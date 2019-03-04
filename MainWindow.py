@@ -1,6 +1,7 @@
 import wx
 
 # file menu
+from LevelView import LevelView
 
 ID_OPEN_ROM = 101
 ID_OPEN_M3L = 102
@@ -150,6 +151,8 @@ class SMB3Foundry(wx.Frame):
 
         self.SetTitle("SMB3Foundry")
         self.Center()
+
+        LevelView(parent=self)
 
     def on_exit(self, e):
         e.Skip()
