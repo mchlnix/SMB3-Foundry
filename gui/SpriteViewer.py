@@ -1,6 +1,8 @@
+from math import ceil
+
 import wx
 
-from Sprite import Tile, TILE_HEIGHT, TILE_WIDTH, TILE_SIZE
+from Sprite import Block
 
 ID_ZOOM_IN = 10001
 ID_ZOOM_OUT = 10002
@@ -22,15 +24,20 @@ class SpriteViewer(wx.Frame):
 
         self.toolbar.Realize()
 
-        self.offset = 0
+        self.object_set = 0
 
         self.rom = rom
 
-        self.sprite_bank = SpriteBank(rom=rom, offset=self.offset, parent=self)
+        self.sprite_bank = SpriteBank(rom=rom, object_set=self.object_set, parent=self)
 
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.sprite_bank, flag=wx.EXPAND)
+
+        self.SetSizer(sizer)
         self.Fit()
 
         self.Bind(wx.EVT_TOOL, self.on_tool_click)
+        self.Bind(wx.EVT_CLOSE, self.on_exit)
 
     def on_tool_click(self, event):
         tool_id = event.GetId()
@@ -41,39 +48,43 @@ class SpriteViewer(wx.Frame):
             self.sprite_bank.zoom_out()
 
         if tool_id == ID_PREV_BANK:
-            self.offset = max(self.offset - 512, 0)
+            self.object_set = max(self.object_set - 1, 0)
         if tool_id == ID_NEXT_BANK:
-            self.offset += 512
+            self.object_set += 1
 
-        self.sprite_bank.set_offset(self.offset)
+        self.sprite_bank.object_set = self.object_set
+
+        self.sprite_bank.Refresh()
 
     def on_resize(self):
-        self.SetSize(self.sprite_bank.GetSize())
+        self.Fit()
 
-    def on_exit(self, e):
-        e.Skip()
-
-        self.Close(True)
+    def on_exit(self, _):
+        self.Hide()
 
 
 class SpriteBank(wx.Panel):
-    def __init__(self, rom, offset=0, zoom=4, *args, **kwargs):
-        self.sprites = 512
+    def __init__(self, rom, object_set=0, zoom=2, *args, **kwargs):
+        self.sprites = 256
         self.sprites_horiz = 16
-        self.sprites_vert = self.sprites // self.sprites_horiz + 1
+        self.sprites_vert = ceil(self.sprites / self.sprites_horiz)
 
-        self.offset = offset
+        self.object_set = object_set
         self.zoom = zoom
 
-        self.size = wx.Size(self.sprites_horiz * TILE_WIDTH * self.zoom,
-                            self.sprites_vert * TILE_HEIGHT * self.zoom)
+        self.size = wx.Size(self.sprites_horiz * Block.WIDTH * self.zoom,
+                            self.sprites_vert * Block.HEIGHT * self.zoom)
 
         super(SpriteBank, self).__init__(size=self.size, *args, **kwargs)
+
+        self.SetSize(self.size)
 
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
 
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_PAINT, self.on_paint)
+
+        self.object_set = 0
 
         self.rom = rom
 
@@ -90,32 +101,26 @@ class SpriteBank(wx.Panel):
         self._after_zoom()
 
     def _after_zoom(self):
-        self.SetSize(wx.Size(self.sprites_horiz * TILE_WIDTH * self.zoom,
-                             self.sprites_vert * TILE_HEIGHT * self.zoom))
+        self.SetSize(wx.Size(self.sprites_horiz * Block.WIDTH * self.zoom,
+                             self.sprites_vert * Block.HEIGHT * self.zoom))
 
-        self.Refresh()
         self.GetParent().on_resize()
-
-    def set_offset(self, offset):
-        self.offset = offset * TILE_SIZE
-        self.Refresh()
 
     def on_paint(self, event):
         event.Skip()
 
         dc = wx.AutoBufferedPaintDC(self)
-        dc.SetUserScale(self.zoom, self.zoom)
 
         dc.Clear()
 
+        horizontal = self.sprites_horiz
+
         for i in range(self.sprites):
-            offset = self.offset + i * TILE_SIZE
+            block = Block(self.rom, self.object_set, i)
 
-            x = (i % self.sprites_horiz) * TILE_WIDTH
-            y = (i // self.sprites_horiz) * TILE_HEIGHT
+            x = (i % horizontal) * Block.WIDTH * self.zoom
+            y = (i // horizontal) * Block.HEIGHT * self.zoom
 
-            tile = Tile(self.rom, offset)
-
-            dc.DrawBitmap(tile.as_bitmap(), x, y)
+            block.draw(dc, x, y, self.zoom)
 
         return
