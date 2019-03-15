@@ -169,8 +169,6 @@ class SMB3Foundry(wx.Frame):
 
         self.levelview = LevelView(parent=self, rom=self.rom, world=1, level=1)
 
-        # Map(0, rom)
-
     def open_level_selector(self, _):
         self.level_selector.Show()
 
@@ -178,18 +176,8 @@ class SMB3Foundry(wx.Frame):
         self.sprite_viewer.Show()
 
     def update_level(self, world, level):
+        self.levelview.Destroy()
         self.levelview = LevelView(parent=self, rom=self.rom, world=world, level=level)
 
     def on_exit(self, _):
         self.Close(True)
-
-
-def main():
-    app = wx.App()
-    ex = SMB3Foundry(None)
-    ex.Show()
-    app.MainLoop()
-
-
-if __name__ == '__main__':
-    main()
