@@ -204,7 +204,7 @@ map_pointers = [
 ]
 
 object_set_pointers = [
-    ObjectSetPointerType(type=0x0000, name='Unknown', min=0x0000, max=0x0000),
+    # ObjectSetPointerType(type=0x0000, name='Unknown', min=0x0000, max=0x0000),
     ObjectSetPointerType(type=0x4000, name='Plains', min=0x1E512, max=0x2000F),
     ObjectSetPointerType(type=0x10000, name='Dungeon', min=0x2A7F7, max=0x2C00F),
     ObjectSetPointerType(type=0x6000, name='Hilly', min=0x20587, max=0x2200F),
