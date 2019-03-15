@@ -12,22 +12,8 @@ TSA_BANK_3 = 3 * 256
 
 BMP_PIXEL_SIZE = 3  # bytes for the colors
 
-OVERWORLD_OBJECT_SET = 14
-
 OBJECT_SET_COUNT = 15
 OBJECTS_PER_SET = 128
-
-MAP_PALETTE_ADDRESS = 0x36BE2
-PALETTE_ADDRESS = 0x36CA2
-
-LEVEL_PALETTE_GROUPS_PER_OBJECT_SET = 8
-ENEMY_PALETTE_GROUPS_PER_OBJECT_SET = 4
-PALETTES_PER_PALETTES_GROUP = 4
-COLORS_PER_PALETTE = 4
-COLOR_SIZE = 1  # byte
-
-PALETTE_DATA_SIZE = (LEVEL_PALETTE_GROUPS_PER_OBJECT_SET + ENEMY_PALETTE_GROUPS_PER_OBJECT_SET) *\
-                    PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
 
 
 def expand_bitmap(bitmap, width, expand=1):
@@ -54,32 +40,14 @@ class Tile:
     PIXEL_COUNT = WIDTH * HEIGHT
     SIZE = int(PIXEL_COUNT * 2 / 8)   # 1 pixel is defined by 2 bits
 
-    palettes = []
-
-    def __init__(self, rom, object_set, object_index, palette_index):
-        if not Tile.palettes:
-            for os in range(OBJECT_SET_COUNT):
-                if os == OVERWORLD_OBJECT_SET:
-                    palette_offset = MAP_PALETTE_ADDRESS
-                else:
-                    palette_offset = PALETTE_ADDRESS + (os * PALETTE_DATA_SIZE)
-                rom.seek(palette_offset)
-
-                Tile.palettes.append([])
-                for lg in range(LEVEL_PALETTE_GROUPS_PER_OBJECT_SET):
-                    Tile.palettes[os].append([])
-                    for pl in range(PALETTES_PER_PALETTES_GROUP):
-                        Tile.palettes[os][lg].append([])
-                        for _ in range(COLORS_PER_PALETTE):
-                            Tile.palettes[os][lg][pl].append(rom.get_byte())
-
+    def __init__(self, rom, object_set, object_index, palette_group, palette_index):
         if object_index < OBJECTS_PER_SET:
             self.start = graphics_offsets[object_set] + object_index * Tile.SIZE
         else:
             common_index = object_index - OBJECTS_PER_SET
             self.start = common_offsets[object_set] + common_index * Tile.SIZE
 
-        self.palette = Tile.palettes[object_set][0][palette_index]
+        self.palette = palette_group[palette_index]
         # self.palette = DEFAULT_PALETTE
 
         self.data = bytearray()
@@ -127,7 +95,7 @@ class Block:
 
     tsa_data = []
 
-    def __init__(self, rom, object_set, block_index):
+    def __init__(self, rom, object_set, block_index, palette_group):
         if not Block.tsa_data:
             for os in range(OBJECT_SET_COUNT):
                 Block.tsa_data.append(load_tsa_data(rom, os))
@@ -141,13 +109,13 @@ class Block:
         ru = tsa_data[TSA_BANK_2 + block_index]
         rd = tsa_data[TSA_BANK_3 + block_index]
 
-        self.lu_tile = Tile(rom, object_set, lu, palette_index)
+        self.lu_tile = Tile(rom, object_set, lu, palette_group, palette_index)
 
-        self.ru_tile = Tile(rom, object_set, ru, palette_index)
+        self.ru_tile = Tile(rom, object_set, ru, palette_group, palette_index)
 
-        self.ld_tile = Tile(rom, object_set, ld, palette_index)
+        self.ld_tile = Tile(rom, object_set, ld, palette_group, palette_index)
 
-        self.rd_tile = Tile(rom, object_set, rd, palette_index)
+        self.rd_tile = Tile(rom, object_set, rd, palette_group, palette_index)
 
     def draw(self, dc, x, y, zoom=2):
         dc.DrawBitmap(self.lu_tile.as_bitmap(zoom), x, y)
