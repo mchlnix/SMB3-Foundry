@@ -2,6 +2,7 @@ from math import ceil
 
 import wx
 
+from Level import Level
 from Sprite import Block
 
 ID_ZOOM_IN = 10001
@@ -50,7 +51,7 @@ class SpriteViewer(wx.Frame):
         if tool_id == ID_PREV_BANK:
             self.object_set = max(self.object_set - 1, 0)
         if tool_id == ID_NEXT_BANK:
-            self.object_set += 1
+            self.object_set = min(self.object_set + 1, 14)
 
         self.sprite_bank.object_set = self.object_set
 
@@ -116,7 +117,7 @@ class SpriteBank(wx.Panel):
         horizontal = self.sprites_horiz
 
         for i in range(self.sprites):
-            block = Block(self.rom, self.object_set, i)
+            block = Block(self.rom, self.object_set, i, Level.palettes[self.object_set][0])
 
             x = (i % horizontal) * Block.WIDTH * self.zoom
             y = (i // horizontal) * Block.HEIGHT * self.zoom
