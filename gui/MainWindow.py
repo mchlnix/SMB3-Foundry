@@ -67,7 +67,7 @@ ID_ABOUT = 605
 class SMB3Foundry(wx.Frame):
 
     def __init__(self, *args, **kw):
-        super(SMB3Foundry, self).__init__(*args, **kw)
+        super(SMB3Foundry, self).__init__(style=wx.MAXIMIZE|wx.DEFAULT_FRAME_STYLE, *args, **kw)
 
         file_menu = wx.Menu()
 
