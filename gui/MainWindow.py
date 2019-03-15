@@ -1,6 +1,7 @@
 import wx
 
-from File import ROM, Map
+from File import ROM
+from LevelSelector import LevelSelector
 from LevelView import LevelView
 from SpriteViewer import SpriteViewer
 
@@ -36,12 +37,13 @@ ID_EDIT_POINTERS = 305
 
 # object menu
 
-ID_CLONE_OBJECT_ENEMY = 401
-ID_ADD_3_BYTE_OBJECT = 402
-ID_ADD_4_BYTE_OBJECT = 403
-ID_ADD_ENEMY = 404
-ID_DELETE_OBJECT_ENEMY = 405
-ID_DELETE_ALL = 406
+ID_VIEW_OBJECTS = 401
+ID_CLONE_OBJECT_ENEMY = 402
+ID_ADD_3_BYTE_OBJECT = 403
+ID_ADD_4_BYTE_OBJECT = 404
+ID_ADD_ENEMY = 405
+ID_DELETE_OBJECT_ENEMY = 406
+ID_DELETE_ALL = 407
 
 # view menu
 
@@ -105,8 +107,12 @@ class SMB3Foundry(wx.Frame):
         level_menu.Append(ID_EDIT_HEADER, "&Edit Header", "")
         level_menu.Append(ID_EDIT_POINTERS, "&Edit Pointers", "")
 
+        self.Bind(wx.EVT_MENU, self.open_level_selector, id=ID_SELECT_LEVEL)
+
         object_menu = wx.Menu()
 
+        object_menu.Append(ID_VIEW_OBJECTS, "&View Objects", "")
+        object_menu.AppendSeparator()
         object_menu.Append(ID_CLONE_OBJECT_ENEMY, "&Clone Object/Enemy", "")
         object_menu.AppendSeparator()
         object_menu.Append(ID_ADD_3_BYTE_OBJECT, "&Add 3 Byte Object", "")
@@ -151,27 +157,30 @@ class SMB3Foundry(wx.Frame):
         self.SetMenuBar(menu_bar)
 
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
-        self.Bind(wx.EVT_MENU, self.on_sprite_viewer, id=ID_OPEN_ROM)
+        self.Bind(wx.EVT_MENU, self.open_sprite_viewer, id=ID_VIEW_OBJECTS)
 
         self.SetTitle("SMB3Foundry")
         self.Center()
 
-        rom = ROM("SMB3.nes")
+        self.rom = ROM("SMB3.nes")
 
         self.sprite_viewer = SpriteViewer(rom=ROM("SMB3.nes"), parent=self)
+        self.level_selector = LevelSelector(parent=self)
 
-        self.levelview = LevelView(parent=self, rom=rom)
+        self.levelview = LevelView(parent=self, rom=self.rom, world=1, level=1)
 
-        Map(0, rom)
+        # Map(0, rom)
 
-    def on_sprite_viewer(self, event):
-        event.Skip()
+    def open_level_selector(self, _):
+        self.level_selector.Show()
 
+    def open_sprite_viewer(self, _):
         self.sprite_viewer.Show()
 
-    def on_exit(self, e):
-        e.Skip()
+    def update_level(self, world, level):
+        self.levelview = LevelView(parent=self, rom=self.rom, world=world, level=level)
 
+    def on_exit(self, _):
         self.Close(True)
 
 
