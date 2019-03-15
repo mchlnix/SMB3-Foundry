@@ -1,0 +1,45 @@
+# caution, might be outdated
+
+Graphic sets consisting of tiles start at 0x40010. Each set contains 256 Sprites á 16 Bytes = 4096 Bytes.
+
+In SMB3 there are 32 Tile sets from 0x40010 to 0x6000F.
+
+0x40010 Mario 1
+0x41010 Items?
+0x42010 Plains 1
+0x43010 Sky
+
+0x44010 Underground
+0x45010 Overworld Tiles
+0x46010 Ice?
+0x47010 Cut scenes?
+
+0x48010 Overworld Sprites
+0x49010 Enemies?
+0x4A010 Mushroom House? Cut scenes?
+0x4B010 Mushroom House Items
+
+0x4C010 Pause Graphics and stuff...
+0x4D010 Ship
+0x4E010 Bowser room?
+0x4F010 Items again?
+
+0x50010 Tanuki Mario
+0x51010 Hammer suit Mario
+0x52010 Koopa Kids
+0x53010 Enemies
+
+0x54010 Frog Mario, small Mario
+0x55010 Super Mario, Star Mario
+0x56010 Some special blocks, cut scene toad/koopa
+0x57010 Menu items/text letters
+
+0x58010 Animated tiles 1 & 2
+0x59010 Animated tiles 3 & 4
+0x5A010 Plains? & Ship cannons
+0x5B010 Hills & Giant World
+
+0x5C010 Animated tiles 5 & 6
+0x5D010 Animated tiles 7 & Bowser & text
+0x5E010 Title gfx (Text)
+0x5F010 Title gfx (Mario, shells)

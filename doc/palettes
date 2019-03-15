@@ -1,0 +1,44 @@
+# NES Colors
+
+The NES has a color table consisting of 64 possible colors. Not all of them are
+unique, however, which results in less than 64 possible colors, that can be
+used.
+
+These colors can be addressed using the indexes 0x00 to 0x3F.
+
+# Color palettes
+
+Palettes consists of 3 colors and a background-color which is the same in every
+palette of a level.
+
+The colors are defined as bytes, containing an index to the NES color table.
+
+bg c1 c2 c3
+
+# Level palettes
+
+These level palettes are not organized by Worlds, but rather by the object set,
+that they are using, e. g. desert or plains. Each object set has 8 groups of
+4 level palettes available for use.
+
+That means that each level can only use 4 different palettes. Every block of a
+level is associated with one of these palettes and is colored with the colors
+defined by it.
+
+# Enemy palettes
+
+Every object set also has 4 groups of 4 color palettes, which can be used to
+color enemies. As with the level palettes, a level can also only have one enemy
+palette from its object set.
+
+# Size and Location in ROM
+
+Since every palette takes up 4 bytes, every palette group has 4 palettes and
+there are 8 level groups + 4 enemy groups, palette data for an object set is
+(8 + 4) * 4 * 4 = 192 bytes long.
+
+The starting address of all the level palettes is #36CA2.
+
+# Overworld palette data
+
+TODO
