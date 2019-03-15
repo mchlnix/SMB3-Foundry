@@ -1,0 +1,3215 @@
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemyhandle_x enemyhandle_y
+0,0x00,0x00,1,1,<0>,9,0,0,White Mario Finished Stage
+0,0x01,0x01,1,1,<1>,9,0,0,White Luigi Finished Stage
+0,0x02,0x02,1,1,<2>,9,0,0,Black Square
+0,0x03,0x03,1,1,<3>,9,0,0,Level 1
+0,0x04,0x04,1,1,<4>,9,0,0,Level 2
+0,0x05,0x05,1,1,<5>,9,0,0,Level 3
+0,0x06,0x06,1,1,<6>,9,0,0,Level 4
+0,0x07,0x07,1,1,<7>,9,0,0,Level 5
+0,0x08,0x08,1,1,<8>,9,0,0,Level 6
+0,0x09,0x09,1,1,<9>,9,0,0,Level 7
+0,0x0A,0x0A,1,1,<10>,9,0,0,Level 8
+0,0x0B,0x0B,1,1,<11>,9,0,0,Level 9
+0,0x0C,0x0C,1,1,<12>,9,0,0,Level 10
+0,0x0D,0x0D,1,1,<161>,9,0,0,Weird Level 1
+0,0x0E,0x0E,1,1,<162>,9,0,0,Weird Level 2
+0,0x0F,0x0F,1,1,<163>,9,0,0,Weird Level 3
+0,0x10,0x10,1,1,<164>,9,0,0,Weird Level 4
+0,0x11,0x11,1,1,<165>,9,0,0,Weird Level 5
+0,0x12,0x12,1,1,<166>,9,0,0,Weird Level 6
+0,0x13,0x13,1,1,<167>,9,0,0,Weird Level 7
+0,0x14,0x14,1,1,<168>,9,0,0,Weird Level 8
+0,0x15,0x15,1,1,<169>,9,0,0,Weird Level 9
+0,0x16,0x16,1,1,<122>,9,0,0,Blank Square
+0,0x17,0x17,1,1,<122>,9,0,0,Blank Square
+0,0x18,0x18,1,1,<122>,9,0,0,Blank Square
+0,0x19,0x19,1,1,<122>,9,0,0,Blank Square
+0,0x1A,0x1A,1,1,<122>,9,0,0,Blank Square
+0,0x1B,0x1B,1,1,<122>,9,0,0,Blank Square
+0,0x1C,0x1C,1,1,<122>,9,0,0,Blank Square
+0,0x1D,0x1D,1,1,<122>,9,0,0,Blank Square
+0,0x1E,0x1E,1,1,<122>,9,0,0,Blank Square
+0,0x1F,0x1F,1,1,<122>,9,0,0,Blank Square
+0,0x20,0x20,1,1,<122>,9,0,0,Blank Square
+0,0x21,0x21,1,1,<122>,9,0,0,Blank Square
+0,0x22,0x22,1,1,<122>,9,0,0,Blank Square
+0,0x23,0x23,1,1,<122>,9,0,0,Blank Square
+0,0x24,0x24,1,1,<122>,9,0,0,Blank Square
+0,0x25,0x25,1,1,<122>,9,0,0,Blank Square
+0,0x26,0x26,1,1,<122>,9,0,0,Blank Square
+0,0x27,0x27,1,1,<122>,9,0,0,Blank Square
+0,0x28,0x28,1,1,<122>,9,0,0,Blank Square
+0,0x29,0x29,1,1,<122>,9,0,0,Blank Square
+0,0x2A,0x2A,1,1,<122>,9,0,0,Blank Square
+0,0x2B,0x2B,1,1,<122>,9,0,0,Blank Square
+0,0x2C,0x2C,1,1,<122>,9,0,0,Blank Square
+0,0x2D,0x2D,1,1,<122>,9,0,0,Blank Square
+0,0x2E,0x2E,1,1,<122>,9,0,0,Blank Square
+0,0x2F,0x2F,1,1,<122>,9,0,0,Blank Square
+0,0x30,0x30,1,1,<122>,9,0,0,Blank Square
+0,0x31,0x31,1,1,<122>,9,0,0,Blank Square
+0,0x32,0x32,1,1,<122>,9,0,0,Blank Square
+0,0x33,0x33,1,1,<122>,9,0,0,Blank Square
+0,0x34,0x34,1,1,<122>,9,0,0,Blank Square
+0,0x35,0x35,1,1,<122>,9,0,0,Blank Square
+0,0x36,0x36,1,1,<122>,9,0,0,Blank Square
+0,0x37,0x37,1,1,<122>,9,0,0,Blank Square
+0,0x38,0x38,1,1,<122>,9,0,0,Blank Square
+0,0x39,0x39,1,1,<122>,9,0,0,Blank Square
+0,0x3A,0x3A,1,1,<122>,9,0,0,Blank Square
+0,0x3B,0x3B,1,1,<122>,9,0,0,Blank Square
+0,0x3C,0x3C,1,1,<122>,9,0,0,Blank Square
+0,0x3D,0x3D,1,1,<122>,9,0,0,Blank Square
+0,0x3E,0x3E,1,1,<122>,9,0,0,Blank Square
+0,0x3F,0x3F,1,1,<122>,9,0,0,Blank Square
+0,0x40,0x40,1,1,<13>,9,0,0,Yellow Mario Finished Stage
+0,0x41,0x41,1,1,<16>,9,0,0,Yellow Luigi Finished Stage
+0,0x42,0x42,1,1,<121>,9,0,0,Barren Ground
+0,0x43,0x43,1,1,<18>,9,0,0,Desert Sand
+0,0x44,0x44,1,1,<19>,9,0,0,W. Road Connector A
+0,0x45,0x45,1,1,<20>,9,0,0,E.-W. Road A
+0,0x46,0x46,1,1,<21>,9,0,0,N.-S. Road A
+0,0x47,0x47,1,1,<22>,9,0,0,E. Road Connector A
+0,0x48,0x48,1,1,<23>,9,0,0,S. Road Connector A
+0,0x49,0x49,1,1,<24>,9,0,0,E.-W. Road C
+0,0x4A,0x4A,1,1,<25>,9,0,0,S. E. Road Connector A
+0,0x4B,0x4B,1,1,<26>,9,0,0,Boat Dock
+0,0x4C,0x4C,1,1,<170>,9,0,0,Weird
+0,0x4D,0x4D,1,1,<170>,9,0,0,Weird
+0,0x4E,0x4E,1,1,<27>,9,0,0,Weird Line
+0,0x4F,0x4F,1,1,<28>,9,0,0,Weird Line
+0,0x50,0x50,1,1,<29>,9,0,0,Mushroom House A
+0,0x51,0x51,1,1,<32>,9,0,0,Rock A
+0,0x52,0x52,1,1,<33>,9,0,0,Rock B
+0,0x53,0x53,1,1,<34>,9,0,0,Rock C
+0,0x54,0x54,1,1,<35>,9,0,0,Locked Door A
+0,0x55,0x55,1,1,<145>,9,0,0,Star A
+0,0x56,0x56,1,1,<36>,9,0,0,Locked Door B
+0,0x57,0x57,1,1,<30>,9,0,0,World 5 - SE Road view from clouds A
+0,0x58,0x58,1,1,<31>,9,0,0,World 5 - SW Road view from clouds
+0,0x59,0x59,1,1,<46>,9,0,0,World 5 - E-W Road view from clouds
+0,0x5A,0x5A,1,1,<47>,9,0,0,World 5 - Tower view from clouds
+0,0x5B,0x5B,1,1,<62>,9,0,0,World 5 - E-W Road Connector view from clouds
+0,0x5C,0x5C,1,1,<63>,9,0,0,World 5 - SE Road view from clouds B
+0,0x5D,0x5D,1,1,<78>,9,0,0,World 5 - Hills view from clouds A
+0,0x5E,0x5E,1,1,<79>,9,0,0,World 5 - Hills view from clouds B
+0,0x5F,0x5F,1,1,<14>,9,0,0,World 5 - Tower
+0,0x60,0x60,1,1,<15>,9,0,0,Destroyed Dungeon A
+0,0x61,0x61,1,1,<94>,9,0,0,World 8 - Castle Top
+0,0x62,0x62,1,1,<110>,9,0,0,World 8 - Castle Columns
+0,0x63,0x63,1,1,<111>,9,0,0,World 8 - Clouds A
+0,0x64,0x64,1,1,<95>,9,0,0,World 8 - Castle Wall
+0,0x65,0x65,1,1,<111>,9,0,0,World 8 - Clouds B
+0,0x66,0x66,1,1,<37>,9,0,0,E. Road Connector C
+0,0x67,0x67,1,1,<38>,9,0,0,Dungeon A
+0,0x68,0x68,1,1,<39>,9,0,0,Desert Quicksand Level
+0,0x69,0x69,1,1,<40>,9,0,0,Desert Pyramid Level
+0,0x6A,0x6A,1,1,<147>,9,0,0,Weird
+0,0x6B,0x6B,1,1,<122>,9,0,0,Blank Square
+0,0x6C,0x6C,1,1,<122>,9,0,0,Blank Square
+0,0x6D,0x6D,1,1,<122>,9,0,0,Blank Square
+0,0x6E,0x6E,1,1,<122>,9,0,0,Blank Square
+0,0x6F,0x6F,1,1,<122>,9,0,0,Blank Square
+0,0x70,0x70,1,1,<122>,9,0,0,Blank Square
+0,0x71,0x71,1,1,<122>,9,0,0,Blank Square
+0,0x72,0x72,1,1,<122>,9,0,0,Blank Square
+0,0x73,0x73,1,1,<122>,9,0,0,Blank Square
+0,0x74,0x74,1,1,<122>,9,0,0,Blank Square
+0,0x75,0x75,1,1,<122>,9,0,0,Blank Square
+0,0x76,0x76,1,1,<122>,9,0,0,Blank Square
+0,0x77,0x77,1,1,<122>,9,0,0,Blank Square
+0,0x78,0x78,1,1,<122>,9,0,0,Blank Square
+0,0x79,0x79,1,1,<122>,9,0,0,Blank Square
+0,0x7A,0x7A,1,1,<122>,9,0,0,Blank Square
+0,0x7B,0x7B,1,1,<122>,9,0,0,Blank Square
+0,0x7C,0x7C,1,1,<122>,9,0,0,Blank Square
+0,0x7D,0x7D,1,1,<122>,9,0,0,Blank Square
+0,0x7E,0x7E,1,1,<122>,9,0,0,Blank Square
+0,0x7F,0x7F,1,1,<122>,9,0,0,Blank Square
+0,0x80,0x80,1,1,<41>,9,0,0,Green Mario Finished Stage
+0,0x81,0x81,1,1,<42>,9,0,0,Green Luigi Finished Stage
+0,0x82,0x82,1,1,<43>,9,0,0,Water 1
+0,0x83,0x83,1,1,<44>,9,0,0,Water 2
+0,0x84,0x84,1,1,<45>,9,0,0,Water 3
+0,0x85,0x85,1,1,<48>,9,0,0,Water 4
+0,0x86,0x86,1,1,<49>,9,0,0,Water 5
+0,0x87,0x87,1,1,<50>,9,0,0,Water 6
+0,0x88,0x88,1,1,<51>,9,0,0,Water 7
+0,0x89,0x89,1,1,<52>,9,0,0,Water 8
+0,0x8A,0x8A,1,1,<53>,9,0,0,Water 9
+0,0x8B,0x8B,1,1,<54>,9,0,0,Water 10
+0,0x8C,0x8C,1,1,<55>,9,0,0,Water 11
+0,0x8D,0x8D,1,1,<56>,9,0,0,Water 12
+0,0x8E,0x8E,1,1,<57>,9,0,0,Water 13
+0,0x8F,0x8F,1,1,<58>,9,0,0,Water 14
+0,0x90,0x90,1,1,<59>,9,0,0,Water 15
+0,0x91,0x91,1,1,<60>,9,0,0,Water 16
+0,0x92,0x92,1,1,<61>,9,0,0,Water 17
+0,0x93,0x93,1,1,<64>,9,0,0,Water 18
+0,0x94,0x94,1,1,<65>,9,0,0,Water 19
+0,0x95,0x95,1,1,<66>,9,0,0,Water 20
+0,0x96,0x96,1,1,<67>,9,0,0,Water 21
+0,0x97,0x97,1,1,<68>,9,0,0,Water 22
+0,0x98,0x98,1,1,<69>,9,0,0,Water 23
+0,0x99,0x99,1,1,<70>,9,0,0,Water 24
+0,0x9A,0x9A,1,1,<71>,9,0,0,Water 25
+0,0x9B,0x9B,1,1,<72>,9,0,0,Water 26
+0,0x9C,0x9C,1,1,<73>,9,0,0,Water 27
+0,0x9D,0x9D,1,1,<74>,9,0,0,Water 28
+0,0x9E,0x9E,1,1,<75>,9,0,0,Water 29
+0,0x9F,0x9F,1,1,<76>,9,0,0,Water 30
+0,0xA0,0xA0,1,1,<77>,9,0,0,Water 31
+0,0xA1,0xA1,1,1,<80>,9,0,0,Water 32
+0,0xA2,0xA2,1,1,<81>,9,0,0,Water 33
+0,0xA3,0xA3,1,1,<82>,9,0,0,Water 34
+0,0xA4,0xA4,1,1,<83>,9,0,0,Water 35
+0,0xA5,0xA5,1,1,<84>,9,0,0,Water 36
+0,0xA6,0xA6,1,1,<85>,9,0,0,Water 37
+0,0xA7,0xA7,1,1,<86>,9,0,0,Water 38
+0,0xA8,0xA8,1,1,<87>,9,0,0,Water 39
+0,0xA9,0xA9,1,1,<88>,9,0,0,Water 40
+0,0xAA,0xAA,1,1,<89>,9,0,0,N. End of Road over Water
+0,0xAB,0xAB,1,1,<90>,9,0,0,S. End of Road over Water
+0,0xAC,0xAC,1,1,<91>,9,0,0,E.-W. Road over Water
+0,0xAD,0xAD,1,1,<92>,9,0,0,Island
+0,0xAE,0xAE,1,1,<93>,9,0,0,E. Road Connector over Water
+0,0xAF,0xAF,1,1,<96>,9,0,0,S. E. Road Connector over Water
+0,0xB0,0xB0,1,1,<97>,9,0,0,N.-S. Road over Water
+0,0xB1,0xB1,1,1,<98>,9,0,0,N.-S. Drawbridge
+0,0xB2,0xB2,1,1,<99>,9,0,0,E.-W. Drawbridge
+0,0xB3,0xB3,1,1,<100>,9,0,0,Bridge
+0,0xB4,0xB4,1,1,<101>,9,0,0,Hills
+0,0xB5,0xB5,1,1,<102>,9,0,0,S. Road Connector over Water
+0,0xB6,0xB6,1,1,<103>,9,0,0,W. Road Connector over Water
+0,0xB7,0xB7,1,1,<104>,9,0,0,W. End of Road over Water
+0,0xB8,0xB8,1,1,<105>,9,0,0,E. End of Road over Water
+0,0xB9,0xB9,1,1,<106>,9,0,0,Road over N.-S. River
+0,0xBA,0xBA,1,1,<107>,9,0,0,Road over E.-W. River
+0,0xBB,0xBB,1,1,<108>,9,0,0,Palm Tree
+0,0xBC,0xBC,1,1,<109>,9,0,0,Pipe
+0,0xBD,0xBD,1,1,<112>,9,0,0,Flower
+0,0xBE,0xBE,1,1,<113>,9,0,0,Piranha Plant
+0,0xBF,0xBF,1,1,<114>,9,0,0,Pond
+0,0xC0,0xC0,1,1,<115>,9,0,0,Red Mario Finished Stage
+0,0xC1,0xC1,1,1,<116>,9,0,0,Red Luigi Finished Stage
+0,0xC2,0xC2,1,1,<148>,9,0,0,World 5 - Clouds A
+0,0xC3,0xC3,1,1,<149>,9,0,0,World 5 - Clouds B
+0,0xC4,0xC4,1,1,<150>,9,0,0,World 5 - Clouds C
+0,0xC5,0xC5,1,1,<151>,9,0,0,World 5 - Clouds D
+0,0xC6,0xC6,1,1,<152>,9,0,0,World 5 - Clouds E
+0,0xC7,0xC7,1,1,<153>,9,0,0,World 5 - Clouds F
+0,0xC8,0xC8,1,1,<117>,9,0,0,Castle Top
+0,0xC9,0xC9,1,1,<118>,9,0,0,Castle Bottom
+0,0xCA,0xCA,1,1,<126>,9,0,0,World 8 - Top Left of Bowser's Castle
+0,0xCB,0xCB,1,1,<127>,9,0,0,World 8 - Top Right of Bowser's Castle
+0,0xCC,0xCC,1,1,<142>,9,0,0,World 8 - Bottom Left of Bowser's Castle
+0,0xCD,0xCD,1,1,<143>,9,0,0,World 8 - Bottom Right of Bowser's Castle
+0,0xCE,0xCE,1,1,<154>,9,0,0,World 5 - Clouds G
+0,0xCF,0xCF,1,1,<155>,9,0,0,World 5 - Clouds H
+0,0xD0,0xD0,1,1,<156>,9,0,0,World 5 - Clouds I
+0,0xD1,0xD1,1,1,<119>,9,0,0,Fire
+0,0xD2,0xD2,1,1,<157>,9,0,0,World 5 - Clouds J
+0,0xD3,0xD3,1,1,<158>,9,0,0,World 5 - Clouds K
+0,0xD4,0xD4,1,1,<159>,9,0,0,World 5 - Clouds L
+0,0xD5,0xD5,1,1,<170>,9,0,0,Weird
+0,0xD6,0xD6,1,1,<120>,9,0,0,Red Square
+0,0xD7,0xD7,1,1,<121>,9,0,0,Plain Ground
+0,0xD8,0xD8,1,1,<122>,9,0,0,Black Square
+0,0xD9,0xD9,1,1,<123>,9,0,0,W. Road Connector B
+0,0xDA,0xDA,1,1,<124>,9,0,0,E.-W. Road B
+0,0xDB,0xDB,1,1,<125>,9,0,0,N.-S. Road B
+0,0xDC,0xDC,1,1,<128>,9,0,0,E. Road Connector B
+0,0xDD,0xDD,1,1,<129>,9,0,0,S. Road Connector B
+0,0xDE,0xDE,1,1,<130>,9,0,0,S. E. Road Connector B
+0,0xDF,0xDF,1,1,<14>,9,0,0,Weird Tower
+0,0xE0,0xE0,1,1,<131>,9,0,0,Mushroom House B
+0,0xE1,0xE1,1,1,<144>,9,0,0,World 8 - Mushroom
+0,0xE2,0xE2,1,1,<132>,9,0,0,Skull
+0,0xE3,0xE3,1,1,<160>,9,0,0,Destroyed Dungeon B
+0,0xE4,0xE4,1,1,<133>,9,0,0,Locked Door C
+0,0xE5,0xE5,1,1,<134>,9,0,0,Start
+0,0xE6,0xE6,1,1,<135>,9,0,0,Hand Trap
+0,0xE7,0xE7,1,1,<136>,9,0,0,Weird Line
+0,0xE8,0xE8,1,1,<137>,9,0,0,Spade House
+0,0xE9,0xE9,1,1,<145>,9,0,0,Star B
+0,0xEA,0xEA,1,1,<146>,9,0,0,Ice
+0,0xEB,0xEB,1,1,<138>,9,0,0,Dungeon B
+0,0xEC,0xFF,1,1,<122>,9,0,0,Blank Square
+
+0,0x00,0x00,5,4,<149,40,41,149,149,40,43,39,40,41,38,42,43,44,39,38,44,44,44,39>,9,0,0,Background Hills A
+0,0x01,0x01,4,3,<149,40,41,149,149,38,42,41,40,43,44,39>,9,0,0,Background Hills B
+0,0x02,0x02,6,8,<149,149,40,41,149,149,149,149,38,42,41,149,149,149,38,44,39,149,149,40,43,44,39,149,40,43,44,44,39,149,38,44,44,44,39,149,38,44,44,44,42,41,38,44,44,44,44,39>,9,0,0,Background Hills C
+0,0x03,0x03,3,1,<187,188,189>,9,0,0,White Mushrooms;; Flowers and Stars
+0,0x04,0x04,1,2,<45,151>,9,0,0,Door (CAN go in)
+0,0x05,0x05,1,2,<46,152>,9,0,0,Door (CAN'T go in)
+0,0x06,0x06,1,1,<148>,9,0,0,Weird Vine
+0,0x07,0x07,1,1,<47>,9,0,0,Small Background Cloud
+0,0x08,0x08,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x09,0x09,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0A,0x0A,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0B,0x0B,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0C,0x0C,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0D,0x0D,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0E,0x0E,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0F,0x0F,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x10,0x1F,3,3,<54,55,56,51,52,53,48,49,50>,6,3,0,White Block Platform (Extends to ground)
+0,0x20,0x2F,3,3,<63,64,65,60,61,62,57,58,59>,6,3,0,Orange Block Platform (Extends to ground)
+0,0x30,0x3F,3,3,<72,73,74,69,70,71,66,67,68>,6,3,0,Green Block Platform (Extends to ground)
+0,0x40,0x4F,3,3,<81,82,83,78,79,80,75,76,77>,6,3,0,Blue Block Platform (Extends to ground)
+0,0x50,0x5F,3,2,<54,55,56,48,49,50>,7,3,0,White Block Platform (Floating)
+0,0x60,0x6F,3,2,<63,64,65,57,58,59>,7,3,0,Orange Block Platform (Floating)
+0,0x70,0x7F,3,2,<72,73,74,66,67,68>,7,3,0,Green Block Platform (Floating)
+0,0x80,0x8F,3,2,<81,82,83,75,76,77>,7,3,0,Blue Block Platform (Floating)
+0,0x90,0x9F,1,1,<89>,0,0,0,Background Bushes
+0,0xA0,0xAF,3,1,<126,157,124>,0,3,0,Gap
+0,0xB0,0xBF,1,1,<91>,0,0,0,Cloud Platform
+0,0xC0,0xCF,3,2,<124,125,126,121,122,123>,0,3,1,Flat Ground
+0,0xD0,0xDF,3,2,<130,131,132,127,128,129>,0,3,1,Underwater Flat Ground
+0,0xE0,0xEF,3,2,<92,94,96,93,95,97>,0,3,0,Background Clouds
+0,0xF0,0xFF,3,1,<132,157,130>,0,3,0,Underwater gap
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with Flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with Leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with Star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with Continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with Single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' Blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden Blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<133,134>,0,0,1,Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,2,<141,141>,0,0,1,Blue X-Blocks
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,2,<61,58>,0,0,1,Weird Orange Background
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+3,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+3,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+3,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+3,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+3,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+3,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+3,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x10,0x1F,1,1,<91>,0,0,0,Cloud Platform
+3,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+3,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+4,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,1,1,<38>,9,0,0,Upper Left Hill Corner - UngerGround
+0,0x01,0x01,1,1,<39>,9,0,0,Upper Left HIll Corner - Hilly
+0,0x02,0x02,1,1,<40>,9,0,0,Upper Left Hill Corner - UnderWater
+0,0x03,0x03,1,1,<41>,9,0,0,Upper Right Hill Corner - UnderGround
+0,0x04,0x04,1,1,<42>,9,0,0,Upper Right Hill Corner - Hilly
+0,0x05,0x05,1,1,<43>,9,0,0,Upper Right Hill Corner - UnderWater
+0,0x06,0x06,1,1,<148>,9,0,0,Weird
+0,0x07,0x07,1,1,<44>,9,0,0,Lower Left Hill Corner
+0,0x08,0x08,1,1,<45>,9,0,0,Lower Left Hill Corner - UnderWater
+0,0x09,0x09,1,1,<148>,9,0,0,Weird
+0,0x0A,0x0A,1,1,<46>,9,0,0,Lower Right Hill Corner
+0,0x0B,0x0B,1,1,<47>,9,0,0,Lower Right Hill Corner - UnderWater
+0,0x0C,0x0C,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0D,0x0D,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0E,0x0E,1,1,<146>,9,0,0,Sets proper background color (?)
+0,0x0F,0x0F,1,2,<48,151>,9,0,0,Door
+0,0x10,0x1F,2,1,<50,49>,4,1,0,45 Degree Underground Hill - Down/Right
+0,0x20,0x2F,2,1,<51,50>,2,1,0,45 Degree Underground Hill - Down/Left
+0,0x30,0x3F,2,1,<153,50>,4,2,0,Weird 45 Degree Hill
+0,0x40,0x4F,2,1,<50,153>,8,1,0,Weird 45 Degree Hill
+0,0x50,0x5F,2,1,<53,52>,4,1,0,45 Degree Hill - Down/Right
+0,0x60,0x6F,2,1,<54,53>,2,1,0,45 Degree Hill - Down/Left
+0,0x70,0x7F,2,1,<55,56>,4,2,0,45 Degree Hill - Up/Left
+0,0x80,0x8F,2,1,<56,57>,8,1,0,45 Degree Hill - Up/Right
+0,0x90,0x9F,2,1,<53,58>,4,1,0,45 Degree Underwater Hill - Down/Right
+0,0xA0,0xAF,2,1,<59,53>,2,1,0,45 Degree Underwater Hill - Down/Left
+0,0xB0,0xBF,2,1,<60,56>,4,2,0,45 Degree Underwater Hill - Up/Left
+0,0xC0,0xCF,2,1,<56,61>,8,1,0,45 Degree Underwater Hill - Up/Right
+0,0xD0,0xDF,1,1,<62>,1,0,0,Underground Wall - Left Side
+0,0xE0,0xEF,1,1,<63>,1,0,0,Hilly Wall - Left Side
+0,0xF0,0xFF,1,1,<64>,1,0,0,Dark Underground Wall - Left Side
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,5,4,<90,66,67,90,90,66,69,65,66,67,70,68,69,71,65,70,71,71,71,65>,9,0,0,Background Hills A
+2,0x0B,0x0B,4,3,<90,66,67,90,90,70,68,67,66,69,71,65>,9,0,0,Background Hills B
+2,0x0C,0x0C,6,8,<90,90,66,67,90,90,90,90,70,68,67,90,90,90,70,71,65,90,90,66,69,71,65,90,66,69,71,71,65,90,70,71,71,71,65,90,70,71,71,71,68,67,70,71,71,71,71,65>,9,0,0,Background Hills C
+2,0x0D,0x0D,1,1,<146>,9,0,0,MSG_NOTHING
+2,0x0E,0x0E,1,1,<146>,9,0,0,MSG_NOTHING
+2,0x0F,0x0F,1,1,<148>,9,0,0,Weird
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<133,134>,0,0,1,Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,2,<72,72>,0,0,1,Blue X-Blocks
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,2,<142,143>,0,0,1,Normal Quicksand
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,8,6,<41,90,90,90,38,76,76,76,162,73,73,73,64,56,56,56,162,73,73,73,64,56,56,56,162,73,73,73,55,56,56,56,56,49,73,73,73,55,56,56,56,56,49,73,73,73,55,56>,9,0,0,Underground Tunnel A
+3,0x01,0x01,8,6,<76,76,76,41,90,90,90,41,56,56,56,162,73,73,73,64,56,56,56,162,73,73,73,64,56,56,56,57,73,73,73,64,56,56,57,73,73,73,51,56,56,57,73,73,73,51,56,56>,9,0,0,Underground Tunnel B
+3,0x02,0x02,6,6,<73,73,73,51,56,57,73,73,51,56,57,73,73,51,56,57,73,73,51,56,57,73,73,73,56,57,73,73,73,73,57,73,73,73,73,73>,9,0,0,45 Degree Diagonal Hill Strip A
+3,0x03,0x03,6,6,<55,56,49,73,73,73,73,55,56,49,73,73,73,73,55,56,49,73,73,73,73,55,56,49,73,73,73,73,55,56,73,73,73,73,73,55>,9,0,0,45 Degree Diagonal Hill Strip B
+3,0x04,0x04,8,4,<73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,76,76,76,76,76,76,76,76,79,79,79,79,79,79,79,79>,9,0,0,Horizontal Hill Strip
+3,0x05,0x05,2,6,<64,162,64,162,64,162,64,162,64,162,64,162>,9,0,0,1 Hill Strip
+3,0x06,0x06,8,6,<73,73,73,73,73,73,89,91,73,73,73,73,89,91,56,56,73,73,89,91,56,56,127,128,89,91,56,56,127,128,73,73,56,56,127,128,73,73,73,73,127,128,73,73,73,73,73,73>,9,0,0,30 Degree Diagonal Hill Strip A
+3,0x07,0x07,8,6,<87,88,73,73,73,73,73,73,56,56,87,88,73,73,73,73,125,126,56,56,87,88,73,73,73,73,125,126,56,56,87,88,73,73,73,73,125,126,56,56,73,73,73,73,73,73,125,126>,9,0,0,30 Degree Diagonal Hill Strip B
+3,0x08,0x08,8,3,<38,76,76,76,76,76,76,41,125,126,56,56,56,56,127,128,73,73,125,126,127,128,73,73>,9,0,0,Triangular Hill Object A
+3,0x09,0x09,8,6,<73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,89,91,87,88,73,73,89,91,56,56,56,56,87,88,44,79,79,79,79,79,79,46>,9,0,0,Triangular Hill Object B
+3,0x0A,0x0A,8,6,<73,73,73,73,73,73,38,76,73,73,73,73,73,38,50,50,73,73,73,73,38,50,50,50,73,73,73,38,50,50,50,50,73,73,38,50,50,50,50,50,73,38,50,50,50,50,50,50>,9,0,0,Steps A
+3,0x0B,0x0B,7,6,<76,41,73,73,73,73,73,50,50,41,73,73,73,73,50,50,50,41,73,73,73,50,50,50,50,41,73,73,50,50,50,50,50,41,73,50,50,50,50,50,50,41>,9,0,0,Steps B
+3,0x0C,0x0C,5,4,<73,73,73,73,73,73,73,73,73,73,73,73,73,38,41,73,73,73,44,46>,9,0,0,Square Hill Object
+3,0x0D,0x0D,8,6,<73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,43,74,40,78,43,74,40,78,161,75,63,53,161,75,63,53,53,78,53,53,53,78,53,53>,9,0,0,Flat Land & Water Pits
+3,0x0E,0x0E,8,6,<73,73,73,73,73,73,39,77,73,73,123,124,43,74,63,53,73,73,63,53,161,75,63,53,43,74,63,53,53,78,53,53,161,75,63,53,53,53,53,53,53,78,53,53,53,53,53,53>,9,0,0,30-Degree Hill & Water Pits A
+3,0x0F,0x0F,8,6,<42,73,73,73,73,73,73,73,161,74,40,121,122,73,73,73,161,75,63,53,161,73,73,73,53,78,53,53,161,74,40,77,53,53,53,53,161,75,63,53,53,53,53,53,53,78,53,53>,9,0,0,30-Degree Hill & Water Pits B
+3,0x10,0x1F,3,1,<50,87,88>,4,1,0,30 Degree Underground Hill - Down/Right
+3,0x20,0x2F,3,1,<89,91,50>,2,1,0,30 Degree Underground Hill - Down/Left
+3,0x30,0x3F,3,1,<153,153,50>,4,2,0,Weird 30-Degree Hill
+3,0x40,0x4F,3,1,<50,153,153>,8,1,0,Weird 30-Degree Hill
+3,0x50,0x5F,3,1,<53,121,122>,4,1,0,30 Degree Hill - Down/Right
+3,0x60,0x6F,3,1,<123,124,53>,2,1,0,30 Degree Hill - Down/Left
+3,0x70,0x7F,3,1,<125,126,56>,4,2,0,30 Degree Hill - Up/Left
+3,0x80,0x8F,3,1,<56,127,128>,8,1,0,30 Degree Hill - Up/Right
+3,0x90,0x9F,3,1,<53,129,130>,4,1,0,30 Degree Underwater Hill - Down/Right
+3,0xA0,0xAF,3,1,<131,132,53>,2,1,0,30 Degree Underwater Hill - Down/Left
+3,0xB0,0xBF,3,1,<157,158,56>,4,2,0,30 Degree Underwater Hill - Up/Left
+3,0xC0,0xCF,3,1,<56,159,141>,8,1,0,30 Degree Underwater Hill - Up/Right
+3,0xD0,0xDF,1,1,<160>,1,0,0,Underground Wall - Right Side
+3,0xE0,0xEF,1,1,<161>,1,0,0,Hilly Wall - Right Side
+3,0xF0,0xFF,1,1,<162>,1,0,0,Dark Underground Wall - Right Side
+4,0x00,0x00,1,1,<81>,9,0,0,Small Background Cloud
+4,0x01,0x01,1,1,<148>,9,0,0,Weird
+4,0x02,0x02,1,1,<148>,9,0,0,Weird
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<148>,9,0,0,Weird
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<146>,0,0,1,Gap
+4,0x20,0x2F,1,1,<73>,0,0,1,Gap with Black Stars (Underground levels only)
+4,0x30,0x3F,1,2,<74,75>,0,0,1,Water
+4,0x40,0x4F,1,1,<50>,0,0,1,Underground Wall
+4,0x50,0x5F,1,1,<53>,0,0,1,Hilly Wall
+4,0x60,0x6F,1,1,<56>,0,0,1,Dark Underground Wall
+4,0x70,0x7F,1,2,<76,50>,0,0,1,Flat Land - Underground
+4,0x80,0x8F,1,2,<77,53>,0,0,1,Flat Land - Hilly
+4,0x90,0x9F,1,2,<78,53>,0,0,1,Flat Land - Underwater
+4,0xA0,0xAF,1,1,<148>,0,0,1,Weird Black Wall
+4,0xB0,0xBF,1,2,<56,79>,7,0,1,Ceiling
+4,0xC0,0xCF,1,2,<56,80>,7,0,1,Underwater Ceiling
+4,0xD0,0xDF,3,1,<83,82,84>,0,3,0,Small Background Hills
+4,0xE0,0xEF,2,2,<30,31,85,86>,1,2,0,Upward Pipe to End of Level
+4,0xF0,0xFF,1,1,<148>,9,0,0,Weird
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<163>,0,0,0,Background like at bottom of hilly level
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,3,2,<92,94,96,93,95,97>,0,3,0,Background Clouds
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<165>,9,0,0,Hilly Wall - 50=right;; 51=left (SMAS only)
+5,0x60,0x6F,3,2,<164,164,164,153,153,153>,0,3,1,Flat Ground with green on top (SMAS only)
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,1,1,<38>,9,0,0,Small Swirly Background Cloud
+0,0x01,0x01,2,1,<39,40>,9,0,0,Large Swirly Background Cloud
+0,0x02,0x02,1,2,<41,42>,13,0,0,Blue Background Pole A
+0,0x03,0x03,1,2,<43,44>,13,0,0,Blue Background Pole B
+0,0x04,0x04,1,1,<46>,6,0,0,Wooden Background Pole
+0,0x05,0x05,1,2,<45,151>,9,0,0,Door
+0,0x06,0x06,1,1,<148>,9,0,0,Weird
+0,0x07,0x07,1,1,<47>,9,0,0,Blue gear
+0,0x08,0x08,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x09,0x09,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0A,0x0A,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0B,0x0B,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0C,0x0C,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0D,0x0D,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0E,0x0E,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0F,0x0F,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x10,0x1F,3,2,<77,78,79,153,153,153>,0,3,1,Wooden platform
+0,0x20,0x2F,3,2,<48,49,50,51,52,53>,0,3,0,Wooden block platform
+0,0x30,0x3F,1,1,<148>,9,0,0,Weird
+0,0x40,0x4F,1,1,<89>,0,0,0,Background Bushes
+0,0x50,0x5F,3,1,<54,55,56>,0,3,0,Double Background Bushes
+0,0x60,0x6F,3,3,<57,58,59,60,61,62,60,61,62>,6,3,0,Green platform
+0,0x70,0x7F,1,1,<148>,9,0,0,Weird
+0,0x80,0x8F,1,1,<63>,0,0,0,Horizontal platform wire
+0,0x90,0x9F,1,1,<64>,1,0,0,1 platform wire
+0,0xA0,0xAF,1,1,<65>,4,0,0,45 Degree Platform Wire - Down/Right
+0,0xB0,0xBF,1,1,<66>,5,0,0,45 Degree Platform Wire - Up/Right
+0,0xC0,0xCF,1,1,<148>,9,0,0,Weird
+0,0xD0,0xDF,1,2,<67,68>,4,0,0,60 Degree Platform Wire - Down/Right
+0,0xE0,0xEF,1,2,<70,69>,2,0,0,60 Degree Platform Wire - Down/Left
+0,0xF0,0xFF,3,2,<71,72,73,74,75,76>,0,3,0,World 5-style Cloud Platform
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<133,134>,0,0,1,Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,1,<84>,0,0,1,Blue Wooden Blocks
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,1,<148>,0,0,1,Weird platform
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+3,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+3,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+3,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+3,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+3,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+3,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+3,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x10,0x1F,1,1,<148>,9,0,0,Weird
+3,0x20,0x2F,1,1,<148>,9,0,0,Weird
+3,0x30,0x3F,1,1,<148>,9,0,0,Weird
+3,0x40,0x4F,1,1,<80>,0,0,0,Donut Blocks
+3,0x50,0x5F,1,1,<81>,0,0,0,Conveyor Belt - moves left
+3,0x60,0x6F,1,1,<82>,0,0,0,Conveyor Belt - moves right
+3,0x70,0x7F,1,1,<83>,0,0,0,Jelectros
+3,0x80,0x8F,1,1,<148>,9,0,0,Weird
+3,0x90,0x9F,1,1,<91>,0,0,0,Cloud Platform
+3,0xA0,0xAF,1,2,<5,153>,0,0,1,Munchers
+3,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xF0,0xFF,1,1,<146>,9,0,0,MSG_NOTHING
+4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+4,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,1,2,<48,151>,9,0,0,Door
+0,0x01,0x01,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x02,0x02,1,1,<38>,9,0,0,Rotodisc block
+0,0x03,0x03,1,1,<148>,9,0,0,Weird
+0,0x04,0x04,1,1,<39>,9,0,0,Hot Foot Candle
+0,0x05,0x05,1,2,<40,41>,9,0,0,Bowser Statue
+0,0x06,0x06,1,2,<42,43>,9,0,0,Invisible Door
+0,0x07,0x07,2,2,<44,45,46,47>,9,0,0,The Princess's Door
+0,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+0,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+0,0x10,0x1F,4,1,<49,50,153,153>,0,0,0,Bottom of background with pillars A
+0,0x20,0x2F,4,1,<51,52,153,153>,0,0,0,Bottom of background with pillars B
+0,0x30,0x3F,2,2,<53,53,54,55>,0,1,0,Red bricks
+0,0x40,0x4F,1,1,<55>,0,0,0,Dungeon background
+0,0x50,0x5F,1,1,<56>,0,0,0,Dark dungeon background
+0,0x60,0x6F,4,2,<57,153,153,153,58,153,153,153>,0,0,0,Dungeon windows
+0,0x70,0x7F,4,4,<57,153,153,153,59,153,153,153,59,153,153,153,58,153,153,153>,0,0,0,Long dungeon windows
+0,0x80,0x8F,4,1,<59,153,153,153>,0,0,0,Middle section of dungeon windows
+0,0x90,0x9F,4,1,<60,153,153,153>,0,0,0,Dungeon Lamps (Note: extends to ceiling)
+0,0xA0,0xAF,1,1,<148>,0,0,0,Weird
+0,0xB0,0xBF,3,1,<63,64,65>,0,3,0,Stretch platform
+0,0xC0,0xCF,1,1,<66>,0,0,0,Floor Spikes
+0,0xD0,0xDF,1,1,<67>,0,0,0,Ceiling Spikes
+0,0xE0,0xEF,1,1,<68>,0,0,1,Horizontally oriented X-blocks
+0,0xF0,0xFF,1,1,<68>,1,0,1,Vertically oriented X-blocks
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine 
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<133,134>,0,0,1,Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,1,<69>,0,0,1,Blocks with circles in the middle
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,1,<148>,0,0,1,Weird Background
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+3,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+3,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+3,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+3,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+3,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+3,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+3,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x10,0x1F,1,1,<81>,6,0,0,Dark Dungeon Background
+3,0x20,0x2F,1,1,<81>,0,0,1,Dark Dungeon Background
+3,0x30,0x3F,1,1,<164>,0,0,1,Blank Background (used to block out stuff)
+3,0x40,0x4F,1,2,<87,88>,0,0,1,Lava
+3,0x50,0x5F,1,1,<70>,0,0,0,Conveyor Belt - moves left
+3,0x60,0x6F,1,1,<71>,0,0,0,Conveyor Belt - moves right
+3,0x70,0x7F,1,1,<72>,0,0,0,Horizontal Platform Wire
+3,0x80,0x8F,1,1,<73>,1,0,0,1 Platform Wire
+3,0x90,0x9F,1,1,<74>,4,0,0,45 Degree Platform Wire - Down/Right
+3,0xA0,0xAF,1,1,<75>,5,0,0,45 Degree Platform Wire - Up/Right
+3,0xB0,0xBF,1,2,<76,77>,4,0,0,60 Degree Platform Wire - Down/Right
+3,0xC0,0xCF,1,2,<78,79>,2,0,0,60 Degree Platform Wire - Down/Left
+3,0xD0,0xDF,1,1,<89>,0,0,1,Red Bricks - found in Bowser's Castle
+3,0xE0,0xEF,1,1,<80>,0,0,0,Donut Blocks
+3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+4,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,1,1,<38>,9,0,0,Right Screw Head
+0,0x01,0x01,1,1,<39>,9,0,0,2-Way Bullet Shooter
+0,0x02,0x02,1,1,<40>,9,0,0,Rocket Engine
+0,0x03,0x03,1,1,<41>,9,0,0,Wooden ship beam terminus A
+0,0x04,0x04,1,1,<42>,9,0,0,Anchor
+0,0x05,0x05,1,1,<43>,9,0,0,Top Screw Head
+0,0x06,0x06,1,1,<44>,9,0,0,Bullet Shooter - Up/Left
+0,0x07,0x07,1,1,<45>,9,0,0,Bullet Shooter - Up/Right
+0,0x08,0x08,1,1,<46>,9,0,0,Bullet Shooter - Down/Left
+0,0x09,0x09,1,1,<47>,9,0,0,Bullet Shooter - Down/Right
+0,0x0A,0x0A,2,3,<48,49,50,51,52,53>,9,0,0,4-Way Bullet Shooter A
+0,0x0B,0x0B,2,3,<48,49,54,55,56,57>,9,0,0,4-Way Bullet Shooter B
+0,0x0C,0x0C,2,2,<58,59,60,61>,9,0,0,Metal Plated Bullet Shooter A
+0,0x0D,0x0D,2,2,<62,63,64,65>,9,0,0,Metal Plated Bullet Shooter B
+0,0x0E,0x0E,2,2,<66,67,68,69>,9,0,0,Wooden Background Box
+0,0x0F,0x0F,1,1,<148>,9,0,0,Black boss room background
+0,0x10,0x1F,3,1,<70,71,73>,0,3,0,Wooden Ship Beam
+0,0x20,0x2F,3,2,<70,71,73,153,153,153>,0,3,1,Wooden Ship Beam
+0,0x30,0x3F,3,2,<74,75,77,153,153,153>,0,3,1,Wooden Ship Beam with 2 strips of wood
+0,0x40,0x4F,1,3,<78,79,81>,1,3,0,Wooden Ship Pillar
+0,0x50,0x5F,1,3,<78,79,81>,0,0,0,Row of Wooden Ship Pillars
+0,0x60,0x6F,2,3,<82,83,84,85,88,89>,1,3,0,Thick Wooden Ship Beam
+0,0x70,0x7F,2,1,<90,91>,0,1,0,Corkscrew - Left terminus
+0,0x80,0x8F,2,1,<91,90>,0,2,0,Corkscrew - Right terminus
+0,0x90,0x9F,1,2,<93,92>,1,2,0,Corkscrew - Lower terminus
+0,0xA0,0xAF,1,2,<92,93>,1,1,0,Corkscrew - Upper terminus
+0,0xB0,0xBF,1,1,<94>,0,0,0,Metal platform
+0,0xC0,0xCF,1,1,<95>,1,0,0,1 Metal Bar A
+0,0xD0,0xDF,1,1,<96>,1,0,0,1 Metal Bar B
+0,0xE0,0xEF,2,3,<97,153,121,153,122,153>,1,3,0,Thick Vertical Background Pillar
+0,0xF0,0xFF,1,3,<123,124,125>,1,3,0,1 Background Pillar
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,2,1,<126,127>,9,0,0,Wooden ship beam terminus B
+2,0x0B,0x0B,2,1,<128,129>,9,0,0,Background wooden ship beam terminus
+2,0x0C,0x0C,6,4,<149,149,149,158,149,149,149,149,132,71,73,149,130,131,70,72,157,149,149,132,72,71,72,73>,9,0,0,Tank A
+2,0x0D,0x0D,11,4,<149,149,149,149,149,158,149,159,149,149,149,149,149,149,132,71,72,71,73,149,149,149,130,131,131,70,71,72,71,157,149,149,149,149,132,71,72,71,72,71,72,71,72,157>,9,0,0,Tank B
+2,0x0E,0x0E,7,5,<41,71,72,71,72,71,72,149,41,71,72,71,72,71,149,149,41,71,72,71,72,149,149,149,126,127,71,72,149,149,149,149,149,128,129>,9,0,0,Corner of Airship - Lasts 32 Blocks
+2,0x0F,0x0F,1,1,<132>,9,0,0,Left terminus of wooden tank beam
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<133,134>,0,0,1,Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,2,<141,141>,0,0,1,Blue X-Blocks
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,1,<148>,0,0,1,Weird Background
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,1,1,<158>,9,0,0,Rocky Wrench hole
+3,0x01,0x01,5,2,<149,149,158,149,39,41,71,72,71,73>,9,0,0,Ship Platform A
+3,0x02,0x02,5,3,<149,149,149,78,149,149,132,71,72,39,41,71,72,71,73>,9,0,0,Ship Platform B
+3,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+3,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+3,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+3,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+3,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+3,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+3,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x10,0x1F,1,1,<160>,0,0,0,Wooden Ship Background Line
+3,0x20,0x2F,1,1,<161>,0,0,0,Railings
+3,0x30,0x3F,1,2,<162,163>,0,0,0,Ground (like on tank levels)
+3,0x40,0x4F,3,3,<164,165,166,167,168,169,170,171,172>,0,3,1,Metal box platform
+3,0x50,0x5F,3,4,<173,174,175,176,177,178,176,177,178,179,180,181>,0,3,0,Crate
+3,0x60,0x6F,2,1,<182,153>,0,0,0,Portholes
+3,0x70,0x7F,4,1,<70,71,72,73>,0,3,1,Wooden Tank Beam
+3,0x80,0x8F,2,2,<184,185,183,186>,0,1,0,Leftward Giant Bullet Shooter
+3,0x90,0x9F,2,2,<185,184,186,183>,0,2,0,Rightward Giant Bullet Shooter
+3,0xA0,0xAF,2,1,<130,131>,0,1,0,Leftward Bullet Shooter
+3,0xB0,0xBF,3,1,<187,188,189>,0,3,0,Tank Wheels
+3,0xC0,0xCF,1,1,<144>,0,0,0,Invisible Platform
+3,0xD0,0xDF,1,1,<146>,9,0,0,MSG_NOTHING
+3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x20,0x2F,6,4,<149,149,149,158,149,149,149,149,132,71,73,149,130,131,70,72,157,149,149,132,72,71,72,73>,9,0,0,Tank C
+4,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+4,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,1,1,<148>,9,0,0,Weird
+0,0x01,0x01,1,1,<148>,9,0,0,Weird
+0,0x02,0x02,10,7,<153,153,153,153,242,241,153,153,153,153,153,153,153,243,149,149,239,153,153,153,153,153,242,149,149,149,149,241,153,153,153,243,149,149,149,149,149,149,239,153,242,149,149,149,149,149,149,149,149,239,244,149,149,149,149,149,149,149,149,238,153,245,149,149,149,149,149,149,240,153>,9,0,0,Cloud Background A
+0,0x03,0x03,1,1,<149>,9,0,0,Sets background color to white
+0,0x04,0x04,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x05,0x05,1,1,<148>,9,0,0,Weird
+0,0x06,0x06,5,4,<149,149,149,40,45,40,45,38,157,42,39,157,157,43,149,149,41,42,149,149>,9,0,0,Cloud Background B
+0,0x07,0x07,5,3,<40,45,40,45,149,39,157,157,157,44,149,41,43,39,42>,9,0,0,Cloud Background C
+0,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+0,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+0,0x10,0x1F,1,1,<148>,9,0,0,Weird
+0,0x20,0x2F,1,1,<148>,9,0,0,Weird
+0,0x30,0x3F,1,1,<148>,9,0,0,Weird
+0,0x40,0x4F,1,1,<148>,9,0,0,Weird
+0,0x50,0x5F,1,1,<148>,9,0,0,Weird
+0,0x60,0x6F,1,1,<148>,9,0,0,Weird
+0,0x70,0x7F,1,1,<148>,9,0,0,Weird
+0,0x80,0x8F,1,1,<148>,9,0,0,Weird
+0,0x90,0x9F,1,1,<148>,9,0,0,Weird
+0,0xA0,0xAF,1,1,<148>,9,0,0,Weird
+0,0xB0,0xBF,1,1,<148>,9,0,0,Weird
+0,0xC0,0xCF,3,2,<49,50,51,46,47,48>,0,3,0,World 5-style Cloud Platform - Blue Background
+0,0xD0,0xDF,3,2,<55,56,57,52,53,54>,0,3,0,World 5-style Cloud Platform - White Background
+0,0xE0,0xEF,3,2,<77,78,79,61,62,63>,0,3,1,Clouds C
+0,0xF0,0xFF,3,1,<58,59,60>,0,3,0,World 6-style Cloud Platform
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<133,134>,0,0,1,Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,2,<141,141>,0,0,1,Blue X-Blocks
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,1,<148>,0,0,1,Weird Background
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+3,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+3,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+3,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+3,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+3,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+3,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+3,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x10,0x1F,1,2,<78,62>,0,0,1,Clouds A
+3,0x20,0x2F,1,2,<68,67>,0,0,1,Clouds B
+3,0x30,0x3F,1,2,<36,37>,0,0,0,Horizontal no-ended pipe
+3,0x40,0x4F,1,1,<149>,0,0,1,White Background
+3,0x50,0x5F,2,1,<30,31>,1,0,0,1 no-ended pipe
+3,0x60,0x6F,2,2,<64,36,65,37>,0,1,0,Rightward pipe to end of level
+3,0x70,0x7F,1,1,<148>,9,0,1,Weird green lava
+3,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+3,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xC0,0xCF,1,1,<149>,0,0,0,White Background
+3,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xE0,0xEF,1,1,<146>,0,0,0,MSG_NOTHING
+3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+4,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,4,2,<149,39,40,149,39,40,39,40>,9,0,0,Small block pyramid - Extends to ground
+0,0x01,0x01,8,4,<149,149,41,42,42,43,149,149,149,149,44,46,46,47,149,149,41,42,42,43,41,42,42,43,44,46,46,47,44,46,46,47>,9,0,0,Medium block pyramid - Extends to ground
+0,0x02,0x02,1,1,<148>,9,0,0,Weird block pyramid
+0,0x03,0x03,8,4,<41,42,42,42,42,42,42,43,48,49,49,49,49,49,49,50,48,49,49,49,49,49,49,50,44,46,46,46,46,46,46,47>,9,0,0,Large block pyramid - Extends to ground
+0,0x04,0x04,3,4,<51,52,53,94,54,94,94,54,94,94,54,94>,9,0,0,Palm Tree
+0,0x05,0x05,3,3,<94,55,94,94,56,94,57,19,57>,9,0,0,Purple Bullet Bill Machine
+0,0x06,0x06,1,1,<148>,9,0,0,Weird
+0,0x07,0x07,1,1,<58>,9,0,0,Uncracked Pipe
+0,0x08,0x08,1,1,<59>,9,0,0,Cracked Pipe
+0,0x09,0x09,1,3,<63,63,61>,9,0,0,Bottom post of pipe structure
+0,0x0A,0x0A,2,1,<64,65>,9,0,0,Oval Background Cloud
+0,0x0B,0x0B,1,2,<45,151>,9,0,0,Door
+0,0x0C,0x0C,6,1,<255,68,69,66,67,255>,11,0,0,Background Pyramid
+0,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+0,0x10,0x1F,2,1,<39,40>,0,0,0,Small block platforms
+0,0x20,0x2F,4,2,<41,42,42,43,44,46,46,47>,0,0,0,Medium block platforms
+0,0x30,0x3F,6,3,<41,42,42,42,42,43,48,49,49,49,49,50,44,46,46,46,46,47>,0,0,0,Large block platforms
+0,0x40,0x4F,8,4,<41,42,42,42,42,42,42,43,48,49,49,49,49,49,49,50,48,49,49,49,49,49,49,50,44,46,46,46,46,46,46,47>,0,0,0,X-Large block platforms
+0,0x50,0x5F,1,2,<70,71>,2,2,0,Diagonally oriented block platforms
+0,0x60,0x6F,2,1,<158,159>,0,0,0,Small sandstone blocks
+0,0x70,0x7F,4,2,<74,75,75,77,72,76,76,73>,0,0,0,Medium sandstone blocks
+0,0x80,0x8F,6,3,<74,75,75,75,75,77,78,79,79,79,79,80,72,76,76,76,76,73>,0,0,0,Large sandstone blocks
+0,0x90,0x9F,8,4,<74,75,75,75,75,75,75,77,78,79,79,79,79,79,79,80,78,79,79,79,79,79,79,80,72,76,76,76,76,76,76,73>,0,0,0,X-Large sandstone blocks
+0,0xA0,0xAF,1,2,<81,82>,2,2,0,Diagonally oriented sandstone blocks
+0,0xB0,0xBF,2,2,<39,40,40,39>,0,0,1,Small block platforms
+0,0xC0,0xCF,4,4,<41,42,42,43,44,46,46,47,42,43,41,42,46,47,44,46>,0,0,1,Medium block platforms
+0,0xD0,0xDF,6,6,<41,42,42,42,42,43,48,49,49,49,49,50,44,46,46,46,46,47,42,42,43,41,42,42,49,49,50,48,49,49,46,46,47,44,46,46>,0,0,1,Large block platforms
+0,0xE0,0xEF,8,8,<41,42,42,42,42,42,42,43,48,49,49,49,49,49,49,50,48,49,49,49,49,49,49,50,44,46,46,46,46,46,46,47,42,42,42,43,41,42,42,42,49,49,49,50,48,49,49,49,49,49,49,50,48,49,49,49,46,46,46,47,44,46,46,46>,0,0,1,X-Large Block Platforms
+0,0xF0,0xFF,3,1,<83,84,85>,0,3,0,Ice blue platform
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<133,134>,0,0,1,Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,2,<141,141>,0,0,1,Blue X-Blocks
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,1,<148>,0,0,1,Weird Background
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+3,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+3,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+3,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+3,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+3,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+3,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+3,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x10,0x1F,1,1,<86>,1,0,0,1 Background Pole
+3,0x20,0x2F,1,1,<87>,0,0,0,Background Coconuts
+3,0x30,0x3F,1,1,<88>,0,0,0,Floor Spikes
+3,0x40,0x4F,1,1,<89>,0,0,0,Ceiling Spikes
+3,0x50,0x5F,1,1,<90>,0,0,0,Square Sandstone Blocks
+3,0x60,0x6F,1,1,<91>,0,0,0,Cloud Platform
+3,0x70,0x7F,1,1,<92>,1,0,0,Background Chains A
+3,0x80,0x8F,1,1,<93>,1,0,0,Background Chains B
+3,0x90,0x9F,1,1,<94>,0,0,0,Horizontal Plain Background A (used to block out stuff)
+3,0xA0,0xAF,8,4,<95,96,96,96,96,96,96,96,97,94,94,94,94,94,94,94,97,94,94,94,94,94,94,94,97,94,94,94,94,94,94,94>,3,0,0,Pipe Boxes A
+3,0xB0,0xBF,1,1,<94>,1,0,0,1 Plain Background (used to block out stuff)
+3,0xC0,0xCF,1,1,<94>,0,0,0,Horizontal Plain Background B (used to block out stuff)
+3,0xD0,0xDF,1,1,<148>,9,0,0,Weird
+3,0xE0,0xEF,1,1,<148>,9,0,0,Weird
+3,0xF0,0xFF,1,1,<147>,9,0,0,CAUTION: Screws Up Game
+4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x40,0x4F,7,5,<95,96,96,96,96,96,96,97,94,94,94,94,94,94,97,94,94,94,94,94,94,97,94,94,94,94,94,94,97,94,94,94,94,94,94>,3,0,0,Pipe Boxes B
+4,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+4,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,2,2,<38,39,40,41>,9,0,0,Upper-left corner of curved pipe
+0,0x01,0x01,2,2,<42,43,40,41>,9,0,0,Upper-right corner of curved pipe
+0,0x02,0x02,2,2,<42,39,44,41>,9,0,0,Lower-left corner of curved pipe
+0,0x03,0x03,2,2,<42,39,40,46>,9,0,0,Lower-right corner of curved pipe
+0,0x04,0x04,2,1,<47,48>,9,0,0,Upward directional platform
+0,0x05,0x05,2,1,<49,50>,9,0,0,Rightward directional platform
+0,0x06,0x06,2,1,<51,52>,9,0,0,Leftward directional platform
+0,0x07,0x07,2,1,<53,54>,9,0,0,Multi-directional directional platform
+0,0x08,0x08,1,1,<55>,9,0,0,Weird blue background
+0,0x09,0x09,1,1,<148>,9,0,0,Weird black background
+0,0x0A,0x0A,1,2,<45,151>,9,0,0,Door
+0,0x0B,0x0B,1,1,<148>,9,0,0,Weird
+0,0x0C,0x0C,1,1,<154>,9,0,0,Background for pipe levels
+0,0x0D,0x0D,1,2,<56,55>,9,0,0,Water - lasts whole level
+0,0x0E,0x0E,1,1,<148>,9,0,0,Weird
+0,0x0F,0x0F,1,1,<148>,9,0,0,Weird
+0,0x10,0x1F,2,3,<57,58,59,60,57,58>,1,3,0,Double-ended pipe
+0,0x20,0x2F,2,2,<61,62,63,64>,0,1,0,Rightward pipe
+0,0x30,0x3F,2,2,<62,61,64,63>,0,2,0,Leftward pipe
+0,0x40,0x4F,2,2,<65,66,67,68>,1,1,0,Downward background pipe
+0,0x50,0x5F,1,3,<69,70,71>,1,3,0,Small Vertical background pipe
+0,0x60,0x6F,2,2,<72,73,74,75>,0,1,0,Rightward background pipe
+0,0x70,0x7F,2,2,<73,72,75,74>,0,2,0,Leftward background pipe
+0,0x80,0x8F,3,1,<76,77,78>,0,3,0,Small Horizontal background pipe
+0,0x90,0x9F,1,1,<146>,0,0,0,MSG_NOTHING
+0,0xA0,0xAF,1,1,<148>,9,0,0,Weird
+0,0xB0,0xBF,1,1,<148>,9,0,0,Weird
+0,0xC0,0xCF,1,1,<148>,9,0,0,Weird
+0,0xD0,0xDF,1,2,<80,79>,1,1,0,Background Aquatic Plants
+0,0xE0,0xEF,1,1,<81>,1,0,0,Vertically Oriented Donut Blocks
+0,0xF0,0xFF,1,1,<82>,0,0,0,Ceiling Spikes
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with Flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with Leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with Star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with Continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with Single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<133,134>,0,0,1,Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,2,<141,141>,0,0,1,Blue X-Blocks
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,1,<148>,0,0,1,Weird Background
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+3,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+3,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+3,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+3,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+3,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+3,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+3,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x10,0x1F,2,2,<59,60,57,58>,1,2,0,Upward Pipe
+3,0x20,0x2F,2,2,<61,62,63,64>,0,1,0,Rightward Pipe
+3,0x30,0x3F,1,2,<55,55>,0,0,0,Water - 2 blocks high
+3,0x40,0x4F,3,3,<83,84,85,86,87,88,86,87,88>,6,3,0,Gray platform
+3,0x50,0x5F,3,2,<89,90,91,92,93,94>,0,3,1,Orange Block Platform
+3,0x60,0x6F,1,1,<55>,0,0,0,Water - Horizontally Oriented
+3,0x70,0x7F,1,1,<55>,1,0,0,Water - Vertically Oriented
+3,0x80,0x8F,1,1,<95>,0,0,0,Jelectros
+3,0x90,0x9F,3,1,<96,97,121>,0,3,0,Double Ended Small Horizontal Pipe
+3,0xA0,0xAF,1,1,<81>,0,0,0,Horizontally Oriented Donut Blocks
+3,0xB0,0xBF,1,1,<122>,0,0,0,Donut Blocks
+3,0xC0,0xCF,1,1,<123>,0,0,0,Floor Spikes
+3,0xD0,0xDF,1,2,<56,55>,0,0,1,Water
+3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+4,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,1,1,<38>,9,0,0,Piranha Plant Muncher A
+0,0x01,0x01,1,1,<39>,9,0,0,Piranha Plant Muncher B
+0,0x02,0x02,1,1,<148>,9,0,0,Weird
+0,0x03,0x03,1,1,<148>,9,0,0,Weird
+0,0x04,0x04,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x05,0x05,7,4,<149,40,41,41,42,149>,11,0,0,Background Mountain
+0,0x06,0x06,1,1,<148>,9,0,0,Weird
+0,0x07,0x07,1,1,<148>,9,0,0,Weird
+0,0x08,0x08,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x09,0x09,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0A,0x0A,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0B,0x0B,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0C,0x0C,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0D,0x0D,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0E,0x0E,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0F,0x0F,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x10,0x1F,2,2,<46,47,44,48>,0,0,0,Giant cloud platform
+0,0x20,0x2F,2,2,<49,50,51,52>,0,0,0,Giant bricks
+0,0x30,0x3F,2,2,<53,54,55,56>,0,0,0,Giant '?' blocks with coins
+0,0x40,0x4F,2,2,<57,58,59,60>,0,0,0,Giant '?' blocks with leafs
+0,0x50,0x5F,2,2,<86,87,88,89>,0,0,0,Giant Wooden Blocks
+0,0x60,0x6F,2,2,<61,62,63,64>,0,0,0,Giant Metal Blocks
+0,0x70,0x7F,2,2,<65,66,67,68>,0,0,0,Giant Ground
+0,0x80,0x8F,3,3,<69,70,71,72,73,74,75,76,77>,1,1,0,Giant Downward Pipe
+0,0x90,0x9F,2,2,<78,79,80,81>,1,0,0,Giant Underwater Coral
+0,0xA0,0xAF,1,2,<82,83>,1,1,0,Piranha Plant Small Downward Pipe A
+0,0xB0,0xBF,1,2,<84,85>,1,1,0,Piranha Plant Small Downward Pipe B
+0,0xC0,0xCF,1,1,<148>,9,0,0,Weird
+0,0xD0,0xDF,1,1,<148>,9,0,0,Weird
+0,0xE0,0xEF,1,1,<148>,9,0,1,Weird
+0,0xF0,0xFF,1,1,<148>,9,0,0,Weird
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<133,134>,0,0,1,Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,2,<141,141>,0,0,1,Blue X-Blocks
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,2,<94,96>,0,0,1,Weird Giant Bricks
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+3,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+3,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+3,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+3,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+3,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+3,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+3,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x10,0x1F,1,1,<148>,9,0,1,Weird
+3,0x20,0x2F,1,1,<148>,9,0,1,Weird
+3,0x30,0x3F,1,2,<36,37>,0,0,0,Horizontal no-ended pipe
+3,0x40,0x4F,1,1,<149>,0,0,1,Gap
+3,0x50,0x5F,2,2,<30,31,90,91>,1,2,0,Upward Pipe to End of Level
+3,0x60,0x6F,2,2,<92,36,93,37>,0,1,0,Rightward Pipe to End of Level
+3,0x70,0x7F,1,2,<121,122>,0,0,1,Lava
+3,0x80,0x8F,1,1,<146>,9,0,0,MSG_NOTHING (SMAS only)
+3,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+3,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+4,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,1,1,<148>,9,0,0,Weird
+0,0x01,0x01,1,1,<148>,9,0,0,Weird
+0,0x02,0x02,1,1,<148>,9,0,0,Weird
+0,0x03,0x03,1,1,<148>,9,0,0,Weird
+0,0x04,0x04,1,1,<38>,6,0,0,Wooden Background Pole
+0,0x05,0x05,1,2,<45,151>,9,0,0,Door
+0,0x06,0x06,1,1,<148>,9,0,0,Weird
+0,0x07,0x07,1,1,<39>,9,0,0,Blue gear
+0,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+0,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+0,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+0,0x10,0x1F,3,2,<68,69,70,153,153,153>,0,3,1,Icy flat ground
+0,0x20,0x2F,1,1,<148>,9,0,0,Weird
+0,0x30,0x3F,3,2,<43,44,46,40,41,42>,0,3,0,Green topped wooden platform
+0,0x40,0x4F,1,2,<47,49>,0,0,0,Top of snowy platform
+0,0x50,0x5F,1,1,<148>,9,0,0,Weird
+0,0x60,0x6F,1,1,<148>,9,0,0,Weird
+0,0x70,0x7F,3,3,<48,49,50,51,52,53,51,52,53>,6,3,0,Snowy Platform
+0,0x80,0x8F,1,1,<54>,0,0,0,Horizontal platform wire
+0,0x90,0x9F,1,1,<55>,1,0,0,1 platform wire
+0,0xA0,0xAF,1,1,<56>,4,0,0,45 Degree Platform Wire - Down/Right
+0,0xB0,0xBF,1,1,<57>,5,0,0,45 Degree Platform Wire - Up/Right
+0,0xC0,0xCF,3,2,<58,59,60,61,62,63>,0,3,0,Background Clouds
+0,0xD0,0xDF,1,2,<64,65>,4,0,0,60 Degree Platform Wire - Down/Right
+0,0xE0,0xEF,1,2,<66,67>,2,0,0,60 Degree Platform Wire - Down/Left
+0,0xF0,0xFF,1,1,<148>,9,0,0,Weird Ice Platform
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with Flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with Leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with Star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with Continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with Single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+2,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<79,80>,0,0,1,Weird Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,1,<84>,0,0,1,Blue Wooden Blocks
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,1,<148>,0,0,1,Weird background
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+3,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+3,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+3,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+3,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+3,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+3,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+3,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+3,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+3,0x10,0x1F,1,1,<71>,0,0,0,Ice Blocks
+3,0x20,0x2F,1,1,<72>,0,0,0,Frozen Munchers
+3,0x30,0x3F,1,1,<73>,0,0,0,Frozen Coins
+3,0x40,0x4F,1,1,<74>,0,0,0,Donut Blocks
+3,0x50,0x5F,1,1,<81>,0,0,0,Conveyor Belt - moves left
+3,0x60,0x6F,1,1,<82>,0,0,0,Conveyor Belt - moves right
+3,0x70,0x7F,1,1,<83>,0,0,0,Jelectros
+3,0x80,0x8F,2,2,<75,76,77,78>,0,0,0,Large Ice Blocks
+3,0x90,0x9F,1,1,<148>,9,0,0,Weird
+3,0xA0,0xAF,1,2,<85,153>,0,0,1,Munchers
+3,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+3,0xF0,0xFF,1,1,<146>,9,0,0,MSG_NOTHING
+4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+4,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,1,1,<38>,9,0,0,Upper Left Hill Corner - UngerGround
+0,0x01,0x01,1,1,<39>,9,0,0,Upper Left HIll Corner - Hilly
+0,0x02,0x02,1,1,<40>,9,0,0,Upper Left Hill Corner - UnderWater
+0,0x03,0x03,1,1,<41>,9,0,0,Upper Right Hill Corner - UnderGround
+0,0x04,0x04,1,1,<42>,9,0,0,Upper Right Hill Corner - Hilly
+0,0x05,0x05,1,1,<43>,9,0,0,Upper Right Hill Corner - UnderWater
+0,0x06,0x06,1,1,<148>,9,0,0,Weird
+0,0x07,0x07,1,1,<44>,9,0,0,Lower Left Hill Corner
+0,0x08,0x08,1,1,<45>,9,0,0,Lower Left Hill Corner - UnderWater
+0,0x09,0x09,1,1,<148>,9,0,0,Weird
+0,0x0A,0x0A,1,1,<46>,9,0,0,Lower Right Hill Corner
+0,0x0B,0x0B,1,1,<47>,9,0,0,Lower Right Hill Corner - UnderWater
+0,0x0C,0x0C,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0D,0x0D,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0E,0x0E,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x0F,0x0F,1,2,<48,151>,9,0,0,Door
+0,0x10,0x1F,2,1,<50,49>,4,1,0,45 Degree Underground Hill - Down/Right
+0,0x20,0x2F,2,1,<51,50>,2,1,0,45 Degree Underground Hill - Down/Left
+0,0x30,0x3F,2,1,<153,50>,4,2,0,Weird 45 Degree Hill
+0,0x40,0x4F,2,1,<50,153>,8,1,0,Weird 45 Degree Hill
+0,0x50,0x5F,2,1,<53,52>,4,1,0,45 Degree Hill - Down/Right
+0,0x60,0x6F,2,1,<54,53>,2,1,0,45 Degree Hill - Down/Left
+0,0x70,0x7F,2,1,<55,56>,4,2,0,45 Degree Hill - Up/Left
+0,0x80,0x8F,2,1,<56,57>,8,1,0,45 Degree Hill - Up/Right
+0,0x90,0x9F,2,1,<53,58>,4,1,0,45 Degree Underwater Hill - Down/Right
+0,0xA0,0xAF,2,1,<59,53>,2,1,0,45 Degree Underwater Hill - Down/Left
+0,0xB0,0xBF,2,1,<60,56>,4,2,0,45 Degree Underwater Hill - Up/Left
+0,0xC0,0xCF,2,1,<56,61>,8,1,0,45 Degree Underwater Hill - Up/Right
+0,0xD0,0xDF,1,1,<62>,1,0,0,Underground Wall - Left Side
+0,0xE0,0xEF,1,1,<63>,1,0,0,Hilly Wall - Left Side
+0,0xF0,0xFF,1,1,<64>,1,0,0,Dark Underground Wall - Left Side
+1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
+1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
+1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
+1,0x03,0x03,1,1,<3>,9,0,0,'?' with continuous star
+1,0x04,0x04,1,1,<4>,9,0,0,'?' with single coin
+1,0x05,0x05,1,1,<5>,9,0,0,Muncher
+1,0x06,0x06,1,1,<6>,9,0,0,Brick with Flower
+1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
+1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
+1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
+1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
+1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
+1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
+1,0x0E,0x0E,1,1,<14>,9,0,0,Invisible Coin
+1,0x0F,0x0F,1,1,<15>,9,0,0,Invisible 1-up
+1,0x10,0x1F,1,1,<16>,0,0,0,Bricks
+1,0x20,0x2F,1,1,<17>,0,0,0,'?' blocks with single coins
+1,0x30,0x3F,1,1,<18>,0,0,0,Bricks with single coins
+1,0x40,0x4F,1,1,<19>,0,0,0,Wooden blocks
+1,0x50,0x5F,1,1,<20>,0,0,0,Colored Note Blocks - movable four directions
+1,0x60,0x6F,1,1,<21>,0,0,0,Note Blocks - movable two directions
+1,0x70,0x7F,1,1,<22>,0,0,0,Wooden Blocks - movable
+1,0x80,0x8F,1,1,<23>,0,0,0,Coins
+1,0x90,0x9F,2,2,<24,25,30,31>,1,1,0,Downward Pipe (CAN go down)
+1,0xA0,0xAF,2,2,<26,27,30,31>,1,1,0,Downward Pipe (CAN'T go down)
+1,0xB0,0xBF,2,2,<28,29,30,31>,1,1,0,Downward Pipe (CAN go down;; ignores pointers)
+1,0xC0,0xCF,2,2,<30,31,32,33>,1,2,0,Upward Pipe (CAN go up)
+1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
+1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
+1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
+2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
+2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
+2,0x03,0x03,1,1,<101>,9,0,0,Note Block with Star
+2,0x04,0x04,1,1,<102>,9,0,0,Wooden Block with Flower
+2,0x05,0x05,1,1,<103>,9,0,0,Wooden Block with Leaf
+2,0x06,0x06,1,1,<104>,9,0,0,Wooden Block with Star
+2,0x07,0x07,1,1,<105>,9,0,0,Red Invisible Note Block
+2,0x08,0x08,1,1,<106>,9,0,0,P-Switch
+2,0x09,0x09,2,1,<107,108>,14,0,0,Level Ending
+2,0x0A,0x0A,5,4,<90,66,67,90,90,66,69,65,66,67,70,68,69,71,65,70,71,71,71,65>,9,0,0,Background Hills A
+2,0x0B,0x0B,4,3,<90,66,67,90,90,70,68,67,66,69,71,65>,9,0,0,Background Hills B
+2,0x0C,0x0C,6,8,<90,90,66,67,90,90,90,90,70,68,67,90,90,90,70,71,65,90,90,66,69,71,65,90,66,69,71,71,65,90,70,71,71,71,65,90,70,71,71,71,68,67,70,71,71,71,71,65>,9,0,0,Background Hills C
+2,0x0D,0x0D,1,1,<146>,9,0,0,Blue background
+2,0x0E,0x0E,1,1,<146>,9,0,0,Starry background
+2,0x0F,0x0F,1,1,<148>,9,0,0,Weird
+2,0x10,0x1F,2,2,<36,109,37,110>,0,2,0,Leftward Pipe (CAN go in)
+2,0x20,0x2F,2,2,<36,111,37,112>,0,2,0,Leftward Pipe (CAN'T go in)
+2,0x30,0x3F,1,3,<113,114,115>,1,1,0,Bullet Bill Machine
+2,0x40,0x4F,1,2,<190,191>,0,0,0,Bridge
+2,0x50,0x5F,1,1,<117>,0,0,0,Silver Coins (appear when you hit a P-Switch)
+2,0x60,0x6F,1,2,<133,134>,0,0,1,Waterfall
+2,0x70,0x7F,1,2,<135,136>,0,0,1,Water (moves to left)
+2,0x80,0x8F,1,2,<137,136>,0,0,1,Water (still)
+2,0x90,0x9F,1,2,<138,136>,0,0,1,Water (moves to right)
+2,0xA0,0xAF,1,2,<139,140>,0,0,1,Background used in Bowser's Castle
+2,0xB0,0xBF,1,2,<72,72>,0,0,1,Blue X-Blocks
+2,0xC0,0xCF,1,2,<142,143>,0,0,1,Weird Quicksand (doesn't act like it)
+2,0xD0,0xDF,1,2,<142,143>,0,0,1,Normal Quicksand
+2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
+2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+3,0x00,0x00,8,6,<41,90,90,90,38,76,76,76,162,73,73,73,64,56,56,56,162,73,73,73,64,56,56,56,162,73,73,73,55,56,56,56,56,52,73,73,73,55,56,56,56,56,52,73,73,73,55,56>,9,0,0,Underground Tunnel A
+3,0x01,0x01,8,6,<76,76,76,41,90,90,90,38,56,56,56,162,73,73,73,64,56,56,56,162,73,73,73,64,56,56,56,57,73,73,73,64,56,56,57,73,73,73,54,56,56,57,73,73,73,54,56,56>,9,0,0,Underground Tunnel B
+3,0x02,0x02,6,6,<73,73,73,51,56,57,73,73,51,56,57,73,73,51,56,57,73,73,51,56,57,73,73,73,56,57,73,73,73,73,57,73,73,73,73,73>,9,0,0,45 Degree Diagonal Hill Strip A
+3,0x03,0x03,6,6,<55,56,49,73,73,73,73,55,56,49,73,73,73,73,55,56,49,73,73,73,73,55,56,49,73,73,73,73,55,56,73,73,73,73,73,55>,9,0,0,45 Degree Diagonal Hill Strip B
+3,0x04,0x04,8,6,<73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,77,77,77,77,77,77,77,77,79,79,79,79,79,79,79,79,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73>,9,0,0,Horizontal Hill Strip
+3,0x05,0x05,2,6,<64,162,64,162,64,162,64,162,64,162,64,162>,9,0,0,1 Hill Strip
+3,0x06,0x06,8,6,<73,73,73,73,73,73,123,124,73,73,73,73,123,124,56,56,73,73,123,124,56,56,127,128,123,124,56,56,127,128,73,73,56,56,127,128,73,73,73,73,127,128,73,73,73,73,73,73>,9,0,0,30 Degree Diagonal Hill Strip A
+3,0x07,0x07,8,6,<121,122,73,73,73,73,73,73,56,56,121,122,73,73,73,73,125,126,56,56,121,122,73,73,73,73,125,126,56,56,121,122,73,73,73,73,125,126,56,56,73,73,73,73,73,73,125,126>,9,0,0,30 Degree Diagonal Hill Strip B
+3,0x08,0x08,8,3,<39,77,77,77,77,77,77,42,125,126,56,56,56,56,127,128,73,73,125,126,127,128,73,73>,9,0,0,Triangular Hill Object A
+3,0x09,0x09,8,6,<73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,123,124,121,122,73,73,123,124,56,56,56,56,121,122,44,79,79,79,79,79,79,46>,9,0,0,Triangular Hill Object B
+3,0x0A,0x0A,8,6,<73,73,73,73,73,73,39,77,73,73,73,73,73,39,53,53,73,73,73,73,39,53,53,53,73,73,73,39,53,53,53,53,73,73,39,53,53,53,53,53,73,39,53,53,53,53,53,53>,9,0,0,Steps A
+3,0x0B,0x0B,8,6,<77,42,73,73,73,73,73,73,53,53,42,73,73,73,73,73,53,53,53,42,73,73,73,73,53,53,53,53,42,73,73,73,53,53,53,53,53,42,73,73,53,53,53,53,53,53,42,73>,9,0,0,Steps B
+3,0x0C,0x0C,8,6,<73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,40,42,73,73,73,73,73,73,44,46,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73>,9,0,0,Square Hill Object
+3,0x0D,0x0D,8,6,<73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,43,74,40,78,43,74,40,78,161,75,63,53,161,75,63,53,53,78,53,53,53,78,53,53>,9,0,0,Flat Land & Water Pits
+3,0x0E,0x0E,8,6,<73,73,73,73,73,73,39,77,73,73,123,124,43,74,63,53,73,73,63,53,161,75,63,53,43,74,63,53,53,78,53,53,161,75,63,53,53,53,53,53,53,78,53,53,53,53,53,53>,9,0,0,30-Degree Hill & Water Pits A
+3,0x0F,0x0F,8,6,<42,73,73,73,73,73,73,73,161,74,40,121,122,73,73,73,161,75,63,53,161,73,73,73,53,78,53,53,161,74,40,77,53,53,53,53,161,75,63,53,53,53,53,53,53,78,53,53>,9,0,0,30-Degree Hill & Water Pits B
+3,0x10,0x1F,3,1,<50,87,88>,4,1,0,30 Degree Underground Hill - Down/Right
+3,0x20,0x2F,3,1,<89,91,50>,2,1,0,30 Degree Underground Hill - Down/Left
+3,0x30,0x3F,3,1,<153,153,50>,4,2,0,Weird 30-Degree Hill
+3,0x40,0x4F,3,1,<50,153,153>,8,1,0,Weird 30-Degree Hill
+3,0x50,0x5F,3,1,<53,121,122>,4,1,0,30 Degree Hill - Down/Right
+3,0x60,0x6F,3,1,<123,124,53>,2,1,0,30 Degree Hill - Down/Left
+3,0x70,0x7F,3,1,<125,126,56>,4,2,0,30 Degree Hill - Up/Left
+3,0x80,0x8F,3,1,<56,127,128>,8,1,0,30 Degree Hill - Up/Right
+3,0x90,0x9F,3,1,<53,129,130>,4,1,0,30 Degree Underwater Hill - Down/Right
+3,0xA0,0xAF,3,1,<131,132,53>,2,1,0,30 Degree Underwater Hill - Down/Left
+3,0xB0,0xBF,3,1,<157,158,56>,4,2,0,30 Degree Underwater Hill - Up/Left
+3,0xC0,0xCF,3,1,<56,159,141>,8,1,0,30 Degree Underwater Hill - Up/Right
+3,0xD0,0xDF,1,1,<160>,1,0,0,Underground Wall - Right Side
+3,0xE0,0xEF,1,1,<161>,1,0,0,Hilly Wall - Right Side
+3,0xF0,0xFF,1,1,<162>,1,0,0,Dark Underground Wall - Right Side
+4,0x00,0x00,1,1,<81>,9,0,0,Small Background Cloud
+4,0x01,0x01,1,1,<148>,9,0,0,Weird
+4,0x02,0x02,1,1,<148>,9,0,0,Weird
+4,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+4,0x04,0x04,1,1,<148>,9,0,0,Weird
+4,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+4,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+4,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+4,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+4,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+4,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+4,0x10,0x1F,1,1,<146>,0,0,1,Gap
+4,0x20,0x2F,1,1,<73>,0,0,1,Gap with Black Stars (Underground levels only)
+4,0x30,0x3F,1,2,<74,75>,0,0,1,Water
+4,0x40,0x4F,1,1,<50>,0,0,1,Underground Wall
+4,0x50,0x5F,1,1,<53>,0,0,1,Hilly Wall
+4,0x60,0x6F,1,1,<56>,0,0,1,Dark Underground Wall
+4,0x70,0x7F,1,2,<76,50>,0,0,1,Flat Land - Underground
+4,0x80,0x8F,1,2,<77,53>,0,0,1,Flat Land - Hilly
+4,0x90,0x9F,1,2,<78,53>,0,0,1,Flat Land - Underwater
+4,0xA0,0xAF,1,1,<148>,0,0,1,Weird Black Wall
+4,0xB0,0xBF,1,2,<56,79>,7,0,1,Ceiling
+4,0xC0,0xCF,1,2,<56,80>,7,0,1,Underwater Ceiling
+4,0xD0,0xDF,3,1,<83,82,84>,0,3,0,Small Background Hills
+4,0xE0,0xEF,2,2,<30,31,85,86>,1,2,0,Upward Pipe to End of Level
+4,0xF0,0xFF,1,1,<148>,9,0,0,Weird
+5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+5,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+5,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+5,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+5,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+5,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+5,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+5,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+5,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x10,0x1F,1,1,<163>,0,0,0,Background like at bottom of hilly level
+5,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x30,0x3F,3,2,<92,94,96,93,95,97>,0,3,0,Background Clouds
+5,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x50,0x5F,1,1,<165>,9,0,0,Hilly Wall - 50=right;; 51=left (SMAS only)
+5,0x60,0x6F,3,2,<164,164,164,153,153,153>,0,3,1,Flat Ground with green on top (SMAS only)
+5,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+5,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+5,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
+6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
+6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
+6,0x03,0x03,1,1,<145>,9,0,0,MSG_CRASH
+6,0x04,0x04,1,1,<145>,9,0,0,MSG_CRASH
+6,0x05,0x05,1,1,<145>,9,0,0,MSG_CRASH
+6,0x06,0x06,1,1,<145>,9,0,0,MSG_CRASH
+6,0x07,0x07,1,1,<145>,9,0,0,MSG_CRASH
+6,0x08,0x08,1,1,<145>,9,0,0,MSG_CRASH
+6,0x09,0x09,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0A,0x0A,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0B,0x0B,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0C,0x0C,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0D,0x0D,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0E,0x0E,1,1,<145>,9,0,0,MSG_CRASH
+6,0x0F,0x0F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x10,0x1F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x20,0x2F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x30,0x3F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x40,0x4F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x50,0x5F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x60,0x6F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x70,0x7F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x80,0x8F,1,1,<145>,9,0,0,MSG_CRASH
+6,0x90,0x9F,1,1,<145>,9,0,0,MSG_CRASH
+6,0xA0,0xAF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xB0,0xBF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xC0,0xCF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
+6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
+7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
+7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
+7,0x03,0x03,1,1,<150>,9,0,0,MSG_POINTER
+7,0x04,0x04,1,1,<150>,9,0,0,MSG_POINTER
+7,0x05,0x05,1,1,<150>,9,0,0,MSG_POINTER
+7,0x06,0x06,1,1,<150>,9,0,0,MSG_POINTER
+7,0x07,0x07,1,1,<150>,9,0,0,MSG_POINTER
+7,0x08,0x08,1,1,<150>,9,0,0,MSG_POINTER
+7,0x09,0x09,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0A,0x0A,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0B,0x0B,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0C,0x0C,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0D,0x0D,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0E,0x0E,1,1,<150>,9,0,0,MSG_POINTER
+7,0x0F,0x0F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x10,0x1F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x20,0x2F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x30,0x3F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x40,0x4F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x50,0x5F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x60,0x6F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x70,0x7F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x80,0x8F,1,1,<150>,9,0,0,MSG_POINTER
+7,0x90,0x9F,1,1,<150>,9,0,0,MSG_POINTER
+7,0xA0,0xAF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xB0,0xBF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xC0,0xCF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xD0,0xDF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
+7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
+
+0,0x00,0x00,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x01,0x01,1,1,<148>,9,0,0,Weird thing;; can slip on
+0,0x02,0x02,1,1,<148>,9,0,0,Makes you bounce at beginning of level
+0,0x03,0x03,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x04,0x04,1,1,<148>,9,0,0,Weird enemy
+0,0x05,0x05,1,1,<148>,9,0,0,Weird enemy
+0,0x06,0x06,1,1,<20>,9,0,0,Colored note block
+0,0x07,0x07,1,1,<70>,9,0,0,Mushroom House with Warp Whistle entrance
+0,0x08,0x08,1,2,<42,43>,9,0,0,Invisible door (appears when you hit a P-switch)
+0,0x09,0x09,3,2,<0,262,0,259,260,261>,9,0,0,Ship Anchor
+0,0x0A,0x0A,1,1,<148>,9,0,0,Weird enemy
+0,0x0B,0x0B,1,1,<4>,9,0,0,Stray 1-up
+0,0x0C,0x0C,1,1,<5>,9,0,0,Stray Star
+0,0x0D,0x0D,1,1,<6>,9,0,0,Stray Mushroom
+0,0x0E,0x0E,2,2,<7,8,23,24>,9,0,0,World x Boss (where x = world)
+0,0x0F,0x0F,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x10,0x10,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x11,0x11,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x12,0x12,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x13,0x13,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x14,0x14,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x15,0x15,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x16,0x16,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x17,0x17,1,1,<9>,9,0,0,Spiny Cheep-Cheep
+0,0x18,0x18,2,3,<32,33,48,49,64,65>,9,0,0,Bowser
+0,0x19,0x19,1,1,<19>,9,0,0,Stray Flower
+0,0x1A,0x1A,1,1,<148>,9,0,0,Weird
+0,0x1B,0x1B,1,1,<20>,9,0,0,Colored note block
+0,0x1C,0x1C,1,1,<6>,9,0,0,Stray Mushroom
+0,0x1D,0x1D,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x1E,0x1E,1,1,<21>,9,0,0,Stray Leaf
+0,0x1F,0x1F,1,1,<25>,9,0,0,Stray Vine
+0,0x20,0x20,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x21,0x21,1,1,<10>,9,0,0,Flashing Mushroom
+0,0x22,0x22,1,1,<11>,9,0,0,Flashing Flower
+0,0x23,0x23,1,1,<12>,9,0,0,Flashing Star
+0,0x24,0x24,3,1,<38,39,40>,9,0,0,Leftward-moving cloud platform (fast)
+0,0x25,0x25,1,1,<146>,9,0,0,Changes exit location on map (works on warp pipe levels)
+0,0x26,0x26,3,1,<55,56,57>,9,0,0,Still wooden platform (moves right when stepped on)
+0,0x27,0x27,3,1,<55,56,57>,9,0,0,Wooden platform - moves back and forth (a lot)
+0,0x28,0x28,3,1,<55,56,57>,9,0,0,Wooden platform - moves up and down (a lot)
+0,0x29,0x29,1,1,<37>,9,0,0,Spike
+0,0x2A,0x2A,1,2,<50,66>,9,0,0,Ptooie
+0,0x2B,0x2B,1,2,<51,67>,9,0,0,Kuribo's Goomba|0 -1 0
+0,0x2C,0x2C,3,1,<38,39,40>,9,0,0,Leftward-moving cloud platform (slow)
+0,0x2D,0x2D,2,2,<52,53,68,69>,9,0,0,Boss Bass (surface)
+0,0x2E,0x2E,2,1,<54,54>,9,0,0,Upward-moving Circle Block platform
+0,0x2F,0x2F,1,1,<41>,9,0,0,Boo Buddy
+0,0x30,0x30,1,1,<88>,9,0,0,Hot Foot
+0,0x31,0x31,1,1,<45>,9,0,0,Top Stretch
+0,0x32,0x32,1,1,<46>,9,0,0,Bottom Stretch
+0,0x33,0x33,1,1,<47>,9,0,0,Nipper Plant
+0,0x34,0x34,1,1,<148>,9,0,0,Toad & Message
+0,0x35,0x35,1,1,<148>,9,0,0,Automatically Clear Stage
+0,0x36,0x36,3,1,<55,56,57>,9,0,0,Wooden platform - moves left,falls when stepped on
+0,0x37,0x37,3,1,<55,56,57>,9,0,0,Wooden platform - moves back and forth (a little)
+0,0x38,0x38,3,1,<55,56,57>,9,0,0,Wooden platform - moves up and down (a little)
+0,0x39,0x39,1,1,<47>,9,0,0,Walking Nipper Plant
+0,0x3A,0x3A,2,1,<54,54>,9,0,0,Falling Circle Block platform
+0,0x3B,0x3B,1,1,<72>,9,0,0,Surface Cheep-Cheep (swims along surface)
+0,0x3C,0x3C,3,1,<55,56,57>,9,0,0,Wired platform (follows platform wires)
+0,0x3D,0x3D,1,1,<47>,9,0,0,Walking Ptooie (spits fireballs)
+0,0x3E,0x3E,3,1,<55,56,57>,9,0,0,Floating platform (floats in water)
+0,0x3F,0x3F,1,2,<80,96>,9,0,0,Dry Bones|0 -1 0
+0,0x40,0x40,1,1,<81>,9,0,0,Buster Beetle
+0,0x41,0x41,1,1,<82>,9,0,0,Goal Card
+0,0x42,0x42,1,1,<72>,9,0,0,Jumping Cheep-Cheep (3 jumps;; up and right)
+0,0x43,0x43,1,1,<72>,9,0,0,Jumping Cheep-Cheep (2 jumps;; down and right)
+0,0x44,0x44,3,1,<55,56,57>,9,0,0,Falling Platform (falls when stepped on)
+0,0x45,0x45,1,1,<88>,9,0,0,Smart Hot Foot
+0,0x46,0x46,2,2,<279,280,281,282>,9,0,0,Pipe Ptooie
+0,0x47,0x47,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x48,0x48,1,1,<91>,9,0,0,Baby Cheep Cheep
+0,0x49,0x49,2,1,<92,93>,9,0,0,Background Cloud
+0,0x4A,0x4A,1,1,<94>,9,0,0,Magic Ball
+0,0x4B,0x4B,2,2,<97,98,113,114>,9,0,0,Boom Boom
+0,0x4C,0x4C,1,2,<99,115>,9,0,0,Flying Boom Boom
+0,0x4D,0x4D,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x4E,0x4E,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x4F,0x4F,1,1,<206>,9,0,0,Jumping Chomp
+0,0x50,0x50,1,1,<104>,9,0,0,Bob-Omb (about to blow up)
+0,0x51,0x51,1,1,<116>,9,0,0,Double Rotodisc (rotates counterclockwise)
+0,0x52,0x52,1,1,<102>,9,0,0,Treasure Chest
+0,0x53,0x53,1,1,<103>,9,0,0,Stray Podoboo
+0,0x54,0x54,1,1,<148>,9,0,0,Weird Block
+0,0x55,0x55,1,1,<104>,9,0,0,Bob-Omb
+0,0x56,0x56,2,2,<283,284,285,286>,9,0,0,Leftward Piranha Plant
+0,0x57,0x57,2,2,<287,288,289,290>,9,0,0,Rightward Piranha Plant|-1 0 0
+0,0x58,0x58,1,1,<111>,9,0,0,Fire Chomp
+0,0x59,0x59,1,3,<112,128,144>,9,0,0,Fire Snake|0 -2 0
+0,0x5A,0x5A,1,1,<116>,9,0,0,Single Rotodisc (rotates clockwise)
+0,0x5B,0x5B,1,1,<116>,9,0,0,Single Rotodisc (rotates counterclockwise)
+0,0x5C,0x5C,1,1,<148>,9,0,0,Instantly broken brick
+0,0x5D,0x5D,4,8,<118,118,118,118,118,118,118,118,118,118,118,0,0,118,118,118,0,118,118,0,0,118,118,0,0,0,118,0,0,118,0,0>,9,0,0,Tornado
+0,0x5E,0x5E,1,1,<116>,9,0,0,Double Rotodisc (rotates both ways;; starting at sides)
+0,0x5F,0x5F,1,1,<116>,9,0,0,Double Rotodisc (rotates both ways;; starting at top)
+0,0x60,0x60,1,1,<116>,9,0,0,Double Rotodisc (rotates clockwise)
+0,0x61,0x61,1,2,<123,139>,9,0,0,Bloober (with babies)|0 -1 0
+0,0x62,0x62,1,1,<124>,9,0,0,Bloober
+0,0x63,0x63,2,2,<52,53,68,69>,9,0,0,Big Bertha (underwater)
+0,0x64,0x64,1,1,<72>,9,0,0,Surface Cheep-Cheep (jumps out of water)
+0,0x65,0x65,1,1,<129>,9,0,0,Upward Current
+0,0x66,0x66,1,1,<130>,9,0,0,Downward Current
+0,0x67,0x67,2,2,<133,134,149,150>,9,0,0,Lava Lotus
+0,0x68,0x68,1,1,<131>,9,0,0,Upside-down Buzzy Beetle
+0,0x69,0x69,1,1,<132>,9,0,0,Upside-down Spiny
+0,0x6A,0x6A,1,1,<135>,9,0,0,Bloober Nanny
+0,0x6B,0x6B,1,1,<136>,9,0,0,Pile Driver Micro-Goomba
+0,0x6C,0x6C,1,2,<137,153>,9,0,0,Green Koopa Troopa|0 -1 0
+0,0x6D,0x6D,1,2,<138,154>,9,0,0,Red Koopa Troopa|0 -1 0
+0,0x6E,0x6E,1,2,<140,156>,9,0,0,Green Koopa Paratroopa (bounces)|0 -1 0
+0,0x6F,0x6F,1,2,<143,159>,9,0,0,Red Koopa Paratroopa|0 -1 0
+0,0x70,0x70,1,1,<157>,9,0,0,Buzzy Beetle
+0,0x71,0x71,1,1,<158>,9,0,0,Spiny
+0,0x72,0x72,1,1,<151>,9,0,0,Goomba
+0,0x73,0x73,2,2,<160,161,176,177>,9,0,0,Para-Goomba|0 -1 0
+0,0x74,0x74,2,2,<162,163,178,179>,9,0,0,Para-Goomba with Micro-Goombas|0 -1 0
+0,0x75,0x75,1,1,<152>,9,0,0,Bowser's Fireballs
+0,0x76,0x76,1,1,<72>,9,0,0,Falling Cheep-Cheep
+0,0x77,0x77,1,1,<165>,9,0,0,Cheep-Cheep
+0,0x78,0x78,1,1,<166>,9,0,0,Still Bullet Bill
+0,0x79,0x79,1,1,<167>,9,0,0,Stray Missile Bill
+0,0x7A,0x7A,2,2,<168,169,184,185>,9,0,0,Giant Green Koopa Troopa
+0,0x7B,0x7B,2,2,<170,171,186,187>,9,0,0,Giant Red Koopa Troopa
+0,0x7C,0x7C,2,2,<172,173,188,189>,9,0,0,Giant Goomba
+0,0x7D,0x7D,2,2,<174,175,190,191>,9,0,0,Giant Green Piranha Plant
+0,0x7E,0x7E,2,2,<180,181,196,197>,9,0,0,Giant Green Koopa Paratroopa
+0,0x7F,0x7F,2,2,<182,183,198,199>,9,0,0,Giant Red Piranha Plant
+0,0x80,0x80,1,2,<140,156>,9,0,0,Green Koopa Paratroopa (doesn't bounce)|0 -1 0
+0,0x81,0x81,1,2,<193,209>,9,0,0,Hammer Brother
+0,0x82,0x82,1,2,<194,210>,9,0,0,Boomerang Brother
+0,0x83,0x83,1,2,<195,211>,9,0,0,Lakitu
+0,0x84,0x84,1,1,<200>,9,0,0,Red Spiny Egg
+0,0x85,0x85,1,1,<201>,9,0,0,Green Spiny Egg
+0,0x86,0x86,2,2,<202,203,218,219>,9,0,0,Sledge Brother
+0,0x87,0x87,1,2,<204,220>,9,0,0,Fire Brother
+0,0x88,0x88,1,1,<205>,9,0,0,Yellow Cheep-Cheep
+0,0x89,0x89,2,1,<222,206>,9,0,0,Chain Chomp
+0,0x8A,0x8A,2,2,<83,84,16,17>,9,0,0,Thwomp (normal)
+0,0x8B,0x8B,2,2,<83,84,16,17>,9,0,0,Thwomp (moves left)
+0,0x8C,0x8C,2,2,<83,84,16,17>,9,0,0,Thwomp (moves right)
+0,0x8D,0x8D,2,2,<83,84,16,17>,9,0,0,Thwomp (moves up)
+0,0x8E,0x8E,2,2,<83,84,16,17>,9,0,0,Thwomp (moves diagonally up and left)
+0,0x8F,0x8F,2,2,<83,84,16,17>,9,0,0,Thwomp (moves diagonally down and left)
+0,0x90,0x90,4,1,<246,245,244,245>,10,1,0,Spinning Platform (step-activated)|0 0 2
+0,0x91,0x91,4,1,<246,245,247,245>,10,1,0,Spinning Platform (constant)|0 0 2
+0,0x92,0x92,4,1,<246,245,248,245>,10,1,0,Spinning Platform (periodical clockwise)|0 0 2
+0,0x93,0x93,4,1,<246,245,249,245>,10,1,0,Spinning Platform (periodical counterclockwise)|0 0 2
+0,0x94,0x94,2,2,<236,237,252,253>,9,0,0,Giant '?' Block with 3 1-ups
+0,0x95,0x95,2,2,<238,239,254,255>,9,0,0,Giant '?' Block with Mushroom
+0,0x96,0x96,2,2,<234,235,250,251>,9,0,0,Giant '?' Block with Flower
+0,0x97,0x97,2,2,<216,217,232,233>,9,0,0,Giant '?' Block with Leaf
+0,0x98,0x98,2,2,<214,215,230,231>,9,0,0,Giant '?' Block with Tanooki Suit
+0,0x99,0x99,2,2,<226,227,242,243>,9,0,0,Giant '?' Block with Frog Suit
+0,0x9A,0x9A,2,2,<224,225,240,241>,9,0,0,Giant '?' Block with Hammer Bros. Suit
+0,0x9B,0x9B,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x9C,0x9C,1,1,<146>,9,0,0,MSG_NOTHING
+0,0x9D,0x9D,1,3,<28,44,60>,9,0,0,Upward Rocket Engine
+0,0x9E,0x9E,1,1,<103>,9,0,0,Podoboo (comes out of lava)
+0,0x9F,0x9F,1,1,<221>,9,0,0,Para-Beetle
+0,0xA0,0xA0,2,2,<267,268,2,3>,9,0,0,Green Piranha Plant (upward)
+0,0xA1,0xA1,2,2,<62,63,271,272>,9,0,0,Green Piranha Plant (downward)|0 -1 0
+0,0xA2,0xA2,2,2,<269,270,2,3>,9,0,0,Red Piranha Plant (upward)
+0,0xA3,0xA3,2,2,<62,63,273,274>,9,0,0,Red Piranha Plant (downward)|0 -1 0
+0,0xA4,0xA4,2,2,<263,264,2,3>,9,0,0,Green Venus Fire Trap (upward)
+0,0xA5,0xA5,2,2,<62,63,275,276>,9,0,0,Green Venus Fire Trap (downward)|0 -1 0
+0,0xA6,0xA6,2,2,<265,266,2,3>,9,0,0,Red Venus Fire Trap (upward)
+0,0xA7,0xA7,2,2,<62,63,277,278>,9,0,0,Red Venus Fire Trap (downward)|0 -1 0
+0,0xA8,0xA8,2,1,<13,14>,9,0,0,Auto-moving upward directional platform
+0,0xA9,0xA9,2,1,<29,30>,9,0,0,Auto-moving multi-directional platform
+0,0xAA,0xAA,1,3,<256,257,258>,9,0,0,Propeller|0 -1 0
+0,0xAB,0xAB,1,1,<146>,9,0,0,MSG_NOTHING
+0,0xAC,0xAC,3,1,<34,35,36>,9,0,0,Leftward Rocket Engine
+0,0xAD,0xAD,1,1,<27>,9,0,0,Brown Rocky Wrench
+0,0xAE,0xAE,2,1,<85,86>,9,0,0,Nut (use with corkscrew)
+0,0xAF,0xAF,2,2,<125,126,141,142>,9,0,0,The Angry Sun
+0,0xB0,0xB0,2,2,<212,213,228,229>,9,0,0,Still Big Bullet
+0,0xB1,0xB1,3,1,<120,121,122>,9,0,0,Rightward Rocket Engine
+0,0xB2,0xB2,1,3,<101,117,100>,9,0,0,Downward Rocket Engine
+0,0xB3,0xB3,1,1,<148>,9,0,0,Weird flashing enemy
+0,0xB4,0xB4,1,1,<164>,9,0,0,Infinite flying Cheep-Cheeps
+0,0xB5,0xB5,1,1,<26>,9,0,0,Infinite Spiny Cheep-Cheeps
+0,0xB6,0xB6,1,1,<61>,9,0,0,Lakitu boundary
+0,0xB7,0xB7,1,1,<73>,9,0,0,Infinite Para-Beetles
+0,0xB8,0xB8,2,1,<92,93>,9,0,0,Moving Background Clouds
+0,0xB9,0xB9,3,1,<55,127,57>,9,0,0,Infinite leftward-moving falling platforms
+0,0xBA,0xBA,1,1,<146>,9,0,0,Exit on get treasure chest
+0,0xBB,0xBB,1,1,<146>,9,0,0,Stops infinite flying or spiny Cheep-Cheeps
+0,0xBC,0xBC,1,1,<166>,9,0,0,Bullet Bills
+0,0xBD,0xBD,1,1,<167>,9,0,0,Missile Bills
+0,0xBE,0xBE,1,1,<18>,9,0,0,Rocky Wrench
+0,0xBF,0xBF,1,1,<119>,9,0,0,Cross-shaped bullet shots
+0,0xC0,0xC0,1,1,<95>,9,0,0,Infinite Goombas (leftward)
+0,0xC1,0xC1,1,1,<95>,9,0,0,Infinite Goombas (rightward)
+0,0xC2,0xC2,1,1,<119>,9,0,0,Bullet Shots (leftward)
+0,0xC3,0xC3,2,2,<212,213,228,229>,9,0,0,Big Bullet Shots (leftward)
+0,0xC4,0xC4,1,1,<119>,9,0,0,Bullet Shots (up/left)
+0,0xC5,0xC5,1,1,<119>,9,0,0,Bullet Shots (up/right)
+0,0xC6,0xC6,1,1,<119>,9,0,0,Bullet Shots (down/left)
+0,0xC7,0xC7,1,1,<119>,9,0,0,Bullet Shots (down/right)
+0,0xC8,0xC8,1,1,<119>,9,0,0,Bullet Shots (up/left)
+0,0xC9,0xC9,1,1,<119>,9,0,0,Bullet Shots (up/right)
+0,0xCA,0xCA,1,1,<119>,9,0,0,Bullet Shots (down/left)
+0,0xCB,0xCB,1,1,<119>,9,0,0,Bullet Shots (down/right)
+0,0xCC,0xCC,1,1,<119>,9,0,0,Bullet Shots (rightward)
+0,0xCD,0xCD,2,2,<212,213,228,229>,9,0,0,Big Bullet Shots (rightward)
+0,0xCE,0xCE,1,1,<22>,9,0,0,Infinite Bob-Ombs (leftward) (use with bullet shooters)
+0,0xCF,0xCF,1,1,<22>,9,0,0,Infinite Bob-Ombs (rightward) (use with bullet shooters)
+0,0xD0,0xD0,1,1,<76>,9,0,0,Lasers (use with Bowser statues)
+0,0xD1,0xD1,3,2,<140,140,140,156,156,156>,9,0,0,3 Green Koopa Paratroopas
+0,0xD2,0xD2,1,3,<205,205,205>,9,0,0,3 Yellow Cheep-Cheeps
+0,0xD3,0xD3,1,1,<147>,9,0,0,Autoscrolling
+0,0xD4,0xD4,1,1,<71>,9,0,0,White Mushroom House (X pos must be uneven;; Y pos=amount of coins required)
+0,0xD5,0xD5,1,1,<148>,9,0,0,'The king has been transformed' message
+0,0xD6,0xD6,1,1,<146>,9,0,0,Puts item in treasure chest (Y pos. determines item; see docs/items.txt)
+0,0xD7,0xD7,1,1,<145>,9,0,0,MSG_CRASH
+0,0xD8,0xD8,1,1,<145>,9,0,0,MSG_CRASH
+0,0xD9,0xD9,1,1,<145>,9,0,0,MSG_CRASH
+0,0xDA,0xDA,1,1,<145>,9,0,0,MSG_CRASH
+0,0xDB,0xDB,1,1,<145>,9,0,0,MSG_CRASH
+0,0xDC,0xDC,1,1,<145>,9,0,0,MSG_CRASH
+0,0xDD,0xDD,1,1,<145>,9,0,0,MSG_CRASH
+0,0xDE,0xDE,1,1,<145>,9,0,0,MSG_CRASH
+0,0xDF,0xDF,1,1,<145>,9,0,0,MSG_CRASH
+0,0xE0,0xE0,1,1,<145>,9,0,0,MSG_CRASH
+0,0xE1,0xE1,1,1,<145>,9,0,0,MSG_CRASH
+0,0xE2,0xE2,1,1,<145>,9,0,0,MSG_CRASH
+0,0xE3,0xE3,1,1,<145>,9,0,0,MSG_CRASH
+0,0xE4,0xE4,1,1,<145>,9,0,0,MSG_CRASH
+0,0xE5,0xE5,1,1,<145>,9,0,0,MSG_CRASH
+0,0xE6,0xE6,1,1,<145>,9,0,0,MSG_CRASH
+0,0xE7,0xE7,1,1,<145>,9,0,0,MSG_CRASH
+0,0xE8,0xE8,1,1,<145>,9,0,0,MSG_CRASH
+0,0xE9,0xE9,1,1,<145>,9,0,0,MSG_CRASH
+0,0xEA,0xEA,1,1,<145>,9,0,0,MSG_CRASH
+0,0xEB,0xEB,1,1,<145>,9,0,0,MSG_CRASH
+0,0xEC,0xFF,1,1,<145>,9,0,0,MSG_CRASH
