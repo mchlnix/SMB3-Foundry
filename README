@@ -1,0 +1,17 @@
+Port/Reimplementation of SMB3 Workshop by hukka
+
+Features right now:
+ - Level selection
+ - Level view(buggy)
+ - Object-Viewer
+
+ To come:
+ - Pretty much the rest of SMB3 Workshops features
+ - Cleaner architecture
+
+Not planned right now:
+ - Support of other versions, other than the US release
+
+Necessary to run:
+ - Put the US rom of SMB3 into the root directory of this repo, before running
+ - Needs wxPython installed
