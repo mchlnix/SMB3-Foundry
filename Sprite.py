@@ -10,23 +10,25 @@ TSA_BANK_1 = 1 * 256
 TSA_BANK_2 = 2 * 256
 TSA_BANK_3 = 3 * 256
 
-BMP_PIXEL_SIZE = 3  # bytes for the colors
+BMP_PIXEL_SIZE = len("RGB")  # bytes for the colors
 
 OBJECT_SET_COUNT = 15
 OBJECTS_PER_SET = 128
 
+BACKGROUND_COLOR_INDEX = 0
 
-def expand_bitmap(bitmap, width, expand=1):
+
+def expand_bitmap(bitmap, width, expand=1, pixel_size=BMP_PIXEL_SIZE):
     new_buffer = bytearray()
 
-    old_row_length = BMP_PIXEL_SIZE * width
-    new_row_length = BMP_PIXEL_SIZE * width * expand
+    old_row_length = pixel_size * width
+    new_row_length = pixel_size * width * expand
 
-    for segment_start in range(0, len(bitmap), BMP_PIXEL_SIZE):
-        new_buffer.extend(expand * bitmap[segment_start:segment_start + BMP_PIXEL_SIZE])
+    for segment_start in range(0, len(bitmap), pixel_size):
+        new_buffer.extend(expand * bitmap[segment_start:segment_start + pixel_size])
 
         # copy the new row, when it's finished
-        if (segment_start + BMP_PIXEL_SIZE) % old_row_length == 0:
+        if (segment_start + pixel_size) % old_row_length == 0:
             for i in range(1, expand):
                 new_buffer.extend(new_buffer[-new_row_length:])
 
@@ -52,13 +54,16 @@ class Tile:
 
         self.data = bytearray()
         self.pixels = bytearray()
+        self.mask_pixels = bytearray()
 
         rom.seek(self.start)
 
         for _ in range(Tile.SIZE):
             self.data.append(rom.get_byte())
 
-        for i in range(Tile.PIXEL_COUNT):
+        mask_value = 0
+
+        for mask_bit, i in enumerate(range(Tile.PIXEL_COUNT)):
             byte_index = i // Tile.HEIGHT
             bit_index = 2 ** (7 - (i % Tile.WIDTH))
 
@@ -74,15 +79,26 @@ class Tile:
 
             color = self.palette[color_index]
 
+            # add alpha values
+            if color_index == BACKGROUND_COLOR_INDEX:
+                mask_value += 2**mask_bit
+
             self.pixels.extend(NESPalette[color])
 
-    def as_bitmap(self, zoom=1):
-        if zoom == 1:
-            bitmap = wx.Bitmap.FromBuffer(Tile.WIDTH, Tile.HEIGHT, self.pixels)
-        else:
-            buffer = expand_bitmap(self.pixels, width=Tile.WIDTH, expand=zoom)
+        self.mask_pixels = mask_value.to_bytes(8, "little")  # flip mask pixels using little endian
 
-            bitmap = wx.Bitmap.FromBuffer(Tile.WIDTH * zoom, Tile.HEIGHT * zoom, buffer)
+    def as_bitmap(self, zoom=1):
+        width = Tile.WIDTH * zoom
+        height = Tile.HEIGHT * zoom
+
+        image_buffer = expand_bitmap(self.pixels, Tile.WIDTH, zoom)
+        # todo doesn't work with zoom
+        mask_buffer = expand_bitmap(self.mask_pixels, Tile.WIDTH, zoom, 1)
+
+        bitmap = wx.Bitmap.FromBuffer(width, height, image_buffer)
+        mask = wx.Mask(wx.Bitmap(mask_buffer, width, height, depth=1))
+
+        bitmap.SetMask(mask)
 
         return bitmap
 
@@ -118,7 +134,7 @@ class Block:
         self.rd_tile = Tile(rom, object_set, rd, palette_group, palette_index)
 
     def draw(self, dc, x, y, zoom=2):
-        dc.DrawBitmap(self.lu_tile.as_bitmap(zoom), x, y)
-        dc.DrawBitmap(self.ru_tile.as_bitmap(zoom), x + zoom * Tile.WIDTH, y)
-        dc.DrawBitmap(self.ld_tile.as_bitmap(zoom), x, y + zoom * Tile.HEIGHT)
-        dc.DrawBitmap(self.rd_tile.as_bitmap(zoom), x + zoom * Tile.WIDTH, y + zoom * Tile.HEIGHT)
+        dc.DrawBitmap(self.lu_tile.as_bitmap(zoom), x, y, useMask=True)
+        dc.DrawBitmap(self.ru_tile.as_bitmap(zoom), x + zoom * Tile.WIDTH, y, useMask=True)
+        dc.DrawBitmap(self.ld_tile.as_bitmap(zoom), x, y + zoom * Tile.HEIGHT, useMask=True)
+        dc.DrawBitmap(self.rd_tile.as_bitmap(zoom), x + zoom * Tile.WIDTH, y + zoom * Tile.HEIGHT, useMask=True)
