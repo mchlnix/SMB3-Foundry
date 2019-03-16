@@ -7,10 +7,10 @@ WORLD_ITEMS = ["World Maps", "World 1", "World 2", "World 3",
                "World 4", "World 5", "World 6", "World 7",
                "World 8", "Lost Levels"]
 
-OBJECT_SET_ITEMS = ["1 Plains", "2 Dungeon", "3 Hilly", "4 Sky",
-                    "5 Piranha Plant", "6 Water", "7 Mushroom", "8 Pipe",
-                    "9 Desert", "A Ship", "B Giant", "C Ice",
-                    "D Cloudy", "E Underground", "F Spade Bonus"]
+OBJECT_SET_ITEMS = ["0 Overworld", "1 Plains", "2 Dungeon", "3 Hilly",
+                    "4 Sky", "5 Piranha Plant", "6 Water", "7 Mushroom",
+                    "8 Pipe", "9 Desert", "A Ship", "B Giant",
+                    "C Ice", "D Cloudy", "E Underground", "F Spade Bonus"]
 
 
 SPINNER_MAX_VALUE = 0xFF_FF_FF  # arbitrary; 16,7 MB
@@ -46,8 +46,7 @@ class LevelSelector(wx.Frame):
         self.object_data_spinner.SetBase(16)
 
         self.object_set_label = wx.StaticText(self, label="Object Set")
-        self.object_set_dropdown = wx.ComboBox(self)
-        self.object_set_dropdown.Set(OBJECT_SET_ITEMS)
+        self.object_set_dropdown = wx.ComboBox(self, choices=OBJECT_SET_ITEMS)
 
         self.button_ok = wx.Button(self, id=wx.ID_OK)
         self.button_cancel = wx.Button(self, id=wx.ID_CANCEL)
@@ -127,14 +126,15 @@ class LevelSelector(wx.Frame):
 
         self.enemy_data_spinner.SetValue(enemy_data_for_lvl)
 
-        if self.selected_world >= WORLD_1_INDEX:
-            object_set_index = level_array[level_array_offset].real_obj_set - 1
-            self.object_set_dropdown.SetSelection(object_set_index)
+        # if self.selected_world >= WORLD_1_INDEX:
+        object_set_index = level_array[level_array_offset].real_obj_set
+        self.object_set_dropdown.SetSelection(object_set_index)
 
-            print(f"Level {self.selected_world}-{self.selected_level}, lvl_array_offset: {level_array_offset}, obj_index: {object_set_index}")
+        print(f"Level {self.selected_world}-{self.selected_level}, lvl_array_offset: {level_array_offset}, obj_index: {object_set_index}")
 
     def on_ok(self, _):
-        self.GetParent().update_level(self.selected_world, self.selected_level)
+        object_set = self.object_set_dropdown.GetSelection()
+        self.GetParent().update_level(self.selected_world, self.selected_level, object_set)
         self.Close(force=False)
 
     def on_exit(self, _):

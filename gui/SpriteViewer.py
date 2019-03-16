@@ -3,12 +3,14 @@ from math import ceil
 import wx
 
 from Level import Level
+from LevelSelector import OBJECT_SET_ITEMS
 from Sprite import Block
 
 ID_ZOOM_IN = 10001
 ID_ZOOM_OUT = 10002
 ID_PREV_BANK = 10003
 ID_NEXT_BANK = 10004
+ID_BANK_DROPDOWN = 10005
 
 
 class SpriteViewer(wx.Frame):
@@ -23,6 +25,13 @@ class SpriteViewer(wx.Frame):
         self.toolbar.AddTool(ID_ZOOM_OUT, "", wx.Bitmap("data/img/zoom_out.bmp"))
         self.toolbar.AddTool(ID_ZOOM_IN, "", wx.Bitmap("data/img/zoom_in.bmp"))
 
+        self.bank_dropdown = wx.ComboBox(parent=self.toolbar, id=ID_BANK_DROPDOWN, choices=OBJECT_SET_ITEMS)
+        self.bank_dropdown.SetSelection(0)
+
+        self.graphic_set_spinner = wx.SpinCtrl(parent=self.toolbar, min=0, max=0x6000F)
+
+        self.toolbar.AddControl(self.bank_dropdown)
+
         self.toolbar.Realize()
 
         self.object_set = 0
@@ -31,14 +40,16 @@ class SpriteViewer(wx.Frame):
 
         self.sprite_bank = SpriteBank(rom=rom, object_set=self.object_set, parent=self)
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.sprite_bank, flag=wx.EXPAND)
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.sprite_bank, flag=wx.EXPAND)
 
-        self.SetSizer(sizer)
-        self.Fit()
+        self.SetSizer(self.sizer)
+        self.sizer.Fit(self)
 
         self.Bind(wx.EVT_TOOL, self.on_tool_click)
+        self.Bind(wx.EVT_COMBOBOX, self.on_combo)
         self.Bind(wx.EVT_CLOSE, self.on_exit)
+        self.Bind(wx.EVT_SIZE, self.on_resize)
 
     def on_tool_click(self, event):
         tool_id = event.GetId()
@@ -54,11 +65,20 @@ class SpriteViewer(wx.Frame):
             self.object_set = min(self.object_set + 1, 14)
 
         self.sprite_bank.object_set = self.object_set
+        self.bank_dropdown.SetSelection(self.object_set)
 
         self.sprite_bank.Refresh()
 
-    def on_resize(self):
-        self.Fit()
+    def on_combo(self, _):
+        self.object_set = self.bank_dropdown.GetSelection()
+
+        self.sprite_bank.object_set = self.object_set
+
+        self.sprite_bank.Refresh()
+
+    def on_resize(self, _):
+        self.sizer.SetMinSize(self.sprite_bank.GetSize())
+        self.sizer.Fit(self)
 
     def on_exit(self, _):
         self.Hide()
@@ -78,8 +98,6 @@ class SpriteBank(wx.Panel):
 
         super(SpriteBank, self).__init__(size=self.size, *args, **kwargs)
 
-        self.SetSize(self.size)
-
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
 
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -88,6 +106,8 @@ class SpriteBank(wx.Panel):
         self.object_set = 0
 
         self.rom = rom
+
+        self.SetSize(self.size)
 
     def on_size(self, event):
         event.Skip()
@@ -105,12 +125,14 @@ class SpriteBank(wx.Panel):
         self.SetSize(wx.Size(self.sprites_horiz * Block.WIDTH * self.zoom,
                              self.sprites_vert * Block.HEIGHT * self.zoom))
 
-        self.GetParent().on_resize()
+        self.GetParent().on_resize(None)
 
     def on_paint(self, event):
         event.Skip()
 
         dc = wx.AutoBufferedPaintDC(self)
+
+        dc.SetBackground(wx.Brush(wx.BLACK))
 
         dc.Clear()
 

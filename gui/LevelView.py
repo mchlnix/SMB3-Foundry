@@ -5,7 +5,7 @@ from Sprite import Block
 
 
 class LevelView(wx.Panel):
-    def __init__(self, parent, rom, world, level):
+    def __init__(self, parent, rom, world, level, object_set=None):
         super(LevelView, self).__init__(parent)
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -15,7 +15,7 @@ class LevelView(wx.Panel):
 
         print(f"Drawing Level: {world}-{level}")
 
-        self.level = Level(self.rom, world, level)
+        self.level = Level(self.rom, world, level, object_set)
 
         self.SetSize(wx.Size(self.level.length * Block.WIDTH, 26 * Block.HEIGHT))
 
