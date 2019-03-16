@@ -1,11 +1,3 @@
-import wx
-
-from Data import map_pointers, level_array, MAP_ENEMY_OFFSET, OBJSET_UNDERGROUND, \
-    OBJSET_HILLY, object_ranges, MAP_PALETTE_ADDRESS, PALETTE_ADDRESS, graphics_offsets, common_offsets, plains_level
-from m3idefs import EXT_SKY, ObjectSize
-from tsa import load_tsa_data, MetaTable, OBJECT_SET_SIZE, object_number, tsa_data
-
-
 class ROM:
     def __init__(self, path="SMB3.nes"):
         with open(path, "rb") as rom:

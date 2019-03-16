@@ -47,12 +47,14 @@ class Level:
 
     palettes = []
 
-    def __init__(self, rom, world, level):
+    def __init__(self, rom, world, level, object_set=None):
         if not Level.offsets:
             Level._load_level_offsets()
 
         if not Level.palettes:
             Level._load_palettes(rom)
+
+        self.object_set = object_set
 
         self.block_cache = dict()
 
@@ -91,7 +93,9 @@ class Level:
         self.scroll_type = Level.scroll_types[(header[6] & 0b0111_0000) >> 4]
         self.is_vertical = header[6] & 0b0001_0000
         # todo make length and height vertical flag dependent
-        self.object_set = (header[6] & 0b0000_1111) - 1  # for indexing purposes
+
+        if self.object_set is None:
+            self.object_set = (header[6] & 0b0000_1111)  # for indexing purposes
 
         self.start_action = (header[7] & 0b1110_0000) >> 5
 
@@ -252,7 +256,7 @@ class Level:
             if os == OVERWORLD_OBJECT_SET:
                 palette_offset = MAP_PALETTE_ADDRESS
             else:
-                palette_offset = PALETTE_ADDRESS + (os * PALETTE_DATA_SIZE)
+                palette_offset = MAP_PALETTE_ADDRESS + (os * PALETTE_DATA_SIZE)
             rom.seek(palette_offset)
 
             Level.palettes.append([])
