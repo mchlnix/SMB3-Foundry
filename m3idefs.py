@@ -10,6 +10,9 @@ class ObjectDefinition:
         self.object_domain, self.min_value, self.max_value, self.bmp_width, self.bmp_height, *self.object_design, \
             self.orientation, self.ends, self.obj_flag, self.object_description = string.split(",")
 
+        self.bmp_width = int(self.bmp_width)
+        self.bmp_height = int(self.bmp_height)
+
         self.object_design2 = []
         self.rom_object_design = []
 

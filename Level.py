@@ -3,8 +3,6 @@ import wx
 from Data import Mario3Level, object_set_pointers, plains_level, NESPalette, object_sets
 from File import ROM
 from Graphics import FourByteObject, ThreeByteObject
-from Sprite import Block
-from m3idefs import ObjectDefinition
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
@@ -25,6 +23,8 @@ COLOR_SIZE = 1  # byte
 
 PALETTE_DATA_SIZE = (LEVEL_PALETTE_GROUPS_PER_OBJECT_SET + ENEMY_PALETTE_GROUPS_PER_OBJECT_SET) *\
                     PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
+
+LEVEL_DEFAULT_HEIGHT = 27
 
 
 class Level:
@@ -56,6 +56,29 @@ class Level:
 
         self.object_set = object_set
 
+        object_set_to_definition = {
+            16: 0,
+            0: 1,
+            1: 1,
+            7: 1,
+            15: 1,
+            3: 2,
+            114: 2,
+            4: 3,
+            2: 4,
+            10: 5,
+            13: 6,
+            9: 7,
+            6: 8,
+            8: 8,
+            5: 9,
+            11: 9,
+            12: 10,
+            14: 11,
+        }
+
+        self.object_definition = object_set_to_definition[self.object_set]
+
         self.block_cache = dict()
 
         level_index = Level.world_indexes[world - 1] + level - 1
@@ -74,9 +97,9 @@ class Level:
 
         self.object_palette_group = Level.palettes[self.object_set][self.object_palette_index]
 
-        self._load_objects(rom)
-
         self._load_rom_object_definition()
+
+        self._load_objects(rom)
 
         print(self.__dict__)
 
@@ -84,7 +107,8 @@ class Level:
         header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
 
         self.start_y = Level.y_positions[(header[4] & 0b1110_0000) >> 5]
-        self.length = (header[4] & 0b0000_1111) * 0x10 + 0x0F
+        self.width = (header[4] & 0b0000_1111) * 0x10 + 0x0F
+        self.height = LEVEL_DEFAULT_HEIGHT
 
         self.start_x = Level.x_positions[(header[5] & 0b0110_0000) >> 5]
         self.enemy_palette_index = (header[5] & 0b0001_1000) >> 3
@@ -133,9 +157,9 @@ class Level:
 
             if has_length:
                 obj_data.append(rom.get_byte())
-                level_object = FourByteObject(obj_data)
+                level_object = FourByteObject(obj_data, self.object_set, self.plains_level[self.object_definition], self.object_palette_group)
             else:
-                level_object = ThreeByteObject(obj_data)
+                level_object = ThreeByteObject(obj_data, self.object_set, self.plains_level[self.object_definition], self.object_palette_group)
 
             self.objects.append(level_object)
 
@@ -149,65 +173,9 @@ class Level:
         dc.Clear()
 
         for level_object in self.objects:
-
-            domain_offset = level_object.domain * 0x1F
-            obj_index = level_object.type
-            base_x = level_object.x_position
-            base_y = level_object.y_position
-
-            if obj_index < 0x0F:
-                obj_index += domain_offset
-            else:
-                obj_index = (obj_index >> 4) + domain_offset + 16 - 1
-
-            object_data: ObjectDefinition = self.plains_level[self.object_definition][obj_index]
-
-            obj_width = int(object_data.bmp_width)
-            obj_height = int(object_data.bmp_height)
-
-            blocks = obj_width * obj_height
-
-            for block in range(blocks):
-                x = base_x + (block % obj_width)
-                y = base_y + (block // obj_width)
-
-                block_index = int(object_data.rom_object_design[block])
-
-                if block_index not in self.block_cache:
-                    if block_index > 0xFF:
-                        rom_block_index = ROM().get_byte(block_index) # block_index is an offset into the graphic memory
-                        block = Block(ROM(), self.object_set, rom_block_index, self.object_palette_group)
-                    else:
-                        block = Block(ROM(), self.object_set, block_index, self.object_palette_group)
-
-                    self.block_cache[block_index] = block
-
-                self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1)
+            level_object.draw(dc)
 
     def _load_rom_object_definition(self):
-        object_set_to_definition = {
-            16: 0,
-            0: 1,
-            1: 1,
-            7: 1,
-            15: 1,
-            3: 2,
-            114: 2,
-            4: 3,
-            2: 4,
-            10: 5,
-            13: 6,
-            9: 7,
-            6: 8,
-            8: 8,
-            5: 9,
-            11: 9,
-            12: 10,
-            14: 11,
-        }
-
-        self.object_definition = object_set_to_definition[self.object_set]
-
         with open(f"data/romobjs{self.object_definition}.dat", "rb") as f:
             data = f.read()
 
