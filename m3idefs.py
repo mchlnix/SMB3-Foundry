@@ -1,6 +1,25 @@
 ENEMY_BANK = 12
 
-EXT_SKY = 13
+HORIZONTAL = 0
+VERTICAL = 1  # vertical downward
+DIAG_DOWN_LEFT = 2
+DESERT_PIPE_BOX = 3
+DIAG_DOWN_RIGHT = 4
+DIAG_UP_RIGHT = 5
+HORIZ_AND_GROUND = 6
+HORIZONTAL_2 = 7  # special case of horizontal
+DIAG_WEIRD = 8  #
+SINGLE_BLOCK_OBJECT = 9
+CENTERED = 10  # like spinning platforms
+PYRAMID_TO_GROUND = 11
+PYRAMID_TO_NEXT = 12  # to the ground or next object
+TO_THE_SKY = 13
+ENDING = 14
+
+UNIFORM = 0
+END_ON_TOP_OR_LEFT = 1
+END_ON_BOTTOM_OR_RIGHT = 2
+TWO_ENDS = 3
 
 
 class ObjectDefinition:

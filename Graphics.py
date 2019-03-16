@@ -1,5 +1,6 @@
 from File import ROM
 from Sprite import Block
+from m3idefs import TO_THE_SKY
 
 
 class LevelObject:
@@ -33,6 +34,7 @@ class LevelObject:
 
         self.width = self.object_data.bmp_width
         self.height = self.object_data.bmp_height
+        self.orientation = int(self.object_data.orientation)
 
         self.blocks = [int(block) for block in self.object_data.rom_object_design]
 
@@ -44,20 +46,35 @@ class LevelObject:
         base_x = self.x_position
         base_y = self.y_position
 
-        for index, block_index in enumerate(self.blocks):
-            x = base_x + (index % self.width)
-            y = base_y + (index // self.width)
+        if int(self.object_data.orientation) == TO_THE_SKY:
+            for g in range(self.y_position):
+                base_yy = g
+                for index, block_index in enumerate(self.blocks[:-1]):
+                    x = base_x + (index % self.width)
+                    y = base_yy + (index // self.width)
 
-            if block_index not in self.block_cache:
-                if block_index > 0xFF:
-                    rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
-                    block = Block(ROM(), self.object_set, rom_block_index, self.palette_group)
-                else:
-                    block = Block(ROM(), self.object_set, block_index, self.palette_group)
+                    self._draw_block(dc, block_index, x, y)
 
-                self.block_cache[block_index] = block
+            self._draw_block(dc, self.blocks[-1], base_x, base_y)
+        else:
+            for index, block_index in enumerate(self.blocks):
+                x = base_x + (index % self.width)
+                y = base_y + (index // self.width)
 
-            self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1)
+                self._draw_block(dc, block_index, x, y)
+
+    def _draw_block(self, dc, block_index, x, y):
+        if block_index not in self.block_cache:
+            if block_index > 0xFF:
+                rom_block_index = ROM().get_byte(
+                    block_index)  # block_index is an offset into the graphic memory
+                block = Block(ROM(), self.object_set, rom_block_index, self.palette_group)
+            else:
+                block = Block(ROM(), self.object_set, block_index, self.palette_group)
+
+            self.block_cache[block_index] = block
+
+        self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1)
 
 
 class ThreeByteObject(LevelObject):
