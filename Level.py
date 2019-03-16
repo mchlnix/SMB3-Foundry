@@ -1,6 +1,6 @@
 import wx
 
-from Data import Mario3Level, object_set_pointers, object_ranges, plains_level, NESPalette
+from Data import Mario3Level, object_set_pointers, plains_level, NESPalette, object_sets
 from File import ROM
 from Graphics import FourByteObject, ThreeByteObject
 from Sprite import Block
@@ -121,7 +121,7 @@ class Level:
 
         rom.seek(object_offset)
 
-        object_order = object_ranges[self.object_set]  # ordered by domain
+        object_order = object_sets[self.object_set]  # ordered by domain
 
         while True:
             obj_data = bytearray(rom.bulk_read(3))
@@ -160,7 +160,7 @@ class Level:
             else:
                 obj_index = (obj_index >> 4) + domain_offset + 16 - 1
 
-            object_data: ObjectDefinition = self.plains_level[self.object_set + 1][obj_index]
+            object_data: ObjectDefinition = self.plains_level[self.object_definition][obj_index]
 
             obj_width = int(object_data.bmp_width)
             obj_height = int(object_data.bmp_height)
@@ -185,7 +185,30 @@ class Level:
                 self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1)
 
     def _load_rom_object_definition(self):
-        with open(f"data/romobjs{self.object_set + 1}.dat", "rb") as f:
+        object_set_to_definition = {
+            16: 0,
+            0: 1,
+            1: 1,
+            7: 1,
+            15: 1,
+            3: 2,
+            114: 2,
+            4: 3,
+            2: 4,
+            10: 5,
+            13: 6,
+            9: 7,
+            6: 8,
+            8: 8,
+            5: 9,
+            11: 9,
+            12: 10,
+            14: 11,
+        }
+
+        self.object_definition = object_set_to_definition[self.object_set]
+
+        with open(f"data/romobjs{self.object_definition}.dat", "rb") as f:
             data = f.read()
 
         assert len(data) > 0
@@ -202,7 +225,7 @@ class Level:
         for object_index in range(object_count):
             object_design_length = data[position]
 
-            self.plains_level[self.object_set + 1][object_index].object_design_length = object_design_length
+            self.plains_level[self.object_definition][object_index].object_design_length = object_design_length
 
             position += 1
 
@@ -214,7 +237,7 @@ class Level:
 
                     position += 3
 
-                self.plains_level[self.object_set + 1][object_index].rom_object_design[i] = block_index
+                self.plains_level[self.object_definition][object_index].rom_object_design[i] = block_index
 
                 position += 1
 
@@ -223,13 +246,13 @@ class Level:
             return
 
         for object_index in range(object_count):
-            object_design_length = self.plains_level[self.object_set + 1][object_index].object_design_length
+            object_design_length = self.plains_level[self.object_definition][object_index].object_design_length
 
-            self.plains_level[self.object_set + 1][object_index].object_design2 = []
+            self.plains_level[self.object_definition][object_index].object_design2 = []
 
             for i in range(object_design_length):
                 if i <= object_design_length:
-                    self.plains_level[self.object_set + 1][object_index].object_design2.append(data[position])
+                    self.plains_level[self.object_definition][object_index].object_design2.append(data[position])
                     position += 1
 
     @staticmethod
