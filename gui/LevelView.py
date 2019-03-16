@@ -1,7 +1,6 @@
 import wx
 
 from Level import Level
-from Sprite import Block
 
 
 class LevelView(wx.Panel):
@@ -17,20 +16,16 @@ class LevelView(wx.Panel):
 
         self.level = Level(self.rom, world, level, object_set)
 
-        self.SetSize(wx.Size(self.level.length * Block.WIDTH, 26 * Block.HEIGHT))
-
     def on_size(self, event):
         event.Skip()
         self.Refresh()
-
-    def on_resize(self, _):
-        self.SetSize(wx.Size(self.level.length * Block.WIDTH, 26 * Block.HEIGHT))
 
     def on_paint(self, event):
         event.Skip()
 
         dc = wx.AutoBufferedPaintDC(self)
 
-        self.level.draw(dc)
+        if self.level:
+            self.level.draw(dc)
 
         return

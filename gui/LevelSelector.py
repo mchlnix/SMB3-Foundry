@@ -135,7 +135,7 @@ class LevelSelector(wx.Frame):
     def on_ok(self, _):
         object_set = self.object_set_dropdown.GetSelection()
         self.GetParent().update_level(self.selected_world, self.selected_level, object_set)
-        self.Close(force=False)
+        self.Hide()
 
     def on_exit(self, _):
         self.Hide()

@@ -178,6 +178,7 @@ class SMB3Foundry(wx.Frame):
     def update_level(self, world, level, object_set):
         self.levelview.Destroy()
         self.levelview = LevelView(parent=self, rom=self.rom, world=world, level=level, object_set=object_set)
+        self.Fit()
 
     def on_exit(self, _):
         self.Close(True)
