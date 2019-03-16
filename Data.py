@@ -323,3 +323,24 @@ object_ranges = [
      (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
      (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3))
 ]
+
+object_sets = {
+    # 16: 0
+    0: object_ranges[0],
+    1: object_ranges[0],
+    7: object_ranges[0],
+    15: object_ranges[0],
+    3: object_ranges[1],
+    # 114: object_ranges[1],
+    4: object_ranges[2],
+    2: object_ranges[3],
+    10: object_ranges[4],
+    13: object_ranges[5],
+    9: object_ranges[6],
+    6: object_ranges[7],
+    8: object_ranges[7],
+    5: object_ranges[8],
+    11: object_ranges[8],
+    12: object_ranges[9],
+    14: object_ranges[10],
+}

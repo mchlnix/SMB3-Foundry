@@ -1,7 +1,7 @@
 Object Sets consist of:
 
 object definitions
-  Which and how many blocks an object is made of.
+  Which and how many blocks an object is made of, where to place them etc.
 
 tsa data
   The way the blocks are constructed out of the tile data (since tiles can be a part of multiple "blocks")
