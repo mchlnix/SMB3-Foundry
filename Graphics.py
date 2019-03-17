@@ -1,6 +1,7 @@
 from File import ROM
 from Sprite import Block
-from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM
+from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
+    END_ON_BOTTOM_OR_RIGHT
 
 SKY = 0
 GROUND = 26
@@ -56,6 +57,7 @@ class LevelObject:
         if self.object_data.orientation == TO_THE_SKY:
             base_x = self.x_position
             base_y = SKY
+            length = self.width
 
             for _ in range(self.y_position):
                 blocks_to_draw.extend(self.blocks[0:self.width])
@@ -63,17 +65,37 @@ class LevelObject:
             blocks_to_draw.extend(self.blocks[-self.width:])
 
         elif self.object_data.orientation == HORIZONTAL:
-            length = self.length
+            length = self.length + 1
 
             if self.object_data.ends == UNIFORM:
                 # todo problems when 4byte object
-                for index in range(length + 1):
-                    x = base_x + index
-                    y = base_y
 
-                    self._draw_block(dc, self.blocks[0], x, y)
+                for y in range(self.height):
+                    offset = y * self.width
 
-            if self.object_data.ends == TWO_ENDS:
+                    for _ in range(0, length):
+                        blocks_to_draw.extend(self.blocks[offset:offset + self.width])
+
+                length *= self.width
+
+            elif self.object_data.ends == END_ON_TOP_OR_LEFT:
+                for y in range(self.height):
+                    offset = y * self.width
+
+                    blocks_to_draw.append(self.blocks[offset])
+
+                    for x in range(1, length):
+                        blocks_to_draw.append(self.blocks[offset + 1])
+            elif self.object_data.ends == END_ON_BOTTOM_OR_RIGHT:
+                for y in range(self.height):
+                    offset = y * self.width
+
+                    for x in range(length - 1):
+                        blocks_to_draw.append(self.blocks[offset])
+
+                    blocks_to_draw.append(self.blocks[offset + self.width - 1])
+
+            elif self.object_data.ends == TWO_ENDS:
                 left_blocks = []
                 middle_blocks = []
                 right_blocks = []
@@ -91,7 +113,7 @@ class LevelObject:
 
                     self._draw_block(dc, block_index, x, y)
 
-                for x_index in range(1, length):
+                for x_index in range(1, length - 1):
                     x = base_x + x_index
                     y = base_y
 
@@ -100,13 +122,17 @@ class LevelObject:
                         self._draw_block(dc, block_index, x, y)
 
                 for index, block_index in enumerate(right_blocks):
-                    x = base_x + length
+                    x = base_x + length - 1
                     y = base_y + index
 
                     self._draw_block(dc, block_index, x, y)
+            else:
+                pass
+                # breakpoint()
 
         elif self.object_data.orientation == HORIZ_TO_GROUND:
             top_blocks = self.blocks[0:self.width]
+            middle_blocks = self.blocks[self.width:-self.width]
             bottom_blocks = self.blocks[-self.width:]
 
             for index, block_index in enumerate(top_blocks):
@@ -137,8 +163,8 @@ class LevelObject:
                 self._draw_block(dc, block_index, x, y)
 
         for index, block_index in enumerate(blocks_to_draw):
-            x = base_x + index % self.width
-            y = base_y + index // self.width
+            x = base_x + index % length
+            y = base_y + index // length
 
             self._draw_block(dc, block_index, x, y)
 
