@@ -10,32 +10,12 @@ TSA_BANK_1 = 1 * 256
 TSA_BANK_2 = 2 * 256
 TSA_BANK_3 = 3 * 256
 
-BMP_PIXEL_SIZE = len("RGB")  # bytes for the colors
-
 OBJECT_SET_COUNT = 15
 OBJECTS_PER_SET = 128
 
 BACKGROUND_COLOR_INDEX = 0
-
-
-def expand_bitmap(bitmap, width, expand=1, pixel_size=BMP_PIXEL_SIZE):
-    if expand == 1:
-        return bitmap
-
-    new_buffer = bytearray()
-
-    old_row_length = pixel_size * width
-    new_row_length = pixel_size * width * expand
-
-    for segment_start in range(0, len(bitmap), pixel_size):
-        new_buffer.extend(expand * bitmap[segment_start:segment_start + pixel_size])
-
-        # copy the new row, when it's finished
-        if (segment_start + pixel_size) % old_row_length == 0:
-            for i in range(1, expand):
-                new_buffer.extend(new_buffer[-new_row_length:])
-
-    return bytes(new_buffer)
+MASK_COLOR_VISIBLE = [0xFF] * 3
+MASK_COLOR_HIDDEN = [0x00] * 3
 
 
 class Tile:
@@ -65,9 +45,7 @@ class Tile:
 
         self.data = rom.bulk_read(Tile.SIZE)
 
-        mask_value = 0
-
-        for mask_bit, i in enumerate(range(Tile.PIXEL_COUNT)):
+        for i in range(Tile.PIXEL_COUNT):
             byte_index = i // Tile.HEIGHT
             bit_index = 2 ** (7 - (i % Tile.WIDTH))
 
@@ -85,27 +63,30 @@ class Tile:
 
             # add alpha values
             if color_index == BACKGROUND_COLOR_INDEX:
-                mask_value += 2**mask_bit
+                self.mask_pixels.extend(MASK_COLOR_HIDDEN)
+            else:
+                self.mask_pixels.extend(MASK_COLOR_VISIBLE)
 
             self.pixels.extend(NESPalette[color])
 
-        self.mask_pixels = mask_value.to_bytes(8, "little")  # flip mask pixels using little endian
+        assert len(self.pixels) == 3 * Tile.PIXEL_COUNT
 
     def as_bitmap(self, zoom=1):
         if zoom not in self.cached_tiles.keys():
             width = Tile.WIDTH * zoom
             height = Tile.HEIGHT * zoom
 
-            image_buffer = expand_bitmap(self.pixels, Tile.WIDTH, zoom)
-            # todo doesn't work with zoom
-            mask_buffer = expand_bitmap(self.mask_pixels, Tile.WIDTH, zoom, 1)
+            image = wx.Image()
+            image.Create(Tile.WIDTH, Tile.HEIGHT, self.pixels)
 
-            bitmap = wx.Bitmap.FromBuffer(width, height, image_buffer)
-            mask = wx.Mask(wx.Bitmap(mask_buffer, width, height, depth=1))
+            mask = wx.Image()
+            mask.Create(Tile.WIDTH, Tile.HEIGHT, self.mask_pixels)
 
-            bitmap.SetMask(mask)
+            image.SetMaskFromImage(mask, *MASK_COLOR_HIDDEN)
 
-            self.cached_tiles[zoom] = bitmap
+            image.Rescale(width, height)
+
+            self.cached_tiles[zoom] = image.ConvertToBitmap()
 
         return self.cached_tiles[zoom]
 
@@ -123,7 +104,7 @@ class Block:
             for os in range(OBJECT_SET_COUNT):
                 Block.tsa_data.append(load_tsa_data(rom, os))
 
-        palette_index = block_index // 0x40
+        palette_index = (block_index & 0b1100_0000) >> 6
 
         tsa_data = Block.tsa_data[object_set]
 

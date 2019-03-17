@@ -2,6 +2,7 @@ from math import ceil
 
 import wx
 
+from Data import NESPalette
 from Level import Level
 from LevelSelector import OBJECT_SET_ITEMS
 from Sprite import Block
@@ -132,7 +133,8 @@ class SpriteBank(wx.Panel):
 
         dc = wx.AutoBufferedPaintDC(self)
 
-        dc.SetBackground(wx.Brush(wx.BLACK))
+        bg_color = NESPalette[Level.palettes[self.object_set][0][0][0]]
+        dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
 
         dc.Clear()
 
