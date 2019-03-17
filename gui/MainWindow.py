@@ -1,4 +1,5 @@
 import wx
+import wx.lib.scrolledpanel
 
 from File import ROM
 from LevelSelector import LevelSelector
@@ -167,7 +168,15 @@ class SMB3Foundry(wx.Frame):
         self.sprite_viewer = SpriteViewer(rom=ROM("SMB3.nes"), parent=self)
         self.level_selector = LevelSelector(parent=self)
 
-        self.levelview = LevelView(parent=self, rom=self.rom, world=1, level=1)
+        self.scroll_panel = wx.lib.scrolledpanel.ScrolledPanel(self)
+        self.scroll_panel.SetupScrolling()
+
+        self.levelview = LevelView(parent=self.scroll_panel, rom=self.rom, world=1, level=1, object_set=1)
+
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(self.levelview)
+
+        self.scroll_panel.SetSizer(sizer)
 
     def open_level_selector(self, _):
         self.level_selector.Show()
@@ -176,9 +185,13 @@ class SMB3Foundry(wx.Frame):
         self.sprite_viewer.Show()
 
     def update_level(self, world, level, object_set):
+        old = self.levelview
+        new = LevelView(parent=self, rom=self.rom, world=world, level=level, object_set=object_set)
+
+        self.scroll_panel.GetSizer().Replace(old, new)
+
         self.levelview.Destroy()
-        self.levelview = LevelView(parent=self, rom=self.rom, world=world, level=level, object_set=object_set)
-        self.Fit()
+        self.levelview = new
 
     def on_exit(self, _):
         self.Close(True)

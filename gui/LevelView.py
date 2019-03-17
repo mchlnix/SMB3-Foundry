@@ -1,6 +1,7 @@
 import wx
 
 from Level import Level
+from Sprite import Block
 
 
 class LevelView(wx.Panel):
@@ -15,6 +16,7 @@ class LevelView(wx.Panel):
         print(f"Drawing Level: {world}-{level}")
 
         self.level = Level(self.rom, world, level, object_set)
+        self.SetMinSize(wx.Size(self.level.width * Block.WIDTH, self.level.height * Block.HEIGHT))
 
     def on_size(self, event):
         event.Skip()
