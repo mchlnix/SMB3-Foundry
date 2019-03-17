@@ -1,7 +1,7 @@
 from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
-    END_ON_BOTTOM_OR_RIGHT
+    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2
 
 SKY = 0
 GROUND = 26
@@ -64,13 +64,19 @@ class LevelObject:
 
             blocks_to_draw.extend(self.blocks[-self.width:])
 
-        elif self.object_data.orientation == HORIZONTAL:
+        elif self.object_data.orientation in [HORIZONTAL, HORIZ_TO_GROUND, HORIZONTAL_2]:
+            # todo horizontal 2 seems to be one shorter than normal horizontal
             length = self.length + 1
+
+            if self.object_data.orientation == HORIZ_TO_GROUND:
+                height = GROUND - base_y
+            else:
+                height = self.height
 
             if self.object_data.ends == UNIFORM:
                 # todo problems when 4byte object
 
-                for y in range(self.height):
+                for y in range(height):
                     offset = y * self.width
 
                     for _ in range(0, length):
@@ -79,15 +85,16 @@ class LevelObject:
                 length *= self.width
 
             elif self.object_data.ends == END_ON_TOP_OR_LEFT:
-                for y in range(self.height):
+                for y in range(height):
                     offset = y * self.width
 
                     blocks_to_draw.append(self.blocks[offset])
 
                     for x in range(1, length):
                         blocks_to_draw.append(self.blocks[offset + 1])
+
             elif self.object_data.ends == END_ON_BOTTOM_OR_RIGHT:
-                for y in range(self.height):
+                for y in range(height):
                     offset = y * self.width
 
                     for x in range(length - 1):
@@ -96,65 +103,31 @@ class LevelObject:
                     blocks_to_draw.append(self.blocks[offset + self.width - 1])
 
             elif self.object_data.ends == TWO_ENDS:
-                left_blocks = []
-                middle_blocks = []
-                right_blocks = []
+                top_and_bottom_line = 2
 
-                assert self.width == 3
+                for y in range(self.height):
+                    offset = y * self.width
+                    left, *middle, right = self.blocks[offset:offset + self.width]
 
-                for i in range(0, len(self.blocks), 3):
-                    left_blocks.append(self.blocks[i])
-                    middle_blocks.append(self.blocks[i + 1])
-                    right_blocks.append(self.blocks[i + 2])
+                    blocks_to_draw.append(left)
+                    blocks_to_draw.extend(middle * (length - top_and_bottom_line))
+                    blocks_to_draw.append(right)
 
-                for index, block_index in enumerate(left_blocks):
-                    x = base_x
-                    y = base_y + index
+                assert len(blocks_to_draw) % self.height == 0
 
-                    self._draw_block(dc, block_index, x, y)
+                new_width = int(len(blocks_to_draw) / self.height)
 
-                for x_index in range(1, length - 1):
-                    x = base_x + x_index
-                    y = base_y
+                middle_blocks = blocks_to_draw[new_width:-new_width]
 
-                    for y_index, block_index in enumerate(middle_blocks):
-                        y += y_index
-                        self._draw_block(dc, block_index, x, y)
+                assert len(middle_blocks) == new_width or len(middle_blocks) == 0
 
-                for index, block_index in enumerate(right_blocks):
-                    x = base_x + length - 1
-                    y = base_y + index
+                new_rows = height - top_and_bottom_line
 
-                    self._draw_block(dc, block_index, x, y)
+                new_blocks = blocks_to_draw[0:new_width] + middle_blocks * new_rows + blocks_to_draw[-new_width:]
+
+                blocks_to_draw = new_blocks
             else:
-                pass
-                # breakpoint()
-
-        elif self.object_data.orientation == HORIZ_TO_GROUND:
-            top_blocks = self.blocks[0:self.width]
-            middle_blocks = self.blocks[self.width:-self.width]
-            bottom_blocks = self.blocks[-self.width:]
-
-            for index, block_index in enumerate(top_blocks):
-                x = base_x + (index % self.width)
-                y = self.y_position + (index // self.width)
-
-                self._draw_block(dc, block_index, x, y)
-
-            for base_y in range(self.y_position, GROUND - 1):
-                for index in range(self.width, len(self.blocks) - self.width):
-                    x = base_x + (index % self.width)
-                    y = base_y + (index // self.width)
-
-                    block_index = self.blocks[index]
-
-                    self._draw_block(dc, block_index, x, y)
-
-            for index, block_index in enumerate(bottom_blocks):
-                x = base_x + (index % self.width)
-                y = GROUND - 1 + (index // self.width)
-
-                self._draw_block(dc, block_index, x, y)
+                breakpoint()
         else:
             for index, block_index in enumerate(self.blocks):
                 x = base_x + (index % self.width)
