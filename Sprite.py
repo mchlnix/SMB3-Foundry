@@ -19,6 +19,9 @@ BACKGROUND_COLOR_INDEX = 0
 
 
 def expand_bitmap(bitmap, width, expand=1, pixel_size=BMP_PIXEL_SIZE):
+    if expand == 1:
+        return bitmap
+
     new_buffer = bytearray()
 
     old_row_length = pixel_size * width
@@ -48,6 +51,8 @@ class Tile:
         else:
             common_index = object_index - OBJECTS_PER_SET
             self.start = common_offsets[object_set] + common_index * Tile.SIZE
+
+        self.cached_tiles = dict()
 
         self.palette = palette_group[palette_index]
         # self.palette = DEFAULT_PALETTE
@@ -88,19 +93,22 @@ class Tile:
         self.mask_pixels = mask_value.to_bytes(8, "little")  # flip mask pixels using little endian
 
     def as_bitmap(self, zoom=1):
-        width = Tile.WIDTH * zoom
-        height = Tile.HEIGHT * zoom
+        if zoom not in self.cached_tiles.keys():
+            width = Tile.WIDTH * zoom
+            height = Tile.HEIGHT * zoom
 
-        image_buffer = expand_bitmap(self.pixels, Tile.WIDTH, zoom)
-        # todo doesn't work with zoom
-        mask_buffer = expand_bitmap(self.mask_pixels, Tile.WIDTH, zoom, 1)
+            image_buffer = expand_bitmap(self.pixels, Tile.WIDTH, zoom)
+            # todo doesn't work with zoom
+            mask_buffer = expand_bitmap(self.mask_pixels, Tile.WIDTH, zoom, 1)
 
-        bitmap = wx.Bitmap.FromBuffer(width, height, image_buffer)
-        mask = wx.Mask(wx.Bitmap(mask_buffer, width, height, depth=1))
+            bitmap = wx.Bitmap.FromBuffer(width, height, image_buffer)
+            mask = wx.Mask(wx.Bitmap(mask_buffer, width, height, depth=1))
 
-        bitmap.SetMask(mask)
+            bitmap.SetMask(mask)
 
-        return bitmap
+            self.cached_tiles[zoom] = bitmap
+
+        return self.cached_tiles[zoom]
 
 
 class Block:
