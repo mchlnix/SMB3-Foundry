@@ -63,8 +63,7 @@ class Tile:
 
         rom.seek(self.start)
 
-        for _ in range(Tile.SIZE):
-            self.data.append(rom.get_byte())
+        self.data = rom.bulk_read(Tile.SIZE)
 
         mask_value = 0
 

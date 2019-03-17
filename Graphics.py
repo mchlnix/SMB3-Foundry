@@ -92,8 +92,7 @@ class LevelObject:
     def _draw_block(self, dc, block_index, x, y):
         if block_index not in self.block_cache:
             if block_index > 0xFF:
-                rom_block_index = ROM().get_byte(
-                    block_index)  # block_index is an offset into the graphic memory
+                rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
                 block = Block(ROM(), self.object_set, rom_block_index, self.palette_group)
             else:
                 block = Block(ROM(), self.object_set, block_index, self.palette_group)

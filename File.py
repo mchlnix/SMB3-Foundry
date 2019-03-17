@@ -1,11 +1,15 @@
 class ROM:
+    data = bytearray()
+
     def __init__(self, path="SMB3.nes"):
-        with open(path, "rb") as rom:
-            self.data = list(rom.read())
+        if not ROM.data:
+            with open(path, "rb") as rom:
+                ROM.data = list(rom.read())
+
         self.position = 0
 
     def seek(self, position):
-        if position > len(self.data) or position < 0:
+        if position > len(ROM.data) or position < 0:
             return -1
 
         self.position = position
@@ -16,10 +20,10 @@ class ROM:
         if position >= 0:
             k = self.seek(position) >= 0
         else:
-            k = self.position < len(self.data)
+            k = self.position < len(ROM.data)
 
         if k:
-            return_byte = self.data[self.position]
+            return_byte = ROM.data[self.position]
         else:
             return_byte = 0
 
@@ -40,7 +44,7 @@ class ROM:
         if position >= 0:
             self.seek(position)
 
-        self.data[self.position] = byte
+        ROM.data[self.position] = byte
 
         self.position += 1
 
@@ -52,7 +56,7 @@ class ROM:
 
         self.position += count
 
-        return self.data[position:position+count]
+        return ROM.data[position:position+count]
 
 
 object_sets = {
