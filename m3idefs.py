@@ -6,7 +6,7 @@ DIAG_DOWN_LEFT = 2
 DESERT_PIPE_BOX = 3
 DIAG_DOWN_RIGHT = 4
 DIAG_UP_RIGHT = 5
-HORIZ_AND_GROUND = 6
+HORIZ_TO_GROUND = 6
 HORIZONTAL_2 = 7  # special case of horizontal
 DIAG_WEIRD = 8  #
 SINGLE_BLOCK_OBJECT = 9
@@ -31,6 +31,9 @@ class ObjectDefinition:
 
         self.bmp_width = int(self.bmp_width)
         self.bmp_height = int(self.bmp_height)
+        self.orientation = int(self.orientation)
+        self.ends = int(self.ends)
+        self.obj_flag = int(self.obj_flag)
 
         self.object_design2 = []
         self.rom_object_design = []

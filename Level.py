@@ -79,8 +79,6 @@ class Level:
 
         self.object_definition = object_set_to_definition[self.object_set]
 
-        self.block_cache = dict()
-
         level_index = Level.world_indexes[world - 1] + level - 1
 
         level_data: Mario3Level = Level.offsets[level_index]
@@ -155,9 +153,11 @@ class Level:
 
             if has_length:
                 obj_data.append(rom.get_byte())
-                level_object = FourByteObject(obj_data, self.object_set, self.plains_level[self.object_definition], self.object_palette_group)
+                level_object = FourByteObject(obj_data, self.object_set, self.plains_level[self.object_definition],
+                                              self.object_palette_group)
             else:
-                level_object = ThreeByteObject(obj_data, self.object_set, self.plains_level[self.object_definition], self.object_palette_group)
+                level_object = ThreeByteObject(obj_data, self.object_set, self.plains_level[self.object_definition],
+                                               self.object_palette_group)
 
             self.objects.append(level_object)
 

@@ -3030,7 +3030,7 @@
 0,0x33,0x33,1,1,<47>,9,0,0,Nipper Plant
 0,0x34,0x34,1,1,<148>,9,0,0,Toad & Message
 0,0x35,0x35,1,1,<148>,9,0,0,Automatically Clear Stage
-0,0x36,0x36,3,1,<55,56,57>,9,0,0,Wooden platform - moves left,falls when stepped on
+0,0x36,0x36,3,1,<55,56,57>,9,0,0,Wooden platform - moves left;;falls when stepped on
 0,0x37,0x37,3,1,<55,56,57>,9,0,0,Wooden platform - moves back and forth (a little)
 0,0x38,0x38,3,1,<55,56,57>,9,0,0,Wooden platform - moves up and down (a little)
 0,0x39,0x39,1,1,<47>,9,0,0,Walking Nipper Plant
