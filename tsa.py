@@ -40,12 +40,7 @@ class MetaTable:
 def load_tsa_data(rom, object_set_number):
     rom.seek(tsa_offsets[object_set_number])
 
-    print(f"Getting tsa data for object set {object_set_number}")
-
     for i in range(1024):
         tsa_data[i] = rom.get_byte()
-
-    # for i in range(256):
-    #     print(f"{tsa_data[i]} {tsa_data[256 + i]} {tsa_data[512 + i]} {tsa_data[768 + i]}")
 
     return tsa_data.copy()

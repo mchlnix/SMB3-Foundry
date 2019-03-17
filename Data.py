@@ -11,7 +11,6 @@ def read_string_dict(path):
     with open(path, "r") as f:
         for line in f.readlines():
             key, value = line.rstrip().split("=")
-            print(f"{key}={value}")
 
             return_dict[key] = value
 
