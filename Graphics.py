@@ -1,6 +1,8 @@
 from File import ROM
 from Sprite import Block
-from m3idefs import TO_THE_SKY
+from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND
+
+GROUND = 26
 
 
 class LevelObject:
@@ -46,16 +48,40 @@ class LevelObject:
         base_x = self.x_position
         base_y = self.y_position
 
-        if int(self.object_data.orientation) == TO_THE_SKY:
-            for g in range(self.y_position):
-                base_yy = g
+        if self.object_data.orientation == TO_THE_SKY:
+            self._draw_block(dc, self.blocks[-1], base_x, base_y)
+
+            for base_y in range(self.y_position):
                 for index, block_index in enumerate(self.blocks[:-1]):
                     x = base_x + (index % self.width)
-                    y = base_yy + (index // self.width)
+                    y = base_y + (index // self.width)
 
                     self._draw_block(dc, block_index, x, y)
 
-            self._draw_block(dc, self.blocks[-1], base_x, base_y)
+        elif self.object_data.orientation == HORIZ_TO_GROUND:
+            top_blocks = self.blocks[0:self.width]
+            bottom_blocks = self.blocks[-self.width:]
+
+            for index, block_index in enumerate(top_blocks):
+                x = base_x + (index % self.width)
+                y = self.y_position + (index // self.width)
+
+                self._draw_block(dc, block_index, x, y)
+
+            for base_y in range(self.y_position, GROUND - 1):
+                for index in range(self.width, len(self.blocks) - self.width):
+                    x = base_x + (index % self.width)
+                    y = base_y + (index // self.width)
+
+                    block_index = self.blocks[index]
+
+                    self._draw_block(dc, block_index, x, y)
+
+            for index, block_index in enumerate(bottom_blocks):
+                x = base_x + (index % self.width)
+                y = GROUND - 1 + (index // self.width)
+
+                self._draw_block(dc, block_index, x, y)
         else:
             for index, block_index in enumerate(self.blocks):
                 x = base_x + (index % self.width)
@@ -95,5 +121,3 @@ class EnemyObject:
         self.type = data[0]
         self.x_position = data[1]
         self.y_position = data[2]
-
-
