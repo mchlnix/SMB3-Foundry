@@ -1,6 +1,6 @@
 from File import ROM
 from Sprite import Block
-from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS
+from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM
 
 GROUND = 26
 
@@ -60,8 +60,16 @@ class LevelObject:
 
                     self._draw_block(dc, block_index, x, y)
 
-        elif self.object_data.orientation == HORIZONTAL and self.object_data.ends == TWO_ENDS:
+        elif self.object_data.orientation == HORIZONTAL:
             length = self.length
+
+            if self.object_data.ends == UNIFORM:
+                # todo problems when 4byte object
+                for index in range(length + 1):
+                    x = base_x + index
+                    y = base_y
+
+                    self._draw_block(dc, self.blocks[0], x, y)
 
             if self.object_data.ends == TWO_ENDS:
                 left_blocks = []
