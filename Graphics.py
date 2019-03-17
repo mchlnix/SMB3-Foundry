@@ -1,10 +1,35 @@
 from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
-    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2
+    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING
 
 SKY = 0
 GROUND = 26
+
+# todo what is this, and where should we put it?
+OBJECT_SET_TO_ENDING = {
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    7: 0,
+    10: 0,
+    13: 0,
+    14: 0,  # Underground
+    15: 0,
+    16: 0,
+    114: 0,
+    4: 1,
+    12: 1,
+    5: 2,
+    9: 2,
+    11: 2,
+    6: 3,
+    8: 3,
+}
+
+# todo what is this, exactly?
+ENDING_OBJECT_OFFSET = 0x1C8F9
 
 
 class LevelObject:
@@ -63,6 +88,26 @@ class LevelObject:
                 blocks_to_draw.extend(self.blocks[0:self.width])
 
             blocks_to_draw.extend(self.blocks[-self.width:])
+
+        elif self.object_data.orientation == ENDING:
+            page_width = 16
+            page_limit = page_width - self.x_position % page_width
+
+            length = (page_width + page_limit)
+
+            for y in range(SKY, GROUND):
+                blocks_to_draw.append(self.blocks[0])
+                blocks_to_draw.extend([self.blocks[1]] * (length - 1))
+
+            # ending graphics
+            offset = ENDING_OBJECT_OFFSET + OBJECT_SET_TO_ENDING[self.object_set] * 0x60
+
+            rom = ROM()
+
+            for y in range(6):
+                for x in range(page_width):
+                    block_index = rom.get_byte(offset + y * page_width + x - 1)
+                    blocks_to_draw[(y + 20) * length + x + page_limit] = block_index
 
         elif self.object_data.orientation in [HORIZONTAL, HORIZ_TO_GROUND, HORIZONTAL_2]:
             # todo horizontal 2 seems to be one shorter than normal horizontal
