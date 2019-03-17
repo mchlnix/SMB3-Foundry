@@ -2,6 +2,7 @@ from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM
 
+SKY = 0
 GROUND = 26
 
 
@@ -50,15 +51,16 @@ class LevelObject:
         base_x = self.x_position
         base_y = self.y_position
 
+        blocks_to_draw = []
+
         if self.object_data.orientation == TO_THE_SKY:
-            self._draw_block(dc, self.blocks[-1], base_x, base_y)
+            base_x = self.x_position
+            base_y = SKY
 
-            for base_y in range(self.y_position):
-                for index, block_index in enumerate(self.blocks[:-1]):
-                    x = base_x + (index % self.width)
-                    y = base_y + (index // self.width)
+            for _ in range(self.y_position):
+                blocks_to_draw.extend(self.blocks[0:self.width])
 
-                    self._draw_block(dc, block_index, x, y)
+            blocks_to_draw.extend(self.blocks[-self.width:])
 
         elif self.object_data.orientation == HORIZONTAL:
             length = self.length
@@ -133,6 +135,12 @@ class LevelObject:
                 y = base_y + (index // self.width)
 
                 self._draw_block(dc, block_index, x, y)
+
+        for index, block_index in enumerate(blocks_to_draw):
+            x = base_x + index % self.width
+            y = base_y + index // self.width
+
+            self._draw_block(dc, block_index, x, y)
 
     def _draw_block(self, dc, block_index, x, y):
         if block_index not in self.block_cache:
