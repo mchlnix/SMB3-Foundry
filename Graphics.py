@@ -1,6 +1,6 @@
 from File import ROM
 from Sprite import Block
-from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND
+from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS
 
 GROUND = 26
 
@@ -29,7 +29,9 @@ class LevelObject:
 
         if obj_index <= 0x0F:
             self.type = obj_index + domain_offset
+            self.length = 1
         else:
+            self.length = obj_index & 0b0000_1111
             self.type = (obj_index >> 4) + domain_offset + 16 - 1
 
         self.object_data = object_definitions[self.type]
@@ -55,6 +57,41 @@ class LevelObject:
                 for index, block_index in enumerate(self.blocks[:-1]):
                     x = base_x + (index % self.width)
                     y = base_y + (index // self.width)
+
+                    self._draw_block(dc, block_index, x, y)
+
+        elif self.object_data.orientation == HORIZONTAL and self.object_data.ends == TWO_ENDS:
+            length = self.length
+
+            if self.object_data.ends == TWO_ENDS:
+                left_blocks = []
+                middle_blocks = []
+                right_blocks = []
+
+                assert self.width == 3
+
+                for i in range(0, len(self.blocks), 3):
+                    left_blocks.append(self.blocks[i])
+                    middle_blocks.append(self.blocks[i + 1])
+                    right_blocks.append(self.blocks[i + 2])
+
+                for index, block_index in enumerate(left_blocks):
+                    x = base_x
+                    y = base_y + index
+
+                    self._draw_block(dc, block_index, x, y)
+
+                for x_index in range(1, length):
+                    x = base_x + x_index
+                    y = base_y
+
+                    for y_index, block_index in enumerate(middle_blocks):
+                        y += y_index
+                        self._draw_block(dc, block_index, x, y)
+
+                for index, block_index in enumerate(right_blocks):
+                    x = base_x + length
+                    y = base_y + index
 
                     self._draw_block(dc, block_index, x, y)
 
