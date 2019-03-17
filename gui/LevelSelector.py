@@ -1,7 +1,7 @@
 import wx
 
+from Level import Level
 from Data import level_array, world_indexes
-from File import convert_object_sets, LEVEL_HEADER_LENGTH
 
 WORLD_ITEMS = ["World Maps", "World 1", "World 2", "World 3",
                "World 4", "World 5", "World 6", "World 7",
@@ -108,11 +108,10 @@ class LevelSelector(wx.Frame):
         else:
             level_array_offset = world_indexes[self.selected_world] + self.selected_level
 
-        object_set_number = convert_object_sets(level_array[level_array_offset].real_obj_set)
         object_data_for_lvl = level_array[level_array_offset].rom_level_offset
 
         if self.selected_world >= WORLD_1_INDEX:
-            object_data_for_lvl -= LEVEL_HEADER_LENGTH
+            object_data_for_lvl -= Level.HEADER_LENGTH
 
         self.object_data_spinner.SetValue(object_data_for_lvl)
 
