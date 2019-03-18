@@ -251,7 +251,5 @@ class Level:
             Level.palettes.append([])
             for lg in range(LEVEL_PALETTE_GROUPS_PER_OBJECT_SET):
                 Level.palettes[os].append([])
-                for pl in range(PALETTES_PER_PALETTES_GROUP):
-                    Level.palettes[os][lg].append([])
-                    for _ in range(COLORS_PER_PALETTE):
-                        Level.palettes[os][lg][pl].append(rom.get_byte())
+                for _ in range(PALETTES_PER_PALETTES_GROUP):
+                    Level.palettes[os][lg].append(rom.bulk_read(COLORS_PER_PALETTE))

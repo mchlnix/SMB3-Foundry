@@ -15,10 +15,7 @@ class MetaTable:
 
         rom.seek(offset)
 
-        tile_buffer = bytearray(0x1000 + 1)
-
-        for i in range(len(tile_buffer)):
-            tile_buffer[i] = rom.get_byte()
+        tile_buffer = bytearray(rom.bulk_read(0x1000))
 
         for i in range(tile_amount):
             base_offset = i * 16
@@ -38,9 +35,10 @@ class MetaTable:
 
 
 def load_tsa_data(rom, object_set_number):
+    global tsa_data
+
     rom.seek(tsa_offsets[object_set_number])
 
-    for i in range(1024):
-        tsa_data[i] = rom.get_byte()
+    tsa_data = rom.bulk_read(1024)
 
     return tsa_data.copy()
