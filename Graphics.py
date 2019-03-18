@@ -1,7 +1,7 @@
 from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
-    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING
+    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL
 
 SKY = 0
 GROUND = 26
@@ -108,6 +108,19 @@ class LevelObject:
                 for x in range(page_width):
                     block_index = rom.get_byte(offset + y * page_width + x - 1)
                     blocks_to_draw[(y + 20) * length + x + page_limit] = block_index
+
+            # item is categorized as an enemy
+
+        elif self.object_data.orientation == VERTICAL:
+            length = self.length
+            if self.object_data.ends == UNIFORM:
+                for _ in range(length):
+                    for x in range(self.width):
+                        for y in range(self.height):
+                            blocks_to_draw.append(self.blocks[x])
+
+            elif self.object_data.ends == END_ON_TOP_OR_LEFT:
+                pass
 
         elif self.object_data.orientation in [HORIZONTAL, HORIZ_TO_GROUND, HORIZONTAL_2]:
             # todo horizontal 2 seems to be one shorter than normal horizontal
