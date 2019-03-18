@@ -181,9 +181,8 @@ class LevelObject:
 
                 new_rows = height - top_and_bottom_line
 
-                new_blocks = blocks_to_draw[0:new_width] + middle_blocks * new_rows + blocks_to_draw[-new_width:]
-
-                blocks_to_draw = new_blocks
+                if new_rows >= 0:
+                    blocks_to_draw = blocks_to_draw[0:new_width] + middle_blocks * new_rows + blocks_to_draw[-new_width:]
             else:
                 breakpoint()
         else:
