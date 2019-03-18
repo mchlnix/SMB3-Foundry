@@ -47,7 +47,7 @@ class Level:
 
     palettes = []
 
-    def __init__(self, rom, world, level, object_set=None):
+    def __init__(self, rom, world, level, object_set=1):
         if not Level.offsets:
             Level._load_level_offsets()
 
