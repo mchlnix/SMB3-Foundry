@@ -71,8 +71,6 @@ class LevelObject:
 
         self.block_cache = {}
 
-        assert len(self.blocks) == self.width * self.height
-
     def draw(self, dc):
         base_x = self.x_position
         base_y = self.y_position
@@ -112,29 +110,78 @@ class LevelObject:
             # item is categorized as an enemy
 
         elif self.object_data.orientation == VERTICAL:
-            length = self.length
+            calculated_height = self.length + 1
+            length = self.width
+
             if self.object_data.ends == UNIFORM:
-                for _ in range(length):
+                for _ in range(calculated_height):
                     for x in range(self.width):
                         for y in range(self.height):
                             blocks_to_draw.append(self.blocks[x])
 
             elif self.object_data.ends == END_ON_TOP_OR_LEFT:
-                pass
+                # in case the drawn object is smaller than its actual size
+                for y in range(min(self.height, calculated_height)):
+                    offset = y * self.width
+                    blocks_to_draw.extend(self.blocks[offset:offset + self.width])
+
+                additional_rows = calculated_height - self.height
+
+                # assume only the last row needs to repeat
+                # todo true for giant blocks?
+                if additional_rows > 0:
+                    last_row = self.blocks[-self.width:]
+
+                    for _ in range(additional_rows):
+                        blocks_to_draw.extend(last_row)
+
+            elif self.object_data.ends == END_ON_BOTTOM_OR_RIGHT:
+                additional_rows = calculated_height - self.height
+
+                # assume only the first row needs to repeat
+                # todo true for giant blocks?
+                if additional_rows > 0:
+                    last_row = self.blocks[0:self.width]
+
+                    for _ in range(additional_rows):
+                        blocks_to_draw.extend(last_row)
+
+                # in case the drawn object is smaller than its actual size
+                for y in range(min(self.height, calculated_height)):
+                    offset = y * self.width
+                    blocks_to_draw.extend(self.blocks[offset:offset + self.width])
+
+            elif self.object_data.ends == TWO_ENDS:
+                # todo does such an object exist?
+                breakpoint()
+                top_row = self.blocks[0:self.width]
+                bottom_row = self.blocks[-self.width:]
+
+                blocks_to_draw.extend(top_row)
+
+                additional_rows = calculated_height - self.height
+
+                # repeat second to last row
+                if additional_rows > 0:
+                    for _ in range(additional_rows):
+                        blocks_to_draw.extend(self.blocks[-2 * self.width:-self.width])
+
+                if calculated_height > 1:
+                    blocks_to_draw.extend(bottom_row)
 
         elif self.object_data.orientation in [HORIZONTAL, HORIZ_TO_GROUND, HORIZONTAL_2]:
             # todo horizontal 2 seems to be one shorter than normal horizontal
             length = self.length + 1
 
             if self.object_data.orientation == HORIZ_TO_GROUND:
-                height = GROUND - base_y
+                calculated_height = GROUND - base_y
             else:
-                height = self.height
+                calculated_height = self.height
 
             if self.object_data.ends == UNIFORM:
                 # todo problems when 4byte object
 
-                for y in range(height):
+                for y in range(calculated_height):
                     offset = y * self.width
 
                     for _ in range(0, length):
@@ -143,7 +190,7 @@ class LevelObject:
                 length *= self.width
 
             elif self.object_data.ends == END_ON_TOP_OR_LEFT:
-                for y in range(height):
+                for y in range(calculated_height):
                     offset = y * self.width
 
                     blocks_to_draw.append(self.blocks[offset])
@@ -152,7 +199,7 @@ class LevelObject:
                         blocks_to_draw.append(self.blocks[offset + 1])
 
             elif self.object_data.ends == END_ON_BOTTOM_OR_RIGHT:
-                for y in range(height):
+                for y in range(calculated_height):
                     offset = y * self.width
 
                     for x in range(length - 1):
@@ -179,7 +226,7 @@ class LevelObject:
 
                 assert len(middle_blocks) == new_width or len(middle_blocks) == 0
 
-                new_rows = height - top_and_bottom_line
+                new_rows = calculated_height - top_and_bottom_line
 
                 if new_rows >= 0:
                     blocks_to_draw = blocks_to_draw[0:new_width] + middle_blocks * new_rows + blocks_to_draw[-new_width:]
