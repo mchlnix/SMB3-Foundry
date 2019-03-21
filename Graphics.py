@@ -137,7 +137,7 @@ class LevelObject:
 
             new_width = (page_width + page_limit)
 
-            for y in range(SKY, GROUND):
+            for y in range(SKY, GROUND - 1):
                 blocks_to_draw.append(self.blocks[0])
                 blocks_to_draw.extend([self.blocks[1]] * (new_width - 1))
 
