@@ -239,9 +239,6 @@ class LevelObject:
             else:
                 new_height = self.height
 
-            for x in range(new_width):
-                LevelObject.ground_map[(base_x + x, base_y)] = True
-
             if self.object_data.ends == UNIFORM:
                 # todo problems when 4byte object
 
@@ -297,6 +294,9 @@ class LevelObject:
                     blocks_to_draw = blocks_to_draw[0:new_width] + middle_blocks * new_rows + blocks_to_draw[-new_width:]
             else:
                 breakpoint()
+
+            for x in range(new_width):
+                LevelObject.ground_map[(base_x + x, base_y)] = True
         else:
             for index, block_index in enumerate(self.blocks):
                 x = base_x + (index % self.width)
