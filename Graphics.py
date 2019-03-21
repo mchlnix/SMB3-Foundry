@@ -81,12 +81,14 @@ class LevelObject:
         base_x = self.x_position
         base_y = self.y_position
 
+        new_width = self.width
+        new_height = self.height
+
         blocks_to_draw = []
 
         if self.object_data.orientation == TO_THE_SKY:
             base_x = self.x_position
             base_y = SKY
-            length = self.width
 
             for _ in range(self.y_position):
                 blocks_to_draw.extend(self.blocks[0:self.width])
@@ -97,11 +99,11 @@ class LevelObject:
             page_width = 16
             page_limit = page_width - self.x_position % page_width
 
-            length = (page_width + page_limit)
+            new_width = (page_width + page_limit)
 
             for y in range(SKY, GROUND):
                 blocks_to_draw.append(self.blocks[0])
-                blocks_to_draw.extend([self.blocks[1]] * (length - 1))
+                blocks_to_draw.extend([self.blocks[1]] * (new_width - 1))
 
             # ending graphics
             offset = ENDING_OBJECT_OFFSET + OBJECT_SET_TO_ENDING[self.object_set] * 0x60
@@ -111,30 +113,30 @@ class LevelObject:
             for y in range(6):
                 for x in range(page_width):
                     block_index = rom.get_byte(offset + y * page_width + x - 1)
-                    blocks_to_draw[(y + 20) * length + x + page_limit] = block_index
+                    blocks_to_draw[(y + 20) * new_width + x + page_limit] = block_index
 
             # item is categorized as an enemy
 
         elif self.object_data.orientation == VERTICAL:
-            calculated_height = self.length + 1
-            length = self.width
+            new_height = self.length + 1
+            new_width = self.width
 
-            for x in range(length):
+            for x in range(new_width):
                 LevelObject.ground_map[(base_x + x, base_y)] = True
 
             if self.object_data.ends == UNIFORM:
-                for _ in range(calculated_height):
+                for _ in range(new_height):
                     for x in range(self.width):
                         for y in range(self.height):
                             blocks_to_draw.append(self.blocks[x])
 
             elif self.object_data.ends == END_ON_TOP_OR_LEFT:
                 # in case the drawn object is smaller than its actual size
-                for y in range(min(self.height, calculated_height)):
+                for y in range(min(self.height, new_height)):
                     offset = y * self.width
                     blocks_to_draw.extend(self.blocks[offset:offset + self.width])
 
-                additional_rows = calculated_height - self.height
+                additional_rows = new_height - self.height
 
                 # assume only the last row needs to repeat
                 # todo true for giant blocks?
@@ -145,7 +147,7 @@ class LevelObject:
                         blocks_to_draw.extend(last_row)
 
             elif self.object_data.ends == END_ON_BOTTOM_OR_RIGHT:
-                additional_rows = calculated_height - self.height
+                additional_rows = new_height - self.height
 
                 # assume only the first row needs to repeat
                 # todo true for giant blocks?
@@ -156,7 +158,7 @@ class LevelObject:
                         blocks_to_draw.extend(last_row)
 
                 # in case the drawn object is smaller than its actual size
-                for y in range(min(self.height, calculated_height)):
+                for y in range(min(self.height, new_height)):
                     offset = y * self.width
                     blocks_to_draw.extend(self.blocks[offset:offset + self.width])
 
@@ -168,21 +170,21 @@ class LevelObject:
 
                 blocks_to_draw.extend(top_row)
 
-                additional_rows = calculated_height - self.height
+                additional_rows = new_height - self.height
 
                 # repeat second to last row
                 if additional_rows > 0:
                     for _ in range(additional_rows):
                         blocks_to_draw.extend(self.blocks[-2 * self.width:-self.width])
 
-                if calculated_height > 1:
+                if new_height > 1:
                     blocks_to_draw.extend(bottom_row)
 
         elif self.object_data.orientation in [HORIZONTAL, HORIZ_TO_GROUND, HORIZONTAL_2]:
             # todo horizontal 2 seems to be one shorter than normal horizontal
-            length = self.length + 1
+            new_width = self.length + 1
 
-            for x in range(length):
+            for x in range(new_width):
                 LevelObject.ground_map[(base_x + x, base_y)] = True
 
             if self.object_data.orientation == HORIZ_TO_GROUND:
@@ -190,42 +192,43 @@ class LevelObject:
                 # to the ground only, until it hits something
                 for y in range(base_y + 1, GROUND):
                     if (base_x, y) in LevelObject.ground_map:
-                        calculated_height = y - base_y
+                        new_height = y - base_y
                         break
                 else:
                     # nothing underneath this object, extend to the ground
-                    calculated_height = GROUND - base_y
+                    new_height = GROUND - base_y
 
                 if self.is_single_block:
-                    length = self.length
+                    new_width = self.length
             else:
-                calculated_height = self.height
+                new_height = self.height
 
             if self.object_data.ends == UNIFORM:
                 # todo problems when 4byte object
 
-                for y in range(calculated_height):
+                for y in range(new_height):
                     offset = (y % self.height) * self.width
 
-                    for _ in range(0, length):
+                    for _ in range(0, new_width):
                         blocks_to_draw.extend(self.blocks[offset:offset + self.width])
 
-                length *= self.width
+                # in case of giant blocks
+                new_width *= self.width
 
             elif self.object_data.ends == END_ON_TOP_OR_LEFT:
-                for y in range(calculated_height):
+                for y in range(new_height):
                     offset = y * self.width
 
                     blocks_to_draw.append(self.blocks[offset])
 
-                    for x in range(1, length):
+                    for x in range(1, new_width):
                         blocks_to_draw.append(self.blocks[offset + 1])
 
             elif self.object_data.ends == END_ON_BOTTOM_OR_RIGHT:
-                for y in range(calculated_height):
+                for y in range(new_height):
                     offset = y * self.width
 
-                    for x in range(length - 1):
+                    for x in range(new_width - 1):
                         blocks_to_draw.append(self.blocks[offset])
 
                     blocks_to_draw.append(self.blocks[offset + self.width - 1])
@@ -238,7 +241,7 @@ class LevelObject:
                     left, *middle, right = self.blocks[offset:offset + self.width]
 
                     blocks_to_draw.append(left)
-                    blocks_to_draw.extend(middle * (length - top_and_bottom_line))
+                    blocks_to_draw.extend(middle * (new_width - top_and_bottom_line))
                     blocks_to_draw.append(right)
 
                 assert len(blocks_to_draw) % self.height == 0
@@ -249,7 +252,7 @@ class LevelObject:
 
                 assert len(middle_blocks) == new_width or len(middle_blocks) == 0
 
-                new_rows = calculated_height - top_and_bottom_line
+                new_rows = new_height - top_and_bottom_line
 
                 if new_rows >= 0:
                     blocks_to_draw = blocks_to_draw[0:new_width] + middle_blocks * new_rows + blocks_to_draw[-new_width:]
@@ -263,8 +266,8 @@ class LevelObject:
                 self._draw_block(dc, block_index, x, y)
 
         for index, block_index in enumerate(blocks_to_draw):
-            x = base_x + index % length
-            y = base_y + index // length
+            x = base_x + index % new_width
+            y = base_y + index // new_width
 
             self._draw_block(dc, block_index, x, y)
 
