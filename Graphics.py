@@ -1,7 +1,7 @@
 from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
-    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL, PYRAMID_TO_GROUND, PYRAMID_2
+    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL, PYRAMID_TO_GROUND, PYRAMID_2, DIAG_DOWN_LEFT
 
 SKY = 0
 GROUND = 27
@@ -31,6 +31,8 @@ OBJECT_SET_TO_ENDING = {
 # todo what is this, exactly?
 ENDING_OBJECT_OFFSET = 0x1C8F9
 
+# not all objects provide a block index for blank block
+BLANK = -1
 
 class LevelObject:
     # todo better way of saving this information?
@@ -94,11 +96,29 @@ class LevelObject:
 
             blocks_to_draw.extend(self.blocks[-self.width:])
 
+        elif self.object_data.orientation == DIAG_DOWN_LEFT:
+            new_height = (self.length + 1) * self.height
+            new_width = (self.length + 1) * (self.width - 1)  # subtract the fill block
+
+            base_x = base_x - (new_width - (self.width - 1))
+
+            slope_blocks = self.blocks[0:-1]
+            fill_blocks = self.blocks[-1]
+
+            for y in range(new_height):
+                fill = y * len(slope_blocks)
+                slope = len(slope_blocks)
+                blank = (new_width - slope - fill)
+
+                row = blank * [BLANK] + slope_blocks + fill * [fill_blocks]
+
+                blocks_to_draw.extend(row)
+
         elif self.object_data.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
             # since pyramids grow horizontally in both directions when extending
             # we need to check for new ground every time it grows
 
-            base_x += 1 # set the new base_x to the tip of the pyramid
+            base_x += 1  # set the new base_x to the tip of the pyramid
 
             lowest_y = GROUND
 
@@ -284,6 +304,9 @@ class LevelObject:
 
                 new_width = int(len(blocks_to_draw) / self.height)
 
+                top_row = blocks_to_draw[0:new_width]
+                bottom_row = blocks_to_draw[-new_width:]
+
                 middle_blocks = blocks_to_draw[new_width:-new_width]
 
                 assert len(middle_blocks) == new_width or len(middle_blocks) == 0
@@ -291,7 +314,7 @@ class LevelObject:
                 new_rows = new_height - top_and_bottom_line
 
                 if new_rows >= 0:
-                    blocks_to_draw = blocks_to_draw[0:new_width] + middle_blocks * new_rows + blocks_to_draw[-new_width:]
+                    blocks_to_draw = top_row + middle_blocks * new_rows + bottom_row
             else:
                 breakpoint()
 
@@ -305,6 +328,9 @@ class LevelObject:
                 self._draw_block(dc, block_index, x, y)
 
         for index, block_index in enumerate(blocks_to_draw):
+            if block_index == BLANK:
+                continue
+
             x = base_x + index % new_width
             y = base_y + index // new_width
 
