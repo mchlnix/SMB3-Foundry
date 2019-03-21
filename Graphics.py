@@ -1,7 +1,8 @@
 from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
-    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL, PYRAMID_TO_GROUND, PYRAMID_2, DIAG_DOWN_LEFT
+    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL, PYRAMID_TO_GROUND, PYRAMID_2, DIAG_DOWN_LEFT, \
+    DIAG_DOWN_RIGHT
 
 SKY = 0
 GROUND = 27
@@ -33,6 +34,7 @@ ENDING_OBJECT_OFFSET = 0x1C8F9
 
 # not all objects provide a block index for blank block
 BLANK = -1
+
 
 class LevelObject:
     # todo better way of saving this information?
@@ -95,6 +97,53 @@ class LevelObject:
                 blocks_to_draw.extend(self.blocks[0:self.width])
 
             blocks_to_draw.extend(self.blocks[-self.width:])
+
+        elif self.object_data.orientation == DIAG_DOWN_RIGHT:
+
+            if self.object_data.ends == UNIFORM:
+                new_height = (self.length + 1) * self.height
+                new_width = (self.length + 1) * self.width
+
+                # a__  length = 2, self.height = 2, self.width = 1 [a, b]
+                # b__
+                # _a_
+                # _b_
+                # __a
+                # __b
+
+                blanks_per_line = new_width - self.width
+
+                for y in range(new_height):
+                    if blanks_per_line:
+                        left_blank = y // (blanks_per_line * self.height)
+                        right_blank = blanks_per_line - (y // (blanks_per_line * self.height))
+                    else:
+                        left_blank = right_blank = 0
+
+                    block_index = y % self.height
+
+                    offset = block_index * self.width
+                    row = left_blank * [BLANK] + self.blocks[offset:offset + self.width] + right_blank * [BLANK]
+
+                    blocks_to_draw.extend(row)
+
+            elif self.object_data.ends == END_ON_TOP_OR_LEFT:
+                new_height = (self.length + 1) * self.height
+                new_width = (self.length + 1) * (self.width - 1)  # subtract the fill block
+
+                # a___ length = 3
+                # ba__
+                # bba_
+                # bbba
+
+                fill_blocks = self.blocks[0:1]
+                slope_blocks = self.blocks[1:]
+
+                row = (new_width - len(slope_blocks)) * fill_blocks + slope_blocks + (new_width - len(slope_blocks)) * [BLANK]
+
+                for y in range(new_height):
+                    offset = len(row) - new_width - y
+                    blocks_to_draw.extend(row[offset:offset + new_width])
 
         elif self.object_data.orientation == DIAG_DOWN_LEFT:
 
