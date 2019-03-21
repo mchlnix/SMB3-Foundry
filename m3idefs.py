@@ -11,8 +11,8 @@ HORIZONTAL_2 = 7  # special case of horizontal, basically only floating boxes
 DIAG_WEIRD = 8  #
 SINGLE_BLOCK_OBJECT = 9
 CENTERED = 10  # like spinning platforms
-PYRAMID_TO_GROUND = 11
-PYRAMID_TO_NEXT = 12  # to the ground or next object
+PYRAMID_TO_GROUND = 11  # to the ground or next object
+PYRAMID_2 = 12  # doesn't exist?
 TO_THE_SKY = 13
 ENDING = 14
 
