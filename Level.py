@@ -47,7 +47,7 @@ class Level:
 
     palettes = []
 
-    def __init__(self, rom, world, level, object_set=1):
+    def __init__(self, rom, world, level, object_set=None):
         if not Level.offsets:
             Level._load_level_offsets()
 
@@ -77,8 +77,6 @@ class Level:
             14: 11,
         }
 
-        self.object_definition = object_set_to_definition[self.object_set]
-
         level_index = Level.world_indexes[world - 1] + level - 1
 
         level_data: Mario3Level = Level.offsets[level_index]
@@ -92,6 +90,8 @@ class Level:
         self.plains_level = plains_level.copy()
 
         self._parse_header(rom)
+
+        self.object_definition = object_set_to_definition[self.object_set]
 
         self.object_palette_group = Level.palettes[self.object_set][self.object_palette_index]
 
@@ -120,7 +120,7 @@ class Level:
         self.start_action = (header[7] & 0b1110_0000) >> 5
 
         # todo what is this for?
-        self.graphic_set_index = header[7] & 0x0001_1111
+        self.graphic_set_index = header[7] & 0b0001_1111
 
         self.time = Level.times[(header[8] & 0b1100_0000) >> 6]
         self.music_index = header[8] & 0b0000_1111
