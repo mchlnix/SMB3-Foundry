@@ -34,7 +34,6 @@ ENDING_OBJECT_OFFSET = 0x1C8F9
 
 class LevelObject:
     # todo better way of saving this information?
-
     ground_map = dict()
 
     def __init__(self, data, object_set, object_definitions, palette_group):
@@ -115,7 +114,7 @@ class LevelObject:
                     block_index = rom.get_byte(offset + y * page_width + x - 1)
                     blocks_to_draw[(y + 20) * new_width + x + page_limit] = block_index
 
-            # item is categorized as an enemy
+            # Mushroom/Fire flower/Star is categorized as an enemy
 
         elif self.object_data.orientation == VERTICAL:
             new_height = self.length + 1
@@ -181,16 +180,12 @@ class LevelObject:
                     blocks_to_draw.extend(bottom_row)
 
         elif self.object_data.orientation in [HORIZONTAL, HORIZ_TO_GROUND, HORIZONTAL_2]:
-            # todo horizontal 2 seems to be one shorter than normal horizontal
             new_width = self.length + 1
-
-            for x in range(new_width):
-                LevelObject.ground_map[(base_x + x, base_y)] = True
 
             if self.object_data.orientation == HORIZ_TO_GROUND:
 
                 # to the ground only, until it hits something
-                for y in range(base_y + 1, GROUND):
+                for y in range(base_y, GROUND):
                     if (base_x, y) in LevelObject.ground_map:
                         new_height = y - base_y
                         break
@@ -200,8 +195,15 @@ class LevelObject:
 
                 if self.is_single_block:
                     new_width = self.length
+
+            elif self.object_data.orientation == HORIZONTAL_2:
+                # floating platforms seem to just be on shorter for some reason
+                new_width -= 1
             else:
                 new_height = self.height
+
+            for x in range(new_width):
+                LevelObject.ground_map[(base_x + x, base_y)] = True
 
             if self.object_data.ends == UNIFORM:
                 # todo problems when 4byte object
