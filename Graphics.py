@@ -4,7 +4,7 @@ from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, 
     END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL
 
 SKY = 0
-GROUND = 26
+GROUND = 27
 
 # todo what is this, and where should we put it?
 OBJECT_SET_TO_ENDING = {
@@ -33,6 +33,10 @@ ENDING_OBJECT_OFFSET = 0x1C8F9
 
 
 class LevelObject:
+    # todo better way of saving this information?
+
+    ground_map = dict()
+
     def __init__(self, data, object_set, object_definitions, palette_group):
         self.data = data
 
@@ -54,7 +58,9 @@ class LevelObject:
 
         domain_offset = self.domain * 0x1F
 
-        if obj_index <= 0x0F:
+        self.is_single_block = obj_index <= 0x0F
+
+        if self.is_single_block:
             self.type = obj_index + domain_offset
             self.length = 1
         else:
@@ -112,6 +118,9 @@ class LevelObject:
         elif self.object_data.orientation == VERTICAL:
             calculated_height = self.length + 1
             length = self.width
+
+            for x in range(length):
+                LevelObject.ground_map[(base_x + x, base_y)] = True
 
             if self.object_data.ends == UNIFORM:
                 for _ in range(calculated_height):
@@ -173,8 +182,22 @@ class LevelObject:
             # todo horizontal 2 seems to be one shorter than normal horizontal
             length = self.length + 1
 
+            for x in range(length):
+                LevelObject.ground_map[(base_x + x, base_y)] = True
+
             if self.object_data.orientation == HORIZ_TO_GROUND:
-                calculated_height = GROUND - base_y
+
+                # to the ground only, until it hits something
+                for y in range(base_y + 1, GROUND):
+                    if (base_x, y) in LevelObject.ground_map:
+                        calculated_height = y - base_y
+                        break
+                else:
+                    # nothing underneath this object, extend to the ground
+                    calculated_height = GROUND - base_y
+
+                if self.is_single_block:
+                    length = self.length
             else:
                 calculated_height = self.height
 
@@ -182,7 +205,7 @@ class LevelObject:
                 # todo problems when 4byte object
 
                 for y in range(calculated_height):
-                    offset = y * self.width
+                    offset = (y % self.height) * self.width
 
                     for _ in range(0, length):
                         blocks_to_draw.extend(self.blocks[offset:offset + self.width])

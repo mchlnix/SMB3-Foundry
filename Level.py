@@ -2,7 +2,7 @@ import wx
 
 from Data import Mario3Level, object_set_pointers, plains_level, NESPalette, object_sets
 from File import ROM
-from Graphics import FourByteObject, ThreeByteObject
+from Graphics import FourByteObject, ThreeByteObject, LevelObject
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
@@ -169,6 +169,8 @@ class Level:
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
 
         dc.Clear()
+
+        LevelObject.ground_map = dict()
 
         for level_object in self.objects:
             level_object.draw(dc)
