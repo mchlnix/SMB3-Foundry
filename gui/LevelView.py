@@ -25,7 +25,7 @@ class LevelView(wx.Panel):
     def on_paint(self, event):
         event.Skip()
 
-        dc = wx.AutoBufferedPaintDC(self)
+        dc = wx.BufferedPaintDC(self)
 
         if hasattr(self, "level"):
             self.level.draw(dc)

@@ -131,7 +131,7 @@ class SpriteBank(wx.Panel):
     def on_paint(self, event):
         event.Skip()
 
-        dc = wx.AutoBufferedPaintDC(self)
+        dc = wx.BufferedPaintDC(self)
 
         bg_color = NESPalette[Level.palettes[self.object_set][0][0][0]]
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))

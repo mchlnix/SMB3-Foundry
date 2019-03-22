@@ -164,7 +164,7 @@ class Level:
             if rom.peek_byte() == 0xFF:
                 break
 
-    def draw(self, dc: wx.AutoBufferedPaintDC):
+    def draw(self, dc):
         bg_color = NESPalette[self.object_palette_group[0][0]]
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
 
