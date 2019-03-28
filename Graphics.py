@@ -160,21 +160,21 @@ class LevelObject:
                     blocks_to_draw.extend(row)
 
             elif self.object_data.ends == END_ON_TOP_OR_LEFT:
+                fill_blocks = self.blocks[0:1]
+                slope_blocks = self.blocks[1:]
+
                 new_height = (self.length + 1) * self.height
-                new_width = (self.length + 1) * (self.width - 1)  # subtract the fill block
+                new_width = (self.length + 1) * len(slope_blocks)
 
                 # a___ length = 3
                 # ba__
                 # bba_
                 # bbba
 
-                fill_blocks = self.blocks[0:1]
-                slope_blocks = self.blocks[1:]
-
                 row = (new_width - len(slope_blocks)) * fill_blocks + slope_blocks + (new_width - len(slope_blocks)) * [BLANK]
 
                 for y in range(new_height):
-                    offset = len(row) - new_width - y
+                    offset = len(row) - new_width - len(slope_blocks) * y
                     blocks_to_draw.extend(row[offset:offset + new_width])
 
         elif self.object_data.orientation == DIAG_DOWN_LEFT:
