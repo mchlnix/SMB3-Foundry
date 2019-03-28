@@ -2,7 +2,7 @@ from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
     END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL, PYRAMID_TO_GROUND, PYRAMID_2, DIAG_DOWN_LEFT, \
-    DIAG_DOWN_RIGHT
+    DIAG_DOWN_RIGHT, DIAG_UP_RIGHT
 
 SKY = 0
 GROUND = 27
@@ -97,6 +97,38 @@ class LevelObject:
                 blocks_to_draw.extend(self.blocks[0:self.width])
 
             blocks_to_draw.extend(self.blocks[-self.width:])
+
+        elif self.object_data.orientation == DIAG_UP_RIGHT:
+            new_height = self.height + self.length
+            new_width = self.width + self.length
+
+            base_y -= (new_height - 1)
+
+            if self.object_data.ends == UNIFORM:
+                blanks_per_line = new_width - self.width
+
+                # __a  length = 2, self.height = 2, self.width = 1 [a, b]
+                # __b
+                # _a_
+                # _b_
+                # a__
+                # b__
+
+                for y in range(new_height):
+                    if blanks_per_line:
+                        left_blank = blanks_per_line - (y // self.height)
+                        right_blank = y // self.height
+                    else:
+                        left_blank = right_blank = 0
+
+                    block_index = y % self.height
+
+                    offset = block_index * self.width
+                    row = left_blank * [BLANK] + self.blocks[offset:offset + self.width] + right_blank * [BLANK]
+
+                    blocks_to_draw.extend(row)
+            else:
+                breakpoint()
 
         elif self.object_data.orientation == DIAG_DOWN_RIGHT:
 
