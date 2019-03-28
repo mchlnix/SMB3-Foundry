@@ -147,8 +147,8 @@ class LevelObject:
 
                 for y in range(new_height):
                     if blanks_per_line:
-                        left_blank = y // (blanks_per_line * self.height)
-                        right_blank = blanks_per_line - (y // (blanks_per_line * self.height))
+                        left_blank = y // self.height
+                        right_blank = blanks_per_line - (y // self.height)
                     else:
                         left_blank = right_blank = 0
 
