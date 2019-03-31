@@ -7,6 +7,8 @@ from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, 
 SKY = 0
 GROUND = 27
 
+# todo ground mapping when the objects are actually drawing, rather then when they are created?
+
 # todo what is this, and where should we put it?
 OBJECT_SET_TO_ENDING = {
     0: 0,
@@ -69,6 +71,8 @@ class LevelObject:
         else:
             self.length = obj_index & 0b0000_1111
             self.type = (obj_index >> 4) + domain_offset + 16 - 1
+
+        self.secondary_length = 0
 
         self.object_data = object_definitions[self.type]
 
@@ -303,11 +307,9 @@ class LevelObject:
                 # floating platforms seem to just be on shorter for some reason
                 new_width -= 1
             else:
-                new_height = self.height
+                new_height = self.height + self.secondary_length
 
-            if self.object_data.ends == UNIFORM:
-                # todo problems when 4byte object
-
+            if self.object_data.ends == UNIFORM and not self.secondary_length:
                 for y in range(new_height):
                     offset = (y % self.height) * self.width
 
@@ -316,6 +318,18 @@ class LevelObject:
 
                 # in case of giant blocks
                 new_width *= self.width
+
+            elif self.object_data.ends == UNIFORM and self.secondary_length:
+                # 4 byte objects
+                top = self.blocks[0:1]
+                bottom = self.blocks[-1:]
+
+                new_height = self.height + self.secondary_length
+
+                blocks_to_draw.extend(new_width * top)
+
+                for _ in range(1, new_height):
+                    blocks_to_draw.extend(new_width * bottom)
 
             elif self.object_data.ends == END_ON_TOP_OR_LEFT:
                 for y in range(new_height):
@@ -405,6 +419,7 @@ class FourByteObject(LevelObject):
         super(FourByteObject, self).__init__(data, object_set, object_definitions, palette_group)
 
         # some objects have variable lengths (ground tiles)
+        self.secondary_length = self.length
         self.length = data[3]
 
 
