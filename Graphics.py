@@ -2,7 +2,7 @@ from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
     END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL, DIAG_DOWN_LEFT, \
-    DIAG_DOWN_RIGHT, DIAG_UP_RIGHT
+    DIAG_DOWN_RIGHT, DIAG_UP_RIGHT, PYRAMID_TO_GROUND, PYRAMID_2
 
 SKY = 0
 GROUND = 27
@@ -159,6 +159,43 @@ class LevelObject:
 
             for row in rows:
                 blocks_to_draw.extend(row)
+
+        elif self.object_data.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
+            # since pyramids grow horizontally in both directions when extending
+            # we need to check for new ground every time it grows
+
+            base_x += 1  # set the new base_x to the tip of the pyramid
+
+            lowest_y = GROUND
+
+            for y in range(base_y, GROUND):
+                x = base_x - (y - base_y)
+
+                if (x, y) in LevelObject.ground_map:
+                    lowest_y = y
+                    break
+
+            new_height = lowest_y - base_y
+            new_width = 2 * new_height
+            base_x = base_x - (new_width / 2)
+
+            # todo indexes work for all objects?
+            blank = self.blocks[0]
+            left_slope = self.blocks[1]
+            middle = self.blocks[2]
+            right_slope = self.blocks[4]
+
+            for y in range(new_height):
+                blank_blocks = (new_width // 2) - (y + 1)
+                middle_blocks = y * 2
+
+                blocks_to_draw.extend(blank_blocks * [blank])
+
+                blocks_to_draw.append(left_slope)
+                blocks_to_draw.extend(middle_blocks * [middle])
+                blocks_to_draw.append(right_slope)
+
+                blocks_to_draw.extend(blank_blocks * [blank])
 
         elif self.object_data.orientation == ENDING:
             page_width = 16
