@@ -1,7 +1,7 @@
 from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
-    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL, PYRAMID_TO_GROUND, PYRAMID_2, DIAG_DOWN_LEFT, \
+    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL, DIAG_DOWN_LEFT, \
     DIAG_DOWN_RIGHT, DIAG_UP_RIGHT
 
 SKY = 0
@@ -98,195 +98,67 @@ class LevelObject:
 
             blocks_to_draw.extend(self.blocks[-self.width:])
 
-        elif self.object_data.orientation == DIAG_UP_RIGHT:
-            new_height = self.height + self.length
-            new_width = self.width + self.length
-
-            base_y -= (new_height - 1)
-
-            if self.object_data.ends == UNIFORM:
-                blanks_per_line = new_width - self.width
-
-                # __a  length = 2, self.height = 2, self.width = 1 [a, b]
-                # __b
-                # _a_
-                # _b_
-                # a__
-                # b__
-
-                for y in range(new_height):
-                    if blanks_per_line:
-                        left_blank = blanks_per_line - (y // self.height)
-                        right_blank = y // self.height
-                    else:
-                        left_blank = right_blank = 0
-
-                    block_index = y % self.height
-
-                    offset = block_index * self.width
-                    row = left_blank * [BLANK] + self.blocks[offset:offset + self.width] + right_blank * [BLANK]
-
-                    blocks_to_draw.extend(row)
-            else:
-                breakpoint()
-
-        elif self.object_data.orientation == DIAG_DOWN_RIGHT:
-
+        elif self.object_data.orientation in [DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
             if self.object_data.ends == UNIFORM:
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * self.width
 
-                # a__  length = 2, self.height = 2, self.width = 1 [a, b]
-                # b__
-                # _a_
-                # _b_
-                # __a
-                # __b
-
-                blanks_per_line = new_width - self.width
-
-                for y in range(new_height):
-                    if blanks_per_line:
-                        left_blank = y // self.height
-                        right_blank = blanks_per_line - (y // self.height)
-                    else:
-                        left_blank = right_blank = 0
-
-                    block_index = y % self.height
-
-                    offset = block_index * self.width
-                    row = left_blank * [BLANK] + self.blocks[offset:offset + self.width] + right_blank * [BLANK]
-
-                    blocks_to_draw.extend(row)
-
-            elif self.object_data.ends == END_ON_TOP_OR_LEFT:
-                fill_blocks = self.blocks[0:1]
-                slope_blocks = self.blocks[1:]
-
-                new_height = (self.length + 1) * self.height
-                new_width = (self.length + 1) * len(slope_blocks)
-
-                # a___ length = 3
-                # ba__
-                # bba_
-                # bbba
-
-                row = (new_width - len(slope_blocks)) * fill_blocks + slope_blocks + (new_width - len(slope_blocks)) * [BLANK]
-
-                for y in range(new_height):
-                    offset = len(row) - new_width - len(slope_blocks) * y
-                    blocks_to_draw.extend(row[offset:offset + new_width])
-
-        elif self.object_data.orientation == DIAG_DOWN_LEFT:
-
-            if self.object_data.ends == UNIFORM:
-                new_height = (self.length + 1) * self.height
-                new_width = (self.length + 1) * self.width
-
-                base_x = base_x - (new_width - self.width)
-
-                # __a  length = 2, self.height = 2, self.width = 1 [a, b]
-                # __b
-                # _a_
-                # _b_
-                # a__
-                # b__
-
-                blanks_per_line = new_width - self.width
-
-                for y in range(new_height):
-                    left_blank = blanks_per_line - (y // (blanks_per_line * self.height))
-                    right_blank = y // (blanks_per_line * self.height)
-
-                    block_index = y % self.height
-
-                    offset = block_index * self.width
-                    row = left_blank * [BLANK] + self.blocks[offset:offset + self.width] + right_blank * [BLANK]
-
-                    blocks_to_draw.extend(row)
+                left = [BLANK]
+                right = [BLANK]
+                slopes = self.blocks
 
             elif self.object_data.ends == END_ON_TOP_OR_LEFT:
                 new_height = (self.length + 1) * self.height
-                new_width = (self.length + 1) * (self.width - 1)  # subtract the fill block
+                new_width = (self.length + 1) * (self.width - 1)  # without fill block
 
-                base_x = base_x - (new_width - (self.width - 1))
+                if self.object_data.orientation in [DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
+                    fill_block = self.blocks[0:1]
+                    slopes = self.blocks[1:]
 
-                # ___a length = 3
-                # __ab
-                # _abb
-                # abbb
+                    left = fill_block
+                    right = [BLANK]
+                else:
+                    fill_block = self.blocks[-1:]
+                    slopes = self.blocks[0:-1]
 
-                slope_blocks = self.blocks[0:-1]
-                fill_blocks = self.blocks[-1]
-
-                for y in range(new_height):
-                    fill = y * len(slope_blocks)
-                    slope = len(slope_blocks)
-                    blank = (new_width - slope - fill)
-
-                    row = blank * [BLANK] + slope_blocks + fill * [fill_blocks]
-
-                    blocks_to_draw.extend(row)
-
-            elif self.object_data.ends == END_ON_BOTTOM_OR_RIGHT:
-                # todo works?
-                breakpoint()
-                # ___a length = 3, self.height = 2, self.width = 1
-                # __ab
-                # _ab_
-                # ab__
-                # b___
-
-                new_height = self.height * self.length - 1
-                new_width = self.length + self.height
-
-                blank_blocks = [BLANK] * (new_width - self.width)
-
-                row = blank_blocks + self.blocks + blank_blocks
-
-                for y in range(new_height):
-                    offset = y
-
-                    blocks_to_draw.extend(row[offset:offset + new_width])
+                    left = [BLANK]
+                    right = fill_block
             else:
+                # todo other two ends not used with diagonals?
                 breakpoint()
+                return
 
-        elif self.object_data.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
-            # since pyramids grow horizontally in both directions when extending
-            # we need to check for new ground every time it grows
+            rows = []
 
-            base_x += 1  # set the new base_x to the tip of the pyramid
-
-            lowest_y = GROUND
-
-            for y in range(base_y, GROUND):
-                x = base_x - (y - base_y)
-
-                if (x, y) in LevelObject.ground_map:
-                    lowest_y = y
-                    break
-
-            new_height = lowest_y - base_y
-            new_width = 2 * new_height
-            base_x = base_x - (new_width / 2)
-
-            # todo indexes work for all objects?
-            blank = self.blocks[0]
-            left_slope = self.blocks[1]
-            middle = self.blocks[2]
-            right_slope = self.blocks[4]
+            if self.height > self.width:
+                slope_width = self.width
+            else:
+                slope_width = len(slopes)
 
             for y in range(new_height):
-                blank_blocks = (new_width // 2) - (y + 1)
-                middle_blocks = y * 2
+                r = (y // self.height) * slope_width
+                l = new_width - slope_width - r
 
-                blocks_to_draw.extend(blank_blocks * [blank])
+                offset = y % self.height
 
-                blocks_to_draw.append(left_slope)
-                blocks_to_draw.extend(middle_blocks * [middle])
-                blocks_to_draw.append(right_slope)
+                rows.append(l * left + slopes[offset:offset + slope_width] + r * right)
 
-                blocks_to_draw.extend(blank_blocks * [blank])
+            if self.object_data.orientation in [DIAG_UP_RIGHT]:
+                for row in rows:
+                    row.reverse()
+
+            if self.object_data.orientation in [DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
+                if not self.height > self.width:  # special case for 60 degree platform wire down right
+                    rows.reverse()
+
+            if self.object_data.orientation in [DIAG_UP_RIGHT]:
+                base_y -= (new_height - 1)
+
+            if self.object_data.orientation in [DIAG_DOWN_LEFT]:
+                base_x -= (new_width - slope_width)
+
+            for row in rows:
+                blocks_to_draw.extend(row)
 
         elif self.object_data.orientation == ENDING:
             page_width = 16
