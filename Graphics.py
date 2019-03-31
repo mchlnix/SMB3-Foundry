@@ -269,14 +269,13 @@ class LevelObject:
                     blocks_to_draw.extend(self.blocks[offset:offset + self.width])
 
             elif self.object_data.ends == TWO_ENDS:
-                # todo does such an object exist?
-                breakpoint()
+                # object exists on ships
                 top_row = self.blocks[0:self.width]
                 bottom_row = self.blocks[-self.width:]
 
                 blocks_to_draw.extend(top_row)
 
-                additional_rows = new_height - self.height
+                additional_rows = new_height - 2
 
                 # repeat second to last row
                 if additional_rows > 0:
