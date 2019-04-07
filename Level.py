@@ -9,7 +9,7 @@ LEVEL_POINTER_OFFSET = 0x10010  # also no idea
 
 TIME_INF = -1
 
-OBJECT_SET_COUNT = 15
+OBJECT_SET_COUNT = 16
 OVERWORLD_OBJECT_SET = 14
 
 MAP_PALETTE_ADDRESS = 0x36BE2
@@ -154,10 +154,10 @@ class Level:
             if has_length:
                 obj_data.append(rom.get_byte())
                 level_object = FourByteObject(obj_data, self.object_set, self.plains_level[self.object_definition],
-                                              self.object_palette_group)
+                                              self.object_palette_group, self.graphic_offset)
             else:
                 level_object = ThreeByteObject(obj_data, self.object_set, self.plains_level[self.object_definition],
-                                               self.object_palette_group)
+                                               self.object_palette_group, self.graphic_offset)
 
             self.objects.append(level_object)
 

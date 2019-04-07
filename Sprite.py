@@ -10,7 +10,7 @@ TSA_BANK_1 = 1 * 256
 TSA_BANK_2 = 2 * 256
 TSA_BANK_3 = 3 * 256
 
-OBJECT_SET_COUNT = 15
+OBJECT_SET_COUNT = 16
 OBJECTS_PER_SET = 128
 
 BACKGROUND_COLOR_INDEX = 0
@@ -25,12 +25,18 @@ class Tile:
     PIXEL_COUNT = WIDTH * HEIGHT
     SIZE = int(PIXEL_COUNT * 2 / 8)   # 1 pixel is defined by 2 bits
 
-    def __init__(self, rom, object_set, object_index, palette_group, palette_index):
+    def __init__(self, rom, object_set, object_index, palette_group, palette_index, graphis_offset=None, common_offset=None):
+        if graphis_offset is None:
+            graphis_offset = graphics_offsets[object_set]
+
+        if common_offset is None:
+            common_offset = common_offsets[object_set]
+
         if object_index < OBJECTS_PER_SET:
-            self.start = graphics_offsets[object_set] + object_index * Tile.SIZE
+            self.start = graphis_offset + object_index * Tile.SIZE
         else:
             common_index = object_index - OBJECTS_PER_SET
-            self.start = common_offsets[object_set] + common_index * Tile.SIZE
+            self.start = common_offset + common_index * Tile.SIZE
 
         self.cached_tiles = dict()
 
@@ -99,7 +105,7 @@ class Block:
 
     tsa_data = []
 
-    def __init__(self, rom, object_set, block_index, palette_group):
+    def __init__(self, rom, object_set, block_index, palette_group, graphic_offset=None, common_offset=None):
         if not Block.tsa_data:
             for os in range(OBJECT_SET_COUNT):
                 Block.tsa_data.append(load_tsa_data(rom, os))
@@ -113,13 +119,13 @@ class Block:
         ru = tsa_data[TSA_BANK_2 + block_index]
         rd = tsa_data[TSA_BANK_3 + block_index]
 
-        self.lu_tile = Tile(rom, object_set, lu, palette_group, palette_index)
+        self.lu_tile = Tile(rom, object_set, lu, palette_group, palette_index, graphic_offset, common_offset)
 
-        self.ru_tile = Tile(rom, object_set, ru, palette_group, palette_index)
+        self.ru_tile = Tile(rom, object_set, ru, palette_group, palette_index, graphic_offset, common_offset)
 
-        self.ld_tile = Tile(rom, object_set, ld, palette_group, palette_index)
+        self.ld_tile = Tile(rom, object_set, ld, palette_group, palette_index, graphic_offset, common_offset)
 
-        self.rd_tile = Tile(rom, object_set, rd, palette_group, palette_index)
+        self.rd_tile = Tile(rom, object_set, rd, palette_group, palette_index, graphic_offset, common_offset)
 
     def draw(self, dc, x, y, zoom=2):
         dc.DrawBitmap(self.lu_tile.as_bitmap(zoom), x, y, useMask=True)

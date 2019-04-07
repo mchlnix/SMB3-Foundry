@@ -42,7 +42,10 @@ class LevelObject:
     # todo better way of saving this information?
     ground_map = dict()
 
-    def __init__(self, data, object_set, object_definitions, palette_group):
+    def __init__(self, data, object_set, object_definitions, palette_group, graphic_offset=None, common_offset=None):
+        self.graphic_offset = graphic_offset
+        self.common_offset = common_offset
+
         self.data = data
 
         self.object_set = object_set
@@ -412,9 +415,9 @@ class LevelObject:
         if block_index not in self.block_cache:
             if block_index > 0xFF:
                 rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
-                block = Block(ROM(), self.object_set, rom_block_index, self.palette_group)
+                block = Block(ROM(), self.object_set, rom_block_index, self.palette_group, self.graphic_offset, self.common_offset)
             else:
-                block = Block(ROM(), self.object_set, block_index, self.palette_group)
+                block = Block(ROM(), self.object_set, block_index, self.palette_group, self.graphic_offset, self.common_offset)
 
             self.block_cache[block_index] = block
 
@@ -422,13 +425,13 @@ class LevelObject:
 
 
 class ThreeByteObject(LevelObject):
-    def __init__(self, data, object_set, object_definitions, palette_group):
-        super(ThreeByteObject, self).__init__(data, object_set, object_definitions, palette_group)
+    def __init__(self, data, object_set, object_definitions, palette_group, graphic_offset=None, common_offset=None):
+        super(ThreeByteObject, self).__init__(data, object_set, object_definitions, palette_group, graphic_offset, common_offset)
 
 
 class FourByteObject(LevelObject):
-    def __init__(self, data, object_set, object_definitions, palette_group):
-        super(FourByteObject, self).__init__(data, object_set, object_definitions, palette_group)
+    def __init__(self, data, object_set, object_definitions, palette_group, graphic_offset=None, common_offset=None):
+        super(FourByteObject, self).__init__(data, object_set, object_definitions, palette_group, graphic_offset, common_offset)
 
         # some objects have variable lengths (ground tiles)
         self.secondary_length = self.length
