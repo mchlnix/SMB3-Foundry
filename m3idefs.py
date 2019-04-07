@@ -7,7 +7,7 @@ DESERT_PIPE_BOX = 3
 DIAG_DOWN_RIGHT = 4
 DIAG_UP_RIGHT = 5
 HORIZ_TO_GROUND = 6
-HORIZONTAL_2 = 7  # special case of horizontal, basically only floating boxes
+HORIZONTAL_2 = 7  # special case of horizontal, floating boxes, ceilings
 DIAG_WEIRD = 8  #
 SINGLE_BLOCK_OBJECT = 9
 CENTERED = 10  # like spinning platforms
@@ -27,13 +27,13 @@ class ObjectDefinition:
         string = string.rstrip().replace("<", "").replace(">", "")
 
         self.object_domain, self.min_value, self.max_value, self.bmp_width, self.bmp_height, *self.object_design, \
-            self.orientation, self.ends, self.obj_flag, self.object_description = string.split(",")
+        self.orientation, self.ends, self.is_4byte, self.object_description = string.split(",")
 
         self.bmp_width = int(self.bmp_width)
         self.bmp_height = int(self.bmp_height)
         self.orientation = int(self.orientation)
         self.ends = int(self.ends)
-        self.obj_flag = int(self.obj_flag)
+        self.is_4byte = bool(int(self.is_4byte))
 
         self.object_design2 = []
         self.rom_object_design = []

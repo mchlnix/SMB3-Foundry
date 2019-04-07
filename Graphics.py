@@ -311,13 +311,13 @@ class LevelObject:
                 if self.is_single_block:
                     new_width = self.length
 
-            elif self.object_data.orientation == HORIZONTAL_2:
-                # floating platforms seem to just be on shorter for some reason
+            elif self.object_data.orientation == HORIZONTAL_2 and self.object_data.ends == TWO_ENDS:
+                # floating platforms seem to just be one shorter for some reason
                 new_width -= 1
             else:
                 new_height = self.height + self.secondary_length
 
-            if self.object_data.ends == UNIFORM and not self.secondary_length:
+            if self.object_data.ends == UNIFORM and not self.object_data.is_4byte:
                 for y in range(new_height):
                     offset = (y % self.height) * self.width
 
@@ -327,12 +327,16 @@ class LevelObject:
                 # in case of giant blocks
                 new_width *= self.width
 
-            elif self.object_data.ends == UNIFORM and self.secondary_length:
+            elif self.object_data.ends == UNIFORM and self.object_data.is_4byte:
                 # 4 byte objects
                 top = self.blocks[0:1]
                 bottom = self.blocks[-1:]
 
                 new_height = self.height + self.secondary_length
+
+                # ceilings are one shorter than normal
+                if self.height > self.width:
+                    new_height -= 1
 
                 blocks_to_draw.extend(new_width * top)
 
