@@ -127,9 +127,18 @@ class LevelObject:
 
                     left = [BLANK]
                     right = fill_block
+            elif self.object_data.ends == END_ON_BOTTOM_OR_RIGHT:
+                new_height = (self.length + 1) * self.height
+                new_width = (self.length + 1) * (self.width - 1)  # without fill block
+
+                fill_block = self.blocks[1:]
+                slopes = self.blocks[0:1]
+
+                left = [BLANK]
+                right = fill_block
             else:
                 # todo other two ends not used with diagonals?
-                breakpoint()
+                print(self.object_data.object_description)
                 return
 
             rows = []
