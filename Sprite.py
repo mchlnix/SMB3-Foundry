@@ -23,7 +23,7 @@ class Tile:
     HEIGHT = 8  # pixel
 
     PIXEL_COUNT = WIDTH * HEIGHT
-    SIZE = int(PIXEL_COUNT * 2 / 8)   # 1 pixel is defined by 2 bits
+    SIZE = 2 * PIXEL_COUNT // 8   # 1 pixel is defined by 2 bits
 
     def __init__(self, rom, object_set, object_index, palette_group, palette_index, graphis_offset=None, common_offset=None):
         if graphis_offset is None:
@@ -77,7 +77,7 @@ class Tile:
 
         assert len(self.pixels) == 3 * Tile.PIXEL_COUNT
 
-    def as_bitmap(self, zoom=1):
+    def as_image(self, zoom=1):
         if zoom not in self.cached_tiles.keys():
             width = Tile.WIDTH * zoom
             height = Tile.HEIGHT * zoom
@@ -92,9 +92,12 @@ class Tile:
 
             image.Rescale(width, height)
 
-            self.cached_tiles[zoom] = image.ConvertToBitmap()
+            self.cached_tiles[zoom] = image
 
         return self.cached_tiles[zoom]
+
+    def as_bitmap(self, zoom=1):
+        return self.as_image(zoom).ConvertToBitmap()
 
 
 class Block:
