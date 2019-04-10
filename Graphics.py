@@ -87,7 +87,9 @@ class LevelObject:
 
         self.block_cache = {}
 
-    def draw(self, dc):
+        self._render()
+
+    def _render(self):
         base_x = self.x_position
         base_y = self.y_position
 
@@ -142,6 +144,7 @@ class LevelObject:
             else:
                 # todo other two ends not used with diagonals?
                 print(self.object_data.object_description)
+                self.rendered_blocks = []
                 return
 
             rows = []
@@ -395,19 +398,24 @@ class LevelObject:
 
             for x in range(new_width):
                 LevelObject.ground_map[(base_x + x, base_y)] = True
+
+        # for not yet implemented objects
+        if blocks_to_draw:
+            self.rendered_blocks = blocks_to_draw
         else:
-            for index, block_index in enumerate(self.blocks):
-                x = base_x + (index % self.width)
-                y = base_y + (index // self.width)
+            self.rendered_blocks = self.blocks
 
-                self._draw_block(dc, block_index, x, y)
+        self.rendered_width = new_width
+        self.rendered_base_x = base_x
+        self.rendered_base_y = base_y
 
-        for index, block_index in enumerate(blocks_to_draw):
+    def draw(self, dc):
+        for index, block_index in enumerate(self.rendered_blocks):
             if block_index == BLANK:
                 continue
 
-            x = base_x + index % new_width
-            y = base_y + index // new_width
+            x = self.rendered_base_x + index % self.rendered_width
+            y = self.rendered_base_y + index // self.rendered_width
 
             self._draw_block(dc, block_index, x, y)
 

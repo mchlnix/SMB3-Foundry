@@ -130,8 +130,19 @@ class Block:
 
         self.rd_tile = Tile(rom, object_set, rd, palette_group, palette_index, graphic_offset, common_offset)
 
-    def draw(self, dc, x, y, zoom=2):
-        dc.DrawBitmap(self.lu_tile.as_bitmap(zoom), x, y, useMask=True)
-        dc.DrawBitmap(self.ru_tile.as_bitmap(zoom), x + zoom * Tile.WIDTH, y, useMask=True)
-        dc.DrawBitmap(self.ld_tile.as_bitmap(zoom), x, y + zoom * Tile.HEIGHT, useMask=True)
-        dc.DrawBitmap(self.rd_tile.as_bitmap(zoom), x + zoom * Tile.WIDTH, y + zoom * Tile.HEIGHT, useMask=True)
+        self.image = wx.Image(Block.WIDTH, Block.HEIGHT)
+        self.image.SetMask(True)
+
+        self.image.Paste(self.lu_tile.as_image(), 0, 0)
+        self.image.Paste(self.ru_tile.as_image(), Tile.WIDTH, 0)
+        self.image.Paste(self.ld_tile.as_image(), 0, Tile.HEIGHT)
+        self.image.Paste(self.rd_tile.as_image(), Tile.WIDTH, Tile.HEIGHT)
+
+    def draw(self, dc, x, y, zoom=1):
+        if zoom > 1:
+            image = self.image.Copy()
+            image.Rescale(Block.WIDTH * zoom, Block.HEIGHT * zoom)
+        else:
+            image = self.image
+
+        dc.DrawBitmap(image.ConvertToBitmap(), x, y, useMask=True)
