@@ -166,6 +166,9 @@ class SMB3Foundry(wx.Frame):
         self.rom = ROM("SMB3.nes")
 
         self.sprite_viewer = SpriteViewer(rom=ROM("SMB3.nes"), parent=self)
+
+        horiz_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
         self.level_selector = LevelSelector(parent=self)
 
         self.scroll_panel = wx.lib.scrolledpanel.ScrolledPanel(self)
@@ -177,6 +180,16 @@ class SMB3Foundry(wx.Frame):
         sizer.Add(self.levelview)
 
         self.scroll_panel.SetSizer(sizer)
+
+        self.object_list = wx.ListBox(self)
+        self.object_list.SetItems([object.object_data.object_description for object in self.levelview.level.objects])
+
+        horiz_sizer.Add(self.scroll_panel, proportion=10, flag=wx.EXPAND)
+        horiz_sizer.Add(self.object_list, proportion=1, flag=wx.EXPAND)
+
+        self.SetSizer(horiz_sizer)
+
+        self.Bind(wx.EVT_LISTBOX, self.select_object)
 
     def open_level_selector(self, _):
         self.level_selector.Show()
@@ -192,6 +205,18 @@ class SMB3Foundry(wx.Frame):
 
         self.levelview.Destroy()
         self.levelview = new
+
+        self.object_list.SetItems([obj.object_data.object_description for obj in self.levelview.level.objects])
+
+    def select_object(self, _):
+        index = self.object_list.GetSelection()
+
+        for obj in self.levelview.level.objects:
+            obj.selected = False
+
+        self.levelview.level.objects[index].selected = True
+
+        self.levelview.Refresh()
 
     def on_exit(self, _):
         self.Close(True)

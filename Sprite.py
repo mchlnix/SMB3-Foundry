@@ -128,11 +128,15 @@ class Block:
 
         self.image.SetMaskColour(*MASK_COLOR)
 
-    def draw(self, dc, x, y, zoom=1):
+    def draw(self, dc, x, y, zoom=1, selected=False):
         if zoom > 1:
             image = self.image.Copy()
             image.Rescale(Block.WIDTH * zoom, Block.HEIGHT * zoom)
         else:
             image = self.image
+
+        # todo better effect
+        if selected:
+            image = image.ConvertToDisabled(127)
 
         dc.DrawBitmap(image.ConvertToBitmap(), x, y, useMask=True)

@@ -93,6 +93,8 @@ class LevelObject:
 
         self._render()
 
+        self.selected = False
+
     def _render(self):
         base_x = self.x_position
         base_y = self.y_position
@@ -433,7 +435,7 @@ class LevelObject:
 
             self.block_cache[block_index] = block
 
-        self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1)
+        self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1, selected=self.selected)
 
 
 class EnemyObject:
