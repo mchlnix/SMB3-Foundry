@@ -2,7 +2,7 @@ import wx
 
 from Data import Mario3Level, object_set_pointers, plains_level, NESPalette, object_sets
 from File import ROM
-from Graphics import FourByteObject, ThreeByteObject, LevelObject
+from Graphics import LevelObject
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
@@ -183,11 +183,8 @@ class Level:
 
             if has_length:
                 obj_data.append(rom.get_byte())
-                level_object = FourByteObject(obj_data, self.object_set, self.plains_level[self.object_definition],
-                                              self.object_palette_group, self.graphic_offset)
-            else:
-                level_object = ThreeByteObject(obj_data, self.object_set, self.plains_level[self.object_definition],
-                                               self.object_palette_group, self.graphic_offset)
+            level_object = LevelObject(obj_data, self.object_set, self.plains_level[self.object_definition],
+                                       self.object_palette_group, self.graphic_offset)
 
             self.objects.append(level_object)
 

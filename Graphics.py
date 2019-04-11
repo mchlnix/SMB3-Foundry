@@ -87,6 +87,10 @@ class LevelObject:
 
         self.block_cache = {}
 
+        if len(data) == 4:
+            self.secondary_length = self.length
+            self.length = data[3]
+
         self._render()
 
     def _render(self):
@@ -399,7 +403,7 @@ class LevelObject:
             for x in range(new_width):
                 LevelObject.ground_map[(base_x + x, base_y)] = True
 
-        # for not yet implemented objects
+        # for not yet implemented objects and single block objects
         if blocks_to_draw:
             self.rendered_blocks = blocks_to_draw
         else:
@@ -430,20 +434,6 @@ class LevelObject:
             self.block_cache[block_index] = block
 
         self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1)
-
-
-class ThreeByteObject(LevelObject):
-    def __init__(self, data, object_set, object_definitions, palette_group, graphic_offset=None, common_offset=None):
-        super(ThreeByteObject, self).__init__(data, object_set, object_definitions, palette_group, graphic_offset, common_offset)
-
-
-class FourByteObject(LevelObject):
-    def __init__(self, data, object_set, object_definitions, palette_group, graphic_offset=None, common_offset=None):
-        super(FourByteObject, self).__init__(data, object_set, object_definitions, palette_group, graphic_offset, common_offset)
-
-        # some objects have variable lengths (ground tiles)
-        self.secondary_length = self.length
-        self.length = data[3]
 
 
 class EnemyObject:

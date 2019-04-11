@@ -14,8 +14,7 @@ OBJECT_SET_COUNT = 16
 OBJECTS_PER_SET = 128
 
 BACKGROUND_COLOR_INDEX = 0
-MASK_COLOR_VISIBLE = [0xFF] * 3
-MASK_COLOR_HIDDEN = [0x00] * 3
+MASK_COLOR = [0xFF, 0x00, 0xFF]
 
 
 class Tile:
@@ -69,11 +68,9 @@ class Tile:
 
             # add alpha values
             if color_index == BACKGROUND_COLOR_INDEX:
-                self.mask_pixels.extend(MASK_COLOR_HIDDEN)
+                self.pixels.extend(MASK_COLOR)
             else:
-                self.mask_pixels.extend(MASK_COLOR_VISIBLE)
-
-            self.pixels.extend(NESPalette[color])
+                self.pixels.extend(NESPalette[color])
 
         assert len(self.pixels) == 3 * Tile.PIXEL_COUNT
 
@@ -84,11 +81,6 @@ class Tile:
 
             image = wx.Image()
             image.Create(Tile.WIDTH, Tile.HEIGHT, self.pixels)
-
-            mask = wx.Image()
-            mask.Create(Tile.WIDTH, Tile.HEIGHT, self.mask_pixels)
-
-            image.SetMaskFromImage(mask, *MASK_COLOR_HIDDEN)
 
             image.Rescale(width, height)
 
@@ -123,20 +115,18 @@ class Block:
         rd = tsa_data[TSA_BANK_3 + block_index]
 
         self.lu_tile = Tile(rom, object_set, lu, palette_group, palette_index, graphic_offset, common_offset)
-
         self.ru_tile = Tile(rom, object_set, ru, palette_group, palette_index, graphic_offset, common_offset)
-
         self.ld_tile = Tile(rom, object_set, ld, palette_group, palette_index, graphic_offset, common_offset)
-
         self.rd_tile = Tile(rom, object_set, rd, palette_group, palette_index, graphic_offset, common_offset)
 
         self.image = wx.Image(Block.WIDTH, Block.HEIGHT)
-        self.image.SetMask(True)
 
         self.image.Paste(self.lu_tile.as_image(), 0, 0)
         self.image.Paste(self.ru_tile.as_image(), Tile.WIDTH, 0)
         self.image.Paste(self.ld_tile.as_image(), 0, Tile.HEIGHT)
         self.image.Paste(self.rd_tile.as_image(), Tile.WIDTH, Tile.HEIGHT)
+
+        self.image.SetMaskColour(*MASK_COLOR)
 
     def draw(self, dc, x, y, zoom=1):
         if zoom > 1:
