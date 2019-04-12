@@ -2,6 +2,7 @@ import wx
 import wx.lib.scrolledpanel
 
 from File import ROM
+from Graphics import LevelObject
 from LevelSelector import LevelSelector
 from LevelView import LevelView
 from SpriteViewer import SpriteViewer
@@ -63,6 +64,10 @@ ID_TROUBLESHOOTING = 602
 ID_PROGRAM_WEBSITE = 603
 ID_MAKE_A_DONATION = 604
 ID_ABOUT = 605
+
+ID_SPIN_DOMAIN = 1000
+ID_SPIN_TYPE = 1001
+ID_SPIN_LENGTH = 1002
 
 
 class SMB3Foundry(wx.Frame):
@@ -182,14 +187,81 @@ class SMB3Foundry(wx.Frame):
         self.scroll_panel.SetSizer(sizer)
 
         self.object_list = wx.ListBox(self)
-        self.object_list.SetItems([object.description for object in self.levelview.level.objects])
+        self.update_object_list()
+
+        vert_sizer = wx.BoxSizer(wx.VERTICAL)
+        spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
+
+        self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=7)
+        self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=0xFF)
+        self.spin_length = wx.SpinCtrl(self, ID_SPIN_LENGTH, max=0xFF)
+
+        self.select_object(None)
+
+        spinner_sizer.Add(self.spin_domain, flag=wx.EXPAND)
+        spinner_sizer.Add(self.spin_type, flag=wx.EXPAND)
+        spinner_sizer.Add(self.spin_length, flag=wx.EXPAND)
+
+        vert_sizer.Add(self.object_list, proportion=1, flag=wx.EXPAND)
+        vert_sizer.Add(spinner_sizer, flag=wx.EXPAND)
 
         horiz_sizer.Add(self.scroll_panel, proportion=10, flag=wx.EXPAND)
-        horiz_sizer.Add(self.object_list, proportion=1, flag=wx.EXPAND)
+        horiz_sizer.Add(vert_sizer, proportion=1, flag=wx.EXPAND)
 
         self.SetSizer(horiz_sizer)
 
         self.Bind(wx.EVT_LISTBOX, self.select_object)
+        self.Bind(wx.EVT_BUTTON, self.on_button)
+
+        self.Bind(wx.EVT_SPINCTRL, self.on_spin)
+        self.Bind(wx.EVT_SPINCTRL, self.on_spin)
+        self.Bind(wx.EVT_SPINCTRL, self.on_spin)
+
+    def on_button(self, _):
+        index = self.object_list.GetSelection()
+
+        if index == -1:
+            return
+
+        level = self.levelview.level
+        object_data = level.objects[index].data
+
+        object_type = object_data[2]
+
+        object_data[2] = (object_type + 1) % 0x100
+
+        self.levelview.level.objects[index] = LevelObject(object_data, level.object_set, level.plains_level[level.object_definition], level.object_palette_group)
+        self.levelview.Refresh()
+        self.update_object_list()
+
+    def on_spin(self, event):
+        _id = event.GetId()
+
+        if _id == ID_SPIN_TYPE:
+            index = self.object_list.GetSelection()
+
+            if index == -1:
+                return
+
+            level = self.levelview.level
+            object_data = level.objects[index].data
+
+            object_data[2] = self.spin_type.GetValue() % 256
+
+            self.levelview.level.objects[index] = LevelObject(object_data, level.object_set,
+                                                              level.plains_level[level.object_definition],
+                                                              level.object_palette_group)
+            self.levelview.Refresh()
+            self.update_object_list()
+
+        self.select_object(None)
+
+    def update_object_list(self):
+        index = self.object_list.GetSelection()
+
+        self.object_list.SetItems([obj.description for obj in self.levelview.level.objects])
+
+        self.object_list.SetSelection(index)
 
     def open_level_selector(self, _):
         self.level_selector.Show()
@@ -206,7 +278,7 @@ class SMB3Foundry(wx.Frame):
         self.levelview.Destroy()
         self.levelview = new
 
-        self.object_list.SetItems([obj.description for obj in self.levelview.level.objects])
+        self.update_object_list()
 
     def select_object(self, _):
         index = self.object_list.GetSelection()
@@ -214,9 +286,34 @@ class SMB3Foundry(wx.Frame):
         for obj in self.levelview.level.objects:
             obj.selected = False
 
-        self.levelview.level.objects[index].selected = True
+        if index == -1:
+            self.spin_domain.SetValue(0)
+            self.spin_type.SetValue(0)
+            self.spin_length.SetValue(0)
 
-        self.levelview.Refresh()
+            self.spin_domain.Disable()
+            self.spin_type.Disable()
+            self.spin_length.Disable()
+
+            return
+        else:
+            obj = self.levelview.level.objects[index]
+
+            obj.selected = True
+            self.spin_domain.SetValue(obj.domain)
+            self.spin_type.SetValue(obj.data[2])
+
+            self.spin_domain.Enable()
+            self.spin_type.Enable()
+
+            if obj.is_4byte:
+                self.spin_length.SetValue(obj.length)
+                self.spin_length.Enable()
+            else:
+                self.spin_length.SetValue(0)
+                self.spin_length.Disable()
+
+            self.levelview.Refresh()
 
     def on_exit(self, _):
         self.Close(True)
