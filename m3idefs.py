@@ -26,14 +26,15 @@ class ObjectDefinition:
     def __init__(self, string):
         string = string.rstrip().replace("<", "").replace(">", "")
 
-        self.object_domain, self.min_value, self.max_value, self.bmp_width, self.bmp_height, *self.object_design, \
-        self.orientation, self.ends, self.is_4byte, self.object_description = string.split(",")
+        self.domain, self.min_value, self.max_value, self.bmp_width, self.bmp_height, *self.object_design, \
+            self.orientation, self.ending, self.is_4byte, self.description = string.split(",")
 
         self.bmp_width = int(self.bmp_width)
         self.bmp_height = int(self.bmp_height)
         self.orientation = int(self.orientation)
-        self.ends = int(self.ends)
-        self.is_4byte = bool(int(self.is_4byte))
+        self.ending = int(self.ending)
+        self.is_4byte = self.is_4byte == "1"
+        self.description = self.description.replace(";;", ",")
 
         self.object_design2 = []
         self.rom_object_design = []
@@ -44,14 +45,4 @@ class ObjectDefinition:
             self.rom_object_design.append(self.object_design[index])
             self.object_design_length = index + 1  # todo necessary when we have len()?
 
-        self.object_description.replace(";;", ",")
-
-        self.object_description = self.object_description.split("|")[0]
-
-
-class ObjectSize:
-    def __init__(self):
-        self.left = self.right = 0
-        self.top = self.bottom = 0
-        self.width = self.height = 0
-        self.handle_x = self.handle_y = 0
+        self.description = self.description.split("|")[0]
