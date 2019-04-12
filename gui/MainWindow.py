@@ -182,7 +182,7 @@ class SMB3Foundry(wx.Frame):
         self.scroll_panel.SetSizer(sizer)
 
         self.object_list = wx.ListBox(self)
-        self.object_list.SetItems([object.object_data.description for object in self.levelview.level.objects])
+        self.object_list.SetItems([object.description for object in self.levelview.level.objects])
 
         horiz_sizer.Add(self.scroll_panel, proportion=10, flag=wx.EXPAND)
         horiz_sizer.Add(self.object_list, proportion=1, flag=wx.EXPAND)
@@ -206,7 +206,7 @@ class SMB3Foundry(wx.Frame):
         self.levelview.Destroy()
         self.levelview = new
 
-        self.object_list.SetItems([obj.object_data.description for obj in self.levelview.level.objects])
+        self.object_list.SetItems([obj.description for obj in self.levelview.level.objects])
 
     def select_object(self, _):
         index = self.object_list.GetSelection()

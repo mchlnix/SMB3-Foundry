@@ -77,17 +77,21 @@ class LevelObject:
 
         self.secondary_length = 0
 
-        self.object_data = object_definitions[self.type]
+        object_data = object_definitions[self.type]
 
-        self.width = self.object_data.bmp_width
-        self.height = self.object_data.bmp_height
-        self.orientation = int(self.object_data.orientation)
+        self.width = object_data.bmp_width
+        self.height = object_data.bmp_height
+        self.orientation = object_data.orientation
+        self.ending = object_data.ending
+        self.description = object_data.description
 
-        self.blocks = [int(block) for block in self.object_data.rom_object_design]
+        self.blocks = [int(block) for block in object_data.rom_object_design]
 
         self.block_cache = {}
 
-        if len(data) == 4:
+        self.is_4byte = len(data) == 4
+
+        if self.is_4byte:
             self.secondary_length = self.length
             self.length = data[3]
 
@@ -104,7 +108,7 @@ class LevelObject:
 
         blocks_to_draw = []
 
-        if self.object_data.orientation == TO_THE_SKY:
+        if self.orientation == TO_THE_SKY:
             base_x = self.x_position
             base_y = SKY
 
@@ -113,8 +117,8 @@ class LevelObject:
 
             blocks_to_draw.extend(self.blocks[-self.width:])
 
-        elif self.object_data.orientation in [DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
-            if self.object_data.ending == UNIFORM:
+        elif self.orientation in [DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
+            if self.ending == UNIFORM:
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * self.width
 
@@ -122,11 +126,11 @@ class LevelObject:
                 right = [BLANK]
                 slopes = self.blocks
 
-            elif self.object_data.ending == END_ON_TOP_OR_LEFT:
+            elif self.ending == END_ON_TOP_OR_LEFT:
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * (self.width - 1)  # without fill block
 
-                if self.object_data.orientation in [DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
+                if self.orientation in [DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
                     fill_block = self.blocks[0:1]
                     slopes = self.blocks[1:]
 
@@ -138,7 +142,7 @@ class LevelObject:
 
                     left = [BLANK]
                     right = fill_block
-            elif self.object_data.ending == END_ON_BOTTOM_OR_RIGHT:
+            elif self.ending == END_ON_BOTTOM_OR_RIGHT:
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * (self.width - 1)  # without fill block
 
@@ -149,7 +153,7 @@ class LevelObject:
                 right = fill_block
             else:
                 # todo other two ends not used with diagonals?
-                print(self.object_data.description)
+                print(self.description)
                 self.rendered_blocks = []
                 return
 
@@ -168,24 +172,24 @@ class LevelObject:
 
                 rows.append(l * left + slopes[offset:offset + slope_width] + r * right)
 
-            if self.object_data.orientation in [DIAG_UP_RIGHT]:
+            if self.orientation in [DIAG_UP_RIGHT]:
                 for row in rows:
                     row.reverse()
 
-            if self.object_data.orientation in [DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
+            if self.orientation in [DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
                 if not self.height > self.width:  # special case for 60 degree platform wire down right
                     rows.reverse()
 
-            if self.object_data.orientation in [DIAG_UP_RIGHT]:
+            if self.orientation in [DIAG_UP_RIGHT]:
                 base_y -= (new_height - 1)
 
-            if self.object_data.orientation in [DIAG_DOWN_LEFT]:
+            if self.orientation in [DIAG_DOWN_LEFT]:
                 base_x -= (new_width - slope_width)
 
             for row in rows:
                 blocks_to_draw.extend(row)
 
-        elif self.object_data.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
+        elif self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
             # since pyramids grow horizontally in both directions when extending
             # we need to check for new ground every time it grows
 
@@ -222,7 +226,7 @@ class LevelObject:
 
                 blocks_to_draw.extend(blank_blocks * [blank])
 
-        elif self.object_data.orientation == ENDING:
+        elif self.orientation == ENDING:
             page_width = 16
             page_limit = page_width - self.x_position % page_width
 
@@ -244,20 +248,20 @@ class LevelObject:
 
             # Mushroom/Fire flower/Star is categorized as an enemy
 
-        elif self.object_data.orientation == VERTICAL:
+        elif self.orientation == VERTICAL:
             new_height = self.length + 1
             new_width = self.width
 
             for x in range(new_width):
                 LevelObject.ground_map[(base_x + x, base_y)] = True
 
-            if self.object_data.ending == UNIFORM:
+            if self.ending == UNIFORM:
                 for _ in range(new_height):
                     for x in range(self.width):
                         for y in range(self.height):
                             blocks_to_draw.append(self.blocks[x])
 
-            elif self.object_data.ending == END_ON_TOP_OR_LEFT:
+            elif self.ending == END_ON_TOP_OR_LEFT:
                 # in case the drawn object is smaller than its actual size
                 for y in range(min(self.height, new_height)):
                     offset = y * self.width
@@ -273,7 +277,7 @@ class LevelObject:
                     for _ in range(additional_rows):
                         blocks_to_draw.extend(last_row)
 
-            elif self.object_data.ending == END_ON_BOTTOM_OR_RIGHT:
+            elif self.ending == END_ON_BOTTOM_OR_RIGHT:
                 additional_rows = new_height - self.height
 
                 # assume only the first row needs to repeat
@@ -289,7 +293,7 @@ class LevelObject:
                     offset = y * self.width
                     blocks_to_draw.extend(self.blocks[offset:offset + self.width])
 
-            elif self.object_data.ending == TWO_ENDS:
+            elif self.ending == TWO_ENDS:
                 # object exists on ships
                 top_row = self.blocks[0:self.width]
                 bottom_row = self.blocks[-self.width:]
@@ -306,10 +310,10 @@ class LevelObject:
                 if new_height > 1:
                     blocks_to_draw.extend(bottom_row)
 
-        elif self.object_data.orientation in [HORIZONTAL, HORIZ_TO_GROUND, HORIZONTAL_2]:
+        elif self.orientation in [HORIZONTAL, HORIZ_TO_GROUND, HORIZONTAL_2]:
             new_width = self.length + 1
 
-            if self.object_data.orientation == HORIZ_TO_GROUND:
+            if self.orientation == HORIZ_TO_GROUND:
 
                 # to the ground only, until it hits something
                 for y in range(base_y, GROUND):
@@ -323,13 +327,13 @@ class LevelObject:
                 if self.is_single_block:
                     new_width = self.length
 
-            elif self.object_data.orientation == HORIZONTAL_2 and self.object_data.ending == TWO_ENDS:
+            elif self.orientation == HORIZONTAL_2 and self.ending == TWO_ENDS:
                 # floating platforms seem to just be one shorter for some reason
                 new_width -= 1
             else:
                 new_height = self.height + self.secondary_length
 
-            if self.object_data.ending == UNIFORM and not self.object_data.is_4byte:
+            if self.ending == UNIFORM and not self.is_4byte:
                 for y in range(new_height):
                     offset = (y % self.height) * self.width
 
@@ -339,7 +343,7 @@ class LevelObject:
                 # in case of giant blocks
                 new_width *= self.width
 
-            elif self.object_data.ending == UNIFORM and self.object_data.is_4byte:
+            elif self.ending == UNIFORM and self.is_4byte:
                 # 4 byte objects
                 top = self.blocks[0:1]
                 bottom = self.blocks[-1:]
@@ -355,7 +359,7 @@ class LevelObject:
                 for _ in range(1, new_height):
                     blocks_to_draw.extend(new_width * bottom)
 
-            elif self.object_data.ending == END_ON_TOP_OR_LEFT:
+            elif self.ending == END_ON_TOP_OR_LEFT:
                 for y in range(new_height):
                     offset = y * self.width
 
@@ -364,7 +368,7 @@ class LevelObject:
                     for x in range(1, new_width):
                         blocks_to_draw.append(self.blocks[offset + 1])
 
-            elif self.object_data.ending == END_ON_BOTTOM_OR_RIGHT:
+            elif self.ending == END_ON_BOTTOM_OR_RIGHT:
                 for y in range(new_height):
                     offset = y * self.width
 
@@ -373,7 +377,7 @@ class LevelObject:
 
                     blocks_to_draw.append(self.blocks[offset + self.width - 1])
 
-            elif self.object_data.ending == TWO_ENDS:
+            elif self.ending == TWO_ENDS:
                 top_and_bottom_line = 2
 
                 for y in range(self.height):
