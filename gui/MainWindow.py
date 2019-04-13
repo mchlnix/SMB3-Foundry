@@ -253,6 +253,8 @@ class SMB3Foundry(wx.Frame):
             object_data[2] = self.spin_type.GetValue()
         elif _id == ID_SPIN_DOMAIN:
             object_data[0] = (self.spin_domain.GetValue() << 5) | (object_data[0] & 0b0001_1111)
+        elif _id == ID_SPIN_LENGTH:
+            object_data[3] = self.spin_length.GetValue()
 
         self.levelview.level.objects[index] = LevelObject(object_data, level.object_set,
                                                           level.plains_level[level.object_definition],
