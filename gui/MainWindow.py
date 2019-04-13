@@ -69,10 +69,10 @@ ID_SPIN_DOMAIN = 1000
 ID_SPIN_TYPE = 1001
 ID_SPIN_LENGTH = 1002
 
-
 MAX_DOMAIN = 0x07
 MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
+
 
 class SMB3Foundry(wx.Frame):
 
@@ -215,28 +215,10 @@ class SMB3Foundry(wx.Frame):
         self.SetSizer(horiz_sizer)
 
         self.Bind(wx.EVT_LISTBOX, self.select_object)
-        self.Bind(wx.EVT_BUTTON, self.on_button)
 
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
-
-    def on_button(self, _):
-        index = self.object_list.GetSelection()
-
-        if index == -1:
-            return
-
-        level = self.levelview.level
-        object_data = level.objects[index].data
-
-        object_type = object_data[2]
-
-        object_data[2] = (object_type + 1) % 0x100
-
-        self.levelview.level.objects[index] = LevelObject(object_data, level.object_set, level.plains_level[level.object_definition], level.object_palette_group)
-        self.levelview.Refresh()
-        self.update_object_list()
 
     def on_spin(self, event):
         _id = event.GetId()
