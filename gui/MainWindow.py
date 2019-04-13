@@ -271,7 +271,7 @@ class SMB3Foundry(wx.Frame):
 
     def update_level(self, world, level, object_set):
         old = self.levelview
-        new = LevelView(parent=self, rom=self.rom, world=world, level=level, object_set=object_set)
+        new = LevelView(parent=self.scroll_panel, rom=self.rom, world=world, level=level, object_set=object_set)
 
         self.scroll_panel.GetSizer().Replace(old, new)
 
