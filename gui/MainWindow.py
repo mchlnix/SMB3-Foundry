@@ -5,6 +5,7 @@ from File import ROM
 from Graphics import LevelObject
 from LevelSelector import LevelSelector
 from LevelView import LevelView
+from Sprite import Block
 from SpriteViewer import SpriteViewer
 
 # file menu
@@ -181,7 +182,7 @@ class SMB3Foundry(wx.Frame):
         self.level_selector = LevelSelector(parent=self)
 
         self.scroll_panel = wx.lib.scrolledpanel.ScrolledPanel(self)
-        self.scroll_panel.SetupScrolling()
+        self.scroll_panel.SetupScrolling(rate_x=Block.WIDTH, rate_y=Block.HEIGHT)
 
         self.levelview = LevelView(parent=self.scroll_panel, rom=self.rom, world=1, level=1, object_set=1)
 
@@ -302,6 +303,10 @@ class SMB3Foundry(wx.Frame):
             else:
                 self.spin_length.SetValue(0)
                 self.spin_length.Disable()
+
+            scroll_offset = self.scroll_panel.GetClientSize()[0] // self.scroll_panel.GetScrollPixelsPerUnit()[0] // 2
+
+            self.scroll_panel.Scroll(obj.rendered_base_x - scroll_offset, obj.rendered_base_y)
 
             self.levelview.Refresh()
 
