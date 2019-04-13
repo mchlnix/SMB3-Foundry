@@ -70,6 +70,10 @@ ID_SPIN_TYPE = 1001
 ID_SPIN_LENGTH = 1002
 
 
+MAX_DOMAIN = 0x07
+MAX_TYPE = 0xFF
+MAX_LENGTH = 0xFF
+
 class SMB3Foundry(wx.Frame):
 
     def __init__(self, *args, **kw):
@@ -192,9 +196,9 @@ class SMB3Foundry(wx.Frame):
         vert_sizer = wx.BoxSizer(wx.VERTICAL)
         spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
 
-        self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=7)
-        self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=0xFF)
-        self.spin_length = wx.SpinCtrl(self, ID_SPIN_LENGTH, max=0xFF)
+        self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
+        self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=MAX_TYPE)
+        self.spin_length = wx.SpinCtrl(self, ID_SPIN_LENGTH, max=MAX_LENGTH)
 
         self.select_object(None)
 
@@ -246,7 +250,7 @@ class SMB3Foundry(wx.Frame):
         object_data = level.objects[index].data
 
         if _id == ID_SPIN_TYPE:
-            object_data[2] = self.spin_type.GetValue() % 256
+            object_data[2] = self.spin_type.GetValue()
         elif _id == ID_SPIN_DOMAIN:
             object_data[0] = (self.spin_domain.GetValue() << 5) | (object_data[0] & 0b0001_1111)
 
