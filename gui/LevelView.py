@@ -23,7 +23,7 @@ class LevelView(wx.Panel):
         level_x = x // Block.WIDTH
         level_y = y // Block.HEIGHT
 
-        for obj in self.level.objects:
+        for obj in reversed(self.level.objects):
             if (level_x, level_y) in obj:
                 return obj
         else:
