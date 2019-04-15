@@ -20,14 +20,20 @@ class LevelView(wx.Panel):
         self.SetSize(self.GetMinSize())
 
     def object_at(self, x, y):
-        level_x = x // Block.WIDTH
-        level_y = y // Block.HEIGHT
+        level_point = self.to_level_point(x, y)
 
         for obj in reversed(self.level.objects):
-            if (level_x, level_y) in obj:
+            if level_point in obj:
                 return obj
         else:
             return None
+
+    @staticmethod
+    def to_level_point(x, y):
+        level_x = x // Block.WIDTH
+        level_y = y // Block.HEIGHT
+
+        return level_x, level_y
 
     def on_size(self, event):
         event.Skip()
