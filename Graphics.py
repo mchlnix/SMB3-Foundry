@@ -1,3 +1,5 @@
+import wx
+
 from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
@@ -420,6 +422,9 @@ class LevelObject:
         self.rendered_base_x = base_x
         self.rendered_base_y = base_y
 
+        self.rect = wx.Rect(self.rendered_base_x, self.rendered_base_y,
+                            self.rendered_width, self.rendered_height)
+
     def draw(self, dc):
         for index, block_index in enumerate(self.rendered_blocks):
             if block_index == BLANK:
@@ -448,8 +453,7 @@ class LevelObject:
         return self.point_in(x, y)
 
     def point_in(self, x, y):
-        return x in range(self.rendered_base_x, self.rendered_base_x + self.rendered_width) and \
-               y in range(self.rendered_base_y, self.rendered_base_y + self.rendered_height)
+        return self.rect.Contains(x, y)
 
 
 class EnemyObject:
