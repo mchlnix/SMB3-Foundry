@@ -201,7 +201,7 @@ class SMB3Foundry(wx.Frame):
         self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=MAX_TYPE)
         self.spin_length = wx.SpinCtrl(self, ID_SPIN_LENGTH, max=MAX_LENGTH)
 
-        self.select_object(None)
+        self.on_list_select(None)
 
         spinner_sizer.Add(self.spin_domain, flag=wx.EXPAND)
         spinner_sizer.Add(self.spin_type, flag=wx.EXPAND)
@@ -215,11 +215,13 @@ class SMB3Foundry(wx.Frame):
 
         self.SetSizer(horiz_sizer)
 
-        self.Bind(wx.EVT_LISTBOX, self.select_object)
+        self.Bind(wx.EVT_LISTBOX, self.on_list_select)
 
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
+
+        self.levelview.Bind(wx.EVT_LEFT_DOWN, self.on_mouse_down)
 
     def on_spin(self, event):
         _id = event.GetId()
@@ -245,7 +247,7 @@ class SMB3Foundry(wx.Frame):
         self.levelview.Refresh()
         self.update_object_list()
 
-        self.select_object(None)
+        self.on_list_select(None)
 
     def update_object_list(self):
         index = self.object_list.GetSelection()
@@ -271,11 +273,35 @@ class SMB3Foundry(wx.Frame):
 
         self.update_object_list()
 
-    def select_object(self, _):
+    def on_list_select(self, _):
         index = self.object_list.GetSelection()
 
-        for obj in self.levelview.level.objects:
-            obj.selected = False
+        self.select_object(index=index)
+
+    def on_mouse_down(self, event):
+        x = event.Position.x
+        y = event.Position.y
+
+        obj = self.levelview.object_at(x, y)
+
+        if obj is None:
+            return
+
+        self.select_object(obj)
+
+        self.levelview.Refresh()
+
+    def select_object(self, obj=None, index=None):
+
+        should_scroll = True
+
+        if index is None:
+            # assume click on levelview
+            should_scroll = False
+            index = self.levelview.level.objects.index(obj)
+
+        for _obj in self.levelview.level.objects:
+            _obj.selected = False
 
         if index == -1:
             self.spin_domain.SetValue(0)
@@ -288,7 +314,12 @@ class SMB3Foundry(wx.Frame):
 
             return
         else:
-            obj = self.levelview.level.objects[index]
+            if obj is None:
+                # assume click on object_list
+                should_scroll = True
+                obj = self.levelview.level.objects[index]
+
+            self.object_list.SetSelection(index)
 
             obj.selected = True
             self.spin_domain.SetValue(obj.domain)
