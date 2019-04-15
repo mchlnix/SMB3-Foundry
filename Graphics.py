@@ -447,6 +447,12 @@ class LevelObject:
 
         self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1, selected=self.selected)
 
+    def set_position(self, x, y):
+        self.x_position = x
+        self.y_position = y
+
+        self._render()
+
     def __contains__(self, item):
         x, y = item
 
