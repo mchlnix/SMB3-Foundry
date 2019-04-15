@@ -221,7 +221,12 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
 
-        self.levelview.Bind(wx.EVT_LEFT_DOWN, self.on_mouse_down)
+        self.levelview.Bind(wx.EVT_LEFT_DOWN, self.start_drag)
+        self.levelview.Bind(wx.EVT_MOTION, self.dragging)
+        self.levelview.Bind(wx.EVT_LEFT_UP, self.stop_drag)
+
+        self.dragging_object = None
+        self.dragging_index = None
 
     def on_spin(self, event):
         _id = event.GetId()
@@ -271,6 +276,11 @@ class SMB3Foundry(wx.Frame):
         self.levelview.Destroy()
         self.levelview = new
 
+        # todo make level changeable, without destroying the level view
+        self.levelview.Bind(wx.EVT_LEFT_DOWN, self.start_drag)
+        self.levelview.Bind(wx.EVT_MOTION, self.dragging)
+        self.levelview.Bind(wx.EVT_LEFT_UP, self.stop_drag)
+
         self.update_object_list()
 
     def on_list_select(self, _):
@@ -278,30 +288,57 @@ class SMB3Foundry(wx.Frame):
 
         self.select_object(index=index)
 
-    def on_mouse_down(self, event):
+    def start_drag(self, event):
         x = event.Position.x
         y = event.Position.y
 
         obj = self.levelview.object_at(x, y)
 
+        self.select_object(obj)
+
         if obj is None:
             return
 
-        self.select_object(obj)
+        self.dragging_object = obj
+        self.dragging_index = self.levelview.level.objects.index(obj)
 
         self.levelview.Refresh()
 
-    def select_object(self, obj=None, index=None):
+    def dragging(self, event):
+        if self.dragging_object is None:
+            return
 
+        self.levelview.level.objects.remove(self.dragging_object)
+
+        x = event.Position.x
+        y = event.Position.y
+
+        level_point = self.levelview.to_level_point(x, y)
+
+        self.dragging_object.set_position(*level_point)
+
+        self.levelview.level.objects.insert(self.dragging_index, self.dragging_object)
+
+        self.levelview.Refresh()
+
+    def stop_drag(self, _):
+        self.dragging_object = None
+        self.dragging_index = None
+
+    def select_object(self, obj=None, index=None):
         should_scroll = True
+
+        for _obj in self.levelview.level.objects:
+            _obj.selected = False
+
+        if obj is None and index is None:
+            index = -1
+            self.object_list.SetSelection(index)
 
         if index is None:
             # assume click on levelview
             should_scroll = False
             index = self.levelview.level.objects.index(obj)
-
-        for _obj in self.levelview.level.objects:
-            _obj.selected = False
 
         if index == -1:
             self.spin_domain.SetValue(0)
@@ -312,7 +349,6 @@ class SMB3Foundry(wx.Frame):
             self.spin_type.Disable()
             self.spin_length.Disable()
 
-            return
         else:
             if obj is None:
                 # assume click on object_list
@@ -340,7 +376,7 @@ class SMB3Foundry(wx.Frame):
 
                 self.scroll_panel.Scroll(obj.rendered_base_x - scroll_offset, obj.rendered_base_y)
 
-            self.levelview.Refresh()
+        self.levelview.Refresh()
 
     def on_exit(self, _):
         self.Close(True)
