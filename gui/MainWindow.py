@@ -335,9 +335,10 @@ class SMB3Foundry(wx.Frame):
                 self.spin_length.SetValue(0)
                 self.spin_length.Disable()
 
-            scroll_offset = self.scroll_panel.GetClientSize()[0] // self.scroll_panel.GetScrollPixelsPerUnit()[0] // 2
+            if should_scroll:
+                scroll_offset = self.scroll_panel.GetClientSize()[0] // self.scroll_panel.GetScrollPixelsPerUnit()[0] // 2
 
-            self.scroll_panel.Scroll(obj.rendered_base_x - scroll_offset, obj.rendered_base_y)
+                self.scroll_panel.Scroll(obj.rendered_base_x - scroll_offset, obj.rendered_base_y)
 
             self.levelview.Refresh()
 
