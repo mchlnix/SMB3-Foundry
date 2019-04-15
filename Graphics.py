@@ -416,6 +416,7 @@ class LevelObject:
             self.rendered_blocks = self.blocks
 
         self.rendered_width = new_width
+        self.rendered_height = new_height
         self.rendered_base_x = base_x
         self.rendered_base_y = base_y
 
@@ -440,6 +441,15 @@ class LevelObject:
             self.block_cache[block_index] = block
 
         self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1, selected=self.selected)
+
+    def __contains__(self, item):
+        x, y = item
+
+        return self.point_in(x, y)
+
+    def point_in(self, x, y):
+        return x in range(self.rendered_base_x, self.rendered_base_x + self.rendered_width) and \
+               y in range(self.rendered_base_y, self.rendered_base_y + self.rendered_height)
 
 
 class EnemyObject:
