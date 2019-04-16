@@ -237,6 +237,7 @@ class SMB3Foundry(wx.Frame):
 
         self.dragging_object = None
         self.dragging_index = None
+        self.dragging_offset = None
 
     def on_spin(self, event):
         _id = event.GetId()
@@ -312,6 +313,13 @@ class SMB3Foundry(wx.Frame):
         self.dragging_object = obj
         self.dragging_index = self.levelview.level.objects.index(obj)
 
+        level_x, level_y = self.levelview.to_level_point(x, y)
+
+        x_off = level_x - obj.rect.x
+        y_off = level_y - obj.rect.y
+
+        self.dragging_offset = (x_off, y_off)
+
         self.levelview.Refresh()
 
     def dragging(self, event):
@@ -323,9 +331,12 @@ class SMB3Foundry(wx.Frame):
         x = event.Position.x
         y = event.Position.y
 
-        level_point = self.levelview.to_level_point(x, y)
+        level_x, level_y = self.levelview.to_level_point(x, y)
 
-        self.dragging_object.set_position(*level_point)
+        level_x -= self.dragging_offset[0]
+        level_y -= self.dragging_offset[1]
+
+        self.dragging_object.set_position(level_x, level_y)
 
         self.status_bar.fill(self.dragging_object)
 
@@ -336,6 +347,7 @@ class SMB3Foundry(wx.Frame):
     def stop_drag(self, _):
         self.dragging_object = None
         self.dragging_index = None
+        self.dragging_offset = None
 
     def select_object(self, obj=None, index=None):
         should_scroll = True
