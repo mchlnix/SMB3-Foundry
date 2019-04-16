@@ -106,6 +106,7 @@ class LevelObject:
     def _render(self):
         if self.rect in LevelObject.ground_map:
             index = LevelObject.ground_map.index(self.rect)
+            del LevelObject.ground_map[index]
         else:
             index = len(LevelObject.ground_map)
 
