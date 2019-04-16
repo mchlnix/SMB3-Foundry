@@ -42,7 +42,7 @@ BLANK = -1
 
 class LevelObject:
     # todo better way of saving this information?
-    ground_map = dict()
+    ground_map = []
 
     def __init__(self, data, object_set, object_definitions, palette_group, graphic_offset=None, common_offset=None):
         self.graphic_offset = graphic_offset
@@ -66,9 +66,9 @@ class LevelObject:
         # describes what object it is
         obj_index = data[2]
 
-        domain_offset = self.domain * 0x1F
-
         self.is_single_block = obj_index <= 0x0F
+
+        domain_offset = self.domain * 0x1F
 
         if self.is_single_block:
             self.type = obj_index + domain_offset
@@ -97,11 +97,18 @@ class LevelObject:
             self.secondary_length = self.length
             self.length = data[3]
 
+        self.rect = wx.Rect()
+
         self._render()
 
         self.selected = False
 
     def _render(self):
+        if self.rect in LevelObject.ground_map:
+            index = LevelObject.ground_map.index(self.rect)
+        else:
+            index = len(LevelObject.ground_map)
+
         base_x = self.x_position
         base_y = self.y_position
 
@@ -197,20 +204,19 @@ class LevelObject:
 
             base_x += 1  # set the new base_x to the tip of the pyramid
 
-            lowest_y = GROUND
-
             for y in range(base_y, GROUND):
-                x = base_x - (y - base_y)
+                new_height = y - base_y
+                new_width = 2 * new_height
 
-                if (x, y) in LevelObject.ground_map:
-                    lowest_y = y
+                bottom_row = wx.Rect(base_x, y, new_width, 1)
+
+                if any([bottom_row.Intersects(rect) and y == rect.GetTop() for rect in
+                        LevelObject.ground_map[0:index]]):
                     break
 
-            new_height = lowest_y - base_y
-            new_width = 2 * new_height
             base_x = base_x - (new_width / 2)
 
-            # todo indexes work for all objects?
+            # todo indexes work for all objects? No, there are left and right fill blocks
             blank = self.blocks[0]
             left_slope = self.blocks[1]
             middle = self.blocks[2]
@@ -253,9 +259,6 @@ class LevelObject:
         elif self.orientation == VERTICAL:
             new_height = self.length + 1
             new_width = self.width
-
-            for x in range(new_width):
-                LevelObject.ground_map[(base_x + x, base_y)] = True
 
             if self.ending == UNIFORM:
                 for _ in range(new_height):
@@ -319,7 +322,9 @@ class LevelObject:
 
                 # to the ground only, until it hits something
                 for y in range(base_y, GROUND):
-                    if (base_x, y) in LevelObject.ground_map:
+                    bottom_row = wx.Rect(base_x, y, new_width, 1)
+
+                    if any([bottom_row.Intersects(rect) and y == rect.GetTop() for rect in LevelObject.ground_map[0:index]]):
                         new_height = y - base_y
                         break
                 else:
@@ -408,9 +413,6 @@ class LevelObject:
             else:
                 breakpoint()
 
-            for x in range(new_width):
-                LevelObject.ground_map[(base_x + x, base_y)] = True
-
         # for not yet implemented objects and single block objects
         if blocks_to_draw:
             self.rendered_blocks = blocks_to_draw
@@ -424,6 +426,8 @@ class LevelObject:
 
         self.rect = wx.Rect(self.rendered_base_x, self.rendered_base_y,
                             self.rendered_width, self.rendered_height)
+
+        LevelObject.ground_map.insert(index, self.rect)
 
     def draw(self, dc):
         for index, block_index in enumerate(self.rendered_blocks):
@@ -439,9 +443,11 @@ class LevelObject:
         if block_index not in self.block_cache:
             if block_index > 0xFF:
                 rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
-                block = Block(ROM(), self.object_set, rom_block_index, self.palette_group, self.graphic_offset, self.common_offset)
+                block = Block(ROM(), self.object_set, rom_block_index, self.palette_group,
+                              self.graphic_offset, self.common_offset)
             else:
-                block = Block(ROM(), self.object_set, block_index, self.palette_group, self.graphic_offset, self.common_offset)
+                block = Block(ROM(), self.object_set, block_index, self.palette_group,
+                              self.graphic_offset, self.common_offset)
 
             self.block_cache[block_index] = block
 
@@ -450,6 +456,11 @@ class LevelObject:
     def set_position(self, x, y):
         self.x_position = x
         self.y_position = y
+
+        self._render()
+
+    def set_domain(self, domain):
+        self.domain = domain
 
         self._render()
 

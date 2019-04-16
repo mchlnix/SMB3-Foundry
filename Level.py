@@ -197,8 +197,6 @@ class Level:
 
         dc.Clear()
 
-        LevelObject.ground_map = dict()
-
         for level_object in self.objects:
             level_object.draw(dc)
 
