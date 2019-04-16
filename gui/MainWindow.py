@@ -1,6 +1,7 @@
 import wx
 import wx.lib.scrolledpanel
 
+from ObjectStatusBar import ObjectStatusBar
 from File import ROM
 from Graphics import LevelObject
 from LevelSelector import LevelSelector
@@ -194,7 +195,6 @@ class SMB3Foundry(wx.Frame):
         self.object_list = wx.ListBox(self)
         self.update_object_list()
 
-        vert_sizer = wx.BoxSizer(wx.VERTICAL)
         spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
 
         self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
@@ -207,11 +207,21 @@ class SMB3Foundry(wx.Frame):
         spinner_sizer.Add(self.spin_type, flag=wx.EXPAND)
         spinner_sizer.Add(self.spin_length, flag=wx.EXPAND)
 
-        vert_sizer.Add(self.object_list, proportion=1, flag=wx.EXPAND)
-        vert_sizer.Add(spinner_sizer, flag=wx.EXPAND)
+        self.status_bar = ObjectStatusBar(parent=self)
 
-        horiz_sizer.Add(self.scroll_panel, proportion=10, flag=wx.EXPAND)
-        horiz_sizer.Add(vert_sizer, proportion=1, flag=wx.EXPAND)
+        vert_left = wx.BoxSizer(wx.VERTICAL)
+
+        vert_left.Add(self.scroll_panel, proportion=1, flag=wx.EXPAND)
+        # todo causes gtk warnings for some reason
+        vert_left.Add(self.status_bar, flag=wx.EXPAND)
+
+        vert_right = wx.BoxSizer(wx.VERTICAL)
+
+        vert_right.Add(self.object_list, proportion=1, flag=wx.EXPAND)
+        vert_right.Add(spinner_sizer, flag=wx.EXPAND)
+
+        horiz_sizer.Add(vert_left, proportion=10, flag=wx.EXPAND)
+        horiz_sizer.Add(vert_right, proportion=1, flag=wx.EXPAND)
 
         self.SetSizer(horiz_sizer)
 
@@ -317,6 +327,8 @@ class SMB3Foundry(wx.Frame):
 
         self.dragging_object.set_position(*level_point)
 
+        self.status_bar.fill(self.dragging_object)
+
         self.levelview.level.objects.insert(self.dragging_index, self.dragging_object)
 
         self.levelview.Refresh()
@@ -334,6 +346,7 @@ class SMB3Foundry(wx.Frame):
         if obj is None and index is None:
             index = -1
             self.object_list.SetSelection(index)
+            self.status_bar.clear()
 
         if index is None:
             # assume click on levelview
@@ -356,6 +369,7 @@ class SMB3Foundry(wx.Frame):
                 obj = self.levelview.level.objects[index]
 
             self.object_list.SetSelection(index)
+            self.status_bar.fill(obj)
 
             obj.selected = True
             self.spin_domain.SetValue(obj.domain)
