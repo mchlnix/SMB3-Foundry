@@ -196,6 +196,7 @@ class SMB3Foundry(wx.Frame):
         self.update_object_list()
 
         spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
+        spinner_sizer.AddGrowableCol(0)
 
         self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
         self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=MAX_TYPE)
@@ -203,9 +204,12 @@ class SMB3Foundry(wx.Frame):
 
         self.on_list_select(None)
 
-        spinner_sizer.Add(self.spin_domain, flag=wx.EXPAND)
-        spinner_sizer.Add(self.spin_type, flag=wx.EXPAND)
-        spinner_sizer.Add(self.spin_length, flag=wx.EXPAND)
+        spinner_sizer.Add(wx.StaticText(self, label="Domain: "), flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
+        spinner_sizer.Add(self.spin_domain)
+        spinner_sizer.Add(wx.StaticText(self, label="Type: "), flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
+        spinner_sizer.Add(self.spin_type)
+        spinner_sizer.Add(wx.StaticText(self, label="Length: "), flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
+        spinner_sizer.Add(self.spin_length)
 
         self.status_bar = ObjectStatusBar(parent=self)
 
