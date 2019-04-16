@@ -136,7 +136,7 @@ class SMB3Foundry(wx.Frame):
 
         view_menu = wx.Menu()
 
-        view_menu.Append(ID_GRIDLINES, "&Gridlines", "")
+        view_menu.AppendCheckItem(ID_GRIDLINES, "&Gridlines", "")
         view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
         view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
         view_menu.AppendSeparator()
@@ -170,6 +170,7 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
         self.Bind(wx.EVT_MENU, self.open_sprite_viewer, id=ID_VIEW_OBJECTS)
+        self.Bind(wx.EVT_MENU, self.set_grid_lines, id=ID_GRIDLINES)
 
         self.SetTitle("SMB3Foundry")
         self.Center()
@@ -242,6 +243,13 @@ class SMB3Foundry(wx.Frame):
         self.dragging_object = None
         self.dragging_index = None
         self.dragging_offset = None
+
+    def set_grid_lines(self, event):
+        checked = event.GetEventObject().IsChecked(event.GetId())
+
+        self.levelview.grid_lines = checked
+
+        self.levelview.Refresh()
 
     def on_spin(self, event):
         _id = event.GetId()
