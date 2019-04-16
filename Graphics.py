@@ -219,17 +219,18 @@ class LevelObject:
             # todo indexes work for all objects? No, there are left and right fill blocks
             blank = self.blocks[0]
             left_slope = self.blocks[1]
-            middle = self.blocks[2]
+            left_fill = self.blocks[2]
+            right_fill = self.blocks[3]
             right_slope = self.blocks[4]
 
             for y in range(new_height):
                 blank_blocks = (new_width // 2) - (y + 1)
-                middle_blocks = y * 2
+                middle_blocks = y  # times two
 
                 blocks_to_draw.extend(blank_blocks * [blank])
 
                 blocks_to_draw.append(left_slope)
-                blocks_to_draw.extend(middle_blocks * [middle])
+                blocks_to_draw.extend(middle_blocks * [left_fill] + middle_blocks * [right_fill])
                 blocks_to_draw.append(right_slope)
 
                 blocks_to_draw.extend(blank_blocks * [blank])
