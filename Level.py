@@ -128,6 +128,8 @@ class Level:
 
         self._load_objects(rom)
 
+        LevelObject.ground_map = []
+
     def _parse_header(self, rom):
         header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
 
