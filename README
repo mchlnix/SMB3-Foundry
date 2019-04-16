@@ -12,6 +12,13 @@ To come:
 Not planned right now:
  - Support of other versions, other than the US release
 
+# How to run
+
+You need to have Python3.6 and wxPython installed. Put the SMB3.nes rom file,
+with that name, into the root folder (where this README file is).
+
+Run `python3 smb3-foundry.py`
+
 Necessary to run:
  - Put the US rom of SMB3 into the root directory of this repo, before running
  - Needs wxPython installed
