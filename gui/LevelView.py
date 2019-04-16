@@ -19,6 +19,8 @@ class LevelView(wx.Panel):
         self.SetMinSize(wx.Size(self.level.width * Block.WIDTH, self.level.height * Block.HEIGHT))
         self.SetSize(self.GetMinSize())
 
+        self.grid_lines = True
+
     def object_at(self, x, y):
         level_point = self.to_level_point(x, y)
 
@@ -46,5 +48,18 @@ class LevelView(wx.Panel):
 
         if hasattr(self, "level"):
             self.level.draw(dc)
+
+        if self.grid_lines:
+            grid_pen = wx.Pen(colour=wx.Colour(0x80, 0x80, 0x80, 0x80), width=1)
+
+            dc.SetPen(grid_pen)
+
+            pixel_width = self.level.width * Block.WIDTH
+            pixel_height = self.level.height * Block.HEIGHT
+
+            for x in range(0, pixel_width, Block.WIDTH):
+                dc.DrawLine(x, 0, x, pixel_height)
+            for y in range(0, pixel_height, Block.HEIGHT):
+                dc.DrawLine(0, y, pixel_width, y)
 
         return
