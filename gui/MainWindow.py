@@ -257,13 +257,18 @@ class SMB3Foundry(wx.Frame):
         self.dragging_offset = None
 
     def on_menu_checked(self, event):
-        menu_item = event.GetId()
+        item_id = event.GetId()
+        menu_item = event.GetEventObject().FindItemById(item_id)
 
-        checked = event.GetEventObject().IsChecked(menu_item)
+        if not menu_item.IsCheckable():
+            event.Skip()
+            return
 
-        if menu_item == ID_GRID_LINES:
+        checked = menu_item.IsChecked()
+
+        if item_id == ID_GRID_LINES:
             self.levelview.grid_lines = checked
-        elif menu_item == ID_TRANSPARENCY:
+        elif item_id == ID_TRANSPARENCY:
             self.levelview.transparency = checked
 
         self.levelview.Refresh()
