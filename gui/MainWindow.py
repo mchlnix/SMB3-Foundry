@@ -145,6 +145,7 @@ class SMB3Foundry(wx.Frame):
 
         view_menu.AppendCheckItem(ID_GRID_LINES, "&Gridlines", "")
         view_menu.AppendCheckItem(ID_TRANSPARENCY, "&Block Transparency", "")
+        view_menu.FindItemById(ID_TRANSPARENCY).Check(True)
         """
         view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
         view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
