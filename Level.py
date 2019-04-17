@@ -55,6 +55,97 @@ graphic_set2chr_index = {
     22: 0x28,  # Throne Room
 }
 
+object_set_to_definition = {
+    16: 0,
+    0: 1,
+    1: 1,
+    7: 1,
+    15: 1,
+    3: 2,
+    114: 2,
+    4: 3,
+    2: 4,
+    10: 5,
+    13: 6,
+    9: 7,
+    6: 8,
+    8: 8,
+    5: 9,
+    11: 9,
+    12: 10,
+    14: 11,
+}
+
+
+def _load_rom_object_definition(object_set):
+    object_definition = object_set_to_definition[object_set]
+    with open(f"data/romobjs{object_definition}.dat", "rb") as f:
+        data = f.read()
+
+    assert len(data) > 0
+
+    object_count = data[0]
+
+    if object_count < 0xF7:
+        # first byte did not represent the object_count
+        object_count = 0xFF
+        position = 0
+    else:
+        position = 1
+
+    for object_index in range(object_count):
+        object_design_length = data[position]
+
+        plains_level[object_definition][object_index].object_design_length = object_design_length
+
+        position += 1
+
+        for i in range(object_design_length):
+            block_index = data[position]
+
+            if block_index == 0xFF:
+                block_index = (data[position+1] << 16) + (data[position+2] << 8) + data[position+3]
+
+                position += 3
+
+            plains_level[object_definition][object_index].rom_object_design[i] = block_index
+
+            position += 1
+
+    # read overlay data
+    if position >= len(data):
+        return
+
+    for object_index in range(object_count):
+        object_design_length = plains_level[object_definition][object_index].object_design_length
+
+        plains_level[object_definition][object_index].object_design2 = []
+
+        for i in range(object_design_length):
+            if i <= object_design_length:
+                plains_level[object_definition][object_index].object_design2.append(data[position])
+                position += 1
+
+    return plains_level[object_definition]
+
+
+def _load_level_offsets():
+    with open("data/levels.dat", "r") as level_data:
+        for line_no, line in enumerate(level_data.readlines()):
+            data = line.rstrip("\n").split(",")
+
+            numbers = [int(_hex, 16) for _hex in data[0:5]]
+            level_name = data[5]
+
+            Level.offsets.append(Mario3Level(*numbers, level_name))
+
+            world_index, level_index = numbers[0], numbers[1]
+
+            if world_index > 0 and level_index == 1:
+                Level.world_indexes.append(line_no)
+
+    Level.WORLDS = len(Level.world_indexes)
+
 
 class Level:
     scroll_types = ["Horizontal, up when flying", "Horizontal 1", "Free scrolling", "Horizontal 2",
@@ -78,33 +169,9 @@ class Level:
 
     def __init__(self, rom, world, level, object_set=None):
         if not Level.offsets:
-            Level._load_level_offsets()
-
-        if not Level.palettes:
-            Level._load_palettes(rom)
+            _load_level_offsets()
 
         self.object_set = object_set
-
-        object_set_to_definition = {
-            16: 0,
-            0: 1,
-            1: 1,
-            7: 1,
-            15: 1,
-            3: 2,
-            114: 2,
-            4: 3,
-            2: 4,
-            10: 5,
-            13: 6,
-            9: 7,
-            6: 8,
-            8: 8,
-            5: 9,
-            11: 9,
-            12: 10,
-            14: 11,
-        }
 
         level_index = Level.world_indexes[world - 1] + level - 1
 
@@ -116,15 +183,12 @@ class Level:
 
         print(f"Loading level {world}-{level} '{self.name}' @ {hex(self.offset)}")
 
-        self.plains_level = plains_level.copy()
-
         self._parse_header(rom)
-
-        self.object_definition = object_set_to_definition[self.object_set]
 
         self.object_palette_group = Level.palettes[self.object_set][self.object_palette_index]
 
-        self._load_rom_object_definition()
+        # todo better name
+        self.plains_level = _load_rom_object_definition(self.object_set)
 
         self._load_objects(rom)
 
@@ -185,7 +249,7 @@ class Level:
 
             if has_length:
                 obj_data.append(rom.get_byte())
-            level_object = LevelObject(obj_data, self.object_set, self.plains_level[self.object_definition],
+            level_object = LevelObject(obj_data, self.object_set, self.plains_level,
                                        self.object_palette_group, self.pattern_table)
 
             self.objects.append(level_object)
@@ -202,72 +266,6 @@ class Level:
         for level_object in self.objects:
             level_object.draw(dc, transparent=transparency)
 
-    def _load_rom_object_definition(self):
-        with open(f"data/romobjs{self.object_definition}.dat", "rb") as f:
-            data = f.read()
-
-        assert len(data) > 0
-
-        object_count = data[0]
-
-        if object_count < 0xF7:
-            # first byte did not represent the object_count
-            object_count = 0xFF
-            position = 0
-        else:
-            position = 1
-
-        for object_index in range(object_count):
-            object_design_length = data[position]
-
-            self.plains_level[self.object_definition][object_index].object_design_length = object_design_length
-
-            position += 1
-
-            for i in range(object_design_length):
-                block_index = data[position]
-
-                if block_index == 0xFF:
-                    block_index = (data[position+1] << 16) + (data[position+2] << 8) + data[position+3]
-
-                    position += 3
-
-                self.plains_level[self.object_definition][object_index].rom_object_design[i] = block_index
-
-                position += 1
-
-        # read overlay data
-        if position >= len(data):
-            return
-
-        for object_index in range(object_count):
-            object_design_length = self.plains_level[self.object_definition][object_index].object_design_length
-
-            self.plains_level[self.object_definition][object_index].object_design2 = []
-
-            for i in range(object_design_length):
-                if i <= object_design_length:
-                    self.plains_level[self.object_definition][object_index].object_design2.append(data[position])
-                    position += 1
-
-    @staticmethod
-    def _load_level_offsets():
-        with open("data/levels.dat", "r") as level_data:
-            for line_no, line in enumerate(level_data.readlines()):
-                data = line.rstrip("\n").split(",")
-
-                numbers = [int(_hex, 16) for _hex in data[0:5]]
-                level_name = data[5]
-
-                Level.offsets.append(Mario3Level(*numbers, level_name))
-
-                world_index, level_index = numbers[0], numbers[1]
-
-                if world_index > 0 and level_index == 1:
-                    Level.world_indexes.append(line_no)
-
-        Level.WORLDS = len(Level.world_indexes)
-
     @staticmethod
     def _load_palettes(rom):
         for os in range(OBJECT_SET_COUNT):
@@ -282,3 +280,6 @@ class Level:
                 Level.palettes[os].append([])
                 for _ in range(PALETTES_PER_PALETTES_GROUP):
                     Level.palettes[os][lg].append(rom.bulk_read(COLORS_PER_PALETTE))
+
+
+Level._load_palettes(ROM())
