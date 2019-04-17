@@ -15,9 +15,9 @@ ID_NEXT_BANK = 10004
 ID_BANK_DROPDOWN = 10005
 
 
-class SpriteViewer(wx.Frame):
+class BlockViewer(wx.Frame):
     def __init__(self, rom, *args, **kwargs):
-        super(SpriteViewer, self).__init__(*args, **kwargs)
+        super(BlockViewer, self).__init__(*args, title="Block Viewer", **kwargs)
 
         self.toolbar = self.CreateToolBar()
 
@@ -40,7 +40,7 @@ class SpriteViewer(wx.Frame):
 
         self.rom = rom
 
-        self.sprite_bank = SpriteBank(rom=rom, object_set=self.object_set, parent=self)
+        self.sprite_bank = BlockBank(rom=rom, object_set=self.object_set, parent=self)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.sprite_bank, flag=wx.EXPAND)
@@ -86,7 +86,7 @@ class SpriteViewer(wx.Frame):
         self.Hide()
 
 
-class SpriteBank(wx.Panel):
+class BlockBank(wx.Panel):
     def __init__(self, rom, object_set=0, zoom=2, *args, **kwargs):
         self.sprites = 256
         self.sprites_horiz = 16
@@ -98,7 +98,7 @@ class SpriteBank(wx.Panel):
         self.size = wx.Size(self.sprites_horiz * Block.WIDTH * self.zoom,
                             self.sprites_vert * Block.HEIGHT * self.zoom)
 
-        super(SpriteBank, self).__init__(size=self.size, *args, **kwargs)
+        super(BlockBank, self).__init__(size=self.size, *args, **kwargs)
 
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
 

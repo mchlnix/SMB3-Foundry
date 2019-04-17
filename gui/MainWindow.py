@@ -7,7 +7,7 @@ from Graphics import LevelObject
 from LevelSelector import LevelSelector
 from LevelView import LevelView
 from Sprite import Block
-from SpriteViewer import SpriteViewer
+from BlockViewer import BlockViewer
 
 # file menu
 
@@ -41,7 +41,7 @@ ID_EDIT_POINTERS = 305
 
 # object menu
 
-ID_VIEW_OBJECTS = 401
+ID_VIEW_BLOCKS = 401
 ID_CLONE_OBJECT_ENEMY = 402
 ID_ADD_3_BYTE_OBJECT = 403
 ID_ADD_4_BYTE_OBJECT = 404
@@ -123,7 +123,7 @@ class SMB3Foundry(wx.Frame):
 
         object_menu = wx.Menu()
 
-        object_menu.Append(ID_VIEW_OBJECTS, "&View Objects", "")
+        object_menu.Append(ID_VIEW_BLOCKS, "&View Blocks", "")
         object_menu.AppendSeparator()
         object_menu.Append(ID_CLONE_OBJECT_ENEMY, "&Clone Object/Enemy", "")
         object_menu.AppendSeparator()
@@ -169,7 +169,7 @@ class SMB3Foundry(wx.Frame):
         self.SetMenuBar(menu_bar)
 
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
-        self.Bind(wx.EVT_MENU, self.open_sprite_viewer, id=ID_VIEW_OBJECTS)
+        self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
         self.Bind(wx.EVT_MENU, self.set_grid_lines, id=ID_GRIDLINES)
 
         self.SetTitle("SMB3Foundry")
@@ -177,7 +177,7 @@ class SMB3Foundry(wx.Frame):
 
         self.rom = ROM("SMB3.nes")
 
-        self.sprite_viewer = SpriteViewer(rom=ROM("SMB3.nes"), parent=self)
+        self.block_viewer = BlockViewer(rom=ROM("SMB3.nes"), parent=self)
 
         horiz_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -287,8 +287,8 @@ class SMB3Foundry(wx.Frame):
     def open_level_selector(self, _):
         self.level_selector.Show()
 
-    def open_sprite_viewer(self, _):
-        self.sprite_viewer.Show()
+    def on_block_viewer(self, _):
+        self.block_viewer.Show()
 
     def update_level(self, world, level, object_set):
         old = self.levelview
