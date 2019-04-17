@@ -3,6 +3,7 @@ from math import ceil
 import wx
 
 from Data import NESPalette
+from Graphics import PatternTable
 from Level import Level
 from LevelSelector import OBJECT_SET_ITEMS
 from Sprite import Block
@@ -138,10 +139,12 @@ class SpriteBank(wx.Panel):
 
         dc.Clear()
 
+        pattern_table = PatternTable(self.object_set)
+
         horizontal = self.sprites_horiz
 
         for i in range(self.sprites):
-            block = Block(self.rom, self.object_set, i, Level.palettes[self.object_set][0])
+            block = Block(self.rom, self.object_set, i, Level.palettes[self.object_set][0], pattern_table)
 
             x = (i % horizontal) * Block.WIDTH * self.zoom
             y = (i // horizontal) * Block.HEIGHT * self.zoom

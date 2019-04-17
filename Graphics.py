@@ -141,7 +141,7 @@ class PatternTable:
 
     def _readin_chrrom_segment(self, index):
         offset = CHR_ROM_OFFSET + index * CHR_ROM_SEGMENT_SIZE
-        chr_rom_data = ROM().bulk_read(CHR_ROM_SEGMENT_SIZE, offset)
+        chr_rom_data = ROM().bulk_read(2 * CHR_ROM_SEGMENT_SIZE, offset)
 
         self.data.extend(chr_rom_data)
 
@@ -150,9 +150,8 @@ class LevelObject:
     # todo better way of saving this information?
     ground_map = []
 
-    def __init__(self, data, object_set, object_definitions, palette_group, graphic_offset=None, common_offset=None):
-        self.graphic_offset = graphic_offset
-        self.common_offset = common_offset
+    def __init__(self, data, object_set, object_definitions, palette_group, pattern_table):
+        self.pattern_table = pattern_table
 
         self.data = data
 
@@ -552,10 +551,10 @@ class LevelObject:
             if block_index > 0xFF:
                 rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
                 block = Block(ROM(), self.object_set, rom_block_index, self.palette_group,
-                              self.graphic_offset, self.common_offset)
+                              self.pattern_table)
             else:
                 block = Block(ROM(), self.object_set, block_index, self.palette_group,
-                              self.graphic_offset, self.common_offset)
+                              self.pattern_table)
 
             self.block_cache[block_index] = block
 

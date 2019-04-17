@@ -271,7 +271,7 @@ class SMB3Foundry(wx.Frame):
 
         self.levelview.level.objects[index] = LevelObject(object_data, level.object_set,
                                                           level.plains_level[level.object_definition],
-                                                          level.object_palette_group)
+                                                          level.object_palette_group, self.levelview.level.pattern_table)
         self.levelview.Refresh()
         self.update_object_list()
 

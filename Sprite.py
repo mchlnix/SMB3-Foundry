@@ -1,6 +1,6 @@
 import wx
 
-from Data import graphics_offsets, common_offsets, NESPalette
+from Data import NESPalette
 from tsa import load_tsa_data
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
@@ -24,18 +24,8 @@ class Tile:
     PIXEL_COUNT = WIDTH * HEIGHT
     SIZE = 2 * PIXEL_COUNT // 8   # 1 pixel is defined by 2 bits
 
-    def __init__(self, rom, object_set, object_index, palette_group, palette_index, graphis_offset=None, common_offset=None):
-        if graphis_offset is None:
-            graphis_offset = graphics_offsets[object_set]
-
-        if common_offset is None:
-            common_offset = common_offsets[object_set]
-
-        if object_index < OBJECTS_PER_SET:
-            self.start = graphis_offset + object_index * Tile.SIZE
-        else:
-            common_index = object_index - OBJECTS_PER_SET
-            self.start = common_offset + common_index * Tile.SIZE
+    def __init__(self, rom, object_set, object_index, palette_group, palette_index, pattern_table):
+        start = object_index * Tile.SIZE
 
         self.cached_tiles = dict()
 
@@ -46,9 +36,7 @@ class Tile:
         self.pixels = bytearray()
         self.mask_pixels = bytearray()
 
-        rom.seek(self.start)
-
-        self.data = rom.bulk_read(Tile.SIZE)
+        self.data = pattern_table.data[start:start + Tile.SIZE]
 
         for i in range(Tile.PIXEL_COUNT):
             byte_index = i // Tile.HEIGHT
@@ -100,7 +88,7 @@ class Block:
 
     tsa_data = []
 
-    def __init__(self, rom, object_set, block_index, palette_group, graphic_offset=None, common_offset=None):
+    def __init__(self, rom, object_set, block_index, palette_group, pattern_table):
         if not Block.tsa_data:
             for os in range(OBJECT_SET_COUNT):
                 Block.tsa_data.append(load_tsa_data(rom, os))
@@ -114,10 +102,10 @@ class Block:
         ru = tsa_data[TSA_BANK_2 + block_index]
         rd = tsa_data[TSA_BANK_3 + block_index]
 
-        self.lu_tile = Tile(rom, object_set, lu, palette_group, palette_index, graphic_offset, common_offset)
-        self.ru_tile = Tile(rom, object_set, ru, palette_group, palette_index, graphic_offset, common_offset)
-        self.ld_tile = Tile(rom, object_set, ld, palette_group, palette_index, graphic_offset, common_offset)
-        self.rd_tile = Tile(rom, object_set, rd, palette_group, palette_index, graphic_offset, common_offset)
+        self.lu_tile = Tile(rom, object_set, lu, palette_group, palette_index, pattern_table)
+        self.ru_tile = Tile(rom, object_set, ru, palette_group, palette_index, pattern_table)
+        self.ld_tile = Tile(rom, object_set, ld, palette_group, palette_index, pattern_table)
+        self.rd_tile = Tile(rom, object_set, rd, palette_group, palette_index, pattern_table)
 
         self.image = wx.Image(Block.WIDTH, Block.HEIGHT)
 
