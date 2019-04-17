@@ -95,6 +95,8 @@ class Block:
 
         palette_index = (block_index & 0b1100_0000) >> 6
 
+        self.bg_color = NESPalette[palette_group[palette_index][0]]
+
         tsa_data = Block.tsa_data[object_set]
 
         lu = tsa_data[TSA_BANK_0 + block_index]
@@ -116,15 +118,17 @@ class Block:
 
         self.image.SetMaskColour(*MASK_COLOR)
 
-    def draw(self, dc, x, y, zoom=1, selected=False):
+    def draw(self, dc, x, y, zoom=1, selected=False, transparent=False):
+        image = self.image.Copy()
+
         if zoom > 1:
-            image = self.image.Copy()
             image.Rescale(Block.WIDTH * zoom, Block.HEIGHT * zoom)
-        else:
-            image = self.image
 
         # todo better effect
         if selected:
             image = image.ConvertToDisabled(127)
 
-        dc.DrawBitmap(image.ConvertToBitmap(), x, y, useMask=True)
+        if not transparent:
+            image.Replace(*MASK_COLOR, *self.bg_color)
+
+        dc.DrawBitmap(image.ConvertToBitmap(), x, y, useMask=transparent)

@@ -193,14 +193,14 @@ class Level:
             if rom.peek_byte() == 0xFF:
                 break
 
-    def draw(self, dc):
+    def draw(self, dc, transparency):
         bg_color = NESPalette[self.object_palette_group[0][0]]
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
 
         dc.Clear()
 
         for level_object in self.objects:
-            level_object.draw(dc)
+            level_object.draw(dc, transparent=transparency)
 
     def _load_rom_object_definition(self):
         with open(f"data/romobjs{self.object_definition}.dat", "rb") as f:

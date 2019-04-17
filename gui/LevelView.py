@@ -22,6 +22,8 @@ class LevelView(wx.Panel):
         self.grid_lines = False
         self.grid_pen = wx.Pen(colour=wx.Colour(0x80, 0x80, 0x80, 0x80), width=1)
 
+        self.transparency = True
+
     def object_at(self, x, y):
         level_point = self.to_level_point(x, y)
 
@@ -48,7 +50,7 @@ class LevelView(wx.Panel):
         dc = wx.BufferedPaintDC(self)
 
         if hasattr(self, "level"):
-            self.level.draw(dc)
+            self.level.draw(dc, transparency=self.transparency)
 
         if self.grid_lines:
             dc.SetPen(self.grid_pen)

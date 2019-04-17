@@ -536,7 +536,7 @@ class LevelObject:
 
         LevelObject.ground_map.insert(index, self.rect)
 
-    def draw(self, dc):
+    def draw(self, dc, transparent):
         for index, block_index in enumerate(self.rendered_blocks):
             if block_index == BLANK:
                 continue
@@ -544,9 +544,9 @@ class LevelObject:
             x = self.rendered_base_x + index % self.rendered_width
             y = self.rendered_base_y + index // self.rendered_width
 
-            self._draw_block(dc, block_index, x, y)
+            self._draw_block(dc, block_index, x, y, transparent)
 
-    def _draw_block(self, dc, block_index, x, y):
+    def _draw_block(self, dc, block_index, x, y, transparent):
         if block_index not in self.block_cache:
             if block_index > 0xFF:
                 rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
@@ -558,7 +558,8 @@ class LevelObject:
 
             self.block_cache[block_index] = block
 
-        self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1, selected=self.selected)
+        self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1, selected=self.selected,
+                                           transparent=transparent)
 
     def set_position(self, x, y):
         self.x_position = x

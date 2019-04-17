@@ -51,13 +51,14 @@ ID_DELETE_ALL = 407
 
 # view menu
 
-ID_GRIDLINES = 501
+ID_GRID_LINES = 501
 ID_BACKGROUND_FLOOR = 502
 ID_TOOLBAR = 503
 ID_ZOOM = 504
 ID_USE_ROM_GRAPHICS = 505
 ID_PALETTE = 506
 ID_MORE = 507
+ID_TRANSPARENCY = 508
 
 # help menu
 
@@ -136,7 +137,8 @@ class SMB3Foundry(wx.Frame):
 
         view_menu = wx.Menu()
 
-        view_menu.AppendCheckItem(ID_GRIDLINES, "&Gridlines", "")
+        view_menu.AppendCheckItem(ID_GRID_LINES, "&Gridlines", "")
+        view_menu.AppendCheckItem(ID_TRANSPARENCY, "&Block Transparency", "")
         view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
         view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
         view_menu.AppendSeparator()
@@ -170,7 +172,7 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
         self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
-        self.Bind(wx.EVT_MENU, self.set_grid_lines, id=ID_GRIDLINES)
+        self.Bind(wx.EVT_MENU, self.on_menu_checked)
 
         self.SetTitle("SMB3Foundry")
         self.Center()
@@ -244,10 +246,15 @@ class SMB3Foundry(wx.Frame):
         self.dragging_index = None
         self.dragging_offset = None
 
-    def set_grid_lines(self, event):
-        checked = event.GetEventObject().IsChecked(event.GetId())
+    def on_menu_checked(self, event):
+        menu_item = event.GetId()
 
-        self.levelview.grid_lines = checked
+        checked = event.GetEventObject().IsChecked(menu_item)
+
+        if menu_item == ID_GRID_LINES:
+            self.levelview.grid_lines = checked
+        elif menu_item == ID_TRANSPARENCY:
+            self.levelview.transparency = checked
 
         self.levelview.Refresh()
 
