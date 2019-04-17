@@ -128,8 +128,6 @@ class Level:
 
         self._load_objects(rom)
 
-        LevelObject.ground_map = []
-
     def _parse_header(self, rom):
         header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
 
@@ -174,6 +172,8 @@ class Level:
         rom.seek(object_offset)
 
         object_order = object_sets[self.object_set]  # ordered by domain
+
+        LevelObject.ground_map = []
 
         while True:
             obj_data = bytearray(rom.bulk_read(3))
