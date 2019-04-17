@@ -84,6 +84,7 @@ class SMB3Foundry(wx.Frame):
 
         file_menu = wx.Menu()
 
+        """
         file_menu.Append(ID_OPEN_ROM, "&Open ROM", " Terminate the program")
         file_menu.Append(ID_OPEN_M3L, "&Open M3L", " Terminate the program")
         file_menu.AppendSeparator()
@@ -98,9 +99,11 @@ class SMB3Foundry(wx.Frame):
         file_menu.Append(ID_ROM_PRESET, "&ROM Preset", " Terminate the program")
         file_menu.AppendSeparator()
         file_menu.Append(ID_EXIT, "&Exit", " Terminate the program")
+        """
 
         edit_menu = wx.Menu()
 
+        """
         edit_menu.Append(ID_EDIT_LEVEL, "&Edit Level", "")
         edit_menu.Append(ID_EDIT_OBJ_DEFS, "&Edit Object Definitions", "")
         edit_menu.Append(ID_EDIT_PALETTE, "&Edit Palette", "")
@@ -109,16 +112,17 @@ class SMB3Foundry(wx.Frame):
         edit_menu.AppendSeparator()
         edit_menu.Append(ID_FREEFORM_MODE, "&Freeform Mode", "")
         edit_menu.Append(ID_LIMIT_SIZE, "&Limit Size", "")
+        """
 
         level_menu = wx.Menu()
 
-        level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
+        # level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
         level_menu.Append(ID_SELECT_LEVEL, "&Select Level", "")
         level_menu.AppendSeparator()
-        level_menu.Append(ID_RELOAD_LEVEL, "&Reload Level", "")
+        # level_menu.Append(ID_RELOAD_LEVEL, "&Reload Level", "")
         level_menu.AppendSeparator()
-        level_menu.Append(ID_EDIT_HEADER, "&Edit Header", "")
-        level_menu.Append(ID_EDIT_POINTERS, "&Edit Pointers", "")
+        # level_menu.Append(ID_EDIT_HEADER, "&Edit Header", "")
+        # level_menu.Append(ID_EDIT_POINTERS, "&Edit Pointers", "")
 
         self.Bind(wx.EVT_MENU, self.open_level_selector, id=ID_SELECT_LEVEL)
 
@@ -126,6 +130,7 @@ class SMB3Foundry(wx.Frame):
 
         object_menu.Append(ID_VIEW_BLOCKS, "&View Blocks", "")
         object_menu.AppendSeparator()
+        """
         object_menu.Append(ID_CLONE_OBJECT_ENEMY, "&Clone Object/Enemy", "")
         object_menu.AppendSeparator()
         object_menu.Append(ID_ADD_3_BYTE_OBJECT, "&Add 3 Byte Object", "")
@@ -134,11 +139,13 @@ class SMB3Foundry(wx.Frame):
         object_menu.AppendSeparator()
         object_menu.Append(ID_DELETE_OBJECT_ENEMY, "&Delete Object/Enemy", "")
         object_menu.Append(ID_DELETE_ALL, "&Delete All", "")
+        """
 
         view_menu = wx.Menu()
 
         view_menu.AppendCheckItem(ID_GRID_LINES, "&Gridlines", "")
         view_menu.AppendCheckItem(ID_TRANSPARENCY, "&Block Transparency", "")
+        """
         view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
         view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
         view_menu.AppendSeparator()
@@ -148,9 +155,10 @@ class SMB3Foundry(wx.Frame):
         view_menu.Append(ID_PALETTE, "&Palette", "")
         view_menu.AppendSeparator()
         view_menu.Append(ID_MORE, "&More", "")
+        """
 
         help_menu = wx.Menu()
-
+        """
         help_menu.Append(ID_ENEMY_COMPATIBILITY, "&Enemy Compatibility", "")
         help_menu.Append(ID_TROUBLESHOOTING, "&Troubleshooting", "")
         help_menu.AppendSeparator()
@@ -158,6 +166,7 @@ class SMB3Foundry(wx.Frame):
         help_menu.Append(ID_MAKE_A_DONATION, "&Make a Donation", "")
         help_menu.AppendSeparator()
         help_menu.Append(ID_ABOUT, "&About", "")
+        """
 
         menu_bar = wx.MenuBar()
 
