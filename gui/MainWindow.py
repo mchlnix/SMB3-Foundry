@@ -286,9 +286,11 @@ class SMB3Foundry(wx.Frame):
 
     def open_level_selector(self, _):
         self.level_selector.Show()
+        self.level_selector.Raise()
 
     def on_block_viewer(self, _):
         self.block_viewer.Show()
+        self.block_viewer.Raise()
 
     def update_level(self, world, level, object_set):
         old = self.levelview
