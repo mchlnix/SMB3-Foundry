@@ -20,7 +20,7 @@ WORLD_1_INDEX = 1
 
 class LevelSelector(wx.Frame):
     def __init__(self, parent):
-        super(LevelSelector, self).__init__(parent, name="Level Selector")
+        super(LevelSelector, self).__init__(parent, title="Level Selector")
         self.selected_world = 1
         self.selected_level = 1
 
@@ -76,6 +76,9 @@ class LevelSelector(wx.Frame):
 
         self.Bind(wx.EVT_BUTTON, self.on_ok, id=self.button_ok.GetId())
         self.Bind(wx.EVT_BUTTON, self.on_exit, id=self.button_cancel.GetId())
+
+        self.world_list.Select(1)  # select Level 1-1
+        self.on_world_click(None)
 
     def on_world_click(self, _):
         index = self.world_list.GetSelection()
