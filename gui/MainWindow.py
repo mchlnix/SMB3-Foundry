@@ -195,7 +195,7 @@ class SMB3Foundry(wx.Frame):
 
         self.Center()
 
-        self.block_viewer = BlockViewer(rom=ROM(), parent=self)
+        self.block_viewer = BlockViewer(parent=self)
         self.object_viewer = ObjectViewer(self)
 
         horiz_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -205,16 +205,14 @@ class SMB3Foundry(wx.Frame):
         self.scroll_panel = wx.lib.scrolledpanel.ScrolledPanel(self)
         self.scroll_panel.SetupScrolling(rate_x=Block.WIDTH, rate_y=Block.HEIGHT)
 
-        self.levelview = LevelView(parent=self.scroll_panel, rom=self.rom, world=1, level=1, object_set=1)
-        self.update_title()
+        self.level_view = LevelView(parent=self.scroll_panel)
 
         sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(self.levelview)
+        sizer.Add(self.level_view)
 
         self.scroll_panel.SetSizer(sizer)
 
         self.object_list = wx.ListBox(self)
-        self.fill_object_list()
 
         spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
         spinner_sizer.AddGrowableCol(0)
@@ -222,8 +220,6 @@ class SMB3Foundry(wx.Frame):
         self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
         self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=MAX_TYPE)
         self.spin_length = wx.SpinCtrl(self, ID_SPIN_LENGTH, max=MAX_LENGTH)
-
-        self.on_list_select(None)
 
         spinner_sizer.Add(wx.StaticText(self, label="Domain: "), flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
         spinner_sizer.Add(self.spin_domain)
@@ -254,9 +250,9 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
 
-        self.levelview.Bind(wx.EVT_LEFT_DOWN, self.start_drag)
-        self.levelview.Bind(wx.EVT_MOTION, self.dragging)
-        self.levelview.Bind(wx.EVT_LEFT_UP, self.stop_drag)
+        self.level_view.Bind(wx.EVT_LEFT_DOWN, self.start_drag)
+        self.level_view.Bind(wx.EVT_MOTION, self.dragging)
+        self.level_view.Bind(wx.EVT_LEFT_UP, self.stop_drag)
 
         self.dragging_object = None
         self.dragging_index = None
@@ -266,7 +262,7 @@ class SMB3Foundry(wx.Frame):
             quit()
 
     def update_title(self):
-        self.SetTitle(f"{self.levelview.level.name} - SMB3Foundry")
+        self.SetTitle(f"{self.level_view.level.name} - SMB3Foundry")
 
     def on_open_rom(self, _):
         if not self.safe_to_change():
@@ -282,16 +278,16 @@ class SMB3Foundry(wx.Frame):
             try:
                 ROM.load_from_file(pathname)
 
-                if hasattr(self, "levelview"):
-                    self.levelview.level.changed = False
-                    self.update_level()
+                self.level_view.unload_level()
+
+                self.update_level(world=1, level=1)
 
                 return True
             except IOError:
                 wx.LogError("Cannot open file '%s'." % pathname)
 
     def safe_to_change(self):
-        if hasattr(self, "levelview") and self.levelview.level.changed:
+        if self.level_view.was_changed():
             answer = wx.MessageBox("Current content has not been saved! Proceed?", "Please confirm",
                                    wx.ICON_QUESTION | wx.YES_NO, self)
 
@@ -308,12 +304,12 @@ class SMB3Foundry(wx.Frame):
             # save the current contents in the file
             pathname = fileDialog.GetPath()
             try:
-                level = self.levelview.level
+                level = self.level_view.level
 
-                self.rom.bulk_write(level.to_bytes(), level.offset)
-                self.rom.save_to_file(pathname)
+                ROM().bulk_write(level.to_bytes(), level.offset)
+                ROM().save_to_file(pathname)
 
-                self.levelview.level.changed = False
+                self.level_view.level.changed = False
             except IOError:
                 wx.LogError("Cannot save current data in file '%s'." % pathname)
 
@@ -328,11 +324,11 @@ class SMB3Foundry(wx.Frame):
         checked = menu_item.IsChecked()
 
         if item_id == ID_GRID_LINES:
-            self.levelview.grid_lines = checked
+            self.level_view.grid_lines = checked
         elif item_id == ID_TRANSPARENCY:
-            self.levelview.transparency = checked
+            self.level_view.transparency = checked
 
-        self.levelview.Refresh()
+        self.level_view.Refresh()
 
     def on_spin(self, event):
         _id = event.GetId()
@@ -342,7 +338,7 @@ class SMB3Foundry(wx.Frame):
         if index == -1:
             return
 
-        level = self.levelview.level
+        level = self.level_view.level
         obj = level.objects[index]
 
         object_data = [(self.spin_domain.GetValue() << 5) | obj.y_position,
@@ -354,12 +350,12 @@ class SMB3Foundry(wx.Frame):
         else:
             object_data.append(0)
 
-        self.levelview.level.objects[index] = LevelObject(object_data, level.object_set, level.plains_level,
-                                                          level.object_palette_group,
-                                                          self.levelview.level.pattern_table)
-        self.levelview.level.changed = True
+        self.level_view.level.objects[index] = LevelObject(object_data, level.object_set, level.plains_level,
+                                                           level.object_palette_group,
+                                                           self.level_view.level.pattern_table)
+        self.level_view.level.changed = True
 
-        self.levelview.Refresh()
+        self.level_view.Refresh()
         self.update_object_list()
 
         self.on_list_select(None)
@@ -368,13 +364,13 @@ class SMB3Foundry(wx.Frame):
         index = self.object_list.GetSelection()
         item = self.object_list.GetString(index)
 
-        description = self.levelview.level.objects[index].description
+        description = self.level_view.level.objects[index].description
 
         if item != description:
             self.object_list.SetString(index, description)
 
     def fill_object_list(self):
-        self.object_list.SetItems([obj.description for obj in self.levelview.level.objects])
+        self.object_list.SetItems([obj.description for obj in self.level_view.level.objects])
 
     def open_level_selector(self, _):
         if not self.safe_to_change():
@@ -391,19 +387,9 @@ class SMB3Foundry(wx.Frame):
         self.object_viewer.Show()
         self.object_viewer.Raise()
 
-    def update_level(self, world=1, level=1, object_set=1):
-        old = self.levelview
-        new = LevelView(parent=self.scroll_panel, rom=self.rom, world=world, level=level, object_set=object_set)
+    def update_level(self, world, level, object_set=None):
 
-        self.scroll_panel.GetSizer().Replace(old, new)
-
-        self.levelview.Destroy()
-        self.levelview = new
-
-        # todo make level changeable, without destroying the level view
-        self.levelview.Bind(wx.EVT_LEFT_DOWN, self.start_drag)
-        self.levelview.Bind(wx.EVT_MOTION, self.dragging)
-        self.levelview.Bind(wx.EVT_LEFT_UP, self.stop_drag)
+        self.level_view.load_level(world=world, level=level, object_set=object_set)
 
         self.fill_object_list()
         self.update_title()
@@ -417,7 +403,7 @@ class SMB3Foundry(wx.Frame):
         x = event.Position.x
         y = event.Position.y
 
-        obj = self.levelview.object_at(x, y)
+        obj = self.level_view.object_at(x, y)
 
         self.select_object(obj)
 
@@ -425,27 +411,27 @@ class SMB3Foundry(wx.Frame):
             return
 
         self.dragging_object = obj
-        self.dragging_index = self.levelview.level.objects.index(obj)
+        self.dragging_index = self.level_view.level.objects.index(obj)
 
-        level_x, level_y = self.levelview.to_level_point(x, y)
+        level_x, level_y = self.level_view.to_level_point(x, y)
 
         x_off = level_x - obj.rect.x
         y_off = level_y - obj.rect.y
 
         self.dragging_offset = (x_off, y_off)
 
-        self.levelview.Refresh()
+        self.level_view.Refresh()
 
     def dragging(self, event):
         if self.dragging_object is None:
             return
 
-        self.levelview.level.objects.remove(self.dragging_object)
+        self.level_view.level.objects.remove(self.dragging_object)
 
         x = event.Position.x
         y = event.Position.y
 
-        level_x, level_y = self.levelview.to_level_point(x, y)
+        level_x, level_y = self.level_view.to_level_point(x, y)
 
         level_x -= self.dragging_offset[0]
         level_y -= self.dragging_offset[1]
@@ -454,11 +440,11 @@ class SMB3Foundry(wx.Frame):
 
         self.status_bar.fill(self.dragging_object)
 
-        self.levelview.level.objects.insert(self.dragging_index, self.dragging_object)
+        self.level_view.level.objects.insert(self.dragging_index, self.dragging_object)
 
-        self.levelview.level.changed = True
+        self.level_view.level.changed = True
 
-        self.levelview.Refresh()
+        self.level_view.Refresh()
 
     def stop_drag(self, _):
         self.dragging_object = None
@@ -468,7 +454,7 @@ class SMB3Foundry(wx.Frame):
     def select_object(self, obj=None, index=None):
         should_scroll = True
 
-        for _obj in self.levelview.level.objects:
+        for _obj in self.level_view.level.objects:
             _obj.selected = False
 
         if obj is None and index is None:
@@ -479,7 +465,7 @@ class SMB3Foundry(wx.Frame):
         if index is None:
             # assume click on levelview
             should_scroll = False
-            index = self.levelview.level.objects.index(obj)
+            index = self.level_view.level.objects.index(obj)
 
         if index == -1:
             self.spin_domain.SetValue(0)
@@ -494,7 +480,7 @@ class SMB3Foundry(wx.Frame):
             if obj is None:
                 # assume click on object_list
                 should_scroll = True
-                obj = self.levelview.level.objects[index]
+                obj = self.level_view.level.objects[index]
 
             self.object_list.SetSelection(index)
             self.status_bar.fill(obj)
@@ -519,7 +505,7 @@ class SMB3Foundry(wx.Frame):
 
                 self.scroll_panel.Scroll(obj.rendered_base_x - scroll_offset, obj.rendered_base_y)
 
-        self.levelview.Refresh()
+        self.level_view.Refresh()
 
     def on_exit(self, _):
         self.Close(True)
