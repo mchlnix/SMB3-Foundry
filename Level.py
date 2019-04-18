@@ -167,7 +167,7 @@ class Level:
 
     palettes = []
 
-    def __init__(self, rom, world, level, object_set=None):
+    def __init__(self, world, level, object_set=None):
         if not Level.offsets:
             _load_level_offsets()
 
@@ -185,6 +185,8 @@ class Level:
         self.offset = level_data.rom_level_offset - Level.HEADER_LENGTH
 
         print(f"Loading {self.name} @ {hex(self.offset)}")
+
+        rom = ROM()
 
         self._parse_header(rom)
 

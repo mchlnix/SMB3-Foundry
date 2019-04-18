@@ -1,6 +1,7 @@
 import wx
 
 from Data import NESPalette
+from File import ROM
 from tsa import load_tsa_data
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
@@ -85,7 +86,8 @@ class Block:
 
     tsa_data = []
 
-    def __init__(self, rom, object_set, block_index, palette_group, pattern_table):
+    def __init__(self, object_set, block_index, palette_group, pattern_table):
+        rom = ROM()
         if not Block.tsa_data:
             for os in range(OBJECT_SET_COUNT):
                 Block.tsa_data.append(load_tsa_data(rom, os))

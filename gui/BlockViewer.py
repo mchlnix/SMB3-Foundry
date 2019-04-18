@@ -16,7 +16,7 @@ ID_BANK_DROPDOWN = 10005
 
 
 class BlockViewer(wx.Frame):
-    def __init__(self, rom, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(BlockViewer, self).__init__(*args, title="Block Viewer", **kwargs)
 
         self.toolbar = self.CreateToolBar()
@@ -38,9 +38,7 @@ class BlockViewer(wx.Frame):
 
         self.object_set = 0
 
-        self.rom = rom
-
-        self.sprite_bank = BlockBank(rom=rom, object_set=self.object_set, parent=self)
+        self.sprite_bank = BlockBank(object_set=self.object_set, parent=self)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.sprite_bank, flag=wx.EXPAND)
@@ -87,7 +85,7 @@ class BlockViewer(wx.Frame):
 
 
 class BlockBank(wx.Panel):
-    def __init__(self, rom, object_set=0, zoom=2, *args, **kwargs):
+    def __init__(self, object_set=0, zoom=2, *args, **kwargs):
         self.sprites = 256
         self.sprites_horiz = 16
         self.sprites_vert = ceil(self.sprites / self.sprites_horiz)
@@ -106,8 +104,6 @@ class BlockBank(wx.Panel):
         self.Bind(wx.EVT_PAINT, self.on_paint)
 
         self.object_set = 0
-
-        self.rom = rom
 
         self.SetSize(self.size)
 
@@ -144,7 +140,7 @@ class BlockBank(wx.Panel):
         horizontal = self.sprites_horiz
 
         for i in range(self.sprites):
-            block = Block(self.rom, self.object_set, i, Level.palettes[self.object_set][0], pattern_table)
+            block = Block(self.object_set, i, Level.palettes[self.object_set][0], pattern_table)
 
             x = (i % horizontal) * Block.WIDTH * self.zoom
             y = (i // horizontal) * Block.HEIGHT * self.zoom

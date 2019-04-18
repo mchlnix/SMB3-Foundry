@@ -542,11 +542,9 @@ class LevelObject:
         if block_index not in self.block_cache:
             if block_index > 0xFF:
                 rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
-                block = Block(ROM(), self.object_set, rom_block_index, self.palette_group,
-                              self.pattern_table)
+                block = Block(self.object_set, rom_block_index, self.palette_group, self.pattern_table)
             else:
-                block = Block(ROM(), self.object_set, block_index, self.palette_group,
-                              self.pattern_table)
+                block = Block(self.object_set, block_index, self.palette_group, self.pattern_table)
 
             self.block_cache[block_index] = block
 
