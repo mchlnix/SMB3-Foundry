@@ -195,6 +195,9 @@ class SMB3Foundry(wx.Frame):
         self.SetTitle("SMB3Foundry")
         self.Center()
 
+        if not self.on_open_rom(None):
+            quit()
+
         self.rom = ROM()
 
         self.block_viewer = BlockViewer(rom=ROM(), parent=self)
@@ -264,7 +267,7 @@ class SMB3Foundry(wx.Frame):
         self.dragging_offset = None
 
     def on_open_rom(self, _):
-        if self.levelview.level.changed:
+        if hasattr(self, "levelview") and self.levelview.level.changed:
             if wx.MessageBox("Current content has not been saved! Proceed?", "Please confirm",
                              wx.ICON_QUESTION | wx.YES_NO, self) == wx.NO:
                 return
@@ -272,15 +275,18 @@ class SMB3Foundry(wx.Frame):
             # otherwise ask the user what new file to open
         with wx.FileDialog(self, "Open ROM", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return  # the user changed their mind
+                return False
 
             # Proceed loading the file chosen by the user
             pathname = fileDialog.GetPath()
             try:
-                self.rom.load_from_file(pathname)
-                self.levelview.level.changed = False
+                ROM.load_from_file(pathname)
 
-                self.update_level()
+                if hasattr(self, "levelview"):
+                    self.levelview.level.changed = False
+                    self.update_level()
+
+                return True
             except IOError:
                 wx.LogError("Cannot open file '%s'." % pathname)
 
