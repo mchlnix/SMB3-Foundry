@@ -211,6 +211,7 @@ class SMB3Foundry(wx.Frame):
         self.scroll_panel.SetupScrolling(rate_x=Block.WIDTH, rate_y=Block.HEIGHT)
 
         self.levelview = LevelView(parent=self.scroll_panel, rom=self.rom, world=1, level=1, object_set=1)
+        self.update_title()
 
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self.levelview)
@@ -265,6 +266,9 @@ class SMB3Foundry(wx.Frame):
         self.dragging_object = None
         self.dragging_index = None
         self.dragging_offset = None
+
+    def update_title(self):
+        self.SetTitle(f"{self.levelview.level.name} - SMB3Foundry")
 
     def on_open_rom(self, _):
         if not self.safe_to_change():
@@ -404,6 +408,7 @@ class SMB3Foundry(wx.Frame):
         self.levelview.Bind(wx.EVT_LEFT_UP, self.stop_drag)
 
         self.fill_object_list()
+        self.update_title()
 
     def on_list_select(self, _):
         index = self.object_list.GetSelection()

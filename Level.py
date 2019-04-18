@@ -177,11 +177,14 @@ class Level:
 
         level_data: Mario3Level = Level.offsets[level_index]
 
-        self.name = level_data.name
+        if world == 0:
+            self.name = level_data.name
+        else:
+            self.name = f"Level {world}-{level}, '{level_data.name}'"
 
         self.offset = level_data.rom_level_offset - Level.HEADER_LENGTH
 
-        print(f"Loading level {world}-{level} '{self.name}' @ {hex(self.offset)}")
+        print(f"Loading {self.name} @ {hex(self.offset)}")
 
         self._parse_header(rom)
 
