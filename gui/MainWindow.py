@@ -82,7 +82,7 @@ MAX_LENGTH = 0xFF
 class SMB3Foundry(wx.Frame):
 
     def __init__(self, *args, **kw):
-        super(SMB3Foundry, self).__init__(style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE, *args, **kw)
+        super(SMB3Foundry, self).__init__(title="SMB3Foundry", style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE, *args, **kw)
 
         file_menu = wx.Menu()
 
@@ -193,7 +193,6 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_object_viewer, id=ID_VIEW_OBJECTS)
         self.Bind(wx.EVT_MENU, self.on_menu_checked)
 
-        self.SetTitle("SMB3Foundry")
         self.Center()
 
         if not self.on_open_rom(None):
