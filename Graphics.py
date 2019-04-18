@@ -169,18 +169,18 @@ class LevelObject:
         self.x_position = data[1]
 
         # describes what object it is
-        obj_index = data[2]
+        self.obj_index = data[2]
 
-        self.is_single_block = obj_index <= 0x0F
+        self.is_single_block = self.obj_index <= 0x0F
 
         domain_offset = self.domain * 0x1F
 
         if self.is_single_block:
-            self.type = obj_index + domain_offset
+            self.type = self.obj_index + domain_offset
             self.length = 1
         else:
-            self.length = obj_index & 0b0000_1111
-            self.type = (obj_index >> 4) + domain_offset + 16 - 1
+            self.length = self.obj_index & 0b0000_1111
+            self.type = (self.obj_index >> 4) + domain_offset + 16 - 1
 
         self.secondary_length = 0
 

@@ -193,38 +193,38 @@ class Level:
         self._load_objects(rom)
 
     def _parse_header(self, rom):
-        header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
+        self.header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
 
-        self.start_y = Level.y_positions[(header[4] & 0b1110_0000) >> 5]
-        self.width = (header[4] & 0b0000_1111) * 0x10 + 0x0F
+        self.start_y = Level.y_positions[(self.header[4] & 0b1110_0000) >> 5]
+        self.width = (self.header[4] & 0b0000_1111) * 0x10 + 0x0F
         self.height = LEVEL_DEFAULT_HEIGHT
 
-        self.start_x = Level.x_positions[(header[5] & 0b0110_0000) >> 5]
-        self.enemy_palette_index = (header[5] & 0b0001_1000) >> 3
-        self.object_palette_index = header[5] & 0b0000_0111
+        self.start_x = Level.x_positions[(self.header[5] & 0b0110_0000) >> 5]
+        self.enemy_palette_index = (self.header[5] & 0b0001_1000) >> 3
+        self.object_palette_index = self.header[5] & 0b0000_0111
 
-        self.scroll_type = Level.scroll_types[(header[6] & 0b0111_0000) >> 4]
-        self.is_vertical = header[6] & 0b0001_0000
+        self.scroll_type = Level.scroll_types[(self.header[6] & 0b0111_0000) >> 4]
+        self.is_vertical = self.header[6] & 0b0001_0000
         # todo make length and height vertical flag dependent
 
         if self.object_set is None:
-            self.object_set = (header[6] & 0b0000_1111)  # for indexing purposes
+            self.object_set = (self.header[6] & 0b0000_1111)  # for indexing purposes
 
-        self.start_action = (header[7] & 0b1110_0000) >> 5
+        self.start_action = (self.header[7] & 0b1110_0000) >> 5
 
-        self.graphic_set_index = header[7] & 0b0001_1111
+        self.graphic_set_index = self.header[7] & 0b0001_1111
 
         self.pattern_table = PatternTable(self.graphic_set_index)
 
-        self.time = Level.times[(header[8] & 0b1100_0000) >> 6]
-        self.music_index = header[8] & 0b0000_1111
+        self.time = Level.times[(self.header[8] & 0b1100_0000) >> 6]
+        self.music_index = self.header[8] & 0b0000_1111
 
         # if there is a bonus area or other secondary level, this pointer points to it
 
         object_set_pointer = object_set_pointers[self.object_set]
 
-        self.level_pointer = (header[1] << 8) + header[0] + LEVEL_POINTER_OFFSET + object_set_pointer.type
-        self.enemy_pointer = (header[3] << 8) + header[2] + ENEMY_POINTER_OFFSET
+        self.level_pointer = (self.header[1] << 8) + self.header[0] + LEVEL_POINTER_OFFSET + object_set_pointer.type
+        self.enemy_pointer = (self.header[3] << 8) + self.header[2] + ENEMY_POINTER_OFFSET
 
         self.has_bonus_area = object_set_pointer.min <= self.level_pointer <= object_set_pointer.max
 
