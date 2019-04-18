@@ -276,6 +276,7 @@ class SMB3Foundry(wx.Frame):
             pathname = fileDialog.GetPath()
             try:
                 self.rom.save_to_file(pathname)
+                self.levelview.level.changed = False
             except IOError:
                 wx.LogError("Cannot save current data in file '%s'." % pathname)
 
@@ -319,6 +320,8 @@ class SMB3Foundry(wx.Frame):
         self.levelview.level.objects[index] = LevelObject(object_data, level.object_set, level.plains_level,
                                                           level.object_palette_group,
                                                           self.levelview.level.pattern_table)
+        self.levelview.level.changed = True
+
         self.levelview.Refresh()
         self.update_object_list()
 
@@ -406,6 +409,8 @@ class SMB3Foundry(wx.Frame):
         self.status_bar.fill(self.dragging_object)
 
         self.levelview.level.objects.insert(self.dragging_index, self.dragging_object)
+
+        self.levelview.level.changed = True
 
         self.levelview.Refresh()
 

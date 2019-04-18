@@ -192,6 +192,8 @@ class Level:
 
         self._load_objects(rom)
 
+        self.changed = False
+
     def _parse_header(self, rom):
         self.header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
 
