@@ -76,9 +76,6 @@ class Tile:
 
         return self.cached_tiles[zoom]
 
-    def as_bitmap(self, zoom=1):
-        return self.as_image(zoom).ConvertToBitmap()
-
 
 class Block:
     WIDTH = 2 * Tile.WIDTH

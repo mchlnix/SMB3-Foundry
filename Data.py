@@ -17,10 +17,6 @@ def read_string_dict(path):
     return return_dict
 
 
-def get_config_integer(name, default):
-    pass
-
-
 MAX_LEVEL_SECTIONS = 65
 SMB3_LEVEL_COUNT = 298
 MAP_ENEMY_OFFSET = 0x16070

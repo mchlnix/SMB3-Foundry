@@ -102,17 +102,9 @@ VS_2P = 18
 
 
 class PatternTable:
-    def __init__(self, arg):
+    def __init__(self, graphic_set):
         self.data = bytearray()
 
-        if isinstance(arg, list):
-            self._readin(arg)
-        elif isinstance(arg, int):
-            self._from_graphic_set(arg)
-        else:
-            raise TypeError("Only list or int allowed.")
-
-    def _from_graphic_set(self, graphic_set):
         segments = []
 
         if graphic_set == WORLD_MAP:
@@ -133,13 +125,13 @@ class PatternTable:
         else:
             segments.extend([0x00, 0x00, 0x00, 0x00])
 
-        self._readin(segments)
+        self._read_in(segments)
 
-    def _readin(self, segments):
+    def _read_in(self, segments):
         for segment in segments:
-            self._readin_chrrom_segment(segment)
+            self._read_in_chr_rom_segment(segment)
 
-    def _readin_chrrom_segment(self, index):
+    def _read_in_chr_rom_segment(self, index):
         offset = CHR_ROM_OFFSET + index * CHR_ROM_SEGMENT_SIZE
         chr_rom_data = ROM().bulk_read(2 * CHR_ROM_SEGMENT_SIZE, offset)
 
@@ -564,11 +556,6 @@ class LevelObject:
     def set_position(self, x, y):
         self.x_position = x
         self.y_position = y
-
-        self._render()
-
-    def set_domain(self, domain):
-        self.domain = domain
 
         self._render()
 

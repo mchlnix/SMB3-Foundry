@@ -49,14 +49,6 @@ class ROM:
 
         return byte
 
-    def put_byte(self, byte, position=-1):
-        if position >= 0:
-            self.seek(position)
-
-        ROM.data[self.position] = byte
-
-        self.position += 1
-
     def bulk_read(self, count, position=-1):
         if position >= 0:
             self.seek(position)
