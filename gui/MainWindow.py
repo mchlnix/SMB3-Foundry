@@ -86,23 +86,23 @@ class SMB3Foundry(wx.Frame):
 
         file_menu = wx.Menu()
 
+        file_menu.Append(ID_OPEN_ROM, "&Open ROM", "")
         """
-        file_menu.Append(ID_OPEN_ROM, "&Open ROM", " Terminate the program")
-        file_menu.Append(ID_OPEN_M3L, "&Open M3L", " Terminate the program")
+        file_menu.Append(ID_OPEN_M3L, "&Open M3L", "")
         file_menu.AppendSeparator()
         """
-        file_menu.Append(ID_SAVE_ROM, "&Save ROM", " Terminate the program")
+        file_menu.Append(ID_SAVE_ROM, "&Save ROM", "")
         """
         file_menu.AppendSeparator()
-        file_menu.Append(ID_SAVE_M3L, "&Save M3L", " Terminate the program")
-        file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", " Terminate the program")
-        file_menu.Append(ID_SAVE_ROM_AS, "&Save ROM as", " Terminate the program")
+        file_menu.Append(ID_SAVE_M3L, "&Save M3L", "")
+        file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", "")
+        file_menu.Append(ID_SAVE_ROM_AS, "&Save ROM as", "")
         file_menu.AppendSeparator()
-        file_menu.Append(ID_APPLY_IPS_PATCH, "&Apply IPS Patch", " Terminate the program")
+        file_menu.Append(ID_APPLY_IPS_PATCH, "&Apply IPS Patch", "")
         file_menu.AppendSeparator()
-        file_menu.Append(ID_ROM_PRESET, "&ROM Preset", " Terminate the program")
+        file_menu.Append(ID_ROM_PRESET, "&ROM Preset", "")
         file_menu.AppendSeparator()
-        file_menu.Append(ID_EXIT, "&Exit", " Terminate the program")
+        file_menu.Append(ID_EXIT, "&Exit", "")
         """
 
         edit_menu = wx.Menu()
@@ -185,6 +185,7 @@ class SMB3Foundry(wx.Frame):
 
         self.SetMenuBar(menu_bar)
 
+        self.Bind(wx.EVT_MENU, self.on_open_rom, id=ID_OPEN_ROM)
         self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM)
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
         self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
@@ -261,6 +262,27 @@ class SMB3Foundry(wx.Frame):
         self.dragging_object = None
         self.dragging_index = None
         self.dragging_offset = None
+
+    def on_open_rom(self, _):
+        if self.levelview.level.changed:
+            if wx.MessageBox("Current content has not been saved! Proceed?", "Please confirm",
+                             wx.ICON_QUESTION | wx.YES_NO, self) == wx.NO:
+                return
+
+            # otherwise ask the user what new file to open
+        with wx.FileDialog(self, "Open ROM", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return  # the user changed their mind
+
+            # Proceed loading the file chosen by the user
+            pathname = fileDialog.GetPath()
+            try:
+                self.rom.load_from_file(pathname)
+                self.levelview.level.changed = False
+
+                self.update_level()
+            except IOError:
+                wx.LogError("Cannot open file '%s'." % pathname)
 
     def on_save_rom(self, _):
         level = self.levelview.level
@@ -346,7 +368,7 @@ class SMB3Foundry(wx.Frame):
         self.object_viewer.Show()
         self.object_viewer.Raise()
 
-    def update_level(self, world, level, object_set):
+    def update_level(self, world=1, level=1, object_set=1):
         old = self.levelview
         new = LevelView(parent=self.scroll_panel, rom=self.rom, world=world, level=level, object_set=object_set)
 
