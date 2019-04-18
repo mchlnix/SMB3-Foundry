@@ -298,10 +298,6 @@ class SMB3Foundry(wx.Frame):
             return True
 
     def on_save_rom(self, _):
-        level = self.levelview.level
-
-        self.rom.bulk_write(level.to_bytes(), level.offset)
-
         with wx.FileDialog(self, "Save ROM as", style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
 
             if fileDialog.ShowModal() == wx.ID_CANCEL:
@@ -310,7 +306,11 @@ class SMB3Foundry(wx.Frame):
             # save the current contents in the file
             pathname = fileDialog.GetPath()
             try:
+                level = self.levelview.level
+
+                self.rom.bulk_write(level.to_bytes(), level.offset)
                 self.rom.save_to_file(pathname)
+
                 self.levelview.level.changed = False
             except IOError:
                 wx.LogError("Cannot save current data in file '%s'." % pathname)
@@ -506,7 +506,8 @@ class SMB3Foundry(wx.Frame):
                 self.spin_length.Disable()
 
             if should_scroll:
-                scroll_offset = self.scroll_panel.GetClientSize()[0] // self.scroll_panel.GetScrollPixelsPerUnit()[0] // 2
+                visible_blocks = self.scroll_panel.GetClientSize()[0] // self.scroll_panel.GetScrollPixelsPerUnit()[0]
+                scroll_offset = visible_blocks // 2
 
                 self.scroll_panel.Scroll(obj.rendered_base_x - scroll_offset, obj.rendered_base_y)
 
