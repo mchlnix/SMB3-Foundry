@@ -3,6 +3,8 @@ import wx
 from Level import Level
 from Sprite import Block
 
+# TODO a lot of functionality from MainWindow can be put here
+
 
 class LevelView(wx.Panel):
     def __init__(self, parent):

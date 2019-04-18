@@ -269,7 +269,8 @@ class SMB3Foundry(wx.Frame):
             return
 
         # otherwise ask the user what new file to open
-        with wx.FileDialog(self, "Open ROM", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+        with wx.FileDialog(self, "Open ROM", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+                           wildcard="NES files (.nes)|*.nes|ROM files (.rom)|*.rom|All files|*") as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 return False
 
