@@ -195,11 +195,6 @@ class SMB3Foundry(wx.Frame):
 
         self.Center()
 
-        if not self.on_open_rom(None):
-            quit()
-
-        self.rom = ROM()
-
         self.block_viewer = BlockViewer(rom=ROM(), parent=self)
         self.object_viewer = ObjectViewer(self)
 
@@ -266,6 +261,9 @@ class SMB3Foundry(wx.Frame):
         self.dragging_object = None
         self.dragging_index = None
         self.dragging_offset = None
+
+        if not self.on_open_rom(None):
+            quit()
 
     def update_title(self):
         self.SetTitle(f"{self.levelview.level.name} - SMB3Foundry")
