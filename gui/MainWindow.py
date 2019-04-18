@@ -90,7 +90,9 @@ class SMB3Foundry(wx.Frame):
         file_menu.Append(ID_OPEN_ROM, "&Open ROM", " Terminate the program")
         file_menu.Append(ID_OPEN_M3L, "&Open M3L", " Terminate the program")
         file_menu.AppendSeparator()
+        """
         file_menu.Append(ID_SAVE_ROM, "&Save ROM", " Terminate the program")
+        """
         file_menu.AppendSeparator()
         file_menu.Append(ID_SAVE_M3L, "&Save M3L", " Terminate the program")
         file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", " Terminate the program")
@@ -183,6 +185,7 @@ class SMB3Foundry(wx.Frame):
 
         self.SetMenuBar(menu_bar)
 
+        self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM)
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
         self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
         self.Bind(wx.EVT_MENU, self.on_object_viewer, id=ID_VIEW_OBJECTS)
@@ -191,9 +194,9 @@ class SMB3Foundry(wx.Frame):
         self.SetTitle("SMB3Foundry")
         self.Center()
 
-        self.rom = ROM("SMB3.nes")
+        self.rom = ROM()
 
-        self.block_viewer = BlockViewer(rom=ROM("SMB3.nes"), parent=self)
+        self.block_viewer = BlockViewer(rom=ROM(), parent=self)
         self.object_viewer = ObjectViewer(self)
 
         horiz_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -258,6 +261,23 @@ class SMB3Foundry(wx.Frame):
         self.dragging_object = None
         self.dragging_index = None
         self.dragging_offset = None
+
+    def on_save_rom(self, _):
+        level = self.levelview.level
+
+        self.rom.bulk_write(level.to_bytes(), level.offset)
+
+        with wx.FileDialog(self, "Save ROM as", style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return  # the user changed their mind
+
+            # save the current contents in the file
+            pathname = fileDialog.GetPath()
+            try:
+                self.rom.save_to_file(pathname)
+            except IOError:
+                wx.LogError("Cannot save current data in file '%s'." % pathname)
 
     def on_menu_checked(self, event):
         item_id = event.GetId()
