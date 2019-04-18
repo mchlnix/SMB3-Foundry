@@ -218,7 +218,7 @@ class SMB3Foundry(wx.Frame):
         self.scroll_panel.SetSizer(sizer)
 
         self.object_list = wx.ListBox(self)
-        self.update_object_list()
+        self.fill_object_list()
 
         spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
         spinner_sizer.AddGrowableCol(0)
@@ -364,10 +364,15 @@ class SMB3Foundry(wx.Frame):
 
     def update_object_list(self):
         index = self.object_list.GetSelection()
+        item = self.object_list.GetString(index)
 
+        description = self.levelview.level.objects[index].description
+
+        if item != description:
+            self.object_list.SetString(index, description)
+
+    def fill_object_list(self):
         self.object_list.SetItems([obj.description for obj in self.levelview.level.objects])
-
-        self.object_list.SetSelection(index)
 
     def open_level_selector(self, _):
         if not self.safe_to_change():
@@ -398,7 +403,7 @@ class SMB3Foundry(wx.Frame):
         self.levelview.Bind(wx.EVT_MOTION, self.dragging)
         self.levelview.Bind(wx.EVT_LEFT_UP, self.stop_drag)
 
-        self.update_object_list()
+        self.fill_object_list()
 
     def on_list_select(self, _):
         index = self.object_list.GetSelection()
