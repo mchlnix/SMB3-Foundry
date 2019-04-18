@@ -101,9 +101,9 @@ class SMB3Foundry(wx.Frame):
         file_menu.Append(ID_APPLY_IPS_PATCH, "&Apply IPS Patch", "")
         file_menu.AppendSeparator()
         file_menu.Append(ID_ROM_PRESET, "&ROM Preset", "")
+        """
         file_menu.AppendSeparator()
         file_menu.Append(ID_EXIT, "&Exit", "")
-        """
 
         edit_menu = wx.Menu()
 
@@ -120,22 +120,22 @@ class SMB3Foundry(wx.Frame):
 
         level_menu = wx.Menu()
 
-        # level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
         level_menu.Append(ID_SELECT_LEVEL, "&Select Level", "")
+        """
+        level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
         level_menu.AppendSeparator()
-        # level_menu.Append(ID_RELOAD_LEVEL, "&Reload Level", "")
+        level_menu.Append(ID_RELOAD_LEVEL, "&Reload Level", "")
         level_menu.AppendSeparator()
-        # level_menu.Append(ID_EDIT_HEADER, "&Edit Header", "")
-        # level_menu.Append(ID_EDIT_POINTERS, "&Edit Pointers", "")
-
-        self.Bind(wx.EVT_MENU, self.open_level_selector, id=ID_SELECT_LEVEL)
+        level_menu.Append(ID_EDIT_HEADER, "&Edit Header", "")
+        level_menu.Append(ID_EDIT_POINTERS, "&Edit Pointers", "")
+        """
 
         object_menu = wx.Menu()
 
         object_menu.Append(ID_VIEW_BLOCKS, "&View Blocks", "")
         object_menu.Append(ID_VIEW_OBJECTS, "&View Objects", "")
-        object_menu.AppendSeparator()
         """
+        object_menu.AppendSeparator()
         object_menu.Append(ID_CLONE_OBJECT_ENEMY, "&Clone Object/Enemy", "")
         object_menu.AppendSeparator()
         object_menu.Append(ID_ADD_3_BYTE_OBJECT, "&Add 3 Byte Object", "")
@@ -188,6 +188,7 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_open_rom, id=ID_OPEN_ROM)
         self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM)
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
+        self.Bind(wx.EVT_MENU, self.open_level_selector, id=ID_SELECT_LEVEL)
         self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
         self.Bind(wx.EVT_MENU, self.on_object_viewer, id=ID_VIEW_OBJECTS)
         self.Bind(wx.EVT_MENU, self.on_menu_checked)
