@@ -267,12 +267,10 @@ class SMB3Foundry(wx.Frame):
         self.dragging_offset = None
 
     def on_open_rom(self, _):
-        if hasattr(self, "levelview") and self.levelview.level.changed:
-            if wx.MessageBox("Current content has not been saved! Proceed?", "Please confirm",
-                             wx.ICON_QUESTION | wx.YES_NO, self) == wx.NO:
-                return
+        if not self.safe_to_change():
+            return
 
-            # otherwise ask the user what new file to open
+        # otherwise ask the user what new file to open
         with wx.FileDialog(self, "Open ROM", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 return False
@@ -289,6 +287,15 @@ class SMB3Foundry(wx.Frame):
                 return True
             except IOError:
                 wx.LogError("Cannot open file '%s'." % pathname)
+
+    def safe_to_change(self):
+        if hasattr(self, "levelview") and self.levelview.level.changed:
+            answer = wx.MessageBox("Current content has not been saved! Proceed?", "Please confirm",
+                                   wx.ICON_QUESTION | wx.YES_NO, self)
+
+            return answer == wx.YES
+        else:
+            return True
 
     def on_save_rom(self, _):
         level = self.levelview.level
@@ -363,6 +370,9 @@ class SMB3Foundry(wx.Frame):
         self.object_list.SetSelection(index)
 
     def open_level_selector(self, _):
+        if not self.safe_to_change():
+            return
+
         self.level_selector.Show()
         self.level_selector.Raise()
 
