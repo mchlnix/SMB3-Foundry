@@ -3,9 +3,12 @@ Port/Reimplementation of SMB3 Workshop by hukka
 Features right now:
  - Level selection
  - Level view(buggy)
+ - Block Viewer
  - Object-Viewer
+ - Loading/Saving of levels
 
 To come:
+ - Items and Enemies
  - Pretty much the rest of SMB3 Workshops features
  - Cleaner architecture
 
@@ -14,11 +17,7 @@ Not planned right now:
 
 # How to run
 
-You need to have Python3.6 and wxPython installed. Put the SMB3.nes rom file,
-with that name, into the root folder (where this README file is).
+You need to have Python3.6 and wxPython installed (pip install wxpython).
 
 Run `python3 smb3-foundry.py`
 
-Necessary to run:
- - Put the US rom of SMB3 into the root directory of this repo, before running
- - Needs wxPython installed
