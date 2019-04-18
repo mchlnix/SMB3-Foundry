@@ -3,10 +3,19 @@ class ROM:
 
     def __init__(self, path="SMB3.nes"):
         if not ROM.data:
-            with open(path, "rb") as rom:
-                ROM.data = list(rom.read())
+            ROM.load_from_file(path)
 
         self.position = 0
+
+    @staticmethod
+    def load_from_file(path):
+        with open(path, "rb") as rom:
+            ROM.data = list(rom.read())
+
+    @staticmethod
+    def save_to_file(path):
+        with open(path, "wb") as f:
+            f.write(bytearray(ROM.data))
 
     def seek(self, position):
         if position > len(ROM.data) or position < 0:
@@ -57,3 +66,13 @@ class ROM:
         self.position += count
 
         return ROM.data[position:position+count]
+
+    def bulk_write(self, data, position=-1):
+        if position >= 0:
+            self.seek(position)
+        else:
+            position = self.position
+
+        self.position += len(data)
+
+        ROM.data[position:position + len(data)] = data
