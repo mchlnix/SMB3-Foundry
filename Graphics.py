@@ -196,7 +196,7 @@ class LevelObject:
 
         self.block_cache = {}
 
-        self.is_4byte = len(data) == 4
+        self.is_4byte = object_data.is_4byte
 
         if self.is_4byte:
             self.secondary_length = self.length

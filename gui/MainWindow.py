@@ -250,8 +250,6 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_LISTBOX, self.on_list_select)
 
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
-        self.Bind(wx.EVT_SPINCTRL, self.on_spin)
-        self.Bind(wx.EVT_SPINCTRL, self.on_spin)
 
         self.levelview.Bind(wx.EVT_LEFT_DOWN, self.start_drag)
         self.levelview.Bind(wx.EVT_MOTION, self.dragging)
@@ -296,9 +294,9 @@ class SMB3Foundry(wx.Frame):
         elif _id == ID_SPIN_LENGTH:
             object_data[3] = self.spin_length.GetValue()
 
-        self.levelview.level.objects[index] = LevelObject(object_data, level.object_set,
-                                                          level.plains_level[level.object_definition],
-                                                          level.object_palette_group, self.levelview.level.pattern_table)
+        self.levelview.level.objects[index] = LevelObject(object_data, level.object_set, level.plains_level,
+                                                          level.object_palette_group,
+                                                          self.levelview.level.pattern_table)
         self.levelview.Refresh()
         self.update_object_list()
 
