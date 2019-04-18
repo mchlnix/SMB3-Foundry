@@ -266,6 +266,18 @@ class Level:
         for level_object in self.objects:
             level_object.draw(dc, transparent=transparency)
 
+    def to_bytes(self):
+        data = bytearray()
+
+        data.extend(self.header)
+
+        for obj in self.objects:
+            data.extend(obj.to_bytes())
+
+        data.append(0xFF)
+
+        return data
+
     @staticmethod
     def _load_palettes(rom):
         for os in range(OBJECT_SET_COUNT):

@@ -580,6 +580,18 @@ class LevelObject:
     def point_in(self, x, y):
         return self.rect.Contains(x, y)
 
+    def to_bytes(self):
+        data = bytearray()
+
+        data.append((self.domain << 5) | self.y_position)
+        data.append(self.x_position)
+        data.append(self.obj_index)
+
+        if self.is_4byte:
+            data.append(self.length)
+
+        return data
+
 
 class EnemyObject:
     def __init__(self, data):
