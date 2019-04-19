@@ -258,6 +258,8 @@ class SMB3Foundry(wx.Frame):
         self.dragging_index = None
         self.dragging_offset = None
 
+        self.Show()
+
         if not self.on_open_rom(None):
             quit()
 
