@@ -75,6 +75,7 @@ class LevelSelector(wx.Frame):
         self.SetSizerAndFit(self.window_sizer)
 
         self.Bind(wx.EVT_BUTTON, self.on_ok, id=self.button_ok.GetId())
+        self.Bind(wx.EVT_LISTBOX_DCLICK, self.on_ok)
         self.Bind(wx.EVT_BUTTON, self.on_exit, id=self.button_cancel.GetId())
 
         self.world_list.Select(1)  # select Level 1-1
