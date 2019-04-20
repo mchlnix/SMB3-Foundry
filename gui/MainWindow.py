@@ -393,6 +393,7 @@ class SMB3Foundry(wx.Frame):
     def update_level(self, world, level, object_set=None):
 
         self.level_view.load_level(world=world, level=level, object_set=object_set)
+        self.Fit()
 
         self.fill_object_list()
         self.update_title()
