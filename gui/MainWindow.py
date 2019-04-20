@@ -195,8 +195,8 @@ class SMB3Foundry(wx.Frame):
 
         self.Center()
 
-        self.block_viewer = BlockViewer(parent=self)
-        self.object_viewer = ObjectViewer(self)
+        self.block_viewer = None
+        self.object_viewer = None
 
         horiz_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -385,10 +385,16 @@ class SMB3Foundry(wx.Frame):
         self.level_selector.Raise()
 
     def on_block_viewer(self, _):
+        if self.block_viewer is None:
+            self.block_viewer = BlockViewer(parent=self)
+
         self.block_viewer.Show()
         self.block_viewer.Raise()
 
     def on_object_viewer(self, _):
+        if self.object_viewer is None:
+            self.object_viewer = ObjectViewer(parent=self)
+
         self.object_viewer.Show()
         self.object_viewer.Raise()
 
