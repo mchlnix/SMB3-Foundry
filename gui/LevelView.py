@@ -34,7 +34,7 @@ class LevelView(wx.Panel):
         else:
             self.level = Level(world, level, object_set)
 
-        self.SetMinSize(wx.Size(self.level.width * Block.WIDTH, self.level.height * Block.HEIGHT))
+        self.SetMinSize(wx.Size(*self.level.size))
         self.SetSize(self.GetMinSize())
 
         print(f"Drawing {self.level.name}")
@@ -45,20 +45,10 @@ class LevelView(wx.Panel):
         self.Refresh()
 
     def object_at(self, x, y):
-        level_point = self.to_level_point(x, y)
+        return self.level.object_at(x, y)
 
-        for obj in reversed(self.level.objects):
-            if level_point in obj:
-                return obj
-        else:
-            return None
-
-    @staticmethod
-    def to_level_point(x, y):
-        level_x = x // Block.WIDTH
-        level_y = y // Block.HEIGHT
-
-        return level_x, level_y
+    def to_level_point(self, x, y):
+        return self.level.to_level_point(x, y)
 
     def on_size(self, event):
         event.Skip()
