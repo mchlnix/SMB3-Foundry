@@ -385,39 +385,43 @@ class WorldMap(LevelLike):
         start = WorldMap.LOCATIONS[world_index]
         end = ROM.rom_data.find(0xFF, start)
 
+        self.zoom = 4
+
+        self.block_width = Block.WIDTH * self.zoom
+        self.block_height = Block.HEIGHT * self.zoom
+
         self.objects = []
 
-        for block_index in ROM().bulk_read(end - start, start):
-            self.objects.append(Block(OVERWORLD_OBJECT_SET, block_index, self.palette_group, self.pattern_table))
+        for index, block_index in enumerate(ROM().bulk_read(end - start, start)):
+            screen_offset = (index // WorldMap.VISIBLE_BLOCKS) * WorldMap.WIDTH
+
+            x = screen_offset + (index % WorldMap.WIDTH)
+            y = (index // WorldMap.WIDTH) % WorldMap.HEIGHT
+
+            block = Block(OVERWORLD_OBJECT_SET, block_index, self.palette_group, self.pattern_table)
+
+            self.objects.append(MapObject(block, x * self.block_width, y * self.block_height, self.zoom))
 
         assert len(self.objects) % WorldMap.HEIGHT == 0
 
         self.width = len(self.objects) / WorldMap.HEIGHT
         self.height = WorldMap.HEIGHT
 
-        self.zoom = 4
-
-        self.block_width = Block.WIDTH * self.zoom
-        self.block_height = Block.HEIGHT * self.zoom
-
         self.size = (self.width * self.block_width, self.height * self.block_height)
 
     def get_object_names(self):
-        return [str(block.index) for block in self.objects]
+        return [str(obj.block.index) for obj in self.objects]
 
     def draw(self, dc, transparency=None):
-        for index, block in enumerate(self.objects):
-            screen_offset = (index // WorldMap.VISIBLE_BLOCKS) * WorldMap.WIDTH
-
-            x = screen_offset + (index % WorldMap.WIDTH)
-            y = (index // WorldMap.WIDTH) % WorldMap.HEIGHT
-
-            block.draw(dc, x * self.block_width, y * self.block_height, zoom=self.zoom)
+        for obj in self.objects:
+            obj.draw(dc)
 
     def object_at(self, x, y):
-        level_x, level_y = self.to_level_point(x, y)
+        point = wx.Point(*self.to_level_point(x, y))
 
-        index = level_y * Block.WIDTH + level_x
+        for obj in reversed(self.objects):
+            if obj.rect.Contains(point):
+                return obj
 
-        return self.objects[index]
+        return None
 
