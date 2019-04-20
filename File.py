@@ -1,8 +1,15 @@
 class ROM:
-    data = bytearray()
+    MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
 
-    def __init__(self, path="SMB3.nes"):
-        if not ROM.data:
+    rom_data = bytearray()
+
+    additional_data = ""
+
+    def __init__(self, path=None):
+        if not ROM.rom_data:
+            if path is None:
+                raise ValueError("Rom was not loaded!")
+
             ROM.load_from_file(path)
 
         self.position = 0
@@ -10,15 +17,37 @@ class ROM:
     @staticmethod
     def load_from_file(path):
         with open(path, "rb") as rom:
-            ROM.data = list(rom.read())
+            data = bytearray(rom.read())
+
+        additional_data_start = data.find(ROM.MARKER_VALUE)
+
+        if additional_data_start == -1:
+            ROM.rom_data = data
+            ROM.additional_data = ""
+            return
+
+        ROM.rom_data = data[:additional_data_start]
+
+        additional_data_start += len(ROM.MARKER_VALUE)
+
+        ROM.additional_data = data[additional_data_start:].decode("utf-8")
 
     @staticmethod
     def save_to_file(path):
         with open(path, "wb") as f:
-            f.write(bytearray(ROM.data))
+            f.write(bytearray(ROM.rom_data))
+
+        if ROM.additional_data is not None:
+            with open(path, "ab") as f:
+                f.write(ROM.MARKER_VALUE)
+                f.write(ROM.additional_data.encode("utf-8"))
+
+    @staticmethod
+    def set_additional_data(additional_data):
+        ROM.additional_data = additional_data
 
     def seek(self, position):
-        if position > len(ROM.data) or position < 0:
+        if position > len(ROM.rom_data) or position < 0:
             return -1
 
         self.position = position
@@ -29,10 +58,10 @@ class ROM:
         if position >= 0:
             k = self.seek(position) >= 0
         else:
-            k = self.position < len(ROM.data)
+            k = self.position < len(ROM.rom_data)
 
         if k:
-            return_byte = ROM.data[self.position]
+            return_byte = ROM.rom_data[self.position]
         else:
             return_byte = 0
 
@@ -57,7 +86,7 @@ class ROM:
 
         self.position += count
 
-        return ROM.data[position:position+count]
+        return ROM.rom_data[position:position + count]
 
     def bulk_write(self, data, position=-1):
         if position >= 0:
@@ -67,4 +96,4 @@ class ROM:
 
         self.position += len(data)
 
-        ROM.data[position:position + len(data)] = data
+        ROM.rom_data[position:position + len(data)] = data
