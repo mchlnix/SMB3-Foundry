@@ -146,7 +146,29 @@ def _load_level_offsets():
     Level.WORLDS = len(Level.world_indexes)
 
 
-class Level:
+class LevelLike:
+    def __init__(self, world, level, object_set):
+        self.world = world
+        self.level = level
+        self.object_set = object_set
+
+        self.objects = []
+
+        self.width = 1
+        self.height = 1
+
+        self.name = "LevelLike object"
+
+        self.pattern_table = None
+
+    def get_object_names(self):
+        raise NotImplementedError("Overwrite this method.")
+
+    def draw(self, dc, transparency):
+        raise NotImplementedError("Overwrite this method.")
+
+
+class Level(LevelLike):
     scroll_types = ["Horizontal, up when flying", "Horizontal 1", "Free scrolling", "Horizontal 2",
                     "Vertical only 1", "Horizontal 3", "Vertical only 2", "Horizontal 4"]
     actions = ["None", "Sliding", "Out of pipe up", "Out of pipe down",
@@ -167,6 +189,7 @@ class Level:
     palettes = []
 
     def __init__(self, world, level, object_set=None):
+        super(Level, self).__init__(world, level, object_set)
         if not Level.offsets:
             _load_level_offsets()
 
@@ -263,6 +286,9 @@ class Level:
             if rom.peek_byte() == 0xFF:
                 break
 
+    def get_object_names(self):
+        return [obj.description for obj in self.objects]
+
     def draw(self, dc, transparency):
         bg_color = NESPalette[self.object_palette_group[0][0]]
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
@@ -300,7 +326,7 @@ class Level:
                     Level.palettes[os][lg].append(rom.bulk_read(COLORS_PER_PALETTE))
 
 
-class WorldMap(Level):
+class WorldMap(LevelLike):
     WIDTH = 16
     HEIGHT = 9
 
@@ -319,20 +345,23 @@ class WorldMap(Level):
     SIZE = WIDTH * HEIGHT
 
     def __init__(self, world_index):
-        super(WorldMap, self).__init__(1, 1, None)
+        super(WorldMap, self).__init__(0, world_index, None)
         self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
         self.palette_group = Level.palettes[OVERWORLD_OBJECT_SET][0]
 
         self.width = WorldMap.WIDTH
         self.height = WorldMap.HEIGHT
 
-        self.blocks = []
+        self.objects = []
 
         for block_index in ROM().bulk_read(WorldMap.SIZE, WorldMap.LOCATIONS[world_index]):
-            self.blocks.append(Block(OVERWORLD_OBJECT_SET, block_index, self.palette_group, self.pattern_table))
+            self.objects.append(Block(OVERWORLD_OBJECT_SET, block_index, self.palette_group, self.pattern_table))
+
+    def get_object_names(self):
+        return [str(block.index) for block in self.objects]
 
     def draw(self, dc, transparency=None):
-        for index, block in enumerate(self.blocks):
+        for index, block in enumerate(self.objects):
             x = index % WorldMap.WIDTH
             y = index // WorldMap.WIDTH
 

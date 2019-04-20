@@ -373,7 +373,9 @@ class SMB3Foundry(wx.Frame):
             self.object_list.SetString(index, description)
 
     def fill_object_list(self):
-        self.object_list.SetItems([obj.description for obj in self.level_view.level.objects])
+        self.object_list.Clear()
+
+        self.object_list.SetItems(self.level_view.level.get_object_names())
 
     def open_level_selector(self, _):
         if not self.safe_to_change():

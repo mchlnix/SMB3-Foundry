@@ -92,6 +92,8 @@ class Block:
             for os in range(OBJECT_SET_COUNT):
                 Block.tsa_data.append(load_tsa_data(rom, os))
 
+        self.index = block_index
+
         palette_index = (block_index & 0b1100_0000) >> 6
 
         self.bg_color = NESPalette[palette_group[palette_index][0]]
