@@ -9,7 +9,30 @@ from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, 
 SKY = 0
 GROUND = 27
 
-# todo ground mapping when the objects are actually drawing, rather then when they are created?
+ENDING_STR = {
+    0: "Uniform",
+    1: "Top or Left",
+    2: "Bottom or Right",
+    3: "Top & Bottom/Left & Right"
+}
+
+ORIENTATION_TO_STR = {
+    0: "Horizontal",
+    1: "Vertical",
+    2: "Diagonal ↙",
+    3: "Desert Pipe Box",
+    4: "Diagonal ↘",
+    5: "Diagonal ↗",
+    6: "Horizontal to the Ground",
+    7: "Horizontal Alternative",
+    8: "Diagonal Weird",  # up left?
+    9: "Single Block",
+    10: "Centered",
+    11: "Pyramid to Ground",
+    12: "Pyramid Alternative",
+    13: "To the Sky",
+    14: "Ending"
+}
 
 # todo what is this, and where should we put it?
 OBJECT_SET_TO_ENDING = {
@@ -155,10 +178,12 @@ class LevelObject:
         self.domain = (data[0] & 0b1110_0000) >> 5
 
         # position relative to the start of the level (top)
-        self.y_position = data[0] & 0b0001_1111
+        self.original_y = data[0] & 0b0001_1111
+        self.y = self.original_y
 
         # position relative to the start of the level (left)
-        self.x_position = data[1]
+        self.original_x = data[1]
+        self.x = self.original_x
 
         # describes what object it is
         self.obj_index = data[2]
@@ -207,8 +232,8 @@ class LevelObject:
         else:
             index = len(LevelObject.ground_map)
 
-        base_x = self.x_position
-        base_y = self.y_position
+        base_x = self.x
+        base_y = self.y
 
         new_width = self.width
         new_height = self.height
@@ -216,10 +241,10 @@ class LevelObject:
         blocks_to_draw = []
 
         if self.orientation == TO_THE_SKY:
-            base_x = self.x_position
+            base_x = self.x
             base_y = SKY
 
-            for _ in range(self.y_position):
+            for _ in range(self.y):
                 blocks_to_draw.extend(self.blocks[0:self.width])
 
             blocks_to_draw.extend(self.blocks[-self.width:])
@@ -335,7 +360,7 @@ class LevelObject:
 
         elif self.orientation == ENDING:
             page_width = 16
-            page_limit = page_width - self.x_position % page_width
+            page_limit = page_width - self.x % page_width
 
             new_width = (page_width + page_limit)
             new_height = (GROUND - 1) - SKY
@@ -521,8 +546,8 @@ class LevelObject:
 
         self.rendered_width = new_width
         self.rendered_height = new_height
-        self.rendered_base_x = base_x
-        self.rendered_base_y = base_y
+        self.x = self.rendered_base_x = base_x
+        self.y = self.rendered_base_y = base_y
 
         if not self.rendered_height == len(self.rendered_blocks) / new_width:
             print(f"Not enough Blocks for calculated height: {self.description}. "
@@ -557,8 +582,8 @@ class LevelObject:
                                            transparent=transparent)
 
     def set_position(self, x, y):
-        self.x_position = x
-        self.y_position = y
+        self.x = x
+        self.y = y
 
         self._render()
 
@@ -570,11 +595,21 @@ class LevelObject:
     def point_in(self, x, y):
         return self.rect.Contains(x, y)
 
+    def get_status_info(self):
+        return [
+            ("x", self.rendered_base_x),
+            ("y", self.rendered_base_y),
+            ("Width", self.rendered_width),
+            ("Height", self.rendered_height),
+            ("Orientation", ORIENTATION_TO_STR[self.orientation]),
+            ("Ending", ENDING_STR[self.ending])
+        ]
+
     def to_bytes(self):
         data = bytearray()
 
-        data.append((self.domain << 5) | self.y_position)
-        data.append(self.x_position)
+        data.append((self.domain << 5) | self.y)
+        data.append(self.x)
         data.append(self.obj_index)
 
         if self.is_4byte:
