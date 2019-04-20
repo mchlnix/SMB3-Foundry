@@ -2,7 +2,7 @@ import wx
 
 from Data import Mario3Level, object_set_pointers, plains_level, NESPalette, object_sets
 from File import ROM
-from Graphics import LevelObject, PatternTable
+from Graphics import LevelObject, PatternTable, MapObject
 from Sprite import Block
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why

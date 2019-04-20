@@ -583,6 +583,36 @@ class LevelObject:
         return data
 
 
+class MapObject:
+    def __init__(self, block, x, y, zoom):
+        self.x = x
+        self.y = y
+
+        self.block = block
+        self.zoom = zoom
+
+        self.rect = wx.Rect(self.x // (Block.WIDTH * self.zoom), self.y // (Block.HEIGHT * self.zoom),
+                            1, 1)
+
+        self.selected = False
+
+    def set_position(self, x, y):
+        self.rect = wx.Rect(x, y, 1, 1)
+
+        self.x = x * Block.WIDTH * self.zoom
+        self.y = y * Block.HEIGHT * self.zoom
+
+    def draw(self, dc):
+        self.block.draw(dc, self.x, self.y, zoom=self.zoom, selected=self.selected, transparent=False)
+
+    def get_status_info(self):
+        return [
+            ("x", self.x),
+            ("y", self.y),
+            ("Block Type", self.block.index)
+        ]
+
+
 class EnemyObject:
     def __init__(self, data):
         self.type = data[0]
