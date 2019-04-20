@@ -184,6 +184,8 @@ class LevelLike:
 
         self.pattern_table = None
 
+        self.changed = False
+
     def to_level_point(self, x, y):
         level_x = x // self.block_width
         level_y = y // self.block_height
@@ -373,35 +375,42 @@ class WorldMap(LevelLike):
         9: 0x19072
     }
 
-    SIZE = WIDTH * HEIGHT
+    VISIBLE_BLOCKS = WIDTH * HEIGHT
 
     def __init__(self, world_index):
         super(WorldMap, self).__init__(0, world_index, None)
         self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
         self.palette_group = Level.palettes[OVERWORLD_OBJECT_SET][0]
 
-        self.width = WorldMap.WIDTH
-        self.height = WorldMap.HEIGHT
+        start = WorldMap.LOCATIONS[world_index]
+        end = ROM.rom_data.find(0xFF, start)
 
         self.objects = []
+
+        for block_index in ROM().bulk_read(end - start, start):
+            self.objects.append(Block(OVERWORLD_OBJECT_SET, block_index, self.palette_group, self.pattern_table))
+
+        assert len(self.objects) % WorldMap.HEIGHT == 0
+
+        self.width = len(self.objects) / WorldMap.HEIGHT
+        self.height = WorldMap.HEIGHT
 
         self.zoom = 4
 
         self.block_width = Block.WIDTH * self.zoom
         self.block_height = Block.HEIGHT * self.zoom
 
-        self.size = (WorldMap.WIDTH * self.block_width, WorldMap.HEIGHT * self.block_height)
-
-        for block_index in ROM().bulk_read(WorldMap.SIZE, WorldMap.LOCATIONS[world_index]):
-            self.objects.append(Block(OVERWORLD_OBJECT_SET, block_index, self.palette_group, self.pattern_table))
+        self.size = (self.width * self.block_width, self.height * self.block_height)
 
     def get_object_names(self):
         return [str(block.index) for block in self.objects]
 
     def draw(self, dc, transparency=None):
         for index, block in enumerate(self.objects):
-            x = index % WorldMap.WIDTH
-            y = index // WorldMap.WIDTH
+            screen_offset = (index // WorldMap.VISIBLE_BLOCKS) * WorldMap.WIDTH
+
+            x = screen_offset + (index % WorldMap.WIDTH)
+            y = (index // WorldMap.WIDTH) % WorldMap.HEIGHT
 
             block.draw(dc, x * self.block_width, y * self.block_height, zoom=self.zoom)
 
