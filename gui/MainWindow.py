@@ -1,6 +1,7 @@
 import wx
 import wx.lib.scrolledpanel
 
+from Level import Level
 from ObjectStatusBar import ObjectStatusBar
 from File import ROM
 from Graphics import LevelObject
@@ -497,24 +498,26 @@ class SMB3Foundry(wx.Frame):
             self.status_bar.fill(obj)
 
             obj.selected = True
-            self.spin_domain.SetValue(obj.domain)
-            self.spin_type.SetValue(obj.data[2])
 
-            self.spin_domain.Enable()
-            self.spin_type.Enable()
+            if isinstance(self.level_view.level, Level):
+                self.spin_domain.SetValue(obj.domain)
+                self.spin_type.SetValue(obj.data[2])
 
-            if obj.is_4byte:
-                self.spin_length.SetValue(obj.length)
-                self.spin_length.Enable()
-            else:
-                self.spin_length.SetValue(0)
-                self.spin_length.Disable()
+                self.spin_domain.Enable()
+                self.spin_type.Enable()
+
+                if obj.is_4byte:
+                    self.spin_length.SetValue(obj.length)
+                    self.spin_length.Enable()
+                else:
+                    self.spin_length.SetValue(0)
+                    self.spin_length.Disable()
 
             if should_scroll:
                 visible_blocks = self.scroll_panel.GetClientSize()[0] // self.scroll_panel.GetScrollPixelsPerUnit()[0]
                 scroll_offset = visible_blocks // 2
 
-                self.scroll_panel.Scroll(obj.rendered_base_x - scroll_offset, obj.rendered_base_y)
+                self.scroll_panel.Scroll(obj.x - scroll_offset, obj.y)
 
         self.level_view.Refresh()
 

@@ -379,6 +379,8 @@ class WorldMap(LevelLike):
 
     def __init__(self, world_index):
         super(WorldMap, self).__init__(0, world_index, None)
+        self.name = f"World {world_index} - Overworld"
+
         self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
         self.palette_group = Level.palettes[OVERWORLD_OBJECT_SET][0]
 
