@@ -109,21 +109,21 @@ class PatternTable:
 
         if graphic_set == WORLD_MAP:
             segments = [0x14, 0x16, 0x20, 0x21, 0x22, 0x23]
-
-        gfx_index = graphic_set2chr_index[graphic_set]
-        common_index = common_set2chr_index[graphic_set]
-
-        segments.append(gfx_index)
-        segments.append(common_index)
-
-        if graphic_set == SPADE_ROULETTE:
-            segments.extend([0x20, 0x21, 0x22, 0x23])
-        elif graphic_set == N_SPADE:
-            segments.extend([0x28, 0x29, 0x5A, 0x31])
-        elif graphic_set == VS_2P:
-            segments.extend([0x04, 0x05, 0x06, 0x07])
         else:
-            segments.extend([0x00, 0x00, 0x00, 0x00])
+            gfx_index = graphic_set2chr_index[graphic_set]
+            common_index = common_set2chr_index[graphic_set]
+
+            segments.append(gfx_index)
+            segments.append(common_index)
+
+            if graphic_set == SPADE_ROULETTE:
+                segments.extend([0x20, 0x21, 0x22, 0x23])
+            elif graphic_set == N_SPADE:
+                segments.extend([0x28, 0x29, 0x5A, 0x31])
+            elif graphic_set == VS_2P:
+                segments.extend([0x04, 0x05, 0x06, 0x07])
+            else:
+                segments.extend([0x00, 0x00, 0x00, 0x00])
 
         self._read_in(segments)
 

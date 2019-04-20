@@ -1,6 +1,6 @@
 import wx
 
-from Level import Level
+from Level import Level, WorldMap
 from Sprite import Block
 
 # TODO a lot of functionality from MainWindow can be put here
@@ -29,7 +29,10 @@ class LevelView(wx.Panel):
             return self.level.changed
 
     def load_level(self, world, level, object_set=None):
-        self.level = Level(world, level, object_set)
+        if world == 0:
+            self.level = WorldMap(level)
+        else:
+            self.level = Level(world, level, object_set)
 
         self.SetMinSize(wx.Size(self.level.width * Block.WIDTH, self.level.height * Block.HEIGHT))
         self.SetSize(self.GetMinSize())

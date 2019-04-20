@@ -3,6 +3,7 @@ import wx
 from Data import Mario3Level, object_set_pointers, plains_level, NESPalette, object_sets
 from File import ROM
 from Graphics import LevelObject, PatternTable
+from Sprite import Block
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
@@ -10,7 +11,8 @@ LEVEL_POINTER_OFFSET = 0x10010  # also no idea
 TIME_INF = -1
 
 OBJECT_SET_COUNT = 16
-OVERWORLD_OBJECT_SET = 14
+OVERWORLD_OBJECT_SET = 0
+OVERWORLD_GRAPHIC_SET = 0
 
 MAP_PALETTE_ADDRESS = 0x36BE2
 PALETTE_ADDRESS = 0x36CA2
@@ -25,9 +27,6 @@ PALETTE_DATA_SIZE = (LEVEL_PALETTE_GROUPS_PER_OBJECT_SET + ENEMY_PALETTE_GROUPS_
                     PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
 
 LEVEL_DEFAULT_HEIGHT = 27
-
-CHR_ROM_OFFSET = 0x40010
-CHR_ROM_SIZE = 0x400
 
 graphic_set2chr_index = {
     0: 0x00,   # not used
@@ -299,6 +298,45 @@ class Level:
                 Level.palettes[os].append([])
                 for _ in range(PALETTES_PER_PALETTES_GROUP):
                     Level.palettes[os][lg].append(rom.bulk_read(COLORS_PER_PALETTE))
+
+
+class WorldMap(Level):
+    WIDTH = 16
+    HEIGHT = 9
+
+    LOCATIONS = {
+        1: 0x185BA,
+        2: 0x1864B,
+        3: 0x1876C,
+        4: 0x1891D,
+        5: 0x18A3E,
+        6: 0x18B5F,
+        7: 0x18D10,
+        8: 0x18E31,
+        9: 0x19072
+    }
+
+    SIZE = WIDTH * HEIGHT
+
+    def __init__(self, world_index):
+        super(WorldMap, self).__init__(1, 1, None)
+        self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
+        self.palette_group = Level.palettes[OVERWORLD_OBJECT_SET][0]
+
+        self.width = WorldMap.WIDTH
+        self.height = WorldMap.HEIGHT
+
+        self.blocks = []
+
+        for block_index in ROM().bulk_read(WorldMap.SIZE, WorldMap.LOCATIONS[world_index]):
+            self.blocks.append(Block(OVERWORLD_OBJECT_SET, block_index, self.palette_group, self.pattern_table))
+
+    def draw(self, dc, transparency=None):
+        for index, block in enumerate(self.blocks):
+            x = index % WorldMap.WIDTH
+            y = index // WorldMap.WIDTH
+
+            block.draw(dc, x * Block.WIDTH, y * Block.HEIGHT)
 
 
 Level._load_palettes(ROM())
