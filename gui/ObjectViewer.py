@@ -1,7 +1,7 @@
 import wx
 
 from Graphics import LevelObject, PatternTable
-from Level import _load_rom_object_definition, Level
+from Level import _load_rom_object_definition, load_palettes
 from Sprite import Block
 
 ID_SPIN_DOMAIN = 1
@@ -97,7 +97,7 @@ class ObjectDrawArea(wx.Panel):
 
         self.object_set = object_set
         self.object_definitions = object_definitions
-        self.palette_group = Level.palettes[self.object_set][palette_index]
+        self.palette_group = load_palettes()[self.object_set][palette_index]
         self.pattern_table = PatternTable(graphic_set)
 
         self.current_object = None

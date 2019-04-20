@@ -146,6 +146,26 @@ def _load_level_offsets():
     Level.WORLDS = len(Level.world_indexes)
 
 
+def load_palettes():
+    rom = ROM()
+    palettes = []
+
+    for os in range(OBJECT_SET_COUNT):
+        if os == OVERWORLD_OBJECT_SET:
+            palette_offset = MAP_PALETTE_ADDRESS
+        else:
+            palette_offset = MAP_PALETTE_ADDRESS + (os * PALETTE_DATA_SIZE)
+        rom.seek(palette_offset)
+
+        palettes.append([])
+        for lg in range(LEVEL_PALETTE_GROUPS_PER_OBJECT_SET):
+            palettes[os].append([])
+            for _ in range(PALETTES_PER_PALETTES_GROUP):
+                palettes[os][lg].append(rom.bulk_read(COLORS_PER_PALETTE))
+
+    return palettes
+
+
 class LevelLike:
     def __init__(self, world, level, object_set):
         self.world = world
@@ -192,6 +212,9 @@ class Level(LevelLike):
         super(Level, self).__init__(world, level, object_set)
         if not Level.offsets:
             _load_level_offsets()
+
+        if not Level.palettes:
+            Level.palettes = load_palettes()
 
         self.object_set = object_set
 
@@ -310,21 +333,6 @@ class Level(LevelLike):
 
         return data
 
-    @staticmethod
-    def _load_palettes(rom):
-        for os in range(OBJECT_SET_COUNT):
-            if os == OVERWORLD_OBJECT_SET:
-                palette_offset = MAP_PALETTE_ADDRESS
-            else:
-                palette_offset = MAP_PALETTE_ADDRESS + (os * PALETTE_DATA_SIZE)
-            rom.seek(palette_offset)
-
-            Level.palettes.append([])
-            for lg in range(LEVEL_PALETTE_GROUPS_PER_OBJECT_SET):
-                Level.palettes[os].append([])
-                for _ in range(PALETTES_PER_PALETTES_GROUP):
-                    Level.palettes[os][lg].append(rom.bulk_read(COLORS_PER_PALETTE))
-
 
 class WorldMap(LevelLike):
     WIDTH = 16
@@ -367,5 +375,3 @@ class WorldMap(LevelLike):
 
             block.draw(dc, x * Block.WIDTH, y * Block.HEIGHT)
 
-
-Level._load_palettes(ROM())
