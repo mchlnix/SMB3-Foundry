@@ -338,6 +338,7 @@ class LevelObject:
             page_limit = page_width - self.x_position % page_width
 
             new_width = (page_width + page_limit)
+            new_height = (GROUND - 1) - SKY
 
             for y in range(SKY, GROUND - 1):
                 blocks_to_draw.append(self.blocks[0])
@@ -522,6 +523,10 @@ class LevelObject:
         self.rendered_height = new_height
         self.rendered_base_x = base_x
         self.rendered_base_y = base_y
+
+        if not self.rendered_height == len(self.rendered_blocks) / new_width:
+            print(f"Not enough Blocks for calculated height: {self.description}. "
+                  f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}")
 
         self.rect = wx.Rect(self.rendered_base_x, self.rendered_base_y,
                             self.rendered_width, self.rendered_height)
