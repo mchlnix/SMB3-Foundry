@@ -406,7 +406,7 @@ class WorldMap(LevelLike):
 
         assert len(self.objects) % WorldMap.HEIGHT == 0
 
-        self.width = len(self.objects) / WorldMap.HEIGHT
+        self.width = len(self.objects) // WorldMap.HEIGHT
         self.height = WorldMap.HEIGHT
 
         self.size = (self.width * self.block_width, self.height * self.block_height)

@@ -1,7 +1,7 @@
 import wx
 
 from Level import Level, WorldMap
-from Sprite import Block
+
 
 # TODO a lot of functionality from MainWindow can be put here
 
@@ -68,12 +68,12 @@ class LevelView(wx.Panel):
         if self.grid_lines:
             dc.SetPen(self.grid_pen)
 
-            pixel_width = self.level.width * Block.WIDTH
-            pixel_height = self.level.height * Block.HEIGHT
+            pixel_width = self.level.width * self.level.block_width
+            pixel_height = self.level.height * self.level.block_height
 
-            for x in range(0, pixel_width, Block.WIDTH):
-                dc.DrawLine(x, 0, x, pixel_height)
-            for y in range(0, pixel_height, Block.HEIGHT):
-                dc.DrawLine(0, y, pixel_width, y)
+            for x in range(0, self.level.width):
+                dc.DrawLine(x * self.level.block_width, 0, x * self.level.block_width, pixel_height)
+            for y in range(0, self.level.height):
+                dc.DrawLine(0, y * self.level.block_height, pixel_width, y * self.level.block_height)
 
         return
