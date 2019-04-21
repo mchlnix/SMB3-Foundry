@@ -93,11 +93,11 @@ class SMB3Foundry(wx.Frame):
         file_menu.AppendSeparator()
         """
         file_menu.Append(ID_SAVE_ROM, "&Save ROM", "")
+        file_menu.Append(ID_SAVE_ROM_AS, "&Save ROM as ...", "")
         """
         file_menu.AppendSeparator()
         file_menu.Append(ID_SAVE_M3L, "&Save M3L", "")
         file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", "")
-        file_menu.Append(ID_SAVE_ROM_AS, "&Save ROM as", "")
         file_menu.AppendSeparator()
         file_menu.Append(ID_APPLY_IPS_PATCH, "&Apply IPS Patch", "")
         file_menu.AppendSeparator()
@@ -188,6 +188,7 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_MENU, self.on_open_rom, id=ID_OPEN_ROM)
         self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM)
+        self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM_AS)
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
         self.Bind(wx.EVT_MENU, self.open_level_selector, id=ID_SELECT_LEVEL)
         self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
@@ -299,23 +300,26 @@ class SMB3Foundry(wx.Frame):
         else:
             return True
 
-    def on_save_rom(self, _):
-        with wx.FileDialog(self, "Save ROM as", style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+    def on_save_rom(self, event):
+        if event.GetId() == ID_SAVE_ROM_AS:
+            with wx.FileDialog(self, "Save ROM as", style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+                if fileDialog.ShowModal() == wx.ID_CANCEL:
+                    return  # the user changed their mind
 
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return  # the user changed their mind
+                # save the current contents in the file
+                pathname = fileDialog.GetPath()
+        else:
+            pathname = ROM.path
 
-            # save the current contents in the file
-            pathname = fileDialog.GetPath()
-            try:
-                level = self.level_view.level
+        try:
+            level = self.level_view.level
 
-                ROM().bulk_write(level.to_bytes(), level.offset)
-                ROM().save_to_file(pathname)
+            ROM().bulk_write(level.to_bytes(), level.offset)
+            ROM().save_to_file(pathname)
 
-                self.level_view.level.changed = False
-            except IOError:
-                wx.LogError("Cannot save current data in file '%s'." % pathname)
+            self.level_view.level.changed = False
+        except IOError:
+            wx.LogError("Cannot save current data in file '%s'." % pathname)
 
     def on_menu_checked(self, event):
         item_id = event.GetId()

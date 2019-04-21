@@ -8,6 +8,7 @@ class ROM:
 
     additional_data = ""
 
+    path = ""
     name = ""
 
     def __init__(self, path=None):
@@ -24,6 +25,7 @@ class ROM:
         with open(path, "rb") as rom:
             data = bytearray(rom.read())
 
+        ROM.path = path
         ROM.name = basename(path)
 
         additional_data_start = data.find(ROM.MARKER_VALUE)
