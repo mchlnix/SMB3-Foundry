@@ -412,7 +412,7 @@ class WorldMap(LevelLike):
         self.size = (self.width * self.block_width, self.height * self.block_height)
 
     def get_object_names(self):
-        return [str(obj.block.index) for obj in self.objects]
+        return [obj.name for obj in self.objects]
 
     def draw(self, dc, transparency=None):
         for obj in self.objects:

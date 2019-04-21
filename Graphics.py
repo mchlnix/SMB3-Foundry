@@ -618,6 +618,81 @@ class LevelObject:
         return data
 
 
+map_object_names = {
+    0x00: "Mario Clear (Blue)",
+    0x01: "Luigi Clear (Blue)",
+    0x03: "Level 1",
+    0x04: "Level 2",
+    0x05: "Level 3",
+    0x06: "Level 4",
+    0x07: "Level 5",
+    0x08: "Level 6",
+    0x09: "Level 7",
+    0x0A: "Level 8",
+    0x0B: "Level 9",
+    0x0C: "Level 10",
+    0x0D: "Level 1 (Broken)",
+    0x0E: "Level 2 (Broken)",
+    0x0F: "Level 3 (Broken)",
+    0x10: "Level 4 (Broken)",
+    0x11: "Level 5 (Broken)",
+    0x12: "Level 6 (Broken)",
+    0x13: "Level 7 (Broken)",
+    0x14: "Level 8 (Broken)",
+    0x15: "Level 9 (Broken)",
+
+    0x40: "Mario Clear (Orange)",
+    0x41: "Luigi Clear (Orange)",
+    0x42: "Desert Background",
+    0x43: "Sand",
+    0x44: "Path Upper Left",
+    0x45: "Path Horizontal",
+    0x46: "Path Vertical",
+    0x47: "Path Upper Right",
+    0x48: "Path Lower Left",
+    0x49: "Path Horizontal 2",
+    0x4A: "Path Lower Right",
+    0x4B: "Pier",
+    0x4C: "I's",
+    0x4D: "Z's",
+    0x4E: "? 1",
+    0x4F: "? 2",
+    0x50: "Mushroom House (Orange)",
+    0x51: "Rock 1",
+    0x52: "Rock 2",
+    0x53: "Rock 3",
+    0x54: "Key Door 1",
+    0x55: "Star",
+    0x56: "Key Door 2",
+    0x57: "Miniature Path Lower Right",
+    0x58: "Miniature Path Lower Left",
+    0x59: "Miniature Path Horizontal",
+    0x5A: "Miniature Tower",
+    0x5B: "Miniature Path Point Horizontal",
+    0x5C: "Miniature Path Lower Left 2",
+    0x5D: "Miniature Cacti",
+    0x5E: "Miniature Cacti 2",
+    0x5F: "Tower",
+    0x60: "Fortress Ruins",
+    0x61: "Castle Wall Tower",
+    0x62: "Castle Wall Side",
+    0x63: "Castle Wall Top 1",
+    0x64: "Castle Wall",
+    0x65: "Castle Wall Top 2",
+    0x66: "Path Upper Right 2",
+    0x67: "Fortress",
+    0x68: "Quicksand",
+    0x69: "Pyramid",
+    0x6A: "Barracks",
+
+    0x80: "Mario Clear (Green)",
+    0x81: "Luigi Clear (Green)",
+    0x82: "Water Three-Way Up",
+    0x83: "Water Three-Way Down",
+    0x84: ""
+}
+
+
 class MapObject:
     def __init__(self, block, x, y, zoom):
         self.x = x
@@ -628,6 +703,11 @@ class MapObject:
 
         self.rect = wx.Rect(self.x // (Block.WIDTH * self.zoom), self.y // (Block.HEIGHT * self.zoom),
                             1, 1)
+
+        if self.block.index in map_object_names:
+            self.name = map_object_names[self.block.index]
+        else:
+            self.name = str(self.block.index)
 
         self.selected = False
 
@@ -644,7 +724,7 @@ class MapObject:
         return [
             ("x", self.x),
             ("y", self.y),
-            ("Block Type", self.block.index)
+            ("Block Type", self.name)
         ]
 
 
