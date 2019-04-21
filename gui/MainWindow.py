@@ -256,6 +256,8 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Bind(wx.EVT_MOTION, self.dragging)
         self.level_view.Bind(wx.EVT_LEFT_UP, self.stop_drag)
 
+        self.Bind(wx.EVT_CLOSE, self.on_exit)
+
         self.dragging_object = None
         self.dragging_index = None
         self.dragging_offset = None
@@ -526,4 +528,7 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Refresh()
 
     def on_exit(self, _):
-        self.Close(True)
+        if not self.safe_to_change():
+            return
+
+        quit()
