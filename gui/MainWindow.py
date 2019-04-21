@@ -220,8 +220,11 @@ class SMB3Foundry(wx.Frame):
         spinner_sizer.AddGrowableCol(0)
 
         self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
+        self.spin_domain.SetBase(16)
         self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=MAX_TYPE)
+        self.spin_type.SetBase(16)
         self.spin_length = wx.SpinCtrl(self, ID_SPIN_LENGTH, max=MAX_LENGTH)
+        self.spin_length.SetBase(16)
 
         spinner_sizer.Add(wx.StaticText(self, label="Domain: "), flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
         spinner_sizer.Add(self.spin_domain)
@@ -253,14 +256,20 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
 
         self.level_view.Bind(wx.EVT_LEFT_DOWN, self.start_drag)
-        self.level_view.Bind(wx.EVT_MOTION, self.dragging)
+        self.level_view.Bind(wx.EVT_MOTION, self.on_mouse_motion)
         self.level_view.Bind(wx.EVT_LEFT_UP, self.stop_drag)
 
-        self.Bind(wx.EVT_CLOSE, self.on_exit)
+        self.level_view.Bind(wx.EVT_RIGHT_DOWN, self.start_resize)
+        self.level_view.Bind(wx.EVT_RIGHT_UP, self.stop_resize)
 
         self.dragging_object = None
         self.dragging_index = None
         self.dragging_offset = None
+
+        self.resizing_object = None
+        self.resizing_index = None
+
+        self.Bind(wx.EVT_CLOSE, self.on_exit)
 
         self.Show()
 
@@ -417,7 +426,60 @@ class SMB3Foundry(wx.Frame):
 
         self.select_object(index=index)
 
+    def on_mouse_motion(self, event):
+        if self.dragging_object is not None:
+            self.dragging(event)
+        elif self.resizing_object is not None:
+            self.resizing(event)
+        else:
+            return
+
+    def start_resize(self, event):
+        if self.dragging_object is not None:
+            return
+
+        x = event.Position.x
+        y = event.Position.y
+
+        obj = self.level_view.object_at(x, y)
+
+        self.select_object(obj)
+
+        if obj is None:
+            return
+
+        self.resizing_object = obj
+        self.resizing_index = self.level_view.level.objects.index(obj)
+
+    def resizing(self, event):
+        self.level_view.level.objects.remove(self.resizing_object)
+
+        x = event.Position.x
+        y = event.Position.y
+
+        level_x, level_y = self.level_view.to_level_point(x, y)
+
+        self.resizing_object.resize_to(level_x, level_y)
+
+        self.status_bar.fill(self.resizing_object)
+
+        self.level_view.level.objects.insert(self.resizing_index, self.resizing_object)
+
+        self.spin_type.SetValue(self.resizing_object.obj_index)
+        self.spin_length.SetValue(self.resizing_object.secondary_length)
+
+        self.level_view.level.changed = True
+
+        self.level_view.Refresh()
+
+    def stop_resize(self, _):
+        self.resizing_object = None
+        self.resizing_index = None
+
     def start_drag(self, event):
+        if self.resizing_object is not None:
+            return
+
         x = event.Position.x
         y = event.Position.y
 
@@ -441,9 +503,6 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Refresh()
 
     def dragging(self, event):
-        if self.dragging_object is None:
-            return
-
         self.level_view.level.objects.remove(self.dragging_object)
 
         x = event.Position.x

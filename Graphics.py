@@ -587,6 +587,21 @@ class LevelObject:
 
         self._render()
 
+    def resize_to(self, x, y):
+        if self.orientation == UNIFORM and not self.is_single_block:
+            # giant blocks are twice as wide
+            width = max(0, x - self.x // self.width)
+
+            # stay under maximum width
+            width = min(width, 0x0F)
+
+            base_index = (self.obj_index // 0x10) * 0x10
+
+            self.obj_index = base_index + width
+            self.length = width
+
+            self._render()
+
     def __contains__(self, item):
         x, y = item
 
