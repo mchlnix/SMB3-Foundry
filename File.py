@@ -1,9 +1,14 @@
+from os.path import basename
+
+
 class ROM:
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
 
     rom_data = bytearray()
 
     additional_data = ""
+
+    name = ""
 
     def __init__(self, path=None):
         if not ROM.rom_data:
@@ -18,6 +23,8 @@ class ROM:
     def load_from_file(path):
         with open(path, "rb") as rom:
             data = bytearray(rom.read())
+
+        ROM.name = basename(path)
 
         additional_data_start = data.find(ROM.MARKER_VALUE)
 

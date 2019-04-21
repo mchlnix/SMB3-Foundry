@@ -265,7 +265,7 @@ class SMB3Foundry(wx.Frame):
             quit()
 
     def update_title(self):
-        self.SetTitle(f"{self.level_view.level.name} - SMB3Foundry")
+        self.SetTitle(f"{self.level_view.level.name} - {ROM.name}")
 
     def on_open_rom(self, _):
         if not self.safe_to_change():
