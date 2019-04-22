@@ -452,6 +452,9 @@ class SMB3Foundry(wx.Frame):
         self.resizing_index = self.level_view.level.objects.index(obj)
 
     def resizing(self, event):
+        if isinstance(self.level_view.level, WorldMap):
+            return
+
         self.level_view.level.objects.remove(self.resizing_object)
 
         x = event.Position.x
