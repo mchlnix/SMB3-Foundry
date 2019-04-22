@@ -34,6 +34,8 @@ class LevelView(wx.Panel):
         else:
             self.level = Level(world, level, object_set)
 
+        self.GetParent().SetupScrolling(rate_x=self.level.block_width, rate_y=self.level.block_height)
+
         self.SetMinSize(wx.Size(*self.level.size))
         self.SetSize(self.GetMinSize())
 

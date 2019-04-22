@@ -1,15 +1,14 @@
 import wx
 import wx.lib.scrolledpanel
 
-from Level import Level, WorldMap
-from ObjectStatusBar import ObjectStatusBar
+from BlockViewer import BlockViewer
 from File import ROM
 from Graphics import LevelObject
+from Level import Level, WorldMap
 from LevelSelector import LevelSelector
 from LevelView import LevelView
+from ObjectStatusBar import ObjectStatusBar
 from ObjectViewer import ObjectViewer
-from Sprite import Block
-from BlockViewer import BlockViewer
 
 # file menu
 
@@ -205,7 +204,6 @@ class SMB3Foundry(wx.Frame):
         self.level_selector = LevelSelector(parent=self)
 
         self.scroll_panel = wx.lib.scrolledpanel.ScrolledPanel(self)
-        self.scroll_panel.SetupScrolling(rate_x=Block.WIDTH, rate_y=Block.HEIGHT)
 
         self.level_view = LevelView(parent=self.scroll_panel)
 
@@ -590,7 +588,7 @@ class SMB3Foundry(wx.Frame):
                 visible_blocks = self.scroll_panel.GetClientSize()[0] // self.scroll_panel.GetScrollPixelsPerUnit()[0]
                 scroll_offset = visible_blocks // 2
 
-                self.scroll_panel.Scroll(obj.x - scroll_offset, obj.y)
+                self.scroll_panel.Scroll(obj.level_x - scroll_offset, obj.level_y)
 
         self.level_view.Refresh()
 
