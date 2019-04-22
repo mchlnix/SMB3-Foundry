@@ -387,6 +387,8 @@ class WorldMap(LevelLike):
         start = WorldMap.LOCATIONS[world_index]
         end = ROM.rom_data.find(0xFF, start)
 
+        self.offset = start
+
         self.zoom = 4
 
         self.block_width = Block.WIDTH * self.zoom
@@ -427,3 +429,11 @@ class WorldMap(LevelLike):
 
         return None
 
+    def to_bytes(self):
+        return_array = bytearray(len(self.objects))
+
+        for obj in self.objects:
+            index = obj.level_y * WorldMap.WIDTH + obj.level_x
+            return_array[index] = obj.to_bytes()
+
+        return return_array

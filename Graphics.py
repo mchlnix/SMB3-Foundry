@@ -742,6 +742,9 @@ class MapObject:
             ("Block Type", self.name)
         ]
 
+    def to_bytes(self):
+        return self.block.index
+
 
 class EnemyObject:
     def __init__(self, data):
