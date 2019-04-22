@@ -1,7 +1,7 @@
 import wx
 import wx.lib.scrolledpanel
 
-from Level import Level
+from Level import Level, WorldMap
 from ObjectStatusBar import ObjectStatusBar
 from File import ROM
 from Graphics import LevelObject
@@ -517,7 +517,12 @@ class SMB3Foundry(wx.Frame):
 
         self.status_bar.fill(self.dragging_object)
 
-        self.level_view.level.objects.insert(self.dragging_index, self.dragging_object)
+        self.level_view.level.add_object(self.dragging_object, self.dragging_index)
+
+        # todo find better way?
+        if isinstance(self.level_view.level, WorldMap):
+            self.fill_object_list()
+            self.object_list.SetSelection(self.level_view.level.objects.index(self.dragging_object))
 
         self.level_view.level.changed = True
 

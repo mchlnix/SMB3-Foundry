@@ -346,6 +346,9 @@ class Level(LevelLike):
         for level_object in self.objects:
             level_object.draw(dc, transparent=transparency)
 
+    def add_object(self, obj: LevelObject, index=-1):
+        self.objects.insert(index, obj)
+
     def to_bytes(self):
         data = bytearray()
 
@@ -412,6 +415,15 @@ class WorldMap(LevelLike):
         self.height = WorldMap.HEIGHT
 
         self.size = (self.width * self.block_width, self.height * self.block_height)
+
+    def add_object(self, obj, _):
+        self.objects.append(obj)
+
+        self.objects.sort(key=WorldMap._array_index)
+
+    @staticmethod
+    def _array_index(obj):
+        return obj.level_y * WorldMap.WIDTH + obj.level_x
 
     def get_object_names(self):
         return [obj.name for obj in self.objects]

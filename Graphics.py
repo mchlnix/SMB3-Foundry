@@ -712,12 +712,14 @@ class MapObject:
     def __init__(self, block, x, y, zoom):
         self.x = x
         self.y = y
-
-        self.block = block
         self.zoom = zoom
 
-        self.rect = wx.Rect(self.x // (Block.WIDTH * self.zoom), self.y // (Block.HEIGHT * self.zoom),
-                            1, 1)
+        self.level_x = self.x // (Block.WIDTH * self.zoom)
+        self.level_y = self.y // (Block.HEIGHT * self.zoom)
+
+        self.block = block
+
+        self.rect = wx.Rect(self.level_x, self.level_y, 1, 1)
 
         if self.block.index in map_object_names:
             self.name = map_object_names[self.block.index]
@@ -727,6 +729,9 @@ class MapObject:
         self.selected = False
 
     def set_position(self, x, y):
+        self.level_x = x
+        self.level_y = y
+
         self.rect = wx.Rect(x, y, 1, 1)
 
         self.x = x * Block.WIDTH * self.zoom
@@ -736,11 +741,7 @@ class MapObject:
         self.block.draw(dc, self.x, self.y, zoom=self.zoom, selected=self.selected, transparent=False)
 
     def get_status_info(self):
-        return [
-            ("x", self.x),
-            ("y", self.y),
-            ("Block Type", self.name)
-        ]
+        return ("x", self.x), ("y", self.y), ("Block Type", self.name)
 
     def to_bytes(self):
         return self.block.index
