@@ -464,10 +464,12 @@ class SMB3Foundry(wx.Frame):
 
         self.status_bar.fill(self.resizing_object)
 
-        self.level_view.level.objects.insert(self.resizing_index, self.resizing_object)
+        self.level_view.level.add_object(self.resizing_object, self.resizing_index)
 
         self.spin_type.SetValue(self.resizing_object.obj_index)
-        self.spin_length.SetValue(self.resizing_object.secondary_length)
+
+        if self.resizing_object.is_4byte:
+            self.spin_length.SetValue(self.resizing_object.data[3])
 
         self.level_view.level.changed = True
 
@@ -572,7 +574,7 @@ class SMB3Foundry(wx.Frame):
 
             if isinstance(self.level_view.level, Level):
                 self.spin_domain.SetValue(obj.domain)
-                self.spin_type.SetValue(obj.data[2])
+                self.spin_type.SetValue(obj.obj_index)
 
                 self.spin_domain.Enable()
                 self.spin_type.Enable()

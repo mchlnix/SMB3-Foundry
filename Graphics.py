@@ -179,11 +179,11 @@ class LevelObject:
 
         # position relative to the start of the level (top)
         self.original_y = data[0] & 0b0001_1111
-        self.y = self.original_y
+        self.y = self.level_y = self.original_y
 
         # position relative to the start of the level (left)
         self.original_x = data[1]
-        self.x = self.original_x
+        self.x = self.level_x = self.original_x
 
         # describes what object it is
         self.obj_index = data[2]
@@ -194,12 +194,8 @@ class LevelObject:
 
         if self.is_single_block:
             self.type = self.obj_index + domain_offset
-            self.length = 1
         else:
-            self.length = self.obj_index & 0b0000_1111
             self.type = (self.obj_index >> 4) + domain_offset + 16 - 1
-
-        self.secondary_length = 0
 
         object_data = object_definitions[self.type]
 
@@ -215,15 +211,25 @@ class LevelObject:
 
         self.is_4byte = object_data.is_4byte
 
-        if self.is_4byte:
-            self.secondary_length = self.length
-            self.length = data[3]
+        self.secondary_length = 0
+
+        self._calculate_lengths()
 
         self.rect = wx.Rect()
 
         self._render()
 
         self.selected = False
+
+    def _calculate_lengths(self):
+        if self.is_single_block:
+            self.length = 1
+        else:
+            self.length = self.obj_index & 0b0000_1111
+
+        if self.is_4byte:
+            self.secondary_length = self.length
+            self.length = self.data[3]
 
     def _render(self):
         if self.rect in LevelObject.ground_map:
@@ -585,20 +591,33 @@ class LevelObject:
         self.x = x
         self.y = y
 
+        self.level_x = x
+        self.level_y = y
+
         self._render()
 
     def resize_to(self, x, y):
-        if self.orientation == UNIFORM and not self.is_single_block:
-            # giant blocks are twice as wide
-            width = max(0, x - self.x // self.width)
+        if not self.is_single_block:
+            if self.is_4byte:
+                max_width = 0xFF
+            else:
+                max_width = 0x0F
+
+            # don't get negative
+            width = max(0, x - self.x)
 
             # stay under maximum width
-            width = min(width, 0x0F)
+            width = min(width, max_width)
 
-            base_index = (self.obj_index // 0x10) * 0x10
+            if self.is_4byte:
+                self.data[3] = width
+            else:
+                base_index = (self.obj_index // 0x10) * 0x10
 
-            self.obj_index = base_index + width
-            self.length = width
+                self.obj_index = base_index + width
+                self.data[2] = self.obj_index
+
+            self._calculate_lengths()
 
             self._render()
 
