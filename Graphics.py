@@ -636,6 +636,7 @@ class LevelObject:
 map_object_names = {
     0x00: "Mario Clear (Blue)",
     0x01: "Luigi Clear (Blue)",
+    0x02: "Black Square",
     0x03: "Level 1",
     0x04: "Level 2",
     0x05: "Level 3",
@@ -689,11 +690,11 @@ map_object_names = {
     0x5E: "Miniature Cacti 2",
     0x5F: "Tower",
     0x60: "Fortress Ruins",
-    0x61: "Castle Wall Tower",
-    0x62: "Castle Wall Side",
-    0x63: "Castle Wall Top 1",
-    0x64: "Castle Wall",
-    0x65: "Castle Wall Top 2",
+    0x61: "Bowsers Castle Wall Tower",
+    0x62: "Bowsers Castle Wall Side",
+    0x63: "Bowsers Castle Wall Top 1",
+    0x64: "Bowsers Castle Wall",
+    0x65: "Bowsers Castle Wall Top 2",
     0x66: "Path Upper Right 2",
     0x67: "Fortress",
     0x68: "Quicksand",
@@ -704,7 +705,62 @@ map_object_names = {
     0x81: "Luigi Clear (Green)",
     0x82: "Water Three-Way Up",
     0x83: "Water Three-Way Down",
-    0x84: ""
+    # TODO continue
+    0xB1: "Switchable Bridge Vertical",
+    0xB2: "Switchable Bridge Horizontal",
+    0xB3: "Round Bridge",
+    0xB4: "Bushes",
+    # TODO continue
+    0xBB: "Palm Tree",
+    0xBC: "Pipe",
+    0xBD: "Fire Flower",
+    0xBE: "Piranha Plant",
+    0xBF: "Pond",
+
+    0xC0: "Mario Clear (Red)",
+    0xC1: "Luigi Clear (Red)",
+    0xC2: "Cloud Upper Left",
+    0xC3: "Cloud Top Left",
+    0xC4: "Cloud Top Right",
+    0xC5: "Cloud Upper Right",
+    0xC6: "? 3",
+    0xC7: "? 4",
+    0xC8: "End Castle Top",
+    0xC9: "End Castle Bottom",
+    0xCA: "Bowsers Lair Top Left",
+    0xCB: "Bowsers Lair Top Right",
+    0xCC: "Bowsers Lair Bottom Left",
+    0xCD: "Bowsers Lair Bottom Right",
+    0xCE: "Cloud Left 1",
+    0xCF: "? 5",
+    0xD0: "Cloud Diagnoal",
+    0xD1: "Flame",
+    0xD2: "Cloud Left 2",
+    0xD3: "Cloud Bottom",
+    0xD4: "Cloud Lower Right",
+    0xD5: "I's 2",
+    0xD6: "Red Background ?",
+    0xD7: "Desert Background 2 ?",
+    0xD8: "Black Square",
+    0xD9: "Path Upper Left 2",
+    0xDA: "Path Horizontal 3",
+    0xDB: "Path Vertical 2",
+    0xDC: "Path Upper Right 2",
+    0xDD: "Path Lower Left 2",
+    0xDE: "Path Lower Right 2",
+    0xDF: "Tower 2",
+    0xE0: "Mushroom House 2",
+    0xE1: "Mushroom",
+    0xE2: "Skull",
+    0xE3: "Fortress Ruins 2",
+    0xE4: "Key Door 3",
+    0xE5: "Start Field",
+    0xE6: "Hand Field",
+    0xE7: "? 6",
+    0xE8: "Spade Bonus",
+    0xE9: "Star 2",
+    0xEA: "Rock Alternative",
+    0xEB: "Fortress 2"
 }
 
 
@@ -724,7 +780,7 @@ class MapObject:
         if self.block.index in map_object_names:
             self.name = map_object_names[self.block.index]
         else:
-            self.name = str(self.block.index)
+            self.name = str(hex(self.block.index))
 
         self.selected = False
 
