@@ -1,5 +1,11 @@
 from os.path import basename
 
+WORLD_COUNT = 9  # includes warp zone
+WORLD_MAP_OFFSET_SIZE = 2  # byte
+
+WORLD_MAP_OFFSET_LIST = 0x185A8
+WORLD_MAP_BASE_OFFSET = 0xE010
+
 
 class ROM:
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
@@ -11,6 +17,8 @@ class ROM:
     path = ""
     name = ""
 
+    WORLD_MAP_OFFSETS = []
+
     def __init__(self, path=None):
         if not ROM.rom_data:
             if path is None:
@@ -19,6 +27,28 @@ class ROM:
             ROM.load_from_file(path)
 
         self.position = 0
+
+    @staticmethod
+    def _parse_rom():
+        ROM._setup_map_addresses()
+        ROM._setup_level_addresses()
+
+    @staticmethod
+    def _setup_map_addresses():
+        offsets = ROM().bulk_read(WORLD_COUNT * WORLD_MAP_OFFSET_SIZE, WORLD_MAP_OFFSET_LIST)
+
+        ROM.WORLD_MAP_OFFSETS.clear()
+
+        for world in range(WORLD_COUNT):
+            index = world * 2
+
+            world_map_offset = (offsets[index + 1] << 8) + offsets[index]
+
+            ROM.WORLD_MAP_OFFSETS.append(WORLD_MAP_BASE_OFFSET + world_map_offset)
+
+    @staticmethod
+    def _setup_level_addresses():
+        pass
 
     @staticmethod
     def load_from_file(path):
@@ -33,13 +63,14 @@ class ROM:
         if additional_data_start == -1:
             ROM.rom_data = data
             ROM.additional_data = ""
-            return
+        else:
+            ROM.rom_data = data[:additional_data_start]
 
-        ROM.rom_data = data[:additional_data_start]
+            additional_data_start += len(ROM.MARKER_VALUE)
 
-        additional_data_start += len(ROM.MARKER_VALUE)
+            ROM.additional_data = data[additional_data_start:].decode("utf-8")
 
-        ROM.additional_data = data[additional_data_start:].decode("utf-8")
+        ROM._parse_rom()
 
     @staticmethod
     def save_to_file(path):
