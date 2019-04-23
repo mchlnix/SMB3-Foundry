@@ -21,13 +21,13 @@
 
 ## How to run
 
-1.) You need to have at least Python3.6 installed. To do that, go to
+1. You need to have at least Python3.6 installed. To do that, go to
 https://www.python.org/downloads. Make sure to tick the box "Add Python to
 Path"!
-2.) You need to install the wxPython GUI framework. To do that, open a command
+2. You need to install the wxPython GUI framework. To do that, open a command
 prompt (search cmd in Windows, open a Terminal in Linux/Mac) and type in `pip
 install wxpython`. This should work automatically.
-3.) Click on smb3-foundry.py and the editor should open up, asking you to
+3. Click on smb3-foundry.py and the editor should open up, asking you to
 select the ROM you want to load. Preferably the US version of SMB3 or a Hack
 based on it.
 
