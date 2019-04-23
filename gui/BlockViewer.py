@@ -30,8 +30,6 @@ class BlockViewer(wx.Frame):
         self.bank_dropdown = wx.ComboBox(parent=self.toolbar, id=ID_BANK_DROPDOWN, choices=OBJECT_SET_ITEMS)
         self.bank_dropdown.SetSelection(0)
 
-        self.graphic_set_spinner = wx.SpinCtrl(parent=self.toolbar, min=0, max=0x6000F)
-
         self.toolbar.AddControl(self.bank_dropdown)
 
         self.toolbar.Realize()
