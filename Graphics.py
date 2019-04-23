@@ -4,7 +4,7 @@ from File import ROM
 from Sprite import Block
 from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
     END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL, DIAG_DOWN_LEFT, \
-    DIAG_DOWN_RIGHT, DIAG_UP_RIGHT, PYRAMID_TO_GROUND, PYRAMID_2
+    DIAG_DOWN_RIGHT, DIAG_UP_RIGHT, PYRAMID_TO_GROUND, PYRAMID_2, SINGLE_BLOCK_OBJECT
 
 SKY = 0
 GROUND = 27
@@ -541,8 +541,10 @@ class LevelObject:
 
                 if new_rows >= 0:
                     blocks_to_draw = top_row + middle_blocks * new_rows + bottom_row
-            else:
-                breakpoint()
+        else:
+            if not self.orientation == SINGLE_BLOCK_OBJECT:
+                print(f"Didn't render {self.description}")
+                # breakpoint()
 
         # for not yet implemented objects and single block objects
         if blocks_to_draw:
