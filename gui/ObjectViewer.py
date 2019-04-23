@@ -2,11 +2,14 @@ import wx
 
 from Graphics import LevelObject, PatternTable
 from Level import _load_rom_object_definition, load_palettes
+from LevelSelector import OBJECT_SET_ITEMS
 from Sprite import Block
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2
 ID_SPIN_LENGTH = 3
+ID_OBJECT_SET_DROPDOWN = 4
+ID_GFX_SET_DROPDOWN = 5
 
 MAX_DOMAIN = 7
 MAX_TYPE = 0xFF
@@ -31,11 +34,18 @@ class ObjectViewer(wx.Frame):
         spin_sizer.Add(self.spin_type)
         spin_sizer.Add(self.spin_length)
 
+        self.object_set_dropdown = wx.ComboBox(parent=self, id=ID_OBJECT_SET_DROPDOWN, choices=OBJECT_SET_ITEMS[1:])
+        self.object_set_dropdown.SetSelection(0)
+
+        self.graphic_set_dropdown = wx.ComboBox(parent=self, id=ID_GFX_SET_DROPDOWN, choices=[f"Graphics Set {gfx_set}" for gfx_set in range(32)])
+        self.graphic_set_dropdown.SetSelection(1)
+
+        spin_sizer.Add(self.object_set_dropdown)
+        spin_sizer.Add(self.graphic_set_dropdown)
+
         self.object_set = 1
 
-        self.object_definitions = _load_rom_object_definition(self.object_set)
-
-        self.drawing_area = ObjectDrawArea(self, self.object_set, self.object_definitions)
+        self.drawing_area = ObjectDrawArea(self, self.object_set)
 
         self.status_bar = wx.StatusBar(parent=self)
         self.status_bar.SetStatusText(self.drawing_area.current_object.description)
@@ -52,9 +62,28 @@ class ObjectViewer(wx.Frame):
 
         self.resize()
 
+        self.Bind(wx.EVT_COMBOBOX, self.on_combo)
         self.Bind(wx.EVT_CLOSE, self.on_exit)
         self.Bind(wx.EVT_SIZE, self.resize)
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
+
+    def on_combo(self, event):
+        dropdown_id = event.GetId()
+
+        if dropdown_id == ID_OBJECT_SET_DROPDOWN:
+            self.object_set = self.object_set_dropdown.GetSelection() + 1
+            gfx_set = self.object_set
+
+            self.graphic_set_dropdown.SetSelection(gfx_set)
+
+            self.drawing_area.change_object_set(self.object_set)
+        elif dropdown_id == ID_GFX_SET_DROPDOWN:
+            gfx_set = self.graphic_set_dropdown.GetSelection()
+        else:
+            return
+
+        self.drawing_area.change_graphic_set(gfx_set)
+        self.status_bar.SetStatusText(self.drawing_area.current_object.description)
 
     def resize(self, _=None):
         self.SetMinSize(wx.Size(1, 1))
@@ -72,7 +101,7 @@ class ObjectViewer(wx.Frame):
         object_data[2] = self.spin_type.GetValue()
         object_data[3] = self.spin_length.GetValue()
 
-        self.drawing_area.change_object(object_data)
+        self.drawing_area.update_object(object_data)
 
         if _id != ID_SPIN_LENGTH:
             if self.drawing_area.current_object.is_4byte:
@@ -92,33 +121,47 @@ class ObjectViewer(wx.Frame):
 
 
 class ObjectDrawArea(wx.Panel):
-    def __init__(self, parent, object_set, object_definitions, graphic_set=1, palette_index=0):
+    def __init__(self, parent, object_set, graphic_set=1, palette_index=0):
         super(ObjectDrawArea, self).__init__(parent)
 
         self.object_set = object_set
-        self.object_definitions = object_definitions
+        self.object_definitions = _load_rom_object_definition(self.object_set)
         self.palette_group = load_palettes()[self.object_set][palette_index]
         self.pattern_table = PatternTable(graphic_set)
 
         self.current_object = None
 
-        self.change_object([0x0, 0x0, 0x0])
+        self.update_object([0x0, 0x0, 0x0])
 
         self.resize()
 
         self.Bind(wx.EVT_PAINT, self.draw)
+
+    def change_object_set(self, object_set):
+        self.object_set = object_set
+        self.object_definitions = _load_rom_object_definition(self.object_set)
+
+        self.update_object()
+
+    def change_graphic_set(self, graphic_set):
+        self.pattern_table = PatternTable(graphic_set)
+        self.update_object()
 
     def resize(self):
         self.SetMinSize(wx.Size(self.current_object.rendered_width * Block.WIDTH,
                                 self.current_object.rendered_height * Block.HEIGHT))
         self.Fit()
 
-    def change_object(self, object_data):
+    def update_object(self, object_data=None):
         LevelObject.ground_map = []
+        if object_data is None:
+            object_data = self.current_object.data
+
         self.current_object = LevelObject(object_data, self.object_set, self.object_definitions, self.palette_group,
                                           self.pattern_table)
 
         self.resize()
+        self.Refresh()
 
     def draw(self, _):
         dc = wx.BufferedPaintDC(self)
