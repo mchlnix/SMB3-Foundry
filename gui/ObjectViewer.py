@@ -168,4 +168,6 @@ class ObjectDrawArea(wx.Panel):
 
         dc.Clear()
 
+        dc.SetDeviceOrigin(- Block.WIDTH * self.current_object.rendered_base_x, - Block.HEIGHT * self.current_object.rendered_base_y)
+
         self.current_object.draw(dc, transparent=True)
