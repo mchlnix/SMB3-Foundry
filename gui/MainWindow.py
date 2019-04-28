@@ -396,6 +396,8 @@ class SMB3Foundry(wx.Frame):
             level_x, level_y = self.level_view.level.to_level_point(x, y)
 
             self.level_view.level.create_object_at(level_x, level_y)
+
+            self.object_list.update()
         else:
             event.Skip()
 
@@ -438,7 +440,7 @@ class SMB3Foundry(wx.Frame):
         self.level_view.level.objects[index] = LevelObject(
             object_data,
             level.object_set,
-            level.plains_level,
+            level.object_definitions,
             level.object_palette_group,
             self.level_view.level.pattern_table,
         )

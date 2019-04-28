@@ -14,11 +14,9 @@ class ObjectList(wx.ListBox):
     def update(self):
         level_objects = self.Parent.level_view.level.objects
 
-        if len(self.GetItems()) > len(level_objects):
+        if len(self.GetItems()) != len(level_objects):
             self._full_update()
             return
-        elif len(self.GetItems()) < len(level_objects):
-            raise NotImplementedError("Adding objects not supported")
 
         index = self.GetSelection()
         item = self.GetString(index)
@@ -30,6 +28,7 @@ class ObjectList(wx.ListBox):
 
     def _full_update(self):
         self._remove_orphaned_items()
+        self._add_placeholder_objects()
 
         for index, obj_name in enumerate(
             self.Parent.level_view.level.get_object_names()
@@ -42,6 +41,12 @@ class ObjectList(wx.ListBox):
         while len(self.GetItems()) > len(level_objects):
             last_index = len(self.GetItems()) - 1
             self.Delete(last_index)
+
+    def _add_placeholder_objects(self):
+        level_objects = self.Parent.level_view.level.objects
+
+        while len(self.GetItems()) < len(level_objects):
+            self.Append("__PLACEHOLDER")
 
     def fill(self):
         self.Clear()
