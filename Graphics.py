@@ -590,6 +590,10 @@ class LevelObject:
                                            transparent=transparent)
 
     def set_position(self, x, y):
+        # todo also check for the upper bounds
+        x = max(0, x)
+        y = max(0, y)
+
         self.x = x
         self.y = y
 
