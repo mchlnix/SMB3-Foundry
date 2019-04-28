@@ -413,8 +413,26 @@ class Level(LevelLike):
         for level_object in self.objects:
             level_object.draw(dc, transparent=transparency)
 
+    def create_object_at(self, x, y):
+        obj = LevelObject(
+            [0x0, 0x0, 0x0],
+            self.object_set,
+            self.object_definitions,
+            self.object_palette_group,
+            self.pattern_table,
+        )
+
+        obj.set_position(x, y)
+
+        self.add_object(obj)
+
     def add_object(self, obj: LevelObject, index=-1):
+        if index == -1:
+            index = len(self.objects)
+
         self.objects.insert(index, obj)
+
+        self.changed = True
 
     def to_bytes(self):
         data = bytearray()
