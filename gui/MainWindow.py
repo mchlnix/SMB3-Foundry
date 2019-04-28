@@ -325,6 +325,11 @@ class SMB3Foundry(wx.Frame):
             return True
 
     def on_save_rom(self, event):
+        if self.level_view.level.is_too_big():
+            wx.MessageBox("Level is too big to save.", "Error", wx.ICON_ERROR | wx.OK, self)
+
+            return
+
         if event.GetId() == ID_SAVE_ROM_AS:
             with wx.FileDialog(self, "Save ROM as", style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
                 if fileDialog.ShowModal() == wx.ID_CANCEL:

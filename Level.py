@@ -260,6 +260,19 @@ class Level(LevelLike):
 
         self.size = (self.width * Block.WIDTH, self.height * Block.HEIGHT)
 
+        self.original_size_on_disk = self._calc_size_on_disk()
+
+    def _calc_size_on_disk(self):
+        size = 0
+
+        for obj in self.objects:
+            if obj.is_4byte:
+                size += 4
+            else:
+                size += 3
+
+        return size
+
     def _parse_header(self, rom):
         self.header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
 
@@ -324,6 +337,9 @@ class Level(LevelLike):
 
             if rom.peek_byte() == 0xFF:
                 break
+
+    def is_too_big(self):
+        return self._calc_size_on_disk() > self.original_size_on_disk
 
     def get_object_names(self):
         return [obj.description for obj in self.objects]
