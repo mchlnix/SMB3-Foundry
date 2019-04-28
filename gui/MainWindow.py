@@ -219,10 +219,13 @@ class SMB3Foundry(wx.Frame):
 
         self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
         self.spin_domain.SetBase(16)
+        self.spin_domain.Enable(False)
         self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=MAX_TYPE)
         self.spin_type.SetBase(16)
+        self.spin_type.Enable(False)
         self.spin_length = wx.SpinCtrl(self, ID_SPIN_LENGTH, max=MAX_LENGTH)
         self.spin_length.SetBase(16)
+        self.spin_length.Enable(False)
 
         spinner_sizer.Add(wx.StaticText(self, label="Domain: "), flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
         spinner_sizer.Add(self.spin_domain)
