@@ -41,7 +41,9 @@ class ROM:
 
     @staticmethod
     def _setup_map_addresses():
-        offsets = ROM().bulk_read(WORLD_COUNT * WORLD_MAP_OFFSET_SIZE, WORLD_MAP_OFFSET_LIST)
+        offsets = ROM().bulk_read(
+            WORLD_COUNT * WORLD_MAP_OFFSET_SIZE, WORLD_MAP_OFFSET_LIST
+        )
 
         ROM.WORLD_MAP_OFFSETS.clear()
 
@@ -148,7 +150,7 @@ class ROM:
 
         self.position += count
 
-        return ROM.rom_data[position:position + count]
+        return ROM.rom_data[position : position + count]
 
     def bulk_write(self, data, position=-1):
         if position >= 0:
@@ -158,4 +160,4 @@ class ROM:
 
         self.position += len(data)
 
-        ROM.rom_data[position:position + len(data)] = data
+        ROM.rom_data[position : position + len(data)] = data

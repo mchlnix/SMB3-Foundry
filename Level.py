@@ -23,22 +23,25 @@ PALETTES_PER_PALETTES_GROUP = 4
 COLORS_PER_PALETTE = 4
 COLOR_SIZE = 1  # byte
 
-PALETTE_DATA_SIZE = (LEVEL_PALETTE_GROUPS_PER_OBJECT_SET + ENEMY_PALETTE_GROUPS_PER_OBJECT_SET) *\
-                    PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
+PALETTE_DATA_SIZE = (
+    (LEVEL_PALETTE_GROUPS_PER_OBJECT_SET + ENEMY_PALETTE_GROUPS_PER_OBJECT_SET)
+    * PALETTES_PER_PALETTES_GROUP
+    * COLORS_PER_PALETTE
+)
 
 LEVEL_DEFAULT_HEIGHT = 27
 
 graphic_set2chr_index = {
-    0: 0x00,   # not used
-    1: 0x08,   # Plains
-    2: 0x10,   # Fortress
-    3: 0x1C,   # Hills / Underground
-    4: 0x0C,   # Sky
-    5: 0x58,   # Piranha Plant
-    6: 0x58,   # Water
-    7: 0x5C,   # Mushroom
-    8: 0x58,   # Pipe
-    9: 0x30,   # Desert
+    0: 0x00,  # not used
+    1: 0x08,  # Plains
+    2: 0x10,  # Fortress
+    3: 0x1C,  # Hills / Underground
+    4: 0x0C,  # Sky
+    5: 0x58,  # Piranha Plant
+    6: 0x58,  # Water
+    7: 0x5C,  # Mushroom
+    8: 0x58,  # Pipe
+    9: 0x30,  # Desert
     10: 0x34,  # Ship
     11: 0x6E,  # Giant
     12: 0x18,  # Ice
@@ -95,7 +98,9 @@ def _load_rom_object_definition(object_set):
     for object_index in range(object_count):
         object_design_length = data[position]
 
-        plains_level[object_definition][object_index].object_design_length = object_design_length
+        plains_level[object_definition][
+            object_index
+        ].object_design_length = object_design_length
 
         position += 1
 
@@ -103,11 +108,17 @@ def _load_rom_object_definition(object_set):
             block_index = data[position]
 
             if block_index == 0xFF:
-                block_index = (data[position+1] << 16) + (data[position+2] << 8) + data[position+3]
+                block_index = (
+                    (data[position + 1] << 16)
+                    + (data[position + 2] << 8)
+                    + data[position + 3]
+                )
 
                 position += 3
 
-            plains_level[object_definition][object_index].rom_object_design[i] = block_index
+            plains_level[object_definition][object_index].rom_object_design[
+                i
+            ] = block_index
 
             position += 1
 
@@ -116,13 +127,17 @@ def _load_rom_object_definition(object_set):
         return
 
     for object_index in range(object_count):
-        object_design_length = plains_level[object_definition][object_index].object_design_length
+        object_design_length = plains_level[object_definition][
+            object_index
+        ].object_design_length
 
         plains_level[object_definition][object_index].object_design2 = []
 
         for i in range(object_design_length):
             if i <= object_design_length:
-                plains_level[object_definition][object_index].object_design2.append(data[position])
+                plains_level[object_definition][object_index].object_design2.append(
+                    data[position]
+                )
                 position += 1
 
     return plains_level[object_definition]
@@ -203,10 +218,26 @@ class LevelLike:
 
 
 class Level(LevelLike):
-    scroll_types = ["Horizontal, up when flying", "Horizontal 1", "Free scrolling", "Horizontal 2",
-                    "Vertical only 1", "Horizontal 3", "Vertical only 2", "Horizontal 4"]
-    actions = ["None", "Sliding", "Out of pipe up", "Out of pipe down",
-               "Out of pipe left", "Out of pipe right", "Climbing up ship", "Ship autoscroll"]
+    scroll_types = [
+        "Horizontal, up when flying",
+        "Horizontal 1",
+        "Free scrolling",
+        "Horizontal 2",
+        "Vertical only 1",
+        "Horizontal 3",
+        "Vertical only 2",
+        "Horizontal 4",
+    ]
+    actions = [
+        "None",
+        "Sliding",
+        "Out of pipe up",
+        "Out of pipe down",
+        "Out of pipe left",
+        "Out of pipe right",
+        "Climbing up ship",
+        "Ship autoscroll",
+    ]
 
     times = [300, 400, 200, TIME_INF]
 
@@ -249,7 +280,9 @@ class Level(LevelLike):
 
         self._parse_header(rom)
 
-        self.object_palette_group = Level.palettes[self.object_set][self.object_palette_index]
+        self.object_palette_group = Level.palettes[self.object_set][
+            self.object_palette_index
+        ]
 
         # todo better name
         self.plains_level = _load_rom_object_definition(self.object_set)
@@ -289,7 +322,7 @@ class Level(LevelLike):
         # todo make length and height vertical flag dependent
 
         if self.object_set is None:
-            self.object_set = (self.header[6] & 0b0000_1111)  # for indexing purposes
+            self.object_set = self.header[6] & 0b0000_1111  # for indexing purposes
 
         self.start_action = (self.header[7] & 0b1110_0000) >> 5
 
@@ -304,10 +337,19 @@ class Level(LevelLike):
 
         object_set_pointer = object_set_pointers[self.object_set]
 
-        self.level_pointer = (self.header[1] << 8) + self.header[0] + LEVEL_POINTER_OFFSET + object_set_pointer.type
-        self.enemy_pointer = (self.header[3] << 8) + self.header[2] + ENEMY_POINTER_OFFSET
+        self.level_pointer = (
+            (self.header[1] << 8)
+            + self.header[0]
+            + LEVEL_POINTER_OFFSET
+            + object_set_pointer.type
+        )
+        self.enemy_pointer = (
+            (self.header[3] << 8) + self.header[2] + ENEMY_POINTER_OFFSET
+        )
 
-        self.has_bonus_area = object_set_pointer.min <= self.level_pointer <= object_set_pointer.max
+        self.has_bonus_area = (
+            object_set_pointer.min <= self.level_pointer <= object_set_pointer.max
+        )
 
     def _load_objects(self, rom: ROM):
         self.objects = []
@@ -330,8 +372,13 @@ class Level(LevelLike):
 
             if has_length:
                 obj_data.append(rom.get_byte())
-            level_object = LevelObject(obj_data, self.object_set, self.plains_level,
-                                       self.object_palette_group, self.pattern_table)
+            level_object = LevelObject(
+                obj_data,
+                self.object_set,
+                self.plains_level,
+                self.object_palette_group,
+                self.pattern_table,
+            )
 
             self.objects.append(level_object)
 
@@ -395,7 +442,7 @@ class WorldMap(LevelLike):
         6: 0x18B5F,
         7: 0x18D10,
         8: 0x18E31,
-        9: 0x19072
+        9: 0x19072,
     }
 
     VISIBLE_BLOCKS = WIDTH * HEIGHT
@@ -425,9 +472,16 @@ class WorldMap(LevelLike):
             x = screen_offset + (index % WorldMap.WIDTH)
             y = (index // WorldMap.WIDTH) % WorldMap.HEIGHT
 
-            block = Block(OVERWORLD_OBJECT_SET, block_index, self.palette_group, self.pattern_table)
+            block = Block(
+                OVERWORLD_OBJECT_SET,
+                block_index,
+                self.palette_group,
+                self.pattern_table,
+            )
 
-            self.objects.append(MapObject(block, x * self.block_width, y * self.block_height, self.zoom))
+            self.objects.append(
+                MapObject(block, x * self.block_width, y * self.block_height, self.zoom)
+            )
 
         assert len(self.objects) % WorldMap.HEIGHT == 0
 

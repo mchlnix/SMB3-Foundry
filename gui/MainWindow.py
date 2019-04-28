@@ -87,9 +87,10 @@ MAX_LENGTH = 0xFF
 
 
 class SMB3Foundry(wx.Frame):
-
     def __init__(self, *args, **kw):
-        super(SMB3Foundry, self).__init__(title="SMB3Foundry", style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE, *args, **kw)
+        super(SMB3Foundry, self).__init__(
+            title="SMB3Foundry", style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE, *args, **kw
+        )
 
         file_menu = wx.Menu()
 
@@ -238,11 +239,20 @@ class SMB3Foundry(wx.Frame):
         self.spin_length.SetBase(16)
         self.spin_length.Enable(False)
 
-        spinner_sizer.Add(wx.StaticText(self, label="Domain: "), flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
+        spinner_sizer.Add(
+            wx.StaticText(self, label="Domain: "),
+            flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
+        )
         spinner_sizer.Add(self.spin_domain)
-        spinner_sizer.Add(wx.StaticText(self, label="Type: "), flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
+        spinner_sizer.Add(
+            wx.StaticText(self, label="Type: "),
+            flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
+        )
         spinner_sizer.Add(self.spin_type)
-        spinner_sizer.Add(wx.StaticText(self, label="Length: "), flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
+        spinner_sizer.Add(
+            wx.StaticText(self, label="Length: "),
+            flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
+        )
         spinner_sizer.Add(self.spin_length)
 
         self.status_bar = ObjectStatusBar(parent=self)
@@ -297,8 +307,12 @@ class SMB3Foundry(wx.Frame):
             return
 
         # otherwise ask the user what new file to open
-        with wx.FileDialog(self, "Open ROM", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-                           wildcard="NES files (.nes)|*.nes|ROM files (.rom)|*.rom|All files|*") as fileDialog:
+        with wx.FileDialog(
+            self,
+            "Open ROM",
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            wildcard="NES files (.nes)|*.nes|ROM files (.rom)|*.rom|All files|*",
+        ) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 return False
 
@@ -317,8 +331,12 @@ class SMB3Foundry(wx.Frame):
 
     def safe_to_change(self):
         if self.level_view.was_changed():
-            answer = wx.MessageBox("Current content has not been saved! Proceed?", "Please confirm",
-                                   wx.ICON_QUESTION | wx.YES_NO, self)
+            answer = wx.MessageBox(
+                "Current content has not been saved! Proceed?",
+                "Please confirm",
+                wx.ICON_QUESTION | wx.YES_NO,
+                self,
+            )
 
             return answer == wx.YES
         else:
@@ -326,12 +344,16 @@ class SMB3Foundry(wx.Frame):
 
     def on_save_rom(self, event):
         if self.level_view.level.is_too_big():
-            wx.MessageBox("Level is too big to save.", "Error", wx.ICON_ERROR | wx.OK, self)
+            wx.MessageBox(
+                "Level is too big to save.", "Error", wx.ICON_ERROR | wx.OK, self
+            )
 
             return
 
         if event.GetId() == ID_SAVE_ROM_AS:
-            with wx.FileDialog(self, "Save ROM as", style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+            with wx.FileDialog(
+                self, "Save ROM as", style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
+            ) as fileDialog:
                 if fileDialog.ShowModal() == wx.ID_CANCEL:
                     return  # the user changed their mind
 
@@ -388,18 +410,24 @@ class SMB3Foundry(wx.Frame):
         level = self.level_view.level
         obj = level.objects[index]
 
-        object_data = [(self.spin_domain.GetValue() << 5) | obj.y,
-                       obj.x,
-                       self.spin_type.GetValue()]
+        object_data = [
+            (self.spin_domain.GetValue() << 5) | obj.y,
+            obj.x,
+            self.spin_type.GetValue(),
+        ]
 
         if _id == ID_SPIN_LENGTH:
             object_data.append(self.spin_length.GetValue())
         else:
             object_data.append(0)
 
-        self.level_view.level.objects[index] = LevelObject(object_data, level.object_set, level.plains_level,
-                                                           level.object_palette_group,
-                                                           self.level_view.level.pattern_table)
+        self.level_view.level.objects[index] = LevelObject(
+            object_data,
+            level.object_set,
+            level.plains_level,
+            level.object_palette_group,
+            self.level_view.level.pattern_table,
+        )
         self.level_view.level.changed = True
 
         self.level_view.Refresh()
@@ -552,7 +580,9 @@ class SMB3Foundry(wx.Frame):
         # todo find better way?
         if isinstance(self.level_view.level, WorldMap):
             self.object_list.fill()
-            self.object_list.SetSelection(self.level_view.level.objects.index(self.dragging_object))
+            self.object_list.SetSelection(
+                self.level_view.level.objects.index(self.dragging_object)
+            )
 
         self.level_view.level.changed = True
 
@@ -613,7 +643,10 @@ class SMB3Foundry(wx.Frame):
                     self.spin_length.Disable()
 
             if should_scroll:
-                visible_blocks = self.scroll_panel.GetClientSize()[0] // self.scroll_panel.GetScrollPixelsPerUnit()[0]
+                visible_blocks = (
+                    self.scroll_panel.GetClientSize()[0]
+                    // self.scroll_panel.GetScrollPixelsPerUnit()[0]
+                )
                 scroll_offset = visible_blocks // 2
 
                 self.scroll_panel.Scroll(obj.level_x - scroll_offset, obj.level_y)

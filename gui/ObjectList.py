@@ -31,7 +31,9 @@ class ObjectList(wx.ListBox):
     def _full_update(self):
         self._remove_orphaned_items()
 
-        for index, obj_name in enumerate(self.Parent.level_view.level.get_object_names()):
+        for index, obj_name in enumerate(
+            self.Parent.level_view.level.get_object_names()
+        ):
             self.SetString(index, obj_name)
 
     def _remove_orphaned_items(self):
@@ -45,5 +47,3 @@ class ObjectList(wx.ListBox):
         self.Clear()
 
         self.SetItems(self.Parent.level_view.level.get_object_names())
-
-

@@ -27,7 +27,9 @@ class BlockViewer(wx.Frame):
         self.toolbar.AddTool(ID_ZOOM_OUT, "", wx.Bitmap("data/img/zoom_out.bmp"))
         self.toolbar.AddTool(ID_ZOOM_IN, "", wx.Bitmap("data/img/zoom_in.bmp"))
 
-        self.bank_dropdown = wx.ComboBox(parent=self.toolbar, id=ID_BANK_DROPDOWN, choices=OBJECT_SET_ITEMS)
+        self.bank_dropdown = wx.ComboBox(
+            parent=self.toolbar, id=ID_BANK_DROPDOWN, choices=OBJECT_SET_ITEMS
+        )
         self.bank_dropdown.SetSelection(0)
 
         self.toolbar.AddControl(self.bank_dropdown)
@@ -91,8 +93,10 @@ class BlockBank(wx.Panel):
         self.object_set = object_set
         self.zoom = zoom
 
-        self.size = wx.Size(self.sprites_horiz * Block.WIDTH * self.zoom,
-                            self.sprites_vert * Block.HEIGHT * self.zoom)
+        self.size = wx.Size(
+            self.sprites_horiz * Block.WIDTH * self.zoom,
+            self.sprites_vert * Block.HEIGHT * self.zoom,
+        )
 
         super(BlockBank, self).__init__(size=self.size, *args, **kwargs)
 
@@ -118,8 +122,12 @@ class BlockBank(wx.Panel):
         self._after_zoom()
 
     def _after_zoom(self):
-        self.SetSize(wx.Size(self.sprites_horiz * Block.WIDTH * self.zoom,
-                             self.sprites_vert * Block.HEIGHT * self.zoom))
+        self.SetSize(
+            wx.Size(
+                self.sprites_horiz * Block.WIDTH * self.zoom,
+                self.sprites_vert * Block.HEIGHT * self.zoom,
+            )
+        )
 
         self.GetParent().on_resize(None)
 
@@ -138,7 +146,9 @@ class BlockBank(wx.Panel):
         horizontal = self.sprites_horiz
 
         for i in range(self.sprites):
-            block = Block(self.object_set, i, Level.palettes[self.object_set][0], pattern_table)
+            block = Block(
+                self.object_set, i, Level.palettes[self.object_set][0], pattern_table
+            )
 
             x = (i % horizontal) * Block.WIDTH * self.zoom
             y = (i // horizontal) * Block.HEIGHT * self.zoom

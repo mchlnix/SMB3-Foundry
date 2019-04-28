@@ -2,9 +2,24 @@ import wx
 
 from File import ROM
 from Sprite import Block
-from m3idefs import TO_THE_SKY, HORIZ_TO_GROUND, HORIZONTAL, TWO_ENDS, UNIFORM, END_ON_TOP_OR_LEFT, \
-    END_ON_BOTTOM_OR_RIGHT, HORIZONTAL_2, ENDING, VERTICAL, DIAG_DOWN_LEFT, \
-    DIAG_DOWN_RIGHT, DIAG_UP_RIGHT, PYRAMID_TO_GROUND, PYRAMID_2, SINGLE_BLOCK_OBJECT
+from m3idefs import (
+    TO_THE_SKY,
+    HORIZ_TO_GROUND,
+    HORIZONTAL,
+    TWO_ENDS,
+    UNIFORM,
+    END_ON_TOP_OR_LEFT,
+    END_ON_BOTTOM_OR_RIGHT,
+    HORIZONTAL_2,
+    ENDING,
+    VERTICAL,
+    DIAG_DOWN_LEFT,
+    DIAG_DOWN_RIGHT,
+    DIAG_UP_RIGHT,
+    PYRAMID_TO_GROUND,
+    PYRAMID_2,
+    SINGLE_BLOCK_OBJECT,
+)
 
 SKY = 0
 GROUND = 27
@@ -13,7 +28,7 @@ ENDING_STR = {
     0: "Uniform",
     1: "Top or Left",
     2: "Bottom or Right",
-    3: "Top & Bottom/Left & Right"
+    3: "Top & Bottom/Left & Right",
 }
 
 ORIENTATION_TO_STR = {
@@ -31,7 +46,7 @@ ORIENTATION_TO_STR = {
     11: "Pyramid to Ground",
     12: "Pyramid Alternative",
     13: "To the Sky",
-    14: "Ending"
+    14: "Ending",
 }
 
 # todo what is this, and where should we put it?
@@ -63,16 +78,16 @@ ENDING_OBJECT_OFFSET = 0x1C8F9
 BLANK = -1
 
 graphic_set2chr_index = {
-    0: 0x00,   # not used
-    1: 0x08,   # Plains
-    2: 0x10,   # Fortress
-    3: 0x1C,   # Hills / Underground
-    4: 0x0C,   # Sky
-    5: 0x58,   # Piranha Plant
-    6: 0x58,   # Water
-    7: 0x5C,   # Mushroom
-    8: 0x58,   # Pipe
-    9: 0x30,   # Desert
+    0: 0x00,  # not used
+    1: 0x08,  # Plains
+    2: 0x10,  # Fortress
+    3: 0x1C,  # Hills / Underground
+    4: 0x0C,  # Sky
+    5: 0x58,  # Piranha Plant
+    6: 0x58,  # Water
+    7: 0x5C,  # Mushroom
+    8: 0x58,  # Pipe
+    9: 0x30,  # Desert
     10: 0x34,  # Ship
     11: 0x6E,  # Giant
     12: 0x18,  # Ice
@@ -89,16 +104,16 @@ graphic_set2chr_index = {
 }
 
 common_set2chr_index = {
-    0: 0x00,   # not used
-    1: 0x60,   # Plains
-    2: 0x60,   # Fortress
-    3: 0x60,   # Hills / Underground
-    4: 0x60,   # Sky
-    5: 0x3E,   # Piranha Plant
-    6: 0x60,   # Water
-    7: 0x5E,   # Mushroom
-    8: 0x60,   # Pipe
-    9: 0x60,   # Desert
+    0: 0x00,  # not used
+    1: 0x60,  # Plains
+    2: 0x60,  # Fortress
+    3: 0x60,  # Hills / Underground
+    4: 0x60,  # Sky
+    5: 0x3E,  # Piranha Plant
+    6: 0x60,  # Water
+    7: 0x5E,  # Mushroom
+    8: 0x60,  # Pipe
+    9: 0x60,  # Desert
     10: 0x6A,  # Ship
     11: 0x60,  # Giant
     12: 0x60,  # Ice
@@ -165,7 +180,9 @@ class LevelObject:
     # todo better way of saving this information?
     ground_map = []
 
-    def __init__(self, data, object_set, object_definitions, palette_group, pattern_table):
+    def __init__(
+        self, data, object_set, object_definitions, palette_group, pattern_table
+    ):
         self.pattern_table = pattern_table
 
         self.data = data
@@ -251,9 +268,9 @@ class LevelObject:
             base_y = SKY
 
             for _ in range(self.y):
-                blocks_to_draw.extend(self.blocks[0:self.width])
+                blocks_to_draw.extend(self.blocks[0 : self.width])
 
-            blocks_to_draw.extend(self.blocks[-self.width:])
+            blocks_to_draw.extend(self.blocks[-self.width :])
 
         elif self.orientation in [DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
             if self.ending == UNIFORM:
@@ -308,21 +325,25 @@ class LevelObject:
 
                 offset = y % self.height
 
-                rows.append(l * left + slopes[offset:offset + slope_width] + r * right)
+                rows.append(
+                    l * left + slopes[offset : offset + slope_width] + r * right
+                )
 
             if self.orientation in [DIAG_UP_RIGHT]:
                 for row in rows:
                     row.reverse()
 
             if self.orientation in [DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
-                if not self.height > self.width:  # special case for 60 degree platform wire down right
+                if (
+                    not self.height > self.width
+                ):  # special case for 60 degree platform wire down right
                     rows.reverse()
 
             if self.orientation in [DIAG_UP_RIGHT]:
-                base_y -= (new_height - 1)
+                base_y -= new_height - 1
 
             if self.orientation in [DIAG_DOWN_LEFT]:
-                base_x -= (new_width - slope_width)
+                base_x -= new_width - slope_width
 
             for row in rows:
                 blocks_to_draw.extend(row)
@@ -339,8 +360,12 @@ class LevelObject:
 
                 bottom_row = wx.Rect(base_x, y, new_width, 1)
 
-                if any([bottom_row.Intersects(rect) and y == rect.GetTop() for rect in
-                        LevelObject.ground_map[0:index]]):
+                if any(
+                    [
+                        bottom_row.Intersects(rect) and y == rect.GetTop()
+                        for rect in LevelObject.ground_map[0:index]
+                    ]
+                ):
                     break
 
             base_x = base_x - (new_width / 2)
@@ -359,7 +384,9 @@ class LevelObject:
                 blocks_to_draw.extend(blank_blocks * [blank])
 
                 blocks_to_draw.append(left_slope)
-                blocks_to_draw.extend(middle_blocks * [left_fill] + middle_blocks * [right_fill])
+                blocks_to_draw.extend(
+                    middle_blocks * [left_fill] + middle_blocks * [right_fill]
+                )
                 blocks_to_draw.append(right_slope)
 
                 blocks_to_draw.extend(blank_blocks * [blank])
@@ -368,7 +395,7 @@ class LevelObject:
             page_width = 16
             page_limit = page_width - self.x % page_width
 
-            new_width = (page_width + page_limit)
+            new_width = page_width + page_limit
             new_height = (GROUND - 1) - SKY
 
             for y in range(SKY, GROUND - 1):
@@ -401,14 +428,14 @@ class LevelObject:
                 # in case the drawn object is smaller than its actual size
                 for y in range(min(self.height, new_height)):
                     offset = y * self.width
-                    blocks_to_draw.extend(self.blocks[offset:offset + self.width])
+                    blocks_to_draw.extend(self.blocks[offset : offset + self.width])
 
                 additional_rows = new_height - self.height
 
                 # assume only the last row needs to repeat
                 # todo true for giant blocks?
                 if additional_rows > 0:
-                    last_row = self.blocks[-self.width:]
+                    last_row = self.blocks[-self.width :]
 
                     for _ in range(additional_rows):
                         blocks_to_draw.extend(last_row)
@@ -419,7 +446,7 @@ class LevelObject:
                 # assume only the first row needs to repeat
                 # todo true for giant blocks?
                 if additional_rows > 0:
-                    last_row = self.blocks[0:self.width]
+                    last_row = self.blocks[0 : self.width]
 
                     for _ in range(additional_rows):
                         blocks_to_draw.extend(last_row)
@@ -427,12 +454,12 @@ class LevelObject:
                 # in case the drawn object is smaller than its actual size
                 for y in range(min(self.height, new_height)):
                     offset = y * self.width
-                    blocks_to_draw.extend(self.blocks[offset:offset + self.width])
+                    blocks_to_draw.extend(self.blocks[offset : offset + self.width])
 
             elif self.ending == TWO_ENDS:
                 # object exists on ships
-                top_row = self.blocks[0:self.width]
-                bottom_row = self.blocks[-self.width:]
+                top_row = self.blocks[0 : self.width]
+                bottom_row = self.blocks[-self.width :]
 
                 blocks_to_draw.extend(top_row)
 
@@ -441,7 +468,9 @@ class LevelObject:
                 # repeat second to last row
                 if additional_rows > 0:
                     for _ in range(additional_rows):
-                        blocks_to_draw.extend(self.blocks[-2 * self.width:-self.width])
+                        blocks_to_draw.extend(
+                            self.blocks[-2 * self.width : -self.width]
+                        )
 
                 if new_height > 1:
                     blocks_to_draw.extend(bottom_row)
@@ -455,7 +484,12 @@ class LevelObject:
                 for y in range(base_y, GROUND):
                     bottom_row = wx.Rect(base_x, y, new_width, 1)
 
-                    if any([bottom_row.Intersects(rect) and y == rect.GetTop() for rect in LevelObject.ground_map[0:index]]):
+                    if any(
+                        [
+                            bottom_row.Intersects(rect) and y == rect.GetTop()
+                            for rect in LevelObject.ground_map[0:index]
+                        ]
+                    ):
                         new_height = y - base_y
                         break
                 else:
@@ -476,7 +510,7 @@ class LevelObject:
                     offset = (y % self.height) * self.width
 
                     for _ in range(0, new_width):
-                        blocks_to_draw.extend(self.blocks[offset:offset + self.width])
+                        blocks_to_draw.extend(self.blocks[offset : offset + self.width])
 
                 # in case of giant blocks
                 new_width *= self.width
@@ -520,7 +554,7 @@ class LevelObject:
 
                 for y in range(self.height):
                     offset = y * self.width
-                    left, *middle, right = self.blocks[offset:offset + self.width]
+                    left, *middle, right = self.blocks[offset : offset + self.width]
 
                     blocks_to_draw.append(left)
                     blocks_to_draw.extend(middle * (new_width - top_and_bottom_line))
@@ -558,11 +592,17 @@ class LevelObject:
         self.y = self.rendered_base_y = base_y
 
         if not self.rendered_height == len(self.rendered_blocks) / new_width:
-            print(f"Not enough Blocks for calculated height: {self.description}. "
-                  f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}")
+            print(
+                f"Not enough Blocks for calculated height: {self.description}. "
+                f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}"
+            )
 
-        self.rect = wx.Rect(self.rendered_base_x, self.rendered_base_y,
-                            self.rendered_width, self.rendered_height)
+        self.rect = wx.Rect(
+            self.rendered_base_x,
+            self.rendered_base_y,
+            self.rendered_width,
+            self.rendered_height,
+        )
 
         LevelObject.ground_map.insert(index, self.rect)
 
@@ -579,15 +619,30 @@ class LevelObject:
     def _draw_block(self, dc, block_index, x, y, transparent):
         if block_index not in self.block_cache:
             if block_index > 0xFF:
-                rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
-                block = Block(self.object_set, rom_block_index, self.palette_group, self.pattern_table)
+                rom_block_index = ROM().get_byte(
+                    block_index
+                )  # block_index is an offset into the graphic memory
+                block = Block(
+                    self.object_set,
+                    rom_block_index,
+                    self.palette_group,
+                    self.pattern_table,
+                )
             else:
-                block = Block(self.object_set, block_index, self.palette_group, self.pattern_table)
+                block = Block(
+                    self.object_set, block_index, self.palette_group, self.pattern_table
+                )
 
             self.block_cache[block_index] = block
 
-        self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1, selected=self.selected,
-                                           transparent=transparent)
+        self.block_cache[block_index].draw(
+            dc,
+            x * Block.WIDTH,
+            y * Block.HEIGHT,
+            zoom=1,
+            selected=self.selected,
+            transparent=transparent,
+        )
 
     def set_position(self, x, y):
         # todo also check for the upper bounds
@@ -642,7 +697,7 @@ class LevelObject:
             ("Width", self.rendered_width),
             ("Height", self.rendered_height),
             ("Orientation", ORIENTATION_TO_STR[self.orientation]),
-            ("Ending", ENDING_STR[self.ending])
+            ("Ending", ENDING_STR[self.ending]),
         ]
 
     def to_bytes(self):
@@ -681,7 +736,6 @@ map_object_names = {
     0x13: "Level 7 (Broken)",
     0x14: "Level 8 (Broken)",
     0x15: "Level 9 (Broken)",
-
     0x40: "Mario Clear (Orange)",
     0x41: "Luigi Clear (Orange)",
     0x42: "Desert Background",
@@ -725,7 +779,6 @@ map_object_names = {
     0x68: "Quicksand",
     0x69: "Pyramid",
     0x6A: "Barracks",
-
     0x80: "Mario Clear (Green)",
     0x81: "Luigi Clear (Green)",
     0x82: "Water Three-Way Up",
@@ -741,7 +794,6 @@ map_object_names = {
     0xBD: "Fire Flower",
     0xBE: "Piranha Plant",
     0xBF: "Pond",
-
     0xC0: "Mario Clear (Red)",
     0xC1: "Luigi Clear (Red)",
     0xC2: "Cloud Upper Left",
@@ -785,7 +837,7 @@ map_object_names = {
     0xE8: "Spade Bonus",
     0xE9: "Star 2",
     0xEA: "Rock Alternative",
-    0xEB: "Fortress 2"
+    0xEB: "Fortress 2",
 }
 
 
@@ -819,7 +871,14 @@ class MapObject:
         self.y = y * Block.HEIGHT * self.zoom
 
     def draw(self, dc):
-        self.block.draw(dc, self.x, self.y, zoom=self.zoom, selected=self.selected, transparent=False)
+        self.block.draw(
+            dc,
+            self.x,
+            self.y,
+            zoom=self.zoom,
+            selected=self.selected,
+            transparent=False,
+        )
 
     def get_status_info(self):
         return ("x", self.x), ("y", self.y), ("Block Type", self.name)

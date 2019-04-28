@@ -3,7 +3,9 @@ import wx
 from Data import NESPalette
 from File import ROM
 
-PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
+PIXEL_OFFSET = (
+    8
+)  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 
 TSA_BANK_0 = 0 * 256
 TSA_BANK_1 = 1 * 256
@@ -22,9 +24,11 @@ class Tile:
     HEIGHT = 8  # pixel
 
     PIXEL_COUNT = WIDTH * HEIGHT
-    SIZE = 2 * PIXEL_COUNT // 8   # 1 pixel is defined by 2 bits
+    SIZE = 2 * PIXEL_COUNT // 8  # 1 pixel is defined by 2 bits
 
-    def __init__(self, rom, object_set, object_index, palette_group, palette_index, pattern_table):
+    def __init__(
+        self, rom, object_set, object_index, palette_group, palette_index, pattern_table
+    ):
         start = object_index * Tile.SIZE
 
         self.cached_tiles = dict()
@@ -36,7 +40,7 @@ class Tile:
         self.pixels = bytearray()
         self.mask_pixels = bytearray()
 
-        self.data = pattern_table.data[start:start + Tile.SIZE]
+        self.data = pattern_table.data[start : start + Tile.SIZE]
 
         for i in range(Tile.PIXEL_COUNT):
             byte_index = i // Tile.HEIGHT
@@ -104,10 +108,18 @@ class Block:
         ru = tsa_data[TSA_BANK_2 + block_index]
         rd = tsa_data[TSA_BANK_3 + block_index]
 
-        self.lu_tile = Tile(rom, object_set, lu, palette_group, palette_index, pattern_table)
-        self.ru_tile = Tile(rom, object_set, ru, palette_group, palette_index, pattern_table)
-        self.ld_tile = Tile(rom, object_set, ld, palette_group, palette_index, pattern_table)
-        self.rd_tile = Tile(rom, object_set, rd, palette_group, palette_index, pattern_table)
+        self.lu_tile = Tile(
+            rom, object_set, lu, palette_group, palette_index, pattern_table
+        )
+        self.ru_tile = Tile(
+            rom, object_set, ru, palette_group, palette_index, pattern_table
+        )
+        self.ld_tile = Tile(
+            rom, object_set, ld, palette_group, palette_index, pattern_table
+        )
+        self.rd_tile = Tile(
+            rom, object_set, rd, palette_group, palette_index, pattern_table
+        )
 
         self.image = wx.Image(Block.WIDTH, Block.HEIGHT)
 

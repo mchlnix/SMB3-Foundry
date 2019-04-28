@@ -3,14 +3,37 @@ import wx
 from Level import Level
 from Data import level_array, world_indexes
 
-WORLD_ITEMS = ["World Maps", "World 1", "World 2", "World 3",
-               "World 4", "World 5", "World 6", "World 7",
-               "World 8", "Lost Levels"]
+WORLD_ITEMS = [
+    "World Maps",
+    "World 1",
+    "World 2",
+    "World 3",
+    "World 4",
+    "World 5",
+    "World 6",
+    "World 7",
+    "World 8",
+    "Lost Levels",
+]
 
-OBJECT_SET_ITEMS = ["0 Overworld", "1 Plains", "2 Dungeon", "3 Hilly",
-                    "4 Sky", "5 Piranha Plant", "6 Water", "7 Mushroom",
-                    "8 Pipe", "9 Desert", "A Ship", "B Giant",
-                    "C Ice", "D Cloudy", "E Underground", "F Spade Bonus"]
+OBJECT_SET_ITEMS = [
+    "0 Overworld",
+    "1 Plains",
+    "2 Dungeon",
+    "3 Hilly",
+    "4 Sky",
+    "5 Piranha Plant",
+    "6 Water",
+    "7 Mushroom",
+    "8 Pipe",
+    "9 Desert",
+    "A Ship",
+    "B Giant",
+    "C Ice",
+    "D Cloudy",
+    "E Underground",
+    "F Spade Bonus",
+]
 
 
 SPINNER_MAX_VALUE = 0xFF_FF_FF  # arbitrary; 16,7 MB
@@ -58,18 +81,32 @@ class LevelSelector(wx.Frame):
         self.window_sizer.Add(self.world_label, flag=wx.ALL, border=border_width)
         self.window_sizer.Add(self.level_label, flag=wx.ALL, border=border_width)
 
-        self.window_sizer.Add(self.world_list, flag=wx.ALL | wx.EXPAND, border=border_width)
-        self.window_sizer.Add(self.level_list, flag=wx.ALL | wx.EXPAND, border=border_width)
+        self.window_sizer.Add(
+            self.world_list, flag=wx.ALL | wx.EXPAND, border=border_width
+        )
+        self.window_sizer.Add(
+            self.level_list, flag=wx.ALL | wx.EXPAND, border=border_width
+        )
 
         self.window_sizer.Add(self.enemy_data_label, flag=wx.ALL, border=border_width)
         self.window_sizer.Add(self.object_data_label, flag=wx.ALL, border=border_width)
         self.window_sizer.Add(self.enemy_data_spinner, flag=wx.ALL, border=border_width)
-        self.window_sizer.Add(self.object_data_spinner, flag=wx.ALL, border=border_width)
+        self.window_sizer.Add(
+            self.object_data_spinner, flag=wx.ALL, border=border_width
+        )
 
-        self.window_sizer.Add(self.object_set_label, flag=wx.ALL | wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL, border=border_width)
-        self.window_sizer.Add(self.object_set_dropdown, flag=wx.ALL | wx.EXPAND, border=border_width)
+        self.window_sizer.Add(
+            self.object_set_label,
+            flag=wx.ALL | wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL,
+            border=border_width,
+        )
+        self.window_sizer.Add(
+            self.object_set_dropdown, flag=wx.ALL | wx.EXPAND, border=border_width
+        )
 
-        self.window_sizer.Add(self.button_ok, flag=wx.ALL | wx.ALIGN_RIGHT, border=border_width)
+        self.window_sizer.Add(
+            self.button_ok, flag=wx.ALL | wx.ALIGN_RIGHT, border=border_width
+        )
         self.window_sizer.Add(self.button_cancel, flag=wx.ALL, border=border_width)
 
         self.SetSizerAndFit(self.window_sizer)
@@ -110,7 +147,9 @@ class LevelSelector(wx.Frame):
         if self.selected_world == OVERWORLD_MAPS_INDEX:  # over-world maps
             level_array_offset = self.selected_level
         else:
-            level_array_offset = world_indexes[self.selected_world] + self.selected_level
+            level_array_offset = (
+                world_indexes[self.selected_world] + self.selected_level
+            )
 
         object_data_for_lvl = level_array[level_array_offset].rom_level_offset
 
@@ -133,13 +172,16 @@ class LevelSelector(wx.Frame):
         object_set_index = level_array[level_array_offset].real_obj_set
         self.object_set_dropdown.SetSelection(object_set_index)
 
-        print(f"Level {self.selected_world}-{self.selected_level}, lvl_array_offset: {level_array_offset}, obj_index: {object_set_index}")
+        print(
+            f"Level {self.selected_world}-{self.selected_level}, lvl_array_offset: {level_array_offset}, obj_index: {object_set_index}"
+        )
 
     def on_ok(self, _):
         object_set = self.object_set_dropdown.GetSelection()
-        self.GetParent().update_level(self.selected_world, self.selected_level, object_set)
+        self.GetParent().update_level(
+            self.selected_world, self.selected_level, object_set
+        )
         self.Hide()
 
     def on_exit(self, _):
         self.Hide()
-

@@ -21,16 +21,21 @@ MAP_ENEMY_OFFSET = 0x16070
 ENEMY_BANK = 12
 
 MapscreenPointerLocation = namedtuple("MapscreenPointerLocation", "count offset")
-ObjectInfo = namedtuple("ObjectInfo", "index subindex x y width height x2 y2 obj objtype rect drag")
+ObjectInfo = namedtuple(
+    "ObjectInfo", "index subindex x y width height x2 y2 obj objtype rect drag"
+)
 ObjectSetPointerType = namedtuple("ObjectSetPointerType", "type name min max")
-Mario3Level = namedtuple("Mario3Level", [
-    "game_world",
-    "level_in_world",
-    "rom_level_offset",
-    "enemy_offset",
-    "real_obj_set",
-    "name"
-])
+Mario3Level = namedtuple(
+    "Mario3Level",
+    [
+        "game_world",
+        "level_in_world",
+        "rom_level_offset",
+        "enemy_offset",
+        "real_obj_set",
+        "name",
+    ],
+)
 
 palette_file = "data/Default.pal"
 
@@ -44,12 +49,18 @@ COLOR_COUNT = 64
 COLOR_SIZE = 3
 
 for i in range(COLOR_COUNT):
-    NESPalette.append([color_data[offset], color_data[offset + 1], color_data[offset + 2]])
+    NESPalette.append(
+        [color_data[offset], color_data[offset + 1], color_data[offset + 2]]
+    )
 
     offset += COLOR_SIZE + 1
 
-world_indexes = [0]  # insert meaningless first item, so that the world number is the correct index
-level_array = [0]  # insert meaningless first item so that that world_indexes[world] + level is the correct index
+world_indexes = [
+    0
+]  # insert meaningless first item, so that the world number is the correct index
+level_array = [
+    0
+]  # insert meaningless first item so that that world_indexes[world] + level is the correct index
 
 with open("data/levels.dat", "r") as level_data:
     for line_no, line in enumerate(level_data.readlines()):
@@ -81,7 +92,7 @@ with open("data/data.dat", "r") as f:
         if line.startswith(";"):  # is a comment
             continue
 
-        if line.rstrip() == '':
+        if line.rstrip() == "":
             plains_level.append([])
 
             first_index += 1
@@ -103,25 +114,37 @@ with open("data/data.dat", "r") as f:
         second_index += 1
 
 map_sprite_names = [
- 'Nothing?', '"Help!"', 'Ship', 'Hammer Bros.',
- 'Boomerang Bros.', 'Sledge Bros.', 'Fire Bros.',
- 'Piranha Plant', 'Weird', 'N-card',
- 'White Mushroom House', 'Coin Ship', 'World 8 Ship #1',
- 'Battleship', 'Tank', 'World 8 Ship #2', 'Boat'
+    "Nothing?",
+    '"Help!"',
+    "Ship",
+    "Hammer Bros.",
+    "Boomerang Bros.",
+    "Sledge Bros.",
+    "Fire Bros.",
+    "Piranha Plant",
+    "Weird",
+    "N-card",
+    "White Mushroom House",
+    "Coin Ship",
+    "World 8 Ship #1",
+    "Battleship",
+    "Tank",
+    "World 8 Ship #2",
+    "Boat",
 ]
 
 obj_sets = [
- 'Map Screen',
- 'Plains Level',
- 'Hilly/Underground Level',
- 'Sky Level',
- 'Dungeon',
- 'Airship',
- 'Cloudy Level',
- 'Desert Level',
- 'Water/Pipe Level',
- 'Giant Level',
- 'Ice Level'
+    "Map Screen",
+    "Plains Level",
+    "Hilly/Underground Level",
+    "Sky Level",
+    "Dungeon",
+    "Airship",
+    "Cloudy Level",
+    "Desert Level",
+    "Water/Pipe Level",
+    "Giant Level",
+    "Ice Level",
 ]
 
 OBJSET_MAP = 0
@@ -138,23 +161,33 @@ OBJSET_ICE = 10
 OBJSET_UNDERGROUND = 11
 
 mushroom_houses = [
-    'P-Wing Only', 'Warp Whistle Only',
-    'P-Wing Only', 'Frog Suit Only',
-    'Tanooki Suit Only', 'Hammer Suit Only',
-    'Frog, Tanooki, Hammer Suit', 'Mushroom, Leaf, Flower',
-    'Leaf, Flower, Frog Suit', 'Leaf, Flower, Tanooki Suit',
-    'Anchor Only',
-    'Warp Whistle, P-Wing, Frog Suit', 'Frog Suit, P-Wing, Tanooki Suit',
-    'Frog, Tanooki, Hammer Suit',
-    'Warp Whistle, P-Wing, Frog Suit', 'Frog Suit, P-Wing, Tanooki Suit',
-    'Frog, Tanooki, Hammer Suit',
-    'Warp Whistle, P-Wing, Frog Suit', 'Frog Suit, P-Wing, Tanooki Suit',
-    'Frog, Tanooki, Hammer Suit',
-    'Warp Whistle, P-Wing, Frog Suit', 'Frog Suit, P-Wing, Tanooki Suit',
-    'Frog, Tanooki, Hammer Suit',
-    'Warp Whistle, P-Wing, Frog Suit', 'Frog Suit, P-Wing, Tanooki Suit',
-    'Frog, Tanooki, Hammer Suit',
-    'Warp Whistle, P-Wing, Frog Suit'
+    "P-Wing Only",
+    "Warp Whistle Only",
+    "P-Wing Only",
+    "Frog Suit Only",
+    "Tanooki Suit Only",
+    "Hammer Suit Only",
+    "Frog, Tanooki, Hammer Suit",
+    "Mushroom, Leaf, Flower",
+    "Leaf, Flower, Frog Suit",
+    "Leaf, Flower, Tanooki Suit",
+    "Anchor Only",
+    "Warp Whistle, P-Wing, Frog Suit",
+    "Frog Suit, P-Wing, Tanooki Suit",
+    "Frog, Tanooki, Hammer Suit",
+    "Warp Whistle, P-Wing, Frog Suit",
+    "Frog Suit, P-Wing, Tanooki Suit",
+    "Frog, Tanooki, Hammer Suit",
+    "Warp Whistle, P-Wing, Frog Suit",
+    "Frog Suit, P-Wing, Tanooki Suit",
+    "Frog, Tanooki, Hammer Suit",
+    "Warp Whistle, P-Wing, Frog Suit",
+    "Frog Suit, P-Wing, Tanooki Suit",
+    "Frog, Tanooki, Hammer Suit",
+    "Warp Whistle, P-Wing, Frog Suit",
+    "Frog Suit, P-Wing, Tanooki Suit",
+    "Frog, Tanooki, Hammer Suit",
+    "Warp Whistle, P-Wing, Frog Suit",
 ]
 
 map_pointers = [
@@ -170,124 +203,146 @@ map_pointers = [
 ]
 
 object_set_pointers = [
-    ObjectSetPointerType(type=0x0000, name='Map Screen', min=0x18010, max=0x1A00F),
-    ObjectSetPointerType(type=0x4000, name='Plains', min=0x1E512, max=0x2000F),
-    ObjectSetPointerType(type=0x10000, name='Dungeon', min=0x2A7F7, max=0x2C00F),
-    ObjectSetPointerType(type=0x6000, name='Hilly', min=0x20587, max=0x2200F),
-    ObjectSetPointerType(type=0x8000, name='Sky', min=0x227E0, max=0x2400F),
-    ObjectSetPointerType(type=0xC000, name='Piranha Plant', min=0x26A6F, max=0x2800F),
-    ObjectSetPointerType(type=0xA000, name='Water', min=0x24BA7, max=0x2600F),
-    ObjectSetPointerType(type=0x0000, name='Mushroom House', min=0x0000, max=0x0000),
-    ObjectSetPointerType(type=0xA000, name='Pipe', min=0x24BA7, max=0x2600F),
-    ObjectSetPointerType(type=0xE000, name='Desert', min=0x28F3F, max=0x2A00F),
-    ObjectSetPointerType(type=0x14000, name='Ship', min=0x2EC07, max=0x3000F),
-    ObjectSetPointerType(type=0xC000, name='Giant', min=0x26A6F, max=0x2800F),
-    ObjectSetPointerType(type=0x8000, name='Ice', min=0x227E0, max=0x2400F),
-    ObjectSetPointerType(type=0xC000, name='Cloudy', min=0x26A6F, max=0x2800F),
-    ObjectSetPointerType(type=0x0000, name='Underground', min=0x1A587, max=0x1C00F),
-    ObjectSetPointerType(type=0x0000, name='Spade House', min=0xA010, max=0xC00F),
+    ObjectSetPointerType(type=0x0000, name="Map Screen", min=0x18010, max=0x1A00F),
+    ObjectSetPointerType(type=0x4000, name="Plains", min=0x1E512, max=0x2000F),
+    ObjectSetPointerType(type=0x10000, name="Dungeon", min=0x2A7F7, max=0x2C00F),
+    ObjectSetPointerType(type=0x6000, name="Hilly", min=0x20587, max=0x2200F),
+    ObjectSetPointerType(type=0x8000, name="Sky", min=0x227E0, max=0x2400F),
+    ObjectSetPointerType(type=0xC000, name="Piranha Plant", min=0x26A6F, max=0x2800F),
+    ObjectSetPointerType(type=0xA000, name="Water", min=0x24BA7, max=0x2600F),
+    ObjectSetPointerType(type=0x0000, name="Mushroom House", min=0x0000, max=0x0000),
+    ObjectSetPointerType(type=0xA000, name="Pipe", min=0x24BA7, max=0x2600F),
+    ObjectSetPointerType(type=0xE000, name="Desert", min=0x28F3F, max=0x2A00F),
+    ObjectSetPointerType(type=0x14000, name="Ship", min=0x2EC07, max=0x3000F),
+    ObjectSetPointerType(type=0xC000, name="Giant", min=0x26A6F, max=0x2800F),
+    ObjectSetPointerType(type=0x8000, name="Ice", min=0x227E0, max=0x2400F),
+    ObjectSetPointerType(type=0xC000, name="Cloudy", min=0x26A6F, max=0x2800F),
+    ObjectSetPointerType(type=0x0000, name="Underground", min=0x1A587, max=0x1C00F),
+    ObjectSetPointerType(type=0x0000, name="Spade House", min=0xA010, max=0xC00F),
 ]
 
 object_ranges = [
     # Object Set 1
-    ((3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)),
+    (
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
     # Object Set 2
-    ((3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)),
+    (
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
     # Object Set 3
-    ((3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)),
+    (
+        (3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
     # Object Set 4
-    ((3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 3, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)),
+    (
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 3, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
     # Object Set 5
-    ((3, 3, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 3, 3, 3, 4, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)),
+    (
+        (3, 3, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 3, 3, 3, 4, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
     # Object Set 6
-    ((3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 4, 4, 3, 4, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)),
+    (
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 4, 4, 3, 4, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
     # Object Set 7
-    ((3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)),
+    (
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
     # Object Set 8
-    ((3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)),
+    (
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
     # Object Set 9
-    ((3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 4, 4, 3, 4, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)),
+    (
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 4, 4, 3, 4, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
     # Object Set 10
-    ((3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)),
+    (
+        (3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
     # Object Set 11
-    ((3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
-     (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3))
+    (
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+        (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+    ),
 ]
 
 object_sets = {

@@ -26,8 +26,9 @@ class ObjectDefinition:
     def __init__(self, string):
         string = string.rstrip().replace("<", "").replace(">", "")
 
-        self.domain, self.min_value, self.max_value, self.bmp_width, self.bmp_height, *self.object_design, \
-            self.orientation, self.ending, self.is_4byte, self.description = string.split(",")
+        self.domain, self.min_value, self.max_value, self.bmp_width, self.bmp_height, *self.object_design, self.orientation, self.ending, self.is_4byte, self.description = string.split(
+            ","
+        )
 
         self.bmp_width = int(self.bmp_width)
         self.bmp_height = int(self.bmp_height)
@@ -41,7 +42,9 @@ class ObjectDefinition:
 
         for index, item in enumerate(self.object_design):
             self.object_design[index] = int(item)  # original data
-            self.object_design2.append(0)  # data after trimming through romobjset*.dat file?
+            self.object_design2.append(
+                0
+            )  # data after trimming through romobjset*.dat file?
             self.rom_object_design.append(self.object_design[index])
             self.object_design_length = index + 1  # todo necessary when we have len()?
 

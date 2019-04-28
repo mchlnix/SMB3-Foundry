@@ -34,10 +34,16 @@ class ObjectViewer(wx.Frame):
         spin_sizer.Add(self.spin_type)
         spin_sizer.Add(self.spin_length)
 
-        self.object_set_dropdown = wx.ComboBox(parent=self, id=ID_OBJECT_SET_DROPDOWN, choices=OBJECT_SET_ITEMS[1:])
+        self.object_set_dropdown = wx.ComboBox(
+            parent=self, id=ID_OBJECT_SET_DROPDOWN, choices=OBJECT_SET_ITEMS[1:]
+        )
         self.object_set_dropdown.SetSelection(0)
 
-        self.graphic_set_dropdown = wx.ComboBox(parent=self, id=ID_GFX_SET_DROPDOWN, choices=[f"Graphics Set {gfx_set}" for gfx_set in range(32)])
+        self.graphic_set_dropdown = wx.ComboBox(
+            parent=self,
+            id=ID_GFX_SET_DROPDOWN,
+            choices=[f"Graphics Set {gfx_set}" for gfx_set in range(32)],
+        )
         self.graphic_set_dropdown.SetSelection(1)
 
         spin_sizer.Add(self.object_set_dropdown)
@@ -148,8 +154,12 @@ class ObjectDrawArea(wx.Panel):
         self.update_object()
 
     def resize(self):
-        self.SetMinSize(wx.Size(self.current_object.rendered_width * Block.WIDTH,
-                                self.current_object.rendered_height * Block.HEIGHT))
+        self.SetMinSize(
+            wx.Size(
+                self.current_object.rendered_width * Block.WIDTH,
+                self.current_object.rendered_height * Block.HEIGHT,
+            )
+        )
         self.Fit()
 
     def update_object(self, object_data=None):
@@ -157,8 +167,13 @@ class ObjectDrawArea(wx.Panel):
         if object_data is None:
             object_data = self.current_object.data
 
-        self.current_object = LevelObject(object_data, self.object_set, self.object_definitions, self.palette_group,
-                                          self.pattern_table)
+        self.current_object = LevelObject(
+            object_data,
+            self.object_set,
+            self.object_definitions,
+            self.palette_group,
+            self.pattern_table,
+        )
 
         self.resize()
         self.Refresh()
@@ -168,6 +183,9 @@ class ObjectDrawArea(wx.Panel):
 
         dc.Clear()
 
-        dc.SetDeviceOrigin(- Block.WIDTH * self.current_object.rendered_base_x, - Block.HEIGHT * self.current_object.rendered_base_y)
+        dc.SetDeviceOrigin(
+            -Block.WIDTH * self.current_object.rendered_base_x,
+            -Block.HEIGHT * self.current_object.rendered_base_y,
+        )
 
         self.current_object.draw(dc, transparent=True)

@@ -45,7 +45,9 @@ class LevelView(wx.Panel):
         else:
             self.level = Level(world, level, object_set)
 
-        self.GetParent().SetupScrolling(rate_x=self.level.block_width, rate_y=self.level.block_height)
+        self.GetParent().SetupScrolling(
+            rate_x=self.level.block_width, rate_y=self.level.block_height
+        )
 
         self.SetMinSize(wx.Size(*self.level.size))
         self.SetSize(self.GetMinSize())
@@ -85,8 +87,18 @@ class LevelView(wx.Panel):
             pixel_height = self.level.height * self.level.block_height
 
             for x in range(0, self.level.width):
-                dc.DrawLine(x * self.level.block_width, 0, x * self.level.block_width, pixel_height)
+                dc.DrawLine(
+                    x * self.level.block_width,
+                    0,
+                    x * self.level.block_width,
+                    pixel_height,
+                )
             for y in range(0, self.level.height):
-                dc.DrawLine(0, y * self.level.block_height, pixel_width, y * self.level.block_height)
+                dc.DrawLine(
+                    0,
+                    y * self.level.block_height,
+                    pixel_width,
+                    y * self.level.block_height,
+                )
 
         return
