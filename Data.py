@@ -1,7 +1,5 @@
 from collections import namedtuple
 
-import wx
-
 from m3idefs import ObjectDefinition
 
 
@@ -34,13 +32,6 @@ Mario3Level = namedtuple("Mario3Level", [
     "name"
 ])
 
-tsa_offsets = []
-graphics_offsets = []
-common_offsets = []
-
-MAP_PALETTE_ADDRESS = 0x36BE2
-PALETTE_ADDRESS = 0x36CA2  # for levels?
-
 palette_file = "data/Default.pal"
 
 with open(palette_file, "rb") as f:
@@ -56,26 +47,6 @@ for i in range(COLOR_COUNT):
     NESPalette.append([color_data[offset], color_data[offset + 1], color_data[offset + 2]])
 
     offset += COLOR_SIZE + 1
-
-zoom_size = 16
-RomGfx = wx.Image(width=256, height=256)
-
-# loadgfx
-
-string_dict = read_string_dict("data/rom.ini")
-
-for offset in string_dict["offsets.tsa"].split(","):
-    tsa_offsets.append(int(offset, 16))
-
-for offset in string_dict["offsets.graphics"].split(","):
-    graphics_offsets.append(int(offset, 16))
-
-for offset in string_dict["offsets.common"].split(","):
-    common_offsets.append(int(offset, 16))
-
-PALETTE_ADDRESS = int(string_dict["levelpalettes"], 16)
-MAP_PALETTE_ADDRESS = int(string_dict["mappalettes"], 16)
-
 
 world_indexes = [0]  # insert meaningless first item, so that the world number is the correct index
 level_array = [0]  # insert meaningless first item so that that world_indexes[world] + level is the correct index
