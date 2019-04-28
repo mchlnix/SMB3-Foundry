@@ -71,9 +71,10 @@ ID_PROGRAM_WEBSITE = 603
 ID_MAKE_A_DONATION = 604
 ID_ABOUT = 605
 
-# Context Menu
+# Context Menus
 
 ID_REMOVE_OBJECT = 701
+ID_ADD_OBJECT = 702
 
 CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES]
 
@@ -203,6 +204,10 @@ class SMB3Foundry(wx.Frame):
 
         self.object_context_menu = wx.Menu()
         self.object_context_menu.Append(id=ID_REMOVE_OBJECT, item="Remove")
+        self.object_context_menu.Append(id=ID_ADD_OBJECT, item="Add object")
+
+        self.background_context_menu = wx.Menu()
+        self.background_context_menu.Append(id=ID_ADD_OBJECT, item="Add object")
 
         self.Bind(wx.EVT_MENU, self.on_menu)
 
@@ -291,6 +296,8 @@ class SMB3Foundry(wx.Frame):
         self.resizing_object = None
         self.resizing_index = None
         self.resizing_happened = False
+
+        self.context_menu_position = None
 
         self.Bind(wx.EVT_CLOSE, self.on_exit)
 
@@ -382,6 +389,13 @@ class SMB3Foundry(wx.Frame):
             self.level_view.level.remove_object(self.level_view.selected_object)
             self.object_list.remove_selected()
             self.select_object(None)
+        elif item_id == ID_ADD_OBJECT:
+            x = self.context_menu_position.x
+            y = self.context_menu_position.y
+
+            level_x, level_y = self.level_view.level.to_level_point(x, y)
+
+            self.level_view.level.create_object_at(level_x, level_y)
         else:
             event.Skip()
 
@@ -527,8 +541,15 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Refresh()
 
     def stop_resize(self, event):
-        if not self.resizing_happened and self.resizing_object is not None:
-            self.PopupMenu(self.object_context_menu, event.GetPosition())
+        if not self.resizing_happened:
+            self.context_menu_position = event.Position
+
+            if self.resizing_object is not None:
+                menu = self.object_context_menu
+            else:
+                menu = self.background_context_menu
+
+            self.PopupMenu(menu, event.GetPosition())
 
         self.resizing_object = None
         self.resizing_index = None
