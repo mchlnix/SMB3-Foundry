@@ -424,13 +424,13 @@ class SMB3Foundry(wx.Frame):
             return
 
         level = self.level_view.level
-        obj = level.objects[index]
+        old_object = level.objects[index]
 
-        self.level_view.level.remove_object(obj)
+        self.level_view.level.remove_object(old_object)
 
         object_data = [
-            (self.spin_domain.GetValue() << 5) | obj.y,
-            obj.x,
+            (self.spin_domain.GetValue() << 5) | old_object.y,
+            old_object.x,
             self.spin_type.GetValue(),
         ]
 
@@ -439,16 +439,18 @@ class SMB3Foundry(wx.Frame):
         else:
             object_data.append(0)
 
-        self.level_view.level.add_object(
-            LevelObject(
-                object_data,
-                level.object_set,
-                level.object_definitions,
-                level.object_palette_group,
-                self.level_view.level.pattern_table,
-            ),
+        new_object = LevelObject(
+            object_data,
+            level.object_set,
+            level.object_definitions,
+            level.object_palette_group,
+            self.level_view.level.pattern_table,
             index,
         )
+
+        new_object.selected = True
+
+        self.level_view.level.add_object(new_object, index)
         self.level_view.level.changed = True
 
         self.level_view.Refresh()

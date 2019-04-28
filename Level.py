@@ -372,12 +372,14 @@ class Level(LevelLike):
 
             if has_length:
                 obj_data.append(rom.get_byte())
+
             level_object = LevelObject(
                 obj_data,
                 self.object_set,
                 self.object_definitions,
                 self.object_palette_group,
                 self.pattern_table,
+                len(self.objects),
             )
 
             self.objects.append(level_object)
@@ -416,6 +418,7 @@ class Level(LevelLike):
             self.object_definitions,
             self.object_palette_group,
             self.pattern_table,
+            len(self.objects),
         )
 
         obj.set_position(x, y)
