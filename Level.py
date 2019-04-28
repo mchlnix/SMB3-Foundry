@@ -1,6 +1,6 @@
 import wx
 
-from Data import Mario3Level, object_set_pointers, object_sets
+from Data import Mario3Level, object_set_pointers, object_sets, ENEMY_BANK, ENEMY_OBJ_DEF
 from File import ROM
 from Graphics import LevelObject, PatternTable, MapObject, LevelObjectFactory
 from Palette import get_bg_color_for, load_palette
@@ -8,6 +8,8 @@ from Sprite import Block
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
+
+ENEMY_SIZE = 3
 
 TIME_INF = -1
 
@@ -52,7 +54,7 @@ class LevelLike:
 
         self.name = "LevelLike object"
 
-        self.pattern_table = None
+        self.object_pattern_table = None
 
         self.changed = False
 
@@ -125,8 +127,9 @@ class Level(LevelLike):
             self.name = f"Level {world}-{level}, '{level_data.name}'"
 
         self.offset = level_data.rom_level_offset - Level.HEADER_LENGTH
+        self.enemy_offset = level_data.enemy_offset
 
-        print(f"Loading {self.name} @ {hex(self.offset)}")
+        print(f"Loading {self.name} @ {hex(self.offset)}/{hex(self.enemy_offset)}")
 
         rom = ROM()
 
@@ -136,7 +139,12 @@ class Level(LevelLike):
             self.object_set, self.graphic_set_index, self.object_palette_index
         )
 
+        self.enemy_palette_group = Level.palettes[ENEMY_BANK][self.enemy_palette_index]
+
+        self.enemy_definitions = _load_rom_object_definition(ENEMY_OBJ_DEF)
+
         self._load_objects(rom)
+        self._load_enemies()
 
         self.changed = False
 
@@ -177,6 +185,8 @@ class Level(LevelLike):
 
         self.graphic_set_index = self.header[7] & 0b0001_1111
 
+        self.enemy_pattern_table = PatternTable(0xff)
+
         self.time = Level.times[(self.header[8] & 0b1100_0000) >> 6]
         self.music_index = self.header[8] & 0b0000_1111
 
@@ -197,6 +207,28 @@ class Level(LevelLike):
         self.has_bonus_area = (
             object_set_pointer.min <= self.level_pointer <= object_set_pointer.max
         )
+
+    def _load_enemies(self):
+        self.enemies = []
+
+        rom = ROM()
+
+        rom.seek(self.enemy_offset)
+
+        enemy_data = rom.bulk_read(ENEMY_SIZE)
+
+        def data_left(data):
+            return not (data[0] == 0xFF and data[1] in [0x00, 0x01])
+
+        while data_left(enemy_data):
+            enemy = EnemyObject(enemy_data, ENEMY_BANK, self.enemy_definitions, self.enemy_palette_group, self.enemy_pattern_table)
+
+            enemy.set_position(enemy_data[1], enemy_data[2])
+            self.enemies.append(enemy)
+
+            enemy_data = rom.bulk_read(ENEMY_SIZE)
+
+        self.objects.extend(self.enemies)
 
     def _load_objects(self, rom: ROM):
         self.objects = []
