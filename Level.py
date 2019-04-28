@@ -285,7 +285,7 @@ class Level(LevelLike):
         ]
 
         # todo better name
-        self.plains_level = _load_rom_object_definition(self.object_set)
+        self.object_definitions = _load_rom_object_definition(self.object_set)
 
         self._load_objects(rom)
 
@@ -375,7 +375,7 @@ class Level(LevelLike):
             level_object = LevelObject(
                 obj_data,
                 self.object_set,
-                self.plains_level,
+                self.object_definitions,
                 self.object_palette_group,
                 self.pattern_table,
             )
