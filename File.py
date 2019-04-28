@@ -6,6 +6,12 @@ WORLD_MAP_OFFSET_SIZE = 2  # byte
 WORLD_MAP_OFFSET_LIST = 0x185A8
 WORLD_MAP_BASE_OFFSET = 0xE010
 
+TSA_OFFSET_LIST = 0x3C3F9
+TSA_TABLE_SIZE = 0x400
+TSA_TABLE_INTERVAL = TSA_TABLE_SIZE + 0x1C00
+
+TSA_BASE_OFFSET = 0x00010
+
 
 class ROM:
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
@@ -49,6 +55,22 @@ class ROM:
     @staticmethod
     def _setup_level_addresses():
         pass
+
+    @staticmethod
+    def get_tsa_data(object_set):
+        rom = ROM()
+
+        rom.seek(TSA_OFFSET_LIST + object_set)
+
+        tsa_index = rom.get_byte()
+
+        if object_set == 0:
+            # todo why is the tsa index in the wrong (seemingly) false?
+            tsa_index += 1
+
+        rom.seek(TSA_BASE_OFFSET + tsa_index * TSA_TABLE_INTERVAL)
+
+        return rom.bulk_read(TSA_TABLE_SIZE)
 
     @staticmethod
     def load_from_file(path):
