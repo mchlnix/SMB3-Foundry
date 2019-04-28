@@ -328,6 +328,10 @@ class Level(LevelLike):
     def get_object_names(self):
         return [obj.description for obj in self.objects]
 
+    def remove_object(self, obj):
+        self.objects.remove(obj)
+        self.changed = True
+
     def object_at(self, x, y):
         level_point = self.to_level_point(x, y)
 

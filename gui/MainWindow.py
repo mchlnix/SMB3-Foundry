@@ -7,6 +7,7 @@ from Graphics import LevelObject
 from Level import Level, WorldMap
 from LevelSelector import LevelSelector
 from LevelView import LevelView
+from ObjectList import ObjectList
 from ObjectStatusBar import ObjectStatusBar
 from ObjectViewer import ObjectViewer
 
@@ -69,6 +70,12 @@ ID_TROUBLESHOOTING = 602
 ID_PROGRAM_WEBSITE = 603
 ID_MAKE_A_DONATION = 604
 ID_ABOUT = 605
+
+# Context Menu
+
+ID_REMOVE_OBJECT = 701
+
+CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES]
 
 ID_SPIN_DOMAIN = 1000
 ID_SPIN_TYPE = 1001
@@ -192,7 +199,11 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_MENU, self.open_level_selector, id=ID_SELECT_LEVEL)
         self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
         self.Bind(wx.EVT_MENU, self.on_object_viewer, id=ID_VIEW_OBJECTS)
-        self.Bind(wx.EVT_MENU, self.on_menu_checked)
+
+        self.object_context_menu = wx.Menu()
+        self.object_context_menu.Append(id=ID_REMOVE_OBJECT, item="Remove")
+
+        self.Bind(wx.EVT_MENU, self.on_menu)
 
         self.Center()
 
@@ -212,7 +223,7 @@ class SMB3Foundry(wx.Frame):
 
         self.scroll_panel.SetSizer(sizer)
 
-        self.object_list = wx.ListBox(self)
+        self.object_list = ObjectList(self)
 
         spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
         spinner_sizer.AddGrowableCol(0)
@@ -269,6 +280,7 @@ class SMB3Foundry(wx.Frame):
 
         self.resizing_object = None
         self.resizing_index = None
+        self.resizing_happened = False
 
         self.Bind(wx.EVT_CLOSE, self.on_exit)
 
@@ -333,13 +345,25 @@ class SMB3Foundry(wx.Frame):
         except IOError:
             wx.LogError("Cannot save current data in file '%s'." % pathname)
 
-    def on_menu_checked(self, event):
+    def on_menu(self, event):
         item_id = event.GetId()
-        menu_item = event.GetEventObject().FindItemById(item_id)
 
-        if not menu_item.IsCheckable():
+        if item_id in CHECKABLE_MENU_ITEMS:
+            self.on_menu_item_checked(event)
+
+        if item_id == ID_REMOVE_OBJECT:
+            self.level_view.level.remove_object(self.level_view.selected_object)
+            self.object_list.remove_selected()
+            self.select_object(None)
+        else:
             event.Skip()
-            return
+
+        self.level_view.Refresh()
+
+    def on_menu_item_checked(self, event):
+        item_id = event.GetId()
+
+        menu_item = event.GetEventObject().FindItemById(item_id)
 
         checked = menu_item.IsChecked()
 
@@ -347,8 +371,6 @@ class SMB3Foundry(wx.Frame):
             self.level_view.grid_lines = checked
         elif item_id == ID_TRANSPARENCY:
             self.level_view.transparency = checked
-
-        self.level_view.Refresh()
 
     def on_spin(self, event):
         _id = event.GetId()
@@ -376,18 +398,9 @@ class SMB3Foundry(wx.Frame):
         self.level_view.level.changed = True
 
         self.level_view.Refresh()
-        self.update_object_list()
+        self.object_list.update()
 
         self.on_list_select(None)
-
-    def update_object_list(self):
-        index = self.object_list.GetSelection()
-        item = self.object_list.GetString(index)
-
-        description = self.level_view.level.objects[index].description
-
-        if item != description:
-            self.object_list.SetString(index, description)
 
     def fill_object_list(self):
         self.object_list.Clear()
@@ -419,7 +432,7 @@ class SMB3Foundry(wx.Frame):
         self.level_view.load_level(world=world, level=level, object_set=object_set)
         self.Fit()
 
-        self.fill_object_list()
+        self.object_list.fill()
         self.update_title()
 
     def on_list_select(self, _):
@@ -453,6 +466,8 @@ class SMB3Foundry(wx.Frame):
         self.resizing_index = self.level_view.level.objects.index(obj)
 
     def resizing(self, event):
+        self.resizing_happened = True
+
         if isinstance(self.level_view.level, WorldMap):
             return
 
@@ -478,9 +493,13 @@ class SMB3Foundry(wx.Frame):
 
         self.level_view.Refresh()
 
-    def stop_resize(self, _):
+    def stop_resize(self, event):
+        if not self.resizing_happened and self.resizing_object is not None:
+            self.PopupMenu(self.object_context_menu, event.GetPosition())
+
         self.resizing_object = None
         self.resizing_index = None
+        self.resizing_happened = False
 
     def start_drag(self, event):
         if self.resizing_object is not None:
@@ -527,7 +546,7 @@ class SMB3Foundry(wx.Frame):
 
         # todo find better way?
         if isinstance(self.level_view.level, WorldMap):
-            self.fill_object_list()
+            self.object_list.fill()
             self.object_list.SetSelection(self.level_view.level.objects.index(self.dragging_object))
 
         self.level_view.level.changed = True
@@ -542,8 +561,7 @@ class SMB3Foundry(wx.Frame):
     def select_object(self, obj=None, index=None):
         should_scroll = True
 
-        for _obj in self.level_view.level.objects:
-            _obj.selected = False
+        self.level_view.select_object(None)
 
         if obj is None and index is None:
             index = -1
@@ -573,7 +591,7 @@ class SMB3Foundry(wx.Frame):
             self.object_list.SetSelection(index)
             self.status_bar.fill(obj)
 
-            obj.selected = True
+            self.level_view.select_object(obj)
 
             if isinstance(self.level_view.level, Level):
                 self.spin_domain.SetValue(obj.domain)

@@ -22,6 +22,17 @@ class LevelView(wx.Panel):
 
         self.transparency = True
 
+        self.selected_object = None
+
+    def select_object(self, obj=None):
+        if self.selected_object is not None:
+            self.selected_object.selected = False
+
+        if obj is not None:
+            obj.selected = True
+
+        self.selected_object = obj
+
     def was_changed(self):
         if self.level is None:
             return False
