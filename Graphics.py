@@ -752,6 +752,147 @@ class LevelObject:
         return data
 
 
+class EnemyObject:
+    SIZE = 3
+
+    def __init__(self, data, object_set, object_definitions, palette_group, pattern_table):
+        self.pattern_table = pattern_table
+
+        self.data = data
+
+        self.object_set = object_set
+
+        self.palette_group = palette_group
+
+        # describes what object it is
+        self.obj_index = data[0]
+
+        # position relative to the start of the level (left)
+        self.x = self.level_x = self.original_x = data[1]
+
+        # position relative to the start of the level (top)
+        self.y = self.level_y = self.original_y = data[2]
+
+        object_data = object_definitions[self.obj_index]
+
+        self.width = object_data.bmp_width
+        self.height = object_data.bmp_height
+        self.orientation = object_data.orientation
+        self.ending = object_data.ending
+        self.description = object_data.description
+
+        self.blocks = [int(block) for block in object_data.rom_object_design]
+
+        self.block_cache = {}
+
+        self.is_4byte = False
+
+        self.rect = wx.Rect()
+
+        self._render()
+
+        self.selected = False
+
+    def _render(self):
+        base_x = self.x
+        base_y = self.y
+
+        new_width = self.width
+        new_height = self.height
+
+        blocks_to_draw = []
+
+        if self.orientation == CENTERED:
+            pass
+
+        elif not self.orientation == SINGLE_BLOCK_OBJECT:
+            print(f"Didn't render {self.description}")
+            # breakpoint()
+
+        # for not yet implemented objects and single block objects
+        if blocks_to_draw:
+            self.rendered_blocks = blocks_to_draw
+        else:
+            self.rendered_blocks = self.blocks
+
+        self.rendered_width = new_width
+        self.rendered_height = new_height
+        self.x = self.rendered_base_x = base_x
+        self.y = self.rendered_base_y = base_y
+
+        if not self.rendered_height == len(self.rendered_blocks) / new_width:
+            print(f"Not enough Blocks for calculated height: {self.description}. "
+                  f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}")
+
+        self.rect = wx.Rect(self.rendered_base_x, self.rendered_base_y,
+                            self.rendered_width, self.rendered_height)
+
+    def draw(self, dc, transparent):
+        for index, block_index in enumerate(self.rendered_blocks):
+            if block_index == BLANK:
+                continue
+
+            x = self.rendered_base_x + index % self.rendered_width
+            y = self.rendered_base_y + index // self.rendered_width
+
+            print(block_index)
+
+            self._draw_block(dc, block_index, x, y, transparent)
+
+    def _draw_block(self, dc, block_index, x, y, transparent):
+        if block_index not in self.block_cache:
+            if block_index > 0xFF:
+                rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
+                block = Block(self.object_set, rom_block_index, self.palette_group, self.pattern_table)
+            else:
+                block = Block(self.object_set, block_index, self.palette_group, self.pattern_table)
+
+            self.block_cache[block_index] = block
+
+        self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1, selected=self.selected,
+                                           transparent=transparent)
+
+    def set_position(self, x, y):
+        self.x = x
+        self.y = y
+
+        self.level_x = x
+        self.level_y = y
+
+        self._render()
+
+    def resize_to(self, x, y):
+        # nothing to do
+        return
+
+    def __contains__(self, item):
+        x, y = item
+
+        return self.point_in(x, y)
+
+    def point_in(self, x, y):
+        return self.rect.Contains(x, y)
+
+    def get_status_info(self):
+        return [
+            ("x", self.rendered_base_x),
+            ("y", self.rendered_base_y),
+            ("Width", self.rendered_width),
+            ("Height", self.rendered_height),
+            ("Orientation", ORIENTATION_TO_STR[self.orientation]),
+            ("Ending", ENDING_STR[self.ending])
+        ]
+
+    def to_bytes(self):
+        data = bytearray(EnemyObject.SIZE)
+
+        data[0] = self.obj_index
+        data[1] = self.x
+        data[2] = self.y
+
+        return data
+
+
 map_object_names = {
     0x00: "Mario Clear (Blue)",
     0x01: "Luigi Clear (Blue)",
@@ -924,10 +1065,3 @@ class MapObject:
 
     def to_bytes(self):
         return self.block.index
-
-
-class EnemyObject:
-    def __init__(self, data):
-        self.type = data[0]
-        self.x_position = data[1]
-        self.y_position = data[2]

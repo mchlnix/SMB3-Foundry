@@ -19,6 +19,7 @@ MAX_LEVEL_SECTIONS = 65
 SMB3_LEVEL_COUNT = 298
 MAP_ENEMY_OFFSET = 0x16070
 ENEMY_BANK = 12
+ENEMY_OBJ_DEF = 16
 
 MapscreenPointerLocation = namedtuple("MapscreenPointerLocation", "count offset")
 ObjectInfo = namedtuple(
