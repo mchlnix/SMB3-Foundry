@@ -525,8 +525,6 @@ class SMB3Foundry(wx.Frame):
         if isinstance(self.level_view.level, WorldMap):
             return
 
-        self.level_view.level.objects.remove(self.resizing_object)
-
         x = event.Position.x
         y = event.Position.y
 
@@ -535,8 +533,6 @@ class SMB3Foundry(wx.Frame):
         self.resizing_object.resize_to(level_x, level_y)
 
         self.status_bar.fill(self.resizing_object)
-
-        self.level_view.level.add_object(self.resizing_object, self.resizing_index)
 
         self.spin_type.SetValue(self.resizing_object.obj_index)
 
@@ -589,8 +585,6 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Refresh()
 
     def dragging(self, event):
-        self.level_view.level.objects.remove(self.dragging_object)
-
         x = event.Position.x
         y = event.Position.y
 
@@ -602,8 +596,6 @@ class SMB3Foundry(wx.Frame):
         self.dragging_object.set_position(level_x, level_y)
 
         self.status_bar.fill(self.dragging_object)
-
-        self.level_view.level.add_object(self.dragging_object, self.dragging_index)
 
         # todo find better way?
         if isinstance(self.level_view.level, WorldMap):
