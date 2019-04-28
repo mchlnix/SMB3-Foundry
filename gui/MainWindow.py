@@ -651,10 +651,15 @@ class SMB3Foundry(wx.Frame):
             self.level_view.select_object(obj)
 
             if isinstance(self.level_view.level, Level):
-                self.spin_domain.SetValue(obj.domain)
+                if isinstance(obj, LevelObject):
+                    self.spin_domain.SetValue(obj.domain)
+                    self.spin_domain.Enable(True)
+                else:
+                    self.spin_domain.SetValue(0x0)
+                    self.spin_domain.Enable(False)
+
                 self.spin_type.SetValue(obj.obj_index)
 
-                self.spin_domain.Enable()
                 self.spin_type.Enable()
 
                 if obj.is_4byte:
