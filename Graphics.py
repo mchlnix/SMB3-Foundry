@@ -181,7 +181,7 @@ class LevelObject:
     ground_map = []
 
     def __init__(
-        self, data, object_set, object_definitions, palette_group, pattern_table
+        self, data, object_set, object_definitions, palette_group, pattern_table, index
     ):
         self.pattern_table = pattern_table
 
@@ -190,6 +190,8 @@ class LevelObject:
         self.object_set = object_set
 
         self.palette_group = palette_group
+
+        self.index = index
 
         # where to look for the graphic data?
         self.domain = (data[0] & 0b1110_0000) >> 5
@@ -249,11 +251,8 @@ class LevelObject:
             self.length = self.data[3]
 
     def _render(self):
-        if self.rect in LevelObject.ground_map:
-            index = LevelObject.ground_map.index(self.rect)
-            del LevelObject.ground_map[index]
-        else:
-            index = len(LevelObject.ground_map)
+        if self.index < len(LevelObject.ground_map):
+            del LevelObject.ground_map[self.index]
 
         base_x = self.x
         base_y = self.y
@@ -363,7 +362,7 @@ class LevelObject:
                 if any(
                     [
                         bottom_row.Intersects(rect) and y == rect.GetTop()
-                        for rect in LevelObject.ground_map[0:index]
+                        for rect in LevelObject.ground_map[0 : self.index]
                     ]
                 ):
                     break
@@ -487,7 +486,7 @@ class LevelObject:
                     if any(
                         [
                             bottom_row.Intersects(rect) and y == rect.GetTop()
-                            for rect in LevelObject.ground_map[0:index]
+                            for rect in LevelObject.ground_map[0 : self.index]
                         ]
                     ):
                         new_height = y - base_y
@@ -604,7 +603,7 @@ class LevelObject:
             self.rendered_height,
         )
 
-        LevelObject.ground_map.insert(index, self.rect)
+        LevelObject.ground_map.insert(self.index, self.rect)
 
     def draw(self, dc, transparent):
         for index, block_index in enumerate(self.rendered_blocks):
