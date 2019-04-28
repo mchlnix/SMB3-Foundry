@@ -173,6 +173,7 @@ class ObjectDrawArea(wx.Panel):
             self.object_definitions,
             self.palette_group,
             self.pattern_table,
+            0,
         )
 
         self.resize()
