@@ -289,28 +289,17 @@ class WorldMap(LevelLike):
     WIDTH = 16
     HEIGHT = 9
 
-    LOCATIONS = {
-        1: 0x185BA,
-        2: 0x1864B,
-        3: 0x1876C,
-        4: 0x1891D,
-        5: 0x18A3E,
-        6: 0x18B5F,
-        7: 0x18D10,
-        8: 0x18E31,
-        9: 0x19072,
-    }
-
     VISIBLE_BLOCKS = WIDTH * HEIGHT
 
     def __init__(self, world_index):
         super(WorldMap, self).__init__(0, world_index, None)
+
         self.name = f"World {world_index} - Overworld"
 
         self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
         self.palette_group = load_palette(OVERWORLD_OBJECT_SET, 0)
 
-        start = WorldMap.LOCATIONS[world_index]
+        start = ROM.WORLD_MAP_OFFSETS[world_index]
         end = ROM.rom_data.find(0xFF, start)
 
         self.offset = start
