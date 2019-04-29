@@ -1,11 +1,9 @@
+import wx
 from math import ceil
 
-import wx
-
-from Data import NESPalette
 from Graphics import PatternTable
-from Level import Level
 from LevelSelector import OBJECT_SET_ITEMS
+from Palette import get_bg_color_for, load_palette
 from Sprite import Block
 
 ID_ZOOM_IN = 10001
@@ -136,19 +134,18 @@ class BlockBank(wx.Panel):
 
         dc = wx.BufferedPaintDC(self)
 
-        bg_color = NESPalette[Level.palettes[self.object_set][0][0][0]]
+        bg_color = get_bg_color_for(self.object_set, 0)
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
 
         dc.Clear()
 
         pattern_table = PatternTable(self.object_set)
+        palette = load_palette(self.object_set, 0)
 
         horizontal = self.sprites_horiz
 
         for i in range(self.sprites):
-            block = Block(
-                self.object_set, i, Level.palettes[self.object_set][0], pattern_table
-            )
+            block = Block(self.object_set, i, palette, pattern_table)
 
             x = (i % horizontal) * Block.WIDTH * self.zoom
             y = (i // horizontal) * Block.HEIGHT * self.zoom

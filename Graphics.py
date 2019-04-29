@@ -1,6 +1,8 @@
 import wx
 
 from File import ROM
+from ObjectDefinitions import load_object_definition
+from Palette import load_palette
 from Sprite import Block
 from m3idefs import (
     TO_THE_SKY,
@@ -174,6 +176,36 @@ class PatternTable:
         chr_rom_data = ROM().bulk_read(2 * CHR_ROM_SEGMENT_SIZE, offset)
 
         self.data.extend(chr_rom_data)
+
+
+class LevelObjectFactory:
+    def __init__(self, object_set, graphic_set, palette_group_index):
+        self.set_object_set(object_set)
+        self.set_graphic_set(graphic_set)
+        self.set_palette_group_index(palette_group_index)
+
+    def set_object_set(self, object_set):
+        self.object_set = object_set
+        self.object_definitions = load_object_definition(self.object_set)
+
+    def set_graphic_set(self, graphic_set):
+        self.graphic_set = graphic_set
+        self.pattern_table = PatternTable(self.graphic_set)
+
+    def set_palette_group_index(self, palette_group_index):
+        self.palette_group_index = palette_group_index
+        self.palette_group = load_palette(self.object_set, self.palette_group_index)
+
+    # todo get rid of index by fixing ground map
+    def make_object(self, data, index):
+        return LevelObject(
+            data,
+            self.object_set,
+            self.object_definitions,
+            self.palette_group,
+            self.pattern_table,
+            index,
+        )
 
 
 class LevelObject:

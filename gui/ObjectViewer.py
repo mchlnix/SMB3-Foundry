@@ -1,7 +1,6 @@
 import wx
 
-from Graphics import LevelObject, PatternTable
-from Level import _load_rom_object_definition, load_palettes
+from Graphics import LevelObject, LevelObjectFactory
 from LevelSelector import OBJECT_SET_ITEMS
 from Sprite import Block
 
@@ -130,10 +129,7 @@ class ObjectDrawArea(wx.Panel):
     def __init__(self, parent, object_set, graphic_set=1, palette_index=0):
         super(ObjectDrawArea, self).__init__(parent)
 
-        self.object_set = object_set
-        self.object_definitions = _load_rom_object_definition(self.object_set)
-        self.palette_group = load_palettes()[self.object_set][palette_index]
-        self.pattern_table = PatternTable(graphic_set)
+        self.object_factory = LevelObjectFactory(object_set, graphic_set, palette_index)
 
         self.current_object = None
 
@@ -144,13 +140,12 @@ class ObjectDrawArea(wx.Panel):
         self.Bind(wx.EVT_PAINT, self.draw)
 
     def change_object_set(self, object_set):
-        self.object_set = object_set
-        self.object_definitions = _load_rom_object_definition(self.object_set)
+        self.object_factory.set_object_set(object_set)
 
         self.update_object()
 
     def change_graphic_set(self, graphic_set):
-        self.pattern_table = PatternTable(graphic_set)
+        self.object_factory.set_graphic_set(graphic_set)
         self.update_object()
 
     def resize(self):
@@ -163,18 +158,12 @@ class ObjectDrawArea(wx.Panel):
         self.Fit()
 
     def update_object(self, object_data=None):
+        # todo remove after fixing ground map
         LevelObject.ground_map = []
         if object_data is None:
             object_data = self.current_object.data
 
-        self.current_object = LevelObject(
-            object_data,
-            self.object_set,
-            self.object_definitions,
-            self.palette_group,
-            self.pattern_table,
-            0,
-        )
+        self.current_object = self.object_factory.make_object(object_data, 0)
 
         self.resize()
         self.Refresh()

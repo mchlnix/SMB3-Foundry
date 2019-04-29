@@ -1,8 +1,9 @@
 import wx
 
-from Data import Mario3Level, object_set_pointers, plains_level, NESPalette, object_sets
+from Data import Mario3Level, object_set_pointers, object_sets
 from File import ROM
-from Graphics import LevelObject, PatternTable, MapObject
+from Graphics import LevelObject, PatternTable, MapObject, LevelObjectFactory
+from Palette import get_bg_color_for
 from Sprite import Block
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
@@ -112,9 +113,6 @@ class Level(LevelLike):
         if not Level.offsets:
             _load_level_offsets()
 
-        if not Level.palettes:
-            Level.palettes = load_palettes()
-
         self.object_set = object_set
 
         level_index = Level.world_indexes[world - 1] + level - 1
@@ -134,12 +132,9 @@ class Level(LevelLike):
 
         self._parse_header(rom)
 
-        self.object_palette_group = Level.palettes[self.object_set][
-            self.object_palette_index
-        ]
-
-        # todo better name
-        self.object_definitions = _load_rom_object_definition(self.object_set)
+        self.object_factory = LevelObjectFactory(
+            self.object_set, self.graphic_set_index, self.object_palette_index
+        )
 
         self._load_objects(rom)
 
@@ -181,8 +176,6 @@ class Level(LevelLike):
         self.start_action = (self.header[7] & 0b1110_0000) >> 5
 
         self.graphic_set_index = self.header[7] & 0b0001_1111
-
-        self.pattern_table = PatternTable(self.graphic_set_index)
 
         self.time = Level.times[(self.header[8] & 0b1100_0000) >> 6]
         self.music_index = self.header[8] & 0b0000_1111
@@ -227,14 +220,7 @@ class Level(LevelLike):
             if has_length:
                 obj_data.append(rom.get_byte())
 
-            level_object = LevelObject(
-                obj_data,
-                self.object_set,
-                self.object_definitions,
-                self.object_palette_group,
-                self.pattern_table,
-                len(self.objects),
-            )
+            level_object = self.object_factory.make_object(obj_data, len(self.objects))
 
             self.objects.append(level_object)
 
@@ -257,7 +243,8 @@ class Level(LevelLike):
             return None
 
     def draw(self, dc, transparency):
-        bg_color = NESPalette[self.object_palette_group[0][0]]
+        bg_color = get_bg_color_for(self.object_set, self.object_palette_index)
+
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
 
         dc.Clear()
@@ -266,14 +253,7 @@ class Level(LevelLike):
             level_object.draw(dc, transparent=transparency)
 
     def create_object_at(self, x, y):
-        obj = LevelObject(
-            [0x0, 0x0, 0x0],
-            self.object_set,
-            self.object_definitions,
-            self.object_palette_group,
-            self.pattern_table,
-            len(self.objects),
-        )
+        obj = self.object_factory.make_object([0x0, 0x0, 0x0], len(self.objects))
 
         obj.set_position(x, y)
 
