@@ -31,32 +31,6 @@ PALETTE_DATA_SIZE = (
 
 LEVEL_DEFAULT_HEIGHT = 27
 
-graphic_set2chr_index = {
-    0: 0x00,  # not used
-    1: 0x08,  # Plains
-    2: 0x10,  # Fortress
-    3: 0x1C,  # Hills / Underground
-    4: 0x0C,  # Sky
-    5: 0x58,  # Piranha Plant
-    6: 0x58,  # Water
-    7: 0x5C,  # Mushroom
-    8: 0x58,  # Pipe
-    9: 0x30,  # Desert
-    10: 0x34,  # Ship
-    11: 0x6E,  # Giant
-    12: 0x18,  # Ice
-    13: 0x38,  # Cloudy
-    14: 0x1C,  # Not Used (same as 3)
-    15: 0x24,  # Bonus Room
-    16: 0x2C,  # Spade (Roulette)
-    17: 0x5C,  # N-Spade (Card)
-    18: 0x58,  # 2P vs.
-    19: 0x6C,  # Hills / Underground alternative
-    20: 0x68,  # 3-7 only
-    21: 0x34,  # World 8 War Vehicle
-    22: 0x28,  # Throne Room
-}
-
 object_set_to_definition = {
     16: 0,
     0: 1,
