@@ -3,7 +3,7 @@ import wx
 from Data import Mario3Level, object_set_pointers, object_sets
 from File import ROM
 from Graphics import LevelObject, PatternTable, MapObject, LevelObjectFactory
-from Palette import get_bg_color_for
+from Palette import get_bg_color_for, load_palette
 from Sprite import Block
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
@@ -308,7 +308,7 @@ class WorldMap(LevelLike):
         self.name = f"World {world_index} - Overworld"
 
         self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
-        self.palette_group = Level.palettes[OVERWORLD_OBJECT_SET][0]
+        self.palette_group = load_palette(OVERWORLD_OBJECT_SET, 0)
 
         start = WorldMap.LOCATIONS[world_index]
         end = ROM.rom_data.find(0xFF, start)
