@@ -179,6 +179,14 @@ class PatternTable:
 
 
 class LevelObjectFactory:
+    object_set: int
+    graphic_set: int
+    palette_group_index: int
+
+    object_definitions: list = []
+    pattern_table: PatternTable = None
+    palette_group: list = []
+
     def __init__(self, object_set, graphic_set, palette_group_index):
         self.set_object_set(object_set)
         self.set_graphic_set(graphic_set)

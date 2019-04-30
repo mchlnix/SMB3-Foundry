@@ -26,9 +26,7 @@ class Tile:
     PIXEL_COUNT = WIDTH * HEIGHT
     SIZE = 2 * PIXEL_COUNT // 8  # 1 pixel is defined by 2 bits
 
-    def __init__(
-        self, rom, object_set, object_index, palette_group, palette_index, pattern_table
-    ):
+    def __init__(self, object_index, palette_group, palette_index, pattern_table):
         start = object_index * Tile.SIZE
 
         self.cached_tiles = dict()
@@ -90,7 +88,7 @@ class Block:
     tsa_data = []
 
     def __init__(self, object_set, block_index, palette_group, pattern_table):
-        rom = ROM()
+
         if not Block.tsa_data:
             for os in range(OBJECT_SET_COUNT):
                 Block.tsa_data.append(ROM.get_tsa_data(os))
@@ -108,18 +106,10 @@ class Block:
         ru = tsa_data[TSA_BANK_2 + block_index]
         rd = tsa_data[TSA_BANK_3 + block_index]
 
-        self.lu_tile = Tile(
-            rom, object_set, lu, palette_group, palette_index, pattern_table
-        )
-        self.ru_tile = Tile(
-            rom, object_set, ru, palette_group, palette_index, pattern_table
-        )
-        self.ld_tile = Tile(
-            rom, object_set, ld, palette_group, palette_index, pattern_table
-        )
-        self.rd_tile = Tile(
-            rom, object_set, rd, palette_group, palette_index, pattern_table
-        )
+        self.lu_tile = Tile(lu, palette_group, palette_index, pattern_table)
+        self.ru_tile = Tile(ru, palette_group, palette_index, pattern_table)
+        self.ld_tile = Tile(ld, palette_group, palette_index, pattern_table)
+        self.rd_tile = Tile(rd, palette_group, palette_index, pattern_table)
 
         self.image = wx.Image(Block.WIDTH, Block.HEIGHT)
 
