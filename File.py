@@ -1,16 +1,25 @@
 from os.path import basename
 
 WORLD_COUNT = 9  # includes warp zone
-WORLD_MAP_OFFSET_SIZE = 2  # byte
 
-WORLD_MAP_OFFSET_LIST = 0x185A8
-WORLD_MAP_BASE_OFFSET = 0xE010
+# W = WORLD_MAP
+# OS = OFFSET
 
-TSA_OFFSET_LIST = 0x3C3F9
+OS_SIZE = 2  # byte
+
+W_BASE_OS = 0xE010
+W_LAYOUT_LIST_OS = W_BASE_OS + 0xA598
+W_INIT_LIST_OS = W_BASE_OS + 0xB3CA
+W_LEVEL_Y_POS_LIST_OS = W_BASE_OS + 0xB3DC
+W_LEVEL_X_POS_LIST_OS = W_BASE_OS + 0xB3EE
+W_LEVEL_ENEMY_LIST_OS = W_BASE_OS + 0xB400
+W_LEVEL_LAYOUT_LIST_OS = W_BASE_OS + 0xB412
+
+TSA_OS_LIST = 0x3C3F9
 TSA_TABLE_SIZE = 0x400
 TSA_TABLE_INTERVAL = TSA_TABLE_SIZE + 0x1C00
 
-TSA_BASE_OFFSET = 0x00010
+TSA_BASE_OS = 0x00010
 
 
 class ROM:
@@ -23,7 +32,8 @@ class ROM:
     path = ""
     name = ""
 
-    WORLD_MAP_OFFSETS = []
+    W_LAYOUT_OS_LIST = []
+    W_INIT_OS_LIST = []
 
     def __init__(self, path=None):
         if not ROM.rom_data:
@@ -42,17 +52,17 @@ class ROM:
     @staticmethod
     def _setup_map_addresses():
         offsets = ROM().bulk_read(
-            WORLD_COUNT * WORLD_MAP_OFFSET_SIZE, WORLD_MAP_OFFSET_LIST
+            WORLD_COUNT * OS_SIZE, W_LAYOUT_LIST_OS
         )
 
-        ROM.WORLD_MAP_OFFSETS.clear()
+        ROM.W_LAYOUT_OS_LIST.clear()
 
         for world in range(WORLD_COUNT):
             index = world * 2
 
             world_map_offset = (offsets[index + 1] << 8) + offsets[index]
 
-            ROM.WORLD_MAP_OFFSETS.append(WORLD_MAP_BASE_OFFSET + world_map_offset)
+            ROM.W_LAYOUT_OS_LIST.append(W_BASE_OS + world_map_offset)
 
     @staticmethod
     def _setup_level_addresses():
@@ -62,7 +72,7 @@ class ROM:
     def get_tsa_data(object_set):
         rom = ROM()
 
-        rom.seek(TSA_OFFSET_LIST + object_set)
+        rom.seek(TSA_OS_LIST + object_set)
 
         tsa_index = rom.get_byte()
 
@@ -70,7 +80,7 @@ class ROM:
             # todo why is the tsa index in the wrong (seemingly) false?
             tsa_index += 1
 
-        rom.seek(TSA_BASE_OFFSET + tsa_index * TSA_TABLE_INTERVAL)
+        rom.seek(TSA_BASE_OS + tsa_index * TSA_TABLE_INTERVAL)
 
         return rom.bulk_read(TSA_TABLE_SIZE)
 
