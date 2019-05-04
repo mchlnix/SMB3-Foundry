@@ -32,7 +32,7 @@ def load_object_definition(object_set):
 
     object_count = data[0]
 
-    if object_count < 0xF7:
+    if object_definition != 0 and object_count < 0xF7:
         # first byte did not represent the object_count
         object_count = 0xFF
         position = 0

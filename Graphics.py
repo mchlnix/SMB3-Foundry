@@ -1,5 +1,6 @@
 import wx
 
+from Data import ENEMY_OBJ_DEF
 from File import ROM
 from ObjectDefinitions import load_object_definition
 from Palette import load_palette
@@ -21,6 +22,7 @@ from m3idefs import (
     PYRAMID_TO_GROUND,
     PYRAMID_2,
     SINGLE_BLOCK_OBJECT,
+    ObjectDefinition,
 )
 
 SKY = 0
@@ -149,6 +151,11 @@ class PatternTable:
 
         if graphic_set == WORLD_MAP:
             segments = [0x14, 0x16, 0x20, 0x21, 0x22, 0x23]
+        if (
+            graphic_set not in graphic_set2chr_index
+            and graphic_set not in common_set2chr_index
+        ):
+            self._read_in([graphic_set])
         else:
             gfx_index = graphic_set2chr_index[graphic_set]
             common_index = common_set2chr_index[graphic_set]
@@ -214,6 +221,47 @@ class LevelObjectFactory:
             self.pattern_table,
             index,
         )
+
+
+class EnemyItemFactory:
+    object_set: int
+    graphic_set: int
+
+    definitions: list = []
+
+    def __init__(self):
+        # self.object_set = load_object_definition(ENEMY_OBJ_DEF)
+        pass
+
+    # todo get rid of index by fixing ground map
+    def make_object(self, data, index):
+        return Goomba(data)
+
+
+class Goomba:
+    def __init__(self, data):
+        self.is_4byte = False
+
+        self.obj_index = data[0]
+        self.x_position = data[1]
+        self.y_position = data[2]
+
+        obj_data: ObjectDefinition = load_object_definition(ENEMY_OBJ_DEF)[
+            self.obj_index
+        ]
+        self.description = obj_data.description
+
+        self.pattern_table = PatternTable(0x79)
+
+    def draw(self, dc, transparent=False):
+        pass
+
+    def get_status_info(self):
+        return [
+            ("Name", self.description),
+            ("X", self.x_position),
+            ("Y", self.y_position),
+        ]
 
 
 class LevelObject:
@@ -755,7 +803,9 @@ class LevelObject:
 class EnemyObject:
     SIZE = 3
 
-    def __init__(self, data, object_set, object_definitions, palette_group, pattern_table):
+    def __init__(
+        self, data, object_set, object_definitions, palette_group, pattern_table
+    ):
         self.pattern_table = pattern_table
 
         self.data = data
@@ -821,11 +871,17 @@ class EnemyObject:
         self.y = self.rendered_base_y = base_y
 
         if not self.rendered_height == len(self.rendered_blocks) / new_width:
-            print(f"Not enough Blocks for calculated height: {self.description}. "
-                  f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}")
+            print(
+                f"Not enough Blocks for calculated height: {self.description}. "
+                f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}"
+            )
 
-        self.rect = wx.Rect(self.rendered_base_x, self.rendered_base_y,
-                            self.rendered_width, self.rendered_height)
+        self.rect = wx.Rect(
+            self.rendered_base_x,
+            self.rendered_base_y,
+            self.rendered_width,
+            self.rendered_height,
+        )
 
     def draw(self, dc, transparent):
         for index, block_index in enumerate(self.rendered_blocks):
@@ -842,15 +898,30 @@ class EnemyObject:
     def _draw_block(self, dc, block_index, x, y, transparent):
         if block_index not in self.block_cache:
             if block_index > 0xFF:
-                rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
-                block = Block(self.object_set, rom_block_index, self.palette_group, self.pattern_table)
+                rom_block_index = ROM().get_byte(
+                    block_index
+                )  # block_index is an offset into the graphic memory
+                block = Block(
+                    self.object_set,
+                    rom_block_index,
+                    self.palette_group,
+                    self.pattern_table,
+                )
             else:
-                block = Block(self.object_set, block_index, self.palette_group, self.pattern_table)
+                block = Block(
+                    self.object_set, block_index, self.palette_group, self.pattern_table
+                )
 
             self.block_cache[block_index] = block
 
-        self.block_cache[block_index].draw(dc, x * Block.WIDTH, y * Block.HEIGHT, zoom=1, selected=self.selected,
-                                           transparent=transparent)
+        self.block_cache[block_index].draw(
+            dc,
+            x * Block.WIDTH,
+            y * Block.HEIGHT,
+            zoom=1,
+            selected=self.selected,
+            transparent=transparent,
+        )
 
     def set_position(self, x, y):
         self.x = x
@@ -880,7 +951,7 @@ class EnemyObject:
             ("Width", self.rendered_width),
             ("Height", self.rendered_height),
             ("Orientation", ORIENTATION_TO_STR[self.orientation]),
-            ("Ending", ENDING_STR[self.ending])
+            ("Ending", ENDING_STR[self.ending]),
         ]
 
     def to_bytes(self):
