@@ -229,9 +229,8 @@ class EnemyItemFactory:
 
     definitions: list = []
 
-    def __init__(self):
-        # self.object_set = load_object_definition(ENEMY_OBJ_DEF)
-        pass
+    def __init__(self, object_set, palette_index):
+        self.palette_group = load_palette(object_set, palette_index)
 
     # todo get rid of index by fixing ground map
     def make_object(self, data, index):
