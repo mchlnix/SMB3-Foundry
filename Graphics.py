@@ -235,11 +235,11 @@ class EnemyItemFactory:
 
     # todo get rid of index by fixing ground map
     def make_object(self, data, index):
-        return Goomba(data)
+        return Goomba(data, self.palette_group)
 
 
 class Goomba:
-    def __init__(self, data):
+    def __init__(self, data, palette_group):
         self.is_4byte = False
 
         self.obj_index = data[0]
@@ -251,10 +251,37 @@ class Goomba:
         ]
         self.description = obj_data.description
 
-        self.pattern_table = PatternTable(0x79)
+        self.pattern_table = PatternTable(0x4C)
+        self.palette_group = palette_group
+
+        self.block_index = 0x72
+
+        self.tsa_data = bytearray(0x400)
+        self.tsa_data[self.block_index] = 0xDA
+        self.tsa_data[0x100 + self.block_index] = 0xDB
+        self.tsa_data[0x200 + self.block_index] = 0xDC
+        self.tsa_data[0x300 + self.block_index] = 0xDD
+
+        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
+
+        self.selected = False
 
     def draw(self, dc, transparent=False):
-        pass
+        block = Block(
+            self.block_index,
+            self.palette_group,
+            self.pattern_table,
+            self.tsa_data,
+            mirrored=True,
+        )
+
+        block.draw(
+            dc,
+            self.x_position * Block.WIDTH,
+            self.y_position * Block.HEIGHT,
+            selected=self.selected,
+            transparent=transparent,
+        )
 
     def get_status_info(self):
         return [
@@ -262,6 +289,24 @@ class Goomba:
             ("X", self.x_position),
             ("Y", self.y_position),
         ]
+
+    def __contains__(self, item):
+        x, y = item
+
+        return self.point_in(x, y)
+
+    def point_in(self, x, y):
+        return self.rect.Contains(x, y)
+
+    def set_position(self, x, y):
+        # todo also check for the upper bounds
+        x = max(0, x)
+        y = max(0, y)
+
+        self.x_position = x
+        self.y_position = y
+
+        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
 
 
 class LevelObject:
