@@ -316,6 +316,7 @@ class LevelObject:
         self, data, object_set, object_definitions, palette_group, pattern_table, index
     ):
         self.pattern_table = pattern_table
+        self.tsa_data = ROM.get_tsa_data(object_set)
 
         self.data = data
 
@@ -754,14 +755,14 @@ class LevelObject:
                     block_index
                 )  # block_index is an offset into the graphic memory
                 block = Block(
-                    self.object_set,
                     rom_block_index,
                     self.palette_group,
                     self.pattern_table,
+                    self.tsa_data,
                 )
             else:
                 block = Block(
-                    self.object_set, block_index, self.palette_group, self.pattern_table
+                    block_index, self.palette_group, self.pattern_table, self.tsa_data
                 )
 
             self.block_cache[block_index] = block

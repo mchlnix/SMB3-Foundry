@@ -1,7 +1,6 @@
 import wx
 
 from Data import NESPalette
-from File import ROM
 
 PIXEL_OFFSET = (
     8
@@ -87,11 +86,9 @@ class Block:
 
     tsa_data = []
 
-    def __init__(self, object_set, block_index, palette_group, pattern_table):
-
-        if not Block.tsa_data:
-            for os in range(OBJECT_SET_COUNT):
-                Block.tsa_data.append(ROM.get_tsa_data(os))
+    def __init__(
+        self, block_index, palette_group, pattern_table, tsa_data, mirrored=False
+    ):
 
         self.index = block_index
 
