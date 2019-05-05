@@ -155,7 +155,7 @@ class PatternTable:
             graphic_set not in graphic_set2chr_index
             and graphic_set not in common_set2chr_index
         ):
-            self._read_in([graphic_set])
+            self._read_in([graphic_set, graphic_set + 2])
         else:
             gfx_index = graphic_set2chr_index[graphic_set]
             common_index = common_set2chr_index[graphic_set]
