@@ -23,6 +23,7 @@ from m3idefs import (
     PYRAMID_2,
     SINGLE_BLOCK_OBJECT,
     ObjectDefinition,
+    CENTERED,
 )
 
 SKY = 0

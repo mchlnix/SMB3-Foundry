@@ -1,12 +1,6 @@
 import wx
 
-from Data import (
-    Mario3Level,
-    object_set_pointers,
-    object_sets,
-    ENEMY_BANK,
-    ENEMY_OBJ_DEF,
-)
+from Data import Mario3Level, object_set_pointers, object_sets
 from File import ROM
 from Graphics import (
     LevelObject,
@@ -150,7 +144,7 @@ class Level(LevelLike):
         self.object_factory = LevelObjectFactory(
             self.object_set, self.graphic_set_index, self.object_palette_index
         )
-        self.enemy_item_factory = EnemyItemFactory()
+        self.enemy_item_factory = EnemyItemFactory(self.object_set, self.enemy_palette_index)
 
         # self.enemy_palette_group = Level.palettes[ENEMY_BANK][self.enemy_palette_index]
 

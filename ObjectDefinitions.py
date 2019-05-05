@@ -1,4 +1,4 @@
-from Data import plains_level
+from Data import plains_level, ENEMY_OBJ_DEF
 
 object_set_to_definition = {
     16: 0,
