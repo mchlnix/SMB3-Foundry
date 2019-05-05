@@ -1,3 +1,5 @@
+import abc
+
 import wx
 
 from Data import ENEMY_OBJ_DEF
@@ -238,7 +240,37 @@ class EnemyItemFactory:
         return Goomba(data, self.palette_group)
 
 
-class Goomba:
+class Drawable(abc.ABC):
+    @abc.abstractmethod
+    def draw(self, dc, transparent):
+        pass
+
+    @abc.abstractmethod
+    def get_status_info(self):
+        pass
+
+    @abc.abstractmethod
+    def set_position(self, x, y):
+        pass
+
+    @abc.abstractmethod
+    def resize_to(self, x, y):
+        pass
+
+    @abc.abstractmethod
+    def point_in(self, x, y):
+        pass
+
+    @abc.abstractmethod
+    def __contains__(self, point):
+        pass
+
+    @abc.abstractmethod
+    def to_bytes(self):
+        pass
+
+
+class Goomba(Drawable):
     def __init__(self, data, palette_group):
         self.is_4byte = False
 
@@ -308,8 +340,14 @@ class Goomba:
 
         self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
 
+    def resize_to(self, _, __):
+        pass
 
-class LevelObject:
+    def to_bytes(self):
+        return self.obj_index, self.x_position, self.y_position
+
+
+class LevelObject(Drawable):
     # todo better way of saving this information?
     ground_map = []
 
