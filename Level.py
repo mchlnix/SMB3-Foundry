@@ -144,7 +144,9 @@ class Level(LevelLike):
         self.object_factory = LevelObjectFactory(
             self.object_set, self.graphic_set_index, self.object_palette_index
         )
-        self.enemy_item_factory = EnemyItemFactory(self.object_set, self.enemy_palette_index)
+        self.enemy_item_factory = EnemyItemFactory(
+            self.object_set, self.enemy_palette_index
+        )
 
         # self.enemy_palette_group = Level.palettes[ENEMY_BANK][self.enemy_palette_index]
 
