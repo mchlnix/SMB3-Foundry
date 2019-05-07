@@ -426,7 +426,7 @@ class SMB3Foundry(wx.Frame):
             return
 
         level = self.level_view.level
-        old_object = level.objects[index]
+        old_object = level.get_object(index)
 
         self.level_view.level.remove_object(old_object)
 
@@ -521,7 +521,7 @@ class SMB3Foundry(wx.Frame):
             return
 
         self.resizing_object = obj
-        self.resizing_index = self.level_view.level.objects.index(obj)
+        self.resizing_index = self.level_view.level.index_of(obj)
 
     def resizing(self, event):
         self.resizing_happened = True
@@ -577,7 +577,7 @@ class SMB3Foundry(wx.Frame):
             return
 
         self.dragging_object = obj
-        self.dragging_index = self.level_view.level.objects.index(obj)
+        self.dragging_index = self.level_view.level.index_of(obj)
 
         level_x, level_y = self.level_view.to_level_point(x, y)
 
@@ -630,7 +630,7 @@ class SMB3Foundry(wx.Frame):
         if index is None:
             # assume click on levelview
             should_scroll = False
-            index = self.level_view.level.objects.index(obj)
+            index = self.level_view.level.index_of(obj)
 
         if index == -1:
             self.spin_domain.SetValue(0)
@@ -645,7 +645,7 @@ class SMB3Foundry(wx.Frame):
             if obj is None:
                 # assume click on object_list
                 should_scroll = True
-                obj = self.level_view.level.objects[index]
+                obj = self.level_view.level.get_object(index)
 
             self.object_list.SetSelection(index)
             self.status_bar.fill(obj)

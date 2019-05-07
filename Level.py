@@ -312,6 +312,18 @@ class Level(LevelLike):
 
         self.changed = True
 
+    def index_of(self, obj):
+        if obj in self.objects:
+            return self.objects.index(obj)
+        else:
+            return len(self.objects) + self.enemies.index(obj)
+
+    def get_object(self, index):
+        if index < len(self.objects):
+            return self.objects[index]
+        else:
+            return self.enemies[index % len(self.objects)]
+
     def remove_object(self, obj):
         try:
             LevelObject.ground_map.remove(obj.rect)
