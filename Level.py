@@ -159,7 +159,8 @@ class Level(LevelLike):
 
         self.size = (self.width * Block.WIDTH, self.height * Block.HEIGHT)
 
-        self.original_size_on_disk = self._calc_size_on_disk()
+        self.object_size_on_disk = self._calc_size_on_disk()
+        self.enemy_size_on_disk = self.enemies * ENEMY_SIZE
 
     def _calc_size_on_disk(self):
         size = 0
@@ -236,8 +237,6 @@ class Level(LevelLike):
 
             enemy_data = rom.bulk_read(ENEMY_SIZE)
 
-        self.objects.extend(self.enemies)
-
     def _load_objects(self, rom: ROM):
         self.objects = []
 
@@ -268,15 +267,18 @@ class Level(LevelLike):
                 break
 
     def is_too_big(self):
-        return self._calc_size_on_disk() > self.original_size_on_disk
+        too_many_enemies = self.enemy_size_on_disk < self.enemies * ENEMY_SIZE
+        too_many_objects = self._calc_size_on_disk() > self.object_size_on_disk
+
+        return too_many_enemies or too_many_objects
 
     def get_object_names(self):
-        return [obj.description for obj in self.objects]
+        return [obj.description for obj in self.objects + self.enemies]
 
     def object_at(self, x, y):
         level_point = self.to_level_point(x, y)
 
-        for obj in reversed(self.objects):
+        for obj in reversed(self.objects + self.enemies):
             if level_point in obj:
                 return obj
         else:
@@ -291,6 +293,9 @@ class Level(LevelLike):
 
         for level_object in self.objects:
             level_object.draw(dc, transparent=transparency)
+
+        for enemy in self.enemies:
+            enemy.draw(dc, transparent=transparency)
 
     def create_object_at(self, x, y):
         obj = self.object_factory.make_object([0x0, 0x0, 0x0], len(self.objects))
@@ -308,8 +313,13 @@ class Level(LevelLike):
         self.changed = True
 
     def remove_object(self, obj):
-        LevelObject.ground_map.remove(obj.rect)
-        self.objects.remove(obj)
+        try:
+            LevelObject.ground_map.remove(obj.rect)
+            self.objects.remove(obj)
+        except ValueError:
+            pass
+
+        self.enemies.remove(obj)
         self.changed = True
 
     def to_bytes(self):
@@ -322,7 +332,14 @@ class Level(LevelLike):
 
         data.append(0xFF)
 
-        return data
+        enemies = bytearray()
+
+        for enemy in sorted(self.enemies, key=lambda _enemy: _enemy.x_position):
+            enemies.extend(enemy.to_bytes())
+
+        enemies.append(0xFF)
+
+        return [(self.offset, data), (self.enemy_offset, enemies)]
 
 
 class WorldMap(LevelLike):
@@ -407,4 +424,4 @@ class WorldMap(LevelLike):
             index = obj.level_y * WorldMap.WIDTH + obj.level_x
             return_array[index] = obj.to_bytes()
 
-        return return_array
+        return [(self.offset, return_array)]

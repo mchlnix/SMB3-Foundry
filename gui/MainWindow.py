@@ -372,7 +372,9 @@ class SMB3Foundry(wx.Frame):
         try:
             level = self.level_view.level
 
-            ROM().bulk_write(level.to_bytes(), level.offset)
+            for offset, data in level.to_bytes():
+                ROM().bulk_write(data, offset)
+
             ROM().save_to_file(pathname)
 
             self.level_view.level.changed = False
