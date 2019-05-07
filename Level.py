@@ -379,7 +379,7 @@ class WorldMap(LevelLike):
         self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
         self.palette_group = load_palette(OVERWORLD_OBJECT_SET, 0)
 
-        start = ROM.WORLD_MAP_OFFSETS[world_index]
+        start = ROM.W_LAYOUT_OS_LIST[world_index - 1]
         end = ROM.rom_data.find(0xFF, start)
 
         self.offset = start
@@ -388,6 +388,9 @@ class WorldMap(LevelLike):
 
         self.block_width = Block.WIDTH * self.zoom
         self.block_height = Block.HEIGHT * self.zoom
+
+        self.object_set = OVERWORLD_OBJECT_SET
+        self.tsa_data = ROM.get_tsa_data(self.object_set)
 
         self.objects = []
 
@@ -398,10 +401,7 @@ class WorldMap(LevelLike):
             y = (index // WorldMap.WIDTH) % WorldMap.HEIGHT
 
             block = Block(
-                OVERWORLD_OBJECT_SET,
-                block_index,
-                self.palette_group,
-                self.pattern_table,
+                block_index, self.palette_group, self.pattern_table, self.tsa_data
             )
 
             self.objects.append(
