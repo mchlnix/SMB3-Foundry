@@ -27,8 +27,8 @@ def test_3byte_parsing():
     ):
         obj = factory.make_object(array, 0)
 
-        assert obj.x == x
-        assert obj.y == y
+        assert obj.x_position == x
+        assert obj.y_position == y
         assert obj.obj_index == obj_type
         assert obj.domain == domain
 

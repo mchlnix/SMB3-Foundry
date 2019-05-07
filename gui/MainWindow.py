@@ -678,7 +678,7 @@ class SMB3Foundry(wx.Frame):
                 )
                 scroll_offset = visible_blocks // 2
 
-                self.scroll_panel.Scroll(obj.level_x - scroll_offset, obj.level_y)
+                self.scroll_panel.Scroll(obj.x_position - scroll_offset, obj.y_position)
 
         self.level_view.Refresh()
 

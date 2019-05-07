@@ -25,7 +25,6 @@ from m3idefs import (
     PYRAMID_2,
     SINGLE_BLOCK_OBJECT,
     ObjectDefinition,
-    CENTERED,
 )
 
 SKY = 0
@@ -410,11 +409,11 @@ class LevelObject(Drawable):
 
         # position relative to the start of the level (top)
         self.original_y = data[0] & 0b0001_1111
-        self.y = self.level_y = self.original_y
+        self.y_position = self.original_y
 
         # position relative to the start of the level (left)
         self.original_x = data[1]
-        self.x = self.level_x = self.original_x
+        self.x_position = self.original_x
 
         # describes what object it is
         self.obj_index = data[2]
@@ -466,8 +465,8 @@ class LevelObject(Drawable):
         if self.index < len(LevelObject.ground_map):
             del LevelObject.ground_map[self.index]
 
-        base_x = self.x
-        base_y = self.y
+        base_x = self.x_position
+        base_y = self.y_position
 
         new_width = self.width
         new_height = self.height
@@ -475,10 +474,10 @@ class LevelObject(Drawable):
         blocks_to_draw = []
 
         if self.orientation == TO_THE_SKY:
-            base_x = self.x
+            base_x = self.x_position
             base_y = SKY
 
-            for _ in range(self.y):
+            for _ in range(self.y_position):
                 blocks_to_draw.extend(self.blocks[0 : self.width])
 
             blocks_to_draw.extend(self.blocks[-self.width :])
@@ -604,7 +603,7 @@ class LevelObject(Drawable):
 
         elif self.orientation == ENDING:
             page_width = 16
-            page_limit = page_width - self.x % page_width
+            page_limit = page_width - self.x_position % page_width
 
             new_width = page_width + page_limit + 1
             new_height = (GROUND - 1) - SKY
@@ -808,8 +807,8 @@ class LevelObject(Drawable):
 
         self.rendered_width = new_width
         self.rendered_height = new_height
-        self.x = self.rendered_base_x = base_x
-        self.y = self.rendered_base_y = base_y
+        self.x_position = self.rendered_base_x = base_x
+        self.y_position = self.rendered_base_y = base_y
 
         if not self.rendered_height == len(self.rendered_blocks) / new_width:
             print(
@@ -869,11 +868,8 @@ class LevelObject(Drawable):
         x = max(0, x)
         y = max(0, y)
 
-        self.x = x
-        self.y = y
-
-        self.level_x = x
-        self.level_y = y
+        self.x_position = x
+        self.y_position = y
 
         self._render()
 
@@ -885,7 +881,7 @@ class LevelObject(Drawable):
                 max_width = 0x0F
 
             # don't get negative
-            width = max(0, x - self.x)
+            width = max(0, x - self.x_position)
 
             # stay under maximum width
             width = min(width, max_width)
@@ -923,8 +919,8 @@ class LevelObject(Drawable):
     def to_bytes(self):
         data = bytearray()
 
-        data.append((self.domain << 5) | self.y)
-        data.append(self.x)
+        data.append((self.domain << 5) | self.y_position)
+        data.append(self.x_position)
         data.append(self.obj_index)
 
         if self.is_4byte:
