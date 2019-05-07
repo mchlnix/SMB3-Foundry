@@ -344,6 +344,10 @@ class EnemyObject(Drawable):
             if not transparent:
                 block.Replace(*MASK_COLOR, *self.bg_color)
 
+            # todo better effect
+            if self.selected:
+                block = block.ConvertToDisabled(127)
+
             dc.DrawBitmap(
                 block.ConvertToBitmap(),
                 x * Block.WIDTH,
