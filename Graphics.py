@@ -2,7 +2,7 @@ import abc
 
 import wx
 
-from Data import ENEMY_OBJ_DEF
+from Data import ENEMY_OBJ_DEF, NESPalette, enemy_handle_x, enemy_handle_y
 from File import ROM
 from ObjectDefinitions import load_object_definition
 from Palette import load_palette
@@ -233,14 +233,22 @@ class EnemyItemFactory:
     definitions: list = []
 
     def __init__(self, object_set, palette_index):
+        wx.InitAllImageHandlers()
+        png = wx.Image("data/gfx.png")
+
+        rows_per_object_set = 256 // 64
+
+        y_offset = 12 * rows_per_object_set * Block.HEIGHT
+
+        self.png_data = png.GetSubImage(
+            wx.Rect(0, y_offset, png.GetWidth(), png.GetHeight() - y_offset)
+        )
+
         self.palette_group = load_palette(object_set, palette_index)
 
     # todo get rid of index by fixing ground map
     def make_object(self, data, _):
-        if data[0] == 0x73:
-            return ParaGoomba(data, self.palette_group)
-
-        return Goomba(data, self.palette_group)
+        return EnemyObject(data, self.png_data, self.palette_group)
 
 
 class Drawable(abc.ABC):
@@ -273,8 +281,11 @@ class Drawable(abc.ABC):
         pass
 
 
+MASK_COLOR = [0xFF, 0x33, 0xFF]
+
+
 class EnemyObject(Drawable):
-    def __init__(self, data, palette_group):
+    def __init__(self, data, png_data, palette_group):
         self.is_4byte = False
 
         self.obj_index = data[0]
@@ -284,14 +295,61 @@ class EnemyObject(Drawable):
         self.pattern_table = PatternTable(0x4C)
         self.palette_group = palette_group
 
-        self.description = str(hex(self.obj_index))
+        self.bg_color = NESPalette[palette_group[0][0]]
 
-        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
+        self.png_data = png_data
+
+        obj_data: ObjectDefinition = load_object_definition(ENEMY_OBJ_DEF)[
+            self.obj_index
+        ]
+
+        self.description = obj_data.description
+
+        self.width = obj_data.bmp_width
+        self.height = obj_data.bmp_height
+
+        self.rect = wx.Rect(self.x_position, self.y_position, self.width, self.height)
 
         self.selected = False
 
+        self._render(obj_data)
+
+    def _render(self, obj_data):
+        self.blocks = []
+
+        block_ids = obj_data.object_design
+
+        for block_id in block_ids:
+            x = (block_id % 64) * Block.WIDTH
+            y = (block_id // 64) * Block.WIDTH
+
+            self.blocks.append(
+                self.png_data.GetSubImage(wx.Rect(x, y, Block.WIDTH, Block.HEIGHT))
+            )
+
     def draw(self, dc, transparent):
-        raise NotImplementedError()
+        for i, image in enumerate(self.blocks):
+            x = self.x_position + (i % self.width)
+            y = self.y_position + (i // self.width)
+
+            x_offset = int(enemy_handle_x[self.obj_index])
+            y_offset = int(enemy_handle_y[self.obj_index])
+
+            x += x_offset
+            y += y_offset
+
+            block = image.Copy()
+            block.SetMaskColour(*MASK_COLOR)
+
+            if not transparent:
+                block.Replace(*MASK_COLOR, *self.bg_color)
+
+            dc.DrawBitmap(
+                block.ConvertToBitmap(),
+                x * Block.WIDTH,
+                y * Block.HEIGHT,
+                useMask=transparent,
+            )
 
     def get_status_info(self):
         return [
@@ -316,100 +374,13 @@ class EnemyObject(Drawable):
         self.x_position = x
         self.y_position = y
 
-        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
+        self.rect = wx.Rect(self.x_position, self.y_position, self.width, self.height)
 
     def resize_to(self, _, __):
         pass
 
     def to_bytes(self):
         return self.obj_index, self.x_position, self.y_position
-
-
-class Goomba(EnemyObject):
-    def __init__(self, data, palette_group):
-        super(Goomba, self).__init__(data, palette_group)
-
-        obj_data = load_object_definition(ENEMY_OBJ_DEF)[self.obj_index]
-
-        self.description = obj_data.description
-
-        self.tsa_data = bytearray(0x400)
-        self.tsa_data[self.obj_index] = 0xDA
-        self.tsa_data[0x100 + self.obj_index] = 0xDB
-        self.tsa_data[0x200 + self.obj_index] = 0xDC
-        self.tsa_data[0x300 + self.obj_index] = 0xDD
-
-        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
-
-    def draw(self, dc, transparent=False):
-        block = Block(
-            self.obj_index,
-            self.palette_group,
-            self.pattern_table,
-            self.tsa_data,
-            mirrored=True,
-        )
-
-        block.draw(
-            dc,
-            self.x_position * Block.WIDTH,
-            self.y_position * Block.HEIGHT,
-            selected=self.selected,
-            transparent=transparent,
-        )
-
-
-class ParaGoomba(Goomba):
-    def __init__(self, data, palette_group):
-        super(ParaGoomba, self).__init__(data, palette_group)
-
-        obj_data = load_object_definition(ENEMY_OBJ_DEF)[self.obj_index]
-
-        self.description = obj_data.description
-
-        self.tsa_data = bytearray(0x400)
-        self.tsa_data[self.obj_index] = 0xDA
-        self.tsa_data[0x100 + self.obj_index] = 0xDB
-        self.tsa_data[0x200 + self.obj_index] = 0xDC
-        self.tsa_data[0x300 + self.obj_index] = 0xDD
-
-        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
-
-
-class Koopa(EnemyObject):
-    def __init__(self, data, palette_group):
-        super(Koopa, self).__init__(data, palette_group)
-
-        obj_data: ObjectDefinition = load_object_definition(ENEMY_OBJ_DEF)[
-            self.obj_index
-        ]
-
-        self.description = obj_data.description
-
-        self.tsa_data = bytearray(0x400)
-        self.tsa_data[self.obj_index] = 0xDA
-        self.tsa_data[0x100 + self.obj_index] = 0xDB
-        self.tsa_data[0x200 + self.obj_index] = 0xDC
-        self.tsa_data[0x300 + self.obj_index] = 0xDD
-
-        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
-
-    def draw(self, dc, transparent=False):
-        block = Block(
-            self.obj_index,
-            self.palette_group,
-            self.pattern_table,
-            self.tsa_data,
-            mirrored=True,
-        )
-
-        block.draw(
-            dc,
-            self.x_position * Block.WIDTH,
-            self.y_position * Block.HEIGHT,
-            selected=self.selected,
-            transparent=transparent,
-        )
 
 
 class LevelObject(Drawable):
@@ -945,170 +916,6 @@ class LevelObject(Drawable):
 
         if self.is_4byte:
             data.append(self.length)
-
-        return data
-
-
-class EnemyObject:
-    SIZE = 3
-
-    def __init__(
-        self, data, object_set, object_definitions, palette_group, pattern_table
-    ):
-        self.pattern_table = pattern_table
-
-        self.data = data
-
-        self.object_set = object_set
-
-        self.palette_group = palette_group
-
-        # describes what object it is
-        self.obj_index = data[0]
-
-        # position relative to the start of the level (left)
-        self.x = self.level_x = self.original_x = data[1]
-
-        # position relative to the start of the level (top)
-        self.y = self.level_y = self.original_y = data[2]
-
-        object_data = object_definitions[self.obj_index]
-
-        self.width = object_data.bmp_width
-        self.height = object_data.bmp_height
-        self.orientation = object_data.orientation
-        self.ending = object_data.ending
-        self.description = object_data.description
-
-        self.blocks = [int(block) for block in object_data.rom_object_design]
-
-        self.block_cache = {}
-
-        self.is_4byte = False
-
-        self.rect = wx.Rect()
-
-        self._render()
-
-        self.selected = False
-
-    def _render(self):
-        base_x = self.x
-        base_y = self.y
-
-        new_width = self.width
-        new_height = self.height
-
-        blocks_to_draw = []
-
-        if self.orientation == CENTERED:
-            pass
-
-        elif not self.orientation == SINGLE_BLOCK_OBJECT:
-            print(f"Didn't render {self.description}")
-            # breakpoint()
-
-        # for not yet implemented objects and single block objects
-        if blocks_to_draw:
-            self.rendered_blocks = blocks_to_draw
-        else:
-            self.rendered_blocks = self.blocks
-
-        self.rendered_width = new_width
-        self.rendered_height = new_height
-        self.x = self.rendered_base_x = base_x
-        self.y = self.rendered_base_y = base_y
-
-        if not self.rendered_height == len(self.rendered_blocks) / new_width:
-            print(
-                f"Not enough Blocks for calculated height: {self.description}. "
-                f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}"
-            )
-
-        self.rect = wx.Rect(
-            self.rendered_base_x,
-            self.rendered_base_y,
-            self.rendered_width,
-            self.rendered_height,
-        )
-
-    def draw(self, dc, transparent):
-        for index, block_index in enumerate(self.rendered_blocks):
-            if block_index == BLANK:
-                continue
-
-            x = self.rendered_base_x + index % self.rendered_width
-            y = self.rendered_base_y + index // self.rendered_width
-
-            print(block_index)
-
-            self._draw_block(dc, block_index, x, y, transparent)
-
-    def _draw_block(self, dc, block_index, x, y, transparent):
-        if block_index not in self.block_cache:
-            if block_index > 0xFF:
-                rom_block_index = ROM().get_byte(
-                    block_index
-                )  # block_index is an offset into the graphic memory
-                block = Block(
-                    self.object_set,
-                    rom_block_index,
-                    self.palette_group,
-                    self.pattern_table,
-                )
-            else:
-                block = Block(
-                    self.object_set, block_index, self.palette_group, self.pattern_table
-                )
-
-            self.block_cache[block_index] = block
-
-        self.block_cache[block_index].draw(
-            dc,
-            x * Block.WIDTH,
-            y * Block.HEIGHT,
-            zoom=1,
-            selected=self.selected,
-            transparent=transparent,
-        )
-
-    def set_position(self, x, y):
-        self.x = x
-        self.y = y
-
-        self.level_x = x
-        self.level_y = y
-
-        self._render()
-
-    def resize_to(self, x, y):
-        # nothing to do
-        return
-
-    def __contains__(self, item):
-        x, y = item
-
-        return self.point_in(x, y)
-
-    def point_in(self, x, y):
-        return self.rect.Contains(x, y)
-
-    def get_status_info(self):
-        return [
-            ("x", self.rendered_base_x),
-            ("y", self.rendered_base_y),
-            ("Width", self.rendered_width),
-            ("Height", self.rendered_height),
-            ("Orientation", ORIENTATION_TO_STR[self.orientation]),
-            ("Ending", ENDING_STR[self.ending]),
-        ]
-
-    def to_bytes(self):
-        data = bytearray(EnemyObject.SIZE)
-
-        data[0] = self.obj_index
-        data[1] = self.x
-        data[2] = self.y
 
         return data
 
