@@ -1,8 +1,7 @@
 from Data import plains_level, ENEMY_OBJ_DEF
 
 object_set_to_definition = {
-    16: 0,
-    0: 1,
+    0: 0,
     1: 1,
     7: 1,
     15: 1,
@@ -19,11 +18,15 @@ object_set_to_definition = {
     11: 9,
     12: 10,
     14: 11,
+    16: 12,
 }
 
 
 def load_object_definition(object_set):
     object_definition = object_set_to_definition[object_set]
+
+    if object_set == ENEMY_OBJ_DEF:
+        return plains_level[object_definition]
 
     with open(f"data/romobjs{object_definition}.dat", "rb") as f:
         data = f.read()
