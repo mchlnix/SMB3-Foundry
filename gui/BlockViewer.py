@@ -1,6 +1,7 @@
 import wx
 from math import ceil
 
+from File import ROM
 from Graphics import PatternTable
 from LevelSelector import OBJECT_SET_ITEMS
 from Palette import get_bg_color_for, load_palette
@@ -103,8 +104,6 @@ class BlockBank(wx.Panel):
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_PAINT, self.on_paint)
 
-        self.object_set = 0
-
         self.SetSize(self.size)
 
     def on_size(self, event):
@@ -141,11 +140,12 @@ class BlockBank(wx.Panel):
 
         pattern_table = PatternTable(self.object_set)
         palette = load_palette(self.object_set, 0)
+        tsa_data = ROM.get_tsa_data(self.object_set)
 
         horizontal = self.sprites_horiz
 
         for i in range(self.sprites):
-            block = Block(self.object_set, i, palette, pattern_table)
+            block = Block(i, palette, pattern_table, tsa_data)
 
             x = (i % horizontal) * Block.WIDTH * self.zoom
             y = (i // horizontal) * Block.HEIGHT * self.zoom
