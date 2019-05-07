@@ -384,7 +384,7 @@ class EnemyObject(Drawable):
         pass
 
     def to_bytes(self):
-        return self.obj_index, self.x_position, self.y_position
+        return bytearray([self.obj_index, self.x_position, self.y_position])
 
 
 class LevelObject(Drawable):
