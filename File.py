@@ -58,9 +58,7 @@ class ROM:
 
     @staticmethod
     def _setup_map_addresses():
-        offsets = ROM().bulk_read(
-            WORLD_COUNT * OS_SIZE, W_LAYOUT_LIST_OS
-        )
+        offsets = ROM().bulk_read(WORLD_COUNT * OS_SIZE, W_LAYOUT_LIST_OS)
 
         ROM.W_LAYOUT_OS_LIST.clear()
 
@@ -118,7 +116,7 @@ class ROM:
         with open(path, "wb") as f:
             f.write(bytearray(ROM.rom_data))
 
-        if ROM.additional_data is not None:
+        if ROM.additional_data:
             with open(path, "ab") as f:
                 f.write(ROM.MARKER_VALUE)
                 f.write(ROM.additional_data.encode("utf-8"))
