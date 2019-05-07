@@ -3,7 +3,7 @@ import wx.lib.scrolledpanel
 
 from BlockViewer import BlockViewer
 from File import ROM
-from Graphics import LevelObject
+from Graphics import LevelObject, EnemyObject
 from Level import Level, WorldMap
 from LevelSelector import LevelSelector
 from LevelView import LevelView
@@ -427,33 +427,24 @@ class SMB3Foundry(wx.Frame):
 
         level = self.level_view.level
         old_object = level.get_object(index)
+        level.remove_object(old_object)
 
-        self.level_view.level.remove_object(old_object)
+        obj_index = self.spin_type.GetValue()
 
-        object_data = [
-            (self.spin_domain.GetValue() << 5) | old_object.y,
-            old_object.x,
-            self.spin_type.GetValue(),
-        ]
+        x = old_object.x_position
+        y = old_object.y_position
 
-        if _id == ID_SPIN_LENGTH:
-            object_data.append(self.spin_length.GetValue())
+        if isinstance(old_object, LevelObject):
+            domain = self.spin_domain.GetValue()
+
+            if _id == ID_SPIN_LENGTH:
+                length = self.spin_length.GetValue()
+            else:
+                length = None
+
+            level.add_object(domain, obj_index, x, y, length, index)
         else:
-            object_data.append(0)
-
-        new_object = LevelObject(
-            object_data,
-            level.object_set,
-            level.object_definitions,
-            level.object_palette_group,
-            self.level_view.level.pattern_table,
-            index,
-        )
-
-        new_object.selected = True
-
-        self.level_view.level.add_object(new_object, index)
-        self.level_view.level.changed = True
+            level.add_enemy(obj_index, x, y, index)
 
         self.level_view.Refresh()
         self.object_list.update()

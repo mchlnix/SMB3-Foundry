@@ -229,8 +229,6 @@ class Level(LevelLike):
             return not (data[0] == 0xFF and data[1] in [0x00, 0x01])
 
         while data_left(enemy_data):
-            # enemy = EnemyObject(enemy_data, ENEMY_BANK, self.enemy_definitions, self.enemy_palette_group, self.enemy_pattern_table)
-
             enemy = self.enemy_item_factory.make_object(enemy_data, 0)
 
             self.enemies.append(enemy)
@@ -259,7 +257,7 @@ class Level(LevelLike):
             if has_length:
                 obj_data.append(rom.get_byte())
 
-            level_object = self.object_factory.make_object(obj_data, len(self.objects))
+            level_object = self.object_factory.from_data(obj_data, len(self.objects))
 
             self.objects.append(level_object)
 
@@ -271,6 +269,9 @@ class Level(LevelLike):
         too_many_objects = self._calc_size_on_disk() > self.object_size_on_disk
 
         return too_many_enemies or too_many_objects
+
+    def get_all_objects(self):
+        return self.objects + self.enemies
 
     def get_object_names(self):
         return [obj.description for obj in self.objects + self.enemies]
@@ -298,17 +299,28 @@ class Level(LevelLike):
             enemy.draw(dc, transparent=transparency)
 
     def create_object_at(self, x, y):
-        obj = self.object_factory.make_object([0x0, 0x0, 0x0], len(self.objects))
+        self.add_object(0, 0, x, y, None, len(self.objects))
 
-        obj.set_position(x, y)
-
-        self.add_object(obj)
-
-    def add_object(self, obj: LevelObject, index=-1):
+    def add_object(self, domain, object_index, x, y, length, index=-1):
         if index == -1:
             index = len(self.objects)
 
+        obj = self.object_factory.from_properties(
+            domain, object_index, x, y, length, index
+        )
         self.objects.insert(index, obj)
+
+        self.changed = True
+
+    def add_enemy(self, object_index, x, y, index=-1):
+        if index == -1:
+            index = len(self.enemies)
+        else:
+            index %= len(self.objects)
+
+        enemy = self.enemy_item_factory.make_object([object_index, x, y], -1)
+
+        self.enemies.insert(index, enemy)
 
         self.changed = True
 
@@ -329,9 +341,8 @@ class Level(LevelLike):
             LevelObject.ground_map.remove(obj.rect)
             self.objects.remove(obj)
         except ValueError:
-            pass
+            self.enemies.remove(obj)
 
-        self.enemies.remove(obj)
         self.changed = True
 
     def to_bytes(self):

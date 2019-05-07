@@ -25,7 +25,7 @@ def test_3byte_parsing():
     for array, x, y, obj_type, domain in zip(
         THREE_BYTE_ARRAYS, X_POSITIONS, Y_POSITIONS, OBJ_TYPES, DOMAINS
     ):
-        obj = factory.make_object(array, 0)
+        obj = factory.from_data(array, 0)
 
         assert obj.x_position == x
         assert obj.y_position == y

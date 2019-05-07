@@ -12,7 +12,7 @@ class ObjectList(wx.ListBox):
             self.Delete(index)
 
     def update(self):
-        level_objects = self.Parent.level_view.level.objects
+        level_objects = self.Parent.level_view.level.get_all_objects()
 
         if len(self.GetItems()) != len(level_objects):
             self._full_update()
@@ -36,14 +36,14 @@ class ObjectList(wx.ListBox):
             self.SetString(index, obj_name)
 
     def _remove_orphaned_items(self):
-        level_objects = self.Parent.level_view.level.objects
+        level_objects = self.Parent.level_view.level.get_all_objects()
 
         while len(self.GetItems()) > len(level_objects):
             last_index = len(self.GetItems()) - 1
             self.Delete(last_index)
 
     def _add_placeholder_objects(self):
-        level_objects = self.Parent.level_view.level.objects
+        level_objects = self.Parent.level_view.level.get_all_objects()
 
         while len(self.GetItems()) < len(level_objects):
             self.Append("__PLACEHOLDER")
