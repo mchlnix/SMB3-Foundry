@@ -606,7 +606,7 @@ class LevelObject(Drawable):
             page_width = 16
             page_limit = page_width - self.x % page_width
 
-            new_width = page_width + page_limit
+            new_width = page_width + page_limit + 1
             new_height = (GROUND - 1) - SKY
 
             for y in range(SKY, GROUND - 1):
@@ -614,14 +614,23 @@ class LevelObject(Drawable):
                 blocks_to_draw.extend([self.blocks[1]] * (new_width - 1))
 
             # ending graphics
-            offset = ENDING_OBJECT_OFFSET + OBJECT_SET_TO_ENDING[self.object_set] * 0x60
+            rom_offset = (
+                ENDING_OBJECT_OFFSET + OBJECT_SET_TO_ENDING[self.object_set] * 0x60
+            )
 
             rom = ROM()
 
-            for y in range(6):
+            ending_graphic_height = 6
+            floor_height = 1
+
+            y_offset = GROUND - floor_height - ending_graphic_height
+
+            for y in range(ending_graphic_height):
                 for x in range(page_width):
-                    block_index = rom.get_byte(offset + y * page_width + x - 1)
-                    blocks_to_draw[(y + 20) * new_width + x + page_limit] = block_index
+                    block_index = rom.get_byte(rom_offset + y * page_width + x - 1)
+
+                    block_position = (y_offset + y) * new_width + x + page_limit + 1
+                    blocks_to_draw[block_position] = block_index
 
             # Mushroom/Fire flower/Star is categorized as an enemy
 
