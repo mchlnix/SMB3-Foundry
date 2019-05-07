@@ -1,3 +1,5 @@
+import abc
+
 import wx
 
 from Data import Mario3Level, object_set_pointers, object_sets
@@ -44,7 +46,7 @@ def _load_level_offsets():
     Level.WORLDS = len(Level.world_indexes)
 
 
-class LevelLike:
+class LevelLike(abc.ABC):
     def __init__(self, world, level, object_set):
         self.world = world
         self.level = level
@@ -70,14 +72,21 @@ class LevelLike:
 
         return level_x, level_y
 
+    @abc.abstractmethod
+    def index_of(self, obj):
+        pass
+
+    @abc.abstractmethod
     def object_at(self, x, y):
-        raise NotImplementedError("Overwrite this method.")
+        pass
 
+    @abc.abstractmethod
     def get_object_names(self):
-        raise NotImplementedError("Overwrite this method.")
+        pass
 
+    @abc.abstractmethod
     def draw(self, dc, transparency):
-        raise NotImplementedError("Overwrite this method.")
+        pass
 
 
 class Level(LevelLike):
@@ -430,6 +439,9 @@ class WorldMap(LevelLike):
     def draw(self, dc, transparency=None):
         for obj in self.objects:
             obj.draw(dc)
+
+    def index_of(self, obj):
+        return self.objects.index(obj)
 
     def object_at(self, x, y):
         point = wx.Point(*self.to_level_point(x, y))

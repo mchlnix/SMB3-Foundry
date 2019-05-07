@@ -3,7 +3,7 @@ import wx.lib.scrolledpanel
 
 from BlockViewer import BlockViewer
 from File import ROM
-from Graphics import LevelObject, EnemyObject
+from Graphics import LevelObject
 from Level import Level, WorldMap
 from LevelSelector import LevelSelector
 from LevelView import LevelView
