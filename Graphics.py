@@ -236,7 +236,10 @@ class EnemyItemFactory:
         self.palette_group = load_palette(object_set, palette_index)
 
     # todo get rid of index by fixing ground map
-    def make_object(self, data, index):
+    def make_object(self, data, _):
+        if data[0] == 0x73:
+            return ParaGoomba(data, self.palette_group)
+
         return Goomba(data, self.palette_group)
 
 
@@ -270,7 +273,7 @@ class Drawable(abc.ABC):
         pass
 
 
-class Goomba(Drawable):
+class EnemyObject(Drawable):
     def __init__(self, data, palette_group):
         self.is_4byte = False
 
@@ -278,42 +281,17 @@ class Goomba(Drawable):
         self.x_position = data[1]
         self.y_position = data[2]
 
-        obj_data: ObjectDefinition = load_object_definition(ENEMY_OBJ_DEF)[
-            self.obj_index
-        ]
-        self.description = obj_data.description
-
         self.pattern_table = PatternTable(0x4C)
         self.palette_group = palette_group
 
-        self.block_index = 0x72
-
-        self.tsa_data = bytearray(0x400)
-        self.tsa_data[self.block_index] = 0xDA
-        self.tsa_data[0x100 + self.block_index] = 0xDB
-        self.tsa_data[0x200 + self.block_index] = 0xDC
-        self.tsa_data[0x300 + self.block_index] = 0xDD
+        self.description = str(hex(self.obj_index))
 
         self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
 
         self.selected = False
 
-    def draw(self, dc, transparent=False):
-        block = Block(
-            self.block_index,
-            self.palette_group,
-            self.pattern_table,
-            self.tsa_data,
-            mirrored=True,
-        )
-
-        block.draw(
-            dc,
-            self.x_position * Block.WIDTH,
-            self.y_position * Block.HEIGHT,
-            selected=self.selected,
-            transparent=transparent,
-        )
+    def draw(self, dc, transparent):
+        raise NotImplementedError()
 
     def get_status_info(self):
         return [
@@ -345,6 +323,93 @@ class Goomba(Drawable):
 
     def to_bytes(self):
         return self.obj_index, self.x_position, self.y_position
+
+
+class Goomba(EnemyObject):
+    def __init__(self, data, palette_group):
+        super(Goomba, self).__init__(data, palette_group)
+
+        obj_data = load_object_definition(ENEMY_OBJ_DEF)[self.obj_index]
+
+        self.description = obj_data.description
+
+        self.tsa_data = bytearray(0x400)
+        self.tsa_data[self.obj_index] = 0xDA
+        self.tsa_data[0x100 + self.obj_index] = 0xDB
+        self.tsa_data[0x200 + self.obj_index] = 0xDC
+        self.tsa_data[0x300 + self.obj_index] = 0xDD
+
+        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
+
+    def draw(self, dc, transparent=False):
+        block = Block(
+            self.obj_index,
+            self.palette_group,
+            self.pattern_table,
+            self.tsa_data,
+            mirrored=True,
+        )
+
+        block.draw(
+            dc,
+            self.x_position * Block.WIDTH,
+            self.y_position * Block.HEIGHT,
+            selected=self.selected,
+            transparent=transparent,
+        )
+
+
+class ParaGoomba(Goomba):
+    def __init__(self, data, palette_group):
+        super(ParaGoomba, self).__init__(data, palette_group)
+
+        obj_data = load_object_definition(ENEMY_OBJ_DEF)[self.obj_index]
+
+        self.description = obj_data.description
+
+        self.tsa_data = bytearray(0x400)
+        self.tsa_data[self.obj_index] = 0xDA
+        self.tsa_data[0x100 + self.obj_index] = 0xDB
+        self.tsa_data[0x200 + self.obj_index] = 0xDC
+        self.tsa_data[0x300 + self.obj_index] = 0xDD
+
+        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
+
+
+class Koopa(EnemyObject):
+    def __init__(self, data, palette_group):
+        super(Koopa, self).__init__(data, palette_group)
+
+        obj_data: ObjectDefinition = load_object_definition(ENEMY_OBJ_DEF)[
+            self.obj_index
+        ]
+
+        self.description = obj_data.description
+
+        self.tsa_data = bytearray(0x400)
+        self.tsa_data[self.obj_index] = 0xDA
+        self.tsa_data[0x100 + self.obj_index] = 0xDB
+        self.tsa_data[0x200 + self.obj_index] = 0xDC
+        self.tsa_data[0x300 + self.obj_index] = 0xDD
+
+        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
+
+    def draw(self, dc, transparent=False):
+        block = Block(
+            self.obj_index,
+            self.palette_group,
+            self.pattern_table,
+            self.tsa_data,
+            mirrored=True,
+        )
+
+        block.draw(
+            dc,
+            self.x_position * Block.WIDTH,
+            self.y_position * Block.HEIGHT,
+            selected=self.selected,
+            transparent=transparent,
+        )
 
 
 class LevelObject(Drawable):
