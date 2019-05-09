@@ -310,6 +310,10 @@ class Level(LevelLike):
     def create_object_at(self, x, y):
         self.add_object(0, 0, x, y, None, len(self.objects))
 
+    def create_enemy_at(self, x, y):
+        # goomba to have something to display
+        self.add_enemy(0x72, x, y, len(self.enemies))
+
     def add_object(self, domain, object_index, x, y, length, index=-1):
         if index == -1:
             index = len(self.objects)

@@ -73,8 +73,9 @@ ID_ABOUT = 605
 
 # Context Menus
 
-ID_REMOVE_OBJECT = 701
-ID_ADD_OBJECT = 702
+ID_CTX_REMOVE_OBJECT = 701
+ID_CTX_ADD_OBJECT = 702
+ID_CTX_ADD_ENEMY = 703
 
 CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES]
 
@@ -203,11 +204,13 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_object_viewer, id=ID_VIEW_OBJECTS)
 
         self.object_context_menu = wx.Menu()
-        self.object_context_menu.Append(id=ID_REMOVE_OBJECT, item="Remove")
-        self.object_context_menu.Append(id=ID_ADD_OBJECT, item="Add object")
+        self.object_context_menu.Append(id=ID_CTX_REMOVE_OBJECT, item="Remove")
+        self.object_context_menu.Append(id=ID_CTX_ADD_OBJECT, item="Add object")
+        self.object_context_menu.Append(id=ID_CTX_ADD_ENEMY, item="Add enemy/item")
 
         self.background_context_menu = wx.Menu()
-        self.background_context_menu.Append(id=ID_ADD_OBJECT, item="Add object")
+        self.background_context_menu.Append(id=ID_CTX_ADD_OBJECT, item="Add object")
+        self.background_context_menu.Append(id=ID_CTX_ADD_ENEMY, item="Add enemy/item")
 
         self.Bind(wx.EVT_MENU, self.on_menu)
 
@@ -384,20 +387,24 @@ class SMB3Foundry(wx.Frame):
     def on_menu(self, event):
         item_id = event.GetId()
 
+        x = self.context_menu_position.x
+        y = self.context_menu_position.y
+
+        level_x, level_y = self.level_view.level.to_level_point(x, y)
+
         if item_id in CHECKABLE_MENU_ITEMS:
             self.on_menu_item_checked(event)
 
-        if item_id == ID_REMOVE_OBJECT:
+        if item_id == ID_CTX_REMOVE_OBJECT:
             self.level_view.level.remove_object(self.level_view.selected_object)
             self.object_list.remove_selected()
             self.select_object(None)
-        elif item_id == ID_ADD_OBJECT:
-            x = self.context_menu_position.x
-            y = self.context_menu_position.y
-
-            level_x, level_y = self.level_view.level.to_level_point(x, y)
-
+        elif item_id == ID_CTX_ADD_OBJECT:
             self.level_view.level.create_object_at(level_x, level_y)
+
+            self.object_list.update()
+        elif item_id == ID_CTX_ADD_ENEMY:
+            self.level_view.level.create_enemy_at(level_x, level_y)
 
             self.object_list.update()
         else:
