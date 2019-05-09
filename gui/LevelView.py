@@ -33,6 +33,9 @@ class LevelView(wx.Panel):
 
         self.selected_object = obj
 
+    def get_selected_object(self):
+        return self.selected_object
+
     def was_changed(self):
         if self.level is None:
             return False

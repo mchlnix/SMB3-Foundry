@@ -292,6 +292,8 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Bind(wx.EVT_RIGHT_DOWN, self.start_resize)
         self.level_view.Bind(wx.EVT_RIGHT_UP, self.stop_resize)
 
+        self.level_view.Bind(wx.EVT_KEY_UP, self.on_key_press)
+
         self.dragging_object = None
         self.dragging_index = None
         self.dragging_offset = None
@@ -396,9 +398,7 @@ class SMB3Foundry(wx.Frame):
             self.on_menu_item_checked(event)
 
         if item_id == ID_CTX_REMOVE_OBJECT:
-            self.level_view.level.remove_object(self.level_view.selected_object)
-            self.object_list.remove_selected()
-            self.select_object(None)
+            self.remove_selected_object()
         elif item_id == ID_CTX_ADD_OBJECT:
             self.level_view.level.create_object_at(level_x, level_y)
 
@@ -411,6 +411,11 @@ class SMB3Foundry(wx.Frame):
             event.Skip()
 
         self.level_view.Refresh()
+
+    def remove_selected_object(self):
+        self.level_view.level.remove_object(self.level_view.get_selected_object())
+        self.object_list.remove_selected()
+        self.select_object(None)
 
     def on_menu_item_checked(self, event):
         item_id = event.GetId()
@@ -495,6 +500,12 @@ class SMB3Foundry(wx.Frame):
         index = self.object_list.GetSelection()
 
         self.select_object(index=index)
+
+    def on_key_press(self, event):
+        key = event.GetKeyCode()
+
+        if key in [wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE]:
+            self.remove_selected_object()
 
     def on_mouse_motion(self, event):
         if self.dragging_object is not None:

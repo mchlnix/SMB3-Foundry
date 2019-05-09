@@ -350,6 +350,9 @@ class Level(LevelLike):
             return self.enemies[index % len(self.objects)]
 
     def remove_object(self, obj):
+        if obj is None:
+            return
+
         try:
             LevelObject.ground_map.remove(obj.rect)
             self.objects.remove(obj)
