@@ -248,7 +248,7 @@ class SMB3Foundry(wx.Frame):
         self.spin_length.Enable(False)
 
         spinner_sizer.Add(
-            wx.StaticText(self, label="Domain: "),
+            wx.StaticText(self, label="Bank/Domain: "),
             flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
         )
         spinner_sizer.Add(self.spin_domain)
@@ -302,7 +302,7 @@ class SMB3Foundry(wx.Frame):
         self.resizing_index = None
         self.resizing_happened = False
 
-        self.context_menu_position = None
+        self.context_menu_position = wx.Point(0, 0)
 
         self.Bind(wx.EVT_CLOSE, self.on_exit)
 
