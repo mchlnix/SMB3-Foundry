@@ -71,6 +71,13 @@ class ObjectViewer(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.on_exit)
         self.Bind(wx.EVT_SIZE, self.resize)
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
+
+    def on_key_press(self, event):
+        key = event.GetKeyCode()
+
+        if key == wx.WXK_ESCAPE:
+            self.on_exit(None)
 
     def on_combo(self, event):
         dropdown_id = event.GetId()
@@ -163,7 +170,7 @@ class ObjectDrawArea(wx.Panel):
         if object_data is None:
             object_data = self.current_object.data
 
-        self.current_object = self.object_factory.make_object(object_data, 0)
+        self.current_object = self.object_factory.from_data(object_data, 0)
 
         self.resize()
         self.Refresh()

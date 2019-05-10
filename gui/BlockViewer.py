@@ -49,6 +49,13 @@ class BlockViewer(wx.Frame):
         self.Bind(wx.EVT_COMBOBOX, self.on_combo)
         self.Bind(wx.EVT_CLOSE, self.on_exit)
         self.Bind(wx.EVT_SIZE, self.on_resize)
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
+
+    def on_key_press(self, event):
+        key = event.GetKeyCode()
+
+        if key == wx.WXK_ESCAPE:
+            self.on_exit(None)
 
     def on_tool_click(self, event):
         tool_id = event.GetId()

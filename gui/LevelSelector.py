@@ -115,8 +115,16 @@ class LevelSelector(wx.Frame):
         self.Bind(wx.EVT_LISTBOX_DCLICK, self.on_ok)
         self.Bind(wx.EVT_BUTTON, self.on_exit, id=self.button_cancel.GetId())
 
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
+
         self.world_list.Select(1)  # select Level 1-1
         self.on_world_click(None)
+
+    def on_key_press(self, event):
+        key = event.GetKeyCode()
+
+        if key == wx.WXK_ESCAPE:
+            self.on_exit(None)
 
     def on_world_click(self, _):
         index = self.world_list.GetSelection()
