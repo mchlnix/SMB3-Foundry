@@ -49,7 +49,9 @@ class LevelView(wx.Panel):
             self.level = Level(world, level, object_set)
 
         self.GetParent().SetupScrolling(
-            rate_x=self.level.block_width, rate_y=self.level.block_height
+            rate_x=self.level.block_width,
+            rate_y=self.level.block_height,
+            scrollToTop=False,
         )
 
         self.SetMinSize(wx.Size(*self.level.size))
@@ -68,8 +70,7 @@ class LevelView(wx.Panel):
     def to_level_point(self, x, y):
         return self.level.to_level_point(x, y)
 
-    def on_size(self, event):
-        event.Skip()
+    def on_size(self, _):
         self.Refresh()
 
     def on_paint(self, event):
