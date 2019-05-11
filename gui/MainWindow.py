@@ -558,14 +558,18 @@ class SMB3Foundry(wx.Frame):
 
     def stop_resize(self, event):
         if not self.resizing_happened:
-            self.context_menu_position = event.Position
+            self.context_menu_position = event.GetPosition()
 
             if self.resizing_object is not None:
                 menu = self.object_context_menu
             else:
                 menu = self.background_context_menu
 
-            self.PopupMenu(menu, event.GetPosition())
+            adjusted_for_scrolling = self.ScreenToClient(
+                self.level_view.ClientToScreen(event.Position)
+            )
+
+            self.PopupMenu(menu, adjusted_for_scrolling)
 
         self.resizing_object = None
         self.resizing_index = None
