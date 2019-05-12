@@ -23,7 +23,7 @@ class LevelView(wx.Panel):
 
         self.transparency = True
 
-        self.selected_object = None
+        self.selected_objects = []
 
         self.selection_square = SelectionSquare()
 
@@ -39,16 +39,33 @@ class LevelView(wx.Panel):
         self.Refresh()
 
     def select_object(self, obj=None):
-        if self.selected_object is not None:
-            self.selected_object.selected = False
-
         if obj is not None:
+            self.select_objects([obj])
+        else:
+            self.select_objects(None)
+
+    def select_objects(self, objects):
+        for obj in self.selected_objects:
+            obj.selected = False
+
+        self.selected_objects.clear()
+
+        if objects is None:
+            return
+
+        for obj in objects:
             obj.selected = True
 
-        self.selected_object = obj
+        self.selected_objects = objects
 
-    def get_selected_object(self):
-        return self.selected_object
+    def get_selected_objects(self):
+        return self.selected_objects
+
+    def remove_selected_objects(self):
+        for obj in self.selected_objects:
+            self.level.remove_object(obj)
+
+        self.selected_objects.clear()
 
     def was_changed(self):
         if self.level is None:

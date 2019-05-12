@@ -395,7 +395,7 @@ class SMB3Foundry(wx.Frame):
             level_x, level_y = self.level_view.level.to_level_point(x, y)
 
             if item_id == ID_CTX_REMOVE:
-                self.remove_selected_object()
+                self.remove_selected_objects()
             elif item_id == ID_CTX_ADD_OBJECT:
                 self.level_view.level.create_object_at(level_x, level_y)
             elif item_id == ID_CTX_ADD_ENEMY:
@@ -415,10 +415,10 @@ class SMB3Foundry(wx.Frame):
 
     def _cut_object(self):
         self._copy_object()
-        self.remove_selected_object()
+        self.remove_selected_objects()
 
     def _copy_object(self):
-        self.context_menu.set_copied_object(self.level_view.get_selected_object())
+        self.context_menu.set_copied_object(self.level_view.get_selected_objects()[0])
 
     def _paste_object(self, x, y):
         obj = self.context_menu.get_copied_object()
@@ -430,8 +430,8 @@ class SMB3Foundry(wx.Frame):
 
         self.level_view.level.add_object(obj.domain, obj.obj_index, x, y, length, -1)
 
-    def remove_selected_object(self):
-        self.level_view.level.remove_object(self.level_view.get_selected_object())
+    def remove_selected_objects(self):
+        self.level_view.remove_selected_objects()
         self.object_list.remove_selected()
         self.select_object(None)
 
@@ -523,7 +523,7 @@ class SMB3Foundry(wx.Frame):
         key = event.GetKeyCode()
 
         if key in [wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE]:
-            self.remove_selected_object()
+            self.remove_selected_objects()
 
     def on_mouse_motion(self, event):
         if self.dragging_object is not None:
