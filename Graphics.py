@@ -828,6 +828,8 @@ class LevelObject(Drawable):
                 f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}"
             )
 
+            self.rendered_height = len(self.rendered_blocks) / new_width
+
         self.rect = wx.Rect(
             self.rendered_base_x,
             self.rendered_base_y,
