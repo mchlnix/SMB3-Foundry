@@ -298,6 +298,8 @@ class SMB3Foundry(wx.Frame):
         self.resizing_index = None
         self.resizing_happened = False
 
+        self.last_mouse_position = 0, 0
+
         self.Bind(wx.EVT_CLOSE, self.on_exit)
 
         # this is needed, so that the scrolling panel doesn't reset
@@ -597,8 +599,7 @@ class SMB3Foundry(wx.Frame):
         if self.resizing_object is not None:
             return
 
-        x = event.Position.x
-        y = event.Position.y
+        x, y = event.GetPosition().Get()
 
         obj = self.level_view.object_at(x, y)
 
@@ -615,20 +616,23 @@ class SMB3Foundry(wx.Frame):
 
             self.dragging_offset = (x_off, y_off)
 
+            self.last_mouse_position = level_x, level_y
+
             self.level_view.Refresh()
         else:
             self.level_view.start_selection_square(event.GetPosition())
 
     def dragging(self, event):
-        x = event.Position.x
-        y = event.Position.y
+        x, y = event.GetPosition().Get()
 
         level_x, level_y = self.level_view.to_level_point(x, y)
 
-        level_x -= self.dragging_offset[0]
-        level_y -= self.dragging_offset[1]
+        dx = level_x - self.last_mouse_position[0]
+        dy = level_y - self.last_mouse_position[1]
 
-        self.dragging_object.set_position(level_x, level_y)
+        self.dragging_object.move_by(dx, dy)
+
+        self.last_mouse_position = level_x, level_y
 
         self.status_bar.fill(self.dragging_object)
 

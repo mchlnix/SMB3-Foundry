@@ -276,6 +276,10 @@ class Drawable(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def move_by(self, dx, dy):
+        pass
+
+    @abc.abstractmethod
     def resize_to(self, x, y):
         pass
 
@@ -394,6 +398,12 @@ class EnemyObject(Drawable):
         self.y_position = y
 
         self.rect = wx.Rect(self.x_position, self.y_position, self.width, self.height)
+
+    def move_by(self, dx, dy):
+        new_x = self.x_position + dx
+        new_y = self.y_position + dy
+
+        self.set_position(new_x, new_y)
 
     def resize_to(self, _, __):
         pass
@@ -893,6 +903,12 @@ class LevelObject(Drawable):
         self.y_position = y
 
         self._render()
+
+    def move_by(self, dx, dy):
+        new_x = self.x_position + dx
+        new_y = self.y_position + dy
+
+        self.set_position(new_x, new_y)
 
     def resize_to(self, x, y):
         if not self.is_single_block:
