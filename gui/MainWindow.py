@@ -404,6 +404,8 @@ class SMB3Foundry(wx.Frame):
                 self._paste_object(level_x, level_y)
 
             self.object_list.update()
+        else:
+            event.Skip()
 
         self.level_view.Refresh()
 
