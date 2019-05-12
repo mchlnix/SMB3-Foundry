@@ -90,6 +90,12 @@ MAX_DOMAIN = 0x07
 MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
 
+# mouse modes
+
+MODE_FREE = 0
+MODE_DRAG = 1
+MODE_RESIZE = 2
+
 
 class SMB3Foundry(wx.Frame):
     def __init__(self, *args, **kw):
@@ -281,22 +287,20 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
 
-        self.level_view.Bind(wx.EVT_LEFT_DOWN, self.start_drag)
+        self.level_view.Bind(wx.EVT_LEFT_DOWN, self.on_left_mouse_button_down)
         self.level_view.Bind(wx.EVT_MOTION, self.on_mouse_motion)
         self.level_view.Bind(wx.EVT_LEFT_UP, self.stop_drag)
 
-        self.level_view.Bind(wx.EVT_RIGHT_DOWN, self.start_resize)
+        self.level_view.Bind(wx.EVT_RIGHT_DOWN, self.on_right_mouse_button_down)
         self.level_view.Bind(wx.EVT_RIGHT_UP, self.stop_resize)
 
         self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
 
-        self.dragging_object = None
-        self.dragging_index = None
-        self.dragging_offset = None
-
         self.resizing_object = None
         self.resizing_index = None
         self.resizing_happened = False
+
+        self.mouse_mode = MODE_FREE
 
         self.last_mouse_position = 0, 0
 
@@ -528,15 +532,44 @@ class SMB3Foundry(wx.Frame):
             self.remove_selected_objects()
 
     def on_mouse_motion(self, event):
-        if self.dragging_object is not None:
+        if self.mouse_mode == MODE_DRAG:
             self.dragging(event)
         elif self.resizing_object is not None:
             self.resizing(event)
         else:
             self.level_view.set_selection_end(event.GetPosition())
 
-    def start_resize(self, event):
-        if self.dragging_object is not None:
+    def select_objects_on_click(self, event):
+        x, y = event.GetPosition().Get()
+        level_x, level_y = self.level_view.to_level_point(x, y)
+
+        self.last_mouse_position = level_x, level_y
+
+        clicked_on_background = self.level_view.object_at(x, y) is None
+
+        if clicked_on_background:
+            self.select_object(None)
+
+            return False
+        else:
+            self.mouse_mode = MODE_DRAG
+
+            selected_objects = self.level_view.get_selected_objects()
+
+            nothing_selected = not selected_objects
+            click_on_selected = any(
+                [(level_x, level_y) in obj for obj in selected_objects]
+            )
+
+            if nothing_selected or not click_on_selected:
+                obj = self.level_view.object_at(x, y)
+
+                self.select_object(obj)
+
+            return True
+
+    def on_right_mouse_button_down(self, event):
+        if self.mouse_mode == MODE_DRAG:
             return
 
         x = event.Position.x
@@ -595,31 +628,11 @@ class SMB3Foundry(wx.Frame):
         self.resizing_index = None
         self.resizing_happened = False
 
-    def start_drag(self, event):
+    def on_left_mouse_button_down(self, event):
         if self.resizing_object is not None:
             return
 
-        x, y = event.GetPosition().Get()
-
-        obj = self.level_view.object_at(x, y)
-
-        self.select_object(obj)
-
-        if obj is not None:
-            self.dragging_object = obj
-            self.dragging_index = self.level_view.level.index_of(obj)
-
-            level_x, level_y = self.level_view.to_level_point(x, y)
-
-            x_off = level_x - obj.rect.x
-            y_off = level_y - obj.rect.y
-
-            self.dragging_offset = (x_off, y_off)
-
-            self.last_mouse_position = level_x, level_y
-
-            self.level_view.Refresh()
-        else:
+        if not self.select_objects_on_click(event):
             self.level_view.start_selection_square(event.GetPosition())
 
     def dragging(self, event):
@@ -630,29 +643,27 @@ class SMB3Foundry(wx.Frame):
         dx = level_x - self.last_mouse_position[0]
         dy = level_y - self.last_mouse_position[1]
 
-        self.dragging_object.move_by(dx, dy)
+        for obj in self.level_view.get_selected_objects():
+            obj.move_by(dx, dy)
 
-        self.last_mouse_position = level_x, level_y
+            self.last_mouse_position = level_x, level_y
 
-        self.status_bar.fill(self.dragging_object)
+            # todo how does this work with multi selections?
+            self.status_bar.fill(obj)
 
-        # todo find better way?
-        if isinstance(self.level_view.level, WorldMap):
-            self.object_list.fill()
-            self.object_list.SetSelection(
-                self.level_view.level.objects.index(self.dragging_object)
-            )
+            # todo find better way?
+            if isinstance(self.level_view.level, WorldMap):
+                self.object_list.fill()
+                self.object_list.SetSelection(self.level_view.level.objects.index(obj))
 
-        self.level_view.level.changed = True
+            self.level_view.level.changed = True
 
         self.level_view.Refresh()
 
     def stop_drag(self, _):
         self.level_view.stop_selection_square()
 
-        self.dragging_object = None
-        self.dragging_index = None
-        self.dragging_offset = None
+        self.mouse_mode = MODE_FREE
 
     def select_object(self, obj=None, index=None):
         should_scroll = True
