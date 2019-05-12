@@ -288,7 +288,7 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Bind(wx.EVT_RIGHT_DOWN, self.start_resize)
         self.level_view.Bind(wx.EVT_RIGHT_UP, self.stop_resize)
 
-        self.level_view.Bind(wx.EVT_KEY_UP, self.on_key_press)
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
 
         self.dragging_object = None
         self.dragging_index = None
