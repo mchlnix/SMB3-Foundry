@@ -300,6 +300,10 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_CLOSE, self.on_exit)
 
+        # this is needed, so that the scrolling panel doesn't reset
+        # after a redraw. not sure why. only needs to happen once
+        self.object_list.SetFocus()
+
         self.Show()
 
         if not self.on_open_rom(None):
