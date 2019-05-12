@@ -2,6 +2,15 @@ import wx
 import wx.lib.scrolledpanel
 
 from BlockViewer import BlockViewer
+from ContextMenu import (
+    ContextMenu,
+    ID_CTX_REMOVE,
+    ID_CTX_ADD_OBJECT,
+    ID_CTX_ADD_ENEMY,
+    ID_CTX_COPY,
+    ID_CTX_PASTE,
+    ID_CTX_CUT,
+)
 from File import ROM
 from Graphics import LevelObject
 from Level import Level, WorldMap
@@ -70,12 +79,6 @@ ID_TROUBLESHOOTING = 602
 ID_PROGRAM_WEBSITE = 603
 ID_MAKE_A_DONATION = 604
 ID_ABOUT = 605
-
-# Context Menus
-
-ID_CTX_REMOVE_OBJECT = 701
-ID_CTX_ADD_OBJECT = 702
-ID_CTX_ADD_ENEMY = 703
 
 CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES]
 
@@ -203,14 +206,7 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
         self.Bind(wx.EVT_MENU, self.on_object_viewer, id=ID_VIEW_OBJECTS)
 
-        self.object_context_menu = wx.Menu()
-        self.object_context_menu.Append(id=ID_CTX_REMOVE_OBJECT, item="Remove")
-        self.object_context_menu.Append(id=ID_CTX_ADD_OBJECT, item="Add object")
-        self.object_context_menu.Append(id=ID_CTX_ADD_ENEMY, item="Add enemy/item")
-
-        self.background_context_menu = wx.Menu()
-        self.background_context_menu.Append(id=ID_CTX_ADD_OBJECT, item="Add object")
-        self.background_context_menu.Append(id=ID_CTX_ADD_ENEMY, item="Add enemy/item")
+        self.context_menu = ContextMenu()
 
         self.Bind(wx.EVT_MENU, self.on_menu)
 
@@ -302,8 +298,6 @@ class SMB3Foundry(wx.Frame):
         self.resizing_index = None
         self.resizing_happened = False
 
-        self.context_menu_position = wx.Point(0, 0)
-
         self.Bind(wx.EVT_CLOSE, self.on_exit)
 
         self.Show()
@@ -389,28 +383,46 @@ class SMB3Foundry(wx.Frame):
     def on_menu(self, event):
         item_id = event.GetId()
 
-        x = self.context_menu_position.x
-        y = self.context_menu_position.y
-
-        level_x, level_y = self.level_view.level.to_level_point(x, y)
-
         if item_id in CHECKABLE_MENU_ITEMS:
             self.on_menu_item_checked(event)
+        elif item_id in self.context_menu.get_all_menu_item_ids():
+            x, y = self.context_menu.get_position()
 
-        if item_id == ID_CTX_REMOVE_OBJECT:
-            self.remove_selected_object()
-        elif item_id == ID_CTX_ADD_OBJECT:
-            self.level_view.level.create_object_at(level_x, level_y)
+            level_x, level_y = self.level_view.level.to_level_point(x, y)
+
+            if item_id == ID_CTX_REMOVE:
+                self.remove_selected_object()
+            elif item_id == ID_CTX_ADD_OBJECT:
+                self.level_view.level.create_object_at(level_x, level_y)
+            elif item_id == ID_CTX_ADD_ENEMY:
+                self.level_view.level.create_enemy_at(level_x, level_y)
+            elif item_id == ID_CTX_CUT:
+                self._cut_object()
+            elif item_id == ID_CTX_COPY:
+                self._copy_object()
+            elif item_id == ID_CTX_PASTE:
+                self._paste_object(level_x, level_y)
 
             self.object_list.update()
-        elif item_id == ID_CTX_ADD_ENEMY:
-            self.level_view.level.create_enemy_at(level_x, level_y)
-
-            self.object_list.update()
-        else:
-            event.Skip()
 
         self.level_view.Refresh()
+
+    def _cut_object(self):
+        self._copy_object()
+        self.remove_selected_object()
+
+    def _copy_object(self):
+        self.context_menu.set_copied_object(self.level_view.get_selected_object())
+
+    def _paste_object(self, x, y):
+        obj = self.context_menu.get_copied_object()
+
+        if obj.is_4byte:
+            length = obj.length
+        else:
+            length = None
+
+        self.level_view.level.add_object(obj.domain, obj.obj_index, x, y, length, -1)
 
     def remove_selected_object(self):
         self.level_view.level.remove_object(self.level_view.get_selected_object())
@@ -558,16 +570,16 @@ class SMB3Foundry(wx.Frame):
 
     def stop_resize(self, event):
         if not self.resizing_happened:
-            self.context_menu_position = event.GetPosition()
-
             if self.resizing_object is not None:
-                menu = self.object_context_menu
+                menu = self.context_menu.as_object_menu()
             else:
-                menu = self.background_context_menu
+                menu = self.context_menu.as_background_menu()
 
             adjusted_for_scrolling = self.ScreenToClient(
-                self.level_view.ClientToScreen(event.Position)
+                self.level_view.ClientToScreen(event.GetPosition())
             )
+
+            self.context_menu.set_position(event.GetPosition())
 
             self.PopupMenu(menu, adjusted_for_scrolling)
 

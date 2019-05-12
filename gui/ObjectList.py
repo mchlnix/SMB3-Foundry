@@ -19,6 +19,10 @@ class ObjectList(wx.ListBox):
             return
 
         index = self.GetSelection()
+
+        if index == -1:
+            return
+
         item = self.GetString(index)
 
         description = level_objects[index].description
