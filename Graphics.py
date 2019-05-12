@@ -284,6 +284,10 @@ class Drawable(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def get_rect(self):
+        pass
+
+    @abc.abstractmethod
     def __contains__(self, point):
         pass
 
@@ -393,6 +397,9 @@ class EnemyObject(Drawable):
 
     def resize_to(self, _, __):
         pass
+
+    def get_rect(self):
+        return self.rect
 
     def to_bytes(self):
         return bytearray([self.obj_index, self.x_position, self.y_position])
@@ -929,6 +936,9 @@ class LevelObject(Drawable):
             ("Orientation", ORIENTATION_TO_STR[self.orientation]),
             ("Ending", ENDING_STR[self.ending]),
         ]
+
+    def get_rect(self):
+        return self.rect
 
     def to_bytes(self):
         data = bytearray()

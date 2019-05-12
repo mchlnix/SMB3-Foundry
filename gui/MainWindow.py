@@ -532,7 +532,6 @@ class SMB3Foundry(wx.Frame):
             self.resizing(event)
         else:
             self.level_view.set_selection_end(event.GetPosition())
-            self.level_view.Refresh()
 
     def start_resize(self, event):
         if self.dragging_object is not None:

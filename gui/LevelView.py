@@ -31,7 +31,24 @@ class LevelView(wx.Panel):
         self.selection_square.start(position)
 
     def set_selection_end(self, position):
+        if not self.selection_square.is_active():
+            return
+
         self.selection_square.set_current_end(position)
+
+        sel_rect = self.selection_square.get_adjusted_rect(
+            self.level.block_width, self.level.block_height
+        )
+
+        touched_objects = [
+            obj
+            for obj in self.level.get_all_objects()
+            if sel_rect.Intersects(obj.get_rect())
+        ]
+
+        self.select_objects(touched_objects)
+
+        self.Refresh()
 
     def stop_selection_square(self):
         self.selection_square.stop()

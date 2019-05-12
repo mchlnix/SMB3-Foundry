@@ -1,5 +1,7 @@
 import wx
 
+SQUARE_COLOR = wx.Colour(0x00, 0x00, 0x00, 0x80)
+
 
 class SelectionSquare:
     def __init__(self):
@@ -11,7 +13,10 @@ class SelectionSquare:
 
         self.rect = wx.Rect(self.start_point, self.end_point)
 
-        self.pen = wx.Pen(wx.Colour(0x00, 0x00, 0x00, 0x80), width=1)
+        self.pen = wx.Pen(SQUARE_COLOR, width=1)
+
+    def is_active(self):
+        return self.active
 
     def start(self, point):
         self.active = True
@@ -31,6 +36,20 @@ class SelectionSquare:
     def stop(self):
         self.active = False
         self.should_draw = False
+
+    def get_rect(self):
+        return self.rect
+
+    def get_adjusted_rect(self, horizontal_factor, vertical_factor):
+        x, y, width, height = self.rect.Get()
+
+        x //= horizontal_factor
+        width //= horizontal_factor
+
+        y //= vertical_factor
+        height //= vertical_factor
+
+        return wx.Rect(x, y, width + 1, height + 1)
 
     def draw(self, dc):
         if self.should_draw:
