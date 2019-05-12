@@ -284,6 +284,10 @@ class Drawable(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def resize_by(self, dx, dy):
+        pass
+
+    @abc.abstractmethod
     def point_in(self, x, y):
         pass
 
@@ -407,6 +411,12 @@ class EnemyObject(Drawable):
 
     def resize_to(self, _, __):
         pass
+
+    def resize_by(self, dx, dy):
+        new_x = self.x_position + dx
+        new_y = self.y_position + dy
+
+        self.resize_to(new_x, new_y)
 
     def get_rect(self):
         return self.rect
@@ -934,6 +944,12 @@ class LevelObject(Drawable):
             self._calculate_lengths()
 
             self._render()
+
+    def resize_by(self, dx, dy):
+        new_x = self.x_position + dx
+        new_y = self.y_position + dy
+
+        self.resize_to(new_x, new_y)
 
     def __contains__(self, item):
         x, y = item

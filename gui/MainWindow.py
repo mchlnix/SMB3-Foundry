@@ -296,11 +296,10 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
 
-        self.resizing_object = None
-        self.resizing_index = None
-        self.resizing_happened = False
-
         self.mouse_mode = MODE_FREE
+
+        self.resize_start_point = 0, 0
+        self.resizing_happened = False
 
         self.last_mouse_position = 0, 0
 
@@ -534,7 +533,7 @@ class SMB3Foundry(wx.Frame):
     def on_mouse_motion(self, event):
         if self.mouse_mode == MODE_DRAG:
             self.dragging(event)
-        elif self.resizing_object is not None:
+        elif self.mouse_mode == MODE_RESIZE:
             self.resizing(event)
         else:
             self.level_view.set_selection_end(event.GetPosition())
@@ -549,8 +548,6 @@ class SMB3Foundry(wx.Frame):
 
         if clicked_on_background:
             self.select_object(None)
-
-            return False
         else:
             self.mouse_mode = MODE_DRAG
 
@@ -566,24 +563,23 @@ class SMB3Foundry(wx.Frame):
 
                 self.select_object(obj)
 
-            return True
+        return not clicked_on_background
 
     def on_right_mouse_button_down(self, event):
         if self.mouse_mode == MODE_DRAG:
             return
 
-        x = event.Position.x
-        y = event.Position.y
+        x, y = event.GetPosition().Get()
+        level_x, level_y = self.level_view.to_level_point(x, y)
 
-        obj = self.level_view.object_at(x, y)
+        self.last_mouse_position = level_x, level_y
 
-        self.select_object(obj)
+        if self.select_objects_on_click(event):
+            self.mouse_mode = MODE_RESIZE
 
-        if obj is None:
-            return
+            obj = self.level_view.object_at(x, y)
 
-        self.resizing_object = obj
-        self.resizing_index = self.level_view.level.index_of(obj)
+            self.resize_start_point = obj.x_position, obj.y_position
 
     def resizing(self, event):
         self.resizing_happened = True
@@ -591,27 +587,32 @@ class SMB3Foundry(wx.Frame):
         if isinstance(self.level_view.level, WorldMap):
             return
 
-        x = event.Position.x
-        y = event.Position.y
+        x, y = event.GetPosition().Get()
 
         level_x, level_y = self.level_view.to_level_point(x, y)
 
-        self.resizing_object.resize_to(level_x, level_y)
+        dx = level_x - self.resize_start_point[0]
+        dy = level_y - self.resize_start_point[1]
 
-        self.status_bar.fill(self.resizing_object)
+        self.last_mouse_position = level_x, level_y
 
-        self.spin_type.SetValue(self.resizing_object.obj_index)
+        for obj in self.level_view.get_selected_objects():
+            obj.resize_by(dx, dy)
 
-        if self.resizing_object.is_4byte:
-            self.spin_length.SetValue(self.resizing_object.data[3])
+            self.status_bar.fill(obj)
 
-        self.level_view.level.changed = True
+            self.spin_type.SetValue(obj.obj_index)
+
+            if obj.is_4byte:
+                self.spin_length.SetValue(obj.data[3])
+
+            self.level_view.level.changed = True
 
         self.level_view.Refresh()
 
     def stop_resize(self, event):
         if not self.resizing_happened:
-            if self.resizing_object is not None:
+            if self.level_view.get_selected_objects():
                 menu = self.context_menu.as_object_menu()
             else:
                 menu = self.context_menu.as_background_menu()
@@ -624,12 +625,11 @@ class SMB3Foundry(wx.Frame):
 
             self.PopupMenu(menu, adjusted_for_scrolling)
 
-        self.resizing_object = None
-        self.resizing_index = None
         self.resizing_happened = False
+        self.mouse_mode = MODE_FREE
 
     def on_left_mouse_button_down(self, event):
-        if self.resizing_object is not None:
+        if self.mouse_mode == MODE_RESIZE:
             return
 
         if not self.select_objects_on_click(event):
@@ -643,10 +643,10 @@ class SMB3Foundry(wx.Frame):
         dx = level_x - self.last_mouse_position[0]
         dy = level_y - self.last_mouse_position[1]
 
+        self.last_mouse_position = level_x, level_y
+
         for obj in self.level_view.get_selected_objects():
             obj.move_by(dx, dy)
-
-            self.last_mouse_position = level_x, level_y
 
             # todo how does this work with multi selections?
             self.status_bar.fill(obj)
