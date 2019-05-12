@@ -4,6 +4,7 @@ from Level import Level, WorldMap
 
 
 # TODO a lot of functionality from MainWindow can be put here
+from SelectionSquare import SelectionSquare
 
 
 class LevelView(wx.Panel):
@@ -23,6 +24,19 @@ class LevelView(wx.Panel):
         self.transparency = True
 
         self.selected_object = None
+
+        self.selection_square = SelectionSquare()
+
+    def start_selection_square(self, position):
+        self.selection_square.start(position)
+
+    def set_selection_end(self, position):
+        self.selection_square.set_current_end(position)
+
+    def stop_selection_square(self):
+        self.selection_square.stop()
+
+        self.Refresh()
 
     def select_object(self, obj=None):
         if self.selected_object is not None:
@@ -104,5 +118,7 @@ class LevelView(wx.Panel):
                     pixel_width,
                     y * self.level.block_height,
                 )
+
+        self.selection_square.draw(dc)
 
         return

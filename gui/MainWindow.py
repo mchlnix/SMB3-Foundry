@@ -531,7 +531,8 @@ class SMB3Foundry(wx.Frame):
         elif self.resizing_object is not None:
             self.resizing(event)
         else:
-            return
+            self.level_view.set_selection_end(event.GetPosition())
+            self.level_view.Refresh()
 
     def start_resize(self, event):
         if self.dragging_object is not None:
@@ -604,20 +605,20 @@ class SMB3Foundry(wx.Frame):
 
         self.select_object(obj)
 
-        if obj is None:
-            return
+        if obj is not None:
+            self.dragging_object = obj
+            self.dragging_index = self.level_view.level.index_of(obj)
 
-        self.dragging_object = obj
-        self.dragging_index = self.level_view.level.index_of(obj)
+            level_x, level_y = self.level_view.to_level_point(x, y)
 
-        level_x, level_y = self.level_view.to_level_point(x, y)
+            x_off = level_x - obj.rect.x
+            y_off = level_y - obj.rect.y
 
-        x_off = level_x - obj.rect.x
-        y_off = level_y - obj.rect.y
+            self.dragging_offset = (x_off, y_off)
 
-        self.dragging_offset = (x_off, y_off)
-
-        self.level_view.Refresh()
+            self.level_view.Refresh()
+        else:
+            self.level_view.start_selection_square(event.GetPosition())
 
     def dragging(self, event):
         x = event.Position.x
@@ -644,6 +645,8 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Refresh()
 
     def stop_drag(self, _):
+        self.level_view.stop_selection_square()
+
         self.dragging_object = None
         self.dragging_index = None
         self.dragging_offset = None
