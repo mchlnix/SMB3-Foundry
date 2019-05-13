@@ -77,6 +77,11 @@ class LevelView(wx.Panel):
 
         self.Refresh()
 
+    def set_selected_objects_by_index(self, indexes):
+        objects = [self.level.get_object(index) for index in indexes]
+
+        self.select_objects(objects)
+
     def get_selected_objects(self):
         return self.selected_objects
 

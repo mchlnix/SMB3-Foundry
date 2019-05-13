@@ -520,14 +520,7 @@ class SMB3Foundry(wx.Frame):
     def on_list_select(self, _):
         indexes = self.object_list.GetSelections()
 
-        self.select_objects_by_index(indexes)
-
-    def select_objects_by_index(self, indexes):
-        level = self.level_view.level
-
-        objects = [level.get_object(index) for index in indexes]
-
-        self.level_view.select_objects(objects)
+        self.level_view.set_selected_objects_by_index(indexes)
 
     def on_key_press(self, event: wx.KeyEvent):
         key = event.GetKeyCode()
