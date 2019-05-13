@@ -429,14 +429,7 @@ class SMB3Foundry(wx.Frame):
 
     def _paste_objects(self, x, y):
         for obj in self.context_menu.get_copied_objects():
-            if obj.is_4byte:
-                length = obj.length
-            else:
-                length = None
-
-            self.level_view.level.add_object(
-                obj.domain, obj.obj_index, x, y, length, -1
-            )
+            self.level_view.level.paste_object_at(x, y, obj)
 
     def remove_selected_objects(self):
         self.level_view.remove_selected_objects()

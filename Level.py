@@ -10,6 +10,7 @@ from Graphics import (
     MapObject,
     LevelObjectFactory,
     EnemyItemFactory,
+    EnemyObject,
 )
 from Palette import get_bg_color_for, load_palette
 from Sprite import Block
@@ -306,6 +307,12 @@ class Level(LevelLike):
 
         for enemy in self.enemies:
             enemy.draw(dc, transparent=transparency)
+
+    def paste_object_at(self, x, y, obj):
+        if isinstance(obj, EnemyObject):
+            self.add_enemy(obj.obj_index, x, y)
+        elif isinstance(obj, LevelObject):
+            self.add_object(obj.domain, obj.obj_index, x, y, obj.data[3])
 
     def create_object_at(self, x, y):
         self.add_object(0, 0, x, y, None, len(self.objects))
