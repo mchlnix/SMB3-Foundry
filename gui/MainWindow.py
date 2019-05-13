@@ -537,6 +537,8 @@ class SMB3Foundry(wx.Frame):
         # activate scrolling and object editing, when only one is selected
         if len(indexes) == 1:
             self.select_object(index=indexes[0])
+        else:
+            self.disable_spinners()
 
     def on_key_press(self, event: wx.KeyEvent):
         key = event.GetKeyCode()
@@ -694,6 +696,15 @@ class SMB3Foundry(wx.Frame):
 
         self.mouse_mode = MODE_FREE
 
+    def disable_spinners(self):
+        self.spin_domain.SetValue(0)
+        self.spin_type.SetValue(0)
+        self.spin_length.SetValue(0)
+
+        self.spin_domain.Disable()
+        self.spin_type.Disable()
+        self.spin_length.Disable()
+
     def select_object(self, obj=None, index=None):
         should_scroll = True
 
@@ -711,14 +722,7 @@ class SMB3Foundry(wx.Frame):
             index = self.level_view.level.index_of(obj)
 
         if index == wx.NOT_FOUND:
-            self.spin_domain.SetValue(0)
-            self.spin_type.SetValue(0)
-            self.spin_length.SetValue(0)
-
-            self.spin_domain.Disable()
-            self.spin_type.Disable()
-            self.spin_length.Disable()
-
+            self.disable_spinners()
         else:
             if obj is None:
                 # assume click on object_list
