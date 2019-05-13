@@ -3,12 +3,12 @@ import wx
 
 class ObjectList(wx.ListBox):
     def __init__(self, parent):
-        super(ObjectList, self).__init__(parent=parent)
+        super(ObjectList, self).__init__(parent=parent, style=wx.LB_MULTIPLE)
 
     def remove_selected(self):
-        index = self.GetSelection()
+        indexes = self.GetSelections()
 
-        if index > -1:
+        for index in reversed(indexes):
             self.Delete(index)
 
     def update(self):
@@ -18,17 +18,18 @@ class ObjectList(wx.ListBox):
             self._full_update()
             return
 
-        index = self.GetSelection()
+        indexes = self.GetSelections()
 
-        if index == -1:
+        if not indexes:
             return
 
-        item = self.GetString(index)
+        for index in indexes:
+            item = self.GetString(index)
 
-        description = level_objects[index].description
+            description = level_objects[index].description
 
-        if item != description:
-            self.SetString(index, description)
+            if item != description:
+                self.SetString(index, description)
 
     def _full_update(self):
         self._remove_orphaned_items()

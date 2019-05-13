@@ -516,9 +516,16 @@ class SMB3Foundry(wx.Frame):
         self.update_title()
 
     def on_list_select(self, _):
-        index = self.object_list.GetSelection()
+        indexes = self.object_list.GetSelections()
 
-        self.select_object(index=index)
+        self.select_objects_by_index(indexes)
+
+    def select_objects_by_index(self, indexes):
+        level = self.level_view.level
+
+        objects = [level.get_object(index) for index in indexes]
+
+        self.level_view.select_objects(objects)
 
     def on_key_press(self, event):
         key = event.GetKeyCode()
@@ -533,6 +540,11 @@ class SMB3Foundry(wx.Frame):
             self.resizing(event)
         else:
             self.level_view.set_selection_end(event.GetPosition())
+
+            self.object_list.SetSelection(wx.NOT_FOUND)
+
+            for obj in self.level_view.get_selected_objects():
+                self.object_list.SetSelection(self.level_view.level.index_of(obj))
 
     def select_objects_on_click(self, event):
         x, y = event.GetPosition().Get()

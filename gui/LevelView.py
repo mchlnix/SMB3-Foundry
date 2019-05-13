@@ -75,6 +75,8 @@ class LevelView(wx.Panel):
 
         self.selected_objects = objects
 
+        self.Refresh()
+
     def get_selected_objects(self):
         return self.selected_objects
 
