@@ -1,9 +1,50 @@
 import wx
 
+# todo should have a reference to the level_view or a better way to sync the object lists
+
 
 class ObjectList(wx.ListBox):
-    def __init__(self, parent):
+    def __init__(self, parent, context_menu):
         super(ObjectList, self).__init__(parent=parent, style=wx.LB_MULTIPLE)
+
+        self.context_menu = context_menu
+
+        self.Bind(wx.EVT_RIGHT_DOWN, self.on_right_down)
+        self.Bind(wx.EVT_RIGHT_UP, self.on_right_up)
+
+    def on_right_down(self, event):
+        """
+        Normally right clicking deselects everything and selects the item under the cursor,
+        but with multi-selection we want the selection to be kept, when the right click happens
+        happens on one of the already selected elements. Didn't seem to be supported like that, so
+        we need to make out own.
+
+        :param event: wx.MouseEvent
+        :return: None
+        """
+        item_under_mouse = self.HitTest(event.GetPosition())
+
+        if item_under_mouse == wx.NOT_FOUND:
+            event.Skip()
+            return
+
+        if item_under_mouse not in self.GetSelections():
+            self.SetSelection(wx.NOT_FOUND)
+
+            self.SetSelection(item_under_mouse)
+
+            self.GetParent().level_view.set_selected_objects_by_index(
+                self.GetSelections()
+            )
+
+    def on_right_up(self, event):
+        item_under_mouse = self.HitTest(event.GetPosition())
+
+        if item_under_mouse == wx.NOT_FOUND:
+            event.Skip()
+            return
+
+        self.PopupMenu(self.context_menu.as_list_menu(), event.GetPosition())
 
     def remove_selected(self):
         indexes = self.GetSelections()

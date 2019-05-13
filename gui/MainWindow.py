@@ -234,7 +234,7 @@ class SMB3Foundry(wx.Frame):
 
         self.scroll_panel.SetSizer(sizer)
 
-        self.object_list = ObjectList(self)
+        self.object_list = ObjectList(self, self.context_menu)
 
         spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
         spinner_sizer.AddGrowableCol(0)
