@@ -431,6 +431,8 @@ class SMB3Foundry(wx.Frame):
         for obj in self.context_menu.get_copied_objects():
             self.level_view.level.paste_object_at(x, y, obj)
 
+        self.object_list.update()
+
     def remove_selected_objects(self):
         self.level_view.remove_selected_objects()
         self.object_list.remove_selected()
@@ -527,11 +529,22 @@ class SMB3Foundry(wx.Frame):
 
         self.level_view.select_objects(objects)
 
-    def on_key_press(self, event):
+    def on_key_press(self, event: wx.KeyEvent):
         key = event.GetKeyCode()
 
         if key in [wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE]:
             self.remove_selected_objects()
+        elif event.ControlDown():
+            key = event.GetUnicodeKey()
+            if key == wx.WXK_NONE:
+                return
+
+            if key == ord("C"):
+                self._copy_objects()
+            elif key == ord("V"):
+                self._paste_objects(*self.last_mouse_position)
+
+            self.level_view.Refresh()
 
     def on_mouse_motion(self, event):
         if self.mouse_mode == MODE_DRAG:
@@ -677,6 +690,7 @@ class SMB3Foundry(wx.Frame):
         should_scroll = True
 
         self.level_view.select_object(None)
+        self.object_list.SetSelection(wx.NOT_FOUND)
 
         if obj is None and index is None:
             index = -1
