@@ -280,6 +280,10 @@ class Drawable(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def get_position(self):
+        pass
+
+    @abc.abstractmethod
     def resize_to(self, x, y):
         pass
 
@@ -408,6 +412,9 @@ class EnemyObject(Drawable):
         new_y = self.y_position + dy
 
         self.set_position(new_x, new_y)
+
+    def get_position(self):
+        return self.x_position, self.y_position
 
     def resize_to(self, _, __):
         pass
@@ -920,6 +927,9 @@ class LevelObject(Drawable):
 
         self.set_position(new_x, new_y)
 
+    def get_position(self):
+        return self.x_position, self.y_position
+
     def resize_to(self, x, y):
         if not self.is_single_block:
             if self.is_4byte:
@@ -1141,6 +1151,9 @@ class MapObject(Drawable):
 
         self.x = x * Block.WIDTH * self.zoom
         self.y = y * Block.HEIGHT * self.zoom
+
+    def get_position(self):
+        return self.x, self.y
 
     def draw(self, dc, transparent=False):
         self.block.draw(
