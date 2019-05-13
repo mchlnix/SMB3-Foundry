@@ -408,9 +408,9 @@ class SMB3Foundry(wx.Frame):
             elif item_id == ID_CTX_CUT:
                 self._cut_object()
             elif item_id == ID_CTX_COPY:
-                self._copy_object()
+                self._copy_objects()
             elif item_id == ID_CTX_PASTE:
-                self._paste_object(level_x, level_y)
+                self._paste_objects(level_x, level_y)
 
             self.object_list.update()
         else:
@@ -419,21 +419,24 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Refresh()
 
     def _cut_object(self):
-        self._copy_object()
+        self._copy_objects()
         self.remove_selected_objects()
 
-    def _copy_object(self):
-        self.context_menu.set_copied_object(self.level_view.get_selected_objects()[0])
+    def _copy_objects(self):
+        self.context_menu.set_copied_objects(
+            self.level_view.get_selected_objects().copy()
+        )
 
-    def _paste_object(self, x, y):
-        obj = self.context_menu.get_copied_object()
+    def _paste_objects(self, x, y):
+        for obj in self.context_menu.get_copied_objects():
+            if obj.is_4byte:
+                length = obj.length
+            else:
+                length = None
 
-        if obj.is_4byte:
-            length = obj.length
-        else:
-            length = None
-
-        self.level_view.level.add_object(obj.domain, obj.obj_index, x, y, length, -1)
+            self.level_view.level.add_object(
+                obj.domain, obj.obj_index, x, y, length, -1
+            )
 
     def remove_selected_objects(self):
         self.level_view.remove_selected_objects()
