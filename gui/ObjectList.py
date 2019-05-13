@@ -33,9 +33,7 @@ class ObjectList(wx.ListBox):
 
             self.SetSelection(item_under_mouse)
 
-            self.GetParent().level_view.set_selected_objects_by_index(
-                self.GetSelections()
-            )
+            self.GetParent().on_list_select(None)
 
     def on_right_up(self, event):
         item_under_mouse = self.HitTest(event.GetPosition())
