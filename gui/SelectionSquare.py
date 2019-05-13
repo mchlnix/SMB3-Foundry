@@ -1,6 +1,6 @@
 import wx
 
-SQUARE_COLOR = wx.Colour(0x00, 0x00, 0x00, 0x80)
+STROKE_COLOR = wx.Colour(0x00, 0x00, 0x00, 0x80)
 
 
 class SelectionSquare:
@@ -13,7 +13,8 @@ class SelectionSquare:
 
         self.rect = wx.Rect(self.start_point, self.end_point)
 
-        self.pen = wx.Pen(SQUARE_COLOR, width=1)
+        self.pen = wx.Pen(STROKE_COLOR, width=1)
+        self.brush = wx.TRANSPARENT_BRUSH
 
     def is_active(self):
         return self.active
@@ -54,6 +55,6 @@ class SelectionSquare:
     def draw(self, dc):
         if self.should_draw:
             dc.SetPen(self.pen)
-            dc.SetBrush(wx.NullBrush)
+            dc.SetBrush(self.brush)
 
             dc.DrawRectangle(self.rect)
