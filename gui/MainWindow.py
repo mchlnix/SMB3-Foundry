@@ -552,6 +552,8 @@ class SMB3Foundry(wx.Frame):
                 self._copy_objects()
             elif key == ord("V"):
                 self._paste_objects(*self.last_mouse_position)
+            elif key == ord("X"):
+                self._cut_object()
 
             self.level_view.Refresh()
 
