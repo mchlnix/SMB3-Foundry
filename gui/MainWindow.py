@@ -423,13 +423,25 @@ class SMB3Foundry(wx.Frame):
         self.remove_selected_objects()
 
     def _copy_objects(self):
-        self.context_menu.set_copied_objects(
-            self.level_view.get_selected_objects().copy()
-        )
+        selected_objects = self.level_view.get_selected_objects().copy()
+
+        if selected_objects:
+            self.context_menu.set_copied_objects(selected_objects)
 
     def _paste_objects(self, x, y):
-        for obj in self.context_menu.get_copied_objects():
-            self.level_view.level.paste_object_at(x, y, obj)
+        objects, origin = self.context_menu.get_copied_objects()
+
+        ori_x, ori_y = origin
+
+        for obj in objects:
+            obj_x, obj_y = obj.get_position()
+
+            offset_x, offset_y = obj_x - ori_x, obj_y - ori_y
+
+            try:
+                self.level_view.level.paste_object_at(x + offset_x, y + offset_y, obj)
+            except ValueError:
+                print("Tried pasting outside of level.")
 
         self.object_list.update()
 
@@ -696,7 +708,7 @@ class SMB3Foundry(wx.Frame):
             should_scroll = False
             index = self.level_view.level.index_of(obj)
 
-        if index == -1:
+        if index == wx.NOT_FOUND:
             self.spin_domain.SetValue(0)
             self.spin_type.SetValue(0)
             self.spin_length.SetValue(0)

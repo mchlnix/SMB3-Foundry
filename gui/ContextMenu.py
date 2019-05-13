@@ -11,12 +11,15 @@ MODE_BG = 0
 MODE_OBJ = 1
 MODE_LIST = 2
 
+MAX_ORIGIN = 0xFF, 0xFF
+
 
 class ContextMenu(wx.Menu):
     def __init__(self):
         super(ContextMenu, self).__init__()
 
         self.copied_objects = None
+        self.copied_objects_origin = wx.Point(0, 0)
         self.last_opened_at = wx.Point(0, 0)
 
         self.Append(id=ID_CTX_CUT, item="Cut")
@@ -27,11 +30,27 @@ class ContextMenu(wx.Menu):
         self.Append(id=ID_CTX_ADD_OBJECT, item="Add Object")
         self.Append(id=ID_CTX_ADD_ENEMY, item="Add Enemy/Item")
 
-    def set_copied_objects(self, objs):
-        self.copied_objects = objs
+    def set_copied_objects(self, objects):
+        if not objects:
+            return
+
+        self.copied_objects = objects
+
+        min_x, min_y = MAX_ORIGIN
+
+        for obj in objects:
+            obj_x, obj_y = obj.get_position()
+
+            min_x = min(min_x, obj_x)
+            min_y = min(min_y, obj_y)
+
+        min_x = max(min_x, 0)
+        min_y = max(min_y, 0)
+
+        self.copied_objects_origin = min_x, min_y
 
     def get_copied_objects(self):
-        return self.copied_objects
+        return self.copied_objects, self.copied_objects_origin
 
     def set_position(self, position):
         self.last_opened_at = position
