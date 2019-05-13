@@ -1113,7 +1113,7 @@ map_object_names = {
 }
 
 
-class MapObject:
+class MapObject(Drawable):
     def __init__(self, block, x, y, zoom):
         self.x = x
         self.y = y
@@ -1142,14 +1142,14 @@ class MapObject:
         self.x = x * Block.WIDTH * self.zoom
         self.y = y * Block.HEIGHT * self.zoom
 
-    def draw(self, dc):
+    def draw(self, dc, transparent=False):
         self.block.draw(
             dc,
             self.x,
             self.y,
             zoom=self.zoom,
             selected=self.selected,
-            transparent=False,
+            transparent=transparent,
         )
 
     def get_status_info(self):
@@ -1157,3 +1157,21 @@ class MapObject:
 
     def to_bytes(self):
         return self.block.index
+
+    def move_by(self, dx, dy):
+        self.set_position(self.level_x + dx, self.level_y + dy)
+
+    def resize_to(self, x, y):
+        return
+
+    def resize_by(self, dx, dy):
+        return
+
+    def point_in(self, x, y):
+        return self.rect.Contains(x, y)
+
+    def get_rect(self):
+        return self.rect
+
+    def __contains__(self, point):
+        pass
