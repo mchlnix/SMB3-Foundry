@@ -433,15 +433,23 @@ class SMB3Foundry(wx.Frame):
 
         ori_x, ori_y = origin
 
+        pasted_objects = []
+
         for obj in objects:
             obj_x, obj_y = obj.get_position()
 
             offset_x, offset_y = obj_x - ori_x, obj_y - ori_y
 
             try:
-                self.level_view.level.paste_object_at(x + offset_x, y + offset_y, obj)
+                pasted_objects.append(
+                    self.level_view.level.paste_object_at(
+                        x + offset_x, y + offset_y, obj
+                    )
+                )
             except ValueError:
                 print("Tried pasting outside of level.")
+
+        self.level_view.select_objects(pasted_objects)
 
         self.object_list.update()
 

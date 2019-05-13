@@ -310,14 +310,14 @@ class Level(LevelLike):
 
     def paste_object_at(self, x, y, obj):
         if isinstance(obj, EnemyObject):
-            self.add_enemy(obj.obj_index, x, y)
+            return self.add_enemy(obj.obj_index, x, y)
         elif isinstance(obj, LevelObject):
             if obj.is_4byte:
                 length = obj.data[3]
             else:
                 length = None
 
-            self.add_object(obj.domain, obj.obj_index, x, y, length)
+            return self.add_object(obj.domain, obj.obj_index, x, y, length)
 
     def create_object_at(self, x, y):
         self.add_object(0, 0, x, y, None, len(self.objects))
@@ -337,6 +337,8 @@ class Level(LevelLike):
 
         self.changed = True
 
+        return obj
+
     def add_enemy(self, object_index, x, y, index=-1):
         if index == -1:
             index = len(self.enemies)
@@ -348,6 +350,8 @@ class Level(LevelLike):
         self.enemies.insert(index, enemy)
 
         self.changed = True
+
+        return enemy
 
     def index_of(self, obj):
         if obj in self.objects:
