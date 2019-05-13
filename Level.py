@@ -169,7 +169,7 @@ class Level(LevelLike):
         self.size = (self.width * Block.WIDTH, self.height * Block.HEIGHT)
 
         self.object_size_on_disk = self._calc_size_on_disk()
-        self.enemy_size_on_disk = self.enemies * ENEMY_SIZE
+        self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
 
     def _calc_size_on_disk(self):
         size = 0
@@ -274,7 +274,7 @@ class Level(LevelLike):
                 break
 
     def is_too_big(self):
-        too_many_enemies = self.enemy_size_on_disk < self.enemies * ENEMY_SIZE
+        too_many_enemies = self.enemy_size_on_disk < len(self.enemies) * ENEMY_SIZE
         too_many_objects = self._calc_size_on_disk() > self.object_size_on_disk
 
         return too_many_enemies or too_many_objects
