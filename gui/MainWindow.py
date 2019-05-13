@@ -522,6 +522,10 @@ class SMB3Foundry(wx.Frame):
 
         self.level_view.set_selected_objects_by_index(indexes)
 
+        # activate scrolling and object editing, when only one is selected
+        if len(indexes) == 1:
+            self.select_object(index=indexes[0])
+
     def on_key_press(self, event: wx.KeyEvent):
         key = event.GetKeyCode()
 
