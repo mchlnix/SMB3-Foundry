@@ -312,7 +312,12 @@ class Level(LevelLike):
         if isinstance(obj, EnemyObject):
             self.add_enemy(obj.obj_index, x, y)
         elif isinstance(obj, LevelObject):
-            self.add_object(obj.domain, obj.obj_index, x, y, obj.data[3])
+            if obj.is_4byte:
+                length = obj.data[3]
+            else:
+                length = None
+
+            self.add_object(obj.domain, obj.obj_index, x, y, length)
 
     def create_object_at(self, x, y):
         self.add_object(0, 0, x, y, None, len(self.objects))
