@@ -558,7 +558,9 @@ class SMB3Foundry(wx.Frame):
 
         self.last_mouse_position = level_x, level_y
 
-        clicked_on_background = self.level_view.object_at(x, y) is None
+        clicked_object = self.level_view.object_at(x, y)
+
+        clicked_on_background = clicked_object is None
 
         if clicked_on_background:
             self.select_object(None)
@@ -568,14 +570,9 @@ class SMB3Foundry(wx.Frame):
             selected_objects = self.level_view.get_selected_objects()
 
             nothing_selected = not selected_objects
-            click_on_selected = any(
-                [(level_x, level_y) in obj for obj in selected_objects]
-            )
 
-            if nothing_selected or not click_on_selected:
-                obj = self.level_view.object_at(x, y)
-
-                self.select_object(obj)
+            if nothing_selected or clicked_object not in selected_objects:
+                self.select_object(clicked_object)
 
         return not clicked_on_background
 
