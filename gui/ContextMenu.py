@@ -61,7 +61,7 @@ class ContextMenu(wx.Menu):
         self.FindItemById(ID_CTX_CUT).Enable(not mode == MODE_BG)
         self.FindItemById(ID_CTX_COPY).Enable(not mode == MODE_BG)
         self.FindItemById(ID_CTX_PASTE).Enable(
-            not mode == MODE_LIST and self.copied_objects
+            not mode == MODE_LIST and bool(self.copied_objects)
         )
 
         self.FindItemById(ID_CTX_REMOVE).Enable(not mode == MODE_BG)
