@@ -70,6 +70,11 @@ class ObjectList(wx.ListBox):
             if item != description:
                 self.SetString(index, description)
 
+        self.SetSelection(wx.NOT_FOUND)
+
+        for index in indexes:
+            self.SetSelection(index)
+
     def _full_update(self):
         self._remove_orphaned_items()
         self._add_placeholder_objects()

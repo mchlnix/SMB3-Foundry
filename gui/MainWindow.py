@@ -578,12 +578,15 @@ class SMB3Foundry(wx.Frame):
         elif self.mouse_mode == MODE_RESIZE:
             self.resizing(event)
         else:
-            self.level_view.set_selection_end(event.GetPosition())
+            if self.level_view.selection_square.active:
+                self.level_view.set_selection_end(event.GetPosition())
 
-            self.object_list.SetSelection(wx.NOT_FOUND)
+                self.object_list.SetSelection(wx.NOT_FOUND)
 
-            for obj in self.level_view.get_selected_objects():
-                self.object_list.SetSelection(self.level_view.level.index_of(obj))
+                for obj in self.level_view.get_selected_objects():
+                    self.object_list.SetSelection(self.level_view.level.index_of(obj))
+
+
 
     def select_objects_on_click(self, event):
         x, y = event.GetPosition().Get()
