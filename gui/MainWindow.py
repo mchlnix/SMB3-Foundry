@@ -275,8 +275,13 @@ class SMB3Foundry(wx.Frame):
 
         vert_right = wx.BoxSizer(wx.VERTICAL)
 
-        vert_right.Add(spinner_sizer, flag=wx.EXPAND)
-        vert_right.Add(self.object_list, proportion=1, flag=wx.EXPAND)
+        vert_right.Add(spinner_sizer, border=5, flag=wx.BOTTOM | wx.EXPAND)
+        vert_right.Add(
+            self.object_list,
+            proportion=1,
+            border=5,
+            flag=wx.BOTTOM | wx.LEFT | wx.EXPAND,
+        )
 
         horiz_sizer.Add(vert_left, proportion=10, flag=wx.EXPAND)
         horiz_sizer.Add(vert_right, proportion=1, flag=wx.EXPAND)
