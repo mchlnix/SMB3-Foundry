@@ -293,9 +293,10 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
 
         self.level_view.Bind(wx.EVT_LEFT_DOWN, self.on_left_mouse_button_down)
-        self.level_view.Bind(wx.EVT_MOTION, self.on_mouse_motion)
         self.level_view.Bind(wx.EVT_LEFT_UP, self.stop_drag)
 
+        self.level_view.Bind(wx.EVT_MOTION, self.on_mouse_motion)
+        self.level_view.Bind(wx.EVT_MOUSEWHEEL, self.on_mouse_wheel)
         self.level_view.Bind(wx.EVT_RIGHT_DOWN, self.on_right_mouse_button_down)
         self.level_view.Bind(wx.EVT_RIGHT_UP, self.stop_resize)
 
@@ -586,7 +587,23 @@ class SMB3Foundry(wx.Frame):
                 for obj in self.level_view.get_selected_objects():
                     self.object_list.SetSelection(self.level_view.level.index_of(obj))
 
+    def on_mouse_wheel(self, event):
+        obj_under_cursor = self.level_view.object_at(*event.GetPosition().Get())
 
+        if obj_under_cursor is None:
+            return
+
+        if event.GetWheelRotation() > 0:
+            new_type = obj_under_cursor.obj_index + 1
+        else:
+            new_type = obj_under_cursor.obj_index - 1
+
+        obj_under_cursor.change_type(new_type)
+
+        self.select_object(obj=obj_under_cursor)
+        self.object_list.update()
+
+        self.level_view.Refresh()
 
     def select_objects_on_click(self, event):
         x, y = event.GetPosition().Get()
