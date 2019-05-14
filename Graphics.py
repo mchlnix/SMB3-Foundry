@@ -300,6 +300,10 @@ class Drawable(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def change_type(self, new_type):
+        pass
+
+    @abc.abstractmethod
     def __contains__(self, point):
         pass
 
@@ -326,6 +330,12 @@ class EnemyObject(Drawable):
 
         self.png_data = png_data
 
+        self.selected = False
+
+        self._setup()
+
+    def _setup(self):
+
         obj_data: ObjectDefinition = load_object_definition(ENEMY_OBJ_DEF)[
             self.obj_index
         ]
@@ -336,8 +346,6 @@ class EnemyObject(Drawable):
         self.height = obj_data.bmp_height
 
         self.rect = wx.Rect(self.x_position, self.y_position, self.width, self.height)
-
-        self.selected = False
 
         self._render(obj_data)
 
@@ -425,6 +433,11 @@ class EnemyObject(Drawable):
 
         self.resize_to(new_x, new_y)
 
+    def change_type(self, new_type):
+        self.obj_index = new_type
+
+        self._setup()
+
     def get_rect(self):
         return self.rect
 
@@ -441,14 +454,24 @@ class LevelObject(Drawable):
     ):
         self.pattern_table = pattern_table
         self.tsa_data = ROM.get_tsa_data(object_set)
-
-        self.data = data
+        self.object_definitions = object_definitions
 
         self.object_set = object_set
+        self.x_position = 0
+        self.y_position = 0
 
         self.palette_group = palette_group
 
         self.index = index
+
+        self.data = data
+
+        self.selected = False
+
+        self._setup()
+
+    def _setup(self):
+        data = self.data
 
         # where to look for the graphic data?
         self.domain = (data[0] & 0b1110_0000) >> 5
@@ -473,7 +496,7 @@ class LevelObject(Drawable):
         else:
             self.type = (self.obj_index >> 4) + domain_offset + 16 - 1
 
-        object_data = object_definitions[self.type]
+        object_data = self.object_definitions[self.type]
 
         self.width = object_data.bmp_width
         self.height = object_data.bmp_height
@@ -487,6 +510,11 @@ class LevelObject(Drawable):
 
         self.is_4byte = object_data.is_4byte
 
+        if self.is_4byte and len(self.data) == 3:
+            self.data.append(0)
+        elif not self.is_4byte and len(data) == 4:
+            del self.data[3]
+
         self.secondary_length = 0
 
         self._calculate_lengths()
@@ -494,8 +522,6 @@ class LevelObject(Drawable):
         self.rect = wx.Rect()
 
         self._render()
-
-        self.selected = False
 
     def _calculate_lengths(self):
         if self.is_single_block:
@@ -961,6 +987,14 @@ class LevelObject(Drawable):
 
         self.resize_to(new_x, new_y)
 
+    def change_type(self, new_type):
+        new_type = min(0xFF, new_type)
+        new_type = max(0, new_type)
+
+        self.data[2] = new_type
+
+        self._setup()
+
     def __contains__(self, item):
         x, y = item
 
@@ -1182,6 +1216,9 @@ class MapObject(Drawable):
 
     def point_in(self, x, y):
         return self.rect.Contains(x, y)
+
+    def change_type(self, new_type):
+        pass
 
     def get_rect(self):
         return self.rect
