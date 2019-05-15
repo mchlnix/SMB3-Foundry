@@ -299,14 +299,36 @@ class Level(LevelLike):
         bg_color = get_bg_color_for(self.object_set, self.object_palette_index)
 
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
+        dc.SetPen(wx.Pen(wx.Colour(0x00, 0x00, 0x00, 0x80), width=1))
+        dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
         dc.Clear()
 
         for level_object in self.objects:
             level_object.draw(dc, transparent=transparency)
 
+            if level_object.selected:
+                x, y, w, h = level_object.get_rect().Get()
+
+                x *= self.block_width
+                w *= self.block_width
+                y *= self.block_height
+                h *= self.block_height
+
+                dc.DrawRectangle(wx.Rect(x, y, w, h))
+
         for enemy in self.enemies:
             enemy.draw(dc, transparent=transparency)
+
+            if enemy.selected:
+                x, y, w, h = enemy.get_rect().Get()
+
+                x *= self.block_width
+                w *= self.block_width
+                y *= self.block_height
+                h *= self.block_height
+
+                dc.DrawRectangle(wx.Rect(x, y, w, h))
 
     def paste_object_at(self, x, y, obj):
         if isinstance(obj, EnemyObject):
