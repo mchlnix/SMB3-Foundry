@@ -988,8 +988,20 @@ class LevelObject(Drawable):
         self.resize_to(new_x, new_y)
 
     def change_type(self, new_type):
-        new_type = min(0xFF, new_type)
-        new_type = max(0, new_type)
+        if new_type < 0 and self.domain > 0:
+            new_domain = self.domain - 1
+            new_type = 0xFF
+        elif new_type > 0xFF and self.domain < 7:
+            new_domain = self.domain + 1
+            new_type = 0x00
+        else:
+            new_type = min(0xFF, new_type)
+            new_type = max(0, new_type)
+
+            new_domain = self.domain
+
+        self.data[0] &= 0b0001_1111
+        self.data[0] |= new_domain << 5
 
         self.data[2] = new_type
 

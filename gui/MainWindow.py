@@ -479,10 +479,12 @@ class SMB3Foundry(wx.Frame):
     def on_spin(self, event):
         _id = event.GetId()
 
-        index = self.object_list.GetSelection()
+        indexes = self.object_list.GetSelections()
 
-        if index == -1:
+        if len(indexes) != 1:
             return
+
+        index = indexes[0]
 
         level = self.level_view.level
         old_object = level.get_object(index)
