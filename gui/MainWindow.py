@@ -13,6 +13,7 @@ from ContextMenu import (
 )
 from File import ROM
 from Graphics import LevelObject
+from HeaderEditor import HeaderEditor
 from Level import Level, WorldMap
 from LevelSelector import LevelSelector
 from LevelView import LevelView
@@ -137,8 +138,10 @@ class SMB3Foundry(wx.Frame):
         level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
         level_menu.AppendSeparator()
         level_menu.Append(ID_RELOAD_LEVEL, "&Reload Level", "")
+        """
         level_menu.AppendSeparator()
         level_menu.Append(ID_EDIT_HEADER, "&Edit Header", "")
+        """
         level_menu.Append(ID_EDIT_POINTERS, "&Edit Pointers", "")
         """
 
@@ -204,6 +207,7 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_MENU, self.open_level_selector, id=ID_SELECT_LEVEL)
         self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
         self.Bind(wx.EVT_MENU, self.on_object_viewer, id=ID_VIEW_OBJECTS)
+        self.Bind(wx.EVT_MENU, self.on_header_editor, id=ID_EDIT_HEADER)
 
         self.context_menu = ContextMenu()
 
@@ -213,6 +217,7 @@ class SMB3Foundry(wx.Frame):
 
         self.block_viewer = None
         self.object_viewer = None
+        self.header_editor = None
 
         horiz_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -503,6 +508,13 @@ class SMB3Foundry(wx.Frame):
 
         self.object_viewer.Show()
         self.object_viewer.Raise()
+
+    def on_header_editor(self, _):
+        if self.header_editor is None:
+            self.header_editor = HeaderEditor(parent=self)
+
+        self.header_editor.Show()
+        self.header_editor.Raise()
 
     def update_level(self, world, level, object_set=None):
         self.level_view.load_level(world=world, level=level, object_set=object_set)
