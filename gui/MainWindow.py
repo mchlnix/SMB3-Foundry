@@ -236,31 +236,32 @@ class SMB3Foundry(wx.Frame):
 
         self.object_list = ObjectList(self, self.context_menu)
 
+        spinner_panel = wx.Panel(self)
         spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
         spinner_sizer.AddGrowableCol(0)
 
-        self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
+        self.spin_domain = wx.SpinCtrl(spinner_panel, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
         self.spin_domain.SetBase(16)
         self.spin_domain.Enable(False)
-        self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=MAX_TYPE)
+        self.spin_type = wx.SpinCtrl(spinner_panel, ID_SPIN_TYPE, max=MAX_TYPE)
         self.spin_type.SetBase(16)
         self.spin_type.Enable(False)
-        self.spin_length = wx.SpinCtrl(self, ID_SPIN_LENGTH, max=MAX_LENGTH)
+        self.spin_length = wx.SpinCtrl(spinner_panel, ID_SPIN_LENGTH, max=MAX_LENGTH)
         self.spin_length.SetBase(16)
         self.spin_length.Enable(False)
 
         spinner_sizer.Add(
-            wx.StaticText(self, label="Bank/Domain: "),
+            wx.StaticText(spinner_panel, label="Bank/Domain: "),
             flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
         )
         spinner_sizer.Add(self.spin_domain)
         spinner_sizer.Add(
-            wx.StaticText(self, label="Type: "),
+            wx.StaticText(spinner_panel, label="Type: "),
             flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
         )
         spinner_sizer.Add(self.spin_type)
         spinner_sizer.Add(
-            wx.StaticText(self, label="Length: "),
+            wx.StaticText(spinner_panel, label="Length: "),
             flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
         )
         spinner_sizer.Add(self.spin_length)
@@ -275,7 +276,9 @@ class SMB3Foundry(wx.Frame):
 
         vert_right = wx.BoxSizer(wx.VERTICAL)
 
-        vert_right.Add(spinner_sizer, border=5, flag=wx.BOTTOM | wx.EXPAND)
+        spinner_panel.SetSizerAndFit(spinner_sizer)
+
+        vert_right.Add(spinner_panel, border=5, flag=wx.BOTTOM | wx.EXPAND)
         vert_right.Add(
             self.object_list,
             proportion=1,
