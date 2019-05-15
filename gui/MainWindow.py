@@ -21,6 +21,7 @@ from ObjectStatusBar import ObjectStatusBar
 from ObjectViewer import ObjectViewer
 
 # file menu
+from SpinnerPanel import SpinnerPanel
 
 ID_OPEN_ROM = 101
 ID_OPEN_M3L = 102
@@ -81,14 +82,6 @@ ID_MAKE_A_DONATION = 604
 ID_ABOUT = 605
 
 CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES]
-
-ID_SPIN_DOMAIN = 1000
-ID_SPIN_TYPE = 1001
-ID_SPIN_LENGTH = 1002
-
-MAX_DOMAIN = 0x07
-MAX_TYPE = 0xFF
-MAX_LENGTH = 0xFF
 
 # mouse modes
 
@@ -236,36 +229,6 @@ class SMB3Foundry(wx.Frame):
 
         self.object_list = ObjectList(self, self.context_menu)
 
-        spinner_panel = wx.Panel(self)
-        spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
-        spinner_sizer.AddGrowableCol(0)
-
-        self.spin_domain = wx.SpinCtrl(spinner_panel, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
-        self.spin_domain.SetBase(16)
-        self.spin_domain.Enable(False)
-        self.spin_type = wx.SpinCtrl(spinner_panel, ID_SPIN_TYPE, max=MAX_TYPE)
-        self.spin_type.SetBase(16)
-        self.spin_type.Enable(False)
-        self.spin_length = wx.SpinCtrl(spinner_panel, ID_SPIN_LENGTH, max=MAX_LENGTH)
-        self.spin_length.SetBase(16)
-        self.spin_length.Enable(False)
-
-        spinner_sizer.Add(
-            wx.StaticText(spinner_panel, label="Bank/Domain: "),
-            flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
-        )
-        spinner_sizer.Add(self.spin_domain)
-        spinner_sizer.Add(
-            wx.StaticText(spinner_panel, label="Type: "),
-            flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
-        )
-        spinner_sizer.Add(self.spin_type)
-        spinner_sizer.Add(
-            wx.StaticText(spinner_panel, label="Length: "),
-            flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
-        )
-        spinner_sizer.Add(self.spin_length)
-
         self.status_bar = ObjectStatusBar(parent=self)
 
         vert_left = wx.BoxSizer(wx.VERTICAL)
@@ -276,9 +239,9 @@ class SMB3Foundry(wx.Frame):
 
         vert_right = wx.BoxSizer(wx.VERTICAL)
 
-        spinner_panel.SetSizerAndFit(spinner_sizer)
+        self.spinner_panel = SpinnerPanel(self)
 
-        vert_right.Add(spinner_panel, border=5, flag=wx.BOTTOM | wx.EXPAND)
+        vert_right.Add(self.spinner_panel, border=5, flag=wx.BOTTOM | wx.EXPAND)
         vert_right.Add(
             self.object_list,
             proportion=1,
@@ -493,16 +456,16 @@ class SMB3Foundry(wx.Frame):
         old_object = level.get_object(index)
         level.remove_object(old_object)
 
-        obj_index = self.spin_type.GetValue()
+        obj_index = self.spinner_panel.get_type()
 
         x = old_object.x_position
         y = old_object.y_position
 
         if isinstance(old_object, LevelObject):
-            domain = self.spin_domain.GetValue()
+            domain = self.spinner_panel.get_domain()
 
-            if _id == ID_SPIN_LENGTH:
-                length = self.spin_length.GetValue()
+            if self.spinner_panel.is_length_spinner(_id):
+                length = self.spinner_panel.get_length()
             else:
                 length = None
 
@@ -557,7 +520,7 @@ class SMB3Foundry(wx.Frame):
         if len(indexes) == 1:
             self.select_object(index=indexes[0])
         else:
-            self.disable_spinners()
+            self.spinner_panel.disable_all()
 
     def on_key_press(self, event: wx.KeyEvent):
         key = event.GetKeyCode()
@@ -668,10 +631,10 @@ class SMB3Foundry(wx.Frame):
 
             self.status_bar.fill(obj)
 
-            self.spin_type.SetValue(obj.obj_index)
+            self.spinner_panel.set_type(obj.obj_index)
 
             if obj.is_4byte:
-                self.spin_length.SetValue(obj.data[3])
+                self.spinner_panel.spin_length(obj.data[3])
 
             self.level_view.level.changed = True
 
@@ -732,15 +695,6 @@ class SMB3Foundry(wx.Frame):
 
         self.mouse_mode = MODE_FREE
 
-    def disable_spinners(self):
-        self.spin_domain.SetValue(0)
-        self.spin_type.SetValue(0)
-        self.spin_length.SetValue(0)
-
-        self.spin_domain.Disable()
-        self.spin_type.Disable()
-        self.spin_length.Disable()
-
     def select_object(self, obj=None, index=None):
         should_scroll = True
 
@@ -758,7 +712,7 @@ class SMB3Foundry(wx.Frame):
             index = self.level_view.level.index_of(obj)
 
         if index == wx.NOT_FOUND:
-            self.disable_spinners()
+            self.spinner_panel.disable_all()
         else:
             if obj is None:
                 # assume click on object_list
@@ -772,22 +726,16 @@ class SMB3Foundry(wx.Frame):
 
             if isinstance(self.level_view.level, Level):
                 if isinstance(obj, LevelObject):
-                    self.spin_domain.SetValue(obj.domain)
-                    self.spin_domain.Enable(True)
+                    self.spinner_panel.enable_domain(True, obj.domain)
                 else:
-                    self.spin_domain.SetValue(0x0)
-                    self.spin_domain.Enable(False)
+                    self.spinner_panel.enable_domain(False)
 
-                self.spin_type.SetValue(obj.obj_index)
-
-                self.spin_type.Enable()
+                self.spinner_panel.enable_type(True, obj.obj_index)
 
                 if obj.is_4byte:
-                    self.spin_length.SetValue(obj.length)
-                    self.spin_length.Enable()
+                    self.spinner_panel.enable_length(True, obj.length)
                 else:
-                    self.spin_length.SetValue(0)
-                    self.spin_length.Disable()
+                    self.spinner_panel.enable_length(False)
 
             if should_scroll:
                 visible_blocks = (
