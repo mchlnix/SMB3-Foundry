@@ -596,11 +596,9 @@ class SMB3Foundry(wx.Frame):
             return
 
         if event.GetWheelRotation() > 0:
-            new_type = obj_under_cursor.obj_index + 1
+            obj_under_cursor.increment_type()
         else:
-            new_type = obj_under_cursor.obj_index - 1
-
-        obj_under_cursor.change_type(new_type)
+            obj_under_cursor.decrement_type()
 
         self.select_object(obj=obj_under_cursor)
         self.object_list.update()

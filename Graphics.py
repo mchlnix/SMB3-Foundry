@@ -987,10 +987,27 @@ class LevelObject(Drawable):
 
         self.resize_to(new_x, new_y)
 
-    def change_type(self, new_type):
+    def increment_type(self):
+        self.change_type(True)
+
+    def decrement_type(self):
+        self.change_type(False)
+
+    def change_type(self, increment):
+        if self.obj_index < 0x10 or self.obj_index == 0x10 and not increment:
+            value = 1
+        else:
+            self.obj_index = self.obj_index // 0x10 * 0x10
+            value = 0x10
+
+        if not increment:
+            value *= -1
+
+        new_type = self.obj_index + value
+
         if new_type < 0 and self.domain > 0:
             new_domain = self.domain - 1
-            new_type = 0xFF
+            new_type = 0xF0
         elif new_type > 0xFF and self.domain < 7:
             new_domain = self.domain + 1
             new_type = 0x00
