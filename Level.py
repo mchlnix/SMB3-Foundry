@@ -284,6 +284,18 @@ class Level(LevelLike):
             if data[0] == 0xFF:
                 break
 
+    def set_width(self, width):
+        self.header[4] &= 0b1111_0000
+        self.header[4] |= width // 0x10
+
+        self._parse_header()
+
+    def set_object_palette_index(self, index):
+        self.header[5] &= 0b1111_1000
+        self.header[5] |= index
+
+        self._parse_header()
+
     def is_too_big(self):
         too_many_enemies = self.enemy_size_on_disk < len(self.enemies) * ENEMY_SIZE
         too_many_objects = self._calc_size_on_disk() > self.object_size_on_disk
