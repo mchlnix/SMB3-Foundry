@@ -27,6 +27,7 @@ OVERWORLD_OBJECT_SET = 0
 OVERWORLD_GRAPHIC_SET = 0
 
 LEVEL_DEFAULT_HEIGHT = 27
+LEVEL_DEFAULT_WIDTH = 16
 
 
 def _load_level_offsets():
@@ -168,7 +169,10 @@ class Level(LevelLike):
 
     def _load_level(self, object_data, enemy_data):
         self.object_factory = LevelObjectFactory(
-            self.object_set, self.graphic_set_index, self.object_palette_index
+            self.object_set,
+            self.graphic_set_index,
+            self.object_palette_index,
+            self.is_vertical,
         )
         self.enemy_item_factory = EnemyItemFactory(
             self.object_set, self.enemy_palette_index
@@ -212,7 +216,10 @@ class Level(LevelLike):
 
         self.scroll_type = Level.scroll_types[(self.header[6] & 0b0111_0000) >> 4]
         self.is_vertical = self.header[6] & 0b0001_0000
-        # todo make length and height vertical flag dependent
+
+        if self.is_vertical:
+            self.height = self.length
+            self.width = LEVEL_DEFAULT_WIDTH
 
         if self.object_set is None:
             self.object_set = self.header[6] & 0b0000_1111  # for indexing purposes

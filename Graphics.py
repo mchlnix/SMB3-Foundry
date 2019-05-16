@@ -144,6 +144,9 @@ SPADE_ROULETTE = 16
 N_SPADE = 17
 VS_2P = 18
 
+SCREEN_HEIGHT = 15
+SCREEN_WIDTH = 16
+
 
 class PatternTable:
     def __init__(self, graphic_set):
@@ -196,10 +199,11 @@ class LevelObjectFactory:
     pattern_table: PatternTable = None
     palette_group: list = []
 
-    def __init__(self, object_set, graphic_set, palette_group_index):
+    def __init__(self, object_set, graphic_set, palette_group_index, vertical_level):
         self.set_object_set(object_set)
         self.set_graphic_set(graphic_set)
         self.set_palette_group_index(palette_group_index)
+        self.vertical_level = vertical_level
 
     def set_object_set(self, object_set):
         self.object_set = object_set
@@ -221,6 +225,7 @@ class LevelObjectFactory:
             self.object_definitions,
             self.palette_group,
             self.pattern_table,
+            self.vertical_level,
             index,
         )
 
@@ -450,7 +455,14 @@ class LevelObject(Drawable):
     ground_map = []
 
     def __init__(
-        self, data, object_set, object_definitions, palette_group, pattern_table, index
+        self,
+        data,
+        object_set,
+        object_definitions,
+        palette_group,
+        pattern_table,
+        vertical_level,
+        index,
     ):
         self.pattern_table = pattern_table
         self.tsa_data = ROM.get_tsa_data(object_set)
@@ -463,6 +475,7 @@ class LevelObject(Drawable):
         self.palette_group = palette_group
 
         self.index = index
+        self.vertical_level = vertical_level
 
         self.data = data
 
@@ -483,6 +496,12 @@ class LevelObject(Drawable):
         # position relative to the start of the level (left)
         self.original_x = data[1]
         self.x_position = self.original_x
+
+        if self.vertical_level:
+            offset = (self.x_position // SCREEN_WIDTH) * SCREEN_HEIGHT
+
+            self.y_position += offset
+            self.x_position %= SCREEN_WIDTH
 
         # describes what object it is
         self.obj_index = data[2]
@@ -1048,8 +1067,17 @@ class LevelObject(Drawable):
     def to_bytes(self):
         data = bytearray()
 
-        data.append((self.domain << 5) | self.y_position)
-        data.append(self.x_position)
+        if self.vertical_level:
+            offset = self.y_position // SCREEN_HEIGHT
+
+            x_position = self.x_position + offset * SCREEN_WIDTH
+            y_position = self.y_position % SCREEN_HEIGHT
+        else:
+            x_position = self.x_position
+            y_position = self.y_position
+
+        data.append((self.domain << 5) | y_position)
+        data.append(x_position)
         data.append(self.obj_index)
 
         if self.is_4byte:
