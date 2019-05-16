@@ -156,7 +156,8 @@ class Level(LevelLike):
 
         rom = ROM()
 
-        self._parse_header(rom)
+        self.header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
+        self._parse_header()
 
         object_offset = self.offset + Level.HEADER_LENGTH
 
@@ -182,11 +183,11 @@ class Level(LevelLike):
         self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
 
     def reload(self):
-        _, header_and_object_data, _, enemy_data = self.to_bytes()
+        header_and_object_data, enemy_data = self.to_bytes()
 
-        object_data = header_and_object_data[Level.HEADER_LENGTH :]
+        object_data = header_and_object_data[1][Level.HEADER_LENGTH :]
 
-        self._load_level(object_data, enemy_data)
+        self._load_level(object_data, enemy_data[1])
 
     def _calc_size_on_disk(self):
         size = 0
@@ -199,9 +200,7 @@ class Level(LevelLike):
 
         return size
 
-    def _parse_header(self, rom):
-        self.header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
-
+    def _parse_header(self):
         self.start_y = Level.y_positions[(self.header[4] & 0b1110_0000) >> 5]
         self.width = Level.MIN_WIDTH + (self.header[4] & 0b0000_1111) * 0x10
         self.height = LEVEL_DEFAULT_HEIGHT
@@ -248,7 +247,7 @@ class Level(LevelLike):
         self.enemies.clear()
 
         def data_left(_data):
-            return not (_data[0] == 0xFF and _data[1] in [0x00, 0x01])
+            return data and not (_data[0] == 0xFF and _data[1] in [0x00, 0x01])
 
         enemy_data, data = data[0:ENEMY_SIZE], data[ENEMY_SIZE:]
 
