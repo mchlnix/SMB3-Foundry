@@ -117,7 +117,7 @@ class Level(LevelLike):
     x_positions = [0x01, 0x07, 0x08, 0x0D]
     y_positions = [0x01, 0x05, 0x08, 0x0C, 0x10, 0x14, 0x17, 0x18]
 
-    MIN_WIDTH = 0x10
+    MIN_LENGTH = 0x10
 
     offsets = []
     world_indexes = []
@@ -202,7 +202,8 @@ class Level(LevelLike):
 
     def _parse_header(self):
         self.start_y = Level.y_positions[(self.header[4] & 0b1110_0000) >> 5]
-        self.width = Level.MIN_WIDTH + (self.header[4] & 0b0000_1111) * 0x10
+        self.length = Level.MIN_LENGTH + (self.header[4] & 0b0000_1111) * 0x10
+        self.width = self.length
         self.height = LEVEL_DEFAULT_HEIGHT
 
         self.start_x = Level.x_positions[(self.header[5] & 0b0110_0000) >> 5]
@@ -286,12 +287,12 @@ class Level(LevelLike):
             if data[0] == 0xFF:
                 break
 
-    def set_width(self, width):
-        if width + 1 == self.width:
+    def set_length(self, length):
+        if length + 1 == self.length:
             return
 
         self.header[4] &= 0b1111_0000
-        self.header[4] |= width
+        self.header[4] |= length
 
         self._parse_header()
 

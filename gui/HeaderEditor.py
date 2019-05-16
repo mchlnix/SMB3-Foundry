@@ -165,8 +165,8 @@ class HeaderEditor(wx.Frame):
         combo_id = event.GetId()
 
         if combo_id == self.length_dropdown.GetId():
-            new_width = LEVEL_LENGTHS[self.length_dropdown.GetSelection()]
-            self.level_ref.set_width(new_width)
+            new_length = LEVEL_LENGTHS[self.length_dropdown.GetSelection()]
+            self.level_ref.set_length(new_length)
 
         elif combo_id == self.music_dropdown.GetId():
             new_music = self.music_dropdown.GetSelection()
