@@ -147,12 +147,20 @@ class Level(LevelLike):
         self.offset = level_data.rom_level_offset - Level.HEADER_LENGTH
         self.enemy_offset = level_data.enemy_offset
 
+        self.objects = []
+        self.enemies = []
+
         print(f"Loading {self.name} @ {hex(self.offset)}/{hex(self.enemy_offset)}")
+
+        self.changed = False
 
         rom = ROM()
 
         self._parse_header(rom)
 
+        self._load_level()
+
+    def _load_level(self):
         self.object_factory = LevelObjectFactory(
             self.object_set, self.graphic_set_index, self.object_palette_index
         )
@@ -162,15 +170,16 @@ class Level(LevelLike):
 
         # self.enemy_palette_group = Level.palettes[ENEMY_BANK][self.enemy_palette_index]
 
-        self._load_objects(rom)
+        self._load_objects()
         self._load_enemies()
-
-        self.changed = False
 
         self.size = (self.width * Block.WIDTH, self.height * Block.HEIGHT)
 
         self.object_size_on_disk = self._calc_size_on_disk()
         self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
+
+    def reload(self):
+        self._load_level()
 
     def _calc_size_on_disk(self):
         size = 0
@@ -205,7 +214,9 @@ class Level(LevelLike):
 
         self.graphic_set_index = self.header[7] & 0b0001_1111
 
-        self.time = Level.times[(self.header[8] & 0b1100_0000) >> 6]
+        self.time_index = (self.header[8] & 0b1100_0000) >> 6
+        self.time = Level.times[self.time_index]
+
         self.music_index = self.header[8] & 0b0000_1111
 
         # if there is a bonus area or other secondary level, this pointer points to it
@@ -227,7 +238,7 @@ class Level(LevelLike):
         )
 
     def _load_enemies(self):
-        self.enemies = []
+        self.enemies.clear()
 
         rom = ROM()
 
@@ -245,10 +256,12 @@ class Level(LevelLike):
 
             enemy_data = rom.bulk_read(ENEMY_SIZE)
 
-    def _load_objects(self, rom: ROM):
-        self.objects = []
+    def _load_objects(self):
+        self.objects.clear()
 
         object_offset = self.offset + Level.HEADER_LENGTH
+
+        rom = ROM()
 
         rom.seek(object_offset)
 
