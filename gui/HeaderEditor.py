@@ -4,7 +4,7 @@ from Level import Level
 
 LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]
 STR_LEVEL_LENGTHS = [
-    f"{length:0=#4X} / {length} Seconds".replace("X", "x") for length in LEVEL_LENGTHS
+    f"{length:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS
 ]
 
 MUSIC_ITEMS = [
@@ -65,10 +65,11 @@ TIMES = ["300", "400", "200", "Unlimited"]
 
 
 class HeaderEditor(wx.Frame):
-    def __init__(self, parent, level_ref):
+    def __init__(self, parent, level_view_ref):
         super(HeaderEditor, self).__init__(parent, title="Level Header Editor")
 
-        self.level_ref: Level = level_ref
+        self.level_view_ref = level_view_ref
+        self.level_ref: Level = self.level_view_ref.level
 
         self.config_sizer = wx.FlexGridSizer(2, 0, 0)
 
@@ -104,6 +105,8 @@ class HeaderEditor(wx.Frame):
 
         self._fill_widgets()
 
+        self.Bind(wx.EVT_SPINCTRL, self.on_spin)
+        self.Bind(wx.EVT_COMBOBOX, self.on_combo)
         self.Bind(wx.EVT_CLOSE, self.on_exit)
 
     def _add_widget(self, label, widget):
@@ -143,6 +146,26 @@ class HeaderEditor(wx.Frame):
 
         self.level_pointer_entry.SetValue(hex(self.level_ref.level_pointer))
         self.enemy_pointer_entry.SetValue(hex(self.level_ref.enemy_pointer))
+
+    def on_spin(self, event):
+        spin_id = event.GetId()
+
+        if spin_id == self.object_palette_spinner.GetId():
+            self.level_ref.set_object_palette_index(
+                self.object_palette_spinner.GetValue()
+            )
+
+        self.level_ref.reload()
+        self.level_view_ref.Refresh()
+
+    def on_combo(self, event):
+        combo_id = event.GetId()
+
+        if combo_id == self.length_dropdown.GetId():
+            self.level_ref.set_width(LEVEL_LENGTHS[self.length_dropdown.GetSelection()])
+
+        self.level_ref.reload()
+        self.level_view_ref.Refresh()
 
     def on_exit(self, _):
         self.Hide()
