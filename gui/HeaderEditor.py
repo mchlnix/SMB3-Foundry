@@ -151,9 +151,12 @@ class HeaderEditor(wx.Frame):
         spin_id = event.GetId()
 
         if spin_id == self.object_palette_spinner.GetId():
-            self.level_ref.set_object_palette_index(
-                self.object_palette_spinner.GetValue()
-            )
+            new_index = self.object_palette_spinner.GetValue()
+            self.level_ref.set_object_palette_index(new_index)
+
+        elif spin_id == self.enemy_palette_spinner.GetId():
+            new_index = self.enemy_palette_spinner.GetValue()
+            self.level_ref.set_enemy_palette_index(new_index)
 
         self.level_ref.reload()
         self.level_view_ref.Refresh()
@@ -162,7 +165,20 @@ class HeaderEditor(wx.Frame):
         combo_id = event.GetId()
 
         if combo_id == self.length_dropdown.GetId():
-            self.level_ref.set_width(LEVEL_LENGTHS[self.length_dropdown.GetSelection()])
+            new_width = LEVEL_LENGTHS[self.length_dropdown.GetSelection()]
+            self.level_ref.set_width(new_width)
+
+        elif combo_id == self.music_dropdown.GetId():
+            new_music = self.music_dropdown.GetSelection()
+            self.level_ref.set_music_index(new_music)
+
+        elif combo_id == self.time_dropdown.GetId():
+            new_time = self.time_dropdown.GetSelection()
+            self.level_ref.set_time_index(new_time)
+
+        elif combo_id == self.graphic_set_dropdown.GetId():
+            new_gfx_set = self.graphic_set_dropdown.GetSelection()
+            self.level_ref.set_gfx_index(new_gfx_set)
 
         self.level_ref.reload()
         self.level_view_ref.Refresh()

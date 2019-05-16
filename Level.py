@@ -152,8 +152,6 @@ class Level(LevelLike):
 
         print(f"Loading {self.name} @ {hex(self.offset)}/{hex(self.enemy_offset)}")
 
-        self.changed = False
-
         rom = ROM()
 
         self.header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
@@ -165,6 +163,8 @@ class Level(LevelLike):
         enemy_data = ROM.rom_data[self.enemy_offset :]
 
         self._load_level(object_data, enemy_data)
+
+        self.changed = False
 
     def _load_level(self, object_data, enemy_data):
         self.object_factory = LevelObjectFactory(
@@ -243,6 +243,8 @@ class Level(LevelLike):
             object_set_pointer.min <= self.level_pointer <= object_set_pointer.max
         )
 
+        self.changed = True
+
     def _load_enemies(self, data):
         self.enemies.clear()
 
@@ -285,14 +287,56 @@ class Level(LevelLike):
                 break
 
     def set_width(self, width):
+        if width + 1 == self.width:
+            return
+
         self.header[4] &= 0b1111_0000
-        self.header[4] |= width // 0x10
+        self.header[4] |= width
 
         self._parse_header()
 
     def set_object_palette_index(self, index):
+        if index == self.object_palette_index:
+            return
+
         self.header[5] &= 0b1111_1000
         self.header[5] |= index
+
+        self._parse_header()
+
+    def set_enemy_palette_index(self, index):
+        if index == self.enemy_palette_index:
+            return
+
+        self.header[5] &= 0b1110_0111
+        self.header[5] |= index << 3
+
+        self._parse_header()
+
+    def set_music_index(self, index):
+        if index == self.music_index:
+            return
+
+        self.header[8] &= 0b1111_0000
+        self.header[8] |= index
+
+        self._parse_header()
+
+    def set_time_index(self, index):
+        if index == self.time_index:
+            return
+
+        self.header[8] &= 0b0011_1111
+        self.header[8] |= index << 6
+
+        self._parse_header()
+
+    def set_gfx_index(self, index):
+        if index == self.graphic_set_index:
+            return
+
+        self.header[7] &= 0b1110_0000
+        self.header[7] |= index
 
         self._parse_header()
 
