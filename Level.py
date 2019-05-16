@@ -158,9 +158,14 @@ class Level(LevelLike):
 
         self._parse_header(rom)
 
-        self._load_level()
+        object_offset = self.offset + Level.HEADER_LENGTH
 
-    def _load_level(self):
+        object_data = ROM.rom_data[object_offset:]
+        enemy_data = ROM.rom_data[self.enemy_offset :]
+
+        self._load_level(object_data, enemy_data)
+
+    def _load_level(self, object_data, enemy_data):
         self.object_factory = LevelObjectFactory(
             self.object_set, self.graphic_set_index, self.object_palette_index
         )
@@ -168,10 +173,8 @@ class Level(LevelLike):
             self.object_set, self.enemy_palette_index
         )
 
-        # self.enemy_palette_group = Level.palettes[ENEMY_BANK][self.enemy_palette_index]
-
-        self._load_objects()
-        self._load_enemies()
+        self._load_objects(object_data)
+        self._load_enemies(enemy_data)
 
         self.size = (self.width * Block.WIDTH, self.height * Block.HEIGHT)
 
@@ -179,7 +182,11 @@ class Level(LevelLike):
         self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
 
     def reload(self):
-        self._load_level()
+        _, header_and_object_data, _, enemy_data = self.to_bytes()
+
+        object_data = header_and_object_data[Level.HEADER_LENGTH :]
+
+        self._load_level(object_data, enemy_data)
 
     def _calc_size_on_disk(self):
         size = 0
@@ -237,40 +244,30 @@ class Level(LevelLike):
             object_set_pointer.min <= self.level_pointer <= object_set_pointer.max
         )
 
-    def _load_enemies(self):
+    def _load_enemies(self, data):
         self.enemies.clear()
 
-        rom = ROM()
+        def data_left(_data):
+            return not (_data[0] == 0xFF and _data[1] in [0x00, 0x01])
 
-        rom.seek(self.enemy_offset)
-
-        enemy_data = rom.bulk_read(ENEMY_SIZE)
-
-        def data_left(data):
-            return not (data[0] == 0xFF and data[1] in [0x00, 0x01])
+        enemy_data, data = data[0:ENEMY_SIZE], data[ENEMY_SIZE:]
 
         while data_left(enemy_data):
             enemy = self.enemy_item_factory.make_object(enemy_data, 0)
 
             self.enemies.append(enemy)
 
-            enemy_data = rom.bulk_read(ENEMY_SIZE)
+            enemy_data, data = data[0:ENEMY_SIZE], data[ENEMY_SIZE:]
 
-    def _load_objects(self):
+    def _load_objects(self, data):
         self.objects.clear()
-
-        object_offset = self.offset + Level.HEADER_LENGTH
-
-        rom = ROM()
-
-        rom.seek(object_offset)
 
         object_order = object_sets[self.object_set]  # ordered by domain
 
         LevelObject.ground_map = []
 
         while True:
-            obj_data = bytearray(rom.bulk_read(3))
+            obj_data, data = data[0:3], data[3:]
 
             domain = (obj_data[0] & 0b1110_0000) >> 5
 
@@ -278,13 +275,14 @@ class Level(LevelLike):
             has_length = object_order[domain][(obj_index & 0b1111_0000) >> 4] == 4
 
             if has_length:
-                obj_data.append(rom.get_byte())
+                fourth_byte, data = data[0], data[1:]
+                obj_data.append(fourth_byte)
 
             level_object = self.object_factory.from_data(obj_data, len(self.objects))
 
             self.objects.append(level_object)
 
-            if rom.peek_byte() == 0xFF:
+            if data[0] == 0xFF:
                 break
 
     def is_too_big(self):
