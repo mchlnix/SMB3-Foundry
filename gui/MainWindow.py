@@ -511,7 +511,9 @@ class SMB3Foundry(wx.Frame):
 
     def on_header_editor(self, _):
         if self.header_editor is None:
-            self.header_editor = HeaderEditor(parent=self)
+            self.header_editor = HeaderEditor(
+                parent=self, level_ref=self.level_view.level
+            )
 
         self.header_editor.Show()
         self.header_editor.Raise()
