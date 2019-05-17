@@ -179,6 +179,11 @@ class HeaderEditor(wx.Frame):
         self.level_pointer_entry.SetValue(hex(self.level_ref.level_pointer))
         self.enemy_pointer_entry.SetValue(hex(self.level_ref.enemy_pointer))
 
+    def reload_level(self):
+        self.level_ref = self.level_view_ref.level
+
+        self._fill_widgets()
+
     def on_spin(self, event):
         spin_id = event.GetId()
 
