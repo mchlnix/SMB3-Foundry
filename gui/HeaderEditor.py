@@ -1,10 +1,30 @@
 import wx
 
-from Level import Level
-
 LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]
 STR_LEVEL_LENGTHS = [
     f"{length:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS
+]
+
+X_POSITIONS = [0x01, 0x07, 0x08, 0x0D]
+STR_X_POSITIONS = [
+    f"{position:0=#4X} / {position} Blocks".replace("X", "x")
+    for position in X_POSITIONS
+]
+
+Y_POSITIONS = [0x01, 0x05, 0x08, 0x0C, 0x10, 0x14, 0x17, 0x18]
+STR_Y_POSITIONS = [
+    f"{position:0=#4X} / {position} Block".replace("X", "x") for position in Y_POSITIONS
+]
+
+ACTIONS = [
+    "None",
+    "Sliding",
+    "Out of pipe ↑",
+    "Out of pipe ↓",
+    "Out of pipe ←",
+    "Out of pipe →",
+    "Running and climbing up ship",
+    "Ship autoscrolling",
 ]
 
 MUSIC_ITEMS = [
@@ -69,7 +89,7 @@ class HeaderEditor(wx.Frame):
         super(HeaderEditor, self).__init__(parent, title="Level Header Editor")
 
         self.level_view_ref = level_view_ref
-        self.level_ref: Level = self.level_view_ref.level
+        self.level_ref = self.level_view_ref.level
 
         self.config_sizer = wx.FlexGridSizer(2, 0, 0)
 
@@ -79,6 +99,10 @@ class HeaderEditor(wx.Frame):
         self.length_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=STR_LEVEL_LENGTHS)
         self.music_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=MUSIC_ITEMS)
         self.time_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=TIMES)
+
+        self.x_position_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=STR_X_POSITIONS)
+        self.y_position_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=STR_Y_POSITIONS)
+        self.action_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=ACTIONS)
 
         self.object_palette_spinner = wx.SpinCtrl(self, wx.ID_ANY, max=7)
         self.enemy_palette_spinner = wx.SpinCtrl(self, wx.ID_ANY, max=3)
@@ -93,6 +117,10 @@ class HeaderEditor(wx.Frame):
         self._add_widget("    Level length: ", self.length_dropdown)
         self._add_widget("    Music: ", self.music_dropdown)
         self._add_widget("    Time: ", self.time_dropdown)
+        self._add_label("Player Settings")
+        self._add_widget("    Starting X: ", self.x_position_dropdown)
+        self._add_widget("    Starting Y: ", self.y_position_dropdown)
+        self._add_widget("    Action: ", self.action_dropdown)
         self._add_label("Graphical Settings")
         self._add_widget("    Object Palette: ", self.object_palette_spinner)
         self._add_widget("    Enemy Palette: ", self.enemy_palette_spinner)
@@ -140,6 +168,10 @@ class HeaderEditor(wx.Frame):
         self.music_dropdown.SetSelection(self.level_ref.music_index)
         self.time_dropdown.SetSelection(self.level_ref.time_index)
 
+        self.x_position_dropdown.SetSelection(self.level_ref.start_x_index)
+        self.y_position_dropdown.SetSelection(self.level_ref.start_y_index)
+        self.action_dropdown.SetSelection(self.level_ref.start_action)
+
         self.object_palette_spinner.SetValue(self.level_ref.object_palette_index)
         self.enemy_palette_spinner.SetValue(self.level_ref.enemy_palette_index)
         self.graphic_set_dropdown.SetSelection(self.level_ref.graphic_set_index)
@@ -175,6 +207,18 @@ class HeaderEditor(wx.Frame):
         elif combo_id == self.time_dropdown.GetId():
             new_time = self.time_dropdown.GetSelection()
             self.level_ref.set_time_index(new_time)
+
+        elif combo_id == self.x_position_dropdown.GetId():
+            new_x = self.x_position_dropdown.GetSelection()
+            self.level_ref.set_x_position_index(new_x)
+
+        elif combo_id == self.y_position_dropdown.GetId():
+            new_y = self.y_position_dropdown.GetSelection()
+            self.level_ref.set_y_position_index(new_y)
+
+        elif combo_id == self.action_dropdown.GetId():
+            new_action = self.action_dropdown.GetSelection()
+            self.level_ref.set_action_index(new_action)
 
         elif combo_id == self.graphic_set_dropdown.GetId():
             new_gfx_set = self.graphic_set_dropdown.GetSelection()
