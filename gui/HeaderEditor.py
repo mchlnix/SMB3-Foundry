@@ -134,7 +134,7 @@ class HeaderEditor(wx.Frame):
         )
 
     def _fill_widgets(self):
-        length_index = LEVEL_LENGTHS.index(self.level_ref.width - 1)
+        length_index = LEVEL_LENGTHS.index(self.level_ref.length - 1)
 
         self.length_dropdown.SetSelection(length_index)
         self.music_dropdown.SetSelection(self.level_ref.music_index)
