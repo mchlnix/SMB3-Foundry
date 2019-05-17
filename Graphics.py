@@ -232,14 +232,17 @@ class LevelObjectFactory:
     def from_properties(self, domain, object_index, x, y, length, index):
         data = bytearray(3)
 
-        data[0] = domain << 5 | y
-        data[1] = x
+        data[0] = domain << 5 | 0
+        data[1] = 0
         data[2] = object_index
 
         if length is not None:
             data.append(length)
 
-        return self.from_data(data, index)
+        obj = self.from_data(data, index)
+        obj.set_position(x, y)
+
+        return obj
 
 
 class EnemyItemFactory:
