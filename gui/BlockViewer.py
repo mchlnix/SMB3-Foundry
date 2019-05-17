@@ -20,11 +20,27 @@ class BlockViewer(wx.Frame):
 
         self.toolbar = self.CreateToolBar()
 
-        self.toolbar.AddTool(ID_PREV_BANK, "", wx.Bitmap("data/img/Previous.bmp"))
-        self.toolbar.AddTool(ID_NEXT_BANK, "", wx.Bitmap("data/img/Next.bmp"))
+        self.toolbar.AddTool(
+            ID_PREV_BANK,
+            "",
+            wx.ArtProvider.GetBitmap(id=wx.ART_GO_BACK, client=wx.ART_TOOLBAR),
+        )
+        self.toolbar.AddTool(
+            ID_NEXT_BANK,
+            "",
+            wx.ArtProvider.GetBitmap(id=wx.ART_GO_FORWARD, client=wx.ART_TOOLBAR),
+        )
 
-        self.toolbar.AddTool(ID_ZOOM_OUT, "", wx.Bitmap("data/img/zoom_out.bmp"))
-        self.toolbar.AddTool(ID_ZOOM_IN, "", wx.Bitmap("data/img/zoom_in.bmp"))
+        self.toolbar.AddTool(
+            ID_ZOOM_OUT,
+            "",
+            wx.ArtProvider.GetBitmap(id=wx.ART_MINUS, client=wx.ART_TOOLBAR),
+        )
+        self.toolbar.AddTool(
+            ID_ZOOM_IN,
+            "",
+            wx.ArtProvider.GetBitmap(id=wx.ART_PLUS, client=wx.ART_TOOLBAR),
+        )
 
         self.bank_dropdown = wx.ComboBox(
             parent=self.toolbar, id=ID_BANK_DROPDOWN, choices=OBJECT_SET_ITEMS
