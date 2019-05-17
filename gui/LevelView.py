@@ -27,6 +27,13 @@ class LevelView(wx.Panel):
 
         self.selection_square = SelectionSquare()
 
+    def Refresh(self, eraseBackground=True, rect=None):
+        if self.level is not None:
+            self.SetMinSize(wx.Size(*self.level.size))
+            self.SetSize(self.GetMinSize())
+
+        super().Refresh(eraseBackground, rect)
+
     def start_selection_square(self, position):
         self.selection_square.start(position)
 
@@ -136,6 +143,12 @@ class LevelView(wx.Panel):
 
         if self.level is None:
             return
+
+        self.GetParent().SetupScrolling(
+            rate_x=self.level.block_width,
+            rate_y=self.level.block_height,
+            scrollToTop=False,
+        )
 
         self.level.draw(dc, transparency=self.transparency)
 

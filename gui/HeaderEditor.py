@@ -5,12 +5,14 @@ STR_LEVEL_LENGTHS = [
     f"{length:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS
 ]
 
+# todo check if correct order
 X_POSITIONS = [0x01, 0x07, 0x08, 0x0D]
 STR_X_POSITIONS = [
     f"{position:0=#4X} / {position}. Block".replace("X", "x")
     for position in X_POSITIONS
 ]
 
+# todo check if correct order
 Y_POSITIONS = [0x01, 0x05, 0x08, 0x0C, 0x10, 0x14, 0x17, 0x18]
 STR_Y_POSITIONS = [
     f"{position:0=#4X} / {position}. Block".replace("X", "x")

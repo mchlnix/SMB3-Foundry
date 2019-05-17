@@ -1071,6 +1071,10 @@ class LevelObject(Drawable):
         data = bytearray()
 
         if self.vertical_level:
+            # todo from vertical to non-vertical is bugged, because it
+            # seems like you can't convert the coordinates 1:1
+            # there seems to be ambiguity
+
             offset = self.y_position // SCREEN_HEIGHT
 
             x_position = self.x_position + offset * SCREEN_WIDTH
