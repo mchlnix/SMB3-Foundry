@@ -7,13 +7,14 @@ STR_LEVEL_LENGTHS = [
 
 X_POSITIONS = [0x01, 0x07, 0x08, 0x0D]
 STR_X_POSITIONS = [
-    f"{position:0=#4X} / {position} Blocks".replace("X", "x")
+    f"{position:0=#4X} / {position}. Block".replace("X", "x")
     for position in X_POSITIONS
 ]
 
 Y_POSITIONS = [0x01, 0x05, 0x08, 0x0C, 0x10, 0x14, 0x17, 0x18]
 STR_Y_POSITIONS = [
-    f"{position:0=#4X} / {position} Block".replace("X", "x") for position in Y_POSITIONS
+    f"{position:0=#4X} / {position}. Block".replace("X", "x")
+    for position in Y_POSITIONS
 ]
 
 ACTIONS = [
@@ -83,6 +84,13 @@ GRAPHIC_SETS = [
 
 TIMES = ["300", "400", "200", "Unlimited"]
 
+SCROLL_DIRECTIONS = [
+    "Locked, unless climbing/flying",
+    "Free vertical scrolling",
+    "Locked 'by start coordinates'?",
+    "Shouldn't appear in game, do not use.",
+]
+
 
 class HeaderEditor(wx.Frame):
     def __init__(self, parent, level_view_ref):
@@ -99,6 +107,11 @@ class HeaderEditor(wx.Frame):
         self.length_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=STR_LEVEL_LENGTHS)
         self.music_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=MUSIC_ITEMS)
         self.time_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=TIMES)
+        self.v_scroll_direction_dropdown = wx.ComboBox(
+            self, wx.ID_ANY, choices=SCROLL_DIRECTIONS
+        )
+        self.level_is_vertical_cb = wx.CheckBox(self)
+        self.pipe_ends_level_cb = wx.CheckBox(self)
 
         self.x_position_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=STR_X_POSITIONS)
         self.y_position_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=STR_Y_POSITIONS)
@@ -117,6 +130,9 @@ class HeaderEditor(wx.Frame):
         self._add_widget("    Level length: ", self.length_dropdown)
         self._add_widget("    Music: ", self.music_dropdown)
         self._add_widget("    Time: ", self.time_dropdown)
+        self._add_widget("    Scroll direction: ", self.v_scroll_direction_dropdown)
+        self._add_widget("    Is Vertical: ", self.level_is_vertical_cb)
+        self._add_widget("    Pipe ends level: ", self.pipe_ends_level_cb)
         self._add_label("Player Settings")
         self._add_widget("    Starting X: ", self.x_position_dropdown)
         self._add_widget("    Starting Y: ", self.y_position_dropdown)
@@ -135,6 +151,7 @@ class HeaderEditor(wx.Frame):
 
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
         self.Bind(wx.EVT_COMBOBOX, self.on_combo)
+        self.Bind(wx.EVT_CHECKBOX, self.on_check_box)
         self.Bind(wx.EVT_CLOSE, self.on_exit)
 
     def _add_widget(self, label, widget):
@@ -167,6 +184,9 @@ class HeaderEditor(wx.Frame):
         self.length_dropdown.SetSelection(length_index)
         self.music_dropdown.SetSelection(self.level_ref.music_index)
         self.time_dropdown.SetSelection(self.level_ref.time_index)
+        self.v_scroll_direction_dropdown.SetSelection(self.level_ref.scroll_type_index)
+        self.level_is_vertical_cb.SetValue(self.level_ref.is_vertical)
+        self.pipe_ends_level_cb.SetValue(self.level_ref.pipe_ends_level)
 
         self.x_position_dropdown.SetSelection(self.level_ref.start_x_index)
         self.y_position_dropdown.SetSelection(self.level_ref.start_y_index)
@@ -228,6 +248,17 @@ class HeaderEditor(wx.Frame):
         elif combo_id == self.graphic_set_dropdown.GetId():
             new_gfx_set = self.graphic_set_dropdown.GetSelection()
             self.level_ref.set_gfx_index(new_gfx_set)
+
+        self.level_ref.reload()
+        self.level_view_ref.Refresh()
+
+    def on_check_box(self, event):
+        cb_id = event.GetId()
+
+        if cb_id == self.pipe_ends_level_cb.GetId():
+            self.level_ref.set_pipe_ends_level(self.pipe_ends_level_cb.GetValue())
+        elif cb_id == self.level_is_vertical_cb.GetId():
+            self.level_ref.set_is_vertical(self.level_is_vertical_cb.GetValue())
 
         self.level_ref.reload()
         self.level_view_ref.Refresh()
