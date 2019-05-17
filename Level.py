@@ -365,7 +365,7 @@ class Level(LevelLike):
         if index == self.scroll_type_index:
             return
 
-        self.header[6] &= 0b0110_0000
+        self.header[6] &= 0b1001_1111
         self.header[6] |= index << 5
 
         self._parse_header()

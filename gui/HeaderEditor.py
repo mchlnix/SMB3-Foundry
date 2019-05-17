@@ -239,6 +239,10 @@ class HeaderEditor(wx.Frame):
             new_x = self.x_position_dropdown.GetSelection()
             self.level_ref.set_x_position_index(new_x)
 
+        elif combo_id == self.v_scroll_direction_dropdown.GetId():
+            new_scroll = self.v_scroll_direction_dropdown.GetSelection()
+            self.level_ref.set_scroll_type(new_scroll)
+
         elif combo_id == self.y_position_dropdown.GetId():
             new_y = self.y_position_dropdown.GetSelection()
             self.level_ref.set_y_position_index(new_y)
