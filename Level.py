@@ -190,12 +190,15 @@ class Level(LevelLike):
         self.enemy_palette_index = (self.header[5] & 0b0001_1000) >> 3
         self.object_palette_index = self.header[5] & 0b0000_0111
 
+        self.pipe_ends_level = not (self.header[6] & 0b1000_0000)
+        self.scroll_type_index = (self.header[6] & 0b0110_0000) >> 5
         self.is_vertical = self.header[6] & 0b0001_0000
 
         if self.is_vertical:
             self.height = self.length
             self.width = LEVEL_DEFAULT_WIDTH
 
+        # todo isn't that the object set for the "next area"?
         if self.object_set is None:
             self.object_set = self.header[6] & 0b0000_1111  # for indexing purposes
 
@@ -273,7 +276,7 @@ class Level(LevelLike):
             return
 
         self.header[4] &= 0b1111_0000
-        self.header[4] |= length
+        self.header[4] |= length // 0x10
 
         self._parse_header()
 
@@ -346,6 +349,33 @@ class Level(LevelLike):
 
         self.header[7] &= 0b1110_0000
         self.header[7] |= index
+
+        self._parse_header()
+
+    def set_pipe_ends_level(self, truth_value):
+        if truth_value == self.pipe_ends_level:
+            return
+
+        self.header[6] &= 0b0111_1111
+        self.header[6] |= int(not truth_value) << 7
+
+        self._parse_header()
+
+    def set_scroll_type(self, index):
+        if index == self.scroll_type_index:
+            return
+
+        self.header[6] &= 0b0110_0000
+        self.header[6] |= index << 5
+
+        self._parse_header()
+
+    def set_is_vertical(self, truth_value):
+        if truth_value == self.is_vertical:
+            return
+
+        self.header[6] &= 0b1110_1111
+        self.header[6] |= int(truth_value) << 4
 
         self._parse_header()
 
