@@ -92,32 +92,6 @@ class LevelLike(abc.ABC):
 
 
 class Level(LevelLike):
-    scroll_types = [
-        "Horizontal, up when flying",
-        "Horizontal 1",
-        "Free scrolling",
-        "Horizontal 2",
-        "Vertical only 1",
-        "Horizontal 3",
-        "Vertical only 2",
-        "Horizontal 4",
-    ]
-    actions = [
-        "None",
-        "Sliding",
-        "Out of pipe up",
-        "Out of pipe down",
-        "Out of pipe left",
-        "Out of pipe right",
-        "Climbing up ship",
-        "Ship autoscroll",
-    ]
-
-    times = [300, 400, 200, TIME_INF]
-
-    x_positions = [0x01, 0x07, 0x08, 0x0D]
-    y_positions = [0x01, 0x05, 0x08, 0x0C, 0x10, 0x14, 0x17, 0x18]
-
     MIN_LENGTH = 0x10
 
     offsets = []
@@ -206,19 +180,16 @@ class Level(LevelLike):
 
     def _parse_header(self):
         self.start_y_index = (self.header[4] & 0b1110_0000) >> 5
-        self.start_y = Level.y_positions[self.start_y_index]
 
         self.length = Level.MIN_LENGTH + (self.header[4] & 0b0000_1111) * 0x10
         self.width = self.length
         self.height = LEVEL_DEFAULT_HEIGHT
 
         self.start_x_index = (self.header[5] & 0b0110_0000) >> 5
-        self.start_x = Level.x_positions[self.start_x_index]
 
         self.enemy_palette_index = (self.header[5] & 0b0001_1000) >> 3
         self.object_palette_index = self.header[5] & 0b0000_0111
 
-        self.scroll_type = Level.scroll_types[(self.header[6] & 0b0111_0000) >> 4]
         self.is_vertical = self.header[6] & 0b0001_0000
 
         if self.is_vertical:
@@ -233,7 +204,6 @@ class Level(LevelLike):
         self.graphic_set_index = self.header[7] & 0b0001_1111
 
         self.time_index = (self.header[8] & 0b1100_0000) >> 6
-        self.time = Level.times[self.time_index]
 
         self.music_index = self.header[8] & 0b0000_1111
 
