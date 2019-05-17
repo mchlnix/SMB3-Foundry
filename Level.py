@@ -205,12 +205,16 @@ class Level(LevelLike):
         return size
 
     def _parse_header(self):
-        self.start_y = Level.y_positions[(self.header[4] & 0b1110_0000) >> 5]
+        self.start_y_index = (self.header[4] & 0b1110_0000) >> 5
+        self.start_y = Level.y_positions[self.start_y_index]
+
         self.length = Level.MIN_LENGTH + (self.header[4] & 0b0000_1111) * 0x10
         self.width = self.length
         self.height = LEVEL_DEFAULT_HEIGHT
 
-        self.start_x = Level.x_positions[(self.header[5] & 0b0110_0000) >> 5]
+        self.start_x_index = (self.header[5] & 0b0110_0000) >> 5
+        self.start_x = Level.x_positions[self.start_x_index]
+
         self.enemy_palette_index = (self.header[5] & 0b0001_1000) >> 3
         self.object_palette_index = self.header[5] & 0b0000_0111
 
@@ -336,6 +340,33 @@ class Level(LevelLike):
 
         self.header[8] &= 0b0011_1111
         self.header[8] |= index << 6
+
+        self._parse_header()
+
+    def set_x_position_index(self, index):
+        if index == self.start_x_index:
+            return
+
+        self.header[5] &= 0b1001_1111
+        self.header[5] |= index << 5
+
+        self._parse_header()
+
+    def set_y_position_index(self, index):
+        if index == self.start_y_index:
+            return
+
+        self.header[4] &= 0b0001_1111
+        self.header[4] |= index << 5
+
+        self._parse_header()
+
+    def set_action_index(self, index):
+        if index == self.start_action:
+            return
+
+        self.header[7] &= 0b0001_1111
+        self.header[7] |= index << 5
 
         self._parse_header()
 
