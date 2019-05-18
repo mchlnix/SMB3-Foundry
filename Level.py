@@ -58,6 +58,7 @@ class LevelLike(abc.ABC):
 
         self.width = 1
         self.height = 1
+        self.zoom = 1
 
         self.block_width = Block.WIDTH
         self.block_height = Block.HEIGHT
@@ -73,6 +74,9 @@ class LevelLike(abc.ABC):
         level_y = y // self.block_height
 
         return level_x, level_y
+
+    def set_zoom(self, zoom):
+        self.zoom = zoom
 
     @abc.abstractmethod
     def index_of(self, obj):
@@ -103,7 +107,7 @@ class Level(LevelLike):
 
     palettes = []
 
-    def __init__(self, world, level, object_set=None):
+    def __init__(self, world, level, object_set=None, zoom=1):
         super(Level, self).__init__(world, level, object_set)
         if not Level.offsets:
             _load_level_offsets()
@@ -139,6 +143,10 @@ class Level(LevelLike):
 
         self._load_level(object_data, enemy_data)
 
+        self.zoom = 1
+        self.size = wx.Size()
+        self.set_zoom(zoom)
+
         self.changed = False
 
     def _load_level(self, object_data, enemy_data):
@@ -154,8 +162,6 @@ class Level(LevelLike):
 
         self._load_objects(object_data)
         self._load_enemies(enemy_data)
-
-        self.size = (self.width * Block.WIDTH, self.height * Block.HEIGHT)
 
         self.object_size_on_disk = self._calc_size_on_disk()
         self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
@@ -270,6 +276,16 @@ class Level(LevelLike):
 
             if data[0] == 0xFF:
                 break
+
+    def set_zoom(self, zoom):
+        super(Level, self).set_zoom(zoom)
+
+        self.block_width = Block.WIDTH * self.zoom
+        self.block_height = Block.HEIGHT * self.zoom
+
+        self.size = wx.Size(
+            self.width * self.block_width, self.height * self.block_height
+        )
 
     def set_length(self, length):
         if length + 1 == self.length:
@@ -410,7 +426,7 @@ class Level(LevelLike):
         dc.Clear()
 
         for level_object in self.objects:
-            level_object.draw(dc, transparent=transparency)
+            level_object.draw(dc, transparency, self.zoom)
 
             if level_object.selected:
                 x, y, w, h = level_object.get_rect().Get()
@@ -423,7 +439,7 @@ class Level(LevelLike):
                 dc.DrawRectangle(wx.Rect(x, y, w, h))
 
         for enemy in self.enemies:
-            enemy.draw(dc, transparent=transparency)
+            enemy.draw(dc, transparency, self.zoom)
 
             if enemy.selected:
                 x, y, w, h = enemy.get_rect().Get()
@@ -530,7 +546,7 @@ class WorldMap(LevelLike):
 
     VISIBLE_BLOCKS = WIDTH * HEIGHT
 
-    def __init__(self, world_index):
+    def __init__(self, world_index, zoom=4):
         super(WorldMap, self).__init__(0, world_index, None)
 
         self.name = f"World {world_index} - Overworld"
@@ -543,7 +559,7 @@ class WorldMap(LevelLike):
 
         self.offset = start
 
-        self.zoom = 4
+        self.zoom = zoom
 
         self.block_width = Block.WIDTH * self.zoom
         self.block_height = Block.HEIGHT * self.zoom
@@ -588,7 +604,7 @@ class WorldMap(LevelLike):
 
     def draw(self, dc, transparency=None):
         for obj in self.objects:
-            obj.draw(dc)
+            obj.draw(dc, transparency, self.zoom)
 
     def index_of(self, obj):
         return self.objects.index(obj)
