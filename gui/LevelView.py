@@ -19,6 +19,8 @@ class LevelView(wx.Panel):
         self.grid_lines = False
         self.grid_pen = wx.Pen(colour=wx.Colour(0x80, 0x80, 0x80, 0x80), width=1)
 
+        self.zoom = 2
+
         self.changed = False
 
         self.transparency = True
@@ -110,9 +112,9 @@ class LevelView(wx.Panel):
 
     def load_level(self, world, level, object_set=None):
         if world == 0:
-            self.level = WorldMap(level)
+            self.level = WorldMap(level, self.zoom)
         else:
-            self.level = Level(world, level, object_set)
+            self.level = Level(world, level, object_set, self.zoom)
 
         self.GetParent().SetupScrolling(
             rate_x=self.level.block_width,
@@ -120,7 +122,7 @@ class LevelView(wx.Panel):
             scrollToTop=False,
         )
 
-        self.SetMinSize(wx.Size(*self.level.size))
+        self.SetMinSize(wx.Size(*self.level.size.Get()))
         self.SetSize(self.GetMinSize())
 
         print(f"Drawing {self.level.name}")
@@ -134,7 +136,7 @@ class LevelView(wx.Panel):
         return self.level.object_at(x, y)
 
     def to_level_point(self, x, y):
-        return self.level.to_level_point(x, y)
+        return self.level.to_level_point(x * self.zoom, y * self.zoom)
 
     def on_size(self, _):
         self.Refresh()
