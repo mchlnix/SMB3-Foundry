@@ -271,6 +271,12 @@ class EnemyItemFactory:
 
 
 class Drawable(abc.ABC):
+    def __init__(self):
+        self.zoom = 1
+
+    def set_zoom(self, zoom):
+        self.zoom = zoom
+
     @abc.abstractmethod
     def draw(self, dc, transparent):
         pass
@@ -325,6 +331,8 @@ MASK_COLOR = [0xFF, 0x33, 0xFF]
 
 class EnemyObject(Drawable):
     def __init__(self, data, png_data, palette_group):
+        super(EnemyObject, self).__init__()
+
         self.is_4byte = False
 
         self.obj_index = data[0]
@@ -467,6 +475,8 @@ class LevelObject(Drawable):
         vertical_level,
         index,
     ):
+        super(LevelObject, self).__init__()
+
         self.pattern_table = pattern_table
         self.tsa_data = ROM.get_tsa_data(object_set)
         self.object_definitions = object_definitions
@@ -1223,6 +1233,8 @@ map_object_names = {
 
 class MapObject(Drawable):
     def __init__(self, block, x, y, zoom):
+        super(MapObject, self).__init__()
+
         self.x = x
         self.y = y
         self.zoom = zoom
