@@ -271,14 +271,8 @@ class EnemyItemFactory:
 
 
 class Drawable(abc.ABC):
-    def __init__(self):
-        self.zoom = 1
-
-    def set_zoom(self, zoom):
-        self.zoom = zoom
-
     @abc.abstractmethod
-    def draw(self, dc, transparent):
+    def draw(self, dc, transparent, zoom):
         pass
 
     @abc.abstractmethod
@@ -378,7 +372,10 @@ class EnemyObject(Drawable):
                 self.png_data.GetSubImage(wx.Rect(x, y, Block.WIDTH, Block.HEIGHT))
             )
 
-    def draw(self, dc, transparent):
+    def draw(self, dc, transparent, zoom):
+        block_width = Block.WIDTH * zoom
+        block_height = Block.HEIGHT * zoom
+
         for i, image in enumerate(self.blocks):
             x = self.x_position + (i % self.width)
             y = self.y_position + (i // self.width)
@@ -399,10 +396,15 @@ class EnemyObject(Drawable):
             if self.selected:
                 block = block.ConvertToDisabled(127)
 
+            if zoom > 1:
+                block.Rescale(
+                    block_width, block_height, quality=wx.IMAGE_QUALITY_NEAREST
+                )
+
             dc.DrawBitmap(
                 block.ConvertToBitmap(),
-                x * Block.WIDTH,
-                y * Block.HEIGHT,
+                x * block_width,
+                y * block_height,
                 useMask=transparent,
             )
 
@@ -475,8 +477,6 @@ class LevelObject(Drawable):
         vertical_level,
         index,
     ):
-        super(LevelObject, self).__init__()
-
         self.pattern_table = pattern_table
         self.tsa_data = ROM.get_tsa_data(object_set)
         self.object_definitions = object_definitions
@@ -931,7 +931,7 @@ class LevelObject(Drawable):
 
         LevelObject.ground_map.insert(self.index, self.rect)
 
-    def draw(self, dc, transparent):
+    def draw(self, dc, transparent, zoom):
         for index, block_index in enumerate(self.rendered_blocks):
             if block_index == BLANK:
                 continue
@@ -939,9 +939,9 @@ class LevelObject(Drawable):
             x = self.rendered_base_x + index % self.rendered_width
             y = self.rendered_base_y + index // self.rendered_width
 
-            self._draw_block(dc, block_index, x, y, transparent)
+            self._draw_block(dc, block_index, x, y, transparent, zoom)
 
-    def _draw_block(self, dc, block_index, x, y, transparent):
+    def _draw_block(self, dc, block_index, x, y, transparent, zoom):
         if block_index not in self.block_cache:
             if block_index > 0xFF:
                 rom_block_index = ROM().get_byte(
@@ -962,9 +962,9 @@ class LevelObject(Drawable):
 
         self.block_cache[block_index].draw(
             dc,
-            x * Block.WIDTH,
-            y * Block.HEIGHT,
-            zoom=1,
+            x * Block.WIDTH * zoom,
+            y * Block.HEIGHT * zoom,
+            zoom=zoom,
             selected=self.selected,
             transparent=transparent,
         )
@@ -1231,10 +1231,9 @@ map_object_names = {
 }
 
 
+# todo remove zoom parameter
 class MapObject(Drawable):
     def __init__(self, block, x, y, zoom):
-        super(MapObject, self).__init__()
-
         self.x = x
         self.y = y
         self.zoom = zoom
@@ -1265,7 +1264,7 @@ class MapObject(Drawable):
     def get_position(self):
         return self.x, self.y
 
-    def draw(self, dc, transparent=False):
+    def draw(self, dc, transparent=False, zoom=1):
         self.block.draw(
             dc,
             self.x,
