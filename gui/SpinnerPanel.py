@@ -19,6 +19,7 @@ class SpinnerPanel(wx.Panel):
         self.level_view_ref = level_view_ref
 
         self.toolbar = wx.ToolBar(self)
+        self.toolbar.AddStretchableSpace()
         self.toolbar.AddTool(
             ID_TOOL_ZOOM_OUT,
             "Zoom out",
@@ -63,8 +64,8 @@ class SpinnerPanel(wx.Panel):
         )
         spinner_sizer.Add(self.spin_length)
 
-        self.panel_sizer.Add(self.toolbar)
-        self.panel_sizer.Add(spinner_sizer)
+        self.panel_sizer.Add(self.toolbar, flag=wx.EXPAND)
+        self.panel_sizer.Add(spinner_sizer, flag=wx.ALIGN_CENTER_HORIZONTAL)
 
         self.SetSizerAndFit(self.panel_sizer)
 
