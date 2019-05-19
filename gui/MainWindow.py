@@ -576,6 +576,7 @@ class SMB3Foundry(wx.Frame):
         obj_under_cursor = self.level_view.object_at(*event.GetPosition().Get())
 
         if obj_under_cursor is None:
+            event.Skip()
             return
 
         if event.GetWheelRotation() > 0:
