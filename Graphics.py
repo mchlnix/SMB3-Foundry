@@ -396,7 +396,7 @@ class EnemyObject(Drawable):
             if self.selected:
                 block = block.ConvertToDisabled(127)
 
-            if zoom > 1:
+            if zoom != 1:
                 block.Rescale(
                     block_width, block_height, quality=wx.IMAGE_QUALITY_NEAREST
                 )
@@ -974,8 +974,8 @@ class LevelObject(Drawable):
         x = max(0, x)
         y = max(0, y)
 
-        self.x_position = x
-        self.y_position = y
+        self.x_position = int(x)
+        self.y_position = int(y)
 
         self._render()
 

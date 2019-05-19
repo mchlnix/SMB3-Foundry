@@ -396,7 +396,7 @@ class Block:
     def draw(self, dc, x, y, zoom=1, selected=False, transparent=False):
         image = self.image.Copy()
 
-        if zoom > 1:
+        if zoom != 1:
             image.Rescale(Block.WIDTH * zoom, Block.HEIGHT * zoom)
 
         # todo better effect
