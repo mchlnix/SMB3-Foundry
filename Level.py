@@ -95,6 +95,15 @@ class LevelLike(abc.ABC):
         pass
 
 
+def undoable(func):
+    def wrapped(self, *args):
+        self.undo_stack.append(self.to_bytes())
+
+        func(self, *args)
+
+    return wrapped
+
+
 class Level(LevelLike):
     MIN_LENGTH = 0x10
 
@@ -148,6 +157,8 @@ class Level(LevelLike):
         self.set_zoom(zoom)
 
         self.changed = False
+
+        self.undo_stack = []
 
     def _load_level(self, object_data, enemy_data):
         self.object_factory = LevelObjectFactory(
@@ -280,6 +291,12 @@ class Level(LevelLike):
 
             if data[0] == 0xFF:
                 break
+
+    def undo(self):
+        print("Undoing")
+
+    def redo(self):
+        print("Redoing")
 
     def set_zoom(self, zoom):
         super(Level, self).set_zoom(zoom)
