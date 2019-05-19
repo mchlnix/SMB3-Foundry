@@ -29,6 +29,18 @@ class LevelView(wx.Panel):
 
         self.selection_square = SelectionSquare()
 
+    def set_zoom(self, zoom):
+        self.zoom = zoom
+        self.level.set_zoom(zoom)
+
+        self.resize()
+
+    def zoom_out(self):
+        self.set_zoom(self.zoom / 2)
+
+    def zoom_in(self):
+        self.set_zoom(self.zoom * 2)
+
     def resize(self):
         if self.level is not None:
             self.SetMinSize(wx.Size(*self.level.size))
