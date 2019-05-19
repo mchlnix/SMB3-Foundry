@@ -4,14 +4,35 @@ ID_SPIN_DOMAIN = 1000
 ID_SPIN_TYPE = 1001
 ID_SPIN_LENGTH = 1002
 
+ID_TOOL_ZOOM_OUT = 1101
+ID_TOOL_ZOOM_IN = 1102
+
 MAX_DOMAIN = 0x07
 MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
 
 
 class SpinnerPanel(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, level_view_ref):
         super(SpinnerPanel, self).__init__(parent)
+
+        self.level_view_ref = level_view_ref
+
+        self.toolbar = wx.ToolBar(self)
+        self.toolbar.AddTool(
+            ID_TOOL_ZOOM_OUT,
+            "Zoom out",
+            wx.ArtProvider.GetBitmap(id=wx.ART_MINUS, client=wx.ART_TOOLBAR),
+        )
+        self.toolbar.AddTool(
+            ID_TOOL_ZOOM_IN,
+            "Zoom in",
+            wx.ArtProvider.GetBitmap(id=wx.ART_PLUS, client=wx.ART_TOOLBAR),
+        )
+
+        self.toolbar.Realize()
+
+        self.panel_sizer = wx.BoxSizer(wx.VERTICAL)
 
         self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
         self.spin_domain.SetBase(16)
@@ -42,7 +63,20 @@ class SpinnerPanel(wx.Panel):
         )
         spinner_sizer.Add(self.spin_length)
 
-        self.SetSizerAndFit(spinner_sizer)
+        self.panel_sizer.Add(self.toolbar)
+        self.panel_sizer.Add(spinner_sizer)
+
+        self.SetSizerAndFit(self.panel_sizer)
+
+        self.Bind(wx.EVT_TOOL, self.on_toolbox)
+
+    def on_toolbox(self, event):
+        tool_id = event.GetId()
+
+        if tool_id == ID_TOOL_ZOOM_OUT:
+            self.level_view_ref.zoom_out()
+        elif tool_id == ID_TOOL_ZOOM_IN:
+            self.level_view_ref.zoom_in()
 
     def get_type(self):
         return self.spin_type.GetValue()

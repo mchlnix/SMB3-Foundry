@@ -244,7 +244,7 @@ class SMB3Foundry(wx.Frame):
 
         vert_right = wx.BoxSizer(wx.VERTICAL)
 
-        self.spinner_panel = SpinnerPanel(self)
+        self.spinner_panel = SpinnerPanel(self, self.level_view)
 
         vert_right.Add(self.spinner_panel, border=5, flag=wx.BOTTOM | wx.EXPAND)
         vert_right.Add(
