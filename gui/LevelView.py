@@ -1,12 +1,14 @@
 import wx
 
 from Level import Level, WorldMap
-
-
-# TODO a lot of functionality from MainWindow can be put here
 from SelectionSquare import SelectionSquare
 
 
+HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
+LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
+
+
+# TODO a lot of functionality from MainWindow can be put here
 class LevelView(wx.Panel):
     def __init__(self, parent):
         super(LevelView, self).__init__(parent)
@@ -30,8 +32,12 @@ class LevelView(wx.Panel):
         self.selection_square = SelectionSquare()
 
     def set_zoom(self, zoom):
+        if not (LOWEST_ZOOM_LEVEL <= zoom <= HIGHEST_ZOOM_LEVEL):
+            return
+
         self.zoom = zoom
-        self.level.set_zoom(zoom)
+
+        self.level.set_zoom(self.zoom)
 
         self.resize()
 
