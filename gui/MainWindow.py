@@ -20,9 +20,9 @@ from LevelView import LevelView
 from ObjectList import ObjectList
 from ObjectStatusBar import ObjectStatusBar
 from ObjectViewer import ObjectViewer
+from SpinnerPanel import SpinnerPanel
 
 # file menu
-from SpinnerPanel import SpinnerPanel
 
 ID_OPEN_ROM = 101
 ID_OPEN_M3L = 102

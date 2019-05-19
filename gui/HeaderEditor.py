@@ -218,6 +218,7 @@ class HeaderEditor(wx.Frame):
             self.level_ref.set_enemy_palette_index(new_index)
 
         self.level_ref.reload()
+        self.level_view_ref.resize()
         self.level_view_ref.Refresh()
 
     def on_combo(self, event):
@@ -256,6 +257,7 @@ class HeaderEditor(wx.Frame):
             self.level_ref.set_gfx_index(new_gfx_set)
 
         self.level_ref.reload()
+        self.level_view_ref.resize()
         self.level_view_ref.Refresh()
 
     def on_check_box(self, event):
@@ -267,6 +269,7 @@ class HeaderEditor(wx.Frame):
             self.level_ref.set_is_vertical(self.level_is_vertical_cb.GetValue())
 
         self.level_ref.reload()
+        self.level_view_ref.resize()
         self.level_view_ref.Refresh()
 
     def on_exit(self, _):
