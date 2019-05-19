@@ -7,6 +7,9 @@ ID_SPIN_LENGTH = 1002
 ID_TOOL_ZOOM_OUT = 1101
 ID_TOOL_ZOOM_IN = 1102
 
+ID_TOOL_UNDO = 1103
+ID_TOOL_REDO = 1104
+
 MAX_DOMAIN = 0x07
 MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
@@ -19,7 +22,19 @@ class SpinnerPanel(wx.Panel):
         self.level_view_ref = level_view_ref
 
         self.toolbar = wx.ToolBar(self)
+        self.toolbar.AddTool(
+            ID_TOOL_UNDO,
+            "Undo",
+            wx.ArtProvider.GetBitmap(id=wx.ART_UNDO, client=wx.ART_TOOLBAR),
+        )
+        self.toolbar.AddTool(
+            ID_TOOL_REDO,
+            "Redo",
+            wx.ArtProvider.GetBitmap(id=wx.ART_REDO, client=wx.ART_TOOLBAR),
+        )
+
         self.toolbar.AddStretchableSpace()
+
         self.toolbar.AddTool(
             ID_TOOL_ZOOM_OUT,
             "Zoom out",
