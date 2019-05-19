@@ -93,6 +93,10 @@ class SpinnerPanel(wx.Panel):
             self.level_view_ref.zoom_out()
         elif tool_id == ID_TOOL_ZOOM_IN:
             self.level_view_ref.zoom_in()
+        elif tool_id == ID_TOOL_UNDO:
+            self.level_view_ref.undo()
+        elif tool_id == ID_TOOL_REDO:
+            self.level_view_ref.redo()
 
     def get_type(self):
         return self.spin_type.GetValue()
