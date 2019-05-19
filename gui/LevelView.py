@@ -136,7 +136,7 @@ class LevelView(wx.Panel):
         return self.level.object_at(x, y)
 
     def to_level_point(self, x, y):
-        return self.level.to_level_point(x * self.zoom, y * self.zoom)
+        return self.level.to_level_point(x, y)
 
     def on_size(self, _):
         self.Refresh()
