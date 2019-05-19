@@ -31,6 +31,16 @@ class LevelView(wx.Panel):
 
         self.selection_square = SelectionSquare()
 
+    def undo(self):
+        self.level.undo()
+        self.resize()
+        self.Refresh()
+
+    def redo(self):
+        self.level.redo()
+        self.resize()
+        self.Refresh()
+
     def set_zoom(self, zoom):
         if not (LOWEST_ZOOM_LEVEL <= zoom <= HIGHEST_ZOOM_LEVEL):
             return
