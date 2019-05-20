@@ -95,15 +95,6 @@ class LevelLike(abc.ABC):
         pass
 
 
-def undoable(func):
-    def wrapped(self, *args):
-        self.undo_stack.append(self.to_bytes())
-
-        func(self, *args)
-
-    return wrapped
-
-
 class Level(LevelLike):
     MIN_LENGTH = 0x10
 
@@ -157,8 +148,6 @@ class Level(LevelLike):
         self.set_zoom(zoom)
 
         self.changed = False
-
-        self.undo_stack = []
 
     def _load_level(self, object_data, enemy_data):
         self.object_factory = LevelObjectFactory(
@@ -291,12 +280,6 @@ class Level(LevelLike):
 
             if data[0] == 0xFF:
                 break
-
-    def undo(self):
-        print("Undoing")
-
-    def redo(self):
-        print("Redoing")
 
     def set_zoom(self, zoom):
         super(Level, self).set_zoom(zoom)
@@ -559,6 +542,17 @@ class Level(LevelLike):
         enemies.append(0xFF)
 
         return [(self.offset, data), (self.enemy_offset, enemies)]
+
+    def from_bytes(self, object_data, enemy_data):
+
+        self.offset, object_bytes = object_data
+        self.enemy_offset, enemies = enemy_data
+
+        self.header = object_bytes[0 : Level.HEADER_LENGTH]
+        objects = object_bytes[Level.HEADER_LENGTH :]
+
+        self._parse_header()
+        self._load_level(objects, enemies)
 
 
 class WorldMap(LevelLike):
