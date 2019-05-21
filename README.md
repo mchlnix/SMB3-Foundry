@@ -1,19 +1,25 @@
 # Port/Reimplementation of SMB3 Workshop by hukka
 
 [![YouTube Video of Version 0.9](https://img.youtube.com/vi/NSQnIYQT5Go/0.jpg)](https://www.youtube.com/watch?v=NSQnIYQT5Go)  
-YouTube Video of Version 0.9
+YouTube Video of Version 0.9, check [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) for more current versions
 
 ## Features right now:
 
  - Level selection
- - Level view(buggy)
+ - Level view
  - Block Viewer
  - Object-Viewer
  - Loading/Saving of levels/world maps
+ - Zooming
+ - Selection of multiple objects
+ - Copy/Cut/Paste objects
+ - Vertical Levels
+ - Undo/Redo System
+ - Instant Header Editing
 
 ## To come:
 
- - Items and Enemies
+ - Smoothing out the rough edges
  - Pretty much the rest of SMB3 Workshops features
  - Cleaner architecture
  - dynamic level sizes
