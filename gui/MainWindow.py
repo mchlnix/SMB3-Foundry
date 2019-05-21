@@ -401,9 +401,9 @@ class SMB3Foundry(wx.Frame):
             if item_id == ID_CTX_REMOVE:
                 self.remove_selected_objects()
             elif item_id == ID_CTX_ADD_OBJECT:
-                self.level_view.level.create_object_at(level_x, level_y)
+                self.add_object_at(level_x, level_y)
             elif item_id == ID_CTX_ADD_ENEMY:
-                self.level_view.level.create_enemy_at(level_x, level_y)
+                self.add_enemy_at(level_x, level_y)
             elif item_id == ID_CTX_CUT:
                 self._cut_object()
             elif item_id == ID_CTX_COPY:
@@ -416,6 +416,14 @@ class SMB3Foundry(wx.Frame):
             event.Skip()
 
         self.level_view.Refresh()
+
+    @undoable
+    def add_object_at(self, level_x, level_y):
+        self.level_view.level.create_object_at(level_x, level_y)
+
+    @undoable
+    def add_enemy_at(self, level_x, level_y):
+        self.level_view.level.create_enemy_at(level_x, level_y)
 
     def on_undo(self, _):
         self.level_view.undo()
