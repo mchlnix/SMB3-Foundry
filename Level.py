@@ -524,6 +524,28 @@ class Level(LevelLike):
 
         self.changed = True
 
+    def to_m3l(self):
+        m3l_bytes = bytearray()
+
+        m3l_bytes.append(self.world)
+        m3l_bytes.append(self.level)
+        m3l_bytes.append(self.object_set)
+
+        m3l_bytes.extend(self.header)
+
+        for obj in self.objects:
+            m3l_bytes.extend(obj.to_bytes())
+
+        m3l_bytes.append(0xFF)
+        m3l_bytes.append(0x01)
+
+        for enemy in sorted(self.enemies, key=lambda _enemy: _enemy.x_position):
+            m3l_bytes.extend(enemy.to_bytes())
+
+        m3l_bytes.append(0xFF)
+
+        return m3l_bytes
+
     def to_bytes(self):
         data = bytearray()
 
