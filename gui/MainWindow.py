@@ -116,10 +116,8 @@ class SMB3Foundry(wx.Frame):
         file_menu = wx.Menu()
 
         file_menu.Append(ID_OPEN_ROM, "&Open ROM", "")
-        """
         file_menu.Append(ID_OPEN_M3L, "&Open M3L", "")
         file_menu.AppendSeparator()
-        """
         file_menu.Append(ID_SAVE_ROM, "&Save ROM", "")
         file_menu.Append(ID_SAVE_ROM_AS, "&Save ROM as ...", "")
         """
@@ -219,6 +217,7 @@ class SMB3Foundry(wx.Frame):
         self.SetMenuBar(menu_bar)
 
         self.Bind(wx.EVT_MENU, self.on_open_rom, id=ID_OPEN_ROM)
+        self.Bind(wx.EVT_MENU, self.on_open_m3l, id=ID_OPEN_M3L)
         self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM)
         self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM_AS)
         self.Bind(wx.EVT_MENU, self.on_save_m3l, id=ID_SAVE_M3L)
@@ -348,6 +347,32 @@ class SMB3Foundry(wx.Frame):
                 self.update_level(world=1, level=1)
 
                 return True
+            except IOError:
+                wx.LogError("Cannot open file '%s'." % pathname)
+
+    def on_open_m3l(self, event):
+        if not self.safe_to_change():
+            return
+
+        # otherwise ask the user what new file to open
+        with wx.FileDialog(
+            self,
+            "Open M3L file",
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            wildcard="M3L files (.m3l)|*.m3l|All files|*",
+        ) as fileDialog:
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return False
+
+            # Proceed loading the file chosen by the user
+            pathname = fileDialog.GetPath()
+            try:
+                with open(pathname, "rb") as m3l_file:
+
+                    self.update_level(world=1, level=1)
+                    self.level_view.from_m3l(bytearray(m3l_file.read()))
+
+                    return True
             except IOError:
                 wx.LogError("Cannot open file '%s'." % pathname)
 

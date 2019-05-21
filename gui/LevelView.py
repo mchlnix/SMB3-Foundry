@@ -163,6 +163,22 @@ class LevelView(wx.Panel):
 
         print(f"Drawing {self.level.name}")
 
+    def from_m3l(self, data):
+        self.load_level(1, 1, 1)
+
+        self.level.from_m3l(data)
+
+        self.undo_stack.clear(self.level.to_bytes())
+
+        self.GetParent().SetupScrolling(
+            rate_x=self.level.block_width,
+            rate_y=self.level.block_height,
+            scrollToTop=False,
+        )
+
+        self.SetMinSize(wx.Size(*self.level.size.Get()))
+        self.SetSize(self.GetMinSize())
+
     def object_at(self, x, y):
         return self.level.object_at(x, y)
 

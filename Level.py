@@ -163,7 +163,7 @@ class Level(LevelLike):
         self._load_objects(object_data)
         self._load_enemies(enemy_data)
 
-        self.object_size_on_disk = self._calc_size_on_disk()
+        self.object_size_on_disk = self._calc_objects_size()
         self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
 
     def reload(self):
@@ -173,7 +173,7 @@ class Level(LevelLike):
 
         self._load_level(object_data, enemy_data[1])
 
-    def _calc_size_on_disk(self):
+    def _calc_objects_size(self):
         size = 0
 
         for obj in self.objects:
@@ -257,6 +257,9 @@ class Level(LevelLike):
 
     def _load_objects(self, data):
         self.objects.clear()
+
+        if not data or data[0] == 0xFF:
+            return
 
         object_order = object_sets[self.object_set]  # ordered by domain
 
@@ -401,7 +404,7 @@ class Level(LevelLike):
 
     def is_too_big(self):
         too_many_enemies = self.enemy_size_on_disk < len(self.enemies) * ENEMY_SIZE
-        too_many_objects = self._calc_size_on_disk() > self.object_size_on_disk
+        too_many_objects = self._calc_objects_size() > self.object_size_on_disk
 
         return too_many_enemies or too_many_objects
 
@@ -545,6 +548,28 @@ class Level(LevelLike):
         m3l_bytes.append(0xFF)
 
         return m3l_bytes
+
+    def from_m3l(self, m3l_bytes):
+        self.world, self.level, self.object_set = m3l_bytes[:3]
+
+        # reload level with new parameters
+        self._load_level(b"", b"")
+
+        m3l_bytes = m3l_bytes[3:]
+
+        self.header = m3l_bytes[: Level.HEADER_LENGTH]
+        self._parse_header()
+
+        m3l_bytes = m3l_bytes[Level.HEADER_LENGTH :]
+
+        self._load_objects(m3l_bytes)
+
+        object_size = self._calc_objects_size() + 2
+
+        object_bytes = m3l_bytes[:object_size]
+        enemy_bytes = m3l_bytes[object_size:]
+
+        self._load_level(object_bytes, enemy_bytes)
 
     def to_bytes(self):
         data = bytearray()
