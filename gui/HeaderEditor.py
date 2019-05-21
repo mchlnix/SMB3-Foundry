@@ -1,4 +1,5 @@
 import wx
+import wx.lib.newevent
 
 LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]
 STR_LEVEL_LENGTHS = [
@@ -94,12 +95,18 @@ SCROLL_DIRECTIONS = [
 ]
 
 
+HeaderChangedEvent, EVT_HEADER_CHANGED = wx.lib.newevent.NewCommandEvent()
+ID_HEADER_EDITOR = wx.NewId()
+
+
 class HeaderEditor(wx.Frame):
     def __init__(self, parent, level_view_ref):
         super(HeaderEditor, self).__init__(parent, title="Level Header Editor")
 
         self.level_view_ref = level_view_ref
         self.level_ref = self.level_view_ref.level
+
+        self.SetId(ID_HEADER_EDITOR)
 
         self.config_sizer = wx.FlexGridSizer(2, 0, 0)
 
@@ -217,6 +224,8 @@ class HeaderEditor(wx.Frame):
             new_index = self.enemy_palette_spinner.GetValue()
             self.level_ref.set_enemy_palette_index(new_index)
 
+        wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
+
         self.level_ref.reload()
         self.level_view_ref.resize()
         self.level_view_ref.Refresh()
@@ -256,6 +265,8 @@ class HeaderEditor(wx.Frame):
             new_gfx_set = self.graphic_set_dropdown.GetSelection()
             self.level_ref.set_gfx_index(new_gfx_set)
 
+        wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
+
         self.level_ref.reload()
         self.level_view_ref.resize()
         self.level_view_ref.Refresh()
@@ -267,6 +278,8 @@ class HeaderEditor(wx.Frame):
             self.level_ref.set_pipe_ends_level(self.pipe_ends_level_cb.GetValue())
         elif cb_id == self.level_is_vertical_cb.GetId():
             self.level_ref.set_is_vertical(self.level_is_vertical_cb.GetValue())
+
+        wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
         self.level_ref.reload()
         self.level_view_ref.resize()

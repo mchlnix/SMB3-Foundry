@@ -21,7 +21,7 @@ from Events import (
 )
 from File import ROM
 from Graphics import LevelObject
-from HeaderEditor import HeaderEditor
+from HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
 from Level import Level, WorldMap
 from LevelSelector import LevelSelector
 from LevelView import LevelView
@@ -296,6 +296,8 @@ class SMB3Foundry(wx.Frame):
         self.Bind(EVT_UNDO_CLEARED, self.spinner_panel.disable_buttons)
         self.Bind(EVT_UNDO_SAVED, self.spinner_panel.disable_buttons)
 
+        self.Bind(EVT_HEADER_CHANGED, self.on_header_change)
+
         self.mouse_mode = MODE_FREE
 
         self.resize_obj_start_point = 0, 0
@@ -419,6 +421,10 @@ class SMB3Foundry(wx.Frame):
             event.Skip()
 
         self.level_view.Refresh()
+
+    @undoable
+    def on_header_change(self, event):
+        pass
 
     @undoable
     def add_object_at(self, level_x, level_y):
