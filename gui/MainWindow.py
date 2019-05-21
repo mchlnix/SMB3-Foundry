@@ -298,7 +298,8 @@ class SMB3Foundry(wx.Frame):
 
         self.mouse_mode = MODE_FREE
 
-        self.resize_start_point = 0, 0
+        self.resize_obj_start_point = 0, 0
+        self.resize_mouse_start_x = 0
         self.resizing_happened = False
 
         self.drag_start_point = 0, 0
@@ -675,9 +676,11 @@ class SMB3Foundry(wx.Frame):
         if self.select_objects_on_click(event):
             self.mouse_mode = MODE_RESIZE
 
+            self.resize_mouse_start_x = level_x
+
             obj = self.level_view.object_at(x, y)
 
-            self.resize_start_point = obj.x_position, obj.y_position
+            self.resize_obj_start_point = obj.x_position, obj.y_position
 
     def resizing(self, event):
         self.resizing_happened = True
@@ -689,8 +692,8 @@ class SMB3Foundry(wx.Frame):
 
         level_x, level_y = self.level_view.to_level_point(x, y)
 
-        dx = level_x - self.resize_start_point[0]
-        dy = level_y - self.resize_start_point[1]
+        dx = level_x - self.resize_obj_start_point[0]
+        dy = level_y - self.resize_obj_start_point[1]
 
         self.last_mouse_position = level_x, level_y
 
@@ -710,7 +713,12 @@ class SMB3Foundry(wx.Frame):
 
     def on_right_mouse_button_up(self, event):
         if self.resizing_happened:
-            self.stop_resize(event)
+            x, y = event.GetPosition().Get()
+
+            resize_end_x, _ = self.level_view.to_level_point(x, y)
+
+            if self.resize_mouse_start_x != resize_end_x:
+                self.stop_resize(event)
         else:
             if self.level_view.get_selected_objects():
                 menu = self.context_menu.as_object_menu()
@@ -729,21 +737,7 @@ class SMB3Foundry(wx.Frame):
         self.mouse_mode = MODE_FREE
 
     @undoable
-    def stop_resize(self, event):
-        if not self.resizing_happened:
-            if self.level_view.get_selected_objects():
-                menu = self.context_menu.as_object_menu()
-            else:
-                menu = self.context_menu.as_background_menu()
-
-            adjusted_for_scrolling = self.ScreenToClient(
-                self.level_view.ClientToScreen(event.GetPosition())
-            )
-
-            self.context_menu.set_position(event.GetPosition())
-
-            self.PopupMenu(menu, adjusted_for_scrolling)
-
+    def stop_resize(self, _):
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
 
