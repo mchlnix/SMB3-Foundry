@@ -221,6 +221,7 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_open_rom, id=ID_OPEN_ROM)
         self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM)
         self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM_AS)
+        self.Bind(wx.EVT_MENU, self.on_save_m3l, id=ID_SAVE_M3L)
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
         self.Bind(wx.EVT_MENU, self.open_level_selector, id=ID_SELECT_LEVEL)
         self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
@@ -392,6 +393,27 @@ class SMB3Foundry(wx.Frame):
             ROM().save_to_file(pathname)
 
             self.level_view.level.changed = False
+        except IOError:
+            wx.LogError("Cannot save current data in file '%s'." % pathname)
+
+    def on_save_m3l(self, _):
+        with wx.FileDialog(
+            self,
+            "Save M3L as",
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+            wildcard="M3L files (.m3l)|*.m3l|All files|*",
+        ) as fileDialog:
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return  # the user changed their mind
+
+            # save the current contents in the file
+            pathname = fileDialog.GetPath()
+
+        try:
+            level = self.level_view.level
+
+            with open(pathname, "wb") as m3l_file:
+                m3l_file.write(level.to_m3l())
         except IOError:
             wx.LogError("Cannot save current data in file '%s'." % pathname)
 
