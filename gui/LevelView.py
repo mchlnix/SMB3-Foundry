@@ -22,7 +22,7 @@ class LevelView(wx.Panel):
         self.grid_lines = False
         self.grid_pen = wx.Pen(colour=wx.Colour(0x80, 0x80, 0x80, 0x80), width=1)
 
-        self.zoom = 2
+        self.zoom = 1
 
         self.changed = False
 
