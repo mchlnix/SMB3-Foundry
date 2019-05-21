@@ -280,7 +280,7 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
 
         self.level_view.Bind(wx.EVT_LEFT_DOWN, self.on_left_mouse_button_down)
-        self.level_view.Bind(wx.EVT_LEFT_UP, self.stop_drag)
+        self.level_view.Bind(wx.EVT_LEFT_UP, self.on_left_mouse_button_up)
 
         self.level_view.Bind(wx.EVT_MOTION, self.on_mouse_motion)
         self.level_view.Bind(wx.EVT_MOUSEWHEEL, self.on_mouse_wheel)
@@ -300,6 +300,7 @@ class SMB3Foundry(wx.Frame):
 
         self.resize_start_point = 0, 0
         self.resizing_happened = False
+        self.dragging_happened = False
 
         self.last_mouse_position = 0, 0
 
@@ -669,8 +670,7 @@ class SMB3Foundry(wx.Frame):
             self.resize_start_point = obj.x_position, obj.y_position
 
     def resizing(self, event):
-        if not self.resizing_happened:
-            self.resizing_happened = True
+        self.resizing_happened = True
 
         if isinstance(self.level_view.level, WorldMap):
             return
@@ -745,6 +745,8 @@ class SMB3Foundry(wx.Frame):
             self.level_view.start_selection_square(event.GetPosition())
 
     def dragging(self, event):
+        self.dragging_happened = True
+
         x, y = event.GetPosition().Get()
 
         level_x, level_y = self.level_view.to_level_point(x, y)
@@ -769,11 +771,17 @@ class SMB3Foundry(wx.Frame):
 
         self.level_view.Refresh()
 
-    @undoable
-    def stop_drag(self, _):
-        self.level_view.stop_selection_square()
+    def on_left_mouse_button_up(self, _):
+        if self.mouse_mode == MODE_DRAG and self.dragging_happened:
+            self.stop_drag()
+        else:
+            self.level_view.stop_selection_square()
 
         self.mouse_mode = MODE_FREE
+
+    @undoable
+    def stop_drag(self):
+        self.dragging_happened = False
 
     def select_object(self, obj=None, index=None):
         should_scroll = True
