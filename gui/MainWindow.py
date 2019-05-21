@@ -300,6 +300,8 @@ class SMB3Foundry(wx.Frame):
 
         self.resize_start_point = 0, 0
         self.resizing_happened = False
+
+        self.drag_start_point = 0, 0
         self.dragging_happened = False
 
         self.last_mouse_position = 0, 0
@@ -749,7 +751,13 @@ class SMB3Foundry(wx.Frame):
         if self.mouse_mode == MODE_RESIZE:
             return
 
-        if not self.select_objects_on_click(event):
+        if self.select_objects_on_click(event):
+            x, y = event.GetPosition().Get()
+
+            obj = self.level_view.object_at(x, y)
+
+            self.drag_start_point = obj.x_position, obj.y_position
+        else:
             self.level_view.start_selection_square(event.GetPosition())
 
     def dragging(self, event):
@@ -779,9 +787,18 @@ class SMB3Foundry(wx.Frame):
 
         self.level_view.Refresh()
 
-    def on_left_mouse_button_up(self, _):
+    def on_left_mouse_button_up(self, event):
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            self.stop_drag()
+            x, y = event.GetPosition().Get()
+
+            obj = self.level_view.object_at(x, y)
+
+            drag_end_point = obj.x_position, obj.y_position
+
+            if self.drag_start_point != drag_end_point:
+                self.stop_drag()
+            else:
+                self.dragging_happened = False
         else:
             self.level_view.stop_selection_square()
 
