@@ -11,6 +11,14 @@ from ContextMenu import (
     ID_CTX_PASTE,
     ID_CTX_CUT,
 )
+from Events import (
+    EVT_REDO,
+    EVT_UNDO,
+    EVT_UNDO_COMPLETE,
+    EVT_REDO_COMPLETE,
+    EVT_UNDO_CLEARED,
+    EVT_UNDO_SAVED,
+)
 from File import ROM
 from Graphics import LevelObject
 from HeaderEditor import HeaderEditor
@@ -89,6 +97,14 @@ CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES]
 MODE_FREE = 0
 MODE_DRAG = 1
 MODE_RESIZE = 2
+
+
+def undoable(func):
+    def wrapped(self, *args):
+        func(self, *args)
+        self.level_view.save_level_state()
+
+    return wrapped
 
 
 class SMB3Foundry(wx.Frame):
@@ -273,6 +289,13 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
 
+        self.Bind(EVT_REDO, self.on_redo)
+        self.Bind(EVT_UNDO, self.on_undo)
+        self.Bind(EVT_UNDO_COMPLETE, self.spinner_panel.disable_buttons)
+        self.Bind(EVT_REDO_COMPLETE, self.spinner_panel.disable_buttons)
+        self.Bind(EVT_UNDO_CLEARED, self.spinner_panel.disable_buttons)
+        self.Bind(EVT_UNDO_SAVED, self.spinner_panel.disable_buttons)
+
         self.mouse_mode = MODE_FREE
 
         self.resize_start_point = 0, 0
@@ -312,8 +335,6 @@ class SMB3Foundry(wx.Frame):
             pathname = fileDialog.GetPath()
             try:
                 ROM.load_from_file(pathname)
-
-                self.level_view.unload_level()
 
                 self.update_level(world=1, level=1)
 
@@ -394,6 +415,16 @@ class SMB3Foundry(wx.Frame):
             event.Skip()
 
         self.level_view.Refresh()
+
+    def on_undo(self, _):
+        self.level_view.undo()
+
+        self.object_list.update()
+
+    def on_redo(self, _):
+        self.level_view.redo()
+
+        self.object_list.update()
 
     def _cut_object(self):
         self._copy_objects()
