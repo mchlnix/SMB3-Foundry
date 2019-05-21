@@ -2,7 +2,7 @@ import wx
 
 from Level import Level, WorldMap
 from SelectionSquare import SelectionSquare
-
+from UndoStack import UndoStack
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
