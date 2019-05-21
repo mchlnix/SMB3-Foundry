@@ -1249,6 +1249,9 @@ class MapObject(Drawable):
         self.selected = False
 
     def set_position(self, x, y):
+        x = int(x)
+        y = int(y)
+
         self.rect = wx.Rect(x, y, 1, 1)
 
         self.x_position = x

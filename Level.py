@@ -584,7 +584,16 @@ class WorldMap(LevelLike):
 
         self.objects = []
 
-        for index, block_index in enumerate(ROM().bulk_read(end - start, start)):
+        obj_data = ROM().bulk_read(end - start, start)
+
+        self._load_objects(obj_data)
+
+        self._calc_size()
+
+    def _load_objects(self, obj_data):
+        self.objects.clear()
+
+        for index, block_index in enumerate(obj_data):
             screen_offset = (index // WorldMap.VISIBLE_BLOCKS) * WorldMap.WIDTH
 
             x = screen_offset + (index % WorldMap.WIDTH)
@@ -598,6 +607,7 @@ class WorldMap(LevelLike):
 
         assert len(self.objects) % WorldMap.HEIGHT == 0
 
+    def _calc_size(self):
         self.width = len(self.objects) // WorldMap.HEIGHT
         self.height = WorldMap.HEIGHT
 
@@ -622,7 +632,7 @@ class WorldMap(LevelLike):
 
     @staticmethod
     def _array_index(obj):
-        return obj.level_y * WorldMap.WIDTH + obj.level_x
+        return obj.y_position * WorldMap.WIDTH + obj.x_position
 
     def get_object_names(self):
         return [obj.name for obj in self.objects]
@@ -647,7 +657,16 @@ class WorldMap(LevelLike):
         return_array = bytearray(len(self.objects))
 
         for obj in self.objects:
-            index = obj.y_position * WorldMap.WIDTH + obj.x_position
+            index = self._array_index(obj)
+            print(type(index), index)
             return_array[index] = obj.to_bytes()
 
         return [(self.offset, return_array)]
+
+    def from_bytes(self, data):
+        offset, obj_bytes = data
+
+        self.offset = offset
+        self._load_objects(obj_bytes)
+
+        self._calc_size()
