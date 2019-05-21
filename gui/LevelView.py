@@ -17,6 +17,7 @@ class LevelView(wx.Panel):
         self.Bind(wx.EVT_PAINT, self.on_paint)
 
         self.level = None
+        self.undo_stack = UndoStack(self)
 
         self.grid_lines = False
         self.grid_pen = wx.Pen(colour=wx.Colour(0x80, 0x80, 0x80, 0x80), width=1)
@@ -32,14 +33,19 @@ class LevelView(wx.Panel):
         self.selection_square = SelectionSquare()
 
     def undo(self):
-        self.level.undo()
+        self.level.from_bytes(*self.undo_stack.undo())
+
         self.resize()
         self.Refresh()
 
     def redo(self):
-        self.level.redo()
+        self.level.from_bytes(*self.undo_stack.redo())
+
         self.resize()
         self.Refresh()
+
+    def save_level_state(self):
+        self.undo_stack.save_state(self.level.to_bytes())
 
     def set_zoom(self, zoom):
         if not (LOWEST_ZOOM_LEVEL <= zoom <= HIGHEST_ZOOM_LEVEL):
@@ -144,6 +150,8 @@ class LevelView(wx.Panel):
         else:
             self.level = Level(world, level, object_set, self.zoom)
 
+        self.undo_stack.clear(self.level.to_bytes())
+
         self.GetParent().SetupScrolling(
             rate_x=self.level.block_width,
             rate_y=self.level.block_height,
@@ -154,11 +162,6 @@ class LevelView(wx.Panel):
         self.SetSize(self.GetMinSize())
 
         print(f"Drawing {self.level.name}")
-
-    def unload_level(self):
-        self.level = None
-
-        self.Refresh()
 
     def object_at(self, x, y):
         return self.level.object_at(x, y)
