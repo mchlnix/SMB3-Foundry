@@ -153,8 +153,8 @@ class SMB3Foundry(wx.Frame):
         """
         level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
         level_menu.AppendSeparator()
-        level_menu.Append(ID_RELOAD_LEVEL, "&Reload Level", "")
         """
+        level_menu.Append(ID_RELOAD_LEVEL, "&Reload Level", "")
         level_menu.AppendSeparator()
         level_menu.Append(ID_EDIT_HEADER, "&Edit Header", "")
         """
@@ -417,10 +417,23 @@ class SMB3Foundry(wx.Frame):
                 self._paste_objects(level_x, level_y)
 
             self.object_list.update()
+
+        elif item_id == ID_RELOAD_LEVEL:
+            self.reload_level()
         else:
             event.Skip()
 
         self.level_view.Refresh()
+
+    def reload_level(self):
+        if not self.safe_to_change():
+            return
+
+        world = self.level_view.level.world
+        level = self.level_view.level.level
+        object_set = self.level_view.level.object_set
+
+        self.update_level(world, level, object_set)
 
     @undoable
     def on_header_change(self, event):
