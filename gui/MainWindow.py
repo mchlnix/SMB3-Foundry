@@ -285,7 +285,7 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Bind(wx.EVT_MOTION, self.on_mouse_motion)
         self.level_view.Bind(wx.EVT_MOUSEWHEEL, self.on_mouse_wheel)
         self.level_view.Bind(wx.EVT_RIGHT_DOWN, self.on_right_mouse_button_down)
-        self.level_view.Bind(wx.EVT_RIGHT_UP, self.stop_resize)
+        self.level_view.Bind(wx.EVT_RIGHT_UP, self.on_right_mouse_button_up)
 
         self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
 
@@ -436,6 +436,7 @@ class SMB3Foundry(wx.Frame):
         if selected_objects:
             self.context_menu.set_copied_objects(selected_objects)
 
+    @undoable
     def _paste_objects(self, x, y):
         objects, origin = self.context_menu.get_copied_objects()
 
@@ -461,6 +462,7 @@ class SMB3Foundry(wx.Frame):
 
         self.object_list.update()
 
+    @undoable
     def remove_selected_objects(self):
         self.level_view.remove_selected_objects()
         self.object_list.remove_selected()
@@ -478,6 +480,7 @@ class SMB3Foundry(wx.Frame):
         elif item_id == ID_TRANSPARENCY:
             self.level_view.transparency = checked
 
+    @undoable
     def on_spin(self, event):
         _id = event.GetId()
 
@@ -608,7 +611,12 @@ class SMB3Foundry(wx.Frame):
 
         if obj_under_cursor is None:
             event.Skip()
-            return
+        else:
+            self.change_object_on_mouse_wheel(event)
+
+    @undoable
+    def change_object_on_mouse_wheel(self, event):
+        obj_under_cursor = self.level_view.object_at(*event.GetPosition().Get())
 
         if event.GetWheelRotation() > 0:
             obj_under_cursor.increment_type()
@@ -661,7 +669,8 @@ class SMB3Foundry(wx.Frame):
             self.resize_start_point = obj.x_position, obj.y_position
 
     def resizing(self, event):
-        self.resizing_happened = True
+        if not self.resizing_happened:
+            self.resizing_happened = True
 
         if isinstance(self.level_view.level, WorldMap):
             return
@@ -689,6 +698,27 @@ class SMB3Foundry(wx.Frame):
 
         self.level_view.Refresh()
 
+    def on_right_mouse_button_up(self, event):
+        if self.resizing_happened:
+            self.stop_resize(event)
+        else:
+            if self.level_view.get_selected_objects():
+                menu = self.context_menu.as_object_menu()
+            else:
+                menu = self.context_menu.as_background_menu()
+
+            adjusted_for_scrolling = self.ScreenToClient(
+                self.level_view.ClientToScreen(event.GetPosition())
+            )
+
+            self.context_menu.set_position(event.GetPosition())
+
+            self.PopupMenu(menu, adjusted_for_scrolling)
+
+        self.resizing_happened = False
+        self.mouse_mode = MODE_FREE
+
+    @undoable
     def stop_resize(self, event):
         if not self.resizing_happened:
             if self.level_view.get_selected_objects():
@@ -739,6 +769,7 @@ class SMB3Foundry(wx.Frame):
 
         self.level_view.Refresh()
 
+    @undoable
     def stop_drag(self, _):
         self.level_view.stop_selection_square()
 
