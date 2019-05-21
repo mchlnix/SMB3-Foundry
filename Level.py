@@ -644,6 +644,9 @@ class WorldMap(LevelLike):
     def index_of(self, obj):
         return self.objects.index(obj)
 
+    def get_all_objects(self):
+        return self.objects
+
     def object_at(self, x, y):
         point = wx.Point(*self.to_level_point(x, y))
 
@@ -658,7 +661,7 @@ class WorldMap(LevelLike):
 
         for obj in self.objects:
             index = self._array_index(obj)
-            print(type(index), index)
+
             return_array[index] = obj.to_bytes()
 
         return [(self.offset, return_array)]
