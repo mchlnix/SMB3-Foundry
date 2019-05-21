@@ -1,5 +1,14 @@
 import wx
 
+from Events import (
+    EVT_UNDO_CLEARED,
+    EVT_UNDO_COMPLETE,
+    EVT_REDO_COMPLETE,
+    EVT_UNDO_SAVED,
+    UndoEvent,
+    RedoEvent,
+)
+
 ID_SPIN_DOMAIN = 1000
 ID_SPIN_TYPE = 1001
 ID_SPIN_LENGTH = 1002
@@ -26,12 +35,12 @@ class SpinnerPanel(wx.Panel):
             ID_TOOL_UNDO,
             "Undo",
             wx.ArtProvider.GetBitmap(id=wx.ART_UNDO, client=wx.ART_TOOLBAR),
-        )
+        ).Enable(False)
         self.toolbar.AddTool(
             ID_TOOL_REDO,
             "Redo",
             wx.ArtProvider.GetBitmap(id=wx.ART_REDO, client=wx.ART_TOOLBAR),
-        )
+        ).Enable(False)
 
         self.toolbar.AddStretchableSpace()
 
@@ -91,12 +100,54 @@ class SpinnerPanel(wx.Panel):
 
         if tool_id == ID_TOOL_ZOOM_OUT:
             self.level_view_ref.zoom_out()
+
         elif tool_id == ID_TOOL_ZOOM_IN:
             self.level_view_ref.zoom_in()
+
         elif tool_id == ID_TOOL_UNDO:
-            self.level_view_ref.undo()
+            self.enable_redo()
+
+            # todo make events work
+            if self.level_view_ref.undo_stack.undo_index - 1 <= 0:
+                self.disable_undo()
+
+            wx.PostEvent(self.GetParent(), UndoEvent(self.GetId()))
+
         elif tool_id == ID_TOOL_REDO:
-            self.level_view_ref.redo()
+            wx.PostEvent(self.GetParent(), RedoEvent(self.GetId()))
+
+    def disable_buttons(self, event):
+        evt_id = event.GetEventType()
+
+        if evt_id == EVT_UNDO_CLEARED.typeId:
+            self.disable_undo()
+            self.disable_redo()
+
+        elif evt_id == EVT_UNDO_SAVED.typeId:
+            self.enable_undo()
+            self.disable_redo()
+
+        elif evt_id == EVT_UNDO_COMPLETE.typeId:
+            self.enable_redo()
+            if not event.undos_left:
+                self.disable_undo()
+
+        elif evt_id == EVT_REDO_COMPLETE.typeId:
+            self.enable_undo()
+            if not event.redos_left:
+                self.disable_redo()
+
+    def disable_undo(self):
+        self.toolbar.EnableTool(ID_TOOL_UNDO, False)
+
+    def enable_undo(self):
+        self.toolbar.EnableTool(ID_TOOL_UNDO, True)
+
+    def disable_redo(self):
+        self.toolbar.EnableTool(ID_TOOL_REDO, False)
+
+    def enable_redo(self):
+        self.toolbar.EnableTool(ID_TOOL_REDO, True)
 
     def get_type(self):
         return self.spin_type.GetValue()
