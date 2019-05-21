@@ -374,7 +374,10 @@ class SMB3Foundry(wx.Frame):
 
         if event.GetId() == ID_SAVE_ROM_AS:
             with wx.FileDialog(
-                self, "Save ROM as", style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
+                self,
+                "Save ROM as",
+                style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+                wildcard="NES files (.nes)|*.nes|ROM files (.rom)|*.rom|All files|*",
             ) as fileDialog:
                 if fileDialog.ShowModal() == wx.ID_CANCEL:
                     return  # the user changed their mind
