@@ -1233,17 +1233,13 @@ map_object_names = {
 
 # todo remove zoom parameter
 class MapObject(Drawable):
-    def __init__(self, block, x, y, zoom):
-        self.x = x
-        self.y = y
-        self.zoom = zoom
-
-        self.level_x = self.x // (Block.WIDTH * self.zoom)
-        self.level_y = self.y // (Block.HEIGHT * self.zoom)
+    def __init__(self, block, x, y):
+        self.x_position = x
+        self.y_position = y
 
         self.block = block
 
-        self.rect = wx.Rect(self.level_x, self.level_y, 1, 1)
+        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
 
         if self.block.index in map_object_names:
             self.name = map_object_names[self.block.index]
@@ -1253,35 +1249,32 @@ class MapObject(Drawable):
         self.selected = False
 
     def set_position(self, x, y):
-        self.level_x = x
-        self.level_y = y
-
         self.rect = wx.Rect(x, y, 1, 1)
 
-        self.x = x * Block.WIDTH * self.zoom
-        self.y = y * Block.HEIGHT * self.zoom
+        self.x_position = x
+        self.y_position = y
 
     def get_position(self):
-        return self.x, self.y
+        return self.x_position, self.y_position
 
-    def draw(self, dc, transparent=False, zoom=1):
+    def draw(self, dc, _, zoom=1):
         self.block.draw(
             dc,
-            self.x,
-            self.y,
-            zoom=self.zoom,
+            self.x_position * Block.WIDTH * zoom,
+            self.y_position * Block.HEIGHT * zoom,
+            zoom=zoom,
             selected=self.selected,
-            transparent=transparent,
+            transparent=False,
         )
 
     def get_status_info(self):
-        return ("x", self.x), ("y", self.y), ("Block Type", self.name)
+        return ("x", self.x_position), ("y", self.y_position), ("Block Type", self.name)
 
     def to_bytes(self):
         return self.block.index
 
     def move_by(self, dx, dy):
-        self.set_position(self.level_x + dx, self.level_y + dy)
+        self.set_position(self.x_position + dx, self.y_position + dy)
 
     def resize_to(self, x, y):
         return

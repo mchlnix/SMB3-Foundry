@@ -594,16 +594,26 @@ class WorldMap(LevelLike):
                 block_index, self.palette_group, self.pattern_table, self.tsa_data
             )
 
-            self.objects.append(
-                MapObject(block, x * self.block_width, y * self.block_height, self.zoom)
-            )
+            self.objects.append(MapObject(block, x, y))
 
         assert len(self.objects) % WorldMap.HEIGHT == 0
 
         self.width = len(self.objects) // WorldMap.HEIGHT
         self.height = WorldMap.HEIGHT
 
-        self.size = (self.width * self.block_width, self.height * self.block_height)
+        self.size = wx.Size(
+            self.width * self.block_width, self.height * self.block_height
+        )
+
+    def set_zoom(self, zoom):
+        super(WorldMap, self).set_zoom(zoom)
+
+        self.block_width = Block.WIDTH * self.zoom
+        self.block_height = Block.HEIGHT * self.zoom
+
+        self.size = wx.Size(
+            self.width * self.block_width, self.height * self.block_height
+        )
 
     def add_object(self, obj, _):
         self.objects.append(obj)
@@ -637,7 +647,7 @@ class WorldMap(LevelLike):
         return_array = bytearray(len(self.objects))
 
         for obj in self.objects:
-            index = obj.level_y * WorldMap.WIDTH + obj.level_x
+            index = obj.y_position * WorldMap.WIDTH + obj.x_position
             return_array[index] = obj.to_bytes()
 
         return [(self.offset, return_array)]
