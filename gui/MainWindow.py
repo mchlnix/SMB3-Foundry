@@ -350,7 +350,7 @@ class SMB3Foundry(wx.Frame):
             except IOError:
                 wx.LogError("Cannot open file '%s'." % pathname)
 
-    def on_open_m3l(self, event):
+    def on_open_m3l(self, _):
         if not self.safe_to_change():
             return
 
@@ -393,6 +393,16 @@ class SMB3Foundry(wx.Frame):
         if self.level_view.level.is_too_big():
             wx.MessageBox(
                 "Level is too big to save.", "Error", wx.ICON_ERROR | wx.OK, self
+            )
+
+            return
+
+        if not self.level_view.level.attached_to_rom:
+            wx.MessageBox(
+                "Saving M3L levels to Rom is not yet supported.",
+                "Error",
+                wx.ICON_ERROR | wx.OK,
+                self,
             )
 
             return

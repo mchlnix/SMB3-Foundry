@@ -68,6 +68,7 @@ class LevelLike(abc.ABC):
         self.object_pattern_table = None
 
         self.changed = False
+        self.attached_to_rom = True
 
     def to_level_point(self, x, y):
         level_x = x // self.block_width
@@ -111,6 +112,8 @@ class Level(LevelLike):
         super(Level, self).__init__(world, level, object_set)
         if not Level.offsets:
             _load_level_offsets()
+
+        self.attached_to_rom = True
 
         self.object_set = object_set
 
@@ -570,6 +573,8 @@ class Level(LevelLike):
         enemy_bytes = m3l_bytes[object_size:]
 
         self._load_level(object_bytes, enemy_bytes)
+
+        self.attached_to_rom = False
 
     def to_bytes(self):
         data = bytearray()
