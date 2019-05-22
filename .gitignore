@@ -1,4 +1,6 @@
 venv
 .*
 SMB3.nes
-__*
+__pycache__
+build/
+dist/
