@@ -791,7 +791,7 @@ class SMB3Foundry(wx.Frame):
             self.spinner_panel.set_type(obj.obj_index)
 
             if obj.is_4byte:
-                self.spinner_panel.spin_length(obj.data[3])
+                self.spinner_panel.spin_length.SetValue(obj.data[3])
 
             self.level_view.level.changed = True
 
