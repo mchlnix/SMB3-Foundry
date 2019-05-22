@@ -682,9 +682,8 @@ class LevelObject(Drawable):
                 ):
                     break
 
-            base_x = base_x - (new_width / 2)
+            base_x = base_x - (new_width // 2)
 
-            # todo indexes work for all objects? No, there are left and right fill blocks
             blank = self.blocks[0]
             left_slope = self.blocks[1]
             left_fill = self.blocks[2]
@@ -1092,6 +1091,9 @@ class LevelObject(Drawable):
         else:
             x_position = self.x_position
             y_position = self.y_position
+
+        if self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
+            x_position = self.rendered_base_x - 1 + self.rendered_width // 2
 
         data.append((self.domain << 5) | y_position)
         data.append(x_position)
