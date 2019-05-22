@@ -655,11 +655,10 @@ class SMB3Foundry(wx.Frame):
         self.object_list.fill()
         self.update_title()
 
-        m3l_export_not_for_world_maps = world != 0
+        for_world_maps = world == 0
 
-        self.GetMenuBar().FindItemById(ID_SAVE_M3L).Enable(
-            m3l_export_not_for_world_maps
-        )
+        self.GetMenuBar().FindItemById(ID_SAVE_M3L).Enable(not for_world_maps)
+        self.GetMenuBar().FindItemById(ID_EDIT_HEADER).Enable(not for_world_maps)
 
     def on_list_select(self, _):
         indexes = self.object_list.GetSelections()
