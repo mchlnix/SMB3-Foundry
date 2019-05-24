@@ -1,6 +1,7 @@
 import wx
 
-from Graphics import LevelObject, LevelObjectFactory
+from game.gfx.objects.LevelObject import LevelObject
+from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from LevelSelector import OBJECT_SET_ITEMS
 from Sprite import Block
 

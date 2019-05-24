@@ -20,7 +20,7 @@ from Events import (
     EVT_UNDO_SAVED,
 )
 from File import ROM
-from Graphics import LevelObject
+from game.gfx.objects.LevelObject import LevelObject
 from HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
 from game.level.Level import Level
 from LevelSelector import LevelSelector

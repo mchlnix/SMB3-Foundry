@@ -1,8 +1,9 @@
 import wx
 
 from File import ROM
-from Graphics import PatternTable, MapObject
-from Palette import load_palette
+from game.gfx import PatternTable
+from game.gfx.objects.MapObject import MapObject
+from game.gfx import load_palette
 from Sprite import Block
 from game.level.LevelLike import LevelLike
 

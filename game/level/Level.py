@@ -2,8 +2,11 @@ import wx
 
 from Data import Mario3Level, object_set_pointers, object_sets
 from File import ROM
-from Graphics import LevelObject, LevelObjectFactory, EnemyItemFactory, EnemyObject
-from Palette import get_bg_color_for
+from game.gfx.objects.LevelObject import LevelObject
+from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from game.gfx.objects.EnemyItemFactory import EnemyItemFactory
+from game.gfx.objects.EnemyItem import EnemyObject
+from game.gfx.Palette import get_bg_color_for
 from game.level import _load_level_offsets
 from game.level.LevelLike import LevelLike
 

@@ -1,5 +1,5 @@
 from File import ROM
-from Graphics import LevelObjectFactory
+from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 
 THREE_BYTE_ARRAYS = [[0x00, 0x00, 0x00], [0xFF, 0xFF, 0xFF]]
 

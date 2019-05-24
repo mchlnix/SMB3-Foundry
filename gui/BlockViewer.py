@@ -2,9 +2,9 @@ import wx
 from math import ceil
 
 from File import ROM
-from Graphics import PatternTable
+from game.gfx import PatternTable
 from LevelSelector import OBJECT_SET_ITEMS
-from Palette import get_bg_color_for, load_palette
+from game.gfx import get_bg_color_for, load_palette
 from Sprite import Block
 
 ID_ZOOM_IN = 10001
