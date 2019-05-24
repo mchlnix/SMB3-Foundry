@@ -113,6 +113,8 @@ class SMB3Foundry(wx.Frame):
             title="SMB3Foundry", style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE, *args, **kw
         )
 
+        self.SetIcon(wx.Icon("data/foundry.ico"))
+
         file_menu = wx.Menu()
 
         file_menu.Append(ID_OPEN_ROM, "&Open ROM", "")
