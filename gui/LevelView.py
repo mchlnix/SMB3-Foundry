@@ -54,7 +54,7 @@ class LevelView(wx.Panel):
             return
 
         self.zoom = zoom
-        self.block_length = Block.SIDE_LENGTH * self.zoom
+        self.block_length = int(Block.SIDE_LENGTH * self.zoom)
 
         self.resize()
 
