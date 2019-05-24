@@ -1,6 +1,6 @@
 import wx
 
-from Level import Level
+from game.level.Level import Level
 from Data import level_array, world_indexes
 
 WORLD_ITEMS = [

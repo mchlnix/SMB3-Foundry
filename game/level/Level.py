@@ -2,17 +2,10 @@ import wx
 
 from Data import Mario3Level, object_set_pointers, object_sets
 from File import ROM
-from Graphics import (
-    LevelObject,
-    PatternTable,
-    MapObject,
-    LevelObjectFactory,
-    EnemyItemFactory,
-    EnemyObject,
-)
-from Palette import get_bg_color_for, load_palette
-from Sprite import Block
-from gameplay.LevelLike import LevelLike
+from Graphics import LevelObject, LevelObjectFactory, EnemyItemFactory, EnemyObject
+from Palette import get_bg_color_for
+from game.level import _load_level_offsets
+from game.level.LevelLike import LevelLike
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
@@ -21,30 +14,8 @@ ENEMY_SIZE = 3
 
 TIME_INF = -1
 
-OBJECT_SET_COUNT = 16
-OVERWORLD_OBJECT_SET = 0
-OVERWORLD_GRAPHIC_SET = 0
-
 LEVEL_DEFAULT_HEIGHT = 27
 LEVEL_DEFAULT_WIDTH = 16
-
-
-def _load_level_offsets():
-    with open("data/levels.dat", "r") as level_data:
-        for line_no, line in enumerate(level_data.readlines()):
-            data = line.rstrip("\n").split(",")
-
-            numbers = [int(_hex, 16) for _hex in data[0:5]]
-            level_name = data[5]
-
-            Level.offsets.append(Mario3Level(*numbers, level_name))
-
-            world_index, level_index = numbers[0], numbers[1]
-
-            if world_index > 0 and level_index == 1:
-                Level.world_indexes.append(line_no)
-
-    Level.WORLDS = len(Level.world_indexes)
 
 
 class Level(LevelLike):
@@ -62,7 +33,9 @@ class Level(LevelLike):
     def __init__(self, world, level, object_set=None):
         super(Level, self).__init__(world, level, object_set)
         if not Level.offsets:
-            _load_level_offsets()
+            Level.offsets, Level.world_indexes = _load_level_offsets()
+
+            Level.WORLDS = len(Level.world_indexes)
 
         self.attached_to_rom = True
 
@@ -538,106 +511,3 @@ class Level(LevelLike):
 
         self._parse_header()
         self._load_level(objects, enemies)
-
-
-class WorldMap(LevelLike):
-    WIDTH = 16
-    HEIGHT = 9
-
-    VISIBLE_BLOCKS = WIDTH * HEIGHT
-
-    def __init__(self, world_index):
-        super(WorldMap, self).__init__(0, world_index, None)
-
-        self.name = f"World {world_index} - Overworld"
-
-        self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
-        self.palette_group = load_palette(OVERWORLD_OBJECT_SET, 0)
-
-        start = ROM.W_LAYOUT_OS_LIST[world_index - 1]
-        end = ROM.rom_data.find(0xFF, start)
-
-        self.offset = start
-
-        self.object_set = OVERWORLD_OBJECT_SET
-        self.tsa_data = ROM.get_tsa_data(self.object_set)
-
-        self.objects = []
-
-        obj_data = ROM().bulk_read(end - start, start)
-
-        self._load_objects(obj_data)
-
-        self._calc_size()
-
-    def _load_objects(self, obj_data):
-        self.objects.clear()
-
-        for index, block_index in enumerate(obj_data):
-            screen_offset = (index // WorldMap.VISIBLE_BLOCKS) * WorldMap.WIDTH
-
-            x = screen_offset + (index % WorldMap.WIDTH)
-            y = (index // WorldMap.WIDTH) % WorldMap.HEIGHT
-
-            block = Block(
-                block_index, self.palette_group, self.pattern_table, self.tsa_data
-            )
-
-            self.objects.append(MapObject(block, x, y))
-
-        assert len(self.objects) % WorldMap.HEIGHT == 0
-
-    def _calc_size(self):
-        self.width = len(self.objects) // WorldMap.HEIGHT
-        self.height = WorldMap.HEIGHT
-
-        self.size = self.width, self.height
-
-    def add_object(self, obj, _):
-        self.objects.append(obj)
-
-        self.objects.sort(key=WorldMap._array_index)
-
-    @staticmethod
-    def _array_index(obj):
-        return obj.y_position * WorldMap.WIDTH + obj.x_position
-
-    def get_object_names(self):
-        return [obj.name for obj in self.objects]
-
-    def draw(self, dc, zoom, transparency=None):
-        for obj in self.objects:
-            obj.draw(dc, zoom, transparency)
-
-    def index_of(self, obj):
-        return self.objects.index(obj)
-
-    def get_all_objects(self):
-        return self.objects
-
-    def object_at(self, x, y):
-        point = wx.Point(x, y)
-
-        for obj in reversed(self.objects):
-            if obj.rect.Contains(point):
-                return obj
-
-        return None
-
-    def to_bytes(self):
-        return_array = bytearray(len(self.objects))
-
-        for obj in self.objects:
-            index = self._array_index(obj)
-
-            return_array[index] = obj.to_bytes()
-
-        return [(self.offset, return_array)]
-
-    def from_bytes(self, data):
-        offset, obj_bytes = data
-
-        self.offset = offset
-        self._load_objects(obj_bytes)
-
-        self._calc_size()
