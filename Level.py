@@ -398,7 +398,7 @@ class Level(LevelLike):
         else:
             return None
 
-    def draw(self, dc, zoom, transparency):
+    def draw(self, dc, block_length, transparency):
         bg_color = get_bg_color_for(self.object_set, self.object_palette_index)
 
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
@@ -408,28 +408,28 @@ class Level(LevelLike):
         dc.Clear()
 
         for level_object in self.objects:
-            level_object.draw(dc, zoom, transparency)
+            level_object.draw(dc, block_length, transparency)
 
             if level_object.selected:
                 x, y, w, h = level_object.get_rect().Get()
 
-                x *= self.block_width
-                w *= self.block_width
-                y *= self.block_height
-                h *= self.block_height
+                x *= block_length
+                w *= block_length
+                y *= block_length
+                h *= block_length
 
                 dc.DrawRectangle(wx.Rect(x, y, w, h))
 
         for enemy in self.enemies:
-            enemy.draw(dc, zoom, transparency)
+            enemy.draw(dc, block_length, transparency)
 
             if enemy.selected:
                 x, y, w, h = enemy.get_rect().Get()
 
-                x *= self.block_width
-                w *= self.block_width
-                y *= self.block_height
-                h *= self.block_height
+                x *= block_length
+                w *= block_length
+                y *= block_length
+                h *= block_length
 
                 dc.DrawRectangle(wx.Rect(x, y, w, h))
 
@@ -630,9 +630,7 @@ class WorldMap(LevelLike):
         self.width = len(self.objects) // WorldMap.HEIGHT
         self.height = WorldMap.HEIGHT
 
-        self.size = wx.Size(
-            self.width * self.block_width, self.height * self.block_height
-        )
+        self.size = wx.Size(self.width, self.height)
 
     def add_object(self, obj, _):
         self.objects.append(obj)
