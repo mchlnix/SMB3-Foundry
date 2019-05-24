@@ -32,5 +32,25 @@ class LevelLike(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def get_all_objects(self):
+        pass
+
+    @abc.abstractmethod
+    def get_object(self, index):
+        pass
+
+    @abc.abstractmethod
+    def remove_object(self, obj):
+        pass
+
+    @abc.abstractmethod
     def draw(self, dc, block_length, transparency):
+        pass
+
+    @abc.abstractmethod
+    def to_bytes(self):
+        pass
+
+    @abc.abstractmethod
+    def from_bytes(self, object_data, enemy_data):
         pass

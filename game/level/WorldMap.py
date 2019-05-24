@@ -105,10 +105,16 @@ class WorldMap(LevelLike):
 
         return [(self.offset, return_array)]
 
-    def from_bytes(self, data):
+    def from_bytes(self, data, _=None):
         offset, obj_bytes = data
 
         self.offset = offset
         self._load_objects(obj_bytes)
 
         self._calc_size()
+
+    def get_object(self, index):
+        return self.objects[index]
+
+    def remove_object(self, obj):
+        self.objects.remove(obj)
