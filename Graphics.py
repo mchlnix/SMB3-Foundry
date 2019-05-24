@@ -272,7 +272,7 @@ class EnemyItemFactory:
 
 class Drawable(abc.ABC):
     @abc.abstractmethod
-    def draw(self, dc, transparent, zoom):
+    def draw(self, dc, zoom, transparent):
         pass
 
     @abc.abstractmethod
@@ -372,7 +372,7 @@ class EnemyObject(Drawable):
                 self.png_data.GetSubImage(wx.Rect(x, y, Block.WIDTH, Block.HEIGHT))
             )
 
-    def draw(self, dc, transparent, zoom):
+    def draw(self, dc, zoom, transparent):
         block_width = Block.WIDTH * zoom
         block_height = Block.HEIGHT * zoom
 
@@ -930,7 +930,7 @@ class LevelObject(Drawable):
 
         LevelObject.ground_map.insert(self.index, self.rect)
 
-    def draw(self, dc, transparent, zoom):
+    def draw(self, dc, zoom, transparent):
         for index, block_index in enumerate(self.rendered_blocks):
             if block_index == BLANK:
                 continue
@@ -938,9 +938,9 @@ class LevelObject(Drawable):
             x = self.rendered_base_x + index % self.rendered_width
             y = self.rendered_base_y + index // self.rendered_width
 
-            self._draw_block(dc, block_index, x, y, transparent, zoom)
+            self._draw_block(dc, block_index, x, y, zoom, transparent)
 
-    def _draw_block(self, dc, block_index, x, y, transparent, zoom):
+    def _draw_block(self, dc, block_index, x, y, zoom, transparent):
         if block_index not in self.block_cache:
             if block_index > 0xFF:
                 rom_block_index = ROM().get_byte(
@@ -1264,7 +1264,7 @@ class MapObject(Drawable):
     def get_position(self):
         return self.x_position, self.y_position
 
-    def draw(self, dc, _, zoom=1):
+    def draw(self, dc, zoom=1, _=None):
         self.block.draw(
             dc,
             self.x_position * Block.WIDTH * zoom,

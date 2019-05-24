@@ -146,9 +146,9 @@ class LevelView(wx.Panel):
 
     def load_level(self, world, level, object_set=None):
         if world == 0:
-            self.level = WorldMap(level, self.zoom)
+            self.level = WorldMap(level)
         else:
-            self.level = Level(world, level, object_set, self.zoom)
+            self.level = Level(world, level, object_set)
 
         self.undo_stack.clear(self.level.to_bytes())
 
@@ -197,7 +197,7 @@ class LevelView(wx.Panel):
         if self.level is None:
             return
 
-        self.level.draw(dc, transparency=self.transparency)
+        self.level.draw(dc, self.zoom, self.transparency)
 
         if self.grid_lines:
             dc.SetPen(self.grid_pen)

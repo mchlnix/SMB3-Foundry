@@ -58,7 +58,6 @@ class LevelLike(abc.ABC):
 
         self.width = 1
         self.height = 1
-        self.zoom = 1
 
         self.block_width = Block.WIDTH
         self.block_height = Block.HEIGHT
@@ -76,9 +75,6 @@ class LevelLike(abc.ABC):
 
         return level_x, level_y
 
-    def set_zoom(self, zoom):
-        self.zoom = zoom
-
     @abc.abstractmethod
     def index_of(self, obj):
         pass
@@ -92,7 +88,7 @@ class LevelLike(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def draw(self, dc, transparency):
+    def draw(self, dc, zoom, transparency):
         pass
 
 
@@ -108,7 +104,7 @@ class Level(LevelLike):
 
     palettes = []
 
-    def __init__(self, world, level, object_set=None, zoom=1):
+    def __init__(self, world, level, object_set=None):
         super(Level, self).__init__(world, level, object_set)
         if not Level.offsets:
             _load_level_offsets()
@@ -146,9 +142,7 @@ class Level(LevelLike):
 
         self._load_level(object_data, enemy_data)
 
-        self.zoom = 1
         self.size = wx.Size()
-        self.set_zoom(zoom)
 
         self.changed = False
 
@@ -287,16 +281,6 @@ class Level(LevelLike):
             if data[0] == 0xFF:
                 break
 
-    def set_zoom(self, zoom):
-        super(Level, self).set_zoom(zoom)
-
-        self.block_width = Block.WIDTH * self.zoom
-        self.block_height = Block.HEIGHT * self.zoom
-
-        self.size = wx.Size(
-            self.width * self.block_width, self.height * self.block_height
-        )
-
     def set_length(self, length):
         if length + 1 == self.length:
             return
@@ -426,7 +410,7 @@ class Level(LevelLike):
         else:
             return None
 
-    def draw(self, dc, transparency):
+    def draw(self, dc, zoom, transparency):
         bg_color = get_bg_color_for(self.object_set, self.object_palette_index)
 
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
@@ -436,7 +420,7 @@ class Level(LevelLike):
         dc.Clear()
 
         for level_object in self.objects:
-            level_object.draw(dc, transparency, self.zoom)
+            level_object.draw(dc, zoom, transparency)
 
             if level_object.selected:
                 x, y, w, h = level_object.get_rect().Get()
@@ -449,7 +433,7 @@ class Level(LevelLike):
                 dc.DrawRectangle(wx.Rect(x, y, w, h))
 
         for enemy in self.enemies:
-            enemy.draw(dc, transparency, self.zoom)
+            enemy.draw(dc, zoom, transparency)
 
             if enemy.selected:
                 x, y, w, h = enemy.get_rect().Get()
@@ -613,7 +597,7 @@ class WorldMap(LevelLike):
 
     VISIBLE_BLOCKS = WIDTH * HEIGHT
 
-    def __init__(self, world_index, zoom=4):
+    def __init__(self, world_index):
         super(WorldMap, self).__init__(0, world_index, None)
 
         self.name = f"World {world_index} - Overworld"
@@ -625,11 +609,6 @@ class WorldMap(LevelLike):
         end = ROM.rom_data.find(0xFF, start)
 
         self.offset = start
-
-        self.zoom = zoom
-
-        self.block_width = Block.WIDTH * self.zoom
-        self.block_height = Block.HEIGHT * self.zoom
 
         self.object_set = OVERWORLD_OBJECT_SET
         self.tsa_data = ROM.get_tsa_data(self.object_set)
@@ -667,16 +646,6 @@ class WorldMap(LevelLike):
             self.width * self.block_width, self.height * self.block_height
         )
 
-    def set_zoom(self, zoom):
-        super(WorldMap, self).set_zoom(zoom)
-
-        self.block_width = Block.WIDTH * self.zoom
-        self.block_height = Block.HEIGHT * self.zoom
-
-        self.size = wx.Size(
-            self.width * self.block_width, self.height * self.block_height
-        )
-
     def add_object(self, obj, _):
         self.objects.append(obj)
 
@@ -689,9 +658,9 @@ class WorldMap(LevelLike):
     def get_object_names(self):
         return [obj.name for obj in self.objects]
 
-    def draw(self, dc, transparency=None):
+    def draw(self, dc, zoom, transparency=None):
         for obj in self.objects:
-            obj.draw(dc, transparency, self.zoom)
+            obj.draw(dc, zoom, transparency)
 
     def index_of(self, obj):
         return self.objects.index(obj)
