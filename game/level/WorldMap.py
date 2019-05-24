@@ -1,10 +1,10 @@
 import wx
 
 from File import ROM
-from game.gfx import PatternTable
+from game.gfx.Palette import load_palette
+from game.gfx.PatternTable import PatternTable
 from game.gfx.objects.MapObject import MapObject
-from game.gfx import load_palette
-from Sprite import Block
+from game.gfx.drawable.Block import Block
 from game.level.LevelLike import LevelLike
 
 OVERWORLD_OBJECT_SET = 0

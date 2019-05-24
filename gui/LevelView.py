@@ -2,7 +2,7 @@ import wx
 
 from game.level.Level import Level
 from SelectionSquare import SelectionSquare
-from Sprite import Block
+from game.gfx.drawable.Block import Block
 from UndoStack import UndoStack
 from game.level.WorldMap import WorldMap
 

@@ -2,7 +2,7 @@ import wx
 
 from Data import NESPalette, ENEMY_OBJ_DEF, enemy_handle_x, enemy_handle_y
 from ObjectDefinitions import load_object_definition
-from Sprite import Block
+from game.gfx.drawable.Block import Block
 from game.gfx.objects.ObjectLike import ObjectLike
 from game.gfx.PatternTable import PatternTable
 from m3idefs import ObjectDefinition

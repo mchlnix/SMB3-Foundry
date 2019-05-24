@@ -3,7 +3,7 @@ import wx
 from game.gfx.objects.LevelObject import LevelObject
 from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from LevelSelector import OBJECT_SET_ITEMS
-from Sprite import Block
+from game.gfx.drawable.Block import Block
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2

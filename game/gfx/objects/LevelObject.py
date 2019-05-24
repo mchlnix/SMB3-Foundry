@@ -1,7 +1,7 @@
 import wx
 
 from File import ROM
-from Sprite import Block
+from game.gfx.drawable.Block import Block
 from game.gfx.objects.ObjectLike import ObjectLike
 from m3idefs import (
     TO_THE_SKY,
