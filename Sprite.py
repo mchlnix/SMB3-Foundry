@@ -279,8 +279,9 @@ bit_reverse = [
 
 
 class Tile:
-    WIDTH = 8  # pixel
-    HEIGHT = 8  # pixel
+    SIDE_LENGTH = 8  # pixel
+    WIDTH = SIDE_LENGTH
+    HEIGHT = SIDE_LENGTH
 
     PIXEL_COUNT = WIDTH * HEIGHT
     SIZE = 2 * PIXEL_COUNT // 8  # 1 pixel is defined by 2 bits
@@ -328,19 +329,18 @@ class Tile:
 
         assert len(self.pixels) == 3 * Tile.PIXEL_COUNT
 
-    def as_image(self, zoom=1):
-        if zoom not in self.cached_tiles.keys():
-            width = Tile.WIDTH * zoom
-            height = Tile.HEIGHT * zoom
+    def as_image(self, tile_length=8):
+        if tile_length not in self.cached_tiles.keys():
+            width = height = tile_length
 
             image = wx.Image()
             image.Create(Tile.WIDTH, Tile.HEIGHT, self.pixels)
 
             image.Rescale(width, height)
 
-            self.cached_tiles[zoom] = image
+            self.cached_tiles[tile_length] = image
 
-        return self.cached_tiles[zoom]
+        return self.cached_tiles[tile_length]
 
     def _mirror(self):
         for byte in range(len(self.data)):
@@ -348,8 +348,9 @@ class Tile:
 
 
 class Block:
-    WIDTH = 2 * Tile.WIDTH
-    HEIGHT = 2 * Tile.HEIGHT
+    SIDE_LENGTH = 2 * Tile.SIDE_LENGTH
+    WIDTH = SIDE_LENGTH
+    HEIGHT = SIDE_LENGTH
 
     PIXEL_COUNT = WIDTH * HEIGHT
 
@@ -393,11 +394,11 @@ class Block:
 
         self.image.SetMaskColour(*MASK_COLOR)
 
-    def draw(self, dc, x, y, zoom=1, selected=False, transparent=False):
+    def draw(self, dc, x, y, block_length, selected=False, transparent=False):
         image = self.image.Copy()
 
-        if zoom != 1:
-            image.Rescale(Block.WIDTH * zoom, Block.HEIGHT * zoom)
+        if block_length != Block.WIDTH:
+            image.Rescale(block_length, block_length)
 
         # todo better effect
         if selected:

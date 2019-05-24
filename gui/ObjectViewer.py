@@ -187,4 +187,4 @@ class ObjectDrawArea(wx.Panel):
             -Block.HEIGHT * self.current_object.rendered_base_y,
         )
 
-        self.current_object.draw(dc, transparent=True, zoom=1)
+        self.current_object.draw(dc, Block.WIDTH, transparent=True)

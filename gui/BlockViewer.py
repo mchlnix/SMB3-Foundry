@@ -167,12 +167,14 @@ class BlockBank(wx.Panel):
 
         horizontal = self.sprites_horiz
 
+        block_length = Block.WIDTH * self.zoom
+
         for i in range(self.sprites):
             block = Block(i, palette, pattern_table, tsa_data)
 
-            x = (i % horizontal) * Block.WIDTH * self.zoom
-            y = (i // horizontal) * Block.HEIGHT * self.zoom
+            x = (i % horizontal) * block_length
+            y = (i // horizontal) * block_length
 
-            block.draw(dc, x, y, self.zoom)
+            block.draw(dc, x, y, block_length)
 
         return

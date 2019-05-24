@@ -2,6 +2,7 @@ import wx
 
 from Level import Level, WorldMap
 from SelectionSquare import SelectionSquare
+from Sprite import Block
 from UndoStack import UndoStack
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
@@ -64,14 +65,16 @@ class LevelView(wx.Panel):
         self.set_zoom(self.zoom * 2)
 
     def resize(self):
+        screen_block_side = Block.WIDTH * self.zoom
+
         if self.level is not None:
-            self.SetMinSize(wx.Size(*self.level.size))
+            self.SetMinSize(
+                wx.Size(*[side * screen_block_side for side in self.level.size.Get()])
+            )
             self.SetSize(self.GetMinSize())
 
             self.GetParent().SetupScrolling(
-                rate_x=self.level.block_width,
-                rate_y=self.level.block_height,
-                scrollToTop=False,
+                rate_x=screen_block_side, rate_y=screen_block_side, scrollToTop=False
             )
 
     def start_selection_square(self, position):
@@ -152,14 +155,7 @@ class LevelView(wx.Panel):
 
         self.undo_stack.clear(self.level.to_bytes())
 
-        self.GetParent().SetupScrolling(
-            rate_x=self.level.block_width,
-            rate_y=self.level.block_height,
-            scrollToTop=False,
-        )
-
-        self.SetMinSize(wx.Size(*self.level.size.Get()))
-        self.SetSize(self.GetMinSize())
+        self.resize()
 
         print(f"Drawing {self.level.name}")
 
@@ -170,14 +166,7 @@ class LevelView(wx.Panel):
 
         self.undo_stack.clear(self.level.to_bytes())
 
-        self.GetParent().SetupScrolling(
-            rate_x=self.level.block_width,
-            rate_y=self.level.block_height,
-            scrollToTop=False,
-        )
-
-        self.SetMinSize(wx.Size(*self.level.size.Get()))
-        self.SetSize(self.GetMinSize())
+        self.resize()
 
     def object_at(self, x, y):
         return self.level.object_at(x, y)
@@ -197,7 +186,7 @@ class LevelView(wx.Panel):
         if self.level is None:
             return
 
-        self.level.draw(dc, self.zoom, self.transparency)
+        self.level.draw(dc, Block.WIDTH * self.zoom, self.transparency)
 
         if self.grid_lines:
             dc.SetPen(self.grid_pen)

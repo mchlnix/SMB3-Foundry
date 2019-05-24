@@ -142,8 +142,6 @@ class Level(LevelLike):
 
         self._load_level(object_data, enemy_data)
 
-        self.size = wx.Size()
-
         self.changed = False
 
     def _load_level(self, object_data, enemy_data):
@@ -231,9 +229,7 @@ class Level(LevelLike):
             object_set_pointer.min <= self.level_pointer <= object_set_pointer.max
         )
 
-        self.size = wx.Size(
-            self.width * self.block_width, self.height * self.block_height
-        )
+        self.size = wx.Size(self.width, self.height)
 
         self.changed = True
 
