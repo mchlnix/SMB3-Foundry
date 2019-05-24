@@ -184,7 +184,7 @@ class Level(LevelLike):
             object_set_pointer.min <= self.level_pointer <= object_set_pointer.max
         )
 
-        self.size = wx.Size(self.width, self.height)
+        self.size = self.width, self.height
 
         self.changed = True
 
@@ -591,7 +591,7 @@ class WorldMap(LevelLike):
         self.width = len(self.objects) // WorldMap.HEIGHT
         self.height = WorldMap.HEIGHT
 
-        self.size = wx.Size(self.width, self.height)
+        self.size = self.width, self.height
 
     def add_object(self, obj, _):
         self.objects.append(obj)

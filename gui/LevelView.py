@@ -67,7 +67,7 @@ class LevelView(wx.Panel):
     def resize(self):
         if self.level is not None:
             self.SetMinSize(
-                wx.Size(*[side * self.block_length for side in self.level.size.Get()])
+                wx.Size(*[side * self.block_length for side in self.level.size])
             )
             self.SetSize(self.GetMinSize())
 
