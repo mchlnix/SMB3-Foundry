@@ -1,5 +1,3 @@
-import abc
-
 import wx
 
 from Data import Mario3Level, object_set_pointers, object_sets
@@ -14,6 +12,7 @@ from Graphics import (
 )
 from Palette import get_bg_color_for, load_palette
 from Sprite import Block
+from gameplay.LevelLike import LevelLike
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
@@ -46,44 +45,6 @@ def _load_level_offsets():
                 Level.world_indexes.append(line_no)
 
     Level.WORLDS = len(Level.world_indexes)
-
-
-class LevelLike(abc.ABC):
-    def __init__(self, world, level, object_set):
-        self.world = world
-        self.level = level
-        self.object_set = object_set
-
-        self.objects = []
-
-        self.width = 1
-        self.height = 1
-
-        self.block_width = Block.WIDTH
-        self.block_height = Block.HEIGHT
-
-        self.name = "LevelLike object"
-
-        self.object_pattern_table = None
-
-        self.changed = False
-        self.attached_to_rom = True
-
-    @abc.abstractmethod
-    def index_of(self, obj):
-        pass
-
-    @abc.abstractmethod
-    def object_at(self, x, y):
-        pass
-
-    @abc.abstractmethod
-    def get_object_names(self):
-        pass
-
-    @abc.abstractmethod
-    def draw(self, dc, zoom, transparency):
-        pass
 
 
 class Level(LevelLike):
