@@ -69,12 +69,6 @@ class LevelLike(abc.ABC):
         self.changed = False
         self.attached_to_rom = True
 
-    def to_level_point(self, x, y):
-        level_x = x // self.block_width
-        level_y = y // self.block_height
-
-        return level_x, level_y
-
     @abc.abstractmethod
     def index_of(self, obj):
         pass
@@ -398,10 +392,8 @@ class Level(LevelLike):
         return [obj.description for obj in self.objects + self.enemies]
 
     def object_at(self, x, y):
-        level_point = self.to_level_point(x, y)
-
         for obj in reversed(self.objects + self.enemies):
-            if level_point in obj:
+            if (x, y) in obj:
                 return obj
         else:
             return None
@@ -665,7 +657,7 @@ class WorldMap(LevelLike):
         return self.objects
 
     def object_at(self, x, y):
-        point = wx.Point(*self.to_level_point(x, y))
+        point = wx.Point(x, y)
 
         for obj in reversed(self.objects):
             if obj.rect.Contains(point):

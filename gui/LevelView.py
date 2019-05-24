@@ -24,6 +24,7 @@ class LevelView(wx.Panel):
         self.grid_pen = wx.Pen(colour=wx.Colour(0x80, 0x80, 0x80, 0x80), width=1)
 
         self.zoom = 1
+        self.block_length = Block.SIDE_LENGTH * self.zoom
 
         self.changed = False
 
@@ -53,8 +54,7 @@ class LevelView(wx.Panel):
             return
 
         self.zoom = zoom
-
-        self.level.set_zoom(self.zoom)
+        self.block_length = Block.SIDE_LENGTH * self.zoom
 
         self.resize()
 
@@ -65,16 +65,14 @@ class LevelView(wx.Panel):
         self.set_zoom(self.zoom * 2)
 
     def resize(self):
-        screen_block_side = Block.WIDTH * self.zoom
-
         if self.level is not None:
             self.SetMinSize(
-                wx.Size(*[side * screen_block_side for side in self.level.size.Get()])
+                wx.Size(*[side * self.block_length for side in self.level.size.Get()])
             )
             self.SetSize(self.GetMinSize())
 
             self.GetParent().SetupScrolling(
-                rate_x=screen_block_side, rate_y=screen_block_side, scrollToTop=False
+                rate_x=self.block_length, rate_y=self.block_length, scrollToTop=False
             )
 
     def start_selection_square(self, position):
@@ -87,7 +85,7 @@ class LevelView(wx.Panel):
         self.selection_square.set_current_end(position)
 
         sel_rect = self.selection_square.get_adjusted_rect(
-            self.level.block_width, self.level.block_height
+            self.block_length, self.block_length
         )
 
         touched_objects = [
@@ -186,28 +184,17 @@ class LevelView(wx.Panel):
         if self.level is None:
             return
 
-        self.level.draw(dc, Block.WIDTH * self.zoom, self.transparency)
+        self.level.draw(dc, self.block_length, self.transparency)
 
         if self.grid_lines:
             dc.SetPen(self.grid_pen)
 
-            pixel_width = self.level.width * self.level.block_width
-            pixel_height = self.level.height * self.level.block_height
+            panel_width, panel_height = self.GetSize().Get()
 
-            for x in range(0, self.level.width):
-                dc.DrawLine(
-                    x * self.level.block_width,
-                    0,
-                    x * self.level.block_width,
-                    pixel_height,
-                )
-            for y in range(0, self.level.height):
-                dc.DrawLine(
-                    0,
-                    y * self.level.block_height,
-                    pixel_width,
-                    y * self.level.block_height,
-                )
+            for x in range(0, panel_width, self.block_length):
+                dc.DrawLine(x, 0, x, panel_height)
+            for y in range(0, panel_height, self.block_length):
+                dc.DrawLine(0, y, panel_width, y)
 
         self.selection_square.draw(dc)
 
