@@ -349,6 +349,7 @@ class Level(LevelLike):
             self._draw_floor(dc, block_length)
 
         for level_object in self.objects:
+            level_object.render()
             level_object.draw(dc, block_length, transparency)
 
             if level_object.selected:

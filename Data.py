@@ -148,6 +148,9 @@ obj_sets = [
     "Ice Level",
 ]
 
+# todo these are the object definitions for those sets, if anything
+# remove some time
+
 OBJSET_MAP = 0
 OBJSET_PLAINS = 1
 OBJSET_HILLY = 2

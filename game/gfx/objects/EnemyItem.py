@@ -59,6 +59,10 @@ class EnemyObject(ObjectLike):
                 self.png_data.GetSubImage(wx.Rect(x, y, Block.WIDTH, Block.HEIGHT))
             )
 
+    def render(self):
+        # nothing to re-render since enemies are just copied over
+        pass
+
     def draw(self, dc, block_length, transparent):
         for i, image in enumerate(self.blocks):
             x = self.x_position + (i % self.width)

@@ -3,6 +3,10 @@ import abc
 
 class ObjectLike(abc.ABC):
     @abc.abstractmethod
+    def render(self):
+        pass
+
+    @abc.abstractmethod
     def draw(self, dc, zoom, transparent):
         pass
 

@@ -183,6 +183,9 @@ class LevelObject(ObjectLike):
             self.secondary_length = self.length
             self.length = self.data[3]
 
+    def render(self):
+        self._render()
+
     def _render(self):
         try:
             self.index = self.objects_ref.index(self)
