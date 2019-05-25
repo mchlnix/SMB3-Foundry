@@ -20,18 +20,18 @@ from Events import (
     EVT_UNDO_SAVED,
 )
 from File import ROM
-from game.gfx.objects.LevelObject import LevelObject
 from HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
-from game.level.Level import Level
 from LevelSelector import LevelSelector
 from LevelView import LevelView
 from ObjectList import ObjectList
 from ObjectStatusBar import ObjectStatusBar
 from ObjectViewer import ObjectViewer
 from SpinnerPanel import SpinnerPanel
+from game.gfx.objects.LevelObject import LevelObject
+from game.level.Level import Level
+from game.level.WorldMap import WorldMap
 
 # file menu
-from game.level.WorldMap import WorldMap
 
 ID_OPEN_ROM = 101
 ID_OPEN_M3L = 102

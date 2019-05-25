@@ -297,8 +297,9 @@ class LevelObject(ObjectLike):
 
                 if any(
                     [
-                        bottom_row.Intersects(rect) and y == rect.GetTop()
-                        for rect in self.objects_ref[0 : self.index]
+                        bottom_row.Intersects(obj.get_rect())
+                        and y == obj.get_rect().GetTop()
+                        for obj in self.objects_ref[0 : self.index]
                     ]
                 ):
                     break

@@ -2,11 +2,13 @@ import wx
 
 from Data import Mario3Level, object_set_pointers, object_sets
 from File import ROM
+from game.gfx.Palette import get_bg_color_for, load_palette
+from game.gfx.PatternTable import PatternTable
+from game.gfx.drawable.Block import Block
+from game.gfx.objects.EnemyItem import EnemyObject
+from game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from game.gfx.objects.LevelObject import LevelObject
 from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from game.gfx.objects.EnemyItem import EnemyObject
-from game.gfx.Palette import get_bg_color_for
 from game.level import _load_level_offsets
 from game.level.LevelLike import LevelLike
 
@@ -343,6 +345,9 @@ class Level(LevelLike):
 
         dc.Clear()
 
+        if self.object_set == 9:  # desert
+            self._draw_floor(dc, block_length)
+
         for level_object in self.objects:
             level_object.draw(dc, block_length, transparency)
 
@@ -368,6 +373,21 @@ class Level(LevelLike):
                 h *= block_length
 
                 dc.DrawRectangle(wx.Rect(x, y, w, h))
+
+    def _draw_floor(self, dc, block_length):
+        floor_level = 26
+        floor_block_index = 86
+
+        palette_group = load_palette(self.object_set, self.object_palette_index)
+        pattern_table = PatternTable(self.graphic_set_index)
+        tsa_data = ROM().get_tsa_data(self.object_set)
+
+        floor_block = Block(floor_block_index, palette_group, pattern_table, tsa_data)
+
+        for x in range(self.width):
+            floor_block.draw(
+                dc, x * block_length, floor_level * block_length, block_length
+            )
 
     def paste_object_at(self, x, y, obj):
         if isinstance(obj, EnemyObject):
