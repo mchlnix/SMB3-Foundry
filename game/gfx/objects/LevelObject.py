@@ -184,6 +184,13 @@ class LevelObject(ObjectLike):
             self.length = self.data[3]
 
     def _render(self):
+        old_index = self.index
+
+        try:
+            self.index = self.objects_ref.index(self)
+        except ValueError:
+            self.index = len(self.objects_ref)
+
         base_x = self.x_position
         base_y = self.y_position
 
