@@ -80,6 +80,7 @@ class Level(LevelLike):
             self.object_set,
             self.graphic_set_index,
             self.object_palette_index,
+            self.objects,
             self.is_vertical,
         )
         self.enemy_item_factory = EnemyItemFactory(
@@ -186,8 +187,6 @@ class Level(LevelLike):
             return
 
         object_order = object_sets[self.object_set]  # ordered by domain
-
-        LevelObject.ground_map = []
 
         while True:
             obj_data, data = data[0:3], data[3:]
@@ -430,14 +429,6 @@ class Level(LevelLike):
     def remove_object(self, obj):
         if obj is None:
             return
-
-        # todo bug
-        try:
-            LevelObject.ground_map.remove(obj.rect)
-        except ValueError:
-            print(
-                f"{obj.description} was not found in ground map, when trying to remove it. {len(LevelObject.ground_map)}"
-            )
 
         try:
             self.objects.remove(obj)

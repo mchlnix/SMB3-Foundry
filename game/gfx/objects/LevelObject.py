@@ -83,9 +83,6 @@ SCREEN_WIDTH = 16
 
 
 class LevelObject(ObjectLike):
-    # todo better way of saving this information?
-    ground_map = []
-
     def __init__(
         self,
         data,
@@ -93,7 +90,8 @@ class LevelObject(ObjectLike):
         object_definitions,
         palette_group,
         pattern_table,
-        vertical_level,
+        objects_ref,
+        is_vertical,
         index,
     ):
         self.pattern_table = pattern_table
@@ -107,7 +105,8 @@ class LevelObject(ObjectLike):
         self.palette_group = palette_group
 
         self.index = index
-        self.vertical_level = vertical_level
+        self.objects_ref = objects_ref
+        self.vertical_level = is_vertical
 
         self.data = data
 
@@ -185,9 +184,6 @@ class LevelObject(ObjectLike):
             self.length = self.data[3]
 
     def _render(self):
-        if self.index < len(LevelObject.ground_map):
-            del LevelObject.ground_map[self.index]
-
         base_x = self.x_position
         base_y = self.y_position
 
@@ -296,7 +292,7 @@ class LevelObject(ObjectLike):
                 if any(
                     [
                         bottom_row.Intersects(rect) and y == rect.GetTop()
-                        for rect in LevelObject.ground_map[0 : self.index]
+                        for rect in self.objects_ref[0 : self.index]
                     ]
                 ):
                     break
@@ -427,8 +423,9 @@ class LevelObject(ObjectLike):
 
                     if any(
                         [
-                            bottom_row.Intersects(rect) and y == rect.GetTop()
-                            for rect in LevelObject.ground_map[0 : self.index]
+                            bottom_row.Intersects(obj.get_rect())
+                            and y == obj.get_rect().GetTop()
+                            for obj in self.objects_ref[0 : self.index]
                         ]
                     ):
                         new_height = y - base_y
@@ -546,8 +543,6 @@ class LevelObject(ObjectLike):
             self.rendered_width,
             self.rendered_height,
         )
-
-        LevelObject.ground_map.insert(self.index, self.rect)
 
     def draw(self, dc, block_length, transparent):
         for index, block_index in enumerate(self.rendered_blocks):

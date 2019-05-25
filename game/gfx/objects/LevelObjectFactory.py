@@ -13,10 +13,13 @@ class LevelObjectFactory:
     pattern_table: PatternTable = None
     palette_group: list = []
 
-    def __init__(self, object_set, graphic_set, palette_group_index, vertical_level):
+    def __init__(
+        self, object_set, graphic_set, palette_group_index, objects_ref, vertical_level
+    ):
         self.set_object_set(object_set)
         self.set_graphic_set(graphic_set)
         self.set_palette_group_index(palette_group_index)
+        self.objects_ref = objects_ref
         self.vertical_level = vertical_level
 
     def set_object_set(self, object_set):
@@ -39,6 +42,7 @@ class LevelObjectFactory:
             self.object_definitions,
             self.palette_group,
             self.pattern_table,
+            self.objects_ref,
             self.vertical_level,
             index,
         )

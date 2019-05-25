@@ -20,7 +20,7 @@ ROM.load_from_file("SMB3.nes")
 
 
 def test_3byte_parsing():
-    factory = LevelObjectFactory(OBJ_SET, GFX_SET, PALETTE_GROUP_INDEX, False)
+    factory = LevelObjectFactory(OBJ_SET, GFX_SET, PALETTE_GROUP_INDEX, [], False)
 
     for array, x, y, obj_type, domain in zip(
         THREE_BYTE_ARRAYS, X_POSITIONS, Y_POSITIONS, OBJ_TYPES, DOMAINS

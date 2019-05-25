@@ -1,9 +1,8 @@
 import wx
 
-from game.gfx.objects.LevelObject import LevelObject
-from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from LevelSelector import OBJECT_SET_ITEMS
 from game.gfx.drawable.Block import Block
+from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2
@@ -138,7 +137,7 @@ class ObjectDrawArea(wx.Panel):
         super(ObjectDrawArea, self).__init__(parent)
 
         self.object_factory = LevelObjectFactory(
-            object_set, graphic_set, palette_index, False
+            object_set, graphic_set, palette_index, [], False
         )
 
         self.current_object = None
@@ -168,8 +167,6 @@ class ObjectDrawArea(wx.Panel):
         self.Fit()
 
     def update_object(self, object_data=None):
-        # todo remove after fixing ground map
-        LevelObject.ground_map = []
         if object_data is None:
             object_data = self.current_object.data
 
