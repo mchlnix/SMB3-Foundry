@@ -466,20 +466,18 @@ class SMB3Foundry(wx.Frame):
         elif item_id in self.context_menu.get_all_menu_item_ids():
             x, y = self.context_menu.get_position()
 
-            level_x, level_y = self.level_view.level.to_level_point(x, y)
-
             if item_id == ID_CTX_REMOVE:
                 self.remove_selected_objects()
             elif item_id == ID_CTX_ADD_OBJECT:
-                self.add_object_at(level_x, level_y)
+                self.create_object_at(x, y)
             elif item_id == ID_CTX_ADD_ENEMY:
-                self.add_enemy_at(level_x, level_y)
+                self.create_enemy_at(x, y)
             elif item_id == ID_CTX_CUT:
                 self._cut_object()
             elif item_id == ID_CTX_COPY:
                 self._copy_objects()
             elif item_id == ID_CTX_PASTE:
-                self._paste_objects(level_x, level_y)
+                self._paste_objects(x, y)
 
             self.object_list.update()
 
@@ -505,12 +503,12 @@ class SMB3Foundry(wx.Frame):
         pass
 
     @undoable
-    def add_object_at(self, level_x, level_y):
-        self.level_view.level.create_object_at(level_x, level_y)
+    def create_object_at(self, x, y):
+        self.level_view.create_object_at(x, y)
 
     @undoable
-    def add_enemy_at(self, level_x, level_y):
-        self.level_view.level.create_enemy_at(level_x, level_y)
+    def create_enemy_at(self, x, y):
+        self.level_view.create_enemy_at(x, y)
 
     def on_undo(self, _):
         self.level_view.undo()
@@ -534,27 +532,7 @@ class SMB3Foundry(wx.Frame):
 
     @undoable
     def _paste_objects(self, x, y):
-        objects, origin = self.context_menu.get_copied_objects()
-
-        ori_x, ori_y = origin
-
-        pasted_objects = []
-
-        for obj in objects:
-            obj_x, obj_y = obj.get_position()
-
-            offset_x, offset_y = obj_x - ori_x, obj_y - ori_y
-
-            try:
-                pasted_objects.append(
-                    self.level_view.level.paste_object_at(
-                        x + offset_x, y + offset_y, obj
-                    )
-                )
-            except ValueError:
-                print("Tried pasting outside of level.")
-
-        self.level_view.select_objects(pasted_objects)
+        self.level_view.paste_objects_at(x, y, self.context_menu.get_copied_objects())
 
         self.object_list.update()
 
@@ -587,14 +565,9 @@ class SMB3Foundry(wx.Frame):
 
         index = indexes[0]
 
-        level = self.level_view.level
-        old_object = level.get_object(index)
-        level.remove_object(old_object)
+        old_object = self.level_view.get_object(index)
 
         obj_index = self.spinner_panel.get_type()
-
-        x = old_object.x_position
-        y = old_object.y_position
 
         if isinstance(old_object, LevelObject):
             domain = self.spinner_panel.get_domain()
@@ -604,9 +577,9 @@ class SMB3Foundry(wx.Frame):
             else:
                 length = None
 
-            level.add_object(domain, obj_index, x, y, length, index)
+            self.level_view.replace_object(old_object, domain, obj_index, length)
         else:
-            level.add_enemy(obj_index, x, y, index)
+            self.level_view.replace_enemy(old_object, obj_index)
 
         self.level_view.Refresh()
         self.object_list.update()
@@ -616,7 +589,7 @@ class SMB3Foundry(wx.Frame):
     def fill_object_list(self):
         self.object_list.Clear()
 
-        self.object_list.SetItems(self.level_view.level.get_object_names())
+        self.object_list.SetItems(self.level_view.get_object_names())
 
     def open_level_selector(self, _):
         if not self.safe_to_change():
@@ -705,7 +678,7 @@ class SMB3Foundry(wx.Frame):
                 self.object_list.SetSelection(wx.NOT_FOUND)
 
                 for obj in self.level_view.get_selected_objects():
-                    self.object_list.SetSelection(self.level_view.level.index_of(obj))
+                    self.object_list.SetSelection(self.level_view.index_of(obj))
 
     def on_mouse_wheel(self, event):
         obj_under_cursor = self.level_view.object_at(*event.GetPosition().Get())
@@ -864,7 +837,7 @@ class SMB3Foundry(wx.Frame):
             # todo find better way?
             if isinstance(self.level_view.level, WorldMap):
                 self.object_list.fill()
-                self.object_list.SetSelection(self.level_view.level.objects.index(obj))
+                self.object_list.SetSelection(self.level_view.index_of(obj))
 
             self.level_view.level.changed = True
 
@@ -905,7 +878,7 @@ class SMB3Foundry(wx.Frame):
         if index is None:
             # assume click on levelview
             should_scroll = False
-            index = self.level_view.level.index_of(obj)
+            index = self.level_view.index_of(obj)
 
         if index == wx.NOT_FOUND:
             self.spinner_panel.disable_all()
@@ -913,7 +886,7 @@ class SMB3Foundry(wx.Frame):
             if obj is None:
                 # assume click on object_list
                 should_scroll = True
-                obj = self.level_view.level.get_object(index)
+                obj = self.level_view.get_object(index)
 
             self.object_list.SetSelection(index)
             self.status_bar.fill(obj)

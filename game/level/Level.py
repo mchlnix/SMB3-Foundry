@@ -431,8 +431,15 @@ class Level(LevelLike):
         if obj is None:
             return
 
+        # todo bug
         try:
             LevelObject.ground_map.remove(obj.rect)
+        except ValueError:
+            print(
+                f"{obj.description} was not found in ground map, when trying to remove it. {len(LevelObject.ground_map)}"
+            )
+
+        try:
             self.objects.remove(obj)
         except ValueError:
             self.enemies.remove(obj)

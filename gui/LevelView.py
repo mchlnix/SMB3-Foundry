@@ -181,6 +181,77 @@ class LevelView(wx.Panel):
     def on_size(self, _):
         self.Refresh()
 
+    def index_of(self, obj):
+        return self.level.index_of(obj)
+
+    def get_object(self, index):
+        return self.level.get_object(index)
+
+    def create_object_at(self, x, y):
+        level_x, level_y = self.to_level_point(x, y)
+
+        self.level.create_object_at(level_x, level_y)
+
+    def create_enemy_at(self, x, y):
+        level_x, level_y = self.to_level_point(x, y)
+
+        self.level.create_enemy_at(level_x, level_y)
+
+    def add_object(self, domain, obj_index, x, y, length, index):
+        level_x, level_y = self.to_level_point(x, y)
+
+        self.level.add_object(domain, obj_index, level_x, level_y, length, index)
+
+    def add_enemy(self, obj_index, x, y, index):
+        level_x, level_y = self.to_level_point(x, y)
+
+        self.level.add_enemy(obj_index, level_x, level_y, index)
+
+    def replace_object(self, obj, domain, obj_index, length):
+        self.remove_object(obj)
+
+        x, y = obj.get_position()
+
+        self.level.add_object(domain, obj_index, x, y, length, obj.index)
+
+    def replace_enemy(self, enemy, enemy_index):
+        self.remove_object(enemy)
+
+        x, y = enemy.get_position()
+
+        self.level.add_enemy(enemy_index, x, y, enemy.index)
+
+    def remove_object(self, obj):
+        self.level.remove_object(obj)
+
+    def paste_objects_at(self, x, y, paste_data):
+        level_x, level_y = self.to_level_point(x, y)
+
+        objects, origin = paste_data
+
+        ori_x, ori_y = origin
+
+        pasted_objects = []
+
+        for obj in objects:
+            obj_x, obj_y = obj.get_position()
+
+            offset_x, offset_y = obj_x - ori_x, obj_y - ori_y
+
+            try:
+                pasted_objects.append(
+                    self.level.paste_object_at(
+                        level_x + offset_x, level_y + offset_y, obj
+                    )
+                )
+            except ValueError:
+                print("Tried pasting outside of level.")
+
+        self.select_objects(pasted_objects)
+
+    def get_object_names(self):
+        return self.level.get_object_names()
+
     def on_paint(self, event):
         event.Skip()
 
