@@ -1,11 +1,11 @@
 import wx
 
-from Data import NESPalette, ENEMY_OBJ_DEF, enemy_handle_x, enemy_handle_y
-from ObjectDefinitions import load_object_definition
+from Data import NESPalette
+from ObjectDefinitions import enemy_handle_x, enemy_handle_y
+from game.ObjectSet import ObjectSet, ENEMY_OBJECT_SET
+from game.gfx.PatternTable import PatternTable
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.ObjectLike import ObjectLike
-from game.gfx.PatternTable import PatternTable
-from m3idefs import ObjectDefinition
 
 MASK_COLOR = [0xFF, 0x33, 0xFF]
 
@@ -23,6 +23,8 @@ class EnemyObject(ObjectLike):
         self.pattern_table = PatternTable(0x4C)
         self.palette_group = palette_group
 
+        self.object_set = ObjectSet(ENEMY_OBJECT_SET)
+
         self.bg_color = NESPalette[palette_group[0][0]]
 
         self.png_data = png_data
@@ -33,23 +35,21 @@ class EnemyObject(ObjectLike):
 
     def _setup(self):
 
-        obj_data: ObjectDefinition = load_object_definition(ENEMY_OBJ_DEF)[
-            self.obj_index
-        ]
+        obj_def = self.object_set.get_definition_of(self.obj_index)
 
-        self.description = obj_data.description
+        self.description = obj_def.description
 
-        self.width = obj_data.bmp_width
-        self.height = obj_data.bmp_height
+        self.width = obj_def.bmp_width
+        self.height = obj_def.bmp_height
 
         self.rect = wx.Rect(self.x_position, self.y_position, self.width, self.height)
 
-        self._render(obj_data)
+        self._render(obj_def)
 
-    def _render(self, obj_data):
+    def _render(self, obj_def):
         self.blocks = []
 
-        block_ids = obj_data.object_design
+        block_ids = obj_def.object_design
 
         for block_id in block_ids:
             x = (block_id % 64) * Block.WIDTH

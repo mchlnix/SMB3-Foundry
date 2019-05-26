@@ -347,7 +347,7 @@ class SMB3Foundry(wx.Frame):
             try:
                 ROM.load_from_file(pathname)
 
-                self.update_level(world=1, level=1)
+                self.update_level(world=1, level=1, object_set=1)
 
                 return True
             except IOError:

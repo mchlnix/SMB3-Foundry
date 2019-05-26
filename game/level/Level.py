@@ -1,7 +1,8 @@
 import wx
 
-from Data import Mario3Level, object_set_pointers, object_sets
+from Data import Mario3Level, object_set_pointers
 from File import ROM
+from game.ObjectSet import ObjectSet
 from game.gfx.Palette import get_bg_color_for, load_palette
 from game.gfx.PatternTable import PatternTable
 from game.gfx.drawable.Block import Block
@@ -44,7 +45,8 @@ class Level(LevelLike):
 
         self.attached_to_rom = True
 
-        self.object_set = object_set
+        self.object_set_number = object_set
+        self.object_set = ObjectSet(object_set)
 
         level_index = Level.world_indexes[world - 1] + level - 1
 
@@ -79,14 +81,14 @@ class Level(LevelLike):
 
     def _load_level(self, object_data, enemy_data):
         self.object_factory = LevelObjectFactory(
-            self.object_set,
+            self.object_set_number,
             self.graphic_set_index,
             self.object_palette_index,
             self.objects,
             self.is_vertical,
         )
         self.enemy_item_factory = EnemyItemFactory(
-            self.object_set, self.enemy_palette_index
+            self.object_set_number, self.enemy_palette_index
         )
 
         self._load_objects(object_data)
@@ -134,8 +136,8 @@ class Level(LevelLike):
             self.width = LEVEL_DEFAULT_WIDTH
 
         # todo isn't that the object set for the "next area"?
-        if self.object_set is None:
-            self.object_set = self.header[6] & 0b0000_1111  # for indexing purposes
+        if self.object_set_number is None:
+            self.object_set_number = self.header[6] & 0b0000_1111  # for indexing purposes
 
         self.start_action = (self.header[7] & 0b1110_0000) >> 5
 
@@ -147,7 +149,7 @@ class Level(LevelLike):
 
         # if there is a bonus area or other secondary level, this pointer points to it
 
-        object_set_pointer = object_set_pointers[self.object_set]
+        object_set_pointer = object_set_pointers[self.object_set_number]
 
         self.level_pointer = (
             (self.header[1] << 8)
@@ -188,17 +190,15 @@ class Level(LevelLike):
         if not data or data[0] == 0xFF:
             return
 
-        object_order = object_sets[self.object_set]  # ordered by domain
-
         while True:
             obj_data, data = data[0:3], data[3:]
 
             domain = (obj_data[0] & 0b1110_0000) >> 5
 
-            obj_index = obj_data[2]
-            has_length = object_order[domain][(obj_index & 0b1111_0000) >> 4] == 4
+            obj_id = obj_data[2]
+            has_length_byte = self.object_set.get_object_byte_length(domain, obj_id) == 4
 
-            if has_length:
+            if has_length_byte:
                 fourth_byte, data = data[0], data[1:]
                 obj_data.append(fourth_byte)
 
@@ -337,7 +337,7 @@ class Level(LevelLike):
             return None
 
     def draw(self, dc, block_length, transparency):
-        bg_color = get_bg_color_for(self.object_set, self.object_palette_index)
+        bg_color = get_bg_color_for(self.object_set_number, self.object_palette_index)
 
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
         dc.SetPen(wx.Pen(wx.Colour(0x00, 0x00, 0x00, 0x80), width=1))
@@ -345,7 +345,7 @@ class Level(LevelLike):
 
         dc.Clear()
 
-        if self.object_set == 9:  # desert
+        if self.object_set_number == 9:  # desert
             self._draw_floor(dc, block_length)
 
         for level_object in self.objects:
@@ -379,9 +379,9 @@ class Level(LevelLike):
         floor_level = 26
         floor_block_index = 86
 
-        palette_group = load_palette(self.object_set, self.object_palette_index)
+        palette_group = load_palette(self.object_set_number, self.object_palette_index)
         pattern_table = PatternTable(self.graphic_set_index)
-        tsa_data = ROM().get_tsa_data(self.object_set)
+        tsa_data = ROM().get_tsa_data(self.object_set_number)
 
         floor_block = Block(floor_block_index, palette_group, pattern_table, tsa_data)
 
@@ -463,7 +463,7 @@ class Level(LevelLike):
 
         m3l_bytes.append(self.world)
         m3l_bytes.append(self.level)
-        m3l_bytes.append(self.object_set)
+        m3l_bytes.append(self.object_set_number)
 
         m3l_bytes.extend(self.header)
 
@@ -481,7 +481,7 @@ class Level(LevelLike):
         return m3l_bytes
 
     def from_m3l(self, m3l_bytes):
-        self.world, self.level, self.object_set = m3l_bytes[:3]
+        self.world, self.level, self.object_set_number = m3l_bytes[:3]
 
         # reload level with new parameters
         self._load_level(b"", b"")

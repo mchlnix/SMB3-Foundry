@@ -1,5 +1,5 @@
 from game.gfx.objects.LevelObject import LevelObject
-from ObjectDefinitions import load_object_definition
+from ObjectDefinitions import load_object_definitions
 from game.gfx.Palette import load_palette
 from game.gfx.PatternTable import PatternTable
 
@@ -24,7 +24,7 @@ class LevelObjectFactory:
 
     def set_object_set(self, object_set):
         self.object_set = object_set
-        self.object_definitions = load_object_definition(self.object_set)
+        self.object_definitions = load_object_definitions(self.object_set)
 
     def set_graphic_set(self, graphic_set):
         self.graphic_set = graphic_set

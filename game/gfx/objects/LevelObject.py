@@ -1,26 +1,22 @@
 import wx
 
 from File import ROM
+from ObjectDefinitions import (HORIZONTAL,
+                               VERTICAL,
+                               DIAG_DOWN_LEFT,
+                               DIAG_DOWN_RIGHT,
+                               DIAG_UP_RIGHT,
+                               HORIZ_TO_GROUND,
+                               HORIZONTAL_2,
+                               SINGLE_BLOCK_OBJECT,
+                               PYRAMID_TO_GROUND,
+                               PYRAMID_2,
+                               TO_THE_SKY,
+                               ENDING,
+                               UNIFORM, END_ON_TOP_OR_LEFT, END_ON_BOTTOM_OR_RIGHT, TWO_ENDS)
+from game.ObjectSet import ObjectSet
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.ObjectLike import ObjectLike
-from m3idefs import (
-    TO_THE_SKY,
-    DIAG_DOWN_LEFT,
-    DIAG_DOWN_RIGHT,
-    DIAG_UP_RIGHT,
-    UNIFORM,
-    END_ON_TOP_OR_LEFT,
-    END_ON_BOTTOM_OR_RIGHT,
-    PYRAMID_TO_GROUND,
-    PYRAMID_2,
-    ENDING,
-    VERTICAL,
-    TWO_ENDS,
-    HORIZONTAL,
-    HORIZ_TO_GROUND,
-    HORIZONTAL_2,
-    SINGLE_BLOCK_OBJECT,
-)
 
 SKY = 0
 GROUND = 27
@@ -50,28 +46,6 @@ ORIENTATION_TO_STR = {
     14: "Ending",
 }
 
-# todo what is this, and where should we put it?
-OBJECT_SET_TO_ENDING = {
-    0: 0,
-    1: 0,
-    2: 0,
-    3: 0,
-    7: 0,
-    10: 0,
-    13: 0,
-    14: 0,  # Underground
-    15: 0,
-    16: 0,
-    114: 0,
-    4: 1,
-    12: 1,
-    5: 2,
-    9: 2,
-    11: 2,
-    6: 3,
-    8: 3,
-}
-
 # todo what is this, exactly?
 ENDING_OBJECT_OFFSET = 0x1C8F9
 
@@ -94,11 +68,11 @@ class LevelObject(ObjectLike):
         is_vertical,
         index,
     ):
+        self.object_set = ObjectSet(object_set)
+
         self.pattern_table = pattern_table
         self.tsa_data = ROM.get_tsa_data(object_set)
-        self.object_definitions = object_definitions
 
-        self.object_set = object_set
         self.x_position = 0
         self.y_position = 0
 
@@ -146,7 +120,7 @@ class LevelObject(ObjectLike):
         else:
             self.type = (self.obj_index >> 4) + domain_offset + 16 - 1
 
-        object_data = self.object_definitions[self.type]
+        object_data = self.object_set.get_definition_of(self.type)
 
         self.width = object_data.bmp_width
         self.height = object_data.bmp_height
@@ -340,9 +314,10 @@ class LevelObject(ObjectLike):
                 blocks_to_draw.append(self.blocks[0])
                 blocks_to_draw.extend([self.blocks[1]] * (new_width - 1))
 
+            # todo magic number
             # ending graphics
             rom_offset = (
-                ENDING_OBJECT_OFFSET + OBJECT_SET_TO_ENDING[self.object_set] * 0x60
+                ENDING_OBJECT_OFFSET + self.object_set.get_ending_offset() * 0x60
             )
 
             rom = ROM()
