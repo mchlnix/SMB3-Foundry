@@ -1,4 +1,4 @@
-from ObjectDefinitions import load_object_definitions
+from game.ObjectDefinitions import load_object_definitions
 
 ENEMY_OBJECT_SET = 16
 

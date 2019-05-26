@@ -1,19 +1,24 @@
 import wx
 
 from File import ROM
-from ObjectDefinitions import (HORIZONTAL,
-                               VERTICAL,
-                               DIAG_DOWN_LEFT,
-                               DIAG_DOWN_RIGHT,
-                               DIAG_UP_RIGHT,
-                               HORIZ_TO_GROUND,
-                               HORIZONTAL_2,
-                               SINGLE_BLOCK_OBJECT,
-                               PYRAMID_TO_GROUND,
-                               PYRAMID_2,
-                               TO_THE_SKY,
-                               ENDING,
-                               UNIFORM, END_ON_TOP_OR_LEFT, END_ON_BOTTOM_OR_RIGHT, TWO_ENDS)
+from game.ObjectDefinitions import (
+    HORIZONTAL,
+    VERTICAL,
+    DIAG_DOWN_LEFT,
+    DIAG_DOWN_RIGHT,
+    DIAG_UP_RIGHT,
+    HORIZ_TO_GROUND,
+    HORIZONTAL_2,
+    SINGLE_BLOCK_OBJECT,
+    PYRAMID_TO_GROUND,
+    PYRAMID_2,
+    TO_THE_SKY,
+    ENDING,
+    UNIFORM,
+    END_ON_TOP_OR_LEFT,
+    END_ON_BOTTOM_OR_RIGHT,
+    TWO_ENDS,
+)
 from game.ObjectSet import ObjectSet
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.ObjectLike import ObjectLike

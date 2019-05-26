@@ -1,5 +1,5 @@
 from game.gfx.objects.LevelObject import LevelObject
-from ObjectDefinitions import load_object_definitions
+from game.ObjectDefinitions import load_object_definitions
 from game.gfx.Palette import load_palette
 from game.gfx.PatternTable import PatternTable
 
