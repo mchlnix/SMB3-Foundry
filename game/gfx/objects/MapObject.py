@@ -160,6 +160,9 @@ class MapObject(ObjectLike):
     def get_position(self):
         return self.x_position, self.y_position
 
+    def render(self):
+        pass
+
     def draw(self, dc, block_length, _=None):
         self.block.draw(
             dc,
