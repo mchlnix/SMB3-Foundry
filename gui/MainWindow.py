@@ -625,7 +625,7 @@ class SMB3Foundry(wx.Frame):
         self.level_view.load_level(world=world, level=level, object_set=object_set)
         self.Fit()
 
-        if self.header_editor is not None:
+        if self.header_editor is not None and isinstance(level, Level):
             self.header_editor.reload_level()
 
         self.object_list.fill()
