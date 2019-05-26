@@ -1,5 +1,6 @@
 venv
 .*
+*.tags
 SMB3.nes
 __pycache__
 build/
