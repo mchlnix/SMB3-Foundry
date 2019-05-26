@@ -660,7 +660,8 @@ class SMB3Foundry(wx.Frame):
             if key == ord("C"):
                 self._copy_objects()
             elif key == ord("V"):
-                self._paste_objects(*self.last_mouse_position)
+                x, y = self.level_view.to_screen_point(*self.last_mouse_position)
+                self._paste_objects(x, y)
             elif key == ord("X"):
                 self._cut_object()
 
