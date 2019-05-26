@@ -67,6 +67,9 @@ class BlockViewer(wx.Frame):
         self.Bind(wx.EVT_SIZE, self.on_resize)
         self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
 
+        self.SetStatusBar(wx.StatusBar(self))
+        self.GetStatusBar().SetFieldsCount(3)
+
     def on_key_press(self, event):
         key = event.GetKeyCode()
 
@@ -126,6 +129,7 @@ class BlockBank(wx.Panel):
 
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_PAINT, self.on_paint)
+        self.Bind(wx.EVT_MOTION, self.on_mouse_motion)
 
         self.SetSize(self.size)
 
@@ -150,6 +154,23 @@ class BlockBank(wx.Panel):
         )
 
         self.GetParent().on_resize(None)
+
+    def on_mouse_motion(self, event):
+        x, y = event.GetPosition().Get()
+
+        block_length = Block.WIDTH * self.zoom
+
+        column = x // block_length
+        row = y // block_length
+
+        dec_index = row * self.sprites_horiz + column
+        hex_index = hex(dec_index).upper().replace("X", "x")
+
+        self.GetParent().SetStatusText(f"Row: {row}", 0)
+        self.GetParent().SetStatusText(f"Column: {column}", 1)
+        self.GetParent().SetStatusText(f"Index: {dec_index} / {hex_index}", 2)
+
+        event.Skip()
 
     def on_paint(self, event):
         event.Skip()
