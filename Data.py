@@ -34,30 +34,11 @@ Mario3Level = namedtuple(
     ],
 )
 
-palette_file = "data/Default.pal"
+# insert meaningless first item, so that the world number is the correct index
+world_indexes = [0]
 
-with open(palette_file, "rb") as f:
-    color_data = f.read()
-
-offset = 0x18  # first color position
-
-NESPalette = []
-COLOR_COUNT = 64
-COLOR_SIZE = 3
-
-for i in range(COLOR_COUNT):
-    NESPalette.append(
-        [color_data[offset], color_data[offset + 1], color_data[offset + 2]]
-    )
-
-    offset += COLOR_SIZE + 1
-
-world_indexes = [
-    0
-]  # insert meaningless first item, so that the world number is the correct index
-level_array = [
-    0
-]  # insert meaningless first item so that that world_indexes[world] + level is the correct index
+# insert meaningless first item so that that world_indexes[world] + level is the correct index
+level_array = [0]
 
 with open("data/levels.dat", "r") as level_data:
     for line_no, line in enumerate(level_data.readlines()):

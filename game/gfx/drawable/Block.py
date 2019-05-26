@@ -1,6 +1,6 @@
 import wx
 
-from Data import NESPalette
+from game.gfx.Palette import NESPalette
 from game.gfx.drawable import MASK_COLOR
 from game.gfx.drawable.Tile import Tile
 

@@ -1,8 +1,8 @@
 import wx
 
-from Data import NESPalette
 from game.ObjectDefinitions import enemy_handle_x, enemy_handle_y
 from game.ObjectSet import ObjectSet, ENEMY_OBJECT_SET
+from game.gfx.Palette import NESPalette
 from game.gfx.PatternTable import PatternTable
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.ObjectLike import ObjectLike

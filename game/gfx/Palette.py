@@ -1,4 +1,3 @@
-from Data import NESPalette
 from File import ROM
 
 MAP_PALETTE_ADDRESS = 0x36BE2
@@ -16,6 +15,24 @@ PALETTE_DATA_SIZE = (
     * PALETTES_PER_PALETTES_GROUP
     * COLORS_PER_PALETTE
 )
+
+palette_file = "data/Default.pal"
+
+with open(palette_file, "rb") as f:
+    color_data = f.read()
+
+offset = 0x18  # first color position
+
+NESPalette = []
+COLOR_COUNT = 64
+BYTES_IN_COLOR = 3 + 1  # bytes + separator
+
+for i in range(COLOR_COUNT):
+    NESPalette.append(
+        [color_data[offset], color_data[offset + 1], color_data[offset + 2]]
+    )
+
+    offset += BYTES_IN_COLOR
 
 
 def load_palette(object_set, palette_group):
