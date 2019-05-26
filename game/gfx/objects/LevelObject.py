@@ -81,6 +81,9 @@ class LevelObject(ObjectLike):
         self.x_position = 0
         self.y_position = 0
 
+        self.rendered_base_x = 0
+        self.rendered_base_y = 0
+
         self.palette_group = palette_group
 
         self.index = index
@@ -516,8 +519,8 @@ class LevelObject(ObjectLike):
 
         self.rendered_width = new_width
         self.rendered_height = new_height
-        self.x_position = self.rendered_base_x = base_x
-        self.y_position = self.rendered_base_y = base_y
+        self.rendered_base_x = base_x
+        self.rendered_base_y = base_y
 
         if not self.rendered_height == len(self.rendered_blocks) / new_width:
             print(
@@ -577,14 +580,20 @@ class LevelObject(ObjectLike):
         x = max(0, x)
         y = max(0, y)
 
-        self.x_position = int(x)
-        self.y_position = int(y)
+        x_diff = self.x_position - self.rendered_base_x
+        y_diff = self.y_position - self.rendered_base_y
+
+        self.rendered_base_x = int(x)
+        self.rendered_base_y = int(y)
+
+        self.x_position = self.rendered_base_x + x_diff
+        self.y_position = self.rendered_base_y + y_diff
 
         self._render()
 
     def move_by(self, dx, dy):
-        new_x = self.x_position + dx
-        new_y = self.y_position + dy
+        new_x = self.rendered_base_x + dx
+        new_y = self.rendered_base_y + dy
 
         self.set_position(new_x, new_y)
 
