@@ -18,6 +18,7 @@ from Events import (
     EVT_REDO_COMPLETE,
     EVT_UNDO_CLEARED,
     EVT_UNDO_SAVED,
+    EVT_OBJ_LIST,
 )
 from File import ROM
 from HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
@@ -246,7 +247,7 @@ class SMB3Foundry(wx.Frame):
 
         self.scroll_panel = wx.lib.scrolledpanel.ScrolledPanel(self)
 
-        self.level_view = LevelView(parent=self.scroll_panel)
+        self.level_view = LevelView(self.scroll_panel, self.context_menu)
 
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self.level_view)
@@ -291,6 +292,8 @@ class SMB3Foundry(wx.Frame):
         self.level_view.Bind(wx.EVT_MOUSEWHEEL, self.on_mouse_wheel)
         self.level_view.Bind(wx.EVT_RIGHT_DOWN, self.on_right_mouse_button_down)
         self.level_view.Bind(wx.EVT_RIGHT_UP, self.on_right_mouse_button_up)
+
+        self.Bind(EVT_OBJ_LIST, self.on_object_selected)
 
         self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
 
@@ -773,6 +776,18 @@ class SMB3Foundry(wx.Frame):
             self.level_view.level.changed = True
 
         self.level_view.Refresh()
+
+    def on_object_selected(self, event):
+        objects = event.objects
+
+        if len(objects) == 1:
+            obj = objects[0]
+            self.status_bar.fill(obj)
+
+            self.spinner_panel.set_type(obj.obj_index)
+
+            if obj.is_4byte:
+                self.spinner_panel.spin_length.SetValue(obj.data[3])
 
     def on_right_mouse_button_up(self, event):
         if self.resizing_happened:

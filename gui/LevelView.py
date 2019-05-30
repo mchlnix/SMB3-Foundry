@@ -1,5 +1,6 @@
 import wx
 
+from Events import ObjectListUpdateEvent
 from game.level.Level import Level
 from SelectionSquare import SelectionSquare
 from game.gfx.drawable.Block import Block
@@ -9,10 +10,16 @@ from game.level.WorldMap import WorldMap
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
 
+# mouse modes
+
+MODE_FREE = 0
+MODE_DRAG = 1
+MODE_RESIZE = 2
+
 
 # TODO a lot of functionality from MainWindow can be put here
 class LevelView(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, context_menu):
         super(LevelView, self).__init__(parent)
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         self.Bind(wx.EVT_SIZE, self.on_size)
@@ -20,6 +27,8 @@ class LevelView(wx.Panel):
 
         self.level = None
         self.undo_stack = UndoStack(self)
+
+        self.context_menu = context_menu
 
         self.grid_lines = False
         self.grid_pen = wx.Pen(colour=wx.Colour(0x80, 0x80, 0x80, 0x80), width=1)
@@ -34,6 +43,195 @@ class LevelView(wx.Panel):
         self.selected_objects = []
 
         self.selection_square = SelectionSquare()
+
+        self.mouse_mode = MODE_FREE
+
+        self.last_mouse_position = 0, 0
+
+        self.drag_start_point = 0, 0
+
+        self.dragging_happened = True
+
+        self.resize_mouse_start_x = 0
+        self.resize_obj_start_point = 0, 0
+
+        self.resizing_happened = False
+
+    def on_mouse_motion(self, event):
+        if self.mouse_mode == MODE_DRAG:
+            self.dragging(event)
+        elif self.mouse_mode == MODE_RESIZE:
+            self.resizing(event)
+        else:
+            if self.selection_square.active:
+                self.set_selection_end(event.GetPosition())
+
+                selected_object_indexes = [
+                    self.index_of(obj) for obj in self.get_selected_objects()
+                ]
+
+                evt = ObjectListUpdateEvent(
+                    id=self.GetId(), objects=selected_object_indexes
+                )
+
+                wx.PostEvent(self, evt)
+
+    def on_right_mouse_button_down(self, event):
+        if self.mouse_mode == MODE_DRAG:
+            return
+
+        x, y = event.GetPosition().Get()
+        level_x, level_y = self.to_level_point(x, y)
+
+        self.last_mouse_position = level_x, level_y
+
+        if self.select_objects_on_click(event):
+            self.mouse_mode = MODE_RESIZE
+
+            self.resize_mouse_start_x = level_x
+
+            obj = self.object_at(x, y)
+
+            self.resize_obj_start_point = obj.x_position, obj.y_position
+
+    def resizing(self, event):
+        self.resizing_happened = True
+
+        if isinstance(self.level, WorldMap):
+            return
+
+        x, y = event.GetPosition().Get()
+
+        level_x, level_y = self.to_level_point(x, y)
+
+        dx = level_x - self.resize_obj_start_point[0]
+        dy = level_y - self.resize_obj_start_point[1]
+
+        self.last_mouse_position = level_x, level_y
+
+        selected_objects = self.get_selected_objects()
+
+        for obj in selected_objects:
+            obj.resize_by(dx, dy)
+
+            self.level.changed = True
+
+        if selected_objects:
+            wx.PostEvent(
+                self, ObjectListUpdateEvent(id=self.GetId(), objects=selected_objects)
+            )
+
+        self.Refresh()
+
+    def on_right_mouse_button_up(self, event):
+        if self.resizing_happened:
+            x, y = event.GetPosition().Get()
+
+            resize_end_x, _ = self.to_level_point(x, y)
+
+            if self.resize_mouse_start_x != resize_end_x:
+                self.stop_resize(event)
+        else:
+            if self.get_selected_objects():
+                menu = self.context_menu.as_object_menu()
+            else:
+                menu = self.context_menu.as_background_menu()
+
+            adjusted_for_scrolling = self.ScreenToClient(
+                self.ClientToScreen(event.GetPosition())
+            )
+
+            self.context_menu.set_position(event.GetPosition())
+
+            self.PopupMenu(menu, adjusted_for_scrolling)
+
+        self.resizing_happened = False
+        self.mouse_mode = MODE_FREE
+
+    def stop_resize(self, _):
+        self.resizing_happened = False
+        self.mouse_mode = MODE_FREE
+
+    def on_left_mouse_button_down(self, event):
+        if self.mouse_mode == MODE_RESIZE:
+            return
+
+        if self.select_objects_on_click(event):
+            x, y = event.GetPosition().Get()
+
+            obj = self.object_at(x, y)
+
+            self.drag_start_point = obj.x_position, obj.y_position
+        else:
+            self.start_selection_square(event.GetPosition())
+
+    def dragging(self, event):
+        self.dragging_happened = True
+
+        x, y = event.GetPosition().Get()
+
+        level_x, level_y = self.to_level_point(x, y)
+
+        dx = level_x - self.last_mouse_position[0]
+        dy = level_y - self.last_mouse_position[1]
+
+        self.last_mouse_position = level_x, level_y
+
+        selected_objects = self.get_selected_objects()
+
+        for obj in selected_objects:
+            obj.move_by(dx, dy)
+
+            self.level.changed = True
+
+        if selected_objects:
+            wx.PostEvent(self, ObjectListUpdateEvent)
+
+        self.Refresh()
+
+    def on_left_mouse_button_up(self, event):
+        if self.mouse_mode == MODE_DRAG and self.dragging_happened:
+            x, y = event.GetPosition().Get()
+
+            obj = self.object_at(x, y)
+
+            drag_end_point = obj.x_position, obj.y_position
+
+            if self.drag_start_point != drag_end_point:
+                self.stop_drag()
+            else:
+                self.dragging_happened = False
+        else:
+            self.stop_selection_square()
+
+        self.mouse_mode = MODE_FREE
+
+    def stop_drag(self):
+        self.dragging_happened = False
+
+    def select_objects_on_click(self, event):
+        x, y = event.GetPosition().Get()
+        level_x, level_y = self.to_level_point(x, y)
+
+        self.last_mouse_position = level_x, level_y
+
+        clicked_object = self.object_at(x, y)
+
+        clicked_on_background = clicked_object is None
+
+        if clicked_on_background:
+            self.select_object(None)
+        else:
+            self.mouse_mode = MODE_DRAG
+
+            selected_objects = self.get_selected_objects()
+
+            nothing_selected = not selected_objects
+
+            if nothing_selected or clicked_object not in selected_objects:
+                self.select_object(clicked_object)
+
+        return not clicked_on_background
 
     def undo(self):
         self.level.from_bytes(*self.undo_stack.undo())
