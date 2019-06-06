@@ -628,7 +628,17 @@ class SMB3Foundry(wx.Frame):
         self.header_editor.Raise()
 
     def update_level(self, world, level, object_set=None):
-        self.level_view.load_level(world=world, level=level, object_set=object_set)
+        try:
+            self.level_view.load_level(world=world, level=level, object_set=object_set)
+        except IndexError as ie:
+            wx.MessageBox(
+                "Failed loading level. The level offsets don't match.",
+                "Please confirm",
+                wx.ICON_ERROR | wx.OK,
+                self,
+            )
+
+            return
 
         self.Fit()
 
