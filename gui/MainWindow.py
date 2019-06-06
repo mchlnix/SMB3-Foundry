@@ -311,8 +311,6 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(EVT_HEADER_CHANGED, self.on_header_change)
 
-        self.mouse_mode = MODE_FREE
-
         self.resize_obj_start_point = 0, 0
         self.resize_mouse_start_x = 0
         self.resizing_happened = False
@@ -631,6 +629,7 @@ class SMB3Foundry(wx.Frame):
 
     def update_level(self, world, level, object_set=None):
         self.level_view.load_level(world=world, level=level, object_set=object_set)
+
         self.Fit()
 
         if self.header_editor is not None and isinstance(level, Level):
