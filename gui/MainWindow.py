@@ -19,6 +19,7 @@ from Events import (
     EVT_UNDO_CLEARED,
     EVT_UNDO_SAVED,
     EVT_OBJ_LIST,
+    ObjectListUpdateEvent,
 )
 from File import ROM
 from HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
@@ -285,15 +286,19 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
 
-        self.level_view.Bind(wx.EVT_LEFT_DOWN, self.level_view.on_left_mouse_button_down)
+        self.level_view.Bind(
+            wx.EVT_LEFT_DOWN, self.level_view.on_left_mouse_button_down
+        )
         self.level_view.Bind(wx.EVT_LEFT_UP, self.level_view.on_left_mouse_button_up)
 
         self.level_view.Bind(wx.EVT_MOTION, self.level_view.on_mouse_motion)
         self.level_view.Bind(wx.EVT_MOUSEWHEEL, self.on_mouse_wheel)
-        self.level_view.Bind(wx.EVT_RIGHT_DOWN, self.level_view.on_right_mouse_button_down)
+        self.level_view.Bind(
+            wx.EVT_RIGHT_DOWN, self.level_view.on_right_mouse_button_down
+        )
         self.level_view.Bind(wx.EVT_RIGHT_UP, self.level_view.on_right_mouse_button_up)
 
-        self.Bind(EVT_OBJ_LIST, self.on_object_selected)
+        self.Bind(EVT_OBJ_LIST, self.on_objects_selected)
 
         self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
 
@@ -543,7 +548,7 @@ class SMB3Foundry(wx.Frame):
     def remove_selected_objects(self):
         self.level_view.remove_selected_objects()
         self.object_list.remove_selected()
-        self.select_object(None)
+        self.deselect_all()
 
     def on_menu_item_checked(self, event):
         item_id = event.GetId()
@@ -676,6 +681,9 @@ class SMB3Foundry(wx.Frame):
         if obj_under_cursor is None:
             event.Skip()
         else:
+            if isinstance(self.level_view.level, WorldMap):
+                return
+
             self.change_object_on_mouse_wheel(event)
 
     @undoable
@@ -692,41 +700,26 @@ class SMB3Foundry(wx.Frame):
 
         self.level_view.Refresh()
 
-    def select_objects_on_click(self, event):
-        x, y = event.GetPosition().Get()
-        level_x, level_y = self.level_view.to_level_point(x, y)
-
-        self.last_mouse_position = level_x, level_y
-
-        clicked_object = self.level_view.object_at(x, y)
-
-        clicked_on_background = clicked_object is None
-
-        if clicked_on_background:
-            self.select_object(None)
-        else:
-            self.mouse_mode = MODE_DRAG
-
-            selected_objects = self.level_view.get_selected_objects()
-
-            nothing_selected = not selected_objects
-
-            if nothing_selected or clicked_object not in selected_objects:
-                self.select_object(clicked_object)
-
-        return not clicked_on_background
-
-    def on_object_selected(self, event):
+    def on_objects_selected(self, event):
         objects = event.objects
+
+        self.status_bar.clear()
+        self.spinner_panel.clear_spinners()
+        self.object_list.SetSelection(wx.NOT_FOUND)
+
+        for index in event.indexes:
+            self.object_list.SetSelection(index)
 
         if len(objects) == 1:
             obj = objects[0]
             self.status_bar.fill(obj)
 
-            self.spinner_panel.set_type(obj.obj_index)
+            if isinstance(obj, LevelObject):
+                self.spinner_panel.set_type(obj.obj_index)
+                self.spinner_panel.set_domain(obj.domain)
 
-            if obj.is_4byte:
-                self.spinner_panel.spin_length.SetValue(obj.data[3])
+                if obj.is_4byte:
+                    self.spinner_panel.spin_length.SetValue(obj.data[3])
 
     @undoable
     def stop_resize(self, event):
@@ -736,6 +729,11 @@ class SMB3Foundry(wx.Frame):
     def stop_drag(self):
         self.level_view.stop_drag()
 
+    def deselect_all(self):
+        self.level_view.select_object(None)
+
+        self.spinner_panel.disable_all()
+
     def select_object(self, obj=None, index=None):
         should_scroll = True
 
@@ -744,8 +742,9 @@ class SMB3Foundry(wx.Frame):
 
         if obj is None and index is None:
             index = -1
-            self.object_list.SetSelection(index)
-            self.status_bar.clear()
+            self.on_objects_selected(
+                ObjectListUpdateEvent(id=wx.ID_ANY, objects=[], indexes=[])
+            )
 
         if index is None:
             # assume click on levelview
@@ -760,8 +759,9 @@ class SMB3Foundry(wx.Frame):
                 should_scroll = True
                 obj = self.level_view.get_object(index)
 
-            self.object_list.SetSelection(index)
-            self.status_bar.fill(obj)
+            self.on_objects_selected(
+                ObjectListUpdateEvent(id=wx.ID_ANY, objects=[obj], indexes=[index])
+            )
 
             self.level_view.select_object(obj)
 

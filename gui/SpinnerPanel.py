@@ -179,7 +179,14 @@ class SpinnerPanel(wx.Panel):
         self.spin_length.SetValue(value)
         self.spin_length.Enable(enable)
 
+    def clear_spinners(self):
+        self.set_type(0x00)
+        self.set_domain(0x00)
+        self.set_length(0x00)
+
     def disable_all(self):
+        self.clear_spinners()
+
         self.enable_type(False)
         self.enable_domain(False)
         self.enable_length(False)

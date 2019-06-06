@@ -66,16 +66,6 @@ class LevelView(wx.Panel):
             if self.selection_square.active:
                 self.set_selection_end(event.GetPosition())
 
-                selected_object_indexes = [
-                    self.index_of(obj) for obj in self.get_selected_objects()
-                ]
-
-                evt = ObjectListUpdateEvent(
-                    id=self.GetId(), objects=selected_object_indexes
-                )
-
-                wx.PostEvent(self, evt)
-
     def on_right_mouse_button_down(self, event):
         if self.mouse_mode == MODE_DRAG:
             return
@@ -115,11 +105,6 @@ class LevelView(wx.Panel):
             obj.resize_by(dx, dy)
 
             self.level.changed = True
-
-        if selected_objects:
-            wx.PostEvent(
-                self, ObjectListUpdateEvent(id=self.GetId(), objects=selected_objects)
-            )
 
         self.Refresh()
 
@@ -183,9 +168,6 @@ class LevelView(wx.Panel):
             obj.move_by(dx, dy)
 
             self.level.changed = True
-
-        if selected_objects:
-            wx.PostEvent(self, ObjectListUpdateEvent)
 
         self.Refresh()
 
@@ -306,21 +288,26 @@ class LevelView(wx.Panel):
         if obj is not None:
             self.select_objects([obj])
         else:
-            self.select_objects(None)
+            self.select_objects([])
 
     def select_objects(self, objects):
         for obj in self.selected_objects:
             obj.selected = False
 
-        self.selected_objects.clear()
-
-        if objects is None:
-            return
-
         for obj in objects:
             obj.selected = True
 
         self.selected_objects = objects
+
+        selected_object_indexes = [self.index_of(obj) for obj in self.selected_objects]
+
+        evt = ObjectListUpdateEvent(
+            id=self.GetId(),
+            indexes=selected_object_indexes,
+            objects=self.get_selected_objects(),
+        )
+
+        wx.PostEvent(self, evt)
 
         self.Refresh()
 
