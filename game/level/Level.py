@@ -36,7 +36,7 @@ class Level(LevelLike):
 
     palettes = []
 
-    def __init__(self, world, level, object_set=None):
+    def __init__(self, world, level, object_data_offset, enemy_data_offset, object_set):
         super(Level, self).__init__(world, level, object_set)
         if not Level.offsets:
             Level.offsets, Level.world_indexes = _load_level_offsets()
@@ -57,20 +57,22 @@ class Level(LevelLike):
         else:
             self.name = f"Level {world}-{level}, '{level_data.name}'"
 
-        self.offset = level_data.rom_level_offset - Level.HEADER_LENGTH
-        self.enemy_offset = level_data.enemy_offset
+        self.object_offset = object_data_offset
+        self.enemy_offset = enemy_data_offset + 1
 
         self.objects = []
         self.enemies = []
 
-        print(f"Loading {self.name} @ {hex(self.offset)}/{hex(self.enemy_offset)}")
+        print(
+            f"Loading {self.name} @ {hex(self.object_offset)}/{hex(self.enemy_offset)}"
+        )
 
         rom = ROM()
 
-        self.header = rom.bulk_read(Level.HEADER_LENGTH, self.offset)
+        self.header = rom.bulk_read(Level.HEADER_LENGTH, self.object_offset)
         self._parse_header()
 
-        object_offset = self.offset + Level.HEADER_LENGTH
+        object_offset = self.object_offset + Level.HEADER_LENGTH
 
         object_data = ROM.rom_data[object_offset:]
         enemy_data = ROM.rom_data[self.enemy_offset :]
@@ -525,11 +527,11 @@ class Level(LevelLike):
 
         enemies.append(0xFF)
 
-        return [(self.offset, data), (self.enemy_offset, enemies)]
+        return [(self.object_offset, data), (self.enemy_offset, enemies)]
 
     def from_bytes(self, object_data, enemy_data):
 
-        self.offset, object_bytes = object_data
+        self.object_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data
 
         self.header = object_bytes[0 : Level.HEADER_LENGTH]

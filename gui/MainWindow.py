@@ -353,7 +353,7 @@ class SMB3Foundry(wx.Frame):
             try:
                 ROM.load_from_file(pathname)
 
-                self.update_level(world=1, level=1, object_set=1)
+                self.open_level_selector(None)
 
                 return True
             except IOError:
@@ -627,9 +627,13 @@ class SMB3Foundry(wx.Frame):
         self.header_editor.Show()
         self.header_editor.Raise()
 
-    def update_level(self, world, level, object_set=None):
+    def update_level(
+        self, world, level, object_data_offset, enemy_data_offset, object_set=None
+    ):
         try:
-            self.level_view.load_level(world=world, level=level, object_set=object_set)
+            self.level_view.load_level(
+                world, level, object_data_offset, enemy_data_offset, object_set
+            )
         except IndexError as ie:
             wx.MessageBox(
                 "Failed loading level. The level offsets don't match.",

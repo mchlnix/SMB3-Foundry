@@ -186,8 +186,15 @@ class LevelSelector(wx.Frame):
 
     def on_ok(self, _):
         object_set = self.object_set_dropdown.GetSelection()
+        object_data_offset = self.object_data_spinner.GetValue()
+        enemy_data_offset = self.enemy_data_spinner.GetValue()
+
         self.GetParent().update_level(
-            self.selected_world, self.selected_level, object_set
+            self.selected_world,
+            self.selected_level,
+            object_data_offset,
+            enemy_data_offset,
+            object_set,
         )
         self.Hide()
 

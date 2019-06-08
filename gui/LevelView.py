@@ -331,11 +331,15 @@ class LevelView(wx.Panel):
         else:
             return self.level.changed
 
-    def load_level(self, world, level, object_set=None):
+    def load_level(
+        self, world, level, object_data_offset, enemy_data_offset, object_set=None
+    ):
         if world == 0:
             self.level = WorldMap(level)
         else:
-            self.level = Level(world, level, object_set)
+            self.level = Level(
+                world, level, object_data_offset, enemy_data_offset, object_set
+            )
 
         self.undo_stack.clear(self.level.to_bytes())
 
@@ -344,7 +348,7 @@ class LevelView(wx.Panel):
         print(f"Drawing {self.level.name}")
 
     def from_m3l(self, data):
-        self.load_level(1, 1, 1)
+        self.load_level(1, 1, 0x0, 0x0, 1)
 
         self.level.from_m3l(data)
 
