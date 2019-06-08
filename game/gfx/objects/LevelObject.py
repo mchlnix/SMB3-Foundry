@@ -716,3 +716,6 @@ class LevelObject(ObjectLike):
             data.append(self.length)
 
         return data
+
+    def __repr__(self):
+        return f"LevelObject {self.description} at {self.x_position}, {self.y_position}"

@@ -149,3 +149,6 @@ class EnemyObject(ObjectLike):
 
     def to_bytes(self):
         return bytearray([self.obj_index, self.x_position, self.y_position])
+
+    def __repr__(self):
+        return f"EnemyObject {self.description} at {self.x_position}, {self.y_position}"

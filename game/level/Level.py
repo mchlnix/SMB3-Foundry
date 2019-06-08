@@ -177,7 +177,10 @@ class Level(LevelLike):
         self.enemies.clear()
 
         def data_left(_data):
-            return data and not (_data[0] == 0xFF and _data[1] in [0x00, 0x01])
+            # the commented out code seems to hold for the stock ROM, but if the ROM was already edited with another
+            # editor, it might not, since they only wrote the 0xFF to end the enemy data
+
+            return _data and not _data[0] == 0xFF  # and _data[1] in [0x00, 0x01]
 
         enemy_data, data = data[0:ENEMY_SIZE], data[ENEMY_SIZE:]
 
