@@ -8,6 +8,7 @@ from game.gfx.PatternTable import PatternTable
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.EnemyItem import EnemyObject
 from game.gfx.objects.EnemyItemFactory import EnemyItemFactory
+from game.gfx.objects.Jump import Jump
 from game.gfx.objects.LevelObject import LevelObject
 from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from game.level import _load_level_offsets
@@ -61,6 +62,7 @@ class Level(LevelLike):
         self.enemy_offset = enemy_data_offset + 1
 
         self.objects = []
+        self.jumps = []
         self.enemies = []
 
         print(
@@ -213,7 +215,10 @@ class Level(LevelLike):
 
             level_object = self.object_factory.from_data(obj_data, len(self.objects))
 
-            self.objects.append(level_object)
+            if isinstance(level_object, LevelObject):
+                self.objects.append(level_object)
+            elif isinstance(level_object, Jump):
+                self.jumps.append(level_object)
 
             if data[0] == 0xFF:
                 break
@@ -520,6 +525,9 @@ class Level(LevelLike):
 
         for obj in self.objects:
             data.extend(obj.to_bytes())
+
+        for jump in self.jumps:
+            data.extend(jump.to_bytes())
 
         data.append(0xFF)
 
