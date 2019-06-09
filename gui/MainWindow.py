@@ -139,9 +139,9 @@ class SMB3Foundry(wx.Frame):
         file_menu.AppendSeparator()
         file_menu.Append(ID_EXIT, "&Exit", "")
 
+        """
         edit_menu = wx.Menu()
 
-        """
         edit_menu.Append(ID_EDIT_LEVEL, "&Edit Level", "")
         edit_menu.Append(ID_EDIT_OBJ_DEFS, "&Edit Object Definitions", "")
         edit_menu.Append(ID_EDIT_PALETTE, "&Edit Palette", "")
@@ -213,7 +213,7 @@ class SMB3Foundry(wx.Frame):
         menu_bar = wx.MenuBar()
 
         menu_bar.Append(file_menu, "&File")
-        menu_bar.Append(edit_menu, "&Edit")
+        # menu_bar.Append(edit_menu, "&Edit")
         menu_bar.Append(level_menu, "&Level")
         menu_bar.Append(object_menu, "&Object")
         menu_bar.Append(view_menu, "&View")
