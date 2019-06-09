@@ -384,7 +384,6 @@ class SMB3Foundry(wx.Frame):
             try:
                 with open(pathname, "rb") as m3l_file:
 
-                    self.update_level(world=1, level=1)
                     self.level_view.from_m3l(bytearray(m3l_file.read()))
 
                     return True
@@ -506,9 +505,11 @@ class SMB3Foundry(wx.Frame):
 
         world = self.level_view.level.world
         level = self.level_view.level.level
+        object_data = self.level_view.level.object_offset
+        enemy_data = self.level_view.level.enemy_offset
         object_set = self.level_view.level.object_set
 
-        self.update_level(world, level, object_set)
+        self.update_level(world, level, object_data, enemy_data, object_set)
 
     @undoable
     def on_header_change(self, event):

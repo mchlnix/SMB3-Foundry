@@ -354,8 +354,6 @@ class LevelView(wx.Panel):
         print(f"Drawing {self.level.name}")
 
     def from_m3l(self, data):
-        self.load_level(1, 1, 0x0, 0x0, 1)
-
         self.level.from_m3l(data)
 
         self.undo_stack.clear(self.level.to_bytes())
