@@ -20,9 +20,11 @@ from Events import (
     EVT_UNDO_SAVED,
     EVT_OBJ_LIST,
     ObjectListUpdateEvent,
+    EVT_JUMP_LIST,
 )
 from File import ROM
 from HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
+from JumpList import JumpList
 from LevelSelector import LevelSelector
 from LevelView import LevelView
 from ObjectList import ObjectList
@@ -256,6 +258,9 @@ class SMB3Foundry(wx.Frame):
         self.scroll_panel.SetSizer(sizer)
 
         self.object_list = ObjectList(self, self.context_menu)
+        self.jump_list = JumpList(self)
+
+        self.Bind(EVT_JUMP_LIST, self.on_jump_list_change)
 
         self.status_bar = ObjectStatusBar(parent=self)
 
@@ -276,6 +281,7 @@ class SMB3Foundry(wx.Frame):
             border=5,
             flag=wx.BOTTOM | wx.LEFT | wx.EXPAND,
         )
+        vert_right.Add(self.jump_list, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND)
 
         horiz_sizer.Add(vert_left, proportion=10, flag=wx.EXPAND)
         horiz_sizer.Add(vert_right, proportion=1, flag=wx.EXPAND)
@@ -667,6 +673,9 @@ class SMB3Foundry(wx.Frame):
             self.select_object(index=indexes[0])
         else:
             self.spinner_panel.disable_all()
+
+    def on_jump_list_change(self, event):
+        self.jump_list.set_jumps(event)
 
     def on_key_press(self, event: wx.KeyEvent):
         key = event.GetKeyCode()

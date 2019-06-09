@@ -1,6 +1,6 @@
 import wx
 
-from Events import ObjectListUpdateEvent
+from Events import ObjectListUpdateEvent, JumpListUpdate
 from game.gfx.objects.LevelObject import SCREEN_WIDTH, SCREEN_HEIGHT
 from game.level.Level import Level
 from SelectionSquare import SelectionSquare
@@ -342,6 +342,10 @@ class LevelView(wx.Panel):
             self.level = Level(
                 world, level, object_data_offset, enemy_data_offset, object_set
             )
+
+            evt = JumpListUpdate(id=wx.ID_ANY, jumps=self.level.jumps)
+
+            wx.PostEvent(self, evt)
 
         self.undo_stack.clear(self.level.to_bytes())
 

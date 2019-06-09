@@ -1,5 +1,7 @@
 import wx.lib.newevent
 
+JumpListUpdate, EVT_JUMP_LIST = wx.lib.newevent.NewCommandEvent()
+
 ObjectListUpdateEvent, EVT_OBJ_LIST = wx.lib.newevent.NewCommandEvent()
 ObjectsSelectedEvent, EVT_OBJ_SELECT = wx.lib.newevent.NewCommandEvent()
 
