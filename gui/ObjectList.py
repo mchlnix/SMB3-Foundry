@@ -16,8 +16,8 @@ class ObjectList(wx.ListBox):
         """
         Normally right clicking deselects everything and selects the item under the cursor,
         but with multi-selection we want the selection to be kept, when the right click happens
-        happens on one of the already selected elements. Didn't seem to be supported like that, so
-        we need to make out own.
+        on one of the already selected elements. Didn't seem to be supported like that, so
+        we need to make our own.
 
         :param event: wx.MouseEvent
         :return: None
