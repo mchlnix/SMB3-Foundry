@@ -1,6 +1,7 @@
 import wx
 
 from Events import ObjectListUpdateEvent
+from game.gfx.objects.LevelObject import SCREEN_WIDTH, SCREEN_HEIGHT
 from game.level.Level import Level
 from SelectionSquare import SelectionSquare
 from game.gfx.drawable.Block import Block
@@ -32,6 +33,7 @@ class LevelView(wx.Panel):
 
         self.grid_lines = False
         self.grid_pen = wx.Pen(colour=wx.Colour(0x80, 0x80, 0x80, 0x80), width=1)
+        self.screen_pen = wx.Pen(colour=wx.Colour(0xFF, 0x00, 0x00, 0xFF), width=1)
 
         self.zoom = 1
         self.block_length = Block.SIDE_LENGTH * self.zoom
@@ -459,14 +461,23 @@ class LevelView(wx.Panel):
         self.level.draw(dc, self.block_length, self.transparency)
 
         if self.grid_lines:
-            dc.SetPen(self.grid_pen)
-
             panel_width, panel_height = self.GetSize().Get()
+
+            dc.SetPen(self.grid_pen)
 
             for x in range(0, panel_width, self.block_length):
                 dc.DrawLine(x, 0, x, panel_height)
             for y in range(0, panel_height, self.block_length):
                 dc.DrawLine(0, y, panel_width, y)
+
+            dc.SetPen(self.screen_pen)
+
+            if self.level.is_vertical:
+                for y in range(0, panel_height, self.block_length * SCREEN_HEIGHT):
+                    dc.DrawLine(0, y, panel_width, y)
+            else:
+                for x in range(0, panel_width, self.block_length * SCREEN_WIDTH):
+                    dc.DrawLine(x, 0, x, panel_height)
 
         self.selection_square.draw(dc)
 
