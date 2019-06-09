@@ -1,3 +1,4 @@
+from game.gfx.objects.Jump import Jump
 from game.gfx.objects.LevelObject import LevelObject
 from game.ObjectDefinitions import load_object_definitions
 from game.gfx.Palette import load_palette
@@ -34,8 +35,11 @@ class LevelObjectFactory:
         self.palette_group_index = palette_group_index
         self.palette_group = load_palette(self.object_set, self.palette_group_index)
 
-    # todo get rid of index by fixing ground map
     def from_data(self, data, index):
+        if Jump.is_jump(data):
+            return Jump(data)
+
+        # todo get rid of index by fixing ground map
         return LevelObject(
             data,
             self.object_set,
