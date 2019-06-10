@@ -21,9 +21,11 @@ from Events import (
     EVT_OBJ_LIST,
     ObjectListUpdateEvent,
     EVT_JUMP_LIST,
+    EVT_JUMP_UPDATE,
 )
 from File import ROM
 from HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
+from JumpEditor import JumpEditor
 from JumpList import JumpList
 from LevelSelector import LevelSelector
 from LevelView import LevelView
@@ -281,7 +283,7 @@ class SMB3Foundry(wx.Frame):
             flag=wx.BOTTOM | wx.LEFT | wx.EXPAND,
         )
 
-        panel = wx.CollapsiblePane(self, wx.ID_ANY, "Jumps:")
+        panel = wx.CollapsiblePane(self, wx.ID_ANY, "Jumps")
 
         win = panel.GetPane()
 
@@ -297,6 +299,8 @@ class SMB3Foundry(wx.Frame):
 
         horiz_sizer.Add(vert_left, proportion=10, flag=wx.EXPAND)
         horiz_sizer.Add(vert_right, proportion=0, flag=wx.EXPAND)
+
+        self.jump_list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_jump_dclick)
 
         self.SetSizer(horiz_sizer)
 
@@ -318,6 +322,7 @@ class SMB3Foundry(wx.Frame):
         self.Bind(EVT_UNDO_SAVED, self.spinner_panel.disable_buttons)
 
         self.Bind(EVT_HEADER_CHANGED, self.on_header_change)
+        self.Bind(EVT_JUMP_UPDATE, self.on_jump_change)
 
         self.resize_obj_start_point = 0, 0
         self.resize_mouse_start_x = 0
@@ -678,6 +683,21 @@ class SMB3Foundry(wx.Frame):
             self.select_object(index=indexes[0])
         else:
             self.spinner_panel.disable_all()
+
+    def on_jump_dclick(self, event):
+        index = event.Int
+
+        jump_editor = JumpEditor(self, self.level_view.level.jumps[index], index)
+
+        jump_editor.Show()
+
+    def on_jump_change(self, event):
+        index = event.index
+        jump = event.jump
+
+        if isinstance(self.level_view.level, Level):
+            self.level_view.level.jumps[index] = jump
+            self.jump_list.SetString(index, str(jump))
 
     def on_jump_list_change(self, event):
         self.jump_list.set_jumps(event)
