@@ -260,9 +260,6 @@ class SMB3Foundry(wx.Frame):
         self.scroll_panel.SetSizer(sizer)
 
         self.object_list = ObjectList(self, self.context_menu)
-        self.jump_list = JumpList(self)
-
-        self.Bind(EVT_JUMP_LIST, self.on_jump_list_change)
 
         self.status_bar = ObjectStatusBar(parent=self)
 
@@ -283,10 +280,23 @@ class SMB3Foundry(wx.Frame):
             border=5,
             flag=wx.BOTTOM | wx.LEFT | wx.EXPAND,
         )
-        vert_right.Add(self.jump_list, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND)
+
+        panel = wx.CollapsiblePane(self, wx.ID_ANY, "Jumps:")
+
+        win = panel.GetPane()
+
+        self.jump_list = JumpList(win)
+
+        self.Bind(EVT_JUMP_LIST, self.on_jump_list_change)
+
+        panel_sizer = wx.BoxSizer(wx.VERTICAL)
+        win.SetSizer(panel_sizer)
+        panel_sizer.Add(self.jump_list, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND)
+
+        vert_right.Add(panel, 0, wx.GROW | wx.ALL, 5)
 
         horiz_sizer.Add(vert_left, proportion=10, flag=wx.EXPAND)
-        horiz_sizer.Add(vert_right, proportion=1, flag=wx.EXPAND)
+        horiz_sizer.Add(vert_right, proportion=0, flag=wx.EXPAND)
 
         self.SetSizer(horiz_sizer)
 
