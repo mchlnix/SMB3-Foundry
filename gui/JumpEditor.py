@@ -11,7 +11,7 @@ JUMP_ACTIONS = [
     "Left Pipe",
     "?",
     "?",
-    "?",
+    "Jump on Noteblock",
     "Door",
     "?",
     "?",
