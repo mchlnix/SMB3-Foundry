@@ -86,6 +86,7 @@ ID_USE_ROM_GRAPHICS = 505
 ID_PALETTE = 506
 ID_MORE = 507
 ID_TRANSPARENCY = 508
+ID_JUMPS = 509
 
 # help menu
 
@@ -95,7 +96,7 @@ ID_PROGRAM_WEBSITE = 603
 ID_MAKE_A_DONATION = 604
 ID_ABOUT = 605
 
-CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES]
+CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES, ID_JUMPS]
 
 # mouse modes
 
@@ -186,6 +187,7 @@ class SMB3Foundry(wx.Frame):
 
         view_menu = wx.Menu()
 
+        view_menu.AppendCheckItem(ID_JUMPS, "Jumps")
         view_menu.AppendCheckItem(ID_GRID_LINES, "&Gridlines", "")
         view_menu.AppendCheckItem(ID_TRANSPARENCY, "&Block Transparency", "")
         view_menu.FindItemById(ID_TRANSPARENCY).Check(True)
@@ -566,6 +568,8 @@ class SMB3Foundry(wx.Frame):
             self.level_view.grid_lines = checked
         elif item_id == ID_TRANSPARENCY:
             self.level_view.transparency = checked
+        elif item_id == ID_JUMPS:
+            self.level_view.jumps = checked
 
     @undoable
     def on_spin(self, event):

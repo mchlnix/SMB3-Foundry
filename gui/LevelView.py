@@ -32,6 +32,7 @@ class LevelView(wx.Panel):
         self.context_menu = context_menu
 
         self.grid_lines = False
+        self.jumps = False
         self.grid_pen = wx.Pen(colour=wx.Colour(0x80, 0x80, 0x80, 0x80), width=1)
         self.screen_pen = wx.Pen(colour=wx.Colour(0xFF, 0x00, 0x00, 0xFF), width=1)
 
@@ -480,6 +481,27 @@ class LevelView(wx.Panel):
             else:
                 for x in range(0, panel_width, self.block_length * SCREEN_WIDTH):
                     dc.DrawLine(x, 0, x, panel_height)
+
+        if self.jumps:
+            for jump in self.level.jumps:
+                dc.SetBrush(wx.Brush(wx.Colour(0xFF, 0x00, 0x00, 0x80)))
+
+                screen = jump.screen_index
+
+                if self.level.is_vertical:
+                    dc.DrawRectangle(
+                        0,
+                        self.block_length * SCREEN_WIDTH * screen,
+                        self.block_length * SCREEN_WIDTH,
+                        self.block_length * SCREEN_HEIGHT,
+                    )
+                else:
+                    dc.DrawRectangle(
+                        self.block_length * SCREEN_WIDTH * screen,
+                        0,
+                        self.block_length * SCREEN_WIDTH,
+                        self.block_length * 27,
+                    )
 
         self.selection_square.draw(dc)
 
