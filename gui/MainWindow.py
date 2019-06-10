@@ -304,17 +304,7 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_SPINCTRL, self.on_spin)
 
-        self.level_view.Bind(
-            wx.EVT_LEFT_DOWN, self.level_view.on_left_mouse_button_down
-        )
-        self.level_view.Bind(wx.EVT_LEFT_UP, self.level_view.on_left_mouse_button_up)
-
-        self.level_view.Bind(wx.EVT_MOTION, self.level_view.on_mouse_motion)
         self.level_view.Bind(wx.EVT_MOUSEWHEEL, self.on_mouse_wheel)
-        self.level_view.Bind(
-            wx.EVT_RIGHT_DOWN, self.level_view.on_right_mouse_button_down
-        )
-        self.level_view.Bind(wx.EVT_RIGHT_UP, self.level_view.on_right_mouse_button_up)
 
         self.Bind(EVT_OBJ_LIST, self.on_objects_selected)
 

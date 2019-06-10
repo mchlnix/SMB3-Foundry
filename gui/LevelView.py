@@ -23,8 +23,6 @@ class LevelView(wx.Panel):
     def __init__(self, parent, context_menu):
         super(LevelView, self).__init__(parent)
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
-        self.Bind(wx.EVT_SIZE, self.on_size)
-        self.Bind(wx.EVT_PAINT, self.on_paint)
 
         self.level = None
         self.undo_stack = UndoStack(self)
@@ -59,6 +57,15 @@ class LevelView(wx.Panel):
         self.resize_obj_start_point = 0, 0
 
         self.resizing_happened = False
+
+        self.Bind(wx.EVT_SIZE, self.on_size)
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+
+        self.Bind(wx.EVT_LEFT_DOWN, self.on_left_mouse_button_down)
+        self.Bind(wx.EVT_RIGHT_DOWN, self.on_right_mouse_button_down)
+        self.Bind(wx.EVT_MOTION, self.on_mouse_motion)
+        self.Bind(wx.EVT_LEFT_UP, self.on_left_mouse_button_up)
+        self.Bind(wx.EVT_RIGHT_UP, self.on_right_mouse_button_up)
 
     def on_mouse_motion(self, event):
         if self.mouse_mode == MODE_DRAG:
