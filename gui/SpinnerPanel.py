@@ -154,18 +154,21 @@ class SpinnerPanel(wx.Panel):
 
     def set_type(self, type):
         self.spin_type.SetValue(type)
+        self.spin_type.Enable()
 
     def get_domain(self):
         return self.spin_domain.GetValue()
 
     def set_domain(self, domain):
         self.spin_domain.SetValue(domain)
+        self.spin_domain.Enable()
 
     def get_length(self):
         return self.spin_length.GetValue()
 
     def set_length(self, length):
         self.spin_length.SetValue(length)
+        self.spin_length.Enable()
 
     def enable_type(self, enable, value=0):
         self.spin_type.SetValue(value)

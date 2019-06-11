@@ -751,7 +751,7 @@ class SMB3Foundry(wx.Frame):
         objects = event.objects
 
         self.status_bar.clear()
-        self.spinner_panel.clear_spinners()
+        self.spinner_panel.disable_all()
         self.object_list.SetSelection(wx.NOT_FOUND)
 
         for index in event.indexes:
@@ -766,7 +766,7 @@ class SMB3Foundry(wx.Frame):
                 self.spinner_panel.set_domain(obj.domain)
 
                 if obj.is_4byte:
-                    self.spinner_panel.spin_length.SetValue(obj.data[3])
+                    self.spinner_panel.set_length(obj.data[3])
 
     @undoable
     def stop_resize(self, event):
