@@ -351,15 +351,23 @@ class LevelView(wx.Panel):
                 world, level, object_data_offset, enemy_data_offset, object_set
             )
 
-            evt = JumpListUpdate(id=wx.ID_ANY, jumps=self.level.jumps)
-
-            wx.PostEvent(self, evt)
+            self.send_jump_event()
 
         self.undo_stack.clear(self.level.to_bytes())
 
         self.resize()
 
         print(f"Drawing {self.level.name}")
+
+    def send_jump_event(self):
+        evt = JumpListUpdate(id=wx.ID_ANY, jumps=self.level.jumps)
+
+        wx.PostEvent(self, evt)
+
+    def add_jump(self, _):
+        self.level.add_jump()
+
+        self.send_jump_event()
 
     def from_m3l(self, data):
         self.level.from_m3l(data)

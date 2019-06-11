@@ -449,6 +449,9 @@ class Level(LevelLike):
 
         return enemy
 
+    def add_jump(self):
+        self.jumps.append(Jump.from_properties(0, 0, 0, 0))
+
     def index_of(self, obj):
         if obj in self.objects:
             return self.objects.index(obj)
