@@ -23,6 +23,7 @@ from Events import (
     EVT_JUMP_LIST,
     EVT_JUMP_UPDATE,
     EVT_JUMP_ADDED,
+    EVT_JUMP_REMOVED,
 )
 from File import ROM
 from HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
@@ -292,6 +293,7 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(EVT_JUMP_LIST, self.on_jump_list_change)
         self.Bind(EVT_JUMP_ADDED, self.on_jump_added)
+        self.Bind(EVT_JUMP_REMOVED, self.on_jump_removed)
 
         panel_sizer = wx.BoxSizer(wx.VERTICAL)
         win.SetSizer(panel_sizer)
@@ -695,6 +697,9 @@ class SMB3Foundry(wx.Frame):
 
     def on_jump_added(self, event):
         self.level_view.add_jump(event)
+
+    def on_jump_removed(self, event):
+        self.level_view.remove_jump(event)
 
     def on_jump_change(self, event):
         index = event.index

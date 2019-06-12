@@ -439,6 +439,11 @@ class LevelView(wx.Panel):
     def remove_object(self, obj):
         self.level.remove_object(obj)
 
+    def remove_jump(self, event):
+        del self.level.jumps[event.GetInt()]
+        self.send_jump_event()
+        self.Refresh()
+
     def paste_objects_at(self, x, y, paste_data):
         level_x, level_y = self.to_level_point(x, y)
 

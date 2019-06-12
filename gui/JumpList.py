@@ -1,6 +1,6 @@
 import wx
 
-from Events import JumpAdded
+from Events import JumpAdded, JumpRemoved
 
 ID_ADD_JUMP = 1
 ID_DEL_JUMP = 2
@@ -45,5 +45,11 @@ class JumpList(wx.ListBox):
             wx.PostEvent(self, evt)
         elif menu_item == ID_ADD_JUMP:
             evt = JumpAdded(id=wx.ID_ANY)
+
+            wx.PostEvent(self, evt)
+
+        elif menu_item == ID_DEL_JUMP:
+            evt = JumpRemoved(id=wx.ID_ANY)
+            evt.SetInt(self.GetSelection())
 
             wx.PostEvent(self, evt)
