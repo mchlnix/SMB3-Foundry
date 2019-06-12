@@ -504,7 +504,9 @@ class LevelView(wx.Panel):
 
         if self.jumps:
             for jump in self.level.jumps:
-                dc.SetBrush(wx.Brush(wx.Colour(0xFF, 0x00, 0x00, 0x80)))
+                dc.SetBrush(
+                    wx.Brush(wx.Colour(0xFF, 0x00, 0x00), wx.BRUSHSTYLE_BDIAGONAL_HATCH)
+                )
 
                 screen = jump.screen_index
 
