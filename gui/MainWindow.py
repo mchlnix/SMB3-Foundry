@@ -811,10 +811,6 @@ class SMB3Foundry(wx.Frame):
                 should_scroll = True
                 obj = self.level_view.get_object(index)
 
-            self.on_objects_selected(
-                ObjectListUpdateEvent(id=wx.ID_ANY, objects=[obj], indexes=[index])
-            )
-
             self.level_view.select_object(obj)
 
             if isinstance(self.level_view.level, Level):
