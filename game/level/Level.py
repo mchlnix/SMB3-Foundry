@@ -235,7 +235,7 @@ class Level(LevelLike):
 
         value -= LEVEL_POINTER_OFFSET + self.object_set_pointer.type
 
-        self.header[0] = 0x0F & value
+        self.header[0] = 0x00FF & value
         self.header[1] = value >> 8
 
         self._parse_header()
@@ -251,7 +251,7 @@ class Level(LevelLike):
 
         value -= ENEMY_POINTER_OFFSET
 
-        self.header[2] = 0x0F & value
+        self.header[2] = 0x00FF & value
         self.header[3] = value >> 8
 
         self._parse_header()
