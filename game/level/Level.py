@@ -86,13 +86,13 @@ class Level(LevelLike):
     def _load_level(self, object_data, enemy_data):
         self.object_factory = LevelObjectFactory(
             self.object_set_number,
-            self.graphic_set_index,
-            self.object_palette_index,
+            self._graphic_set_index,
+            self._object_palette_index,
             self.objects,
-            self.is_vertical,
+            self._is_vertical,
         )
         self.enemy_item_factory = EnemyItemFactory(
-            self.object_set_number, self.enemy_palette_index
+            self.object_set_number, self._enemy_palette_index
         )
 
         self._load_objects(object_data)
@@ -120,55 +120,56 @@ class Level(LevelLike):
         return size
 
     def _parse_header(self):
-        self.start_y_index = (self.header[4] & 0b1110_0000) >> 5
+        self._start_y_index = (self.header[4] & 0b1110_0000) >> 5
 
-        self.length = Level.MIN_LENGTH + (self.header[4] & 0b0000_1111) * 0x10
-        self.width = self.length
+        self._length = Level.MIN_LENGTH + (self.header[4] & 0b0000_1111) * 0x10
+        self.width = self._length
         self.height = LEVEL_DEFAULT_HEIGHT
 
-        self.start_x_index = (self.header[5] & 0b0110_0000) >> 5
+        self._start_x_index = (self.header[5] & 0b0110_0000) >> 5
 
-        self.enemy_palette_index = (self.header[5] & 0b0001_1000) >> 3
-        self.object_palette_index = self.header[5] & 0b0000_0111
+        self._enemy_palette_index = (self.header[5] & 0b0001_1000) >> 3
+        self._object_palette_index = self.header[5] & 0b0000_0111
 
-        self.pipe_ends_level = not (self.header[6] & 0b1000_0000)
-        self.scroll_type_index = (self.header[6] & 0b0110_0000) >> 5
-        self.is_vertical = self.header[6] & 0b0001_0000
+        self._pipe_ends_level = not (self.header[6] & 0b1000_0000)
+        self._scroll_type_index = (self.header[6] & 0b0110_0000) >> 5
+        self._is_vertical = self.header[6] & 0b0001_0000
 
-        if self.is_vertical:
-            self.height = self.length
+        if self._is_vertical:
+            self.height = self._length
             self.width = LEVEL_DEFAULT_WIDTH
 
         # todo isn't that the object set for the "next area"?
-        if self.object_set_number is None:
-            self.object_set_number = (
-                self.header[6] & 0b0000_1111
-            )  # for indexing purposes
+        self._next_area_object_set = (
+            self.header[6] & 0b0000_1111
+        )  # for indexing purposes
 
-        self.start_action = (self.header[7] & 0b1110_0000) >> 5
+        self._start_action = (self.header[7] & 0b1110_0000) >> 5
 
-        self.graphic_set_index = self.header[7] & 0b0001_1111
+        self._graphic_set_index = self.header[7] & 0b0001_1111
 
-        self.time_index = (self.header[8] & 0b1100_0000) >> 6
+        self._time_index = (self.header[8] & 0b1100_0000) >> 6
 
-        self.music_index = self.header[8] & 0b0000_1111
+        self._music_index = self.header[8] & 0b0000_1111
 
         # if there is a bonus area or other secondary level, this pointer points to it
 
-        object_set_pointer = object_set_pointers[self.object_set_number]
+        self.object_set_pointer = object_set_pointers[self.object_set_number]
 
-        self.level_pointer = (
+        self._level_pointer = (
             (self.header[1] << 8)
             + self.header[0]
             + LEVEL_POINTER_OFFSET
-            + object_set_pointer.type
+            + self.object_set_pointer.type
         )
-        self.enemy_pointer = (
+        self._enemy_pointer = (
             (self.header[3] << 8) + self.header[2] + ENEMY_POINTER_OFFSET
         )
 
         self.has_bonus_area = (
-            object_set_pointer.min <= self.level_pointer <= object_set_pointer.max
+            self.object_set_pointer.min
+            <= self._level_pointer
+            <= self.object_set_pointer.max
         )
 
         self.size = self.width, self.height
@@ -223,62 +224,45 @@ class Level(LevelLike):
             if data[0] == 0xFF:
                 break
 
-    def set_length(self, length):
-        if length + 1 == self.length:
+    @property
+    def next_area_objects(self):
+        return self._level_pointer
+
+    @next_area_objects.setter
+    def next_area_objects(self, value):
+        if value == self._level_pointer:
             return
 
-        self.header[4] &= 0b1111_0000
-        self.header[4] |= length // 0x10
+        value -= LEVEL_POINTER_OFFSET + self.object_set_pointer.type
+
+        self.header[0] = 0x0F & value
+        self.header[1] = value >> 8
 
         self._parse_header()
 
-    def set_object_palette_index(self, index):
-        if index == self.object_palette_index:
+    @property
+    def next_area_enemies(self):
+        return self._enemy_pointer
+
+    @next_area_enemies.setter
+    def next_area_enemies(self, value):
+        if value == self._enemy_pointer:
             return
 
-        self.header[5] &= 0b1111_1000
-        self.header[5] |= index
+        value -= ENEMY_POINTER_OFFSET
+
+        self.header[2] = 0x0F & value
+        self.header[3] = value >> 8
 
         self._parse_header()
 
-    def set_enemy_palette_index(self, index):
-        if index == self.enemy_palette_index:
-            return
+    @property
+    def start_y_index(self):
+        return self._start_y_index
 
-        self.header[5] &= 0b1110_0111
-        self.header[5] |= index << 3
-
-        self._parse_header()
-
-    def set_music_index(self, index):
-        if index == self.music_index:
-            return
-
-        self.header[8] &= 0b1111_0000
-        self.header[8] |= index
-
-        self._parse_header()
-
-    def set_time_index(self, index):
-        if index == self.time_index:
-            return
-
-        self.header[8] &= 0b0011_1111
-        self.header[8] |= index << 6
-
-        self._parse_header()
-
-    def set_x_position_index(self, index):
-        if index == self.start_x_index:
-            return
-
-        self.header[5] &= 0b1001_1111
-        self.header[5] |= index << 5
-
-        self._parse_header()
-
-    def set_y_position_index(self, index):
-        if index == self.start_y_index:
+    @start_y_index.setter
+    def start_y_index(self, index):
+        if index == self._start_y_index:
             return
 
         self.header[4] &= 0b0001_1111
@@ -286,26 +270,81 @@ class Level(LevelLike):
 
         self._parse_header()
 
-    def set_action_index(self, index):
-        if index == self.start_action:
+    # bit 4 unused
+
+    @property
+    def length(self):
+        return self._length
+
+    @length.setter
+    def length(self, length):
+        """
+        Sets the length of the level in "screens".
+
+        :param length: amount of screens the level should have
+        :return:
+        """
+
+        # internally the level has length + 1 screens
+        if length + 1 == self._length:
             return
 
-        self.header[7] &= 0b0001_1111
-        self.header[7] |= index << 5
+        self.header[4] &= 0b1111_0000
+        self.header[4] |= length // 0x10
 
         self._parse_header()
 
-    def set_gfx_index(self, index):
-        if index == self.graphic_set_index:
+    # bit 1 unused
+
+    @property
+    def start_x_index(self):
+        return self._start_x_index
+
+    @start_x_index.setter
+    def start_x_index(self, index):
+        if index == self._start_x_index:
             return
 
-        self.header[7] &= 0b1110_0000
-        self.header[7] |= index
+        self.header[5] &= 0b1001_1111
+        self.header[5] |= index << 5
 
         self._parse_header()
 
-    def set_pipe_ends_level(self, truth_value):
-        if truth_value == self.pipe_ends_level:
+    @property
+    def enemy_palette_index(self):
+        return self._enemy_palette_index
+
+    @enemy_palette_index.setter
+    def enemy_palette_index(self, index):
+        if index == self._enemy_palette_index:
+            return
+
+        self.header[5] &= 0b1110_0111
+        self.header[5] |= index << 3
+
+        self._parse_header()
+
+    @property
+    def object_palette_index(self):
+        return self._object_palette_index
+
+    @object_palette_index.setter
+    def object_palette_index(self, index):
+        if index == self._object_palette_index:
+            return
+
+        self.header[5] &= 0b1111_1000
+        self.header[5] |= index
+
+        self._parse_header()
+
+    @property
+    def pipe_ends_level(self):
+        return self._pipe_ends_level
+
+    @pipe_ends_level.setter
+    def pipe_ends_level(self, truth_value):
+        if truth_value == self._pipe_ends_level:
             return
 
         self.header[6] &= 0b0111_1111
@@ -313,8 +352,13 @@ class Level(LevelLike):
 
         self._parse_header()
 
-    def set_scroll_type(self, index):
-        if index == self.scroll_type_index:
+    @property
+    def scroll_type(self):
+        return self._scroll_type_index
+
+    @scroll_type.setter
+    def scroll_type(self, index):
+        if index == self._scroll_type_index:
             return
 
         self.header[6] &= 0b1001_1111
@@ -322,12 +366,89 @@ class Level(LevelLike):
 
         self._parse_header()
 
-    def set_is_vertical(self, truth_value):
-        if truth_value == self.is_vertical:
+    @property
+    def is_vertical(self):
+        return self._is_vertical
+
+    @is_vertical.setter
+    def is_vertical(self, truth_value):
+        if truth_value == self._is_vertical:
             return
 
         self.header[6] &= 0b1110_1111
         self.header[6] |= int(truth_value) << 4
+
+        self._parse_header()
+
+    @property
+    def next_area_object_set(self):
+        return self._next_area_object_set
+
+    @next_area_object_set.setter
+    def next_area_object_set(self, index):
+        if index == self._next_area_object_set:
+            return
+
+        self.header[6] &= 0b1111_0000
+        self.header[6] |= index
+
+        self._parse_header()
+
+    @property
+    def start_action(self):
+        return self._start_action
+
+    @start_action.setter
+    def start_action(self, index):
+        if index == self._start_action:
+            return
+
+        self.header[7] &= 0b0001_1111
+        self.header[7] |= index << 5
+
+        self._parse_header()
+
+    @property
+    def graphic_set(self):
+        return self._graphic_set_index
+
+    @graphic_set.setter
+    def graphic_set(self, index):
+        if index == self._graphic_set_index:
+            return
+
+        self.header[7] &= 0b1110_0000
+        self.header[7] |= index
+
+        self._parse_header()
+
+    @property
+    def time_index(self):
+        return self._time_index
+
+    @time_index.setter
+    def time_index(self, index):
+        if index == self._time_index:
+            return
+
+        self.header[8] &= 0b0011_1111
+        self.header[8] |= index << 6
+
+        self._parse_header()
+
+    # bit 3 and 4 unused
+
+    @property
+    def music_index(self):
+        return self._music_index
+
+    @music_index.setter
+    def music_index(self, index):
+        if index == self._music_index:
+            return
+
+        self.header[8] &= 0b1111_0000
+        self.header[8] |= index
 
         self._parse_header()
 
@@ -351,7 +472,7 @@ class Level(LevelLike):
             return None
 
     def draw(self, dc, block_length, transparency):
-        bg_color = get_bg_color_for(self.object_set_number, self.object_palette_index)
+        bg_color = get_bg_color_for(self.object_set_number, self._object_palette_index)
 
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
         dc.SetPen(wx.Pen(wx.Colour(0x00, 0x00, 0x00, 0x80), width=1))
@@ -393,8 +514,8 @@ class Level(LevelLike):
         floor_level = 26
         floor_block_index = 86
 
-        palette_group = load_palette(self.object_set_number, self.object_palette_index)
-        pattern_table = PatternTable(self.graphic_set_index)
+        palette_group = load_palette(self.object_set_number, self._object_palette_index)
+        pattern_table = PatternTable(self._graphic_set_index)
         tsa_data = ROM().get_tsa_data(self.object_set_number)
 
         floor_block = Block(floor_block_index, palette_group, pattern_table, tsa_data)
