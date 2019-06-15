@@ -1,6 +1,8 @@
 import wx
 import wx.lib.newevent
 
+from game.level.Level import Level
+
 LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]
 STR_LEVEL_LENGTHS = [
     f"{length:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS
@@ -106,7 +108,7 @@ class HeaderEditor(wx.Frame):
         super(HeaderEditor, self).__init__(parent, title="Level Header Editor")
 
         self.level_view_ref = level_view_ref
-        self.level_ref = self.level_view_ref.level
+        self.level_ref: Level = self.level_view_ref.level
 
         self.SetId(ID_HEADER_EDITOR)
 
@@ -132,10 +134,10 @@ class HeaderEditor(wx.Frame):
         self.enemy_palette_spinner = wx.SpinCtrl(self, wx.ID_ANY, max=3)
         self.graphic_set_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=GRAPHIC_SETS)
 
-        self.level_pointer_entry = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
-        self.level_pointer_entry.SetBase(16)
-        self.enemy_pointer_entry = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
-        self.enemy_pointer_entry.SetBase(16)
+        self.level_pointer_spinner = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
+        self.level_pointer_spinner.SetBase(16)
+        self.enemy_pointer_spinner = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
+        self.enemy_pointer_spinner.SetBase(16)
 
         self._add_label("Level Settings")
         self._add_widget("    Level length: ", self.length_dropdown)
@@ -153,8 +155,8 @@ class HeaderEditor(wx.Frame):
         self._add_widget("    Enemy Palette: ", self.enemy_palette_spinner)
         self._add_widget("    Graphic Set: ", self.graphic_set_dropdown)
         self._add_label("Next Area")
-        self._add_widget("    Address of Objects: ", self.level_pointer_entry)
-        self._add_widget("    Address of Enemies: ", self.enemy_pointer_entry)
+        self._add_widget("    Address of Objects: ", self.level_pointer_spinner)
+        self._add_widget("    Address of Enemies: ", self.enemy_pointer_spinner)
 
         self.SetSizerAndFit(self.config_sizer)
 
@@ -195,7 +197,7 @@ class HeaderEditor(wx.Frame):
         self.length_dropdown.SetSelection(length_index)
         self.music_dropdown.SetSelection(self.level_ref.music_index)
         self.time_dropdown.SetSelection(self.level_ref.time_index)
-        self.v_scroll_direction_dropdown.SetSelection(self.level_ref.scroll_type_index)
+        self.v_scroll_direction_dropdown.SetSelection(self.level_ref.scroll_type)
         self.level_is_vertical_cb.SetValue(self.level_ref.is_vertical)
         self.pipe_ends_level_cb.SetValue(self.level_ref.pipe_ends_level)
 
@@ -205,10 +207,10 @@ class HeaderEditor(wx.Frame):
 
         self.object_palette_spinner.SetValue(self.level_ref.object_palette_index)
         self.enemy_palette_spinner.SetValue(self.level_ref.enemy_palette_index)
-        self.graphic_set_dropdown.SetSelection(self.level_ref.graphic_set_index)
+        self.graphic_set_dropdown.SetSelection(self.level_ref.graphic_set)
 
-        self.level_pointer_entry.SetValue(self.level_ref.level_pointer)
-        self.enemy_pointer_entry.SetValue(self.level_ref.enemy_pointer)
+        self.level_pointer_spinner.SetValue(self.level_ref.next_area_objects)
+        self.enemy_pointer_spinner.SetValue(self.level_ref.next_area_enemies)
 
     def reload_level(self):
         self.level_ref = self.level_view_ref.level
@@ -220,11 +222,19 @@ class HeaderEditor(wx.Frame):
 
         if spin_id == self.object_palette_spinner.GetId():
             new_index = self.object_palette_spinner.GetValue()
-            self.level_ref.set_object_palette_index(new_index)
+            self.level_ref.object_palette_index = new_index
 
         elif spin_id == self.enemy_palette_spinner.GetId():
             new_index = self.enemy_palette_spinner.GetValue()
-            self.level_ref.set_enemy_palette_index(new_index)
+            self.level_ref.enemy_palette_index = new_index
+
+        elif spin_id == self.level_pointer_spinner.GetId():
+            new_offset = self.level_pointer_spinner.GetValue()
+            self.level_ref.next_area_objects = new_offset
+
+        elif spin_id == self.enemy_pointer_spinner:
+            new_offset = self.enemy_pointer_spinner.GetValue()
+            self.level_ref.next_area_enemies = new_offset
 
         wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
@@ -237,35 +247,35 @@ class HeaderEditor(wx.Frame):
 
         if combo_id == self.length_dropdown.GetId():
             new_length = LEVEL_LENGTHS[self.length_dropdown.GetSelection()]
-            self.level_ref.set_length(new_length)
+            self.level_ref.length = new_length
 
         elif combo_id == self.music_dropdown.GetId():
             new_music = self.music_dropdown.GetSelection()
-            self.level_ref.set_music_index(new_music)
+            self.level_ref.music_index = new_music
 
         elif combo_id == self.time_dropdown.GetId():
             new_time = self.time_dropdown.GetSelection()
-            self.level_ref.set_time_index(new_time)
+            self.level_ref.time_index = new_time
 
         elif combo_id == self.x_position_dropdown.GetId():
             new_x = self.x_position_dropdown.GetSelection()
-            self.level_ref.set_x_position_index(new_x)
+            self.level_ref.start_x_index = new_x
 
         elif combo_id == self.v_scroll_direction_dropdown.GetId():
             new_scroll = self.v_scroll_direction_dropdown.GetSelection()
-            self.level_ref.set_scroll_type(new_scroll)
+            self.level_ref.scroll_type = new_scroll
 
         elif combo_id == self.y_position_dropdown.GetId():
             new_y = self.y_position_dropdown.GetSelection()
-            self.level_ref.set_y_position_index(new_y)
+            self.level_ref.start_y_index = new_y
 
         elif combo_id == self.action_dropdown.GetId():
             new_action = self.action_dropdown.GetSelection()
-            self.level_ref.set_action_index(new_action)
+            self.level_ref.start_action = new_action
 
         elif combo_id == self.graphic_set_dropdown.GetId():
             new_gfx_set = self.graphic_set_dropdown.GetSelection()
-            self.level_ref.set_gfx_index(new_gfx_set)
+            self.level_ref.graphic_set = new_gfx_set
 
         wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
@@ -277,9 +287,9 @@ class HeaderEditor(wx.Frame):
         cb_id = event.GetId()
 
         if cb_id == self.pipe_ends_level_cb.GetId():
-            self.level_ref.set_pipe_ends_level(self.pipe_ends_level_cb.GetValue())
+            self.level_ref.pipe_ends_level = self.pipe_ends_level_cb.GetValue()
         elif cb_id == self.level_is_vertical_cb.GetId():
-            self.level_ref.set_is_vertical(self.level_is_vertical_cb.GetValue())
+            self.level_ref.is_vertical = self.level_is_vertical_cb.GetValue()
 
         wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
