@@ -297,5 +297,12 @@ class HeaderEditor(wx.Frame):
         self.level_view_ref.resize()
         self.level_view_ref.Refresh()
 
+    def refresh(self):
+        self._fill_widgets()
+
+    def Show(self, **kwargs):
+        self._fill_widgets()
+        super(HeaderEditor, self).Show(**kwargs)
+
     def on_exit(self, _):
         self.Hide()

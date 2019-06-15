@@ -537,10 +537,16 @@ class SMB3Foundry(wx.Frame):
     def on_undo(self, _):
         self.level_view.undo()
 
+        if self.header_editor is not None:
+            self.header_editor.refresh()
+
         self.object_list.update()
 
     def on_redo(self, _):
         self.level_view.redo()
+
+        if self.header_editor is not None:
+            self.header_editor.refresh()
 
         self.object_list.update()
 
