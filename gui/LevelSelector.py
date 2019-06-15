@@ -125,6 +125,8 @@ class LevelSelector(wx.Frame):
 
         if key == wx.WXK_ESCAPE:
             self.on_exit(None)
+        else:
+            event.Skip()
 
     def on_world_click(self, _):
         index = self.world_list.GetSelection()

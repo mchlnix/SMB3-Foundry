@@ -98,6 +98,8 @@ SCROLL_DIRECTIONS = [
 HeaderChangedEvent, EVT_HEADER_CHANGED = wx.lib.newevent.NewCommandEvent()
 ID_HEADER_EDITOR = wx.NewId()
 
+SPINNER_MAX_VALUE = 0x0F_FF_FF
+
 
 class HeaderEditor(wx.Frame):
     def __init__(self, parent, level_view_ref):
@@ -130,10 +132,10 @@ class HeaderEditor(wx.Frame):
         self.enemy_palette_spinner = wx.SpinCtrl(self, wx.ID_ANY, max=3)
         self.graphic_set_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=GRAPHIC_SETS)
 
-        self.level_pointer_entry = wx.TextCtrl(parent=self, style=wx.TE_RIGHT)
-        self.level_pointer_entry.Disable()
-        self.enemy_pointer_entry = wx.TextCtrl(parent=self, style=wx.TE_RIGHT)
-        self.enemy_pointer_entry.Disable()
+        self.level_pointer_entry = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
+        self.level_pointer_entry.SetBase(16)
+        self.enemy_pointer_entry = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
+        self.enemy_pointer_entry.SetBase(16)
 
         self._add_label("Level Settings")
         self._add_widget("    Level length: ", self.length_dropdown)
@@ -205,8 +207,8 @@ class HeaderEditor(wx.Frame):
         self.enemy_palette_spinner.SetValue(self.level_ref.enemy_palette_index)
         self.graphic_set_dropdown.SetSelection(self.level_ref.graphic_set_index)
 
-        self.level_pointer_entry.SetValue(hex(self.level_ref.level_pointer))
-        self.enemy_pointer_entry.SetValue(hex(self.level_ref.enemy_pointer))
+        self.level_pointer_entry.SetValue(self.level_ref.level_pointer)
+        self.enemy_pointer_entry.SetValue(self.level_ref.enemy_pointer)
 
     def reload_level(self):
         self.level_ref = self.level_view_ref.level

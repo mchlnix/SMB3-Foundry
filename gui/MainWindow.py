@@ -654,7 +654,7 @@ class SMB3Foundry(wx.Frame):
             self.level_view.load_level(
                 world, level, object_data_offset, enemy_data_offset, object_set
             )
-        except IndexError as ie:
+        except IndexError:
             wx.MessageBox(
                 "Failed loading level. The level offsets don't match.",
                 "Please confirm",
@@ -731,6 +731,8 @@ class SMB3Foundry(wx.Frame):
                 self._cut_object()
 
             self.level_view.Refresh()
+        else:
+            event.Skip()
 
     def on_mouse_wheel(self, event):
         obj_under_cursor = self.level_view.object_at(*event.GetPosition().Get())
