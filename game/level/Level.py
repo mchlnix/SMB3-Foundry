@@ -196,6 +196,7 @@ class Level(LevelLike):
 
     def _load_objects(self, data):
         self.objects.clear()
+        self.jumps.clear()
 
         if not data or data[0] == 0xFF:
             return
