@@ -1,6 +1,7 @@
 import wx
 import wx.lib.scrolledpanel
 
+from AboutWindow import AboutDialog
 from BlockViewer import BlockViewer
 from ContextMenu import (
     ContextMenu,
@@ -215,8 +216,8 @@ class SMB3Foundry(wx.Frame):
         help_menu.Append(ID_PROGRAM_WEBSITE, "&Program Website", "")
         help_menu.Append(ID_MAKE_A_DONATION, "&Make a Donation", "")
         help_menu.AppendSeparator()
-        help_menu.Append(ID_ABOUT, "&About", "")
         """
+        help_menu.Append(ID_ABOUT, "&About", "")
 
         menu_bar = wx.MenuBar()
 
@@ -239,6 +240,7 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
         self.Bind(wx.EVT_MENU, self.on_object_viewer, id=ID_VIEW_OBJECTS)
         self.Bind(wx.EVT_MENU, self.on_header_editor, id=ID_EDIT_HEADER)
+        self.Bind(wx.EVT_MENU, self.on_about, id=ID_ABOUT)
 
         self.context_menu = ContextMenu()
 
@@ -849,6 +851,11 @@ class SMB3Foundry(wx.Frame):
                 self.scroll_panel.Scroll(obj.x_position - scroll_offset, obj.y_position)
 
         self.level_view.Refresh()
+
+    def on_about(self, _):
+        about = AboutDialog(self)
+
+        about.Show()
 
     def on_exit(self, _):
         if not self.safe_to_change():
