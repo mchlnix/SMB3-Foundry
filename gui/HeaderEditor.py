@@ -1,6 +1,7 @@
 import wx
 import wx.lib.newevent
 
+from LevelSelector import OBJECT_SET_ITEMS
 from game.level.Level import Level
 
 LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]
@@ -138,6 +139,9 @@ class HeaderEditor(wx.Frame):
         self.level_pointer_spinner.SetBase(16)
         self.enemy_pointer_spinner = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
         self.enemy_pointer_spinner.SetBase(16)
+        self.next_area_object_set_dropdown = wx.ComboBox(
+            self, wx.ID_ANY, choices=OBJECT_SET_ITEMS
+        )
 
         self._add_label("Level Settings")
         self._add_widget("    Level length: ", self.length_dropdown)
@@ -157,6 +161,7 @@ class HeaderEditor(wx.Frame):
         self._add_label("Next Area")
         self._add_widget("    Address of Objects: ", self.level_pointer_spinner)
         self._add_widget("    Address of Enemies: ", self.enemy_pointer_spinner)
+        self._add_widget("    Object Set: ", self.next_area_object_set_dropdown)
 
         self.SetSizerAndFit(self.config_sizer)
 
@@ -211,6 +216,9 @@ class HeaderEditor(wx.Frame):
 
         self.level_pointer_spinner.SetValue(self.level_ref.next_area_objects)
         self.enemy_pointer_spinner.SetValue(self.level_ref.next_area_enemies)
+        self.next_area_object_set_dropdown.SetSelection(
+            self.level_ref.next_area_object_set
+        )
 
     def reload_level(self):
         self.level_ref = self.level_view_ref.level
@@ -276,6 +284,10 @@ class HeaderEditor(wx.Frame):
         elif combo_id == self.graphic_set_dropdown.GetId():
             new_gfx_set = self.graphic_set_dropdown.GetSelection()
             self.level_ref.graphic_set = new_gfx_set
+
+        elif combo_id == self.next_area_object_set_dropdown.GetId():
+            new_object_set = self.next_area_object_set_dropdown.GetSelection()
+            self.level_ref.next_area_object_set = new_object_set
 
         wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
