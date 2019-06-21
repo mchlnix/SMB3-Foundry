@@ -743,6 +743,7 @@ class SMB3Foundry(wx.Frame):
             event.Skip()
 
     def on_mouse_wheel(self, event):
+
         obj_under_cursor = self.level_view.object_at(*event.GetPosition().Get())
 
         if obj_under_cursor is None:

@@ -54,8 +54,8 @@ class LevelObjectFactory:
     def from_properties(self, domain, object_index, x, y, length, index):
         data = bytearray(3)
 
-        data[0] = domain << 5 | 0
-        data[1] = 0
+        data[0] = domain << 5 | y
+        data[1] = x
         data[2] = object_index
 
         if length is not None:
