@@ -35,6 +35,12 @@ class JumpList(wx.ListBox):
 
         self.PopupMenu(menu)
 
+    def update(self):
+        # todo make an event or something
+        jumps = self.GetParent().GetParent().GetParent().level_view.level.jumps
+
+        self.SetItems([str(jump) for jump in jumps])
+
     def on_menu(self, event):
         menu_item = event.GetId()
 

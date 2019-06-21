@@ -545,6 +545,7 @@ class SMB3Foundry(wx.Frame):
             self.header_editor.refresh()
 
         self.object_list.update()
+        self.jump_list.update()
 
     def on_redo(self, _):
         self.level_view.redo()
@@ -553,6 +554,7 @@ class SMB3Foundry(wx.Frame):
             self.header_editor.refresh()
 
         self.object_list.update()
+        self.jump_list.update()
 
     def _cut_object(self):
         self._copy_objects()
@@ -705,12 +707,15 @@ class SMB3Foundry(wx.Frame):
 
         jump_editor.Show()
 
+    @undoable
     def on_jump_added(self, event):
         self.level_view.add_jump(event)
 
+    @undoable
     def on_jump_removed(self, event):
         self.level_view.remove_jump(event)
 
+    @undoable
     def on_jump_change(self, event):
         index = event.index
         jump = event.jump
