@@ -35,7 +35,7 @@ from LevelView import LevelView
 from ObjectList import ObjectList
 from ObjectStatusBar import ObjectStatusBar
 from ObjectViewer import ObjectViewer
-from SpinnerPanel import SpinnerPanel
+from SpinnerPanel import SpinnerPanel, ID_SPIN_DOMAIN, ID_SPIN_TYPE, ID_SPIN_LENGTH
 from game.gfx.objects.LevelObject import LevelObject
 from game.level.Level import Level
 from game.level.WorldMap import WorldMap
@@ -312,7 +312,9 @@ class SMB3Foundry(wx.Frame):
 
         self.Bind(wx.EVT_LISTBOX, self.on_list_select)
 
-        self.Bind(wx.EVT_SPINCTRL, self.on_spin)
+        self.Bind(wx.EVT_SPINCTRL, self.on_spin, id=ID_SPIN_DOMAIN)
+        self.Bind(wx.EVT_SPINCTRL, self.on_spin, id=ID_SPIN_TYPE)
+        self.Bind(wx.EVT_SPINCTRL, self.on_spin, id=ID_SPIN_LENGTH)
 
         self.level_view.Bind(wx.EVT_MOUSEWHEEL, self.on_mouse_wheel)
 
