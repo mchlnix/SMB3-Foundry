@@ -796,14 +796,6 @@ class SMB3Foundry(wx.Frame):
                 if obj.is_4byte:
                     self.spinner_panel.set_length(obj.data[3])
 
-    @undoable
-    def stop_resize(self, event):
-        self.level_view.stop_resize(event)
-
-    @undoable
-    def stop_drag(self):
-        self.level_view.stop_drag()
-
     def deselect_all(self):
         self.level_view.select_object(None)
 

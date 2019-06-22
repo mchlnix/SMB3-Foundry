@@ -18,7 +18,6 @@ MODE_DRAG = 1
 MODE_RESIZE = 2
 
 
-# TODO a lot of functionality from MainWindow can be put here
 class LevelView(wx.Panel):
     def __init__(self, parent, context_menu):
         super(LevelView, self).__init__(parent)
@@ -144,6 +143,9 @@ class LevelView(wx.Panel):
         self.mouse_mode = MODE_FREE
 
     def stop_resize(self, _):
+        if self.resizing_happened:
+            self.save_level_state()
+
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
 
@@ -199,6 +201,9 @@ class LevelView(wx.Panel):
         self.mouse_mode = MODE_FREE
 
     def stop_drag(self):
+        if self.dragging_happened:
+            self.save_level_state()
+
         self.dragging_happened = False
 
     def select_objects_on_click(self, event):
