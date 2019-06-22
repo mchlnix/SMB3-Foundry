@@ -449,8 +449,11 @@ class LevelView(wx.Panel):
         self.send_jump_event()
         self.Refresh()
 
-    def paste_objects_at(self, x, y, paste_data):
-        level_x, level_y = self.to_level_point(x, y)
+    def paste_objects_at(self, x=None, y=None, paste_data=None):
+        if x is None or y is None:
+            level_x, level_y = self.last_mouse_position
+        else:
+            level_x, level_y = self.to_level_point(x, y)
 
         objects, origin = paste_data
 

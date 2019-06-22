@@ -339,8 +339,6 @@ class SMB3Foundry(wx.Frame):
         self.drag_start_point = 0, 0
         self.dragging_happened = False
 
-        self.last_mouse_position = 0, 0
-
         self.Bind(wx.EVT_CLOSE, self.on_exit)
 
         # this is needed, so that the scrolling panel doesn't reset
@@ -567,8 +565,10 @@ class SMB3Foundry(wx.Frame):
             self.context_menu.set_copied_objects(selected_objects)
 
     @undoable
-    def _paste_objects(self, x, y):
-        self.level_view.paste_objects_at(x, y, self.context_menu.get_copied_objects())
+    def _paste_objects(self, x=None, y=None):
+        self.level_view.paste_objects_at(
+            x, y, paste_data=self.context_menu.get_copied_objects()
+        )
 
         self.object_list.update()
 
@@ -740,8 +740,7 @@ class SMB3Foundry(wx.Frame):
             if key == ord("C"):
                 self._copy_objects()
             elif key == ord("V"):
-                x, y = self.level_view.to_screen_point(*self.last_mouse_position)
-                self._paste_objects(x, y)
+                self._paste_objects()
             elif key == ord("X"):
                 self._cut_object()
 
