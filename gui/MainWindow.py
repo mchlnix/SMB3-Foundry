@@ -728,6 +728,15 @@ class SMB3Foundry(wx.Frame):
         self.jump_list.set_jumps(event)
 
     def on_key_press(self, event: wx.KeyEvent):
+        widget = self.FindFocus()
+
+        if isinstance(widget, wx.Control) and widget != self.object_list:
+            # check if we are in a widget taking user input. ignore our shortcuts, then
+            # the default widget with keyboard focus is the object list for some reason, so don't ignore then
+            event.Skip()
+
+            return
+
         key = event.GetKeyCode()
 
         if key in [wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE]:
