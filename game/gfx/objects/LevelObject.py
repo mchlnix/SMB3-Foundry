@@ -18,6 +18,7 @@ from game.ObjectDefinitions import (
     END_ON_TOP_OR_LEFT,
     END_ON_BOTTOM_OR_RIGHT,
     TWO_ENDS,
+    DESERT_PIPE_BOX,
 )
 from game.ObjectSet import ObjectSet
 from game.gfx.drawable.Block import Block
@@ -191,6 +192,48 @@ class LevelObject(ObjectLike):
                 blocks_to_draw.extend(self.blocks[0 : self.width])
 
             blocks_to_draw.extend(self.blocks[-self.width :])
+
+        elif self.orientation == DESERT_PIPE_BOX:
+            # segments are the horizontal sections, which are 8 blocks long
+            # two of those are drawn per length bit
+            # rows are the 4 block high rows Mario can walk in
+
+            is_pipe_box_type_b = self.obj_index // 0x10 == 4
+
+            rows_per_box = self.height
+            lines_per_row = 4
+
+            segment_width = self.width
+            segments = (self.length + 1) * 2
+
+            box_height = lines_per_row * rows_per_box
+
+            new_width = segments * segment_width
+            new_height = box_height
+
+            for row_number in range(rows_per_box):
+                for line in range(lines_per_row):
+                    if is_pipe_box_type_b and row_number > 0 and line == 0:
+                        # in pipebox type b we do not repeat the horizontal beams
+                        line += 1
+
+                    start = line * segment_width
+                    stop = start + segment_width
+
+                    for segment_number in range(segments):
+                        blocks_to_draw.extend(self.blocks[start:stop])
+
+            if is_pipe_box_type_b:
+                # draw another open row
+                start = segment_width
+            else:
+                # draw the first row again to close the box
+                start = 0
+
+            stop = start + segment_width
+
+            for segment_number in range(segments):
+                blocks_to_draw.extend(self.blocks[start:stop])
 
         elif self.orientation in [DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
             if self.ending == UNIFORM:
