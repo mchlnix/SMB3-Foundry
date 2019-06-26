@@ -534,7 +534,8 @@ class LevelObject(ObjectLike):
                     blocks_to_draw.extend(middle * (new_width - top_and_bottom_line))
                     blocks_to_draw.append(right)
 
-                assert len(blocks_to_draw) % self.height == 0
+                if not len(blocks_to_draw) % self.height == 0:
+                    print(f"Blocks to draw are not divisible by height. {self}")
 
                 new_width = int(len(blocks_to_draw) / self.height)
 
@@ -542,8 +543,6 @@ class LevelObject(ObjectLike):
                 bottom_row = blocks_to_draw[-new_width:]
 
                 middle_blocks = blocks_to_draw[new_width:-new_width]
-
-                assert len(middle_blocks) == new_width or len(middle_blocks) == 0
 
                 new_rows = new_height - top_and_bottom_line
 
