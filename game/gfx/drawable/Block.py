@@ -57,6 +57,15 @@ class Block:
 
         self.image.SetMaskColour(*MASK_COLOR)
 
+        histogram = wx.ImageHistogram()
+
+        no_of_colors = self.image.ComputeHistogram(histogram)
+
+        if no_of_colors == 1 and self.image.GetData()[0:3] == bytearray(MASK_COLOR):
+            self._whole_block_is_transparent = True
+        else:
+            self._whole_block_is_transparent = False
+
     def draw(self, dc, x, y, block_length, selected=False, transparent=False):
         image = self.image.Copy()
 
@@ -67,7 +76,7 @@ class Block:
         if selected:
             image = image.ConvertToDisabled(127)
 
-        if not transparent:
+        if not transparent or self._whole_block_is_transparent:
             image.Replace(*MASK_COLOR, *self.bg_color)
 
         dc.DrawBitmap(image.ConvertToBitmap(), x, y, useMask=transparent)
