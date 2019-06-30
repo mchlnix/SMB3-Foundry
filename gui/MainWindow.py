@@ -1,3 +1,5 @@
+import os
+
 import wx
 import wx.lib.scrolledpanel
 
@@ -92,6 +94,7 @@ ID_PALETTE = 506
 ID_MORE = 507
 ID_TRANSPARENCY = 508
 ID_JUMPS = 509
+ID_SCREEN_SHOT = 510
 
 # help menu
 
@@ -196,6 +199,8 @@ class SMB3Foundry(wx.Frame):
         view_menu.AppendCheckItem(ID_GRID_LINES, "&Gridlines", "")
         view_menu.AppendCheckItem(ID_TRANSPARENCY, "&Block Transparency", "")
         view_menu.FindItemById(ID_TRANSPARENCY).Check(True)
+        view_menu.AppendSeparator()
+        view_menu.Append(ID_SCREEN_SHOT, "&Save Screenshot of Level", "")
         """
         view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
         view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
@@ -241,6 +246,7 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_object_viewer, id=ID_VIEW_OBJECTS)
         self.Bind(wx.EVT_MENU, self.on_header_editor, id=ID_EDIT_HEADER)
         self.Bind(wx.EVT_MENU, self.on_about, id=ID_ABOUT)
+        self.Bind(wx.EVT_MENU, self.on_screenshot, id=ID_SCREEN_SHOT)
 
         self.context_menu = ContextMenu()
 
@@ -349,6 +355,38 @@ class SMB3Foundry(wx.Frame):
 
         if not self.on_open_rom(None):
             wx.Exit()
+
+    def on_screenshot(self, _):
+        if self.level_view is None:
+            return
+
+        with wx.FileDialog(
+            self,
+            "Save Screenshot",
+            defaultFile=f"{ROM.name} - {self.level_view.level.name}.png",
+            defaultDir=os.path.expanduser("~"),
+            style=wx.FD_SAVE,
+            wildcard="Bitmap files (.png)|*.png|All files|*",
+        ) as fileDialog:
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+
+            # Proceed loading the file chosen by the user
+            pathname = fileDialog.GetPath()
+            try:
+                dc = wx.MemoryDC()
+
+                bitmap = self.level_view.make_screenshot(dc)
+
+                dc.SelectObject(wx.NullBitmap)
+
+                img = bitmap.ConvertToImage()
+
+                img.SaveFile(pathname, wx.BITMAP_TYPE_PNG)
+
+                return True
+            except IOError:
+                wx.LogError("Cannot save file '%s'." % pathname)
 
     def update_title(self):
         self.SetTitle(f"{self.level_view.level.name} - {ROM.name}")

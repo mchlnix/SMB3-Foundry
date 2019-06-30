@@ -480,6 +480,15 @@ class LevelView(wx.Panel):
     def get_object_names(self):
         return self.level.get_object_names()
 
+    def make_screenshot(self, dc: wx.MemoryDC):
+        bitmap = wx.EmptyBitmap(*self.GetSize())
+
+        dc.SelectObject(bitmap)
+
+        self.level.draw(dc, self.block_length, True)
+
+        return bitmap
+
     def on_paint(self, event):
         event.Skip()
 
