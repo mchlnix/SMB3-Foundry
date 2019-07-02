@@ -435,11 +435,13 @@ class LevelView(wx.Panel):
         self.level.add_object(domain, obj_index, x, y, length, obj.index)
 
     def replace_enemy(self, enemy, enemy_index):
+        index_in_level = self.level.index_of(enemy)
+
         self.remove_object(enemy)
 
         x, y = enemy.get_position()
 
-        self.level.add_enemy(enemy_index, x, y, enemy.index)
+        self.level.add_enemy(enemy_index, x, y, index_in_level)
 
     def remove_object(self, obj):
         self.level.remove_object(obj)

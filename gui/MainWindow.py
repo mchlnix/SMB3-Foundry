@@ -38,6 +38,7 @@ from ObjectList import ObjectList
 from ObjectStatusBar import ObjectStatusBar
 from ObjectViewer import ObjectViewer
 from SpinnerPanel import SpinnerPanel, ID_SPIN_DOMAIN, ID_SPIN_TYPE, ID_SPIN_LENGTH
+from game.gfx.objects.EnemyItem import EnemyObject
 from game.gfx.objects.LevelObject import LevelObject
 from game.level.Level import Level
 from game.level.WorldMap import WorldMap
@@ -841,6 +842,8 @@ class SMB3Foundry(wx.Frame):
 
                 if obj.is_4byte:
                     self.spinner_panel.set_length(obj.data[3])
+            elif isinstance(obj, EnemyObject):
+                self.spinner_panel.set_type(obj.obj_index)
 
     def deselect_all(self):
         self.level_view.select_object(None)
