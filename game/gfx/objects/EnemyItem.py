@@ -147,6 +147,16 @@ class EnemyObject(ObjectLike):
     def get_rect(self):
         return self.rect
 
+    def increment_type(self):
+        self.obj_index = min(0xFF, self.obj_index + 1)
+
+        self._setup()
+
+    def decrement_type(self):
+        self.obj_index = max(0, self.obj_index - 1)
+
+        self._setup()
+
     def to_bytes(self):
         return bytearray([self.obj_index, self.x_position, self.y_position])
 

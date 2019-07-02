@@ -818,7 +818,7 @@ class SMB3Foundry(wx.Frame):
             obj_under_cursor.decrement_type()
 
         self.select_object(obj=obj_under_cursor)
-        self.object_list.update()
+        self.object_list.fill()
 
         self.level_view.Refresh()
 
