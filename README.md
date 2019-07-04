@@ -3,7 +3,7 @@
 [![YouTube Video of Version 0.9](https://img.youtube.com/vi/NSQnIYQT5Go/0.jpg)](https://www.youtube.com/watch?v=NSQnIYQT5Go)  
 YouTube Video of Version 0.9, check [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) for more current versions
 
-## Features right now:
+## Features right now
 
  - Level selection
  - Level view
@@ -16,17 +16,23 @@ YouTube Video of Version 0.9, check [Releases](https://github.com/mchlnix/SMB3-F
  - Vertical Levels
  - Undo/Redo System
  - Instant Header Editing
+ - Jump (Level pointer) editing
+ - Make screenshots of your Level
 
-## To come:
+## To come
 
  - Smoothing out the rough edges
  - Pretty much the rest of SMB3 Workshops features
  - Cleaner architecture
  - dynamic level sizes
 
-## Not planned right now:
+## Not planned right now
 
  - Support of other versions, other than the US release
+ 
+## Contact
+
+Come to the [SMB3 Romhacking Discord](https://discord.gg/pm87gm7) and message Michael.
 
 ## How to run
 
