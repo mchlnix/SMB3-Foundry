@@ -137,7 +137,7 @@ class ObjectDrawArea(wx.Panel):
         super(ObjectDrawArea, self).__init__(parent)
 
         self.object_factory = LevelObjectFactory(
-            object_set, graphic_set, palette_index, [], False
+            object_set, graphic_set, palette_index, [], False, size_minimal=True
         )
 
         self.current_object = None

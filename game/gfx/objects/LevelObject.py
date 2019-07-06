@@ -73,6 +73,7 @@ class LevelObject(ObjectLike):
         objects_ref,
         is_vertical,
         index,
+        size_minimal=False,
     ):
         self.object_set = ObjectSet(object_set)
 
@@ -94,6 +95,8 @@ class LevelObject(ObjectLike):
         self.data = data
 
         self.selected = False
+
+        self.size_minimal = size_minimal
 
         self._setup()
 
@@ -317,20 +320,21 @@ class LevelObject(ObjectLike):
 
             base_x += 1  # set the new base_x to the tip of the pyramid
 
-            for y in range(base_y, GROUND):
-                new_height = y - base_y
-                new_width = 2 * new_height
+            if not self.size_minimal:
+                for y in range(base_y, GROUND):
+                    new_height = y - base_y
+                    new_width = 2 * new_height
 
-                bottom_row = wx.Rect(base_x, y, new_width, 1)
+                    bottom_row = wx.Rect(base_x, y, new_width, 1)
 
-                if any(
-                    [
-                        bottom_row.Intersects(obj.get_rect())
-                        and y == obj.get_rect().GetTop()
-                        for obj in self.objects_ref[0 : self.index]
-                    ]
-                ):
-                    break
+                    if any(
+                        [
+                            bottom_row.Intersects(obj.get_rect())
+                            and y == obj.get_rect().GetTop()
+                            for obj in self.objects_ref[0 : self.index]
+                        ]
+                    ):
+                        break
 
             base_x = base_x - (new_width // 2)
 
@@ -453,22 +457,23 @@ class LevelObject(ObjectLike):
 
             if self.orientation == HORIZ_TO_GROUND:
 
-                # to the ground only, until it hits something
-                for y in range(base_y, GROUND):
-                    bottom_row = wx.Rect(base_x, y, new_width, 1)
+                if not self.size_minimal:
+                    # to the ground only, until it hits something
+                    for y in range(base_y, GROUND):
+                        bottom_row = wx.Rect(base_x, y, new_width, 1)
 
-                    if any(
-                        [
-                            bottom_row.Intersects(obj.get_rect())
-                            and y == obj.get_rect().GetTop()
-                            for obj in self.objects_ref[0 : self.index]
-                        ]
-                    ):
-                        new_height = y - base_y
-                        break
-                else:
-                    # nothing underneath this object, extend to the ground
-                    new_height = GROUND - base_y
+                        if any(
+                            [
+                                bottom_row.Intersects(obj.get_rect())
+                                and y == obj.get_rect().GetTop()
+                                for obj in self.objects_ref[0 : self.index]
+                            ]
+                        ):
+                            new_height = y - base_y
+                            break
+                    else:
+                        # nothing underneath this object, extend to the ground
+                        new_height = GROUND - base_y
 
                 if self.is_single_block:
                     new_width = self.length

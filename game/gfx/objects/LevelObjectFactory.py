@@ -1,5 +1,5 @@
 from game.gfx.objects.Jump import Jump
-from game.gfx.objects.LevelObject import LevelObject
+from game.gfx.objects.LevelObject import LevelObject, GROUND
 from game.ObjectDefinitions import load_object_definitions
 from game.gfx.Palette import load_palette
 from game.gfx.PatternTable import PatternTable
@@ -15,13 +15,21 @@ class LevelObjectFactory:
     palette_group: list = []
 
     def __init__(
-        self, object_set, graphic_set, palette_group_index, objects_ref, vertical_level
+        self,
+        object_set,
+        graphic_set,
+        palette_group_index,
+        objects_ref,
+        vertical_level,
+        size_minimal=False,
     ):
         self.set_object_set(object_set)
         self.set_graphic_set(graphic_set)
         self.set_palette_group_index(palette_group_index)
         self.objects_ref = objects_ref
         self.vertical_level = vertical_level
+
+        self.size_minimal = size_minimal
 
     def set_object_set(self, object_set):
         self.object_set = object_set
@@ -49,6 +57,7 @@ class LevelObjectFactory:
             self.objects_ref,
             self.vertical_level,
             index,
+            size_minimal=self.size_minimal,
         )
 
     def from_properties(self, domain, object_index, x, y, length, index):
