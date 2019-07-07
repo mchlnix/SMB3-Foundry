@@ -34,6 +34,7 @@ from JumpEditor import JumpEditor
 from JumpList import JumpList
 from LevelSelector import LevelSelector
 from LevelView import LevelView
+from ObjectDropdown import ObjectDropdown
 from ObjectList import ObjectList
 from ObjectStatusBar import ObjectStatusBar
 from ObjectViewer import ObjectViewer
@@ -287,6 +288,15 @@ class SMB3Foundry(wx.Frame):
         self.spinner_panel = SpinnerPanel(self, self.level_view)
 
         vert_right.Add(self.spinner_panel, border=5, flag=wx.BOTTOM | wx.EXPAND)
+
+        self.object_dropdown = ObjectDropdown(self, None)
+
+        vert_right.Add(
+            self.object_dropdown,
+            border=5,
+            flag=wx.BOTTOM | wx.RIGHT | wx.LEFT | wx.EXPAND,
+        )
+
         vert_right.Add(
             self.object_list,
             proportion=1,
@@ -727,6 +737,8 @@ class SMB3Foundry(wx.Frame):
 
         self.GetMenuBar().FindItemById(ID_SAVE_M3L).Enable(not for_world_maps)
         self.GetMenuBar().FindItemById(ID_EDIT_HEADER).Enable(not for_world_maps)
+
+        self.object_dropdown.set_object_factory(self.level_view.level.object_factory)
 
     def on_list_select(self, _):
         indexes = self.object_list.GetSelections()
