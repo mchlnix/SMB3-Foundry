@@ -334,6 +334,7 @@ class SMB3Foundry(wx.Frame):
         self.Bind(wx.EVT_SPINCTRL, self.on_spin, id=ID_SPIN_LENGTH)
 
         self.level_view.Bind(wx.EVT_MOUSEWHEEL, self.on_mouse_wheel)
+        self.level_view.Bind(wx.EVT_MIDDLE_UP, self.on_middle_click)
 
         self.Bind(EVT_OBJ_LIST, self.on_objects_selected)
 
@@ -807,6 +808,19 @@ class SMB3Foundry(wx.Frame):
             self.level_view.Refresh()
         else:
             event.Skip()
+
+    def on_middle_click(self, event):
+        index = self.object_dropdown.GetSelection()
+        if index == wx.NOT_FOUND:
+            return
+        else:
+            domain, object_index = self.object_dropdown.GetClientData(index)
+
+            self.level_view.create_object_at(
+                *event.GetPosition().Get(), domain, object_index
+            )
+
+            self.object_list.update()
 
     def on_mouse_wheel(self, event):
 

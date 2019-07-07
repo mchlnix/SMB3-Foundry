@@ -50,7 +50,7 @@ class ObjectDropdown(wx.adv.BitmapComboBox):
 
         bitmap = self._resize_bitmap(level_object.as_bitmap())
 
-        self.Append(level_object.description, bitmap, level_object)
+        self.Append(level_object.description, bitmap, (domain, object_index))
 
     @staticmethod
     def _resize_bitmap(source_bitmap):
