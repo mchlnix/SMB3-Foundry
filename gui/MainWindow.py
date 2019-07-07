@@ -292,9 +292,7 @@ class SMB3Foundry(wx.Frame):
         self.object_dropdown = ObjectDropdown(self, None)
 
         vert_right.Add(
-            self.object_dropdown,
-            border=5,
-            flag=wx.BOTTOM | wx.RIGHT | wx.LEFT | wx.EXPAND,
+            self.object_dropdown, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND
         )
 
         vert_right.Add(
