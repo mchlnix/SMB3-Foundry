@@ -570,13 +570,23 @@ class LevelObject(ObjectLike):
         self.rendered_base_x = base_x
         self.rendered_base_y = base_y
 
-        if not self.rendered_height == len(self.rendered_blocks) / new_width:
+        if (
+            new_width
+            and not self.rendered_height == len(self.rendered_blocks) / new_width
+        ):
             print(
                 f"Not enough Blocks for calculated height: {self.description}. "
                 f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}"
             )
 
             self.rendered_height = len(self.rendered_blocks) / new_width
+        elif new_width == 0:
+            print(
+                f"Calculated Width is 0, setting to 1: {self.description}. "
+                f"Blocks to draw: {len(self.rendered_blocks)}. Rendered height: {self.rendered_height}"
+            )
+
+            self.rendered_width = 1
 
         self.rect = wx.Rect(
             self.rendered_base_x,
