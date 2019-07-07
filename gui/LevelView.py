@@ -407,10 +407,12 @@ class LevelView(wx.Panel):
     def get_object(self, index):
         return self.level.get_object(index)
 
-    def create_object_at(self, x, y):
+    def create_object_at(self, x, y, domain=0, object_index=0):
         level_x, level_y = self.to_level_point(x, y)
 
-        self.level.create_object_at(level_x, level_y)
+        self.level.create_object_at(level_x, level_y, domain, object_index)
+
+        self.Refresh()
 
     def create_enemy_at(self, x, y):
         level_x, level_y = self.to_level_point(x, y)

@@ -537,8 +537,8 @@ class Level(LevelLike):
 
             return self.add_object(obj.domain, obj.obj_index, x, y, length)
 
-    def create_object_at(self, x, y):
-        self.add_object(0, 0, x, y, None, len(self.objects))
+    def create_object_at(self, x, y, domain=0, object_index=0):
+        self.add_object(domain, object_index, x, y, None, len(self.objects))
 
     def create_enemy_at(self, x, y):
         # goomba to have something to display
