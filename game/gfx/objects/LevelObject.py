@@ -21,6 +21,7 @@ from game.ObjectDefinitions import (
     DESERT_PIPE_BOX,
 )
 from game.ObjectSet import ObjectSet
+from game.gfx.Palette import get_bg_color_for
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.ObjectLike import ObjectLike
 
@@ -735,6 +736,39 @@ class LevelObject(ObjectLike):
 
     def get_rect(self):
         return self.rect
+
+    def as_bitmap(self):
+        """
+        Creates a Bitmap of the level object for use in the GUI (for menus or dropdowns). Shouldn't be used for
+        Levelobjects, that are used in the LevelView. The Bitmap has to be resized, if necessary.
+
+        :return: A wx.Bitmap with a version of this LevelObject.
+        :rtype: wx.Bitmap
+        """
+
+        assert self.rendered_base_x == 0
+        assert self.rendered_base_y == 0
+
+        dc = wx.MemoryDC()
+
+        bitmap = wx.Bitmap(
+            width=self.rendered_width * Block.SIDE_LENGTH,
+            height=self.rendered_height * Block.SIDE_LENGTH,
+        )
+
+        dc.SelectObject(bitmap)
+
+        bg_color = get_bg_color_for(self.object_set.number, 0)
+
+        dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
+
+        dc.Clear()
+
+        self.draw(dc, Block.SIDE_LENGTH, True)
+
+        dc.SelectObject(wx.NullBitmap)
+
+        return bitmap
 
     def to_bytes(self):
         data = bytearray()
