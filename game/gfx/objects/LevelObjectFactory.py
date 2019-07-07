@@ -71,6 +71,8 @@ class LevelObjectFactory:
             data.append(length)
 
         obj = self.from_data(data, index)
-        obj.set_position(x, y)
+
+        if isinstance(obj, LevelObject):
+            obj.set_position(x, y)
 
         return obj
