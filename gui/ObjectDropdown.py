@@ -10,13 +10,24 @@ class ObjectDropdown(wx.adv.BitmapComboBox):
 
         self._on_object_factory_change(object_factory)
 
+        # the internal list of objects, which can be filtered down
+        self._object_items = []
+
+        # text entered in the combobox to filter the items
+        self._text = ""
+
+        self.Bind(wx.EVT_TEXT, self._update_filter_text)
+
     def set_object_factory(self, object_factory):
         self._on_object_factory_change(object_factory)
 
+    def _update_filter_text(self, _):
+        self._text = self.GetValue()
+
+        self._fill_combobox()
+
     def _on_object_factory_change(self, object_factory):
         self._object_factory = object_factory
-
-        self.Clear()
 
         if self._object_factory is None:
             return
@@ -29,6 +40,17 @@ class ObjectDropdown(wx.adv.BitmapComboBox):
                 # add one, since some objects have a width of 0, when taking the base index
                 # I guess these are just invalid in that case
                 self._add_object(domain, expanding_object + 1)
+
+        self._fill_combobox()
+
+    def _fill_combobox(self):
+        self.SetItems([])
+
+        for description, bitmap, client_data in self._object_items:
+            if self._text and not self._text.lower() in description.lower():
+                continue
+
+            self.Append(description, bitmap, client_data)
 
     def _add_object(self, domain, object_index):
         """
@@ -50,7 +72,9 @@ class ObjectDropdown(wx.adv.BitmapComboBox):
 
         bitmap = self._resize_bitmap(level_object.as_bitmap())
 
-        self.Append(level_object.description, bitmap, (domain, object_index))
+        self._object_items.append(
+            (level_object.description, bitmap, (domain, object_index))
+        )
 
     @staticmethod
     def _resize_bitmap(source_bitmap):
