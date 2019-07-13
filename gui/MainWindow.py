@@ -289,7 +289,7 @@ class SMB3Foundry(wx.Frame):
 
         vert_right.Add(self.spinner_panel, border=5, flag=wx.BOTTOM | wx.EXPAND)
 
-        self.object_dropdown = ObjectDropdown(self, None)
+        self.object_dropdown = ObjectDropdown(self)
 
         vert_right.Add(
             self.object_dropdown, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND
@@ -809,6 +809,7 @@ class SMB3Foundry(wx.Frame):
 
     def on_middle_click(self, event):
         index = self.object_dropdown.GetSelection()
+
         if index == wx.NOT_FOUND:
             return
         else:
