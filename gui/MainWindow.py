@@ -831,6 +831,11 @@ class SMB3Foundry(wx.Frame):
             if isinstance(self.level_view.level, WorldMap):
                 return
 
+            # scrolling through the level could unintentionally change objects, if the cursor would wander onto them.
+            # this is annoying (to me) so only change already selected objects
+            if obj_under_cursor not in self.level_view.selected_objects:
+                return
+
             self.change_object_on_mouse_wheel(event)
 
     @undoable
