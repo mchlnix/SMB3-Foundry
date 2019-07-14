@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 
 import wx
 import wx.lib.scrolledpanel
@@ -813,13 +814,17 @@ class SMB3Foundry(wx.Frame):
         if index == wx.NOT_FOUND:
             return
         else:
-            domain, object_index = self.object_dropdown.GetClientData(index)
+            pos = event.GetPosition().Get()
 
-            self.level_view.create_object_at(
-                *event.GetPosition().Get(), domain, object_index
-            )
+            self.place_object_from_dropdown(index, pos)
 
-            self.object_list.update()
+    @undoable
+    def place_object_from_dropdown(self, index: int, pos: Tuple[int, int]) -> None:
+        domain, object_index = self.object_dropdown.GetClientData(index)
+
+        self.level_view.create_object_at(*pos, domain, object_index)
+
+        self.object_list.update()
 
     def on_mouse_wheel(self, event):
 
