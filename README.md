@@ -36,13 +36,25 @@ Come to the [SMB3 Romhacking Discord](https://discord.gg/pm87gm7) and message Mi
 
 ## How to run
 
+### The Easy Way
+You can use the editions in the [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) tab on Github under **Assets**. Those should work out of the box.
+
+Alternatively you can try the methods below.
+
+### Windows
+
 1. You need to have at least Python3.6 installed. To do that, go to
 https://www.python.org/downloads. Make sure to tick the box "Add Python to
 Path"!
 2. You need to install the wxPython GUI framework. To do that, open a command
-prompt (search cmd in Windows, open a Terminal in Linux/Mac) and type in `pip
-install wxpython`. This should work automatically.
-3. Click on smb3-foundry.py and the editor should open up, asking you to
+prompt (search cmd in Windows) and type in `pip install wxpython`. This should work automatically.
+3. Click on smb3-foundry.py and the level editor should open up, asking you to
 select the ROM you want to load. Preferably the US version of SMB3 or a Hack
 based on it.
 
+### Linux
+
+1. The `python3` package should already be installed on your system. If not then do it using your distributions package manager.
+2. Install `python3-pip` using the package manager as well.
+3. Install the GUI framework, using `pip install wxpython`. Maybe you need to use `pip3` instead.
+4. You can start the level editor using `python3 smb3-foundry.py` using the terminal.
