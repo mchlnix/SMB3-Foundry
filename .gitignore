@@ -5,3 +5,4 @@ SMB3.nes
 __pycache__
 build/
 dist/
+*.egg-info/

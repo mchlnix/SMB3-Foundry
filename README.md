@@ -48,7 +48,7 @@ https://www.python.org/downloads. Make sure to tick the box "Add Python to
 Path"!
 2. You need to install the wxPython GUI framework. To do that, open a command
 prompt (search cmd in Windows) and type in `pip install wxpython`. This should work automatically.
-3. Click on smb3-foundry.py and the level editor should open up, asking you to
+3. Click on smb3foundry.py and the level editor should open up, asking you to
 select the ROM you want to load. Preferably the US version of SMB3 or a Hack
 based on it.
 
