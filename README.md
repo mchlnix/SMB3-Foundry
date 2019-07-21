@@ -1,5 +1,7 @@
 # Port/Reimplementation of SMB3 Workshop by hukka
 
+[![Build Status](https://travis-ci.org/mchlnix/SMB3-Foundry.svg?branch=master)](https://travis-ci.org/mchlnix/SMB3-Foundry)
+
 [![YouTube Video of Version 0.9](https://img.youtube.com/vi/NSQnIYQT5Go/0.jpg)](https://www.youtube.com/watch?v=NSQnIYQT5Go)  
 YouTube Video of Version 0.9, check [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) for more current versions
 

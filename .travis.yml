@@ -1,0 +1,14 @@
+os: linux
+dist: bionic
+language: python
+python:
+    - "3.6"
+    - "3.7"
+
+before_install:
+  - sudo apt-get install -y mesa-common-dev libglu1-mesa-dev
+  - sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+  - sudo apt-get install -y libgtk-3-dev libwxgtk-webview3.0-gtk3-dev
+install:
+  - pip3 install -r requirements.txt
+

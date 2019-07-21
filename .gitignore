@@ -1,5 +1,6 @@
 venv
-.*
+.pytest-cache
+.idea
 *.tags
 SMB3.nes
 __pycache__
