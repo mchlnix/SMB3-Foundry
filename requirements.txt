@@ -1,10 +1,2 @@
-altgraph==0.16.1
-future==0.17.1
-macholib==1.11
-numpy==1.16.4
 pathlib2==2.3.4
-pefile==2019.4.18
-Pillow==6.1.0
-PyInstaller==3.4
-six==1.12.0
-wxPython==4.0.4
+wxPython==4.0.6
