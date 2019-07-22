@@ -1,8 +1,8 @@
 import wx
 
-from LevelSelector import OBJECT_SET_ITEMS
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from gui.LevelSelector import OBJECT_SET_ITEMS
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2

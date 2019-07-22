@@ -1,7 +1,7 @@
 import wx
 
+from game.Data import level_array, world_indexes
 from game.level.Level import Level
-from Data import level_array, world_indexes
 
 WORLD_ITEMS = [
     "World Maps",

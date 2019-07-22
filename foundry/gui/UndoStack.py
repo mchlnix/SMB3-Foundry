@@ -1,6 +1,6 @@
 import wx
 
-from Events import (
+from gui.Events import (
     UndoCompleteEvent,
     UndoStackClearedEvent,
     UndoStateSavedEvent,

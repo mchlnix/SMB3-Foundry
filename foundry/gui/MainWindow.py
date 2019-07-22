@@ -4,9 +4,14 @@ from typing import Tuple
 import wx
 import wx.lib.scrolledpanel
 
-from AboutWindow import AboutDialog
-from BlockViewer import BlockViewer
-from ContextMenu import (
+from game.File import ROM
+from game.gfx.objects.EnemyItem import EnemyObject
+from game.gfx.objects.LevelObject import LevelObject
+from game.level.Level import Level
+from game.level.WorldMap import WorldMap
+from gui.AboutWindow import AboutDialog
+from gui.BlockViewer import BlockViewer
+from gui.ContextMenu import (
     ContextMenu,
     ID_CTX_REMOVE,
     ID_CTX_ADD_OBJECT,
@@ -15,7 +20,7 @@ from ContextMenu import (
     ID_CTX_PASTE,
     ID_CTX_CUT,
 )
-from Events import (
+from gui.Events import (
     EVT_REDO,
     EVT_UNDO,
     EVT_UNDO_COMPLETE,
@@ -29,21 +34,16 @@ from Events import (
     EVT_JUMP_ADDED,
     EVT_JUMP_REMOVED,
 )
-from File import ROM
-from HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
-from JumpEditor import JumpEditor
-from JumpList import JumpList
-from LevelSelector import LevelSelector
-from LevelView import LevelView
-from ObjectDropdown import ObjectDropdown
-from ObjectList import ObjectList
-from ObjectStatusBar import ObjectStatusBar
-from ObjectViewer import ObjectViewer
-from SpinnerPanel import SpinnerPanel, ID_SPIN_DOMAIN, ID_SPIN_TYPE, ID_SPIN_LENGTH
-from game.gfx.objects.EnemyItem import EnemyObject
-from game.gfx.objects.LevelObject import LevelObject
-from game.level.Level import Level
-from game.level.WorldMap import WorldMap
+from gui.HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
+from gui.JumpEditor import JumpEditor
+from gui.JumpList import JumpList
+from gui.LevelSelector import LevelSelector
+from gui.LevelView import LevelView
+from gui.ObjectDropdown import ObjectDropdown
+from gui.ObjectList import ObjectList
+from gui.ObjectStatusBar import ObjectStatusBar
+from gui.ObjectViewer import ObjectViewer
+from gui.SpinnerPanel import SpinnerPanel, ID_SPIN_DOMAIN, ID_SPIN_TYPE, ID_SPIN_LENGTH
 
 # file menu
 
@@ -945,4 +945,4 @@ class SMB3Foundry(wx.Frame):
         if not self.safe_to_change():
             return
 
-        wx.Exit()
+        self.Destroy()

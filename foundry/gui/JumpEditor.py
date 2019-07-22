@@ -1,7 +1,7 @@
 import wx
 
-from Events import JumpUpdate
 from game.gfx.objects.Jump import Jump
+from gui.Events import JumpUpdate
 
 JUMP_ACTIONS = [
     "Downward Pipe 1",

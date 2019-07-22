@@ -1,7 +1,7 @@
 import wx
 
-from Data import Mario3Level, object_set_pointers
-from File import ROM
+from game.Data import Mario3Level, object_set_pointers
+from game.File import ROM
 from game.ObjectSet import ObjectSet
 from game.gfx.Palette import get_bg_color_for, load_palette
 from game.gfx.PatternTable import PatternTable

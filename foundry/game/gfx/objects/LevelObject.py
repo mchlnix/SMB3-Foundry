@@ -1,6 +1,6 @@
 import wx
 
-from File import ROM
+from game.File import ROM
 from game.ObjectDefinitions import (
     HORIZONTAL,
     VERTICAL,

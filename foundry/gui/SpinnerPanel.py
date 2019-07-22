@@ -1,6 +1,6 @@
 import wx
 
-from Events import (
+from gui.Events import (
     EVT_UNDO_CLEARED,
     EVT_UNDO_COMPLETE,
     EVT_REDO_COMPLETE,

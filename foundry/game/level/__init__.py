@@ -1,4 +1,4 @@
-from Data import Mario3Level
+from game.Data import Mario3Level
 
 
 def _load_level_offsets():

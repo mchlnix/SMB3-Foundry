@@ -1,7 +1,7 @@
 import wx
 import wx.lib.newevent
 
-from LevelSelector import OBJECT_SET_ITEMS
+from gui.LevelSelector import OBJECT_SET_ITEMS
 from game.level.Level import Level
 
 LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]

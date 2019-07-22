@@ -1,12 +1,12 @@
 import wx
 
-from Events import ObjectListUpdateEvent, JumpListUpdate
+from game.gfx.drawable.Block import Block
 from game.gfx.objects.LevelObject import SCREEN_WIDTH, SCREEN_HEIGHT
 from game.level.Level import Level
-from SelectionSquare import SelectionSquare
-from game.gfx.drawable.Block import Block
-from UndoStack import UndoStack
 from game.level.WorldMap import WorldMap
+from gui.Events import ObjectListUpdateEvent, JumpListUpdate
+from gui.SelectionSquare import SelectionSquare
+from gui.UndoStack import UndoStack
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks

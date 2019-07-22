@@ -2,7 +2,9 @@
 
 # start the editor in the background, saving its process ID
 
-python3 smb3-foundry.py &
+FOUNDRY_EXECUTABLE="foundry/smb3-foundry.py"
+
+python3 "$FOUNDRY_EXECUTABLE" &
 
 FOUNDRY_PID=$!
 
@@ -12,7 +14,7 @@ sleep 10
 
 # if it is still open, we assume it started correctly
 
-if ps aux  | grep -v "grep" | grep "smb3-foundry.py" >/dev/null; then
+if ps aux  | grep -v "grep" | grep "$FOUNDRY_EXECUTABLE" >/dev/null; then
     kill "$FOUNDRY_PID"
 
     exit 0
