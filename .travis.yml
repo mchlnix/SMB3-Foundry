@@ -26,7 +26,9 @@ matrix:
           secure: zapduKP5v3rW86Zczy2bithNEklLL2y1TA/tmyumjgP5hqVyG8oOzDxI0sw4rzQkJWmdXC1t1dV7UzG9lF9FK2IvWrVOTlCH8/wpqReDNLLkUtI+hKIZERCpUC7pFKookIr9CWtjH+rObauPvjv6GjmejJmgncIl2SktCCp1ZBY/d/d2rmUDiyX2xgcRPjExxpLrFskrVdfo6EaQmPZn+X/WQEYY+Aksm8bstsn/0XgXmIy/ey9xP1EF+aLfeK7vRLe3LOgRda6DlcU4LpvXRuk1Y4opgMC943qukJNNlxub8N0iaSCreNQSa2HdY/tar/CAW9WuHeszfGMJgwyaBP15cs1T4WQwHFdr7mDCySnNMo7VjVGH3nsSlQYzlhtiBFiENX/XPg0DLn3IshrOVARQYJ5uvP6n+qLmsiGNMvvfwkmVIopkbuDpZt/0HdgwAXYzsoHJE+NkVc1XZnr3y8J+7RGCA286P05wg1kCGw742LphspIQUD2SrvNpbdRQ2nMJ6JXW8j1MC6AYtmxFUATDbIkZEdwtQN/lYnly9VvezXjN7BAwLu1bFv3Q2nRP90hf9qALOmdXscaSadTauei0MNs2OGclOKFgd/do8ITZKNxKLWzH1UrJ5tMFuGvHS47aQdV5xG31kQORMYKzRa4e88g2h26SlLh1BX6FhwA=
         file: dist/linux-pip-smb3-foundry
         skip_cleanup: true
+        pre_release: true
         on:
+          branch: master
           tags: true
 
     - os: linux
@@ -51,6 +53,7 @@ matrix:
           secure: zapduKP5v3rW86Zczy2bithNEklLL2y1TA/tmyumjgP5hqVyG8oOzDxI0sw4rzQkJWmdXC1t1dV7UzG9lF9FK2IvWrVOTlCH8/wpqReDNLLkUtI+hKIZERCpUC7pFKookIr9CWtjH+rObauPvjv6GjmejJmgncIl2SktCCp1ZBY/d/d2rmUDiyX2xgcRPjExxpLrFskrVdfo6EaQmPZn+X/WQEYY+Aksm8bstsn/0XgXmIy/ey9xP1EF+aLfeK7vRLe3LOgRda6DlcU4LpvXRuk1Y4opgMC943qukJNNlxub8N0iaSCreNQSa2HdY/tar/CAW9WuHeszfGMJgwyaBP15cs1T4WQwHFdr7mDCySnNMo7VjVGH3nsSlQYzlhtiBFiENX/XPg0DLn3IshrOVARQYJ5uvP6n+qLmsiGNMvvfwkmVIopkbuDpZt/0HdgwAXYzsoHJE+NkVc1XZnr3y8J+7RGCA286P05wg1kCGw742LphspIQUD2SrvNpbdRQ2nMJ6JXW8j1MC6AYtmxFUATDbIkZEdwtQN/lYnly9VvezXjN7BAwLu1bFv3Q2nRP90hf9qALOmdXscaSadTauei0MNs2OGclOKFgd/do8ITZKNxKLWzH1UrJ5tMFuGvHS47aQdV5xG31kQORMYKzRa4e88g2h26SlLh1BX6FhwA=
         file: dist/linux-smb3-foundry
         skip_cleanup: true
+        pre_release: true
         on:
           tags: true
 
@@ -74,7 +77,9 @@ matrix:
           secure: zapduKP5v3rW86Zczy2bithNEklLL2y1TA/tmyumjgP5hqVyG8oOzDxI0sw4rzQkJWmdXC1t1dV7UzG9lF9FK2IvWrVOTlCH8/wpqReDNLLkUtI+hKIZERCpUC7pFKookIr9CWtjH+rObauPvjv6GjmejJmgncIl2SktCCp1ZBY/d/d2rmUDiyX2xgcRPjExxpLrFskrVdfo6EaQmPZn+X/WQEYY+Aksm8bstsn/0XgXmIy/ey9xP1EF+aLfeK7vRLe3LOgRda6DlcU4LpvXRuk1Y4opgMC943qukJNNlxub8N0iaSCreNQSa2HdY/tar/CAW9WuHeszfGMJgwyaBP15cs1T4WQwHFdr7mDCySnNMo7VjVGH3nsSlQYzlhtiBFiENX/XPg0DLn3IshrOVARQYJ5uvP6n+qLmsiGNMvvfwkmVIopkbuDpZt/0HdgwAXYzsoHJE+NkVc1XZnr3y8J+7RGCA286P05wg1kCGw742LphspIQUD2SrvNpbdRQ2nMJ6JXW8j1MC6AYtmxFUATDbIkZEdwtQN/lYnly9VvezXjN7BAwLu1bFv3Q2nRP90hf9qALOmdXscaSadTauei0MNs2OGclOKFgd/do8ITZKNxKLWzH1UrJ5tMFuGvHS47aQdV5xG31kQORMYKzRa4e88g2h26SlLh1BX6FhwA=
         file: dist/osx-smb3-foundry
         skip_cleanup: true
+        pre_release: true
         on:
+          branch: master
           tags: true
 
     - os: windows
@@ -98,5 +103,7 @@ matrix:
           secure: zapduKP5v3rW86Zczy2bithNEklLL2y1TA/tmyumjgP5hqVyG8oOzDxI0sw4rzQkJWmdXC1t1dV7UzG9lF9FK2IvWrVOTlCH8/wpqReDNLLkUtI+hKIZERCpUC7pFKookIr9CWtjH+rObauPvjv6GjmejJmgncIl2SktCCp1ZBY/d/d2rmUDiyX2xgcRPjExxpLrFskrVdfo6EaQmPZn+X/WQEYY+Aksm8bstsn/0XgXmIy/ey9xP1EF+aLfeK7vRLe3LOgRda6DlcU4LpvXRuk1Y4opgMC943qukJNNlxub8N0iaSCreNQSa2HdY/tar/CAW9WuHeszfGMJgwyaBP15cs1T4WQwHFdr7mDCySnNMo7VjVGH3nsSlQYzlhtiBFiENX/XPg0DLn3IshrOVARQYJ5uvP6n+qLmsiGNMvvfwkmVIopkbuDpZt/0HdgwAXYzsoHJE+NkVc1XZnr3y8J+7RGCA286P05wg1kCGw742LphspIQUD2SrvNpbdRQ2nMJ6JXW8j1MC6AYtmxFUATDbIkZEdwtQN/lYnly9VvezXjN7BAwLu1bFv3Q2nRP90hf9qALOmdXscaSadTauei0MNs2OGclOKFgd/do8ITZKNxKLWzH1UrJ5tMFuGvHS47aQdV5xG31kQORMYKzRa4e88g2h26SlLh1BX6FhwA=
         file: dist/win-smb3-foundry.exe
         skip_cleanup: true
+        pre_release: true
         on:
+          branch: master
           tags: true
