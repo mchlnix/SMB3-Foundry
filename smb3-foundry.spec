@@ -3,8 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['smb3-foundry.py'],
-             pathex=['gui', '/home/michael/Gits/SMB3Foundry'],
+a = Analysis(['foundry/smb3-foundry.py'],
              binaries=[],
              datas=[('data', 'data')],
              hiddenimports=[],
