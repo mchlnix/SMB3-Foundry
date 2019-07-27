@@ -1,3 +1,7 @@
+env:
+  global:
+    - PY37PATH=/c/Python37:/c/Python37/Scripts
+
 matrix:
   include:
     - os: linux
@@ -51,17 +55,17 @@ matrix:
           tags: true
 
     - os: windows
-      language: python
-      python: "3.6"
-      virtualenv:
-        system_site_packages: true
+      language: shell # python is not supported yet
+      env: PATH=$PY37PATH:$PATH
       before_install:
-        - pip install wxPython
-        - pip3 install pyinstaller
+        - choco install python
+        - python -m pip install --upgrade pip
+        - python -m pip install wxpython
+        - python -m pip install pyinstaller
       install:
         - true;
       script:
-        - python3 -c "import wx; print(wx.version())"
+        - python -c "import wx; print(wx.version())"
       after_success:
         - pyinstaller smb3-foundry.spec
         - mv dist/smb3-foundry.exe dist/win-smb3-foundry.exe
@@ -73,3 +77,21 @@ matrix:
         skip_cleanup: true
         on:
           tags: true
+
+    - os: windows      # Windows Server, version 1803
+      language: shell  # 'language: python' is not yet supported on Windows
+      env: PATH=$PY37PATH:$PATH
+      before_install:
+        - choco install python
+
+      install:
+        - python -m pip install --upgrade pip
+        #- pip install -r requirements.txt
+        - pip install pyinstaller
+
+      script:
+        - pyinstaller --onefile hello.py
+        - sleep 1  # Allow pyinstaller to finish writing to stdout
+        - ls -l dist
+        - dist/hello.exe
+        - echo "Did something print?!?"
