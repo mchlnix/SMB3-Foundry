@@ -40,7 +40,8 @@ matrix:
       script:
         - python3 -c "import wx; print(wx.version())"
       after_success:
-        - pyinstaller smb3-foundry.spec
+        - pyinstaller --windowed smb3-foundry.spec
+        - ls dist
         - mv dist/smb3-foundry dist/osx-smb3-foundry
       deploy:
         provider: releases
