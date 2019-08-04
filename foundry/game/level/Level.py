@@ -601,7 +601,7 @@ class Level(LevelLike):
 
         m3l_bytes.extend(self.header)
 
-        for obj in self.objects:
+        for obj in self.objects + self.jumps:
             m3l_bytes.extend(obj.to_bytes())
 
         # only write 0xFF, even though the stock ROM would use 0xFF00 or 0xFF01
