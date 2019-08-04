@@ -112,6 +112,8 @@ class Level(LevelLike):
             else:
                 size += 3
 
+        size += Jump.SIZE * len(self.jumps)
+
         return size
 
     def _parse_header(self):
@@ -621,6 +623,9 @@ class Level(LevelLike):
 
         self.object_offset = self.enemy_offset = 0
 
+        # update the level_object_factory
+        self._load_level(b"", b"")
+
         m3l_bytes = m3l_bytes[3:]
 
         self.header = m3l_bytes[: Level.HEADER_LENGTH]
@@ -630,7 +635,7 @@ class Level(LevelLike):
 
         # figure out how many bytes are the objects
         self._load_objects(m3l_bytes)
-        object_size = self._calc_objects_size() + 2
+        object_size = self._calc_objects_size() + len(b"\xFF")  # delimiter
 
         object_bytes = m3l_bytes[:object_size]
         enemy_bytes = m3l_bytes[object_size:]

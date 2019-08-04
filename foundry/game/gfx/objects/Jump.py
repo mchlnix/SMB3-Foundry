@@ -1,6 +1,8 @@
 class Jump:
     POINTER_DOMAIN = 0b111
 
+    SIZE = 3  # bytes
+
     def __init__(self, data):
         self.data = data
 
