@@ -450,6 +450,8 @@ class SMB3Foundry(wx.Frame):
             except IOError:
                 wx.LogError("Cannot open file '%s'." % pathname)
 
+        self.level_view.level.name = os.path.basename(pathname)
+
         self.set_up_gui_for_level()
 
         return True
