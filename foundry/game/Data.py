@@ -34,28 +34,6 @@ Mario3Level = namedtuple(
     ],
 )
 
-# insert meaningless first item, so that the world number is the correct index
-world_indexes = [0]
-
-# insert meaningless first item so that that world_indexes[world] + level is the correct index
-level_array = [0]
-
-with open("data/levels.dat", "r") as level_data:
-    for line_no, line in enumerate(level_data.readlines()):
-        data = line.rstrip("\n").split(",")
-
-        numbers = [int(_hex, 16) for _hex in data[0:5]]
-        level_name = data[5]
-
-        level_array.append(Mario3Level(*numbers, level_name))
-
-        world_index, level_index = numbers[0], numbers[1]
-
-        if world_index > 0 and level_index == 1:
-            world_indexes.append(line_no)
-
-WORLDS = len(world_indexes)
-
 map_sprite_names = [
     "Nothing?",
     '"Help!"',

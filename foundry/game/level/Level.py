@@ -28,10 +28,9 @@ LEVEL_DEFAULT_WIDTH = 16
 class Level(LevelLike):
     MIN_LENGTH = 0x10
 
-    offsets = []
-    world_indexes = []
+    offsets, world_indexes = _load_level_offsets()
 
-    WORLDS = 0
+    WORLDS = len(world_indexes)
 
     HEADER_LENGTH = 9  # bytes
 
@@ -39,17 +38,13 @@ class Level(LevelLike):
 
     def __init__(self, world, level, object_data_offset, enemy_data_offset, object_set):
         super(Level, self).__init__(world, level, object_set)
-        if not Level.offsets:
-            Level.offsets, Level.world_indexes = _load_level_offsets()
-
-            Level.WORLDS = len(Level.world_indexes)
 
         self.attached_to_rom = True
 
         self.object_set_number = object_set
         self.object_set = ObjectSet(object_set)
 
-        level_index = Level.world_indexes[world - 1] + level - 1
+        level_index = Level.world_indexes[world - 1] + level
 
         level_data: Mario3Level = Level.offsets[level_index]
 

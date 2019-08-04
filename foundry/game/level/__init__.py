@@ -2,8 +2,8 @@ from game.Data import Mario3Level
 
 
 def _load_level_offsets():
-    offsets = []
-    world_indexes = []
+    offsets = [0]
+    world_indexes = [0]
 
     with open("data/levels.dat", "r") as level_data:
         for line_no, line in enumerate(level_data.readlines()):

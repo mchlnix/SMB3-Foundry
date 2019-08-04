@@ -1,6 +1,5 @@
 import wx
 
-from game.Data import level_array, world_indexes
 from game.level.Level import Level
 
 WORLD_ITEMS = [
@@ -136,7 +135,7 @@ class LevelSelector(wx.Frame):
         self.level_list.Clear()
 
         # skip first meaningless item
-        for level in level_array[1:]:
+        for level in Level.offsets[1:]:
             if level.game_world == index:
                 if level.name:
                     self.level_list.Append(level.name)
@@ -158,10 +157,10 @@ class LevelSelector(wx.Frame):
             level_array_offset = self.selected_level
         else:
             level_array_offset = (
-                world_indexes[self.selected_world] + self.selected_level
+                Level.world_indexes[self.selected_world] + self.selected_level
             )
 
-        object_data_for_lvl = level_array[level_array_offset].rom_level_offset
+        object_data_for_lvl = Level.offsets[level_array_offset].rom_level_offset
 
         if self.selected_world >= WORLD_1_INDEX:
             object_data_for_lvl -= Level.HEADER_LENGTH
@@ -169,7 +168,7 @@ class LevelSelector(wx.Frame):
         self.object_data_spinner.SetValue(object_data_for_lvl)
 
         if self.selected_world >= WORLD_1_INDEX:
-            enemy_data_for_lvl = level_array[level_array_offset].enemy_offset
+            enemy_data_for_lvl = Level.offsets[level_array_offset].enemy_offset
         else:
             enemy_data_for_lvl = 0
 
@@ -179,7 +178,7 @@ class LevelSelector(wx.Frame):
         self.enemy_data_spinner.SetValue(enemy_data_for_lvl)
 
         # if self.selected_world >= WORLD_1_INDEX:
-        object_set_index = level_array[level_array_offset].real_obj_set
+        object_set_index = Level.offsets[level_array_offset].real_obj_set
         self.object_set_dropdown.SetSelection(object_set_index)
 
         print(
