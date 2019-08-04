@@ -604,8 +604,9 @@ class Level(LevelLike):
         for obj in self.objects:
             m3l_bytes.extend(obj.to_bytes())
 
+        # only write 0xFF, even though the stock ROM would use 0xFF00 or 0xFF01
+        # this is done to keep compatibility to older editors
         m3l_bytes.append(0xFF)
-        m3l_bytes.append(0x01)
 
         for enemy in sorted(self.enemies, key=lambda _enemy: _enemy.x_position):
             m3l_bytes.extend(enemy.to_bytes())
