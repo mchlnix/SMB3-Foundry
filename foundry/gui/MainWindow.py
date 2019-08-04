@@ -515,9 +515,15 @@ class SMB3Foundry(wx.Frame):
             wx.LogError("Cannot save current data in file '%s'." % pathname)
 
     def on_save_m3l(self, _):
+        suggested_file = self.level_view.level.name
+
+        if not suggested_file.endswith(".m3l"):
+            suggested_file += ".m3l"
+
         with wx.FileDialog(
             self,
             "Save M3L as",
+            defaultFile=suggested_file,
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
             wildcard="M3L files (.m3l)|*.m3l|All files|*",
         ) as fileDialog:
