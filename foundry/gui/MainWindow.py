@@ -447,10 +447,12 @@ class SMB3Foundry(wx.Frame):
                 with open(pathname, "rb") as m3l_file:
 
                     self.level_view.from_m3l(bytearray(m3l_file.read()))
-
-                    return True
             except IOError:
                 wx.LogError("Cannot open file '%s'." % pathname)
+
+        self.set_up_gui_for_level()
+
+        return True
 
     def safe_to_change(self):
         if self.level_view.was_changed():
@@ -725,6 +727,9 @@ class SMB3Foundry(wx.Frame):
 
             return
 
+        self.set_up_gui_for_level()
+
+    def set_up_gui_for_level(self):
         self.Fit()
 
         if self.header_editor is not None and isinstance(self.level_view.level, Level):
@@ -733,7 +738,7 @@ class SMB3Foundry(wx.Frame):
         self.object_list.fill()
         self.update_title()
 
-        is_a_world_map = world == 0
+        is_a_world_map = self.level_view.level.world == 0
 
         self.GetMenuBar().FindItemById(ID_SAVE_M3L).Enable(not is_a_world_map)
         self.GetMenuBar().FindItemById(ID_EDIT_HEADER).Enable(not is_a_world_map)

@@ -377,6 +377,8 @@ class LevelView(wx.Panel):
     def from_m3l(self, data):
         self.level.from_m3l(data)
 
+        self.send_jump_event()
+
         self.undo_stack.clear(self.level.to_bytes())
 
         self.resize()
