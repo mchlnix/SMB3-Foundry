@@ -733,12 +733,24 @@ class SMB3Foundry(wx.Frame):
         self.object_list.fill()
         self.update_title()
 
-        for_world_maps = world == 0
+        is_a_world_map = world == 0
 
-        self.GetMenuBar().FindItemById(ID_SAVE_M3L).Enable(not for_world_maps)
-        self.GetMenuBar().FindItemById(ID_EDIT_HEADER).Enable(not for_world_maps)
+        self.GetMenuBar().FindItemById(ID_SAVE_M3L).Enable(not is_a_world_map)
+        self.GetMenuBar().FindItemById(ID_EDIT_HEADER).Enable(not is_a_world_map)
 
-        self.object_dropdown.set_object_factory(self.level_view.level.object_factory)
+        if is_a_world_map:
+            self.object_dropdown.Clear()
+            self.object_dropdown.Enable(False)
+
+            self.jump_list.Enable(False)
+            self.jump_list.Clear()
+        else:
+            self.object_dropdown.Enable(True)
+            self.object_dropdown.set_object_factory(
+                self.level_view.level.object_factory
+            )
+
+            self.jump_list.Enable(True)
 
     def on_list_select(self, _):
         indexes = self.object_list.GetSelections()
