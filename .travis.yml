@@ -17,6 +17,7 @@ matrix:
       after_success:
         - pyinstaller smb3-foundry.spec
         - mv dist/smb3-foundry dist/linux-smb3-foundry
+        - chmod +x dist/linux-smb3-foundry
       deploy:
         provider: releases
         api_key:
