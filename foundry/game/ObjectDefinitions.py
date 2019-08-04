@@ -1,3 +1,5 @@
+from typing import List
+
 HORIZONTAL = 0
 VERTICAL = 1  # vertical downward
 DIAG_DOWN_LEFT = 2
@@ -52,7 +54,7 @@ class ObjectDefinition:
         self.description = self.description.split("|")[0]
 
 
-object_metadata = [[]]
+object_metadata: List[List[ObjectDefinition]] = [[]]
 enemy_handle_x = []
 enemy_handle_x2 = []
 enemy_handle_y = []
@@ -78,7 +80,7 @@ with open("data/data.dat", "r") as f:
             if line.find("|") >= 0:
                 x, y, x2 = line.split("|")[1].split(" ")
             else:
-                x, y, x2 = 0, 0, 0
+                x, y, x2 = "0 0 0".split(" ")
 
             enemy_handle_x.append(x)
             enemy_handle_x2.append(x2)

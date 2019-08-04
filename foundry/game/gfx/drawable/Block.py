@@ -1,6 +1,9 @@
+from typing import List
+
 import wx
 
 from game.gfx.Palette import NESPalette
+from game.gfx.PatternTable import PatternTable
 from game.gfx.drawable import MASK_COLOR
 from game.gfx.drawable.Tile import Tile
 
@@ -17,12 +20,16 @@ class Block:
 
     PIXEL_COUNT = WIDTH * HEIGHT
 
-    tsa_data = []
+    tsa_data = bytes()
 
     def __init__(
-        self, block_index, palette_group, pattern_table, tsa_data, mirrored=False
+        self,
+        block_index: int,
+        palette_group: List[List[int]],
+        pattern_table: PatternTable,
+        tsa_data: bytes,
+        mirrored=False,
     ):
-
         self.index = block_index
 
         palette_index = (block_index & 0b1100_0000) >> 6
