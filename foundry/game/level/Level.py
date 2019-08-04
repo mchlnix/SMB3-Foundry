@@ -617,9 +617,9 @@ class Level(LevelLike):
 
     def from_m3l(self, m3l_bytes):
         self.world, self.level, self.object_set_number = m3l_bytes[:3]
+        self.object_set = ObjectSet(self.object_set_number)
 
-        # reload level with new parameters
-        self._load_level(b"", b"")
+        self.object_offset = self.enemy_offset = 0
 
         m3l_bytes = m3l_bytes[3:]
 
@@ -628,8 +628,8 @@ class Level(LevelLike):
 
         m3l_bytes = m3l_bytes[Level.HEADER_LENGTH :]
 
+        # figure out how many bytes are the objects
         self._load_objects(m3l_bytes)
-
         object_size = self._calc_objects_size() + 2
 
         object_bytes = m3l_bytes[:object_size]
