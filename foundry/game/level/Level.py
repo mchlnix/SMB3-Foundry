@@ -44,7 +44,7 @@ class Level(LevelLike):
         self.object_set_number = object_set
         self.object_set = ObjectSet(object_set)
 
-        level_index = Level.world_indexes[world - 1] + level
+        level_index = Level.world_indexes[world] + level
 
         level_data: Mario3Level = Level.offsets[level_index]
 
@@ -481,25 +481,12 @@ class Level(LevelLike):
         if self.object_set_number == 9:  # desert
             self._draw_floor(dc, block_length)
 
-        for level_object in self.objects:
+        for level_object in self.objects + self.enemies:
             level_object.render()
             level_object.draw(dc, block_length, transparency)
 
             if level_object.selected:
                 x, y, w, h = level_object.get_rect().Get()
-
-                x *= block_length
-                w *= block_length
-                y *= block_length
-                h *= block_length
-
-                dc.DrawRectangle(wx.Rect(x, y, w, h))
-
-        for enemy in self.enemies:
-            enemy.draw(dc, block_length, transparency)
-
-            if enemy.selected:
-                x, y, w, h = enemy.get_rect().Get()
 
                 x *= block_length
                 w *= block_length
