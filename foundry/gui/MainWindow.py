@@ -552,7 +552,12 @@ class SMB3Foundry(wx.Frame):
             if item_id == ID_CTX_REMOVE:
                 self.remove_selected_objects()
             elif item_id == ID_CTX_ADD_OBJECT:
-                self.create_object_at(x, y)
+                selected_object = self.object_dropdown.GetSelection()
+
+                if selected_object == wx.NOT_FOUND:
+                    self.create_object_at(x, y)
+                else:
+                    self.place_object_from_dropdown(selected_object, (x, y))
             elif item_id == ID_CTX_ADD_ENEMY:
                 self.create_enemy_at(x, y)
             elif item_id == ID_CTX_CUT:
