@@ -8,7 +8,7 @@ class AboutDialog(wx.Frame):
 
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        image = wx.Image("data/ico")
+        image = wx.Image("data/foundry.ico")
         image.Rescale(200, 200)
 
         bitmap = wx.Bitmap(image)
