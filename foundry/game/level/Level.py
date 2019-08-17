@@ -53,7 +53,7 @@ class Level(LevelLike):
             self.name = f"Level {world}-{level}, '{level_data.name}'"
 
         self.header_offset = object_data_offset
-        self.enemy_offset = enemy_data_offset + 1
+        self.enemy_offset = enemy_data_offset
 
         self.objects = []
         self.jumps = []
@@ -223,6 +223,13 @@ class Level(LevelLike):
     def _update_level_size(self):
         self.object_size_on_disk = self._calc_objects_size()
         self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
+
+    def attach_to_rom(self, header_offset, enemy_item_offset):
+        self.header_offset = header_offset
+        self.object_offset = self.header_offset + Level.HEADER_LENGTH
+        self.enemy_offset = enemy_item_offset
+
+        self.attached_to_rom = True
 
     def was_saved(self):
         self._update_level_size()

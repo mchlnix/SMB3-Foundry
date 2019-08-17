@@ -472,6 +472,8 @@ class SMB3Foundry(wx.Frame):
             return True
 
     def on_save_rom(self, event):
+        is_save_as = event.GetId() == ID_SAVE_ROM_AS
+
         safe_to_save, reason, additional_info = self.level_view.level_safe_to_save()
 
         if not safe_to_save:
@@ -487,15 +489,28 @@ class SMB3Foundry(wx.Frame):
 
         if not self.level_view.level.attached_to_rom:
             wx.MessageBox(
-                "Saving M3L levels to Rom is not yet supported.",
-                "Error",
-                wx.ICON_ERROR | wx.OK,
+                "Please select the positions in the ROM you want the level objects and enemies/items to be stored.",
+                "Importing M3L into ROM",
+                wx.ICON_INFORMATION | wx.OK,
                 self,
             )
 
-            return
+            answer = self.level_selector.ShowModal()
 
-        if event.GetId() == ID_SAVE_ROM_AS:
+            if answer == wx.OK:
+                self.level_view.level.attach_to_rom(
+                    self.level_selector.object_data_offset,
+                    self.level_selector.enemy_data_offset,
+                )
+
+                if is_save_as:
+                    # if we save to another rom, don't consider the level
+                    # attached (to the current rom)
+                    self.level_view.level.attached_to_rom = False
+            else:
+                return
+
+        if is_save_as:
             with wx.FileDialog(
                 self,
                 "Save ROM as",
