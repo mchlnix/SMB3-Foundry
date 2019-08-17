@@ -73,6 +73,7 @@ class LevelView(wx.Panel):
             self.dragging(event)
         elif self.mouse_mode == MODE_RESIZE:
             self.resizing(event)
+            self.select_objects(self.selected_objects)
         else:
             if self.selection_square.active:
                 self.set_selection_end(event.GetPosition())

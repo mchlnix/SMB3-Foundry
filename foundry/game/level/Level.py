@@ -134,7 +134,6 @@ class Level(LevelLike):
             self.height = self._length
             self.width = LEVEL_DEFAULT_WIDTH
 
-        # todo isn't that the object set for the "next area"?
         self._next_area_object_set = (
             self.header[6] & 0b0000_1111
         )  # for indexing purposes

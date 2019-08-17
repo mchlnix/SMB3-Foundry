@@ -195,6 +195,7 @@ class LevelSelector(wx.Dialog):
     def on_ok(self, _):
         self.object_set = self.object_set_dropdown.GetSelection()
         self.object_data_offset = self.object_data_spinner.GetValue()
+        # skip the first byte, because it seems useless
         self.enemy_data_offset = self.enemy_data_spinner.GetValue() + 1
 
         self.EndModal(wx.OK)
