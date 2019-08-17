@@ -705,8 +705,16 @@ class SMB3Foundry(wx.Frame):
         if not self.safe_to_change():
             return
 
-        self.level_selector.Show()
-        self.level_selector.Raise()
+        answer = self.level_selector.ShowModal()
+
+        if answer == wx.OK:
+            self.update_level(
+                self.level_selector.selected_world,
+                self.level_selector.selected_level,
+                self.level_selector.object_data_offset,
+                self.level_selector.enemy_data_offset,
+                self.level_selector.object_set,
+            )
 
     def on_block_viewer(self, _):
         if self.block_viewer is None:

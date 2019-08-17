@@ -40,7 +40,7 @@ OVERWORLD_MAPS_INDEX = 0
 WORLD_1_INDEX = 1
 
 
-class LevelSelector(wx.Frame):
+class LevelSelector(wx.Dialog):
     def __init__(self, parent):
         super(LevelSelector, self).__init__(
             parent,
@@ -49,6 +49,9 @@ class LevelSelector(wx.Frame):
         )
         self.selected_world = 1
         self.selected_level = 1
+        self.object_set = 0
+        self.object_data_offset = 0x0
+        self.enemy_data_offset = 0x0
 
         self.Bind(wx.EVT_CLOSE, self.on_exit)
 
@@ -190,18 +193,11 @@ class LevelSelector(wx.Frame):
         )
 
     def on_ok(self, _):
-        object_set = self.object_set_dropdown.GetSelection()
-        object_data_offset = self.object_data_spinner.GetValue()
-        enemy_data_offset = self.enemy_data_spinner.GetValue()
+        self.object_set = self.object_set_dropdown.GetSelection()
+        self.object_data_offset = self.object_data_spinner.GetValue()
+        self.enemy_data_offset = self.enemy_data_spinner.GetValue()
 
-        self.GetParent().update_level(
-            self.selected_world,
-            self.selected_level,
-            object_data_offset,
-            enemy_data_offset,
-            object_set,
-        )
-        self.Hide()
+        self.EndModal(wx.OK)
 
     def on_exit(self, _):
-        self.Hide()
+        self.EndModal(wx.CANCEL)
