@@ -349,14 +349,12 @@ class LevelView(wx.Panel):
             return self.level.changed
 
     def level_safe_to_save(self):
-        self.cuts_into_other_level()
-
         is_safe = True
         reason = ""
         additional_info = ""
 
         if self.level.too_many_level_objects():
-            level = self.cuts_into_other_level()
+            level = self.cuts_into_other_objects()
 
             is_safe = False
             reason = "Too many level objects."
@@ -370,13 +368,45 @@ class LevelView(wx.Panel):
                 )
 
         elif self.level.too_many_enemies_or_items():
+            level = self.cuts_into_other_enemies()
+
             is_safe = False
             reason = "Too many enemies or items."
-            additional_info = "Would probably overwrite enemy/item data of other level."
+
+            if level:
+                additional_info = (
+                    f"Would probably overwrite enemy/item data of '{level}'."
+                )
+            else:
+                additional_info = (
+                    "It wouldn't overwrite enemy/item data of another level, "
+                    "but it might still overwrite other important data."
+                )
 
         return is_safe, reason, additional_info
 
-    def cuts_into_other_level(self) -> str:
+    def cuts_into_other_enemies(self) -> str:
+        enemies_end = self.level.enemies_end
+
+        levels_by_enemy_offset = sorted(
+            Level.offsets, key=lambda level: level.enemy_offset
+        )
+
+        level_index = (
+            bisect_right(
+                [level.enemy_offset for level in levels_by_enemy_offset], enemies_end
+            )
+            - 1
+        )
+
+        found_level = levels_by_enemy_offset[level_index]
+
+        if found_level.enemy_offset == self.level.enemy_offset:
+            return ""
+        else:
+            return f"World {found_level.game_world} - {found_level.name}"
+
+    def cuts_into_other_objects(self) -> str:
         end_of_level_objects = self.level.objects_end
 
         level_index = (

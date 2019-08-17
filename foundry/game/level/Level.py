@@ -233,8 +233,16 @@ class Level(LevelLike):
             self.header_offset
             + Level.HEADER_LENGTH
             + self._calc_objects_size()
-            + len(b"\xFF")
-        )  # the delimiter
+            + len(b"\xFF")  # the delimiter
+        )
+
+    @property
+    def enemies_end(self):
+        return (
+            self.enemy_offset
+            + len(self.enemies) * ENEMY_SIZE
+            + len(b"\xFF\x00")  # the delimiter
+        )
 
     @property
     def next_area_objects(self):
