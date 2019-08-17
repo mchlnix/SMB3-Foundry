@@ -421,6 +421,8 @@ class SMB3Foundry(wx.Frame):
             try:
                 ROM.load_from_file(pathname)
 
+                self.level_view.level = None
+
                 self.open_level_selector(None)
 
                 return True
