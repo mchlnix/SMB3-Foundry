@@ -29,12 +29,11 @@ class Level(LevelLike):
     MIN_LENGTH = 0x10
 
     offsets, world_indexes = _load_level_offsets()
+    sorted_offsets = sorted(offsets, key=lambda level: level.rom_level_offset)
 
     WORLDS = len(world_indexes)
 
     HEADER_LENGTH = 9  # bytes
-
-    palettes = []
 
     def __init__(self, world, level, object_data_offset, enemy_data_offset, object_set):
         super(Level, self).__init__(world, level, object_set)
@@ -53,7 +52,7 @@ class Level(LevelLike):
         else:
             self.name = f"Level {world}-{level}, '{level_data.name}'"
 
-        self.object_offset = object_data_offset
+        self.header_offset = object_data_offset
         self.enemy_offset = enemy_data_offset + 1
 
         self.objects = []
@@ -61,17 +60,17 @@ class Level(LevelLike):
         self.enemies = []
 
         print(
-            f"Loading {self.name} @ {hex(self.object_offset)}/{hex(self.enemy_offset)}"
+            f"Loading {self.name} @ {hex(self.header_offset)}/{hex(self.enemy_offset)}"
         )
 
         rom = ROM()
 
-        self.header = rom.bulk_read(Level.HEADER_LENGTH, self.object_offset)
+        self.header = rom.bulk_read(Level.HEADER_LENGTH, self.header_offset)
         self._parse_header()
 
-        object_offset = self.object_offset + Level.HEADER_LENGTH
+        self.object_offset = self.header_offset + Level.HEADER_LENGTH
 
-        object_data = ROM.rom_data[object_offset:]
+        object_data = ROM.rom_data[self.object_offset :]
         enemy_data = ROM.rom_data[self.enemy_offset :]
 
         self._load_level(object_data, enemy_data)
@@ -93,8 +92,7 @@ class Level(LevelLike):
         self._load_objects(object_data)
         self._load_enemies(enemy_data)
 
-        self.object_size_on_disk = self._calc_objects_size()
-        self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
+        self._update_level_size()
 
     def reload(self):
         header_and_object_data, enemy_data = self.to_bytes()
@@ -221,6 +219,22 @@ class Level(LevelLike):
 
             if data[0] == 0xFF:
                 break
+
+    def _update_level_size(self):
+        self.object_size_on_disk = self._calc_objects_size()
+        self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
+
+    def was_saved(self):
+        self._update_level_size()
+
+    @property
+    def objects_end(self):
+        return (
+            self.header_offset
+            + Level.HEADER_LENGTH
+            + self._calc_objects_size()
+            + len(b"\xFF")
+        )  # the delimiter
 
     @property
     def next_area_objects(self):
@@ -451,10 +465,13 @@ class Level(LevelLike):
         self._parse_header()
 
     def is_too_big(self):
-        too_many_enemies = self.enemy_size_on_disk < len(self.enemies) * ENEMY_SIZE
-        too_many_objects = self._calc_objects_size() > self.object_size_on_disk
+        return self.too_many_level_objects() or self.too_many_enemies_or_items()
 
-        return too_many_enemies or too_many_objects
+    def too_many_level_objects(self):
+        return self._calc_objects_size() > self.object_size_on_disk
+
+    def too_many_enemies_or_items(self):
+        return self.enemy_size_on_disk < len(self.enemies) * ENEMY_SIZE
 
     def get_all_objects(self):
         return self.objects + self.enemies
@@ -608,7 +625,7 @@ class Level(LevelLike):
         self.world, self.level, self.object_set_number = m3l_bytes[:3]
         self.object_set = ObjectSet(self.object_set_number)
 
-        self.object_offset = self.enemy_offset = 0
+        self.header_offset = self.enemy_offset = 0
 
         # update the level_object_factory
         self._load_level(b"", b"")
@@ -651,11 +668,11 @@ class Level(LevelLike):
 
         enemies.append(0xFF)
 
-        return [(self.object_offset, data), (self.enemy_offset, enemies)]
+        return [(self.header_offset, data), (self.enemy_offset, enemies)]
 
     def from_bytes(self, object_data, enemy_data):
 
-        self.object_offset, object_bytes = object_data
+        self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data
 
         self.header = object_bytes[0 : Level.HEADER_LENGTH]

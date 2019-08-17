@@ -461,7 +461,7 @@ class SMB3Foundry(wx.Frame):
             answer = wx.MessageBox(
                 "Current content has not been saved! Proceed?",
                 "Please confirm",
-                wx.ICON_QUESTION | wx.YES_NO,
+                wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
                 self,
             )
 
@@ -470,12 +470,18 @@ class SMB3Foundry(wx.Frame):
             return True
 
     def on_save_rom(self, event):
-        if self.level_view.level.is_too_big():
-            wx.MessageBox(
-                "Level is too big to save.", "Error", wx.ICON_ERROR | wx.OK, self
+        safe_to_save, reason, additional_info = self.level_view.level_safe_to_save()
+
+        if not safe_to_save:
+            answer = wx.MessageBox(
+                f"{additional_info}\n\nDo you want to proceed?",
+                reason,
+                wx.ICON_WARNING | wx.YES_NO | wx.NO_DEFAULT,
+                self,
             )
 
-            return
+            if answer == wx.NO:
+                return
 
         if not self.level_view.level.attached_to_rom:
             wx.MessageBox(
