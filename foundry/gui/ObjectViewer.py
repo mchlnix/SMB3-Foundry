@@ -17,7 +17,11 @@ MAX_LENGTH = 0xFF
 
 class ObjectViewer(wx.Frame):
     def __init__(self, parent):
-        super(ObjectViewer, self).__init__(parent, title="Object Viewer")
+        super(ObjectViewer, self).__init__(
+            parent,
+            title="Object Viewer",
+            style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
+        )
 
         self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
         self.spin_domain.SetBase(16)

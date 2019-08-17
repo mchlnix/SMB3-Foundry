@@ -4,7 +4,11 @@ import wx.adv
 
 class AboutDialog(wx.Frame):
     def __init__(self, parent):
-        super(AboutDialog, self).__init__(parent, title="About SMB3Foundry")
+        super(AboutDialog, self).__init__(
+            parent,
+            title="About SMB3Foundry",
+            style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
+        )
 
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
 

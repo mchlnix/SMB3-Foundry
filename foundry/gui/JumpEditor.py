@@ -47,7 +47,9 @@ MAX_HORIZ_POSITION = 0xFF
 
 class JumpEditor(wx.Frame):
     def __init__(self, parent, jump, index):
-        super(JumpEditor, self).__init__(parent)
+        super(JumpEditor, self).__init__(
+            parent, style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE
+        )
 
         self.SetTitle("Jump Editor")
 

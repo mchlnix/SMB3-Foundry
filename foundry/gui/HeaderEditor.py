@@ -106,7 +106,11 @@ SPINNER_MAX_VALUE = 0x0F_FF_FF
 
 class HeaderEditor(wx.Frame):
     def __init__(self, parent, level_view_ref):
-        super(HeaderEditor, self).__init__(parent, title="Level Header Editor")
+        super(HeaderEditor, self).__init__(
+            parent,
+            title="Level Header Editor",
+            style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
+        )
 
         self.level_view_ref = level_view_ref
         self.level_ref: Level = self.level_view_ref.level

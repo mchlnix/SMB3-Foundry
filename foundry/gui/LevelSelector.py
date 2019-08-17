@@ -42,7 +42,11 @@ WORLD_1_INDEX = 1
 
 class LevelSelector(wx.Frame):
     def __init__(self, parent):
-        super(LevelSelector, self).__init__(parent, title="Level Selector")
+        super(LevelSelector, self).__init__(
+            parent,
+            title="Level Selector",
+            style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
+        )
         self.selected_world = 1
         self.selected_level = 1
 
