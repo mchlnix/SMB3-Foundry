@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import NamedTuple
 
 
 def read_string_dict(path):
@@ -22,17 +23,16 @@ ObjectInfo = namedtuple(
     "ObjectInfo", "index subindex x y width height x2 y2 obj objtype rect drag"
 )
 ObjectSetPointerType = namedtuple("ObjectSetPointerType", "type name min max")
-Mario3Level = namedtuple(
-    "Mario3Level",
-    [
-        "game_world",
-        "level_in_world",
-        "rom_level_offset",
-        "enemy_offset",
-        "real_obj_set",
-        "name",
-    ],
-)
+
+
+class Mario3Level(NamedTuple):
+    game_world: int
+    level_in_world: int
+    rom_level_offset: int
+    enemy_offset: int
+    real_obj_set: int
+    name: str
+
 
 map_sprite_names = [
     "Nothing?",

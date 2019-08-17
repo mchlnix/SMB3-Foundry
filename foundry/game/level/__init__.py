@@ -1,8 +1,10 @@
+from typing import Tuple, List
+
 from game.Data import Mario3Level
 
 
-def _load_level_offsets():
-    offsets = [0]
+def _load_level_offsets() -> Tuple[List[Mario3Level], List[int]]:
+    offsets = [Mario3Level(0, 0, 0, 0, 0, "Placeholder")]
     world_indexes = [0]
 
     with open("data/levels.dat", "r") as level_data:
@@ -12,11 +14,11 @@ def _load_level_offsets():
             numbers = [int(_hex, 16) for _hex in data[0:5]]
             level_name = data[5]
 
-            offsets.append(Mario3Level(*numbers, level_name))
+            level = Mario3Level(*numbers, level_name)
 
-            world_index, level_index = numbers[0], numbers[1]
+            offsets.append(level)
 
-            if world_index > 0 and level_index == 1:
+            if level.game_world > 0 and level.level_in_world == 1:
                 world_indexes.append(line_no)
 
     return offsets, world_indexes
