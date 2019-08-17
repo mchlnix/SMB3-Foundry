@@ -67,3 +67,14 @@ class AboutDialog(wx.Frame):
         main_sizer.Add(info_sizer, proportion=1, border=20, flag=wx.ALL | wx.CENTER)
 
         self.SetSizerAndFit(main_sizer)
+
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
+
+    def on_key_press(self, event):
+        key = event.GetKeyCode()
+
+        if key == wx.WXK_ESCAPE:
+            self.on_exit(None)
+
+    def on_exit(self, _):
+        self.Hide()

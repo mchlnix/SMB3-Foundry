@@ -175,6 +175,7 @@ class HeaderEditor(wx.Frame):
         self.Bind(wx.EVT_COMBOBOX, self.on_combo)
         self.Bind(wx.EVT_CHECKBOX, self.on_check_box)
         self.Bind(wx.EVT_CLOSE, self.on_exit)
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
 
     def _add_widget(self, label, widget):
         _label = wx.StaticText(parent=self, label=label)
@@ -319,6 +320,12 @@ class HeaderEditor(wx.Frame):
     def Show(self, **kwargs):
         self._fill_widgets()
         super(HeaderEditor, self).Show(**kwargs)
+
+    def on_key_press(self, event):
+        key = event.GetKeyCode()
+
+        if key == wx.WXK_ESCAPE:
+            self.on_exit(None)
 
     def on_exit(self, _):
         self.Hide()
