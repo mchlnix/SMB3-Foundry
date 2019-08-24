@@ -1,10 +1,11 @@
 import os
 from typing import Tuple
+from warnings import warn
 
 import wx
 import wx.lib.scrolledpanel
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QFrame, QMenu, QMainWindow
+from PySide2.QtWidgets import QMenu, QMainWindow, QFileDialog, QMessageBox
 
 from game.File import ROM
 from game.gfx.objects.EnemyItem import EnemyObject
@@ -46,6 +47,9 @@ from gui.ObjectList import ObjectList
 from gui.ObjectStatusBar import ObjectStatusBar
 from gui.ObjectViewer import ObjectViewer
 from gui.SpinnerPanel import SpinnerPanel, ID_SPIN_DOMAIN, ID_SPIN_TYPE, ID_SPIN_LENGTH
+
+ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
+M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
 
 # file menu
 
@@ -134,15 +138,22 @@ class SMB3Foundry(QMainWindow):
 
         file_menu = QMenu("File")
 
-        file_menu.addAction("&Open ROM")
-        file_menu.addAction("&Open M3L")
+        open_rom_action = file_menu.addAction("&Open ROM")
+        open_rom_action.triggered.connect(self.on_open_rom)
+        open_m3l_action = file_menu.addAction("&Open M3L")
+        open_m3l_action.triggered.connect(self.on_open_m3l)
+
         file_menu.addSeparator()
-        file_menu.addAction("&Save ROM")
-        file_menu.addAction("&Save ROM as ...")
+
+        save_rom_action = file_menu.addAction("&Save ROM")
+        save_rom_action.triggered.connect(self.on_save_rom)
+        save_rom_as_action = file_menu.addAction("&Save ROM as ...")
+        save_rom_as_action.triggered.connect(self.on_save_rom_as)
         """
         file_menu.AppendSeparator()
         """
-        file_menu.addAction("&Save M3L")
+        save_m3l_action = file_menu.addAction("&Save M3L")
+        save_m3l_action.triggered.connect(self.on_save_m3l)
         """
         file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", "")
         file_menu.AppendSeparator()
@@ -151,7 +162,8 @@ class SMB3Foundry(QMainWindow):
         file_menu.Append(ID_ROM_PRESET, "&ROM Preset", "")
         """
         file_menu.addSeparator()
-        file_menu.addAction("&Exit")
+        exit_action = file_menu.addAction("&Exit")
+        exit_action.triggered.connect(self.on_exit)
 
         self.menuBar().addMenu(file_menu)
 
@@ -418,50 +430,47 @@ class SMB3Foundry(QMainWindow):
             return
 
         # otherwise ask the user what new file to open
-        with wx.FileDialog(
-            self,
-            "Open ROM",
-            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-            wildcard="NES files (.nes)|*.nes|ROM files (.rom)|*.rom|All files|*",
-        ) as fileDialog:
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return False
+        pathname = QFileDialog.getOpenFileName(
+            self, caption="Open ROM", filter=ROM_FILE_FILTER
+        )
 
-            # Proceed loading the file chosen by the user
-            pathname = fileDialog.GetPath()
-            try:
-                ROM.load_from_file(pathname)
+        if pathname is None:
+            return False
 
-                self.level_view.level = None
+        # Proceed loading the file chosen by the user
+        try:
+            ROM.load_from_file(pathname)
 
-                self.open_level_selector(None)
+            self.level_view.level = None
 
-                return True
-            except IOError:
-                wx.LogError("Cannot open file '%s'." % pathname)
+            self.open_level_selector(None)
+
+            return True
+        except IOError:
+            warn(f"Cannot open file '{pathname}'.")
+            return False
 
     def on_open_m3l(self, _):
         if not self.safe_to_change():
             return
 
         # otherwise ask the user what new file to open
-        with wx.FileDialog(
-            self,
-            "Open M3L file",
-            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-            wildcard="M3L files (.m3l)|*.m3l|All files|*",
-        ) as fileDialog:
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return False
+        pathname = QFileDialog.getOpenFileName(
+            self, caption="Open M3L file", filter=M3L_FILE_FILTER
+        )
 
-            # Proceed loading the file chosen by the user
-            pathname = fileDialog.GetPath()
-            try:
-                with open(pathname, "rb") as m3l_file:
+        if pathname is None:
+            return False
 
-                    self.level_view.from_m3l(bytearray(m3l_file.read()))
-            except IOError:
-                wx.LogError("Cannot open file '%s'." % pathname)
+        # Proceed loading the file chosen by the user
+        try:
+            with open(pathname, "rb") as m3l_file:
+
+                self.level_view.from_m3l(bytearray(m3l_file.read()))
+        except IOError:
+            warn(f"Cannot open file '{pathname}'.")
+
+            return False
 
         self.level_view.level.name = os.path.basename(pathname)
 
@@ -482,33 +491,39 @@ class SMB3Foundry(QMainWindow):
         else:
             return True
 
-    def on_save_rom(self, event):
-        is_save_as = event.GetId() == ID_SAVE_ROM_AS
+    def on_save_rom(self, _):
+        self.save_rom(False)
+
+    def on_save_rom_as(self, _):
+        self.save_rom(True)
+
+    def save_rom(self, is_save_as):
 
         safe_to_save, reason, additional_info = self.level_view.level_safe_to_save()
 
         if not safe_to_save:
-            answer = wx.MessageBox(
-                f"{additional_info}\n\nDo you want to proceed?",
-                reason,
-                wx.ICON_WARNING | wx.YES_NO | wx.NO_DEFAULT,
+            answer = QMessageBox.warning(
                 self,
+                title=reason,
+                text=f"{additional_info}\n\nDo you want to proceed?",
+                buttons=[QMessageBox.No, QMessageBox.Yes],
+                defaultButton=QMessageBox.No,
             )
 
-            if answer == wx.NO:
+            if answer == QMessageBox.No:
                 return
 
         if not self.level_view.level.attached_to_rom:
-            wx.MessageBox(
-                "Please select the positions in the ROM you want the level objects and enemies/items to be stored.",
-                "Importing M3L into ROM",
-                wx.ICON_INFORMATION | wx.OK,
+            QMessageBox.information(
                 self,
+                title="Importing M3L into ROM",
+                text="Please select the positions in the ROM you want the level objects and enemies/items to be stored.",
+                button0=QMessageBox.Ok,
             )
 
             answer = self.level_selector.ShowModal()
 
-            if answer == wx.OK:
+            if answer == QMessageBox.OK:
                 self.level_view.level.attach_to_rom(
                     self.level_selector.object_data_offset,
                     self.level_selector.enemy_data_offset,
@@ -522,17 +537,11 @@ class SMB3Foundry(QMainWindow):
                 return
 
         if is_save_as:
-            with wx.FileDialog(
-                self,
-                "Save ROM as",
-                style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-                wildcard="NES files (.nes)|*.nes|ROM files (.rom)|*.rom|All files|*",
-            ) as fileDialog:
-                if fileDialog.ShowModal() == wx.ID_CANCEL:
-                    return  # the user changed their mind
-
-                # save the current contents in the file
-                pathname = fileDialog.GetPath()
+            pathname = QFileDialog.getSaveFileName(
+                self, caption="Save ROM as", filter=ROM_FILE_FILTER
+            )
+            if pathname is None:
+                return  # the user changed their mind
         else:
             pathname = ROM.path
 
@@ -548,7 +557,7 @@ class SMB3Foundry(QMainWindow):
 
             self.level_view.level.changed = False
         except IOError:
-            wx.LogError("Cannot save current data in file '%s'." % pathname)
+            warn("Cannot save current data in file '%s'." % pathname)
 
     def on_save_m3l(self, _):
         suggested_file = self.level_view.level.name
@@ -1024,4 +1033,4 @@ class SMB3Foundry(QMainWindow):
         if not self.safe_to_change():
             return
 
-        self.Destroy()
+        self.destroy()
