@@ -5,7 +5,7 @@ from warnings import warn
 import wx
 import wx.lib.scrolledpanel
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QMenu, QMainWindow, QFileDialog, QMessageBox
+from PySide2.QtWidgets import QMenu, QMainWindow, QFileDialog, QMessageBox, QDialog
 
 from game.File import ROM
 from game.gfx.objects.EnemyItem import EnemyObject
@@ -182,7 +182,9 @@ class SMB3Foundry(QMainWindow):
 
         level_menu = QMenu("Level")
 
-        level_menu.addAction("&Select Level")
+        select_level_action = level_menu.addAction("&Select Level")
+        select_level_action.triggered.connect(self.open_level_selector)
+
         """
         level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
         level_menu.AppendSeparator()
@@ -253,6 +255,8 @@ class SMB3Foundry(QMainWindow):
         help_menu.addAction("&About")
 
         self.menuBar().addMenu(help_menu)
+
+        self.level_selector = LevelSelector(parent=self)
 
         return
 
@@ -480,14 +484,15 @@ class SMB3Foundry(QMainWindow):
 
     def safe_to_change(self):
         if self.level_view.was_changed():
-            answer = wx.MessageBox(
-                "Current content has not been saved! Proceed?",
-                "Please confirm",
-                wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
+            answer = QMessageBox.question(
                 self,
+                title="Please confirm",
+                text="Current content has not been saved! Proceed?",
+                buttons=[QMessageBox.No, QMessageBox.Yes],
+                defaultButton=QMessageBox.No,
             )
 
-            return answer == wx.YES
+            return answer == QMessageBox.Yes
         else:
             return True
 
@@ -742,9 +747,9 @@ class SMB3Foundry(QMainWindow):
         if not self.safe_to_change():
             return
 
-        answer = self.level_selector.ShowModal()
+        answer = self.level_selector.exec_()
 
-        if answer == wx.OK:
+        if answer == QDialog.Accepted:
             self.update_level(
                 self.level_selector.selected_world,
                 self.level_selector.selected_level,

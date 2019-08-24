@@ -1,6 +1,15 @@
-import wx
+from PySide2.QtGui import QCloseEvent, QKeyEvent, Qt
+from PySide2.QtWidgets import (
+    QDialog,
+    QLabel,
+    QListWidget,
+    QComboBox,
+    QPushButton,
+    QGridLayout,
+)
 
 from game.level.Level import Level
+from gui.HexSpinner import HexSpinner
 
 WORLD_ITEMS = [
     "World Maps",
@@ -35,129 +44,103 @@ OBJECT_SET_ITEMS = [
 ]
 
 
-SPINNER_MAX_VALUE = 0xFF_FF_FF  # arbitrary; 16,7 MB
 OVERWORLD_MAPS_INDEX = 0
 WORLD_1_INDEX = 1
 
 
-class LevelSelector(wx.Dialog):
+class LevelSelector(QDialog):
     def __init__(self, parent):
-        super(LevelSelector, self).__init__(
-            parent,
-            title="Level Selector",
-            style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
-        )
+        super(LevelSelector, self).__init__(parent)
+
+        self.setWindowTitle("Level Selector")
+        self.setModal(True)
+
         self.selected_world = 1
         self.selected_level = 1
         self.object_set = 0
         self.object_data_offset = 0x0
         self.enemy_data_offset = 0x0
 
-        self.Bind(wx.EVT_CLOSE, self.on_exit)
+        self.world_label = QLabel(parent=self, text="World")
+        self.world_list = QListWidget(parent=self)
+        self.world_list.addItems(WORLD_ITEMS)
 
-        self.world_label = wx.StaticText(self, label="World")
-        self.world_list = wx.ListBox(parent=self)
-        self.world_list.InsertItems(WORLD_ITEMS, 0)
+        self.world_list.itemDoubleClicked.connect(self.on_ok)
+        self.world_list.itemSelectionChanged.connect(self.on_world_click)
 
-        self.Bind(wx.EVT_LISTBOX, self.on_world_click, id=self.world_list.GetId())
+        self.level_label = QLabel(parent=self, text="Level")
+        self.level_list = QListWidget(parent=self)
 
-        self.level_label = wx.StaticText(self, label="Level")
-        self.level_list = wx.ListBox(parent=self)
+        self.level_list.itemDoubleClicked.connect(self.on_ok)
+        self.level_list.itemSelectionChanged.connect(self.on_level_click)
 
-        self.Bind(wx.EVT_LISTBOX, self.on_level_click, id=self.level_list.GetId())
+        self.enemy_data_label = QLabel(parent=self, text="Enemy Data")
+        self.enemy_data_spinner = HexSpinner(parent=self)
 
-        self.enemy_data_label = wx.StaticText(self, label="Enemy Data")
-        self.enemy_data_spinner = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
-        self.enemy_data_spinner.SetBase(16)
+        self.object_data_label = QLabel(parent=self, text="Object Data")
+        self.object_data_spinner = HexSpinner(self)
 
-        self.object_data_label = wx.StaticText(self, label="Object Data")
-        self.object_data_spinner = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
-        self.object_data_spinner.SetBase(16)
+        self.object_set_label = QLabel(parent=self, text="Object Set")
+        self.object_set_dropdown = QComboBox(self)
+        self.object_set_dropdown.addItems(OBJECT_SET_ITEMS)
 
-        self.object_set_label = wx.StaticText(self, label="Object Set")
-        self.object_set_dropdown = wx.ComboBox(self, choices=OBJECT_SET_ITEMS)
+        self.button_ok = QPushButton("Ok", self)
+        self.button_ok.clicked.connect(self.on_ok)
+        self.button_cancel = QPushButton("Cancel", self)
+        self.button_cancel.clicked.connect(self.close)
 
-        self.button_ok = wx.Button(self, id=wx.ID_OK)
-        self.button_cancel = wx.Button(self, id=wx.ID_CANCEL)
+        self.window_layout = QGridLayout(self)
 
-        border_width = 5
+        self.window_layout.addWidget(self.world_label, 0, 0)
+        self.window_layout.addWidget(self.level_label, 0, 1)
 
-        self.window_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
+        self.window_layout.addWidget(self.world_list, 1, 0)
+        self.window_layout.addWidget(self.level_list, 1, 1)
 
-        self.window_sizer.Add(self.world_label, flag=wx.ALL, border=border_width)
-        self.window_sizer.Add(self.level_label, flag=wx.ALL, border=border_width)
+        self.window_layout.addWidget(self.enemy_data_label, 2, 0)
+        self.window_layout.addWidget(self.object_data_label, 2, 1)
+        self.window_layout.addWidget(self.enemy_data_spinner, 3, 0)
+        self.window_layout.addWidget(self.object_data_spinner, 3, 1)
 
-        self.window_sizer.Add(
-            self.world_list, flag=wx.ALL | wx.EXPAND, border=border_width
-        )
-        self.window_sizer.Add(
-            self.level_list, flag=wx.ALL | wx.EXPAND, border=border_width
-        )
+        self.window_layout.addWidget(self.object_set_label, 4, 0)
+        self.window_layout.addWidget(self.object_set_dropdown, 4, 1)
 
-        self.window_sizer.Add(self.enemy_data_label, flag=wx.ALL, border=border_width)
-        self.window_sizer.Add(self.object_data_label, flag=wx.ALL, border=border_width)
-        self.window_sizer.Add(self.enemy_data_spinner, flag=wx.ALL, border=border_width)
-        self.window_sizer.Add(
-            self.object_data_spinner, flag=wx.ALL, border=border_width
-        )
+        self.window_layout.addWidget(self.button_ok, 5, 0)
+        self.window_layout.addWidget(self.button_cancel, 5, 1)
 
-        self.window_sizer.Add(
-            self.object_set_label,
-            flag=wx.ALL | wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL,
-            border=border_width,
-        )
-        self.window_sizer.Add(
-            self.object_set_dropdown, flag=wx.ALL | wx.EXPAND, border=border_width
-        )
+        self.setLayout(self.window_layout)
 
-        self.window_sizer.Add(
-            self.button_ok, flag=wx.ALL | wx.ALIGN_RIGHT, border=border_width
-        )
-        self.window_sizer.Add(self.button_cancel, flag=wx.ALL, border=border_width)
+        self.world_list.setCurrentRow(1)  # select Level 1-1
+        self.on_world_click()
 
-        self.SetSizerAndFit(self.window_sizer)
+    def keyPressEvent(self, key_event: QKeyEvent):
+        if key_event.key() == Qt.Key_Escape:
+            self.reject()
 
-        self.Bind(wx.EVT_BUTTON, self.on_ok, id=self.button_ok.GetId())
-        self.Bind(wx.EVT_LISTBOX_DCLICK, self.on_ok)
-        self.Bind(wx.EVT_BUTTON, self.on_exit, id=self.button_cancel.GetId())
-
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
-
-        self.world_list.Select(1)  # select Level 1-1
-        self.on_world_click(None)
-
-    def on_key_press(self, event):
-        key = event.GetKeyCode()
-
-        if key == wx.WXK_ESCAPE:
-            self.on_exit(None)
-        else:
-            event.Skip()
-
-    def on_world_click(self, _):
-        index = self.world_list.GetSelection()
+    def on_world_click(self):
+        index = self.world_list.currentRow()
 
         assert index >= 0
 
-        self.level_list.Clear()
+        self.level_list.clear()
 
         # skip first meaningless item
         for level in Level.offsets[1:]:
             if level.game_world == index:
                 if level.name:
-                    self.level_list.Append(level.name)
+                    self.level_list.addItem(level.name)
 
-        if not self.level_list.IsEmpty():
-            self.level_list.Select(0)
+        if self.level_list.count():
+            self.level_list.setCurrentRow(0)
 
-            self.on_level_click(None)
+            self.on_level_click()
 
-    def on_level_click(self, _):
-        index = self.level_list.GetSelection()
+    def on_level_click(self):
+        index = self.level_list.currentRow()
 
         assert index >= 0
 
-        self.selected_world = self.world_list.GetSelection()
+        self.selected_world = self.world_list.currentRow()
         self.selected_level = index + 1
 
         if self.selected_world == OVERWORLD_MAPS_INDEX:  # over-world maps
@@ -172,7 +155,7 @@ class LevelSelector(wx.Dialog):
         if self.selected_world >= WORLD_1_INDEX:
             object_data_for_lvl -= Level.HEADER_LENGTH
 
-        self.object_data_spinner.SetValue(object_data_for_lvl)
+        self.object_data_spinner.setValue(object_data_for_lvl)
 
         if self.selected_world >= WORLD_1_INDEX:
             enemy_data_for_lvl = Level.offsets[level_array_offset].enemy_offset
@@ -182,11 +165,11 @@ class LevelSelector(wx.Dialog):
         if enemy_data_for_lvl > 0:
             enemy_data_for_lvl -= 1
 
-        self.enemy_data_spinner.SetValue(enemy_data_for_lvl)
+        self.enemy_data_spinner.setValue(enemy_data_for_lvl)
 
         # if self.selected_world >= WORLD_1_INDEX:
         object_set_index = Level.offsets[level_array_offset].real_obj_set
-        self.object_set_dropdown.SetSelection(object_set_index)
+        self.object_set_dropdown.setCurrentIndex(object_set_index)
 
         print(
             f"Level {self.selected_world}-{self.selected_level}, lvl_array_offset: {level_array_offset}, obj_index: {object_set_index}"
@@ -198,7 +181,7 @@ class LevelSelector(wx.Dialog):
         # skip the first byte, because it seems useless
         self.enemy_data_offset = self.enemy_data_spinner.GetValue() + 1
 
-        self.EndModal(wx.OK)
+        self.accept()
 
-    def on_exit(self, _):
-        self.EndModal(wx.CANCEL)
+    def closeEvent(self, _close_event: QCloseEvent):
+        self.reject()
