@@ -3,6 +3,8 @@ from typing import Tuple
 
 import wx
 import wx.lib.scrolledpanel
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QFrame, QMenu, QMainWindow
 
 from game.File import ROM
 from game.gfx.objects.EnemyItem import EnemyObject
@@ -124,25 +126,23 @@ def undoable(func):
     return wrapped
 
 
-class SMB3Foundry(wx.Frame):
-    def __init__(self, *args, **kw):
-        super(SMB3Foundry, self).__init__(
-            title="SMB3Foundry", style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE, *args, **kw
-        )
+class SMB3Foundry(QMainWindow):
+    def __init__(self):
+        super(SMB3Foundry, self).__init__()
 
-        self.SetIcon(wx.Icon("data/foundry.ico"))
+        self.setWindowIcon(QIcon("data/foundry.ico"))
 
-        file_menu = wx.Menu()
+        file_menu = QMenu("File")
 
-        file_menu.Append(ID_OPEN_ROM, "&Open ROM", "")
-        file_menu.Append(ID_OPEN_M3L, "&Open M3L", "")
-        file_menu.AppendSeparator()
-        file_menu.Append(ID_SAVE_ROM, "&Save ROM", "")
-        file_menu.Append(ID_SAVE_ROM_AS, "&Save ROM as ...", "")
+        file_menu.addAction("&Open ROM")
+        file_menu.addAction("&Open M3L")
+        file_menu.addSeparator()
+        file_menu.addAction("&Save ROM")
+        file_menu.addAction("&Save ROM as ...")
         """
         file_menu.AppendSeparator()
         """
-        file_menu.Append(ID_SAVE_M3L, "&Save M3L", "")
+        file_menu.addAction("&Save M3L")
         """
         file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", "")
         file_menu.AppendSeparator()
@@ -150,8 +150,10 @@ class SMB3Foundry(wx.Frame):
         file_menu.AppendSeparator()
         file_menu.Append(ID_ROM_PRESET, "&ROM Preset", "")
         """
-        file_menu.AppendSeparator()
-        file_menu.Append(ID_EXIT, "&Exit", "")
+        file_menu.addSeparator()
+        file_menu.addAction("&Exit")
+
+        self.menuBar().addMenu(file_menu)
 
         """
         edit_menu = wx.Menu()
@@ -166,24 +168,26 @@ class SMB3Foundry(wx.Frame):
         edit_menu.Append(ID_LIMIT_SIZE, "&Limit Size", "")
         """
 
-        level_menu = wx.Menu()
+        level_menu = QMenu("Level")
 
-        level_menu.Append(ID_SELECT_LEVEL, "&Select Level", "")
+        level_menu.addAction("&Select Level")
         """
         level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
         level_menu.AppendSeparator()
         """
-        level_menu.Append(ID_RELOAD_LEVEL, "&Reload Level", "")
-        level_menu.AppendSeparator()
-        level_menu.Append(ID_EDIT_HEADER, "&Edit Header", "")
+        level_menu.addAction("&Reload Level")
+        level_menu.addSeparator()
+        level_menu.addAction("&Edit Header")
         """
         level_menu.Append(ID_EDIT_POINTERS, "&Edit Pointers", "")
         """
 
-        object_menu = wx.Menu()
+        self.menuBar().addMenu(level_menu)
 
-        object_menu.Append(ID_VIEW_BLOCKS, "&View Blocks", "")
-        object_menu.Append(ID_VIEW_OBJECTS, "&View Objects", "")
+        object_menu = QMenu("Objects")
+
+        object_menu.addAction("&View Blocks")
+        object_menu.addAction("&View Objects")
         """
         object_menu.AppendSeparator()
         object_menu.Append(ID_CLONE_OBJECT_ENEMY, "&Clone Object/Enemy", "")
@@ -196,14 +200,21 @@ class SMB3Foundry(wx.Frame):
         object_menu.Append(ID_DELETE_ALL, "&Delete All", "")
         """
 
-        view_menu = wx.Menu()
+        self.menuBar().addMenu(object_menu)
 
-        view_menu.AppendCheckItem(ID_JUMPS, "Jumps")
-        view_menu.AppendCheckItem(ID_GRID_LINES, "&Gridlines", "")
-        view_menu.AppendCheckItem(ID_TRANSPARENCY, "&Block Transparency", "")
-        view_menu.FindItemById(ID_TRANSPARENCY).Check(True)
-        view_menu.AppendSeparator()
-        view_menu.Append(ID_SCREEN_SHOT, "&Save Screenshot of Level", "")
+        view_menu = QMenu("View")
+
+        self._show_jump_action = view_menu.addAction("Jumps")
+        self._show_jump_action.setCheckable(True)
+        self._show_grid_action = view_menu.addAction("&Grid lines")
+        self._show_grid_action.setCheckable(True)
+        self._show_transparent_blocks_action = view_menu.addAction(
+            "&Block Transparency"
+        )
+        self._show_transparent_blocks_action.setCheckable(True)
+        self._show_transparent_blocks_action.setChecked(True)
+        view_menu.addSeparator()
+        view_menu.addAction("&Save Screenshot of Level")
         """
         view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
         view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
@@ -216,7 +227,9 @@ class SMB3Foundry(wx.Frame):
         view_menu.Append(ID_MORE, "&More", "")
         """
 
-        help_menu = wx.Menu()
+        self.menuBar().addMenu(view_menu)
+
+        help_menu = QMenu("Help")
         """
         help_menu.Append(ID_ENEMY_COMPATIBILITY, "&Enemy Compatibility", "")
         help_menu.Append(ID_TROUBLESHOOTING, "&Troubleshooting", "")
@@ -225,18 +238,11 @@ class SMB3Foundry(wx.Frame):
         help_menu.Append(ID_MAKE_A_DONATION, "&Make a Donation", "")
         help_menu.AppendSeparator()
         """
-        help_menu.Append(ID_ABOUT, "&About", "")
+        help_menu.addAction("&About")
 
-        menu_bar = wx.MenuBar()
+        self.menuBar().addMenu(help_menu)
 
-        menu_bar.Append(file_menu, "&File")
-        # menu_bar.Append(edit_menu, "&Edit")
-        menu_bar.Append(level_menu, "&Level")
-        menu_bar.Append(object_menu, "&Object")
-        menu_bar.Append(view_menu, "&View")
-        menu_bar.Append(help_menu, "&Help")
-
-        self.SetMenuBar(menu_bar)
+        return
 
         self.Bind(wx.EVT_MENU, self.on_open_rom, id=ID_OPEN_ROM)
         self.Bind(wx.EVT_MENU, self.on_open_m3l, id=ID_OPEN_M3L)
@@ -400,7 +406,12 @@ class SMB3Foundry(wx.Frame):
                 wx.LogError("Cannot save file '%s'." % pathname)
 
     def update_title(self):
-        self.SetTitle(f"{self.level_view.level.name} - {ROM.name}")
+        if self.level_view.level is not None and ROM is not None:
+            title = f"{self.level_view.level.name} - {ROM.name}"
+        else:
+            title = "SMB3Foundry"
+
+        self.setWindowTitle(title)
 
     def on_open_rom(self, _):
         if not self.safe_to_change():
