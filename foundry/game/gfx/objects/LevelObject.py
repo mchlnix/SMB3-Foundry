@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import wx
 
 from game.File import ROM
@@ -22,6 +24,7 @@ from game.ObjectDefinitions import (
 )
 from game.ObjectSet import ObjectSet
 from game.gfx.Palette import get_bg_color_for
+from game.gfx.PatternTable import PatternTable
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.ObjectLike import ObjectLike
 
@@ -66,15 +69,15 @@ SCREEN_WIDTH = 16
 class LevelObject(ObjectLike):
     def __init__(
         self,
-        data,
-        object_set,
+        data: bytearray,
+        object_set: int,
         object_definitions,
         palette_group,
-        pattern_table,
-        objects_ref,
-        is_vertical,
-        index,
-        size_minimal=False,
+        pattern_table: PatternTable,
+        objects_ref: List["LevelObject"],
+        is_vertical: bool,
+        index: int,
+        size_minimal: bool = False,
     ):
         self.object_set = ObjectSet(object_set)
 
@@ -89,7 +92,7 @@ class LevelObject(ObjectLike):
 
         self.palette_group = palette_group
 
-        self.index = index
+        self.index_in_level = index
         self.objects_ref = objects_ref
         self.vertical_level = is_vertical
 
@@ -175,7 +178,7 @@ class LevelObject(ObjectLike):
 
     def _render(self):
         try:
-            self.index = self.objects_ref.index(self)
+            self.index_in_level = self.objects_ref.index(self)
         except ValueError:
             # the object has not been added yet, so stick with the one given in the constructor
             pass
@@ -287,13 +290,15 @@ class LevelObject(ObjectLike):
                 slope_width = len(slopes)
 
             for y in range(new_height):
-                r = (y // self.height) * slope_width
-                l = new_width - slope_width - r
+                amount_right = (y // self.height) * slope_width
+                amount_left = new_width - slope_width - amount_right
 
                 offset = y % self.height
 
                 rows.append(
-                    l * left + slopes[offset : offset + slope_width] + r * right
+                    amount_left * left
+                    + slopes[offset : offset + slope_width]
+                    + amount_right * right
                 )
 
             if self.orientation in [DIAG_UP_RIGHT]:
@@ -332,7 +337,7 @@ class LevelObject(ObjectLike):
                         [
                             bottom_row.Intersects(obj.get_rect())
                             and y == obj.get_rect().GetTop()
-                            for obj in self.objects_ref[0 : self.index]
+                            for obj in self.objects_ref[0 : self.index_in_level]
                         ]
                     ):
                         break
@@ -467,7 +472,7 @@ class LevelObject(ObjectLike):
                             [
                                 bottom_row.Intersects(obj.get_rect())
                                 and y == obj.get_rect().GetTop()
-                                for obj in self.objects_ref[0 : self.index]
+                                for obj in self.objects_ref[0 : self.index_in_level]
                             ]
                         ):
                             new_height = y - base_y
@@ -649,7 +654,7 @@ class LevelObject(ObjectLike):
 
         self._render()
 
-    def move_by(self, dx, dy):
+    def move_by(self, dx: int, dy: int):
         new_x = self.rendered_base_x + dx
         new_y = self.rendered_base_y + dy
 
@@ -658,7 +663,7 @@ class LevelObject(ObjectLike):
     def get_position(self):
         return self.x_position, self.y_position
 
-    def resize_to(self, x, y):
+    def resize_to(self, x: int, y: int):
         if not self.is_single_block:
             if self.is_4byte:
                 max_width = 0xFF
@@ -683,7 +688,7 @@ class LevelObject(ObjectLike):
 
             self._render()
 
-    def resize_by(self, dx, dy):
+    def resize_by(self, dx: int, dy: int):
         new_x = self.x_position + dx
         new_y = self.y_position + dy
 
@@ -695,7 +700,7 @@ class LevelObject(ObjectLike):
     def decrement_type(self):
         self.change_type(False)
 
-    def change_type(self, increment):
+    def change_type(self, increment: int):
         if self.obj_index < 0x10 or self.obj_index == 0x10 and not increment:
             value = 1
         else:
@@ -726,15 +731,15 @@ class LevelObject(ObjectLike):
 
         self._setup()
 
-    def __contains__(self, item):
+    def __contains__(self, item: Tuple[int, int]) -> bool:
         x, y = item
 
         return self.point_in(x, y)
 
-    def point_in(self, x, y):
+    def point_in(self, x: int, y: int) -> bool:
         return self.rect.Contains(x, y)
 
-    def get_status_info(self):
+    def get_status_info(self) -> List[tuple]:
         return [
             ("x", self.rendered_base_x),
             ("y", self.rendered_base_y),
@@ -744,10 +749,10 @@ class LevelObject(ObjectLike):
             ("Ending", ENDING_STR[self.ending]),
         ]
 
-    def get_rect(self):
+    def get_rect(self) -> wx.Rect:
         return self.rect
 
-    def as_bitmap(self):
+    def as_bitmap(self) -> wx.Bitmap:
         """
         Creates a Bitmap of the level object for use in the GUI (for menus or dropdowns). Shouldn't be used for
         Levelobjects, that are used in the LevelView. The Bitmap has to be resized, if necessary.
@@ -780,7 +785,7 @@ class LevelObject(ObjectLike):
 
         return bitmap
 
-    def to_bytes(self):
+    def to_bytes(self) -> bytearray:
         data = bytearray()
 
         if self.vertical_level:
@@ -808,5 +813,5 @@ class LevelObject(ObjectLike):
 
         return data
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"LevelObject {self.description} at {self.x_position}, {self.y_position}"

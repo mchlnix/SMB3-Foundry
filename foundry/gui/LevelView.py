@@ -429,13 +429,18 @@ class LevelView(wx.Panel):
             return f"World {found_level.game_world} - {found_level.name}"
 
     def load_level(
-        self, world, level, object_data_offset, enemy_data_offset, object_set=None
+        self,
+        world: int,
+        level: int,
+        object_data_offset: int,
+        enemy_data_offset: int,
+        object_set_number: int,
     ):
         if world == 0:
             self.level = WorldMap(level)
         else:
             self.level = Level(
-                world, level, object_data_offset, enemy_data_offset, object_set
+                world, level, object_data_offset, enemy_data_offset, object_set_number
             )
 
             self.send_jump_event()

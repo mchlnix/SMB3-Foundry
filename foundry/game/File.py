@@ -1,4 +1,5 @@
 from os.path import basename
+from typing import List, Optional
 
 WORLD_COUNT = 9  # includes warp zone
 
@@ -23,7 +24,7 @@ TSA_BASE_OS = 0x00010
 
 
 # little endian
-def le(two_bytes):
+def le(two_bytes: bytearray) -> int:
     first, second = two_bytes
 
     return (second << 8) + first
@@ -36,13 +37,13 @@ class ROM:
 
     additional_data = ""
 
-    path = ""
-    name = ""
+    path: str = ""
+    name: str = ""
 
-    W_LAYOUT_OS_LIST = []
-    W_INIT_OS_LIST = []
+    W_LAYOUT_OS_LIST: List[int] = []
+    W_INIT_OS_LIST: List[int] = []
 
-    def __init__(self, path=None):
+    def __init__(self, path: Optional[str] = None):
         if not ROM.rom_data:
             if path is None:
                 raise ValueError("Rom was not loaded!")
@@ -74,7 +75,7 @@ class ROM:
         pass
 
     @staticmethod
-    def get_tsa_data(object_set):
+    def get_tsa_data(object_set: int) -> bytearray:
         rom = ROM()
 
         rom.seek(TSA_OS_LIST + object_set)
@@ -90,7 +91,7 @@ class ROM:
         return rom.bulk_read(TSA_TABLE_SIZE)
 
     @staticmethod
-    def load_from_file(path):
+    def load_from_file(path: str):
         with open(path, "rb") as rom:
             data = bytearray(rom.read())
 
@@ -112,7 +113,7 @@ class ROM:
         ROM._parse_rom()
 
     @staticmethod
-    def save_to_file(path):
+    def save_to_file(path: str):
         with open(path, "wb") as f:
             f.write(bytearray(ROM.rom_data))
 
@@ -125,7 +126,7 @@ class ROM:
     def set_additional_data(additional_data):
         ROM.additional_data = additional_data
 
-    def seek(self, position):
+    def seek(self, position: int) -> int:
         if position > len(ROM.rom_data) or position < 0:
             return -1
 
@@ -133,7 +134,7 @@ class ROM:
 
         return 0
 
-    def get_byte(self, position=-1):
+    def get_byte(self, position: int = -1) -> int:
         if position >= 0:
             k = self.seek(position) >= 0
         else:
@@ -148,7 +149,7 @@ class ROM:
 
         return return_byte
 
-    def peek_byte(self, position=-1):
+    def peek_byte(self, position: int = -1) -> int:
         old_position = self.position
 
         byte = self.get_byte(position)
@@ -157,7 +158,7 @@ class ROM:
 
         return byte
 
-    def bulk_read(self, count, position=-1):
+    def bulk_read(self, count: int, position: int = -1) -> bytearray:
         if position >= 0:
             self.seek(position)
         else:
@@ -167,7 +168,7 @@ class ROM:
 
         return ROM.rom_data[position : position + count]
 
-    def bulk_write(self, data, position=-1):
+    def bulk_write(self, data: bytearray, position: int = -1):
         if position >= 0:
             self.seek(position)
         else:

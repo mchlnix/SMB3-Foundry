@@ -1,3 +1,5 @@
+from typing import List, Union, Optional, Tuple
+
 import wx
 
 from game.Data import Mario3Level, object_set_pointers
@@ -35,13 +37,20 @@ class Level(LevelLike):
 
     HEADER_LENGTH = 9  # bytes
 
-    def __init__(self, world, level, object_data_offset, enemy_data_offset, object_set):
-        super(Level, self).__init__(world, level, object_set)
+    def __init__(
+        self,
+        world: int,
+        level: int,
+        object_data_offset: int,
+        enemy_data_offset: int,
+        object_set_number: int,
+    ):
+        super(Level, self).__init__(world, level, object_set_number)
 
         self.attached_to_rom = True
 
-        self.object_set_number = object_set
-        self.object_set = ObjectSet(object_set)
+        self.object_set_number = object_set_number
+        self.object_set = ObjectSet(object_set_number)
 
         level_index = Level.world_indexes[world] + level
 
@@ -56,8 +65,8 @@ class Level(LevelLike):
         self.enemy_offset = enemy_data_offset
 
         self.objects = []
-        self.jumps = []
-        self.enemies = []
+        self.jumps: List[Jump] = []
+        self.enemies: List[EnemyObject] = []
 
         print(
             f"Loading {self.name} @ {hex(self.header_offset)}/{hex(self.enemy_offset)}"
@@ -77,7 +86,7 @@ class Level(LevelLike):
 
         self.changed = False
 
-    def _load_level(self, object_data, enemy_data):
+    def _load_level(self, object_data: bytearray, enemy_data: bytearray):
         self.object_factory = LevelObjectFactory(
             self.object_set_number,
             self._graphic_set_index,
@@ -170,10 +179,10 @@ class Level(LevelLike):
 
         self.changed = True
 
-    def _load_enemies(self, data):
+    def _load_enemies(self, data: bytearray):
         self.enemies.clear()
 
-        def data_left(_data):
+        def data_left(_data: bytearray):
             # the commented out code seems to hold for the stock ROM, but if the ROM was already edited with another
             # editor, it might not, since they only wrote the 0xFF to end the enemy data
 
@@ -188,7 +197,7 @@ class Level(LevelLike):
 
             enemy_data, data = data[0:ENEMY_SIZE], data[ENEMY_SIZE:]
 
-    def _load_objects(self, data):
+    def _load_objects(self, data: bytearray):
         self.objects.clear()
         self.jumps.clear()
 
@@ -223,7 +232,7 @@ class Level(LevelLike):
         self.object_size_on_disk = self._calc_objects_size()
         self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
 
-    def attach_to_rom(self, header_offset, enemy_item_offset):
+    def attach_to_rom(self, header_offset: int, enemy_item_offset: int):
         self.header_offset = header_offset
         self.object_offset = self.header_offset + Level.HEADER_LENGTH
         self.enemy_offset = enemy_item_offset
@@ -239,16 +248,14 @@ class Level(LevelLike):
             self.header_offset
             + Level.HEADER_LENGTH
             + self._calc_objects_size()
-            + len(b"\xFF")  # the delimiter
-        )
+            + len(b"\xFF")
+        )  # the delimiter
 
     @property
     def enemies_end(self):
         return (
-            self.enemy_offset
-            + len(self.enemies) * ENEMY_SIZE
-            + len(b"\xFF\x00")  # the delimiter
-        )
+            self.enemy_offset + len(self.enemies) * ENEMY_SIZE + len(b"\xFF\x00")
+        )  # the delimiter
 
     @property
     def next_area_objects(self):
@@ -493,14 +500,14 @@ class Level(LevelLike):
     def get_object_names(self):
         return [obj.description for obj in self.objects + self.enemies]
 
-    def object_at(self, x, y):
+    def object_at(self, x: int, y: int) -> Optional[Union[EnemyObject, LevelObject]]:
         for obj in reversed(self.objects + self.enemies):
             if (x, y) in obj:
                 return obj
         else:
             return None
 
-    def draw(self, dc, block_length, transparency):
+    def draw(self, dc: wx.DC, block_length: int, transparency: bool):
         bg_color = get_bg_color_for(self.object_set_number, self._object_palette_index)
 
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
@@ -526,7 +533,7 @@ class Level(LevelLike):
 
                 dc.DrawRectangle(wx.Rect(x, y, w, h))
 
-    def _draw_floor(self, dc, block_length):
+    def _draw_floor(self, dc: wx.DC, block_length: int):
         floor_level = 26
         floor_block_index = 86
 
@@ -541,25 +548,36 @@ class Level(LevelLike):
                 dc, x * block_length, floor_level * block_length, block_length
             )
 
-    def paste_object_at(self, x, y, obj):
+    def paste_object_at(
+        self, x: int, y: int, obj: Union[EnemyObject, LevelObject]
+    ) -> Union[EnemyObject, LevelObject]:
         if isinstance(obj, EnemyObject):
             return self.add_enemy(obj.obj_index, x, y)
+
         elif isinstance(obj, LevelObject):
             if obj.is_4byte:
-                length = obj.data[3]
+                length: Optional[int] = obj.data[3]
             else:
                 length = None
 
             return self.add_object(obj.domain, obj.obj_index, x, y, length)
 
-    def create_object_at(self, x, y, domain=0, object_index=0):
+    def create_object_at(self, x: int, y: int, domain: int = 0, object_index: int = 0):
         self.add_object(domain, object_index, x, y, None, len(self.objects))
 
-    def create_enemy_at(self, x, y):
+    def create_enemy_at(self, x: int, y: int):
         # goomba to have something to display
         self.add_enemy(0x72, x, y, len(self.enemies))
 
-    def add_object(self, domain, object_index, x, y, length, index=-1):
+    def add_object(
+        self,
+        domain: int,
+        object_index: int,
+        x: int,
+        y: int,
+        length: Optional[int],
+        index: int = -1,
+    ) -> LevelObject:
         if index == -1:
             index = len(self.objects)
 
@@ -572,7 +590,9 @@ class Level(LevelLike):
 
         return obj
 
-    def add_enemy(self, object_index, x, y, index=-1):
+    def add_enemy(
+        self, object_index: int, x: int, y: int, index: int = -1
+    ) -> EnemyObject:
         if index == -1:
             index = len(self.enemies)
         else:
@@ -589,30 +609,32 @@ class Level(LevelLike):
     def add_jump(self):
         self.jumps.append(Jump.from_properties(0, 0, 0, 0))
 
-    def index_of(self, obj):
-        if obj in self.objects:
+    def index_of(self, obj: Union[EnemyObject, LevelObject]) -> int:
+        if isinstance(obj, LevelObject):
             return self.objects.index(obj)
-        else:
+        elif isinstance(obj, EnemyObject):
             return len(self.objects) + self.enemies.index(obj)
+        else:
+            raise TypeError("Given Object was not EnemyObject or LevelObject.")
 
-    def get_object(self, index):
+    def get_object(self, index: int):
         if index < len(self.objects):
             return self.objects[index]
         else:
             return self.enemies[index % len(self.objects)]
 
-    def remove_object(self, obj):
+    def remove_object(self, obj: Union[EnemyObject, LevelObject]):
         if obj is None:
             return
 
-        try:
+        if isinstance(obj, LevelObject):
             self.objects.remove(obj)
-        except ValueError:
+        elif isinstance(obj, EnemyObject):
             self.enemies.remove(obj)
 
         self.changed = True
 
-    def to_m3l(self):
+    def to_m3l(self) -> bytearray:
         m3l_bytes = bytearray()
 
         m3l_bytes.append(self.world)
@@ -635,14 +657,14 @@ class Level(LevelLike):
 
         return m3l_bytes
 
-    def from_m3l(self, m3l_bytes):
+    def from_m3l(self, m3l_bytes: bytearray):
         self.world, self.level, self.object_set_number = m3l_bytes[:3]
         self.object_set = ObjectSet(self.object_set_number)
 
         self.header_offset = self.enemy_offset = 0
 
         # update the level_object_factory
-        self._load_level(b"", b"")
+        self._load_level(bytearray(), bytearray())
 
         m3l_bytes = m3l_bytes[3:]
 
@@ -662,7 +684,7 @@ class Level(LevelLike):
 
         self.attached_to_rom = False
 
-    def to_bytes(self):
+    def to_bytes(self) -> Tuple[Tuple[int, bytearray], Tuple[int, bytearray]]:
         data = bytearray()
 
         data.extend(self.header)
@@ -682,9 +704,11 @@ class Level(LevelLike):
 
         enemies.append(0xFF)
 
-        return [(self.header_offset, data), (self.enemy_offset, enemies)]
+        return (self.header_offset, data), (self.enemy_offset, enemies)
 
-    def from_bytes(self, object_data, enemy_data):
+    def from_bytes(
+        self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray]
+    ):
 
         self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data

@@ -14,7 +14,18 @@ def _load_level_offsets() -> Tuple[List[Mario3Level], List[int]]:
             numbers = [int(_hex, 16) for _hex in data[0:5]]
             level_name = data[5]
 
-            level = Mario3Level(*numbers, level_name)
+            game_world, level_in_world, rom_level_offset, enemy_offset, real_obj_set = (
+                numbers
+            )
+
+            level = Mario3Level(
+                game_world,
+                level_in_world,
+                rom_level_offset,
+                enemy_offset,
+                real_obj_set,
+                level_name,
+            )
 
             offsets.append(level)
 

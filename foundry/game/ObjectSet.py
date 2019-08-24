@@ -1,15 +1,17 @@
-from game.ObjectDefinitions import load_object_definitions
+from typing import Tuple, Optional
+
+from game.ObjectDefinitions import load_object_definitions, ObjectDefinition
 
 ENEMY_OBJECT_SET = 16
 
 
 class ObjectSet:
-    def __init__(self, object_set_number):
+    def __init__(self, object_set_number: int):
         self.number = object_set_number
 
         if self.number == ENEMY_OBJECT_SET:
             self.name = "Enemy Object Set"
-            self.range = []
+            self.range: Optional[Tuple[Tuple[int, ...], ...]] = None
         else:
             self.name = _names[self.number]
             self.range = _range[self.number]
@@ -18,17 +20,17 @@ class ObjectSet:
 
         self.definitions = load_object_definitions(self.number)
 
-    def get_definition_of(self, object_id):
+    def get_definition_of(self, object_id: int) -> ObjectDefinition:
         return self.definitions[object_id]
 
-    def get_ending_offset(self):
+    def get_ending_offset(self) -> int:
         if self.number == ENEMY_OBJECT_SET:
             raise ValueError(f"This method shouldn't be called for the {self.name}")
 
         return self.ending_gfx_offset
 
-    def get_object_byte_length(self, domain, object_id):
-        if self.number == ENEMY_OBJECT_SET:
+    def get_object_byte_length(self, domain: int, object_id: int) -> int:
+        if self.range is None:
             raise ValueError(f"This method shouldn't be called for the {self.name}")
 
         object_group = (object_id & 0xF0) >> 4

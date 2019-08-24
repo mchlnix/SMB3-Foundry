@@ -755,7 +755,12 @@ class SMB3Foundry(wx.Frame):
         self.header_editor.Raise()
 
     def update_level(
-        self, world, level, object_data_offset, enemy_data_offset, object_set=None
+        self,
+        world: int,
+        level: int,
+        object_data_offset: int,
+        enemy_data_offset: int,
+        object_set: int,
     ):
         try:
             self.level_view.load_level(
