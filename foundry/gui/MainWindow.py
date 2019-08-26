@@ -533,6 +533,8 @@ class SMB3Foundry(wx.Frame):
 
             ROM().save_to_file(pathname)
 
+            self.update_title()
+
             self.level_view.level.changed = False
         except IOError:
             wx.LogError("Cannot save current data in file '%s'." % pathname)

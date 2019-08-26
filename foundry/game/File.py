@@ -122,6 +122,9 @@ class ROM:
                 f.write(ROM.MARKER_VALUE)
                 f.write(ROM.additional_data.encode("utf-8"))
 
+        ROM.path = path
+        ROM.name = basename(path)
+
     @staticmethod
     def set_additional_data(additional_data):
         ROM.additional_data = additional_data
