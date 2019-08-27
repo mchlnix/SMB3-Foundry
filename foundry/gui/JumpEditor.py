@@ -72,10 +72,10 @@ class JumpEditor(wx.Frame):
         self._add_widget("Exit action:", self.exit_action)
 
         self.exit_horizontal = wx.SpinCtrl(parent=self, max=MAX_HORIZ_POSITION)
-        self._add_widget("Exit position 1:", self.exit_horizontal)
+        self._add_widget("Exit position x:", self.exit_horizontal)
 
         self.exit_vertical = wx.ComboBox(parent=self, choices=VERT_POSITIONS)
-        self._add_widget("Exit position 2:", self.exit_vertical)
+        self._add_widget("Exit position y:", self.exit_vertical)
 
         ok_button = wx.Button(parent=self, id=wx.ID_OK)
         cancel_button = wx.Button(parent=self, id=wx.ID_CANCEL)
