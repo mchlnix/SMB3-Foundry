@@ -14,7 +14,8 @@ class Jump:
         self.screen_index = data[0] & 0x0F
         self.exit_vertical = (data[1] & 0xF0) >> 4
         self.exit_action = data[1] & 0x0F
-        self.exit_horizontal = data[2]
+        # for some reason those are flipped, meaning 5678, 1234
+        self.exit_horizontal = ((data[2] & 0xF) << 4) + (data[2] >> 4)
 
     def to_bytes(self):
         return self.data
@@ -43,6 +44,6 @@ class Jump:
         data[1] |= vert << 4
         data[1] |= action
 
-        data[2] |= horiz
+        data[2] |= ((horiz & 0xF) << 4) + (horiz >> 4)
 
         return Jump(data)
