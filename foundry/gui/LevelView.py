@@ -527,7 +527,9 @@ class LevelView(wx.Panel):
 
         self.level.add_enemy(enemy_index, level_x, level_y, index)
 
-    def replace_object(self, obj: LevelObject, domain: int, obj_index: int, length: int):
+    def replace_object(
+        self, obj: LevelObject, domain: int, obj_index: int, length: int
+    ):
         self.remove_object(obj)
 
         x, y = obj.get_position()
