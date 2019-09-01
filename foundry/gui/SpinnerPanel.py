@@ -8,6 +8,7 @@ from gui.Events import (
     UndoEvent,
     RedoEvent,
 )
+from gui.LevelView import LevelView
 
 ID_SPIN_DOMAIN = 1000
 ID_SPIN_TYPE = 1001
@@ -25,7 +26,7 @@ MAX_LENGTH = 0xFF
 
 
 class SpinnerPanel(wx.Panel):
-    def __init__(self, parent, level_view_ref):
+    def __init__(self, parent: wx.Window, level_view_ref: LevelView):
         super(SpinnerPanel, self).__init__(parent)
 
         self.level_view_ref = level_view_ref
@@ -152,33 +153,33 @@ class SpinnerPanel(wx.Panel):
     def get_type(self):
         return self.spin_type.GetValue()
 
-    def set_type(self, type):
-        self.spin_type.SetValue(type)
+    def set_type(self, object_type: int):
+        self.spin_type.SetValue(object_type)
         self.spin_type.Enable()
 
     def get_domain(self):
         return self.spin_domain.GetValue()
 
-    def set_domain(self, domain):
+    def set_domain(self, domain: int):
         self.spin_domain.SetValue(domain)
         self.spin_domain.Enable()
 
-    def get_length(self):
+    def get_length(self) -> int:
         return self.spin_length.GetValue()
 
-    def set_length(self, length):
+    def set_length(self, length: int):
         self.spin_length.SetValue(length)
         self.spin_length.Enable()
 
-    def enable_type(self, enable, value=0):
+    def enable_type(self, enable: bool, value: int = 0):
         self.spin_type.SetValue(value)
         self.spin_type.Enable(enable)
 
-    def enable_domain(self, enable, value=0):
+    def enable_domain(self, enable: bool, value: int = 0):
         self.spin_domain.SetValue(value)
         self.spin_domain.Enable(enable)
 
-    def enable_length(self, enable, value=0):
+    def enable_length(self, enable: bool, value: int = 0):
         self.spin_length.SetValue(value)
         self.spin_length.Enable(enable)
 
@@ -194,5 +195,6 @@ class SpinnerPanel(wx.Panel):
         self.enable_domain(False)
         self.enable_length(False)
 
-    def is_length_spinner(self, id):
-        return id == ID_SPIN_LENGTH
+    @staticmethod
+    def is_length_spinner(spinner_id: int) -> bool:
+        return spinner_id == ID_SPIN_LENGTH

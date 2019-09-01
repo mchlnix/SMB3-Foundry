@@ -3,7 +3,7 @@ import wx.adv
 
 
 class AboutDialog(wx.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent: wx.Window):
         super(AboutDialog, self).__init__(
             parent,
             title="About SMB3Foundry",

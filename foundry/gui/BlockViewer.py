@@ -15,12 +15,11 @@ ID_BANK_DROPDOWN = 10005
 
 
 class BlockViewer(wx.Frame):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent: wx.Window):
         super(BlockViewer, self).__init__(
-            *args,
+            parent,
             title="Block Viewer",
             style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
-            **kwargs,
         )
 
         self.toolbar = self.CreateToolBar()

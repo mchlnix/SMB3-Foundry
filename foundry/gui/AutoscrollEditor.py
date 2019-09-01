@@ -6,12 +6,12 @@ WATER_LINE_MODE_IDENTIFIER = 0x60
 
 
 class AutoscrollEditor(wx.Frame):
-    def __init__(self, parent, autoscroll_object):
+    def __init__(self, parent: wx.Window, autoscroll_object: EnemyObject):
         super(AutoscrollEditor, self).__init__(parent)
 
         self.SetTitle("Autoscroll Editor")
 
-        self._autoscroll_object: EnemyObject = autoscroll_object
+        self._autoscroll_object = autoscroll_object
 
         if self._autoscroll_object.x_position == WATER_LINE_MODE_IDENTIFIER:
             # used in 3-2 to draw the water texture on the bottom it seems like
@@ -45,7 +45,7 @@ class AutoscrollEditor(wx.Frame):
 
         self._set_widget_values()
 
-    def _add_widget(self, label, widget):
+    def _add_widget(self, label: str, widget: wx.Object):
         _label = wx.StaticText(parent=self, label=label)
 
         self.config_sizer.Add(
@@ -57,7 +57,7 @@ class AutoscrollEditor(wx.Frame):
             flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT,
         )
 
-    def _add_label(self, label):
+    def _add_label(self, label: str):
         _label = wx.StaticText(parent=self, label=label)
 
         self.config_sizer.Add(

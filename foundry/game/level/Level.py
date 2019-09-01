@@ -16,6 +16,8 @@ from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from game.level import _load_level_offsets
 from game.level.LevelLike import LevelLike
 
+LevelByteData = Tuple[Tuple[int, bytearray], Tuple[int, bytearray]]
+
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
 
@@ -92,7 +94,7 @@ class Level(LevelLike):
             self._graphic_set_index,
             self._object_palette_index,
             self.objects,
-            self._is_vertical,
+            bool(self._is_vertical),
         )
         self.enemy_item_factory = EnemyItemFactory(
             self.object_set_number, self._enemy_palette_index
@@ -684,7 +686,7 @@ class Level(LevelLike):
 
         self.attached_to_rom = False
 
-    def to_bytes(self) -> Tuple[Tuple[int, bytearray], Tuple[int, bytearray]]:
+    def to_bytes(self) -> LevelByteData:
         data = bytearray()
 
         data.extend(self.header)

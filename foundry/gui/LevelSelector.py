@@ -41,7 +41,7 @@ WORLD_1_INDEX = 1
 
 
 class LevelSelector(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent: wx.Window):
         super(LevelSelector, self).__init__(
             parent,
             title="Level Selector",
@@ -189,7 +189,8 @@ class LevelSelector(wx.Dialog):
         self.object_set_dropdown.SetSelection(object_set_index)
 
         print(
-            f"Level {self.selected_world}-{self.selected_level}, lvl_array_offset: {level_array_offset}, obj_index: {object_set_index}"
+            f"Level {self.selected_world}-{self.selected_level}, lvl_array_offset: {level_array_offset}, "
+            f"obj_index: {object_set_index}"
         )
 
     def on_ok(self, _):

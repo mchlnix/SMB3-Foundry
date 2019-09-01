@@ -1,5 +1,5 @@
 import os
-from typing import Tuple
+from typing import Tuple, Optional, Union
 
 import wx
 import wx.lib.scrolledpanel
@@ -64,7 +64,7 @@ ID_EDIT_OBJ_DEFS = 202
 ID_EDIT_PALETTE = 203
 ID_EDIT_GRAPHICS = 204
 ID_EDIT_MISC = 205
-ID_FREEFORM_MODE = 206
+ID_FREE_FORM_MODE = 206
 ID_LIMIT_SIZE = 207
 
 # level menu
@@ -162,7 +162,7 @@ class SMB3Foundry(wx.Frame):
         edit_menu.Append(ID_EDIT_GRAPHICS, "&Edit Graphics", "")
         edit_menu.Append(ID_EDIT_MISC, "&Edit Miscellaneous", "")
         edit_menu.AppendSeparator()
-        edit_menu.Append(ID_FREEFORM_MODE, "&Freeform Mode", "")
+        edit_menu.Append(ID_FREE_FORM_MODE, "&Free form Mode", "")
         edit_menu.Append(ID_LIMIT_SIZE, "&Limit Size", "")
         """
 
@@ -199,7 +199,7 @@ class SMB3Foundry(wx.Frame):
         view_menu = wx.Menu()
 
         view_menu.AppendCheckItem(ID_JUMPS, "Jumps")
-        view_menu.AppendCheckItem(ID_GRID_LINES, "&Gridlines", "")
+        view_menu.AppendCheckItem(ID_GRID_LINES, "&Grid lines", "")
         view_menu.AppendCheckItem(ID_TRANSPARENCY, "&Block Transparency", "")
         view_menu.FindItemById(ID_TRANSPARENCY).Check(True)
         view_menu.AppendSeparator()
@@ -322,7 +322,7 @@ class SMB3Foundry(wx.Frame):
         horiz_sizer.Add(vert_left, proportion=10, flag=wx.EXPAND)
         horiz_sizer.Add(vert_right, proportion=0, flag=wx.EXPAND)
 
-        self.jump_list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_jump_dclick)
+        self.jump_list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_jump_double_click)
 
         self.SetSizer(horiz_sizer)
 
@@ -367,9 +367,9 @@ class SMB3Foundry(wx.Frame):
         if not self.on_open_rom(None):
             wx.Exit()
 
-    def on_screenshot(self, _):
+    def on_screenshot(self, _) -> bool:
         if self.level_view is None:
-            return
+            return False
 
         with wx.FileDialog(
             self,
@@ -380,7 +380,7 @@ class SMB3Foundry(wx.Frame):
             wildcard="Bitmap files (.png)|*.png|All files|*",
         ) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return
+                return False
 
             # Proceed loading the file chosen by the user
             pathname = fileDialog.GetPath()
@@ -399,12 +399,14 @@ class SMB3Foundry(wx.Frame):
             except IOError:
                 wx.LogError("Cannot save file '%s'." % pathname)
 
+                return False
+
     def update_title(self):
         self.SetTitle(f"{self.level_view.level.name} - {ROM.name}")
 
-    def on_open_rom(self, _):
+    def on_open_rom(self, _) -> bool:
         if not self.safe_to_change():
-            return
+            return False
 
         # otherwise ask the user what new file to open
         with wx.FileDialog(
@@ -429,9 +431,11 @@ class SMB3Foundry(wx.Frame):
             except IOError:
                 wx.LogError("Cannot open file '%s'." % pathname)
 
-    def on_open_m3l(self, _):
+                return False
+
+    def on_open_m3l(self, _) -> bool:
         if not self.safe_to_change():
-            return
+            return False
 
         # otherwise ask the user what new file to open
         with wx.FileDialog(
@@ -458,7 +462,7 @@ class SMB3Foundry(wx.Frame):
 
         return True
 
-    def safe_to_change(self):
+    def safe_to_change(self) -> bool:
         if self.level_view.was_changed():
             answer = wx.MessageBox(
                 "Current content has not been saved! Proceed?",
@@ -656,7 +660,7 @@ class SMB3Foundry(wx.Frame):
     @undoable
     def _paste_objects(self, x=None, y=None):
         self.level_view.paste_objects_at(
-            x, y, paste_data=self.context_menu.get_copied_objects()
+            self.context_menu.get_copied_objects(), x, y
         )
 
         self.object_list.update()
@@ -819,7 +823,7 @@ class SMB3Foundry(wx.Frame):
         else:
             self.spinner_panel.disable_all()
 
-    def on_jump_dclick(self, event):
+    def on_jump_double_click(self, event):
         index = event.Int
 
         jump_editor = JumpEditor(self, self.level_view.level.jumps[index], index)
@@ -953,7 +957,7 @@ class SMB3Foundry(wx.Frame):
 
         self.spinner_panel.disable_all()
 
-    def select_object(self, obj=None, index=None):
+    def select_object(self, obj: Optional[Union[LevelObject, EnemyObject]] = None, index: Optional[int] = None):
         should_scroll = True
 
         self.level_view.select_object(None)
@@ -966,7 +970,7 @@ class SMB3Foundry(wx.Frame):
             )
 
         if index is None:
-            # assume click on levelview
+            # assume click on LevelView
             should_scroll = False
             index = self.level_view.index_of(obj)
 

@@ -1,4 +1,9 @@
+from typing import List, Union, Tuple
+
 import wx
+
+from game.gfx.objects.EnemyItem import EnemyObject
+from game.gfx.objects.LevelObject import LevelObject
 
 ID_CTX_REMOVE = 701
 ID_CTX_ADD_OBJECT = 702
@@ -19,7 +24,7 @@ class ContextMenu(wx.Menu):
         super(ContextMenu, self).__init__()
 
         self.copied_objects = None
-        self.copied_objects_origin = wx.Point(0, 0)
+        self.copied_objects_origin = 0, 0
         self.last_opened_at = wx.Point(0, 0)
 
         self.Append(id=ID_CTX_CUT, item="Cut")
@@ -30,7 +35,7 @@ class ContextMenu(wx.Menu):
         self.Append(id=ID_CTX_ADD_OBJECT, item="Add Object")
         self.Append(id=ID_CTX_ADD_ENEMY, item="Add Enemy/Item")
 
-    def set_copied_objects(self, objects):
+    def set_copied_objects(self, objects: List[Union[LevelObject, EnemyObject]]):
         if not objects:
             return
 
@@ -49,34 +54,34 @@ class ContextMenu(wx.Menu):
 
         self.copied_objects_origin = min_x, min_y
 
-    def get_copied_objects(self):
+    def get_copied_objects(self) -> Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]]:
         return self.copied_objects, self.copied_objects_origin
 
-    def set_position(self, position):
+    def set_position(self, position: wx.Point):
         self.last_opened_at = position
 
-    def get_position(self):
+    def get_position(self) -> Tuple[int, int]:
         return self.last_opened_at.Get()
 
-    def get_all_menu_item_ids(self):
+    def get_all_menu_item_ids(self) -> List[int]:
         return [item.GetId() for item in self.GetMenuItems()]
 
-    def as_object_menu(self):
+    def as_object_menu(self) -> "ContextMenu":
         self._setup_items(MODE_OBJ)
 
         return self
 
-    def as_background_menu(self):
+    def as_background_menu(self) -> "ContextMenu":
         self._setup_items(MODE_BG)
 
         return self
 
-    def as_list_menu(self):
+    def as_list_menu(self) -> "ContextMenu":
         self._setup_items(MODE_LIST)
 
         return self
 
-    def _setup_items(self, mode):
+    def _setup_items(self, mode: int):
         self.FindItemById(ID_CTX_CUT).Enable(not mode == MODE_BG)
         self.FindItemById(ID_CTX_COPY).Enable(not mode == MODE_BG)
         self.FindItemById(ID_CTX_PASTE).Enable(

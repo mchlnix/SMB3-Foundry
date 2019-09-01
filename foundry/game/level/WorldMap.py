@@ -103,7 +103,7 @@ class WorldMap(LevelLike):
 
             return_array[index] = obj.to_bytes()
 
-        return [(self.offset, return_array)]
+        return self.offset, return_array
 
     def from_bytes(self, data, _=None):
         offset, obj_bytes = data

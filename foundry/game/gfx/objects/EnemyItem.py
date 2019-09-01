@@ -15,6 +15,7 @@ class EnemyObject(ObjectLike):
         super(EnemyObject, self).__init__()
 
         self.is_4byte = False
+        self.length = 0
 
         self.obj_index = data[0]
         self.x_position = data[1]
@@ -28,6 +29,8 @@ class EnemyObject(ObjectLike):
         self.bg_color = NESPalette[palette_group[0][0]]
 
         self.png_data = png_data
+
+        self.rect = wx.Rect()
 
         self.selected = False
 

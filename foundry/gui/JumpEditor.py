@@ -46,7 +46,7 @@ MAX_HORIZ_POSITION = 0xFF
 
 
 class JumpEditor(wx.Frame):
-    def __init__(self, parent, jump, index):
+    def __init__(self, parent: wx.Window, jump: Jump, index: int):
         super(JumpEditor, self).__init__(
             parent, style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE
         )
@@ -92,7 +92,7 @@ class JumpEditor(wx.Frame):
 
         self._set_widget_values()
 
-    def _add_widget(self, label, widget):
+    def _add_widget(self, label: str, widget: wx.Object):
         _label = wx.StaticText(parent=self, label=label)
 
         self.config_sizer.Add(
@@ -104,7 +104,7 @@ class JumpEditor(wx.Frame):
             flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT,
         )
 
-    def _add_label(self, label):
+    def _add_label(self, label: str):
         _label = wx.StaticText(parent=self, label=label)
 
         self.config_sizer.Add(

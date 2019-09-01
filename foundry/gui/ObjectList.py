@@ -1,10 +1,12 @@
 import wx
 
+from gui.ContextMenu import ContextMenu
+
 # todo should have a reference to the level_view or a better way to sync the object lists
 
 
 class ObjectList(wx.ListBox):
-    def __init__(self, parent, context_menu):
+    def __init__(self, parent: wx.Window, context_menu: ContextMenu):
         super(ObjectList, self).__init__(parent=parent, style=wx.LB_MULTIPLE)
 
         self.context_menu = context_menu

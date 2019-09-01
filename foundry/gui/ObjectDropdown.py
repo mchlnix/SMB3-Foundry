@@ -114,7 +114,7 @@ class ObjectDropdown(wx.adv.BitmapComboBox):
     @staticmethod
     def _resize_bitmap(source_bitmap: wx.Bitmap) -> wx.Bitmap:
         """
-        Takes a wx.Bitmap and resizes it to the size of the ImageDropdown.
+        Takes a wx.Bitmap and scales it to the size of the ImageDropdown.
 
         :param wx.Bitmap source_bitmap: Bitmap to resize.
 

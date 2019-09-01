@@ -1,5 +1,8 @@
+from typing import List, Optional
+
 import wx
 
+from game.level.Level import LevelByteData
 from gui.Events import (
     UndoCompleteEvent,
     UndoStackClearedEvent,
@@ -11,20 +14,20 @@ UNDO_STACK_ID = wx.NewId()
 
 
 class UndoStack(wx.Window):
-    def __init__(self, parent):
+    def __init__(self, parent: wx.Window):
         super(UndoStack, self).__init__(parent)
         self.SetId(UNDO_STACK_ID)
 
-        self.undo_stack = []
+        self.undo_stack: List[LevelByteData] = []
         self.undo_index = -1
 
-    def clear(self, new_initial_state):
+    def clear(self, new_initial_state: LevelByteData):
         self.undo_stack = [new_initial_state]
         self.undo_index = 0
 
         wx.PostEvent(self, UndoStackClearedEvent(self.GetId()))
 
-    def save_state(self, data):
+    def save_state(self, data: LevelByteData):
         self.undo_index += 1
 
         self.undo_stack = self.undo_stack[: self.undo_index]
@@ -33,9 +36,9 @@ class UndoStack(wx.Window):
 
         wx.PostEvent(self, UndoStateSavedEvent(self.GetId()))
 
-    def undo(self):
+    def undo(self) -> Optional[LevelByteData]:
         if not self.undo_stack:
-            return
+            return None
 
         self.undo_index -= 1
 
@@ -47,9 +50,9 @@ class UndoStack(wx.Window):
 
         return data
 
-    def redo(self):
+    def redo(self) -> Optional[LevelByteData]:
         if self.undo_index + 1 == len(self.undo_stack):
-            return
+            return None
 
         self.undo_index += 1
 

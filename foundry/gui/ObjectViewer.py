@@ -1,3 +1,5 @@
+from typing import Optional
+
 import wx
 
 from game.gfx.drawable.Block import Block
@@ -16,7 +18,7 @@ MAX_LENGTH = 0xFF
 
 
 class ObjectViewer(wx.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent: wx.Window):
         super(ObjectViewer, self).__init__(
             parent,
             title="Object Viewer",
@@ -137,27 +139,27 @@ class ObjectViewer(wx.Frame):
 
 
 class ObjectDrawArea(wx.Panel):
-    def __init__(self, parent, object_set, graphic_set=1, palette_index=0):
+    def __init__(self, parent: wx.Window, object_set: int, graphic_set: int = 1, palette_index: int = 0):
         super(ObjectDrawArea, self).__init__(parent)
 
         self.object_factory = LevelObjectFactory(
             object_set, graphic_set, palette_index, [], False, size_minimal=True
         )
 
-        self.current_object = None
+        self.current_object = self.object_factory.from_data(bytearray([0x0, 0x0, 0x0]), 0)
 
-        self.update_object([0x0, 0x0, 0x0])
+        self.update_object()
 
         self.resize()
 
         self.Bind(wx.EVT_PAINT, self.draw)
 
-    def change_object_set(self, object_set):
+    def change_object_set(self, object_set: int):
         self.object_factory.set_object_set(object_set)
 
         self.update_object()
 
-    def change_graphic_set(self, graphic_set):
+    def change_graphic_set(self, graphic_set: int):
         self.object_factory.set_graphic_set(graphic_set)
         self.update_object()
 
@@ -170,7 +172,7 @@ class ObjectDrawArea(wx.Panel):
         )
         self.Fit()
 
-    def update_object(self, object_data=None):
+    def update_object(self, object_data: Optional[bytearray] = None):
         if object_data is None:
             object_data = self.current_object.data
 

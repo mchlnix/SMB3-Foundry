@@ -1,11 +1,14 @@
 from bisect import bisect_right
+from typing import List, Union, Optional, Tuple
 
 import wx
 
 from game.gfx.drawable.Block import Block
-from game.gfx.objects.LevelObject import SCREEN_WIDTH, SCREEN_HEIGHT
+from game.gfx.objects.EnemyItem import EnemyObject
+from game.gfx.objects.LevelObject import SCREEN_WIDTH, SCREEN_HEIGHT, LevelObject
 from game.level.Level import Level
 from game.level.WorldMap import WorldMap
+from gui.ContextMenu import ContextMenu
 from gui.Events import ObjectListUpdateEvent, JumpListUpdate
 from gui.SelectionSquare import SelectionSquare
 from gui.UndoStack import UndoStack
@@ -21,11 +24,11 @@ MODE_RESIZE = 2
 
 
 class LevelView(wx.Panel):
-    def __init__(self, parent, context_menu):
+    def __init__(self, parent: wx.Window, context_menu: ContextMenu):
         super(LevelView, self).__init__(parent)
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
 
-        self.level = None
+        self.level: Optional[Union[Level, WorldMap]] = None
         self.undo_stack = UndoStack(self)
 
         self.context_menu = context_menu
@@ -42,7 +45,7 @@ class LevelView(wx.Panel):
 
         self.transparency = True
 
-        self.selected_objects = []
+        self.selected_objects: List[Union[LevelObject, EnemyObject]] = []
 
         self.selection_square = SelectionSquare()
 
@@ -209,7 +212,7 @@ class LevelView(wx.Panel):
 
         self.dragging_happened = False
 
-    def select_objects_on_click(self, event):
+    def select_objects_on_click(self, event) -> bool:
         x, y = event.GetPosition().Get()
         level_x, level_y = self.to_level_point(x, y)
 
@@ -334,7 +337,7 @@ class LevelView(wx.Panel):
 
         self.select_objects(objects)
 
-    def get_selected_objects(self):
+    def get_selected_objects(self) -> List[Union[LevelObject, EnemyObject]]:
         return self.selected_objects
 
     def remove_selected_objects(self):
@@ -343,13 +346,13 @@ class LevelView(wx.Panel):
 
         self.selected_objects.clear()
 
-    def was_changed(self):
+    def was_changed(self) -> bool:
         if self.level is None:
             return False
         else:
             return self.level.changed
 
-    def level_safe_to_save(self):
+    def level_safe_to_save(self) -> Tuple[bool, str, str]:
         is_safe = True
         reason = ""
         additional_info = ""
@@ -387,6 +390,9 @@ class LevelView(wx.Panel):
         return is_safe, reason, additional_info
 
     def cuts_into_other_enemies(self) -> str:
+        if self.level is None:
+            raise TypeError("Level is None")
+
         enemies_end = self.level.enemies_end
 
         levels_by_enemy_offset = sorted(
@@ -408,6 +414,9 @@ class LevelView(wx.Panel):
             return f"World {found_level.game_world} - {found_level.name}"
 
     def cuts_into_other_objects(self) -> str:
+        if self.level is None:
+            raise TypeError("Level is None")
+
         end_of_level_objects = self.level.objects_end
 
         level_index = (
@@ -461,7 +470,7 @@ class LevelView(wx.Panel):
 
         self.send_jump_event()
 
-    def from_m3l(self, data):
+    def from_m3l(self, data: bytearray):
         self.level.from_m3l(data)
 
         self.send_jump_event()
@@ -470,18 +479,18 @@ class LevelView(wx.Panel):
 
         self.resize()
 
-    def object_at(self, x, y):
+    def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
         level_x, level_y = self.to_level_point(x, y)
 
         return self.level.object_at(level_x, level_y)
 
-    def to_level_point(self, screen_x, screen_y):
+    def to_level_point(self, screen_x: int, screen_y: int) -> Tuple[int, int]:
         level_x = screen_x // self.block_length
         level_y = screen_y // self.block_length
 
         return level_x, level_y
 
-    def to_screen_point(self, level_x, level_y):
+    def to_screen_point(self, level_x: int, level_y: int) -> Tuple[int, int]:
         screen_x = level_x * self.block_length
         screen_y = level_y * self.block_length
 
@@ -490,42 +499,42 @@ class LevelView(wx.Panel):
     def on_size(self, _):
         self.Refresh()
 
-    def index_of(self, obj):
+    def index_of(self, obj: Union[LevelObject, EnemyObject]) -> int:
         return self.level.index_of(obj)
 
-    def get_object(self, index):
+    def get_object(self, index: int) -> Union[LevelObject, EnemyObject]:
         return self.level.get_object(index)
 
-    def create_object_at(self, x, y, domain=0, object_index=0):
+    def create_object_at(self, x: int, y: int, domain: int = 0, object_index: int = 0):
         level_x, level_y = self.to_level_point(x, y)
 
         self.level.create_object_at(level_x, level_y, domain, object_index)
 
         self.Refresh()
 
-    def create_enemy_at(self, x, y):
+    def create_enemy_at(self, x: int, y: int):
         level_x, level_y = self.to_level_point(x, y)
 
         self.level.create_enemy_at(level_x, level_y)
 
-    def add_object(self, domain, obj_index, x, y, length, index):
+    def add_object(self, domain: int, obj_index: int, x: int, y: int, length: int, index: int):
         level_x, level_y = self.to_level_point(x, y)
 
         self.level.add_object(domain, obj_index, level_x, level_y, length, index)
 
-    def add_enemy(self, obj_index, x, y, index):
+    def add_enemy(self, enemy_index: int, x: int, y: int, index: int):
         level_x, level_y = self.to_level_point(x, y)
 
-        self.level.add_enemy(obj_index, level_x, level_y, index)
+        self.level.add_enemy(enemy_index, level_x, level_y, index)
 
-    def replace_object(self, obj, domain, obj_index, length):
+    def replace_object(self, obj: LevelObject, domain: int, obj_index: int, length: int):
         self.remove_object(obj)
 
         x, y = obj.get_position()
 
-        self.level.add_object(domain, obj_index, x, y, length, obj.index)
+        self.level.add_object(domain, obj_index, x, y, length, obj.index_in_level)
 
-    def replace_enemy(self, enemy, enemy_index):
+    def replace_enemy(self, enemy: EnemyObject, enemy_index: int):
         index_in_level = self.level.index_of(enemy)
 
         self.remove_object(enemy)
@@ -542,7 +551,8 @@ class LevelView(wx.Panel):
         self.send_jump_event()
         self.Refresh()
 
-    def paste_objects_at(self, x=None, y=None, paste_data=None):
+    def paste_objects_at(self, paste_data: Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]],
+                         x: Optional[int] = None, y: Optional[int] = None):
         if x is None or y is None:
             level_x, level_y = self.last_mouse_position
         else:
@@ -574,6 +584,9 @@ class LevelView(wx.Panel):
         return self.level.get_object_names()
 
     def make_screenshot(self, dc: wx.MemoryDC):
+        if self.level is None:
+            return
+
         bitmap = wx.EmptyBitmap(*self.GetSize())
 
         dc.SelectObject(bitmap)
