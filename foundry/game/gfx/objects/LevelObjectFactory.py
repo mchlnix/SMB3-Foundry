@@ -2,7 +2,6 @@ from typing import Optional, List
 
 from game.gfx.objects.Jump import Jump
 from game.gfx.objects.LevelObject import LevelObject
-from game.ObjectDefinitions import load_object_definitions
 from game.gfx.Palette import load_palette
 from game.gfx.PatternTable import PatternTable
 
@@ -12,7 +11,6 @@ class LevelObjectFactory:
     graphic_set: int
     palette_group_index: int
 
-    object_definitions: list = []
     pattern_table: Optional[PatternTable] = None
     palette_group: list = []
 
@@ -35,7 +33,6 @@ class LevelObjectFactory:
 
     def set_object_set(self, object_set: int):
         self.object_set = object_set
-        self.object_definitions = load_object_definitions(self.object_set)
 
     def set_graphic_set(self, graphic_set: int):
         self.graphic_set = graphic_set
@@ -55,7 +52,6 @@ class LevelObjectFactory:
         return LevelObject(
             data,
             self.object_set,
-            self.object_definitions,
             self.palette_group,
             self.pattern_table,
             self.objects_ref,

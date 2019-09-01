@@ -71,7 +71,6 @@ class LevelObject(ObjectLike):
         self,
         data: bytearray,
         object_set: int,
-        object_definitions,
         palette_group,
         pattern_table: PatternTable,
         objects_ref: List["LevelObject"],
