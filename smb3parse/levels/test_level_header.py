@@ -1,0 +1,119 @@
+from hypothesis import given, strategies
+
+from game.level.Level import LEVEL_DEFAULT_HEIGHT
+from smb3parse.levels import DEFAULT_VERTICAL_WIDTH, is_valid_level_length
+from smb3parse.levels.level_header import LevelHeader
+from smb3parse.objects.object_set import MIN_OBJECT_SET, MAX_OBJECT_SET, is_valid_object_set_number
+
+
+@given(
+    header_bytes=strategies.binary(min_size=9, max_size=9),
+    object_set_number=strategies.integers(min_value=MIN_OBJECT_SET, max_value=MAX_OBJECT_SET),
+)
+def test_construction(header_bytes, object_set_number):
+    level_header = LevelHeader(header_bytes, object_set_number)
+
+    if level_header._is_vertical:
+        assert level_header.width == DEFAULT_VERTICAL_WIDTH
+        assert is_valid_level_length(level_header.height)
+    else:
+        assert is_valid_level_length(level_header.width)
+        assert level_header.height == LEVEL_DEFAULT_HEIGHT
+
+    assert level_header._music_index in range(16)
+    assert level_header._time_index in range(4)
+    assert level_header._scroll_type_index in range(4)
+
+    assert level_header._start_x_index in range(4)
+    assert level_header._start_y_index in range(8)
+    assert level_header._start_action in range(8)
+
+    assert level_header._object_palette_index in range(8)
+    assert level_header._enemy_palette_index in range(4)
+    assert level_header._graphic_set_index in range(32)
+
+    assert is_valid_object_set_number(level_header.jump_object_set_number)
+
+
+def test_level_1_1():
+    object_set_number = 1
+    level_header_bytes = bytearray([0x93, 0xBC, 0x06, 0xC0, 0xEA, 0x80, 0x81, 0x01, 0x00])
+
+    level_header = LevelHeader(level_header_bytes, object_set_number)
+
+    assert level_header.width == 0xB0  # blocks
+    assert level_header.height == LEVEL_DEFAULT_HEIGHT  # blocks
+
+    assert level_header._music_index == 0
+    assert level_header._time_index == 0
+    assert level_header._scroll_type_index == 0
+
+    assert not level_header._pipe_ends_level
+    assert not level_header._is_vertical
+
+    assert level_header._start_x_index == 0
+    assert level_header._start_y_index == 7
+    assert level_header._start_action == 0
+
+    assert level_header._object_palette_index == 0
+    assert level_header._enemy_palette_index == 0
+    assert level_header._graphic_set_index == 1
+
+    assert level_header.jump_enemy_address == 0xC016
+    assert level_header.jump_level_address == 0x1FCA3
+
+
+def test_level_1_1_bonus():
+    object_set_number = 1
+    level_header_bytes = bytearray([0x82, 0xBB, 0x27, 0xC5, 0x81, 0x85, 0xC1, 0x01, 0x01])
+
+    level_header = LevelHeader(level_header_bytes, object_set_number)
+
+    assert level_header.width == 0x20  # blocks
+    assert level_header.height == LEVEL_DEFAULT_HEIGHT  # blocks
+
+    assert level_header._music_index == 1
+    assert level_header._time_index == 0
+    assert level_header._scroll_type_index == 2
+
+    assert not level_header._pipe_ends_level
+    assert not level_header._is_vertical
+
+    assert level_header._start_x_index == 0
+    assert level_header._start_y_index == 4
+    assert level_header._start_action == 0
+
+    assert level_header._object_palette_index == 5
+    assert level_header._enemy_palette_index == 0
+    assert level_header._graphic_set_index == 1
+
+    assert level_header.jump_enemy_address == 0xC537
+    assert level_header.jump_level_address == 0x1FB92
+
+
+def test_level_7_1():
+    object_set_number = 8
+    level_header_bytes = bytearray([0x61, 0xAA, 0x4D, 0xC2, 0x07, 0x80, 0xB1, 0x08, 0x01])
+
+    level_header = LevelHeader(level_header_bytes, object_set_number)
+
+    assert level_header.width == DEFAULT_VERTICAL_WIDTH  # blocks
+    assert level_header.height == 0x80  # blocks
+
+    assert level_header._music_index == 1
+    assert level_header._time_index == 0
+    assert level_header._scroll_type_index == 1
+
+    assert not level_header._pipe_ends_level
+    assert level_header._is_vertical
+
+    assert level_header._start_x_index == 0
+    assert level_header._start_y_index == 0
+    assert level_header._start_action == 0
+
+    assert level_header._object_palette_index == 0
+    assert level_header._enemy_palette_index == 0
+    assert level_header._graphic_set_index == 8
+
+    assert level_header.jump_enemy_address == 0xC25D
+    assert level_header.jump_level_address == 0x1EA71
