@@ -1,6 +1,6 @@
 from typing import Tuple, List
 
-from game.Data import Mario3Level
+from foundry.game.Data import Mario3Level
 
 
 def _load_level_offsets() -> Tuple[List[Mario3Level], List[int]]:

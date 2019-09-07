@@ -1,7 +1,7 @@
 import wx
 
-from game.gfx.objects.Jump import Jump
-from gui.Events import JumpUpdate
+from foundry.game.gfx.objects.Jump import Jump
+from foundry.gui.Events import JumpUpdate
 
 JUMP_ACTIONS = [
     "Downward Pipe 1",

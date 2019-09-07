@@ -2,8 +2,8 @@ from typing import List, Optional
 
 import wx
 
-from game.level.Level import LevelByteData
-from gui.Events import (
+from foundry.game.level.Level import LevelByteData
+from foundry.gui.Events import (
     UndoCompleteEvent,
     UndoStackClearedEvent,
     UndoStateSavedEvent,

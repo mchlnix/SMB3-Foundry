@@ -1,7 +1,7 @@
 import wx
 
-from game.gfx.Palette import NESPalette
-from game.gfx.drawable import bit_reverse, MASK_COLOR
+from foundry.game.gfx.Palette import NESPalette
+from foundry.game.gfx.drawable import bit_reverse, MASK_COLOR
 
 PIXEL_OFFSET = (
     8

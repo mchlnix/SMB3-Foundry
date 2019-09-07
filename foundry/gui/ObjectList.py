@@ -1,6 +1,6 @@
 import wx
 
-from gui.ContextMenu import ContextMenu
+from foundry.gui.ContextMenu import ContextMenu
 
 # todo should have a reference to the level_view or a better way to sync the object lists
 

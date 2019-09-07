@@ -4,14 +4,14 @@ from typing import Tuple, Optional, Union
 import wx
 import wx.lib.scrolledpanel
 
-from game.File import ROM
-from game.gfx.objects.EnemyItem import EnemyObject
-from game.gfx.objects.LevelObject import LevelObject
-from game.level.Level import Level
-from game.level.WorldMap import WorldMap
-from gui.AboutWindow import AboutDialog
-from gui.BlockViewer import BlockViewer
-from gui.ContextMenu import (
+from foundry.game.File import ROM
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.level.Level import Level
+from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.AboutWindow import AboutDialog
+from foundry.gui.BlockViewer import BlockViewer
+from foundry.gui.ContextMenu import (
     ContextMenu,
     ID_CTX_REMOVE,
     ID_CTX_ADD_OBJECT,
@@ -20,7 +20,7 @@ from gui.ContextMenu import (
     ID_CTX_PASTE,
     ID_CTX_CUT,
 )
-from gui.Events import (
+from foundry.gui.Events import (
     EVT_REDO,
     EVT_UNDO,
     EVT_UNDO_COMPLETE,
@@ -34,16 +34,16 @@ from gui.Events import (
     EVT_JUMP_ADDED,
     EVT_JUMP_REMOVED,
 )
-from gui.HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
-from gui.JumpEditor import JumpEditor
-from gui.JumpList import JumpList
-from gui.LevelSelector import LevelSelector
-from gui.LevelView import LevelView
-from gui.ObjectDropdown import ObjectDropdown
-from gui.ObjectList import ObjectList
-from gui.ObjectStatusBar import ObjectStatusBar
-from gui.ObjectViewer import ObjectViewer
-from gui.SpinnerPanel import SpinnerPanel, ID_SPIN_DOMAIN, ID_SPIN_TYPE, ID_SPIN_LENGTH
+from foundry.gui.HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
+from foundry.gui.JumpEditor import JumpEditor
+from foundry.gui.JumpList import JumpList
+from foundry.gui.LevelSelector import LevelSelector
+from foundry.gui.LevelView import LevelView
+from foundry.gui.ObjectDropdown import ObjectDropdown
+from foundry.gui.ObjectList import ObjectList
+from foundry.gui.ObjectStatusBar import ObjectStatusBar
+from foundry.gui.ObjectViewer import ObjectViewer
+from foundry.gui.SpinnerPanel import SpinnerPanel, ID_SPIN_DOMAIN, ID_SPIN_TYPE, ID_SPIN_LENGTH
 
 # file menu
 

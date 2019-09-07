@@ -1,6 +1,6 @@
 import wx
 
-from gui.Events import JumpAdded, JumpRemoved
+from foundry.gui.Events import JumpAdded, JumpRemoved
 
 ID_ADD_JUMP = 1
 ID_DEL_JUMP = 2

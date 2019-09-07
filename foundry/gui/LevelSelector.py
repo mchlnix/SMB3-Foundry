@@ -1,6 +1,6 @@
 import wx
 
-from game.level.Level import Level
+from foundry.game.level.Level import Level
 
 WORLD_ITEMS = [
     "World Maps",

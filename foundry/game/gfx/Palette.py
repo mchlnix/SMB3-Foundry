@@ -1,4 +1,4 @@
-from game.File import ROM
+from foundry.game.File import ROM
 
 MAP_PALETTE_ADDRESS = 0x36BE2
 PALETTE_ADDRESS = 0x36CA2

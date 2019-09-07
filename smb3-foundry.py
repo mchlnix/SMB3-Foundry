@@ -9,7 +9,7 @@ if hasattr(sys, "_MEIPASS"):
     print(f"Changing current dir to {getattr(sys, '_MEIPASS')}")
     os.chdir(getattr(sys, "_MEIPASS"))
 
-from gui.MainWindow import SMB3Foundry
+from foundry.gui.MainWindow import SMB3Foundry
 
 
 def main():

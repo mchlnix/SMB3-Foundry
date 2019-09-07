@@ -2,9 +2,9 @@ from typing import Optional
 
 import wx
 
-from game.gfx.drawable.Block import Block
-from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from gui.LevelSelector import OBJECT_SET_ITEMS
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2

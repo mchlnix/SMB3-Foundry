@@ -2,19 +2,19 @@ from typing import List, Union, Optional, Tuple
 
 import wx
 
-from game.Data import Mario3Level, object_set_pointers
-from game.File import ROM
-from game.ObjectSet import ObjectSet
-from game.gfx.Palette import get_bg_color_for, load_palette
-from game.gfx.PatternTable import PatternTable
-from game.gfx.drawable.Block import Block
-from game.gfx.objects.EnemyItem import EnemyObject
-from game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from game.gfx.objects.Jump import Jump
-from game.gfx.objects.LevelObject import LevelObject
-from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from game.level import _load_level_offsets
-from game.level.LevelLike import LevelLike
+from foundry.game.Data import Mario3Level
+from foundry.game.File import ROM
+from foundry.game.ObjectSet import ObjectSet
+from foundry.game.gfx.Palette import get_bg_color_for, load_palette
+from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
+from foundry.game.gfx.objects.Jump import Jump
+from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from foundry.game.level import _load_level_offsets
+from foundry.game.level.LevelLike import LevelLike
 
 LevelByteData = Tuple[Tuple[int, bytearray], Tuple[int, bytearray]]
 

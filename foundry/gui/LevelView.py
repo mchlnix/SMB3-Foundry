@@ -3,15 +3,15 @@ from typing import List, Union, Optional, Tuple
 
 import wx
 
-from game.gfx.drawable.Block import Block
-from game.gfx.objects.EnemyItem import EnemyObject
-from game.gfx.objects.LevelObject import SCREEN_WIDTH, SCREEN_HEIGHT, LevelObject
-from game.level.Level import Level
-from game.level.WorldMap import WorldMap
-from gui.ContextMenu import ContextMenu
-from gui.Events import ObjectListUpdateEvent, JumpListUpdate
-from gui.SelectionSquare import SelectionSquare
-from gui.UndoStack import UndoStack
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.LevelObject import SCREEN_WIDTH, SCREEN_HEIGHT, LevelObject
+from foundry.game.level.Level import Level
+from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.ContextMenu import ContextMenu
+from foundry.gui.Events import ObjectListUpdateEvent, JumpListUpdate
+from foundry.gui.SelectionSquare import SelectionSquare
+from foundry.gui.UndoStack import UndoStack
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks

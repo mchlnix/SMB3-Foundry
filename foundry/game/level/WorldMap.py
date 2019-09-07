@@ -1,11 +1,11 @@
 import wx
 
-from game.File import ROM
-from game.gfx.Palette import load_palette
-from game.gfx.PatternTable import PatternTable
-from game.gfx.drawable.Block import Block
-from game.gfx.objects.MapObject import MapObject
-from game.level.LevelLike import LevelLike
+from foundry.game.File import ROM
+from foundry.game.gfx.Palette import load_palette
+from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.MapObject import MapObject
+from foundry.game.level.LevelLike import LevelLike
 
 OVERWORLD_OBJECT_SET = 0
 OVERWORLD_GRAPHIC_SET = 0

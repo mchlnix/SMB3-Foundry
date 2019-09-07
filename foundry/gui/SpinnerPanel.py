@@ -1,6 +1,6 @@
 import wx
 
-from gui.Events import (
+from foundry.gui.Events import (
     EVT_UNDO_CLEARED,
     EVT_UNDO_COMPLETE,
     EVT_REDO_COMPLETE,
@@ -8,7 +8,7 @@ from gui.Events import (
     UndoEvent,
     RedoEvent,
 )
-from gui.LevelView import LevelView
+from foundry.gui.LevelView import LevelView
 
 ID_SPIN_DOMAIN = 1000
 ID_SPIN_TYPE = 1001

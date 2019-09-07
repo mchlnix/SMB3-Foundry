@@ -1,8 +1,8 @@
 import wx
 
-from game.gfx.Palette import load_palette
-from game.gfx.drawable.Block import Block
-from game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.Palette import load_palette
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
 
 
 class EnemyItemFactory:

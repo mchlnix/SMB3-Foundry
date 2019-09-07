@@ -1,6 +1,6 @@
 import wx
 
-from game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
 
 WATER_LINE_MODE_IDENTIFIER = 0x60
 

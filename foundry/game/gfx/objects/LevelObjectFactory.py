@@ -1,9 +1,9 @@
 from typing import Optional, List
 
-from game.gfx.objects.Jump import Jump
-from game.gfx.objects.LevelObject import LevelObject
-from game.gfx.Palette import load_palette
-from game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.objects.Jump import Jump
+from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.Palette import load_palette
+from foundry.game.gfx.PatternTable import PatternTable
 
 
 class LevelObjectFactory:

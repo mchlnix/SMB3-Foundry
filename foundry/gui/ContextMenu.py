@@ -2,8 +2,8 @@ from typing import List, Union, Tuple
 
 import wx
 
-from game.gfx.objects.EnemyItem import EnemyObject
-from game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.LevelObject import LevelObject
 
 ID_CTX_REMOVE = 701
 ID_CTX_ADD_OBJECT = 702

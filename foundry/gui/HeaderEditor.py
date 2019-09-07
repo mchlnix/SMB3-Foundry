@@ -1,8 +1,8 @@
 import wx
 import wx.lib.newevent
 
-from gui.LevelSelector import OBJECT_SET_ITEMS
-from gui.LevelView import LevelView
+from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
+from foundry.gui.LevelView import LevelView
 
 LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]
 STR_LEVEL_LENGTHS = [

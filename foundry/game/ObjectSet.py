@@ -1,6 +1,6 @@
 from typing import Tuple, Optional
 
-from game.ObjectDefinitions import load_object_definitions, ObjectDefinition
+from foundry.game.ObjectDefinitions import load_object_definitions, ObjectDefinition
 
 ENEMY_OBJECT_SET = 16
 

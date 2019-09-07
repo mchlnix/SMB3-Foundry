@@ -1,11 +1,11 @@
 import wx
 from math import ceil
 
-from game.File import ROM
-from game.gfx.Palette import get_bg_color_for, load_palette
-from game.gfx.PatternTable import PatternTable
-from game.gfx.drawable.Block import Block
-from gui.LevelSelector import OBJECT_SET_ITEMS
+from foundry.game.File import ROM
+from foundry.game.gfx.Palette import get_bg_color_for, load_palette
+from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.drawable.Block import Block
+from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 
 ID_ZOOM_IN = 10001
 ID_ZOOM_OUT = 10002

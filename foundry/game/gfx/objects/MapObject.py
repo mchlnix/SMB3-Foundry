@@ -1,6 +1,6 @@
 import wx
 
-from game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects.ObjectLike import ObjectLike
 
 map_object_names = {
     0x00: "Mario Clear (Blue)",

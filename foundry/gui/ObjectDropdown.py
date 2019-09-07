@@ -2,9 +2,9 @@ from typing import Any, List
 
 import wx.adv
 
-from game.gfx.drawable.Block import Block
-from game.gfx.objects.LevelObject import LevelObject
-from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 
 
 class ObjectDropdown(wx.adv.BitmapComboBox):

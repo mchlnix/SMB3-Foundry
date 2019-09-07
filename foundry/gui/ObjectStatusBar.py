@@ -2,8 +2,8 @@ from typing import Union
 
 import wx
 
-from game.gfx.objects.EnemyItem import EnemyObject
-from game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.LevelObject import LevelObject
 
 
 class ObjectStatusBar(wx.StatusBar):
