@@ -1,4 +1,10 @@
-from smb3parse.levels import HEADER_LENGTH, DEFAULT_HORIZONTAL_HEIGHT, DEFAULT_VERTICAL_WIDTH, MIN_LENGTH
+from smb3parse.levels import (
+    HEADER_LENGTH,
+    DEFAULT_HORIZONTAL_HEIGHT,
+    DEFAULT_VERTICAL_WIDTH,
+    MIN_LENGTH,
+    LEVEL_LENGTH_INTERVAL,
+)
 from smb3parse.levels.level import BASE_LEVEL_OFFSET, BASE_ENEMY_OFFSET
 from smb3parse.objects.object_set import is_valid_object_set_number, ObjectSet
 
@@ -16,35 +22,35 @@ class LevelHeader:
 
         self.data = header_bytes
 
-        self._start_y_index = (self.data[4] & 0b1110_0000) >> 5
+        self.start_y_index = (self.data[4] & 0b1110_0000) >> 5
 
-        self._length = MIN_LENGTH + (self.data[4] & 0b0000_1111) * 0x10
-        self.width = self._length
+        self.length = MIN_LENGTH + (self.data[4] & 0b0000_1111) * LEVEL_LENGTH_INTERVAL
+        self.width = self.length
         self.height = DEFAULT_HORIZONTAL_HEIGHT
 
-        self._start_x_index = (self.data[5] & 0b0110_0000) >> 5
+        self.start_x_index = (self.data[5] & 0b0110_0000) >> 5
 
-        self._enemy_palette_index = (self.data[5] & 0b0001_1000) >> 3
-        self._object_palette_index = self.data[5] & 0b0000_0111
+        self.enemy_palette_index = (self.data[5] & 0b0001_1000) >> 3
+        self.object_palette_index = self.data[5] & 0b0000_0111
 
-        self._pipe_ends_level = not (self.data[6] & 0b1000_0000)
-        self._scroll_type_index = (self.data[6] & 0b0110_0000) >> 5
-        self._is_vertical = self.data[6] & 0b0001_0000
+        self.pipe_ends_level = not (self.data[6] & 0b1000_0000)
+        self.scroll_type_index = (self.data[6] & 0b0110_0000) >> 5
+        self.is_vertical = self.data[6] & 0b0001_0000
 
-        if self._is_vertical:
-            self.height = self._length
+        if self.is_vertical:
+            self.height = self.length
             self.width = DEFAULT_VERTICAL_WIDTH
 
         self.jump_object_set_number = self.data[6] & 0b0000_1111  # for indexing purposes
         self.jump_object_set = ObjectSet(self.jump_object_set_number)
 
-        self._start_action = (self.data[7] & 0b1110_0000) >> 5
+        self.start_action = (self.data[7] & 0b1110_0000) >> 5
 
-        self._graphic_set_index = self.data[7] & 0b0001_1111
+        self.graphic_set_index = self.data[7] & 0b0001_1111
 
-        self._time_index = (self.data[8] & 0b1100_0000) >> 6
+        self.time_index = (self.data[8] & 0b1100_0000) >> 6
 
-        self._music_index = self.data[8] & 0b0000_1111
+        self.music_index = self.data[8] & 0b0000_1111
 
         self.jump_level_address = (
             (self.data[1] << 8) + self.data[0] + BASE_LEVEL_OFFSET + self.jump_object_set.level_offset

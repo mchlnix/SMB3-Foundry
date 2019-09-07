@@ -1,4 +1,5 @@
-from smb3parse.objects import InLevelObject, MAX_Y_VALUE
+from smb3parse.levels import DEFAULT_HORIZONTAL_HEIGHT
+from smb3parse.objects import InLevelObject
 
 
 class LevelObject(InLevelObject):
@@ -11,8 +12,10 @@ class LevelObject(InLevelObject):
         self.domain = data[0] >> 5
         self.y = data[0] & 0b0001_1111
 
-        if self.y > MAX_Y_VALUE:
-            raise ValueError(f"Data designating y value cannot be higher than {MAX_Y_VALUE}, was {self.y}.")
+        if self.y > DEFAULT_HORIZONTAL_HEIGHT:
+            raise ValueError(
+                f"Data designating y value cannot be higher than {DEFAULT_HORIZONTAL_HEIGHT}, was {self.y}."
+            )
 
         self.id = data[1]
         self.x = data[2]

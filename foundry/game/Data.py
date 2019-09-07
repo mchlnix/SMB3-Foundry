@@ -19,10 +19,7 @@ SMB3_LEVEL_COUNT = 298
 MAP_ENEMY_OFFSET = 0x16070
 
 MapscreenPointerLocation = namedtuple("MapscreenPointerLocation", "count offset")
-ObjectInfo = namedtuple(
-    "ObjectInfo", "index subindex x y width height x2 y2 obj objtype rect drag"
-)
-ObjectSetPointerType = namedtuple("ObjectSetPointerType", "type name min max")
+ObjectInfo = namedtuple("ObjectInfo", "index subindex x y width height x2 y2 obj objtype rect drag")
 
 
 class Mario3Level(NamedTuple):
@@ -108,23 +105,4 @@ map_pointers = [
     MapscreenPointerLocation(46, 0x19A3E),  # World 7
     MapscreenPointerLocation(41, 0x19B56),  # World 8
     MapscreenPointerLocation(10, 0x19C50),  # Warp Zone (no enemies or level pointers)
-]
-
-object_set_pointers = [
-    ObjectSetPointerType(type=0x0000, name="Map Screen", min=0x18010, max=0x1A00F),
-    ObjectSetPointerType(type=0x4000, name="Plains", min=0x1E512, max=0x2000F),
-    ObjectSetPointerType(type=0x10000, name="Dungeon", min=0x2A7F7, max=0x2C00F),
-    ObjectSetPointerType(type=0x6000, name="Hilly", min=0x20587, max=0x2200F),
-    ObjectSetPointerType(type=0x8000, name="Sky", min=0x227E0, max=0x2400F),
-    ObjectSetPointerType(type=0xC000, name="Piranha Plant", min=0x26A6F, max=0x2800F),
-    ObjectSetPointerType(type=0xA000, name="Water", min=0x24BA7, max=0x2600F),
-    ObjectSetPointerType(type=0x0000, name="Mushroom House", min=0x0000, max=0x0000),
-    ObjectSetPointerType(type=0xA000, name="Pipe", min=0x24BA7, max=0x2600F),
-    ObjectSetPointerType(type=0xE000, name="Desert", min=0x28F3F, max=0x2A00F),
-    ObjectSetPointerType(type=0x14000, name="Ship", min=0x2EC07, max=0x3000F),
-    ObjectSetPointerType(type=0xC000, name="Giant", min=0x26A6F, max=0x2800F),
-    ObjectSetPointerType(type=0x8000, name="Ice", min=0x227E0, max=0x2400F),
-    ObjectSetPointerType(type=0xC000, name="Cloudy", min=0x26A6F, max=0x2800F),
-    ObjectSetPointerType(type=0x0000, name="Underground", min=0x1A587, max=0x1C00F),
-    ObjectSetPointerType(type=0x0000, name="Spade House", min=0xA010, max=0xC00F),
 ]

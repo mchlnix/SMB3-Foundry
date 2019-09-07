@@ -1,14 +1,26 @@
 """
-Describes all objects, that are part of a level, i. e. Platforms, enemies, items, jumps, auto scroll objects etc.
+Describes all objects, that are part of a level, i. e. platforms, enemies, items, jumps, auto scroll objects etc.
 """
 from abc import ABC
 from typing import Optional
 
 
+MIN_DOMAIN = 0
+MAX_DOMAIN = 7
+MIN_Y_VALUE = 0
+MAX_Y_VALUE = 27
+MIN_ID_VALUE = 0
+MAX_ID_VALUE = 0xFF
+MIN_X_VALUE = 0
+MAX_X_VALUE = 0xFF
+MIN_ADDITIONAL_LENGTH = 0
+MAX_ADDITIONAL_LENGTH = 0xFF
+
+
 class InLevelObject(ABC):
     """
-    Describes objects that are positioned at a specific place in the level and have some sort of representation, be it
-    visible like platforms and enemies or
+    Describes objects that are positioned at a specific place in a level and have some sort of representation, be it
+    visible like platforms and enemies or invisible, like auto scroll items or jumps.
     """
 
     def __init__(self, data: bytearray):
@@ -62,15 +74,3 @@ class InLevelObject(ABC):
     @property
     def has_additional_length(self):
         return self.additional_length is not None
-
-
-MIN_DOMAIN = 0
-MAX_DOMAIN = 7
-MIN_Y_VALUE = 0
-MAX_Y_VALUE = 27
-MIN_ID_VALUE = 0
-MAX_ID_VALUE = 0xFF
-MIN_X_VALUE = 0
-MAX_X_VALUE = 0xFF
-MIN_ADDITIONAL_LENGTH = 0
-MAX_ADDITIONAL_LENGTH = 0xFF
