@@ -31,7 +31,7 @@ def test_list_all_world_maps_height(rom):
 
 def test_list_all_world_maps_screen_counts(rom):
     for world_map, screen_count in zip(get_all_world_maps(rom.rom_data), world_map_screen_counts):
-        assert world_map._screen_count == screen_count
+        assert world_map.screen_count == screen_count
 
 
 def test_list_all_world_maps_width(rom):

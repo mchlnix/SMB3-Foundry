@@ -6,38 +6,36 @@ from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.MapObject import MapObject
 from foundry.game.level.LevelLike import LevelLike
+from smb3parse.levels.world_map import (
+    WorldMap as _WorldMap,
+    WORLD_MAP_SCREEN_SIZE,
+    WORLD_MAP_SCREEN_WIDTH,
+    WORLD_MAP_HEIGHT,
+)
+from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
-OVERWORLD_OBJECT_SET = 0
 OVERWORLD_GRAPHIC_SET = 0
 
 
 class WorldMap(LevelLike):
-    WIDTH = 16
-    HEIGHT = 9
-
-    VISIBLE_BLOCKS = WIDTH * HEIGHT
-
     def __init__(self, world_index):
         super(WorldMap, self).__init__(0, world_index, None)
+
+        self._internal_world_map = _WorldMap.from_world_number(ROM().rom_data, world_index)
 
         self.name = f"World {world_index} - Overworld"
 
         self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
-        self.palette_group = load_palette(OVERWORLD_OBJECT_SET, 0)
+        self.palette_group = load_palette(WORLD_MAP_OBJECT_SET, 0)
 
-        start = ROM.W_LAYOUT_OS_LIST[world_index - 1]
-        end = ROM.rom_data.find(0xFF, start)
+        self.offset = self._internal_world_map.memory_address
 
-        self.offset = start
-
-        self.object_set = OVERWORLD_OBJECT_SET
+        self.object_set = WORLD_MAP_OBJECT_SET
         self.tsa_data = ROM.get_tsa_data(self.object_set)
 
         self.objects = []
 
-        obj_data = ROM().bulk_read(end - start, start)
-
-        self._load_objects(obj_data)
+        self._load_objects(self._internal_world_map.layout_bytes)
 
         self._calc_size()
 
@@ -45,22 +43,20 @@ class WorldMap(LevelLike):
         self.objects.clear()
 
         for index, block_index in enumerate(obj_data):
-            screen_offset = (index // WorldMap.VISIBLE_BLOCKS) * WorldMap.WIDTH
+            screen_offset = (index // WORLD_MAP_SCREEN_SIZE) * WORLD_MAP_SCREEN_WIDTH
 
-            x = screen_offset + (index % WorldMap.WIDTH)
-            y = (index // WorldMap.WIDTH) % WorldMap.HEIGHT
+            x = screen_offset + (index % WORLD_MAP_SCREEN_WIDTH)
+            y = (index // WORLD_MAP_SCREEN_WIDTH) % WORLD_MAP_HEIGHT
 
-            block = Block(
-                block_index, self.palette_group, self.pattern_table, self.tsa_data
-            )
+            block = Block(block_index, self.palette_group, self.pattern_table, self.tsa_data)
 
             self.objects.append(MapObject(block, x, y))
 
-        assert len(self.objects) % WorldMap.HEIGHT == 0
+        assert len(self.objects) % WORLD_MAP_HEIGHT == 0
 
     def _calc_size(self):
-        self.width = len(self.objects) // WorldMap.HEIGHT
-        self.height = WorldMap.HEIGHT
+        self.width = len(self.objects) // WORLD_MAP_HEIGHT
+        self.height = WORLD_MAP_HEIGHT
 
         self.size = self.width, self.height
 
@@ -71,7 +67,7 @@ class WorldMap(LevelLike):
 
     @staticmethod
     def _array_index(obj):
-        return obj.y_position * WorldMap.WIDTH + obj.x_position
+        return obj.y_position * WORLD_MAP_SCREEN_WIDTH + obj.x_position
 
     def get_object_names(self):
         return [obj.name for obj in self.objects]

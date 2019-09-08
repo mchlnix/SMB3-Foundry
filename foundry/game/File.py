@@ -1,20 +1,14 @@
 from os.path import basename
 from typing import List, Optional
 
+from smb3parse.levels.world_map import list_world_map_addresses
+
 WORLD_COUNT = 9  # includes warp zone
 
 # W = WORLD_MAP
 # OS = OFFSET
 
 OS_SIZE = 2  # byte
-
-W_BASE_OS = 0xE010
-W_LAYOUT_LIST_OS = W_BASE_OS + 0xA598
-W_INIT_LIST_OS = W_BASE_OS + 0xB3CA
-W_LEVEL_Y_POS_LIST_OS = W_BASE_OS + 0xB3DC
-W_LEVEL_X_POS_LIST_OS = W_BASE_OS + 0xB3EE
-W_LEVEL_ENEMY_LIST_OS = W_BASE_OS + 0xB400
-W_LEVEL_LAYOUT_LIST_OS = W_BASE_OS + 0xB412
 
 TSA_OS_LIST = 0x3C3F9
 TSA_TABLE_SIZE = 0x400
@@ -59,16 +53,7 @@ class ROM:
 
     @staticmethod
     def _setup_map_addresses():
-        offsets = ROM().bulk_read(WORLD_COUNT * OS_SIZE, W_LAYOUT_LIST_OS)
-
-        ROM.W_LAYOUT_OS_LIST.clear()
-
-        for world in range(WORLD_COUNT):
-            index = world * 2
-
-            world_map_offset = (offsets[index + 1] << 8) + offsets[index]
-
-            ROM.W_LAYOUT_OS_LIST.append(W_BASE_OS + world_map_offset)
+        ROM.W_LAYOUT_OS_LIST = list_world_map_addresses(ROM.rom_data)
 
     @staticmethod
     def _setup_level_addresses():

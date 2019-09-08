@@ -42,6 +42,21 @@ def get_all_world_maps(rom_bytes: bytearray) -> List["WorldMap"]:
 
 
 class WorldMap(LevelBase):
+    """
+    Represents the data associated with a world map/overworld. World maps are always 9 blocks high and 16 blocks wide.
+    They can be multiple screens big, which are either not visibly connected or connected horizontally.
+
+    Attributes:
+        memory_address  The position in the ROM of the bytes making up the visual layout of the world map.
+        layout_bytes    The actual bytes making up the visual layout
+
+        width           The width of the world map in blocks across all scenes.
+        height          The height of the world map, always 9 blocks.
+
+        object_set      An ObjectSet object for the world map object set.
+        screen_count    How many screens this world map spans.
+    """
+
     def __init__(self, memory_address: int, rom_bytes: bytearray):
         super(WorldMap, self).__init__(memory_address)
 
@@ -57,5 +72,14 @@ class WorldMap(LevelBase):
                 f"Should be divisible by {WORLD_MAP_SCREEN_SIZE}."
             )
 
-        self._screen_count = len(self.layout_bytes) / WORLD_MAP_SCREEN_SIZE
-        self._width = int(self._screen_count * WORLD_MAP_SCREEN_WIDTH)
+        self.screen_count = len(self.layout_bytes) / WORLD_MAP_SCREEN_SIZE
+        self._width = int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
+
+    @staticmethod
+    def from_world_number(rom_bytes: bytearray, world_number: int) -> "WorldMap":
+        if not world_number - 1 in range(WORLD_COUNT):
+            raise ValueError(f"World number must be between 1 and {WORLD_COUNT}, including.")
+
+        memory_address = list_world_map_addresses(rom_bytes)[world_number - 1]
+
+        return WorldMap(memory_address, rom_bytes)
