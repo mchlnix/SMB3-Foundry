@@ -1,4 +1,4 @@
-from smb3parse.levels import DEFAULT_HORIZONTAL_HEIGHT
+from smb3parse.levels.level import DEFAULT_HORIZONTAL_HEIGHT
 from smb3parse.objects import InLevelObject
 
 

@@ -1,17 +1,4 @@
-# in bytes
-HEADER_LENGTH = 9
-
-# in blocks
-MIN_LENGTH = 0x10
-MAX_LENGTH = 0x100
-LEVEL_LENGTH_INTERVAL = 0x10
-
-DEFAULT_HORIZONTAL_HEIGHT = 27
-DEFAULT_VERTICAL_WIDTH = 16
-
-
-def is_valid_level_length(level_length: int) -> bool:
-    return level_length in range(MIN_LENGTH, MAX_LENGTH + 1, LEVEL_LENGTH_INTERVAL)
+from smb3parse.objects.object_set import ObjectSet
 
 
 class LevelBase:
@@ -22,3 +9,20 @@ class LevelBase:
         self._height: int = 0
 
         self._object_set_index: int = 0
+        self._object_set = ObjectSet(self._object_set_index)
+
+    @property
+    def memory_address(self):
+        return self._memory_address
+
+    @property
+    def width(self):
+        return self._width
+
+    @property
+    def height(self):
+        return self._height
+
+    @property
+    def object_set(self):
+        return self._object_set

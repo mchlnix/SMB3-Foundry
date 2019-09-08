@@ -1,11 +1,12 @@
-from smb3parse.levels import (
+from smb3parse.levels.level import (
     HEADER_LENGTH,
     DEFAULT_HORIZONTAL_HEIGHT,
     DEFAULT_VERTICAL_WIDTH,
     MIN_LENGTH,
+    BASE_ENEMY_OFFSET,
+    BASE_LEVEL_OFFSET,
     LEVEL_LENGTH_INTERVAL,
 )
-from smb3parse.levels.level import BASE_LEVEL_OFFSET, BASE_ENEMY_OFFSET
 from smb3parse.objects.object_set import is_valid_object_set_number, ObjectSet
 
 
