@@ -126,6 +126,11 @@ def test_value_error_y(all_zero_3_byte_object_data, all_zero_4_byte_object_data)
             LevelObject(bad_data)
 
 
+def test_value_error():
+    with pytest.raises(ValueError, match="Length of the given data"):
+        LevelObject(bytearray(5))
+
+
 @given(data=strategies.binary(min_size=3, max_size=4).filter(lambda data: valid_y_value_in_byte(data[0])))
 def test_object_construction(data):
     LevelObject(data)

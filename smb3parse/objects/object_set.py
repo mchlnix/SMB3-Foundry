@@ -172,7 +172,7 @@ _object_length_lookup_table = [
 ]
 
 _object_set_to_object_length_lookup_table = {
-    00: _object_length_lookup_table[0],
+    0: _object_length_lookup_table[0],
     1: _object_length_lookup_table[0],
     7: _object_length_lookup_table[0],
     15: _object_length_lookup_table[0],

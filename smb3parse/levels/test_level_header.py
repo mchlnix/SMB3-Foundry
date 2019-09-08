@@ -1,6 +1,12 @@
+import pytest
 from hypothesis import given, strategies
 
-from smb3parse.levels.level import DEFAULT_VERTICAL_WIDTH, is_valid_level_length, DEFAULT_HORIZONTAL_HEIGHT
+from smb3parse.levels.level import (
+    DEFAULT_VERTICAL_WIDTH,
+    is_valid_level_length,
+    DEFAULT_HORIZONTAL_HEIGHT,
+    HEADER_LENGTH,
+)
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.objects.object_set import MIN_OBJECT_SET, MAX_OBJECT_SET, is_valid_object_set_number
 
@@ -32,6 +38,14 @@ def test_construction(header_bytes, object_set_number):
     assert level_header.graphic_set_index in range(32)
 
     assert is_valid_object_set_number(level_header.jump_object_set_number)
+
+
+def test_value_error():
+    with pytest.raises(ValueError, match="A level header is made up of"):
+        LevelHeader(bytearray(HEADER_LENGTH + 1), MIN_OBJECT_SET)
+
+    with pytest.raises(ValueError, match="Object set number"):
+        LevelHeader(bytearray(HEADER_LENGTH), MAX_OBJECT_SET + 1)
 
 
 def test_level_1_1():

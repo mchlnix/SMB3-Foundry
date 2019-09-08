@@ -9,3 +9,4 @@ SMB3.nes
 __pycache__
 build/
 dist/
+htmlcov/
