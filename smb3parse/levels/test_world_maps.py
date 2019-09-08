@@ -21,7 +21,7 @@ def test_list_all_world_maps_address(rom):
 
 def test_list_all_world_maps_object_set(rom):
     for world_map in get_all_world_maps(rom.rom_data):
-        assert world_map.object_set._object_set_number == WORLD_MAP_OBJECT_SET
+        assert world_map.object_set.number == WORLD_MAP_OBJECT_SET
 
 
 def test_list_all_world_maps_height(rom):

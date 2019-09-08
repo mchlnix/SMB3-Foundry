@@ -1,6 +1,7 @@
 venv
 .pytest-cache
 .hypothesis
+.coverage
 .idea
 .mypy_cache
 *.tags

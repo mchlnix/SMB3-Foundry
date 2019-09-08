@@ -21,7 +21,7 @@ def check_object_for_0s(level_object: LevelObject, attribute_name, expected_valu
         if attribute != attribute_name:
             assert getattr(level_object, attribute) == 0
         else:
-            assert getattr(level_object, attribute_name) == expected_value
+            assert getattr(level_object, attribute_name) == expected_value, expected_value
 
     if level_object.has_additional_length:
         if attribute_name == "additional_length":
@@ -44,10 +44,13 @@ def all_zero_4_byte_object_data():
     return bytearray([0x00, 0x00, 0x00, 0x00])
 
 
-@pytest.mark.parametrize("expected_domain", list(range(MIN_DOMAIN, MAX_DOMAIN + 1)))
+@given(expected_domain=strategies.integers(min_value=MIN_DOMAIN, max_value=MAX_DOMAIN))
 def test_parsing_domain(all_zero_3_byte_object_data, all_zero_4_byte_object_data, expected_domain):
     # GIVEN data for 3 and 4 byte objects, where everything is set to 0 and an expected domain value
+    all_zero_3_byte_object_data[0] &= 0b0001_1111
     all_zero_3_byte_object_data[0] |= expected_domain << 5
+
+    all_zero_4_byte_object_data[0] &= 0b0001_1111
     all_zero_4_byte_object_data[0] |= expected_domain << 5
 
     # WHEN LevelObjects are created with the modified data
@@ -59,7 +62,7 @@ def test_parsing_domain(all_zero_3_byte_object_data, all_zero_4_byte_object_data
     check_object_for_0s(level_object_4_byte, "domain", expected_domain)
 
 
-@pytest.mark.parametrize("expected_y", list(range(MIN_Y_VALUE, MAX_Y_VALUE + 1)))
+@given(expected_y=strategies.integers(min_value=MIN_Y_VALUE, max_value=MAX_Y_VALUE))
 def test_parsing_y(all_zero_3_byte_object_data, all_zero_4_byte_object_data, expected_y):
     # GIVEN data for 3 and 4 byte objects, where everything is set to 0 and an expected y value
     all_zero_3_byte_object_data[0] &= 0b1110_0000
@@ -77,7 +80,7 @@ def test_parsing_y(all_zero_3_byte_object_data, all_zero_4_byte_object_data, exp
     check_object_for_0s(level_object_4_byte, "y", expected_y)
 
 
-@pytest.mark.parametrize("expected_id", list(range(MIN_ID_VALUE, MAX_ID_VALUE + 1)))
+@given(expected_id=strategies.integers(min_value=MIN_ID_VALUE, max_value=MAX_ID_VALUE))
 def test_parsing_id(all_zero_3_byte_object_data, all_zero_4_byte_object_data, expected_id):
     # GIVEN data for 3 and 4 byte objects, where everything is set to 0 and an expected id value
     all_zero_3_byte_object_data[1] = expected_id
@@ -92,7 +95,7 @@ def test_parsing_id(all_zero_3_byte_object_data, all_zero_4_byte_object_data, ex
     check_object_for_0s(level_object_4_byte, "id", expected_id)
 
 
-@pytest.mark.parametrize("expected_x", list(range(MIN_X_VALUE, MAX_X_VALUE + 1)))
+@given(expected_x=strategies.integers(min_value=MIN_X_VALUE, max_value=MAX_X_VALUE))
 def test_parsing_x(all_zero_3_byte_object_data, all_zero_4_byte_object_data, expected_x):
     # GIVEN data for 3 and 4 byte objects, where everything is set to 0 and an expected x value
     all_zero_3_byte_object_data[2] = expected_x
