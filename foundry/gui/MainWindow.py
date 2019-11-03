@@ -258,6 +258,9 @@ class SMB3Foundry(QMainWindow):
 
         self.level_selector = LevelSelector(parent=self)
 
+        self.block_viewer = None
+        self.object_viewer = None
+
         return
 
         self.Bind(wx.EVT_MENU, self.on_open_rom, id=ID_OPEN_ROM)
@@ -278,9 +281,6 @@ class SMB3Foundry(QMainWindow):
         self.Bind(wx.EVT_MENU, self.on_menu)
 
         self.Center()
-
-        self.block_viewer = None
-        self.object_viewer = None
         self.header_editor = None
 
         horiz_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -743,8 +743,6 @@ class SMB3Foundry(QMainWindow):
             )
 
     def on_block_viewer(self, _):
-        self.block_viewer = None
-
         if self.block_viewer is None:
             self.block_viewer = BlockViewer(parent=self)
 
@@ -754,8 +752,7 @@ class SMB3Foundry(QMainWindow):
         if self.object_viewer is None:
             self.object_viewer = ObjectViewer(parent=self)
 
-        self.object_viewer.Show()
-        self.object_viewer.Raise()
+        self.object_viewer.show()
 
     def on_header_editor(self, _):
         if self.header_editor is None:

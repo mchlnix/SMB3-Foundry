@@ -15,6 +15,7 @@ class BlockViewer(QMainWindow):
     def __init__(self, parent):
         super(BlockViewer, self).__init__(parent)
         self.setWindowTitle("Block Viewer")
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.object_set = 0
         self.sprite_bank = BlockBank(parent=self, object_set=self.object_set)

@@ -1,8 +1,11 @@
-import wx
+from PySide2.QtCore import QSize, QPoint
+from PySide2.QtGui import Qt, QKeyEvent, QPaintEvent, QPainter
+from PySide2.QtWidgets import QMainWindow, QToolBar, QComboBox, QStatusBar, QWidget, QLayout
 
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from gui.LevelSelector import OBJECT_SET_ITEMS
+from gui.Spinner import Spinner
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2
@@ -15,142 +18,119 @@ MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
 
 
-class ObjectViewer(wx.Frame):
+class ObjectViewer(QMainWindow):
     def __init__(self, parent):
-        super(ObjectViewer, self).__init__(
-            parent,
-            title="Object Viewer",
-            style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
-        )
+        super(ObjectViewer, self).__init__(parent)
 
-        self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
-        self.spin_domain.SetBase(16)
-        self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=MAX_TYPE)
-        self.spin_type.SetBase(16)
-        self.spin_length = wx.SpinCtrl(self, ID_SPIN_LENGTH, max=MAX_LENGTH)
-        self.spin_length.SetBase(16)
-        self.spin_length.Enable(False)
+        self.setWindowTitle("Object Viewer")
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
-        spin_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.spin_domain = Spinner(self, MAX_DOMAIN)
+        self.spin_domain.valueChanged.connect(self.on_spin)
 
-        spin_sizer.Add(self.spin_domain)
-        spin_sizer.Add(self.spin_type)
-        spin_sizer.Add(self.spin_length)
+        self.spin_type = Spinner(self, MAX_TYPE)
+        self.spin_type.valueChanged.connect(self.on_spin)
 
-        self.object_set_dropdown = wx.ComboBox(
-            parent=self, id=ID_OBJECT_SET_DROPDOWN, choices=OBJECT_SET_ITEMS[1:]
-        )
-        self.object_set_dropdown.SetSelection(0)
+        self.spin_length = Spinner(self, MAX_LENGTH)
+        self.spin_length.setDisabled(True)
+        self.spin_length.valueChanged.connect(self.on_spin)
 
-        self.graphic_set_dropdown = wx.ComboBox(
-            parent=self,
-            id=ID_GFX_SET_DROPDOWN,
-            choices=[f"Graphics Set {gfx_set}" for gfx_set in range(32)],
-        )
-        self.graphic_set_dropdown.SetSelection(1)
+        self._toolbar = QToolBar(self)
 
-        spin_sizer.Add(self.object_set_dropdown)
-        spin_sizer.Add(self.graphic_set_dropdown)
+        self._toolbar.addWidget(self.spin_domain)
+        self._toolbar.addWidget(self.spin_type)
+        self._toolbar.addWidget(self.spin_length)
+
+        self.object_set_dropdown = QComboBox(self._toolbar)
+        self.object_set_dropdown.addItems(OBJECT_SET_ITEMS[1:])
+        self.object_set_dropdown.setCurrentIndex(0)
+
+        self.graphic_set_dropdown = QComboBox(self._toolbar)
+        self.graphic_set_dropdown.addItems([f"Graphics Set {gfx_set}" for gfx_set in range(32)])
+        self.graphic_set_dropdown.setCurrentIndex(1)
+
+        self.object_set_dropdown.currentIndexChanged.connect(self.on_object_set)
+        self.graphic_set_dropdown.currentIndexChanged.connect(self.on_graphic_set)
+
+        self._toolbar.addWidget(self.object_set_dropdown)
+        self._toolbar.addWidget(self.graphic_set_dropdown)
+
+        self.addToolBar(self._toolbar)
 
         self.object_set = 1
 
         self.drawing_area = ObjectDrawArea(self, self.object_set)
 
-        self.status_bar = wx.StatusBar(parent=self)
-        self.status_bar.SetStatusText(self.drawing_area.current_object.description)
+        self.status_bar = QStatusBar(parent=self)
+        self.status_bar.showMessage(self.drawing_area.current_object.description)
 
-        vert_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.setStatusBar(self.status_bar)
 
-        vert_sizer.Add(spin_sizer, flag=wx.EXPAND)
-        vert_sizer.Add(self.drawing_area, proportion=1, flag=wx.EXPAND)
-        vert_sizer.Add(self.status_bar, flag=wx.EXPAND)
+        self.setCentralWidget(self.drawing_area)
 
-        self.SetSizer(vert_sizer)
+        self.drawing_area.update()
 
-        self.drawing_area.Refresh()
+        self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
-        self.resize()
+        return
 
-        self.Bind(wx.EVT_COMBOBOX, self.on_combo)
-        self.Bind(wx.EVT_CLOSE, self.on_exit)
-        self.Bind(wx.EVT_SIZE, self.resize)
-        self.Bind(wx.EVT_SPINCTRL, self.on_spin)
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
-
-    def on_key_press(self, event):
-        key = event.GetKeyCode()
-
-        if key == wx.WXK_ESCAPE:
+    def keyPressEvent(self, event: QKeyEvent):
+        if event.key() == Qt.Key_Escape:
             self.on_exit(None)
 
-    def on_combo(self, event):
-        dropdown_id = event.GetId()
+    def on_object_set(self):
+        self.object_set = self.object_set_dropdown.currentIndex() + 1
 
-        if dropdown_id == ID_OBJECT_SET_DROPDOWN:
-            self.object_set = self.object_set_dropdown.GetSelection() + 1
-            gfx_set = self.object_set
+        gfx_set = self.object_set
 
-            self.graphic_set_dropdown.SetSelection(gfx_set)
+        self.graphic_set_dropdown.setCurrentIndex(gfx_set)
 
-            self.drawing_area.change_object_set(self.object_set)
-        elif dropdown_id == ID_GFX_SET_DROPDOWN:
-            gfx_set = self.graphic_set_dropdown.GetSelection()
-        else:
-            return
+        self.drawing_area.change_object_set(self.object_set)
 
         self.drawing_area.change_graphic_set(gfx_set)
-        self.status_bar.SetStatusText(self.drawing_area.current_object.description)
+        self.status_bar.showMessage(self.drawing_area.current_object.description)
 
-    def resize(self, _=None):
-        self.SetMinSize(wx.Size(1, 1))
-        self.Layout()
-        self.Fit()
-        self.SetMinSize(self.GetSize())
+    def on_graphic_set(self):
+        gfx_set = self.graphic_set_dropdown.currentIndex()
 
-    def on_spin(self, event):
-        _id = event.GetId()
+        self.drawing_area.change_graphic_set(gfx_set)
+        self.status_bar.showMessage(self.drawing_area.current_object.description)
 
+    def on_spin(self, _):
         object_data = bytearray(4)
 
-        object_data[0] = self.spin_domain.GetValue() << 5
+        object_data[0] = self.spin_domain.value() << 5
         object_data[1] = 0
-        object_data[2] = self.spin_type.GetValue()
-        object_data[3] = self.spin_length.GetValue()
+        object_data[2] = self.spin_type.value()
+        object_data[3] = self.spin_length.value()
 
         self.drawing_area.update_object(object_data)
 
-        if _id != ID_SPIN_LENGTH:
-            if self.drawing_area.current_object.is_4byte:
-                self.spin_length.Enable(True)
-            else:
-                self.spin_length.SetValue(0)
-                self.spin_length.Enable(False)
+        if self.drawing_area.current_object.is_4byte:
+            self.spin_length.setEnabled(True)
+        else:
+            self.spin_length.setValue(0)
+            self.spin_length.setEnabled(False)
 
-        self.drawing_area.Refresh()
+        self.drawing_area.update()
 
-        self.status_bar.SetStatusText(self.drawing_area.current_object.description)
-
-        self.resize()
+        self.status_bar.showMessage(self.drawing_area.current_object.description)
 
     def on_exit(self, _):
         self.Hide()
 
 
-class ObjectDrawArea(wx.Panel):
+class ObjectDrawArea(QWidget):
     def __init__(self, parent, object_set, graphic_set=1, palette_index=0):
         super(ObjectDrawArea, self).__init__(parent)
 
-        self.object_factory = LevelObjectFactory(
-            object_set, graphic_set, palette_index, [], False, size_minimal=True
-        )
+        self.object_factory = LevelObjectFactory(object_set, graphic_set, palette_index, [], False, size_minimal=True)
 
         self.current_object = None
 
         self.update_object([0x0, 0x0, 0x0])
 
-        self.resize()
-
-        self.Bind(wx.EVT_PAINT, self.draw)
+        self.resize(QSize())
 
     def change_object_set(self, object_set):
         self.object_factory.set_object_set(object_set)
@@ -161,14 +141,10 @@ class ObjectDrawArea(wx.Panel):
         self.object_factory.set_graphic_set(graphic_set)
         self.update_object()
 
-    def resize(self):
-        self.SetMinSize(
-            wx.Size(
-                self.current_object.rendered_width * Block.WIDTH,
-                self.current_object.rendered_height * Block.HEIGHT,
-            )
+    def resize(self, size: QSize):
+        self.setMinimumSize(
+            QSize(self.current_object.rendered_width * Block.WIDTH, self.current_object.rendered_height * Block.HEIGHT)
         )
-        self.Fit()
 
     def update_object(self, object_data=None):
         if object_data is None:
@@ -176,17 +152,16 @@ class ObjectDrawArea(wx.Panel):
 
         self.current_object = self.object_factory.from_data(object_data, 0)
 
-        self.resize()
-        self.Refresh()
+        self.resize(QSize())
+        self.update()
 
-    def draw(self, _):
-        dc = wx.BufferedPaintDC(self)
+    def paintEvent(self, event: QPaintEvent):
+        painter = QPainter(self)
 
-        dc.Clear()
-
-        dc.SetDeviceOrigin(
-            -Block.WIDTH * self.current_object.rendered_base_x,
-            -Block.HEIGHT * self.current_object.rendered_base_y,
+        painter.translate(
+            QPoint(
+                -Block.WIDTH * self.current_object.rendered_base_x, -Block.HEIGHT * self.current_object.rendered_base_y
+            )
         )
 
-        self.current_object.draw(dc, Block.WIDTH, transparent=True)
+        self.current_object.draw(painter, Block.WIDTH, transparent=True)
