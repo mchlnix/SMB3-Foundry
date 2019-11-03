@@ -1,20 +1,14 @@
 from math import ceil
 
 from PySide2.QtCore import QSize, QRect, QPoint, QObject
-from PySide2.QtGui import Qt, QKeyEvent, QCloseEvent, QPaintEvent, QPainter, QColor, QBrush, QResizeEvent
-from PySide2.QtWidgets import QStyle, QComboBox, QMainWindow, QToolBar, QWidget, QLayout
+from PySide2.QtGui import Qt, QKeyEvent, QCloseEvent, QPaintEvent, QPainter, QColor, QBrush, QResizeEvent, QMouseEvent
+from PySide2.QtWidgets import QStyle, QComboBox, QMainWindow, QToolBar, QWidget, QLayout, QStatusBar
 
 from game.File import ROM
 from game.gfx.Palette import get_bg_color_for, load_palette
 from game.gfx.PatternTable import PatternTable
 from game.gfx.drawable.Block import Block
 from gui.LevelSelector import OBJECT_SET_ITEMS
-
-ID_ZOOM_IN = 10001
-ID_ZOOM_OUT = 10002
-ID_PREV_BANK = 10003
-ID_NEXT_BANK = 10004
-ID_BANK_DROPDOWN = 10005
 
 
 class BlockViewer(QMainWindow):
@@ -29,8 +23,10 @@ class BlockViewer(QMainWindow):
 
         self._toolbar = QToolBar(self)
 
-        self._toolbar.addAction(self.style().standardIcon(QStyle.SP_ArrowLeft), "Previous object set")
-        self._toolbar.addAction(self.style().standardIcon(QStyle.SP_ArrowRight), "Next object set")
+        prev_os_action = self._toolbar.addAction(self.style().standardIcon(QStyle.SP_ArrowLeft), "Previous object set")
+        prev_os_action.triggered.connect(self.prev_object_set)
+        next_os_action = self._toolbar.addAction(self.style().standardIcon(QStyle.SP_ArrowRight), "Next object set")
+        next_os_action.triggered.connect(self.next_object_set)
 
         assert isinstance(self.sprite_bank, QObject)
 
@@ -44,32 +40,45 @@ class BlockViewer(QMainWindow):
         self.bank_dropdown.addItems(OBJECT_SET_ITEMS)
         self.bank_dropdown.setCurrentIndex(0)
 
+        self.bank_dropdown.currentIndexChanged.connect(self.on_combo)
+
         self._toolbar.addWidget(self.bank_dropdown)
 
         self.addToolBar(self._toolbar)
 
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
+        self.setStatusBar(QStatusBar(self))
+
         return
 
-        self.Bind(wx.EVT_COMBOBOX, self.on_combo)
-        self.Bind(wx.EVT_CLOSE, self.on_exit)
-        self.Bind(wx.EVT_SIZE, self.on_resize)
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
+    def prev_object_set(self):
+        self.object_set = max(self.object_set - 1, 0)
 
-        self.SetStatusBar(wx.StatusBar(self))
-        self.GetStatusBar().SetFieldsCount(3)
+        self._after_object_set()
+
+    def next_object_set(self):
+        self.object_set = min(self.object_set + 1, 0xE)
+
+        self._after_object_set()
+
+    def _after_object_set(self):
+        self.sprite_bank.object_set = self.object_set
+
+        self.bank_dropdown.setCurrentIndex(self.object_set)
+
+        self.sprite_bank.update()
 
     def keyPressEvent(self, event: QKeyEvent):
         if event.key() == Qt.Key_Escape:
             self.hide()
 
     def on_combo(self, _):
-        self.object_set = self.bank_dropdown.GetSelection()
+        self.object_set = self.bank_dropdown.currentIndex()
 
         self.sprite_bank.object_set = self.object_set
 
-        self.sprite_bank.Refresh()
+        self.sprite_bank.update()
 
     def closeEvent(self, event: QCloseEvent):
         self.hide()
@@ -77,6 +86,9 @@ class BlockViewer(QMainWindow):
 
 class BlockBank(QWidget):
     def __init__(self, parent, object_set=0, zoom=2):
+        super(BlockBank, self).__init__(parent)
+        self.setMouseTracking(True)
+
         self.sprites = 256
         self.sprites_horiz = 16
         self.sprites_vert = ceil(self.sprites / self.sprites_horiz)
@@ -86,16 +98,9 @@ class BlockBank(QWidget):
 
         self._size = QSize(self.sprites_horiz * Block.WIDTH * self.zoom, self.sprites_vert * Block.HEIGHT * self.zoom)
 
-        super(BlockBank, self).__init__(parent)
-
         self.setFixedSize(self._size)
 
         return
-
-        self.Bind(wx.EVT_PAINT, self.on_paint)
-        self.Bind(wx.EVT_MOTION, self.on_mouse_motion)
-
-        self.SetSize(self._size)
 
     def resizeEvent(self, event: QResizeEvent):
         self.update()
@@ -113,8 +118,8 @@ class BlockBank(QWidget):
 
         self.setFixedSize(new_size)
 
-    def on_mouse_motion(self, event):
-        x, y = event.GetPosition().Get()
+    def mouseMoveEvent(self, event: QMouseEvent):
+        x, y = event.pos().toTuple()
 
         block_length = Block.WIDTH * self.zoom
 
@@ -124,11 +129,9 @@ class BlockBank(QWidget):
         dec_index = row * self.sprites_horiz + column
         hex_index = hex(dec_index).upper().replace("X", "x")
 
-        self.GetParent().SetStatusText(f"Row: {row}", 0)
-        self.GetParent().SetStatusText(f"Column: {column}", 1)
-        self.GetParent().SetStatusText(f"Index: {dec_index} / {hex_index}", 2)
+        status_message = f"Row: {row}, Column: {column}, Index: {dec_index} / {hex_index}"
 
-        event.Skip()
+        self.parent().statusBar().showMessage(status_message)
 
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
