@@ -200,8 +200,10 @@ class SMB3Foundry(QMainWindow):
 
         object_menu = QMenu("Objects")
 
-        object_menu.addAction("&View Blocks")
-        object_menu.addAction("&View Objects")
+        view_blocks_action = object_menu.addAction("&View Blocks")
+        view_blocks_action.triggered.connect(self.on_block_viewer)
+        view_objects_action = object_menu.addAction("&View Objects")
+        view_objects_action.triggered.connect(self.on_object_viewer)
         """
         object_menu.AppendSeparator()
         object_menu.Append(ID_CLONE_OBJECT_ENEMY, "&Clone Object/Enemy", "")
@@ -222,9 +224,7 @@ class SMB3Foundry(QMainWindow):
         self._show_jump_action.setCheckable(True)
         self._show_grid_action = view_menu.addAction("&Grid lines")
         self._show_grid_action.setCheckable(True)
-        self._show_transparent_blocks_action = view_menu.addAction(
-            "&Block Transparency"
-        )
+        self._show_transparent_blocks_action = view_menu.addAction("&Block Transparency")
         self._show_transparent_blocks_action.setCheckable(True)
         self._show_transparent_blocks_action.setChecked(True)
         view_menu.addSeparator()
@@ -314,16 +314,9 @@ class SMB3Foundry(QMainWindow):
 
         self.object_dropdown = ObjectDropdown(self)
 
-        vert_right.Add(
-            self.object_dropdown, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND
-        )
+        vert_right.Add(self.object_dropdown, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND)
 
-        vert_right.Add(
-            self.object_list,
-            proportion=1,
-            border=5,
-            flag=wx.BOTTOM | wx.LEFT | wx.EXPAND,
-        )
+        vert_right.Add(self.object_list, proportion=1, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND)
 
         panel = wx.CollapsiblePane(self, wx.ID_ANY, "Jumps")
 
@@ -434,9 +427,7 @@ class SMB3Foundry(QMainWindow):
             return
 
         # otherwise ask the user what new file to open
-        pathname = QFileDialog.getOpenFileName(
-            self, caption="Open ROM", filter=ROM_FILE_FILTER
-        )
+        pathname = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
 
         if pathname is None:
             return False
@@ -459,9 +450,7 @@ class SMB3Foundry(QMainWindow):
             return
 
         # otherwise ask the user what new file to open
-        pathname = QFileDialog.getOpenFileName(
-            self, caption="Open M3L file", filter=M3L_FILE_FILTER
-        )
+        pathname = QFileDialog.getOpenFileName(self, caption="Open M3L file", filter=M3L_FILE_FILTER)
 
         if pathname is None:
             return False
@@ -530,8 +519,7 @@ class SMB3Foundry(QMainWindow):
 
             if answer == QMessageBox.OK:
                 self.level_view.level.attach_to_rom(
-                    self.level_selector.object_data_offset,
-                    self.level_selector.enemy_data_offset,
+                    self.level_selector.object_data_offset, self.level_selector.enemy_data_offset
                 )
 
                 if is_save_as:
@@ -542,9 +530,7 @@ class SMB3Foundry(QMainWindow):
                 return
 
         if is_save_as:
-            pathname = QFileDialog.getSaveFileName(
-                self, caption="Save ROM as", filter=ROM_FILE_FILTER
-            )
+            pathname = QFileDialog.getSaveFileName(self, caption="Save ROM as", filter=ROM_FILE_FILTER)
             if pathname is None:
                 return  # the user changed their mind
         else:
@@ -680,9 +666,7 @@ class SMB3Foundry(QMainWindow):
 
     @undoable
     def _paste_objects(self, x=None, y=None):
-        self.level_view.paste_objects_at(
-            x, y, paste_data=self.context_menu.get_copied_objects()
-        )
+        self.level_view.paste_objects_at(x, y, paste_data=self.context_menu.get_copied_objects())
 
         self.object_list.update()
 
@@ -759,11 +743,12 @@ class SMB3Foundry(QMainWindow):
             )
 
     def on_block_viewer(self, _):
+        self.block_viewer = None
+
         if self.block_viewer is None:
             self.block_viewer = BlockViewer(parent=self)
 
-        self.block_viewer.Show()
-        self.block_viewer.Raise()
+        self.block_viewer.show()
 
     def on_object_viewer(self, _):
         if self.object_viewer is None:
@@ -774,31 +759,17 @@ class SMB3Foundry(QMainWindow):
 
     def on_header_editor(self, _):
         if self.header_editor is None:
-            self.header_editor = HeaderEditor(
-                parent=self, level_view_ref=self.level_view
-            )
+            self.header_editor = HeaderEditor(parent=self, level_view_ref=self.level_view)
 
         self.header_editor.Show()
         self.header_editor.Raise()
 
-    def update_level(
-        self,
-        world: int,
-        level: int,
-        object_data_offset: int,
-        enemy_data_offset: int,
-        object_set: int,
-    ):
+    def update_level(self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set: int):
         try:
-            self.level_view.load_level(
-                world, level, object_data_offset, enemy_data_offset, object_set
-            )
+            self.level_view.load_level(world, level, object_data_offset, enemy_data_offset, object_set)
         except IndexError:
             wx.MessageBox(
-                "Failed loading level. The level offsets don't match.",
-                "Please confirm",
-                wx.ICON_ERROR | wx.OK,
-                self,
+                "Failed loading level. The level offsets don't match.", "Please confirm", wx.ICON_ERROR | wx.OK, self
             )
 
             return
@@ -827,9 +798,7 @@ class SMB3Foundry(QMainWindow):
             self.jump_list.Clear()
         else:
             self.object_dropdown.Enable(True)
-            self.object_dropdown.set_object_factory(
-                self.level_view.level.object_factory
-            )
+            self.object_dropdown.set_object_factory(self.level_view.level.object_factory)
 
             self.jump_list.Enable(True)
 
@@ -986,9 +955,7 @@ class SMB3Foundry(QMainWindow):
 
         if obj is None and index is None:
             index = -1
-            self.on_objects_selected(
-                ObjectListUpdateEvent(id=wx.ID_ANY, objects=[], indexes=[])
-            )
+            self.on_objects_selected(ObjectListUpdateEvent(id=wx.ID_ANY, objects=[], indexes=[]))
 
         if index is None:
             # assume click on levelview
@@ -1019,10 +986,7 @@ class SMB3Foundry(QMainWindow):
                     self.spinner_panel.enable_length(False)
 
             if should_scroll:
-                visible_blocks = (
-                    self.scroll_panel.GetClientSize()[0]
-                    // self.scroll_panel.GetScrollPixelsPerUnit()[0]
-                )
+                visible_blocks = self.scroll_panel.GetClientSize()[0] // self.scroll_panel.GetScrollPixelsPerUnit()[0]
                 scroll_offset = visible_blocks // 2
 
                 self.scroll_panel.Scroll(obj.x_position - scroll_offset, obj.y_position)

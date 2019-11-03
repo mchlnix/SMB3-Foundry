@@ -1,6 +1,10 @@
 import wx
 from math import ceil
 
+from PySide2.QtCore import QSize, QRect, QPoint
+from PySide2.QtGui import Qt, QIcon, QKeyEvent, QCloseEvent, QPaintEvent, QPainter, QColor, QBrush
+from PySide2.QtWidgets import QStyle, QComboBox, QMainWindow, QToolBar, QVBoxLayout, QWidget, QFrame
+
 from game.File import ROM
 from game.gfx.Palette import get_bg_color_for, load_palette
 from game.gfx.PatternTable import PatternTable
@@ -14,57 +18,34 @@ ID_NEXT_BANK = 10004
 ID_BANK_DROPDOWN = 10005
 
 
-class BlockViewer(wx.Frame):
-    def __init__(self, *args, **kwargs):
-        super(BlockViewer, self).__init__(
-            *args,
-            title="Block Viewer",
-            style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
-            **kwargs,
-        )
+class BlockViewer(QMainWindow):
+    def __init__(self, parent):
+        super(BlockViewer, self).__init__(parent)
+        self.setWindowTitle("Block Viewer")
 
-        self.toolbar = self.CreateToolBar()
+        self.toolbar = QToolBar(self)
 
-        self.toolbar.AddTool(
-            ID_PREV_BANK,
-            "",
-            wx.ArtProvider.GetBitmap(id=wx.ART_GO_BACK, client=wx.ART_TOOLBAR),
-        )
-        self.toolbar.AddTool(
-            ID_NEXT_BANK,
-            "",
-            wx.ArtProvider.GetBitmap(id=wx.ART_GO_FORWARD, client=wx.ART_TOOLBAR),
-        )
+        self.toolbar.addAction(self.style().standardIcon(QStyle.SP_ArrowLeft), "Previous object set")
+        self.toolbar.addAction(self.style().standardIcon(QStyle.SP_ArrowRight), "Next object set")
 
-        self.toolbar.AddTool(
-            ID_ZOOM_OUT,
-            "",
-            wx.ArtProvider.GetBitmap(id=wx.ART_MINUS, client=wx.ART_TOOLBAR),
-        )
-        self.toolbar.AddTool(
-            ID_ZOOM_IN,
-            "",
-            wx.ArtProvider.GetBitmap(id=wx.ART_PLUS, client=wx.ART_TOOLBAR),
-        )
+        self.toolbar.addAction("-")
+        self.toolbar.addAction("+")
 
-        self.bank_dropdown = wx.ComboBox(
-            parent=self.toolbar, id=ID_BANK_DROPDOWN, choices=OBJECT_SET_ITEMS
-        )
-        self.bank_dropdown.SetSelection(0)
+        self.bank_dropdown = QComboBox(parent=self.toolbar)
+        self.bank_dropdown.addItems(OBJECT_SET_ITEMS)
+        self.bank_dropdown.setCurrentIndex(0)
 
-        self.toolbar.AddControl(self.bank_dropdown)
+        self.toolbar.addWidget(self.bank_dropdown)
 
-        self.toolbar.Realize()
+        self.addToolBar(self.toolbar)
 
         self.object_set = 0
 
-        self.sprite_bank = BlockBank(object_set=self.object_set, parent=self)
+        self.sprite_bank = BlockBank(parent=self, object_set=self.object_set)
 
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.sprite_bank, flag=wx.EXPAND)
+        self.setCentralWidget(self.sprite_bank)
 
-        self.SetSizer(self.sizer)
-        self.sizer.Fit(self)
+        return
 
         self.Bind(wx.EVT_TOOL, self.on_tool_click)
         self.Bind(wx.EVT_COMBOBOX, self.on_combo)
@@ -75,11 +56,9 @@ class BlockViewer(wx.Frame):
         self.SetStatusBar(wx.StatusBar(self))
         self.GetStatusBar().SetFieldsCount(3)
 
-    def on_key_press(self, event):
-        key = event.GetKeyCode()
-
-        if key == wx.WXK_ESCAPE:
-            self.on_exit(None)
+    def keyPressEvent(self, event: QKeyEvent):
+        if event.key() == Qt.Key_Escape:
+            self.hide()
 
     def on_tool_click(self, event):
         tool_id = event.GetId()
@@ -107,15 +86,15 @@ class BlockViewer(wx.Frame):
         self.sprite_bank.Refresh()
 
     def on_resize(self, _):
-        self.sizer.SetMinSize(self.sprite_bank.GetSize())
-        self.sizer.Fit(self)
+        self.layout.SetMinSize(self.sprite_bank.GetSize())
+        self.layout.Fit(self)
 
-    def on_exit(self, _):
-        self.Hide()
+    def closeEvent(self, event: QCloseEvent):
+        self.hide()
 
 
-class BlockBank(wx.Panel):
-    def __init__(self, object_set=0, zoom=2, *args, **kwargs):
+class BlockBank(QWidget):
+    def __init__(self, parent, object_set=0, zoom=2):
         self.sprites = 256
         self.sprites_horiz = 16
         self.sprites_vert = ceil(self.sprites / self.sprites_horiz)
@@ -123,14 +102,13 @@ class BlockBank(wx.Panel):
         self.object_set = object_set
         self.zoom = zoom
 
-        self.size = wx.Size(
-            self.sprites_horiz * Block.WIDTH * self.zoom,
-            self.sprites_vert * Block.HEIGHT * self.zoom,
-        )
+        self.size = QSize(self.sprites_horiz * Block.WIDTH * self.zoom, self.sprites_vert * Block.HEIGHT * self.zoom)
 
-        super(BlockBank, self).__init__(size=self.size, *args, **kwargs)
+        super(BlockBank, self).__init__(parent)
 
-        self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
+        self.setFixedSize(self.size)
+
+        return
 
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_PAINT, self.on_paint)
@@ -152,10 +130,7 @@ class BlockBank(wx.Panel):
 
     def _after_zoom(self):
         self.SetSize(
-            wx.Size(
-                self.sprites_horiz * Block.WIDTH * self.zoom,
-                self.sprites_vert * Block.HEIGHT * self.zoom,
-            )
+            wx.Size(self.sprites_horiz * Block.WIDTH * self.zoom, self.sprites_vert * Block.HEIGHT * self.zoom)
         )
 
         self.GetParent().on_resize(None)
@@ -177,15 +152,13 @@ class BlockBank(wx.Panel):
 
         event.Skip()
 
-    def on_paint(self, event):
-        event.Skip()
+    def paintEvent(self, event: QPaintEvent):
+        painter = QPainter(self)
 
-        dc = wx.BufferedPaintDC(self)
+        bg_color = QColor(*get_bg_color_for(self.object_set, 0))
+        painter.setBrush(QBrush(bg_color))
 
-        bg_color = get_bg_color_for(self.object_set, 0)
-        dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
-
-        dc.Clear()
+        painter.drawRect(QRect(QPoint(0, 0), self.size))
 
         pattern_table = PatternTable(self.object_set)
         palette = load_palette(self.object_set, 0)
@@ -201,6 +174,6 @@ class BlockBank(wx.Panel):
             x = (i % horizontal) * block_length
             y = (i // horizontal) * block_length
 
-            block.draw(dc, x, y, block_length)
+            block.draw(painter, x, y, block_length)
 
         return

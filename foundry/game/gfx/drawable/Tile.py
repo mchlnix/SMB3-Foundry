@@ -1,11 +1,9 @@
-import wx
+from PySide2.QtGui import QImage
 
 from game.gfx.Palette import NESPalette
 from game.gfx.drawable import bit_reverse, MASK_COLOR
 
-PIXEL_OFFSET = (
-    8
-)  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
+PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 
 BACKGROUND_COLOR_INDEX = 0
 
@@ -18,9 +16,7 @@ class Tile:
     PIXEL_COUNT = WIDTH * HEIGHT
     SIZE = 2 * PIXEL_COUNT // 8  # 1 pixel is defined by 2 bits
 
-    def __init__(
-        self, object_index, palette_group, palette_index, pattern_table, mirrored=False
-    ):
+    def __init__(self, object_index, palette_group, palette_index, pattern_table, mirrored=False):
         start = object_index * Tile.SIZE
 
         self.cached_tiles = dict()
@@ -65,10 +61,9 @@ class Tile:
         if tile_length not in self.cached_tiles.keys():
             width = height = tile_length
 
-            image = wx.Image()
-            image.Create(Tile.WIDTH, Tile.HEIGHT, self.pixels)
+            image = QImage(self.pixels, self.WIDTH, self.HEIGHT, QImage.Format_RGB888)
 
-            image.Rescale(width, height)
+            image = image.scaled(width, height)
 
             self.cached_tiles[tile_length] = image
 

@@ -1,6 +1,7 @@
 from typing import List
 
-import wx
+from PySide2.QtCore import QPoint
+from PySide2.QtGui import QImage, QPainter, Qt, QColor
 
 from game.gfx.Palette import NESPalette
 from game.gfx.PatternTable import PatternTable
@@ -45,45 +46,39 @@ class Block:
         self.ld_tile = Tile(ld, palette_group, palette_index, pattern_table)
 
         if mirrored:
-            self.ru_tile = Tile(
-                lu, palette_group, palette_index, pattern_table, mirrored=True
-            )
-            self.rd_tile = Tile(
-                ld, palette_group, palette_index, pattern_table, mirrored=True
-            )
+            self.ru_tile = Tile(lu, palette_group, palette_index, pattern_table, mirrored=True)
+            self.rd_tile = Tile(ld, palette_group, palette_index, pattern_table, mirrored=True)
         else:
             self.ru_tile = Tile(ru, palette_group, palette_index, pattern_table)
             self.rd_tile = Tile(rd, palette_group, palette_index, pattern_table)
 
-        self.image = wx.Image(Block.WIDTH, Block.HEIGHT)
+        self.image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format_RGB888)
+        painter = QPainter(self.image)
 
-        self.image.Paste(self.lu_tile.as_image(), 0, 0)
-        self.image.Paste(self.ru_tile.as_image(), Tile.WIDTH, 0)
-        self.image.Paste(self.ld_tile.as_image(), 0, Tile.HEIGHT)
-        self.image.Paste(self.rd_tile.as_image(), Tile.WIDTH, Tile.HEIGHT)
+        painter.drawImage(QPoint(0, 0), self.lu_tile.as_image())
+        painter.drawImage(QPoint(Tile.WIDTH, 0), self.ru_tile.as_image())
+        painter.drawImage(QPoint(0, Tile.HEIGHT), self.ld_tile.as_image())
+        painter.drawImage(QPoint(Tile.WIDTH, Tile.HEIGHT), self.rd_tile.as_image())
 
-        self.image.SetMaskColour(*MASK_COLOR)
+        painter.end()
 
-        histogram = wx.ImageHistogram()
-
-        no_of_colors = self.image.ComputeHistogram(histogram)
-
-        if no_of_colors == 1 and self.image.GetData()[0:3] == bytearray(MASK_COLOR):
+        if self.image.colorCount() == 1 and self.image.pixelColor(0, 0) == QColor(*MASK_COLOR):
             self._whole_block_is_transparent = True
         else:
             self._whole_block_is_transparent = False
 
-    def draw(self, dc, x, y, block_length, selected=False, transparent=False):
-        image = self.image.Copy()
+    def draw(self, painter: QPainter, x, y, block_length, selected=False, transparent=False):
+        image = self.image.copy()
 
         if block_length != Block.WIDTH:
-            image.Rescale(block_length, block_length)
+            image = image.scaled(block_length, block_length)
 
         # todo better effect
-        if selected:
-            image = image.ConvertToDisabled(127)
+        if False and selected:
+            image.convertTo(QImage.Format_Mono)
 
         if not transparent or self._whole_block_is_transparent:
-            image.Replace(*MASK_COLOR, *self.bg_color)
+            mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
+            image.setAlphaChannel(mask)
 
-        dc.DrawBitmap(image.ConvertToBitmap(), x, y, useMask=transparent)
+        painter.drawImage(x, y, image)
