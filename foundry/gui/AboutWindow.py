@@ -1,80 +1,71 @@
-import wx
-import wx.adv
+from PySide2.QtGui import Qt, QPixmap
+from PySide2.QtWidgets import QBoxLayout, QLabel, QWidget, QFrame
+
+from gui.CustomDialog import CustomDialog
+
+LINK_SMB3F = "https://github.com/mchlnix/SMB3-Foundry"
+LINK_HUKKA = "http://hukka.ncn.fi/index.php?about"
+LINK_SMB3WS = "https://www.romhacking.net/utilities/298/"
+LINK_SOUTHBIRD = "https://github.com/captainsouthbird"
+LINK_DISASM = "https://github.com/captainsouthbird/smb3"
+LINK_BLUEFINCH = "https://www.twitch.tv/bluefinch3000"
 
 
-class AboutDialog(wx.Frame):
+class AboutDialog(CustomDialog):
     def __init__(self, parent):
-        super(AboutDialog, self).__init__(
-            parent,
-            title="About SMB3Foundry",
-            style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
+        super(AboutDialog, self).__init__(parent, title="About SMB3Foundry")
+
+        central_widget = QWidget()
+
+        main_layout = QBoxLayout(QBoxLayout.LeftToRight)
+
+        image = QPixmap("data/foundry.ico").scaled(200, 200)
+
+        icon = QLabel(self)
+        icon.setPixmap(image)
+
+        main_layout.addWidget(icon)
+
+        text_layout = QBoxLayout(QBoxLayout.TopToBottom)
+
+        text_layout.addWidget(QLabel("SMB3 Foundry", self))
+        text_layout.addWidget(QHLine())
+        text_layout.addWidget(LinkLabel(self, f'By <a href="{LINK_SMB3F}">Michael</a>'))
+        text_layout.addWidget((QLabel("", self)))
+        text_layout.addWidget(QLabel("With thanks to:", self))
+        text_layout.addWidget(
+            LinkLabel(self, f'<a href="{LINK_HUKKA}">Hukka</a> for <a href="{LINK_SMB3WS}">SMB3 Workshop</a>')
         )
-
-        main_sizer = wx.BoxSizer(wx.HORIZONTAL)
-
-        image = wx.Image("data/foundry.ico")
-        image.Rescale(200, 200)
-
-        bitmap = wx.Bitmap(image)
-
-        icon = wx.StaticBitmap(self, wx.ID_ANY, bitmap)
-
-        main_sizer.Add(icon, proportion=1, border=20, flag=wx.ALL)
-
-        info_sizer = wx.BoxSizer(wx.VERTICAL)
-
-        info_sizer.Add(wx.StaticText(self, wx.ID_ANY, "SMB3 Foundry"))
-        info_sizer.Add(
-            wx.StaticLine(self, wx.ID_ANY),
-            border=5,
-            flag=wx.EXPAND | wx.TOP | wx.BOTTOM,
-        )
-        info_sizer.Add(
-            wx.adv.HyperlinkCtrl(
+        text_layout.addWidget(
+            LinkLabel(
                 self,
-                wx.ID_ANY,
-                url="https://github.com/mchlnix/SMB3-Foundry",
-                label="By Michael",
+                f'<a href="{LINK_SOUTHBIRD}">Captain Southbird</a> for the <a href="{LINK_DISASM}">SMB3 Disassembly</a>',
             )
         )
-        info_sizer.Add(wx.StaticText(self, wx.ID_ANY, ""))
-        info_sizer.Add(wx.StaticText(self, wx.ID_ANY, "With thanks to:"))
-        info_sizer.Add(
-            wx.adv.HyperlinkCtrl(
-                self,
-                wx.ID_ANY,
-                url="http://hukka.ncn.fi/index.php?about",
-                label="Hukka for SMB3 Workshop",
-            )
-        )
-        info_sizer.Add(
-            wx.adv.HyperlinkCtrl(
-                self,
-                wx.ID_ANY,
-                url="https://github.com/captainsouthbird",
-                label="Captain Southbird for the SMB3 Disassembly",
-            )
-        )
-        info_sizer.Add(
-            wx.adv.HyperlinkCtrl(
-                self,
-                wx.ID_ANY,
-                url="https://www.twitch.tv/bluefinch3000",
-                label="BlueFinch for testing and sanity checking",
-            )
+        text_layout.addWidget(
+            LinkLabel(self, f'<a href="{LINK_BLUEFINCH}">BlueFinch</a> and ZacMario for testing and sanity checking')
         )
 
-        main_sizer.Add(info_sizer, proportion=1, border=20, flag=wx.ALL | wx.CENTER)
+        main_layout.addLayout(text_layout)
 
-        self.SetSizerAndFit(main_sizer)
+        central_widget.setLayout(main_layout)
 
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
+        self.setCentralWidget(central_widget)
 
-    def on_key_press(self, event):
-        key = event.GetKeyCode()
 
-        if key == wx.WXK_ESCAPE:
-            self.on_exit(None)
+class LinkLabel(QLabel):
+    def __init__(self, parent, text):
+        super(LinkLabel, self).__init__(parent)
 
-    def on_exit(self, _):
-        self.Hide()
+        self.setText(text)
+        self.setTextFormat(Qt.RichText)
+        self.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.setOpenExternalLinks(True)
+
+
+# taken from https://stackoverflow.com/a/41068447/4252230
+class QHLine(QFrame):
+    def __init__(self):
+        super(QHLine, self).__init__()
+        self.setFrameShape(QFrame.HLine)
+        self.setFrameShadow(QFrame.Sunken)

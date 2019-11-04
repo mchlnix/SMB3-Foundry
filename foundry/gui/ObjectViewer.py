@@ -1,9 +1,10 @@
 from PySide2.QtCore import QSize, QPoint
-from PySide2.QtGui import Qt, QKeyEvent, QPaintEvent, QPainter
-from PySide2.QtWidgets import QMainWindow, QToolBar, QComboBox, QStatusBar, QWidget, QLayout
+from PySide2.QtGui import QPaintEvent, QPainter
+from PySide2.QtWidgets import QToolBar, QComboBox, QStatusBar, QWidget, QLayout
 
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from gui.CustomDialog import CustomDialog
 from gui.LevelSelector import OBJECT_SET_ITEMS
 from gui.Spinner import Spinner
 
@@ -18,12 +19,9 @@ MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
 
 
-class ObjectViewer(QMainWindow):
+class ObjectViewer(CustomDialog):
     def __init__(self, parent):
-        super(ObjectViewer, self).__init__(parent)
-
-        self.setWindowTitle("Object Viewer")
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+        super(ObjectViewer, self).__init__(parent, title="Object Viewer")
 
         self.spin_domain = Spinner(self, MAX_DOMAIN)
         self.spin_domain.valueChanged.connect(self.on_spin)
@@ -35,27 +33,27 @@ class ObjectViewer(QMainWindow):
         self.spin_length.setDisabled(True)
         self.spin_length.valueChanged.connect(self.on_spin)
 
-        self._toolbar = QToolBar(self)
+        _toolbar = QToolBar(self)
 
-        self._toolbar.addWidget(self.spin_domain)
-        self._toolbar.addWidget(self.spin_type)
-        self._toolbar.addWidget(self.spin_length)
+        _toolbar.addWidget(self.spin_domain)
+        _toolbar.addWidget(self.spin_type)
+        _toolbar.addWidget(self.spin_length)
 
-        self.object_set_dropdown = QComboBox(self._toolbar)
+        self.object_set_dropdown = QComboBox(_toolbar)
         self.object_set_dropdown.addItems(OBJECT_SET_ITEMS[1:])
         self.object_set_dropdown.setCurrentIndex(0)
 
-        self.graphic_set_dropdown = QComboBox(self._toolbar)
+        self.graphic_set_dropdown = QComboBox(_toolbar)
         self.graphic_set_dropdown.addItems([f"Graphics Set {gfx_set}" for gfx_set in range(32)])
         self.graphic_set_dropdown.setCurrentIndex(1)
 
         self.object_set_dropdown.currentIndexChanged.connect(self.on_object_set)
         self.graphic_set_dropdown.currentIndexChanged.connect(self.on_graphic_set)
 
-        self._toolbar.addWidget(self.object_set_dropdown)
-        self._toolbar.addWidget(self.graphic_set_dropdown)
+        _toolbar.addWidget(self.object_set_dropdown)
+        _toolbar.addWidget(self.graphic_set_dropdown)
 
-        self.addToolBar(self._toolbar)
+        self.addToolBar(_toolbar)
 
         self.object_set = 1
 
@@ -73,10 +71,6 @@ class ObjectViewer(QMainWindow):
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
         return
-
-    def keyPressEvent(self, event: QKeyEvent):
-        if event.key() == Qt.Key_Escape:
-            self.on_exit(None)
 
     def on_object_set(self):
         self.object_set = self.object_set_dropdown.currentIndex() + 1
@@ -115,9 +109,6 @@ class ObjectViewer(QMainWindow):
         self.drawing_area.update()
 
         self.status_bar.showMessage(self.drawing_area.current_object.description)
-
-    def on_exit(self, _):
-        self.Hide()
 
 
 class ObjectDrawArea(QWidget):

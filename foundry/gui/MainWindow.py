@@ -252,7 +252,8 @@ class SMB3Foundry(QMainWindow):
         help_menu.Append(ID_MAKE_A_DONATION, "&Make a Donation", "")
         help_menu.AppendSeparator()
         """
-        help_menu.addAction("&About")
+        about_action = help_menu.addAction("&About")
+        about_action.triggered.connect(self.on_about)
 
         self.menuBar().addMenu(help_menu)
 
@@ -993,7 +994,7 @@ class SMB3Foundry(QMainWindow):
     def on_about(self, _):
         about = AboutDialog(self)
 
-        about.Show()
+        about.show()
 
     def on_exit(self, _):
         if not self.safe_to_change():
