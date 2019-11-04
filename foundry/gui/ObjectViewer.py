@@ -5,8 +5,8 @@ from PySide2.QtWidgets import QToolBar, QComboBox, QStatusBar, QWidget, QLayout
 from game.gfx.drawable.Block import Block
 from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from gui.CustomDialog import CustomDialog
+from gui.HexSpinner import HexSpinner
 from gui.LevelSelector import OBJECT_SET_ITEMS
-from gui.Spinner import Spinner
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2
@@ -23,13 +23,13 @@ class ObjectViewer(CustomDialog):
     def __init__(self, parent):
         super(ObjectViewer, self).__init__(parent, title="Object Viewer")
 
-        self.spin_domain = Spinner(self, MAX_DOMAIN)
+        self.spin_domain = HexSpinner(self, MAX_DOMAIN)
         self.spin_domain.valueChanged.connect(self.on_spin)
 
-        self.spin_type = Spinner(self, MAX_TYPE)
+        self.spin_type = HexSpinner(self, MAX_TYPE)
         self.spin_type.valueChanged.connect(self.on_spin)
 
-        self.spin_length = Spinner(self, MAX_LENGTH)
+        self.spin_length = HexSpinner(self, MAX_LENGTH)
         self.spin_length.setDisabled(True)
         self.spin_length.valueChanged.connect(self.on_spin)
 
