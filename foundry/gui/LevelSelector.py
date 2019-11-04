@@ -8,8 +8,8 @@ from PySide2.QtWidgets import (
     QGridLayout,
 )
 
-from game.level.Level import Level
-from gui.HexSpinner import HexSpinner
+from foundry.game.level.Level import Level
+from foundry.gui.HexSpinner import HexSpinner
 
 WORLD_ITEMS = [
     "World Maps",
@@ -172,7 +172,8 @@ class LevelSelector(QDialog):
         self.object_set_dropdown.setCurrentIndex(object_set_index)
 
         print(
-            f"Level {self.selected_world}-{self.selected_level}, lvl_array_offset: {level_array_offset}, obj_index: {object_set_index}"
+            f"Level {self.selected_world}-{self.selected_level}, lvl_array_offset: {level_array_offset}, "
+            f"obj_index: {object_set_index}"
         )
 
     def on_ok(self, _):

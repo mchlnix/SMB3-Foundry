@@ -1,7 +1,7 @@
 from PySide2.QtGui import Qt, QPixmap
 from PySide2.QtWidgets import QBoxLayout, QLabel, QWidget, QFrame
 
-from gui.CustomDialog import CustomDialog
+from foundry.gui.CustomDialog import CustomDialog
 
 LINK_SMB3F = "https://github.com/mchlnix/SMB3-Foundry"
 LINK_HUKKA = "http://hukka.ncn.fi/index.php?about"

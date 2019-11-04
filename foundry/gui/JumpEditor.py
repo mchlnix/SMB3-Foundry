@@ -1,7 +1,7 @@
 import wx
 
-from game.gfx.objects.Jump import Jump
-from gui.Events import JumpUpdate
+from foundry.game.gfx.objects.Jump import Jump
+from foundry.gui.Events import JumpUpdate
 
 JUMP_ACTIONS = [
     "Downward Pipe 1",
@@ -26,19 +26,19 @@ VERT_POSITIONS = [
     "00",
     "05",
     "08",
-    "0C",
-    "10",
-    "14",
-    "17",
-    "18",
+    "12",
+    "16",
+    "20",
+    "23",
+    "24",
     "00 (Vertical)",
     "05 (Vertical)",
     "08 (Vertical)",
-    "0C (Vertical)",
-    "10 (Vertical)",
-    "14 (Vertical)",
-    "17 (Vertical)",
-    "18 (Vertical)",
+    "12 (Vertical)",
+    "16 (Vertical)",
+    "20 (Vertical)",
+    "23 (Vertical)",
+    "24 (Vertical)",
 ]
 
 MAX_SCREEN_INDEX = 0x0F
@@ -46,7 +46,7 @@ MAX_HORIZ_POSITION = 0xFF
 
 
 class JumpEditor(wx.Frame):
-    def __init__(self, parent, jump, index):
+    def __init__(self, parent: wx.Window, jump: Jump, index: int):
         super(JumpEditor, self).__init__(
             parent, style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE
         )
@@ -72,10 +72,10 @@ class JumpEditor(wx.Frame):
         self._add_widget("Exit action:", self.exit_action)
 
         self.exit_horizontal = wx.SpinCtrl(parent=self, max=MAX_HORIZ_POSITION)
-        self._add_widget("Exit position 1:", self.exit_horizontal)
+        self._add_widget("Exit position x:", self.exit_horizontal)
 
         self.exit_vertical = wx.ComboBox(parent=self, choices=VERT_POSITIONS)
-        self._add_widget("Exit position 2:", self.exit_vertical)
+        self._add_widget("Exit position y:", self.exit_vertical)
 
         ok_button = wx.Button(parent=self, id=wx.ID_OK)
         cancel_button = wx.Button(parent=self, id=wx.ID_CANCEL)
@@ -92,7 +92,7 @@ class JumpEditor(wx.Frame):
 
         self._set_widget_values()
 
-    def _add_widget(self, label, widget):
+    def _add_widget(self, label: str, widget: wx.Object):
         _label = wx.StaticText(parent=self, label=label)
 
         self.config_sizer.Add(
@@ -104,7 +104,7 @@ class JumpEditor(wx.Frame):
             flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT,
         )
 
-    def _add_label(self, label):
+    def _add_label(self, label: str):
         _label = wx.StaticText(parent=self, label=label)
 
         self.config_sizer.Add(

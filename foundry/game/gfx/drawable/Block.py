@@ -3,10 +3,10 @@ from typing import List
 from PySide2.QtCore import QPoint
 from PySide2.QtGui import QImage, QPainter, Qt, QColor
 
-from game.gfx.Palette import NESPalette
-from game.gfx.PatternTable import PatternTable
-from game.gfx.drawable import MASK_COLOR
-from game.gfx.drawable.Tile import Tile
+from foundry.game.gfx.Palette import NESPalette
+from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.drawable import MASK_COLOR
+from foundry.game.gfx.drawable.Tile import Tile
 
 TSA_BANK_0 = 0 * 256
 TSA_BANK_1 = 1 * 256

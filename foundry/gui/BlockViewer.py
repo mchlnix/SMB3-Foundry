@@ -4,12 +4,12 @@ from PySide2.QtCore import QSize, QRect, QPoint
 from PySide2.QtGui import QPaintEvent, QPainter, QColor, QBrush, QResizeEvent, QMouseEvent
 from PySide2.QtWidgets import QStyle, QComboBox, QToolBar, QWidget, QLayout, QStatusBar
 
-from game.File import ROM
-from game.gfx.Palette import get_bg_color_for, load_palette
-from game.gfx.PatternTable import PatternTable
-from game.gfx.drawable.Block import Block
-from gui.CustomDialog import CustomDialog
-from gui.LevelSelector import OBJECT_SET_ITEMS
+from foundry.game.File import ROM
+from foundry.game.gfx.Palette import get_bg_color_for, load_palette
+from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.drawable.Block import Block
+from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 
 
 class BlockViewer(CustomDialog):

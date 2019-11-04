@@ -19,12 +19,12 @@ class SelectionSquare:
     def is_active(self):
         return self.active
 
-    def start(self, point):
+    def start(self, point: wx.Point):
         self.active = True
 
         self.start_point = point
 
-    def set_current_end(self, point):
+    def set_current_end(self, point: wx.Point):
         if not self.active:
             return
 
@@ -41,7 +41,7 @@ class SelectionSquare:
     def get_rect(self):
         return self.rect
 
-    def get_adjusted_rect(self, horizontal_factor, vertical_factor):
+    def get_adjusted_rect(self, horizontal_factor: int, vertical_factor: int) -> wx.Rect:
         x, y, width, height = self.rect.Get()
 
         x //= horizontal_factor

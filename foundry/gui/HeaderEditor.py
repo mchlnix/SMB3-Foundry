@@ -1,8 +1,8 @@
 import wx
 import wx.lib.newevent
 
-from gui.LevelSelector import OBJECT_SET_ITEMS
-from game.level.Level import Level
+from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
+from foundry.gui.LevelView import LevelView
 
 LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]
 STR_LEVEL_LENGTHS = [
@@ -31,7 +31,7 @@ ACTIONS = [
     "Out of pipe ←",
     "Out of pipe →",
     "Running and climbing up ship",
-    "Ship autoscrolling",
+    "Ship auto scrolling",
 ]
 
 MUSIC_ITEMS = [
@@ -105,15 +105,15 @@ SPINNER_MAX_VALUE = 0x0F_FF_FF
 
 
 class HeaderEditor(wx.Frame):
-    def __init__(self, parent, level_view_ref):
+    def __init__(self, parent: wx.Window, level_view_ref: LevelView):
         super(HeaderEditor, self).__init__(
             parent,
             title="Level Header Editor",
             style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
         )
 
-        self.level_view_ref = level_view_ref
-        self.level_ref: Level = self.level_view_ref.level
+        self.level_view_ref: LevelView = level_view_ref
+        self.level_ref = self.level_view_ref.level
 
         self.SetId(ID_HEADER_EDITOR)
 
@@ -177,7 +177,7 @@ class HeaderEditor(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.on_exit)
         self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
 
-    def _add_widget(self, label, widget):
+    def _add_widget(self, label: str, widget: wx.Control):
         _label = wx.StaticText(parent=self, label=label)
 
         self.config_sizer.Add(
@@ -189,7 +189,7 @@ class HeaderEditor(wx.Frame):
             flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT,
         )
 
-    def _add_label(self, label):
+    def _add_label(self, label: str):
         _label = wx.StaticText(parent=self, label=label)
 
         self.config_sizer.Add(
@@ -230,7 +230,10 @@ class HeaderEditor(wx.Frame):
 
         self._fill_widgets()
 
-    def on_spin(self, event):
+    def on_spin(self, event: wx.SpinEvent):
+        if self.level_ref is None:
+            return
+
         spin_id = event.GetId()
 
         if spin_id == self.object_palette_spinner.GetId():

@@ -1,7 +1,7 @@
 from PySide2.QtGui import QImage
 
-from game.gfx.Palette import NESPalette
-from game.gfx.drawable import bit_reverse, MASK_COLOR
+from foundry.game.gfx.Palette import NESPalette
+from foundry.game.gfx.drawable import bit_reverse, MASK_COLOR
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 

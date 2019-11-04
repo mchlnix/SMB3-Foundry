@@ -1,5 +1,5 @@
 import os
-from typing import Tuple
+from typing import Tuple, Optional, Union
 from warnings import warn
 
 import wx
@@ -7,14 +7,14 @@ import wx.lib.scrolledpanel
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMenu, QMainWindow, QFileDialog, QMessageBox, QDialog
 
-from game.File import ROM
-from game.gfx.objects.EnemyItem import EnemyObject
-from game.gfx.objects.LevelObject import LevelObject
-from game.level.Level import Level
-from game.level.WorldMap import WorldMap
-from gui.AboutWindow import AboutDialog
-from gui.BlockViewer import BlockViewer
-from gui.ContextMenu import (
+from foundry.game.File import ROM
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.level.Level import Level
+from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.AboutWindow import AboutDialog
+from foundry.gui.BlockViewer import BlockViewer
+from foundry.gui.ContextMenu import (
     ContextMenu,
     ID_CTX_REMOVE,
     ID_CTX_ADD_OBJECT,
@@ -23,7 +23,7 @@ from gui.ContextMenu import (
     ID_CTX_PASTE,
     ID_CTX_CUT,
 )
-from gui.Events import (
+from foundry.gui.Events import (
     EVT_REDO,
     EVT_UNDO,
     EVT_UNDO_COMPLETE,
@@ -37,16 +37,16 @@ from gui.Events import (
     EVT_JUMP_ADDED,
     EVT_JUMP_REMOVED,
 )
-from gui.HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
-from gui.JumpEditor import JumpEditor
-from gui.JumpList import JumpList
-from gui.LevelSelector import LevelSelector
-from gui.LevelView import LevelView
-from gui.ObjectDropdown import ObjectDropdown
-from gui.ObjectList import ObjectList
-from gui.ObjectStatusBar import ObjectStatusBar
-from gui.ObjectViewer import ObjectViewer
-from gui.SpinnerPanel import SpinnerPanel, ID_SPIN_DOMAIN, ID_SPIN_TYPE, ID_SPIN_LENGTH
+from foundry.gui.HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
+from foundry.gui.JumpEditor import JumpEditor
+from foundry.gui.JumpList import JumpList
+from foundry.gui.LevelSelector import LevelSelector
+from foundry.gui.LevelView import LevelView
+from foundry.gui.ObjectDropdown import ObjectDropdown
+from foundry.gui.ObjectList import ObjectList
+from foundry.gui.ObjectStatusBar import ObjectStatusBar
+from foundry.gui.ObjectViewer import ObjectViewer
+from foundry.gui.SpinnerPanel import SpinnerPanel, ID_SPIN_DOMAIN, ID_SPIN_TYPE, ID_SPIN_LENGTH
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
@@ -70,7 +70,7 @@ ID_EDIT_OBJ_DEFS = 202
 ID_EDIT_PALETTE = 203
 ID_EDIT_GRAPHICS = 204
 ID_EDIT_MISC = 205
-ID_FREEFORM_MODE = 206
+ID_FREE_FORM_MODE = 206
 ID_LIMIT_SIZE = 207
 
 # level menu
@@ -176,7 +176,7 @@ class SMB3Foundry(QMainWindow):
         edit_menu.Append(ID_EDIT_GRAPHICS, "&Edit Graphics", "")
         edit_menu.Append(ID_EDIT_MISC, "&Edit Miscellaneous", "")
         edit_menu.AppendSeparator()
-        edit_menu.Append(ID_FREEFORM_MODE, "&Freeform Mode", "")
+        edit_menu.Append(ID_FREE_FORM_MODE, "&Free form Mode", "")
         edit_menu.Append(ID_LIMIT_SIZE, "&Limit Size", "")
         """
 
@@ -338,7 +338,7 @@ class SMB3Foundry(QMainWindow):
         horiz_sizer.Add(vert_left, proportion=10, flag=wx.EXPAND)
         horiz_sizer.Add(vert_right, proportion=0, flag=wx.EXPAND)
 
-        self.jump_list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_jump_dclick)
+        self.jump_list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_jump_double_click)
 
         self.SetSizer(horiz_sizer)
 
@@ -383,9 +383,9 @@ class SMB3Foundry(QMainWindow):
         if not self.on_open_rom(None):
             wx.Exit()
 
-    def on_screenshot(self, _):
+    def on_screenshot(self, _) -> bool:
         if self.level_view is None:
-            return
+            return False
 
         with wx.FileDialog(
             self,
@@ -396,7 +396,7 @@ class SMB3Foundry(QMainWindow):
             wildcard="Bitmap files (.png)|*.png|All files|*",
         ) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return
+                return False
 
             # Proceed loading the file chosen by the user
             pathname = fileDialog.GetPath()
@@ -415,6 +415,8 @@ class SMB3Foundry(QMainWindow):
             except IOError:
                 wx.LogError("Cannot save file '%s'." % pathname)
 
+                return False
+
     def update_title(self):
         if self.level_view.level is not None and ROM is not None:
             title = f"{self.level_view.level.name} - {ROM.name}"
@@ -423,9 +425,9 @@ class SMB3Foundry(QMainWindow):
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self, _):
+    def on_open_rom(self, _) -> bool:
         if not self.safe_to_change():
-            return
+            return False
 
         # otherwise ask the user what new file to open
         pathname = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
@@ -446,9 +448,9 @@ class SMB3Foundry(QMainWindow):
             warn(f"Cannot open file '{pathname}'.")
             return False
 
-    def on_open_m3l(self, _):
+    def on_open_m3l(self, _) -> bool:
         if not self.safe_to_change():
-            return
+            return False
 
         # otherwise ask the user what new file to open
         pathname = QFileDialog.getOpenFileName(self, caption="Open M3L file", filter=M3L_FILE_FILTER)
@@ -472,7 +474,7 @@ class SMB3Foundry(QMainWindow):
 
         return True
 
-    def safe_to_change(self):
+    def safe_to_change(self) -> bool:
         if self.level_view.was_changed():
             answer = QMessageBox.question(
                 self,
@@ -811,7 +813,7 @@ class SMB3Foundry(QMainWindow):
         else:
             self.spinner_panel.disable_all()
 
-    def on_jump_dclick(self, event):
+    def on_jump_double_click(self, event):
         index = event.Int
 
         jump_editor = JumpEditor(self, self.level_view.level.jumps[index], index)
@@ -945,7 +947,7 @@ class SMB3Foundry(QMainWindow):
 
         self.spinner_panel.disable_all()
 
-    def select_object(self, obj=None, index=None):
+    def select_object(self, obj: Optional[Union[LevelObject, EnemyObject]] = None, index: Optional[int] = None):
         should_scroll = True
 
         self.level_view.select_object(None)
@@ -956,7 +958,7 @@ class SMB3Foundry(QMainWindow):
             self.on_objects_selected(ObjectListUpdateEvent(id=wx.ID_ANY, objects=[], indexes=[]))
 
         if index is None:
-            # assume click on levelview
+            # assume click on LevelView
             should_scroll = False
             index = self.level_view.index_of(obj)
 

@@ -2,19 +2,22 @@ from typing import List, Union, Optional, Tuple
 
 import wx
 
-from game.Data import Mario3Level, object_set_pointers
-from game.File import ROM
-from game.ObjectSet import ObjectSet
-from game.gfx.Palette import get_bg_color_for, load_palette
-from game.gfx.PatternTable import PatternTable
-from game.gfx.drawable.Block import Block
-from game.gfx.objects.EnemyItem import EnemyObject
-from game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from game.gfx.objects.Jump import Jump
-from game.gfx.objects.LevelObject import LevelObject
-from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from game.level import _load_level_offsets
-from game.level.LevelLike import LevelLike
+from foundry.game.Data import Mario3Level
+from foundry.game.File import ROM
+from foundry.game.ObjectSet import ObjectSet
+from foundry.game.gfx.Palette import get_bg_color_for, load_palette
+from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
+from foundry.game.gfx.objects.Jump import Jump
+from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from foundry.game.level import _load_level_offsets
+from foundry.game.level.LevelLike import LevelLike
+from smb3parse.levels.level_header import LevelHeader
+
+LevelByteData = Tuple[Tuple[int, bytearray], Tuple[int, bytearray]]
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
@@ -37,14 +40,7 @@ class Level(LevelLike):
 
     HEADER_LENGTH = 9  # bytes
 
-    def __init__(
-        self,
-        world: int,
-        level: int,
-        object_data_offset: int,
-        enemy_data_offset: int,
-        object_set_number: int,
-    ):
+    def __init__(self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set_number: int):
         super(Level, self).__init__(world, level, object_set_number)
 
         self.attached_to_rom = True
@@ -68,13 +64,11 @@ class Level(LevelLike):
         self.jumps: List[Jump] = []
         self.enemies: List[EnemyObject] = []
 
-        print(
-            f"Loading {self.name} @ {hex(self.header_offset)}/{hex(self.enemy_offset)}"
-        )
+        print(f"Loading {self.name} @ {hex(self.header_offset)}/{hex(self.enemy_offset)}")
 
         rom = ROM()
 
-        self.header = rom.bulk_read(Level.HEADER_LENGTH, self.header_offset)
+        self.header_bytes = rom.bulk_read(Level.HEADER_LENGTH, self.header_offset)
         self._parse_header()
 
         self.object_offset = self.header_offset + Level.HEADER_LENGTH
@@ -89,14 +83,12 @@ class Level(LevelLike):
     def _load_level(self, object_data: bytearray, enemy_data: bytearray):
         self.object_factory = LevelObjectFactory(
             self.object_set_number,
-            self._graphic_set_index,
-            self._object_palette_index,
+            self.header.graphic_set_index,
+            self.header.object_palette_index,
             self.objects,
-            self._is_vertical,
+            bool(self.header.is_vertical),
         )
-        self.enemy_item_factory = EnemyItemFactory(
-            self.object_set_number, self._enemy_palette_index
-        )
+        self.enemy_item_factory = EnemyItemFactory(self.object_set_number, self.header.enemy_palette_index)
 
         self._load_objects(object_data)
         self._load_enemies(enemy_data)
@@ -124,58 +116,9 @@ class Level(LevelLike):
         return size
 
     def _parse_header(self):
-        self._start_y_index = (self.header[4] & 0b1110_0000) >> 5
+        self.header = LevelHeader(self.header_bytes, self.object_set_number)
 
-        self._length = Level.MIN_LENGTH + (self.header[4] & 0b0000_1111) * 0x10
-        self.width = self._length
-        self.height = LEVEL_DEFAULT_HEIGHT
-
-        self._start_x_index = (self.header[5] & 0b0110_0000) >> 5
-
-        self._enemy_palette_index = (self.header[5] & 0b0001_1000) >> 3
-        self._object_palette_index = self.header[5] & 0b0000_0111
-
-        self._pipe_ends_level = not (self.header[6] & 0b1000_0000)
-        self._scroll_type_index = (self.header[6] & 0b0110_0000) >> 5
-        self._is_vertical = self.header[6] & 0b0001_0000
-
-        if self._is_vertical:
-            self.height = self._length
-            self.width = LEVEL_DEFAULT_WIDTH
-
-        self._next_area_object_set = (
-            self.header[6] & 0b0000_1111
-        )  # for indexing purposes
-
-        self._start_action = (self.header[7] & 0b1110_0000) >> 5
-
-        self._graphic_set_index = self.header[7] & 0b0001_1111
-
-        self._time_index = (self.header[8] & 0b1100_0000) >> 6
-
-        self._music_index = self.header[8] & 0b0000_1111
-
-        # if there is a bonus area or other secondary level, this pointer points to it
-
-        self.object_set_pointer = object_set_pointers[self.object_set_number]
-
-        self._level_pointer = (
-            (self.header[1] << 8)
-            + self.header[0]
-            + LEVEL_POINTER_OFFSET
-            + self.object_set_pointer.type
-        )
-        self._enemy_pointer = (
-            (self.header[3] << 8) + self.header[2] + ENEMY_POINTER_OFFSET
-        )
-
-        self.has_bonus_area = (
-            self.object_set_pointer.min
-            <= self._level_pointer
-            <= self.object_set_pointer.max
-        )
-
-        self.size = self.width, self.height
+        self.size = self.header.width, self.header.height
 
         self.changed = True
 
@@ -210,9 +153,7 @@ class Level(LevelLike):
             domain = (obj_data[0] & 0b1110_0000) >> 5
 
             obj_id = obj_data[2]
-            has_length_byte = (
-                self.object_set.get_object_byte_length(domain, obj_id) == 4
-            )
+            has_length_byte = self.object_set.get_object_byte_length(domain, obj_id) == 4
 
             if has_length_byte:
                 fourth_byte, data = data[0], data[1:]
@@ -244,62 +185,55 @@ class Level(LevelLike):
 
     @property
     def objects_end(self):
-        return (
-            self.header_offset
-            + Level.HEADER_LENGTH
-            + self._calc_objects_size()
-            + len(b"\xFF")
-        )  # the delimiter
+        return self.header_offset + Level.HEADER_LENGTH + self._calc_objects_size() + len(b"\xFF")  # the delimiter
 
     @property
     def enemies_end(self):
-        return (
-            self.enemy_offset + len(self.enemies) * ENEMY_SIZE + len(b"\xFF\x00")
-        )  # the delimiter
+        return self.enemy_offset + len(self.enemies) * ENEMY_SIZE + len(b"\xFF\x00")  # the delimiter
 
     @property
     def next_area_objects(self):
-        return self._level_pointer
+        return self.header.jump_level_address
 
     @next_area_objects.setter
     def next_area_objects(self, value):
-        if value == self._level_pointer:
+        if value == self.header.jump_level_address:
             return
 
-        value -= LEVEL_POINTER_OFFSET + self.object_set_pointer.type
+        value -= LEVEL_POINTER_OFFSET + self.header.jump_object_set.level_offset
 
-        self.header[0] = 0x00FF & value
-        self.header[1] = value >> 8
+        self.header_bytes[0] = 0x00FF & value
+        self.header_bytes[1] = value >> 8
 
         self._parse_header()
 
     @property
     def next_area_enemies(self):
-        return self._enemy_pointer
+        return self.header.jump_enemy_address
 
     @next_area_enemies.setter
     def next_area_enemies(self, value):
-        if value == self._enemy_pointer:
+        if value == self.header.jump_enemy_address:
             return
 
         value -= ENEMY_POINTER_OFFSET
 
-        self.header[2] = 0x00FF & value
-        self.header[3] = value >> 8
+        self.header_bytes[2] = 0x00FF & value
+        self.header_bytes[3] = value >> 8
 
         self._parse_header()
 
     @property
     def start_y_index(self):
-        return self._start_y_index
+        return self.header.start_y_index
 
     @start_y_index.setter
     def start_y_index(self, index):
-        if index == self._start_y_index:
+        if index == self.header.start_y_index:
             return
 
-        self.header[4] &= 0b0001_1111
-        self.header[4] |= index << 5
+        self.header_bytes[4] &= 0b0001_1111
+        self.header_bytes[4] |= index << 5
 
         self._parse_header()
 
@@ -307,7 +241,7 @@ class Level(LevelLike):
 
     @property
     def length(self):
-        return self._length
+        return self.header.length
 
     @length.setter
     def length(self, length):
@@ -319,11 +253,11 @@ class Level(LevelLike):
         """
 
         # internally the level has length + 1 screens
-        if length + 1 == self._length:
+        if length + 1 == self.header.length:
             return
 
-        self.header[4] &= 0b1111_0000
-        self.header[4] |= length // 0x10
+        self.header_bytes[4] &= 0b1111_0000
+        self.header_bytes[4] |= length // 0x10
 
         self._parse_header()
 
@@ -331,141 +265,141 @@ class Level(LevelLike):
 
     @property
     def start_x_index(self):
-        return self._start_x_index
+        return self.header.start_x_index
 
     @start_x_index.setter
     def start_x_index(self, index):
-        if index == self._start_x_index:
+        if index == self.header.start_x_index:
             return
 
-        self.header[5] &= 0b1001_1111
-        self.header[5] |= index << 5
+        self.header_bytes[5] &= 0b1001_1111
+        self.header_bytes[5] |= index << 5
 
         self._parse_header()
 
     @property
     def enemy_palette_index(self):
-        return self._enemy_palette_index
+        return self.header.enemy_palette_index
 
     @enemy_palette_index.setter
     def enemy_palette_index(self, index):
-        if index == self._enemy_palette_index:
+        if index == self.header.enemy_palette_index:
             return
 
-        self.header[5] &= 0b1110_0111
-        self.header[5] |= index << 3
+        self.header_bytes[5] &= 0b1110_0111
+        self.header_bytes[5] |= index << 3
 
         self._parse_header()
 
     @property
     def object_palette_index(self):
-        return self._object_palette_index
+        return self.header.object_palette_index
 
     @object_palette_index.setter
     def object_palette_index(self, index):
-        if index == self._object_palette_index:
+        if index == self.header.object_palette_index:
             return
 
-        self.header[5] &= 0b1111_1000
-        self.header[5] |= index
+        self.header_bytes[5] &= 0b1111_1000
+        self.header_bytes[5] |= index
 
         self._parse_header()
 
     @property
     def pipe_ends_level(self):
-        return self._pipe_ends_level
+        return self.header.pipe_ends_level
 
     @pipe_ends_level.setter
     def pipe_ends_level(self, truth_value):
-        if truth_value == self._pipe_ends_level:
+        if truth_value == self.header.pipe_ends_level:
             return
 
-        self.header[6] &= 0b0111_1111
-        self.header[6] |= int(not truth_value) << 7
+        self.header_bytes[6] &= 0b0111_1111
+        self.header_bytes[6] |= int(not truth_value) << 7
 
         self._parse_header()
 
     @property
     def scroll_type(self):
-        return self._scroll_type_index
+        return self.header.scroll_type_index
 
     @scroll_type.setter
     def scroll_type(self, index):
-        if index == self._scroll_type_index:
+        if index == self.header.scroll_type_index:
             return
 
-        self.header[6] &= 0b1001_1111
-        self.header[6] |= index << 5
+        self.header_bytes[6] &= 0b1001_1111
+        self.header_bytes[6] |= index << 5
 
         self._parse_header()
 
     @property
     def is_vertical(self):
-        return self._is_vertical
+        return self.header.is_vertical
 
     @is_vertical.setter
     def is_vertical(self, truth_value):
-        if truth_value == self._is_vertical:
+        if truth_value == self.header.is_vertical:
             return
 
-        self.header[6] &= 0b1110_1111
-        self.header[6] |= int(truth_value) << 4
+        self.header_bytes[6] &= 0b1110_1111
+        self.header_bytes[6] |= int(truth_value) << 4
 
         self._parse_header()
 
     @property
     def next_area_object_set(self):
-        return self._next_area_object_set
+        return self.header.jump_object_set_number
 
     @next_area_object_set.setter
     def next_area_object_set(self, index):
-        if index == self._next_area_object_set:
+        if index == self.header.jump_object_set_number:
             return
 
-        self.header[6] &= 0b1111_0000
-        self.header[6] |= index
+        self.header_bytes[6] &= 0b1111_0000
+        self.header_bytes[6] |= index
 
         self._parse_header()
 
     @property
     def start_action(self):
-        return self._start_action
+        return self.header.start_action
 
     @start_action.setter
     def start_action(self, index):
-        if index == self._start_action:
+        if index == self.header.start_action:
             return
 
-        self.header[7] &= 0b0001_1111
-        self.header[7] |= index << 5
+        self.header_bytes[7] &= 0b0001_1111
+        self.header_bytes[7] |= index << 5
 
         self._parse_header()
 
     @property
     def graphic_set(self):
-        return self._graphic_set_index
+        return self.header.graphic_set_index
 
     @graphic_set.setter
     def graphic_set(self, index):
-        if index == self._graphic_set_index:
+        if index == self.header.graphic_set_index:
             return
 
-        self.header[7] &= 0b1110_0000
-        self.header[7] |= index
+        self.header_bytes[7] &= 0b1110_0000
+        self.header_bytes[7] |= index
 
         self._parse_header()
 
     @property
     def time_index(self):
-        return self._time_index
+        return self.header.time_index
 
     @time_index.setter
     def time_index(self, index):
-        if index == self._time_index:
+        if index == self.header.time_index:
             return
 
-        self.header[8] &= 0b0011_1111
-        self.header[8] |= index << 6
+        self.header_bytes[8] &= 0b0011_1111
+        self.header_bytes[8] |= index << 6
 
         self._parse_header()
 
@@ -473,15 +407,15 @@ class Level(LevelLike):
 
     @property
     def music_index(self):
-        return self._music_index
+        return self.header.music_index
 
     @music_index.setter
     def music_index(self, index):
-        if index == self._music_index:
+        if index == self.header.music_index:
             return
 
-        self.header[8] &= 0b1111_0000
-        self.header[8] |= index
+        self.header_bytes[8] &= 0b1111_0000
+        self.header_bytes[8] |= index
 
         self._parse_header()
 
@@ -508,7 +442,7 @@ class Level(LevelLike):
             return None
 
     def draw(self, dc: wx.DC, block_length: int, transparency: bool):
-        bg_color = get_bg_color_for(self.object_set_number, self._object_palette_index)
+        bg_color = get_bg_color_for(self.object_set_number, self.header.object_palette_index)
 
         dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
         dc.SetPen(wx.Pen(wx.Colour(0x00, 0x00, 0x00, 0x80), width=1))
@@ -537,20 +471,16 @@ class Level(LevelLike):
         floor_level = 26
         floor_block_index = 86
 
-        palette_group = load_palette(self.object_set_number, self._object_palette_index)
-        pattern_table = PatternTable(self._graphic_set_index)
+        palette_group = load_palette(self.object_set_number, self.header.object_palette_index)
+        pattern_table = PatternTable(self.header.graphic_set_index)
         tsa_data = ROM().get_tsa_data(self.object_set_number)
 
         floor_block = Block(floor_block_index, palette_group, pattern_table, tsa_data)
 
         for x in range(self.width):
-            floor_block.draw(
-                dc, x * block_length, floor_level * block_length, block_length
-            )
+            floor_block.draw(dc, x * block_length, floor_level * block_length, block_length)
 
-    def paste_object_at(
-        self, x: int, y: int, obj: Union[EnemyObject, LevelObject]
-    ) -> Union[EnemyObject, LevelObject]:
+    def paste_object_at(self, x: int, y: int, obj: Union[EnemyObject, LevelObject]) -> Union[EnemyObject, LevelObject]:
         if isinstance(obj, EnemyObject):
             return self.add_enemy(obj.obj_index, x, y)
 
@@ -570,29 +500,19 @@ class Level(LevelLike):
         self.add_enemy(0x72, x, y, len(self.enemies))
 
     def add_object(
-        self,
-        domain: int,
-        object_index: int,
-        x: int,
-        y: int,
-        length: Optional[int],
-        index: int = -1,
+        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int = -1
     ) -> LevelObject:
         if index == -1:
             index = len(self.objects)
 
-        obj = self.object_factory.from_properties(
-            domain, object_index, x, y, length, index
-        )
+        obj = self.object_factory.from_properties(domain, object_index, x, y, length, index)
         self.objects.insert(index, obj)
 
         self.changed = True
 
         return obj
 
-    def add_enemy(
-        self, object_index: int, x: int, y: int, index: int = -1
-    ) -> EnemyObject:
+    def add_enemy(self, object_index: int, x: int, y: int, index: int = -1) -> EnemyObject:
         if index == -1:
             index = len(self.enemies)
         else:
@@ -641,7 +561,7 @@ class Level(LevelLike):
         m3l_bytes.append(self.level)
         m3l_bytes.append(self.object_set_number)
 
-        m3l_bytes.extend(self.header)
+        m3l_bytes.extend(self.header_bytes)
 
         for obj in self.objects + self.jumps:
             m3l_bytes.extend(obj.to_bytes())
@@ -668,7 +588,7 @@ class Level(LevelLike):
 
         m3l_bytes = m3l_bytes[3:]
 
-        self.header = m3l_bytes[: Level.HEADER_LENGTH]
+        self.header_bytes = m3l_bytes[: Level.HEADER_LENGTH]
         self._parse_header()
 
         m3l_bytes = m3l_bytes[Level.HEADER_LENGTH :]
@@ -684,10 +604,10 @@ class Level(LevelLike):
 
         self.attached_to_rom = False
 
-    def to_bytes(self) -> Tuple[Tuple[int, bytearray], Tuple[int, bytearray]]:
+    def to_bytes(self) -> LevelByteData:
         data = bytearray()
 
-        data.extend(self.header)
+        data.extend(self.header_bytes)
 
         for obj in self.objects:
             data.extend(obj.to_bytes())
@@ -706,14 +626,12 @@ class Level(LevelLike):
 
         return (self.header_offset, data), (self.enemy_offset, enemies)
 
-    def from_bytes(
-        self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray]
-    ):
+    def from_bytes(self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray]):
 
         self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data
 
-        self.header = object_bytes[0 : Level.HEADER_LENGTH]
+        self.header_bytes = object_bytes[0 : Level.HEADER_LENGTH]
         objects = object_bytes[Level.HEADER_LENGTH :]
 
         self._parse_header()

@@ -1,12 +1,14 @@
+from typing import Optional
+
 from PySide2.QtCore import QSize, QPoint
 from PySide2.QtGui import QPaintEvent, QPainter
 from PySide2.QtWidgets import QToolBar, QComboBox, QStatusBar, QWidget, QLayout
 
-from game.gfx.drawable.Block import Block
-from game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from gui.CustomDialog import CustomDialog
-from gui.HexSpinner import HexSpinner
-from gui.LevelSelector import OBJECT_SET_ITEMS
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.HexSpinner import HexSpinner
+from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2
@@ -117,18 +119,18 @@ class ObjectDrawArea(QWidget):
 
         self.object_factory = LevelObjectFactory(object_set, graphic_set, palette_index, [], False, size_minimal=True)
 
-        self.current_object = None
+        self.current_object = self.object_factory.from_data(bytearray([0x0, 0x0, 0x0]), 0)
 
-        self.update_object([0x0, 0x0, 0x0])
+        self.update_object()
 
         self.resize(QSize())
 
-    def change_object_set(self, object_set):
+    def change_object_set(self, object_set: int):
         self.object_factory.set_object_set(object_set)
 
         self.update_object()
 
-    def change_graphic_set(self, graphic_set):
+    def change_graphic_set(self, graphic_set: int):
         self.object_factory.set_graphic_set(graphic_set)
         self.update_object()
 
@@ -137,7 +139,7 @@ class ObjectDrawArea(QWidget):
             QSize(self.current_object.rendered_width * Block.WIDTH, self.current_object.rendered_height * Block.HEIGHT)
         )
 
-    def update_object(self, object_data=None):
+    def update_object(self, object_data: Optional[bytearray] = None):
         if object_data is None:
             object_data = self.current_object.data
 

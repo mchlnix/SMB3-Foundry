@@ -2,8 +2,8 @@ from typing import List, Tuple
 
 import wx
 
-from game.File import ROM
-from game.ObjectDefinitions import (
+from foundry.game.File import ROM
+from foundry.game.ObjectDefinitions import (
     HORIZONTAL,
     VERTICAL,
     DIAG_DOWN_LEFT,
@@ -22,11 +22,11 @@ from game.ObjectDefinitions import (
     TWO_ENDS,
     DESERT_PIPE_BOX,
 )
-from game.ObjectSet import ObjectSet
-from game.gfx.Palette import get_bg_color_for
-from game.gfx.PatternTable import PatternTable
-from game.gfx.drawable.Block import Block
-from game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.ObjectSet import ObjectSet
+from foundry.game.gfx.Palette import get_bg_color_for
+from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.ObjectLike import ObjectLike
 
 SKY = 0
 GROUND = 27
@@ -71,7 +71,6 @@ class LevelObject(ObjectLike):
         self,
         data: bytearray,
         object_set: int,
-        object_definitions,
         palette_group,
         pattern_table: PatternTable,
         objects_ref: List["LevelObject"],

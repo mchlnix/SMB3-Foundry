@@ -1,11 +1,11 @@
 import wx
 
-from game.ObjectDefinitions import enemy_handle_x, enemy_handle_y
-from game.ObjectSet import ObjectSet, ENEMY_OBJECT_SET
-from game.gfx.Palette import NESPalette
-from game.gfx.PatternTable import PatternTable
-from game.gfx.drawable.Block import Block
-from game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.ObjectDefinitions import enemy_handle_x, enemy_handle_y
+from foundry.game.ObjectSet import ObjectSet, ENEMY_OBJECT_SET
+from foundry.game.gfx.Palette import NESPalette
+from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.ObjectLike import ObjectLike
 
 MASK_COLOR = [0xFF, 0x33, 0xFF]
 
@@ -15,6 +15,7 @@ class EnemyObject(ObjectLike):
         super(EnemyObject, self).__init__()
 
         self.is_4byte = False
+        self.length = 0
 
         self.obj_index = data[0]
         self.x_position = data[1]
@@ -28,6 +29,8 @@ class EnemyObject(ObjectLike):
         self.bg_color = NESPalette[palette_group[0][0]]
 
         self.png_data = png_data
+
+        self.rect = wx.Rect()
 
         self.selected = False
 

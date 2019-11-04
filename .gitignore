@@ -1,5 +1,7 @@
 venv
 .pytest-cache
+.hypothesis
+.coverage
 .idea
 .mypy_cache
 *.tags
@@ -7,3 +9,4 @@ SMB3.nes
 __pycache__
 build/
 dist/
+htmlcov/

@@ -1,6 +1,6 @@
 import wx
 
-from gui.Events import JumpAdded, JumpRemoved
+from foundry.gui.Events import JumpAdded, JumpRemoved
 
 ID_ADD_JUMP = 1
 ID_DEL_JUMP = 2
@@ -8,7 +8,7 @@ ID_EDIT_JUMP = 3
 
 
 class JumpList(wx.ListBox):
-    def __init__(self, parent):
+    def __init__(self, parent: wx.Window):
         super(JumpList, self).__init__(parent)
 
         self.Bind(wx.EVT_RIGHT_UP, self.on_right_click)
