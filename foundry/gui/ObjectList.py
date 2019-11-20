@@ -1,105 +1,83 @@
-import wx
+from PySide2.QtCore import Signal, QItemSelectionModel, QRect
+from PySide2.QtGui import QWindow, QMouseEvent, Qt
+from PySide2.QtWidgets import QListWidget, QAbstractItemView, QSizePolicy
 
 from foundry.gui.ContextMenu import ContextMenu
 
-# todo should have a reference to the level_view or a better way to sync the object lists
 
+class ObjectList(QListWidget):
+    selection_changed = Signal()
 
-class ObjectList(wx.ListBox):
-    def __init__(self, parent: wx.Window, context_menu: ContextMenu):
-        super(ObjectList, self).__init__(parent=parent, style=wx.LB_MULTIPLE)
+    def __init__(self, parent: QWindow, level_view_ref, context_menu: ContextMenu):
+        super(ObjectList, self).__init__(parent=parent)
+        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+        self.level_view_ref = level_view_ref
 
         self.context_menu = context_menu
 
-        self.Bind(wx.EVT_RIGHT_DOWN, self.on_right_down)
-        self.Bind(wx.EVT_RIGHT_UP, self.on_right_up)
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.RightButton:
+            self.on_right_down(event)
+        else:
+            super(ObjectList, self).mousePressEvent(event)
 
-    def on_right_down(self, event):
-        """
-        Normally right clicking deselects everything and selects the item under the cursor,
-        but with multi-selection we want the selection to be kept, when the right click happens
-        on one of the already selected elements. Didn't seem to be supported like that, so
-        we need to make our own.
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        if event.button() == Qt.RightButton:
+            self.on_right_up(event)
+        else:
+            super(ObjectList, self).mouseReleaseEvent(event)
 
-        :param event: wx.MouseEvent
-        :return: None
-        """
-        item_under_mouse = self.HitTest(event.GetPosition())
+    def on_right_down(self, event: QMouseEvent):
+        item_under_mouse = self.itemAt(event.pos())
 
-        if item_under_mouse == wx.NOT_FOUND:
-            event.Skip()
+        if item_under_mouse is None:
+            event.ignore()
             return
 
-        if item_under_mouse not in self.GetSelections():
-            self.SetSelection(wx.NOT_FOUND)
+        if not item_under_mouse.isSelected():
+            self.clearSelection()
 
-            self.SetSelection(item_under_mouse)
+            self.setItemSelected(item_under_mouse, True)
 
-            self.GetParent().on_list_select(None)
+            self.parent().on_list_select(None)
 
     def on_right_up(self, event):
-        item_under_mouse = self.HitTest(event.GetPosition())
+        item_under_mouse = self.itemAt(event.pos())
 
-        if item_under_mouse == wx.NOT_FOUND:
-            event.Skip()
+        if item_under_mouse is None:
+            event.ignore()
             return
 
-        self.PopupMenu(self.context_menu.as_list_menu(), event.GetPosition())
+        self.context_menu.as_list_menu().popup(event.globalPos())
 
-    def remove_selected(self):
-        indexes = self.GetSelections()
+    def setSelection(self, rect: QRect, command: QItemSelectionModel.SelectionFlags):
+        super(ObjectList, self).setSelection(rect, command)
 
-        for index in reversed(indexes):
-            self.Delete(index)
+        selected_objects = [self.item(index.row()).data(Qt.UserRole) for index in self.selectedIndexes()]
+
+        self.level_view_ref.level.selected_objects = selected_objects
 
     def update(self):
-        level_objects = self.Parent.level_view.level.get_all_objects()
+        level_objects = self.level_view_ref.level.get_all_objects()
 
-        if len(self.GetItems()) != len(level_objects):
-            self._full_update()
-            return
+        labels = [obj.description for obj in level_objects]
 
-        indexes = self.GetSelections()
+        self.clear()
 
-        if not indexes:
-            return
+        self.addItems(labels)
 
-        for index in indexes:
-            item = self.GetString(index)
+        self.blockSignals(True)
 
-            description = level_objects[index].description
+        for index, level_object in enumerate(level_objects):
+            item = self.item(index)
 
-            if item != description:
-                self.SetString(index, description)
+            item.setData(Qt.UserRole, level_object)
+            item.setSelected(level_object.selected)
 
-        self.SetSelection(wx.NOT_FOUND)
+        self.blockSignals(False)
 
-        for index in indexes:
-            self.SetSelection(index)
-
-    def _full_update(self):
-        self._remove_orphaned_items()
-        self._add_placeholder_objects()
-
-        for index, obj_name in enumerate(
-            self.Parent.level_view.level.get_object_names()
-        ):
-            self.SetString(index, obj_name)
-
-    def _remove_orphaned_items(self):
-        level_objects = self.Parent.level_view.level.get_all_objects()
-
-        while len(self.GetItems()) > len(level_objects):
-            last_index = len(self.GetItems()) - 1
-            self.Delete(last_index)
-
-    def _add_placeholder_objects(self):
-        level_objects = self.Parent.level_view.level.get_all_objects()
-
-        while len(self.GetItems()) < len(level_objects):
-            self.Append("__PLACEHOLDER")
-
-    def fill(self):
-        self.Clear()
-
-        self.SetItems(self.Parent.level_view.level.get_object_names())
+        if self.selectedIndexes():
+            self.scrollTo(self.selectedIndexes()[-1])

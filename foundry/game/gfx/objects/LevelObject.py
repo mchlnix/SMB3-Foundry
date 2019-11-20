@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
-import wx
+from PySide2.QtCore import QSize, QRect
+from PySide2.QtGui import QImage, QPainter, QColor
 
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import (
@@ -31,12 +32,7 @@ from foundry.game.gfx.objects.ObjectLike import ObjectLike
 SKY = 0
 GROUND = 27
 
-ENDING_STR = {
-    0: "Uniform",
-    1: "Top or Left",
-    2: "Bottom or Right",
-    3: "Top & Bottom/Left & Right",
-}
+ENDING_STR = {0: "Uniform", 1: "Top or Left", 2: "Bottom or Right", 3: "Top & Bottom/Left & Right"}
 
 ORIENTATION_TO_STR = {
     0: "Horizontal",
@@ -158,7 +154,7 @@ class LevelObject(ObjectLike):
 
         self._calculate_lengths()
 
-        self.rect = wx.Rect()
+        self.rect = QRect()
 
         self._render()
 
@@ -294,20 +290,14 @@ class LevelObject(ObjectLike):
 
                 offset = y % self.height
 
-                rows.append(
-                    amount_left * left
-                    + slopes[offset : offset + slope_width]
-                    + amount_right * right
-                )
+                rows.append(amount_left * left + slopes[offset : offset + slope_width] + amount_right * right)
 
             if self.orientation in [DIAG_UP_RIGHT]:
                 for row in rows:
                     row.reverse()
 
             if self.orientation in [DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
-                if (
-                    not self.height > self.width
-                ):  # special case for 60 degree platform wire down right
+                if not self.height > self.width:  # special case for 60 degree platform wire down right
                     rows.reverse()
 
             if self.orientation in [DIAG_UP_RIGHT]:
@@ -330,12 +320,11 @@ class LevelObject(ObjectLike):
                     new_height = y - base_y
                     new_width = 2 * new_height
 
-                    bottom_row = wx.Rect(base_x, y, new_width, 1)
+                    bottom_row = QRect(base_x, y, new_width, 1)
 
                     if any(
                         [
-                            bottom_row.Intersects(obj.get_rect())
-                            and y == obj.get_rect().GetTop()
+                            bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
                             for obj in self.objects_ref[0 : self.index_in_level]
                         ]
                     ):
@@ -356,9 +345,7 @@ class LevelObject(ObjectLike):
                 blocks_to_draw.extend(blank_blocks * [blank])
 
                 blocks_to_draw.append(left_slope)
-                blocks_to_draw.extend(
-                    middle_blocks * [left_fill] + middle_blocks * [right_fill]
-                )
+                blocks_to_draw.extend(middle_blocks * [left_fill] + middle_blocks * [right_fill])
                 blocks_to_draw.append(right_slope)
 
                 blocks_to_draw.extend(blank_blocks * [blank])
@@ -376,9 +363,7 @@ class LevelObject(ObjectLike):
 
             # todo magic number
             # ending graphics
-            rom_offset = (
-                ENDING_OBJECT_OFFSET + self.object_set.get_ending_offset() * 0x60
-            )
+            rom_offset = ENDING_OBJECT_OFFSET + self.object_set.get_ending_offset() * 0x60
 
             rom = ROM()
 
@@ -450,9 +435,7 @@ class LevelObject(ObjectLike):
                 # repeat second to last row
                 if additional_rows > 0:
                     for _ in range(additional_rows):
-                        blocks_to_draw.extend(
-                            self.blocks[-2 * self.width : -self.width]
-                        )
+                        blocks_to_draw.extend(self.blocks[-2 * self.width : -self.width])
 
                 if new_height > 1:
                     blocks_to_draw.extend(bottom_row)
@@ -465,12 +448,11 @@ class LevelObject(ObjectLike):
                 if not self.size_minimal:
                     # to the ground only, until it hits something
                     for y in range(base_y, GROUND):
-                        bottom_row = wx.Rect(base_x, y, new_width, 1)
+                        bottom_row = QRect(base_x, y, new_width, 1)
 
                         if any(
                             [
-                                bottom_row.Intersects(obj.get_rect())
-                                and y == obj.get_rect().GetTop()
+                                bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
                                 for obj in self.objects_ref[0 : self.index_in_level]
                             ]
                         ):
@@ -574,10 +556,7 @@ class LevelObject(ObjectLike):
         self.rendered_base_x = base_x
         self.rendered_base_y = base_y
 
-        if (
-            new_width
-            and not self.rendered_height == len(self.rendered_blocks) / new_width
-        ):
+        if new_width and not self.rendered_height == len(self.rendered_blocks) / new_width:
             print(
                 f"Not enough Blocks for calculated height: {self.description}. "
                 f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}"
@@ -592,14 +571,9 @@ class LevelObject(ObjectLike):
 
             self.rendered_width = 1
 
-        self.rect = wx.Rect(
-            self.rendered_base_x,
-            self.rendered_base_y,
-            self.rendered_width,
-            self.rendered_height,
-        )
+        self.rect = QRect(self.rendered_base_x, self.rendered_base_y, self.rendered_width, self.rendered_height)
 
-    def draw(self, dc, block_length, transparent):
+    def draw(self, painter: QPainter, block_length, transparent):
         for index, block_index in enumerate(self.rendered_blocks):
             if block_index == BLANK:
                 continue
@@ -607,29 +581,20 @@ class LevelObject(ObjectLike):
             x = self.rendered_base_x + index % self.rendered_width
             y = self.rendered_base_y + index // self.rendered_width
 
-            self._draw_block(dc, block_index, x, y, block_length, transparent)
+            self._draw_block(painter, block_index, x, y, block_length, transparent)
 
-    def _draw_block(self, dc, block_index, x, y, block_length, transparent):
+    def _draw_block(self, painter: QPainter, block_index, x, y, block_length, transparent):
         if block_index not in self.block_cache:
             if block_index > 0xFF:
-                rom_block_index = ROM().get_byte(
-                    block_index
-                )  # block_index is an offset into the graphic memory
-                block = Block(
-                    rom_block_index,
-                    self.palette_group,
-                    self.pattern_table,
-                    self.tsa_data,
-                )
+                rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
+                block = Block(rom_block_index, self.palette_group, self.pattern_table, self.tsa_data)
             else:
-                block = Block(
-                    block_index, self.palette_group, self.pattern_table, self.tsa_data
-                )
+                block = Block(block_index, self.palette_group, self.pattern_table, self.tsa_data)
 
             self.block_cache[block_index] = block
 
         self.block_cache[block_index].draw(
-            dc,
+            painter,
             x * block_length,
             y * block_length,
             block_length=block_length,
@@ -736,7 +701,7 @@ class LevelObject(ObjectLike):
         return self.point_in(x, y)
 
     def point_in(self, x: int, y: int) -> bool:
-        return self.rect.Contains(x, y)
+        return self.rect.contains(x, y)
 
     def get_status_info(self) -> List[tuple]:
         return [
@@ -748,41 +713,27 @@ class LevelObject(ObjectLike):
             ("Ending", ENDING_STR[self.ending]),
         ]
 
-    def get_rect(self) -> wx.Rect:
+    def get_rect(self) -> QRect:
         return self.rect
 
-    def as_bitmap(self) -> wx.Bitmap:
-        """
-        Creates a Bitmap of the level object for use in the GUI (for menus or dropdowns). Shouldn't be used for
-        Levelobjects, that are used in the LevelView. The Bitmap has to be resized, if necessary.
-
-        :return: A wx.Bitmap with a version of this LevelObject.
-        :rtype: wx.Bitmap
-        """
-
+    def as_image(self) -> QImage:
         assert self.rendered_base_x == 0
         assert self.rendered_base_y == 0
 
-        dc = wx.MemoryDC()
-
-        bitmap = wx.Bitmap(
-            width=self.rendered_width * Block.SIDE_LENGTH,
-            height=self.rendered_height * Block.SIDE_LENGTH,
+        image = QImage(
+            QSize(self.rendered_width * Block.SIDE_LENGTH, self.rendered_height * Block.SIDE_LENGTH),
+            QImage.Format_RGB888,
         )
 
-        dc.SelectObject(bitmap)
+        bg_color = QColor(*get_bg_color_for(self.object_set.number, 0))
 
-        bg_color = get_bg_color_for(self.object_set.number, 0)
+        image.fill(bg_color)
 
-        dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
+        painter = QPainter(image)
 
-        dc.Clear()
+        self.draw(painter, Block.SIDE_LENGTH, True)
 
-        self.draw(dc, Block.SIDE_LENGTH, True)
-
-        dc.SelectObject(wx.NullBitmap)
-
-        return bitmap
+        return image
 
     def to_bytes(self) -> bytearray:
         data = bytearray()

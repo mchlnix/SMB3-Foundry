@@ -5,23 +5,15 @@ from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.gui.LevelView import LevelView
 
 LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]
-STR_LEVEL_LENGTHS = [
-    f"{length:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS
-]
+STR_LEVEL_LENGTHS = [f"{length:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS]
 
 # todo check if correct order
 X_POSITIONS = [0x01, 0x07, 0x08, 0x0D]
-STR_X_POSITIONS = [
-    f"{position:0=#4X} / {position}. Block".replace("X", "x")
-    for position in X_POSITIONS
-]
+STR_X_POSITIONS = [f"{position:0=#4X} / {position}. Block".replace("X", "x") for position in X_POSITIONS]
 
 # todo check if correct order
 Y_POSITIONS = [0x01, 0x05, 0x08, 0x0C, 0x10, 0x14, 0x17, 0x18]
-STR_Y_POSITIONS = [
-    f"{position:0=#4X} / {position}. Block".replace("X", "x")
-    for position in Y_POSITIONS
-]
+STR_Y_POSITIONS = [f"{position:0=#4X} / {position}. Block".replace("X", "x") for position in Y_POSITIONS]
 
 ACTIONS = [
     "None",
@@ -107,9 +99,7 @@ SPINNER_MAX_VALUE = 0x0F_FF_FF
 class HeaderEditor(wx.Frame):
     def __init__(self, parent: wx.Window, level_view_ref: LevelView):
         super(HeaderEditor, self).__init__(
-            parent,
-            title="Level Header Editor",
-            style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE,
+            parent, title="Level Header Editor", style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE
         )
 
         self.level_view_ref: LevelView = level_view_ref
@@ -125,9 +115,7 @@ class HeaderEditor(wx.Frame):
         self.length_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=STR_LEVEL_LENGTHS)
         self.music_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=MUSIC_ITEMS)
         self.time_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=TIMES)
-        self.v_scroll_direction_dropdown = wx.ComboBox(
-            self, wx.ID_ANY, choices=SCROLL_DIRECTIONS
-        )
+        self.v_scroll_direction_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=SCROLL_DIRECTIONS)
         self.level_is_vertical_cb = wx.CheckBox(self)
         self.pipe_ends_level_cb = wx.CheckBox(self)
 
@@ -143,9 +131,7 @@ class HeaderEditor(wx.Frame):
         self.level_pointer_spinner.SetBase(16)
         self.enemy_pointer_spinner = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
         self.enemy_pointer_spinner.SetBase(16)
-        self.next_area_object_set_dropdown = wx.ComboBox(
-            self, wx.ID_ANY, choices=OBJECT_SET_ITEMS
-        )
+        self.next_area_object_set_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=OBJECT_SET_ITEMS)
 
         self._add_label("Level Settings")
         self._add_widget("    Level length: ", self.length_dropdown)
@@ -180,21 +166,13 @@ class HeaderEditor(wx.Frame):
     def _add_widget(self, label: str, widget: wx.Control):
         _label = wx.StaticText(parent=self, label=label)
 
-        self.config_sizer.Add(
-            _label, border=20, flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT
-        )
-        self.config_sizer.Add(
-            widget,
-            border=3,
-            flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT,
-        )
+        self.config_sizer.Add(_label, border=20, flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT)
+        self.config_sizer.Add(widget, border=3, flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT)
 
     def _add_label(self, label: str):
         _label = wx.StaticText(parent=self, label=label)
 
-        self.config_sizer.Add(
-            _label, border=3, flag=wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT
-        )
+        self.config_sizer.Add(_label, border=3, flag=wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT)
         self.config_sizer.Add(
             wx.StaticText(parent=self, label=""),
             border=3,
@@ -221,9 +199,7 @@ class HeaderEditor(wx.Frame):
 
         self.level_pointer_spinner.SetValue(self.level_ref.next_area_objects)
         self.enemy_pointer_spinner.SetValue(self.level_ref.next_area_enemies)
-        self.next_area_object_set_dropdown.SetSelection(
-            self.level_ref.next_area_object_set
-        )
+        self.next_area_object_set_dropdown.SetSelection(self.level_ref.next_area_object_set)
 
     def reload_level(self):
         self.level_ref = self.level_view_ref.level
@@ -255,7 +231,7 @@ class HeaderEditor(wx.Frame):
         wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
         self.level_ref.reload()
-        self.level_view_ref.resize()
+        self.level_view_ref.update_size()
         self.level_view_ref.Refresh()
 
     def on_combo(self, event):
@@ -300,7 +276,7 @@ class HeaderEditor(wx.Frame):
         wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
         self.level_ref.reload()
-        self.level_view_ref.resize()
+        self.level_view_ref.update_size()
         self.level_view_ref.Refresh()
 
     def on_check_box(self, event):
@@ -314,7 +290,7 @@ class HeaderEditor(wx.Frame):
         wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
         self.level_ref.reload()
-        self.level_view_ref.resize()
+        self.level_view_ref.update_size()
         self.level_view_ref.Refresh()
 
     def refresh(self):

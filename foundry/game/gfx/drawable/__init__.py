@@ -1,3 +1,6 @@
+from PySide2.QtCore import QPoint
+from PySide2.QtGui import QColor, QPainter
+
 bit_reverse = [
     0x00,
     0x80,
@@ -257,3 +260,15 @@ bit_reverse = [
     0xFF,
 ]
 MASK_COLOR = [0xFF, 0x00, 0xFF]
+
+SELECTION_OVERLAY_COLOR = QColor(20, 87, 159, 80)
+
+
+def apply_selection_overlay(image, mask):
+    overlay = image.copy()
+    overlay.fill(SELECTION_OVERLAY_COLOR)
+    overlay.setAlphaChannel(mask)
+
+    _painter = QPainter(image)
+    _painter.drawImage(QPoint(), overlay)
+    _painter.end()

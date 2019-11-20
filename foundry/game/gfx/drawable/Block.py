@@ -5,7 +5,7 @@ from PySide2.QtGui import QImage, QPainter, Qt, QColor
 
 from foundry.game.gfx.Palette import NESPalette
 from foundry.game.gfx.PatternTable import PatternTable
-from foundry.game.gfx.drawable import MASK_COLOR
+from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Tile import Tile
 
 TSA_BANK_0 = 0 * 256
@@ -35,7 +35,7 @@ class Block:
 
         palette_index = (block_index & 0b1100_0000) >> 6
 
-        self.bg_color = NESPalette[palette_group[palette_index][0]]
+        self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
 
         lu = tsa_data[TSA_BANK_0 + block_index]
         ld = tsa_data[TSA_BANK_1 + block_index]
@@ -62,7 +62,7 @@ class Block:
 
         painter.end()
 
-        if self.image.colorCount() == 1 and self.image.pixelColor(0, 0) == QColor(*MASK_COLOR):
+        if _image_only_one_color(self.image) and self.image.pixelColor(0, 0) == QColor(*MASK_COLOR):
             self._whole_block_is_transparent = True
         else:
             self._whole_block_is_transparent = False
@@ -73,12 +73,33 @@ class Block:
         if block_length != Block.WIDTH:
             image = image.scaled(block_length, block_length)
 
-        # todo better effect
-        if False and selected:
-            image.convertTo(QImage.Format_Mono)
+        # mask out the transparent pixels first
+        mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+        image.setAlphaChannel(mask)
 
-        if not transparent or self._whole_block_is_transparent:
-            mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
-            image.setAlphaChannel(mask)
+        if not transparent:  # or self._whole_block_is_transparent:
+            image = self._replace_transparent_with_background(image)
+
+        if selected:
+            apply_selection_overlay(image, mask)
 
         painter.drawImage(x, y, image)
+
+    def _replace_transparent_with_background(self, image):
+        # draw image on background layer, to fill transparent pixels
+        background = image.copy()
+        background.fill(self.bg_color)
+
+        _painter = QPainter(background)
+        _painter.drawImage(QPoint(), image)
+        _painter.end()
+
+        return background
+
+
+def _image_only_one_color(image):
+    copy = image.copy()
+
+    copy.convertTo(QImage.Format_Indexed8)
+
+    return copy.colorCount() == 1

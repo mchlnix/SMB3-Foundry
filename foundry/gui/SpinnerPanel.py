@@ -1,13 +1,12 @@
-import wx
+from typing import Union
 
-from foundry.gui.Events import (
-    EVT_UNDO_CLEARED,
-    EVT_UNDO_COMPLETE,
-    EVT_REDO_COMPLETE,
-    EVT_UNDO_SAVED,
-    UndoEvent,
-    RedoEvent,
-)
+from PySide2.QtCore import Signal
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QSizePolicy, QFormLayout, QVBoxLayout
+
+from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.gui.Events import EVT_UNDO_CLEARED, EVT_UNDO_COMPLETE, EVT_REDO_COMPLETE, EVT_UNDO_SAVED
+from foundry.gui.HexSpinner import HexSpinner
 from foundry.gui.LevelView import LevelView
 
 ID_SPIN_DOMAIN = 1000
@@ -25,97 +24,90 @@ MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
 
 
-class SpinnerPanel(wx.Panel):
-    def __init__(self, parent: wx.Window, level_view_ref: LevelView):
+class SpinnerPanel(QWidget):
+    undo_triggered = Signal()
+    redo_triggered = Signal()
+
+    object_change = Signal
+
+    def __init__(self, parent: QWidget, level_view_ref: LevelView):
         super(SpinnerPanel, self).__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.level_view_ref = level_view_ref
 
-        self.toolbar = wx.ToolBar(self)
-        self.toolbar.AddTool(
-            ID_TOOL_UNDO,
-            "Undo",
-            wx.ArtProvider.GetBitmap(id=wx.ART_UNDO, client=wx.ART_TOOLBAR),
-        ).Enable(False)
-        self.toolbar.AddTool(
-            ID_TOOL_REDO,
-            "Redo",
-            wx.ArtProvider.GetBitmap(id=wx.ART_REDO, client=wx.ART_TOOLBAR),
-        ).Enable(False)
+        self.undo_button = QPushButton(QIcon("data/icons/rotate-ccw.svg"), "", self)
+        self.undo_button.pressed.connect(self.on_undo)
+        self.undo_button.setDisabled(True)
 
-        self.toolbar.AddStretchableSpace()
+        self.redo_button = QPushButton(QIcon("data/icons/rotate-cw.svg"), "", self)
+        self.redo_button.pressed.connect(self.on_redo)
 
-        self.toolbar.AddTool(
-            ID_TOOL_ZOOM_OUT,
-            "Zoom out",
-            wx.ArtProvider.GetBitmap(id=wx.ART_MINUS, client=wx.ART_TOOLBAR),
-        )
-        self.toolbar.AddTool(
-            ID_TOOL_ZOOM_IN,
-            "Zoom in",
-            wx.ArtProvider.GetBitmap(id=wx.ART_PLUS, client=wx.ART_TOOLBAR),
-        )
+        self.zoom_out_button = QPushButton(QIcon("data/icons/zoom-out.svg"), "", self)
+        self.zoom_out_button.pressed.connect(self.level_view_ref.zoom_out)
 
-        self.toolbar.Realize()
+        self.zoom_in_button = QPushButton(QIcon("data/icons/zoom-in.svg"), "", self)
+        self.zoom_in_button.pressed.connect(self.level_view_ref.zoom_in)
 
-        self.panel_sizer = wx.BoxSizer(wx.VERTICAL)
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.undo_button)
+        button_layout.addWidget(self.redo_button)
+        button_layout.addStretch(1)
+        button_layout.addWidget(self.zoom_out_button)
+        button_layout.addWidget(self.zoom_in_button)
 
-        self.spin_domain = wx.SpinCtrl(self, ID_SPIN_DOMAIN, max=MAX_DOMAIN)
-        self.spin_domain.SetBase(16)
-        self.spin_domain.Enable(False)
-        self.spin_type = wx.SpinCtrl(self, ID_SPIN_TYPE, max=MAX_TYPE)
-        self.spin_type.SetBase(16)
-        self.spin_type.Enable(False)
-        self.spin_length = wx.SpinCtrl(self, ID_SPIN_LENGTH, max=MAX_LENGTH)
-        self.spin_length.SetBase(16)
-        self.spin_length.Enable(False)
+        self.spin_domain = HexSpinner(self, maximum=MAX_DOMAIN)
+        self.spin_domain.setEnabled(False)
 
-        spinner_sizer = wx.FlexGridSizer(cols=2, vgap=0, hgap=0)
-        spinner_sizer.AddGrowableCol(0)
+        self.spin_type = HexSpinner(self, maximum=MAX_TYPE)
+        self.spin_type.setEnabled(False)
 
-        spinner_sizer.Add(
-            wx.StaticText(self, label="Bank/Domain: "),
-            flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
-        )
-        spinner_sizer.Add(self.spin_domain)
-        spinner_sizer.Add(
-            wx.StaticText(self, label="Type: "),
-            flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
-        )
-        spinner_sizer.Add(self.spin_type)
-        spinner_sizer.Add(
-            wx.StaticText(self, label="Length: "),
-            flag=wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT,
-        )
-        spinner_sizer.Add(self.spin_length)
+        self.spin_length = HexSpinner(self, maximum=MAX_LENGTH)
+        self.spin_length.setEnabled(False)
 
-        self.panel_sizer.Add(self.toolbar, flag=wx.EXPAND)
-        self.panel_sizer.Add(spinner_sizer, flag=wx.ALIGN_CENTER_HORIZONTAL)
+        spinner_layout = QFormLayout()
+        spinner_layout.addRow("Bank/Domain:", self.spin_domain)
+        spinner_layout.addRow("Type:", self.spin_type)
+        spinner_layout.addRow("Length:", self.spin_length)
 
-        self.SetSizerAndFit(self.panel_sizer)
+        self.setLayout(QVBoxLayout(self))
 
-        self.Bind(wx.EVT_TOOL, self.on_toolbox)
+        self.layout().addLayout(button_layout)
+        self.layout().addLayout(spinner_layout)
 
-    def on_toolbox(self, event):
-        tool_id = event.GetId()
+    def update(self):
+        if len(self.level_view_ref.level.selected_objects) == 1:
+            selected_object = self.level_view_ref.level.selected_objects[0]
 
-        if tool_id == ID_TOOL_ZOOM_OUT:
-            self.level_view_ref.zoom_out()
+            if isinstance(selected_object, LevelObject):
+                self._populate_spinners(selected_object)
 
-        elif tool_id == ID_TOOL_ZOOM_IN:
-            self.level_view_ref.zoom_in()
+        else:
+            self.disable_all()
 
-        elif tool_id == ID_TOOL_UNDO:
-            self.enable_redo()
+        super(SpinnerPanel, self).update()
 
-            # todo make events work
-            if self.level_view_ref.undo_stack.undo_index - 1 <= 0:
-                self.disable_undo()
+    def _populate_spinners(self, obj: LevelObject):
+        self.set_type(obj.type)
+        self.set_domain(obj.domain)
 
-            wx.PostEvent(self.GetParent(), UndoEvent(self.GetId()))
+        if obj.is_4byte:
+            self.set_length(obj.secondary_length)
+        else:
+            self.enable_length(False)
 
-        elif tool_id == ID_TOOL_REDO:
-            wx.PostEvent(self.GetParent(), RedoEvent(self.GetId()))
+    def on_undo(self):
+        self.enable_redo()
+
+        # todo make events work
+        if self.level_view_ref.undo_stack.undo_index - 1 <= 0:
+            self.disable_undo()
+
+        self.undo_triggered.emit()
+
+    def on_redo(self):
+        self.redo_triggered.emit()
 
     def disable_buttons(self, event):
         evt_id = event.GetEventType()
@@ -139,49 +131,49 @@ class SpinnerPanel(wx.Panel):
                 self.disable_redo()
 
     def disable_undo(self):
-        self.toolbar.EnableTool(ID_TOOL_UNDO, False)
+        self.undo_button.setEnabled(False)
 
     def enable_undo(self):
-        self.toolbar.EnableTool(ID_TOOL_UNDO, True)
+        self.undo_button.setEnabled(True)
 
     def disable_redo(self):
-        self.toolbar.EnableTool(ID_TOOL_REDO, False)
+        self.redo_button.setEnabled(False)
 
     def enable_redo(self):
-        self.toolbar.EnableTool(ID_TOOL_REDO, True)
+        self.redo_button.setEnabled(True)
 
     def get_type(self):
-        return self.spin_type.GetValue()
+        return self.spin_type.value()
 
     def set_type(self, object_type: int):
-        self.spin_type.SetValue(object_type)
-        self.spin_type.Enable()
+        self.spin_type.setValue(object_type)
+        self.spin_type.setEnabled(True)
 
     def get_domain(self):
-        return self.spin_domain.GetValue()
+        return self.spin_domain.value()
 
     def set_domain(self, domain: int):
-        self.spin_domain.SetValue(domain)
-        self.spin_domain.Enable()
+        self.spin_domain.setValue(domain)
+        self.spin_domain.setEnabled(True)
 
     def get_length(self) -> int:
-        return self.spin_length.GetValue()
+        return self.spin_length.value()
 
     def set_length(self, length: int):
-        self.spin_length.SetValue(length)
-        self.spin_length.Enable()
+        self.spin_length.setValue(length)
+        self.spin_length.setEnabled(True)
 
     def enable_type(self, enable: bool, value: int = 0):
-        self.spin_type.SetValue(value)
-        self.spin_type.Enable(enable)
+        self.spin_type.setValue(value)
+        self.spin_type.setEnabled(enable)
 
     def enable_domain(self, enable: bool, value: int = 0):
-        self.spin_domain.SetValue(value)
-        self.spin_domain.Enable(enable)
+        self.spin_domain.setValue(value)
+        self.spin_domain.setEnabled(enable)
 
     def enable_length(self, enable: bool, value: int = 0):
-        self.spin_length.SetValue(value)
-        self.spin_length.Enable(enable)
+        self.spin_length.setValue(value)
+        self.spin_length.setEnabled(enable)
 
     def clear_spinners(self):
         self.set_type(0x00)

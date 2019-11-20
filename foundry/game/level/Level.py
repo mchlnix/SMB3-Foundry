@@ -1,6 +1,7 @@
 from typing import List, Union, Optional, Tuple
 
-import wx
+from PySide2.QtCore import QRect, QPoint, QSize, Signal
+from PySide2.QtGui import QPainter, QBrush, QColor, Qt, QPen
 
 from foundry.game.Data import Mario3Level
 from foundry.game.File import ROM
@@ -39,6 +40,9 @@ class Level(LevelLike):
     WORLDS = len(world_indexes)
 
     HEADER_LENGTH = 9  # bytes
+
+    selection_changed = Signal()
+    data_changed = Signal()
 
     def __init__(self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set_number: int):
         super(Level, self).__init__(world, level, object_set_number)
@@ -441,33 +445,45 @@ class Level(LevelLike):
         else:
             return None
 
-    def draw(self, dc: wx.DC, block_length: int, transparency: bool):
-        bg_color = get_bg_color_for(self.object_set_number, self.header.object_palette_index)
+    @property
+    def selected_objects(self):
+        return [obj for obj in self.objects + self.enemies if obj.selected]
 
-        dc.SetBackground(wx.Brush(wx.Colour(bg_color)))
-        dc.SetPen(wx.Pen(wx.Colour(0x00, 0x00, 0x00, 0x80), width=1))
-        dc.SetBrush(wx.TRANSPARENT_BRUSH)
+    @selected_objects.setter
+    def selected_objects(self, selected_objects):
+        for obj in self.objects + self.enemies:
+            obj.selected = obj in selected_objects
 
-        dc.Clear()
+    def draw(self, painter: QPainter, block_length: int, transparency: bool):
+        bg_color = QColor(*get_bg_color_for(self.object_set_number, self.header.object_palette_index))
+
+        width, height = self.size
+
+        rect = QRect(QPoint(0, 0), QSize(width * block_length, height * block_length))
+
+        painter.fillRect(rect, QBrush(bg_color))
+        painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
+        painter.setBrush(Qt.NoBrush)
 
         if self.object_set_number == 9:  # desert
-            self._draw_floor(dc, block_length)
+            self._draw_floor(painter, block_length)
 
         for level_object in self.objects + self.enemies:
             level_object.render()
-            level_object.draw(dc, block_length, transparency)
+            level_object.draw(painter, block_length, transparency)
 
             if level_object.selected:
-                x, y, w, h = level_object.get_rect().Get()
+                x, y = level_object.get_rect().topLeft().toTuple()
+                w, h = level_object.get_rect().size().toTuple()
 
                 x *= block_length
                 w *= block_length
                 y *= block_length
                 h *= block_length
 
-                dc.DrawRectangle(wx.Rect(x, y, w, h))
+                painter.drawRect(QRect(x, y, w, h))
 
-    def _draw_floor(self, dc: wx.DC, block_length: int):
+    def _draw_floor(self, painter: QPainter, block_length: int):
         floor_level = 26
         floor_block_index = 86
 
@@ -478,7 +494,7 @@ class Level(LevelLike):
         floor_block = Block(floor_block_index, palette_group, pattern_table, tsa_data)
 
         for x in range(self.width):
-            floor_block.draw(dc, x * block_length, floor_level * block_length, block_length)
+            floor_block.draw(painter, x * block_length, floor_level * block_length, block_length)
 
     def paste_object_at(self, x: int, y: int, obj: Union[EnemyObject, LevelObject]) -> Union[EnemyObject, LevelObject]:
         if isinstance(obj, EnemyObject):

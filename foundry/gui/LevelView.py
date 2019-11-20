@@ -1,7 +1,9 @@
 from bisect import bisect_right
 from typing import List, Union, Optional, Tuple
 
-import wx
+from PySide2.QtCore import Signal, QSize
+from PySide2.QtGui import QPaintEvent, QPainter, QPen, QColor, QMouseEvent, Qt, QBrush
+from PySide2.QtWidgets import QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -9,7 +11,6 @@ from foundry.game.gfx.objects.LevelObject import SCREEN_WIDTH, SCREEN_HEIGHT, Le
 from foundry.game.level.Level import Level
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import ContextMenu
-from foundry.gui.Events import ObjectListUpdateEvent, JumpListUpdate
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.UndoStack import UndoStack
 
@@ -23,20 +24,28 @@ MODE_DRAG = 1
 MODE_RESIZE = 2
 
 
-class LevelView(wx.Panel):
-    def __init__(self, parent: wx.Window, context_menu: ContextMenu):
-        super(LevelView, self).__init__(parent)
-        self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
+class LevelView(QWidget):
+    # list of jumps
+    jumps_created = Signal(list)
 
-        self.level: Optional[Union[Level, WorldMap]] = None
+    # selected indexes, selected objects
+    objects_updated = Signal(list, list)
+
+    selection_changed = Signal()
+
+    def __init__(self, parent: QWidget, context_menu: ContextMenu):
+        super(LevelView, self).__init__(parent)
+
+        self.level: Level = None
         self.undo_stack = UndoStack(self)
 
         self.context_menu = context_menu
 
         self.grid_lines = False
         self.jumps = False
-        self.grid_pen = wx.Pen(colour=wx.Colour(0x80, 0x80, 0x80, 0x80), width=1)
-        self.screen_pen = wx.Pen(colour=wx.Colour(0xFF, 0x00, 0x00, 0xFF), width=1)
+
+        self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), width=1)
+        self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), width=1)
 
         self.zoom = 1
         self.block_length = Block.SIDE_LENGTH * self.zoom
@@ -44,8 +53,6 @@ class LevelView(wx.Panel):
         self.changed = False
 
         self.transparency = True
-
-        self.selected_objects: List[Union[LevelObject, EnemyObject]] = []
 
         self.selection_square = SelectionSquare()
 
@@ -62,30 +69,58 @@ class LevelView(wx.Panel):
 
         self.resizing_happened = False
 
-        self.Bind(wx.EVT_SIZE, self.on_size)
-        self.Bind(wx.EVT_PAINT, self.on_paint)
+    def mousePressEvent(self, event: QMouseEvent):
+        pressed_button = event.button()
 
-        self.Bind(wx.EVT_LEFT_DOWN, self.on_left_mouse_button_down)
-        self.Bind(wx.EVT_RIGHT_DOWN, self.on_right_mouse_button_down)
-        self.Bind(wx.EVT_MOTION, self.on_mouse_motion)
-        self.Bind(wx.EVT_LEFT_UP, self.on_left_mouse_button_up)
-        self.Bind(wx.EVT_RIGHT_UP, self.on_right_mouse_button_up)
+        if pressed_button == Qt.LeftButton:
+            self.on_left_mouse_button_down(event)
+        elif pressed_button == Qt.RightButton:
+            self.on_right_mouse_button_down(event)
+        else:
+            super(LevelView, self).mousePressEvent(event)
 
-    def on_mouse_motion(self, event):
+    def mouseMoveEvent(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG:
             self.dragging(event)
         elif self.mouse_mode == MODE_RESIZE:
-            self.resizing(event)
-            self.select_objects(self.selected_objects)
-        else:
-            if self.selection_square.active:
-                self.set_selection_end(event.GetPosition())
+            previously_selected_objects = self.level.selected_objects
 
-    def on_right_mouse_button_down(self, event):
+            self.resizing(event)
+
+            self.level.selected_objects = previously_selected_objects
+        elif self.selection_square.active:
+            self.set_selection_end(event.pos())
+        else:
+            super(LevelView, self).mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        released_button = event.button()
+
+        if released_button == Qt.LeftButton:
+            self.on_left_mouse_button_up(event)
+        elif released_button == Qt.RightButton:
+            self.on_right_mouse_button_up(event)
+        else:
+            super(LevelView, self).mouseReleaseEvent(event)
+
+    def sizeHint(self) -> QSize:
+        if self.level is None:
+            return super(LevelView, self).sizeHint()
+        else:
+            width, height = self.level.size
+
+            return QSize(width * self.block_length, height * self.block_length)
+
+    def update(self):
+        self.setMinimumSize(self.sizeHint())
+
+        super(LevelView, self).update()
+
+    def on_right_mouse_button_down(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG:
             return
 
-        x, y = event.GetPosition().Get()
+        x, y = event.pos().toTuple()
         level_x, level_y = self.to_level_point(x, y)
 
         self.last_mouse_position = level_x, level_y
@@ -97,15 +132,16 @@ class LevelView(wx.Panel):
 
             obj = self.object_at(x, y)
 
-            self.resize_obj_start_point = obj.x_position, obj.y_position
+            if obj is not None:
+                self.resize_obj_start_point = obj.x_position, obj.y_position
 
-    def resizing(self, event):
+    def resizing(self, event: QMouseEvent):
         self.resizing_happened = True
 
         if isinstance(self.level, WorldMap):
             return
 
-        x, y = event.GetPosition().Get()
+        x, y = event.pos().toTuple()
 
         level_x, level_y = self.to_level_point(x, y)
 
@@ -121,11 +157,11 @@ class LevelView(wx.Panel):
 
             self.level.changed = True
 
-        self.Refresh()
+        self.update()
 
     def on_right_mouse_button_up(self, event):
         if self.resizing_happened:
-            x, y = event.GetPosition().Get()
+            x, y = event.pos().toTuple()
 
             resize_end_x, _ = self.to_level_point(x, y)
 
@@ -137,13 +173,9 @@ class LevelView(wx.Panel):
             else:
                 menu = self.context_menu.as_background_menu()
 
-            adjusted_for_scrolling = self.ScreenToClient(
-                self.ClientToScreen(event.GetPosition())
-            )
+            self.context_menu.set_position(event.pos())
 
-            self.context_menu.set_position(event.GetPosition())
-
-            self.PopupMenu(menu, adjusted_for_scrolling)
+            menu.popup(event.pos())
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
@@ -155,23 +187,24 @@ class LevelView(wx.Panel):
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
 
-    def on_left_mouse_button_down(self, event):
+    def on_left_mouse_button_down(self, event: QMouseEvent):
         if self.mouse_mode == MODE_RESIZE:
             return
 
         if self.select_objects_on_click(event):
-            x, y = event.GetPosition().Get()
+            x, y = event.pos().toTuple()
 
             obj = self.object_at(x, y)
 
-            self.drag_start_point = obj.x_position, obj.y_position
+            if obj is not None:
+                self.drag_start_point = obj.x_position, obj.y_position
         else:
-            self.start_selection_square(event.GetPosition())
+            self.start_selection_square(event.pos())
 
-    def dragging(self, event):
+    def dragging(self, event: QMouseEvent):
         self.dragging_happened = True
 
-        x, y = event.GetPosition().Get()
+        x, y = event.pos().toTuple()
 
         level_x, level_y = self.to_level_point(x, y)
 
@@ -187,20 +220,21 @@ class LevelView(wx.Panel):
 
             self.level.changed = True
 
-        self.Refresh()
+        self.update()
 
-    def on_left_mouse_button_up(self, event):
+    def on_left_mouse_button_up(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            x, y = event.GetPosition().Get()
+            x, y = event.pos().toTuple()
 
             obj = self.object_at(x, y)
 
-            drag_end_point = obj.x_position, obj.y_position
+            if obj is not None:
+                drag_end_point = obj.x_position, obj.y_position
 
-            if self.drag_start_point != drag_end_point:
-                self.stop_drag()
-            else:
-                self.dragging_happened = False
+                if self.drag_start_point != drag_end_point:
+                    self.stop_drag()
+                else:
+                    self.dragging_happened = False
         else:
             self.stop_selection_square()
 
@@ -212,8 +246,8 @@ class LevelView(wx.Panel):
 
         self.dragging_happened = False
 
-    def select_objects_on_click(self, event) -> bool:
-        x, y = event.GetPosition().Get()
+    def select_objects_on_click(self, event: QMouseEvent) -> bool:
+        x, y = event.pos().toTuple()
         level_x, level_y = self.to_level_point(x, y)
 
         self.last_mouse_position = level_x, level_y
@@ -239,14 +273,12 @@ class LevelView(wx.Panel):
     def undo(self):
         self.level.from_bytes(*self.undo_stack.undo())
 
-        self.resize()
-        self.Refresh()
+        self.update()
 
     def redo(self):
         self.level.from_bytes(*self.undo_stack.redo())
 
-        self.resize()
-        self.Refresh()
+        self.update()
 
     def save_level_state(self):
         self.undo_stack.save_state(self.level.to_bytes())
@@ -258,24 +290,13 @@ class LevelView(wx.Panel):
         self.zoom = zoom
         self.block_length = int(Block.SIDE_LENGTH * self.zoom)
 
-        self.resize()
+        self.update()
 
     def zoom_out(self):
         self.set_zoom(self.zoom / 2)
 
     def zoom_in(self):
         self.set_zoom(self.zoom * 2)
-
-    def resize(self):
-        if self.level is not None:
-            self.SetMinSize(
-                wx.Size(*[side * self.block_length for side in self.level.size])
-            )
-            self.SetSize(self.GetMinSize())
-
-            self.GetParent().SetupScrolling(
-                rate_x=self.block_length, rate_y=self.block_length, scrollToTop=False
-            )
 
     def start_selection_square(self, position):
         self.selection_square.start(position)
@@ -286,24 +307,21 @@ class LevelView(wx.Panel):
 
         self.selection_square.set_current_end(position)
 
-        sel_rect = self.selection_square.get_adjusted_rect(
-            self.block_length, self.block_length
-        )
+        sel_rect = self.selection_square.get_adjusted_rect(self.block_length, self.block_length)
 
-        touched_objects = [
-            obj
-            for obj in self.level.get_all_objects()
-            if sel_rect.Intersects(obj.get_rect())
-        ]
+        touched_objects = [obj for obj in self.level.get_all_objects() if sel_rect.intersects(obj.get_rect())]
 
-        self.select_objects(touched_objects)
+        if touched_objects != self.level.selected_objects:
+            self._set_selected_objects(touched_objects)
 
-        self.Refresh()
+            self.selection_changed.emit()
+
+        self.update()
 
     def stop_selection_square(self):
         self.selection_square.stop()
 
-        self.Refresh()
+        self.update()
 
     def select_object(self, obj=None):
         if obj is not None:
@@ -312,39 +330,19 @@ class LevelView(wx.Panel):
             self.select_objects([])
 
     def select_objects(self, objects):
-        for obj in self.selected_objects:
-            obj.selected = False
+        self._set_selected_objects(objects)
 
-        for obj in objects:
-            obj.selected = True
+        self.update()
 
-        self.selected_objects = objects
-
-        selected_object_indexes = [self.index_of(obj) for obj in self.selected_objects]
-
-        evt = ObjectListUpdateEvent(
-            id=self.GetId(),
-            indexes=selected_object_indexes,
-            objects=self.get_selected_objects(),
-        )
-
-        wx.PostEvent(self, evt)
-
-        self.Refresh()
-
-    def set_selected_objects_by_index(self, indexes):
-        objects = [self.level.get_object(index) for index in indexes]
-
-        self.select_objects(objects)
+    def _set_selected_objects(self, objects):
+        self.level.selected_objects = objects
 
     def get_selected_objects(self) -> List[Union[LevelObject, EnemyObject]]:
-        return self.selected_objects
+        return self.level.selected_objects
 
     def remove_selected_objects(self):
-        for obj in self.selected_objects:
+        for obj in self.level.selected_objects:
             self.level.remove_object(obj)
-
-        self.selected_objects.clear()
 
     def was_changed(self) -> bool:
         if self.level is None:
@@ -367,8 +365,7 @@ class LevelView(wx.Panel):
                 additional_info = f"Would overwrite data of '{level}'."
             else:
                 additional_info = (
-                    "It wouldn't overwrite another level, "
-                    "but it might still overwrite other important data."
+                    "It wouldn't overwrite another level, " "but it might still overwrite other important data."
                 )
 
         elif self.level.too_many_enemies_or_items():
@@ -378,9 +375,7 @@ class LevelView(wx.Panel):
             reason = "Too many enemies or items."
 
             if level:
-                additional_info = (
-                    f"Would probably overwrite enemy/item data of '{level}'."
-                )
+                additional_info = f"Would probably overwrite enemy/item data of '{level}'."
             else:
                 additional_info = (
                     "It wouldn't overwrite enemy/item data of another level, "
@@ -395,16 +390,9 @@ class LevelView(wx.Panel):
 
         enemies_end = self.level.enemies_end
 
-        levels_by_enemy_offset = sorted(
-            Level.offsets, key=lambda level: level.enemy_offset
-        )
+        levels_by_enemy_offset = sorted(Level.offsets, key=lambda level: level.enemy_offset)
 
-        level_index = (
-            bisect_right(
-                [level.enemy_offset for level in levels_by_enemy_offset], enemies_end
-            )
-            - 1
-        )
+        level_index = bisect_right([level.enemy_offset for level in levels_by_enemy_offset], enemies_end) - 1
 
         found_level = levels_by_enemy_offset[level_index]
 
@@ -421,11 +409,7 @@ class LevelView(wx.Panel):
 
         level_index = (
             bisect_right(
-                [
-                    level.rom_level_offset - Level.HEADER_LENGTH
-                    for level in Level.sorted_offsets
-                ],
-                end_of_level_objects,
+                [level.rom_level_offset - Level.HEADER_LENGTH for level in Level.sorted_offsets], end_of_level_objects
             )
             - 1
         )
@@ -438,32 +422,21 @@ class LevelView(wx.Panel):
             return f"World {found_level.game_world} - {found_level.name}"
 
     def load_level(
-        self,
-        world: int,
-        level: int,
-        object_data_offset: int,
-        enemy_data_offset: int,
-        object_set_number: int,
+        self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set_number: int
     ):
         if world == 0:
             self.level = WorldMap(level)
         else:
-            self.level = Level(
-                world, level, object_data_offset, enemy_data_offset, object_set_number
-            )
+            self.level = Level(world, level, object_data_offset, enemy_data_offset, object_set_number)
 
             self.send_jump_event()
 
         self.undo_stack.clear(self.level.to_bytes())
 
-        self.resize()
-
         print(f"Drawing {self.level.name}")
 
     def send_jump_event(self):
-        evt = JumpListUpdate(id=wx.ID_ANY, jumps=self.level.jumps)
-
-        wx.PostEvent(self, evt)
+        self.jumps_created.emit(self.level.jumps)
 
     def add_jump(self, _):
         self.level.add_jump()
@@ -476,8 +449,6 @@ class LevelView(wx.Panel):
         self.send_jump_event()
 
         self.undo_stack.clear(self.level.to_bytes())
-
-        self.resize()
 
     def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
         level_x, level_y = self.to_level_point(x, y)
@@ -496,9 +467,6 @@ class LevelView(wx.Panel):
 
         return screen_x, screen_y
 
-    def on_size(self, _):
-        self.Refresh()
-
     def index_of(self, obj: Union[LevelObject, EnemyObject]) -> int:
         return self.level.index_of(obj)
 
@@ -510,7 +478,7 @@ class LevelView(wx.Panel):
 
         self.level.create_object_at(level_x, level_y, domain, object_index)
 
-        self.Refresh()
+        self.update()
 
     def create_enemy_at(self, x: int, y: int):
         level_x, level_y = self.to_level_point(x, y)
@@ -527,9 +495,7 @@ class LevelView(wx.Panel):
 
         self.level.add_enemy(enemy_index, level_x, level_y, index)
 
-    def replace_object(
-        self, obj: LevelObject, domain: int, obj_index: int, length: int
-    ):
+    def replace_object(self, obj: LevelObject, domain: int, obj_index: int, length: int):
         self.remove_object(obj)
 
         x, y = obj.get_position()
@@ -551,10 +517,14 @@ class LevelView(wx.Panel):
     def remove_jump(self, event):
         del self.level.jumps[event.GetInt()]
         self.send_jump_event()
-        self.Refresh()
+        self.update()
 
-    def paste_objects_at(self, paste_data: Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]],
-                         x: Optional[int] = None, y: Optional[int] = None):
+    def paste_objects_at(
+        self,
+        paste_data: Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]],
+        x: Optional[int] = None,
+        y: Optional[int] = None,
+    ):
         if x is None or y is None:
             level_x, level_y = self.last_mouse_position
         else:
@@ -572,11 +542,7 @@ class LevelView(wx.Panel):
             offset_x, offset_y = obj_x - ori_x, obj_y - ori_y
 
             try:
-                pasted_objects.append(
-                    self.level.paste_object_at(
-                        level_x + offset_x, level_y + offset_y, obj
-                    )
-                )
+                pasted_objects.append(self.level.paste_object_at(level_x + offset_x, level_y + offset_y, obj))
             except ValueError:
                 print("Tried pasting outside of level.")
 
@@ -585,71 +551,60 @@ class LevelView(wx.Panel):
     def get_object_names(self):
         return self.level.get_object_names()
 
-    def make_screenshot(self, dc: wx.MemoryDC):
+    def make_screenshot(self):
         if self.level is None:
             return
 
-        bitmap = wx.EmptyBitmap(*self.GetSize())
+        return self.grab()
 
-        dc.SelectObject(bitmap)
-
-        self.level.draw(dc, self.block_length, True)
-
-        return bitmap
-
-    def on_paint(self, event):
-        event.Skip()
-
-        dc = wx.BufferedPaintDC(self)
-        dc.Clear()
+    def paintEvent(self, event: QPaintEvent):
+        painter = QPainter(self)
 
         if self.level is None:
             return
 
-        self.level.draw(dc, self.block_length, self.transparency)
+        self.level.draw(painter, self.block_length, self.transparency)
 
         if self.grid_lines:
-            panel_width, panel_height = self.GetSize().Get()
+            panel_width, panel_height = self.size().toTuple()
 
-            dc.SetPen(self.grid_pen)
+            painter.setPen(self.grid_pen)
 
             for x in range(0, panel_width, self.block_length):
-                dc.DrawLine(x, 0, x, panel_height)
+                painter.drawLine(x, 0, x, panel_height)
             for y in range(0, panel_height, self.block_length):
-                dc.DrawLine(0, y, panel_width, y)
+                painter.drawLine(0, y, panel_width, y)
 
-            dc.SetPen(self.screen_pen)
+            painter.setPen(self.screen_pen)
 
             if self.level.is_vertical:
                 for y in range(0, panel_height, self.block_length * SCREEN_HEIGHT):
-                    dc.DrawLine(0, y, panel_width, y)
+                    painter.drawLine(0, y, panel_width, y)
             else:
                 for x in range(0, panel_width, self.block_length * SCREEN_WIDTH):
-                    dc.DrawLine(x, 0, x, panel_height)
+                    painter.drawLine(x, 0, x, panel_height)
 
         if self.jumps:
             for jump in self.level.jumps:
-                dc.SetBrush(
-                    wx.Brush(wx.Colour(0xFF, 0x00, 0x00), wx.BRUSHSTYLE_BDIAGONAL_HATCH)
-                )
+                painter.setBrush(QBrush(QColor(0xFF, 0x00, 0x00), Qt.FDiagPattern))
 
                 screen = jump.screen_index
 
                 if self.level.is_vertical:
-                    dc.DrawRectangle(
+                    painter.drawRect(
                         0,
                         self.block_length * SCREEN_WIDTH * screen,
                         self.block_length * SCREEN_WIDTH,
                         self.block_length * SCREEN_HEIGHT,
                     )
                 else:
-                    dc.DrawRectangle(
+                    painter.drawRect(
                         self.block_length * SCREEN_WIDTH * screen,
                         0,
                         self.block_length * SCREEN_WIDTH,
                         self.block_length * 27,
                     )
 
-        self.selection_square.draw(dc)
+        self.selection_square.draw(painter)
 
         return

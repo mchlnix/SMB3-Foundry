@@ -1,14 +1,15 @@
 from typing import Any, List
 
-import wx.adv
+from PySide2.QtGui import QImage, QIcon, QPixmap
+from PySide2.QtWidgets import QComboBox, QWidget, QSizePolicy
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 
 
-class ObjectDropdown(wx.adv.BitmapComboBox):
-    def __init__(self, parent: wx.Window):
+class ObjectDropdown(QComboBox):
+    def __init__(self, parent: QWidget):
         super(ObjectDropdown, self).__init__(parent)
 
         # the internal list of objects, which can be filtered down
@@ -16,8 +17,6 @@ class ObjectDropdown(wx.adv.BitmapComboBox):
 
         # text entered in the combobox to filter the items
         self._text: str = ""
-
-        self.Bind(wx.EVT_TEXT, self._update_filter_text)
 
     def set_object_factory(self, object_factory: LevelObjectFactory) -> None:
         self._on_object_factory_change(object_factory)
@@ -29,7 +28,7 @@ class ObjectDropdown(wx.adv.BitmapComboBox):
 
         :return: The real index of the selected object, or wx.NotFound if none is selected.
         """
-        current_value = self.GetValue()
+        current_value = self.currentIndex()
 
         for index, (object_description, *_) in enumerate(self._object_items):
             if current_value == object_description:
@@ -73,19 +72,16 @@ class ObjectDropdown(wx.adv.BitmapComboBox):
         self._fill_combobox()
 
     def _fill_combobox(self) -> None:
-        self.SetItems([])
+        self.clear()
 
         filter_values = self._text.lower().split(" ")
 
-        for description, bitmap, client_data in self._object_items:
+        for description, image, client_data in self._object_items:
             if filter_values:
-                if not all(
-                    filter_value in description.lower()
-                    for filter_value in filter_values
-                ):
+                if not all(filter_value in description.lower() for filter_value in filter_values):
                     continue
 
-            self.Append(description, bitmap, client_data)
+            self.addItem(QIcon(QPixmap(image)), description, client_data)
 
     def _add_object(self, domain: int, object_index: int) -> None:
         """
@@ -95,9 +91,7 @@ class ObjectDropdown(wx.adv.BitmapComboBox):
         :param int object_index: The index inside the domain of the object.
         """
 
-        level_object = self._object_factory.from_properties(
-            domain, object_index, x=0, y=0, length=1, index=0
-        )
+        level_object = self._object_factory.from_properties(domain, object_index, x=0, y=0, length=1, index=0)
 
         if not isinstance(level_object, LevelObject):
             return
@@ -105,25 +99,12 @@ class ObjectDropdown(wx.adv.BitmapComboBox):
         if level_object.description in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
             return
 
-        bitmap = self._resize_bitmap(level_object.as_bitmap())
+        bitmap = self._resize_bitmap(level_object.as_image())
 
-        self._object_items.append(
-            (level_object.description, bitmap, (domain, object_index))
-        )
+        self._object_items.append((level_object.description, bitmap, (domain, object_index)))
 
     @staticmethod
-    def _resize_bitmap(source_bitmap: wx.Bitmap) -> wx.Bitmap:
-        """
-        Takes a wx.Bitmap and scales it to the size of the ImageDropdown.
+    def _resize_bitmap(source_image: QImage) -> QImage:
+        image = source_image.scaled(Block.SIDE_LENGTH, Block.SIDE_LENGTH)
 
-        :param wx.Bitmap source_bitmap: Bitmap to resize.
-
-        :return: Resized copy of Bitmap.
-        :rtype: wx.Bitmap
-        """
-
-        image = source_bitmap.ConvertToImage()
-
-        image.Rescale(Block.SIDE_LENGTH, Block.SIDE_LENGTH)
-
-        return image.ConvertToBitmap()
+        return image

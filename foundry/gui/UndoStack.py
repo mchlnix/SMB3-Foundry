@@ -1,22 +1,24 @@
 from typing import List, Optional
 
 import wx
+from PySide2.QtCore import Signal
+from PySide2.QtWidgets import QWidget
 
 from foundry.game.level.Level import LevelByteData
-from foundry.gui.Events import (
-    UndoCompleteEvent,
-    UndoStackClearedEvent,
-    UndoStateSavedEvent,
-    RedoCompleteEvent,
-)
 
 UNDO_STACK_ID = wx.NewId()
 
 
-class UndoStack(wx.Window):
-    def __init__(self, parent: wx.Window):
+class UndoStack(QWidget):
+    undo_stack_cleared = Signal()
+    undo_stack_saved = Signal()
+    undo_complete = Signal()
+
+    # bool - redos left
+    redo_complete = Signal(bool)
+
+    def __init__(self, parent: QWidget):
         super(UndoStack, self).__init__(parent)
-        self.SetId(UNDO_STACK_ID)
 
         self.undo_stack: List[LevelByteData] = []
         self.undo_index = -1
@@ -25,7 +27,7 @@ class UndoStack(wx.Window):
         self.undo_stack = [new_initial_state]
         self.undo_index = 0
 
-        wx.PostEvent(self, UndoStackClearedEvent(self.GetId()))
+        self.undo_stack_cleared.emit()
 
     def save_state(self, data: LevelByteData):
         self.undo_index += 1
@@ -34,7 +36,7 @@ class UndoStack(wx.Window):
 
         self.undo_stack.append(data)
 
-        wx.PostEvent(self, UndoStateSavedEvent(self.GetId()))
+        self.undo_stack_saved.emit()
 
     def undo(self) -> Optional[LevelByteData]:
         if not self.undo_stack:
@@ -44,9 +46,7 @@ class UndoStack(wx.Window):
 
         data = self.undo_stack[self.undo_index]
 
-        evt = UndoCompleteEvent(id=self.GetId(), undos_left=self.undo_index > -1)
-
-        wx.PostEvent(self, evt)
+        self.undo_complete.emit()
 
         return data
 
@@ -58,10 +58,6 @@ class UndoStack(wx.Window):
 
         data = self.undo_stack[self.undo_index]
 
-        evt = RedoCompleteEvent(
-            id=self.GetId(), redos_left=self.undo_index + 1 < len(self.undo_stack)
-        )
-
-        wx.PostEvent(self, evt)
+        self.redo_complete.emit(self.undo_index + 1 < len(self.undo_stack))
 
         return data

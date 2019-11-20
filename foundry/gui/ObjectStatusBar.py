@@ -1,23 +1,33 @@
 from typing import Union
 
-import wx
+from PySide2.QtWidgets import QStatusBar, QMainWindow
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.gui.LevelView import LevelView
 
 
-class ObjectStatusBar(wx.StatusBar):
-    def __init__(self, parent: wx.Window):
+class ObjectStatusBar(QStatusBar):
+    def __init__(self, parent: QMainWindow, level_view_ref: LevelView):
         super(ObjectStatusBar, self).__init__(parent=parent)
 
-    def clear(self):
-        for i in range(self.GetFieldsCount()):
-            self.SetStatusText("", i)
+        self.level_view_ref = level_view_ref
 
-    def fill(self, obj: Union[LevelObject, EnemyObject]):
+    def clear(self):
+        self.clearMessage()
+
+    def update(self):
+        selected_objects = self.level_view_ref.level.selected_objects
+
+        if selected_objects:
+            self._fill(selected_objects[-1])
+
+    def _fill(self, obj: Union[LevelObject, EnemyObject]):
         info = obj.get_status_info()
 
-        self.SetFieldsCount(len(info))
+        message_parts = []
 
-        for index, (key, value) in enumerate(info):
-            self.SetStatusText(f"{key}: {value}", index)
+        for key, value in info:
+            message_parts.append(f"{key}: {value}")
+
+        self.showMessage(" | ".join(message_parts))

@@ -1,14 +1,24 @@
 import os
-from typing import Tuple, Optional, Union
+from logging import error
+from typing import Tuple
 from warnings import warn
 
-import wx
-import wx.lib.scrolledpanel
-from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QMenu, QMainWindow, QFileDialog, QMessageBox, QDialog
+from PySide2.QtGui import QIcon, Qt, QCloseEvent, QWheelEvent, QKeySequence
+from PySide2.QtWidgets import (
+    QMenu,
+    QMainWindow,
+    QFileDialog,
+    QMessageBox,
+    QDialog,
+    QAction,
+    QScrollArea,
+    QToolBar,
+    QSplitter,
+    QSizePolicy,
+    QShortcut,
+)
 
 from foundry.game.File import ROM
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.Level import Level
 from foundry.game.level.WorldMap import WorldMap
@@ -23,21 +33,7 @@ from foundry.gui.ContextMenu import (
     ID_CTX_PASTE,
     ID_CTX_CUT,
 )
-from foundry.gui.Events import (
-    EVT_REDO,
-    EVT_UNDO,
-    EVT_UNDO_COMPLETE,
-    EVT_REDO_COMPLETE,
-    EVT_UNDO_CLEARED,
-    EVT_UNDO_SAVED,
-    EVT_OBJ_LIST,
-    ObjectListUpdateEvent,
-    EVT_JUMP_LIST,
-    EVT_JUMP_UPDATE,
-    EVT_JUMP_ADDED,
-    EVT_JUMP_REMOVED,
-)
-from foundry.gui.HeaderEditor import HeaderEditor, EVT_HEADER_CHANGED
+from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
 from foundry.gui.LevelSelector import LevelSelector
@@ -46,10 +42,11 @@ from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectViewer import ObjectViewer
-from foundry.gui.SpinnerPanel import SpinnerPanel, ID_SPIN_DOMAIN, ID_SPIN_TYPE, ID_SPIN_LENGTH
+from foundry.gui.SpinnerPanel import SpinnerPanel
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
+IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 # file menu
 
@@ -152,8 +149,8 @@ class SMB3Foundry(QMainWindow):
         """
         file_menu.AppendSeparator()
         """
-        save_m3l_action = file_menu.addAction("&Save M3L")
-        save_m3l_action.triggered.connect(self.on_save_m3l)
+        self.save_m3l_action = file_menu.addAction("&Save M3L")
+        self.save_m3l_action.triggered.connect(self.on_save_m3l)
         """
         file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", "")
         file_menu.AppendSeparator()
@@ -163,7 +160,7 @@ class SMB3Foundry(QMainWindow):
         """
         file_menu.addSeparator()
         exit_action = file_menu.addAction("&Exit")
-        exit_action.triggered.connect(self.on_exit)
+        exit_action.triggered.connect(lambda _: self.close())
 
         self.menuBar().addMenu(file_menu)
 
@@ -191,7 +188,8 @@ class SMB3Foundry(QMainWindow):
         """
         level_menu.addAction("&Reload Level")
         level_menu.addSeparator()
-        level_menu.addAction("&Edit Header")
+        self.edit_header_action = level_menu.addAction("&Edit Header")
+        self.edit_header_action.triggered.connect(self.on_header_editor)
         """
         level_menu.Append(ID_EDIT_POINTERS, "&Edit Pointers", "")
         """
@@ -219,16 +217,23 @@ class SMB3Foundry(QMainWindow):
         self.menuBar().addMenu(object_menu)
 
         view_menu = QMenu("View")
+        view_menu.triggered.connect(self.on_menu)
 
         self._show_jump_action = view_menu.addAction("Jumps")
+        self._show_jump_action.setProperty("ID", ID_JUMPS)
         self._show_jump_action.setCheckable(True)
+
         self._show_grid_action = view_menu.addAction("&Grid lines")
+        self._show_grid_action.setProperty("ID", ID_GRID_LINES)
         self._show_grid_action.setCheckable(True)
+
         self._show_transparent_blocks_action = view_menu.addAction("&Block Transparency")
+        self._show_transparent_blocks_action.setProperty("ID", ID_TRANSPARENCY)
         self._show_transparent_blocks_action.setCheckable(True)
         self._show_transparent_blocks_action.setChecked(True)
+
         view_menu.addSeparator()
-        view_menu.addAction("&Save Screenshot of Level")
+        view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
         """
         view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
         view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
@@ -262,160 +267,85 @@ class SMB3Foundry(QMainWindow):
         self.block_viewer = None
         self.object_viewer = None
 
-        return
-
-        self.Bind(wx.EVT_MENU, self.on_open_rom, id=ID_OPEN_ROM)
-        self.Bind(wx.EVT_MENU, self.on_open_m3l, id=ID_OPEN_M3L)
-        self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM)
-        self.Bind(wx.EVT_MENU, self.on_save_rom, id=ID_SAVE_ROM_AS)
-        self.Bind(wx.EVT_MENU, self.on_save_m3l, id=ID_SAVE_M3L)
-        self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
-        self.Bind(wx.EVT_MENU, self.open_level_selector, id=ID_SELECT_LEVEL)
-        self.Bind(wx.EVT_MENU, self.on_block_viewer, id=ID_VIEW_BLOCKS)
-        self.Bind(wx.EVT_MENU, self.on_object_viewer, id=ID_VIEW_OBJECTS)
-        self.Bind(wx.EVT_MENU, self.on_header_editor, id=ID_EDIT_HEADER)
-        self.Bind(wx.EVT_MENU, self.on_about, id=ID_ABOUT)
-        self.Bind(wx.EVT_MENU, self.on_screenshot, id=ID_SCREEN_SHOT)
-
         self.context_menu = ContextMenu()
+        self.context_menu.triggered.connect(self.on_menu)
 
-        self.Bind(wx.EVT_MENU, self.on_menu)
-
-        self.Center()
         self.header_editor = None
 
-        horiz_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.scroll_panel = QScrollArea()
 
-        self.level_selector = LevelSelector(parent=self)
+        self.level_view = LevelView(self, self.context_menu)
+        self.scroll_panel.setWidget(self.level_view)
 
-        self.scroll_panel = wx.lib.scrolledpanel.ScrolledPanel(self)
-
-        self.level_view = LevelView(self.scroll_panel, self.context_menu)
-
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(self.level_view)
-
-        self.scroll_panel.SetSizer(sizer)
-
-        self.object_list = ObjectList(self, self.context_menu)
-
-        self.status_bar = ObjectStatusBar(parent=self)
-
-        vert_left = wx.BoxSizer(wx.VERTICAL)
-
-        vert_left.Add(self.scroll_panel, proportion=1, flag=wx.EXPAND)
-        # todo causes gtk warnings for some reason
-        vert_left.Add(self.status_bar, flag=wx.EXPAND)
-
-        vert_right = wx.BoxSizer(wx.VERTICAL)
+        self.setCentralWidget(self.scroll_panel)
 
         self.spinner_panel = SpinnerPanel(self, self.level_view)
 
-        vert_right.Add(self.spinner_panel, border=5, flag=wx.BOTTOM | wx.EXPAND)
+        self.object_list = ObjectList(self, self.level_view, self.context_menu)
+
+        self.object_list.itemSelectionChanged.connect(self.on_selection_changed)
+        self.level_view.selection_changed.connect(self.on_selection_changed)
 
         self.object_dropdown = ObjectDropdown(self)
 
-        vert_right.Add(self.object_dropdown, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND)
+        self.jump_list = JumpList(self)
 
-        vert_right.Add(self.object_list, proportion=1, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND)
+        splitter = QSplitter(self)
+        splitter.setOrientation(Qt.Vertical)
 
-        panel = wx.CollapsiblePane(self, wx.ID_ANY, "Jumps")
+        splitter.addWidget(self.object_list)
+        splitter.setStretchFactor(0, 1)
+        splitter.addWidget(self.jump_list)
 
-        win = panel.GetPane()
+        splitter.setChildrenCollapsible(False)
 
-        self.jump_list = JumpList(win)
+        toolbar = QToolBar(self)
+        toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        toolbar.setOrientation(Qt.Vertical)
+        toolbar.setFloatable(False)
 
-        self.Bind(EVT_JUMP_LIST, self.on_jump_list_change)
-        self.Bind(EVT_JUMP_ADDED, self.on_jump_added)
-        self.Bind(EVT_JUMP_REMOVED, self.on_jump_removed)
+        toolbar.addWidget(self.spinner_panel)
+        toolbar.addWidget(self.object_dropdown)
+        toolbar.addWidget(splitter)
 
-        panel_sizer = wx.BoxSizer(wx.VERTICAL)
-        win.SetSizer(panel_sizer)
-        panel_sizer.Add(self.jump_list, border=5, flag=wx.BOTTOM | wx.LEFT | wx.EXPAND)
+        toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
 
-        vert_right.Add(panel, 0, wx.GROW | wx.ALL, 5)
+        self.addToolBar(Qt.RightToolBarArea, toolbar)
 
-        horiz_sizer.Add(vert_left, proportion=10, flag=wx.EXPAND)
-        horiz_sizer.Add(vert_right, proportion=0, flag=wx.EXPAND)
+        self.status_bar = ObjectStatusBar(self, self.level_view)
+        self.setStatusBar(self.status_bar)
 
-        self.jump_list.Bind(wx.EVT_LISTBOX_DCLICK, self.on_jump_double_click)
+        self.delete_shortcut = QShortcut(QKeySequence(Qt.Key_Delete), self, self.remove_selected_objects)
 
-        self.SetSizer(horiz_sizer)
+        self.cut_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_X), self, self._cut_objects)
+        self.copy_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
+        self.paste_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
 
-        self.Bind(wx.EVT_LISTBOX, self.on_list_select)
-
-        self.Bind(wx.EVT_SPINCTRL, self.on_spin, id=ID_SPIN_DOMAIN)
-        self.Bind(wx.EVT_SPINCTRL, self.on_spin, id=ID_SPIN_TYPE)
-        self.Bind(wx.EVT_SPINCTRL, self.on_spin, id=ID_SPIN_LENGTH)
-
-        self.level_view.Bind(wx.EVT_MOUSEWHEEL, self.on_mouse_wheel)
-        self.level_view.Bind(wx.EVT_MIDDLE_UP, self.on_middle_click)
-
-        self.Bind(EVT_OBJ_LIST, self.on_objects_selected)
-
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
-
-        self.Bind(EVT_REDO, self.on_redo)
-        self.Bind(EVT_UNDO, self.on_undo)
-        self.Bind(EVT_UNDO_COMPLETE, self.spinner_panel.disable_buttons)
-        self.Bind(EVT_REDO_COMPLETE, self.spinner_panel.disable_buttons)
-        self.Bind(EVT_UNDO_CLEARED, self.spinner_panel.disable_buttons)
-        self.Bind(EVT_UNDO_SAVED, self.spinner_panel.disable_buttons)
-
-        self.Bind(EVT_HEADER_CHANGED, self.on_header_change)
-        self.Bind(EVT_JUMP_UPDATE, self.on_jump_change)
-
-        self.resize_obj_start_point = 0, 0
-        self.resize_mouse_start_x = 0
-        self.resizing_happened = False
-
-        self.drag_start_point = 0, 0
-        self.dragging_happened = False
-
-        self.Bind(wx.EVT_CLOSE, self.on_exit)
-
-        # this is needed, so that the scrolling panel doesn't reset
-        # after a redraw. not sure why. only needs to happen once
-        self.object_list.SetFocus()
-
-        self.Show()
+        self.showMaximized()
 
         if not self.on_open_rom(None):
-            wx.Exit()
+            self.close()
+
+    def on_selection_changed(self):
+        self.level_view.update()
+        self.object_list.update()
+        self.spinner_panel.update()
 
     def on_screenshot(self, _) -> bool:
         if self.level_view is None:
             return False
 
-        with wx.FileDialog(
-            self,
-            "Save Screenshot",
-            defaultFile=f"{ROM.name} - {self.level_view.level.name}.png",
-            defaultDir=os.path.expanduser("~"),
-            style=wx.FD_SAVE,
-            wildcard="Bitmap files (.png)|*.png|All files|*",
-        ) as fileDialog:
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return False
+        recommended_file = f"{os.path.expanduser('~')}/{ROM.name} - {self.level_view.level.name}.png"
 
-            # Proceed loading the file chosen by the user
-            pathname = fileDialog.GetPath()
-            try:
-                dc = wx.MemoryDC()
+        pathname, _ = QFileDialog.getSaveFileName(
+            self, caption="Save Screenshot", dir=recommended_file, filter=IMG_FILE_FILTER
+        )
 
-                bitmap = self.level_view.make_screenshot(dc)
+        # Proceed loading the file chosen by the user
+        self.level_view.make_screenshot().save(pathname)
 
-                dc.SelectObject(wx.NullBitmap)
-
-                img = bitmap.ConvertToImage()
-
-                img.SaveFile(pathname, wx.BITMAP_TYPE_PNG)
-
-                return True
-            except IOError:
-                wx.LogError("Cannot save file '%s'." % pathname)
-
-                return False
+        return True
 
     def update_title(self):
         if self.level_view.level is not None and ROM is not None:
@@ -430,9 +360,9 @@ class SMB3Foundry(QMainWindow):
             return False
 
         # otherwise ask the user what new file to open
-        pathname = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
+        pathname, _ = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
 
-        if pathname is None:
+        if not pathname:
             return False
 
         # Proceed loading the file chosen by the user
@@ -453,9 +383,9 @@ class SMB3Foundry(QMainWindow):
             return False
 
         # otherwise ask the user what new file to open
-        pathname = QFileDialog.getOpenFileName(self, caption="Open M3L file", filter=M3L_FILE_FILTER)
+        pathname, _ = QFileDialog.getOpenFileName(self, caption="Open M3L file", filter=M3L_FILE_FILTER)
 
-        if pathname is None:
+        if not pathname:
             return False
 
         # Proceed loading the file chosen by the user
@@ -478,10 +408,10 @@ class SMB3Foundry(QMainWindow):
         if self.level_view.was_changed():
             answer = QMessageBox.question(
                 self,
-                title="Please confirm",
-                text="Current content has not been saved! Proceed?",
-                buttons=[QMessageBox.No, QMessageBox.Yes],
-                defaultButton=QMessageBox.No,
+                "Please confirm",
+                "Current content has not been saved! Proceed?",
+                QMessageBox.No | QMessageBox.Yes,
+                QMessageBox.No,
             )
 
             return answer == QMessageBox.Yes
@@ -501,10 +431,10 @@ class SMB3Foundry(QMainWindow):
         if not safe_to_save:
             answer = QMessageBox.warning(
                 self,
-                title=reason,
-                text=f"{additional_info}\n\nDo you want to proceed?",
-                buttons=[QMessageBox.No, QMessageBox.Yes],
-                defaultButton=QMessageBox.No,
+                reason,
+                f"{additional_info}\n\nDo you want to proceed?",
+                QMessageBox.No | QMessageBox.Yes,
+                QMessageBox.No,
             )
 
             if answer == QMessageBox.No:
@@ -513,12 +443,12 @@ class SMB3Foundry(QMainWindow):
         if not self.level_view.level.attached_to_rom:
             QMessageBox.information(
                 self,
-                title="Importing M3L into ROM",
-                text="Please select the positions in the ROM you want the level objects and enemies/items to be stored.",
-                button0=QMessageBox.Ok,
+                "Importing M3L into ROM",
+                "Please select the positions in the ROM you want the level objects and enemies/items to be stored.",
+                QMessageBox.Ok,
             )
 
-            answer = self.level_selector.ShowModal()
+            answer = self.level_selector.exec_()
 
             if answer == QMessageBox.OK:
                 self.level_view.level.attach_to_rom(
@@ -533,7 +463,7 @@ class SMB3Foundry(QMainWindow):
                 return
 
         if is_save_as:
-            pathname = QFileDialog.getSaveFileName(self, caption="Save ROM as", filter=ROM_FILE_FILTER)
+            pathname, _ = QFileDialog.getSaveFileName(self, caption="Save ROM as", filter=ROM_FILE_FILTER)
             if pathname is None:
                 return  # the user changed their mind
         else:
@@ -559,18 +489,10 @@ class SMB3Foundry(QMainWindow):
         if not suggested_file.endswith(".m3l"):
             suggested_file += ".m3l"
 
-        with wx.FileDialog(
-            self,
-            "Save M3L as",
-            defaultFile=suggested_file,
-            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-            wildcard="M3L files (.m3l)|*.m3l|All files|*",
-        ) as fileDialog:
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return  # the user changed their mind
+        pathname, _ = QFileDialog.getSaveFileName(self, caption="Save M3L as", filter=M3L_FILE_FILTER)
 
-            # save the current contents in the file
-            pathname = fileDialog.GetPath()
+        if not pathname:
+            return
 
         try:
             level = self.level_view.level
@@ -578,29 +500,30 @@ class SMB3Foundry(QMainWindow):
             with open(pathname, "wb") as m3l_file:
                 m3l_file.write(level.to_m3l())
         except IOError:
-            wx.LogError("Cannot save current data in file '%s'." % pathname)
+            error(f"Cannot save current data in file '{pathname}'.")
 
-    def on_menu(self, event):
-        item_id = event.GetId()
+    def on_menu(self, action: QAction):
+        item_id = action.property("ID")
 
         if item_id in CHECKABLE_MENU_ITEMS:
-            self.on_menu_item_checked(event)
+            self.on_menu_item_checked(action)
+
         elif item_id in self.context_menu.get_all_menu_item_ids():
             x, y = self.context_menu.get_position()
 
             if item_id == ID_CTX_REMOVE:
                 self.remove_selected_objects()
             elif item_id == ID_CTX_ADD_OBJECT:
-                selected_object = self.object_dropdown.GetSelection()
+                selected_object = self.object_dropdown.currentIndex()
 
-                if selected_object == wx.NOT_FOUND:
+                if selected_object == -1:
                     self.create_object_at(x, y)
                 else:
                     self.place_object_from_dropdown(selected_object, (x, y))
             elif item_id == ID_CTX_ADD_ENEMY:
                 self.create_enemy_at(x, y)
             elif item_id == ID_CTX_CUT:
-                self._cut_object()
+                self._cut_objects()
             elif item_id == ID_CTX_COPY:
                 self._copy_objects()
             elif item_id == ID_CTX_PASTE:
@@ -610,10 +533,8 @@ class SMB3Foundry(QMainWindow):
 
         elif item_id == ID_RELOAD_LEVEL:
             self.reload_level()
-        else:
-            event.Skip()
 
-        self.level_view.Refresh()
+        self.level_view.update()
 
     def reload_level(self):
         if not self.safe_to_change():
@@ -657,7 +578,7 @@ class SMB3Foundry(QMainWindow):
         self.object_list.update()
         self.jump_list.update()
 
-    def _cut_object(self):
+    def _cut_objects(self):
         self._copy_objects()
         self.remove_selected_objects()
 
@@ -669,22 +590,20 @@ class SMB3Foundry(QMainWindow):
 
     @undoable
     def _paste_objects(self, x=None, y=None):
-        self.level_view.paste_objects_at(x, y, paste_data=self.context_menu.get_copied_objects())
+        self.level_view.paste_objects_at(self.context_menu.get_copied_objects(), x, y)
 
         self.object_list.update()
 
     @undoable
     def remove_selected_objects(self):
         self.level_view.remove_selected_objects()
-        self.object_list.remove_selected()
-        self.deselect_all()
+        self.object_list.update()
+        self.spinner_panel.disable_all()
 
-    def on_menu_item_checked(self, event):
-        item_id = event.GetId()
+    def on_menu_item_checked(self, action: QAction):
+        item_id = action.property("ID")
 
-        menu_item = event.GetEventObject().FindItemById(item_id)
-
-        checked = menu_item.IsChecked()
+        checked = action.isChecked()
 
         if item_id == ID_GRID_LINES:
             self.level_view.grid_lines = checked
@@ -768,50 +687,37 @@ class SMB3Foundry(QMainWindow):
         try:
             self.level_view.load_level(world, level, object_data_offset, enemy_data_offset, object_set)
         except IndexError:
-            wx.MessageBox(
-                "Failed loading level. The level offsets don't match.", "Please confirm", wx.ICON_ERROR | wx.OK, self
-            )
+            QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
 
             return
 
         self.set_up_gui_for_level()
 
     def set_up_gui_for_level(self):
-        self.Fit()
-
         if self.header_editor is not None and isinstance(self.level_view.level, Level):
             self.header_editor.reload_level()
 
-        self.object_list.fill()
+        self.object_list.update()
         self.update_title()
 
         is_a_world_map = self.level_view.level.world == 0
 
-        self.GetMenuBar().FindItemById(ID_SAVE_M3L).Enable(not is_a_world_map)
-        self.GetMenuBar().FindItemById(ID_EDIT_HEADER).Enable(not is_a_world_map)
+        self.save_m3l_action.setEnabled(not is_a_world_map)
+        self.edit_header_action.setEnabled(not is_a_world_map)
 
         if is_a_world_map:
             self.object_dropdown.Clear()
-            self.object_dropdown.Enable(False)
+            self.object_dropdown.setEnabled(False)
 
-            self.jump_list.Enable(False)
+            self.jump_list.setEnabled(False)
             self.jump_list.Clear()
         else:
-            self.object_dropdown.Enable(True)
+            self.object_dropdown.setEnabled(True)
             self.object_dropdown.set_object_factory(self.level_view.level.object_factory)
 
-            self.jump_list.Enable(True)
+            self.jump_list.setEnabled(True)
 
-    def on_list_select(self, _):
-        indexes = self.object_list.GetSelections()
-
-        self.level_view.set_selected_objects_by_index(indexes)
-
-        # activate scrolling and object editing, when only one is selected
-        if len(indexes) == 1:
-            self.select_object(index=indexes[0])
-        else:
-            self.spinner_panel.disable_all()
+        self.level_view.update()
 
     def on_jump_double_click(self, event):
         index = event.Int
@@ -840,60 +746,31 @@ class SMB3Foundry(QMainWindow):
     def on_jump_list_change(self, event):
         self.jump_list.set_jumps(event)
 
-    def on_key_press(self, event: wx.KeyEvent):
-        widget = self.FindFocus()
-
-        if isinstance(widget, wx.Control) and widget != self.object_list:
-            # check if we are in a widget taking user input. ignore our shortcuts, then
-            # the default widget with keyboard focus is the object list for some reason, so don't ignore then
-            event.Skip()
-
-            return
-
-        key = event.GetKeyCode()
-
-        if key in [wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE]:
-            self.remove_selected_objects()
-        elif event.ControlDown():
-            key = event.GetUnicodeKey()
-            if key == wx.WXK_NONE:
-                return
-
-            if key == ord("C"):
-                self._copy_objects()
-            elif key == ord("V"):
-                self._paste_objects()
-            elif key == ord("X"):
-                self._cut_object()
-
-            self.level_view.Refresh()
-        else:
-            event.Skip()
-
     def on_middle_click(self, event):
-        index = self.object_dropdown.GetSelection()
+        index = self.object_dropdown.currentIndex()
 
-        if index == wx.NOT_FOUND:
+        if index == -1:
             return
         else:
-            pos = event.GetPosition().Get()
+            pos = event.pos().toTuple()
 
             self.place_object_from_dropdown(index, pos)
 
     @undoable
     def place_object_from_dropdown(self, index: int, pos: Tuple[int, int]) -> None:
-        domain, object_index = self.object_dropdown.GetClientData(index)
+        domain, object_index = self.object_dropdown.currentData(Qt.UserRole)
 
         self.level_view.create_object_at(*pos, domain, object_index)
 
         self.object_list.update()
 
-    def on_mouse_wheel(self, event):
+    def wheelEvent(self, event: QWheelEvent):
+        x, y = event.pos().toTuple()
 
-        obj_under_cursor = self.level_view.object_at(*event.GetPosition().Get())
+        obj_under_cursor = self.level_view.object_at(x, y)
 
         if obj_under_cursor is None:
-            event.Skip()
+            return
         else:
             if isinstance(self.level_view.level, WorldMap):
                 return
@@ -906,100 +783,29 @@ class SMB3Foundry(QMainWindow):
             self.change_object_on_mouse_wheel(event)
 
     @undoable
-    def change_object_on_mouse_wheel(self, event):
-        obj_under_cursor = self.level_view.object_at(*event.GetPosition().Get())
+    def change_object_on_mouse_wheel(self, event: QWheelEvent):
+        x, y = event.pos().toTuple()
 
-        if event.GetWheelRotation() > 0:
+        obj_under_cursor = self.level_view.object_at(x, y)
+
+        if event.angleDelta() > 0:
             obj_under_cursor.increment_type()
         else:
             obj_under_cursor.decrement_type()
 
-        self.select_object(obj=obj_under_cursor)
-        self.object_list.fill()
+        obj_under_cursor.selected = True
 
-        self.level_view.Refresh()
-
-    def on_objects_selected(self, event):
-        objects = event.objects
-
-        self.status_bar.clear()
-        self.spinner_panel.disable_all()
-        self.object_list.SetSelection(wx.NOT_FOUND)
-
-        for index in event.indexes:
-            self.object_list.SetSelection(index)
-
-        if len(objects) == 1:
-            obj = objects[0]
-            self.status_bar.fill(obj)
-
-            if isinstance(obj, LevelObject):
-                self.spinner_panel.set_type(obj.obj_index)
-                self.spinner_panel.set_domain(obj.domain)
-
-                if obj.is_4byte:
-                    self.spinner_panel.set_length(obj.data[3])
-            elif isinstance(obj, EnemyObject):
-                self.spinner_panel.set_type(obj.obj_index)
-
-    def deselect_all(self):
-        self.level_view.select_object(None)
-
-        self.spinner_panel.disable_all()
-
-    def select_object(self, obj: Optional[Union[LevelObject, EnemyObject]] = None, index: Optional[int] = None):
-        should_scroll = True
-
-        self.level_view.select_object(None)
-        self.object_list.SetSelection(wx.NOT_FOUND)
-
-        if obj is None and index is None:
-            index = -1
-            self.on_objects_selected(ObjectListUpdateEvent(id=wx.ID_ANY, objects=[], indexes=[]))
-
-        if index is None:
-            # assume click on LevelView
-            should_scroll = False
-            index = self.level_view.index_of(obj)
-
-        if index == wx.NOT_FOUND:
-            self.spinner_panel.disable_all()
-        else:
-            if obj is None:
-                # assume click on object_list
-                should_scroll = True
-                obj = self.level_view.get_object(index)
-
-            self.level_view.select_object(obj)
-
-            if isinstance(self.level_view.level, Level):
-                if isinstance(obj, LevelObject):
-                    self.spinner_panel.enable_domain(True, obj.domain)
-                else:
-                    self.spinner_panel.enable_domain(False)
-
-                self.spinner_panel.enable_type(True, obj.obj_index)
-
-                if obj.is_4byte:
-                    self.spinner_panel.enable_length(True, obj.length)
-                else:
-                    self.spinner_panel.enable_length(False)
-
-            if should_scroll:
-                visible_blocks = self.scroll_panel.GetClientSize()[0] // self.scroll_panel.GetScrollPixelsPerUnit()[0]
-                scroll_offset = visible_blocks // 2
-
-                self.scroll_panel.Scroll(obj.x_position - scroll_offset, obj.y_position)
-
-        self.level_view.Refresh()
+        self.on_selection_changed()
 
     def on_about(self, _):
         about = AboutDialog(self)
 
         about.show()
 
-    def on_exit(self, _):
+    def closeEvent(self, event: QCloseEvent):
         if not self.safe_to_change():
+            event.ignore()
+
             return
 
         self.destroy()

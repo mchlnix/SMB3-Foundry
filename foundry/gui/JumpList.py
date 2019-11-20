@@ -1,4 +1,5 @@
 import wx
+from PySide2.QtWidgets import QListWidget, QWidget
 
 from foundry.gui.Events import JumpAdded, JumpRemoved
 
@@ -7,12 +8,12 @@ ID_DEL_JUMP = 2
 ID_EDIT_JUMP = 3
 
 
-class JumpList(wx.ListBox):
-    def __init__(self, parent: wx.Window):
+class JumpList(QListWidget):
+    def __init__(self, parent: QWidget):
         super(JumpList, self).__init__(parent)
 
-        self.Bind(wx.EVT_RIGHT_UP, self.on_right_click)
-        self.Bind(wx.EVT_MENU, self.on_menu)
+        # self.Bind(wx.EVT_RIGHT_UP, self.on_right_click)
+        # self.Bind(wx.EVT_MENU, self.on_menu)
 
     def set_jumps(self, event):
         jumps = event.jumps

@@ -1,12 +1,5 @@
 from PySide2.QtGui import QCloseEvent, QKeyEvent, Qt
-from PySide2.QtWidgets import (
-    QDialog,
-    QLabel,
-    QListWidget,
-    QComboBox,
-    QPushButton,
-    QGridLayout,
-)
+from PySide2.QtWidgets import QDialog, QLabel, QListWidget, QComboBox, QPushButton, QGridLayout
 
 from foundry.game.level.Level import Level
 from foundry.gui.HexSpinner import HexSpinner
@@ -146,9 +139,7 @@ class LevelSelector(QDialog):
         if self.selected_world == OVERWORLD_MAPS_INDEX:  # over-world maps
             level_array_offset = self.selected_level
         else:
-            level_array_offset = (
-                Level.world_indexes[self.selected_world] + self.selected_level
-            )
+            level_array_offset = Level.world_indexes[self.selected_world] + self.selected_level
 
         object_data_for_lvl = Level.offsets[level_array_offset].rom_level_offset
 
@@ -177,10 +168,10 @@ class LevelSelector(QDialog):
         )
 
     def on_ok(self, _):
-        self.object_set = self.object_set_dropdown.GetSelection()
-        self.object_data_offset = self.object_data_spinner.GetValue()
+        self.object_set = self.object_set_dropdown.currentIndex()
+        self.object_data_offset = self.object_data_spinner.value()
         # skip the first byte, because it seems useless
-        self.enemy_data_offset = self.enemy_data_spinner.GetValue() + 1
+        self.enemy_data_offset = self.enemy_data_spinner.value() + 1
 
         self.accept()
 

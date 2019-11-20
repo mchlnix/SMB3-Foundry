@@ -14,8 +14,7 @@ from foundry.gui.MainWindow import SMB3Foundry
 
 def main():
     app = QApplication()
-    ex = SMB3Foundry()
-    ex.showMaximized()
+    SMB3Foundry()
     app.exec_()
 
 

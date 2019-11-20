@@ -1,6 +1,7 @@
 from typing import List, Union, Tuple
 
-import wx
+from PySide2.QtCore import QPoint
+from PySide2.QtWidgets import QMenu
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
@@ -19,21 +20,33 @@ MODE_LIST = 2
 MAX_ORIGIN = 0xFF, 0xFF
 
 
-class ContextMenu(wx.Menu):
+class ContextMenu(QMenu):
     def __init__(self):
         super(ContextMenu, self).__init__()
 
         self.copied_objects = None
         self.copied_objects_origin = 0, 0
-        self.last_opened_at = wx.Point(0, 0)
+        self.last_opened_at = QPoint(0, 0)
 
-        self.Append(id=ID_CTX_CUT, item="Cut")
-        self.Append(id=ID_CTX_COPY, item="Copy")
-        self.Append(id=ID_CTX_PASTE, item="Paste")
-        self.AppendSeparator()
-        self.Append(id=ID_CTX_REMOVE, item="Remove")
-        self.Append(id=ID_CTX_ADD_OBJECT, item="Add Object")
-        self.Append(id=ID_CTX_ADD_ENEMY, item="Add Enemy/Item")
+        self.cut_action = self.addAction("Cut")
+        self.cut_action.setProperty("ID", ID_CTX_CUT)
+
+        self.copy_action = self.addAction("Copy")
+        self.copy_action.setProperty("ID", ID_CTX_COPY)
+
+        self.paste_action = self.addAction("Paste")
+        self.paste_action.setProperty("ID", ID_CTX_PASTE)
+
+        self.addSeparator()
+
+        self.remove_action = self.addAction("Remove")
+        self.remove_action.setProperty("ID", ID_CTX_REMOVE)
+
+        self.add_object_action = self.addAction("Add Object")
+        self.add_object_action.setProperty("ID", ID_CTX_ADD_OBJECT)
+
+        self.add_enemy_action = self.addAction("Add Enemy/Item")
+        self.add_enemy_action.setProperty("ID", ID_CTX_ADD_ENEMY)
 
     def set_copied_objects(self, objects: List[Union[LevelObject, EnemyObject]]):
         if not objects:
@@ -57,14 +70,16 @@ class ContextMenu(wx.Menu):
     def get_copied_objects(self) -> Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]]:
         return self.copied_objects, self.copied_objects_origin
 
-    def set_position(self, position: wx.Point):
+    def set_position(self, position: QPoint):
         self.last_opened_at = position
 
     def get_position(self) -> Tuple[int, int]:
-        return self.last_opened_at.Get()
+        x, y = self.last_opened_at.toTuple()
 
-    def get_all_menu_item_ids(self) -> List[int]:
-        return [item.GetId() for item in self.GetMenuItems()]
+        return x, y
+
+    def get_all_menu_item_ids(self):
+        return [action.property("ID") for action in self.actions()]
 
     def as_object_menu(self) -> "ContextMenu":
         self._setup_items(MODE_OBJ)
@@ -82,12 +97,11 @@ class ContextMenu(wx.Menu):
         return self
 
     def _setup_items(self, mode: int):
-        self.FindItemById(ID_CTX_CUT).Enable(not mode == MODE_BG)
-        self.FindItemById(ID_CTX_COPY).Enable(not mode == MODE_BG)
-        self.FindItemById(ID_CTX_PASTE).Enable(
-            not mode == MODE_LIST and bool(self.copied_objects)
-        )
 
-        self.FindItemById(ID_CTX_REMOVE).Enable(not mode == MODE_BG)
-        self.FindItemById(ID_CTX_ADD_OBJECT).Enable(not mode == MODE_LIST)
-        self.FindItemById(ID_CTX_ADD_ENEMY).Enable(not mode == MODE_LIST)
+        self.cut_action.setEnabled(not mode == MODE_BG)
+        self.copy_action.setEnabled(not mode == MODE_BG)
+        self.paste_action.setEnabled(not mode == MODE_LIST and bool(self.copied_objects))
+
+        self.remove_action.setEnabled(not mode == MODE_BG)
+        self.add_object_action.setEnabled(not mode == MODE_LIST)
+        self.add_enemy_action.setEnabled(not mode == MODE_LIST)
