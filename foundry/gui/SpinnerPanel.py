@@ -1,13 +1,10 @@
-from typing import Union
-
 from PySide2.QtCore import Signal
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QSizePolicy, QFormLayout, QVBoxLayout
 
 from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.gui.Events import EVT_UNDO_CLEARED, EVT_UNDO_COMPLETE, EVT_REDO_COMPLETE, EVT_UNDO_SAVED
-from foundry.gui.HexSpinner import HexSpinner
 from foundry.gui.LevelView import LevelView
+from foundry.gui.Spinner import Spinner
 
 ID_SPIN_DOMAIN = 1000
 ID_SPIN_TYPE = 1001
@@ -57,13 +54,13 @@ class SpinnerPanel(QWidget):
         button_layout.addWidget(self.zoom_out_button)
         button_layout.addWidget(self.zoom_in_button)
 
-        self.spin_domain = HexSpinner(self, maximum=MAX_DOMAIN)
+        self.spin_domain = Spinner(self, maximum=MAX_DOMAIN)
         self.spin_domain.setEnabled(False)
 
-        self.spin_type = HexSpinner(self, maximum=MAX_TYPE)
+        self.spin_type = Spinner(self, maximum=MAX_TYPE)
         self.spin_type.setEnabled(False)
 
-        self.spin_length = HexSpinner(self, maximum=MAX_LENGTH)
+        self.spin_length = Spinner(self, maximum=MAX_LENGTH)
         self.spin_length.setEnabled(False)
 
         spinner_layout = QFormLayout()

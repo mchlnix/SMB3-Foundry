@@ -2,7 +2,7 @@ from PySide2.QtGui import QCloseEvent, QKeyEvent, Qt
 from PySide2.QtWidgets import QDialog, QLabel, QListWidget, QComboBox, QPushButton, QGridLayout
 
 from foundry.game.level.Level import Level
-from foundry.gui.HexSpinner import HexSpinner
+from foundry.gui.Spinner import Spinner
 
 WORLD_ITEMS = [
     "World Maps",
@@ -68,10 +68,10 @@ class LevelSelector(QDialog):
         self.level_list.itemSelectionChanged.connect(self.on_level_click)
 
         self.enemy_data_label = QLabel(parent=self, text="Enemy Data")
-        self.enemy_data_spinner = HexSpinner(parent=self)
+        self.enemy_data_spinner = Spinner(parent=self)
 
         self.object_data_label = QLabel(parent=self, text="Object Data")
-        self.object_data_spinner = HexSpinner(self)
+        self.object_data_spinner = Spinner(self)
 
         self.object_set_label = QLabel(parent=self, text="Object Set")
         self.object_set_dropdown = QComboBox(self)

@@ -429,24 +429,21 @@ class LevelView(QWidget):
         else:
             self.level = Level(world, level, object_data_offset, enemy_data_offset, object_set_number)
 
-            self.send_jump_event()
+            self.objects_updated.emit()
 
         self.undo_stack.clear(self.level.to_bytes())
 
         print(f"Drawing {self.level.name}")
 
-    def send_jump_event(self):
-        self.jumps_created.emit(self.level.jumps)
-
-    def add_jump(self, _):
+    def add_jump(self):
         self.level.add_jump()
 
-        self.send_jump_event()
+        self.objects_updated.emit()
 
     def from_m3l(self, data: bytearray):
         self.level.from_m3l(data)
 
-        self.send_jump_event()
+        self.objects_updated.emit()
 
         self.undo_stack.clear(self.level.to_bytes())
 
@@ -514,9 +511,9 @@ class LevelView(QWidget):
     def remove_object(self, obj):
         self.level.remove_object(obj)
 
-    def remove_jump(self, event):
-        del self.level.jumps[event.GetInt()]
-        self.send_jump_event()
+    def remove_jump(self, index: int):
+        del self.level.jumps[index]
+        self.object_updated.emit()
         self.update()
 
     def paste_objects_at(

@@ -1,7 +1,8 @@
-import wx
-from PySide2.QtWidgets import QListWidget, QWidget
+from PySide2.QtCore import Signal
+from PySide2.QtGui import QContextMenuEvent
+from PySide2.QtWidgets import QListWidget, QWidget, QMenu
 
-from foundry.gui.Events import JumpAdded, JumpRemoved
+from foundry.gui.LevelView import LevelView
 
 ID_ADD_JUMP = 1
 ID_DEL_JUMP = 2
@@ -9,54 +10,36 @@ ID_EDIT_JUMP = 3
 
 
 class JumpList(QListWidget):
-    def __init__(self, parent: QWidget):
+    add_jump = Signal()
+    edit_jump = Signal()
+    remove_jump = Signal()
+
+    def __init__(self, parent: QWidget, level_view_ref: LevelView):
         super(JumpList, self).__init__(parent)
 
-        # self.Bind(wx.EVT_RIGHT_UP, self.on_right_click)
-        # self.Bind(wx.EVT_MENU, self.on_menu)
-
-    def set_jumps(self, event):
-        jumps = event.jumps
-
-        self.SetItems([str(jump) for jump in jumps])
-
-    def on_right_click(self, event):
-        index = self.HitTest(event.GetPosition())
-
-        menu = wx.Menu()
-
-        if index == wx.NOT_FOUND:
-            menu.Append(id=ID_ADD_JUMP, item="Add jump")
-
-        else:
-            menu = wx.Menu()
-
-            menu.Append(id=ID_EDIT_JUMP, item="Edit Jump")
-            menu.Append(id=ID_DEL_JUMP, item="Remove Jump")
-
-        self.PopupMenu(menu)
+        self._level_view_ref = level_view_ref
 
     def update(self):
-        # todo make an event or something
-        jumps = self.GetParent().GetParent().GetParent().level_view.level.jumps
+        jumps = self._level_view_ref.level.jumps
 
-        self.SetItems([str(jump) for jump in jumps])
+        self.clear()
 
-    def on_menu(self, event):
-        menu_item = event.GetId()
+        self.addItems([str(jump) for jump in jumps])
 
-        if menu_item == ID_EDIT_JUMP:
-            evt = wx.ListEvent(wx.wxEVT_LISTBOX_DCLICK, id=wx.ID_ANY)
-            evt.SetInt(self.GetSelection())
+    def contextMenuEvent(self, event: QContextMenuEvent):
+        item = self.itemAt(event.pos())
 
-            wx.PostEvent(self, evt)
-        elif menu_item == ID_ADD_JUMP:
-            evt = JumpAdded(id=wx.ID_ANY)
+        menu = QMenu()
 
-            wx.PostEvent(self, evt)
+        if item is None:
+            add_action = menu.addAction("Add Jump")
+            add_action.triggered.connect(self.add_jump.emit)
 
-        elif menu_item == ID_DEL_JUMP:
-            evt = JumpRemoved(id=wx.ID_ANY)
-            evt.SetInt(self.GetSelection())
+        else:
+            edit_action = menu.addAction("Edit Jump")
+            edit_action.triggered.connect(self.edit_jump.emit)
 
-            wx.PostEvent(self, evt)
+            remove_action = menu.addAction("Remove Jump")
+            remove_action.triggered.connect(self.remove_jump.emit)
+
+        menu.exec_(event.globalPos())

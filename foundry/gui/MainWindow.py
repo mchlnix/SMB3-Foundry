@@ -283,12 +283,15 @@ class SMB3Foundry(QMainWindow):
 
         self.object_list = ObjectList(self, self.level_view, self.context_menu)
 
-        self.object_list.itemSelectionChanged.connect(self.on_selection_changed)
+        self.object_list.selection_changed.connect(self.on_selection_changed)
         self.level_view.selection_changed.connect(self.on_selection_changed)
 
         self.object_dropdown = ObjectDropdown(self)
 
-        self.jump_list = JumpList(self)
+        self.jump_list = JumpList(self, self.level_view)
+        self.jump_list.add_jump.connect(self.on_jump_added)
+        self.jump_list.edit_jump.connect(self.on_jump_edit)
+        self.jump_list.remove_jump.connect(self.on_jump_removed)
 
         splitter = QSplitter(self)
         splitter.setOrientation(Qt.Vertical)
@@ -699,6 +702,7 @@ class SMB3Foundry(QMainWindow):
 
         self.object_list.update()
         self.update_title()
+        self.jump_list.update()
 
         is_a_world_map = self.level_view.level.world == 0
 
@@ -719,29 +723,32 @@ class SMB3Foundry(QMainWindow):
 
         self.level_view.update()
 
-    def on_jump_double_click(self, event):
-        index = event.Int
+    def on_jump_edit(self):
+        index = self.jump_list.currentIndex().row()
 
         jump_editor = JumpEditor(self, self.level_view.level.jumps[index], index)
 
-        jump_editor.Show()
+        jump_editor.jump_updated.connect(self.on_jump_edited)
+
+        jump_editor.exec_()
 
     @undoable
-    def on_jump_added(self, event):
-        self.level_view.add_jump(event)
+    def on_jump_added(self):
+        self.level_view.add_jump()
 
     @undoable
-    def on_jump_removed(self, event):
-        self.level_view.remove_jump(event)
+    def on_jump_removed(self):
+        self.level_view.remove_jump(self.jump_list.currentIndex())
 
     @undoable
-    def on_jump_change(self, event):
-        index = event.index
-        jump = event.jump
+    def on_jump_edited(self, jump):
+        index = self.jump_list.currentIndex().row()
+
+        assert index >= 0
 
         if isinstance(self.level_view.level, Level):
             self.level_view.level.jumps[index] = jump
-            self.jump_list.SetString(index, str(jump))
+            self.jump_list.item(index).setText(str(jump))
 
     def on_jump_list_change(self, event):
         self.jump_list.set_jumps(event)
