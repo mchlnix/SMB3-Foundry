@@ -29,7 +29,7 @@ class LevelView(QWidget):
     jumps_created = Signal(list)
 
     # selected indexes, selected objects
-    objects_updated = Signal(list, list)
+    objects_updated = Signal()
 
     selection_changed = Signal()
 
@@ -335,7 +335,12 @@ class LevelView(QWidget):
         self.update()
 
     def _set_selected_objects(self, objects):
+        if self.level.selected_objects == objects:
+            return
+
         self.level.selected_objects = objects
+
+        self.selection_changed.emit()
 
     def get_selected_objects(self) -> List[Union[LevelObject, EnemyObject]]:
         return self.level.selected_objects

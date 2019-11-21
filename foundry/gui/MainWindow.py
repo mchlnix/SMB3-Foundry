@@ -600,6 +600,7 @@ class SMB3Foundry(QMainWindow):
     @undoable
     def remove_selected_objects(self):
         self.level_view.remove_selected_objects()
+        self.level_view.update()
         self.object_list.update()
         self.spinner_panel.disable_all()
 

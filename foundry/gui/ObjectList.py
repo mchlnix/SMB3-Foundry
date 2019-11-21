@@ -2,33 +2,36 @@ from PySide2.QtCore import Signal, QItemSelectionModel, QRect
 from PySide2.QtGui import QWindow, QMouseEvent, Qt
 from PySide2.QtWidgets import QListWidget, QAbstractItemView, QSizePolicy
 
+from foundry.gui.LevelView import LevelView
 from foundry.gui.ContextMenu import ContextMenu
 
 
 class ObjectList(QListWidget):
     selection_changed = Signal()
 
-    def __init__(self, parent: QWindow, level_view_ref, context_menu: ContextMenu):
+    def __init__(self, parent: QWindow, level_view_ref: LevelView, context_menu: ContextMenu):
         super(ObjectList, self).__init__(parent=parent)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-        self.level_view_ref = level_view_ref
+        self.level_view_ref: LevelView = level_view_ref
 
         self.context_menu = context_menu
+
+        self.itemSelectionChanged.connect(self.on_selection_changed)
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.RightButton:
             self.on_right_down(event)
         else:
-            super(ObjectList, self).mousePressEvent(event)
+            return super(ObjectList, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.RightButton:
             self.on_right_up(event)
         else:
-            super(ObjectList, self).mouseReleaseEvent(event)
+            return super(ObjectList, self).mouseReleaseEvent(event)
 
     def on_right_down(self, event: QMouseEvent):
         item_under_mouse = self.itemAt(event.pos())
@@ -40,9 +43,13 @@ class ObjectList(QListWidget):
         if not item_under_mouse.isSelected():
             self.clearSelection()
 
-            self.setItemSelected(item_under_mouse, True)
+            index = self.indexFromItem(item_under_mouse)
 
-            self.parent().on_list_select(None)
+            selected_object = self.level_view_ref.level.get_all_objects()[index.row()]
+
+            self.level_view_ref.level.selected_objects = [selected_object]
+
+            self.selection_changed.emit()
 
     def on_right_up(self, event):
         item_under_mouse = self.itemAt(event.pos())
@@ -52,13 +59,6 @@ class ObjectList(QListWidget):
             return
 
         self.context_menu.as_list_menu().popup(event.globalPos())
-
-    def setSelection(self, rect: QRect, command: QItemSelectionModel.SelectionFlags):
-        super(ObjectList, self).setSelection(rect, command)
-
-        selected_objects = [self.item(index.row()).data(Qt.UserRole) for index in self.selectedIndexes()]
-
-        self.level_view_ref.level.selected_objects = selected_objects
 
     def update(self):
         level_objects = self.level_view_ref.level.get_all_objects()
@@ -81,3 +81,16 @@ class ObjectList(QListWidget):
 
         if self.selectedIndexes():
             self.scrollTo(self.selectedIndexes()[-1])
+
+    def selected_objects(self):
+        return [self.item(index.row()).data(Qt.UserRole) for index in self.selectedIndexes()]
+
+    def on_selection_changed(self):
+        selected_objects = self.selected_objects()
+
+        selection_not_changed = selected_objects == self.level_view_ref.level.selected_objects
+
+        if selection_not_changed:
+            return
+
+        self.selection_changed.emit()
