@@ -1,8 +1,8 @@
 from PySide2.QtGui import Qt, QKeyEvent
-from PySide2.QtWidgets import QMainWindow
+from PySide2.QtWidgets import QMainWindow, QDialog
 
 
-class CustomDialog(QMainWindow):
+class CustomDialog(QDialog):
     def __init__(self, parent, title="Title"):
         super(CustomDialog, self).__init__(parent)
 
