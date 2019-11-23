@@ -1,8 +1,8 @@
 import wx
 import wx.lib.newevent
 
+from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
-from foundry.gui.LevelView import LevelView
 
 LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]
 STR_LEVEL_LENGTHS = [f"{length:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS]
@@ -97,13 +97,12 @@ SPINNER_MAX_VALUE = 0x0F_FF_FF
 
 
 class HeaderEditor(wx.Frame):
-    def __init__(self, parent: wx.Window, level_view_ref: LevelView):
+    def __init__(self, parent: wx.Window, level_ref: LevelRef):
         super(HeaderEditor, self).__init__(
             parent, title="Level Header Editor", style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE
         )
 
-        self.level_view_ref: LevelView = level_view_ref
-        self.level_ref = self.level_view_ref.level
+        self.level_ref: LevelRef = level_ref
 
         self.SetId(ID_HEADER_EDITOR)
 
@@ -179,119 +178,121 @@ class HeaderEditor(wx.Frame):
             flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT,
         )
 
+    @property
+    def _level(self):
+        return self.level_ref.level
+
     def _fill_widgets(self):
-        length_index = LEVEL_LENGTHS.index(self.level_ref.length - 1)
+        length_index = LEVEL_LENGTHS.index(self._level.length - 1)
 
         self.length_dropdown.SetSelection(length_index)
-        self.music_dropdown.SetSelection(self.level_ref.music_index)
-        self.time_dropdown.SetSelection(self.level_ref.time_index)
-        self.v_scroll_direction_dropdown.SetSelection(self.level_ref.scroll_type)
-        self.level_is_vertical_cb.SetValue(self.level_ref.is_vertical)
-        self.pipe_ends_level_cb.SetValue(self.level_ref.pipe_ends_level)
+        self.music_dropdown.SetSelection(self._level.music_index)
+        self.time_dropdown.SetSelection(self._level.time_index)
+        self.v_scroll_direction_dropdown.SetSelection(self._level.scroll_type)
+        self.level_is_vertical_cb.SetValue(self._level.is_vertical)
+        self.pipe_ends_level_cb.SetValue(self._level.pipe_ends_level)
 
-        self.x_position_dropdown.SetSelection(self.level_ref.start_x_index)
-        self.y_position_dropdown.SetSelection(self.level_ref.start_y_index)
-        self.action_dropdown.SetSelection(self.level_ref.start_action)
+        self.x_position_dropdown.SetSelection(self._level.start_x_index)
+        self.y_position_dropdown.SetSelection(self._level.start_y_index)
+        self.action_dropdown.SetSelection(self._level.start_action)
 
-        self.object_palette_spinner.SetValue(self.level_ref.object_palette_index)
-        self.enemy_palette_spinner.SetValue(self.level_ref.enemy_palette_index)
-        self.graphic_set_dropdown.SetSelection(self.level_ref.graphic_set)
+        self.object_palette_spinner.SetValue(self._level.object_palette_index)
+        self.enemy_palette_spinner.SetValue(self._level.enemy_palette_index)
+        self.graphic_set_dropdown.SetSelection(self._level.graphic_set)
 
-        self.level_pointer_spinner.SetValue(self.level_ref.next_area_objects)
-        self.enemy_pointer_spinner.SetValue(self.level_ref.next_area_enemies)
-        self.next_area_object_set_dropdown.SetSelection(self.level_ref.next_area_object_set)
+        self.level_pointer_spinner.SetValue(self._level.next_area_objects)
+        self.enemy_pointer_spinner.SetValue(self._level.next_area_enemies)
+        self.next_area_object_set_dropdown.SetSelection(self._level.next_area_object_set)
 
-    def reload_level(self):
-        self.level_ref = self.level_view_ref.level
-
+    def update(self):
         self._fill_widgets()
 
     def on_spin(self, event: wx.SpinEvent):
-        if self.level_ref is None:
+        if self._level is None:
             return
 
         spin_id = event.GetId()
 
         if spin_id == self.object_palette_spinner.GetId():
             new_index = self.object_palette_spinner.GetValue()
-            self.level_ref.object_palette_index = new_index
+            self._level.object_palette_index = new_index
 
         elif spin_id == self.enemy_palette_spinner.GetId():
             new_index = self.enemy_palette_spinner.GetValue()
-            self.level_ref.enemy_palette_index = new_index
+            self._level.enemy_palette_index = new_index
 
         elif spin_id == self.level_pointer_spinner.GetId():
             new_offset = self.level_pointer_spinner.GetValue()
-            self.level_ref.next_area_objects = new_offset
+            self._level.next_area_objects = new_offset
 
         elif spin_id == self.enemy_pointer_spinner:
             new_offset = self.enemy_pointer_spinner.GetValue()
-            self.level_ref.next_area_enemies = new_offset
+            self._level.next_area_enemies = new_offset
 
         wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
-        self.level_ref.reload()
-        self.level_view_ref.update_size()
-        self.level_view_ref.Refresh()
+        self._level.reload()
+        self.level_ref.update_size()
+        self.level_ref.Refresh()
 
     def on_combo(self, event):
         combo_id = event.GetId()
 
         if combo_id == self.length_dropdown.GetId():
             new_length = LEVEL_LENGTHS[self.length_dropdown.GetSelection()]
-            self.level_ref.length = new_length
+            self._level.length = new_length
 
         elif combo_id == self.music_dropdown.GetId():
             new_music = self.music_dropdown.GetSelection()
-            self.level_ref.music_index = new_music
+            self._level.music_index = new_music
 
         elif combo_id == self.time_dropdown.GetId():
             new_time = self.time_dropdown.GetSelection()
-            self.level_ref.time_index = new_time
+            self._level.time_index = new_time
 
         elif combo_id == self.x_position_dropdown.GetId():
             new_x = self.x_position_dropdown.GetSelection()
-            self.level_ref.start_x_index = new_x
+            self._level.start_x_index = new_x
 
         elif combo_id == self.v_scroll_direction_dropdown.GetId():
             new_scroll = self.v_scroll_direction_dropdown.GetSelection()
-            self.level_ref.scroll_type = new_scroll
+            self._level.scroll_type = new_scroll
 
         elif combo_id == self.y_position_dropdown.GetId():
             new_y = self.y_position_dropdown.GetSelection()
-            self.level_ref.start_y_index = new_y
+            self._level.start_y_index = new_y
 
         elif combo_id == self.action_dropdown.GetId():
             new_action = self.action_dropdown.GetSelection()
-            self.level_ref.start_action = new_action
+            self._level.start_action = new_action
 
         elif combo_id == self.graphic_set_dropdown.GetId():
             new_gfx_set = self.graphic_set_dropdown.GetSelection()
-            self.level_ref.graphic_set = new_gfx_set
+            self._level.graphic_set = new_gfx_set
 
         elif combo_id == self.next_area_object_set_dropdown.GetId():
             new_object_set = self.next_area_object_set_dropdown.GetSelection()
-            self.level_ref.next_area_object_set = new_object_set
+            self._level.next_area_object_set = new_object_set
 
         wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
-        self.level_ref.reload()
-        self.level_view_ref.update_size()
-        self.level_view_ref.Refresh()
+        self._level.reload()
+        self.level_ref.update_size()
+        self.level_ref.Refresh()
 
     def on_check_box(self, event):
         cb_id = event.GetId()
 
         if cb_id == self.pipe_ends_level_cb.GetId():
-            self.level_ref.pipe_ends_level = self.pipe_ends_level_cb.GetValue()
+            self._level.pipe_ends_level = self.pipe_ends_level_cb.GetValue()
         elif cb_id == self.level_is_vertical_cb.GetId():
-            self.level_ref.is_vertical = self.level_is_vertical_cb.GetValue()
+            self._level.is_vertical = self.level_is_vertical_cb.GetValue()
 
         wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
 
-        self.level_ref.reload()
-        self.level_view_ref.update_size()
-        self.level_view_ref.Refresh()
+        self._level.reload()
+        self.level_ref.update_size()
+        self.level_ref.Refresh()
 
     def refresh(self):
         self._fill_widgets()

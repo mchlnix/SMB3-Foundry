@@ -21,6 +21,7 @@ from PySide2.QtWidgets import (
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.Level import Level
+from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.BlockViewer import BlockViewer
@@ -122,7 +123,7 @@ MODE_RESIZE = 2
 def undoable(func):
     def wrapped(self, *args):
         func(self, *args)
-        self.level_view.save_level_state()
+        self.level_ref.save_level_state()
 
     return wrapped
 
@@ -274,21 +275,23 @@ class SMB3Foundry(QMainWindow):
 
         self.scroll_panel = QScrollArea()
 
-        self.level_view = LevelView(self, self.context_menu)
+        self.level_ref = LevelRef()
+        self.level_ref.data_changed.connect(self.on_selection_changed)
+
+        self.level_view = LevelView(self, self.level_ref, self.context_menu)
         self.scroll_panel.setWidget(self.level_view)
 
         self.setCentralWidget(self.scroll_panel)
 
-        self.spinner_panel = SpinnerPanel(self, self.level_view)
+        self.spinner_panel = SpinnerPanel(self, self.level_ref)
+        self.spinner_panel.zoom_in_triggered.connect(self.level_view.zoom_in)
+        self.spinner_panel.zoom_out_triggered.connect(self.level_view.zoom_out)
 
-        self.object_list = ObjectList(self, self.level_view, self.context_menu)
-
-        self.object_list.selection_changed.connect(self.on_selection_changed)
-        self.level_view.selection_changed.connect(self.on_selection_changed)
+        self.object_list = ObjectList(self, self.level_ref, self.context_menu)
 
         self.object_dropdown = ObjectDropdown(self)
 
-        self.jump_list = JumpList(self, self.level_view)
+        self.jump_list = JumpList(self, self.level_ref)
         self.jump_list.add_jump.connect(self.on_jump_added)
         self.jump_list.edit_jump.connect(self.on_jump_edit)
         self.jump_list.remove_jump.connect(self.on_jump_removed)
@@ -316,7 +319,7 @@ class SMB3Foundry(QMainWindow):
 
         self.addToolBar(Qt.RightToolBarArea, toolbar)
 
-        self.status_bar = ObjectStatusBar(self, self.level_view)
+        self.status_bar = ObjectStatusBar(self, self.level_ref)
         self.setStatusBar(self.status_bar)
 
         self.delete_shortcut = QShortcut(QKeySequence(Qt.Key_Delete), self, self.remove_selected_objects)
@@ -325,10 +328,10 @@ class SMB3Foundry(QMainWindow):
         self.copy_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
         self.paste_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
 
-        self.showMaximized()
-
-        if not self.on_open_rom(None):
+        if not self.on_open_rom():
             self.close()
+
+        self.showMaximized()
 
     def on_selection_changed(self):
         self.level_view.update()
@@ -339,7 +342,7 @@ class SMB3Foundry(QMainWindow):
         if self.level_view is None:
             return False
 
-        recommended_file = f"{os.path.expanduser('~')}/{ROM.name} - {self.level_view.level.name}.png"
+        recommended_file = f"{os.path.expanduser('~')}/{ROM.name} - {self.level_view.level_ref.name}.png"
 
         pathname, _ = QFileDialog.getSaveFileName(
             self, caption="Save Screenshot", dir=recommended_file, filter=IMG_FILE_FILTER
@@ -351,14 +354,14 @@ class SMB3Foundry(QMainWindow):
         return True
 
     def update_title(self):
-        if self.level_view.level is not None and ROM is not None:
-            title = f"{self.level_view.level.name} - {ROM.name}"
+        if self.level_view.level_ref is not None and ROM is not None:
+            title = f"{self.level_view.level_ref.name} - {ROM.name}"
         else:
             title = "SMB3Foundry"
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self, _) -> bool:
+    def on_open_rom(self) -> bool:
         if not self.safe_to_change():
             return False
 
@@ -371,8 +374,6 @@ class SMB3Foundry(QMainWindow):
         # Proceed loading the file chosen by the user
         try:
             ROM.load_from_file(pathname)
-
-            self.level_view.level = None
 
             self.open_level_selector(None)
 
@@ -401,14 +402,17 @@ class SMB3Foundry(QMainWindow):
 
             return False
 
-        self.level_view.level.name = os.path.basename(pathname)
+        self.level_view.level_ref.name = os.path.basename(pathname)
 
         self.set_up_gui_for_level()
 
         return True
 
     def safe_to_change(self) -> bool:
-        if self.level_view.was_changed():
+        if not self.level_ref:
+            return True
+
+        if self.level_ref.changed:
             answer = QMessageBox.question(
                 self,
                 "Please confirm",
@@ -443,7 +447,7 @@ class SMB3Foundry(QMainWindow):
             if answer == QMessageBox.No:
                 return
 
-        if not self.level_view.level.attached_to_rom:
+        if not self.level_view.level_ref.attached_to_rom:
             QMessageBox.information(
                 self,
                 "Importing M3L into ROM",
@@ -454,14 +458,14 @@ class SMB3Foundry(QMainWindow):
             answer = self.level_selector.exec_()
 
             if answer == QMessageBox.OK:
-                self.level_view.level.attach_to_rom(
+                self.level_view.level_ref.attach_to_rom(
                     self.level_selector.object_data_offset, self.level_selector.enemy_data_offset
                 )
 
                 if is_save_as:
                     # if we save to another rom, don't consider the level
                     # attached (to the current rom)
-                    self.level_view.level.attached_to_rom = False
+                    self.level_view.level_ref.attached_to_rom = False
             else:
                 return
 
@@ -473,7 +477,7 @@ class SMB3Foundry(QMainWindow):
             pathname = ROM.path
 
         try:
-            level = self.level_view.level
+            level = self.level_view.level_ref
 
             for offset, data in level.to_bytes():
                 ROM().bulk_write(data, offset)
@@ -482,12 +486,12 @@ class SMB3Foundry(QMainWindow):
 
             self.update_title()
 
-            self.level_view.level.changed = False
+            self.level_view.level_ref.changed = False
         except IOError:
             warn("Cannot save current data in file '%s'." % pathname)
 
     def on_save_m3l(self, _):
-        suggested_file = self.level_view.level.name
+        suggested_file = self.level_view.level_ref.name
 
         if not suggested_file.endswith(".m3l"):
             suggested_file += ".m3l"
@@ -498,7 +502,7 @@ class SMB3Foundry(QMainWindow):
             return
 
         try:
-            level = self.level_view.level
+            level = self.level_view.level_ref
 
             with open(pathname, "wb") as m3l_file:
                 m3l_file.write(level.to_m3l())
@@ -543,11 +547,11 @@ class SMB3Foundry(QMainWindow):
         if not self.safe_to_change():
             return
 
-        world = self.level_view.level.world
-        level = self.level_view.level.level
-        object_data = self.level_view.level.object_offset
-        enemy_data = self.level_view.level.enemy_offset
-        object_set = self.level_view.level.object_set
+        world = self.level_view.level_ref.world
+        level = self.level_view.level_ref.level
+        object_data = self.level_view.level_ref.object_offset
+        enemy_data = self.level_view.level_ref.enemy_offset
+        object_set = self.level_view.level_ref.object_set
 
         self.update_level(world, level, object_data, enemy_data, object_set)
 
@@ -682,14 +686,14 @@ class SMB3Foundry(QMainWindow):
 
     def on_header_editor(self, _):
         if self.header_editor is None:
-            self.header_editor = HeaderEditor(parent=self, level_view_ref=self.level_view)
+            self.header_editor = HeaderEditor(self, self.level_ref)
 
         self.header_editor.Show()
         self.header_editor.Raise()
 
     def update_level(self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set: int):
         try:
-            self.level_view.load_level(world, level, object_data_offset, enemy_data_offset, object_set)
+            self.level_ref.load_level(world, level, object_data_offset, enemy_data_offset, object_set)
         except IndexError:
             QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
 
@@ -698,14 +702,14 @@ class SMB3Foundry(QMainWindow):
         self.set_up_gui_for_level()
 
     def set_up_gui_for_level(self):
-        if self.header_editor is not None and isinstance(self.level_view.level, Level):
-            self.header_editor.reload_level()
+        if self.header_editor is not None and isinstance(self.level_view.level_ref, Level):
+            self.header_editor.update()
 
         self.object_list.update()
         self.update_title()
         self.jump_list.update()
 
-        is_a_world_map = self.level_view.level.world == 0
+        is_a_world_map = self.level_view.level_ref.world == 0
 
         self.save_m3l_action.setEnabled(not is_a_world_map)
         self.edit_header_action.setEnabled(not is_a_world_map)
@@ -718,7 +722,7 @@ class SMB3Foundry(QMainWindow):
             self.jump_list.Clear()
         else:
             self.object_dropdown.setEnabled(True)
-            self.object_dropdown.set_object_factory(self.level_view.level.object_factory)
+            self.object_dropdown.set_object_factory(self.level_view.level_ref.object_factory)
 
             self.jump_list.setEnabled(True)
 
@@ -727,7 +731,7 @@ class SMB3Foundry(QMainWindow):
     def on_jump_edit(self):
         index = self.jump_list.currentIndex().row()
 
-        jump_editor = JumpEditor(self, self.level_view.level.jumps[index], index)
+        jump_editor = JumpEditor(self, self.level_view.level_ref.jumps[index], index)
 
         jump_editor.jump_updated.connect(self.on_jump_edited)
 
@@ -747,8 +751,8 @@ class SMB3Foundry(QMainWindow):
 
         assert index >= 0
 
-        if isinstance(self.level_view.level, Level):
-            self.level_view.level.jumps[index] = jump
+        if isinstance(self.level_view.level_ref, Level):
+            self.level_view.level_ref.jumps[index] = jump
             self.jump_list.item(index).setText(str(jump))
 
     def on_jump_list_change(self, event):
@@ -780,7 +784,7 @@ class SMB3Foundry(QMainWindow):
         if obj_under_cursor is None:
             return
         else:
-            if isinstance(self.level_view.level, WorldMap):
+            if isinstance(self.level_view.level_ref, WorldMap):
                 return
 
             # scrolling through the level could unintentionally change objects, if the cursor would wander onto them.

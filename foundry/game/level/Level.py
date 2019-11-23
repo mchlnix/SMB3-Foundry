@@ -1,6 +1,6 @@
 from typing import List, Union, Optional, Tuple
 
-from PySide2.QtCore import QRect, QPoint, QSize, Signal
+from PySide2.QtCore import QRect, QPoint, QSize, Signal, SignalInstance, QObject
 from PySide2.QtGui import QPainter, QBrush, QColor, Qt, QPen
 
 from foundry.game.Data import Mario3Level
@@ -31,6 +31,12 @@ LEVEL_DEFAULT_HEIGHT = 27
 LEVEL_DEFAULT_WIDTH = 16
 
 
+class LevelSignaller(QObject):
+    selection_changed: SignalInstance = Signal()
+    data_changed: SignalInstance = Signal()
+    jumps_changed: SignalInstance = Signal()
+
+
 class Level(LevelLike):
     MIN_LENGTH = 0x10
 
@@ -41,11 +47,10 @@ class Level(LevelLike):
 
     HEADER_LENGTH = 9  # bytes
 
-    selection_changed = Signal()
-    data_changed = Signal()
-
     def __init__(self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set_number: int):
         super(Level, self).__init__(world, level, object_set_number)
+
+        self._signal_emitter = LevelSignaller()
 
         self.attached_to_rom = True
 
@@ -80,11 +85,11 @@ class Level(LevelLike):
         object_data = ROM.rom_data[self.object_offset :]
         enemy_data = ROM.rom_data[self.enemy_offset :]
 
-        self._load_level(object_data, enemy_data)
+        self._load_level_data(object_data, enemy_data)
 
         self.changed = False
 
-    def _load_level(self, object_data: bytearray, enemy_data: bytearray):
+    def _load_level_data(self, object_data: bytearray, enemy_data: bytearray):
         self.object_factory = LevelObjectFactory(
             self.object_set_number,
             self.header.graphic_set_index,
@@ -99,12 +104,20 @@ class Level(LevelLike):
 
         self._update_level_size()
 
+    @property
+    def data_changed(self):
+        return self._signal_emitter.data_changed
+
+    @property
+    def jumps_changed(self):
+        return self._signal_emitter.jumps_changed
+
     def reload(self):
         header_and_object_data, enemy_data = self.to_bytes()
 
         object_data = header_and_object_data[1][Level.HEADER_LENGTH :]
 
-        self._load_level(object_data, enemy_data[1])
+        self._load_level_data(object_data, enemy_data[1])
 
     def _calc_objects_size(self):
         size = 0
@@ -445,15 +458,6 @@ class Level(LevelLike):
         else:
             return None
 
-    @property
-    def selected_objects(self):
-        return [obj for obj in self.objects + self.enemies if obj.selected]
-
-    @selected_objects.setter
-    def selected_objects(self, selected_objects):
-        for obj in self.objects + self.enemies:
-            obj.selected = obj in selected_objects
-
     def draw(self, painter: QPainter, block_length: int, transparency: bool):
         bg_color = QColor(*get_bg_color_for(self.object_set_number, self.header.object_palette_index))
 
@@ -545,6 +549,13 @@ class Level(LevelLike):
     def add_jump(self):
         self.jumps.append(Jump.from_properties(0, 0, 0, 0))
 
+        self.jumps_changed.emit()
+
+    def remove_jump(self, jump: Jump):
+        self.jumps.remove(jump)
+
+        self.jumps_changed.emit()
+
     def index_of(self, obj: Union[EnemyObject, LevelObject]) -> int:
         if isinstance(obj, LevelObject):
             return self.objects.index(obj)
@@ -574,7 +585,7 @@ class Level(LevelLike):
         m3l_bytes = bytearray()
 
         m3l_bytes.append(self.world)
-        m3l_bytes.append(self.level)
+        m3l_bytes.append(self._level)
         m3l_bytes.append(self.object_set_number)
 
         m3l_bytes.extend(self.header_bytes)
@@ -594,13 +605,13 @@ class Level(LevelLike):
         return m3l_bytes
 
     def from_m3l(self, m3l_bytes: bytearray):
-        self.world, self.level, self.object_set_number = m3l_bytes[:3]
+        self.world, self._level, self.object_set_number = m3l_bytes[:3]
         self.object_set = ObjectSet(self.object_set_number)
 
         self.header_offset = self.enemy_offset = 0
 
         # update the level_object_factory
-        self._load_level(bytearray(), bytearray())
+        self._load_level_data(bytearray(), bytearray())
 
         m3l_bytes = m3l_bytes[3:]
 
@@ -616,7 +627,7 @@ class Level(LevelLike):
         object_bytes = m3l_bytes[:object_size]
         enemy_bytes = m3l_bytes[object_size:]
 
-        self._load_level(object_bytes, enemy_bytes)
+        self._load_level_data(object_bytes, enemy_bytes)
 
         self.attached_to_rom = False
 
@@ -651,4 +662,4 @@ class Level(LevelLike):
         objects = object_bytes[Level.HEADER_LENGTH :]
 
         self._parse_header()
-        self._load_level(objects, enemies)
+        self._load_level_data(objects, enemies)

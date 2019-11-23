@@ -1,20 +1,10 @@
-from PySide2.QtCore import Signal
+from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QSizePolicy, QFormLayout, QVBoxLayout
 
 from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.gui.LevelView import LevelView
+from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
-
-ID_SPIN_DOMAIN = 1000
-ID_SPIN_TYPE = 1001
-ID_SPIN_LENGTH = 1002
-
-ID_TOOL_ZOOM_OUT = 1101
-ID_TOOL_ZOOM_IN = 1102
-
-ID_TOOL_UNDO = 1103
-ID_TOOL_REDO = 1104
 
 MAX_DOMAIN = 0x07
 MAX_TYPE = 0xFF
@@ -22,17 +12,18 @@ MAX_LENGTH = 0xFF
 
 
 class SpinnerPanel(QWidget):
-    undo_triggered = Signal()
-    redo_triggered = Signal()
+    object_change: SignalInstance = Signal()
 
-    object_change = Signal
+    zoom_in_triggered: SignalInstance = Signal()
+    zoom_out_triggered: SignalInstance = Signal()
 
-    def __init__(self, parent: QWidget, level_view_ref: LevelView):
+    def __init__(self, parent: QWidget, level_ref: LevelRef):
         super(SpinnerPanel, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
-        self.level_view_ref = level_view_ref
+        self.level_ref = level_ref
+        self.level_ref.data_changed.connect(self.update)
 
         self.undo_button = QPushButton(QIcon("data/icons/rotate-ccw.svg"), "", self)
         self.undo_button.pressed.connect(self.on_undo)
@@ -40,12 +31,13 @@ class SpinnerPanel(QWidget):
 
         self.redo_button = QPushButton(QIcon("data/icons/rotate-cw.svg"), "", self)
         self.redo_button.pressed.connect(self.on_redo)
+        self.redo_button.setDisabled(True)
 
         self.zoom_out_button = QPushButton(QIcon("data/icons/zoom-out.svg"), "", self)
-        self.zoom_out_button.pressed.connect(self.level_view_ref.zoom_out)
+        self.zoom_out_button.pressed.connect(self.zoom_out_triggered.emit)
 
         self.zoom_in_button = QPushButton(QIcon("data/icons/zoom-in.svg"), "", self)
-        self.zoom_in_button.pressed.connect(self.level_view_ref.zoom_in)
+        self.zoom_in_button.pressed.connect(self.zoom_in_triggered.emit)
 
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.undo_button)
@@ -59,6 +51,7 @@ class SpinnerPanel(QWidget):
 
         self.spin_type = Spinner(self, maximum=MAX_TYPE)
         self.spin_type.setEnabled(False)
+        self.spin_type.valueChanged.connect(self.set_type)
 
         self.spin_length = Spinner(self, maximum=MAX_LENGTH)
         self.spin_length.setEnabled(False)
@@ -74,14 +67,17 @@ class SpinnerPanel(QWidget):
         self.layout().addLayout(spinner_layout)
 
     def update(self):
-        if len(self.level_view_ref.level.selected_objects) == 1:
-            selected_object = self.level_view_ref.level.selected_objects[0]
+        if len(self.level_ref.selected_objects) == 1:
+            selected_object = self.level_ref.selected_objects[0]
 
             if isinstance(selected_object, LevelObject):
                 self._populate_spinners(selected_object)
 
         else:
             self.disable_all()
+
+        self.undo_button.setEnabled(self.level_ref.undo_stack.undo_available)
+        self.redo_button.setEnabled(self.level_ref.undo_stack.redo_available)
 
         super(SpinnerPanel, self).update()
 
@@ -95,49 +91,14 @@ class SpinnerPanel(QWidget):
             self.enable_length(False)
 
     def on_undo(self):
-        self.enable_redo()
+        self.level_ref.undo()
 
-        # todo make events work
-        if self.level_view_ref.undo_stack.undo_index - 1 <= 0:
-            self.disable_undo()
-
-        self.undo_triggered.emit()
+        self.update()
 
     def on_redo(self):
-        self.redo_triggered.emit()
+        self.level_ref.redo()
 
-    def disable_buttons(self, event):
-        evt_id = event.GetEventType()
-
-        if evt_id == EVT_UNDO_CLEARED.typeId:
-            self.disable_undo()
-            self.disable_redo()
-
-        elif evt_id == EVT_UNDO_SAVED.typeId:
-            self.enable_undo()
-            self.disable_redo()
-
-        elif evt_id == EVT_UNDO_COMPLETE.typeId:
-            self.enable_redo()
-            if not event.undos_left:
-                self.disable_undo()
-
-        elif evt_id == EVT_REDO_COMPLETE.typeId:
-            self.enable_undo()
-            if not event.redos_left:
-                self.disable_redo()
-
-    def disable_undo(self):
-        self.undo_button.setEnabled(False)
-
-    def enable_undo(self):
-        self.undo_button.setEnabled(True)
-
-    def disable_redo(self):
-        self.redo_button.setEnabled(False)
-
-    def enable_redo(self):
-        self.redo_button.setEnabled(True)
+        self.update()
 
     def get_type(self):
         return self.spin_type.value()

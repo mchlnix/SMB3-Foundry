@@ -1,7 +1,7 @@
 from typing import Any, List
 
 from PySide2.QtGui import QImage, QIcon, QPixmap
-from PySide2.QtWidgets import QComboBox, QWidget, QSizePolicy
+from PySide2.QtWidgets import QComboBox, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.LevelObject import LevelObject

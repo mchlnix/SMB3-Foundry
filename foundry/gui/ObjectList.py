@@ -1,21 +1,20 @@
-from PySide2.QtCore import Signal, QItemSelectionModel, QRect
 from PySide2.QtGui import QWindow, QMouseEvent, Qt
 from PySide2.QtWidgets import QListWidget, QAbstractItemView, QSizePolicy
 
-from foundry.gui.LevelView import LevelView
+from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import ContextMenu
 
 
 class ObjectList(QListWidget):
-    selection_changed = Signal()
-
-    def __init__(self, parent: QWindow, level_view_ref: LevelView, context_menu: ContextMenu):
+    def __init__(self, parent: QWindow, level_ref: LevelRef, context_menu: ContextMenu):
         super(ObjectList, self).__init__(parent=parent)
+
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-        self.level_view_ref: LevelView = level_view_ref
+        self.level_ref: LevelRef = level_ref
+        self.level_ref.data_changed.connect(self.update)
 
         self.context_menu = context_menu
 
@@ -45,9 +44,9 @@ class ObjectList(QListWidget):
 
             index = self.indexFromItem(item_under_mouse)
 
-            selected_object = self.level_view_ref.level.get_all_objects()[index.row()]
+            selected_object = self.level_ref.level.get_all_objects()[index.row()]
 
-            self.level_view_ref.level.selected_objects = [selected_object]
+            self.level_ref.selected_objects = [selected_object]
 
             self.selection_changed.emit()
 
@@ -61,15 +60,15 @@ class ObjectList(QListWidget):
         self.context_menu.as_list_menu().popup(event.globalPos())
 
     def update(self):
-        level_objects = self.level_view_ref.level.get_all_objects()
+        level_objects = self.level_ref.get_all_objects()
 
         labels = [obj.description for obj in level_objects]
+
+        self.blockSignals(True)
 
         self.clear()
 
         self.addItems(labels)
-
-        self.blockSignals(True)
 
         for index, level_object in enumerate(level_objects):
             item = self.item(index)
@@ -88,9 +87,9 @@ class ObjectList(QListWidget):
     def on_selection_changed(self):
         selected_objects = self.selected_objects()
 
-        selection_not_changed = selected_objects == self.level_view_ref.level.selected_objects
+        selection_not_changed = selected_objects == self.level_ref.selected_objects
 
         if selection_not_changed:
             return
-
-        self.selection_changed.emit()
+        else:
+            self.level_ref.selected_objects = selected_objects

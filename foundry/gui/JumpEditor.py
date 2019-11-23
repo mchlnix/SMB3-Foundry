@@ -1,6 +1,5 @@
-from PySide2.QtCore import Signal
-from PySide2.QtWidgets import QMainWindow, QFormLayout, QVBoxLayout, QGroupBox, QComboBox, \
-    QDialogButtonBox
+from PySide2.QtCore import Signal, SignalInstance
+from PySide2.QtWidgets import QMainWindow, QFormLayout, QVBoxLayout, QGroupBox, QComboBox, QDialogButtonBox
 
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.gui.CustomDialog import CustomDialog
@@ -49,7 +48,7 @@ MAX_HORIZ_POSITION = 0xFF
 
 
 class JumpEditor(CustomDialog):
-    jump_updated = Signal(Jump)
+    jump_updated: SignalInstance = Signal(Jump)
 
     def __init__(self, parent: QMainWindow, jump: Jump, index: int):
         super(JumpEditor, self).__init__(parent, "Jump Editor")

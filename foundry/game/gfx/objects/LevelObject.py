@@ -765,3 +765,6 @@ class LevelObject(ObjectLike):
 
     def __repr__(self) -> str:
         return f"LevelObject {self.description} at {self.x_position}, {self.y_position}"
+
+    def __lt__(self, other):
+        return self.index_in_level < other.index_in_level

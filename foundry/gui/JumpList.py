@@ -1,8 +1,8 @@
-from PySide2.QtCore import Signal
+from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtGui import QContextMenuEvent
 from PySide2.QtWidgets import QListWidget, QWidget, QMenu
 
-from foundry.gui.LevelView import LevelView
+from foundry.game.level.LevelRef import LevelRef
 
 ID_ADD_JUMP = 1
 ID_DEL_JUMP = 2
@@ -10,19 +10,19 @@ ID_EDIT_JUMP = 3
 
 
 class JumpList(QListWidget):
-    add_jump = Signal()
-    edit_jump = Signal()
-    remove_jump = Signal()
+    add_jump: SignalInstance = Signal()
+    edit_jump: SignalInstance = Signal()
+    remove_jump: SignalInstance = Signal()
 
-    def __init__(self, parent: QWidget, level_view_ref: LevelView):
+    def __init__(self, parent: QWidget, level_ref: LevelRef):
         super(JumpList, self).__init__(parent)
 
-        self._level_view_ref = level_view_ref
+        self._level_ref = level_ref
 
     def update(self):
-        jumps = self._level_view_ref.level.jumps
-
         self.clear()
+
+        jumps = self._level_ref.jumps
 
         self.addItems([str(jump) for jump in jumps])
 

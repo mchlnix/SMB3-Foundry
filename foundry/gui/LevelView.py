@@ -1,7 +1,7 @@
 from bisect import bisect_right
 from typing import List, Union, Optional, Tuple
 
-from PySide2.QtCore import Signal, QSize
+from PySide2.QtCore import Signal, QSize, SignalInstance
 from PySide2.QtGui import QPaintEvent, QPainter, QPen, QColor, QMouseEvent, Qt, QBrush
 from PySide2.QtWidgets import QWidget
 
@@ -9,10 +9,10 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import SCREEN_WIDTH, SCREEN_HEIGHT, LevelObject
 from foundry.game.level.Level import Level
+from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.SelectionSquare import SelectionSquare
-from foundry.gui.UndoStack import UndoStack
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
@@ -26,18 +26,18 @@ MODE_RESIZE = 2
 
 class LevelView(QWidget):
     # list of jumps
-    jumps_created = Signal(list)
+    jumps_created: SignalInstance = Signal(list)
 
     # selected indexes, selected objects
-    objects_updated = Signal()
+    objects_updated: SignalInstance = Signal()
 
-    selection_changed = Signal()
+    selection_changed: SignalInstance = Signal()
 
-    def __init__(self, parent: QWidget, context_menu: ContextMenu):
+    def __init__(self, parent: QWidget, level: LevelRef, context_menu: ContextMenu):
         super(LevelView, self).__init__(parent)
 
-        self.level: Level = None
-        self.undo_stack = UndoStack(self)
+        self.level_ref: LevelRef = level
+        self.level_ref.data_changed.connect(self.update)
 
         self.context_menu = context_menu
 
@@ -83,11 +83,11 @@ class LevelView(QWidget):
         if self.mouse_mode == MODE_DRAG:
             self.dragging(event)
         elif self.mouse_mode == MODE_RESIZE:
-            previously_selected_objects = self.level.selected_objects
+            previously_selected_objects = self.level_ref.selected_objects
 
             self.resizing(event)
 
-            self.level.selected_objects = previously_selected_objects
+            self.level_ref.selected_objects = previously_selected_objects
         elif self.selection_square.active:
             self.set_selection_end(event.pos())
         else:
@@ -104,10 +104,10 @@ class LevelView(QWidget):
             super(LevelView, self).mouseReleaseEvent(event)
 
     def sizeHint(self) -> QSize:
-        if self.level is None:
+        if not self.level_ref:
             return super(LevelView, self).sizeHint()
         else:
-            width, height = self.level.size
+            width, height = self.level_ref.size
 
             return QSize(width * self.block_length, height * self.block_length)
 
@@ -138,7 +138,7 @@ class LevelView(QWidget):
     def resizing(self, event: QMouseEvent):
         self.resizing_happened = True
 
-        if isinstance(self.level, WorldMap):
+        if isinstance(self.level_ref.level, WorldMap):
             return
 
         x, y = event.pos().toTuple()
@@ -155,7 +155,7 @@ class LevelView(QWidget):
         for obj in selected_objects:
             obj.resize_by(dx, dy)
 
-            self.level.changed = True
+            self.level_ref.changed = True
 
         self.update()
 
@@ -182,7 +182,7 @@ class LevelView(QWidget):
 
     def stop_resize(self, _):
         if self.resizing_happened:
-            self.save_level_state()
+            self.level_ref.save_level_state()
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
@@ -218,7 +218,7 @@ class LevelView(QWidget):
         for obj in selected_objects:
             obj.move_by(dx, dy)
 
-            self.level.changed = True
+            self.level_ref.changed = True
 
         self.update()
 
@@ -242,7 +242,7 @@ class LevelView(QWidget):
 
     def stop_drag(self):
         if self.dragging_happened:
-            self.save_level_state()
+            self.level_ref.save_level_state()
 
         self.dragging_happened = False
 
@@ -270,19 +270,6 @@ class LevelView(QWidget):
 
         return not clicked_on_background
 
-    def undo(self):
-        self.level.from_bytes(*self.undo_stack.undo())
-
-        self.update()
-
-    def redo(self):
-        self.level.from_bytes(*self.undo_stack.redo())
-
-        self.update()
-
-    def save_level_state(self):
-        self.undo_stack.save_state(self.level.to_bytes())
-
     def set_zoom(self, zoom):
         if not (LOWEST_ZOOM_LEVEL <= zoom <= HIGHEST_ZOOM_LEVEL):
             return
@@ -309,9 +296,9 @@ class LevelView(QWidget):
 
         sel_rect = self.selection_square.get_adjusted_rect(self.block_length, self.block_length)
 
-        touched_objects = [obj for obj in self.level.get_all_objects() if sel_rect.intersects(obj.get_rect())]
+        touched_objects = [obj for obj in self.level_ref.get_all_objects() if sel_rect.intersects(obj.get_rect())]
 
-        if touched_objects != self.level.selected_objects:
+        if touched_objects != self.level_ref.selected_objects:
             self._set_selected_objects(touched_objects)
 
             self.selection_changed.emit()
@@ -335,32 +322,32 @@ class LevelView(QWidget):
         self.update()
 
     def _set_selected_objects(self, objects):
-        if self.level.selected_objects == objects:
+        if self.level_ref.selected_objects == objects:
             return
 
-        self.level.selected_objects = objects
+        self.level_ref.selected_objects = objects
 
         self.selection_changed.emit()
 
     def get_selected_objects(self) -> List[Union[LevelObject, EnemyObject]]:
-        return self.level.selected_objects
+        return self.level_ref.selected_objects
 
     def remove_selected_objects(self):
-        for obj in self.level.selected_objects:
-            self.level.remove_object(obj)
+        for obj in self.level_ref.selected_objects:
+            self.level_ref.remove_object(obj)
 
     def was_changed(self) -> bool:
-        if self.level is None:
+        if self.level_ref is None:
             return False
         else:
-            return self.level.changed
+            return self.level_ref.changed
 
     def level_safe_to_save(self) -> Tuple[bool, str, str]:
         is_safe = True
         reason = ""
         additional_info = ""
 
-        if self.level.too_many_level_objects():
+        if self.level_ref.too_many_level_objects():
             level = self.cuts_into_other_objects()
 
             is_safe = False
@@ -373,7 +360,7 @@ class LevelView(QWidget):
                     "It wouldn't overwrite another level, " "but it might still overwrite other important data."
                 )
 
-        elif self.level.too_many_enemies_or_items():
+        elif self.level_ref.too_many_enemies_or_items():
             level = self.cuts_into_other_enemies()
 
             is_safe = False
@@ -390,10 +377,10 @@ class LevelView(QWidget):
         return is_safe, reason, additional_info
 
     def cuts_into_other_enemies(self) -> str:
-        if self.level is None:
+        if self.level_ref is None:
             raise TypeError("Level is None")
 
-        enemies_end = self.level.enemies_end
+        enemies_end = self.level_ref.enemies_end
 
         levels_by_enemy_offset = sorted(Level.offsets, key=lambda level: level.enemy_offset)
 
@@ -401,16 +388,16 @@ class LevelView(QWidget):
 
         found_level = levels_by_enemy_offset[level_index]
 
-        if found_level.enemy_offset == self.level.enemy_offset:
+        if found_level.enemy_offset == self.level_ref.enemy_offset:
             return ""
         else:
             return f"World {found_level.game_world} - {found_level.name}"
 
     def cuts_into_other_objects(self) -> str:
-        if self.level is None:
+        if self.level_ref is None:
             raise TypeError("Level is None")
 
-        end_of_level_objects = self.level.objects_end
+        end_of_level_objects = self.level_ref.objects_end
 
         level_index = (
             bisect_right(
@@ -421,41 +408,27 @@ class LevelView(QWidget):
 
         found_level = Level.sorted_offsets[level_index]
 
-        if found_level.rom_level_offset == self.level.object_offset:
+        if found_level.rom_level_offset == self.level_ref.object_offset:
             return ""
         else:
             return f"World {found_level.game_world} - {found_level.name}"
 
-    def load_level(
-        self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set_number: int
-    ):
-        if world == 0:
-            self.level = WorldMap(level)
-        else:
-            self.level = Level(world, level, object_data_offset, enemy_data_offset, object_set_number)
-
-            self.objects_updated.emit()
-
-        self.undo_stack.clear(self.level.to_bytes())
-
-        print(f"Drawing {self.level.name}")
-
     def add_jump(self):
-        self.level.add_jump()
+        self.level_ref.add_jump()
 
         self.objects_updated.emit()
 
     def from_m3l(self, data: bytearray):
-        self.level.from_m3l(data)
+        self.level_ref.from_m3l(data)
 
         self.objects_updated.emit()
 
-        self.undo_stack.clear(self.level.to_bytes())
+        self.undo_stack.clear(self.level_ref.to_bytes())
 
     def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
         level_x, level_y = self.to_level_point(x, y)
 
-        return self.level.object_at(level_x, level_y)
+        return self.level_ref.object_at(level_x, level_y)
 
     def to_level_point(self, screen_x: int, screen_y: int) -> Tuple[int, int]:
         level_x = screen_x // self.block_length
@@ -470,55 +443,55 @@ class LevelView(QWidget):
         return screen_x, screen_y
 
     def index_of(self, obj: Union[LevelObject, EnemyObject]) -> int:
-        return self.level.index_of(obj)
+        return self.level_ref.index_of(obj)
 
     def get_object(self, index: int) -> Union[LevelObject, EnemyObject]:
-        return self.level.get_object(index)
+        return self.level_ref.get_object(index)
 
     def create_object_at(self, x: int, y: int, domain: int = 0, object_index: int = 0):
         level_x, level_y = self.to_level_point(x, y)
 
-        self.level.create_object_at(level_x, level_y, domain, object_index)
+        self.level_ref.create_object_at(level_x, level_y, domain, object_index)
 
         self.update()
 
     def create_enemy_at(self, x: int, y: int):
         level_x, level_y = self.to_level_point(x, y)
 
-        self.level.create_enemy_at(level_x, level_y)
+        self.level_ref.create_enemy_at(level_x, level_y)
 
     def add_object(self, domain: int, obj_index: int, x: int, y: int, length: int, index: int):
         level_x, level_y = self.to_level_point(x, y)
 
-        self.level.add_object(domain, obj_index, level_x, level_y, length, index)
+        self.level_ref.add_object(domain, obj_index, level_x, level_y, length, index)
 
     def add_enemy(self, enemy_index: int, x: int, y: int, index: int):
         level_x, level_y = self.to_level_point(x, y)
 
-        self.level.add_enemy(enemy_index, level_x, level_y, index)
+        self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
 
     def replace_object(self, obj: LevelObject, domain: int, obj_index: int, length: int):
         self.remove_object(obj)
 
         x, y = obj.get_position()
 
-        self.level.add_object(domain, obj_index, x, y, length, obj.index_in_level)
+        self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level)
 
     def replace_enemy(self, enemy: EnemyObject, enemy_index: int):
-        index_in_level = self.level.index_of(enemy)
+        index_in_level = self.level_ref.index_of(enemy)
 
         self.remove_object(enemy)
 
         x, y = enemy.get_position()
 
-        self.level.add_enemy(enemy_index, x, y, index_in_level)
+        self.level_ref.add_enemy(enemy_index, x, y, index_in_level)
 
     def remove_object(self, obj):
-        self.level.remove_object(obj)
+        self.level_ref.remove_object(obj)
 
     def remove_jump(self, index: int):
-        del self.level.jumps[index]
-        self.object_updated.emit()
+        del self.level_ref.jumps[index]
+
         self.update()
 
     def paste_objects_at(
@@ -544,17 +517,17 @@ class LevelView(QWidget):
             offset_x, offset_y = obj_x - ori_x, obj_y - ori_y
 
             try:
-                pasted_objects.append(self.level.paste_object_at(level_x + offset_x, level_y + offset_y, obj))
+                pasted_objects.append(self.level_ref.paste_object_at(level_x + offset_x, level_y + offset_y, obj))
             except ValueError:
                 print("Tried pasting outside of level.")
 
         self.select_objects(pasted_objects)
 
     def get_object_names(self):
-        return self.level.get_object_names()
+        return self.level_ref.get_object_names()
 
     def make_screenshot(self):
-        if self.level is None:
+        if self.level_ref is None:
             return
 
         return self.grab()
@@ -562,10 +535,10 @@ class LevelView(QWidget):
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
 
-        if self.level is None:
+        if self.level_ref is None:
             return
 
-        self.level.draw(painter, self.block_length, self.transparency)
+        self.level_ref.draw(painter, self.block_length, self.transparency)
 
         if self.grid_lines:
             panel_width, panel_height = self.size().toTuple()
@@ -579,7 +552,7 @@ class LevelView(QWidget):
 
             painter.setPen(self.screen_pen)
 
-            if self.level.is_vertical:
+            if self.level_ref.is_vertical:
                 for y in range(0, panel_height, self.block_length * SCREEN_HEIGHT):
                     painter.drawLine(0, y, panel_width, y)
             else:
@@ -587,12 +560,12 @@ class LevelView(QWidget):
                     painter.drawLine(x, 0, x, panel_height)
 
         if self.jumps:
-            for jump in self.level.jumps:
+            for jump in self.level_ref.jumps:
                 painter.setBrush(QBrush(QColor(0xFF, 0x00, 0x00), Qt.FDiagPattern))
 
                 screen = jump.screen_index
 
-                if self.level.is_vertical:
+                if self.level_ref.is_vertical:
                     painter.drawRect(
                         0,
                         self.block_length * SCREEN_WIDTH * screen,
