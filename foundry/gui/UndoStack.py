@@ -3,7 +3,7 @@ from typing import List, Optional
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QWidget
 
-from foundry.game.level.Level import LevelByteData
+from foundry.game.level import LevelByteData
 
 
 class UndoStack(QWidget):

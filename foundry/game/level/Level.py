@@ -14,11 +14,10 @@ from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from foundry.game.level import _load_level_offsets
+from foundry.game.level import _load_level_offsets, LevelByteData
 from foundry.game.level.LevelLike import LevelLike
+from foundry.gui.UndoStack import UndoStack
 from smb3parse.levels.level_header import LevelHeader
-
-LevelByteData = Tuple[Tuple[int, bytearray], Tuple[int, bytearray]]
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
@@ -57,6 +56,8 @@ class Level(LevelLike):
         self.object_set_number = object_set_number
         self.object_set = ObjectSet(object_set_number)
 
+        self.undo_stack = UndoStack()
+
         level_index = Level.world_indexes[world] + level
 
         level_data: Mario3Level = Level.offsets[level_index]
@@ -89,7 +90,7 @@ class Level(LevelLike):
 
         self.changed = False
 
-    def _load_level_data(self, object_data: bytearray, enemy_data: bytearray):
+    def _load_level_data(self, object_data: bytearray, enemy_data: bytearray, new_level: bool = True):
         self.object_factory = LevelObjectFactory(
             self.object_set_number,
             self.header.graphic_set_index,
@@ -103,6 +104,10 @@ class Level(LevelLike):
         self._load_enemies(enemy_data)
 
         self._update_level_size()
+
+        if new_level:
+            self.undo_stack.clear(self.to_bytes())
+            self._signal_emitter.data_changed.emit()
 
     @property
     def data_changed(self):
@@ -653,7 +658,7 @@ class Level(LevelLike):
 
         return (self.header_offset, data), (self.enemy_offset, enemies)
 
-    def from_bytes(self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray]):
+    def from_bytes(self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray], new_level=True):
 
         self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data
@@ -662,4 +667,4 @@ class Level(LevelLike):
         objects = object_bytes[Level.HEADER_LENGTH :]
 
         self._parse_header()
-        self._load_level_data(objects, enemies)
+        self._load_level_data(objects, enemies, new_level)

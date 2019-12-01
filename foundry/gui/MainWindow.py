@@ -276,7 +276,6 @@ class SMB3Foundry(QMainWindow):
         self.scroll_panel = QScrollArea()
 
         self.level_ref = LevelRef()
-        self.level_ref.data_changed.connect(self.on_selection_changed)
 
         self.level_view = LevelView(self, self.level_ref, self.context_menu)
         self.scroll_panel.setWidget(self.level_view)
@@ -286,6 +285,7 @@ class SMB3Foundry(QMainWindow):
         self.spinner_panel = SpinnerPanel(self, self.level_ref)
         self.spinner_panel.zoom_in_triggered.connect(self.level_view.zoom_in)
         self.spinner_panel.zoom_out_triggered.connect(self.level_view.zoom_out)
+        self.spinner_panel.object_change.connect(self.on_spin)
 
         self.object_list = ObjectList(self, self.level_ref, self.context_menu)
 
@@ -332,11 +332,6 @@ class SMB3Foundry(QMainWindow):
             self.close()
 
         self.showMaximized()
-
-    def on_selection_changed(self):
-        self.level_view.update()
-        self.object_list.update()
-        self.spinner_panel.update()
 
     def on_screenshot(self, _) -> bool:
         if self.level_view is None:
@@ -621,36 +616,28 @@ class SMB3Foundry(QMainWindow):
             self.level_view.jumps = checked
 
     @undoable
-    def on_spin(self, event):
-        _id = event.GetId()
+    def on_spin(self, _):
+        selected_objects = self.level_ref.selected_objects
 
-        indexes = self.object_list.GetSelections()
+        assert len(selected_objects) == 1, print(selected_objects)
 
-        if len(indexes) != 1:
-            return
+        selected_object = selected_objects[0]
 
-        index = indexes[0]
+        obj_type = self.spinner_panel.get_type()
 
-        old_object = self.level_view.get_object(index)
-
-        obj_index = self.spinner_panel.get_type()
-
-        if isinstance(old_object, LevelObject):
+        if isinstance(selected_object, LevelObject):
             domain = self.spinner_panel.get_domain()
 
-            if self.spinner_panel.is_length_spinner(_id):
+            if selected_object.is_4byte:
                 length = self.spinner_panel.get_length()
             else:
                 length = None
 
-            self.level_view.replace_object(old_object, domain, obj_index, length)
+            self.level_view.replace_object(selected_object, domain, obj_type, length)
         else:
-            self.level_view.replace_enemy(old_object, obj_index)
+            self.level_view.replace_enemy(selected_object, obj_type)
 
-        self.level_view.Refresh()
-        self.object_list.update()
-
-        self.on_list_select(None)
+        self.level_ref.data_changed.emit()
 
     def fill_object_list(self):
         self.object_list.Clear()
@@ -806,8 +793,6 @@ class SMB3Foundry(QMainWindow):
             obj_under_cursor.decrement_type()
 
         obj_under_cursor.selected = True
-
-        self.on_selection_changed()
 
     def on_about(self, _):
         about = AboutDialog(self)

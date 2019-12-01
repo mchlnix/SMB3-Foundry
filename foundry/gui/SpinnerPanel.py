@@ -12,7 +12,7 @@ MAX_LENGTH = 0xFF
 
 
 class SpinnerPanel(QWidget):
-    object_change: SignalInstance = Signal()
+    object_change: SignalInstance = Signal(int)
 
     zoom_in_triggered: SignalInstance = Signal()
     zoom_out_triggered: SignalInstance = Signal()
@@ -48,13 +48,15 @@ class SpinnerPanel(QWidget):
 
         self.spin_domain = Spinner(self, maximum=MAX_DOMAIN)
         self.spin_domain.setEnabled(False)
+        self.spin_domain.valueChanged.connect(self.object_change.emit)
 
         self.spin_type = Spinner(self, maximum=MAX_TYPE)
         self.spin_type.setEnabled(False)
-        self.spin_type.valueChanged.connect(self.set_type)
+        self.spin_type.valueChanged.connect(self.object_change.emit)
 
         self.spin_length = Spinner(self, maximum=MAX_LENGTH)
         self.spin_length.setEnabled(False)
+        self.spin_length.valueChanged.connect(self.object_change.emit)
 
         spinner_layout = QFormLayout()
         spinner_layout.addRow("Bank/Domain:", self.spin_domain)
@@ -82,7 +84,9 @@ class SpinnerPanel(QWidget):
         super(SpinnerPanel, self).update()
 
     def _populate_spinners(self, obj: LevelObject):
-        self.set_type(obj.type)
+        self.blockSignals(True)
+
+        self.set_type(obj.obj_index)
         self.set_domain(obj.domain)
 
         if obj.is_4byte:
@@ -90,15 +94,13 @@ class SpinnerPanel(QWidget):
         else:
             self.enable_length(False)
 
+        self.blockSignals(False)
+
     def on_undo(self):
         self.level_ref.undo()
 
-        self.update()
-
     def on_redo(self):
         self.level_ref.redo()
-
-        self.update()
 
     def get_type(self):
         return self.spin_type.value()
@@ -139,12 +141,12 @@ class SpinnerPanel(QWidget):
         self.set_length(0x00)
 
     def disable_all(self):
+        self.blockSignals(True)
+
         self.clear_spinners()
 
         self.enable_type(False)
         self.enable_domain(False)
         self.enable_length(False)
 
-    @staticmethod
-    def is_length_spinner(spinner_id: int) -> bool:
-        return spinner_id == ID_SPIN_LENGTH
+        self.blockSignals(False)

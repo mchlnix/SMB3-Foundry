@@ -475,16 +475,19 @@ class LevelView(QWidget):
 
         x, y = obj.get_position()
 
-        self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level)
+        new_obj = self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level)
+        new_obj.selected = obj.selected
 
-    def replace_enemy(self, enemy: EnemyObject, enemy_index: int):
-        index_in_level = self.level_ref.index_of(enemy)
+    def replace_enemy(self, old_enemy: EnemyObject, enemy_index: int):
+        index_in_level = self.level_ref.index_of(old_enemy)
 
-        self.remove_object(enemy)
+        self.remove_object(old_enemy)
 
-        x, y = enemy.get_position()
+        x, y = old_enemy.get_position()
 
-        self.level_ref.add_enemy(enemy_index, x, y, index_in_level)
+        new_enemy = self.level_ref.add_enemy(enemy_index, x, y, index_in_level)
+
+        new_enemy.selected = old_enemy.selected
 
     def remove_object(self, obj):
         self.level_ref.remove_object(obj)
