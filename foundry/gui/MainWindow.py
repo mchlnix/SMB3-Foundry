@@ -329,7 +329,7 @@ class SMB3Foundry(QMainWindow):
         self.paste_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
 
         if not self.on_open_rom():
-            self.close()
+            self.deleteLater()
 
         self.showMaximized()
 
@@ -370,9 +370,8 @@ class SMB3Foundry(QMainWindow):
         try:
             ROM.load_from_file(pathname)
 
-            self.open_level_selector(None)
+            return self.open_level_selector(None)
 
-            return True
         except IOError:
             warn(f"Cannot open file '{pathname}'.")
             return False
@@ -648,9 +647,9 @@ class SMB3Foundry(QMainWindow):
         if not self.safe_to_change():
             return
 
-        answer = self.level_selector.exec_()
+        level_was_selected = self.level_selector.exec_() == QDialog.Accepted
 
-        if answer == QDialog.Accepted:
+        if level_was_selected:
             self.update_level(
                 self.level_selector.selected_world,
                 self.level_selector.selected_level,
@@ -658,6 +657,8 @@ class SMB3Foundry(QMainWindow):
                 self.level_selector.enemy_data_offset,
                 self.level_selector.object_set,
             )
+
+        return level_was_selected
 
     def on_block_viewer(self, _):
         if self.block_viewer is None:
