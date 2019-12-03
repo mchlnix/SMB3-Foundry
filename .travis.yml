@@ -8,12 +8,13 @@ matrix:
       virtualenv:
         system_site_packages: true
       before_install:
-        - sudo apt-get install -y python3-wxgtk4.0
+        - pip3 install --upgrade pip
+        - pip3 install pyside2
         - pip3 install pyinstaller
       install:
         - true;
       script:
-        - python3 -c "import wx; print(wx.version())"
+        - true;
       after_success:
         - pyinstaller smb3-foundry.spec
         - mv dist/smb3-foundry dist/linux-smb3-foundry
@@ -34,15 +35,14 @@ matrix:
       language: shell
       before_install:
         - python3 -m pip install --upgrade pip
-        - python3 -m pip install wxpython
+        - python3 -m pip install pyside2
         - python3 -m pip install pyinstaller
       install:
         - true;
       script:
-        - python3 -c "import wx; print(wx.version())"
+        - true;
       after_success:
         - pyinstaller --windowed smb3-foundry.spec
-        - ls dist
         - mv dist/smb3-foundry dist/osx-smb3-foundry
       deploy:
         provider: releases
@@ -62,13 +62,14 @@ matrix:
         - PATH=$PY37PATH:$PATH
       before_install:
         - choco install python
-        - python -m pip install --upgrade pip
-        - python -m pip install wxpython
-        - python -m pip install pyinstaller
+        - python -m pip --version
+        - python -m pip -v install --upgrade pip
+        - python -m pip -v install pyside2
+        - python -m pip -v install pyinstaller
       install:
         - true;
       script:
-        - python -c "import wx; print(wx.version())"
+        - true;
       after_success:
         - pyinstaller smb3-foundry.spec
         - mv dist/smb3-foundry.exe dist/win-smb3-foundry.exe
