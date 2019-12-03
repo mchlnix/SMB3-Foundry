@@ -118,11 +118,16 @@ class Level(LevelLike):
         return self._signal_emitter.jumps_changed
 
     def reload(self):
-        header_and_object_data, enemy_data = self.to_bytes()
+        (_, header_and_object_data), (_, enemy_data) = self.to_bytes()
 
-        object_data = header_and_object_data[1][Level.HEADER_LENGTH :]
+        self.header_bytes = header_and_object_data[: Level.HEADER_LENGTH]
 
-        self._load_level_data(object_data, enemy_data[1])
+        object_data = header_and_object_data[Level.HEADER_LENGTH :]
+
+        self._parse_header()
+        self._load_level_data(object_data, enemy_data, new_level=False)
+
+        self.data_changed.emit()
 
     def _calc_objects_size(self):
         size = 0
@@ -143,6 +148,8 @@ class Level(LevelLike):
         self.size = self.header.width, self.header.height
 
         self.changed = True
+
+        self.data_changed.emit()
 
     def _load_enemies(self, data: bytearray):
         self.enemies.clear()

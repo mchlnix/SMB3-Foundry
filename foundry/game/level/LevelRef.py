@@ -34,7 +34,7 @@ class LevelRef(QObject):
 
     @selected_objects.setter
     def selected_objects(self, selected_objects):
-        if sorted(selected_objects) == self.selected_objects:
+        if selected_objects == self.selected_objects:
             return
 
         for obj in self._internal_level.get_all_objects():
@@ -43,13 +43,10 @@ class LevelRef(QObject):
         self.data_changed.emit()
 
     def __getattr__(self, item: str):
-        try:
-            return self.__dict__[item]
-        except KeyError:
-            if self._internal_level is None:
-                return None
-            else:
-                return getattr(self._internal_level, item)
+        if self._internal_level is None:
+            return None
+        else:
+            return getattr(self._internal_level, item)
 
     def undo(self):
         self._internal_level.from_bytes(*self.undo_stack.undo(), new_level=False)

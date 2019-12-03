@@ -271,8 +271,6 @@ class SMB3Foundry(QMainWindow):
         self.context_menu = ContextMenu()
         self.context_menu.triggered.connect(self.on_menu)
 
-        self.header_editor = None
-
         self.scroll_panel = QScrollArea()
 
         self.level_ref = LevelRef()
@@ -520,7 +518,7 @@ class SMB3Foundry(QMainWindow):
                 if selected_object == -1:
                     self.create_object_at(x, y)
                 else:
-                    self.place_object_from_dropdown(selected_object, (x, y))
+                    self.place_object_from_dropdown((x, y))
             elif item_id == ID_CTX_ADD_ENEMY:
                 self.create_enemy_at(x, y)
             elif item_id == ID_CTX_CUT:
@@ -550,34 +548,12 @@ class SMB3Foundry(QMainWindow):
         self.update_level(world, level, object_data, enemy_data, object_set)
 
     @undoable
-    def on_header_change(self, event):
-        pass
-
-    @undoable
     def create_object_at(self, x, y):
         self.level_view.create_object_at(x, y)
 
     @undoable
     def create_enemy_at(self, x, y):
         self.level_view.create_enemy_at(x, y)
-
-    def on_undo(self, _):
-        self.level_view.undo()
-
-        if self.header_editor is not None:
-            self.header_editor.refresh()
-
-        self.object_list.update()
-        self.jump_list.update()
-
-    def on_redo(self, _):
-        self.level_view.redo()
-
-        if self.header_editor is not None:
-            self.header_editor.refresh()
-
-        self.object_list.update()
-        self.jump_list.update()
 
     def _cut_objects(self):
         self._copy_objects()
@@ -673,11 +649,7 @@ class SMB3Foundry(QMainWindow):
         self.object_viewer.show()
 
     def on_header_editor(self, _):
-        if self.header_editor is None:
-            self.header_editor = HeaderEditor(self, self.level_ref)
-
-        self.header_editor.Show()
-        self.header_editor.Raise()
+        HeaderEditor(self, self.level_ref).exec_()
 
     def update_level(self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set: int):
         try:
@@ -690,9 +662,6 @@ class SMB3Foundry(QMainWindow):
         self.set_up_gui_for_level()
 
     def set_up_gui_for_level(self):
-        if self.header_editor is not None and isinstance(self.level_view.level_ref, Level):
-            self.header_editor.update()
-
         self.object_list.update()
         self.update_title()
         self.jump_list.update()
@@ -747,17 +716,12 @@ class SMB3Foundry(QMainWindow):
         self.jump_list.set_jumps(event)
 
     def on_middle_click(self, event):
-        index = self.object_dropdown.currentIndex()
+        pos = event.pos().toTuple()
 
-        if index == -1:
-            return
-        else:
-            pos = event.pos().toTuple()
-
-            self.place_object_from_dropdown(index, pos)
+        self.place_object_from_dropdown(pos)
 
     @undoable
-    def place_object_from_dropdown(self, index: int, pos: Tuple[int, int]) -> None:
+    def place_object_from_dropdown(self, pos: Tuple[int, int]) -> None:
         domain, object_index = self.object_dropdown.currentData(Qt.UserRole)
 
         self.level_view.create_object_at(*pos, domain, object_index)

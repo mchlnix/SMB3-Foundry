@@ -1,11 +1,15 @@
-import wx
-import wx.lib.newevent
+from PySide2.QtCore import Signal, SignalInstance
+from PySide2.QtGui import QWindow
+from PySide2.QtWidgets import QGroupBox, QComboBox, QCheckBox, QVBoxLayout, QFormLayout
 
+from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
+from foundry.gui.Spinner import Spinner
 
-LEVEL_LENGTHS = [0x0F + 0x10 * i for i in range(0, 2 ** 4)]
-STR_LEVEL_LENGTHS = [f"{length:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS]
+LEVEL_LENGTHS = [0x10 * (i + 1) for i in range(0, 2 ** 4)]
+STR_LEVEL_LENGTHS = [f"{length - 1:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS]
 
 # todo check if correct order
 X_POSITIONS = [0x01, 0x07, 0x08, 0x0D]
@@ -90,222 +94,219 @@ SCROLL_DIRECTIONS = [
 ]
 
 
-HeaderChangedEvent, EVT_HEADER_CHANGED = wx.lib.newevent.NewCommandEvent()
-ID_HEADER_EDITOR = wx.NewId()
-
 SPINNER_MAX_VALUE = 0x0F_FF_FF
 
 
-class HeaderEditor(wx.Frame):
-    def __init__(self, parent: wx.Window, level_ref: LevelRef):
-        super(HeaderEditor, self).__init__(
-            parent, title="Level Header Editor", style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE
-        )
+class HeaderEditor(CustomDialog):
+    header_change: SignalInstance = Signal()
 
-        self.level_ref: LevelRef = level_ref
+    def __init__(self, parent: QWindow, level_ref: LevelRef):
+        super(HeaderEditor, self).__init__(parent, "Level Header Editor")
 
-        self.SetId(ID_HEADER_EDITOR)
+        self.level: Level = level_ref.level
+        self.level.data_changed.connect(self.update)
+        self.header_change.connect(level_ref.save_level_state)
+        self.header_change.connect(self.level.reload)
 
-        self.config_sizer = wx.FlexGridSizer(2, 0, 0)
+        main_layout = QVBoxLayout(self)
 
-        self.config_sizer.AddGrowableCol(0, 1)
-        self.config_sizer.AddGrowableCol(1, 2)
+        # level settings
 
-        self.length_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=STR_LEVEL_LENGTHS)
-        self.music_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=MUSIC_ITEMS)
-        self.time_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=TIMES)
-        self.v_scroll_direction_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=SCROLL_DIRECTIONS)
-        self.level_is_vertical_cb = wx.CheckBox(self)
-        self.pipe_ends_level_cb = wx.CheckBox(self)
+        self.length_dropdown = QComboBox()
+        self.length_dropdown.addItems(STR_LEVEL_LENGTHS)
+        self.length_dropdown.activated.connect(self.on_combo)
 
-        self.x_position_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=STR_X_POSITIONS)
-        self.y_position_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=STR_Y_POSITIONS)
-        self.action_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=ACTIONS)
+        self.music_dropdown = QComboBox()
+        self.music_dropdown.addItems(MUSIC_ITEMS)
+        self.music_dropdown.activated.connect(self.on_combo)
 
-        self.object_palette_spinner = wx.SpinCtrl(self, wx.ID_ANY, max=7)
-        self.enemy_palette_spinner = wx.SpinCtrl(self, wx.ID_ANY, max=3)
-        self.graphic_set_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=GRAPHIC_SETS)
+        self.time_dropdown = QComboBox()
+        self.time_dropdown.addItems(TIMES)
+        self.time_dropdown.activated.connect(self.on_combo)
 
-        self.level_pointer_spinner = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
-        self.level_pointer_spinner.SetBase(16)
-        self.enemy_pointer_spinner = wx.SpinCtrl(self, min=0, max=SPINNER_MAX_VALUE)
-        self.enemy_pointer_spinner.SetBase(16)
-        self.next_area_object_set_dropdown = wx.ComboBox(self, wx.ID_ANY, choices=OBJECT_SET_ITEMS)
+        self.v_scroll_direction_dropdown = QComboBox()
+        self.v_scroll_direction_dropdown.addItems(SCROLL_DIRECTIONS)
+        self.v_scroll_direction_dropdown.activated.connect(self.on_combo)
 
-        self._add_label("Level Settings")
-        self._add_widget("    Level length: ", self.length_dropdown)
-        self._add_widget("    Music: ", self.music_dropdown)
-        self._add_widget("    Time: ", self.time_dropdown)
-        self._add_widget("    Scroll direction: ", self.v_scroll_direction_dropdown)
-        self._add_widget("    Is Vertical: ", self.level_is_vertical_cb)
-        self._add_widget("    Pipe ends level: ", self.pipe_ends_level_cb)
-        self._add_label("Player Settings")
-        self._add_widget("    Starting X: ", self.x_position_dropdown)
-        self._add_widget("    Starting Y: ", self.y_position_dropdown)
-        self._add_widget("    Action: ", self.action_dropdown)
-        self._add_label("Graphical Settings")
-        self._add_widget("    Object Palette: ", self.object_palette_spinner)
-        self._add_widget("    Enemy Palette: ", self.enemy_palette_spinner)
-        self._add_widget("    Graphic Set: ", self.graphic_set_dropdown)
-        self._add_label("Next Area")
-        self._add_widget("    Address of Objects: ", self.level_pointer_spinner)
-        self._add_widget("    Address of Enemies: ", self.enemy_pointer_spinner)
-        self._add_widget("    Object Set: ", self.next_area_object_set_dropdown)
+        self.level_is_vertical_cb = QCheckBox()
+        self.level_is_vertical_cb.clicked.connect(self.on_check_box)
 
-        self.SetSizerAndFit(self.config_sizer)
+        self.pipe_ends_level_cb = QCheckBox()
+        self.pipe_ends_level_cb.clicked.connect(self.on_check_box)
 
-        self._fill_widgets()
+        self.level_group_box = QGroupBox("Level Settings")
 
-        self.Bind(wx.EVT_SPINCTRL, self.on_spin)
-        self.Bind(wx.EVT_COMBOBOX, self.on_combo)
-        self.Bind(wx.EVT_CHECKBOX, self.on_check_box)
-        self.Bind(wx.EVT_CLOSE, self.on_exit)
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_press)
+        form = QFormLayout(self.level_group_box)
 
-    def _add_widget(self, label: str, widget: wx.Control):
-        _label = wx.StaticText(parent=self, label=label)
+        form.addRow("Level length: ", self.length_dropdown)
+        form.addRow("Music: ", self.music_dropdown)
+        form.addRow("Time: ", self.time_dropdown)
+        form.addRow("Scroll direction: ", self.v_scroll_direction_dropdown)
+        form.addRow("Is Vertical: ", self.level_is_vertical_cb)
+        form.addRow("Pipe ends level: ", self.pipe_ends_level_cb)
 
-        self.config_sizer.Add(_label, border=20, flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT)
-        self.config_sizer.Add(widget, border=3, flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT)
+        main_layout.addWidget(self.level_group_box)
 
-    def _add_label(self, label: str):
-        _label = wx.StaticText(parent=self, label=label)
+        # player settings
 
-        self.config_sizer.Add(_label, border=3, flag=wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT)
-        self.config_sizer.Add(
-            wx.StaticText(parent=self, label=""),
-            border=3,
-            flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT,
-        )
+        self.x_position_dropdown = QComboBox()
+        self.x_position_dropdown.addItems(STR_X_POSITIONS)
+        self.x_position_dropdown.activated.connect(self.on_combo)
 
-    @property
-    def _level(self):
-        return self.level_ref.level
+        self.y_position_dropdown = QComboBox()
+        self.y_position_dropdown.addItems(STR_Y_POSITIONS)
+        self.y_position_dropdown.activated.connect(self.on_combo)
 
-    def _fill_widgets(self):
-        length_index = LEVEL_LENGTHS.index(self._level.length - 1)
+        self.action_dropdown = QComboBox()
+        self.action_dropdown.addItems(ACTIONS)
+        self.action_dropdown.activated.connect(self.on_combo)
 
-        self.length_dropdown.SetSelection(length_index)
-        self.music_dropdown.SetSelection(self._level.music_index)
-        self.time_dropdown.SetSelection(self._level.time_index)
-        self.v_scroll_direction_dropdown.SetSelection(self._level.scroll_type)
-        self.level_is_vertical_cb.SetValue(self._level.is_vertical)
-        self.pipe_ends_level_cb.SetValue(self._level.pipe_ends_level)
+        self.player_group_box = QGroupBox("Player Settings")
 
-        self.x_position_dropdown.SetSelection(self._level.start_x_index)
-        self.y_position_dropdown.SetSelection(self._level.start_y_index)
-        self.action_dropdown.SetSelection(self._level.start_action)
+        form = QFormLayout(self.player_group_box)
 
-        self.object_palette_spinner.SetValue(self._level.object_palette_index)
-        self.enemy_palette_spinner.SetValue(self._level.enemy_palette_index)
-        self.graphic_set_dropdown.SetSelection(self._level.graphic_set)
+        form.addRow("Starting X: ", self.x_position_dropdown)
+        form.addRow("Starting Y: ", self.y_position_dropdown)
+        form.addRow("Action: ", self.action_dropdown)
 
-        self.level_pointer_spinner.SetValue(self._level.next_area_objects)
-        self.enemy_pointer_spinner.SetValue(self._level.next_area_enemies)
-        self.next_area_object_set_dropdown.SetSelection(self._level.next_area_object_set)
+        main_layout.addWidget(self.player_group_box)
+
+        # graphic settings
+
+        self.object_palette_spinner = Spinner(self, maximum=7)
+        self.object_palette_spinner.valueChanged.connect(self.on_spin)
+
+        self.enemy_palette_spinner = Spinner(self, maximum=3)
+        self.enemy_palette_spinner.valueChanged.connect(self.on_spin)
+
+        self.graphic_set_dropdown = QComboBox()
+        self.graphic_set_dropdown.addItems(GRAPHIC_SETS)
+        self.graphic_set_dropdown.activated.connect(self.on_combo)
+
+        self.graphic_group_box = QGroupBox("Graphic Settings")
+
+        form = QFormLayout(self.graphic_group_box)
+
+        form.addRow("Object Palette: ", self.object_palette_spinner)
+        form.addRow("Enemy Palette: ", self.enemy_palette_spinner)
+        form.addRow("Graphic Set: ", self.graphic_set_dropdown)
+
+        main_layout.addWidget(self.graphic_group_box)
+
+        # next area settings
+
+        self.level_pointer_spinner = Spinner(self, maximum=SPINNER_MAX_VALUE)
+        self.enemy_pointer_spinner = Spinner(self, maximum=SPINNER_MAX_VALUE)
+
+        self.next_area_object_set_dropdown = QComboBox()
+        self.next_area_object_set_dropdown.addItems(OBJECT_SET_ITEMS)
+        self.next_area_object_set_dropdown.activated.connect(self.on_combo)
+
+        self.next_area_group_box = QGroupBox("Next Area")
+
+        form = QFormLayout(self.next_area_group_box)
+
+        form.addRow("Address of Objects: ", self.level_pointer_spinner)
+        form.addRow("Address of Enemies: ", self.enemy_pointer_spinner)
+        form.addRow("Object Set: ", self.next_area_object_set_dropdown)
+
+        main_layout.addWidget(self.next_area_group_box)
+
+        self.update()
 
     def update(self):
-        self._fill_widgets()
+        length_index = LEVEL_LENGTHS.index(self.level.length)
 
-    def on_spin(self, event: wx.SpinEvent):
-        if self._level is None:
+        self.length_dropdown.setCurrentIndex(length_index)
+        self.music_dropdown.setCurrentIndex(self.level.music_index)
+        self.time_dropdown.setCurrentIndex(self.level.time_index)
+        self.v_scroll_direction_dropdown.setCurrentIndex(self.level.scroll_type)
+        self.level_is_vertical_cb.setChecked(self.level.is_vertical)
+        self.pipe_ends_level_cb.setChecked(self.level.pipe_ends_level)
+
+        self.x_position_dropdown.setCurrentIndex(self.level.start_x_index)
+        self.y_position_dropdown.setCurrentIndex(self.level.start_y_index)
+        self.action_dropdown.setCurrentIndex(self.level.start_action)
+
+        self.object_palette_spinner.setValue(self.level.object_palette_index)
+        self.enemy_palette_spinner.setValue(self.level.enemy_palette_index)
+        self.graphic_set_dropdown.setCurrentIndex(self.level.graphic_set)
+
+        self.level_pointer_spinner.setValue(self.level.next_area_objects)
+        self.enemy_pointer_spinner.setValue(self.level.next_area_enemies)
+        self.next_area_object_set_dropdown.setCurrentIndex(self.level.next_area_object_set)
+
+    def on_spin(self, _):
+        if self.level is None:
             return
 
-        spin_id = event.GetId()
+        spinner = self.sender()
 
-        if spin_id == self.object_palette_spinner.GetId():
-            new_index = self.object_palette_spinner.GetValue()
-            self._level.object_palette_index = new_index
+        if spinner == self.object_palette_spinner:
+            new_index = self.object_palette_spinner.value()
+            self.level.object_palette_index = new_index
 
-        elif spin_id == self.enemy_palette_spinner.GetId():
-            new_index = self.enemy_palette_spinner.GetValue()
-            self._level.enemy_palette_index = new_index
+        elif spinner == self.enemy_palette_spinner:
+            new_index = self.enemy_palette_spinner.value()
+            self.level.enemy_palette_index = new_index
 
-        elif spin_id == self.level_pointer_spinner.GetId():
-            new_offset = self.level_pointer_spinner.GetValue()
-            self._level.next_area_objects = new_offset
+        elif spinner == self.level_pointer_spinner:
+            new_offset = self.level_pointer_spinner.value()
+            self.level.next_area_objects = new_offset
 
-        elif spin_id == self.enemy_pointer_spinner:
-            new_offset = self.enemy_pointer_spinner.GetValue()
-            self._level.next_area_enemies = new_offset
+        elif spinner == self.enemy_pointer_spinner:
+            new_offset = self.enemy_pointer_spinner.value()
+            self.level.next_area_enemies = new_offset
 
-        wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
+        self.header_change.emit()
 
-        self._level.reload()
-        self.level_ref.update_size()
-        self.level_ref.Refresh()
+    def on_combo(self, _):
+        dropdown = self.sender()
 
-    def on_combo(self, event):
-        combo_id = event.GetId()
+        if dropdown == self.length_dropdown:
+            new_length = LEVEL_LENGTHS[self.length_dropdown.currentIndex()]
+            self.level.length = new_length
 
-        if combo_id == self.length_dropdown.GetId():
-            new_length = LEVEL_LENGTHS[self.length_dropdown.GetSelection()]
-            self._level.length = new_length
+        elif dropdown == self.music_dropdown:
+            new_music = self.music_dropdown.currentIndex()
+            self.level.music_index = new_music
 
-        elif combo_id == self.music_dropdown.GetId():
-            new_music = self.music_dropdown.GetSelection()
-            self._level.music_index = new_music
+        elif dropdown == self.time_dropdown:
+            new_time = self.time_dropdown.currentIndex()
+            self.level.time_index = new_time
 
-        elif combo_id == self.time_dropdown.GetId():
-            new_time = self.time_dropdown.GetSelection()
-            self._level.time_index = new_time
+        elif dropdown == self.v_scroll_direction_dropdown:
+            new_scroll = self.v_scroll_direction_dropdown.currentIndex()
+            self.level.scroll_type = new_scroll
 
-        elif combo_id == self.x_position_dropdown.GetId():
-            new_x = self.x_position_dropdown.GetSelection()
-            self._level.start_x_index = new_x
+        elif dropdown == self.x_position_dropdown:
+            new_x = self.x_position_dropdown.currentIndex()
+            self.level.start_x_index = new_x
 
-        elif combo_id == self.v_scroll_direction_dropdown.GetId():
-            new_scroll = self.v_scroll_direction_dropdown.GetSelection()
-            self._level.scroll_type = new_scroll
+        elif dropdown == self.y_position_dropdown:
+            new_y = self.y_position_dropdown.currentIndex()
+            self.level.start_y_index = new_y
 
-        elif combo_id == self.y_position_dropdown.GetId():
-            new_y = self.y_position_dropdown.GetSelection()
-            self._level.start_y_index = new_y
+        elif dropdown == self.action_dropdown:
+            new_action = self.action_dropdown.currentIndex()
+            self.level.start_action = new_action
 
-        elif combo_id == self.action_dropdown.GetId():
-            new_action = self.action_dropdown.GetSelection()
-            self._level.start_action = new_action
+        elif dropdown == self.graphic_set_dropdown:
+            new_gfx_set = self.graphic_set_dropdown.currentIndex()
+            self.level.graphic_set = new_gfx_set
 
-        elif combo_id == self.graphic_set_dropdown.GetId():
-            new_gfx_set = self.graphic_set_dropdown.GetSelection()
-            self._level.graphic_set = new_gfx_set
+        elif dropdown == self.next_area_object_set_dropdown:
+            new_object_set = self.next_area_object_set_dropdown.currentIndex()
+            self.level.next_area_object_set = new_object_set
 
-        elif combo_id == self.next_area_object_set_dropdown.GetId():
-            new_object_set = self.next_area_object_set_dropdown.GetSelection()
-            self._level.next_area_object_set = new_object_set
+        self.header_change.emit()
 
-        wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
+    def on_check_box(self, _):
+        checkbox = self.sender()
 
-        self._level.reload()
-        self.level_ref.update_size()
-        self.level_ref.Refresh()
+        if checkbox == self.pipe_ends_level_cb:
+            self.level.pipe_ends_level = self.pipe_ends_level_cb.isChecked()
+        elif checkbox == self.level_is_vertical_cb:
+            self.level.is_vertical = self.level_is_vertical_cb.isChecked()
 
-    def on_check_box(self, event):
-        cb_id = event.GetId()
-
-        if cb_id == self.pipe_ends_level_cb.GetId():
-            self._level.pipe_ends_level = self.pipe_ends_level_cb.GetValue()
-        elif cb_id == self.level_is_vertical_cb.GetId():
-            self._level.is_vertical = self.level_is_vertical_cb.GetValue()
-
-        wx.PostEvent(self, HeaderChangedEvent(self.GetId()))
-
-        self._level.reload()
-        self.level_ref.update_size()
-        self.level_ref.Refresh()
-
-    def refresh(self):
-        self._fill_widgets()
-
-    def Show(self, **kwargs):
-        self._fill_widgets()
-        super(HeaderEditor, self).Show(**kwargs)
-
-    def on_key_press(self, event):
-        key = event.GetKeyCode()
-
-        if key == wx.WXK_ESCAPE:
-            self.on_exit(None)
-
-    def on_exit(self, _):
-        self.Hide()
+        self.header_change.emit()
