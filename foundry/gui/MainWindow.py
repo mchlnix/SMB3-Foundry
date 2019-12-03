@@ -770,4 +770,4 @@ class SMB3Foundry(QMainWindow):
 
             return
 
-        self.destroy()
+        super(SMB3Foundry, self).closeEvent(event)
