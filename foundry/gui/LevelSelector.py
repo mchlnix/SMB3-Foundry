@@ -167,7 +167,12 @@ class LevelSelector(QDialog):
             f"obj_index: {object_set_index}"
         )
 
+        self.button_ok.setDisabled(self.selected_world == 0)
+
     def on_ok(self, _):
+        if self.selected_world == 0:
+            return
+
         self.object_set = self.object_set_dropdown.currentIndex()
         self.object_data_offset = self.object_data_spinner.value()
         # skip the first byte, because it seems useless
