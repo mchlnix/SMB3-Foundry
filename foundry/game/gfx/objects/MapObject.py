@@ -1,4 +1,4 @@
-import wx
+from PySide2.QtCore import QRect
 
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 
@@ -137,7 +137,7 @@ class MapObject(ObjectLike):
 
         self.block = block
 
-        self.rect = wx.Rect(self.x_position, self.y_position, 1, 1)
+        self.rect = QRect(self.x_position, self.y_position, 1, 1)
 
         if self.block.index in map_object_names:
             self.name = map_object_names[self.block.index]
@@ -152,7 +152,7 @@ class MapObject(ObjectLike):
         x = int(x)
         y = int(y)
 
-        self.rect = wx.Rect(x, y, 1, 1)
+        self.rect = QRect(x, y, 1, 1)
 
         self.x_position = x
         self.y_position = y
@@ -189,7 +189,7 @@ class MapObject(ObjectLike):
         return
 
     def point_in(self, x, y):
-        return self.rect.Contains(x, y)
+        return self.rect.contains(x, y)
 
     def change_type(self, new_type):
         pass

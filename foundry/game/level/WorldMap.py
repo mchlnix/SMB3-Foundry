@@ -1,4 +1,4 @@
-import wx
+from PySide2.QtCore import QPoint
 
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import load_palette
@@ -63,7 +63,7 @@ class WorldMap(LevelLike):
     def add_object(self, obj, _):
         self.objects.append(obj)
 
-        self.objects.sort(key=WorldMap._array_index)
+        self.objects.sort(key=self._array_index)
 
     @staticmethod
     def _array_index(obj):
@@ -83,10 +83,10 @@ class WorldMap(LevelLike):
         return self.objects
 
     def object_at(self, x, y):
-        point = wx.Point(x, y)
+        point = QPoint(x, y)
 
         for obj in reversed(self.objects):
-            if obj.rect.Contains(point):
+            if obj.rect.contains(point):
                 return obj
 
         return None
