@@ -6,7 +6,7 @@ from PySide2.QtWidgets import QToolBar, QComboBox, QStatusBar, QWidget, QLayout
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.Spinner import Spinner
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 
@@ -21,7 +21,7 @@ MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
 
 
-class ObjectViewer(CustomDialog):
+class ObjectViewer(CustomChildWindow):
     def __init__(self, parent):
         super(ObjectViewer, self).__init__(parent, title="Object Viewer")
 

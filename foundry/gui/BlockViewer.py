@@ -8,11 +8,11 @@ from foundry.game.File import ROM
 from foundry.game.gfx.Palette import get_bg_color_for, load_palette
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable.Block import Block
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 
 
-class BlockViewer(CustomDialog):
+class BlockViewer(CustomChildWindow):
     def __init__(self, parent):
         super(BlockViewer, self).__init__(parent, "Block Viewer")
 

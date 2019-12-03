@@ -1,5 +1,5 @@
 from PySide2.QtGui import Qt, QPixmap
-from PySide2.QtWidgets import QBoxLayout, QLabel, QWidget, QFrame
+from PySide2.QtWidgets import QBoxLayout, QLabel, QFrame
 
 from foundry.gui.CustomDialog import CustomDialog
 
@@ -15,9 +15,7 @@ class AboutDialog(CustomDialog):
     def __init__(self, parent):
         super(AboutDialog, self).__init__(parent, title="About SMB3Foundry")
 
-        central_widget = QWidget()
-
-        main_layout = QBoxLayout(QBoxLayout.LeftToRight)
+        main_layout = QBoxLayout(QBoxLayout.LeftToRight, self)
 
         image = QPixmap("data/foundry.ico").scaled(200, 200)
 
@@ -47,10 +45,6 @@ class AboutDialog(CustomDialog):
         )
 
         main_layout.addLayout(text_layout)
-
-        central_widget.setLayout(main_layout)
-
-        self.setCentralWidget(central_widget)
 
 
 class LinkLabel(QLabel):

@@ -1,10 +1,10 @@
 from PySide2.QtGui import Qt, QKeyEvent
-from PySide2.QtWidgets import QDialog
+from PySide2.QtWidgets import QMainWindow
 
 
-class CustomDialog(QDialog):
+class CustomChildWindow(QMainWindow):
     def __init__(self, parent, title="Title"):
-        super(CustomDialog, self).__init__(parent)
+        super(CustomChildWindow, self).__init__(parent)
 
         self.setWindowTitle(title)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
