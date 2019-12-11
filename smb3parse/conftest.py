@@ -1,17 +1,17 @@
+import os
 from os import chdir
 
 import pytest
 
-from foundry.game.File import ROM
+from util.rom import Rom
 
 
 @pytest.fixture(scope="session", autouse=True)
 def cd_to_repo_root():
-    chdir("..")
+    chdir(os.path.dirname(__file__) + "/..")
 
 
 @pytest.fixture(scope="session")
 def rom():
-    ROM.load_from_file("SMB3.nes")
-
-    yield ROM()
+    with open("SMB3.nes", "rb") as rom_file:
+        yield Rom(bytearray(rom_file.read()))

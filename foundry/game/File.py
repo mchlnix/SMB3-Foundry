@@ -17,13 +17,6 @@ TSA_TABLE_INTERVAL = TSA_TABLE_SIZE + 0x1C00
 TSA_BASE_OS = 0x00010
 
 
-# little endian
-def le(two_bytes: bytearray) -> int:
-    first, second = two_bytes
-
-    return (second << 8) + first
-
-
 class ROM:
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
 
