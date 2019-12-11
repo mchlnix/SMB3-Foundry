@@ -61,7 +61,7 @@ matrix:
         - PY36PATH=/c/Python36:/c/Python36/Scripts
         - PATH=$PY36PATH:$PATH
       before_install:
-        - choco install python --version 3.6.7
+        - choco install python --version=3.6.7
         - python -m pip -v --version
         - python -m pip -v install --upgrade pip
         - python -m pip -v install pyside2
