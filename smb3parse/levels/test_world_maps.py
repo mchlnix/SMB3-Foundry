@@ -1,12 +1,7 @@
 import pytest
 
-from smb3parse.levels.world_map import (
-    WORLD_MAP_HEIGHT,
-    WORLD_MAP_SCREEN_WIDTH,
-    WorldMap,
-    get_all_world_maps,
-    list_world_map_addresses,
-)
+from smb3parse.levels import WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
+from smb3parse.levels.world_map import WorldMap, get_all_world_maps, list_world_map_addresses
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 world_map_addresses = [0x185BA, 0x1864B, 0x1876C, 0x1891D, 0x18A3E, 0x18B5F, 0x18D10, 0x18E31, 0x19072]
@@ -69,11 +64,11 @@ def test_list_all_world_maps_width(rom):
 @pytest.mark.parametrize(
     "row, column, level_address, enemy_address, object_set",
     [
-        (0, 4, 0x1FB9B, 0xC538, 0x1),
-        (0, 8, 0x20F43, 0xC6BB, 0x3),
-        (0, 10, 0x1EE22, 0xC2FF, 0x01),
-        (2, 10, 0x2351A, 0xCC44, 0x4),
-        (8, 4, 0x1AA5A, 0xC93C, 0xE),
+        (0, 4, 0x1FB92, 0xC537, 0x1),
+        (0, 8, 0x20F3A, 0xC6BA, 0x3),
+        (0, 10, 0x1EE19, 0xC2FE, 0x01),
+        (2, 10, 0x23511, 0xCC43, 0x4),
+        (8, 4, 0x1AA51, 0xC93B, 0xE),
     ],
 )
 def test_get_level_at_position(rom, row, column, level_address, enemy_address, object_set):

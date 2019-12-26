@@ -1,4 +1,4 @@
-from util.rom import Rom
+from smb3parse.util.rom import Rom
 
 
 def test_find():

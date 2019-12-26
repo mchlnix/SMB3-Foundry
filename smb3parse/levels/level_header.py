@@ -1,13 +1,13 @@
-from smb3parse.levels.level import (
-    HEADER_LENGTH,
+from smb3parse.levels import (
     DEFAULT_HORIZONTAL_HEIGHT,
     DEFAULT_VERTICAL_WIDTH,
-    MIN_LENGTH,
-    BASE_ENEMY_OFFSET,
-    BASE_LEVEL_OFFSET,
+    ENEMY_BASE_OFFSET,
+    HEADER_LENGTH,
+    LEVEL_BASE_OFFSET,
     LEVEL_LENGTH_INTERVAL,
+    LEVEL_MIN_LENGTH,
 )
-from smb3parse.objects.object_set import is_valid_object_set_number, ObjectSet
+from smb3parse.objects.object_set import ObjectSet, is_valid_object_set_number
 
 
 class LevelHeader:
@@ -25,7 +25,7 @@ class LevelHeader:
 
         self.start_y_index = (self.data[4] & 0b1110_0000) >> 5
 
-        self.length = MIN_LENGTH + (self.data[4] & 0b0000_1111) * LEVEL_LENGTH_INTERVAL
+        self.length = LEVEL_MIN_LENGTH + (self.data[4] & 0b0000_1111) * LEVEL_LENGTH_INTERVAL
         self.width = self.length
         self.height = DEFAULT_HORIZONTAL_HEIGHT
 
@@ -54,6 +54,6 @@ class LevelHeader:
         self.music_index = self.data[8] & 0b0000_1111
 
         self.jump_level_address = (
-            (self.data[1] << 8) + self.data[0] + BASE_LEVEL_OFFSET + self.jump_object_set.level_offset
+            (self.data[1] << 8) + self.data[0] + LEVEL_BASE_OFFSET + self.jump_object_set.level_offset
         )
-        self.jump_enemy_address = (self.data[3] << 8) + self.data[2] + BASE_ENEMY_OFFSET
+        self.jump_enemy_address = (self.data[3] << 8) + self.data[2] + ENEMY_BASE_OFFSET

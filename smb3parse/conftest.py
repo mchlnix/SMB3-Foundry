@@ -3,7 +3,7 @@ from os import chdir
 
 import pytest
 
-from util.rom import Rom
+from smb3parse.util.rom import Rom
 
 
 @pytest.fixture(scope="session", autouse=True)

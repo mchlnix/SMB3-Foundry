@@ -1,93 +1,27 @@
 from typing import List, Optional, Tuple
 
-from smb3parse.levels import LevelBase
-from smb3parse.levels.level import HEADER_LENGTH
+from smb3parse.levels import (
+    ENEMY_BASE_OFFSET,
+    FIRST_VALID_ROW,
+    LAYOUT_LIST_OFFSET,
+    LEVELS_IN_WORLD_LIST_OFFSET,
+    LEVEL_ENEMY_LIST_OFFSET,
+    LEVEL_X_POS_LISTS,
+    LEVEL_Y_POS_LISTS,
+    LevelBase,
+    OFFSET_BY_OBJECT_SET_A000,
+    OFFSET_SIZE,
+    STRUCTURE_DATA_OFFSETS,
+    TILE_ATTRIBUTES_TS0_OFFSET,
+    VALID_COLUMNS,
+    VALID_ROWS,
+    WORLD_COUNT,
+    WORLD_MAP_BASE_OFFSET,
+    WORLD_MAP_HEIGHT,
+    WORLD_MAP_SCREEN_SIZE,
+    WORLD_MAP_SCREEN_WIDTH,
+)
 from smb3parse.util.rom import Rom
-
-OFFSET_SIZE = 2  # byte
-
-BASE_OFFSET = 0x10  # the size of the rom header identifying the rom
-
-ENEMY_BASE_OFFSET = BASE_OFFSET + 1
-"""
-One additional byte, at the beginning of every enemy data, where I don't know what does
-"""
-
-LEVEL_BASE_OFFSET = BASE_OFFSET + 0xE000
-"""
-Offset for a lot of world and level related parsing.
-"""
-
-LAYOUT_LIST_OFFSET = LEVEL_BASE_OFFSET + 0xA598
-
-TILE_ATTRIBUTES_TS0_OFFSET = LEVEL_BASE_OFFSET + 0xA400
-"""
-The first 4 bytes describe minimal indexes an overworld tile must have to be enterable.
-"""
-
-STRUCTURE_DATA_OFFSETS = LEVEL_BASE_OFFSET + 0xB3CA  # Map_ByXHi_InitIndex
-"""
-This lists the start of a block of world meta data. 9 worlds means 9 times 2 bytes of offsets. The block starts with a
-0x00, so that also marks the end of the block before it.
-"""
-
-LEVEL_Y_POS_LISTS = LEVEL_BASE_OFFSET + 0xB3DC  # Map_ByRowType
-"""
-This list contains the offsets to the y positions/row indexes of the levels of a world map. Since world maps can have up
-to 4 screens, the offset could points to 4 consecutive lists, so we need to know the amount of levels per screen, to
-make sense of them.
-"""
-
-LEVEL_X_POS_LISTS = LEVEL_BASE_OFFSET + 0xB3EE  # Map_ByScrCol
-"""
-This list contains the offsets to the x positions/column indexes of the levels in a world map. They are listed in a row
-for all 4 screens.
-"""
-
-LEVEL_ENEMY_LIST_OFFSET = LEVEL_BASE_OFFSET + 0xB400
-"""
-"""
-
-LEVELS_IN_WORLD_LIST_OFFSET = LEVEL_BASE_OFFSET + 0xB412
-"""
-The memory locations of levels inside a world map are listed in a row. This offset points to the memory locations of
-these lists for every world. The first 2 bytes following this offset point to the levels in world 1, the next 2 for
-world 2 etc.
-"""
-
-OFFSET_BY_OBJECT_SET_A000 = BASE_OFFSET + 0x34000 + 0x83E9  # PAGE_A000_ByTileset
-"""
-A list of values, which specify which ROM page should be loaded into addresses 0xA000 - 0xBFFF for a given object set.
-This is necessary, since the ROM is larger then the addressable RAM in the NES. The offsets of levels are always into
-the RAM, which means, to address levels at different parts in the ROM these parts need to be loaded into the RAM first.
-"""
-
-OFFSET_BY_OBJECT_SET_C000 = 0x34010 + 0x83D6  # PAGE_C000_ByTileset
-"""
-Same with the ROM page and addresses 0xC000 - 0xFFFF.
-"""
-
-WORLD_COUNT = 9  # includes warp zone
-
-WORLD_MAP_HEIGHT = 9  # blocks
-WORLD_MAP_SCREEN_WIDTH = 16  # blocks
-
-FIRST_VALID_ROW = 2
-"""
-Tiles in rows before this one are part of the border and not valid overworld tiles.
-"""
-
-VALID_ROWS = range(FIRST_VALID_ROW, FIRST_VALID_ROW + WORLD_MAP_HEIGHT)
-"""
-A range of row values, where Mario could possibly stand.
-"""
-
-VALID_COLUMNS = range(WORLD_MAP_SCREEN_WIDTH)
-"""
-A range of column values, where Mario could possibly stand.
-"""
-
-WORLD_MAP_SCREEN_SIZE = WORLD_MAP_HEIGHT * WORLD_MAP_SCREEN_WIDTH  # bytes
 
 
 def list_world_map_addresses(rom: Rom) -> List[int]:
@@ -100,7 +34,7 @@ def list_world_map_addresses(rom: Rom) -> List[int]:
 
         world_map_offset = (offsets[index + 1] << 8) + offsets[index]
 
-        addresses.append(LEVEL_BASE_OFFSET + world_map_offset)
+        addresses.append(WORLD_MAP_BASE_OFFSET + world_map_offset)
 
     return addresses
 
@@ -141,7 +75,7 @@ class WorldMap(LevelBase):
         except ValueError:
             raise ValueError(f"World map was not found at given memory address {hex(memory_address)}.")
 
-        self._height = WORLD_MAP_HEIGHT
+        self.height = WORLD_MAP_HEIGHT
 
         layout_end_index = rom.find(b"\xFF", memory_address)
 
@@ -154,7 +88,7 @@ class WorldMap(LevelBase):
             )
 
         self.screen_count = len(self.layout_bytes) // WORLD_MAP_SCREEN_SIZE
-        self._width = int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
+        self.width = int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
 
         self._parse_structure_data_block(rom)
 
@@ -169,16 +103,16 @@ class WorldMap(LevelBase):
     def _parse_structure_data_block(self, rom: Rom):
         structure_block_offset = rom.little_endian(STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.world_index)
 
-        self.structure_block_start = LEVEL_BASE_OFFSET + structure_block_offset
+        self.structure_block_start = WORLD_MAP_BASE_OFFSET + structure_block_offset
 
         # the indexes into the y_pos list, where the levels for the n-th screen start
         y_pos_start_by_screen = rom.read(self.structure_block_start, 4)
 
-        level_y_pos_list_start = LEVEL_BASE_OFFSET + rom.little_endian(
+        level_y_pos_list_start = WORLD_MAP_BASE_OFFSET + rom.little_endian(
             LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
         )
 
-        level_x_pos_list_start = LEVEL_BASE_OFFSET + rom.little_endian(
+        level_x_pos_list_start = WORLD_MAP_BASE_OFFSET + rom.little_endian(
             LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
         )
 
@@ -218,11 +152,11 @@ class WorldMap(LevelBase):
         if not self._is_enterable(tile):
             return None
 
-        level_y_pos_list_start = LEVEL_BASE_OFFSET + self._rom.little_endian(
+        level_y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
             LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
         )
 
-        level_x_pos_list_start = LEVEL_BASE_OFFSET + self._rom.little_endian(
+        level_x_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
             LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
         )
 
@@ -255,7 +189,7 @@ class WorldMap(LevelBase):
         # get level offset
         level_list_offset_position = LEVELS_IN_WORLD_LIST_OFFSET + self.world_index * OFFSET_SIZE
 
-        level_list_address = LEVEL_BASE_OFFSET + self._rom.little_endian(level_list_offset_position)
+        level_list_address = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(level_list_offset_position)
 
         level_offset = self._rom.little_endian(level_list_address + OFFSET_SIZE * level_index)
 
@@ -269,13 +203,13 @@ class WorldMap(LevelBase):
 
         object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set) * 2 - 10) * 0x1000
 
-        absolute_level_address = 0x0010 + object_set_offset + level_offset + HEADER_LENGTH
+        absolute_level_address = 0x0010 + object_set_offset + level_offset
 
         # get enemy address
 
         enemy_list_start_offset = LEVEL_ENEMY_LIST_OFFSET + self.world_index * OFFSET_SIZE
 
-        enemy_list_start = LEVEL_BASE_OFFSET + self._rom.little_endian(enemy_list_start_offset)
+        enemy_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(enemy_list_start_offset)
 
         enemy_address = ENEMY_BASE_OFFSET + self._rom.little_endian(enemy_list_start + level_index * OFFSET_SIZE)
 
