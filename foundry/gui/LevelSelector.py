@@ -136,27 +136,31 @@ class LevelSelector(QDialog):
         self.selected_world = self.world_list.currentRow()
         self.selected_level = index + 1
 
-        if self.selected_world == OVERWORLD_MAPS_INDEX:  # over-world maps
+        level_is_overworld = self.selected_world == OVERWORLD_MAPS_INDEX
+
+        if level_is_overworld:
             level_array_offset = self.selected_level
         else:
             level_array_offset = Level.world_indexes[self.selected_world] + self.selected_level
 
         object_data_for_lvl = Level.offsets[level_array_offset].rom_level_offset
 
-        if self.selected_world >= WORLD_1_INDEX:
+        if not level_is_overworld:
             object_data_for_lvl -= Level.HEADER_LENGTH
 
         self.object_data_spinner.setValue(object_data_for_lvl)
 
-        if self.selected_world >= WORLD_1_INDEX:
+        if not level_is_overworld:
             enemy_data_for_lvl = Level.offsets[level_array_offset].enemy_offset
         else:
             enemy_data_for_lvl = 0
 
         if enemy_data_for_lvl > 0:
+            # data in look up table is off by one, since workshop ignores the first byte
             enemy_data_for_lvl -= 1
 
         self.enemy_data_spinner.setValue(enemy_data_for_lvl)
+        self.enemy_data_spinner.setEnabled(not level_is_overworld)
 
         # if self.selected_world >= WORLD_1_INDEX:
         object_set_index = Level.offsets[level_array_offset].real_obj_set
