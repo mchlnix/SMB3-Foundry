@@ -28,9 +28,7 @@ COLOR_COUNT = 64
 BYTES_IN_COLOR = 3 + 1  # bytes + separator
 
 for i in range(COLOR_COUNT):
-    NESPalette.append(
-        [color_data[offset], color_data[offset + 1], color_data[offset + 2]]
-    )
+    NESPalette.append([color_data[offset], color_data[offset + 1], color_data[offset + 2]])
 
     offset += BYTES_IN_COLOR
 
@@ -41,11 +39,12 @@ def load_palette(object_set, palette_group):
     palette_offset = MAP_PALETTE_ADDRESS + (object_set * PALETTE_DATA_SIZE)
     palette_offset += palette_group * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
 
-    rom.seek(palette_offset)
-
     palettes = []
+
     for _ in range(PALETTES_PER_PALETTES_GROUP):
-        palettes.append(rom.bulk_read(COLORS_PER_PALETTE))
+        palettes.append(rom.read(palette_offset, COLORS_PER_PALETTE))
+
+        palette_offset += COLORS_PER_PALETTE
 
     return palettes
 

@@ -18,3 +18,13 @@ def test_little_endian():
 
     assert rom.little_endian(0) == (0x01 << 8) + 0x00
     assert rom.little_endian(6) == (0x00 << 8) + 0x06
+
+
+def test_int():
+    rom_bytes = bytearray(b"\x00\x01\x02\x03\x04\x1f")
+    numbers = [0, 1, 2, 3, 4, 0x1F]
+
+    rom = Rom(rom_bytes)
+
+    for offset, number in enumerate(numbers):
+        assert rom.int(offset) == number

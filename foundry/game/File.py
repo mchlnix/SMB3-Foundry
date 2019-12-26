@@ -2,6 +2,7 @@ from os.path import basename
 from typing import List, Optional
 
 from smb3parse.levels.world_map import list_world_map_addresses
+from smb3parse.util.rom import Rom
 
 WORLD_COUNT = 9  # includes warp zone
 
@@ -17,7 +18,7 @@ TSA_TABLE_INTERVAL = TSA_TABLE_SIZE + 0x1C00
 TSA_BASE_OS = 0x00010
 
 
-class ROM:
+class ROM(Rom):
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
 
     rom_data = bytearray()
@@ -27,7 +28,6 @@ class ROM:
     path: str = ""
     name: str = ""
 
-    W_LAYOUT_OS_LIST: List[int] = []
     W_INIT_OS_LIST: List[int] = []
 
     def __init__(self, path: Optional[str] = None):
@@ -37,36 +37,23 @@ class ROM:
 
             ROM.load_from_file(path)
 
+        super(ROM, self).__init__(ROM.rom_data)
+
         self.position = 0
-
-    @staticmethod
-    def _parse_rom():
-        ROM._setup_map_addresses()
-        ROM._setup_level_addresses()
-
-    @staticmethod
-    def _setup_map_addresses():
-        ROM.W_LAYOUT_OS_LIST = list_world_map_addresses(ROM.rom_data)
-
-    @staticmethod
-    def _setup_level_addresses():
-        pass
 
     @staticmethod
     def get_tsa_data(object_set: int) -> bytearray:
         rom = ROM()
 
-        rom.seek(TSA_OS_LIST + object_set)
-
-        tsa_index = rom.get_byte()
+        tsa_index = rom.int(TSA_OS_LIST + object_set)
 
         if object_set == 0:
             # todo why is the tsa index in the wrong (seemingly) false?
             tsa_index += 1
 
-        rom.seek(TSA_BASE_OS + tsa_index * TSA_TABLE_INTERVAL)
+        tsa_start = TSA_BASE_OS + tsa_index * TSA_TABLE_INTERVAL
 
-        return rom.bulk_read(TSA_TABLE_SIZE)
+        return rom.read(tsa_start, TSA_TABLE_SIZE)
 
     @staticmethod
     def load_from_file(path: str):
@@ -87,8 +74,6 @@ class ROM:
             additional_data_start += len(ROM.MARKER_VALUE)
 
             ROM.additional_data = data[additional_data_start:].decode("utf-8")
-
-        ROM._parse_rom()
 
     @staticmethod
     def save_to_file(path: str):

@@ -1,4 +1,4 @@
-from util import little_endian
+from smb3parse.util import little_endian
 
 
 class Rom:
@@ -13,3 +13,8 @@ class Rom:
 
     def find(self, byte: bytes, offset: int = 0) -> int:
         return self._data.find(byte, offset)
+
+    def int(self, offset: int) -> int:
+        read_bytes = self.read(offset, 1)
+
+        return read_bytes[0]
