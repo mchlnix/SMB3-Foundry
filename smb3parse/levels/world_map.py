@@ -1,6 +1,8 @@
 from typing import List, Optional, Tuple
 
 from smb3parse.levels import (
+    COMPLETABLE_LIST_END_MARKER,
+    COMPLETABLE_TILES_LIST,
     ENEMY_BASE_OFFSET,
     FIRST_VALID_ROW,
     LAYOUT_LIST_OFFSET,
@@ -11,6 +13,8 @@ from smb3parse.levels import (
     LevelBase,
     OFFSET_BY_OBJECT_SET_A000,
     OFFSET_SIZE,
+    SPECIAL_ENTERABLE_TILES_LIST,
+    SPECIAL_ENTERABLE_TILE_AMOUNT,
     STRUCTURE_DATA_OFFSETS,
     TILE_ATTRIBUTES_TS0_OFFSET,
     VALID_COLUMNS,
@@ -66,7 +70,9 @@ class WorldMap(LevelBase):
 
         self._rom = rom
 
-        self._minimal_enterable_tiles = _get_enterable_tiles(self._rom)
+        self._minimal_enterable_tiles = _get_normal_enterable_tiles(self._rom)
+        self._special_enterable_tiles = _get_special_enterable_tiles(self._rom)
+        self._completable_tiles = _get_completable_tiles(self._rom)
 
         memory_addresses = list_world_map_addresses(rom)
 
@@ -162,8 +168,12 @@ class WorldMap(LevelBase):
 
         row_amount = col_amount = level_x_pos_list_start - level_y_pos_list_start
 
+        row_start_index = sum(
+            [self.level_count_s1, self.level_count_s2, self.level_count_s3, self.level_count_s4][0 : screen - 1]
+        )
+
         # find the row position
-        for row_index in range(row_amount):
+        for row_index in range(row_start_index, row_amount):
             value = self._rom.int(level_y_pos_list_start + row_index)
 
             # adjust the value, so that we ignore the black border tiles around the map
@@ -253,7 +263,12 @@ class WorldMap(LevelBase):
         """
         quadrant_index = tile_index >> 6
 
-        return tile_index >= self._minimal_enterable_tiles[quadrant_index]
+        # todo allows spade houses, but those break. treat them differently when loading their level
+        return (
+            tile_index >= self._minimal_enterable_tiles[quadrant_index]
+            or tile_index in self._completable_tiles
+            or tile_index in self._special_enterable_tiles
+        )
 
     @staticmethod
     def from_world_number(rom: Rom, world_number: int) -> "WorldMap":
@@ -265,5 +280,15 @@ class WorldMap(LevelBase):
         return WorldMap(memory_address, rom)
 
 
-def _get_enterable_tiles(rom: Rom) -> bytearray:
+def _get_normal_enterable_tiles(rom: Rom) -> bytearray:
     return rom.read(TILE_ATTRIBUTES_TS0_OFFSET, 4)
+
+
+def _get_special_enterable_tiles(rom: Rom) -> bytearray:
+    return rom.read(SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
+
+
+def _get_completable_tiles(rom: Rom) -> bytearray:
+    completable_tile_amount = rom.find(COMPLETABLE_LIST_END_MARKER, COMPLETABLE_TILES_LIST) - COMPLETABLE_TILES_LIST - 1
+
+    return rom.read(COMPLETABLE_TILES_LIST, completable_tile_amount)

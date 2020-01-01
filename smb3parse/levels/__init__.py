@@ -9,6 +9,8 @@ ENEMY_BASE_OFFSET = BASE_OFFSET  # + 1
 One additional byte, at the beginning of every enemy data, where I don't know what does
 """
 
+UNKNOWN_OFFSET = BASE_OFFSET + 0x8000  # offset used for uncategorized stuff. TODO find a name
+
 WORLD_MAP_BASE_OFFSET = BASE_OFFSET + 0xE000
 """
 Offset for a lot of world related parsing.
@@ -63,7 +65,7 @@ This is necessary, since the ROM is larger then the addressable RAM in the NES. 
 the RAM, which means, to address levels at different parts in the ROM these parts need to be loaded into the RAM first.
 """
 
-OFFSET_BY_OBJECT_SET_C000 = 0x34010 + 0x83D6  # PAGE_C000_ByTileset
+OFFSET_BY_OBJECT_SET_C000 = BASE_OFFSET + 0x34000 + 0x83D6  # PAGE_C000_ByTileset
 """
 Same with the ROM page and addresses 0xC000 - 0xFFFF.
 """
@@ -87,6 +89,23 @@ VALID_COLUMNS = range(WORLD_MAP_SCREEN_WIDTH)
 """
 A range of column values, where Mario could possibly stand.
 """
+
+COMPLETABLE_TILES_LIST = WORLD_MAP_BASE_OFFSET + 0xA447  # Map_Completable_Tiles
+"""
+A list of tile values, that are completable, like the Toad House.
+"""
+
+COMPLETABLE_LIST_END_MARKER = 0x00  # MCT_END
+"""
+A value, that specifies the end of the completable tiles, rather than a set address.
+"""
+
+SPECIAL_ENTERABLE_TILES_LIST = UNKNOWN_OFFSET + 0xCDAF  # Map_EnterSpecialTiles
+"""
+A list of tile values, that are also enterable, like the castle and the toad house.
+"""
+
+SPECIAL_ENTERABLE_TILE_AMOUNT = 11  # the rom mistakenly uses 0x1A
 
 WORLD_MAP_SCREEN_SIZE = WORLD_MAP_HEIGHT * WORLD_MAP_SCREEN_WIDTH  # bytes
 

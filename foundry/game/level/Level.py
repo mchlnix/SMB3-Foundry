@@ -1,7 +1,7 @@
-from typing import List, Union, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
-from PySide2.QtCore import QRect, QPoint, QSize, Signal, SignalInstance, QObject
-from PySide2.QtGui import QPainter, QBrush, QColor, Qt, QPen
+from PySide2.QtCore import QPoint, QRect, QSize
+from PySide2.QtGui import QBrush, QColor, QPainter, QPen, Qt
 
 from foundry.game.Data import Mario3Level
 from foundry.game.File import ROM
