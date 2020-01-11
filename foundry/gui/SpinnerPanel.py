@@ -1,8 +1,9 @@
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QSizePolicy, QFormLayout, QVBoxLayout
+from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
 
@@ -72,7 +73,7 @@ class SpinnerPanel(QWidget):
         if len(self.level_ref.selected_objects) == 1:
             selected_object = self.level_ref.selected_objects[0]
 
-            if isinstance(selected_object, LevelObject):
+            if isinstance(selected_object, ObjectLike):
                 self._populate_spinners(selected_object)
 
         else:
@@ -83,13 +84,14 @@ class SpinnerPanel(QWidget):
 
         super(SpinnerPanel, self).update()
 
-    def _populate_spinners(self, obj: LevelObject):
+    def _populate_spinners(self, obj: ObjectLike):
         self.blockSignals(True)
 
         self.set_type(obj.obj_index)
-        self.set_domain(obj.domain)
 
-        if obj.is_4byte:
+        self.enable_domain(isinstance(obj, LevelObject), 0)
+
+        if isinstance(obj, LevelObject) and obj.is_4byte:
             self.set_length(obj.secondary_length)
         else:
             self.enable_length(False)

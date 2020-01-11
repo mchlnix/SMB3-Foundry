@@ -2,6 +2,11 @@ import abc
 
 
 class ObjectLike(abc.ABC):
+    obj_index: int
+    domain: int
+
+    is_4byte: bool
+
     @abc.abstractmethod
     def render(self):
         pass

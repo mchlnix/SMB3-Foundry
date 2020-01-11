@@ -23,6 +23,8 @@ class EnemyObject(ObjectLike):
         self.x_position = data[1]
         self.y_position = data[2]
 
+        self.domain = 0
+
         self.pattern_table = PatternTable(0x4C)
         self.palette_group = palette_group
 
