@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple, Union
 
-from PySide2.QtCore import QPoint, QRect, QSize
+from PySide2.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 from PySide2.QtGui import QBrush, QColor, QPainter, QPen, Qt
 
 from foundry.game.Data import Mario3Level
@@ -14,7 +14,7 @@ from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from foundry.game.level import _load_level_offsets, LevelByteData
+from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from foundry.gui.UndoStack import UndoStack
 from smb3parse.levels.level_header import LevelHeader
