@@ -21,28 +21,31 @@ class BlockViewer(CustomChildWindow):
 
         self.setCentralWidget(self.sprite_bank)
 
-        _toolbar = QToolBar(self)
+        self.toolbar = QToolBar(self)
 
-        prev_os_action = _toolbar.addAction(self.style().standardIcon(QStyle.SP_ArrowLeft), "Previous object set")
-        prev_os_action.triggered.connect(self.prev_object_set)
-        next_os_action = _toolbar.addAction(self.style().standardIcon(QStyle.SP_ArrowRight), "Next object set")
-        next_os_action.triggered.connect(self.next_object_set)
+        self.prev_os_action = self.toolbar.addAction(
+            self.style().standardIcon(QStyle.SP_ArrowLeft), "Previous object set"
+        )
+        self.prev_os_action.triggered.connect(self.prev_object_set)
 
-        zoom_out_action = _toolbar.addAction("-")
-        zoom_out_action.triggered.connect(self.sprite_bank.zoom_out)
+        self.next_os_action = self.toolbar.addAction(self.style().standardIcon(QStyle.SP_ArrowRight), "Next object set")
+        self.next_os_action.triggered.connect(self.next_object_set)
 
-        zoom_in_action = _toolbar.addAction("+")
-        zoom_in_action.triggered.connect(self.sprite_bank.zoom_in)
+        self.zoom_out_action = self.toolbar.addAction("-")
+        self.zoom_out_action.triggered.connect(self.sprite_bank.zoom_out)
 
-        self.bank_dropdown = QComboBox(parent=_toolbar)
+        self.zoom_in_action = self.toolbar.addAction("+")
+        self.zoom_in_action.triggered.connect(self.sprite_bank.zoom_in)
+
+        self.bank_dropdown = QComboBox(parent=self.toolbar)
         self.bank_dropdown.addItems(OBJECT_SET_ITEMS)
         self.bank_dropdown.setCurrentIndex(0)
 
         self.bank_dropdown.currentIndexChanged.connect(self.on_combo)
 
-        _toolbar.addWidget(self.bank_dropdown)
+        self.toolbar.addWidget(self.bank_dropdown)
 
-        self.addToolBar(_toolbar)
+        self.addToolBar(self.toolbar)
 
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
@@ -81,6 +84,7 @@ class BlockBank(QWidget):
         self.setMouseTracking(True)
 
         self.sprites = 256
+        self.zoom_step = 256
         self.sprites_horiz = 16
         self.sprites_vert = ceil(self.sprites / self.sprites_horiz)
 
