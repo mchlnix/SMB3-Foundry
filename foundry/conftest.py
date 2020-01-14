@@ -8,9 +8,6 @@ world_1, level_1 = 1, 1
 level_1_1_object_address = 0x1FB92
 level_1_1_enemy_address = 0xC537 + 1
 
-object_set_plains = 1
-object_set_enemy = 12
-
 
 @pytest.fixture(scope="module", autouse=True)
 def rom():
