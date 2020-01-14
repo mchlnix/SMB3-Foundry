@@ -128,9 +128,9 @@ def undoable(func):
     return wrapped
 
 
-class SMB3Foundry(QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
-        super(SMB3Foundry, self).__init__()
+        super(MainWindow, self).__init__()
 
         self.setWindowIcon(QIcon("data/foundry.ico"))
 
@@ -770,4 +770,4 @@ class SMB3Foundry(QMainWindow):
 
             return
 
-        super(SMB3Foundry, self).closeEvent(event)
+        super(MainWindow, self).closeEvent(event)

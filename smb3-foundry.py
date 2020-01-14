@@ -9,12 +9,12 @@ if hasattr(sys, "_MEIPASS"):
     print(f"Changing current dir to {getattr(sys, '_MEIPASS')}")
     os.chdir(getattr(sys, "_MEIPASS"))
 
-from foundry.gui.MainWindow import SMB3Foundry
+from foundry.gui.MainWindow import MainWindow
 
 
 def main():
     app = QApplication()
-    SMB3Foundry()
+    MainWindow()
     app.exec_()
 
 
