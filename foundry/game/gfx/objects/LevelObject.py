@@ -266,8 +266,8 @@ class LevelObject(ObjectLike):
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * (self.width - 1)  # without fill block
 
-                fill_block = self.blocks[1:]
-                slopes = self.blocks[0:1]
+                fill_block = self.blocks[-1:]
+                slopes = self.blocks[0:-1]
 
                 left = [BLANK]
                 right = fill_block
@@ -715,6 +715,9 @@ class LevelObject(ObjectLike):
 
     def get_rect(self) -> QRect:
         return self.rect
+
+    def display_size(self, zoom_factor: int = 1):
+        return QSize(self.rendered_width * Block.SIDE_LENGTH, self.rendered_height * Block.SIDE_LENGTH) * zoom_factor
 
     def as_image(self) -> QImage:
         assert self.rendered_base_x == 0

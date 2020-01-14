@@ -1,14 +1,16 @@
-from typing import Optional
+from typing import Union
 
-from PySide2.QtCore import QSize, QPoint
+from PySide2.QtCore import QPoint, QSize
 from PySide2.QtGui import QPaintEvent, QPainter
-from PySide2.QtWidgets import QToolBar, QComboBox, QStatusBar, QWidget, QLayout
+from PySide2.QtWidgets import QComboBox, QLayout, QStatusBar, QToolBar, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.Jump import Jump
+from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.gui.CustomChildWindow import CustomChildWindow
-from foundry.gui.Spinner import Spinner
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
+from foundry.gui.Spinner import Spinner
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2
@@ -139,9 +141,11 @@ class ObjectDrawArea(QWidget):
             QSize(self.current_object.rendered_width * Block.WIDTH, self.current_object.rendered_height * Block.HEIGHT)
         )
 
-    def update_object(self, object_data: Optional[bytearray] = None):
+    def update_object(self, object_data: Union[bytearray, LevelObject, Jump] = None):
         if object_data is None:
             object_data = self.current_object.data
+        elif isinstance(object_data, (LevelObject, Jump)):
+            object_data = object_data.data
 
         self.current_object = self.object_factory.from_data(object_data, 0)
 

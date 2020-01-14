@@ -7,8 +7,6 @@ from foundry.gui.BlockViewer import BlockViewer
 def block_viewer(qtbot):
     block_viewer = BlockViewer(None)
 
-    block_viewer.show()
-
     qtbot.addWidget(block_viewer)
 
     return block_viewer
