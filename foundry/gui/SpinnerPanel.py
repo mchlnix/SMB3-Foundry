@@ -1,3 +1,5 @@
+from typing import Optional
+
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QSizePolicy, QVBoxLayout, QWidget
@@ -18,7 +20,7 @@ class SpinnerPanel(QWidget):
     zoom_in_triggered: SignalInstance = Signal()
     zoom_out_triggered: SignalInstance = Signal()
 
-    def __init__(self, parent: QWidget, level_ref: LevelRef):
+    def __init__(self, parent: Optional[QWidget], level_ref: LevelRef):
         super(SpinnerPanel, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -89,10 +91,10 @@ class SpinnerPanel(QWidget):
 
         self.set_type(obj.obj_index)
 
-        self.enable_domain(isinstance(obj, LevelObject), 0)
+        self.enable_domain(isinstance(obj, LevelObject), obj.domain)
 
         if isinstance(obj, LevelObject) and obj.is_4byte:
-            self.set_length(obj.secondary_length)
+            self.set_length(obj.length)
         else:
             self.enable_length(False)
 
