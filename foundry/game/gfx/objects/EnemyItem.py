@@ -132,6 +132,10 @@ class EnemyObject(ObjectLike):
 
         self.resize_to(new_x, new_y)
 
+    @property
+    def type(self):
+        return self.obj_index
+
     def change_type(self, new_type):
         self.obj_index = new_type
 

@@ -3,6 +3,7 @@ from logging import error
 from typing import Tuple
 from warnings import warn
 
+from PySide2.QtCore import QPoint
 from PySide2.QtGui import QIcon, Qt, QCloseEvent, QWheelEvent, QKeySequence
 from PySide2.QtWidgets import (
     QMenu,
@@ -729,30 +730,36 @@ class MainWindow(QMainWindow):
         self.object_list.update()
 
     def wheelEvent(self, event: QWheelEvent):
-        x, y = event.pos().toTuple()
+        main_window_offset = QPoint(0, self.menuBar().height())
+
+        mapped_to_main_window = event.pos() - main_window_offset
+
+        x, y = mapped_to_main_window.toTuple()
 
         obj_under_cursor = self.level_view.object_at(x, y)
 
         if obj_under_cursor is None:
-            return
-        else:
-            if isinstance(self.level_view.level_ref, WorldMap):
-                return
+            return False
 
-            # scrolling through the level could unintentionally change objects, if the cursor would wander onto them.
-            # this is annoying (to me) so only change already selected objects
-            if obj_under_cursor not in self.level_view.selected_objects:
-                return
+        if isinstance(self.level_view.level_ref, WorldMap):
+            return False
 
-            self.change_object_on_mouse_wheel(event)
+        # scrolling through the level could unintentionally change objects, if the cursor would wander onto them.
+        # this is annoying (to me) so only change already selected objects
+        if obj_under_cursor not in self.level_ref.selected_objects:
+            return False
+
+        self.change_object_on_mouse_wheel(mapped_to_main_window, event.angleDelta().y())
+
+        return True
 
     @undoable
-    def change_object_on_mouse_wheel(self, event: QWheelEvent):
-        x, y = event.pos().toTuple()
+    def change_object_on_mouse_wheel(self, cursor_position: QPoint, y_delta: int):
+        x, y = cursor_position.toTuple()
 
         obj_under_cursor = self.level_view.object_at(x, y)
 
-        if event.angleDelta() > 0:
+        if y_delta > 0:
             obj_under_cursor.increment_type()
         else:
             obj_under_cursor.decrement_type()
