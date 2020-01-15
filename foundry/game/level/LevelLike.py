@@ -4,7 +4,7 @@ import abc
 class LevelLike(abc.ABC):
     def __init__(self, world, level, object_set):
         self.world = world
-        self._level = level
+        self.level_number = level
         self.object_set_number = object_set
 
         self.objects = []

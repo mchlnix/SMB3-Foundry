@@ -50,67 +50,13 @@ ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
-# file menu
-
-ID_OPEN_ROM = 101
-ID_OPEN_M3L = 102
-ID_SAVE_ROM = 103
-ID_SAVE_M3L = 104
-ID_SAVE_LEVEL_TO = 105
-ID_SAVE_ROM_AS = 106
-ID_APPLY_IPS_PATCH = 107
-ID_ROM_PRESET = 108
-ID_EXIT = 109
-
-# edit menu
-
-ID_EDIT_LEVEL = 201
-ID_EDIT_OBJ_DEFS = 202
-ID_EDIT_PALETTE = 203
-ID_EDIT_GRAPHICS = 204
-ID_EDIT_MISC = 205
-ID_FREE_FORM_MODE = 206
-ID_LIMIT_SIZE = 207
-
-# level menu
-
-ID_GOTO_NEXT_AREA = 301
-ID_SELECT_LEVEL = 302
 ID_RELOAD_LEVEL = 303
-ID_EDIT_HEADER = 304
-ID_EDIT_POINTERS = 305
-
-# object menu
-
-ID_VIEW_BLOCKS = 401
-ID_CLONE_OBJECT_ENEMY = 402
-ID_ADD_3_BYTE_OBJECT = 403
-ID_ADD_4_BYTE_OBJECT = 404
-ID_ADD_ENEMY = 405
-ID_DELETE_OBJECT_ENEMY = 406
-ID_DELETE_ALL = 407
-ID_VIEW_OBJECTS = 408
-
-# view menu
 
 ID_GRID_LINES = 501
-ID_BACKGROUND_FLOOR = 502
-ID_TOOLBAR = 503
-ID_ZOOM = 504
-ID_USE_ROM_GRAPHICS = 505
-ID_PALETTE = 506
-ID_MORE = 507
 ID_TRANSPARENCY = 508
 ID_JUMPS = 509
-ID_SCREEN_SHOT = 510
 
-# help menu
-
-ID_ENEMY_COMPATIBILITY = 601
-ID_TROUBLESHOOTING = 602
-ID_PROGRAM_WEBSITE = 603
-ID_MAKE_A_DONATION = 604
-ID_ABOUT = 605
+ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
 
 CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES, ID_JUMPS]
 
@@ -188,7 +134,8 @@ class MainWindow(QMainWindow):
         level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
         level_menu.AppendSeparator()
         """
-        level_menu.addAction("&Reload Level")
+        self.reload_action = level_menu.addAction("&Reload Level")
+        self.reload_action.triggered.connect(self.reload_level)
         level_menu.addSeparator()
         self.edit_header_action = level_menu.addAction("&Edit Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
@@ -222,15 +169,15 @@ class MainWindow(QMainWindow):
         view_menu.triggered.connect(self.on_menu)
 
         self._show_jump_action = view_menu.addAction("Jumps")
-        self._show_jump_action.setProperty("ID", ID_JUMPS)
+        self._show_jump_action.setProperty(ID_PROP, ID_JUMPS)
         self._show_jump_action.setCheckable(True)
 
         self._show_grid_action = view_menu.addAction("&Grid lines")
-        self._show_grid_action.setProperty("ID", ID_GRID_LINES)
+        self._show_grid_action.setProperty(ID_PROP, ID_GRID_LINES)
         self._show_grid_action.setCheckable(True)
 
         self._show_transparent_blocks_action = view_menu.addAction("&Block Transparency")
-        self._show_transparent_blocks_action.setProperty("ID", ID_TRANSPARENCY)
+        self._show_transparent_blocks_action.setProperty(ID_PROP, ID_TRANSPARENCY)
         self._show_transparent_blocks_action.setCheckable(True)
         self._show_transparent_blocks_action.setChecked(True)
 
@@ -503,7 +450,7 @@ class MainWindow(QMainWindow):
             error(f"Cannot save current data in file '{pathname}'.")
 
     def on_menu(self, action: QAction):
-        item_id = action.property("ID")
+        item_id = action.property(ID_PROP)
 
         if item_id in CHECKABLE_MENU_ITEMS:
             self.on_menu_item_checked(action)
@@ -531,9 +478,6 @@ class MainWindow(QMainWindow):
 
             self.object_list.update()
 
-        elif item_id == ID_RELOAD_LEVEL:
-            self.reload_level()
-
         self.level_view.update()
 
     def reload_level(self):
@@ -541,10 +485,10 @@ class MainWindow(QMainWindow):
             return
 
         world = self.level_view.level_ref.world
-        level = self.level_view.level_ref.level
-        object_data = self.level_view.level_ref.object_offset
+        level = self.level_view.level_ref.level_number
+        object_data = self.level_view.level_ref.header_offset
         enemy_data = self.level_view.level_ref.enemy_offset
-        object_set = self.level_view.level_ref.object_set
+        object_set = self.level_view.level_ref.object_set_number
 
         self.update_level(world, level, object_data, enemy_data, object_set)
 
@@ -580,7 +524,7 @@ class MainWindow(QMainWindow):
         self.spinner_panel.disable_all()
 
     def on_menu_item_checked(self, action: QAction):
-        item_id = action.property("ID")
+        item_id = action.property(ID_PROP)
 
         checked = action.isChecked()
 

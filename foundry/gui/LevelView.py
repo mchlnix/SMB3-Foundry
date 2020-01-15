@@ -1,13 +1,13 @@
 from bisect import bisect_right
-from typing import List, Union, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
-from PySide2.QtCore import Signal, QSize, SignalInstance
-from PySide2.QtGui import QPaintEvent, QPainter, QPen, QColor, QMouseEvent, Qt, QBrush
+from PySide2.QtCore import QSize, Signal, SignalInstance
+from PySide2.QtGui import QBrush, QColor, QMouseEvent, QPaintEvent, QPainter, QPen, Qt
 from PySide2.QtWidgets import QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import SCREEN_WIDTH, SCREEN_HEIGHT, LevelObject
+from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
@@ -33,7 +33,7 @@ class LevelView(QWidget):
 
     selection_changed: SignalInstance = Signal()
 
-    def __init__(self, parent: QWidget, level: LevelRef, context_menu: ContextMenu):
+    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: ContextMenu):
         super(LevelView, self).__init__(parent)
 
         self.level_ref: LevelRef = level
@@ -435,12 +435,6 @@ class LevelView(QWidget):
         level_y = screen_y // self.block_length
 
         return level_x, level_y
-
-    def to_screen_point(self, level_x: int, level_y: int) -> Tuple[int, int]:
-        screen_x = level_x * self.block_length
-        screen_y = level_y * self.block_length
-
-        return screen_x, screen_y
 
     def index_of(self, obj: Union[LevelObject, EnemyObject]) -> int:
         return self.level_ref.index_of(obj)
