@@ -85,8 +85,8 @@ class MainWindow(QMainWindow):
 
         open_rom_action = file_menu.addAction("&Open ROM")
         open_rom_action.triggered.connect(self.on_open_rom)
-        open_m3l_action = file_menu.addAction("&Open M3L")
-        open_m3l_action.triggered.connect(self.on_open_m3l)
+        self.open_m3l_action = file_menu.addAction("&Open M3L")
+        self.open_m3l_action.triggered.connect(self.on_open_m3l)
 
         file_menu.addSeparator()
 

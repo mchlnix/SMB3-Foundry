@@ -423,8 +423,6 @@ class LevelView(QWidget):
 
         self.objects_updated.emit()
 
-        self.undo_stack.clear(self.level_ref.to_bytes())
-
     def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
         level_x, level_y = self.to_level_point(x, y)
 
