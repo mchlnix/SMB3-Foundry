@@ -19,6 +19,8 @@ class JumpList(QListWidget):
 
         self._level_ref = level_ref
 
+        self._level_ref.data_changed.connect(self.update)
+
     def update(self):
         self.clear()
 

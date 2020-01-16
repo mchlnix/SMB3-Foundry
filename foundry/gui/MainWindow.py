@@ -633,11 +633,9 @@ class MainWindow(QMainWindow):
     def on_jump_edit(self):
         index = self.jump_list.currentIndex().row()
 
-        jump_editor = JumpEditor(self, self.level_view.level_ref.jumps[index], index)
+        updated_jump = JumpEditor.edit_jump(self, self.level_view.level_ref.jumps[index])
 
-        jump_editor.jump_updated.connect(self.on_jump_edited)
-
-        jump_editor.exec_()
+        self.on_jump_edited(updated_jump)
 
     @undoable
     def on_jump_added(self):
@@ -653,7 +651,7 @@ class MainWindow(QMainWindow):
 
         assert index >= 0
 
-        if isinstance(self.level_view.level_ref, Level):
+        if isinstance(self.level_ref.level, Level):
             self.level_view.level_ref.jumps[index] = jump
             self.jump_list.item(index).setText(str(jump))
 

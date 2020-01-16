@@ -25,12 +25,7 @@ MODE_RESIZE = 2
 
 
 class LevelView(QWidget):
-    # list of jumps
-    jumps_created: SignalInstance = Signal(list)
-
     # selected indexes, selected objects
-    objects_updated: SignalInstance = Signal()
-
     selection_changed: SignalInstance = Signal()
 
     def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: ContextMenu):
@@ -416,12 +411,8 @@ class LevelView(QWidget):
     def add_jump(self):
         self.level_ref.add_jump()
 
-        self.objects_updated.emit()
-
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)
-
-        self.objects_updated.emit()
 
     def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
         level_x, level_y = self.to_level_point(x, y)

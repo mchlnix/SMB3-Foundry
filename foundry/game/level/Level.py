@@ -561,12 +561,12 @@ class Level(LevelLike):
     def add_jump(self):
         self.jumps.append(Jump.from_properties(0, 0, 0, 0))
 
-        self.jumps_changed.emit()
+        self.data_changed.emit()
 
     def remove_jump(self, jump: Jump):
         self.jumps.remove(jump)
 
-        self.jumps_changed.emit()
+        self.data_changed.emit()
 
     def index_of(self, obj: Union[EnemyObject, LevelObject]) -> int:
         if isinstance(obj, LevelObject):

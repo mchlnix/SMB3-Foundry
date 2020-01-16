@@ -1,5 +1,7 @@
+from typing import Optional
+
 from PySide2.QtCore import Signal, SignalInstance
-from PySide2.QtWidgets import QMainWindow, QFormLayout, QVBoxLayout, QGroupBox, QComboBox, QDialogButtonBox
+from PySide2.QtWidgets import QComboBox, QDialogButtonBox, QFormLayout, QGroupBox, QVBoxLayout, QWidget
 
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.gui.CustomDialog import CustomDialog
@@ -48,13 +50,10 @@ MAX_HORIZ_POSITION = 0xFF
 
 
 class JumpEditor(CustomDialog):
-    jump_updated: SignalInstance = Signal(Jump)
-
-    def __init__(self, parent: QMainWindow, jump: Jump, index: int):
+    def __init__(self, parent: Optional[QWidget], jump: Jump):
         super(JumpEditor, self).__init__(parent, "Jump Editor")
 
-        self._jump = jump
-        self._jump_index = index
+        self.jump = jump
 
         self.screen_spinner = Spinner(parent=self, maximum=MAX_SCREEN_INDEX, base=10)
 
@@ -81,7 +80,8 @@ class JumpEditor(CustomDialog):
         exit_group_box.setLayout(exit_layout)
 
         button_box = QDialogButtonBox()
-        button_box.addButton(QDialogButtonBox.Ok).pressed.connect(self.on_ok)
+        self.ok_button = button_box.addButton(QDialogButtonBox.Ok)
+        self.ok_button.pressed.connect(self.on_ok)
         button_box.addButton(QDialogButtonBox.Cancel).pressed.connect(self.close)
 
         main_layout = QVBoxLayout()
@@ -94,20 +94,26 @@ class JumpEditor(CustomDialog):
         self._set_widget_values()
 
     def _set_widget_values(self):
-        self.screen_spinner.setValue(self._jump.screen_index)
+        self.screen_spinner.setValue(self.jump.screen_index)
 
-        self.exit_action.setCurrentIndex(self._jump.exit_action)
-        self.exit_horizontal.setValue(self._jump.exit_horizontal)
-        self.exit_vertical.setCurrentIndex(self._jump.exit_vertical)
+        self.exit_action.setCurrentIndex(self.jump.exit_action)
+        self.exit_horizontal.setValue(self.jump.exit_horizontal)
+        self.exit_vertical.setCurrentIndex(self.jump.exit_vertical)
+
+    @staticmethod
+    def edit_jump(parent: Optional[QWidget], jump: Jump):
+        jump_editor = JumpEditor(parent, jump)
+
+        jump_editor.exec_()
+
+        return jump_editor.jump
 
     def on_ok(self):
-        jump = Jump.from_properties(
+        self.jump = Jump.from_properties(
             self.screen_spinner.value(),
             self.exit_action.currentIndex(),
             self.exit_horizontal.value(),
             self.exit_vertical.currentIndex(),
         )
-
-        self.jump_updated.emit(jump)
 
         self.close()
