@@ -1,27 +1,28 @@
 from typing import List, Tuple
 
-from PySide2.QtCore import QSize, QRect
-from PySide2.QtGui import QImage, QPainter, QColor
+from PySide2.QtCore import QRect, QSize
+from PySide2.QtGui import QColor, QImage, QPainter
 
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import (
-    HORIZONTAL,
-    VERTICAL,
+    DESERT_PIPE_BOX,
     DIAG_DOWN_LEFT,
     DIAG_DOWN_RIGHT,
     DIAG_UP_RIGHT,
-    HORIZ_TO_GROUND,
-    HORIZONTAL_2,
-    SINGLE_BLOCK_OBJECT,
-    PYRAMID_TO_GROUND,
-    PYRAMID_2,
-    TO_THE_SKY,
     ENDING,
-    UNIFORM,
-    END_ON_TOP_OR_LEFT,
     END_ON_BOTTOM_OR_RIGHT,
+    END_ON_TOP_OR_LEFT,
+    HORIZONTAL,
+    HORIZONTAL_2,
+    HORIZ_TO_GROUND,
+    PYRAMID_2,
+    PYRAMID_TO_GROUND,
+    SINGLE_BLOCK_OBJECT,
+    TO_THE_SKY,
     TWO_ENDS,
-    DESERT_PIPE_BOX,
+    UNIFORM,
+    VERTICAL,
+    DIAG_WEIRD,
 )
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.Palette import get_bg_color_for
@@ -237,7 +238,7 @@ class LevelObject(ObjectLike):
             for segment_number in range(segments):
                 blocks_to_draw.extend(self.blocks[start:stop])
 
-        elif self.orientation in [DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
+        elif self.orientation in [DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT, DIAG_WEIRD]:
             if self.ending == UNIFORM:
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * self.width
@@ -256,12 +257,20 @@ class LevelObject(ObjectLike):
 
                     left = fill_block
                     right = [BLANK]
-                else:
+                elif self.orientation == DIAG_DOWN_LEFT:
                     fill_block = self.blocks[-1:]
                     slopes = self.blocks[0:-1]
 
-                    left = [BLANK]
                     right = fill_block
+                    left = [BLANK]
+
+                else:
+                    fill_block = self.blocks[0:1]
+                    slopes = self.blocks[1:]
+
+                    right = [BLANK]
+                    left = fill_block
+
             elif self.ending == END_ON_BOTTOM_OR_RIGHT:
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * (self.width - 1)  # without fill block
