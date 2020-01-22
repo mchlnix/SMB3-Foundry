@@ -2,9 +2,9 @@ import os
 from pathlib import Path
 
 import pytest
-from PySide2.QtGui import QImage
-from pytest import fail, skip
+from PySide2.QtGui import QImage, QPixmap
 
+from approval_tests.gui import ApprovalDialog
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.gui.ObjectViewer import ObjectDrawArea
 from smb3parse.objects.object_set import (
@@ -29,26 +29,24 @@ def _test_object_against_reference(level_object, qtbot):
     view.setGeometry(0, 0, *level_object.display_size().toTuple())
 
     image_name = f"object_set_{object_set_number}_domain_{level_object.domain}_index_{hex(level_object.obj_index)}.png"
-    image_path = str(reference_image_dir.joinpath(image_name))
+    ref_image_path = str(reference_image_dir.joinpath(image_name))
 
-    if os.path.exists(image_path):
-        ref_image = QImage(image_path)
+    if os.path.exists(ref_image_path):
+        result = ApprovalDialog.compare(image_name, QPixmap(ref_image_path), view.grab())
 
-        if view.grab().toImage() != ref_image:
-            view.show()
-
-            qtbot.waitForWindowShown(view)
-
-            qtbot.stopForInteraction()
-
-            fail(f"{image_name} did not look like the reference.")
+        if result == ApprovalDialog.Rejected:
+            pytest.fail(f"{image_name} did not look like the reference.")
+        elif result == ApprovalDialog.Accepted:
+            pytest.skip(f"{image_name} was different, but accepted.")
         else:
-            return  # pass the test
+            # accepted and overwrite ref
+            view.grab().toImage().save(ref_image_path)
 
+            pass
     else:
-        view.grab().toImage().save(image_path)
+        view.grab().toImage().save(ref_image_path)
 
-        skip(f"No ref image was found. Saved new ref under {image_path}.")
+        pytest.skip(f"No ref image was found. Saved new ref under {ref_image_path}.")
 
 
 @pytest.mark.parametrize(
