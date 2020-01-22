@@ -4,7 +4,7 @@ from typing import Tuple
 from warnings import warn
 
 from PySide2.QtCore import QPoint
-from PySide2.QtGui import QIcon, Qt, QCloseEvent, QWheelEvent, QKeySequence
+from PySide2.QtGui import QIcon, Qt, QCloseEvent, QWheelEvent, QKeySequence, QMouseEvent
 from PySide2.QtWidgets import (
     QMenu,
     QMainWindow,
@@ -658,10 +658,11 @@ class MainWindow(QMainWindow):
     def on_jump_list_change(self, event):
         self.jump_list.set_jumps(event)
 
-    def on_middle_click(self, event):
-        pos = event.pos().toTuple()
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        if event.button() == Qt.MiddleButton:
+            pos = self.level_view.mapFromGlobal(self.mapToGlobal(event.pos())).toTuple()
 
-        self.place_object_from_dropdown(pos)
+            self.place_object_from_dropdown(pos)
 
     @undoable
     def place_object_from_dropdown(self, pos: Tuple[int, int]) -> None:
