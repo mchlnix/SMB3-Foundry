@@ -1,6 +1,6 @@
-from typing import Any, List
+from typing import List
 
-from PySide2.QtGui import QImage, QIcon, QPixmap
+from PySide2.QtGui import QIcon, QImage, QPixmap
 from PySide2.QtWidgets import QComboBox, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
@@ -20,34 +20,6 @@ class ObjectDropdown(QComboBox):
 
     def set_object_factory(self, object_factory: LevelObjectFactory) -> None:
         self._on_object_factory_change(object_factory)
-
-    def GetSelection(self) -> int:
-        """
-        Overwritten method of wx.Combobox, which goes through the objects, that are saved behind the scenes and gives
-        the actual index, independent on the currently filtered contents of the ComboBox.
-
-        :return: The real index of the selected object, or wx.NotFound if none is selected.
-        """
-        current_value = self.currentIndex()
-
-        for index, (object_description, *_) in enumerate(self._object_items):
-            if current_value == object_description:
-                return index
-        else:
-            return -1
-
-    def GetClientData(self, index: int) -> Any:
-        """
-        Overwritten method of wx.Combobox, which returns the client data based on the real index of the object, not the
-        current index, of a possible filtered down ComboBox.
-
-        :param int index: The real index of an object inside the ComboBox, obtained by GetSelection().
-        :return: The ClientData of the object with the given index.
-        """
-
-        description, bitmap, client_data = self._object_items[index]
-
-        return client_data
 
     def _update_filter_text(self, _) -> None:
         self._text = self.GetValue()
