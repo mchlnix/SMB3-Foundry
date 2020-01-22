@@ -14,6 +14,8 @@ def _get_pixmap_from_source(image: image_source) -> QPixmap:
 
 
 class ApprovalDialog(QDialog):
+    Ignore = QDialogButtonBox.Ignore
+
     def __init__(self, test_name: str, reference_image: QPixmap, generated_image: QPixmap):
         super(ApprovalDialog, self).__init__()
 
@@ -37,7 +39,7 @@ class ApprovalDialog(QDialog):
         button_box = QDialogButtonBox()
 
         button_box.addButton("Reject", QDialogButtonBox.RejectRole).clicked.connect(self.reject)
-        button_box.addButton("Accept", QDialogButtonBox.AcceptRole).clicked.connect(self.accept)
+        button_box.addButton(QDialogButtonBox.Ignore).clicked.connect(self._on_ignore)
 
         button_box.addButton("Accept as new Reference", QDialogButtonBox.ApplyRole).clicked.connect(self._on_overwrite)
 
@@ -46,6 +48,9 @@ class ApprovalDialog(QDialog):
 
     def _on_overwrite(self):
         self.done(QDialogButtonBox.Apply)
+
+    def _on_ignore(self):
+        self.done(QDialogButtonBox.Ignore)
 
     @staticmethod
     def compare(test_name: str, reference_image: image_source, generated_image: image_source):

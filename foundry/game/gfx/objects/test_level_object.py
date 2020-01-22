@@ -37,7 +37,9 @@ def _test_object_against_reference(level_object, qtbot):
         if result == ApprovalDialog.Rejected:
             pytest.fail(f"{image_name} did not look like the reference.")
         elif result == ApprovalDialog.Accepted:
-            pytest.skip(f"{image_name} was different, but accepted.")
+            pass
+        elif result == ApprovalDialog.Ignore:
+            pytest.skip(f"{image_name} did not look like the reference, but was ignored.")
         else:
             # accepted and overwrite ref
             view.grab().toImage().save(ref_image_path)
