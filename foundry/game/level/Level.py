@@ -281,12 +281,12 @@ class Level(LevelLike):
         :return:
         """
 
-        # internally the level has length + 1 screens
-        if length + 1 == self.header.length:
+        if length == self.header.length:
             return
 
+        # screens are 0 indexed, minimum is 1
         self.header_bytes[4] &= 0b1111_0000
-        self.header_bytes[4] |= length // 0x10
+        self.header_bytes[4] |= (length // 0x10) - 1
 
         self._parse_header()
 
