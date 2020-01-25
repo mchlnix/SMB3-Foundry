@@ -364,7 +364,7 @@ class Level(LevelLike):
 
     @property
     def is_vertical(self):
-        return self.header.is_vertical
+        return bool(self.header.is_vertical)
 
     @is_vertical.setter
     def is_vertical(self, truth_value):
