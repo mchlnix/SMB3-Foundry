@@ -219,11 +219,13 @@ class MainWindow(QMainWindow):
         self.context_menu = ContextMenu()
         self.context_menu.triggered.connect(self.on_menu)
 
-        self.scroll_panel = QScrollArea()
-
         self.level_ref = LevelRef()
 
         self.level_view = LevelView(self, self.level_ref, self.context_menu)
+        self.level_view.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.scroll_panel = QScrollArea()
+        self.scroll_panel.setWidgetResizable(True)
         self.scroll_panel.setWidget(self.level_view)
 
         self.setCentralWidget(self.scroll_panel)

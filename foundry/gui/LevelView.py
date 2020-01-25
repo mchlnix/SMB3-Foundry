@@ -107,7 +107,7 @@ class LevelView(QWidget):
             return QSize(width * self.block_length, height * self.block_length)
 
     def update(self):
-        self.setMinimumSize(self.sizeHint())
+        self.resize(self.sizeHint())
 
         super(LevelView, self).update()
 
