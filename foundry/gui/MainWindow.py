@@ -19,6 +19,7 @@ from PySide2.QtWidgets import (
     QShortcut,
 )
 
+from foundry import root_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.Level import Level
@@ -79,7 +80,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        self.setWindowIcon(QIcon("data/foundry.ico"))
+        self.setWindowIcon(QIcon(str(root_dir.joinpath("data", "foundry.ico"))))
 
         file_menu = QMenu("File")
 

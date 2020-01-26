@@ -1,6 +1,7 @@
 from PySide2.QtCore import QRect
 from PySide2.QtGui import QImage
 
+from foundry import data_dir
 from foundry.game.gfx.Palette import load_palette
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -13,7 +14,7 @@ class EnemyItemFactory:
     definitions: list = []
 
     def __init__(self, object_set, palette_index):
-        png = QImage("data/gfx.png")
+        png = QImage(str(data_dir.joinpath("gfx.png")))
 
         png.convertTo(QImage.Format_RGB888)
 

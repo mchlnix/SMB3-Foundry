@@ -1,3 +1,4 @@
+from foundry import root_dir
 from foundry.game.File import ROM
 
 MAP_PALETTE_ADDRESS = 0x36BE2
@@ -16,7 +17,7 @@ PALETTE_DATA_SIZE = (
     * COLORS_PER_PALETTE
 )
 
-palette_file = "data/Default.pal"
+palette_file = root_dir.joinpath("data", "Default.pal")
 
 with open(palette_file, "rb") as f:
     color_data = f.read()

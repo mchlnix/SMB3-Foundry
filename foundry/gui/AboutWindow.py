@@ -1,6 +1,7 @@
-from PySide2.QtGui import Qt, QPixmap
-from PySide2.QtWidgets import QBoxLayout, QLabel, QFrame
+from PySide2.QtGui import QPixmap, Qt
+from PySide2.QtWidgets import QBoxLayout, QFrame, QLabel
 
+from foundry import data_dir
 from foundry.gui.CustomDialog import CustomDialog
 
 LINK_SMB3F = "https://github.com/mchlnix/SMB3-Foundry"
@@ -17,7 +18,7 @@ class AboutDialog(CustomDialog):
 
         main_layout = QBoxLayout(QBoxLayout.LeftToRight, self)
 
-        image = QPixmap("data/foundry.ico").scaled(200, 200)
+        image = QPixmap(str(data_dir.joinpath("foundry.ico"))).scaled(200, 200)
 
         icon = QLabel(self)
         icon.setPixmap(image)

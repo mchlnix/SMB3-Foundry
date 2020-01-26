@@ -4,6 +4,7 @@ from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
+from foundry import icon_dir
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
@@ -28,18 +29,18 @@ class SpinnerPanel(QWidget):
         self.level_ref = level_ref
         self.level_ref.data_changed.connect(self.update)
 
-        self.undo_button = QPushButton(QIcon("data/icons/rotate-ccw.svg"), "", self)
+        self.undo_button = QPushButton(QIcon(str(icon_dir.joinpath("rotate-ccw.svg"))), "", self)
         self.undo_button.pressed.connect(self.on_undo)
         self.undo_button.setDisabled(True)
 
-        self.redo_button = QPushButton(QIcon("data/icons/rotate-cw.svg"), "", self)
+        self.redo_button = QPushButton(QIcon(str(icon_dir.joinpath("rotate-cw.svg"))), "", self)
         self.redo_button.pressed.connect(self.on_redo)
         self.redo_button.setDisabled(True)
 
-        self.zoom_out_button = QPushButton(QIcon("data/icons/zoom-out.svg"), "", self)
+        self.zoom_out_button = QPushButton(QIcon(str(icon_dir.joinpath("zoom-out.svg"))), "", self)
         self.zoom_out_button.pressed.connect(self.zoom_out_triggered.emit)
 
-        self.zoom_in_button = QPushButton(QIcon("data/icons/zoom-in.svg"), "", self)
+        self.zoom_in_button = QPushButton(QIcon(str(icon_dir.joinpath("zoom-in.svg"))), "", self)
         self.zoom_in_button.pressed.connect(self.zoom_in_triggered.emit)
 
         button_layout = QHBoxLayout()
