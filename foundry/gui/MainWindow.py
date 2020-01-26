@@ -4,19 +4,19 @@ from typing import Tuple
 from warnings import warn
 
 from PySide2.QtCore import QPoint
-from PySide2.QtGui import QIcon, Qt, QCloseEvent, QWheelEvent, QKeySequence, QMouseEvent
+from PySide2.QtGui import QCloseEvent, QIcon, QKeySequence, QMouseEvent, QWheelEvent, Qt
 from PySide2.QtWidgets import (
-    QMenu,
-    QMainWindow,
-    QFileDialog,
-    QMessageBox,
-    QDialog,
     QAction,
+    QDialog,
+    QFileDialog,
+    QMainWindow,
+    QMenu,
+    QMessageBox,
     QScrollArea,
-    QToolBar,
-    QSplitter,
-    QSizePolicy,
     QShortcut,
+    QSizePolicy,
+    QSplitter,
+    QToolBar,
 )
 
 from foundry import root_dir
@@ -29,12 +29,12 @@ from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.BlockViewer import BlockViewer
 from foundry.gui.ContextMenu import (
     ContextMenu,
-    ID_CTX_REMOVE,
-    ID_CTX_ADD_OBJECT,
     ID_CTX_ADD_ENEMY,
+    ID_CTX_ADD_OBJECT,
     ID_CTX_COPY,
-    ID_CTX_PASTE,
     ID_CTX_CUT,
+    ID_CTX_PASTE,
+    ID_CTX_REMOVE,
 )
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.JumpEditor import JumpEditor
@@ -223,7 +223,6 @@ class MainWindow(QMainWindow):
         self.level_ref = LevelRef()
 
         self.level_view = LevelView(self, self.level_ref, self.context_menu)
-        self.level_view.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.scroll_panel = QScrollArea()
         self.scroll_panel.setWidgetResizable(True)

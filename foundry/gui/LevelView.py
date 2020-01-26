@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple, Union
 
 from PySide2.QtCore import QSize, Signal, SignalInstance
 from PySide2.QtGui import QBrush, QColor, QMouseEvent, QPaintEvent, QPainter, QPen, Qt
-from PySide2.QtWidgets import QWidget
+from PySide2.QtWidgets import QSizePolicy, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -30,6 +30,8 @@ class LevelView(QWidget):
 
     def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: ContextMenu):
         super(LevelView, self).__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self.level_ref: LevelRef = level
         self.level_ref.data_changed.connect(self.update)
