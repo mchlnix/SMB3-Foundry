@@ -82,19 +82,13 @@ class ContextMenu(QMenu):
         return [action.property("ID") for action in self.actions()]
 
     def as_object_menu(self) -> "ContextMenu":
-        self._setup_items(MODE_OBJ)
-
-        return self
+        return self._setup_items(MODE_OBJ)
 
     def as_background_menu(self) -> "ContextMenu":
-        self._setup_items(MODE_BG)
-
-        return self
+        return self._setup_items(MODE_BG)
 
     def as_list_menu(self) -> "ContextMenu":
-        self._setup_items(MODE_LIST)
-
-        return self
+        return self._setup_items(MODE_LIST)
 
     def _setup_items(self, mode: int):
 
@@ -105,3 +99,5 @@ class ContextMenu(QMenu):
         self.remove_action.setEnabled(not mode == MODE_BG)
         self.add_object_action.setEnabled(not mode == MODE_LIST)
         self.add_enemy_action.setEnabled(not mode == MODE_LIST)
+
+        return self
