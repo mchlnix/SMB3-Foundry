@@ -168,9 +168,11 @@ class LevelView(QWidget):
             else:
                 menu = self.context_menu.as_background_menu()
 
-            self.context_menu.set_position(event.pos())
+            menu_pos = self.mapToGlobal(event.pos())
 
-            menu.popup(event.pos())
+            self.context_menu.set_position(menu_pos)
+
+            menu.popup(menu_pos)
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
