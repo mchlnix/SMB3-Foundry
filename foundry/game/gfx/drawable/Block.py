@@ -23,6 +23,8 @@ class Block:
 
     tsa_data = bytes()
 
+    _block_cache = {}
+
     def __init__(
         self,
         block_index: int,
@@ -36,6 +38,8 @@ class Block:
         palette_index = (block_index & 0b1100_0000) >> 6
 
         self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
+
+        self._block_id = (block_index, self.bg_color.toTuple(), pattern_table.graphics_set)
 
         lu = tsa_data[TSA_BANK_0 + block_index]
         ld = tsa_data[TSA_BANK_1 + block_index]
@@ -68,22 +72,27 @@ class Block:
             self._whole_block_is_transparent = False
 
     def draw(self, painter: QPainter, x, y, block_length, selected=False, transparent=False):
-        image = self.image.copy()
+        block_attributes = (self._block_id, block_length, selected, transparent)
 
-        if block_length != Block.WIDTH:
-            image = image.scaled(block_length, block_length)
+        if block_attributes not in Block._block_cache:
+            image = self.image.copy()
 
-        # mask out the transparent pixels first
-        mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
-        image.setAlphaChannel(mask)
+            if block_length != Block.WIDTH:
+                image = image.scaled(block_length, block_length)
 
-        if not transparent:  # or self._whole_block_is_transparent:
-            image = self._replace_transparent_with_background(image)
+            # mask out the transparent pixels first
+            mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+            image.setAlphaChannel(mask)
 
-        if selected:
-            apply_selection_overlay(image, mask)
+            if not transparent:  # or self._whole_block_is_transparent:
+                image = self._replace_transparent_with_background(image)
 
-        painter.drawImage(x, y, image)
+            if selected:
+                apply_selection_overlay(image, mask)
+
+            Block._block_cache[block_attributes] = image
+
+        painter.drawImage(x, y, Block._block_cache[block_attributes])
 
     def _replace_transparent_with_background(self, image):
         # draw image on background layer, to fill transparent pixels
