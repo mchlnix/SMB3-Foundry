@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from foundry import root_dir
 from foundry.game.File import ROM
 
 world_1, level_1 = 1, 1
@@ -13,9 +14,7 @@ level_1_1_enemy_address = 0xC537 + 1
 def rom():
     current_dir = Path(__file__).parent
 
-    repo_root = current_dir.parent
-
-    rom_path = repo_root.joinpath("SMB3.nes")
+    rom_path = root_dir.joinpath("SMB3.nes")
 
     rom = ROM(rom_path)
 
