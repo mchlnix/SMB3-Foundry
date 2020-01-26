@@ -27,7 +27,8 @@ class ObjectDropdown(QComboBox):
         self._fill_combobox()
 
     def _on_object_factory_change(self, object_factory: LevelObjectFactory) -> None:
-        self._object_factory: LevelObjectFactory = object_factory
+        self._object_factory = object_factory
+        self._object_items.clear()
 
         if self._object_factory is None:
             return
