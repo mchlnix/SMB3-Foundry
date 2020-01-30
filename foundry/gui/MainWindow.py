@@ -3,8 +3,7 @@ from logging import error
 from typing import Tuple
 from warnings import warn
 
-from PySide2.QtCore import QPoint
-from PySide2.QtGui import QCloseEvent, QIcon, QKeySequence, QMouseEvent, QWheelEvent, Qt
+from PySide2.QtGui import QCloseEvent, QIcon, QKeySequence, QMouseEvent, Qt
 from PySide2.QtWidgets import (
     QAction,
     QDialog,
@@ -24,7 +23,6 @@ from foundry.game.File import ROM
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
-from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.BlockViewer import BlockViewer
 from foundry.gui.ContextMenu import (
@@ -40,7 +38,7 @@ from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
 from foundry.gui.LevelSelector import LevelSelector
-from foundry.gui.LevelView import LevelView
+from foundry.gui.LevelView import LevelView, undoable
 from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
@@ -66,14 +64,6 @@ CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES, ID_JUMPS]
 MODE_FREE = 0
 MODE_DRAG = 1
 MODE_RESIZE = 2
-
-
-def undoable(func):
-    def wrapped(self, *args):
-        func(self, *args)
-        self.level_ref.save_level_state()
-
-    return wrapped
 
 
 class MainWindow(QMainWindow):
@@ -673,43 +663,6 @@ class MainWindow(QMainWindow):
         self.level_view.create_object_at(*pos, domain, object_index)
 
         self.object_list.update()
-
-    def wheelEvent(self, event: QWheelEvent):
-        main_window_offset = QPoint(0, self.menuBar().height())
-
-        mapped_to_main_window = event.pos() - main_window_offset
-
-        x, y = mapped_to_main_window.toTuple()
-
-        obj_under_cursor = self.level_view.object_at(x, y)
-
-        if obj_under_cursor is None:
-            return False
-
-        if isinstance(self.level_view.level_ref, WorldMap):
-            return False
-
-        # scrolling through the level could unintentionally change objects, if the cursor would wander onto them.
-        # this is annoying (to me) so only change already selected objects
-        if obj_under_cursor not in self.level_ref.selected_objects:
-            return False
-
-        self.change_object_on_mouse_wheel(mapped_to_main_window, event.angleDelta().y())
-
-        return True
-
-    @undoable
-    def change_object_on_mouse_wheel(self, cursor_position: QPoint, y_delta: int):
-        x, y = cursor_position.toTuple()
-
-        obj_under_cursor = self.level_view.object_at(x, y)
-
-        if y_delta > 0:
-            obj_under_cursor.increment_type()
-        else:
-            obj_under_cursor.decrement_type()
-
-        obj_under_cursor.selected = True
 
     def on_about(self, _):
         about = AboutDialog(self)

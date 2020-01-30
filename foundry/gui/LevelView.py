@@ -1,8 +1,8 @@
 from bisect import bisect_right
 from typing import List, Optional, Tuple, Union
 
-from PySide2.QtCore import QSize, Signal, SignalInstance
-from PySide2.QtGui import QBrush, QColor, QMouseEvent, QPaintEvent, QPainter, QPen, Qt
+from PySide2.QtCore import QPoint, QSize, Signal, SignalInstance
+from PySide2.QtGui import QBrush, QColor, QMouseEvent, QPaintEvent, QPainter, QPen, QWheelEvent, Qt
 from PySide2.QtWidgets import QSizePolicy, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
@@ -22,6 +22,14 @@ LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
 MODE_FREE = 0
 MODE_DRAG = 1
 MODE_RESIZE = 2
+
+
+def undoable(func):
+    def wrapped(self, *args):
+        func(self, *args)
+        self.level_ref.save_level_state()
+
+    return wrapped
 
 
 class LevelView(QWidget):
@@ -99,6 +107,39 @@ class LevelView(QWidget):
             self.on_right_mouse_button_up(event)
         else:
             super(LevelView, self).mouseReleaseEvent(event)
+
+    def wheelEvent(self, event: QWheelEvent):
+        x, y = event.pos().toTuple()
+
+        obj_under_cursor = self.object_at(x, y)
+
+        if obj_under_cursor is None:
+            return False
+
+        if isinstance(self.level_ref.level, WorldMap):
+            return False
+
+        # scrolling through the level could unintentionally change objects, if the cursor would wander onto them.
+        # this is annoying (to me) so only change already selected objects
+        if obj_under_cursor not in self.level_ref.selected_objects:
+            return False
+
+        self.change_object_on_mouse_wheel(event.pos(), event.angleDelta().y())
+
+        return True
+
+    @undoable
+    def change_object_on_mouse_wheel(self, cursor_position: QPoint, y_delta: int):
+        x, y = cursor_position.toTuple()
+
+        obj_under_cursor = self.object_at(x, y)
+
+        if y_delta > 0:
+            obj_under_cursor.increment_type()
+        else:
+            obj_under_cursor.decrement_type()
+
+        obj_under_cursor.selected = True
 
     def sizeHint(self) -> QSize:
         if not self.level_ref:

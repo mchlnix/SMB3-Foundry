@@ -1,4 +1,6 @@
 import pytest
+from PySide2.QtCore import QPoint
+from PySide2.QtGui import QWheelEvent, Qt
 
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.LevelView import LevelView
@@ -62,3 +64,47 @@ def test_level_smaller(level_view):
     # THEN the level_view should be larger as well
     assert level_view.size().width() < original_size.width()
     assert level_view.size().height() >= original_size.height()
+
+
+@pytest.mark.parametrize("scroll_amount", [0, 100])
+@pytest.mark.parametrize(
+    "coordinates", [(2, 2), (334, 265), (233, 409)]  # background symbols  # background cloud  # goomba
+)
+@pytest.mark.parametrize("wheel_delta, type_change", [(10, 1), (-10, -1)])  # scroll wheel up  # scroll wheel down
+def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_window, qtbot):
+    # GIVEN a level view and a cursor position over an object
+    x, y = coordinates
+
+    level_view = main_window.level_view
+    object_under_cursor = level_view.object_at(x, y)
+    original_type = object_under_cursor.type
+
+    # WHEN level view is scrolled horizontally, the object is selected and the scroll wheel is used on it
+    main_window.scroll_panel.horizontalScrollBar().setMaximum(level_view.width())
+    main_window.scroll_panel.horizontalScrollBar().setValue(scroll_amount)
+
+    main_window.show()
+    qtbot.wait_for_window_shown(main_window)
+
+    main_window.hide()
+
+    qtbot.mouseClick(level_view, Qt.LeftButton, pos=QPoint(x, y))
+    assert object_under_cursor.selected
+
+    event = QWheelEvent(
+        QPoint(x, y),
+        QPoint(-1, -1),
+        QPoint(0, wheel_delta),
+        QPoint(0, wheel_delta),
+        Qt.LeftButton,
+        Qt.NoModifier,
+        Qt.ScrollEnd,
+        False,
+    )
+
+    assert level_view.wheelEvent(event)
+
+    # THEN the type of the object should have changed
+    new_type = level_view.object_at(*coordinates).type
+
+    assert new_type == original_type + type_change, (original_type, new_type)
