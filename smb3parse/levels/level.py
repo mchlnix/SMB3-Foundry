@@ -1,16 +1,17 @@
 from typing import Optional
 
-from smb3parse.levels import HEADER_LENGTH
+from smb3parse.levels import HEADER_LENGTH, LevelBase
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMapPosition
 from smb3parse.objects.object_set import assert_valid_object_set_number
 from smb3parse.util.rom import Rom
 
 
-class Level:
+class Level(LevelBase):
     def __init__(self, rom: Rom, object_set_number: int, layout_address: int, enemy_address: int):
+        super(Level, self).__init__(object_set_number, layout_address)
+
         self.object_set_number = object_set_number
-        self.layout_address = layout_address
         self.enemy_address = enemy_address
 
         self.world_map_position = None
