@@ -78,7 +78,7 @@ class WorldMap(LevelBase):
         memory_addresses = list_world_map_addresses(rom)
 
         try:
-            self.world_number = memory_addresses.index(layout_address) + 1
+            self.number = memory_addresses.index(layout_address) + 1
         except ValueError:
             raise ValueError(f"World map was not found at given memory address {hex(layout_address)}.")
 
@@ -101,7 +101,7 @@ class WorldMap(LevelBase):
 
     @property
     def world_index(self):
-        return self.world_number - 1
+        return self.number - 1
 
     @property
     def level_count(self):
@@ -247,9 +247,7 @@ class WorldMap(LevelBase):
             )
 
         if screen - 1 not in range(self.screen_count):
-            raise ValueError(
-                f"World {self.world_number} has {self.screen_count} screens. " f"Given number {screen} invalid."
-            )
+            raise ValueError(f"World {self.number} has {self.screen_count} screens. " f"Given number {screen} invalid.")
 
         return self.layout_bytes[(screen - 1) * WORLD_MAP_SCREEN_SIZE + row * WORLD_MAP_SCREEN_WIDTH + column]
 
@@ -290,7 +288,7 @@ class WorldMap(LevelBase):
         return WorldMap(memory_address, rom)
 
     def __repr__(self):
-        return f"World {self.world_number}"
+        return f"World {self.number}"
 
 
 class WorldMapPosition:
@@ -308,14 +306,14 @@ class WorldMapPosition:
         return self.world.tile_at(self.screen, self.row, self.column)
 
     def tuple(self):
-        return self.world.world_number, self.screen, self.row, self.column
+        return self.world.number, self.screen, self.row, self.column
 
     def __eq__(self, other):
         if not isinstance(other, WorldMapPosition):
             return False
 
         return (
-            self.world.world_number == other.world.world_number
+            self.world.number == other.world.number
             and self.screen == other.screen
             and self.row == other.row
             and self.column == other.column
