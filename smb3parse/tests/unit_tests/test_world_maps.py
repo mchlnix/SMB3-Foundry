@@ -8,6 +8,7 @@ from smb3parse.levels.world_map import (
     list_world_map_addresses,
 )
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.tests.conftest import TILE_BOWSER_CASTLE
 
 world_map_addresses = [0x185BA, 0x1864B, 0x1876C, 0x1891D, 0x18A3E, 0x18B5F, 0x18D10, 0x18E31, 0x19072]
 world_map_screen_counts = [1, 2, 3, 2, 2, 3, 2, 4, 1]
@@ -35,9 +36,6 @@ world_1_addresses = [
     0x2FC2E,
     0x2FCD1,
 ]
-
-
-TILE_BOWSER_CASTLE = 0xCC  # TILE_BOWSERCASTLELL
 
 
 def test_list_world_map_addresses(rom):
@@ -98,25 +96,25 @@ def test_get_level_on_screen_4(world_8):
 
 
 def test_tile_not_enterable(world_1):
-    tile_at_0_0 = world_1._map_tile_for_position(1, 0, 0)
+    tile_at_0_0 = world_1.tile_at(1, 0, 0)
 
     assert not world_1._is_enterable(tile_at_0_0)
 
 
 def test_tile_is_enterable(world_1):
-    level_1_1 = world_1._map_tile_for_position(1, 0, 4)
+    level_1_1 = world_1.tile_at(1, 0, 4)
 
     assert world_1._is_enterable(level_1_1)
 
 
 def test_spade_bonus_is_enterable(world_1):
-    spade_bonus_level = world_1._map_tile_for_position(1, 4, 8)
+    spade_bonus_level = world_1.tile_at(1, 4, 8)
 
     assert world_1._is_enterable(spade_bonus_level)
 
 
 def test_castle_is_enterable(world_1):
-    castle_level = world_1._map_tile_for_position(1, 6, 12)
+    castle_level = world_1.tile_at(1, 6, 12)
 
     assert world_1._is_enterable(castle_level)
 
@@ -138,10 +136,10 @@ def test_level_count_world_8(world_8):
 def test_get_tile(world_1):
     level_1_tile, level_2_tile, level_3_tile, level_4_tile = range(0x03, 0x03 + 4)
 
-    assert world_1._map_tile_for_position(1, 0, 4) == level_1_tile
-    assert world_1._map_tile_for_position(1, 0, 8) == level_2_tile
-    assert world_1._map_tile_for_position(1, 0, 10) == level_3_tile
-    assert world_1._map_tile_for_position(1, 2, 10) == level_4_tile
+    assert world_1.tile_at(1, 0, 4) == level_1_tile
+    assert world_1.tile_at(1, 0, 8) == level_2_tile
+    assert world_1.tile_at(1, 0, 10) == level_3_tile
+    assert world_1.tile_at(1, 2, 10) == level_4_tile
 
 
 def test_get_tile_second_screen(rom):
@@ -149,13 +147,13 @@ def test_get_tile_second_screen(rom):
 
     world_2 = WorldMap.from_world_number(rom, 2)
 
-    assert world_2._map_tile_for_position(2, 0, 2) == tile_level_4
+    assert world_2.tile_at(2, 0, 2) == tile_level_4
 
 
 def test_get_tile_fourth_screen(world_8):
     bowser_castle = TILE_BOWSER_CASTLE
 
-    assert world_8._map_tile_for_position(4, 5, 12) == bowser_castle
+    assert world_8.tile_at(4, 5, 12) == bowser_castle
 
 
 def test_special_enterable_tiles(rom):

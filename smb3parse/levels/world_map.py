@@ -154,7 +154,7 @@ class WorldMap(LevelBase):
             None, if there is no level at the map position.
         """
 
-        tile = self._map_tile_for_position(screen, player_row, player_column)
+        tile = self.tile_at(screen, player_row, player_column)
 
         if not self._is_enterable(tile):
             return None
@@ -226,10 +226,10 @@ class WorldMap(LevelBase):
 
         return object_set_number, absolute_level_address, enemy_address
 
-    def _map_tile_for_position(self, screen: int, row: int, column: int) -> int:
+    def tile_at(self, screen: int, row: int, column: int) -> int:
         """
-        Returns the tile value at the given coordinates. We (0, 0) to be the topmost, leftmost tile, under the black
-        border, so we'll adjust them accordingly, when bound checking.
+        Returns the tile value at the given coordinates. We define (0, 0) to be the topmost, leftmost tile, under the
+        black border, so we'll adjust them accordingly, when bound checking.
 
         :param screen:
         :param row:
@@ -271,6 +271,15 @@ class WorldMap(LevelBase):
             or tile_index in self._special_enterable_tiles
         )
 
+    def gen_positions(self):
+        """
+        Returns a generator, which yield WorldMapPosition objects, one screen at a time, one row at a time.
+        """
+        for screen in range(1, self.screen_count + 1):
+            for row in range(WORLD_MAP_HEIGHT):
+                for column in range(WORLD_MAP_SCREEN_WIDTH):
+                    yield WorldMapPosition(self, screen, row, column)
+
     @staticmethod
     def from_world_number(rom: Rom, world_number: int) -> "WorldMap":
         if not world_number - 1 in range(WORLD_COUNT):
@@ -279,6 +288,9 @@ class WorldMap(LevelBase):
         memory_address = list_world_map_addresses(rom)[world_number - 1]
 
         return WorldMap(memory_address, rom)
+
+    def __repr__(self):
+        return f"World {self.world_number}"
 
 
 class WorldMapPosition:
@@ -291,6 +303,26 @@ class WorldMapPosition:
     @property
     def level_info(self):
         return self.world.level_for_position(self.screen, self.row, self.column)
+
+    def tile(self):
+        return self.world.tile_at(self.screen, self.row, self.column)
+
+    def tuple(self):
+        return self.world.world_number, self.screen, self.row, self.column
+
+    def __eq__(self, other):
+        if not isinstance(other, WorldMapPosition):
+            return False
+
+        return (
+            self.world.world_number == other.world.world_number
+            and self.screen == other.screen
+            and self.row == other.row
+            and self.column == other.column
+        )
+
+    def __repr__(self):
+        return f"WorldMapPosition({self.world}, screen={self.screen}, row={self.row}, column={self.column})"
 
 
 def _get_normal_enterable_tiles(rom: Rom) -> bytearray:
