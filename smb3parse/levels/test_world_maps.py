@@ -40,16 +40,6 @@ world_1_addresses = [
 TILE_BOWSER_CASTLE = 0xCC  # TILE_BOWSERCASTLELL
 
 
-@pytest.fixture
-def world_1(rom):
-    return WorldMap.from_world_number(rom, 1)
-
-
-@pytest.fixture
-def world_8(rom):
-    return WorldMap.from_world_number(rom, 8)
-
-
 def test_list_world_map_addresses(rom):
     assert world_map_addresses == list_world_map_addresses(rom)
 
@@ -80,23 +70,23 @@ def test_list_all_world_maps_width(rom):
 
 
 @pytest.mark.parametrize(
-    "row, column, level_address, enemy_address, object_set",
+    "row, column, object_set, level_address, enemy_address",
     [
-        (0, 4, 0x1FB92, 0xC537, 0x1),
-        (0, 8, 0x20F3A, 0xC6BA, 0x3),
-        (0, 10, 0x1EE19, 0xC2FE, 0x01),
-        (2, 10, 0x23511, 0xCC43, 0x4),
-        (8, 4, 0x1AA51, 0xC93B, 0xE),
+        (0, 4, 0x1, 0x1FB92, 0xC537),
+        (0, 8, 0x3, 0x20F3A, 0xC6BA),
+        (0, 10, 0x1, 0x1EE19, 0xC2FE),
+        (2, 10, 0x4, 0x23511, 0xCC43),
+        (8, 4, 0xE, 0x1AA51, 0xC93B),
     ],
 )
-def test_get_level_at_position(world_1, row, column, level_address, enemy_address, object_set):
+def test_get_level_at_position(world_1, row, column, object_set, level_address, enemy_address):
     level_tile = world_1.level_for_position(1, row, column)
 
-    assert level_tile == (level_address, enemy_address, object_set)
+    assert level_tile == (object_set, level_address, enemy_address)
 
 
 def test_get_level_on_screen_2(rom):
-    level_2_4 = (0x29C88, 0xD26F, 0x9)
+    level_2_4 = (0x9, 0x29C88, 0xD26F)
 
     world_2 = WorldMap.from_world_number(rom, 2)
 
@@ -104,7 +94,7 @@ def test_get_level_on_screen_2(rom):
 
 
 def test_get_level_on_screen_4(world_8):
-    assert world_8.level_for_position(4, 5, 12) == (0x2BC3D, 0xD5DD, 0x2)
+    assert world_8.level_for_position(4, 5, 12) == (0x2, 0x2BC3D, 0xD5DD)
 
 
 def test_tile_not_enterable(world_1):

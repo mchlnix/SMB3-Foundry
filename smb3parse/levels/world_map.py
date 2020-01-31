@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List
 
 from smb3parse.levels import (
     COMPLETABLE_LIST_END_MARKER,
@@ -129,7 +129,7 @@ class WorldMap(LevelBase):
         self.level_count_s3 = y_pos_start_by_screen[3] - y_pos_start_by_screen[2]
         self.level_count_s4 = level_y_pos_list_end - y_pos_start_by_screen[3]
 
-    def level_for_position(self, screen: int, player_row: int, player_column: int) -> Optional[Tuple[int, int, int]]:
+    def level_for_position(self, screen: int, player_row: int, player_column: int):
         """
         The rom takes the position of the current player, so the world, the screen and the x and y coordinates, and
         operates on them. First it is checked, whether or not the player is located on a tile, that is able to be
@@ -209,9 +209,9 @@ class WorldMap(LevelBase):
 
         # the object set is part of the row, but we didn't have the correct row index before, only the first match
         correct_row_value = self._rom.int(level_y_pos_list_start + level_index)
-        object_set = correct_row_value & 0x0F
+        object_set_number = correct_row_value & 0x0F
 
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set) * 2 - 10) * 0x1000
+        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
 
         absolute_level_address = 0x0010 + object_set_offset + level_offset
 
@@ -223,7 +223,7 @@ class WorldMap(LevelBase):
 
         enemy_address = ENEMY_BASE_OFFSET + self._rom.little_endian(enemy_list_start + level_index * OFFSET_SIZE)
 
-        return absolute_level_address, enemy_address, object_set
+        return object_set_number, absolute_level_address, enemy_address
 
     def _map_tile_for_position(self, screen: int, row: int, column: int) -> int:
         """
@@ -278,6 +278,18 @@ class WorldMap(LevelBase):
         memory_address = list_world_map_addresses(rom)[world_number - 1]
 
         return WorldMap(memory_address, rom)
+
+
+class WorldMapPosition:
+    def __init__(self, world: WorldMap, screen: int, row: int, column: int):
+        self.world = world
+        self.screen = screen
+        self.row = row
+        self.column = column
+
+    @property
+    def level_info(self):
+        return self.world.level_for_position(self.screen, self.row, self.column)
 
 
 def _get_normal_enterable_tiles(rom: Rom) -> bytearray:
