@@ -21,6 +21,11 @@ MAX_OBJECT_SET = 0x0F
 OBJECT_GROUP_SIZE = 16
 
 
+def assert_valid_object_set_number(object_set_number: int):
+    if not is_valid_object_set_number(object_set_number):
+        raise ValueError(f"Object set number {object_set_number} is invalid.")
+
+
 def is_valid_object_set_number(object_set_number: int):
     return object_set_number in range(MIN_OBJECT_SET, MAX_OBJECT_SET + 1)
 

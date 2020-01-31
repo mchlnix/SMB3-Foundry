@@ -7,7 +7,7 @@ from smb3parse.levels import (
     LEVEL_LENGTH_INTERVAL,
     LEVEL_MIN_LENGTH,
 )
-from smb3parse.objects.object_set import ObjectSet, is_valid_object_set_number
+from smb3parse.objects.object_set import ObjectSet, assert_valid_object_set_number
 
 
 class LevelHeader:
@@ -15,8 +15,7 @@ class LevelHeader:
         if len(header_bytes) != HEADER_LENGTH:
             raise ValueError(f"A level header is made up of {HEADER_LENGTH} bytes, but {len(header_bytes)} were given.")
 
-        if not is_valid_object_set_number(object_set_number):
-            raise ValueError(f"Object set number {object_set_number} is invalid.")
+        assert_valid_object_set_number(object_set_number)
 
         self._object_set_number = object_set_number
         self._object_set = ObjectSet(self._object_set_number)
