@@ -55,7 +55,7 @@ class WorldMap(LevelBase):
     They can be multiple screens big, which are either not visibly connected or connected horizontally.
 
     Attributes:
-        memory_address  The position in the ROM of the bytes making up the visual layout of the world map.
+        layout_address  The position in the ROM of the bytes making up the visual layout of the world map.
         layout_bytes    The actual bytes making up the visual layout
 
         width           The width of the world map in blocks across all scenes.
@@ -65,8 +65,8 @@ class WorldMap(LevelBase):
         screen_count    How many screens this world map spans.
     """
 
-    def __init__(self, memory_address: int, rom: Rom):
-        super(WorldMap, self).__init__(memory_address)
+    def __init__(self, layout_address: int, rom: Rom):
+        super(WorldMap, self).__init__(layout_address)
 
         self._rom = rom
 
@@ -77,15 +77,15 @@ class WorldMap(LevelBase):
         memory_addresses = list_world_map_addresses(rom)
 
         try:
-            self.world_number = memory_addresses.index(memory_address) + 1
+            self.world_number = memory_addresses.index(layout_address) + 1
         except ValueError:
-            raise ValueError(f"World map was not found at given memory address {hex(memory_address)}.")
+            raise ValueError(f"World map was not found at given memory address {hex(layout_address)}.")
 
         self.height = WORLD_MAP_HEIGHT
 
-        layout_end_index = rom.find(b"\xFF", memory_address)
+        layout_end_index = rom.find(b"\xFF", layout_address)
 
-        self.layout_bytes = rom.read(memory_address, layout_end_index - memory_address)
+        self.layout_bytes = rom.read(layout_address, layout_end_index - layout_address)
 
         if len(self.layout_bytes) % WORLD_MAP_SCREEN_SIZE != 0:
             raise ValueError(

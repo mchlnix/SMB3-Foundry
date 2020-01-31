@@ -126,8 +126,8 @@ def is_valid_level_length(level_length: int) -> bool:
 
 
 class LevelBase:
-    def __init__(self, memory_address: int):
-        self.memory_address = memory_address
+    def __init__(self, layout_address: int):
+        self.layout_address = layout_address
 
         self.width: int = 0
         self.height: int = 0

@@ -56,7 +56,7 @@ def test_list_world_map_addresses(rom):
 
 def test_list_all_world_maps_address(rom):
     for world_map, world_map_address in zip(get_all_world_maps(rom), world_map_addresses):
-        assert world_map.memory_address == world_map_address
+        assert world_map.layout_address == world_map_address
 
 
 def test_list_all_world_maps_object_set(rom):

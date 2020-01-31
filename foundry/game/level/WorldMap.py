@@ -28,7 +28,7 @@ class WorldMap(LevelLike):
         self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
         self.palette_group = load_palette(WORLD_MAP_OBJECT_SET, 0)
 
-        self.offset = self._internal_world_map.memory_address
+        self.offset = self._internal_world_map.layout_address
 
         self.object_set = WORLD_MAP_OBJECT_SET
         self.tsa_data = ROM.get_tsa_data(self.object_set)
