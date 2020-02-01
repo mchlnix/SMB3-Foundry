@@ -156,7 +156,7 @@ class WorldMap(LevelBase):
 
         tile = self.tile_at(screen, player_row, player_column)
 
-        if not self._is_enterable(tile):
+        if not self.is_enterable(tile):
             return None
 
         level_y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
@@ -251,7 +251,7 @@ class WorldMap(LevelBase):
 
         return self.layout_bytes[(screen - 1) * WORLD_MAP_SCREEN_SIZE + row * WORLD_MAP_SCREEN_WIDTH + column]
 
-    def _is_enterable(self, tile_index: int) -> bool:
+    def is_enterable(self, tile_index: int) -> bool:
         """
         The tile attributes for the overworld tile set define the minimal value a tile has to have to be enterable.
         Which of the 4 bytes to check against depends on the "quadrant", so the 2 MSBs.
@@ -301,6 +301,9 @@ class WorldMapPosition:
     @property
     def level_info(self):
         return self.world.level_for_position(self.screen, self.row, self.column)
+
+    def can_have_level(self):
+        return self.world.is_enterable(self.tile())
 
     def tile(self):
         return self.world.tile_at(self.screen, self.row, self.column)

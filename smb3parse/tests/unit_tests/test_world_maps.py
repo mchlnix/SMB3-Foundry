@@ -98,25 +98,25 @@ def test_get_level_on_screen_4(world_8):
 def test_tile_not_enterable(world_1):
     tile_at_0_0 = world_1.tile_at(1, 0, 0)
 
-    assert not world_1._is_enterable(tile_at_0_0)
+    assert not world_1.is_enterable(tile_at_0_0)
 
 
 def test_tile_is_enterable(world_1):
     level_1_1 = world_1.tile_at(1, 0, 4)
 
-    assert world_1._is_enterable(level_1_1)
+    assert world_1.is_enterable(level_1_1)
 
 
 def test_spade_bonus_is_enterable(world_1):
     spade_bonus_level = world_1.tile_at(1, 4, 8)
 
-    assert world_1._is_enterable(spade_bonus_level)
+    assert world_1.is_enterable(spade_bonus_level)
 
 
 def test_castle_is_enterable(world_1):
     castle_level = world_1.tile_at(1, 6, 12)
 
-    assert world_1._is_enterable(castle_level)
+    assert world_1.is_enterable(castle_level)
 
 
 def test_level_count_world_1(world_1):
