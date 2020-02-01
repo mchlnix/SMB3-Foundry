@@ -46,14 +46,13 @@ class Level(LevelLike):
 
     HEADER_LENGTH = 9  # bytes
 
-    def __init__(self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set_number: int):
-        super(Level, self).__init__(world, level, object_set_number)
+    def __init__(self, world: int, level: int, layout_address: int, enemy_data_offset: int, object_set_number: int):
+        super(Level, self).__init__(object_set_number, layout_address)
 
         self._signal_emitter = LevelSignaller()
 
         self.attached_to_rom = True
 
-        self.object_set_number = object_set_number
         self.object_set = ObjectSet(object_set_number)
 
         self.undo_stack = UndoStack()
@@ -67,7 +66,11 @@ class Level(LevelLike):
         else:
             self.name = f"Level {world}-{level}, '{level_data.name}'"
 
-        self.header_offset = object_data_offset
+        # TODO get rid of this; only used for naming and M3L header
+        self.world = world
+        self.level_number = level
+
+        self.header_offset = layout_address
         self.enemy_offset = enemy_data_offset
 
         self.objects = []

@@ -1,4 +1,4 @@
-from PySide2.QtCore import QPoint
+from PySide2.QtCore import QPoint, QSize
 
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import load_palette
@@ -7,10 +7,10 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.MapObject import MapObject
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.levels.world_map import (
-    WorldMap as _WorldMap,
+    WORLD_MAP_HEIGHT,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
-    WORLD_MAP_HEIGHT,
+    WorldMap as _WorldMap,
 )
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -19,36 +19,37 @@ OVERWORLD_GRAPHIC_SET = 0
 
 class WorldMap(LevelLike):
     def __init__(self, world_index):
-        super(WorldMap, self).__init__(0, world_index, None)
+        self._internal_world_map = _WorldMap.from_world_number(ROM(), world_index)
 
-        self._internal_world_map = _WorldMap.from_world_number(ROM().rom_data, world_index)
+        super(WorldMap, self).__init__(0, self._internal_world_map.layout_address)
 
         self.name = f"World {world_index} - Overworld"
 
         self.pattern_table = PatternTable(OVERWORLD_GRAPHIC_SET)
         self.palette_group = load_palette(WORLD_MAP_OBJECT_SET, 0)
 
-        self.offset = self._internal_world_map.layout_address
-
         self.object_set = WORLD_MAP_OBJECT_SET
         self.tsa_data = ROM.get_tsa_data(self.object_set)
 
+        self.world = 0
+        self.level_number = 0
+
         self.objects = []
 
-        self._load_objects(self._internal_world_map.layout_bytes)
+        self._load_objects()
 
         self._calc_size()
 
-    def _load_objects(self, obj_data):
+    def _load_objects(self):
         self.objects.clear()
 
-        for index, block_index in enumerate(obj_data):
+        for index, world_position in enumerate(self._internal_world_map.gen_positions()):
             screen_offset = (index // WORLD_MAP_SCREEN_SIZE) * WORLD_MAP_SCREEN_WIDTH
 
             x = screen_offset + (index % WORLD_MAP_SCREEN_WIDTH)
             y = (index // WORLD_MAP_SCREEN_WIDTH) % WORLD_MAP_HEIGHT
 
-            block = Block(block_index, self.palette_group, self.pattern_table, self.tsa_data)
+            block = Block(world_position.tile(), self.palette_group, self.pattern_table, self.tsa_data)
 
             self.objects.append(MapObject(block, x, y))
 
@@ -65,6 +66,10 @@ class WorldMap(LevelLike):
 
         self.objects.sort(key=self._array_index)
 
+    @property
+    def q_size(self):
+        return QSize(*self.size) * Block.SIDE_LENGTH
+
     @staticmethod
     def _array_index(obj):
         return obj.y_position * WORLD_MAP_SCREEN_WIDTH + obj.x_position
@@ -74,7 +79,7 @@ class WorldMap(LevelLike):
 
     def draw(self, dc, zoom, transparency=None):
         for obj in self.objects:
-            obj.draw(dc, zoom, transparency)
+            obj.draw(dc, Block.SIDE_LENGTH * zoom, transparency)
 
     def index_of(self, obj):
         return self.objects.index(obj)
@@ -99,12 +104,12 @@ class WorldMap(LevelLike):
 
             return_array[index] = obj.to_bytes()
 
-        return self.offset, return_array
+        return self.layout_address, return_array
 
     def from_bytes(self, data, _=None):
         offset, obj_bytes = data
 
-        self.offset = offset
+        self.layout_address = offset
         self._load_objects(obj_bytes)
 
         self._calc_size()

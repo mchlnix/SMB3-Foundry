@@ -23,6 +23,7 @@ from foundry.game.File import ROM
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
+from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.BlockViewer import BlockViewer
 from foundry.gui.ContextMenu import (
@@ -603,7 +604,7 @@ class MainWindow(QMainWindow):
         self.update_title()
         self.jump_list.update()
 
-        is_a_world_map = self.level_view.level_ref.world == 0
+        is_a_world_map = isinstance(self.level_ref.level, WorldMap)
 
         self.save_m3l_action.setEnabled(not is_a_world_map)
         self.edit_header_action.setEnabled(not is_a_world_map)

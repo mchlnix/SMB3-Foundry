@@ -1,20 +1,14 @@
 import abc
 
+from smb3parse.levels import LevelBase
 
-class LevelLike(abc.ABC):
-    def __init__(self, world, level, object_set):
-        self.world = world
-        self.level_number = level
-        self.object_set_number = object_set
 
-        self.objects = []
+class LevelLike(LevelBase, abc.ABC):
+    width: int
+    height: int
 
-        self.width = 1
-        self.height = 1
-
-        self.name = "LevelLike object"
-
-        self.object_pattern_table = None
+    def __init__(self, object_set_number, layout_address):
+        super(LevelLike, self).__init__(object_set_number, layout_address)
 
         self.changed = False
         self.attached_to_rom = True
