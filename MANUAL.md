@@ -63,7 +63,7 @@ $ python3 foundry/smb3-foundry.py
 Note that you need to install the graphical user interface framework, that the editor uses. This is easily done using `pip3`, which should already be installed, when having installed Python.
 
 ```shell script
-$ pip3 install wxPython 
+$ pip3 install PySide2
 ```
 
 ## Getting a ROM
@@ -144,7 +144,7 @@ They are also not following the level object in memory, but are stored separatel
 
 #### Jumps
 
-Jumps are a third kind of object. They are the exclusive object type of the 8th domain (domain 7) and are used in Pipes to transport a player to a different level.
+Jumps are a third kind of object. They are the exclusive object type of the 8th domain (domain 7) and are used in Pipes or Doors to transport a player to a different level.
 
     dddu_ssss aaaa_yyyy xxxx_xxxx
     
@@ -162,7 +162,7 @@ Mario has a few exit actions, like exiting from a pipe, exiting from a door, sli
 
 The y position at which Mario appears in the new level. Note that this is not the specific position, but rather points to an entry in a list of 16 different y coordinates.
 
-8 of these can be used for horizontal levels and 8 for vertical levels. Y coordinates other than the ones in the list can not be chosen.
+8 of these can be used for horizontal levels and 8 for vertical levels. Y coordinates other than the ones in the list can not be chosen, without hacking the rom manually.
 
 ##### X Position
 
@@ -170,6 +170,62 @@ The x coordinate, however, can be chosen freely. Of note is, that the two 4 Bit 
 
 In the same way the hexadecimal representation of the x coordinate 100, 0x64, is saved in memory as 0x46.
 
+### World Maps
+
+World maps, or overworlds, are used to enter the levels (in most cases). The data for world maps is organized in a data structure, separate from its layout information.
+
+#### Layout information
+
+Since all world maps share an object set (object set 0), and every object on the world map is made up of single 16x16 blocks, the layout data does not need to be specially constructed. Instead the blocks IDs are simply stored in memory in the order they would appear in on the screen. This makes reading and parsing a world map particularly simple.
+
+Each block ID is simply a byte, without any further information like coordinates, length, etc. 
+
+The animation of some of the tiles is not part of the world map itself, rather their block IDs is used in a different routine and, if it is marked in that list as "animatable" a lookup will periodically exchange the normal block with animated versions of itself.
+
+##### Screen count
+
+How many screens a world map has, is implicitly encoded in the amount of layout bytes, that the layout consists of. It takes 16 * 9, so 144 bytes to fill one screen, so all world maps have a multiple of that many bytes in the layout data. The maximum amount of screens is 4.
+
+#### Data structure
+
+The data structure holds information about the positions and memory locations of the levels, among others. They are mostly organized in lists of bytes, which, for each screen, hold some part of the necessary level information.
+
+- how many level entries are in each screen (level counts for screens, that are unused are simply 0)
+- the row position and object set of every level (4 bit row, 4 bit object_set)
+- the screen and column position for every level (4 bit screen, 4 bit column)
+- addresses pointing to the enemy and item data of the level, that corresponds to the coordinates at the same index (the first address in the list is for the level at the first row and first column in their respective lists)
+- addresses pointing to the level layout data of the level, that corresponds to the coordinates at the same index
+
+See also Mechanisms:Level Loading
+
 ### Levels
 
-TODO
+#### Object Set
+
+#### Level Header
+
+#### Layout Data
+
+#### Enemy and Item data
+
+## Mechanisms
+
+### Level Loading
+
+When the player stands in a location on the world map and presses the A button, the rom will first do a check, if the block the player is standing on is marked as "enterable".
+
+If this is the case, then the position of the player is split up into its screen, row and column value.
+
+Afterwards the world data structure is looked up to find the corresponding lists for the world and screen.
+
+The list of rows and object sets is traversed first, while keeping track of the index (the current position in the list). Once an entry is found, that has the same row value as the player currently has, the search is stopped. Now the search is continued in the column list, starting from the index we were at in the row list.
+
+This works, because the row list is in normal numerical order, meaning levels at the top of the screen are listed first, while the column list is sorted from left to right, with the caveat, that levels on the same row are grouped together.
+
+That means, that in the column list, first all levels in the first row are listed from left to right, then the ones from the second row, etc. This allows us to first find the position in the row list, marking the start of the row we are standing on and then, searching from left to right, find the level which has the column value we are looking for.
+
+After finding the entry in column list, which corresponds to the column of the player, its position is the actual position of the level we are looking for in all of the lists.
+
+We go again into the row list, find the correct row + object set pair, instead of the first matching, and store the object set of our level. Afterwards we go into the enemy and item data list and retrieve the address for the data, corresponding to our level. The same is done for the layout data list and we have the 3 pieces of information, that is necessary to load and build the level we want to go to.
+
+#### Special Case Warp World 
