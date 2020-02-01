@@ -196,7 +196,7 @@ The data structure holds information about the positions and memory locations of
 - addresses pointing to the enemy and item data of the level, that corresponds to the coordinates at the same index (the first address in the list is for the level at the first row and first column in their respective lists)
 - addresses pointing to the level layout data of the level, that corresponds to the coordinates at the same index
 
-See also Mechanisms:Level Loading
+See also [Level Loading](#Level-Loading)
 
 ### Levels
 
@@ -228,4 +228,8 @@ After finding the entry in column list, which corresponds to the column of the p
 
 We go again into the row list, find the correct row + object set pair, instead of the first matching, and store the object set of our level. Afterwards we go into the enemy and item data list and retrieve the address for the data, corresponding to our level. The same is done for the layout data list and we have the 3 pieces of information, that is necessary to load and build the level we want to go to.
 
-#### Special Case Warp World 
+#### Special Case Warp World
+
+In Warp World the data structure works a bit different. While the row and column lists work the same way, here the second half of the row values are not denoting the object set, but the world to jump to.
+
+After selecting a level, but before loading it, the current world is checked. If it is the value 8 (so World 9), then, instead of loading the level like normal, the target world is written into a special variable and the execution jumps back to where the warp world code executed to initiate the jump.
