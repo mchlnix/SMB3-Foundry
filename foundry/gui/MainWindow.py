@@ -1,7 +1,5 @@
 import os
-from logging import error
 from typing import Tuple
-from warnings import warn
 
 from PySide2.QtGui import QCloseEvent, QIcon, QKeySequence, QMouseEvent, Qt
 from PySide2.QtWidgets import (
@@ -311,8 +309,8 @@ class MainWindow(QMainWindow):
 
             return self.open_level_selector(None)
 
-        except IOError:
-            warn(f"Cannot open file '{pathname}'.")
+        except IOError as exp:
+            QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{pathname}'.")
             return False
 
     def on_open_m3l(self, _) -> bool:
@@ -330,8 +328,8 @@ class MainWindow(QMainWindow):
             with open(pathname, "rb") as m3l_file:
 
                 self.level_view.from_m3l(bytearray(m3l_file.read()))
-        except IOError:
-            warn(f"Cannot open file '{pathname}'.")
+        except IOError as exp:
+            QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{pathname}'.")
 
             return False
 
@@ -409,19 +407,19 @@ class MainWindow(QMainWindow):
         else:
             pathname = ROM.path
 
+        level = self.level_view.level_ref
+
+        for offset, data in level.to_bytes():
+            ROM().bulk_write(data, offset)
+
         try:
-            level = self.level_view.level_ref
-
-            for offset, data in level.to_bytes():
-                ROM().bulk_write(data, offset)
-
             ROM().save_to_file(pathname)
+        except IOError as exp:
+            QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
 
-            self.update_title()
+        self.update_title()
 
-            self.level_view.level_ref.changed = False
-        except IOError:
-            warn("Cannot save current data in file '%s'." % pathname)
+        self.level_view.level_ref.changed = False
 
     def on_save_m3l(self, _):
         suggested_file = self.level_view.level_ref.name
@@ -434,13 +432,13 @@ class MainWindow(QMainWindow):
         if not pathname:
             return
 
-        try:
-            level = self.level_view.level_ref
+        level = self.level_view.level_ref
 
+        try:
             with open(pathname, "wb") as m3l_file:
                 m3l_file.write(level.to_m3l())
-        except IOError:
-            error(f"Cannot save current data in file '{pathname}'.")
+        except IOError as exp:
+            QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
 
     def on_menu(self, action: QAction):
         item_id = action.property(ID_PROP)
