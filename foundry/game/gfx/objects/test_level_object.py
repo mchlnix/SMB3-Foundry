@@ -36,21 +36,22 @@ def _test_object_against_reference(level_object, qtbot):
 
 
 @pytest.mark.parametrize(
-    "object_index",
+    "domain, object_index",
     [
-        0x30,  # Weird 30-Degree Hill
-        0x3A,
-        0x70,  # 30 Degree Hill - Up/Left
-        0x7A,
-        0xB0,  # 30 Degree Underwater Hill - Up/Left
-        0xBA,
+        (0, 0x30),  # Weird 45-Degree Hill
+        (0, 0x3C),
+        (3, 0x30),  # Weird 30-Degree Hill
+        (3, 0x3A),
+        (3, 0x70),  # 30 Degree Hill - Up/Left
+        (3, 0x7A),
+        (3, 0xB0),  # 30 Degree Underwater Hill - Up/Left
+        (3, 0xBA),
     ],
 )
-def test_object_rendering_4_2(object_index, qtbot):
+def test_object_rendering_4_2(domain, object_index, qtbot):
     object_factory = LevelObjectFactory(HILLY_OBJECT_SET, HILLY_GRAPHICS_SET, 0, [], False)
 
-    object_domain = 0x03
-    level_object = object_factory.from_properties(object_domain, object_index, 0, 0, None, 0)
+    level_object = object_factory.from_properties(domain, object_index, 0, 0, None, 0)
 
     _test_object_against_reference(level_object, qtbot)
 
