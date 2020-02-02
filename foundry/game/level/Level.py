@@ -458,7 +458,7 @@ class Level(LevelLike):
         return self._calc_objects_size() > self.object_size_on_disk
 
     def too_many_enemies_or_items(self):
-        return self.enemy_size_on_disk < len(self.enemies) * ENEMY_SIZE
+        return len(self.enemies) * ENEMY_SIZE > self.enemy_size_on_disk
 
     def get_all_objects(self):
         return self.objects + self.enemies
