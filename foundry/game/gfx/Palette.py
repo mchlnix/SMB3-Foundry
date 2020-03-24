@@ -1,3 +1,5 @@
+from typing import List
+
 from foundry import root_dir
 from foundry.game.File import ROM
 
@@ -34,7 +36,7 @@ for i in range(COLOR_COUNT):
     offset += BYTES_IN_COLOR
 
 
-def load_palette(object_set, palette_group):
+def load_palette(object_set: int, palette_group: int):
     rom = ROM()
 
     palette_offset = MAP_PALETTE_ADDRESS + (object_set * PALETTE_DATA_SIZE)
@@ -50,7 +52,11 @@ def load_palette(object_set, palette_group):
     return palettes
 
 
-def get_bg_color_for(object_set, palette_group):
-    palette = load_palette(object_set, palette_group)
+def bg_color_for_object_set(object_set_number: int, palette_group_index: int) -> List[int]:
+    palette = load_palette(object_set_number, palette_group_index)
 
+    return bg_color_for_palette(palette)
+
+
+def bg_color_for_palette(palette: List[bytearray]):
     return NESPalette[palette[0][0]]

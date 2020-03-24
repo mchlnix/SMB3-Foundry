@@ -25,7 +25,7 @@ from foundry.game.ObjectDefinitions import (
     DIAG_WEIRD,
 )
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.Palette import get_bg_color_for
+from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
@@ -63,6 +63,20 @@ SCREEN_HEIGHT = 15
 SCREEN_WIDTH = 16
 
 
+def get_minimal_icon(level_object):
+    while (
+        any(block not in level_object.rendered_blocks for block in level_object.blocks) and level_object.length < 0x10
+    ):
+        level_object.length += 1
+
+        if level_object.is_4byte:
+            level_object.secondary_length += 1
+
+        level_object.render()
+
+    return level_object.as_image()
+
+
 class LevelObject(ObjectLike):
     def __init__(
         self,
@@ -97,6 +111,11 @@ class LevelObject(ObjectLike):
         self.selected = False
 
         self.size_minimal = size_minimal
+
+        if self.size_minimal:
+            self.ground_level = 0
+        else:
+            self.ground_level = GROUND
 
         self._setup()
 
@@ -324,20 +343,19 @@ class LevelObject(ObjectLike):
 
             base_x += 1  # set the new base_x to the tip of the pyramid
 
-            if not self.size_minimal:
-                for y in range(base_y, GROUND):
-                    new_height = y - base_y
-                    new_width = 2 * new_height
+            for y in range(base_y, self.ground_level):
+                new_height = y - base_y
+                new_width = 2 * new_height
 
-                    bottom_row = QRect(base_x, y, new_width, 1)
+                bottom_row = QRect(base_x, y, new_width, 1)
 
-                    if any(
-                        [
-                            bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
-                            for obj in self.objects_ref[0 : self.index_in_level]
-                        ]
-                    ):
-                        break
+                if any(
+                    [
+                        bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
+                        for obj in self.objects_ref[0 : self.index_in_level]
+                    ]
+                ):
+                    break
 
             base_x = base_x - (new_width // 2)
 
@@ -453,23 +471,21 @@ class LevelObject(ObjectLike):
             new_width = self.length + 1
 
             if self.orientation == HORIZ_TO_GROUND:
+                # to the ground only, until it hits something
+                for y in range(base_y, self.ground_level):
+                    bottom_row = QRect(base_x, y, new_width, 1)
 
-                if not self.size_minimal:
-                    # to the ground only, until it hits something
-                    for y in range(base_y, GROUND):
-                        bottom_row = QRect(base_x, y, new_width, 1)
-
-                        if any(
-                            [
-                                bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
-                                for obj in self.objects_ref[0 : self.index_in_level]
-                            ]
-                        ):
-                            new_height = y - base_y
-                            break
-                    else:
-                        # nothing underneath this object, extend to the ground
-                        new_height = GROUND - base_y
+                    if any(
+                        [
+                            bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
+                            for obj in self.objects_ref[0 : self.index_in_level]
+                        ]
+                    ):
+                        new_height = y - base_y
+                        break
+                else:
+                    # nothing underneath this object, extend to the ground
+                    new_height = self.ground_level - base_y
 
                 if self.is_single_block:
                     new_width = self.length
@@ -737,7 +753,7 @@ class LevelObject(ObjectLike):
             QImage.Format_RGB888,
         )
 
-        bg_color = QColor(*get_bg_color_for(self.object_set.number, 0))
+        bg_color = QColor(*bg_color_for_object_set(self.object_set.number, 0))
 
         image.fill(bg_color)
 

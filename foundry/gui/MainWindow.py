@@ -41,6 +41,7 @@ from foundry.gui.LevelView import LevelView, undoable
 from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
+from foundry.gui.ObjectToolBox import ObjectToolBox
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.SpinnerPanel import SpinnerPanel
 
@@ -242,19 +243,35 @@ class MainWindow(QMainWindow):
 
         splitter.setChildrenCollapsible(False)
 
-        toolbar = QToolBar(self)
-        toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        toolbar.setOrientation(Qt.Vertical)
-        toolbar.setFloatable(False)
+        level_toolbar = QToolBar(self)
+        level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        level_toolbar.setOrientation(Qt.Vertical)
+        level_toolbar.setFloatable(False)
 
-        toolbar.addWidget(self.spinner_panel)
-        toolbar.addWidget(self.object_dropdown)
-        toolbar.addWidget(splitter)
+        level_toolbar.addWidget(self.spinner_panel)
+        level_toolbar.addWidget(self.object_dropdown)
+        level_toolbar.addWidget(splitter)
 
-        toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
 
-        self.addToolBar(Qt.RightToolBarArea, toolbar)
+        self.addToolBar(Qt.RightToolBarArea, level_toolbar)
+
+        self.object_toolbar = ObjectToolBox()
+
+        object_toolbar = QToolBar(self)
+        object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        object_toolbar.setFloatable(False)
+
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidget(self.object_toolbar)
+        scroll_area.setWidgetResizable(True)
+
+        object_toolbar.addWidget(scroll_area)
+        object_toolbar.setAllowedAreas(Qt.TopToolBarArea | Qt.BottomToolBarArea)
+
+        self.addToolBar(Qt.BottomToolBarArea, object_toolbar)
 
         self.status_bar = ObjectStatusBar(self, self.level_ref)
         self.setStatusBar(self.status_bar)
@@ -618,6 +635,8 @@ class MainWindow(QMainWindow):
             self.object_dropdown.set_object_factory(self.level_view.level_ref.object_factory)
 
             self.jump_list.setEnabled(True)
+
+        self.object_toolbar.update()
 
         self.level_view.update()
 

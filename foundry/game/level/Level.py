@@ -6,7 +6,7 @@ from PySide2.QtGui import QBrush, QColor, QPainter, QPen, Qt
 from foundry.game.Data import Mario3Level
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.Palette import get_bg_color_for, load_palette
+from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -474,7 +474,7 @@ class Level(LevelLike):
             return None
 
     def draw(self, painter: QPainter, block_length: int, transparency: bool):
-        bg_color = QColor(*get_bg_color_for(self.object_set_number, self.header.object_palette_index))
+        bg_color = QColor(*bg_color_for_object_set(self.object_set_number, self.header.object_palette_index))
 
         width, height = self.size
 

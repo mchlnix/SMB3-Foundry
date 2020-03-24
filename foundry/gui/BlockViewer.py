@@ -5,7 +5,7 @@ from PySide2.QtGui import QPaintEvent, QPainter, QColor, QBrush, QResizeEvent, Q
 from PySide2.QtWidgets import QStyle, QComboBox, QToolBar, QWidget, QLayout, QStatusBar
 
 from foundry.game.File import ROM
-from foundry.game.gfx.Palette import get_bg_color_for, load_palette
+from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable.Block import Block
 from foundry.gui.CustomChildWindow import CustomChildWindow
@@ -131,7 +131,7 @@ class BlockBank(QWidget):
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
 
-        bg_color = QColor(*get_bg_color_for(self.object_set, 0))
+        bg_color = QColor(*bg_color_for_object_set(self.object_set, 0))
         painter.setBrush(QBrush(bg_color))
 
         painter.drawRect(QRect(QPoint(0, 0), self.size()))
