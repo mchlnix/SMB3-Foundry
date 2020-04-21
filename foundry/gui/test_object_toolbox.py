@@ -30,4 +30,3 @@ def test_object_toolbar(qtbot):
     toolbar.update()
 
     toolbar.show()
-    qtbot.wait_for_window_shown(toolbar)

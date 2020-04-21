@@ -44,6 +44,7 @@ from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBox import ObjectToolBox
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.SpinnerPanel import SpinnerPanel
+from foundry.gui.TabbedToolBox import TabbedToolBox
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
@@ -257,18 +258,14 @@ class MainWindow(QMainWindow):
 
         self.addToolBar(Qt.RightToolBarArea, level_toolbar)
 
-        self.object_toolbar = ObjectToolBox()
+        self.object_toolbar = TabbedToolBox(self)
 
         object_toolbar = QToolBar(self)
         object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
         object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         object_toolbar.setFloatable(False)
 
-        scroll_area = QScrollArea(self)
-        scroll_area.setWidget(self.object_toolbar)
-        scroll_area.setWidgetResizable(True)
-
-        object_toolbar.addWidget(scroll_area)
+        object_toolbar.addWidget(self.object_toolbar)
         object_toolbar.setAllowedAreas(Qt.TopToolBarArea | Qt.BottomToolBarArea)
 
         self.addToolBar(Qt.BottomToolBarArea, object_toolbar)
@@ -636,7 +633,7 @@ class MainWindow(QMainWindow):
 
             self.jump_list.setEnabled(True)
 
-        self.object_toolbar.update()
+        self.object_toolbar.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
 
         self.level_view.update()
 
