@@ -10,6 +10,7 @@ class ObjectToolBar(QWidget):
         super(ObjectToolBar, self).__init__(parent)
 
         layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         self.current_object_icon = ObjectIcon()
         self.current_object_name = QLabel()
@@ -19,6 +20,7 @@ class ObjectToolBar(QWidget):
         current_item_layout.addWidget(self.current_object_icon, alignment=Qt.AlignCenter)
         current_item_layout.addWidget(self.current_object_name, alignment=Qt.AlignCenter)
         current_item_layout.addWidget(QWidget(), stretch=1)
+        current_item_layout.setContentsMargins(0, 0, 0, 0)
 
         self.tool_box = TabbedToolBox()
 
