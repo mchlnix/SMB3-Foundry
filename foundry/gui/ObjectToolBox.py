@@ -2,7 +2,7 @@ from itertools import product
 from typing import Optional, Union
 
 from PySide2.QtCore import QSize
-from PySide2.QtGui import QColor, QPaintEvent, QPainter, Qt
+from PySide2.QtGui import QColor, QImage, QPaintEvent, QPainter, Qt
 from PySide2.QtWidgets import QHBoxLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.Palette import bg_color_for_palette
@@ -66,7 +66,7 @@ class ObjectIcon(QWidget):
     MIN_SIZE = QSize(32, 32)
     MAX_SIZE = MIN_SIZE * 2
 
-    def __init__(self, level_object: LevelObject):
+    def __init__(self, level_object: Optional[LevelObject] = None):
         super(ObjectIcon, self).__init__()
 
         size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -75,12 +75,22 @@ class ObjectIcon(QWidget):
 
         self.zoom = 1
 
-        self.object = level_object
+        self.object = None
+        self.image = QImage()
 
-        self.image = get_minimal_icon(level_object)
-        self.setToolTip(level_object.description)
+        self.set_object(level_object)
 
         self.draw_background_color = True
+
+    def set_object(self, level_object: Optional[LevelObject]):
+        self.object = level_object
+
+        if self.object is not None:
+            self.image = get_minimal_icon(level_object)
+            self.setToolTip(level_object.description)
+        else:
+            self.image = QImage()
+            self.setToolTip("")
 
     def heightForWidth(self, width: int) -> int:
         current_width, current_height = self.image.size().toTuple()
@@ -96,17 +106,18 @@ class ObjectIcon(QWidget):
             return self.MAX_SIZE
 
     def paintEvent(self, event: QPaintEvent):
-        painter = QPainter(self)
+        if self.object is not None:
+            painter = QPainter(self)
 
-        if self.draw_background_color:
-            painter.fillRect(event.rect(), QColor(*bg_color_for_palette(self.object.palette_group)))
+            if self.draw_background_color:
+                painter.fillRect(event.rect(), QColor(*bg_color_for_palette(self.object.palette_group)))
 
-        scaled_image = self.image.scaled(self.size(), aspectMode=Qt.KeepAspectRatio)
+            scaled_image = self.image.scaled(self.size(), aspectMode=Qt.KeepAspectRatio)
 
-        x = (self.width() - scaled_image.width()) // 2
-        y = (event.rect().height() - scaled_image.height()) // 2
+            x = (self.width() - scaled_image.width()) // 2
+            y = (event.rect().height() - scaled_image.height()) // 2
 
-        painter.drawImage(x, y, scaled_image)
+            painter.drawImage(x, y, scaled_image)
 
         super(ObjectIcon, self).paintEvent(event)
 

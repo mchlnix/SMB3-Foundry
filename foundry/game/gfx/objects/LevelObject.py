@@ -63,7 +63,7 @@ SCREEN_HEIGHT = 15
 SCREEN_WIDTH = 16
 
 
-def get_minimal_icon(level_object):
+def get_minimal_icon(level_object) -> QImage:
     while (
         any(block not in level_object.rendered_blocks for block in level_object.blocks) and level_object.length < 0x10
     ):
