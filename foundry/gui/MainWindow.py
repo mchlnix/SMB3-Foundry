@@ -41,10 +41,9 @@ from foundry.gui.LevelView import LevelView, undoable
 from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
-from foundry.gui.ObjectToolBox import ObjectToolBox
+from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.SpinnerPanel import SpinnerPanel
-from foundry.gui.TabbedToolBox import TabbedToolBox
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
@@ -258,7 +257,7 @@ class MainWindow(QMainWindow):
 
         self.addToolBar(Qt.RightToolBarArea, level_toolbar)
 
-        self.object_toolbar = TabbedToolBox(self)
+        self.object_toolbar = ObjectToolBar(self)
 
         object_toolbar = QToolBar(self)
         object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
