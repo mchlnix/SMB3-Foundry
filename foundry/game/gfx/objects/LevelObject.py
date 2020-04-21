@@ -745,8 +745,8 @@ class LevelObject(ObjectLike):
         return QSize(self.rendered_width * Block.SIDE_LENGTH, self.rendered_height * Block.SIDE_LENGTH) * zoom_factor
 
     def as_image(self) -> QImage:
-        assert self.rendered_base_x == 0
-        assert self.rendered_base_y == 0
+        self.rendered_base_x = 0
+        self.rendered_base_y = 0
 
         image = QImage(
             QSize(self.rendered_width * Block.SIDE_LENGTH, self.rendered_height * Block.SIDE_LENGTH),
