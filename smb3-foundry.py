@@ -12,11 +12,16 @@ if hasattr(sys, "_MEIPASS"):
 from foundry.gui.MainWindow import MainWindow
 
 
-def main():
+def main(path_to_rom):
     app = QApplication()
-    MainWindow()
+    MainWindow(path_to_rom)
     app.exec_()
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+    else:
+        path = ""
+
+    main(path)

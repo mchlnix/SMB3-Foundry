@@ -67,7 +67,7 @@ MODE_RESIZE = 2
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, path_to_rom=""):
         super(MainWindow, self).__init__()
 
         self.setWindowIcon(QIcon(str(root_dir.joinpath("data", "foundry.ico"))))
@@ -278,7 +278,7 @@ class MainWindow(QMainWindow):
         self.copy_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
         self.paste_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
 
-        if not self.on_open_rom():
+        if not self.on_open_rom(path_to_rom):
             self.deleteLater()
 
         self.showMaximized()
@@ -306,24 +306,25 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self) -> bool:
+    def on_open_rom(self, path_to_rom="") -> bool:
         if not self.safe_to_change():
             return False
 
-        # otherwise ask the user what new file to open
-        pathname, _ = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
+        if not path_to_rom:
+            # otherwise ask the user what new file to open
+            path_to_rom, _ = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
 
-        if not pathname:
-            return False
+            if not path_to_rom:
+                return False
 
         # Proceed loading the file chosen by the user
         try:
-            ROM.load_from_file(pathname)
+            ROM.load_from_file(path_to_rom)
 
             return self.open_level_selector(None)
 
         except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{pathname}'.")
+            QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
             return False
 
     def on_open_m3l(self, _) -> bool:
