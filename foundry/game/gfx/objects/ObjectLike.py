@@ -4,6 +4,7 @@ import abc
 class ObjectLike(abc.ABC):
     obj_index: int
     domain: int
+    description: str
 
     is_4byte: bool
 

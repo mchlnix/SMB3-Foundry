@@ -1,5 +1,5 @@
 import os
-from typing import Tuple
+from typing import Tuple, Union
 
 from PySide2.QtGui import QCloseEvent, QIcon, QKeySequence, QMouseEvent, Qt
 from PySide2.QtWidgets import (
@@ -18,6 +18,7 @@ from PySide2.QtWidgets import (
 
 from foundry import root_dir
 from foundry.game.File import ROM
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
@@ -228,6 +229,7 @@ class MainWindow(QMainWindow):
         self.object_list = ObjectList(self, self.level_ref, self.context_menu)
 
         self.object_dropdown = ObjectDropdown(self)
+        self.object_dropdown.object_selected.connect(self._on_placeable_object_selected)
 
         self.jump_list = JumpList(self, self.level_ref)
         self.jump_list.add_jump.connect(self.on_jump_added)
@@ -258,6 +260,7 @@ class MainWindow(QMainWindow):
         self.addToolBar(Qt.RightToolBarArea, level_toolbar)
 
         self.object_toolbar = ObjectToolBar(self)
+        self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
         object_toolbar = QToolBar(self)
         object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
@@ -496,6 +499,12 @@ class MainWindow(QMainWindow):
         object_set = self.level_view.level_ref.object_set_number
 
         self.update_level(world, level, object_data, enemy_data, object_set)
+
+    def _on_placeable_object_selected(self, level_object: Union[LevelObject, EnemyObject]):
+        if self.sender() is self.object_toolbar:
+            self.object_dropdown.select_object(level_object)
+        else:
+            self.object_toolbar.select_object(level_object)
 
     @undoable
     def create_object_at(self, x, y):

@@ -1,6 +1,10 @@
+from typing import Union
+
 from PySide2.QtCore import Qt, Signal, SignalInstance
 from PySide2.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.gui.ObjectToolBox import ObjectIcon
 from foundry.gui.TabbedToolBox import TabbedToolBox
@@ -40,8 +44,11 @@ class ObjectToolBar(QWidget):
         self._on_object_icon_selected(first_object_icon)
 
     def _on_object_icon_selected(self, object_icon: ObjectIcon):
-        self.current_object_icon.set_object(object_icon.object)
-
-        self.current_object_name.setText(object_icon.object.description)
+        self.select_object(object_icon.object)
 
         self.object_selected.emit(object_icon.object)
+
+    def select_object(self, level_object: Union[LevelObject, EnemyObject]):
+        self.current_object_icon.set_object(level_object)
+
+        self.current_object_name.setText(level_object.description)

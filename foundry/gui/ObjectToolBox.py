@@ -6,6 +6,7 @@ from PySide2.QtGui import QColor, QImage, QMouseEvent, QPaintEvent, QPainter
 from PySide2.QtWidgets import QHBoxLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.Palette import bg_color_for_palette
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
@@ -35,7 +36,7 @@ class ObjectIcon(QWidget):
 
         self.draw_background_color = True
 
-    def set_object(self, level_object: Optional[LevelObject]):
+    def set_object(self, level_object: Union[LevelObject, EnemyObject]):
         self.object = level_object
 
         if self.object is not None:

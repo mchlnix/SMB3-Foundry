@@ -1,14 +1,18 @@
 from typing import List
 
+from PySide2.QtCore import Qt, Signal, SignalInstance
 from PySide2.QtGui import QIcon, QImage, QPixmap
 from PySide2.QtWidgets import QComboBox, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from foundry.game.gfx.objects.ObjectLike import ObjectLike
 
 
 class ObjectDropdown(QComboBox):
+    object_selected: SignalInstance = Signal(ObjectLike)
+
     def __init__(self, parent: QWidget):
         super(ObjectDropdown, self).__init__(parent)
 
@@ -18,8 +22,27 @@ class ObjectDropdown(QComboBox):
         # text entered in the combobox to filter the items
         self._text: str = ""
 
+        self.currentIndexChanged.connect(self._on_object_selected)
+
     def set_object_factory(self, object_factory: LevelObjectFactory) -> None:
         self._on_object_factory_change(object_factory)
+
+    def _on_object_selected(self, _):
+        domain, object_index = self.currentData(Qt.UserRole)
+
+        level_object = self._object_factory.from_properties(domain, object_index, 0, 0, 0, 0)
+
+        self.object_selected.emit(level_object)
+
+    def select_object(self, level_object: ObjectLike):
+        index_of_object = self.findText(level_object.description)
+
+        if index_of_object == -1:
+            raise LookupError(f"Couldn't find {level_object} in object dropdown.")
+
+        was_blocked = self.blockSignals(True)
+        self.setCurrentIndex(index_of_object)
+        self.blockSignals(was_blocked)
 
     def _update_filter_text(self, _) -> None:
         self._text = self.GetValue()
