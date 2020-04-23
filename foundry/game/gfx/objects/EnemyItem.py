@@ -1,8 +1,8 @@
-from PySide2.QtCore import QRect
-from PySide2.QtGui import QColor, Qt, QPainter
+from PySide2.QtCore import QRect, QSize
+from PySide2.QtGui import QColor, QImage, QPainter, Qt
 
 from foundry.game.ObjectDefinitions import enemy_handle_x, enemy_handle_y
-from foundry.game.ObjectSet import ObjectSet, ENEMY_OBJECT_SET
+from foundry.game.ObjectSet import ENEMY_OBJECT_SET, ObjectSet
 from foundry.game.gfx.Palette import NESPalette
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable import apply_selection_overlay
@@ -41,7 +41,6 @@ class EnemyObject(ObjectLike):
         self._setup()
 
     def _setup(self):
-
         obj_def = self.object_set.get_definition_of(self.obj_index)
 
         self.description = obj_def.description
@@ -156,6 +155,17 @@ class EnemyObject(ObjectLike):
 
     def to_bytes(self):
         return bytearray([self.obj_index, self.x_position, self.y_position])
+
+    def as_image(self) -> QImage:
+        image = QImage(QSize(self.width * Block.SIDE_LENGTH, self.height * Block.SIDE_LENGTH), QImage.Format_RGBA8888,)
+
+        image.fill(QColor(0, 0, 0, 0))
+
+        painter = QPainter(image)
+
+        self.draw(painter, Block.SIDE_LENGTH, True)
+
+        return image
 
     def __repr__(self):
         return f"EnemyObject {self.description} at {self.x_position}, {self.y_position}"

@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from PySide2.QtCore import QRect, QSize
 from PySide2.QtGui import QColor, QImage, QPainter
@@ -28,6 +28,7 @@ from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 
 SKY = 0
@@ -63,7 +64,9 @@ SCREEN_HEIGHT = 15
 SCREEN_WIDTH = 16
 
 
-def get_minimal_icon(level_object) -> QImage:
+def get_minimal_icon(level_object: Union["LevelObject", EnemyObject]) -> QImage:
+    if isinstance(level_object, EnemyObject):
+        return level_object.as_image()
     while (
         any(block not in level_object.rendered_blocks for block in level_object.blocks) and level_object.length < 0x10
     ):
