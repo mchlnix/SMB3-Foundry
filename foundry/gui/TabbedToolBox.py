@@ -33,6 +33,8 @@ class TabbedToolBox(QTabWidget):
         self.addTab(object_scroll_area, "Objects")
         self.addTab(enemies_scroll_area, "Enemies")
 
+        self.setCurrentIndex(self.indexOf(object_scroll_area))
+
     def set_object_set(self, object_set_index, graphic_set_index=-1):
         self._recent_toolbox.clear()
         self._objects_toolbox.clear()
