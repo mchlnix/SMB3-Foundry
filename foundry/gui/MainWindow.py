@@ -682,9 +682,12 @@ class MainWindow(QMainWindow):
 
     @undoable
     def place_object_from_dropdown(self, pos: Tuple[int, int]) -> None:
-        domain, object_index = self.object_dropdown.currentData(Qt.UserRole)
+        level_object = self.object_dropdown.currentData(Qt.UserRole)
 
-        self.level_view.create_object_at(*pos, domain, object_index)
+        if isinstance(level_object, LevelObject):
+            self.level_view.create_object_at(*pos, level_object.domain, level_object.obj_index)
+        elif isinstance(level_object, EnemyObject):
+            self.level_view.add_enemy(level_object.obj_index, *pos, -1)
 
         self.object_list.update()
 

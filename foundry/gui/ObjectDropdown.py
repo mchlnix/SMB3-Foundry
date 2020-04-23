@@ -29,9 +29,7 @@ class ObjectDropdown(QComboBox):
         if self.currentIndex() == -1:
             return
 
-        domain, object_index = self.currentData(Qt.UserRole)
-
-        level_object = self._object_factory.from_properties(domain, object_index, 0, 0, 0, 0)
+        level_object = self.currentData(Qt.UserRole)
 
         self.object_selected.emit(level_object)
 
@@ -92,7 +90,7 @@ class ObjectDropdown(QComboBox):
 
         icon = QIcon(QPixmap(self._resize_bitmap(get_minimal_icon(level_object))))
 
-        self.addItem(icon, level_object.description, (level_object.domain, level_object.obj_index))
+        self.addItem(icon, level_object.description, level_object)
 
     @staticmethod
     def _resize_bitmap(source_image: QImage) -> QImage:
