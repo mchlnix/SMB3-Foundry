@@ -6,9 +6,10 @@ from PySide2.QtGui import QColor, QImage, QPaintEvent, QPainter, Qt
 from PySide2.QtWidgets import QHBoxLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.Palette import bg_color_for_palette
+from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
+from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 from smb3parse.objects.enemy_item import EnemyItem
 
 
@@ -17,6 +18,7 @@ class ObjectToolBox(QWidget):
         super(ObjectToolBox, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setContentsMargins(0, 10, 0, 15)
 
         self._layout = QHBoxLayout(self)
 
@@ -44,6 +46,17 @@ class ObjectToolBox(QWidget):
                 continue
 
             self.add_object(level_object)
+
+    def add_from_enemy_set(self, object_set_index: int):
+        factory = EnemyItemFactory(object_set_index, 0)
+
+        for obj_index in range(MAX_ENEMY_ITEM_ID + 1):
+            enemy_item = factory.from_properties(obj_index, x=0, y=0)
+
+            if enemy_item.description in ["MSG_NOTHING", "MSG_CRASH"]:
+                continue
+
+            self.add_object(enemy_item)
 
     def clear(self):
         while item := self._layout.takeAt(0):

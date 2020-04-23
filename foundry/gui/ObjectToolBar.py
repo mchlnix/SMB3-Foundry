@@ -30,7 +30,7 @@ class ObjectToolBar(QWidget):
     def set_object_set(self, object_set_index: int, graphic_set_index: int = -1):
         self.tool_box.set_object_set(object_set_index, graphic_set_index)
 
-        first_object_icon = self.tool_box._all_toolbox.layout().itemAt(0).widget()
+        first_object_icon = self.tool_box._objects_toolbox.layout().itemAt(0).widget()
 
         self.current_object_icon.set_object(first_object_icon.object)
         self.current_object_name.setText(first_object_icon.object.description)
