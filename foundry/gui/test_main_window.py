@@ -20,10 +20,10 @@ def test_middle_click_adds_object(main_window, qtbot):
     qtbot.mouseClick(main_window, Qt.MiddleButton, pos=pos)
 
     # THEN there is now the selected object
-    domain, object_index = main_window.object_dropdown.currentData(Qt.UserRole)
+    selected_object = main_window.object_dropdown.currentData(Qt.UserRole)
 
     new_object = level_view.object_at(*pos.toTuple())
 
     assert new_object is not None
-    assert new_object.domain == domain
-    assert new_object.obj_index == object_index
+    assert new_object.domain == selected_object.domain
+    assert new_object.obj_index == selected_object.obj_index
