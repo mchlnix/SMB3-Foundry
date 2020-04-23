@@ -19,7 +19,7 @@ def main_window(qtbot):
     return main_window
 
 
-def mocked_open_rom_and_level_select(self: MainWindow):
+def mocked_open_rom_and_level_select(self: MainWindow, _):
     self.update_level(world_1, level_1, level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
 
     return True
