@@ -21,19 +21,28 @@ class TabbedToolBox(QTabWidget):
         self._enemies_toolbox = ObjectToolBox(self)
         self._enemies_toolbox.object_icon_clicked.connect(self.object_icon_clicked)
 
-        object_scroll_area = QScrollArea(self)
-        object_scroll_area.setWidgetResizable(True)
-        object_scroll_area.setWidget(self._objects_toolbox)
+        self._object_scroll_area = QScrollArea(self)
+        self._object_scroll_area.setWidgetResizable(True)
+        self._object_scroll_area.setWidget(self._objects_toolbox)
 
-        enemies_scroll_area = QScrollArea(self)
-        enemies_scroll_area.setWidgetResizable(True)
-        enemies_scroll_area.setWidget(self._enemies_toolbox)
+        self._enemies_scroll_area = QScrollArea(self)
+        self._enemies_scroll_area.setWidgetResizable(True)
+        self._enemies_scroll_area.setWidget(self._enemies_toolbox)
 
         self.addTab(self._recent_toolbox, "Recent")
-        self.addTab(object_scroll_area, "Objects")
-        self.addTab(enemies_scroll_area, "Enemies")
+        self.addTab(self._object_scroll_area, "Objects")
+        self.addTab(self._enemies_scroll_area, "Enemies")
 
-        self.setCurrentIndex(self.indexOf(object_scroll_area))
+        self.show_level_object_tab()
+
+    def show_recent_tab(self):
+        self.setCurrentIndex(self.indexOf(self._recent_toolbox))
+
+    def show_level_object_tab(self):
+        self.setCurrentIndex(self.indexOf(self._object_scroll_area))
+
+    def show_enemy_item_tab(self):
+        self.setCurrentIndex(self.indexOf(self._enemies_scroll_area))
 
     def set_object_set(self, object_set_index, graphic_set_index=-1):
         self._recent_toolbox.clear()

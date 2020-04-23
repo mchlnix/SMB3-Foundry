@@ -44,6 +44,10 @@ class ObjectToolBar(QWidget):
         self.object_selected.emit(object_icon.object)
 
     def select_object(self, level_object: Union[LevelObject, EnemyObject]):
-        self.current_object_icon.set_object(level_object)
+        if isinstance(level_object, LevelObject):
+            self.tool_box.show_level_object_tab()
+        elif isinstance(level_object, EnemyObject):
+            self.tool_box.show_enemy_item_tab()
 
+        self.current_object_icon.set_object(level_object)
         self.current_object_name.setText(level_object.description)
