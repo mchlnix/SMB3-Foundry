@@ -512,7 +512,9 @@ class Level(LevelLike):
 
         floor_block = Block(floor_block_index, palette_group, pattern_table, tsa_data)
 
-        for x in range(self.width):
+        level_width, _ = self.size
+
+        for x in range(level_width):
             floor_block.draw(painter, x * block_length, floor_level * block_length, block_length)
 
     def paste_object_at(self, x: int, y: int, obj: Union[EnemyObject, LevelObject]) -> Union[EnemyObject, LevelObject]:
