@@ -1,13 +1,15 @@
-from typing import List
+from typing import Union
 
 from PySide2.QtCore import Qt, Signal, SignalInstance
 from PySide2.QtGui import QIcon, QImage, QPixmap
 from PySide2.QtWidgets import QComboBox, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE, MIN_DOMAIN
 
 
 class ObjectDropdown(QComboBox):
@@ -16,11 +18,6 @@ class ObjectDropdown(QComboBox):
     def __init__(self, parent: QWidget):
         super(ObjectDropdown, self).__init__(parent)
 
-        # the internal list of objects, which can be filtered down
-        self._object_items: List[tuple] = []
-
-        # text entered in the combobox to filter the items
-        self._text: str = ""
 
         self.currentIndexChanged.connect(self._on_object_selected)
 
@@ -35,6 +32,12 @@ class ObjectDropdown(QComboBox):
         self.object_selected.emit(level_object)
 
     def select_object(self, level_object: ObjectLike):
+        """
+        Called, when the current placeable object was selected from outside and we need to update the selection in the
+        dropdown. This is not the selected object inside the level!
+
+        :param level_object: The type of object, that was selected to be placeable in the level.
+        """
         index_of_object = self.findText(level_object.description)
 
         if index_of_object == -1:
@@ -44,60 +47,38 @@ class ObjectDropdown(QComboBox):
         self.setCurrentIndex(index_of_object)
         self.blockSignals(was_blocked)
 
-    def _update_filter_text(self, _) -> None:
-        self._text = self.GetValue()
-
-        self._fill_combobox()
-
     def _on_object_factory_change(self, object_factory: LevelObjectFactory) -> None:
+        self.clear()
+
         self._object_factory = object_factory
-        self._object_items.clear()
 
         if self._object_factory is None:
             return
 
-        for domain in range(0, 8):
+        for domain in range(MIN_DOMAIN, MAX_DOMAIN + 1):
             for static_object in range(0, 0x10):
                 self._add_object(domain, static_object)
 
-            for expanding_object in range(0x10, 0xFF, 0x10):
+            for expanding_object in range(0x10, MAX_ID_VALUE, 0x10):
                 # add one, since some objects have a width of 0, when taking the base index
                 # I guess these are just invalid in that case
                 self._add_object(domain, expanding_object + 1)
 
-        self._fill_combobox()
-
-    def _fill_combobox(self) -> None:
-        self.clear()
-
-        filter_values = self._text.lower().split(" ")
-
-        for description, image, client_data in self._object_items:
-            if filter_values:
-                if not all(filter_value in description.lower() for filter_value in filter_values):
-                    continue
-
-            self.addItem(QIcon(QPixmap(image)), description, client_data)
-
     def _add_object(self, domain: int, object_index: int) -> None:
-        """
-        Adds objects described by the domain and index, if they are displayable.
-
-        :param int domain: The domain of the object.
-        :param int object_index: The index inside the domain of the object.
-        """
-
         level_object = self._object_factory.from_properties(domain, object_index, x=0, y=0, length=1, index=0)
 
+        self._add_item(level_object)
+
+    def _add_item(self, level_object: Union[LevelObject, EnemyObject]):
         if not isinstance(level_object, LevelObject):
             return
 
         if level_object.description in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
             return
 
-        bitmap = self._resize_bitmap(level_object.as_image())
+        icon = QIcon(QPixmap(self._resize_bitmap(get_minimal_icon(level_object))))
 
-        self._object_items.append((level_object.description, bitmap, (domain, object_index)))
+        self.addItem(icon, level_object.description, (level_object.domain, level_object.obj_index))
 
     @staticmethod
     def _resize_bitmap(source_image: QImage) -> QImage:
