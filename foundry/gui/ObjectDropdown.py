@@ -6,10 +6,11 @@ from PySide2.QtWidgets import QComboBox, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
-from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE, MIN_DOMAIN
+from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE, MIN_DOMAIN
 
 
 class ObjectDropdown(QComboBox):
@@ -55,22 +56,35 @@ class ObjectDropdown(QComboBox):
         if self._object_factory is None:
             return
 
+        # adds level objects
         for domain in range(MIN_DOMAIN, MAX_DOMAIN + 1):
-            for static_object in range(0, 0x10):
-                self._add_object(domain, static_object)
+            for static_object_id in range(0, 0x10):
+                level_object = self._object_factory.from_properties(
+                    domain, static_object_id, x=0, y=0, length=1, index=0
+                )
 
-            for expanding_object in range(0x10, MAX_ID_VALUE, 0x10):
-                # add one, since some objects have a width of 0, when taking the base index
-                # I guess these are just invalid in that case
-                self._add_object(domain, expanding_object + 1)
+                self._add_item(level_object)
 
-    def _add_object(self, domain: int, object_index: int) -> None:
-        level_object = self._object_factory.from_properties(domain, object_index, x=0, y=0, length=1, index=0)
+            for expanding_object_id in range(0x10, MAX_ID_VALUE, 0x10):
+                level_object = self._object_factory.from_properties(
+                    domain, expanding_object_id, x=0, y=0, length=1, index=0
+                )
 
-        self._add_item(level_object)
+                self._add_item(level_object)
+
+        # adds enemies and items
+        factory = EnemyItemFactory(object_factory.object_set, 0)
+
+        for obj_index in range(MAX_ENEMY_ITEM_ID + 1):
+            enemy_item = factory.from_properties(obj_index, x=0, y=0)
+
+            if enemy_item.description in ["MSG_NOTHING", "MSG_CRASH"]:
+                continue
+
+            self._add_item(enemy_item)
 
     def _add_item(self, level_object: Union[LevelObject, EnemyObject]):
-        if not isinstance(level_object, LevelObject):
+        if not isinstance(level_object, (LevelObject, EnemyObject)):
             return
 
         if level_object.description in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
