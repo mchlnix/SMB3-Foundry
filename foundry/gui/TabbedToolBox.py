@@ -1,17 +1,25 @@
+from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QScrollArea, QTabWidget
 
-from foundry.gui.ObjectToolBox import ObjectToolBox
+from foundry.gui.ObjectToolBox import ObjectIcon, ObjectToolBox
 
 
 class TabbedToolBox(QTabWidget):
+    object_icon_clicked: SignalInstance = Signal(ObjectIcon)
+
     def __init__(self, parent=None):
         super(TabbedToolBox, self).__init__(parent)
 
         self.setTabPosition(self.South)
 
         self._recent_toolbox = ObjectToolBox(self)
+        self._recent_toolbox.object_icon_clicked.connect(self.object_icon_clicked)
+
         self._objects_toolbox = ObjectToolBox(self)
+        self._objects_toolbox.object_icon_clicked.connect(self.object_icon_clicked)
+
         self._enemies_toolbox = ObjectToolBox(self)
+        self._enemies_toolbox.object_icon_clicked.connect(self.object_icon_clicked)
 
         object_scroll_area = QScrollArea(self)
         object_scroll_area.setWidgetResizable(True)
