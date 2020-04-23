@@ -166,7 +166,7 @@ class Level(LevelLike):
         enemy_data, data = data[0:ENEMY_SIZE], data[ENEMY_SIZE:]
 
         while data_left(enemy_data):
-            enemy = self.enemy_item_factory.make_object(enemy_data, 0)
+            enemy = self.enemy_item_factory.from_data(enemy_data, 0)
 
             self.enemies.append(enemy)
 
@@ -553,7 +553,7 @@ class Level(LevelLike):
         else:
             index %= len(self.objects)
 
-        enemy = self.enemy_item_factory.make_object([object_index, x, y], -1)
+        enemy = self.enemy_item_factory.from_data([object_index, x, y], -1)
 
         self.enemies.insert(index, enemy)
 

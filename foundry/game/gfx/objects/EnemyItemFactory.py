@@ -26,5 +26,16 @@ class EnemyItemFactory:
 
         self.palette_group = load_palette(object_set, palette_index)
 
-    def make_object(self, data, _):
+    def from_data(self, data, _):
         return EnemyObject(data, self.png_data, self.palette_group)
+
+    def from_properties(self, enemy_item_id: int, x: int, y: int):
+        data = bytearray(3)
+
+        data[0] = enemy_item_id
+        data[1] = x
+        data[2] = y
+
+        obj = self.from_data(data, 0)
+
+        return obj
