@@ -26,6 +26,9 @@ class ObjectDropdown(QComboBox):
         self._on_object_factory_change(object_factory)
 
     def _on_object_selected(self, _):
+        if self.currentIndex() == -1:
+            return
+
         domain, object_index = self.currentData(Qt.UserRole)
 
         level_object = self._object_factory.from_properties(domain, object_index, 0, 0, 0, 0)
@@ -77,9 +80,6 @@ class ObjectDropdown(QComboBox):
 
         for obj_index in range(MAX_ENEMY_ITEM_ID + 1):
             enemy_item = factory.from_properties(obj_index, x=0, y=0)
-
-            if enemy_item.description in ["MSG_NOTHING", "MSG_CRASH"]:
-                continue
 
             self._add_item(enemy_item)
 

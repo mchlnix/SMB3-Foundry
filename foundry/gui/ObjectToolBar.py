@@ -38,11 +38,6 @@ class ObjectToolBar(QWidget):
     def set_object_set(self, object_set_index: int, graphic_set_index: int = -1):
         self.tool_box.set_object_set(object_set_index, graphic_set_index)
 
-        # todo, make nicer
-        first_object_icon = self.tool_box._objects_toolbox.layout().itemAt(0).widget()
-
-        self._on_object_icon_selected(first_object_icon)
-
     def _on_object_icon_selected(self, object_icon: ObjectIcon):
         self.select_object(object_icon.object)
 
