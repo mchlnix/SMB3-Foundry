@@ -22,8 +22,12 @@ class ObjectDropdown(QComboBox):
 
         self.currentIndexChanged.connect(self._on_object_selected)
 
-    def set_object_factory(self, object_factory: LevelObjectFactory) -> None:
-        self._on_object_factory_change(object_factory)
+    def set_object_set(self, object_set_index: int, graphic_set_index: int) -> None:
+        factory = LevelObjectFactory(
+            object_set_index, graphic_set_index, 0, [], vertical_level=False, size_minimal=True
+        )
+
+        self._on_object_factory_change(factory)
 
     def _on_object_selected(self, _):
         if self.currentIndex() == -1:

@@ -638,7 +638,7 @@ class MainWindow(QMainWindow):
             self.jump_list.Clear()
         else:
             self.object_dropdown.setEnabled(True)
-            self.object_dropdown.set_object_factory(self.level_view.level_ref.object_factory)
+            self.object_dropdown.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
 
             self.jump_list.setEnabled(True)
 
