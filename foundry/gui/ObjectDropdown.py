@@ -73,6 +73,9 @@ class ObjectDropdown(QComboBox):
 
                 self._add_item(level_object)
 
+        # insert visual separator between level objects and enemies/items
+        self.insertSeparator(self.count())
+
         # adds enemies and items
         factory = EnemyItemFactory(object_factory.object_set, 0)
 
