@@ -2,7 +2,7 @@ from typing import Union
 
 from PySide2.QtCore import Qt, Signal, SignalInstance
 from PySide2.QtGui import QIcon, QImage, QPixmap
-from PySide2.QtWidgets import QComboBox, QWidget
+from PySide2.QtWidgets import QApplication, QComboBox, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -21,6 +21,9 @@ class ObjectDropdown(QComboBox):
 
 
         self.currentIndexChanged.connect(self._on_object_selected)
+
+        # guard against overly long item descriptions
+        self.setMaximumWidth(QApplication.desktop().geometry().width() / 5)
 
     def set_object_set(self, object_set_index: int, graphic_set_index: int) -> None:
         factory = LevelObjectFactory(
