@@ -20,9 +20,15 @@ class ObjectToolBar(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         self.current_object_icon = ObjectIcon()
-        self.current_object_name = QLabel()
 
-        current_item_layout = QVBoxLayout()
+        self.current_object_name = QLabel()
+        self.current_object_name.setWordWrap(True)
+        self.current_object_name.setAlignment(Qt.AlignCenter)
+
+        current_item_widget = QWidget()
+        current_item_widget.setFixedWidth(self.current_object_icon.MAX_SIZE.width() * 2)
+
+        current_item_layout = QVBoxLayout(current_item_widget)
         current_item_layout.addWidget(QWidget(), stretch=1)
         current_item_layout.addWidget(self.current_object_icon, alignment=Qt.AlignCenter)
         current_item_layout.addWidget(self.current_object_name, alignment=Qt.AlignCenter)
@@ -32,7 +38,7 @@ class ObjectToolBar(QWidget):
         self.tool_box = TabbedToolBox()
         self.tool_box.object_icon_clicked.connect(self._on_object_icon_selected)
 
-        layout.addLayout(current_item_layout)
+        layout.addWidget(current_item_widget)
         layout.addWidget(self.tool_box)
 
     def set_object_set(self, object_set_index: int, graphic_set_index: int = -1):
