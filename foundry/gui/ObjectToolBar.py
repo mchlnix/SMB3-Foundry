@@ -57,3 +57,9 @@ class ObjectToolBar(QWidget):
 
         self.current_object_icon.set_object(level_object)
         self.current_object_name.setText(level_object.description)
+
+    def on_toolbar_area_changed(self, new_toolbar_area):
+        if new_toolbar_area == Qt.TopToolBarArea:
+            self.tool_box.setTabPosition(self.tool_box.North)
+        else:
+            self.tool_box.setTabPosition(self.tool_box.South)
