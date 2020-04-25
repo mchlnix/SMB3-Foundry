@@ -97,13 +97,14 @@ class ObjectToolBox(QWidget):
         self.setContentsMargins(0, 10, 0, 15)
 
         self._layout = QHBoxLayout(self)
+        self._layout.setAlignment(Qt.AlignLeft)
 
-    def add_object(self, level_object: Union[EnemyItem, LevelObject]):
+    def add_object(self, level_object: Union[EnemyItem, LevelObject], index: int = -1):
         icon = ObjectIcon(level_object)
 
         icon.clicked.connect(self._on_icon_clicked)
 
-        self._layout.addWidget(icon)
+        self._layout.insertWidget(index, icon)
 
     def add_from_object_set(self, object_set_index: int, graphic_set_index: int = -1):
         if graphic_set_index == -1:
@@ -154,3 +155,21 @@ class ObjectToolBox(QWidget):
     def draw_background_color(self, value):
         for index in range(self._layout.count()):
             self._layout.itemAt(index).draw_background_color = value
+
+    def has_object(self, level_object):
+        return self.index_of_object(level_object) != -1
+
+    def index_of_object(self, level_object):
+        for index in range(self._layout.count()):
+            if self._layout.itemAt(index).widget().object == level_object:
+                return index
+        else:
+            return -1
+
+    def place_at_front(self, level_object):
+        index = self.index_of_object(level_object)
+
+        if index != -1:
+            self._layout.takeAt(index).widget().deleteLater()
+
+        self.add_object(level_object, 0)

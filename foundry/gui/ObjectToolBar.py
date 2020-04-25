@@ -50,10 +50,7 @@ class ObjectToolBar(QWidget):
         self.object_selected.emit(object_icon.object)
 
     def select_object(self, level_object: Union[LevelObject, EnemyObject]):
-        if isinstance(level_object, LevelObject):
-            self.tool_box.show_level_object_tab()
-        elif isinstance(level_object, EnemyObject):
-            self.tool_box.show_enemy_item_tab()
+        self.tool_box.select_object(level_object)
 
         self.current_object_icon.set_object(level_object)
         self.current_object_name.setText(level_object.description)
@@ -63,3 +60,6 @@ class ObjectToolBar(QWidget):
             self.tool_box.setTabPosition(self.tool_box.North)
         else:
             self.tool_box.setTabPosition(self.tool_box.South)
+
+    def add_recent_object(self, level_object: Union[EnemyObject, LevelObject]):
+        self.tool_box.add_recent_object(level_object)

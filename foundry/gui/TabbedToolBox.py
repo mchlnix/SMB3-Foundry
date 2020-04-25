@@ -1,7 +1,11 @@
+from typing import Union
+
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QScrollArea, QTabWidget
 
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.gui.ObjectToolBox import ObjectIcon, ObjectToolBox
+from smb3parse.objects.level_object import LevelObject
 
 
 class TabbedToolBox(QTabWidget):
@@ -44,6 +48,16 @@ class TabbedToolBox(QTabWidget):
     def show_enemy_item_tab(self):
         self.setCurrentIndex(self.indexOf(self._enemies_scroll_area))
 
+    def select_object(self, level_object):
+        recent_tab_showing = self.currentIndex() == self.indexOf(self._recent_toolbox)
+
+        if self._recent_toolbox.has_object(level_object) and recent_tab_showing:
+            pass
+        elif isinstance(level_object, LevelObject):
+            self.show_level_object_tab()
+        elif isinstance(level_object, EnemyObject):
+            self.show_enemy_item_tab()
+
     def set_object_set(self, object_set_index, graphic_set_index=-1):
         self._recent_toolbox.clear()
         self._objects_toolbox.clear()
@@ -51,3 +65,6 @@ class TabbedToolBox(QTabWidget):
 
         self._enemies_toolbox.clear()
         self._enemies_toolbox.add_from_enemy_set(object_set_index)
+
+    def add_recent_object(self, level_object: Union[EnemyObject, LevelObject]):
+        self._recent_toolbox.place_at_front(level_object)

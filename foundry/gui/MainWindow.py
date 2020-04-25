@@ -688,7 +688,10 @@ class MainWindow(QMainWindow):
 
     @undoable
     def place_object_from_dropdown(self, pos: Tuple[int, int]) -> None:
+        # the dropdown is synchronized with the toolbar, so it doesn't matter where to take it from
         level_object = self.object_dropdown.currentData(Qt.UserRole)
+
+        self.object_toolbar.add_recent_object(level_object)
 
         if isinstance(level_object, LevelObject):
             self.level_view.create_object_at(*pos, level_object.domain, level_object.obj_index)
