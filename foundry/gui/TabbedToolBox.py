@@ -4,8 +4,8 @@ from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QScrollArea, QTabWidget
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.gui.ObjectToolBox import ObjectIcon, ObjectToolBox
-from smb3parse.objects.level_object import LevelObject
 
 
 class TabbedToolBox(QTabWidget):
