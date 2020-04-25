@@ -2,7 +2,7 @@ from typing import Union
 
 from PySide2.QtCore import Qt, Signal, SignalInstance
 from PySide2.QtGui import QIcon, QImage, QPixmap
-from PySide2.QtWidgets import QApplication, QComboBox, QWidget
+from PySide2.QtWidgets import QApplication, QComboBox, QCompleter, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -19,6 +19,13 @@ class ObjectDropdown(QComboBox):
     def __init__(self, parent: QWidget):
         super(ObjectDropdown, self).__init__(parent)
 
+        self.setEditable(True)
+        self.setMaxVisibleItems(30)
+
+        self.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.completer().setFilterMode(Qt.MatchContains)
+
+        self.setInsertPolicy(QComboBox.NoInsert)
 
         self.currentIndexChanged.connect(self._on_object_selected)
 
