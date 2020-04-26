@@ -138,11 +138,15 @@ class ObjectToolBox(QWidget):
             self.add_object(enemy_item)
 
     def clear(self):
-        while item := self._layout.takeAt(0):
+        item = self._layout.takeAt(0)
+
+        while True:
             if item is None:
                 break
             else:
                 item.widget().deleteLater()
+
+            item = self._layout.takeAt(0)
 
     def _on_icon_clicked(self):
         self.object_icon_clicked.emit(self.sender())
