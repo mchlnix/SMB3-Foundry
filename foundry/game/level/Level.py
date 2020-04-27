@@ -208,6 +208,10 @@ class Level(LevelLike):
         self.object_size_on_disk = self.current_object_size()
         self.enemy_size_on_disk = self.current_enemies_size()
 
+    @property
+    def size_on_disk(self):
+        return self.object_size_on_disk + self.enemy_size_on_disk
+
     def attach_to_rom(self, header_offset: int, enemy_item_offset: int):
         self.header_offset = header_offset
         self.object_offset = self.header_offset + Level.HEADER_LENGTH

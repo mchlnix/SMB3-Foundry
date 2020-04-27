@@ -38,6 +38,7 @@ from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
 from foundry.gui.LevelSelector import LevelSelector
+from foundry.gui.LevelSizeBar import LevelSizeBar
 from foundry.gui.LevelView import LevelView, undoable
 from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
@@ -231,6 +232,8 @@ class MainWindow(QMainWindow):
         self.object_dropdown = ObjectDropdown(self)
         self.object_dropdown.object_selected.connect(self._on_placeable_object_selected)
 
+        self.level_size_bar = LevelSizeBar(self, self.level_ref)
+
         self.jump_list = JumpList(self, self.level_ref)
         self.jump_list.add_jump.connect(self.on_jump_added)
         self.jump_list.edit_jump.connect(self.on_jump_edit)
@@ -253,6 +256,7 @@ class MainWindow(QMainWindow):
 
         level_toolbar.addWidget(self.spinner_panel)
         level_toolbar.addWidget(self.object_dropdown)
+        level_toolbar.addWidget(self.level_size_bar)
         level_toolbar.addWidget(splitter)
 
         level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
