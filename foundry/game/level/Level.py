@@ -106,9 +106,9 @@ class Level(LevelLike):
         self._load_objects(object_data)
         self._load_enemies(enemy_data)
 
-        self._update_level_size()
-
         if new_level:
+            self._update_level_size()
+
             self.undo_stack.clear(self.to_bytes())
             self._signal_emitter.data_changed.emit()
 
@@ -132,7 +132,7 @@ class Level(LevelLike):
 
         self.data_changed.emit()
 
-    def _calc_objects_size(self):
+    def current_object_size(self):
         size = 0
 
         for obj in self.objects:
@@ -144,6 +144,9 @@ class Level(LevelLike):
         size += Jump.SIZE * len(self.jumps)
 
         return size
+
+    def current_enemies_size(self):
+        return len(self.enemies) * ENEMY_SIZE
 
     def _parse_header(self):
         self.header = LevelHeader(self.header_bytes, self.object_set_number)
@@ -202,8 +205,8 @@ class Level(LevelLike):
                 break
 
     def _update_level_size(self):
-        self.object_size_on_disk = self._calc_objects_size()
-        self.enemy_size_on_disk = len(self.enemies) * ENEMY_SIZE
+        self.object_size_on_disk = self.current_object_size()
+        self.enemy_size_on_disk = self.current_enemies_size()
 
     def attach_to_rom(self, header_offset: int, enemy_item_offset: int):
         self.header_offset = header_offset
@@ -217,11 +220,11 @@ class Level(LevelLike):
 
     @property
     def objects_end(self):
-        return self.header_offset + Level.HEADER_LENGTH + self._calc_objects_size() + len(b"\xFF")  # the delimiter
+        return self.header_offset + Level.HEADER_LENGTH + self.current_object_size() + len(b"\xFF")  # the delimiter
 
     @property
     def enemies_end(self):
-        return self.enemy_offset + len(self.enemies) * ENEMY_SIZE + len(b"\xFF\x00")  # the delimiter
+        return self.enemy_offset + self.current_enemies_size() + len(b"\xFF\x00")  # the delimiter
 
     @property
     def next_area_objects(self):
@@ -455,10 +458,10 @@ class Level(LevelLike):
         return self.too_many_level_objects() or self.too_many_enemies_or_items()
 
     def too_many_level_objects(self):
-        return self._calc_objects_size() > self.object_size_on_disk
+        return self.current_object_size() > self.object_size_on_disk
 
     def too_many_enemies_or_items(self):
-        return len(self.enemies) * ENEMY_SIZE > self.enemy_size_on_disk
+        return self.current_enemies_size() > self.enemy_size_on_disk
 
     def get_all_objects(self):
         return self.objects + self.enemies
@@ -639,7 +642,7 @@ class Level(LevelLike):
 
         # figure out how many bytes are the objects
         self._load_objects(m3l_bytes)
-        object_size = self._calc_objects_size() + len(b"\xFF")  # delimiter
+        object_size = self.current_object_size() + len(b"\xFF")  # delimiter
 
         object_bytes = m3l_bytes[:object_size]
         enemy_bytes = m3l_bytes[object_size:]

@@ -418,7 +418,7 @@ class LevelView(QWidget):
 
     def cuts_into_other_enemies(self) -> str:
         if self.level_ref is None:
-            raise TypeError("Level is None")
+            raise ValueError("Level is None")
 
         enemies_end = self.level_ref.enemies_end
 
@@ -435,7 +435,7 @@ class LevelView(QWidget):
 
     def cuts_into_other_objects(self) -> str:
         if self.level_ref is None:
-            raise TypeError("Level is None")
+            raise ValueError("Level is None")
 
         end_of_level_objects = self.level_ref.objects_end
 
