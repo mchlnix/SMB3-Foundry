@@ -291,6 +291,12 @@ class MainWindow(QMainWindow):
         self.copy_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
         self.paste_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
 
+        self.undo_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Z), self, self.spinner_panel.on_undo)
+        self.redo_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Y), self, self.spinner_panel.on_redo)
+        self.redo_shortcut_alt = QShortcut(
+            QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_Z), self, self.spinner_panel.on_redo
+        )
+
         if not self.on_open_rom(path_to_rom):
             self.deleteLater()
 

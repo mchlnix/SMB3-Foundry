@@ -49,11 +49,17 @@ class LevelRef(QObject):
             return getattr(self._internal_level, item)
 
     def undo(self):
+        if not self.undo_stack.undo_available:
+            return
+
         self._internal_level.from_bytes(*self.undo_stack.undo(), new_level=False)
 
         self.data_changed.emit()
 
     def redo(self):
+        if not self.undo_stack.redo_available:
+            return
+
         self.level.from_bytes(*self.undo_stack.redo(), new_level=False)
 
         self.data_changed.emit()
