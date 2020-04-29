@@ -5,7 +5,7 @@ venv
 .idea
 .mypy_cache
 *.tags
-SMB3.nes
+*.nes
 __pycache__
 build/
 dist/
