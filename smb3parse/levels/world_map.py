@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Tuple
 
 from smb3parse.levels import (
+    BASE_OFFSET,
     COMPLETABLE_LIST_END_MARKER,
     COMPLETABLE_TILES_LIST,
     ENEMY_BASE_OFFSET,
@@ -150,14 +151,73 @@ class WorldMap(LevelBase):
         :param player_row:
         :param player_column:
 
-        :return: A tuple of the absolute level address, pointing to the objects, enemy address and the object set. Or
-            None, if there is no level at the map position.
+        :return: A tuple of the object set number, the absolute level address, pointing to the objects and the enemy
+        address. Or None, if there is no level at the map position.
         """
 
         tile = self.tile_at(screen, player_row, player_column)
 
         if not self.is_enterable(tile):
             return None
+
+        row_address, column_address, level_offset_address, enemy_offset_address = self.level_indexes(
+            screen, player_row, player_column
+        )
+
+        level_offset = self._rom.little_endian(level_offset_address)
+
+        assert 0xA000 <= level_offset < 0xC000  # suppose that level layouts are only in this range?
+
+        correct_row_value = self._rom.int(row_address)
+        object_set_number = correct_row_value & 0x0F
+
+        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
+
+        absolute_level_address = 0x0010 + object_set_offset + level_offset
+
+        # get enemy address
+        enemy_address = ENEMY_BASE_OFFSET + self._rom.little_endian(enemy_offset_address)
+
+        return object_set_number, absolute_level_address, enemy_address
+
+    def replace_level_at_position(self, level_info, position: "WorldMapPosition"):
+        level_address, enemy_address, object_set_number = level_info
+
+        existing_level = self.level_for_position(position.screen, position.row, position.column)
+
+        if existing_level is None:
+            raise LookupError("No existing level at position.")
+
+        _, screen, row, column = position.tuple()
+
+        row_address, column_address, level_offset_address, enemy_offset_address = self.level_indexes(
+            screen, row, column
+        )
+
+        row_value = ((row + FIRST_VALID_ROW) << 4) + object_set_number
+        self._rom.write(row_address, bytes([row_value]))
+
+        column_value = ((screen - 1) << 4) + column
+        self._rom.write(column_address, bytes([column_value]))
+
+        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
+        level_offset = level_address - object_set_offset - BASE_OFFSET
+
+        self._rom.write_little_endian(level_offset_address, level_offset)
+
+        enemy_offset = enemy_address - BASE_OFFSET
+
+        self._rom.write_little_endian(enemy_offset_address, enemy_offset)
+
+    def level_indexes(self, screen, player_row, player_column):
+        """
+
+        :param int screen: On which screen the level is positioned.
+        :param int player_row: In which row the level is positioned.
+        :param int player_column: In which column the level is positioned.
+
+        :return: The memory addresses of the row, column and level offset position.
+        """
 
         level_y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
             LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
@@ -195,36 +255,21 @@ class WorldMap(LevelBase):
             # no column for row
             return None
 
-        level_index = col_index
+        row_position = level_y_pos_list_start + col_index
+        col_position = level_x_pos_list_start + col_index
 
         # get level offset
         level_list_offset_position = LEVELS_IN_WORLD_LIST_OFFSET + self.world_index * OFFSET_SIZE
-
         level_list_address = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(level_list_offset_position)
 
-        level_offset = self._rom.little_endian(level_list_address + OFFSET_SIZE * level_index)
-
-        assert 0xA000 <= level_offset < 0xC000  # suppose that level layouts are only in this range?
-
-        # get object set offset
-
-        # the object set is part of the row, but we didn't have the correct row index before, only the first match
-        correct_row_value = self._rom.int(level_y_pos_list_start + level_index)
-        object_set_number = correct_row_value & 0x0F
-
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
-
-        absolute_level_address = 0x0010 + object_set_offset + level_offset
-
-        # get enemy address
+        level_offset_position = level_list_address + OFFSET_SIZE * col_index
 
         enemy_list_start_offset = LEVEL_ENEMY_LIST_OFFSET + self.world_index * OFFSET_SIZE
-
         enemy_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(enemy_list_start_offset)
 
-        enemy_address = ENEMY_BASE_OFFSET + self._rom.little_endian(enemy_list_start + level_index * OFFSET_SIZE)
+        enemy_offset_position = enemy_list_start + col_index * OFFSET_SIZE
 
-        return object_set_number, absolute_level_address, enemy_address
+        return row_position, col_position, level_offset_position, enemy_offset_position
 
     def tile_at(self, screen: int, row: int, column: int) -> int:
         """
@@ -299,7 +344,7 @@ class WorldMapPosition:
         self.column = column
 
     @property
-    def level_info(self):
+    def level_info(self) -> Tuple[int, int, int]:
         return self.world.level_for_position(self.screen, self.row, self.column)
 
     def can_have_level(self):
