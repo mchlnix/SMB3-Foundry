@@ -1,3 +1,6 @@
+import subprocess
+import tempfile
+from pathlib import Path
 from typing import Optional
 
 from PySide2.QtCore import Signal, SignalInstance
@@ -5,10 +8,14 @@ from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry import icon_dir
+from foundry.game.File import ROM
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
+from smb3parse.constants import TILE_LEVEL_1
+from smb3parse.levels.world_map import WorldMap
+from smb3parse.util.rom import Rom
 
 MAX_DOMAIN = 0x07
 MAX_TYPE = 0xFF
@@ -29,23 +36,28 @@ class SpinnerPanel(QWidget):
         self.level_ref = level_ref
         self.level_ref.data_changed.connect(self.update)
 
-        self.undo_button = QPushButton(QIcon(str(icon_dir.joinpath("rotate-ccw.svg"))), "", self)
+        self.undo_button = QPushButton(QIcon(str(icon_dir / "rotate-ccw.svg")), "", self)
         self.undo_button.pressed.connect(self.on_undo)
         self.undo_button.setDisabled(True)
 
-        self.redo_button = QPushButton(QIcon(str(icon_dir.joinpath("rotate-cw.svg"))), "", self)
+        self.redo_button = QPushButton(QIcon(str(icon_dir / "rotate-cw.svg")), "", self)
         self.redo_button.pressed.connect(self.on_redo)
         self.redo_button.setDisabled(True)
 
-        self.zoom_out_button = QPushButton(QIcon(str(icon_dir.joinpath("zoom-out.svg"))), "", self)
+        self.play_button = QPushButton(QIcon(str(icon_dir / "play-circle.svg")), "", self)
+        self.play_button.pressed.connect(self.on_play)
+
+        self.zoom_out_button = QPushButton(QIcon(str(icon_dir / "zoom-out.svg")), "", self)
         self.zoom_out_button.pressed.connect(self.zoom_out_triggered.emit)
 
-        self.zoom_in_button = QPushButton(QIcon(str(icon_dir.joinpath("zoom-in.svg"))), "", self)
+        self.zoom_in_button = QPushButton(QIcon(str(icon_dir / "zoom-in.svg")), "", self)
         self.zoom_in_button.pressed.connect(self.zoom_in_triggered.emit)
 
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.undo_button)
         button_layout.addWidget(self.redo_button)
+        button_layout.addStretch(1)
+        button_layout.addWidget(self.play_button)
         button_layout.addStretch(1)
         button_layout.addWidget(self.zoom_out_button)
         button_layout.addWidget(self.zoom_in_button)
@@ -106,6 +118,48 @@ class SpinnerPanel(QWidget):
 
     def on_redo(self):
         self.level_ref.redo()
+
+    def on_play(self):
+        """
+        Copies the ROM, including the current level, to a temporary directory, saves the current level as level 1-1 and
+        opens the rom in an emulator.
+        """
+        temp_dir = Path(tempfile.gettempdir()) / "smb3foundry"
+        temp_dir.mkdir(parents=True, exist_ok=True)
+
+        path_to_temp_rom = temp_dir / "instaplay.rom"
+
+        ROM().save_to(path_to_temp_rom)
+
+        self._put_current_level_to_level_1_1(path_to_temp_rom)
+
+        subprocess.run(["fceux", str(path_to_temp_rom)])
+
+    def _put_current_level_to_level_1_1(self, path_to_rom):
+        level_address = self.level_ref.layout_address
+        enemy_address = self.level_ref.enemy_offset
+        object_set_number = self.level_ref.object_set_number
+
+        with open(path_to_rom, "rb") as smb3_rom:
+            data = smb3_rom.read()
+
+        rom = Rom(bytearray(data))
+
+        # load world-1 data
+        world_1 = WorldMap.from_world_number(rom, 1)
+
+        # find position of "level 1" tile in world map
+        for position in world_1.gen_positions():
+            if position.tile() == TILE_LEVEL_1:
+                break
+        else:
+            raise LookupError("No level 1 tile found.")
+
+        # replace level information with level 1-2 info
+        world_1.replace_level_at_position((level_address, enemy_address, object_set_number), position)
+
+        # save rom
+        rom.save_to(path_to_rom)
 
     def get_type(self):
         return self.spin_type.value()

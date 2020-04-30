@@ -6,10 +6,6 @@ import pytest
 from smb3parse.levels.world_map import WorldMap
 from smb3parse.util.rom import Rom
 
-TILE_LEVEL_1 = 0x03
-TILE_CASTLE_BOTTOM = 0xC9
-TILE_BOWSER_CASTLE = 0xCC  # TILE_BOWSERCASTLELL
-
 
 @pytest.fixture(scope="session", autouse=True)
 def cd_to_repo_root():
