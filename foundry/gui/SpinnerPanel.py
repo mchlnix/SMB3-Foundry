@@ -1,3 +1,4 @@
+import shlex
 import subprocess
 import tempfile
 from pathlib import Path
@@ -134,13 +135,11 @@ class SpinnerPanel(QWidget):
 
         self._put_current_level_to_level_1_1(path_to_temp_rom)
 
-        arguments = SETTINGS["instaplay_arguments"].split()
+        arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
 
-        rom_path_index = arguments.index("%f")
+        arguments = shlex.split(arguments)
 
-        if rom_path_index >= 0:
-            arguments[rom_path_index] = str(path_to_temp_rom)
-
+        print([SETTINGS["instaplay_emulator"], *arguments])
         subprocess.run([SETTINGS["instaplay_emulator"], *arguments])
 
     def _put_current_level_to_level_1_1(self, path_to_rom):

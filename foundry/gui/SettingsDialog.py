@@ -8,7 +8,7 @@ load_settings()
 
 class SettingsDialog(CustomDialog):
     def __init__(self, parent=None):
-        super(SettingsDialog, self).__init__(parent)
+        super(SettingsDialog, self).__init__(parent, "Settings")
 
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.textEdited.connect(self._update_settings)
@@ -25,7 +25,7 @@ class SettingsDialog(CustomDialog):
         command_box = QGroupBox("Emulator", self)
         command_layout = QVBoxLayout(command_box)
 
-        command_layout.addWidget(QLabel("Emulator command or path to exe:"))
+        command_layout.addWidget(QLabel('Emulator command or "path to exe":'))
         command_layout.addWidget(self.emulator_command_input)
         command_layout.addWidget(QLabel("Command arguments (%f will be replaced with rom path):"))
         command_layout.addWidget(self.command_arguments_input)
