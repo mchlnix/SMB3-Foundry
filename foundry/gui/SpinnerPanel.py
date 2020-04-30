@@ -12,6 +12,7 @@ from foundry.game.File import ROM
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.SettingsDialog import SETTINGS
 from foundry.gui.Spinner import Spinner
 from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap
@@ -133,7 +134,14 @@ class SpinnerPanel(QWidget):
 
         self._put_current_level_to_level_1_1(path_to_temp_rom)
 
-        subprocess.run(["fceux", str(path_to_temp_rom)])
+        arguments = SETTINGS["instaplay_arguments"].split()
+
+        rom_path_index = arguments.index("%f")
+
+        if rom_path_index >= 0:
+            arguments[rom_path_index] = str(path_to_temp_rom)
+
+        subprocess.run([SETTINGS["instaplay_emulator"], *arguments])
 
     def _put_current_level_to_level_1_1(self, path_to_rom):
         level_address = self.level_ref.layout_address

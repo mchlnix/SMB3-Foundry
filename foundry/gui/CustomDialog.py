@@ -15,3 +15,6 @@ class CustomDialog(QDialog):
 
     def on_exit(self):
         self.hide()
+
+    def closeEvent(self, event):
+        self.on_exit()

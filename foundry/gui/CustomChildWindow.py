@@ -3,6 +3,10 @@ from PySide2.QtWidgets import QMainWindow
 
 
 class CustomChildWindow(QMainWindow):
+    """
+    A customized Mainwindow replacement, allowing to set a central widget.
+    """
+
     def __init__(self, parent, title="Title"):
         super(CustomChildWindow, self).__init__(parent)
 

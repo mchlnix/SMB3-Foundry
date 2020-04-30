@@ -45,6 +45,7 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
+from foundry.gui.SettingsDialog import show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
@@ -99,6 +100,9 @@ class MainWindow(QMainWindow):
         file_menu.AppendSeparator()
         file_menu.Append(ID_ROM_PRESET, "&ROM Preset", "")
         """
+        file_menu.addSeparator()
+        settings_action = file_menu.addAction("&Settings")
+        settings_action.triggered.connect(show_settings)
         file_menu.addSeparator()
         exit_action = file_menu.addAction("&Exit")
         exit_action.triggered.connect(lambda _: self.close())
