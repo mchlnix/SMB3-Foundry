@@ -144,7 +144,7 @@ class SpinnerPanel(QWidget):
 
     def _put_current_level_to_level_1_1(self, path_to_rom):
         level_address = self.level_ref.layout_address
-        enemy_address = self.level_ref.enemy_offset
+        enemy_address = self.level_ref.enemy_offset - 1
         object_set_number = self.level_ref.object_set_number
 
         with open(path_to_rom, "rb") as smb3_rom:
