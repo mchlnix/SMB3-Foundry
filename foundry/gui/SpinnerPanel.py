@@ -137,7 +137,7 @@ class SpinnerPanel(QWidget):
 
         arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
 
-        arguments = shlex.split(arguments)
+        arguments = shlex.split(arguments, posix=False)
 
         print([SETTINGS["instaplay_emulator"], *arguments])
         subprocess.run([SETTINGS["instaplay_emulator"], *arguments])
