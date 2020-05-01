@@ -155,14 +155,15 @@ class SpinnerPanel(QWidget):
             QMessageBox.critical(self, "Emulator command failed", str(e))
 
     def _put_current_level_to_level_1_1(self, path_to_rom):
-        level_address = self.level_ref.layout_address
-        enemy_address = self.level_ref.enemy_offset - 1
-        object_set_number = self.level_ref.object_set_number
-
         with open(path_to_rom, "rb") as smb3_rom:
             data = smb3_rom.read()
 
         rom = Rom(bytearray(data))
+
+        # write level and enemy data of current level
+        (layout_address, layout_bytes), (enemy_address, enemy_bytes) = self.level_ref.level.to_bytes()
+        rom.write(layout_address, layout_bytes)
+        rom.write(enemy_address, enemy_bytes)
 
         # load world-1 data
         world_1 = WorldMap.from_world_number(rom, 1)
@@ -174,8 +175,10 @@ class SpinnerPanel(QWidget):
         else:
             raise LookupError("No level 1 tile found.")
 
-        # replace level information with level 1-2 info
-        world_1.replace_level_at_position((level_address, enemy_address, object_set_number), position)
+        # replace level information with that of current level
+        object_set_number = self.level_ref.object_set_number
+
+        world_1.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
 
         # save rom
         rom.save_to(path_to_rom)
