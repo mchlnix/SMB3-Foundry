@@ -6,7 +6,7 @@ from typing import Optional
 
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QSizePolicy, QVBoxLayout, QWidget
+from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QMessageBox, QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry import icon_dir
 from foundry.game.File import ROM
@@ -136,11 +136,23 @@ class SpinnerPanel(QWidget):
         self._put_current_level_to_level_1_1(path_to_temp_rom)
 
         arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
-
         arguments = shlex.split(arguments, posix=False)
 
-        print([SETTINGS["instaplay_emulator"], *arguments])
-        subprocess.run([SETTINGS["instaplay_emulator"], *arguments])
+        emu_path = Path(SETTINGS["instaplay_emulator"])
+
+        if emu_path.is_absolute():
+            if emu_path.exists():
+                emulator = str(emu_path)
+            else:
+                QMessageBox.critical(self, "Emulator not found", f"File {emu_path} not found.")
+                return
+        else:
+            emulator = SETTINGS["instaplay_emulator"]
+
+        try:
+            subprocess.run([emulator, *arguments])
+        except Exception as e:
+            QMessageBox.critical(self, "Emulator command failed", str(e))
 
     def _put_current_level_to_level_1_1(self, path_to_rom):
         level_address = self.level_ref.layout_address
