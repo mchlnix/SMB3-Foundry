@@ -8,9 +8,9 @@ matrix:
       virtualenv:
         system_site_packages: true
       before_install:
-        - pip3 install --upgrade pip
-        - pip3 install pyside2
-        - pip3 install pyinstaller
+        - python3 -m pip install --upgrade pip
+        - python3 -m pip install -r requirements.txt
+        - python3 -m pip install pyinstaller
       install:
         - true;
       script:
@@ -35,7 +35,7 @@ matrix:
       language: shell
       before_install:
         - python3 -m pip install --upgrade pip
-        - python3 -m pip install pyside2
+        - python3 -m pip install -r requirements.txt
         - python3 -m pip install pyinstaller
       install:
         - true;
@@ -62,10 +62,9 @@ matrix:
         - PATH=$PY36PATH:$PATH
       before_install:
         - choco install python --version=3.6.7
-        - python -m pip -v --version
-        - python -m pip -v install --upgrade pip
-        - python -m pip -v install pyside2
-        - python -m pip -v install pyinstaller
+        - python -m pip install --upgrade pip
+        - python -m pip install -r requirements.txt
+        - python -m pip install pyinstaller
       install:
         - true;
       script:

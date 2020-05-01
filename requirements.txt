@@ -1,2 +1,1 @@
-pathlib2==2.3.5
-PySide2==5.13.2
+PySide2>=5.14.2.1
