@@ -2,9 +2,13 @@ from typing import List
 
 from foundry import root_dir
 from foundry.game.File import ROM
+from smb3parse.levels import BASE_OFFSET
 
 MAP_PALETTE_ADDRESS = 0x36BE2
-PALETTE_ADDRESS = 0x36CA2
+
+PALETTE_BASE_ADDRESS = BASE_OFFSET + 0x2C000
+PALETTE_OFFSET_LIST = BASE_OFFSET + 0x377D2
+PALETTE_OFFSET_SIZE = 2  # bytes
 
 LEVEL_PALETTE_GROUPS_PER_OBJECT_SET = 8
 ENEMY_PALETTE_GROUPS_PER_OBJECT_SET = 4
@@ -39,15 +43,18 @@ for i in range(COLOR_COUNT):
 def load_palette(object_set: int, palette_group: int):
     rom = ROM()
 
-    palette_offset = MAP_PALETTE_ADDRESS + (object_set * PALETTE_DATA_SIZE)
-    palette_offset += palette_group * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
+    palette_offset_position = PALETTE_OFFSET_LIST + (object_set * PALETTE_OFFSET_SIZE)
+    palette_offset = rom.little_endian(palette_offset_position)
+
+    palette_address = PALETTE_BASE_ADDRESS + palette_offset
+    palette_address += palette_group * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
 
     palettes = []
 
     for _ in range(PALETTES_PER_PALETTES_GROUP):
-        palettes.append(rom.read(palette_offset, COLORS_PER_PALETTE))
+        palettes.append(rom.read(palette_address, COLORS_PER_PALETTE))
 
-        palette_offset += COLORS_PER_PALETTE
+        palette_address += COLORS_PER_PALETTE
 
     return palettes
 
