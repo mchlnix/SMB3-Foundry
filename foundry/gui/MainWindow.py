@@ -503,8 +503,6 @@ class MainWindow(QMainWindow):
             elif item_id == ID_CTX_PASTE:
                 self._paste_objects(x, y)
 
-            self.object_list.update()
-
         self.level_view.update()
 
     def reload_level(self):
@@ -547,13 +545,10 @@ class MainWindow(QMainWindow):
     def _paste_objects(self, x=None, y=None):
         self.level_view.paste_objects_at(self.context_menu.get_copied_objects(), x, y)
 
-        self.object_list.update()
-
     @undoable
     def remove_selected_objects(self):
         self.level_view.remove_selected_objects()
         self.level_view.update()
-        self.object_list.update()
         self.spinner_panel.disable_all()
 
     def on_menu_item_checked(self, action: QAction):
@@ -640,7 +635,6 @@ class MainWindow(QMainWindow):
         self.set_up_gui_for_level()
 
     def set_up_gui_for_level(self):
-        self.object_list.update()
         self.update_title()
         self.jump_list.update()
 
@@ -710,8 +704,6 @@ class MainWindow(QMainWindow):
             self.level_view.create_object_at(*pos, level_object.domain, level_object.obj_index)
         elif isinstance(level_object, EnemyObject):
             self.level_view.add_enemy(level_object.obj_index, *pos, -1)
-
-        self.object_list.update()
 
     def on_about(self, _):
         about = AboutDialog(self)
