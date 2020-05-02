@@ -133,7 +133,8 @@ class SpinnerPanel(QWidget):
 
         ROM().save_to(path_to_temp_rom)
 
-        self._put_current_level_to_level_1_1(path_to_temp_rom)
+        if not self._put_current_level_to_level_1_1(path_to_temp_rom):
+            return
 
         arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
         arguments = shlex.split(arguments, posix=False)
@@ -144,7 +145,9 @@ class SpinnerPanel(QWidget):
             if emu_path.exists():
                 emulator = str(emu_path)
             else:
-                QMessageBox.critical(self, "Emulator not found", f"File {emu_path} not found.")
+                QMessageBox.critical(
+                    self, "Emulator not found", f"Check it under File > Settings.\nFile {emu_path} not found."
+                )
                 return
         else:
             emulator = SETTINGS["instaplay_emulator"]
@@ -152,18 +155,13 @@ class SpinnerPanel(QWidget):
         try:
             subprocess.run([emulator, *arguments])
         except Exception as e:
-            QMessageBox.critical(self, "Emulator command failed", str(e))
+            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
 
-    def _put_current_level_to_level_1_1(self, path_to_rom):
+    def _put_current_level_to_level_1_1(self, path_to_rom) -> bool:
         with open(path_to_rom, "rb") as smb3_rom:
             data = smb3_rom.read()
 
         rom = Rom(bytearray(data))
-
-        # write level and enemy data of current level
-        (layout_address, layout_bytes), (enemy_address, enemy_bytes) = self.level_ref.level.to_bytes()
-        rom.write(layout_address, layout_bytes)
-        rom.write(enemy_address, enemy_bytes)
 
         # load world-1 data
         world_1 = WorldMap.from_world_number(rom, 1)
@@ -173,7 +171,23 @@ class SpinnerPanel(QWidget):
             if position.tile() == TILE_LEVEL_1:
                 break
         else:
-            raise LookupError("No level 1 tile found.")
+            QMessageBox.critical(
+                self, "Couldn't place level", "Could not find a level 1 tile in World 1 to put your level at."
+            )
+            return False
+
+        if not self.level_ref.level.attached_to_rom:
+            QMessageBox.critical(
+                self,
+                "Couldn't place level",
+                "The Level is not part of the rom yet (M3L?). Try saving it into the ROM first.",
+            )
+            return False
+
+        # write level and enemy data of current level
+        (layout_address, layout_bytes), (enemy_address, enemy_bytes) = self.level_ref.level.to_bytes()
+        rom.write(layout_address, layout_bytes)
+        rom.write(enemy_address, enemy_bytes)
 
         # replace level information with that of current level
         object_set_number = self.level_ref.object_set_number
@@ -182,6 +196,8 @@ class SpinnerPanel(QWidget):
 
         # save rom
         rom.save_to(path_to_rom)
+
+        return True
 
     def get_type(self):
         return self.spin_type.value()
