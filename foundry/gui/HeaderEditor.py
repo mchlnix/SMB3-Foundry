@@ -103,9 +103,9 @@ class HeaderEditor(CustomDialog):
         super(HeaderEditor, self).__init__(parent, "Level Header Editor")
 
         self.level: Level = level_ref.level
-        self.level.data_changed.connect(self.update)
+
+        # enables undo
         self.header_change.connect(level_ref.save_level_state)
-        self.header_change.connect(self.level.reload)
 
         main_layout = QVBoxLayout(self)
 
@@ -247,6 +247,8 @@ class HeaderEditor(CustomDialog):
 
         spinner = self.sender()
 
+        self.level.data_changed.connect(self.header_change.emit)
+
         if spinner == self.object_palette_spinner:
             new_index = self.object_palette_spinner.value()
             self.level.object_palette_index = new_index
@@ -263,10 +265,14 @@ class HeaderEditor(CustomDialog):
             new_offset = self.enemy_pointer_spinner.value()
             self.level.next_area_enemies = new_offset
 
-        self.header_change.emit()
+        self.level.data_changed.disconnect(self.header_change.emit)
+
+        self.update()
 
     def on_combo(self, _):
         dropdown = self.sender()
+
+        self.level.data_changed.connect(self.header_change.emit)
 
         if dropdown == self.length_dropdown:
             new_length = LEVEL_LENGTHS[self.length_dropdown.currentIndex()]
@@ -304,14 +310,20 @@ class HeaderEditor(CustomDialog):
             new_object_set = self.next_area_object_set_dropdown.currentIndex()
             self.level.next_area_object_set = new_object_set
 
-        self.header_change.emit()
+        self.level.data_changed.disconnect(self.header_change.emit)
+
+        self.update()
 
     def on_check_box(self, _):
         checkbox = self.sender()
+
+        self.level.data_changed.connect(self.header_change.emit)
 
         if checkbox == self.pipe_ends_level_cb:
             self.level.pipe_ends_level = self.pipe_ends_level_cb.isChecked()
         elif checkbox == self.level_is_vertical_cb:
             self.level.is_vertical = self.level_is_vertical_cb.isChecked()
 
-        self.header_change.emit()
+        self.level.data_changed.disconnect(self.header_change.emit)
+
+        self.update()
