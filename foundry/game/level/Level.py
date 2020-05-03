@@ -31,7 +31,6 @@ LEVEL_DEFAULT_WIDTH = 16
 
 
 class LevelSignaller(QObject):
-    selection_changed: SignalInstance = Signal()
     data_changed: SignalInstance = Signal()
     jumps_changed: SignalInstance = Signal()
 

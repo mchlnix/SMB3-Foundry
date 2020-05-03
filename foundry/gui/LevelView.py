@@ -1,7 +1,7 @@
 from bisect import bisect_right
 from typing import List, Optional, Tuple, Union
 
-from PySide2.QtCore import QPoint, QSize, Signal, SignalInstance
+from PySide2.QtCore import QPoint, QSize
 from PySide2.QtGui import QBrush, QColor, QMouseEvent, QPaintEvent, QPainter, QPen, QWheelEvent, Qt
 from PySide2.QtWidgets import QSizePolicy, QWidget
 
@@ -33,9 +33,6 @@ def undoable(func):
 
 
 class LevelView(QWidget):
-    # selected indexes, selected objects
-    selection_changed: SignalInstance = Signal()
-
     def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: ContextMenu):
         super(LevelView, self).__init__(parent)
 
@@ -341,8 +338,6 @@ class LevelView(QWidget):
         if touched_objects != self.level_ref.selected_objects:
             self._set_selected_objects(touched_objects)
 
-            self.selection_changed.emit()
-
         self.update()
 
     def stop_selection_square(self):
@@ -366,8 +361,6 @@ class LevelView(QWidget):
             return
 
         self.level_ref.selected_objects = objects
-
-        self.selection_changed.emit()
 
     def get_selected_objects(self) -> List[Union[LevelObject, EnemyObject]]:
         return self.level_ref.selected_objects

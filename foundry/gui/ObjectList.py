@@ -48,8 +48,6 @@ class ObjectList(QListWidget):
 
             self.level_ref.selected_objects = [selected_object]
 
-            self.selection_changed.emit()
-
     def on_right_up(self, event):
         item_under_mouse = self.itemAt(event.pos())
 
