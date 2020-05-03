@@ -9,6 +9,9 @@ from smb3parse.levels import (
 )
 from smb3parse.objects.object_set import ObjectSet, assert_valid_object_set_number
 
+MARIO_X_POSITIONS = [0x18, 0x70, 0xD8, 0x80]  # 0x10249
+MARIO_Y_POSITIONS = [0x17, 0x04, 0x00, 0x14, 0x07, 0x0B, 0x0F, 0x18]  # 0x3D7A0 + 0x3D7A8
+
 
 class LevelHeader:
     def __init__(self, header_bytes: bytearray, object_set_number: int):
@@ -56,3 +59,7 @@ class LevelHeader:
             (self.data[1] << 8) + self.data[0] + LEVEL_BASE_OFFSET + self.jump_object_set.level_offset
         )
         self.jump_enemy_address = (self.data[3] << 8) + self.data[2] + ENEMY_BASE_OFFSET
+
+    def mario_position(self):
+
+        return MARIO_X_POSITIONS[self.start_x_index] >> 4, MARIO_Y_POSITIONS[self.start_y_index]

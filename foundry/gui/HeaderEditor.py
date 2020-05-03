@@ -1,25 +1,22 @@
 from typing import Optional
 
 from PySide2.QtCore import Signal, SignalInstance
-from PySide2.QtGui import QWindow
-from PySide2.QtWidgets import QGroupBox, QComboBox, QCheckBox, QVBoxLayout, QFormLayout
+from PySide2.QtGui import QWindow, Qt
+from PySide2.QtWidgets import QGroupBox, QComboBox, QCheckBox, QLabel, QVBoxLayout, QFormLayout
 
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
+from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
 
 LEVEL_LENGTHS = [0x10 * (i + 1) for i in range(0, 2 ** 4)]
 STR_LEVEL_LENGTHS = [f"{length - 1:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS]
 
-# todo check if correct order
-X_POSITIONS = [0x01, 0x07, 0x08, 0x0D]
-STR_X_POSITIONS = [f"{position:0=#4X} / {position}. Block".replace("X", "x") for position in X_POSITIONS]
+STR_X_POSITIONS = [f"{position >> 4}. Block ({position:0=#4X})".replace("X", "x") for position in MARIO_X_POSITIONS]
 
-# todo check if correct order
-Y_POSITIONS = [0x01, 0x05, 0x08, 0x0C, 0x10, 0x14, 0x17, 0x18]
-STR_Y_POSITIONS = [f"{position:0=#4X} / {position}. Block".replace("X", "x") for position in Y_POSITIONS]
+STR_Y_POSITIONS = [f"{position}. Block ({position:0=#4X})".replace("X", "x") for position in MARIO_Y_POSITIONS]
 
 ACTIONS = [
     "None",
