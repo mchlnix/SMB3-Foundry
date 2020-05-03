@@ -680,7 +680,7 @@ class MainWindow(QMainWindow):
 
     @undoable
     def on_jump_removed(self):
-        self.level_view.remove_jump(self.jump_list.currentIndex())
+        self.level_view.remove_jump(self.jump_list.currentIndex().row())
 
     @undoable
     def on_jump_edited(self, jump):
