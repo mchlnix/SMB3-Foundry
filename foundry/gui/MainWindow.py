@@ -25,15 +25,7 @@ from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.BlockViewer import BlockViewer
-from foundry.gui.ContextMenu import (
-    ContextMenu,
-    ID_CTX_ADD_ENEMY,
-    ID_CTX_ADD_OBJECT,
-    ID_CTX_COPY,
-    ID_CTX_CUT,
-    ID_CTX_PASTE,
-    ID_CTX_REMOVE,
-)
+from foundry.gui.ContextMenu import CMAction, ContextMenu
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
@@ -489,22 +481,22 @@ class MainWindow(QMainWindow):
         elif item_id in self.context_menu.get_all_menu_item_ids():
             x, y = self.context_menu.get_position()
 
-            if item_id == ID_CTX_REMOVE:
+            if item_id == CMAction.REMOVE:
                 self.remove_selected_objects()
-            elif item_id == ID_CTX_ADD_OBJECT:
+            elif item_id == CMAction.ADD_OBJECT:
                 selected_object = self.object_dropdown.currentIndex()
 
                 if selected_object == -1:
                     self.create_object_at(x, y)
                 else:
                     self.place_object_from_dropdown((x, y))
-            elif item_id == ID_CTX_ADD_ENEMY:
+            elif item_id == CMAction.ADD_ENEMY:
                 self.create_enemy_at(x, y)
-            elif item_id == ID_CTX_CUT:
+            elif item_id == CMAction.CUT:
                 self._cut_objects()
-            elif item_id == ID_CTX_COPY:
+            elif item_id == CMAction.COPY:
                 self._copy_objects()
-            elif item_id == ID_CTX_PASTE:
+            elif item_id == CMAction.PASTE:
                 self._paste_objects(x, y)
 
         self.level_view.update()

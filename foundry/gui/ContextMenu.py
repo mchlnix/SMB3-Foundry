@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List, Union, Tuple
 
 from PySide2.QtCore import QPoint
@@ -6,16 +7,25 @@ from PySide2.QtWidgets import QMenu
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
 
-ID_CTX_REMOVE = 701
-ID_CTX_ADD_OBJECT = 702
-ID_CTX_ADD_ENEMY = 703
-ID_CTX_COPY = 704
-ID_CTX_PASTE = 705
-ID_CTX_CUT = 706
 
-MODE_BG = 0
-MODE_OBJ = 1
-MODE_LIST = 2
+class CMAction(Enum):
+    REMOVE = 1
+    ADD_OBJECT = 2
+    ADD_ENEMY = 3
+    COPY = 4
+    PASTE = 5
+    CUT = 6
+    BACKGROUND = 7
+    FOREGROUND = 8
+
+
+class CMMode(Enum):
+    BG = 1
+    OBJ = 2
+    LIST = 3
+
+
+ID_PROP: bytes = "ID"
 
 MAX_ORIGIN = 0xFF, 0xFF
 
@@ -29,24 +39,24 @@ class ContextMenu(QMenu):
         self.last_opened_at = QPoint(0, 0)
 
         self.cut_action = self.addAction("Cut")
-        self.cut_action.setProperty("ID", ID_CTX_CUT)
+        self.cut_action.setProperty(ID_PROP, CMAction.CUT)
 
         self.copy_action = self.addAction("Copy")
-        self.copy_action.setProperty("ID", ID_CTX_COPY)
+        self.copy_action.setProperty(ID_PROP, CMAction.COPY)
 
         self.paste_action = self.addAction("Paste")
-        self.paste_action.setProperty("ID", ID_CTX_PASTE)
+        self.paste_action.setProperty(ID_PROP, CMAction.PASTE)
 
         self.addSeparator()
 
         self.remove_action = self.addAction("Remove")
-        self.remove_action.setProperty("ID", ID_CTX_REMOVE)
+        self.remove_action.setProperty(ID_PROP, CMAction.REMOVE)
 
         self.add_object_action = self.addAction("Add Object")
-        self.add_object_action.setProperty("ID", ID_CTX_ADD_OBJECT)
+        self.add_object_action.setProperty(ID_PROP, CMAction.ADD_OBJECT)
 
         self.add_enemy_action = self.addAction("Add Enemy/Item")
-        self.add_enemy_action.setProperty("ID", ID_CTX_ADD_ENEMY)
+        self.add_enemy_action.setProperty(ID_PROP, CMAction.ADD_ENEMY)
 
     def set_copied_objects(self, objects: List[Union[LevelObject, EnemyObject]]):
         if not objects:
@@ -82,22 +92,23 @@ class ContextMenu(QMenu):
         return [action.property("ID") for action in self.actions()]
 
     def as_object_menu(self) -> "ContextMenu":
-        return self._setup_items(MODE_OBJ)
+        return self._setup_items(CMMode.OBJ)
 
     def as_background_menu(self) -> "ContextMenu":
-        return self._setup_items(MODE_BG)
+        return self._setup_items(CMMode.BG)
 
     def as_list_menu(self) -> "ContextMenu":
-        return self._setup_items(MODE_LIST)
+        return self._setup_items(CMMode.LIST)
 
-    def _setup_items(self, mode: int):
+    def _setup_items(self, mode: CMMode):
 
-        self.cut_action.setEnabled(not mode == MODE_BG)
-        self.copy_action.setEnabled(not mode == MODE_BG)
-        self.paste_action.setEnabled(not mode == MODE_LIST and bool(self.copied_objects))
+        self.cut_action.setEnabled(not mode == CMMode.BG)
+        self.copy_action.setEnabled(not mode == CMMode.BG)
+        self.paste_action.setEnabled(not mode == CMMode.LIST and bool(self.copied_objects))
 
-        self.remove_action.setEnabled(not mode == MODE_BG)
-        self.add_object_action.setEnabled(not mode == MODE_LIST)
-        self.add_enemy_action.setEnabled(not mode == MODE_LIST)
+
+        self.remove_action.setEnabled(not mode == CMMode.BG)
+        self.add_object_action.setEnabled(not mode == CMMode.LIST)
+        self.add_enemy_action.setEnabled(not mode == CMMode.LIST)
 
         return self
