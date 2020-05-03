@@ -12,7 +12,6 @@ from foundry.game.level.LevelRef import LevelRef
 class CMAction(Enum):
     REMOVE = 1
     ADD_OBJECT = 2
-    ADD_ENEMY = 3
     COPY = 4
     PASTE = 5
     CUT = 6
@@ -65,9 +64,6 @@ class ContextMenu(QMenu):
 
         self.add_object_action = self.addAction("Add Object")
         self.add_object_action.setProperty(ID_PROP, CMAction.ADD_OBJECT)
-
-        self.add_enemy_action = self.addAction("Add Enemy/Item")
-        self.add_enemy_action.setProperty(ID_PROP, CMAction.ADD_ENEMY)
 
     def set_copied_objects(self, objects: List[Union[LevelObject, EnemyObject]]):
         if not objects:
@@ -124,6 +120,5 @@ class ContextMenu(QMenu):
 
         self.remove_action.setEnabled(not mode == CMMode.BG and objects_selected)
         self.add_object_action.setEnabled(not mode == CMMode.LIST)
-        self.add_enemy_action.setEnabled(not mode == CMMode.LIST)
 
         return self

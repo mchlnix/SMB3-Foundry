@@ -494,12 +494,11 @@ class MainWindow(QMainWindow):
             elif item_id == CMAction.ADD_OBJECT:
                 selected_object = self.object_dropdown.currentIndex()
 
-                if selected_object == -1:
-                    self.create_object_at(x, y)
-                else:
+                if selected_object != -1:
                     self.place_object_from_dropdown((x, y))
-            elif item_id == CMAction.ADD_ENEMY:
-                self.create_enemy_at(x, y)
+                else:
+                    self.create_object_at(x, y)
+
             elif item_id == CMAction.CUT:
                 self._cut_objects()
             elif item_id == CMAction.COPY:
