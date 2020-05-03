@@ -1,10 +1,11 @@
 from bisect import bisect_right
 from typing import List, Optional, Tuple, Union
 
-from PySide2.QtCore import QPoint, QSize
-from PySide2.QtGui import QBrush, QColor, QMouseEvent, QPaintEvent, QPainter, QPen, QWheelEvent, Qt
+from PySide2.QtCore import QPoint, QRect, QSize
+from PySide2.QtGui import QBrush, QColor, QImage, QMouseEvent, QPaintEvent, QPainter, QPen, QWheelEvent, Qt
 from PySide2.QtWidgets import QSizePolicy, QWidget
 
+from foundry import data_dir
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
@@ -609,4 +610,17 @@ class LevelView(QWidget):
 
         self.selection_square.draw(painter)
 
+        self.draw_mario(painter)
+
         return
+
+    def draw_mario(self, painter):
+        mario_actions = QImage(str(data_dir / "mario.png"))
+
+        mario_actions.convertTo(QImage.Format_RGBA8888)
+
+        mario_position = QPoint(*self.level_ref.header.mario_position()) * self.block_length
+
+        x_offset = 32 * self.level_ref.level.start_action
+
+        painter.drawImage(mario_position, mario_actions.copy(QRect(x_offset, 0, 32, 32)))
