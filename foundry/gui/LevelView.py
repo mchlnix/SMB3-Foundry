@@ -345,6 +345,9 @@ class LevelView(QWidget):
 
         self.update()
 
+    def select_all(self):
+        self.select_objects(self.level_ref.get_all_objects())
+
     def select_object(self, obj=None):
         if obj is not None:
             self.select_objects([obj])

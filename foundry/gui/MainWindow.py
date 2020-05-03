@@ -296,6 +296,8 @@ class MainWindow(QMainWindow):
         self.zoom_in_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Plus), self, self.level_view.zoom_in)
         self.zoom_out_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self, self.level_view.zoom_out)
 
+        self.select_all_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
+
         if not self.on_open_rom(path_to_rom):
             self.deleteLater()
 
