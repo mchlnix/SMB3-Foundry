@@ -27,7 +27,8 @@ class LevelHeader:
 
         self.start_y_index = (self.data[4] & 0b1110_0000) >> 5
 
-        self.length = LEVEL_MIN_LENGTH + (self.data[4] & 0b0000_1111) * LEVEL_LENGTH_INTERVAL
+        self.screens = self.data[4] & 0b0000_1111
+        self.length = LEVEL_MIN_LENGTH + self.screens * LEVEL_LENGTH_INTERVAL
         self.width = self.length
         self.height = DEFAULT_HORIZONTAL_HEIGHT
 
@@ -61,5 +62,10 @@ class LevelHeader:
         self.jump_enemy_address = (self.data[3] << 8) + self.data[2] + ENEMY_BASE_OFFSET
 
     def mario_position(self):
+        x = MARIO_X_POSITIONS[self.start_x_index] >> 4
+        y = MARIO_Y_POSITIONS[self.start_y_index]
 
-        return MARIO_X_POSITIONS[self.start_x_index] >> 4, MARIO_Y_POSITIONS[self.start_y_index]
+        if self.is_vertical:
+            y += (self.screens - 1) * 15  # TODO: Why?
+
+        return x, y
