@@ -112,14 +112,12 @@ class ContextMenu(QMenu):
         return self._setup_items(CMMode.LIST)
 
     def _setup_items(self, mode: CMMode):
-        selected_objects_are_of_same_type = len(set(type(obj) for obj in self.level_ref.selected_objects)) == 1
-
         self.cut_action.setEnabled(not mode == CMMode.BG)
         self.copy_action.setEnabled(not mode == CMMode.BG)
         self.paste_action.setEnabled(not mode == CMMode.LIST and bool(self.copied_objects))
 
-        self.into_background_action.setEnabled(selected_objects_are_of_same_type)
-        self.into_foreground_action.setEnabled(selected_objects_are_of_same_type)
+        self.into_background_action.setEnabled(not mode == CMMode.BG and bool(self.level_ref.selected_objects))
+        self.into_foreground_action.setEnabled(not mode == CMMode.BG and bool(self.level_ref.selected_objects))
 
         self.remove_action.setEnabled(not mode == CMMode.BG)
         self.add_object_action.setEnabled(not mode == CMMode.LIST)
