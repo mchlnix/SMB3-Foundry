@@ -49,10 +49,11 @@ ID_RELOAD_LEVEL = 303
 ID_GRID_LINES = 501
 ID_TRANSPARENCY = 508
 ID_JUMPS = 509
+ID_MARIO = 510
+
+CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES, ID_JUMPS, ID_MARIO]
 
 ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
-
-CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES, ID_JUMPS]
 
 # mouse modes
 
@@ -156,6 +157,11 @@ class MainWindow(QMainWindow):
 
         view_menu = QMenu("View")
         view_menu.triggered.connect(self.on_menu)
+
+        self._mario_start_location = view_menu.addAction("Mario")
+        self._mario_start_location.setProperty(ID_PROP, ID_MARIO)
+        self._mario_start_location.setCheckable(True)
+        self._mario_start_location.setChecked(True)
 
         self._show_jump_action = view_menu.addAction("Jumps")
         self._show_jump_action.setProperty(ID_PROP, ID_JUMPS)
@@ -572,6 +578,8 @@ class MainWindow(QMainWindow):
             self.level_view.transparency = checked
         elif item_id == ID_JUMPS:
             self.level_view.jumps = checked
+        elif item_id == ID_MARIO:
+            self.level_view.mario = checked
 
     @undoable
     def on_spin(self, _):

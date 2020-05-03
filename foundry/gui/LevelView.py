@@ -46,6 +46,8 @@ class LevelView(QWidget):
 
         self.grid_lines = False
         self.jumps = False
+        self.transparency = True
+        self.mario = True
 
         self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), width=1)
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), width=1)
@@ -54,8 +56,6 @@ class LevelView(QWidget):
         self.block_length = Block.SIDE_LENGTH * self.zoom
 
         self.changed = False
-
-        self.transparency = True
 
         self.selection_square = SelectionSquare()
 
@@ -610,7 +610,8 @@ class LevelView(QWidget):
 
         self.selection_square.draw(painter)
 
-        self.draw_mario(painter)
+        if self.mario:
+            self.draw_mario(painter)
 
         return
 
@@ -623,4 +624,6 @@ class LevelView(QWidget):
 
         x_offset = 32 * self.level_ref.level.start_action
 
-        painter.drawImage(mario_position, mario_actions.copy(QRect(x_offset, 0, 32, 32)))
+        mario_cutout = mario_actions.copy(QRect(x_offset, 0, 32, 32)).scaled(32 * self.zoom, 32 * self.zoom)
+
+        painter.drawImage(mario_position, mario_cutout)
