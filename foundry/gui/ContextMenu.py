@@ -112,14 +112,17 @@ class ContextMenu(QMenu):
         return self._setup_items(CMMode.LIST)
 
     def _setup_items(self, mode: CMMode):
-        self.cut_action.setEnabled(not mode == CMMode.BG)
-        self.copy_action.setEnabled(not mode == CMMode.BG)
-        self.paste_action.setEnabled(not mode == CMMode.LIST and bool(self.copied_objects))
+        objects_selected = bool(self.level_ref.selected_objects)
+        objects_copied = bool(self.copied_objects)
 
-        self.into_background_action.setEnabled(not mode == CMMode.BG and bool(self.level_ref.selected_objects))
-        self.into_foreground_action.setEnabled(not mode == CMMode.BG and bool(self.level_ref.selected_objects))
+        self.cut_action.setEnabled(not mode == CMMode.BG and objects_selected)
+        self.copy_action.setEnabled(not mode == CMMode.BG and objects_selected)
+        self.paste_action.setEnabled(not mode == CMMode.LIST and objects_copied)
 
-        self.remove_action.setEnabled(not mode == CMMode.BG)
+        self.into_background_action.setEnabled(not mode == CMMode.BG and objects_selected)
+        self.into_foreground_action.setEnabled(not mode == CMMode.BG and objects_selected)
+
+        self.remove_action.setEnabled(not mode == CMMode.BG and objects_selected)
         self.add_object_action.setEnabled(not mode == CMMode.LIST)
         self.add_enemy_action.setEnabled(not mode == CMMode.LIST)
 
