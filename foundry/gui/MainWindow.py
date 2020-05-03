@@ -205,10 +205,10 @@ class MainWindow(QMainWindow):
         self.block_viewer = None
         self.object_viewer = None
 
-        self.context_menu = ContextMenu()
-        self.context_menu.triggered.connect(self.on_menu)
-
         self.level_ref = LevelRef()
+
+        self.context_menu = ContextMenu(self.level_ref)
+        self.context_menu.triggered.connect(self.on_menu)
 
         self.level_view = LevelView(self, self.level_ref, self.context_menu)
 
@@ -498,6 +498,10 @@ class MainWindow(QMainWindow):
                 self._copy_objects()
             elif item_id == CMAction.PASTE:
                 self._paste_objects(x, y)
+            elif item_id == CMAction.FOREGROUND:
+                self.bring_objects_to_foreground()
+            elif item_id == CMAction.BACKGROUND:
+                self.bring_objects_to_background()
 
         self.level_view.update()
 
@@ -518,6 +522,14 @@ class MainWindow(QMainWindow):
             self.object_dropdown.select_object(level_object)
         else:
             self.object_toolbar.select_object(level_object)
+
+    @undoable
+    def bring_objects_to_foreground(self):
+        self.level_ref.level.bring_to_foreground(self.level_ref.selected_objects)
+
+    @undoable
+    def bring_objects_to_background(self):
+        self.level_ref.level.bring_to_background(self.level_ref.selected_objects)
 
     @undoable
     def create_object_at(self, x, y):

@@ -1,11 +1,12 @@
 from enum import Enum
-from typing import List, Union, Tuple
+from typing import List, Tuple, Union
 
 from PySide2.QtCore import QPoint
 from PySide2.QtWidgets import QMenu
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.level.LevelRef import LevelRef
 
 
 class CMAction(Enum):
@@ -31,8 +32,10 @@ MAX_ORIGIN = 0xFF, 0xFF
 
 
 class ContextMenu(QMenu):
-    def __init__(self):
+    def __init__(self, level_ref: LevelRef):
         super(ContextMenu, self).__init__()
+
+        self.level_ref = level_ref
 
         self.copied_objects = None
         self.copied_objects_origin = 0, 0
@@ -46,6 +49,14 @@ class ContextMenu(QMenu):
 
         self.paste_action = self.addAction("Paste")
         self.paste_action.setProperty(ID_PROP, CMAction.PASTE)
+
+        self.addSeparator()
+
+        self.into_background_action = self.addAction("To Background")
+        self.into_background_action.setProperty(ID_PROP, CMAction.BACKGROUND)
+
+        self.into_foreground_action = self.addAction("To Foreground")
+        self.into_foreground_action.setProperty(ID_PROP, CMAction.FOREGROUND)
 
         self.addSeparator()
 
@@ -101,11 +112,14 @@ class ContextMenu(QMenu):
         return self._setup_items(CMMode.LIST)
 
     def _setup_items(self, mode: CMMode):
+        selected_objects_are_of_same_type = len(set(type(obj) for obj in self.level_ref.selected_objects)) == 1
 
         self.cut_action.setEnabled(not mode == CMMode.BG)
         self.copy_action.setEnabled(not mode == CMMode.BG)
         self.paste_action.setEnabled(not mode == CMMode.LIST and bool(self.copied_objects))
 
+        self.into_background_action.setEnabled(selected_objects_are_of_same_type)
+        self.into_foreground_action.setEnabled(selected_objects_are_of_same_type)
 
         self.remove_action.setEnabled(not mode == CMMode.BG)
         self.add_object_action.setEnabled(not mode == CMMode.LIST)

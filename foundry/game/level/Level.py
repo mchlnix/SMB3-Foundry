@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, overload
 
 from PySide2.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 from PySide2.QtGui import QBrush, QColor, QPainter, QPen, Qt
@@ -73,7 +73,7 @@ class Level(LevelLike):
         self.header_offset = layout_address
         self.enemy_offset = enemy_data_offset
 
-        self.objects = []
+        self.objects: List[LevelObject] = []
         self.jumps: List[Jump] = []
         self.enemies: List[EnemyObject] = []
 
@@ -479,6 +479,81 @@ class Level(LevelLike):
                 return obj
         else:
             return None
+
+    def bring_to_foreground(self, objects: List[Union[LevelObject, EnemyObject]]):
+        for obj in objects:
+            intersecting_objects = self.get_intersecting_objects(obj)
+
+            object_currently_in_the_foreground: Union[LevelObject, EnemyObject] = intersecting_objects[-1]
+
+            if obj is object_currently_in_the_foreground:
+                continue
+
+            if isinstance(obj, LevelObject):
+                objects = self.objects
+            elif isinstance(obj, EnemyObject):
+                objects = self.enemies
+
+            objects.remove(obj)
+
+            index = objects.index(object_currently_in_the_foreground) + 1
+
+            objects.insert(index, obj)
+
+    def bring_to_background(self, level_objects: List[Union[LevelObject, EnemyObject]]):
+        for obj in level_objects:
+            intersecting_objects = self.get_intersecting_objects(obj)
+
+            object_currently_in_the_background: Union[LevelObject, EnemyObject] = intersecting_objects[0]
+
+            if obj is object_currently_in_the_background:
+                continue
+
+            if isinstance(obj, LevelObject):
+                objects = self.objects
+            elif isinstance(obj, EnemyObject):
+                objects = self.enemies
+            else:
+                raise TypeError()
+
+            objects.remove(obj)
+
+            index = objects.index(object_currently_in_the_background)
+
+            objects.insert(index, obj)
+
+    @overload
+    def get_intersecting_objects(self, obj: LevelObject) -> List[LevelObject]:
+        ...
+
+    @overload
+    def get_intersecting_objects(self, obj: EnemyObject) -> List[EnemyObject]:
+        ...
+
+    def get_intersecting_objects(
+        self, obj: Union[LevelObject, EnemyObject]
+    ) -> Union[List[LevelObject], List[EnemyObject]]:
+        """
+        Returns all objects of the same type, that overlap the rectangle of the given object, including itself. The
+        objects are in the order, that they appear in, in memory, meaning back to front.
+
+        :param obj: The object to check overlaps for.
+        :return:
+        """
+        if isinstance(obj, LevelObject):
+            objects_to_check = self.objects
+        elif isinstance(obj, EnemyObject):
+            objects_to_check = self.enemies
+        else:
+            raise TypeError()
+
+        intersecting_objects = []
+
+        for other_object in objects_to_check:
+            if obj.get_rect().intersects(other_object.get_rect()):
+                intersecting_objects.append(other_object)
+
+        return intersecting_objects
 
     def draw(self, painter: QPainter, block_length: int, transparency: bool):
         bg_color = QColor(*bg_color_for_object_set(self.object_set_number, self.header.object_palette_index))
