@@ -214,6 +214,10 @@ class HeaderEditor(CustomDialog):
 
         main_layout.addWidget(self.next_area_group_box)
 
+        self.header_bytes_label = QLabel()
+
+        main_layout.addWidget(self.header_bytes_label, alignment=Qt.AlignCenter)
+
         self.update()
 
     def update(self):
@@ -237,6 +241,8 @@ class HeaderEditor(CustomDialog):
         self.level_pointer_spinner.setValue(self.level.next_area_objects)
         self.enemy_pointer_spinner.setValue(self.level.next_area_enemies)
         self.next_area_object_set_dropdown.setCurrentIndex(self.level.next_area_object_set)
+
+        self.header_bytes_label.setText(" ".join(f"{number:0=#4X}"[2:] for number in self.level.header_bytes))
 
     def on_spin(self, _):
         if self.level is None:
