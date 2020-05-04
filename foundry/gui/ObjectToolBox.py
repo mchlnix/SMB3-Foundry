@@ -37,7 +37,10 @@ class ObjectIcon(QWidget):
 
         self.draw_background_color = True
 
-    def mousePressEvent(self, event):
+    def mouseMoveEvent(self, event):
+        if not (event.buttons() & Qt.LeftButton):
+            return super(ObjectIcon, self).mouseMoveEvent(event)
+
         drag = QDrag(self)
 
         mime_data = QMimeData()
