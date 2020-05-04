@@ -18,12 +18,15 @@ class TabbedToolBox(QTabWidget):
 
         self._recent_toolbox = ObjectToolBox(self)
         self._recent_toolbox.object_icon_clicked.connect(self.object_icon_clicked)
+        self._recent_toolbox.object_placed.connect(self._on_object_dragged)
 
         self._objects_toolbox = ObjectToolBox(self)
         self._objects_toolbox.object_icon_clicked.connect(self.object_icon_clicked)
+        self._objects_toolbox.object_placed.connect(self._on_object_dragged)
 
         self._enemies_toolbox = ObjectToolBox(self)
         self._enemies_toolbox.object_icon_clicked.connect(self.object_icon_clicked)
+        self._enemies_toolbox.object_placed.connect(self._on_object_dragged)
 
         self._object_scroll_area = QScrollArea(self)
         self._object_scroll_area.setWidgetResizable(True)
@@ -68,3 +71,6 @@ class TabbedToolBox(QTabWidget):
 
     def add_recent_object(self, level_object: Union[EnemyObject, LevelObject]):
         self._recent_toolbox.place_at_front(level_object)
+
+    def _on_object_dragged(self, object_icon: ObjectIcon):
+        self.add_recent_object(object_icon.object)

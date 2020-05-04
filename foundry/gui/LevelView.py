@@ -607,6 +607,8 @@ class LevelView(QWidget):
         else:
             self.level_ref.level.add_enemy(level_object.obj_index, x, y)
 
+        event.accept()
+
         self.currently_dragged_object = None
 
         self.level_ref.data_changed.emit()
