@@ -1,8 +1,8 @@
 from itertools import product
 from typing import Optional, Union
 
-from PySide2.QtCore import QSize, Qt, Signal, SignalInstance
-from PySide2.QtGui import QColor, QImage, QMouseEvent, QPaintEvent, QPainter
+from PySide2.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
+from PySide2.QtGui import QColor, QDrag, QImage, QMouseEvent, QPaintEvent, QPainter, QPixmap
 from PySide2.QtWidgets import QHBoxLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.Palette import bg_color_for_palette
@@ -35,6 +35,27 @@ class ObjectIcon(QWidget):
         self.set_object(level_object)
 
         self.draw_background_color = True
+
+    def mousePressEvent(self, event):
+        drag = QDrag(self)
+
+        mime_data = QMimeData()
+
+        object_bytes = bytearray()
+
+        if isinstance(self.object, LevelObject):
+            object_bytes.append(0)
+        else:
+            object_bytes.append(1)
+
+        object_bytes.extend(self.object.to_bytes())
+
+        mime_data.setData("application/level-object", object_bytes)
+
+        drag.setMimeData(mime_data)
+        drag.setPixmap(QPixmap.fromImage(self.image))
+
+        drag.exec_()
 
     def set_object(self, level_object: Union[LevelObject, EnemyObject]):
         self.object = level_object

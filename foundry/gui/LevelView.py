@@ -1,8 +1,20 @@
 from bisect import bisect_right
 from typing import List, Optional, Tuple, Union
 
-from PySide2.QtCore import QPoint, QRect, QSize
-from PySide2.QtGui import QBrush, QColor, QImage, QMouseEvent, QPaintEvent, QPainter, QPen, QWheelEvent, Qt
+from PySide2.QtCore import QMimeData, QPoint, QRect, QSize
+from PySide2.QtGui import (
+    QBrush,
+    QColor,
+    QDragEnterEvent,
+    QDragMoveEvent,
+    QImage,
+    QMouseEvent,
+    QPaintEvent,
+    QPainter,
+    QPen,
+    QWheelEvent,
+    Qt,
+)
 from PySide2.QtWidgets import QSizePolicy, QWidget
 
 from foundry import data_dir
@@ -38,6 +50,7 @@ class LevelView(QWidget):
         super(LevelView, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setAcceptDrops(True)
 
         self.level_ref: LevelRef = level
         self.level_ref.data_changed.connect(self.update)
@@ -71,6 +84,9 @@ class LevelView(QWidget):
         self.resize_obj_start_point = 0, 0
 
         self.resizing_happened = False
+
+        # dragged in from the object toolbar
+        self.currently_dragged_object: Optional[Union[LevelObject, EnemyObject]] = None
 
     def mousePressEvent(self, event: QMouseEvent):
         pressed_button = event.button()
@@ -560,6 +576,54 @@ class LevelView(QWidget):
 
         return self.grab()
 
+    def dragEnterEvent(self, event: QDragEnterEvent):
+        if event.mimeData().hasFormat("application/level-object"):
+            event.acceptProposedAction()
+
+    def dragMoveEvent(self, event: QDragMoveEvent):
+        x, y = self.to_level_point(*event.pos().toTuple())
+
+        level_object = self.get_object_from_mime_data(event.mimeData())
+
+        level_object.set_position(x, y)
+
+        self.currently_dragged_object = level_object
+
+        self.repaint()
+
+    def dragLeaveEvent(self, event):
+        self.currently_dragged_object = None
+
+        self.repaint()
+
+    @undoable
+    def dropEvent(self, event):
+        x, y = self.to_level_point(*event.pos().toTuple())
+
+        level_object = self.get_object_from_mime_data(event.mimeData())
+
+        if isinstance(level_object, LevelObject):
+            self.level_ref.level.add_object(level_object.domain, level_object.obj_index, x, y, None)
+        else:
+            self.level_ref.level.add_enemy(level_object.obj_index, x, y)
+
+        self.currently_dragged_object = None
+
+        self.level_ref.data_changed.emit()
+
+    def get_object_from_mime_data(self, mime_data: QMimeData) -> Union[LevelObject, EnemyObject]:
+        object_type, *object_bytes = mime_data.data("application/level-object")
+
+        if object_type == b"\x00":
+            domain = int.from_bytes(object_bytes[0], "big") >> 5
+            object_index = int.from_bytes(object_bytes[2], "big")
+
+            return self.level_ref.level.object_factory.from_properties(domain, object_index, 0, 0, None, 999)
+        else:
+            enemy_id = int.from_bytes(object_bytes[0], "big")
+
+            return self.level_ref.level.enemy_item_factory.from_properties(enemy_id, 0, 0)
+
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
 
@@ -609,6 +673,9 @@ class LevelView(QWidget):
                     )
 
         self.selection_square.draw(painter)
+
+        if self.currently_dragged_object is not None:
+            self.currently_dragged_object.draw(painter, self.block_length, self.transparency)
 
         if self.mario:
             self.draw_mario(painter)
