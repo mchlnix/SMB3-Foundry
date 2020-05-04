@@ -2,7 +2,7 @@ from typing import Optional
 
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtGui import QWindow, Qt
-from PySide2.QtWidgets import QGroupBox, QComboBox, QCheckBox, QLabel, QVBoxLayout, QFormLayout
+from PySide2.QtWidgets import QCheckBox, QComboBox, QFormLayout, QLabel, QTabWidget, QVBoxLayout, QWidget
 
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
@@ -109,6 +109,9 @@ class HeaderEditor(CustomDialog):
 
         main_layout = QVBoxLayout(self)
 
+        self.tab_widget = QTabWidget(self)
+        main_layout.addWidget(self.tab_widget)
+
         # level settings
 
         self.length_dropdown = QComboBox()
@@ -133,9 +136,7 @@ class HeaderEditor(CustomDialog):
         self.pipe_ends_level_cb = QCheckBox()
         self.pipe_ends_level_cb.clicked.connect(self.on_check_box)
 
-        self.level_group_box = QGroupBox("Level Settings")
-
-        form = QFormLayout(self.level_group_box)
+        form = QFormLayout()
 
         form.addRow("Level length: ", self.length_dropdown)
         form.addRow("Music: ", self.music_dropdown)
@@ -144,7 +145,10 @@ class HeaderEditor(CustomDialog):
         form.addRow("Is Vertical: ", self.level_is_vertical_cb)
         form.addRow("Pipe ends level: ", self.pipe_ends_level_cb)
 
-        main_layout.addWidget(self.level_group_box)
+        widget = QWidget()
+        widget.setLayout(form)
+
+        self.tab_widget.addTab(widget, "Level")
 
         # player settings
 
@@ -160,15 +164,16 @@ class HeaderEditor(CustomDialog):
         self.action_dropdown.addItems(ACTIONS)
         self.action_dropdown.activated.connect(self.on_combo)
 
-        self.player_group_box = QGroupBox("Player Settings")
-
-        form = QFormLayout(self.player_group_box)
+        form = QFormLayout()
 
         form.addRow("Starting X: ", self.x_position_dropdown)
         form.addRow("Starting Y: ", self.y_position_dropdown)
         form.addRow("Action: ", self.action_dropdown)
 
-        main_layout.addWidget(self.player_group_box)
+        widget = QWidget()
+        widget.setLayout(form)
+
+        self.tab_widget.addTab(widget, "Mario")
 
         # graphic settings
 
@@ -182,15 +187,16 @@ class HeaderEditor(CustomDialog):
         self.graphic_set_dropdown.addItems(GRAPHIC_SETS)
         self.graphic_set_dropdown.activated.connect(self.on_combo)
 
-        self.graphic_group_box = QGroupBox("Graphic Settings")
-
-        form = QFormLayout(self.graphic_group_box)
+        form = QFormLayout()
 
         form.addRow("Object Palette: ", self.object_palette_spinner)
         form.addRow("Enemy Palette: ", self.enemy_palette_spinner)
         form.addRow("Graphic Set: ", self.graphic_set_dropdown)
 
-        main_layout.addWidget(self.graphic_group_box)
+        widget = QWidget()
+        widget.setLayout(form)
+
+        self.tab_widget.addTab(widget, "Graphics")
 
         # next area settings
 
@@ -201,15 +207,16 @@ class HeaderEditor(CustomDialog):
         self.next_area_object_set_dropdown.addItems(OBJECT_SET_ITEMS)
         self.next_area_object_set_dropdown.activated.connect(self.on_combo)
 
-        self.next_area_group_box = QGroupBox("Next Area")
-
-        form = QFormLayout(self.next_area_group_box)
+        form = QFormLayout()
 
         form.addRow("Address of Objects: ", self.level_pointer_spinner)
         form.addRow("Address of Enemies: ", self.enemy_pointer_spinner)
         form.addRow("Object Set: ", self.next_area_object_set_dropdown)
 
-        main_layout.addWidget(self.next_area_group_box)
+        widget = QWidget()
+        widget.setLayout(form)
+
+        self.tab_widget.addTab(widget, "Jump Destination")
 
         self.header_bytes_label = QLabel()
 
