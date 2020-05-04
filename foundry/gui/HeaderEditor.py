@@ -2,12 +2,23 @@ from typing import Optional
 
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtGui import QWindow, Qt
-from PySide2.QtWidgets import QCheckBox, QComboBox, QFormLayout, QLabel, QTabWidget, QVBoxLayout, QWidget
+from PySide2.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
-from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
+from foundry.gui.LevelSelector import LevelSelector, OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
 from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
 
@@ -109,8 +120,8 @@ class HeaderEditor(CustomDialog):
 
         main_layout = QVBoxLayout(self)
 
-        self.tab_widget = QTabWidget(self)
-        main_layout.addWidget(self.tab_widget)
+        tab_widget = QTabWidget(self)
+        main_layout.addWidget(tab_widget)
 
         # level settings
 
@@ -130,25 +141,34 @@ class HeaderEditor(CustomDialog):
         self.v_scroll_direction_dropdown.addItems(SCROLL_DIRECTIONS)
         self.v_scroll_direction_dropdown.activated.connect(self.on_combo)
 
-        self.level_is_vertical_cb = QCheckBox()
+        self.level_is_vertical_cb = QCheckBox("Level is Vertical")
         self.level_is_vertical_cb.clicked.connect(self.on_check_box)
 
-        self.pipe_ends_level_cb = QCheckBox()
+        self.pipe_ends_level_cb = QCheckBox("Pipe ends Level")
         self.pipe_ends_level_cb.clicked.connect(self.on_check_box)
 
+        check_box_layout = QHBoxLayout()
+        check_box_layout.setContentsMargins(0, 0, 0, 0)
+        check_box_layout.addWidget(self.level_is_vertical_cb)
+        check_box_layout.addWidget(self.pipe_ends_level_cb)
+
+        check_box_widget = QWidget()
+        check_box_widget.setLayout(check_box_layout)
+
         form = QFormLayout()
+        form.setFormAlignment(Qt.AlignCenter)
 
         form.addRow("Level length: ", self.length_dropdown)
         form.addRow("Music: ", self.music_dropdown)
         form.addRow("Time: ", self.time_dropdown)
         form.addRow("Scroll direction: ", self.v_scroll_direction_dropdown)
-        form.addRow("Is Vertical: ", self.level_is_vertical_cb)
-        form.addRow("Pipe ends level: ", self.pipe_ends_level_cb)
+
+        form.addWidget(check_box_widget)
 
         widget = QWidget()
         widget.setLayout(form)
 
-        self.tab_widget.addTab(widget, "Level")
+        tab_widget.addTab(widget, "Level")
 
         # player settings
 
@@ -165,6 +185,7 @@ class HeaderEditor(CustomDialog):
         self.action_dropdown.activated.connect(self.on_combo)
 
         form = QFormLayout()
+        form.setFormAlignment(Qt.AlignCenter)
 
         form.addRow("Starting X: ", self.x_position_dropdown)
         form.addRow("Starting Y: ", self.y_position_dropdown)
@@ -173,7 +194,7 @@ class HeaderEditor(CustomDialog):
         widget = QWidget()
         widget.setLayout(form)
 
-        self.tab_widget.addTab(widget, "Mario")
+        tab_widget.addTab(widget, "Mario")
 
         # graphic settings
 
@@ -188,6 +209,7 @@ class HeaderEditor(CustomDialog):
         self.graphic_set_dropdown.activated.connect(self.on_combo)
 
         form = QFormLayout()
+        form.setFormAlignment(Qt.AlignCenter)
 
         form.addRow("Object Palette: ", self.object_palette_spinner)
         form.addRow("Enemy Palette: ", self.enemy_palette_spinner)
@@ -196,7 +218,7 @@ class HeaderEditor(CustomDialog):
         widget = QWidget()
         widget.setLayout(form)
 
-        self.tab_widget.addTab(widget, "Graphics")
+        tab_widget.addTab(widget, "Graphics")
 
         # next area settings
 
@@ -207,16 +229,23 @@ class HeaderEditor(CustomDialog):
         self.next_area_object_set_dropdown.addItems(OBJECT_SET_ITEMS)
         self.next_area_object_set_dropdown.activated.connect(self.on_combo)
 
+        level_select_button = QPushButton("Set from Level")
+        level_select_button.pressed.connect(self._set_jump_destination)
+
         form = QFormLayout()
+        form.setFormAlignment(Qt.AlignCenter)
 
         form.addRow("Address of Objects: ", self.level_pointer_spinner)
         form.addRow("Address of Enemies: ", self.enemy_pointer_spinner)
         form.addRow("Object Set: ", self.next_area_object_set_dropdown)
 
+        form.addRow(QLabel(""))
+        form.addRow(level_select_button)
+
         widget = QWidget()
         widget.setLayout(form)
 
-        self.tab_widget.addTab(widget, "Jump Destination")
+        tab_widget.addTab(widget, "Jump Destination")
 
         self.header_bytes_label = QLabel()
 
@@ -247,6 +276,24 @@ class HeaderEditor(CustomDialog):
         self.next_area_object_set_dropdown.setCurrentIndex(self.level.next_area_object_set)
 
         self.header_bytes_label.setText(" ".join(f"{number:0=#4X}"[2:] for number in self.level.header_bytes))
+
+    def _set_jump_destination(self):
+        level_selector = LevelSelector(self)
+        level_was_selected = level_selector.exec_() == QDialog.Accepted
+
+        if not level_was_selected:
+            return
+
+        self.next_area_object_set_dropdown.setCurrentIndex(level_selector.object_set)
+        self.level.next_area_object_set = level_selector.object_set
+
+        self.level_pointer_spinner.setValue(level_selector.object_data_offset)
+        self.level.next_area_objects = level_selector.object_data_offset
+
+        self.enemy_pointer_spinner.setValue(level_selector.enemy_data_offset)
+        self.level.next_area_enemies = level_selector.enemy_data_offset - 1
+
+        self.header_change.emit()
 
     def on_spin(self, _):
         if self.level is None:
