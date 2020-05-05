@@ -2,7 +2,7 @@ from itertools import product
 from typing import Optional, Union
 
 from PySide2.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
-from PySide2.QtGui import QColor, QDrag, QImage, QMouseEvent, QPaintEvent, QPainter, QPixmap
+from PySide2.QtGui import QColor, QDrag, QImage, QMouseEvent, QPaintEvent, QPainter
 from PySide2.QtWidgets import QHBoxLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.Palette import bg_color_for_palette
@@ -57,7 +57,6 @@ class ObjectIcon(QWidget):
         mime_data.setData("application/level-object", object_bytes)
 
         drag.setMimeData(mime_data)
-        drag.setPixmap(QPixmap.fromImage(self.image))
 
         if drag.exec_() == Qt.MoveAction:
             self.object_placed.emit()
