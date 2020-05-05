@@ -20,6 +20,7 @@ class ObjectToolBar(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         self.current_object_icon = ObjectIcon()
+        self.current_object_icon.max_size = self.current_object_icon.MAX_SIZE
 
         self.current_object_name = QLabel()
         self.current_object_name.setWordWrap(True)

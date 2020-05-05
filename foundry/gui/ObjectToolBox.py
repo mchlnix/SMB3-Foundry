@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 from PySide2.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
 from PySide2.QtGui import QColor, QDrag, QImage, QMouseEvent, QPaintEvent, QPainter
-from PySide2.QtWidgets import QHBoxLayout, QSizePolicy, QWidget
+from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.Palette import bg_color_for_palette
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -36,6 +36,8 @@ class ObjectIcon(QWidget):
         self.set_object(level_object)
 
         self.draw_background_color = True
+
+        self.max_size = self.MIN_SIZE
 
     def mouseMoveEvent(self, event):
         if not (event.buttons() & Qt.LeftButton):
@@ -81,10 +83,10 @@ class ObjectIcon(QWidget):
         return height
 
     def sizeHint(self):
-        if self.fits_inside(self.image.size() * 2, self.MAX_SIZE):
+        if self.fits_inside(self.image.size() * 2, self.max_size):
             return self.image.size() * 2
         else:
-            return self.MAX_SIZE
+            return self.max_size
 
     def paintEvent(self, event: QPaintEvent):
         if self.object is not None:
@@ -122,7 +124,7 @@ class ObjectToolBox(QWidget):
         self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.setContentsMargins(0, 10, 0, 15)
 
-        self._layout = QHBoxLayout(self)
+        self._layout = QGridLayout(self)
         self._layout.setAlignment(Qt.AlignLeft)
 
     def add_object(self, level_object: Union[EnemyItem, LevelObject], index: int = -1):
@@ -131,7 +133,10 @@ class ObjectToolBox(QWidget):
         icon.clicked.connect(self._on_icon_clicked)
         icon.object_placed.connect(lambda: self.object_placed.emit(icon))
 
-        self._layout.insertWidget(index, icon)
+        if index == -1:
+            index = self._layout.count()
+
+        self._layout.addWidget(icon, index % 2, index // 2)
 
     def add_from_object_set(self, object_set_index: int, graphic_set_index: int = -1):
         if graphic_set_index == -1:
@@ -192,15 +197,29 @@ class ObjectToolBox(QWidget):
 
     def index_of_object(self, level_object):
         for index in range(self._layout.count()):
-            if self._layout.itemAt(index).widget().object == level_object:
+            if self._layout.itemAtPosition(index % 2, index // 2).widget().object == level_object:
                 return index
         else:
             return -1
 
     def place_at_front(self, level_object):
-        index = self.index_of_object(level_object)
+        objects = []
 
-        if index != -1:
-            self._layout.takeAt(index).widget().deleteLater()
+        while True:
+            item = self._layout.takeAt(0)
 
-        self.add_object(level_object, 0)
+            if item is None:
+                break
+            else:
+                objects.append(item.widget().object)
+                item.widget().deleteLater()
+
+        if level_object in objects:
+            objects.remove(level_object)
+
+        objects.insert(0, level_object)
+
+        assert self._layout.count() == 0
+
+        for obj in objects:
+            self.add_object(obj)
