@@ -14,7 +14,7 @@ class TabbedToolBox(QTabWidget):
     def __init__(self, parent=None):
         super(TabbedToolBox, self).__init__(parent)
 
-        self.setTabPosition(self.South)
+        self.setTabPosition(self.East)
 
         self._recent_toolbox = ObjectToolBox(self)
         self._recent_toolbox.object_icon_clicked.connect(self.object_icon_clicked)
@@ -41,6 +41,18 @@ class TabbedToolBox(QTabWidget):
         self.addTab(self._enemies_scroll_area, "Enemies")
 
         self.show_level_object_tab()
+
+    def sizeHint(self):
+        size = super().sizeHint()
+        width = self._recent_toolbox.sizeHint().width()
+        width = max(width, self._objects_toolbox.sizeHint().width())
+        width = max(width, self._enemies_toolbox.sizeHint().width())
+
+        size.setWidth(
+            max(width, size.width()) + self.tabBar().width() + self._object_scroll_area.verticalScrollBar().width() + 5
+        )
+
+        return size
 
     def show_recent_tab(self):
         self.setCurrentIndex(self.indexOf(self._recent_toolbox))

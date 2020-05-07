@@ -83,7 +83,7 @@ class ObjectIcon(QWidget):
         return height
 
     def sizeHint(self):
-        if self.fits_inside(self.image.size() * 2, self.max_size):
+        if self.object is not None and self.fits_inside(self.image.size() * 2, self.max_size):
             return self.image.size() * 2
         else:
             return self.max_size
@@ -98,11 +98,11 @@ class ObjectIcon(QWidget):
             scaled_image = self.image.scaled(self.size(), aspectMode=Qt.KeepAspectRatio)
 
             x = (self.width() - scaled_image.width()) // 2
-            y = (event.rect().height() - scaled_image.height()) // 2
+            y = (self.height() - scaled_image.height()) // 2
 
             painter.drawImage(x, y, scaled_image)
 
-        super(ObjectIcon, self).paintEvent(event)
+        return super(ObjectIcon, self).paintEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         self.clicked.emit()
@@ -122,10 +122,11 @@ class ObjectToolBox(QWidget):
         super(ObjectToolBox, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.setContentsMargins(0, 10, 0, 15)
 
         self._layout = QGridLayout(self)
-        self._layout.setAlignment(Qt.AlignLeft)
+        self._layout.setAlignment(Qt.AlignCenter)
+
+        self._layout.setAlignment(Qt.AlignHCenter)
 
     def add_object(self, level_object: Union[EnemyItem, LevelObject], index: int = -1):
         icon = ObjectIcon(level_object)
@@ -136,7 +137,7 @@ class ObjectToolBox(QWidget):
         if index == -1:
             index = self._layout.count()
 
-        self._layout.addWidget(icon, index % 2, index // 2)
+        self._layout.addWidget(icon, index // 2, index % 2)
 
     def add_from_object_set(self, object_set_index: int, graphic_set_index: int = -1):
         if graphic_set_index == -1:
@@ -170,15 +171,7 @@ class ObjectToolBox(QWidget):
             self.add_object(enemy_item)
 
     def clear(self):
-        item = self._layout.takeAt(0)
-
-        while True:
-            if item is None:
-                break
-            else:
-                item.widget().deleteLater()
-
-            item = self._layout.takeAt(0)
+        self._extract_objects()
 
     def _on_icon_clicked(self):
         self.object_icon_clicked.emit(self.sender())
@@ -202,7 +195,7 @@ class ObjectToolBox(QWidget):
         else:
             return -1
 
-    def place_at_front(self, level_object):
+    def _extract_objects(self):
         objects = []
 
         while True:
@@ -213,6 +206,11 @@ class ObjectToolBox(QWidget):
             else:
                 objects.append(item.widget().object)
                 item.widget().deleteLater()
+
+        return objects
+
+    def place_at_front(self, level_object):
+        objects = self._extract_objects()
 
         if level_object in objects:
             objects.remove(level_object)

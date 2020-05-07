@@ -274,15 +274,9 @@ class MainWindow(QMainWindow):
         object_toolbar.setFloatable(False)
 
         object_toolbar.addWidget(self.object_toolbar)
-        object_toolbar.setAllowedAreas(Qt.TopToolBarArea | Qt.BottomToolBarArea)
+        object_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
 
-        self.object_toolbar.on_toolbar_area_changed(self.toolBarArea(object_toolbar))
-
-        object_toolbar.topLevelChanged.connect(
-            lambda _: self.object_toolbar.on_toolbar_area_changed(self.toolBarArea(object_toolbar))
-        )
-
-        self.addToolBar(Qt.BottomToolBarArea, object_toolbar)
+        self.addToolBar(Qt.LeftToolBarArea, object_toolbar)
 
         self.status_bar = ObjectStatusBar(self, self.level_ref)
         self.setStatusBar(self.status_bar)
