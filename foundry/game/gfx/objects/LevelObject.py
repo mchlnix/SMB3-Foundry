@@ -791,7 +791,13 @@ class LevelObject(ObjectLike):
 
         data.append((self.domain << 5) | y_position)
         data.append(x_position)
-        data.append(self.obj_index)
+
+        if not self.is_4byte and not self.is_single_block:
+            third_byte = (self.obj_index & 0xF0) + self.length
+        else:
+            third_byte = self.obj_index
+
+        data.append(third_byte)
 
         if self.is_4byte:
             data.append(self.length)

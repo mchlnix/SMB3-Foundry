@@ -115,3 +115,28 @@ def test_ending_object(object_set, graphics_set, qtbot):
     ending_object = object_factory.from_properties(0x2, 0x09, 0, 0, None, 0)
 
     _test_object_against_reference(ending_object, qtbot)
+
+
+def test_no_change_to_bytes():
+    object_factory = LevelObjectFactory(1, 1, 0, [], False)
+
+    cloud_bytes = bytearray([0x00, 0x00, 0xE5])
+
+    cloud_object = object_factory.from_data(cloud_bytes, 0)
+
+    assert cloud_object.to_bytes() == cloud_bytes
+
+
+@pytest.mark.parametrize(
+    "attribute, increase", zip(["domain", "obj_index", "length", "x_position", "y_position"], [1, 0x10, 1, 1, 1])
+)
+def test_change_attribute_to_bytes(attribute, increase):
+    object_factory = LevelObjectFactory(1, 1, 0, [], False)
+
+    cloud_object = object_factory.from_properties(0x00, 0xE0, 0, 0, None, 0)
+
+    initial_bytes = cloud_object.to_bytes()
+
+    setattr(cloud_object, attribute, getattr(cloud_object, attribute) + increase)
+
+    assert cloud_object.to_bytes() != initial_bytes
