@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QApplication, QComboBox, QCompleter, QWidget
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon
+from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon_object
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE, MIN_DOMAIN
@@ -105,7 +105,9 @@ class ObjectDropdown(QComboBox):
         if level_object.description in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
             return
 
-        icon = QIcon(QPixmap(self._resize_bitmap(get_minimal_icon(level_object))))
+        level_object = get_minimal_icon_object(level_object)
+
+        icon = QIcon(QPixmap(self._resize_bitmap(level_object.as_image())))
 
         self.addItem(icon, level_object.description, level_object)
 

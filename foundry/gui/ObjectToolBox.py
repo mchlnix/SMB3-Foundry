@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
 from foundry.game.gfx.Palette import bg_color_for_palette
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon
+from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon_object
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 from smb3parse.objects.enemy_item import EnemyItem
@@ -64,11 +64,11 @@ class ObjectIcon(QWidget):
             self.object_placed.emit()
 
     def set_object(self, level_object: Union[LevelObject, EnemyObject]):
-        self.object = level_object
+        if level_object is not None:
+            self.object = get_minimal_icon_object(level_object)
 
-        if self.object is not None:
-            self.image = get_minimal_icon(level_object)
-            self.setToolTip(level_object.description)
+            self.image = self.object.as_image()
+            self.setToolTip(self.object.description)
         else:
             self.image = QImage()
             self.setToolTip("")

@@ -64,9 +64,13 @@ SCREEN_HEIGHT = 15
 SCREEN_WIDTH = 16
 
 
-def get_minimal_icon(level_object: Union["LevelObject", EnemyObject]) -> QImage:
+def get_minimal_icon_object(level_object: Union["LevelObject", EnemyObject]) -> Union["LevelObject", EnemyObject]:
+    """
+    Returns the object with a length, so that every block is rendered. E. g. clouds with length 0, don't have a face.
+    """
     if isinstance(level_object, EnemyObject):
-        return level_object.as_image()
+        return level_object
+
     while (
         any(block not in level_object.rendered_blocks for block in level_object.blocks) and level_object.length < 0x10
     ):
@@ -77,7 +81,7 @@ def get_minimal_icon(level_object: Union["LevelObject", EnemyObject]) -> QImage:
 
         level_object.render()
 
-    return level_object.as_image()
+    return level_object
 
 
 class LevelObject(ObjectLike):
