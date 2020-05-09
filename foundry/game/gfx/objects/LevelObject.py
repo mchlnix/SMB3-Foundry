@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from PySide2.QtCore import QRect, QSize
 from PySide2.QtGui import QColor, QImage, QPainter
@@ -64,10 +64,16 @@ SCREEN_HEIGHT = 15
 SCREEN_WIDTH = 16
 
 
-def get_minimal_icon_object(level_object: Union["LevelObject", EnemyObject]) -> Union["LevelObject", EnemyObject]:
+def get_minimal_icon_object(
+    level_object: Union["LevelObject", EnemyObject]
+) -> Optional[Union["LevelObject", EnemyObject]]:
     """
     Returns the object with a length, so that every block is rendered. E. g. clouds with length 0, don't have a face.
     """
+
+    if not isinstance(level_object, (LevelObject, EnemyObject)):
+        return None
+
     if isinstance(level_object, EnemyObject):
         return level_object
 
@@ -147,16 +153,9 @@ class LevelObject(ObjectLike):
             self.x_position %= SCREEN_WIDTH
 
         # describes what object it is
+        self._obj_index = 0x00
+
         self.obj_index = data[2]
-
-        self.is_single_block = self.obj_index <= 0x0F
-
-        domain_offset = self.domain * 0x1F
-
-        if self.is_single_block:
-            self.type = self.obj_index + domain_offset
-        else:
-            self.type = (self.obj_index >> 4) + domain_offset + 16 - 1
 
         object_data = self.object_set.get_definition_of(self.type)
 
@@ -177,6 +176,7 @@ class LevelObject(ObjectLike):
         elif not self.is_4byte and len(data) == 4:
             del self.data[3]
 
+        self._length = 0
         self.secondary_length = 0
 
         self._calculate_lengths()
@@ -185,11 +185,40 @@ class LevelObject(ObjectLike):
 
         self._render()
 
+    @property
+    def obj_index(self):
+        return self._obj_index
+
+    @obj_index.setter
+    def obj_index(self, value):
+        self._obj_index = value
+
+        self.is_single_block = self.obj_index <= 0x0F
+
+        domain_offset = self.domain * 0x1F
+
+        if self.is_single_block:
+            self.type = self.obj_index + domain_offset
+        else:
+            self.type = (self.obj_index >> 4) + domain_offset + 16 - 1
+
+    @property
+    def length(self):
+        return self._length
+
+    @length.setter
+    def length(self, value):
+        if not self.is_4byte and not self.is_single_block:
+            self._obj_index &= 0xF0
+            self._obj_index |= value & 0x0F
+
+        self._length = value
+
     def _calculate_lengths(self):
         if self.is_single_block:
-            self.length = 1
+            self._length = 1
         else:
-            self.length = self.obj_index & 0b0000_1111
+            self._length = self.obj_index & 0b0000_1111
 
         if self.is_4byte:
             self.secondary_length = self.length

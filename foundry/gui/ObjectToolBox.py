@@ -190,7 +190,7 @@ class ObjectToolBox(QWidget):
 
     def index_of_object(self, level_object):
         for index in range(self._layout.count()):
-            if self._layout.itemAtPosition(index % 2, index // 2).widget().object == level_object:
+            if self._layout.itemAtPosition(index // 2, index % 2).widget().object == level_object:
                 return index
         else:
             return -1

@@ -501,7 +501,7 @@ class LevelView(QWidget):
 
         self.level_ref.create_enemy_at(level_x, level_y)
 
-    def add_object(self, domain: int, obj_index: int, x: int, y: int, length: int, index: int):
+    def add_object(self, domain: int, obj_index: int, x: int, y: int, length: int, index: int = -1):
         level_x, level_y = self.to_level_point(x, y)
 
         self.level_ref.add_object(domain, obj_index, level_x, level_y, length, index)

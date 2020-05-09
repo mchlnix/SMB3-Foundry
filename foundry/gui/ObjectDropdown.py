@@ -78,12 +78,16 @@ class ObjectDropdown(QComboBox):
                     domain, static_object_id, x=0, y=0, length=1, index=0
                 )
 
+                level_object = get_minimal_icon_object(level_object)
+
                 self._add_item(level_object)
 
             for expanding_object_id in range(0x10, MAX_ID_VALUE, 0x10):
                 level_object = self._object_factory.from_properties(
                     domain, expanding_object_id, x=0, y=0, length=1, index=0
                 )
+
+                level_object = get_minimal_icon_object(level_object)
 
                 self._add_item(level_object)
 
@@ -104,8 +108,6 @@ class ObjectDropdown(QComboBox):
 
         if level_object.description in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
             return
-
-        level_object = get_minimal_icon_object(level_object)
 
         icon = QIcon(QPixmap(self._resize_bitmap(level_object.as_image())))
 
