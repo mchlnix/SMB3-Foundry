@@ -42,7 +42,10 @@ class AboutDialog(CustomDialog):
             )
         )
         text_layout.addWidget(
-            LinkLabel(self, f'<a href="{LINK_BLUEFINCH}">BlueFinch</a> and ZacMario for testing and sanity checking')
+            LinkLabel(
+                self,
+                f'<a href="{LINK_BLUEFINCH}">BlueFinch</a>, ZacMario and SKJyannick for testing and sanity checking',
+            )
         )
 
         main_layout.addLayout(text_layout)
