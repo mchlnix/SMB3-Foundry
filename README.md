@@ -1,10 +1,10 @@
-# Port/Reimplementation of SMB3 Workshop by hukka
+# A modern Super Mario Bros. 3 Level Editor
 
 [![Build Status](https://travis-ci.org/mchlnix/SMB3-Foundry.svg?branch=master)](https://travis-ci.org/mchlnix/SMB3-Foundry)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-[![YouTube Video of Version 0.9](https://img.youtube.com/vi/NSQnIYQT5Go/0.jpg)](https://www.youtube.com/watch?v=NSQnIYQT5Go)  
-YouTube Video of Version 0.9, check [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) for more current versions
+[![YouTube Video of Version 1.0](https://i.imgur.com/voqocoG.png)](https://youtu.be/7_22cAffMmE)
+YouTube Video of Version 1.0, check [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) for more latest versions
 
 ## Features right now
 
@@ -21,6 +21,8 @@ YouTube Video of Version 0.9, check [Releases](https://github.com/mchlnix/SMB3-F
  - Instant Header Editing
  - Jump (Level pointer) editing
  - Make screenshots of your Level
+ - Play any level directly, without having to save it to ROM
+ - Drag and Drop objects into the level
 
 ## To come
 
