@@ -11,7 +11,7 @@ from PySide2.QtWidgets import (
     QVBoxLayout,
 )
 
-from foundry import icon_dir
+from foundry import icon, icon_dir
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings
 
@@ -49,7 +49,7 @@ class SettingsDialog(CustomDialog):
 
         self.emulator_command_input.textChanged.connect(self._update_settings)
 
-        self.emulator_path_button = QPushButton(QIcon(str(icon_dir / "folder.svg")), "", self)
+        self.emulator_path_button = QPushButton(icon("folder.svg"), "", self)
         self.emulator_path_button.pressed.connect(self._get_emulator_path)
 
         self.command_arguments_input = QLineEdit(self)

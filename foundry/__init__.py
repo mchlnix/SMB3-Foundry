@@ -4,7 +4,7 @@ import urllib.error
 from pathlib import Path
 
 from PySide2.QtCore import QUrl
-from PySide2.QtGui import QDesktopServices
+from PySide2.QtGui import QDesktopServices, QIcon
 
 root_dir = Path(__file__).parent.parent
 
@@ -47,3 +47,15 @@ def get_latest_version_name(timeout: int = 10) -> str:
         return json.loads(data)[0]["tag_name"].strip()
     except (KeyError, IndexError, json.JSONDecodeError):
         raise ValueError("Parsing the received information failed.")
+
+
+def icon(icon_name: str):
+    icon_path = icon_dir / icon_name
+    data_path = data_dir / icon_name
+
+    if icon_path.exists():
+        return QIcon(str(icon_path))
+    elif data_path.exists():
+        return QIcon(str(data_path))
+    else:
+        raise FileNotFoundError(icon_path)

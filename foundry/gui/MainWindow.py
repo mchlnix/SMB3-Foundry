@@ -1,7 +1,12 @@
 import os
+import pathlib
+import shlex
+import subprocess
+import tempfile
 from typing import Tuple, Union
 
-from PySide2.QtGui import QCloseEvent, QIcon, QKeySequence, QMouseEvent, Qt
+from PySide2.QtCore import QSize
+from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
 from PySide2.QtWidgets import (
     QAction,
     QDialog,
@@ -22,10 +27,9 @@ from foundry import (
     feature_video_link,
     get_current_version_name,
     get_latest_version_name,
-    icon_dir,
+    icon,
     open_url,
     releases_link,
-    root_dir,
 )
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -50,6 +54,9 @@ from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.SettingsDialog import show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.settings import SETTINGS, save_settings
+from smb3parse.constants import TILE_LEVEL_1
+from smb3parse.levels.world_map import WorldMap as SMB3World
+from smb3parse.util.rom import Rom as SMB3Rom
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
@@ -90,7 +97,7 @@ class MainWindow(QMainWindow):
     def __init__(self, path_to_rom=""):
         super(MainWindow, self).__init__()
 
-        self.setWindowIcon(QIcon(str(root_dir.joinpath("data", "foundry.ico"))))
+        self.setWindowIcon(icon("foundry.ico"))
 
         file_menu = QMenu("File")
 
@@ -313,10 +320,10 @@ class MainWindow(QMainWindow):
 
         splitter.setChildrenCollapsible(False)
 
-        level_toolbar = QToolBar(self)
+        level_toolbar = QToolBar("Level Info Toolbar", self)
         level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
         level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        level_toolbar.setOrientation(Qt.Vertical)
+        level_toolbar.setOrientation(Qt.Horizontal)
         level_toolbar.setFloatable(False)
 
         level_toolbar.addWidget(self.spinner_panel)
@@ -331,7 +338,7 @@ class MainWindow(QMainWindow):
         self.object_toolbar = ObjectToolBar(self)
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
-        object_toolbar = QToolBar(self)
+        object_toolbar = QToolBar("Object Toolbar", self)
         object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
         object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         object_toolbar.setFloatable(False)
@@ -340,6 +347,30 @@ class MainWindow(QMainWindow):
         object_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
 
         self.addToolBar(Qt.LeftToolBarArea, object_toolbar)
+
+        menu_toolbar = QToolBar("Menu Toolbar", self)
+        menu_toolbar.setOrientation(Qt.Horizontal)
+        menu_toolbar.setIconSize(QSize(20, 20))
+
+        menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(show_settings)
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
+        menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(icon("rotate-ccw.svg"), "Undo Action")
+        menu_toolbar.addAction(icon("rotate-cw.svg"), "Redo Action")
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(icon("play-circle.svg"), "Play Level").triggered.connect(self.on_play)
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
+        menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In").triggered.connect(self.level_view.zoom_in)
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(icon("tool.svg"), "Edit Level Header").triggered.connect(self.on_header_editor)
+        menu_toolbar.addAction(icon("arrow-right-circle.svg"), "Go to Jump Destination")
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(icon("help-circle.svg"), "What's this?")
+
+        self.addToolBar(Qt.TopToolBarArea, menu_toolbar)
 
         self.status_bar = ObjectStatusBar(self, self.level_ref)
         self.setStatusBar(self.status_bar)
@@ -365,6 +396,84 @@ class MainWindow(QMainWindow):
             self.deleteLater()
 
         self.showMaximized()
+
+    def on_play(self):
+        """
+        Copies the ROM, including the current level, to a temporary directory, saves the current level as level 1-1 and
+        opens the rom in an emulator.
+        """
+        temp_dir = pathlib.Path(tempfile.gettempdir()) / "smb3foundry"
+        temp_dir.mkdir(parents=True, exist_ok=True)
+
+        path_to_temp_rom = temp_dir / "instaplay.rom"
+
+        ROM().save_to(path_to_temp_rom)
+
+        if not self._put_current_level_to_level_1_1(path_to_temp_rom):
+            return
+
+        arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
+        arguments = shlex.split(arguments, posix=False)
+
+        emu_path = pathlib.Path(SETTINGS["instaplay_emulator"])
+
+        if emu_path.is_absolute():
+            if emu_path.exists():
+                emulator = str(emu_path)
+            else:
+                QMessageBox.critical(
+                    self, "Emulator not found", f"Check it under File > Settings.\nFile {emu_path} not found."
+                )
+                return
+        else:
+            emulator = SETTINGS["instaplay_emulator"]
+
+        try:
+            subprocess.run([emulator, *arguments])
+        except Exception as e:
+            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
+
+    def _put_current_level_to_level_1_1(self, path_to_rom) -> bool:
+        with open(path_to_rom, "rb") as smb3_rom:
+            data = smb3_rom.read()
+
+        rom = SMB3Rom(bytearray(data))
+
+        # load world-1 data
+        world_1 = SMB3World.from_world_number(rom, 1)
+
+        # find position of "level 1" tile in world map
+        for position in world_1.gen_positions():
+            if position.tile() == TILE_LEVEL_1:
+                break
+        else:
+            QMessageBox.critical(
+                self, "Couldn't place level", "Could not find a level 1 tile in World 1 to put your level at."
+            )
+            return False
+
+        if not self.level_ref.level.attached_to_rom:
+            QMessageBox.critical(
+                self,
+                "Couldn't place level",
+                "The Level is not part of the rom yet (M3L?). Try saving it into the ROM first.",
+            )
+            return False
+
+        # write level and enemy data of current level
+        (layout_address, layout_bytes), (enemy_address, enemy_bytes) = self.level_ref.level.to_bytes()
+        rom.write(layout_address, layout_bytes)
+        rom.write(enemy_address, enemy_bytes)
+
+        # replace level information with that of current level
+        object_set_number = self.level_ref.object_set_number
+
+        world_1.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
+
+        # save rom
+        rom.save_to(path_to_rom)
+
+        return True
 
     def on_screenshot(self, _) -> bool:
         if self.level_view is None:
@@ -551,7 +660,7 @@ class MainWindow(QMainWindow):
         if current_version != latest_version:
             latest_release_url = f"{releases_link}/tag/{latest_version}"
 
-            go_to_github_button = QPushButton(QIcon(str(icon_dir / "external-link.svg")), "Go to latest release")
+            go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest release")
             go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
 
             info_box = QMessageBox(
