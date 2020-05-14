@@ -228,17 +228,17 @@ class LevelObject(ObjectLike):
         self._render()
 
     def _render(self):
+        self.rendered_base_x = base_x = self.x_position
+        self.rendered_base_y = base_y = self.y_position
+
+        self.rendered_width = new_width = self.width
+        self.rendered_height = new_height = self.height
+
         try:
             self.index_in_level = self.objects_ref.index(self)
         except ValueError:
             # the object has not been added yet, so stick with the one given in the constructor
             pass
-
-        base_x = self.x_position
-        base_y = self.y_position
-
-        new_width = self.width
-        new_height = self.height
 
         blocks_to_draw = []
 
