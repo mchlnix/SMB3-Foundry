@@ -41,6 +41,14 @@ for i in range(COLOR_COUNT):
 
 
 def load_palette(object_set: int, palette_group: int):
+    """
+    Basically does, what the Setup_PalData routine does.
+
+    :param object_set: Level_Tileset in the disassembly.
+    :param palette_group: Palette_By_Tileset. Defined in the level header.
+
+    :return: A list of 4 groups of 4 colors.
+    """
     rom = ROM()
 
     palette_offset_position = PALETTE_OFFSET_LIST + (object_set * PALETTE_OFFSET_SIZE)
