@@ -38,7 +38,7 @@ class LevelLike(LevelBase, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def draw(self, dc, block_length, transparency):
+    def draw(self, dc, block_length, transparency, show_expansion):
         pass
 
     @abc.abstractmethod

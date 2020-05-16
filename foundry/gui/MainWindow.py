@@ -50,8 +50,9 @@ ID_GRID_LINES = 501
 ID_TRANSPARENCY = 508
 ID_JUMPS = 509
 ID_MARIO = 510
+ID_RESIZE_TYPE = 511
 
-CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES, ID_JUMPS, ID_MARIO]
+CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES, ID_JUMPS, ID_MARIO, ID_RESIZE_TYPE]
 
 ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
 
@@ -170,6 +171,10 @@ class MainWindow(QMainWindow):
         self._show_grid_action = view_menu.addAction("&Grid lines")
         self._show_grid_action.setProperty(ID_PROP, ID_GRID_LINES)
         self._show_grid_action.setCheckable(True)
+
+        self._show_resize_action = view_menu.addAction("Resize Type")
+        self._show_resize_action.setProperty(ID_PROP, ID_RESIZE_TYPE)
+        self._show_resize_action.setCheckable(True)
 
         self._show_transparent_blocks_action = view_menu.addAction("&Block Transparency")
         self._show_transparent_blocks_action.setProperty(ID_PROP, ID_TRANSPARENCY)
@@ -573,6 +578,8 @@ class MainWindow(QMainWindow):
             self.level_view.jumps = checked
         elif item_id == ID_MARIO:
             self.level_view.mario = checked
+        elif item_id == ID_RESIZE_TYPE:
+            self.level_view.show_expansion = checked
 
     @undoable
     def on_spin(self, _):

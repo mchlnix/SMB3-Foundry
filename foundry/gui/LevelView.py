@@ -60,6 +60,7 @@ class LevelView(QWidget):
         self.grid_lines = False
         self.jumps = False
         self.transparency = True
+        self.show_expansion = False
         self.mario = True
 
         self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), width=1)
@@ -632,7 +633,7 @@ class LevelView(QWidget):
         if self.level_ref is None:
             return
 
-        self.level_ref.draw(painter, self.block_length, self.transparency)
+        self.level_ref.draw(painter, self.block_length, self.transparency, self.show_expansion)
 
         if self.grid_lines:
             panel_width, panel_height = self.size().toTuple()

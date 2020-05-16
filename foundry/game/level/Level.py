@@ -14,6 +14,7 @@ from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from foundry.gui.UndoStack import UndoStack
@@ -554,7 +555,7 @@ class Level(LevelLike):
 
         return intersecting_objects
 
-    def draw(self, painter: QPainter, block_length: int, transparency: bool):
+    def draw(self, painter: QPainter, block_length: int, transparency: bool, show_expansion: bool):
         bg_color = QColor(*bg_color_for_object_set(self.object_set_number, self.header.object_palette_index))
 
         width, height = self.size
@@ -573,15 +574,23 @@ class Level(LevelLike):
             level_object.draw(painter, block_length, transparency)
 
             if level_object.selected:
-                x, y = level_object.get_rect().topLeft().toTuple()
-                w, h = level_object.get_rect().size().toTuple()
+                painter.drawRect(level_object.get_rect(block_length))
 
-                x *= block_length
-                w *= block_length
-                y *= block_length
-                h *= block_length
+            if show_expansion:
+                painter.save()
 
-                painter.drawRect(QRect(x, y, w, h))
+                painter.setPen(Qt.NoPen)
+
+                if level_object.expands() == EXPANDS_BOTH:
+                    painter.setBrush(QColor(0xFF, 0, 0xFF, 0x80))
+                elif level_object.expands() == EXPANDS_HORIZ:
+                    painter.setBrush(QColor(0xFF, 0, 0, 0x80))
+                elif level_object.expands() == EXPANDS_VERT:
+                    painter.setBrush(QColor(0, 0, 0xFF, 0x80))
+
+                painter.drawRect(level_object.get_rect(block_length))
+
+                painter.restore()
 
     def _draw_floor(self, painter: QPainter, block_length: int):
         floor_level = 26
