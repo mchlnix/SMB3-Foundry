@@ -2,9 +2,14 @@ import json
 import pathlib
 from collections import defaultdict
 
+RESIZE_LEFT_CLICK = "LMB"
+RESIZE_RIGHT_CLICK = "RMB"
+
 SETTINGS = defaultdict(str)
 SETTINGS["instaplay_emulator"] = "fceux"
 SETTINGS["instaplay_arguments"] = "%f"
+
+SETTINGS["resize_method"] = RESIZE_LEFT_CLICK
 
 default_settings_dir = pathlib.Path.home() / ".smb3foundry"
 default_settings_dir.mkdir(parents=True, exist_ok=True)
