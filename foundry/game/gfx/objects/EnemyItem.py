@@ -17,6 +17,7 @@ class EnemyObject(ObjectLike):
         super(EnemyObject, self).__init__()
 
         self.is_4byte = False
+        self.is_single_block = True
         self.length = 0
 
         self.obj_index = data[0]
