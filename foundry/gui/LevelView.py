@@ -15,17 +15,19 @@ from PySide2.QtGui import (
     QWheelEvent,
     Qt,
 )
-from PySide2.QtWidgets import QSizePolicy, QWidget
+from PySide2.QtWidgets import QApplication, QSizePolicy, QWidget
 
 from foundry import data_dir
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.SelectionSquare import SelectionSquare
+from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
@@ -50,6 +52,7 @@ class LevelView(QWidget):
         super(LevelView, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setMouseTracking(True)
         self.setAcceptDrops(True)
 
         self.level_ref: LevelRef = level
@@ -97,9 +100,12 @@ class LevelView(QWidget):
         elif pressed_button == Qt.RightButton:
             self.on_right_mouse_button_down(event)
         else:
-            super(LevelView, self).mousePressEvent(event)
+            return super(LevelView, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
+        if SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK:
+            self.set_cursor_for_position(event)
+
         if self.mouse_mode == MODE_DRAG:
             self.dragging(event)
         elif self.mouse_mode == MODE_RESIZE:
@@ -110,8 +116,53 @@ class LevelView(QWidget):
             self.level_ref.selected_objects = previously_selected_objects
         elif self.selection_square.active:
             self.set_selection_end(event.pos())
-        else:
-            super(LevelView, self).mouseMoveEvent(event)
+
+        return super(LevelView, self).mouseMoveEvent(event)
+
+    def set_cursor_for_position(self, event: QMouseEvent):
+        level_object = self.object_at(*event.pos().toTuple())
+
+        if level_object is not None:
+            is_resizable = not level_object.is_single_block
+
+            edges = self.cursor_on_edge_of_object(level_object, event.pos())
+
+            if is_resizable and edges:
+                if edges == Qt.RightEdge and level_object.expands() & EXPANDS_HORIZ:
+                    cursor = Qt.SizeHorCursor
+                elif edges == Qt.BottomEdge and level_object.expands() & EXPANDS_VERT:
+                    cursor = Qt.SizeVerCursor
+                elif (level_object.expands() & EXPANDS_BOTH) == EXPANDS_BOTH:
+                    cursor = Qt.SizeFDiagCursor
+                else:
+                    return
+
+                if QApplication.overrideCursor() is None:
+                    QApplication.setOverrideCursor(cursor)
+                elif QApplication.overrideCursor() != cursor:
+                    QApplication.changeOverrideCursor(cursor)
+
+                return
+
+        if self.mouse_mode != MODE_RESIZE:
+            QApplication.restoreOverrideCursor()
+
+    def cursor_on_edge_of_object(self, level_object: Union[LevelObject, EnemyObject], pos: QPoint, edge_width: int = 4):
+        right = (level_object.get_rect().left() + level_object.get_rect().width()) * self.block_length
+        bottom = (level_object.get_rect().top() + level_object.get_rect().height()) * self.block_length
+
+        on_right_edge = pos.x() in range(right - edge_width, right)
+        on_bottom_edge = pos.y() in range(bottom - edge_width, bottom)
+
+        edges = 0
+
+        if on_right_edge:
+            edges |= Qt.RightEdge
+
+        if on_bottom_edge:
+            edges |= Qt.BottomEdge
+
+        return edges
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         released_button = event.button()
@@ -178,15 +229,21 @@ class LevelView(QWidget):
 
         self.last_mouse_position = level_x, level_y
 
-        if self.select_objects_on_click(event):
-            self.mouse_mode = MODE_RESIZE
+        if self.select_objects_on_click(event) and SETTINGS["resize_mode"] == RESIZE_RIGHT_CLICK:
+            self.try_start_resize(event)
 
-            self.resize_mouse_start_x = level_x
+    def try_start_resize(self, event: QMouseEvent):
+        x, y = event.pos().toTuple()
+        level_x, level_y = self.to_level_point(x, y)
 
-            obj = self.object_at(x, y)
+        self.mouse_mode = MODE_RESIZE
 
-            if obj is not None:
-                self.resize_obj_start_point = obj.x_position, obj.y_position
+        self.resize_mouse_start_x = level_x
+
+        obj = self.object_at(x, y)
+
+        if obj is not None:
+            self.resize_obj_start_point = obj.x_position, obj.y_position
 
     def resizing(self, event: QMouseEvent):
         self.resizing_happened = True
@@ -243,16 +300,16 @@ class LevelView(QWidget):
         self.mouse_mode = MODE_FREE
 
     def on_left_mouse_button_down(self, event: QMouseEvent):
-        if self.mouse_mode == MODE_RESIZE:
-            return
-
         if self.select_objects_on_click(event):
             x, y = event.pos().toTuple()
 
             obj = self.object_at(x, y)
 
             if obj is not None:
-                self.drag_start_point = obj.x_position, obj.y_position
+                if SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK and self.cursor_on_edge_of_object(obj, event.pos()):
+                    self.try_start_resize(event)
+                else:
+                    self.drag_start_point = obj.x_position, obj.y_position
         else:
             self.start_selection_square(event.pos())
 
@@ -476,7 +533,7 @@ class LevelView(QWidget):
     def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
         level_x, level_y = self.to_level_point(x, y)
 
-        return self.level_ref.object_at(level_x, level_y)
+        return self.level_ref.level.object_at(level_x, level_y)
 
     def to_level_point(self, screen_x: int, screen_y: int) -> Tuple[int, int]:
         level_x = screen_x // self.block_length
