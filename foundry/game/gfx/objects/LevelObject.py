@@ -29,7 +29,7 @@ from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
 
 SKY = 0
 GROUND = 27
@@ -687,6 +687,20 @@ class LevelObject(ObjectLike):
 
     def get_position(self):
         return self.x_position, self.y_position
+
+    def expands(self):
+        expands = EXPANDS_NOT
+
+        if self.is_4byte:
+            expands |= EXPANDS_BOTH
+
+        if not self.is_single_block:
+            if self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND]:
+                expands |= EXPANDS_HORIZ
+            elif self.orientation in [VERTICAL]:
+                expands |= EXPANDS_VERT
+
+        return expands
 
     def resize_to(self, x: int, y: int):
         if not self.is_single_block:

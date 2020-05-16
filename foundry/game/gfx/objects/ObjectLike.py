@@ -2,6 +2,11 @@ import abc
 
 from PySide2.QtCore import QRect
 
+EXPANDS_NOT = 0b00
+EXPANDS_HORIZ = 0b01
+EXPANDS_VERT = 0b10
+EXPANDS_BOTH = EXPANDS_HORIZ | EXPANDS_VERT
+
 
 class ObjectLike(abc.ABC):
     obj_index: int
@@ -73,3 +78,6 @@ class ObjectLike(abc.ABC):
     @abc.abstractmethod
     def to_bytes(self):
         pass
+
+    def expands(self):
+        return EXPANDS_NOT
