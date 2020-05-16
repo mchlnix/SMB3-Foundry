@@ -1,10 +1,14 @@
 import abc
 
+from PySide2.QtCore import QRect
+
 
 class ObjectLike(abc.ABC):
     obj_index: int
     domain: int
     description: str
+
+    rect: QRect
 
     is_4byte: bool
 
@@ -44,9 +48,19 @@ class ObjectLike(abc.ABC):
     def point_in(self, x, y):
         pass
 
-    @abc.abstractmethod
-    def get_rect(self):
-        pass
+    def get_rect(self, block_length=1) -> QRect:
+        if block_length != 1:
+            x, y = self.rect.topLeft().toTuple()
+            w, h = self.rect.size().toTuple()
+
+            x *= block_length
+            w *= block_length
+            y *= block_length
+            h *= block_length
+
+            return QRect(x, y, w, h)
+        else:
+            return self.rect
 
     @abc.abstractmethod
     def change_type(self, new_type):

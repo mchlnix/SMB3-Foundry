@@ -774,9 +774,6 @@ class LevelObject(ObjectLike):
             ("Ending", ENDING_STR[self.ending]),
         ]
 
-    def get_rect(self) -> QRect:
-        return self.rect
-
     def display_size(self, zoom_factor: int = 1):
         return QSize(self.rendered_width * Block.SIDE_LENGTH, self.rendered_height * Block.SIDE_LENGTH) * zoom_factor
 

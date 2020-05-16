@@ -140,9 +140,6 @@ class EnemyObject(ObjectLike):
 
         self._setup()
 
-    def get_rect(self):
-        return self.rect
-
     def increment_type(self):
         self.obj_index = min(0xFF, self.obj_index + 1)
 
