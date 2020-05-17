@@ -23,7 +23,7 @@ class ApprovalDialog(QDialog):
 
         main_layout = QVBoxLayout(self)
 
-        self.image_layout = QHBoxLayout()
+        self.image_layout = QVBoxLayout()
 
         ref_image = QLabel()
         ref_image.setPixmap(reference_image)
