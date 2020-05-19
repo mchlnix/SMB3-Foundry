@@ -77,8 +77,6 @@ class Level(LevelLike):
         self.jumps: List[Jump] = []
         self.enemies: List[EnemyObject] = []
 
-        print(f"Loading {self.name} @ {hex(self.header_offset)}/{hex(self.enemy_offset)}")
-
         rom = ROM()
 
         self.header_bytes = rom.bulk_read(Level.HEADER_LENGTH, self.header_offset)
