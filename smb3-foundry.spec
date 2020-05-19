@@ -5,7 +5,7 @@ block_cipher = None
 
 a = Analysis(['smb3-foundry.py'],
              binaries=[],
-             datas=[('data', 'data')],
+             datas=[('data', 'data'), ('VERSION', '.')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
