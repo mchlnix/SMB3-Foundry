@@ -36,7 +36,10 @@ LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
 
 MODE_FREE = 0
 MODE_DRAG = 1
-MODE_RESIZE = 2
+MODE_RESIZE_HORIZ = 2
+MODE_RESIZE_VERT = 4
+MODE_RESIZE_DIAG = MODE_RESIZE_HORIZ | MODE_RESIZE_VERT
+RESIZE_MODES = [MODE_RESIZE_HORIZ, MODE_RESIZE_VERT, MODE_RESIZE_DIAG]
 
 
 def undoable(func):
@@ -103,19 +106,21 @@ class LevelView(QWidget):
             return super(LevelView, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        if SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK:
-            self.set_cursor_for_position(event)
-
         if self.mouse_mode == MODE_DRAG:
             self.dragging(event)
-        elif self.mouse_mode == MODE_RESIZE:
+
+        elif self.mouse_mode in RESIZE_MODES:
             previously_selected_objects = self.level_ref.selected_objects
 
             self.resizing(event)
 
             self.level_ref.selected_objects = previously_selected_objects
+
         elif self.selection_square.active:
             self.set_selection_end(event.pos())
+
+        elif SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK:
+            self.set_cursor_for_position(event)
 
         return super(LevelView, self).mouseMoveEvent(event)
 
@@ -144,7 +149,7 @@ class LevelView(QWidget):
 
                 return
 
-        if self.mouse_mode != MODE_RESIZE:
+        if self.mouse_mode not in RESIZE_MODES:
             QApplication.restoreOverrideCursor()
 
     def cursor_on_edge_of_object(self, level_object: Union[LevelObject, EnemyObject], pos: QPoint, edge_width: int = 4):
@@ -230,13 +235,16 @@ class LevelView(QWidget):
         self.last_mouse_position = level_x, level_y
 
         if self.select_objects_on_click(event) and SETTINGS["resize_mode"] == RESIZE_RIGHT_CLICK:
-            self.try_start_resize(event)
+            self.try_start_resize(MODE_RESIZE_DIAG, event)
 
-    def try_start_resize(self, event: QMouseEvent):
+    def try_start_resize(self, resize_mode: int, event: QMouseEvent):
+        if resize_mode not in RESIZE_MODES:
+            return
+
         x, y = event.pos().toTuple()
         level_x, level_y = self.to_level_point(x, y)
 
-        self.mouse_mode = MODE_RESIZE
+        self.mouse_mode = resize_mode
 
         self.resize_mouse_start_x = level_x
 
@@ -255,8 +263,13 @@ class LevelView(QWidget):
 
         level_x, level_y = self.to_level_point(x, y)
 
-        dx = level_x - self.resize_obj_start_point[0]
-        dy = level_y - self.resize_obj_start_point[1]
+        dx = dy = 0
+
+        if self.mouse_mode & MODE_RESIZE_HORIZ:
+            dx = level_x - self.resize_obj_start_point[0]
+
+        if self.mouse_mode & MODE_RESIZE_VERT:
+            dy = level_y - self.resize_obj_start_point[1]
 
         self.last_mouse_position = level_x, level_y
 
@@ -291,6 +304,7 @@ class LevelView(QWidget):
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
+        QApplication.restoreOverrideCursor()
 
     def stop_resize(self, _):
         if self.resizing_happened:
@@ -298,6 +312,7 @@ class LevelView(QWidget):
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
+        QApplication.restoreOverrideCursor()
 
     def on_left_mouse_button_down(self, event: QMouseEvent):
         if self.select_objects_on_click(event):
@@ -306,12 +321,27 @@ class LevelView(QWidget):
             obj = self.object_at(x, y)
 
             if obj is not None:
-                if SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK and self.cursor_on_edge_of_object(obj, event.pos()):
-                    self.try_start_resize(event)
+                edge = self.cursor_on_edge_of_object(obj, event.pos())
+
+                if SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK and edge:
+
+                    self.try_start_resize(self._resize_mode_from_edge(edge), event)
                 else:
                     self.drag_start_point = obj.x_position, obj.y_position
         else:
             self.start_selection_square(event.pos())
+
+    @staticmethod
+    def _resize_mode_from_edge(edge: int):
+        mode = 0
+
+        if edge & Qt.RightEdge:
+            mode |= MODE_RESIZE_HORIZ
+
+        if edge & Qt.BottomEdge:
+            mode |= MODE_RESIZE_VERT
+
+        return mode
 
     def dragging(self, event: QMouseEvent):
         self.dragging_happened = True
@@ -351,6 +381,7 @@ class LevelView(QWidget):
             self.stop_selection_square()
 
         self.mouse_mode = MODE_FREE
+        QApplication.restoreOverrideCursor()
 
     def stop_drag(self):
         if self.dragging_happened:
