@@ -691,47 +691,99 @@ class LevelObject(ObjectLike):
     def expands(self):
         expands = EXPANDS_NOT
 
+        if self.is_single_block:
+            return expands
+
         if self.is_4byte:
             expands |= EXPANDS_BOTH
 
-        if not self.is_single_block:
-            if self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND]:
-                expands |= EXPANDS_HORIZ
-            elif self.orientation in [VERTICAL]:
-                expands |= EXPANDS_VERT
+        if self.orientation in [DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT, DIAG_WEIRD]:
+            expands |= EXPANDS_BOTH
+
+        elif self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND]:
+            expands |= EXPANDS_HORIZ
+
+        elif self.orientation in [VERTICAL]:
+            expands |= EXPANDS_VERT
 
         return expands
 
-    def resize_to(self, x: int, y: int):
-        if not self.is_single_block:
+    def primary_expansion(self):
+        if self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND]:
             if self.is_4byte:
-                max_width = 0xFF
+                return EXPANDS_VERT
             else:
-                max_width = 0x0F
+                return EXPANDS_HORIZ
+        elif self.orientation in [VERTICAL]:
+            if self.is_4byte:
+                return EXPANDS_HORIZ
+            else:
+                return EXPANDS_VERT
+        else:
+            return EXPANDS_BOTH
 
-            # don't get negative
-            width = max(0, x - self.x_position)
+    def resize_x(self, x: int):
+        if self.expands() & EXPANDS_HORIZ == 0:
+            return
 
-            # stay under maximum width
-            width = min(width, max_width)
+        if self.primary_expansion() == EXPANDS_HORIZ:
+            length = x - self.x_position
+
+            length = max(0, length)
+            length = min(length, 0x0F)
+
+            base_index = (self.obj_index // 0x10) * 0x10
+
+            self.obj_index = base_index + length
+            self.data[2] = self.obj_index
+        else:
+            length = x - self.x_position
+            length = max(0, length)
+            length = min(length, 0xFF)
 
             if self.is_4byte:
-                self.data[3] = width
+                self.data[3] = length
             else:
-                base_index = (self.obj_index // 0x10) * 0x10
+                raise ValueError("Resize impossible", self)
 
-                self.obj_index = base_index + width
-                self.data[2] = self.obj_index
+        self._calculate_lengths()
 
-            self._calculate_lengths()
+        self._render()
 
-            self._render()
+    def resize_y(self, y: int):
+        if self.expands() & EXPANDS_VERT == 0:
+            return
+
+        if self.primary_expansion() == EXPANDS_VERT:
+            length = y - self.y_position
+
+            length = max(0, length)
+            length = min(length, 0x0F)
+
+            base_index = (self.obj_index // 0x10) * 0x10
+
+            self.obj_index = base_index + length
+            self.data[2] = self.obj_index
+        else:
+            length = y - self.y_position
+            length = max(0, length)
+            length = min(length, 0xFF)
+
+            if self.is_4byte:
+                self.data[3] = length
+            else:
+                raise ValueError("Resize impossible", self)
+
+        self._calculate_lengths()
+
+        self._render()
 
     def resize_by(self, dx: int, dy: int):
-        new_x = self.x_position + dx
-        new_y = self.y_position + dy
+        if dx:
+            self.resize_x(self.x_position + dx)
 
-        self.resize_to(new_x, new_y)
+        if dy:
+            self.resize_y(self.y_position + dy)
 
     def increment_type(self):
         self.change_type(True)

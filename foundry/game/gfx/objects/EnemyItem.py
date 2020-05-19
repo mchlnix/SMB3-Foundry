@@ -123,14 +123,8 @@ class EnemyObject(ObjectLike):
     def get_position(self):
         return self.x_position, self.y_position
 
-    def resize_to(self, _, __):
-        pass
-
     def resize_by(self, dx, dy):
-        new_x = self.x_position + dx
-        new_y = self.y_position + dy
-
-        self.resize_to(new_x, new_y)
+        pass
 
     @property
     def type(self):

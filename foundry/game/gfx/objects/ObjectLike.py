@@ -42,10 +42,6 @@ class ObjectLike(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def resize_to(self, x, y):
-        pass
-
-    @abc.abstractmethod
     def resize_by(self, dx, dy):
         pass
 
@@ -80,4 +76,7 @@ class ObjectLike(abc.ABC):
         pass
 
     def expands(self):
+        return EXPANDS_NOT
+
+    def primary_expansion(self):
         return EXPANDS_NOT
