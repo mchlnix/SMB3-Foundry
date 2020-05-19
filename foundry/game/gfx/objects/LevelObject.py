@@ -449,10 +449,15 @@ class LevelObject(ObjectLike):
             new_width = self.width
 
             if self.ending == UNIFORM:
+                if self.is_4byte:
+                    # there is one VERTICAL 4-byte object: Vertically oriented X-blocks
+                    # the width is the primary expansion
+                    new_width = (self.obj_index & 0x0F) + 1
+
                 for _ in range(new_height):
-                    for x in range(self.width):
+                    for x in range(new_width):
                         for y in range(self.height):
-                            blocks_to_draw.append(self.blocks[x])
+                            blocks_to_draw.append(self.blocks[x % self.width])
 
             elif self.ending == END_ON_TOP_OR_LEFT:
                 # in case the drawn object is smaller than its actual size
