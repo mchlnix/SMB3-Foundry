@@ -15,7 +15,7 @@ from PySide2.QtGui import (
     QWheelEvent,
     Qt,
 )
-from PySide2.QtWidgets import QApplication, QSizePolicy, QWidget
+from PySide2.QtWidgets import QSizePolicy, QWidget
 
 from foundry import data_dir
 from foundry.game.gfx.drawable.Block import Block
@@ -107,6 +107,7 @@ class LevelView(QWidget):
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG:
+            self.setCursor(Qt.ClosedHandCursor)
             self.dragging(event)
 
         elif self.mouse_mode in RESIZE_MODES:
@@ -142,15 +143,13 @@ class LevelView(QWidget):
                 else:
                     return
 
-                if QApplication.overrideCursor() is None:
-                    QApplication.setOverrideCursor(cursor)
-                elif QApplication.overrideCursor() != cursor:
-                    QApplication.changeOverrideCursor(cursor)
+                if self.cursor() not in [Qt.SizeHorCursor, Qt.SizeVerCursor, Qt.SizeFDiagCursor]:
+                    self.setCursor(cursor)
 
                 return
 
         if self.mouse_mode not in RESIZE_MODES:
-            QApplication.restoreOverrideCursor()
+            self.setCursor(Qt.ArrowCursor)
 
     def cursor_on_edge_of_object(self, level_object: Union[LevelObject, EnemyObject], pos: QPoint, edge_width: int = 4):
         right = (level_object.get_rect().left() + level_object.get_rect().width()) * self.block_length
@@ -304,7 +303,7 @@ class LevelView(QWidget):
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
-        QApplication.restoreOverrideCursor()
+        self.setCursor(Qt.ArrowCursor)
 
     def stop_resize(self, _):
         if self.resizing_happened:
@@ -312,7 +311,7 @@ class LevelView(QWidget):
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
-        QApplication.restoreOverrideCursor()
+        self.setCursor(Qt.ArrowCursor)
 
     def on_left_mouse_button_down(self, event: QMouseEvent):
         if self.select_objects_on_click(event):
@@ -381,7 +380,7 @@ class LevelView(QWidget):
             self.stop_selection_square()
 
         self.mouse_mode = MODE_FREE
-        QApplication.restoreOverrideCursor()
+        self.setCursor(Qt.ArrowCursor)
 
     def stop_drag(self):
         if self.dragging_happened:
