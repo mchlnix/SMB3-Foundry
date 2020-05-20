@@ -14,6 +14,7 @@ icon_dir = data_dir.joinpath("icons")
 
 releases_link = "https://github.com/mchlnix/SMB3-Foundry/releases"
 feature_video_link = "https://www.youtube.com/watch?v=7_22cAffMmE"
+discord_link = "https://discord.gg/pm87gm7"
 
 
 def open_url(url: str):

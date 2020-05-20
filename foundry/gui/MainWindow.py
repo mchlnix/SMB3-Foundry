@@ -18,6 +18,7 @@ from PySide2.QtWidgets import (
 )
 
 from foundry import (
+    discord_link,
     feature_video_link,
     get_current_version_name,
     get_latest_version_name,
@@ -218,8 +219,13 @@ class MainWindow(QMainWindow):
         update_action = help_menu.addAction("Check for updates")
         update_action.triggered.connect(self.on_check_for_update)
 
-        video_action = help_menu.addAction("Watch Feature Video on YouTube")
+        help_menu.addSeparator()
+
+        video_action = help_menu.addAction("Feature Video on YouTube")
         video_action.triggered.connect(lambda: open_url(feature_video_link))
+
+        discord_action = help_menu.addAction("SMB3 Rom Hacking Discord")
+        discord_action.triggered.connect(lambda: open_url(discord_link))
 
         help_menu.addSeparator()
 
