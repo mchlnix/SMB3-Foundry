@@ -8,6 +8,7 @@ matrix:
       virtualenv:
         system_site_packages: true
       before_install:
+        - if [ -n "$TRAVIS_TAG" ]; then [ "$(cat VERSION)" == "$TRAVIS_TAG" ]; fi  # check VERSION is set correctly
         - python3 -m pip install --upgrade pip
         - python3 -m pip install -r requirements.txt
         - python3 -m pip install pyinstaller
