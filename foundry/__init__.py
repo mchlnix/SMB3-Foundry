@@ -9,6 +9,8 @@ data_dir = root_dir.joinpath("data")
 
 icon_dir = data_dir.joinpath("icons")
 
+releases_link = "https://github.com/mchlnix/SMB3-Foundry/releases"
+
 
 def get_current_version_name() -> str:
     version_file = root_dir / "VERSION"

@@ -1,7 +1,8 @@
 import os
 from typing import Tuple, Union
 
-from PySide2.QtGui import QCloseEvent, QIcon, QKeySequence, QMouseEvent, Qt
+from PySide2.QtCore import QUrl
+from PySide2.QtGui import QCloseEvent, QDesktopServices, QIcon, QKeySequence, QMouseEvent, Qt
 from PySide2.QtWidgets import (
     QAction,
     QDialog,
@@ -9,6 +10,7 @@ from PySide2.QtWidgets import (
     QMainWindow,
     QMenu,
     QMessageBox,
+    QPushButton,
     QScrollArea,
     QShortcut,
     QSizePolicy,
@@ -16,7 +18,7 @@ from PySide2.QtWidgets import (
     QToolBar,
 )
 
-from foundry import root_dir
+from foundry import get_current_version_name, get_latest_version_name, icon_dir, releases_link, root_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
@@ -206,6 +208,8 @@ class MainWindow(QMainWindow):
         help_menu.Append(ID_MAKE_A_DONATION, "&Make a Donation", "")
         help_menu.AppendSeparator()
         """
+        update_action = help_menu.addAction("Check for updates")
+        update_action.triggered.connect(self.on_check_for_update)
         about_action = help_menu.addAction("&About")
         about_action.triggered.connect(self.on_about)
 
@@ -478,6 +482,36 @@ class MainWindow(QMainWindow):
                 m3l_file.write(level.to_m3l())
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
+
+    def on_check_for_update(self):
+        self.setCursor(Qt.WaitCursor)
+
+        current_version = get_current_version_name()
+
+        try:
+            latest_version = get_latest_version_name()
+        except ValueError as ve:
+            QMessageBox.critical(self, "Error while checking for updates", f"Error: {ve}")
+            return
+
+        if current_version != latest_version:
+            latest_release_url = QUrl("https://github.com/mchlnix/SMB3-Foundry/releases/tag/" + latest_version)
+
+            go_to_github_button = QPushButton(QIcon(str(icon_dir / "external-link.svg")), "Go to latest release")
+            go_to_github_button.clicked.connect(lambda: QDesktopServices.openUrl(latest_release_url))
+
+            info_box = QMessageBox(
+                QMessageBox.Information, "New release available", f"Version {latest_version} is available."
+            )
+
+            info_box.addButton(QMessageBox.Cancel)
+            info_box.addButton(go_to_github_button, QMessageBox.AcceptRole)
+
+            info_box.exec_()
+        else:
+            QMessageBox.information(self, "No newer release", f"Version {current_version} is up to date.")
+
+        self.setCursor(Qt.ArrowCursor)
 
     def on_menu(self, action: QAction):
         item_id = action.property(ID_PROP)
