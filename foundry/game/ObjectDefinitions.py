@@ -31,9 +31,18 @@ class ObjectDefinition:
     def __init__(self, string):
         string = string.rstrip().replace("<", "").replace(">", "")
 
-        self.domain, self.min_value, self.max_value, self.bmp_width, self.bmp_height, *self.object_design, self.orientation, self.ending, self.is_4byte, self.description = string.split(
-            ","
-        )
+        (
+            self.domain,
+            self.min_value,
+            self.max_value,
+            self.bmp_width,
+            self.bmp_height,
+            *self.object_design,
+            self.orientation,
+            self.ending,
+            self.is_4byte,
+            self.description,
+        ) = string.split(",")
 
         self.bmp_width = int(self.bmp_width)
         self.bmp_height = int(self.bmp_height)
