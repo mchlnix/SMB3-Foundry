@@ -6,9 +6,29 @@ from foundry.game.File import ROM
 from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
+from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
+
+
+png = QImage(str(data_dir / "gfx.png"))
+png.convertTo(QImage.Format_RGB888)
+
+
+def _load_from_png(x: int, y: int):
+    image = png.copy(QRect(x * 16, y * 16, 16, 16))
+    mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+    image.setAlphaChannel(mask)
+
+    return image
+
+
+NO_JUMP = _load_from_png(32, 53)
+UP_ARROW = _load_from_png(33, 53)
+DOWN_ARROW = _load_from_png(34, 53)
+LEFT_ARROW = _load_from_png(35, 53)
+RIGHT_ARROW = _load_from_png(36, 53)
 
 
 class LevelDrawer:
@@ -17,6 +37,7 @@ class LevelDrawer:
         self.draw_grid = False
         self.draw_expansions = False
         self.draw_mario = False
+        self.draw_overlays = True
         self.transparency = False
 
         self.block_length = Block.WIDTH
@@ -34,6 +55,9 @@ class LevelDrawer:
         # painter.setBrush(Qt.NoBrush)
 
         self._draw_objects(painter, level)
+
+        if self.draw_overlays:
+            self._draw_overlays(painter, level)
 
         if self.draw_expansions:
             self._draw_expansions(painter, level)
@@ -76,6 +100,59 @@ class LevelDrawer:
         for level_object in level.get_all_objects():
             level_object.render()
             level_object.draw(painter, self.block_length, self.transparency)
+
+    def _draw_overlays(self, painter: QPainter, level: Level):
+        for level_object in level.get_all_objects():
+            # pipe entries
+            if "CAN go" in level_object.description:
+                rect = level_object.get_rect(self.block_length)
+
+                # center() is one pixel off for some reason
+                pos = rect.topLeft() + QPoint(*(rect.size() / 2).toTuple())
+
+                if "Left" in level_object.description:
+                    image = LEFT_ARROW
+
+                    pos.setX(rect.right())
+                    pos.setY(pos.y() - self.block_length / 2)
+
+                elif "Right" in level_object.description:
+                    image = RIGHT_ARROW
+                    pos.setX(rect.left() - self.block_length)
+                    pos.setY(pos.y() - self.block_length / 2)
+
+                elif "Down" in level_object.description:
+                    image = DOWN_ARROW
+
+                    pos.setX(pos.x() - self.block_length / 2)
+                    pos.setY(rect.top() - self.block_length)
+                else:
+                    image = UP_ARROW
+
+                    pos.setX(pos.x() - self.block_length / 2)
+                    pos.setY(rect.bottom())
+
+                if not self._object_in_jump_area(level, level_object):
+                    image = NO_JUMP
+
+                image = image.scaled(self.block_length, self.block_length)
+
+                painter.drawImage(pos, image)
+
+    @staticmethod
+    def _object_in_jump_area(level: Level, level_object: LevelObject):
+        for jump in level.jumps:
+            screen = jump.screen_index
+
+            if level.is_vertical:
+                rect = QRect(0, SCREEN_WIDTH * screen, SCREEN_WIDTH, SCREEN_HEIGHT,)
+            else:
+                rect = QRect(SCREEN_WIDTH * screen, 0, SCREEN_WIDTH, GROUND,)
+
+            if rect.contains(QPoint(*level_object.get_position())):
+                return True
+        else:
+            return False
 
     def _draw_expansions(self, painter: QPainter, level: Level):
         for level_object in level.get_all_objects():
