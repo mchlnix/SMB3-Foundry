@@ -143,7 +143,7 @@ class LevelView(QWidget):
                 else:
                     return
 
-                if self.cursor() not in [Qt.SizeHorCursor, Qt.SizeVerCursor, Qt.SizeFDiagCursor]:
+                if self.mouse_mode not in RESIZE_MODES:
                     self.setCursor(cursor)
 
                 return
