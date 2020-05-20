@@ -1,8 +1,7 @@
 import os
 from typing import Tuple, Union
 
-from PySide2.QtCore import QUrl
-from PySide2.QtGui import QCloseEvent, QDesktopServices, QIcon, QKeySequence, QMouseEvent, Qt
+from PySide2.QtGui import QCloseEvent, QIcon, QKeySequence, QMouseEvent, Qt
 from PySide2.QtWidgets import (
     QAction,
     QDialog,
@@ -18,7 +17,15 @@ from PySide2.QtWidgets import (
     QToolBar,
 )
 
-from foundry import get_current_version_name, get_latest_version_name, icon_dir, releases_link, root_dir
+from foundry import (
+    feature_video_link,
+    get_current_version_name,
+    get_latest_version_name,
+    icon_dir,
+    open_url,
+    releases_link,
+    root_dir,
+)
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
@@ -210,6 +217,12 @@ class MainWindow(QMainWindow):
         """
         update_action = help_menu.addAction("Check for updates")
         update_action.triggered.connect(self.on_check_for_update)
+
+        video_action = help_menu.addAction("Watch Feature Video on YouTube")
+        video_action.triggered.connect(lambda: open_url(feature_video_link))
+
+        help_menu.addSeparator()
+
         about_action = help_menu.addAction("&About")
         about_action.triggered.connect(self.on_about)
 
@@ -495,13 +508,13 @@ class MainWindow(QMainWindow):
             return
 
         if current_version != latest_version:
-            latest_release_url = QUrl("https://github.com/mchlnix/SMB3-Foundry/releases/tag/" + latest_version)
+            latest_release_url = f"{releases_link}/tag/{latest_version}"
 
             go_to_github_button = QPushButton(QIcon(str(icon_dir / "external-link.svg")), "Go to latest release")
-            go_to_github_button.clicked.connect(lambda: QDesktopServices.openUrl(latest_release_url))
+            go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
 
             info_box = QMessageBox(
-                QMessageBox.Information, "New release available", f"Version {latest_version} is available."
+                QMessageBox.Information, "New release available", f"New Version {latest_version} is available."
             )
 
             info_box.addButton(QMessageBox.Cancel)

@@ -3,6 +3,9 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 
+from PySide2.QtCore import QUrl
+from PySide2.QtGui import QDesktopServices
+
 root_dir = Path(__file__).parent.parent
 
 data_dir = root_dir.joinpath("data")
@@ -10,6 +13,11 @@ data_dir = root_dir.joinpath("data")
 icon_dir = data_dir.joinpath("icons")
 
 releases_link = "https://github.com/mchlnix/SMB3-Foundry/releases"
+feature_video_link = "https://www.youtube.com/watch?v=7_22cAffMmE"
+
+
+def open_url(url: str):
+    QDesktopServices.openUrl(QUrl(url))
 
 
 def get_current_version_name() -> str:
