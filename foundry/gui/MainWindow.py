@@ -624,15 +624,15 @@ class MainWindow(QMainWindow):
         checked = action.isChecked()
 
         if item_id == ID_GRID_LINES:
-            self.level_view.grid_lines = checked
+            self.level_view.draw_grid = checked
         elif item_id == ID_TRANSPARENCY:
             self.level_view.transparency = checked
         elif item_id == ID_JUMPS:
-            self.level_view.jumps = checked
+            self.level_view.draw_jumps = checked
         elif item_id == ID_MARIO:
-            self.level_view.mario = checked
+            self.level_view.draw_mario = checked
         elif item_id == ID_RESIZE_TYPE:
-            self.level_view.show_expansion = checked
+            self.level_view.draw_expansions = checked
 
     @undoable
     def on_spin(self, _):

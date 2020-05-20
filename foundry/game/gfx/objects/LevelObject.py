@@ -857,7 +857,7 @@ class LevelObject(ObjectLike):
             QImage.Format_RGB888,
         )
 
-        bg_color = QColor(*bg_color_for_object_set(self.object_set.number, 0))
+        bg_color = bg_color_for_object_set(self.object_set.number, 0)
 
         image.fill(bg_color)
 

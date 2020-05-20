@@ -1,31 +1,27 @@
 from bisect import bisect_right
 from typing import List, Optional, Tuple, Union
 
-from PySide2.QtCore import QMimeData, QPoint, QRect, QSize
+from PySide2.QtCore import QMimeData, QPoint, QSize
 from PySide2.QtGui import (
-    QBrush,
-    QColor,
     QDragEnterEvent,
     QDragMoveEvent,
-    QImage,
     QMouseEvent,
     QPaintEvent,
     QPainter,
-    QPen,
     QWheelEvent,
     Qt,
 )
 from PySide2.QtWidgets import QSizePolicy, QWidget
 
-from foundry import data_dir
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import ContextMenu
+from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
@@ -63,14 +59,13 @@ class LevelView(QWidget):
 
         self.context_menu = context_menu
 
-        self.grid_lines = False
-        self.jumps = False
-        self.transparency = True
-        self.show_expansion = False
-        self.mario = True
+        self.level_drawer = LevelDrawer()
 
-        self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), width=1)
-        self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), width=1)
+        self.draw_grid = False
+        self.draw_jumps = False
+        self.draw_expansions = False
+        self.draw_mario = True
+        self.transparency = True
 
         self.zoom = 1
         self.block_length = Block.SIDE_LENGTH * self.zoom
@@ -94,6 +89,46 @@ class LevelView(QWidget):
 
         # dragged in from the object toolbar
         self.currently_dragged_object: Optional[Union[LevelObject, EnemyObject]] = None
+
+    @property
+    def transparency(self):
+        return self.level_drawer.transparency
+
+    @transparency.setter
+    def transparency(self, value):
+        self.level_drawer.transparency = value
+
+    @property
+    def draw_grid(self):
+        return self.level_drawer.draw_grid
+
+    @draw_grid.setter
+    def draw_grid(self, value):
+        self.level_drawer.draw_grid = value
+
+    @property
+    def draw_jumps(self):
+        return self.level_drawer.draw_jumps
+
+    @draw_jumps.setter
+    def draw_jumps(self, value):
+        self.level_drawer.draw_jumps = value
+
+    @property
+    def draw_mario(self):
+        return self.level_drawer.draw_mario
+
+    @draw_mario.setter
+    def draw_mario(self, value):
+        self.level_drawer.draw_mario = value
+
+    @property
+    def draw_expansions(self):
+        return self.level_drawer.draw_expansions
+
+    @draw_expansions.setter
+    def draw_expansions(self, value):
+        self.level_drawer.draw_expansions = value
 
     def mousePressEvent(self, event: QMouseEvent):
         pressed_button = event.button()
@@ -720,67 +755,11 @@ class LevelView(QWidget):
         if self.level_ref is None:
             return
 
-        self.level_ref.draw(painter, self.block_length, self.transparency, self.show_expansion)
+        self.level_drawer.block_length = self.block_length
 
-        if self.grid_lines:
-            panel_width, panel_height = self.size().toTuple()
-
-            painter.setPen(self.grid_pen)
-
-            for x in range(0, panel_width, self.block_length):
-                painter.drawLine(x, 0, x, panel_height)
-            for y in range(0, panel_height, self.block_length):
-                painter.drawLine(0, y, panel_width, y)
-
-            painter.setPen(self.screen_pen)
-
-            if self.level_ref.is_vertical:
-                for y in range(0, panel_height, self.block_length * SCREEN_HEIGHT):
-                    painter.drawLine(0, y, panel_width, y)
-            else:
-                for x in range(0, panel_width, self.block_length * SCREEN_WIDTH):
-                    painter.drawLine(x, 0, x, panel_height)
-
-        if self.jumps:
-            for jump in self.level_ref.jumps:
-                painter.setBrush(QBrush(QColor(0xFF, 0x00, 0x00), Qt.FDiagPattern))
-
-                screen = jump.screen_index
-
-                if self.level_ref.is_vertical:
-                    painter.drawRect(
-                        0,
-                        self.block_length * SCREEN_WIDTH * screen,
-                        self.block_length * SCREEN_WIDTH,
-                        self.block_length * SCREEN_HEIGHT,
-                    )
-                else:
-                    painter.drawRect(
-                        self.block_length * SCREEN_WIDTH * screen,
-                        0,
-                        self.block_length * SCREEN_WIDTH,
-                        self.block_length * 27,
-                    )
+        self.level_drawer.draw(painter, self.level_ref.level)
 
         self.selection_square.draw(painter)
 
         if self.currently_dragged_object is not None:
             self.currently_dragged_object.draw(painter, self.block_length, self.transparency)
-
-        if self.mario:
-            self.draw_mario(painter)
-
-        return
-
-    def draw_mario(self, painter):
-        mario_actions = QImage(str(data_dir / "mario.png"))
-
-        mario_actions.convertTo(QImage.Format_RGBA8888)
-
-        mario_position = QPoint(*self.level_ref.header.mario_position()) * self.block_length
-
-        x_offset = 32 * self.level_ref.level.start_action
-
-        mario_cutout = mario_actions.copy(QRect(x_offset, 0, 32, 32)).scaled(32 * self.zoom, 32 * self.zoom)
-
-        painter.drawImage(mario_position, mario_cutout)
