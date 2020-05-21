@@ -130,6 +130,30 @@ class LevelView(QWidget):
     def draw_expansions(self, value):
         self.level_drawer.draw_expansions = value
 
+    @property
+    def draw_jumps_on_objects(self):
+        return self.level_drawer.draw_jumps_on_objects
+
+    @draw_jumps_on_objects.setter
+    def draw_jumps_on_objects(self, value):
+        self.level_drawer.draw_jumps_on_objects = value
+
+    @property
+    def draw_items_in_blocks(self):
+        return self.level_drawer.draw_items_in_blocks
+
+    @draw_items_in_blocks.setter
+    def draw_items_in_blocks(self, value):
+        self.level_drawer.draw_items_in_blocks = value
+
+    @property
+    def draw_invisible_items(self):
+        return self.level_drawer.draw_invisible_items
+
+    @draw_invisible_items.setter
+    def draw_invisible_items(self, value):
+        self.level_drawer.draw_invisible_items = value
+
     def mousePressEvent(self, event: QMouseEvent):
         pressed_button = event.button()
 

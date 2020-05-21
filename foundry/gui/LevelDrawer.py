@@ -66,7 +66,9 @@ class LevelDrawer:
         self.draw_grid = False
         self.draw_expansions = False
         self.draw_mario = False
-        self.draw_overlays = True
+        self.draw_jumps_on_objects = True
+        self.draw_items_in_blocks = True
+        self.draw_invisible_items = True
         self.transparency = False
 
         self.block_length = Block.WIDTH
@@ -85,8 +87,7 @@ class LevelDrawer:
 
         self._draw_objects(painter, level)
 
-        if self.draw_overlays:
-            self._draw_overlays(painter, level)
+        self._draw_overlays(painter, level)
 
         if self.draw_expansions:
             self._draw_expansions(painter, level)
@@ -152,6 +153,9 @@ class LevelDrawer:
 
             # pipe entries
             if "pipe" in name and "can go" in name:
+                if not self.draw_jumps_on_objects:
+                    continue
+
                 fill_object = False
 
                 rect = level_object.get_rect(self.block_length)
@@ -186,6 +190,9 @@ class LevelDrawer:
 
             # "?" - blocks, note blocks, wooden blocks and bricks
             elif "'?' with" in name or "brick with" in name or "bricks with" in name or "block with" in name:
+                if not self.draw_items_in_blocks:
+                    continue
+
                 pos.setY(pos.y() - self.block_length)
 
                 if "flower" in name:
@@ -214,11 +221,21 @@ class LevelDrawer:
                 arrow_pos.setY(arrow_pos.y() + self.block_length / 4)
                 painter.drawImage(arrow_pos, ITEM_ARROW.scaled(self.block_length, self.block_length))
 
-            elif "invisible coin" in name:
-                image = INVISIBLE_COIN
-            elif "invisible 1-up" in name:
-                image = INVISIBLE_1_UP
+            elif "invisible" in name:
+                if not self.draw_invisible_items:
+                    continue
+
+                if "coin" in name:
+                    image = INVISIBLE_COIN
+                elif "1-up" in name:
+                    image = INVISIBLE_1_UP
+                else:
+                    image = EMPTY_IMAGE
+
             elif "silver coins" in name:
+                if not self.draw_invisible_items:
+                    continue
+
                 image = SILVER_COIN
             else:
                 continue
