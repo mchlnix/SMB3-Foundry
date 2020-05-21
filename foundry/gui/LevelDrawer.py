@@ -130,6 +130,14 @@ class LevelDrawer:
             level_object.render()
             level_object.draw(painter, self.block_length, self.transparency)
 
+            if level_object.selected:
+                painter.save()
+
+                painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
+                painter.drawRect(level_object.get_rect(self.block_length))
+
+                painter.restore()
+
     def _draw_overlays(self, painter: QPainter, level: Level):
         painter.save()
 
