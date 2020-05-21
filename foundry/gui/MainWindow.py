@@ -1,7 +1,12 @@
 import os
+import pathlib
+import shlex
+import subprocess
+import tempfile
 from typing import Tuple, Union
 
-from PySide2.QtGui import QCloseEvent, QIcon, QKeySequence, QMouseEvent, Qt
+from PySide2.QtCore import QSize
+from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
 from PySide2.QtWidgets import (
     QAction,
     QDialog,
@@ -9,6 +14,7 @@ from PySide2.QtWidgets import (
     QMainWindow,
     QMenu,
     QMessageBox,
+    QPushButton,
     QScrollArea,
     QShortcut,
     QSizePolicy,
@@ -16,16 +22,25 @@ from PySide2.QtWidgets import (
     QToolBar,
 )
 
-from foundry import root_dir
+from foundry import (
+    discord_link,
+    feature_video_link,
+    get_current_version_name,
+    get_latest_version_name,
+    icon,
+    open_url,
+    releases_link,
+)
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.level.Level import Level
+from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.BlockViewer import BlockViewer
 from foundry.gui.ContextMenu import CMAction, ContextMenu
+from foundry.gui.EnemySizeBar import EnemySizeBar
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
@@ -39,6 +54,10 @@ from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.SettingsDialog import show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
+from foundry.gui.settings import SETTINGS, save_settings
+from smb3parse.constants import TILE_LEVEL_1
+from smb3parse.levels.world_map import WorldMap as SMB3World
+from smb3parse.util.rom import Rom as SMB3Rom
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
@@ -50,8 +69,21 @@ ID_GRID_LINES = 501
 ID_TRANSPARENCY = 508
 ID_JUMPS = 509
 ID_MARIO = 510
+ID_RESIZE_TYPE = 511
+ID_JUMP_OBJECTS = 512
+ID_ITEM_BLOCKS = 513
+ID_INVISIBLE_ITEMS = 514
 
-CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES, ID_JUMPS, ID_MARIO]
+CHECKABLE_MENU_ITEMS = [
+    ID_TRANSPARENCY,
+    ID_GRID_LINES,
+    ID_JUMPS,
+    ID_MARIO,
+    ID_RESIZE_TYPE,
+    ID_JUMP_OBJECTS,
+    ID_ITEM_BLOCKS,
+    ID_INVISIBLE_ITEMS,
+]
 
 ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
 
@@ -66,7 +98,7 @@ class MainWindow(QMainWindow):
     def __init__(self, path_to_rom=""):
         super(MainWindow, self).__init__()
 
-        self.setWindowIcon(QIcon(str(root_dir.joinpath("data", "foundry.ico"))))
+        self.setWindowIcon(icon("foundry.ico"))
 
         file_menu = QMenu("File")
 
@@ -158,23 +190,49 @@ class MainWindow(QMainWindow):
         view_menu = QMenu("View")
         view_menu.triggered.connect(self.on_menu)
 
-        self._mario_start_location = view_menu.addAction("Mario")
-        self._mario_start_location.setProperty(ID_PROP, ID_MARIO)
-        self._mario_start_location.setCheckable(True)
-        self._mario_start_location.setChecked(True)
+        action = view_menu.addAction("Mario")
+        action.setProperty(ID_PROP, ID_MARIO)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_mario"])
 
-        self._show_jump_action = view_menu.addAction("Jumps")
-        self._show_jump_action.setProperty(ID_PROP, ID_JUMPS)
-        self._show_jump_action.setCheckable(True)
+        action = view_menu.addAction("&Jumps on objects")
+        action.setProperty(ID_PROP, ID_JUMP_OBJECTS)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_jump_on_objects"])
 
-        self._show_grid_action = view_menu.addAction("&Grid lines")
-        self._show_grid_action.setProperty(ID_PROP, ID_GRID_LINES)
-        self._show_grid_action.setCheckable(True)
+        action = view_menu.addAction("Items in blocks")
+        action.setProperty(ID_PROP, ID_ITEM_BLOCKS)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_items_in_blocks"])
 
-        self._show_transparent_blocks_action = view_menu.addAction("&Block Transparency")
-        self._show_transparent_blocks_action.setProperty(ID_PROP, ID_TRANSPARENCY)
-        self._show_transparent_blocks_action.setCheckable(True)
-        self._show_transparent_blocks_action.setChecked(True)
+        action = view_menu.addAction("Invisible items")
+        action.setProperty(ID_PROP, ID_INVISIBLE_ITEMS)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_invisible_items"])
+
+        view_menu.addSeparator()
+
+        action = view_menu.addAction("Jump Zones")
+        action.setProperty(ID_PROP, ID_JUMPS)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_jumps"])
+
+        action = view_menu.addAction("&Grid lines")
+        action.setProperty(ID_PROP, ID_GRID_LINES)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_grid"])
+
+        action = view_menu.addAction("Resize Type")
+        action.setProperty(ID_PROP, ID_RESIZE_TYPE)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_expansion"])
+
+        view_menu.addSeparator()
+
+        action = view_menu.addAction("&Block Transparency")
+        action.setProperty(ID_PROP, ID_TRANSPARENCY)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["block_transparency"])
 
         view_menu.addSeparator()
         view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
@@ -201,6 +259,19 @@ class MainWindow(QMainWindow):
         help_menu.Append(ID_MAKE_A_DONATION, "&Make a Donation", "")
         help_menu.AppendSeparator()
         """
+        update_action = help_menu.addAction("Check for updates")
+        update_action.triggered.connect(self.on_check_for_update)
+
+        help_menu.addSeparator()
+
+        video_action = help_menu.addAction("Feature Video on YouTube")
+        video_action.triggered.connect(lambda: open_url(feature_video_link))
+
+        discord_action = help_menu.addAction("SMB3 Rom Hacking Discord")
+        discord_action.triggered.connect(lambda: open_url(discord_link))
+
+        help_menu.addSeparator()
+
         about_action = help_menu.addAction("&About")
         about_action.triggered.connect(self.on_about)
 
@@ -212,6 +283,7 @@ class MainWindow(QMainWindow):
         self.object_viewer = None
 
         self.level_ref = LevelRef()
+        self.level_ref.data_changed.connect(self._on_level_data_changed)
 
         self.context_menu = ContextMenu(self.level_ref)
         self.context_menu.triggered.connect(self.on_menu)
@@ -235,6 +307,7 @@ class MainWindow(QMainWindow):
         self.object_dropdown.object_selected.connect(self._on_placeable_object_selected)
 
         self.level_size_bar = LevelSizeBar(self, self.level_ref)
+        self.enemy_size_bar = EnemySizeBar(self, self.level_ref)
 
         self.jump_list = JumpList(self, self.level_ref)
         self.jump_list.add_jump.connect(self.on_jump_added)
@@ -250,15 +323,16 @@ class MainWindow(QMainWindow):
 
         splitter.setChildrenCollapsible(False)
 
-        level_toolbar = QToolBar(self)
+        level_toolbar = QToolBar("Level Info Toolbar", self)
         level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
         level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        level_toolbar.setOrientation(Qt.Vertical)
+        level_toolbar.setOrientation(Qt.Horizontal)
         level_toolbar.setFloatable(False)
 
         level_toolbar.addWidget(self.spinner_panel)
         level_toolbar.addWidget(self.object_dropdown)
         level_toolbar.addWidget(self.level_size_bar)
+        level_toolbar.addWidget(self.enemy_size_bar)
         level_toolbar.addWidget(splitter)
 
         level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
@@ -268,7 +342,7 @@ class MainWindow(QMainWindow):
         self.object_toolbar = ObjectToolBar(self)
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
-        object_toolbar = QToolBar(self)
+        object_toolbar = QToolBar("Object Toolbar", self)
         object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
         object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         object_toolbar.setFloatable(False)
@@ -278,30 +352,155 @@ class MainWindow(QMainWindow):
 
         self.addToolBar(Qt.LeftToolBarArea, object_toolbar)
 
+        menu_toolbar = QToolBar("Menu Toolbar", self)
+        menu_toolbar.setOrientation(Qt.Horizontal)
+        menu_toolbar.setIconSize(QSize(20, 20))
+
+        menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(show_settings)
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
+        menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
+        menu_toolbar.addSeparator()
+
+        self.undo_action = menu_toolbar.addAction(icon("rotate-ccw.svg"), "Undo Action")
+        self.undo_action.triggered.connect(self.level_ref.undo)
+        self.undo_action.setEnabled(False)
+        self.redo_action = menu_toolbar.addAction(icon("rotate-cw.svg"), "Redo Action")
+        self.redo_action.triggered.connect(self.level_ref.redo)
+        self.redo_action.setEnabled(False)
+
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(icon("play-circle.svg"), "Play Level").triggered.connect(self.on_play)
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
+        menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In").triggered.connect(self.level_view.zoom_in)
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(icon("tool.svg"), "Edit Level Header").triggered.connect(self.on_header_editor)
+        self.jump_destination_action = menu_toolbar.addAction(icon("arrow-right-circle.svg"), "Go to Jump Destination")
+        self.jump_destination_action.triggered.connect(self._go_to_jump_destination)
+        menu_toolbar.addSeparator()
+        # menu_toolbar.addAction(icon("help-circle.svg"), "What's this?")
+
+        self.addToolBar(Qt.TopToolBarArea, menu_toolbar)
+
         self.status_bar = ObjectStatusBar(self, self.level_ref)
         self.setStatusBar(self.status_bar)
 
         self.delete_shortcut = QShortcut(QKeySequence(Qt.Key_Delete), self, self.remove_selected_objects)
 
-        self.cut_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_X), self, self._cut_objects)
-        self.copy_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
-        self.paste_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_X), self, self._cut_objects)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
 
-        self.undo_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Z), self, self.spinner_panel.on_undo)
-        self.redo_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Y), self, self.spinner_panel.on_redo)
-        self.redo_shortcut_alt = QShortcut(
-            QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_Z), self, self.spinner_panel.on_redo
-        )
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Z), self, self.level_ref.undo)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Y), self, self.level_ref.redo)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_Z), self, self.level_ref.redo)
 
-        self.zoom_in_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Plus), self, self.level_view.zoom_in)
-        self.zoom_out_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self, self.level_view.zoom_out)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Plus), self, self.level_view.zoom_in)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self, self.level_view.zoom_out)
 
-        self.select_all_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
 
         if not self.on_open_rom(path_to_rom):
             self.deleteLater()
 
         self.showMaximized()
+
+    def _on_level_data_changed(self):
+        self.undo_action.setEnabled(self.level_ref.undo_stack.undo_available)
+        self.redo_action.setEnabled(self.level_ref.undo_stack.redo_available)
+
+        self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
+
+    def _go_to_jump_destination(self):
+        if not self.safe_to_change():
+            return
+
+        level_address = self.level_ref.level.next_area_objects
+        enemy_address = self.level_ref.level.next_area_enemies + 1
+        object_set = self.level_ref.level.next_area_object_set
+
+        world, level = world_and_level_for_level_address(level_address)
+
+        self.update_level(world, level, level_address, enemy_address, object_set)
+
+    def on_play(self):
+        """
+        Copies the ROM, including the current level, to a temporary directory, saves the current level as level 1-1 and
+        opens the rom in an emulator.
+        """
+        temp_dir = pathlib.Path(tempfile.gettempdir()) / "smb3foundry"
+        temp_dir.mkdir(parents=True, exist_ok=True)
+
+        path_to_temp_rom = temp_dir / "instaplay.rom"
+
+        ROM().save_to(path_to_temp_rom)
+
+        if not self._put_current_level_to_level_1_1(path_to_temp_rom):
+            return
+
+        arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
+        arguments = shlex.split(arguments, posix=False)
+
+        emu_path = pathlib.Path(SETTINGS["instaplay_emulator"])
+
+        if emu_path.is_absolute():
+            if emu_path.exists():
+                emulator = str(emu_path)
+            else:
+                QMessageBox.critical(
+                    self, "Emulator not found", f"Check it under File > Settings.\nFile {emu_path} not found."
+                )
+                return
+        else:
+            emulator = SETTINGS["instaplay_emulator"]
+
+        try:
+            subprocess.run([emulator, *arguments])
+        except Exception as e:
+            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
+
+    def _put_current_level_to_level_1_1(self, path_to_rom) -> bool:
+        with open(path_to_rom, "rb") as smb3_rom:
+            data = smb3_rom.read()
+
+        rom = SMB3Rom(bytearray(data))
+
+        # load world-1 data
+        world_1 = SMB3World.from_world_number(rom, 1)
+
+        # find position of "level 1" tile in world map
+        for position in world_1.gen_positions():
+            if position.tile() == TILE_LEVEL_1:
+                break
+        else:
+            QMessageBox.critical(
+                self, "Couldn't place level", "Could not find a level 1 tile in World 1 to put your level at."
+            )
+            return False
+
+        if not self.level_ref.level.attached_to_rom:
+            QMessageBox.critical(
+                self,
+                "Couldn't place level",
+                "The Level is not part of the rom yet (M3L?). Try saving it into the ROM first.",
+            )
+            return False
+
+        # write level and enemy data of current level
+        (layout_address, layout_bytes), (enemy_address, enemy_bytes) = self.level_ref.level.to_bytes()
+        rom.write(layout_address, layout_bytes)
+        rom.write(enemy_address, enemy_bytes)
+
+        # replace level information with that of current level
+        object_set_number = self.level_ref.object_set_number
+
+        world_1.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
+
+        # save rom
+        rom.save_to(path_to_rom)
+
+        return True
 
     def on_screenshot(self, _) -> bool:
         if self.level_view is None:
@@ -474,6 +673,36 @@ class MainWindow(QMainWindow):
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
 
+    def on_check_for_update(self):
+        self.setCursor(Qt.WaitCursor)
+
+        current_version = get_current_version_name()
+
+        try:
+            latest_version = get_latest_version_name()
+        except ValueError as ve:
+            QMessageBox.critical(self, "Error while checking for updates", f"Error: {ve}")
+            return
+
+        if current_version != latest_version:
+            latest_release_url = f"{releases_link}/tag/{latest_version}"
+
+            go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest release")
+            go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
+
+            info_box = QMessageBox(
+                QMessageBox.Information, "New release available", f"New Version {latest_version} is available."
+            )
+
+            info_box.addButton(QMessageBox.Cancel)
+            info_box.addButton(go_to_github_button, QMessageBox.AcceptRole)
+
+            info_box.exec_()
+        else:
+            QMessageBox.information(self, "No newer release", f"Version {current_version} is up to date.")
+
+        self.setCursor(Qt.ArrowCursor)
+
     def on_menu(self, action: QAction):
         item_id = action.property(ID_PROP)
 
@@ -566,13 +795,32 @@ class MainWindow(QMainWindow):
         checked = action.isChecked()
 
         if item_id == ID_GRID_LINES:
-            self.level_view.grid_lines = checked
+            self.level_view.draw_grid = checked
         elif item_id == ID_TRANSPARENCY:
             self.level_view.transparency = checked
         elif item_id == ID_JUMPS:
-            self.level_view.jumps = checked
+            self.level_view.draw_jumps = checked
         elif item_id == ID_MARIO:
-            self.level_view.mario = checked
+            self.level_view.draw_mario = checked
+        elif item_id == ID_RESIZE_TYPE:
+            self.level_view.draw_expansions = checked
+        elif item_id == ID_JUMP_OBJECTS:
+            self.level_view.draw_jumps_on_objects = checked
+        elif item_id == ID_ITEM_BLOCKS:
+            self.level_view.draw_items_in_blocks = checked
+        elif item_id == ID_INVISIBLE_ITEMS:
+            self.level_view.draw_invisible_items = checked
+
+        SETTINGS["draw_mario"] = self.level_view.draw_mario
+        SETTINGS["draw_jumps"] = self.level_view.draw_jumps
+        SETTINGS["draw_grid"] = self.level_view.draw_grid
+        SETTINGS["draw_expansion"] = self.level_view.draw_expansions
+        SETTINGS["draw_jump_on_objects"] = self.level_view.draw_jumps_on_objects
+        SETTINGS["draw_items_in_blocks"] = self.level_view.draw_items_in_blocks
+        SETTINGS["draw_invisible_items"] = self.level_view.draw_invisible_items
+        SETTINGS["block_transparency"] = self.level_view.transparency
+
+        save_settings()
 
     @undoable
     def on_spin(self, _):

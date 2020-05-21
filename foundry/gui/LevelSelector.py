@@ -166,11 +166,6 @@ class LevelSelector(QDialog):
         object_set_index = Level.offsets[level_array_offset].real_obj_set
         self.object_set_dropdown.setCurrentIndex(object_set_index)
 
-        print(
-            f"Level {self.selected_world}-{self.selected_level}, lvl_array_offset: {level_array_offset}, "
-            f"obj_index: {object_set_index}"
-        )
-
         self.button_ok.setDisabled(self.selected_world == 0)
 
     def on_ok(self, _):

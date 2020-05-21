@@ -1,5 +1,7 @@
 from typing import List
 
+from PySide2.QtGui import QColor
+
 from foundry import root_dir
 from foundry.game.File import ROM
 from smb3parse.levels import BASE_OFFSET
@@ -41,6 +43,14 @@ for i in range(COLOR_COUNT):
 
 
 def load_palette(object_set: int, palette_group: int):
+    """
+    Basically does, what the Setup_PalData routine does.
+
+    :param object_set: Level_Tileset in the disassembly.
+    :param palette_group: Palette_By_Tileset. Defined in the level header.
+
+    :return: A list of 4 groups of 4 colors.
+    """
     rom = ROM()
 
     palette_offset_position = PALETTE_OFFSET_LIST + (object_set * PALETTE_OFFSET_SIZE)
@@ -59,10 +69,10 @@ def load_palette(object_set: int, palette_group: int):
     return palettes
 
 
-def bg_color_for_object_set(object_set_number: int, palette_group_index: int) -> List[int]:
+def bg_color_for_object_set(object_set_number: int, palette_group_index: int) -> QColor:
     palette = load_palette(object_set_number, palette_group_index)
 
-    return bg_color_for_palette(palette)
+    return QColor(*bg_color_for_palette(palette))
 
 
 def bg_color_for_palette(palette: List[bytearray]):

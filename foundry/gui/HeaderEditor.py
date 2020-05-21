@@ -223,7 +223,9 @@ class HeaderEditor(CustomDialog):
         # next area settings
 
         self.level_pointer_spinner = Spinner(self, maximum=SPINNER_MAX_VALUE)
+        self.level_pointer_spinner.valueChanged.connect(self.on_spin)
         self.enemy_pointer_spinner = Spinner(self, maximum=SPINNER_MAX_VALUE)
+        self.enemy_pointer_spinner.valueChanged.connect(self.on_spin)
 
         self.next_area_object_set_dropdown = QComboBox()
         self.next_area_object_set_dropdown.addItems(OBJECT_SET_ITEMS)

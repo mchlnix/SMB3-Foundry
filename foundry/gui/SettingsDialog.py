@@ -1,9 +1,19 @@
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QFileDialog, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout
+from PySide2.QtWidgets import (
+    QButtonGroup,
+    QFileDialog,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QRadioButton,
+    QVBoxLayout,
+)
 
-from foundry import icon_dir
+from foundry import icon, icon_dir
 from foundry.gui.CustomDialog import CustomDialog
-from foundry.gui.settings import SETTINGS, load_settings, save_settings
+from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings
 
 load_settings()
 
@@ -12,13 +22,34 @@ class SettingsDialog(CustomDialog):
     def __init__(self, parent=None):
         super(SettingsDialog, self).__init__(parent, "Settings")
 
+        mouse_box = QGroupBox("Mouse", self)
+        mouse_layout = QHBoxLayout(mouse_box)
+
+        self.lmb_radio = QRadioButton("Left Mouse Button")
+        rmb_radio = QRadioButton("Right Mouse Button")
+
+        self.lmb_radio.setChecked(SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK)
+        rmb_radio.setChecked(SETTINGS["resize_mode"] == RESIZE_RIGHT_CLICK)
+
+        self.lmb_radio.toggled.connect(self._update_settings)
+
+        radio_group = QButtonGroup()
+        radio_group.addButton(self.lmb_radio)
+        radio_group.addButton(rmb_radio)
+
+        mouse_layout.addWidget(QLabel("Resize mode:"))
+        mouse_layout.addWidget(self.lmb_radio)
+        mouse_layout.addWidget(rmb_radio)
+
+        # ----------------------------------
+
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText("Path to emulator")
         self.emulator_command_input.setText(SETTINGS["instaplay_emulator"])
 
         self.emulator_command_input.textChanged.connect(self._update_settings)
 
-        self.emulator_path_button = QPushButton(QIcon(str(icon_dir / "folder.svg")), "", self)
+        self.emulator_path_button = QPushButton(icon("folder.svg"), "", self)
         self.emulator_path_button.pressed.connect(self._get_emulator_path)
 
         self.command_arguments_input = QLineEdit(self)
@@ -43,6 +74,7 @@ class SettingsDialog(CustomDialog):
         command_layout.addWidget(self.command_arguments_input)
 
         layout = QVBoxLayout(self)
+        layout.addWidget(mouse_box)
         layout.addWidget(command_box)
         layout.addWidget(QLabel("Command used to play the rom:"))
         layout.addWidget(self.command_label)
@@ -55,6 +87,11 @@ class SettingsDialog(CustomDialog):
     def _update_settings(self, _):
         SETTINGS["instaplay_emulator"] = self.emulator_command_input.text()
         SETTINGS["instaplay_arguments"] = self.command_arguments_input.text()
+
+        if self.lmb_radio.isChecked():
+            SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
+        else:
+            SETTINGS["resize_mode"] = RESIZE_RIGHT_CLICK
 
         self.update()
 

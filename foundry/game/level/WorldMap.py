@@ -77,7 +77,7 @@ class WorldMap(LevelLike):
     def get_object_names(self):
         return [obj.name for obj in self.objects]
 
-    def draw(self, dc, zoom, transparency=None):
+    def draw(self, dc, zoom, transparency=None, show_expansion=None):
         for obj in self.objects:
             obj.draw(dc, Block.SIDE_LENGTH * zoom, transparency)
 

@@ -17,6 +17,7 @@ class EnemyObject(ObjectLike):
         super(EnemyObject, self).__init__()
 
         self.is_4byte = False
+        self.is_single_block = True
         self.length = 0
 
         self.obj_index = data[0]
@@ -122,14 +123,8 @@ class EnemyObject(ObjectLike):
     def get_position(self):
         return self.x_position, self.y_position
 
-    def resize_to(self, _, __):
-        pass
-
     def resize_by(self, dx, dy):
-        new_x = self.x_position + dx
-        new_y = self.y_position + dy
-
-        self.resize_to(new_x, new_y)
+        pass
 
     @property
     def type(self):
@@ -139,9 +134,6 @@ class EnemyObject(ObjectLike):
         self.obj_index = new_type
 
         self._setup()
-
-    def get_rect(self):
-        return self.rect
 
     def increment_type(self):
         self.obj_index = min(0xFF, self.obj_index + 1)

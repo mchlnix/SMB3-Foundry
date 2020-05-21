@@ -278,7 +278,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
@@ -527,7 +527,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
@@ -776,7 +776,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
@@ -1025,7 +1025,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
@@ -1274,7 +1274,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
@@ -1523,7 +1523,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
@@ -1772,7 +1772,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
@@ -2021,7 +2021,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
@@ -2270,7 +2270,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
@@ -2519,7 +2519,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch
@@ -2768,7 +2768,7 @@
 1,0x07,0x07,1,1,<7>,9,0,0,Brick with Leaf
 1,0x08,0x08,1,1,<8>,9,0,0,Brick with Star
 1,0x09,0x09,1,1,<9>,9,0,0,Brick with Continuous Star
-1,0x0A,0x0A,1,1,<10>,9,0,0,Multi-Coin Brick
+1,0x0A,0x0A,1,1,<10>,9,0,0,Brick with Multi-Coin
 1,0x0B,0x0B,1,1,<11>,9,0,0,Brick with 1-up
 1,0x0C,0x0C,1,1,<12>,9,0,0,Brick with Vine
 1,0x0D,0x0D,1,1,<13>,9,0,0,Brick with P-Switch

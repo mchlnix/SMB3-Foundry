@@ -1,14 +1,10 @@
 from typing import List, Optional, Tuple, Union, overload
 
 from PySide2.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
-from PySide2.QtGui import QBrush, QColor, QPainter, QPen, Qt
 
 from foundry.game.Data import Mario3Level
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
-from foundry.game.gfx.PatternTable import PatternTable
-from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.Jump import Jump
@@ -28,6 +24,14 @@ TIME_INF = -1
 
 LEVEL_DEFAULT_HEIGHT = 27
 LEVEL_DEFAULT_WIDTH = 16
+
+
+def world_and_level_for_level_address(level_address: int):
+    for level in Level.offsets[1:]:
+        if level.rom_level_offset == level_address:
+            return level.game_world, level.level_in_world
+    else:
+        return -1, -1
 
 
 class LevelSignaller(QObject):
@@ -76,8 +80,6 @@ class Level(LevelLike):
         self.jumps: List[Jump] = []
         self.enemies: List[EnemyObject] = []
 
-        print(f"Loading {self.name} @ {hex(self.header_offset)}/{hex(self.enemy_offset)}")
-
         rom = ROM()
 
         self.header_bytes = rom.bulk_read(Level.HEADER_LENGTH, self.header_offset)
@@ -110,6 +112,14 @@ class Level(LevelLike):
 
             self.undo_stack.clear(self.to_bytes())
             self._signal_emitter.data_changed.emit()
+
+    @property
+    def width(self):
+        return self.size[0]
+
+    @property
+    def height(self):
+        return self.size[1]
 
     @property
     def data_changed(self):
@@ -211,6 +221,11 @@ class Level(LevelLike):
     def size_on_disk(self):
         return self.object_size_on_disk + self.enemy_size_on_disk
 
+    def get_rect(self, block_length: int = 1):
+        width, height = self.size
+
+        return QRect(QPoint(0, 0), QSize(width, height) * block_length)
+
     def attach_to_rom(self, header_offset: int, enemy_item_offset: int):
         self.header_offset = header_offset
         self.object_offset = self.header_offset + Level.HEADER_LENGTH
@@ -244,6 +259,10 @@ class Level(LevelLike):
         self.header_bytes[1] = value >> 8
 
         self._parse_header()
+
+    @property
+    def has_next_area(self):
+        return self.header_bytes[0] + self.header_bytes[1] != 0
 
     @property
     def next_area_enemies(self):
@@ -466,14 +485,14 @@ class Level(LevelLike):
     def too_many_enemies_or_items(self):
         return self.current_enemies_size() > self.enemy_size_on_disk
 
-    def get_all_objects(self):
+    def get_all_objects(self) -> List[Union[LevelObject, EnemyObject]]:
         return self.objects + self.enemies
 
     def get_object_names(self):
-        return [obj.description for obj in self.objects + self.enemies]
+        return [obj.description for obj in self.get_all_objects()]
 
     def object_at(self, x: int, y: int) -> Optional[Union[EnemyObject, LevelObject]]:
-        for obj in reversed(self.objects + self.enemies):
+        for obj in reversed(self.get_all_objects()):
             if (x, y) in obj:
                 return obj
         else:
@@ -554,49 +573,8 @@ class Level(LevelLike):
 
         return intersecting_objects
 
-    def draw(self, painter: QPainter, block_length: int, transparency: bool):
-        bg_color = QColor(*bg_color_for_object_set(self.object_set_number, self.header.object_palette_index))
-
-        width, height = self.size
-
-        rect = QRect(QPoint(0, 0), QSize(width * block_length, height * block_length))
-
-        painter.fillRect(rect, QBrush(bg_color))
-        painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
-        painter.setBrush(Qt.NoBrush)
-
-        if self.object_set_number == 9:  # desert
-            self._draw_floor(painter, block_length)
-
-        for level_object in self.objects + self.enemies:
-            level_object.render()
-            level_object.draw(painter, block_length, transparency)
-
-            if level_object.selected:
-                x, y = level_object.get_rect().topLeft().toTuple()
-                w, h = level_object.get_rect().size().toTuple()
-
-                x *= block_length
-                w *= block_length
-                y *= block_length
-                h *= block_length
-
-                painter.drawRect(QRect(x, y, w, h))
-
-    def _draw_floor(self, painter: QPainter, block_length: int):
-        floor_level = 26
-        floor_block_index = 86
-
-        palette_group = load_palette(self.object_set_number, self.header.object_palette_index)
-        pattern_table = PatternTable(self.header.graphic_set_index)
-        tsa_data = ROM().get_tsa_data(self.object_set_number)
-
-        floor_block = Block(floor_block_index, palette_group, pattern_table, tsa_data)
-
-        level_width, _ = self.size
-
-        for x in range(level_width):
-            floor_block.draw(painter, x * block_length, floor_level * block_length, block_length)
+    def draw(self, *_):
+        pass
 
     def paste_object_at(self, x: int, y: int, obj: Union[EnemyObject, LevelObject]) -> Union[EnemyObject, LevelObject]:
         if isinstance(obj, EnemyObject):

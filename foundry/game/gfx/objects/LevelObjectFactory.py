@@ -61,13 +61,7 @@ class LevelObjectFactory:
         )
 
     def from_properties(
-        self,
-        domain: int,
-        object_index: int,
-        x: int,
-        y: int,
-        length: Optional[int],
-        index: int,
+        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int,
     ):
         data = bytearray(3)
 

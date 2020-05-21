@@ -131,7 +131,7 @@ class BlockBank(QWidget):
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
 
-        bg_color = QColor(*bg_color_for_object_set(self.object_set, 0))
+        bg_color = bg_color_for_object_set(self.object_set, 0)
         painter.setBrush(QBrush(bg_color))
 
         painter.drawRect(QRect(QPoint(0, 0), self.size()))

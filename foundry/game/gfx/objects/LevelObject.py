@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Union
 
 from PySide2.QtCore import QRect, QSize
-from PySide2.QtGui import QColor, QImage, QPainter
+from PySide2.QtGui import QImage, QPainter
 
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import (
@@ -9,6 +9,7 @@ from foundry.game.ObjectDefinitions import (
     DIAG_DOWN_LEFT,
     DIAG_DOWN_RIGHT,
     DIAG_UP_RIGHT,
+    DIAG_WEIRD,
     ENDING,
     END_ON_BOTTOM_OR_RIGHT,
     END_ON_TOP_OR_LEFT,
@@ -22,14 +23,13 @@ from foundry.game.ObjectDefinitions import (
     TWO_ENDS,
     UNIFORM,
     VERTICAL,
-    DIAG_WEIRD,
 )
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
 
 SKY = 0
 GROUND = 27
@@ -449,10 +449,15 @@ class LevelObject(ObjectLike):
             new_width = self.width
 
             if self.ending == UNIFORM:
+                if self.is_4byte:
+                    # there is one VERTICAL 4-byte object: Vertically oriented X-blocks
+                    # the width is the primary expansion
+                    new_width = (self.obj_index & 0x0F) + 1
+
                 for _ in range(new_height):
-                    for x in range(self.width):
+                    for x in range(new_width):
                         for y in range(self.height):
-                            blocks_to_draw.append(self.blocks[x])
+                            blocks_to_draw.append(self.blocks[x % self.width])
 
             elif self.ending == END_ON_TOP_OR_LEFT:
                 # in case the drawn object is smaller than its actual size
@@ -688,36 +693,109 @@ class LevelObject(ObjectLike):
     def get_position(self):
         return self.x_position, self.y_position
 
-    def resize_to(self, x: int, y: int):
-        if not self.is_single_block:
+    def expands(self):
+        expands = EXPANDS_NOT
+
+        if self.is_single_block:
+            return expands
+
+        if self.is_4byte:
+            expands |= EXPANDS_BOTH
+
+        elif self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND] or self.orientation in [
+            DIAG_DOWN_LEFT,
+            DIAG_DOWN_RIGHT,
+            DIAG_UP_RIGHT,
+            DIAG_WEIRD,
+        ]:
+            expands |= EXPANDS_HORIZ
+
+        elif self.orientation in [VERTICAL, DIAG_WEIRD]:
+            expands |= EXPANDS_VERT
+
+        return expands
+
+    def primary_expansion(self):
+        if self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND] or self.orientation in [
+            DIAG_DOWN_LEFT,
+            DIAG_DOWN_RIGHT,
+            DIAG_UP_RIGHT,
+            DIAG_WEIRD,
+        ]:
             if self.is_4byte:
-                max_width = 0xFF
+                return EXPANDS_VERT
             else:
-                max_width = 0x0F
+                return EXPANDS_HORIZ
+        elif self.orientation in [VERTICAL]:
+            if self.is_4byte:
+                return EXPANDS_HORIZ
+            else:
+                return EXPANDS_VERT
+        else:
+            return EXPANDS_BOTH
 
-            # don't get negative
-            width = max(0, x - self.x_position)
+    def resize_x(self, x: int):
+        if self.expands() & EXPANDS_HORIZ == 0:
+            return
 
-            # stay under maximum width
-            width = min(width, max_width)
+        if self.primary_expansion() == EXPANDS_HORIZ:
+            length = x - self.x_position
+
+            length = max(0, length)
+            length = min(length, 0x0F)
+
+            base_index = (self.obj_index // 0x10) * 0x10
+
+            self.obj_index = base_index + length
+            self.data[2] = self.obj_index
+        else:
+            length = x - self.x_position
+            length = max(0, length)
+            length = min(length, 0xFF)
 
             if self.is_4byte:
-                self.data[3] = width
+                self.data[3] = length
             else:
-                base_index = (self.obj_index // 0x10) * 0x10
+                raise ValueError("Resize impossible", self)
 
-                self.obj_index = base_index + width
-                self.data[2] = self.obj_index
+        self._calculate_lengths()
 
-            self._calculate_lengths()
+        self._render()
 
-            self._render()
+    def resize_y(self, y: int):
+        if self.expands() & EXPANDS_VERT == 0:
+            return
+
+        if self.primary_expansion() == EXPANDS_VERT:
+            length = y - self.y_position
+
+            length = max(0, length)
+            length = min(length, 0x0F)
+
+            base_index = (self.obj_index // 0x10) * 0x10
+
+            self.obj_index = base_index + length
+            self.data[2] = self.obj_index
+        else:
+            length = y - self.y_position
+            length = max(0, length)
+            length = min(length, 0xFF)
+
+            if self.is_4byte:
+                self.data[3] = length
+            else:
+                raise ValueError("Resize impossible", self)
+
+        self._calculate_lengths()
+
+        self._render()
 
     def resize_by(self, dx: int, dy: int):
-        new_x = self.x_position + dx
-        new_y = self.y_position + dy
+        if dx:
+            self.resize_x(self.x_position + dx)
 
-        self.resize_to(new_x, new_y)
+        if dy:
+            self.resize_y(self.y_position + dy)
 
     def increment_type(self):
         self.change_type(True)
@@ -774,9 +852,6 @@ class LevelObject(ObjectLike):
             ("Ending", ENDING_STR[self.ending]),
         ]
 
-    def get_rect(self) -> QRect:
-        return self.rect
-
     def display_size(self, zoom_factor: int = 1):
         return QSize(self.rendered_width * Block.SIDE_LENGTH, self.rendered_height * Block.SIDE_LENGTH) * zoom_factor
 
@@ -789,7 +864,7 @@ class LevelObject(ObjectLike):
             QImage.Format_RGB888,
         )
 
-        bg_color = QColor(*bg_color_for_object_set(self.object_set.number, 0))
+        bg_color = bg_color_for_object_set(self.object_set.number, 0)
 
         image.fill(bg_color)
 

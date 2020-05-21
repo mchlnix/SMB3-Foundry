@@ -7,6 +7,8 @@ from foundry.conftest import compare_images
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.gui.ObjectViewer import ObjectDrawArea
 from smb3parse.objects.object_set import (
+    DUNGEON_GRAPHICS_SET,
+    DUNGEON_OBJECT_SET,
     HILLY_GRAPHICS_SET,
     HILLY_OBJECT_SET,
     PLAINS_GRAPHICS_SET,
@@ -93,6 +95,21 @@ def test_object_rendering_2_1(object_index, domain, object_set, graphic_set, qtb
     ],
 )
 def test_object_rendering_0_0(object_index, domain, object_set, graphic_set, qtbot):
+    object_factory = LevelObjectFactory(object_set, graphic_set, 0, [], False)
+
+    level_object = object_factory.from_properties(domain, object_index, 0, 0, 8, 0)
+
+    _test_object_against_reference(level_object, qtbot)
+
+
+@pytest.mark.parametrize(
+    "object_index, domain, object_set, graphic_set",
+    [
+        (0xF0, 0x0, DUNGEON_OBJECT_SET, DUNGEON_GRAPHICS_SET),  # Vertically oriented X-blocks
+        (0xF7, 0x0, DUNGEON_OBJECT_SET, DUNGEON_GRAPHICS_SET),
+    ],
+)
+def test_object_rendering_1_0_1(object_index, domain, object_set, graphic_set, qtbot):
     object_factory = LevelObjectFactory(object_set, graphic_set, 0, [], False)
 
     level_object = object_factory.from_properties(domain, object_index, 0, 0, 8, 0)
