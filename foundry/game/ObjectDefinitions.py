@@ -1,9 +1,10 @@
 import yaml
 from yaml import CLoader as Loader
-
 import logging
 from foundry import data_dir
 from dataclasses import dataclass
+
+from foundry.game.Range import Range
 
 HORIZONTAL = 0
 VERTICAL = 1  # vertical downward
@@ -165,27 +166,6 @@ class BitMapPicture:
             logging.CRITICAL(f"{e} from BitMapPicture.from_ints({width}, {height}, {obj_generator}, {ending}, "
                              f"{offset_x}, {offset_y}")
             print(e)
-
-
-@dataclass
-class Range:
-    """Determine range of numbers python"""
-    start: int = 0
-    end: int = 0
-
-    def is_inside(self, idx: int) -> bool:
-        """Determines if an idx is inside the range"""
-        try:
-            return self.start <= idx <= self.end
-        except TypeError:
-            return False
-
-    @classmethod
-    def from_dict(cls, dic: dict, default_start: int = 0, default_end: int = 0):
-        """Makes a dictionary from dictionary values"""
-        start = dic["start"] if "start" in dic else default_start
-        end = dic["end"] if "end" in dic else default_end
-        return cls(start, end)
 
 
 @dataclass

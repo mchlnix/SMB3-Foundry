@@ -1,4 +1,10 @@
-from collections import namedtuple
+from dataclasses import dataclass
+from dataclasses import astuple
+import yaml
+from yaml import CLoader as Loader
+
+from foundry.game.Range import Range
+from foundry import data_dir
 
 WORLD_MAP_OBJECT_SET = 0x00
 PLAINS_OBJECT_SET = 0x01
@@ -32,6 +38,40 @@ def is_valid_object_set_number(object_set_number: int):
     return object_set_number in range(MIN_OBJECT_SET, MAX_OBJECT_SET + 1)
 
 
+@dataclass
+class ObjectSetLevelData:
+    name: str = ""
+    jump_offset: int = 0x10010
+    range: Range = Range(0, 0)
+
+    @property
+    def level_offset(self):
+        return self.jump_offset
+
+    @classmethod
+    def from_dict(cls, dic: dict):
+        """Makes ObjectSetLevelData from a dictionary"""
+        jump_offset = dic["jump_offset"]
+        jump_offset = int(jump_offset[1:], 16) if \
+            isinstance(jump_offset, str) and jump_offset.startswith("$") else int(dic["jump_offset"])
+        return cls(
+            name=dic["name"],
+            jump_offset=jump_offset,
+            range=Range.from_dict(dic["range"])
+        )
+
+
+def load_obj_lvl_data_from_yaml(file_path: str):
+    with open(file_path) as f:
+        lvl_data = yaml.load(f, Loader=Loader)
+    for key, set in lvl_data.items():
+        lvl_data[key] = ObjectSetLevelData.from_dict(set)
+    return lvl_data
+
+
+object_set_level_data = load_obj_lvl_data_from_yaml(data_dir.joinpath("object_level_data.yaml"))
+
+
 class ObjectSet:
     def __init__(self, object_set_number: int):
         self.number = object_set_number
@@ -40,7 +80,7 @@ class ObjectSet:
             self.level_offset = 0
             self.name = "Enemy/Item Object set"
         else:
-            self.level_offset, self.name, self._level_range = object_set_level_data[object_set_number]
+            self.name, self.level_offset, self._level_range = astuple(object_set_level_data[object_set_number])
 
             self._object_length_lookup_table = _object_set_to_object_length_lookup_table[object_set_number]
 
@@ -82,28 +122,6 @@ class ObjectSet:
             return 3  # size of all enemies and items
 
         return self._object_length_lookup_table[domain][object_id // OBJECT_GROUP_SIZE]
-
-
-ObjectSetLevelData = namedtuple("ObjectSetPointerType", "offset name level_range")
-
-object_set_level_data = [
-    ObjectSetLevelData(0x0000, "Map Screen", range(0x18010, 0x1A00F)),
-    ObjectSetLevelData(0x4000, "Plains", range(0x1E512, 0x2000F)),
-    ObjectSetLevelData(0x10000, "Dungeon", range(0x2A7F7, 0x2C00F)),
-    ObjectSetLevelData(0x6000, "Hilly", range(0x20587, 0x2200F)),
-    ObjectSetLevelData(0x8000, "Sky", range(0x227E0, 0x2400F)),
-    ObjectSetLevelData(0xC000, "Piranha Plant", range(0x26A6F, 0x2800F)),
-    ObjectSetLevelData(0xA000, "Water", range(0x24BA7, 0x2600F)),
-    ObjectSetLevelData(0x0000, "Mushroom House", range(0x0000, 0x0000)),
-    ObjectSetLevelData(0xA000, "Pipe", range(0x24BA7, 0x2600F)),
-    ObjectSetLevelData(0xE000, "Desert", range(0x28F3F, 0x2A00F)),
-    ObjectSetLevelData(0x14000, "Ship", range(0x2EC07, 0x3000F)),
-    ObjectSetLevelData(0xC000, "Giant", range(0x26A6F, 0x2800F)),
-    ObjectSetLevelData(0x8000, "Ice", range(0x227E0, 0x2400F)),
-    ObjectSetLevelData(0xC000, "Cloudy", range(0x26A6F, 0x2800F)),
-    ObjectSetLevelData(0x0000, "Underground", range(0x1A587, 0x1C00F)),
-    ObjectSetLevelData(0x0000, "Spade House", range(0xA010, 0xC00F)),
-]
 
 
 _object_length_lookup_table = [
