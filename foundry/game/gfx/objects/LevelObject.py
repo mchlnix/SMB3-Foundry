@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Union
 
 from PySide2.QtCore import QRect, QSize
-from PySide2.QtGui import QColor, QImage, QPainter
+from PySide2.QtGui import QImage, QPainter
 
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import (
@@ -9,6 +9,7 @@ from foundry.game.ObjectDefinitions import (
     DIAG_DOWN_LEFT,
     DIAG_DOWN_RIGHT,
     DIAG_UP_RIGHT,
+    DIAG_WEIRD,
     ENDING,
     END_ON_BOTTOM_OR_RIGHT,
     END_ON_TOP_OR_LEFT,
@@ -22,7 +23,6 @@ from foundry.game.ObjectDefinitions import (
     TWO_ENDS,
     UNIFORM,
     VERTICAL,
-    DIAG_WEIRD,
 )
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.Palette import bg_color_for_object_set
@@ -702,19 +702,26 @@ class LevelObject(ObjectLike):
         if self.is_4byte:
             expands |= EXPANDS_BOTH
 
-        if self.orientation in [DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT, DIAG_WEIRD]:
-            expands |= EXPANDS_BOTH
-
-        elif self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND]:
+        elif self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND] or self.orientation in [
+            DIAG_DOWN_LEFT,
+            DIAG_DOWN_RIGHT,
+            DIAG_UP_RIGHT,
+            DIAG_WEIRD,
+        ]:
             expands |= EXPANDS_HORIZ
 
-        elif self.orientation in [VERTICAL]:
+        elif self.orientation in [VERTICAL, DIAG_WEIRD]:
             expands |= EXPANDS_VERT
 
         return expands
 
     def primary_expansion(self):
-        if self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND]:
+        if self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND] or self.orientation in [
+            DIAG_DOWN_LEFT,
+            DIAG_DOWN_RIGHT,
+            DIAG_UP_RIGHT,
+            DIAG_WEIRD,
+        ]:
             if self.is_4byte:
                 return EXPANDS_VERT
             else:
