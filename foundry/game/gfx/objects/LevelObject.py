@@ -37,22 +37,22 @@ GROUND = 27
 ENDING_STR = {0: "Uniform", 1: "Top or Left", 2: "Bottom or Right", 3: "Top & Bottom/Left & Right"}
 
 ORIENTATION_TO_STR = {
-    0: "Horizontal",
-    1: "Vertical",
-    2: "Diagonal ↙",
-    3: "Desert Pipe Box",
-    4: "Diagonal ↘",
-    5: "Diagonal ↗",
-    6: "Horizontal to the Ground",
-    7: "Horizontal Alternative",
-    8: "Diagonal Weird",  # up left?
-    9: "Single Block",
-    10: "Centered",
-    11: "Pyramid to Ground",
-    12: "Pyramid Alternative",
-    13: "To the Sky",
-    14: "Ending",
-}
+        0: "Horizontal",
+        1: "Vertical",
+        2: "Diagonal Left-Down",
+        3: "Desert Pipe Box",
+        4: "Diagonal Right-Down",
+        5: "Diagonal Right-Up",
+        6: "Horizontal to the Ground",
+        7: "Horizontal Alternative",
+        8: "Diagonal Weird",  # up left?
+        9: "Single Block",
+        10: "Centered",
+        11: "Pyramid to Ground",
+        12: "Pyramid Alternative",
+        13: "To the Sky",
+        14: "Ending",
+    }
 
 # todo what is this, exactly?
 ENDING_OBJECT_OFFSET = 0x1C8F9

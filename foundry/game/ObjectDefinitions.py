@@ -1,6 +1,7 @@
-from typing import List
-
+import yaml
+import logging
 from foundry import data_dir
+from dataclasses import dataclass
 
 HORIZONTAL = 0
 VERTICAL = 1  # vertical downward
@@ -23,73 +24,9 @@ END_ON_TOP_OR_LEFT = 1
 END_ON_BOTTOM_OR_RIGHT = 2
 TWO_ENDS = 3
 
-
 ENEMY_OBJECT_DEFINITION = 12
 
-
-class ObjectDefinition:
-    def __init__(self, string):
-        string = string.rstrip().replace("<", "").replace(">", "")
-
-        self.domain, self.min_value, self.max_value, self.bmp_width, self.bmp_height, *self.object_design, self.orientation, self.ending, self.is_4byte, self.description = string.split(
-            ","
-        )
-
-        self.bmp_width = int(self.bmp_width)
-        self.bmp_height = int(self.bmp_height)
-        self.orientation = int(self.orientation)
-        self.ending = int(self.ending)
-        self.is_4byte = self.is_4byte == "1"
-        self.description = self.description.replace(";;", ",")
-
-        self.object_design2 = []
-        self.rom_object_design = []
-
-        for index, item in enumerate(self.object_design):
-            self.object_design[index] = int(item)  # original data
-            self.object_design2.append(0)  # data after trimming through romobjset*.dat file?
-            self.rom_object_design.append(self.object_design[index])
-            self.object_design_length = index + 1  # todo necessary when we have len()?
-
-        self.description = self.description.split("|")[0]
-
-
-object_metadata: List[List[ObjectDefinition]] = [[]]
-enemy_handle_x = []
-enemy_handle_x2 = []
-enemy_handle_y = []
-
-with open(data_dir.joinpath("data.dat"), "r") as f:
-    first_index = 0  # todo what are they symbolizing? object tables?
-    second_index = 0
-
-    for line in f.readlines():
-        if line.startswith(";"):  # is a comment
-            continue
-
-        if line.rstrip() == "":
-            object_metadata.append([])
-
-            first_index += 1
-            second_index = 0
-            continue
-
-        object_metadata[first_index].append(ObjectDefinition(line))
-
-        if first_index == ENEMY_OBJECT_DEFINITION and second_index <= 236:
-            if line.find("|") >= 0:
-                x, y, x2 = line.split("|")[1].split(" ")
-            else:
-                x, y, x2 = "0 0 0".split(" ")
-
-            enemy_handle_x.append(x)
-            enemy_handle_x2.append(x2)
-            enemy_handle_y.append(y)
-
-        second_index += 1
-
-
-object_set_to_definition = {
+OBJECT_SET_TO_DEFINITION = {
     0: 0,
     1: 1,
     7: 1,
@@ -111,10 +48,268 @@ object_set_to_definition = {
 }
 
 
+logging.basicConfig(filename="data/logs/obj_def.log", level=logging.DEBUG)
+
+
+@dataclass
+class Size:
+    """Defines a 2d shape"""
+    width: int = 0
+    height: int = 0
+
+    @classmethod
+    def from_dict(cls, dic: dict, default_width: int = 1, default_height: int = 1):
+        """Makes a 2d size from a dictionary of values"""
+        width = dic["width"] if "width" in dic else default_width
+        height = dic["height"] if "height" in dic else default_height
+        return cls(width, height)
+
+
+@dataclass
+class BitMapPicture:
+    """Bit map picture """
+    size: Size
+    obj_generator: int
+    ending: int = 0
+    offset_x: int = 0
+    offset_y: int = 0
+
+    STR_TO_ORIENTATION = {
+        "Horizontal": 0,
+        "Vertical": 1,
+        "Diagonal Left-Down": 2,
+        "Desert Pipe Box": 3,
+        "Diagonal Right-Down": 4,
+        "Diagonal Right-Up": 5,
+        "Horizontal to the Ground": 6,
+        "Horizontal Alternative": 7,
+        "Diagonal Weird": 8,
+        "Single Block": 9,
+        "Centered": 10,
+        "Pyramid to Ground": 11,
+        "Pyramid Alternative": 12,
+        "To the Sky": 13,
+        "Ending": 14,
+    }
+
+    ORIENTATION_TO_STR = {
+        0: "Horizontal",
+        1: "Vertical",
+        2: "Diagonal Left-Down",
+        3: "Desert Pipe Box",
+        4: "Diagonal Right-Down",
+        5: "Diagonal Right-Up",
+        6: "Horizontal to the Ground",
+        7: "Horizontal Alternative",
+        8: "Diagonal Weird",  # up left?
+        9: "Single Block",
+        10: "Centered",
+        11: "Pyramid to Ground",
+        12: "Pyramid Alternative",
+        13: "To the Sky",
+        14: "Ending",
+    }
+
+    @property
+    def orientation(self):
+        """Legacy property for compatibility"""
+        return self.obj_generator
+
+    @property
+    def obj_generator_name(self):
+        """Provides the name of the generator"""
+        return self.ORIENTATION_TO_STR[self.obj_generator]
+
+    @classmethod
+    def from_dict(cls, dic):
+        """Makes a bmp from a dictionary of values"""
+        size = Size.from_dict(dic["size"]) if "size" in dic else Size(1, 1)
+        obj_generator = cls.STR_TO_ORIENTATION[dic["obj_generator"]] if "obj_generator" in dic else [0xFF]
+        ending = dic["ending"] if "ending" in dic else 0
+        offset_x = dic["offset_x"] if "offset_x" in dic else 0
+        offset_y = dic["offset_y"] if "offset_y" in dic else 0
+        return cls(size, obj_generator, ending, offset_x, offset_y)
+
+    @classmethod
+    def from_ints(cls, width: int, height: int, obj_generator: int, ending: int, offset_x: int = 0, offset_y: int = 0):
+        """Makes a bmp from a series of ints"""
+        try:
+            return cls(Size(width, height), obj_generator, ending, offset_x, offset_y)
+        except TypeError as e:
+            logging.CRITICAL(f"{e} from BitMapPicture.from_ints({width}, {height}, {obj_generator}, {ending}, "
+                             f"{offset_x}, {offset_y}")
+            print(e)
+
+
+@dataclass
+class Range:
+    """Determine range of numbers python"""
+    start: int = 0
+    end: int = 0
+
+    def is_inside(self, idx: int) -> bool:
+        """Determines if an idx is inside the range"""
+        try:
+            return self.start <= idx <= self.end
+        except TypeError:
+            return False
+
+    @classmethod
+    def from_dict(cls, dic: dict, default_start: int = 0, default_end: int = 0):
+        """Makes a dictionary from dictionary values"""
+        start = dic["start"] if "start" in dic else default_start
+        end = dic["end"] if "end" in dic else default_end
+        return cls(start, end)
+
+
+@dataclass
+class ObjectDefinition:
+    """Determines what an object (Block generator or sprite generator is)"""
+    object_design: list
+    domain: int = 0
+    bmp: BitMapPicture = BitMapPicture.from_ints(1, 1, 0, 0)
+    range: Range = Range(-1, -1)
+    bytes: int = 0
+    description: str = ""
+
+    @property
+    def is_4byte(self):
+        """Legacy property for compatibility"""
+        return self.bytes == 4
+
+    @property
+    def object_design_length(self):
+        """Legacy property for compatibility"""
+        return len(self.object_design)
+
+    @object_design_length.setter
+    def object_design_length(self, length: int):
+        """Legacy property for compatibility"""
+        pass
+
+    @property
+    def rom_object_design(self):
+        """Legacy property for compatibility"""
+        return self.object_design
+
+    @rom_object_design.setter
+    def rom_object_design(self, design: list):
+        """Legacy property for compatibility"""
+        self.object_design = design
+
+    @property
+    def ending(self):
+        """Legacy property for compatibility"""
+        return self.bmp.ending
+
+    @property
+    def bmp_width(self):
+        """Legacy property for compatibility"""
+        return self.bmp.size.width
+
+    @property
+    def bmp_height(self):
+        """Legacy property for compatibility"""
+        return self.bmp.size.height
+
+    @property
+    def orientation(self):
+        """Legacy property for compatibility"""
+        return self.bmp.orientation
+
+    def log(self):
+        """Logs all of the class' attributes"""
+        logging.debug(f"{self}")
+
+    @classmethod
+    def from_string(cls, string: str):
+        """Legacy method for old data.dat file"""
+        string = string.rstrip().replace("<", "").replace(">", "")
+
+        domain, min_value, max_value, bmp_width, bmp_height, *object_design, orientation, ending, extra_bytes, \
+            description = string.split(",")
+
+        if string.find("|") >= 0:
+            offset_x, offset_y, offset_sub_x = string.split("|")[1].split(" ")
+        else:
+            offset_x, offset_y = "0", "0"
+
+        return cls(
+            object_design=[int(i) for i in object_design],
+            domain=int(domain),
+            range=Range(start=int(min_value, 16), end=int(max_value, 16)),
+            bmp=BitMapPicture.from_ints(
+                int(bmp_width), int(bmp_height), int(orientation), int(ending),
+                offset_x=int(offset_x), offset_y=int(offset_y)
+            ),
+            bytes=int(extra_bytes) + 3,
+            description=description.split("|")[0].replace(";;", ",")
+        )
+
+
+enemy_handle_x, enemy_handle_x2, enemy_handle_y = [], [], []
+
+
+def load_obj_definitions_from_yaml(file_path):
+    """Loads all the object definitions at once from a .yaml file"""
+    with open(file_path) as f:
+        obj_definitions = yaml.load(f, Loader=yaml.FullLoader)
+
+    for key, tileset in obj_definitions.items():
+        for k, tile in tileset.items():
+            tileset[k] = ObjectDefinition(
+                object_design=tile["object_design"],
+                domain=tile["domain"],
+                bmp=BitMapPicture.from_dict(tile["bmp"]),
+                range=Range.from_dict(tile["range"]),
+                bytes=tile["bytes"],
+                description=tile["description"]
+            )
+
+            if int(key) == ENEMY_OBJECT_DEFINITION and int(k) <= 236:
+                enemy_handle_x.append(str(tileset[k].bmp.offset_x))
+                enemy_handle_y.append(str(tileset[k].bmp.offset_y))
+
+            tileset[k].log()
+
+    return obj_definitions
+
+
+def load_obj_definitions_from_dat(file_path):
+    """Loads all the object definitions at once from a .dat file"""
+    obj_metadata, tileset, idx = [[]], 0, 0
+    with open(file_path, "r") as f:
+        for line in f.readlines():
+            if line.startswith(";"):
+                continue
+            if not line.rstrip():
+                obj_metadata.append([])
+                tileset, idx = tileset + 1, 0
+                continue
+            else:
+                obj_def = ObjectDefinition.from_string(line)
+                obj_metadata[tileset].append(obj_def)
+                obj_def.log()
+                if tileset == ENEMY_OBJECT_DEFINITION and idx <= 236:
+                    if line.find("|") >= 0:
+                        x, y, x2 = line.split("|")[1].split(" ")
+                    else:
+                        x, y, x2 = "0 0 0".split(" ")
+
+                    enemy_handle_x.append(x)
+                    enemy_handle_x2.append(x2)
+                    enemy_handle_y.append(y)
+                idx += 1
+    return obj_metadata
+
+
+object_metadata = load_obj_definitions_from_yaml(data_dir.joinpath("object_definitions.yaml"))
+
+
 def load_object_definitions(object_set):
     global object_metadata
 
-    object_definition = object_set_to_definition[object_set]
+    object_definition = OBJECT_SET_TO_DEFINITION[object_set]
 
     if object_definition == ENEMY_OBJECT_DEFINITION:
         return object_metadata[object_definition]
