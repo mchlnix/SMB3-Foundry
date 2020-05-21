@@ -8,10 +8,10 @@ matrix:
       virtualenv:
         system_site_packages: true
       before_install:
-        - if [ -n "$TRAVIS_TAG" ]; then [ "$(cat VERSION)" == "$TRAVIS_TAG" ]; fi  # check VERSION is set correctly
         - python3 -m pip install --upgrade pip
         - python3 -m pip install -r requirements.txt
         - python3 -m pip install pyinstaller
+        - python3 .ci-tag-check.py
       install:
         - true;
       script:
@@ -35,9 +35,11 @@ matrix:
       osx_image: xcode10.2  # Python 3.7.2 running on macOS 10.14.3
       language: shell
       before_install:
+        - if [ -n "$TRAVIS_TAG" ]; then [ "$(cat VERSION)" == "$TRAVIS_TAG" ]; fi  # check VERSION is set correctly
         - python3 -m pip install --upgrade pip
         - python3 -m pip install -r requirements.txt
         - python3 -m pip install pyinstaller
+        - python3 .ci-tag-check.py
       install:
         - true;
       script:
@@ -66,6 +68,7 @@ matrix:
         - python -m pip install --upgrade pip
         - python -m pip install -r requirements.txt
         - python -m pip install pyinstaller
+        - python .ci-tag-check.py
       install:
         - true;
       script:
