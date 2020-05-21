@@ -9,11 +9,14 @@ which in turn only happens on tagged commits.
 import os
 from pathlib import Path
 
-if "TRAVIS_TAG" not in os.environ:
+current_tag = os.environ["TRAVIS_TAG"].strip()
+
+if not current_tag:
+    print("No tag set. Proceed.")
     quit(0)
 
-current_tag = os.environ["TRAVIS_TAG"].strip()
 current_version = Path("VERSION").read_text().strip()
 
 if current_version != current_tag:
+    print(f"VERSION: '{current_version}', TAG: '{current_tag}'")
     quit(1)
