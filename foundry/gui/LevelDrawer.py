@@ -24,11 +24,28 @@ def _load_from_png(x: int, y: int):
     return image
 
 
+FIRE_FLOWER = _load_from_png(16, 53)
+LEAF = _load_from_png(17, 53)
+NORMAL_STAR = _load_from_png(18, 53)
+CONTINUOUS_STAR = _load_from_png(19, 53)
+MULTI_COIN = _load_from_png(20, 53)
+ONE_UP = _load_from_png(21, 53)
+COIN = _load_from_png(22, 53)
+VINE = _load_from_png(23, 53)
+P_SWITCH = _load_from_png(24, 53)
+SILVER_COIN = _load_from_png(25, 53)
+INVISIBLE_COIN = _load_from_png(26, 53)
+INVISIBLE_1_UP = _load_from_png(27, 53)
+
 NO_JUMP = _load_from_png(32, 53)
 UP_ARROW = _load_from_png(33, 53)
 DOWN_ARROW = _load_from_png(34, 53)
 LEFT_ARROW = _load_from_png(35, 53)
 RIGHT_ARROW = _load_from_png(36, 53)
+
+ITEM_ARROW = _load_from_png(53, 53)
+
+EMPTY_IMAGE = _load_from_png(0, 53)
 
 
 class LevelDrawer:
@@ -102,26 +119,38 @@ class LevelDrawer:
             level_object.draw(painter, self.block_length, self.transparency)
 
     def _draw_overlays(self, painter: QPainter, level: Level):
-        for level_object in level.get_all_objects():
+        painter.save()
+
+        for level_object in level.objects:
+            name = level_object.description.lower()
+
+            pos = level_object.get_rect(self.block_length).topLeft()
+
+            # invisible coins, for example, expand and need to have multiple overlays drawn onto them
+            # set true by default, since for most overlays it doesn't matter
+            fill_object = True
+
             # pipe entries
-            if "CAN go" in level_object.description:
+            if "pipe" in name and "can go" in name:
+                fill_object = False
+
                 rect = level_object.get_rect(self.block_length)
 
                 # center() is one pixel off for some reason
                 pos = rect.topLeft() + QPoint(*(rect.size() / 2).toTuple())
 
-                if "Left" in level_object.description:
+                if "left" in name:
                     image = LEFT_ARROW
 
                     pos.setX(rect.right())
                     pos.setY(pos.y() - self.block_length / 2)
 
-                elif "Right" in level_object.description:
+                elif "right" in name:
                     image = RIGHT_ARROW
                     pos.setX(rect.left() - self.block_length)
                     pos.setY(pos.y() - self.block_length / 2)
 
-                elif "Down" in level_object.description:
+                elif "down" in name:
                     image = DOWN_ARROW
 
                     pos.setX(pos.x() - self.block_length / 2)
@@ -135,9 +164,57 @@ class LevelDrawer:
                 if not self._object_in_jump_area(level, level_object):
                     image = NO_JUMP
 
-                image = image.scaled(self.block_length, self.block_length)
+            # "?" - blocks, note blocks, wooden blocks and bricks
+            elif "'?' with" in name or "brick with" in name or "bricks with" in name or "block with" in name:
+                pos.setY(pos.y() - self.block_length)
 
+                if "flower" in name:
+                    image = FIRE_FLOWER
+                elif "leaf" in name:
+                    image = LEAF
+                elif "continuous star" in name:
+                    image = CONTINUOUS_STAR
+                elif "star" in name:
+                    image = NORMAL_STAR
+                elif "multi-coin" in name:
+                    image = MULTI_COIN
+                elif "coin" in name:
+                    image = COIN
+                elif "1-up" in name:
+                    image = ONE_UP
+                elif "vine" in name:
+                    image = VINE
+                elif "p-switch" in name:
+                    image = P_SWITCH
+                else:
+                    image = EMPTY_IMAGE
+
+                # draw little arrow for the offset item overlay
+                arrow_pos = QPoint(pos)
+                arrow_pos.setY(arrow_pos.y() + self.block_length / 4)
+                painter.drawImage(arrow_pos, ITEM_ARROW.scaled(self.block_length, self.block_length))
+
+            elif "invisible coin" in name:
+                image = INVISIBLE_COIN
+            elif "invisible 1-up" in name:
+                image = INVISIBLE_1_UP
+            elif "silver coins" in name:
+                image = SILVER_COIN
+            else:
+                continue
+
+            if fill_object:
+                for x in range(level_object.rendered_width):
+                    adapted_pos = QPoint(pos)
+                    adapted_pos.setX(pos.x() + x * self.block_length)
+
+                    image = image.scaled(self.block_length, self.block_length)
+                    painter.drawImage(adapted_pos, image)
+            else:
+                image = image.scaled(self.block_length, self.block_length)
                 painter.drawImage(pos, image)
+
+        painter.restore()
 
     @staticmethod
     def _object_in_jump_area(level: Level, level_object: LevelObject):
