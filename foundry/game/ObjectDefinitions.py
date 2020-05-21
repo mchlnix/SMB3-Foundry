@@ -1,4 +1,6 @@
 import yaml
+from yaml import CLoader as Loader
+
 import logging
 from foundry import data_dir
 from dataclasses import dataclass
@@ -48,7 +50,31 @@ OBJECT_SET_TO_DEFINITION = {
 }
 
 
-logging.basicConfig(filename="data/logs/obj_def.log", level=logging.DEBUG)
+logging.basicConfig(filename=data_dir.joinpath("logs/obj_def.log"), level=logging.DEBUG)
+
+
+class Block_Design:
+    """Defines the design of an object"""
+    def __init__(self, blocks: list = []):
+        self.blocks = blocks
+
+    @classmethod
+    def from_dat_file(cls, data, len, pos):
+        """Legacy function to load block designs from a .dat file"""
+        l = []
+        for i in range(len):
+            if data[pos] == 0xFF:
+                block_index = (data[pos + 1] << 16) + (data[pos + 2] << 8) + data[pos + 3]
+                pos += 3
+            else:
+                block_index = data[pos]
+
+            l.append(block_index)
+            pos += 1
+        return cls(l), pos
+
+    def __repr__(self):
+        return f"Block_Design([{','.join(str(i) for i in self.blocks)}]"
 
 
 @dataclass
@@ -170,6 +196,7 @@ class ObjectDefinition:
     bmp: BitMapPicture = BitMapPicture.from_ints(1, 1, 0, 0)
     range: Range = Range(-1, -1)
     bytes: int = 0
+    block_design: Block_Design = Block_Design()
     description: str = ""
 
     @property
@@ -190,7 +217,7 @@ class ObjectDefinition:
     @property
     def rom_object_design(self):
         """Legacy property for compatibility"""
-        return self.object_design
+        return self.block_design.blocks
 
     @rom_object_design.setter
     def rom_object_design(self, design: list):
@@ -253,7 +280,7 @@ enemy_handle_x, enemy_handle_x2, enemy_handle_y = [], [], []
 def load_obj_definitions_from_yaml(file_path):
     """Loads all the object definitions at once from a .yaml file"""
     with open(file_path) as f:
-        obj_definitions = yaml.load(f, Loader=yaml.FullLoader)
+        obj_definitions = yaml.load(f, Loader=Loader)
 
     for key, tileset in obj_definitions.items():
         for k, tile in tileset.items():
@@ -263,7 +290,8 @@ def load_obj_definitions_from_yaml(file_path):
                 bmp=BitMapPicture.from_dict(tile["bmp"]),
                 range=Range.from_dict(tile["range"]),
                 bytes=tile["bytes"],
-                description=tile["description"]
+                description=tile["description"],
+                block_design=Block_Design(tile["block_design"])
             )
 
             if int(key) == ENEMY_OBJECT_DEFINITION and int(k) <= 236:
@@ -303,62 +331,44 @@ def load_obj_definitions_from_dat(file_path):
     return obj_metadata
 
 
+#object_metadata = load_obj_definitions_from_dat(data_dir.joinpath("data.dat"))
 object_metadata = load_obj_definitions_from_yaml(data_dir.joinpath("object_definitions.yaml"))
 
 
+def load_all_obj_definitions():
+    """A method to generate all object definitions for debugging or recreations"""
+    for object_definition in range(0, 11):
+
+        if object_definition == ENEMY_OBJECT_DEFINITION:
+            continue
+
+        with open(data_dir.joinpath(f"romobjs{object_definition}.dat"), "rb") as obj_def:
+            data = obj_def.read()
+
+        object_count = data[0]
+
+        if object_definition != 0 and object_count < 0xF7:
+            # first byte did not represent the object_count
+            object_count = 0xFF
+            position = 0
+        else:
+            position = 1
+
+        for object_index in range(object_count):
+            object_design_length = data[position]
+            position += 1
+
+            bd, position = Block_Design.from_dat_file(data, object_design_length, position)
+            try:
+                object_metadata[object_definition][object_index].block_design = bd
+            except:
+                pass
+
+
 def load_object_definitions(object_set):
+    """Loads the object definitions with the block definitions"""
     global object_metadata
 
     object_definition = OBJECT_SET_TO_DEFINITION[object_set]
-
-    if object_definition == ENEMY_OBJECT_DEFINITION:
-        return object_metadata[object_definition]
-
-    with open(data_dir.joinpath(f"romobjs{object_definition}.dat"), "rb") as obj_def:
-        data = obj_def.read()
-
-    assert len(data) > 0
-
-    object_count = data[0]
-
-    if object_definition != 0 and object_count < 0xF7:
-        # first byte did not represent the object_count
-        object_count = 0xFF
-        position = 0
-    else:
-        position = 1
-
-    for object_index in range(object_count):
-        object_design_length = data[position]
-
-        object_metadata[object_definition][object_index].object_design_length = object_design_length
-
-        position += 1
-
-        for i in range(object_design_length):
-            block_index = data[position]
-
-            if block_index == 0xFF:
-                block_index = (data[position + 1] << 16) + (data[position + 2] << 8) + data[position + 3]
-
-                position += 3
-
-            object_metadata[object_definition][object_index].rom_object_design[i] = block_index
-
-            position += 1
-
-    # read overlay data
-    if position >= len(data):
-        return
-
-    for object_index in range(object_count):
-        object_design_length = object_metadata[object_definition][object_index].object_design_length
-
-        object_metadata[object_definition][object_index].object_design2 = []
-
-        for i in range(object_design_length):
-            if i <= object_design_length:
-                object_metadata[object_definition][object_index].object_design2.append(data[position])
-                position += 1
 
     return object_metadata[object_definition]

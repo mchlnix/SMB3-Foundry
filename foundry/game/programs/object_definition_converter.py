@@ -1,6 +1,6 @@
 import yaml
 from dataclasses import asdict
-from foundry.game.ObjectDefinitions import ObjectDefinition, object_metadata
+from foundry.game.ObjectDefinitions import ObjectDefinition, object_metadata, load_all_obj_definitions
 """A temporary program used to convert the legacy data.dat file into yaml"""
 
 
@@ -33,7 +33,7 @@ def dictafy_object_definitions(obj):
     if isinstance(obj, dict):
         new_dict = {}
         for key in obj:
-            new_dict.update({key, dictafy_object_definitions(obj[key])})
+            new_dict.update({key: dictafy_object_definitions(obj[key])})
         return new_dict
     if isinstance(obj, int):
         return obj
@@ -44,9 +44,11 @@ def dictafy_object_definitions(obj):
     if isinstance(obj, ObjectDefinition):
         d = asdict(obj)
         d["bmp"].update({"obj_generator": ORIENTATION_TO_STR[d["bmp"]["obj_generator"]]})
+        d.update({"block_design": obj.block_design.blocks})
         return d
 
 
+load_all_obj_definitions()
 l = object_metadata.copy()
 l = dictafy_object_definitions(l)
 d = {i: ele for i, ele in enumerate(l)}
