@@ -7,11 +7,10 @@ from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
+from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
 from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
-
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
@@ -142,10 +141,15 @@ class LevelDrawer:
     def _draw_overlays(self, painter: QPainter, level: Level):
         painter.save()
 
-        for level_object in level.objects:
+        for level_object in level.get_all_objects():
             name = level_object.description.lower()
 
+            # only handle this specific enemy item for now
+            if isinstance(level_object, EnemyObject) and "invisible door" not in name:
+                continue
+
             pos = level_object.get_rect(self.block_length).topLeft()
+            rect = level_object.get_rect(self.block_length)
 
             # invisible coins, for example, expand and need to have multiple overlays drawn onto them
             # set true by default, since for most overlays it doesn't matter
@@ -157,8 +161,6 @@ class LevelDrawer:
                     continue
 
                 fill_object = False
-
-                rect = level_object.get_rect(self.block_length)
 
                 # center() is one pixel off for some reason
                 pos = rect.topLeft() + QPoint(*(rect.size() / 2).toTuple())
@@ -184,6 +186,16 @@ class LevelDrawer:
 
                     pos.setX(pos.x() - self.block_length / 2)
                     pos.setY(rect.bottom())
+
+                if not self._object_in_jump_area(level, level_object):
+                    image = NO_JUMP
+
+            elif "door" == name or "door (can go" in name or "invisible door" in name:
+                fill_object = False
+
+                image = DOWN_ARROW
+
+                pos.setY(rect.top() - self.block_length)
 
                 if not self._object_in_jump_area(level, level_object):
                     image = NO_JUMP
