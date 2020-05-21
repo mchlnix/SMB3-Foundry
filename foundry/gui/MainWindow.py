@@ -282,6 +282,7 @@ class MainWindow(QMainWindow):
         self.object_viewer = None
 
         self.level_ref = LevelRef()
+        self.level_ref.data_changed.connect(self._on_level_data_changed)
 
         self.context_menu = ContextMenu(self.level_ref)
         self.context_menu.triggered.connect(self.on_menu)
@@ -358,10 +359,12 @@ class MainWindow(QMainWindow):
         menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
         menu_toolbar.addSeparator()
 
-        undo_action = menu_toolbar.addAction(icon("rotate-ccw.svg"), "Undo Action")
-        undo_action.setEnabled(False)
-        redo_action = menu_toolbar.addAction(icon("rotate-cw.svg"), "Redo Action")
-        redo_action.setEnabled(False)
+        self.undo_action = menu_toolbar.addAction(icon("rotate-ccw.svg"), "Undo Action")
+        self.undo_action.triggered.connect(self.level_ref.undo)
+        self.undo_action.setEnabled(False)
+        self.redo_action = menu_toolbar.addAction(icon("rotate-cw.svg"), "Redo Action")
+        self.redo_action.triggered.connect(self.level_ref.redo)
+        self.redo_action.setEnabled(False)
 
         menu_toolbar.addSeparator()
         menu_toolbar.addAction(icon("play-circle.svg"), "Play Level").triggered.connect(self.on_play)
@@ -400,6 +403,10 @@ class MainWindow(QMainWindow):
             self.deleteLater()
 
         self.showMaximized()
+
+    def _on_level_data_changed(self):
+        self.undo_action.setEnabled(self.level_ref.undo_stack.undo_available)
+        self.redo_action.setEnabled(self.level_ref.undo_stack.redo_available)
 
     def on_play(self):
         """
