@@ -8,7 +8,7 @@ SETTINGS = dict()
 SETTINGS["instaplay_emulator"] = "fceux"
 SETTINGS["instaplay_arguments"] = "%f"
 
-SETTINGS["resize_method"] = RESIZE_LEFT_CLICK
+SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
 
 SETTINGS["draw_mario"] = True
 SETTINGS["draw_jumps"] = False
@@ -40,4 +40,4 @@ def load_settings():
 
 def save_settings():
     with open(str(default_settings_path), "w") as settings_file:
-        settings_file.write(json.dumps(SETTINGS))
+        settings_file.write(json.dumps(SETTINGS, indent=4, sort_keys=True))
