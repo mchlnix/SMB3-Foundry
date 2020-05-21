@@ -1,0 +1,96 @@
+1:
+    name: Map Screen
+    jump_offset: $10010
+    range:
+        start: $18010
+        end: $1A00F
+2:
+    name: Plains
+    jump_offset: $14010
+    range:
+        start: $1E512
+        end: $2000F
+3:
+    name: Dungeon
+    jump_offset: $20010
+    range:
+        start: $2A7F7
+        end: $2C00F
+4:
+    name: Hilly
+    jump_offset: $16010
+    range:
+        start: $20587
+        end: $2200F
+5:
+    name: Sky
+    jump_offset: $18010
+    range:
+        start: $227E0
+        end: $2400F
+6:
+    name: Piranha Plant
+    jump_offset: $1C010
+    range:
+        start: $26A6F
+        end: $2800F
+7:
+    name: Water
+    jump_offset: $1A010
+    range:
+        start: $24BA7
+        end: $2600F
+8:
+    name: Mushroom House
+    jump_offset: $10000
+    range:
+        start: $0
+        end: $0
+9:
+    name: Pipe
+    jump_offset: $1A010
+    range:
+        start: $24BA7
+        end: $2600F
+10:
+    name: Desert
+    jump_offset: $1E010
+    range:
+        start: $28F3F
+        end: $2A00F
+11:
+    name: Ship
+    jump_offset: $24010
+    range:
+        start: $2EC07
+        end: $3000F
+12:
+    name: Giant
+    jump_offset: $1C010
+    range:
+        start: $26A6F
+        end: $2800F
+13:
+    name: Ice
+    jump_offset: $18010
+    range:
+        start: $227E0
+        end: $2400F
+14:
+    name: Cloudy
+    jump_offset: $1C010
+    range:
+        start: $26A6F
+        end: $2800F
+15:
+    name: Underground
+    jump_offset: $10010
+    range:
+        start: $1A587
+        end: $1C007
+16:
+    name: Spade House
+    jump_offset: $10010
+    range:
+        start: $A010
+        end: $C00F
