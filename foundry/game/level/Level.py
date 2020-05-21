@@ -26,6 +26,14 @@ LEVEL_DEFAULT_HEIGHT = 27
 LEVEL_DEFAULT_WIDTH = 16
 
 
+def world_and_level_for_level_address(level_address: int):
+    for level in Level.offsets[1:]:
+        if level.rom_level_offset == level_address:
+            return level.game_world, level.level_in_world
+    else:
+        return -1, -1
+
+
 class LevelSignaller(QObject):
     data_changed: SignalInstance = Signal()
     jumps_changed: SignalInstance = Signal()
@@ -251,6 +259,10 @@ class Level(LevelLike):
         self.header_bytes[1] = value >> 8
 
         self._parse_header()
+
+    @property
+    def has_next_area(self):
+        return self.header_bytes[0] + self.header_bytes[1] != 0
 
     @property
     def next_area_enemies(self):

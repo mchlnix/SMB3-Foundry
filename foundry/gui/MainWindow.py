@@ -34,7 +34,7 @@ from foundry import (
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.level.Level import Level
+from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
@@ -373,7 +373,8 @@ class MainWindow(QMainWindow):
         menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In").triggered.connect(self.level_view.zoom_in)
         menu_toolbar.addSeparator()
         menu_toolbar.addAction(icon("tool.svg"), "Edit Level Header").triggered.connect(self.on_header_editor)
-        menu_toolbar.addAction(icon("arrow-right-circle.svg"), "Go to Jump Destination")
+        self.jump_destination_action = menu_toolbar.addAction(icon("arrow-right-circle.svg"), "Go to Jump Destination")
+        self.jump_destination_action.triggered.connect(self._go_to_jump_destination)
         menu_toolbar.addSeparator()
         # menu_toolbar.addAction(icon("help-circle.svg"), "What's this?")
 
@@ -384,18 +385,18 @@ class MainWindow(QMainWindow):
 
         self.delete_shortcut = QShortcut(QKeySequence(Qt.Key_Delete), self, self.remove_selected_objects)
 
-        self.cut_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_X), self, self._cut_objects)
-        self.copy_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
-        self.paste_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_X), self, self._cut_objects)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
 
-        self.undo_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Z), self, self.level_ref.undo)
-        self.redo_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Y), self, self.level_ref.redo)
-        self.redo_shortcut_alt = QShortcut(QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_Z), self, self.level_ref.redo)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Z), self, self.level_ref.undo)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Y), self, self.level_ref.redo)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_Z), self, self.level_ref.redo)
 
-        self.zoom_in_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Plus), self, self.level_view.zoom_in)
-        self.zoom_out_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self, self.level_view.zoom_out)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Plus), self, self.level_view.zoom_in)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self, self.level_view.zoom_out)
 
-        self.select_all_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
 
         if not self.on_open_rom(path_to_rom):
             self.deleteLater()
@@ -405,6 +406,20 @@ class MainWindow(QMainWindow):
     def _on_level_data_changed(self):
         self.undo_action.setEnabled(self.level_ref.undo_stack.undo_available)
         self.redo_action.setEnabled(self.level_ref.undo_stack.redo_available)
+
+        self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
+
+    def _go_to_jump_destination(self):
+        if not self.safe_to_change():
+            return
+
+        level_address = self.level_ref.level.next_area_objects
+        enemy_address = self.level_ref.level.next_area_enemies + 1
+        object_set = self.level_ref.level.next_area_object_set
+
+        world, level = world_and_level_for_level_address(level_address)
+
+        self.update_level(world, level, level_address, enemy_address, object_set)
 
     def on_play(self):
         """
