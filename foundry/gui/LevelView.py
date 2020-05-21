@@ -66,6 +66,9 @@ class LevelView(QWidget):
         self.draw_expansions = SETTINGS["draw_expansion"]
         self.draw_mario = SETTINGS["draw_mario"]
         self.transparency = SETTINGS["block_transparency"]
+        self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
+        self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
+        self.draw_invisible_items = SETTINGS["draw_invisible_items"]
 
         self.zoom = 1
         self.block_length = Block.SIDE_LENGTH * self.zoom

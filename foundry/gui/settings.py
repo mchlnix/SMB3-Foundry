@@ -14,6 +14,9 @@ SETTINGS["draw_mario"] = True
 SETTINGS["draw_jumps"] = False
 SETTINGS["draw_grid"] = False
 SETTINGS["draw_expansion"] = False
+SETTINGS["draw_jump_on_objects"] = True
+SETTINGS["draw_items_in_blocks"] = True
+SETTINGS["draw_invisible_items"] = True
 SETTINGS["block_transparency"] = True
 
 default_settings_dir = pathlib.Path.home() / ".smb3foundry"

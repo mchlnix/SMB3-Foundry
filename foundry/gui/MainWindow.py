@@ -62,8 +62,20 @@ ID_TRANSPARENCY = 508
 ID_JUMPS = 509
 ID_MARIO = 510
 ID_RESIZE_TYPE = 511
+ID_JUMP_OBJECTS = 512
+ID_ITEM_BLOCKS = 513
+ID_INVISIBLE_ITEMS = 514
 
-CHECKABLE_MENU_ITEMS = [ID_TRANSPARENCY, ID_GRID_LINES, ID_JUMPS, ID_MARIO, ID_RESIZE_TYPE]
+CHECKABLE_MENU_ITEMS = [
+    ID_TRANSPARENCY,
+    ID_GRID_LINES,
+    ID_JUMPS,
+    ID_MARIO,
+    ID_RESIZE_TYPE,
+    ID_JUMP_OBJECTS,
+    ID_ITEM_BLOCKS,
+    ID_INVISIBLE_ITEMS,
+]
 
 ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
 
@@ -170,30 +182,49 @@ class MainWindow(QMainWindow):
         view_menu = QMenu("View")
         view_menu.triggered.connect(self.on_menu)
 
-        self._mario_start_location = view_menu.addAction("Mario")
-        self._mario_start_location.setProperty(ID_PROP, ID_MARIO)
-        self._mario_start_location.setCheckable(True)
-        self._mario_start_location.setChecked(SETTINGS["draw_mario"])
+        action = view_menu.addAction("Mario")
+        action.setProperty(ID_PROP, ID_MARIO)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_mario"])
 
-        self._show_jump_action = view_menu.addAction("Jumps")
-        self._show_jump_action.setProperty(ID_PROP, ID_JUMPS)
-        self._show_jump_action.setCheckable(True)
-        self._show_jump_action.setChecked(SETTINGS["draw_jumps"])
+        action = view_menu.addAction("&Jumps on objects")
+        action.setProperty(ID_PROP, ID_JUMP_OBJECTS)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_jump_on_objects"])
 
-        self._show_grid_action = view_menu.addAction("&Grid lines")
-        self._show_grid_action.setProperty(ID_PROP, ID_GRID_LINES)
-        self._show_grid_action.setCheckable(True)
-        self._show_grid_action.setChecked(SETTINGS["draw_grid"])
+        action = view_menu.addAction("Items in blocks")
+        action.setProperty(ID_PROP, ID_ITEM_BLOCKS)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_items_in_blocks"])
 
-        self._show_resize_action = view_menu.addAction("Resize Type")
-        self._show_resize_action.setProperty(ID_PROP, ID_RESIZE_TYPE)
-        self._show_resize_action.setCheckable(True)
-        self._show_resize_action.setChecked(SETTINGS["draw_expansion"])
+        action = view_menu.addAction("Invisible items")
+        action.setProperty(ID_PROP, ID_INVISIBLE_ITEMS)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_invisible_items"])
 
-        self._show_transparent_blocks_action = view_menu.addAction("&Block Transparency")
-        self._show_transparent_blocks_action.setProperty(ID_PROP, ID_TRANSPARENCY)
-        self._show_transparent_blocks_action.setCheckable(True)
-        self._show_transparent_blocks_action.setChecked(SETTINGS["block_transparency"])
+        view_menu.addSeparator()
+
+        action = view_menu.addAction("Jump Zones")
+        action.setProperty(ID_PROP, ID_JUMPS)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_jumps"])
+
+        action = view_menu.addAction("&Grid lines")
+        action.setProperty(ID_PROP, ID_GRID_LINES)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_grid"])
+
+        action = view_menu.addAction("Resize Type")
+        action.setProperty(ID_PROP, ID_RESIZE_TYPE)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_expansion"])
+
+        view_menu.addSeparator()
+
+        action = view_menu.addAction("&Block Transparency")
+        action.setProperty(ID_PROP, ID_TRANSPARENCY)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["block_transparency"])
 
         view_menu.addSeparator()
         view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
@@ -637,11 +668,20 @@ class MainWindow(QMainWindow):
             self.level_view.draw_mario = checked
         elif item_id == ID_RESIZE_TYPE:
             self.level_view.draw_expansions = checked
+        elif item_id == ID_JUMP_OBJECTS:
+            self.level_view.draw_jumps_on_objects = checked
+        elif item_id == ID_ITEM_BLOCKS:
+            self.level_view.draw_items_in_blocks = checked
+        elif item_id == ID_INVISIBLE_ITEMS:
+            self.level_view.draw_invisible_items = checked
 
         SETTINGS["draw_mario"] = self.level_view.draw_mario
         SETTINGS["draw_jumps"] = self.level_view.draw_jumps
         SETTINGS["draw_grid"] = self.level_view.draw_grid
         SETTINGS["draw_expansion"] = self.level_view.draw_expansions
+        SETTINGS["draw_jump_on_objects"] = self.level_view.draw_jumps_on_objects
+        SETTINGS["draw_items_in_blocks"] = self.level_view.draw_items_in_blocks
+        SETTINGS["draw_invisible_items"] = self.level_view.draw_invisible_items
         SETTINGS["block_transparency"] = self.level_view.transparency
 
         save_settings()
