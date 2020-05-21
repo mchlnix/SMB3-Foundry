@@ -61,11 +61,11 @@ class LevelView(QWidget):
 
         self.level_drawer = LevelDrawer()
 
-        self.draw_grid = False
-        self.draw_jumps = False
-        self.draw_expansions = False
-        self.draw_mario = True
-        self.transparency = True
+        self.draw_grid = SETTINGS["draw_grid"]
+        self.draw_jumps = SETTINGS["draw_jumps"]
+        self.draw_expansions = SETTINGS["draw_expansion"]
+        self.draw_mario = SETTINGS["draw_mario"]
+        self.transparency = SETTINGS["block_transparency"]
 
         self.zoom = 1
         self.block_length = Block.SIDE_LENGTH * self.zoom

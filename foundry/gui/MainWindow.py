@@ -49,6 +49,7 @@ from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.SettingsDialog import show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
+from foundry.gui.settings import SETTINGS, save_settings
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
@@ -172,24 +173,27 @@ class MainWindow(QMainWindow):
         self._mario_start_location = view_menu.addAction("Mario")
         self._mario_start_location.setProperty(ID_PROP, ID_MARIO)
         self._mario_start_location.setCheckable(True)
-        self._mario_start_location.setChecked(True)
+        self._mario_start_location.setChecked(SETTINGS["draw_mario"])
 
         self._show_jump_action = view_menu.addAction("Jumps")
         self._show_jump_action.setProperty(ID_PROP, ID_JUMPS)
         self._show_jump_action.setCheckable(True)
+        self._show_jump_action.setChecked(SETTINGS["draw_jumps"])
 
         self._show_grid_action = view_menu.addAction("&Grid lines")
         self._show_grid_action.setProperty(ID_PROP, ID_GRID_LINES)
         self._show_grid_action.setCheckable(True)
+        self._show_grid_action.setChecked(SETTINGS["draw_grid"])
 
         self._show_resize_action = view_menu.addAction("Resize Type")
         self._show_resize_action.setProperty(ID_PROP, ID_RESIZE_TYPE)
         self._show_resize_action.setCheckable(True)
+        self._show_resize_action.setChecked(SETTINGS["draw_expansion"])
 
         self._show_transparent_blocks_action = view_menu.addAction("&Block Transparency")
         self._show_transparent_blocks_action.setProperty(ID_PROP, ID_TRANSPARENCY)
         self._show_transparent_blocks_action.setCheckable(True)
-        self._show_transparent_blocks_action.setChecked(True)
+        self._show_transparent_blocks_action.setChecked(SETTINGS["block_transparency"])
 
         view_menu.addSeparator()
         view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
@@ -633,6 +637,14 @@ class MainWindow(QMainWindow):
             self.level_view.draw_mario = checked
         elif item_id == ID_RESIZE_TYPE:
             self.level_view.draw_expansions = checked
+
+        SETTINGS["draw_mario"] = self.level_view.draw_mario
+        SETTINGS["draw_jumps"] = self.level_view.draw_jumps
+        SETTINGS["draw_grid"] = self.level_view.draw_grid
+        SETTINGS["draw_expansion"] = self.level_view.draw_expansions
+        SETTINGS["block_transparency"] = self.level_view.transparency
+
+        save_settings()
 
     @undoable
     def on_spin(self, _):
