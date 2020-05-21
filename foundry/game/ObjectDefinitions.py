@@ -352,3 +352,13 @@ def load_object_definitions(object_set):
     object_definition = OBJECT_SET_TO_DEFINITION[object_set]
 
     return object_metadata[object_definition]
+
+
+def load_object_definition_tile(object_set: int, tile: int, domain: int):
+    """Loads the object definition for a tile"""
+    object_definition = OBJECT_SET_TO_DEFINITION[object_set]
+
+    for _, obj in object_metadata[object_definition].items():
+        if obj.range.is_inside(tile) and obj.domain == domain:
+            return obj
+    return None
