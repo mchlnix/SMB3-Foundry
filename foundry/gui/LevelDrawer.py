@@ -5,6 +5,7 @@ from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
 from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
@@ -14,6 +15,17 @@ from foundry.game.level.Level import Level
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
+
+
+def _make_image_selected(image: QImage) -> QImage:
+    alpha_mask = image.createAlphaMask()
+    alpha_mask.invertPixels()
+
+    selected_image = QImage(image)
+
+    apply_selection_overlay(selected_image, alpha_mask)
+
+    return selected_image
 
 
 def _load_from_png(x: int, y: int):
@@ -210,6 +222,10 @@ class LevelDrawer:
 
                     image = image.scaled(self.block_length, self.block_length)
                     painter.drawImage(adapted_pos, image)
+
+                    if level_object.selected:
+                        painter.drawImage(adapted_pos, _make_image_selected(image))
+
             else:
                 image = image.scaled(self.block_length, self.block_length)
                 painter.drawImage(pos, image)
