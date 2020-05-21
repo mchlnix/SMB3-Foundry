@@ -178,6 +178,7 @@ class ObjectDefinition:
     bytes: int = 0
     block_design: Block_Design = Block_Design()
     description: str = ""
+    overload: tuple = ()
 
     @property
     def is_4byte(self):
@@ -271,7 +272,8 @@ def load_obj_definitions_from_yaml(file_path):
                 range=Range.from_dict(tile["range"]),
                 bytes=tile["bytes"],
                 description=tile["description"],
-                block_design=Block_Design(tile["block_design"])
+                block_design=Block_Design(tile["block_design"]),
+                overload=tile["overload"] if "overload" in tile else ()
             )
 
             if int(key) == ENEMY_OBJECT_DEFINITION and int(k) <= 236:

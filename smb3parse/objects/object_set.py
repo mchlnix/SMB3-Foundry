@@ -70,9 +70,6 @@ def load_obj_lvl_data_from_yaml(file_path: str):
     return lvl_data
 
 
-object_set_level_data = load_obj_lvl_data_from_yaml(data_dir.joinpath("object_level_data.yaml"))
-
-
 class ObjectSet:
     def __init__(self, object_set_number: int):
         self.number = object_set_number
@@ -87,6 +84,7 @@ class ObjectSet:
 
     @property
     def ending_graphic_offset(self):
+        """Provides the end of level graphic rom offset"""
         if self.number == ENEMY_ITEM_OBJECT_SET:
             raise ValueError(f"{self.name} is not a level object set and does not provide an ending graphic offset.")
 
@@ -120,22 +118,9 @@ class ObjectSet:
         return load_object_definition_tile(self.number, object_id, domain).bytes
 
 
-_ending_graphic_offset = {
-    0: 0,
-    1: 0,
-    2: 0,
-    3: 0,
-    7: 0,
-    10: 0,
-    13: 0,
-    14: 0,  # Underground
-    15: 0,
-    16: 0,
-    4: 1,
-    12: 1,
-    5: 2,
-    9: 2,
-    11: 2,
-    6: 3,
-    8: 3,
-}
+object_set_level_data = load_obj_lvl_data_from_yaml(data_dir.joinpath("object_level_data.yaml"))
+
+with open(data_dir.joinpath("ending_graphic_offsets.yaml")) as f:
+    ending_offset = yaml.load(f, Loader=Loader)
+_ending_graphic_offset = [int(end_offset[1:], 16) if isinstance(end_offset, str) and end_offset.startswith("$")
+                          else int(end_offset) for _, end_offset in ending_offset.items()]
