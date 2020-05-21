@@ -357,8 +357,12 @@ class MainWindow(QMainWindow):
         menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
         menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
         menu_toolbar.addSeparator()
-        menu_toolbar.addAction(icon("rotate-ccw.svg"), "Undo Action")
-        menu_toolbar.addAction(icon("rotate-cw.svg"), "Redo Action")
+
+        undo_action = menu_toolbar.addAction(icon("rotate-ccw.svg"), "Undo Action")
+        undo_action.setEnabled(False)
+        redo_action = menu_toolbar.addAction(icon("rotate-cw.svg"), "Redo Action")
+        redo_action.setEnabled(False)
+
         menu_toolbar.addSeparator()
         menu_toolbar.addAction(icon("play-circle.svg"), "Play Level").triggered.connect(self.on_play)
         menu_toolbar.addSeparator()
@@ -368,7 +372,7 @@ class MainWindow(QMainWindow):
         menu_toolbar.addAction(icon("tool.svg"), "Edit Level Header").triggered.connect(self.on_header_editor)
         menu_toolbar.addAction(icon("arrow-right-circle.svg"), "Go to Jump Destination")
         menu_toolbar.addSeparator()
-        menu_toolbar.addAction(icon("help-circle.svg"), "What's this?")
+        # menu_toolbar.addAction(icon("help-circle.svg"), "What's this?")
 
         self.addToolBar(Qt.TopToolBarArea, menu_toolbar)
 
