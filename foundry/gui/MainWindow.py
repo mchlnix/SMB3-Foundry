@@ -40,6 +40,7 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.BlockViewer import BlockViewer
 from foundry.gui.ContextMenu import CMAction, ContextMenu
+from foundry.gui.EnemySizeBar import EnemySizeBar
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
@@ -306,6 +307,7 @@ class MainWindow(QMainWindow):
         self.object_dropdown.object_selected.connect(self._on_placeable_object_selected)
 
         self.level_size_bar = LevelSizeBar(self, self.level_ref)
+        self.enemy_size_bar = EnemySizeBar(self, self.level_ref)
 
         self.jump_list = JumpList(self, self.level_ref)
         self.jump_list.add_jump.connect(self.on_jump_added)
@@ -330,6 +332,7 @@ class MainWindow(QMainWindow):
         level_toolbar.addWidget(self.spinner_panel)
         level_toolbar.addWidget(self.object_dropdown)
         level_toolbar.addWidget(self.level_size_bar)
+        level_toolbar.addWidget(self.enemy_size_bar)
         level_toolbar.addWidget(splitter)
 
         level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
