@@ -388,11 +388,9 @@ class MainWindow(QMainWindow):
         self.copy_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
         self.paste_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
 
-        self.undo_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Z), self, self.spinner_panel.on_undo)
-        self.redo_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Y), self, self.spinner_panel.on_redo)
-        self.redo_shortcut_alt = QShortcut(
-            QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_Z), self, self.spinner_panel.on_redo
-        )
+        self.undo_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Z), self, self.level_ref.undo)
+        self.redo_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Y), self, self.level_ref.redo)
+        self.redo_shortcut_alt = QShortcut(QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_Z), self, self.level_ref.redo)
 
         self.zoom_in_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Plus), self, self.level_view.zoom_in)
         self.zoom_out_shortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self, self.level_view.zoom_out)
