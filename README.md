@@ -3,8 +3,8 @@
 [![Build Status](https://travis-ci.org/mchlnix/SMB3-Foundry.svg?branch=master)](https://travis-ci.org/mchlnix/SMB3-Foundry)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-[![YouTube Video of Version 1.0](https://i.imgur.com/voqocoG.png)](https://youtu.be/7_22cAffMmE)
-YouTube Video of Version 1.0, check [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) for more latest versions
+[![YouTube Video of Version 1.0](https://i.imgur.com/ZQXDyCr.png)](https://youtu.be/7_22cAffMmE)
+YouTube Video of Version 1.0, check [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) for more up to date versions
 
 ## Features right now
 
