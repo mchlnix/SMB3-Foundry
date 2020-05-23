@@ -20,6 +20,7 @@ from PySide2.QtWidgets import (
     QSizePolicy,
     QSplitter,
     QToolBar,
+    QWhatsThis,
 )
 
 from foundry import (
@@ -374,16 +375,34 @@ class MainWindow(QMainWindow):
         self.redo_action.setEnabled(False)
 
         menu_toolbar.addSeparator()
-        menu_toolbar.addAction(icon("play-circle.svg"), "Play Level").triggered.connect(self.on_play)
+        play_action = menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
+        play_action.triggered.connect(self.on_play)
+        play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
         menu_toolbar.addSeparator()
         menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
         menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In").triggered.connect(self.level_view.zoom_in)
         menu_toolbar.addSeparator()
-        menu_toolbar.addAction(icon("tool.svg"), "Edit Level Header").triggered.connect(self.on_header_editor)
+        header_action = menu_toolbar.addAction(icon("tool.svg"), "Edit Level Header")
+        header_action.triggered.connect(self.on_header_editor)
+        header_action.setWhatsThis(
+            "<b>Header Editor</b><br/>"
+            "Many configurations regarding the level are done in its header, like the length of "
+            "the timer, or where and how Mario enters the level.<br/>"
+        )
+
         self.jump_destination_action = menu_toolbar.addAction(icon("arrow-right-circle.svg"), "Go to Jump Destination")
         self.jump_destination_action.triggered.connect(self._go_to_jump_destination)
+        self.jump_destination_action.setWhatsThis(
+            "Opens the level, that can be reached from this one, e.g. by entering a pipe."
+        )
+
         menu_toolbar.addSeparator()
-        # menu_toolbar.addAction(icon("help-circle.svg"), "What's this?")
+
+        whats_this_action = QWhatsThis.createAction()
+        whats_this_action.setWhatsThis("Click on parts of the editor, to receive help information.")
+        whats_this_action.setIcon(icon("help-circle.svg"))
+        whats_this_action.setText("Starts 'What's this?' mode")
+        menu_toolbar.addAction(whats_this_action)
 
         self.addToolBar(Qt.TopToolBarArea, menu_toolbar)
 

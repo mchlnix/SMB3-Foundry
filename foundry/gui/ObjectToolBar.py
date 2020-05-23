@@ -32,6 +32,12 @@ class ObjectToolBar(QWidget):
         current_item_widget.setContentsMargins(5, 10, 5, 5)
         current_item_widget.setFixedWidth(self.current_object_icon.MAX_SIZE.width() * 2)
 
+        current_item_widget.setWhatsThis(
+            "<b>Current Object</b><br/>"
+            "Shows the currently selected object and its name. It can be placed by "
+            "clicking the middle mouse button anywhere in the level."
+        )
+
         current_item_layout = QVBoxLayout(current_item_widget)
         current_item_layout.addWidget(self.current_object_icon, alignment=Qt.AlignCenter)
         current_item_layout.addWidget(self.current_object_name, alignment=Qt.AlignCenter)

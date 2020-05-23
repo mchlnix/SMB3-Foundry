@@ -32,6 +32,14 @@ class ObjectDropdown(QComboBox):
         # guard against overly long item descriptions
         self.setMaximumWidth(QApplication.desktop().geometry().width() / 5)
 
+        self.setWhatsThis(
+            "<b>Object Dropdown</b><br/>"
+            "Contains all objects and enemies/items, that can be placed in this type of level. Which are "
+            "available depends on the object set, that is selected for this level.<br/>"
+            "You can search, by typing in the name, or simply select it from the list. After selecting "
+            "an object, you can place it by clicking the middle mouse button anywhere in the level."
+        )
+
     def set_object_set(self, object_set_index: int, graphic_set_index: int) -> None:
         factory = LevelObjectFactory(
             object_set_index, graphic_set_index, 0, [], vertical_level=False, size_minimal=True
