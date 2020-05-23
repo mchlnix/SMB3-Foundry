@@ -27,6 +27,7 @@ from foundry import (
     feature_video_link,
     get_current_version_name,
     get_latest_version_name,
+    github_link,
     icon,
     open_url,
     releases_link,
@@ -266,6 +267,9 @@ class MainWindow(QMainWindow):
 
         video_action = help_menu.addAction("Feature Video on YouTube")
         video_action.triggered.connect(lambda: open_url(feature_video_link))
+
+        github_action = help_menu.addAction("Github Repository")
+        github_action.triggered.connect(lambda: open_url(github_link))
 
         discord_action = help_menu.addAction("SMB3 Rom Hacking Discord")
         discord_action.triggered.connect(lambda: open_url(discord_link))
