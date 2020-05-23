@@ -96,11 +96,11 @@ class Level(LevelLike):
 
     def _load_level_data(self, object_data: bytearray, enemy_data: bytearray, new_level: bool = True):
         self.object_factory = LevelObjectFactory(
-            self.object_set_number,
-            self.header.graphic_set_index,
-            self.header.object_palette_index,
-            self.objects,
-            bool(self.header.is_vertical),
+            object_set=self.object_set_number,
+            graphic_set=self.header.graphic_set_index,
+            palette_group_index=self.header.object_palette_index,
+            objects_ref=self.objects,
+            vertical_level=bool(self.header.is_vertical),
         )
         self.enemy_item_factory = EnemyItemFactory(self.object_set_number, self.header.enemy_palette_index)
 

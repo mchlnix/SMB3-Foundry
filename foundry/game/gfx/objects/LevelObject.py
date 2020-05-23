@@ -32,6 +32,9 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
 
+from foundry.game.Size import Size
+from foundry.game.Position import Position
+
 SKY = 0
 GROUND = 27
 
@@ -91,32 +94,46 @@ def get_minimal_icon_object(
 
 @dataclass
 class BlockGenerator:
-    hei: int
-    len: int
+    size: Size
     object_set: ObjectSet
     domain: int
     index: int
-    y_pos: int
-    x_pos: int
+    pos: Position
+
+    @property
+    def y_pos(self):
+        return self.pos.y
+
+    @y_pos.setter
+    def y_pos(self, y: int):
+        self.pos.y = y
+
+    @property
+    def x_pos(self):
+        return self.pos.x
+
+    @x_pos.setter
+    def x_pos(self, x: int):
+        self.pos.x = x
 
     @property
     def height_len(self):
-        return self.hei
+        return self.size.height
 
     @height_len.setter
     def height_len(self, value):
-        self.hei = value
+        self.size.height = value
 
     @property
     def length(self):
-        return self.len
+        return self.size.width
 
     @length.setter
     def length(self, value):
         if not self.is_4byte and not self.is_single_block:
             self.index &= 0xF0
             self.index |= value & 0x0F
-        self.len = value
+        self.size.width = value
 
     @property
     def is_4byte(self):
@@ -187,7 +204,7 @@ class BlockGenerator:
         else:
             length = index & 0b0000_1111
             height = 0
-        return cls(object_set=object_set, domain=domain, index=index, y_pos=y_pos, x_pos=x_pos, len=length, hei=height)
+        return cls(object_set=object_set, domain=domain, index=index, pos=Position(x_pos, y_pos), size=Size(length, height))
 
 
 class LevelObject(ObjectLike, BlockGenerator):
@@ -198,27 +215,23 @@ class LevelObject(ObjectLike, BlockGenerator):
             pattern_table: PatternTable,
             objects_ref: List["LevelObject"],
             is_vertical: bool,
-            index_in_level: int,
-            size_minimal: bool = False,
             domain: int = 0,
             index: int = 0,
-            y_pos: int = 0,
-            x_pos: int = 0,
-            length: int = 0,
-            height: int = 0,
+            position: Position = (0, 0),
+            size: Size = (0, 0)
     ):
         self.object_set, self.palette_group = object_set, palette_group
         self.pattern_table, self.objects_ref, self.vertical_level = pattern_table, objects_ref, is_vertical
-        self.index_in_level, self.size_minimal = index_in_level, size_minimal
-        self.domain, self.index, self.y_pos, self.x_pos = domain, index, y_pos, x_pos
-        self.length = length
-        self.height_len = height
+        self.domain, self.index, self.pos = domain, index, position
+        self.size = size
+
+        self.index_in_level = None
 
         self.block_cache = {}
         self.rendered_base_x, self.rendered_base_y = 0, 0
         self.selected = False
 
-        self.ground_level = 0 if self.size_minimal else GROUND
+        self.ground_level = GROUND
 
         self.rect = QRect()
 
@@ -226,23 +239,19 @@ class LevelObject(ObjectLike, BlockGenerator):
 
     @classmethod
     def from_data(cls, data: bytearray, object_set: ObjectSet, palette_group, pattern_table: PatternTable,
-            objects_ref: List["LevelObject"], is_vertical: bool, index_in_level: int, size_minimal: bool = False):
+                  objects_ref: List["LevelObject"], is_vertical: bool):
         bg = BlockGenerator.from_bytes(object_set, data, is_vertical)
-        domain, index, y_pos, x_pos, length, height = bg.domain, bg.index, bg.y_pos, bg.x_pos, bg.length, bg.hei
+        domain, index, position, size = bg.domain, bg.index, bg.pos, bg.size
         return cls(
             object_set,
             palette_group,
             pattern_table,
             objects_ref,
             is_vertical,
-            index_in_level,
-            size_minimal,
             domain,
             index,
-            y_pos,
-            x_pos,
-            length,
-            height
+            position,
+            size
         )
 
     @property
@@ -298,20 +307,11 @@ class LevelObject(ObjectLike, BlockGenerator):
         object_data = self.object_set.get_definition_of(self.type).rom_object_design
         return [int(block) for block in object_data]
 
-    def _calculate_lengths(self):
-        """
-        if self.is_single_block:
-            self._length = 1
-        else:
-            self._length = self.obj_index & 0b0000_1111
-
-        if self.is_4byte:
-            self.secondary_length = self.length
-            self.length = self.data[3]
-        """
-
     def render(self):
         self._render()
+
+    def rend(self):
+        pass
 
     def _render(self):
         self.rendered_base_x = base_x = self.x_position

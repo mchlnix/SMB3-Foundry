@@ -56,9 +56,7 @@ class LevelObjectFactory:
             palette_group=self.palette_group,
             pattern_table=self.pattern_table,
             objects_ref=self.objects_ref,
-            is_vertical=self.vertical_level,
-            index_in_level=index,
-            size_minimal=self.size_minimal,
+            is_vertical=self.vertical_level
         )
 
     def from_properties(
