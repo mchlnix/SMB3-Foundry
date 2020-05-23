@@ -20,6 +20,7 @@ class JumpList(QListWidget):
         self._level_ref = level_ref
 
         self._level_ref.data_changed.connect(self.update)
+        self.itemDoubleClicked.connect(lambda _: self.edit_jump.emit())
 
     def update(self):
         self.clear()
