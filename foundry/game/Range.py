@@ -15,6 +15,10 @@ class Range:
             return False
 
     @classmethod
+    def from_offset(cls, start, offset):
+        return cls(start, start + offset)
+
+    @classmethod
     def from_dict(cls, dic: dict, default_start: int = 0, default_end: int = 0):
         """Makes a dictionary from dictionary values"""
         start = dic["start"] if "start" in dic else default_start
