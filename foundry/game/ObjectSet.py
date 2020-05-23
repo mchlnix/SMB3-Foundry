@@ -6,6 +6,8 @@ ENEMY_OBJECT_SET = 16
 
 class ObjectSet:
     def __init__(self, object_set_number: int):
+        self.object_set_number = object_set_number
+
         self._internal_object_set = _ObjectSet(object_set_number)
 
         self.number = self._internal_object_set.number

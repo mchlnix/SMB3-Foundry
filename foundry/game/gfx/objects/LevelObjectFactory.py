@@ -4,6 +4,7 @@ from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.Palette import load_palette
 from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.ObjectSet import ObjectSet
 
 
 class LevelObjectFactory:
@@ -49,14 +50,14 @@ class LevelObjectFactory:
         assert self.pattern_table is not None
 
         # todo get rid of index by fixing ground map
-        return LevelObject(
-            data,
-            self.object_set,
-            self.palette_group,
-            self.pattern_table,
-            self.objects_ref,
-            self.vertical_level,
-            index,
+        return LevelObject.from_data(
+            data=data,
+            object_set=ObjectSet(self.object_set),
+            palette_group=self.palette_group,
+            pattern_table=self.pattern_table,
+            objects_ref=self.objects_ref,
+            is_vertical=self.vertical_level,
+            index_in_level=index,
             size_minimal=self.size_minimal,
         )
 

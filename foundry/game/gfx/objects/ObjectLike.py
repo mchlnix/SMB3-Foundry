@@ -1,4 +1,5 @@
 import abc
+from dataclasses import dataclass
 
 from PySide2.QtCore import QRect
 
@@ -8,14 +9,13 @@ EXPANDS_VERT = 0b10
 EXPANDS_BOTH = EXPANDS_HORIZ | EXPANDS_VERT
 
 
+@dataclass
 class ObjectLike(abc.ABC):
-    obj_index: int
-    domain: int
-    description: str
-
-    rect: QRect
-
-    is_4byte: bool
+    obj_index: int = 0
+    domain: int = 0
+    description: str = ""
+    rect: QRect = QRect()
+    is_4byte: bool = False
 
     @abc.abstractmethod
     def render(self):

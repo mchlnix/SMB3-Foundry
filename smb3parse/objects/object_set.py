@@ -103,7 +103,7 @@ class ObjectSet:
         if self.number == ENEMY_ITEM_OBJECT_SET:
             raise ValueError(f"{self.name} is not a level object set and does not provide a memory range.")
 
-        return memory_address in self._level_range
+        return self._level_range.is_inside(memory_address)
 
     def object_length(self, domain: int, object_id: int) -> int:
         """

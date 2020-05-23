@@ -1,4 +1,5 @@
 from typing import List, Optional, Tuple, Union
+from dataclasses import dataclass
 
 from PySide2.QtCore import QRect, QSize
 from PySide2.QtGui import QImage, QPainter
@@ -37,22 +38,22 @@ GROUND = 27
 ENDING_STR = {0: "Uniform", 1: "Top or Left", 2: "Bottom or Right", 3: "Top & Bottom/Left & Right"}
 
 ORIENTATION_TO_STR = {
-        0: "Horizontal",
-        1: "Vertical",
-        2: "Diagonal Left-Down",
-        3: "Desert Pipe Box",
-        4: "Diagonal Right-Down",
-        5: "Diagonal Right-Up",
-        6: "Horizontal to the Ground",
-        7: "Horizontal Alternative",
-        8: "Diagonal Weird",  # up left?
-        9: "Single Block",
-        10: "Centered",
-        11: "Pyramid to Ground",
-        12: "Pyramid Alternative",
-        13: "To the Sky",
-        14: "Ending",
-    }
+    0: "Horizontal",
+    1: "Vertical",
+    2: "Diagonal Left-Down",
+    3: "Desert Pipe Box",
+    4: "Diagonal Right-Down",
+    5: "Diagonal Right-Up",
+    6: "Horizontal to the Ground",
+    7: "Horizontal Alternative",
+    8: "Diagonal Weird",  # up left?
+    9: "Single Block",
+    10: "Centered",
+    11: "Pyramid to Ground",
+    12: "Pyramid Alternative",
+    13: "To the Sky",
+    14: "Ending",
+}
 
 # not all objects provide a block index for blank block
 BLANK = -1
@@ -62,7 +63,7 @@ SCREEN_WIDTH = 16
 
 
 def get_minimal_icon_object(
-    level_object: Union["LevelObject", EnemyObject]
+        level_object: Union["LevelObject", EnemyObject]
 ) -> Optional[Union["LevelObject", EnemyObject]]:
     """
     Returns the object with a length, so that every block is rendered. E. g. clouds with length 0, don't have a face.
@@ -75,7 +76,8 @@ def get_minimal_icon_object(
         return level_object
 
     while (
-        any(block not in level_object.rendered_blocks for block in level_object.blocks) and level_object.length < 0x10
+            any(block not in level_object.rendered_blocks for block in
+                level_object.blocks) and level_object.length < 0x10
     ):
         level_object.length += 1
 
@@ -87,131 +89,217 @@ def get_minimal_icon_object(
     return level_object
 
 
-class LevelObject(ObjectLike):
-    def __init__(
-        self,
-        data: bytearray,
-        object_set: int,
-        palette_group,
-        pattern_table: PatternTable,
-        objects_ref: List["LevelObject"],
-        is_vertical: bool,
-        index: int,
-        size_minimal: bool = False,
-    ):
-        self.object_set = ObjectSet(object_set)
+@dataclass
+class BlockGenerator:
+    hei: int
+    len: int
+    object_set: ObjectSet
+    domain: int
+    index: int
+    y_pos: int
+    x_pos: int
 
-        self.pattern_table = pattern_table
-        self.tsa_data = ROM.get_tsa_data(object_set)
+    @property
+    def height_len(self):
+        return self.hei
 
-        self.x_position = 0
-        self.y_position = 0
+    @height_len.setter
+    def height_len(self, value):
+        self.hei = value
 
-        self.rendered_base_x = 0
-        self.rendered_base_y = 0
+    @property
+    def length(self):
+        return self.len
 
-        self.palette_group = palette_group
+    @length.setter
+    def length(self, value):
+        if not self.is_4byte and not self.is_single_block:
+            self.index &= 0xF0
+            self.index |= value & 0x0F
+        self.len = value
 
-        self.index_in_level = index
-        self.objects_ref = objects_ref
-        self.vertical_level = is_vertical
+    @property
+    def is_4byte(self):
+        """Returns if the object takes 4 bytes"""
+        return self._is_4byte(self.object_set, self.type)
 
-        self.data = data
+    @staticmethod
+    def _is_4byte(object_set, type):
+        """Returns if an object is 4 bytes from the object set from a given type"""
+        return object_set.get_definition_of(type).is_4byte
 
-        self.selected = False
+    @property
+    def is_single_block(self):
+        """Returns if a block is a single block"""
+        return self._is_single_block(self.index)
 
-        self.size_minimal = size_minimal
+    @staticmethod
+    def _is_single_block(index):
+        """Returns if the index is in the range for single blocks"""
+        return index <= 0x0F
 
-        if self.size_minimal:
-            self.ground_level = 0
+    @property
+    def domain_offset(self):
+        """Returns the offset for type of a domain"""
+        return self._domain_offset(self.domain)
+
+    @staticmethod
+    def _domain_offset(domain):
+        """Returns the correct offset for a type from a given domain"""
+        return domain * 0x1F
+
+    @property
+    def type(self):
+        """Returns the type of the block"""
+        return self._type(self.index, self.domain)
+
+    @staticmethod
+    def _type(index, domain):
+        """Returns the type of the block from a given index and domain
+        For every domain there is 16 single-block types and 15 multi-block types
+        Single-block objects exist at the beginning of every domain
+        Multi-block objects exist in the remainder, being split into 16 block indexes
+        """
+        if BlockGenerator._is_single_block(index):
+            return index + BlockGenerator._domain_offset(domain)
         else:
-            self.ground_level = GROUND
+            return (index >> 4) + BlockGenerator._domain_offset(domain) + 15
 
-        self._setup()
+    @classmethod
+    def from_bytes(cls, object_set: ObjectSet, data: list, is_vertical: bool = False):
+        """Fabricates an object from bytes in rom"""
+        domain = (data[0] & 0b1110_0000) >> 5
+        y_pos = data[0] & 0b0001_1111
+        x_pos = data[1]
+        if is_vertical:
+            y_pos += (x_pos // SCREEN_WIDTH) * SCREEN_HEIGHT
+            x_pos %= SCREEN_WIDTH
+        index = data[2]
 
-    def _setup(self):
-        data = self.data
+        if cls._is_single_block(index):
+            length, height = 1, 0
+        elif cls._is_4byte(object_set, cls._type(index, domain)):
+            height = index & 0b0000_1111
+            try:
+                length = data[3]
+            except IndexError:
+                length = 0
+        else:
+            length = index & 0b0000_1111
+            height = 0
+        return cls(object_set=object_set, domain=domain, index=index, y_pos=y_pos, x_pos=x_pos, len=length, hei=height)
 
-        # where to look for the graphic data?
-        self.domain = (data[0] & 0b1110_0000) >> 5
 
-        # position relative to the start of the level (top)
-        self.original_y = data[0] & 0b0001_1111
-        self.y_position = self.original_y
-
-        # position relative to the start of the level (left)
-        self.original_x = data[1]
-        self.x_position = self.original_x
-
-        if self.vertical_level:
-            offset = (self.x_position // SCREEN_WIDTH) * SCREEN_HEIGHT
-
-            self.y_position += offset
-            self.x_position %= SCREEN_WIDTH
-
-        # describes what object it is
-        self._obj_index = 0x00
-
-        self.obj_index = data[2]
-
-        object_data = self.object_set.get_definition_of(self.type)
-
-        self.width = object_data.bmp_width
-        self.height = object_data.bmp_height
-        self.orientation = object_data.orientation
-        self.ending = object_data.ending
-        self.description = object_data.description
-
-        self.blocks = [int(block) for block in object_data.rom_object_design]
+class LevelObject(ObjectLike, BlockGenerator):
+    def __init__(
+            self,
+            object_set: ObjectSet,
+            palette_group,
+            pattern_table: PatternTable,
+            objects_ref: List["LevelObject"],
+            is_vertical: bool,
+            index_in_level: int,
+            size_minimal: bool = False,
+            domain: int = 0,
+            index: int = 0,
+            y_pos: int = 0,
+            x_pos: int = 0,
+            length: int = 0,
+            height: int = 0,
+    ):
+        self.object_set, self.palette_group = object_set, palette_group
+        self.pattern_table, self.objects_ref, self.vertical_level = pattern_table, objects_ref, is_vertical
+        self.index_in_level, self.size_minimal = index_in_level, size_minimal
+        self.domain, self.index, self.y_pos, self.x_pos = domain, index, y_pos, x_pos
+        self.length = length
+        self.height_len = height
 
         self.block_cache = {}
+        self.rendered_base_x, self.rendered_base_y = 0, 0
+        self.selected = False
 
-        self.is_4byte = object_data.is_4byte
-
-        if self.is_4byte and len(self.data) == 3:
-            self.data.append(0)
-        elif not self.is_4byte and len(data) == 4:
-            del self.data[3]
-
-        self._length = 0
-        self.secondary_length = 0
-
-        self._calculate_lengths()
+        self.ground_level = 0 if self.size_minimal else GROUND
 
         self.rect = QRect()
 
         self._render()
 
+    @classmethod
+    def from_data(cls, data: bytearray, object_set: ObjectSet, palette_group, pattern_table: PatternTable,
+            objects_ref: List["LevelObject"], is_vertical: bool, index_in_level: int, size_minimal: bool = False):
+        bg = BlockGenerator.from_bytes(object_set, data, is_vertical)
+        domain, index, y_pos, x_pos, length, height = bg.domain, bg.index, bg.y_pos, bg.x_pos, bg.length, bg.hei
+        return cls(
+            object_set,
+            palette_group,
+            pattern_table,
+            objects_ref,
+            is_vertical,
+            index_in_level,
+            size_minimal,
+            domain,
+            index,
+            y_pos,
+            x_pos,
+            length,
+            height
+        )
+
     @property
-    def obj_index(self):
-        return self._obj_index
+    def secondary_length(self):
+        return self.height_len
 
-    @obj_index.setter
-    def obj_index(self, value):
-        self._obj_index = value
-
-        self.is_single_block = self.obj_index <= 0x0F
-
-        domain_offset = self.domain * 0x1F
-
-        if self.is_single_block:
-            self.type = self.obj_index + domain_offset
-        else:
-            self.type = (self.obj_index >> 4) + domain_offset + 16 - 1
+    @secondary_length.setter
+    def secondary_length(self, len):
+        self.height_len = len
 
     @property
-    def length(self):
-        return self._length
+    def x_position(self):
+        return self.x_pos
 
-    @length.setter
-    def length(self, value):
-        if not self.is_4byte and not self.is_single_block:
-            self._obj_index &= 0xF0
-            self._obj_index |= value & 0x0F
+    @x_position.setter
+    def x_position(self, pos):
+        self.x_pos = pos
 
-        self._length = value
+    @property
+    def y_position(self):
+        return self.y_pos
+
+    @y_position.setter
+    def y_position(self, pos):
+        self.y_pos = pos
+
+    @property
+    def tsa_data(self):
+        return ROM.get_tsa_data(self.object_set.object_set_number)
+
+    @property
+    def width(self):
+        return self.object_set.get_definition_of(self.type).bmp_width
+
+    @property
+    def height(self):
+        return self.object_set.get_definition_of(self.type).bmp_height
+
+    @property
+    def orientation(self):
+        return self.object_set.get_definition_of(self.type).orientation
+
+    @property
+    def ending(self):
+        return self.object_set.get_definition_of(self.type).ending
+
+    @property
+    def description(self):
+        return self.object_set.get_definition_of(self.type).description
+
+    @property
+    def blocks(self):
+        object_data = self.object_set.get_definition_of(self.type).rom_object_design
+        return [int(block) for block in object_data]
 
     def _calculate_lengths(self):
+        """
         if self.is_single_block:
             self._length = 1
         else:
@@ -220,6 +308,7 @@ class LevelObject(ObjectLike):
         if self.is_4byte:
             self.secondary_length = self.length
             self.length = self.data[3]
+        """
 
     def render(self):
         self._render()
@@ -244,9 +333,9 @@ class LevelObject(ObjectLike):
             base_y = SKY
 
             for _ in range(self.y_position):
-                blocks_to_draw.extend(self.blocks[0 : self.width])
+                blocks_to_draw.extend(self.blocks[0: self.width])
 
-            blocks_to_draw.extend(self.blocks[-self.width :])
+            blocks_to_draw.extend(self.blocks[-self.width:])
 
         elif self.orientation == DESERT_PIPE_BOX:
             # segments are the horizontal sections, which are 8 blocks long
@@ -351,7 +440,7 @@ class LevelObject(ObjectLike):
 
                 offset = y % self.height
 
-                rows.append(amount_left * left + slopes[offset : offset + slope_width] + amount_right * right)
+                rows.append(amount_left * left + slopes[offset: offset + slope_width] + amount_right * right)
 
             if self.orientation in [DIAG_UP_RIGHT]:
                 for row in rows:
@@ -383,10 +472,10 @@ class LevelObject(ObjectLike):
                 bottom_row = QRect(base_x, y, new_width, 1)
 
                 if any(
-                    [
-                        bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
-                        for obj in self.objects_ref[0 : self.index_in_level]
-                    ]
+                        [
+                            bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
+                            for obj in self.objects_ref[0: self.index_in_level]
+                        ]
                 ):
                     break
 
@@ -458,14 +547,14 @@ class LevelObject(ObjectLike):
                 # in case the drawn object is smaller than its actual size
                 for y in range(min(self.height, new_height)):
                     offset = y * self.width
-                    blocks_to_draw.extend(self.blocks[offset : offset + self.width])
+                    blocks_to_draw.extend(self.blocks[offset: offset + self.width])
 
                 additional_rows = new_height - self.height
 
                 # assume only the last row needs to repeat
                 # todo true for giant blocks?
                 if additional_rows > 0:
-                    last_row = self.blocks[-self.width :]
+                    last_row = self.blocks[-self.width:]
 
                     for _ in range(additional_rows):
                         blocks_to_draw.extend(last_row)
@@ -476,7 +565,7 @@ class LevelObject(ObjectLike):
                 # assume only the first row needs to repeat
                 # todo true for giant blocks?
                 if additional_rows > 0:
-                    last_row = self.blocks[0 : self.width]
+                    last_row = self.blocks[0: self.width]
 
                     for _ in range(additional_rows):
                         blocks_to_draw.extend(last_row)
@@ -484,12 +573,12 @@ class LevelObject(ObjectLike):
                 # in case the drawn object is smaller than its actual size
                 for y in range(min(self.height, new_height)):
                     offset = y * self.width
-                    blocks_to_draw.extend(self.blocks[offset : offset + self.width])
+                    blocks_to_draw.extend(self.blocks[offset: offset + self.width])
 
             elif self.ending == TWO_ENDS:
                 # object exists on ships
-                top_row = self.blocks[0 : self.width]
-                bottom_row = self.blocks[-self.width :]
+                top_row = self.blocks[0: self.width]
+                bottom_row = self.blocks[-self.width:]
 
                 blocks_to_draw.extend(top_row)
 
@@ -498,7 +587,7 @@ class LevelObject(ObjectLike):
                 # repeat second to last row
                 if additional_rows > 0:
                     for _ in range(additional_rows):
-                        blocks_to_draw.extend(self.blocks[-2 * self.width : -self.width])
+                        blocks_to_draw.extend(self.blocks[-2 * self.width: -self.width])
 
                 if new_height > 1:
                     blocks_to_draw.extend(bottom_row)
@@ -512,10 +601,10 @@ class LevelObject(ObjectLike):
                     bottom_row = QRect(base_x, y, new_width, 1)
 
                     if any(
-                        [
-                            bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
-                            for obj in self.objects_ref[0 : self.index_in_level]
-                        ]
+                            [
+                                bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
+                                for obj in self.objects_ref[0: self.index_in_level]
+                            ]
                     ):
                         new_height = y - base_y
                         break
@@ -537,7 +626,7 @@ class LevelObject(ObjectLike):
                     offset = (y % self.height) * self.width
 
                     for _ in range(0, new_width):
-                        blocks_to_draw.extend(self.blocks[offset : offset + self.width])
+                        blocks_to_draw.extend(self.blocks[offset: offset + self.width])
 
                 # in case of giant blocks
                 new_width *= self.width
@@ -581,7 +670,7 @@ class LevelObject(ObjectLike):
 
                 for y in range(self.height):
                     offset = y * self.width
-                    left, *middle, right = self.blocks[offset : offset + self.width]
+                    left, *middle, right = self.blocks[offset: offset + self.width]
 
                     blocks_to_draw.append(left)
                     blocks_to_draw.extend(middle * (new_width - top_and_bottom_line))

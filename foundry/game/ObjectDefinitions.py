@@ -51,7 +51,7 @@ OBJECT_SET_TO_DEFINITION = {
 }
 
 
-logging.basicConfig(filename=data_dir.joinpath("logs/obj_def.log"), level=logging.DEBUG)
+logging.basicConfig(filename=data_dir.joinpath("logs/obj_def.log"), level=logging.CRITICAL)
 
 
 class Block_Design:
@@ -295,7 +295,6 @@ def load_obj_definitions_from_dat(file_path):
             if not line.rstrip():
                 obj_metadata.append([])
                 tileset, idx = tileset + 1, 0
-                continue
             else:
                 obj_def = ObjectDefinition.from_string(line)
                 obj_metadata[tileset].append(obj_def)
