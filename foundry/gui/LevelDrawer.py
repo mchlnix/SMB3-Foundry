@@ -115,9 +115,6 @@ class LevelDrawer:
         if self.draw_mario:
             self._draw_mario(painter, level)
 
-        if self.draw_grid:
-            self._draw_grid(painter, level)
-
         if self.draw_jumps:
             self._draw_jumps(painter, level)
 
