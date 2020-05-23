@@ -37,7 +37,7 @@ class LevelSizeBar(QWidget):
         if self.level is None:
             return
 
-        total_length = max(self.current_value, self.original_value)
+        total_length = max(self.current_value, self.original_value, 1)
 
         pixels_per_byte = event.rect().width() / total_length
 
