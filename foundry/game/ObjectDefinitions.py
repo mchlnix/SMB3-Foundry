@@ -1,6 +1,25 @@
 from typing import List
 
 from foundry import data_dir
+from smb3parse.objects.object_set import (
+    AIR_SHIP_OBJECT_SET,
+    CLOUDY_OBJECT_SET,
+    DESERT_OBJECT_SET,
+    DUNGEON_OBJECT_SET,
+    ENEMY_ITEM_OBJECT_SET,
+    GIANT_OBJECT_SET,
+    HILLY_OBJECT_SET,
+    ICE_OBJECT_SET,
+    MUSHROOM_OBJECT_SET,
+    PIPE_OBJECT_SET,
+    PIRANHA_PLANT_OBJECT_SET,
+    PLAINS_OBJECT_SET,
+    SKY_OBJECT_SET,
+    SPADE_BONUS_OBJECT_SET,
+    UNDERGROUND_OBJECT_SET,
+    WATER_OBJECT_SET,
+    WORLD_MAP_OBJECT_SET,
+)
 
 HORIZONTAL = 0
 VERTICAL = 1  # vertical downward
@@ -99,24 +118,23 @@ with open(data_dir.joinpath("data.dat"), "r") as f:
 
 
 object_set_to_definition = {
-    0: 0,
-    1: 1,
-    7: 1,
-    15: 1,
-    3: 2,
-    114: 2,
-    4: 3,
-    2: 4,
-    10: 5,
-    13: 6,
-    9: 7,
-    6: 8,
-    8: 8,
-    5: 9,
-    11: 9,
-    12: 10,
-    14: 11,
-    16: 12,
+    WORLD_MAP_OBJECT_SET: 0,
+    PLAINS_OBJECT_SET: 1,
+    MUSHROOM_OBJECT_SET: 1,
+    SPADE_BONUS_OBJECT_SET: 1,
+    HILLY_OBJECT_SET: 2,
+    SKY_OBJECT_SET: 3,
+    DUNGEON_OBJECT_SET: 4,
+    AIR_SHIP_OBJECT_SET: 5,
+    CLOUDY_OBJECT_SET: 6,
+    DESERT_OBJECT_SET: 7,
+    WATER_OBJECT_SET: 8,
+    PIPE_OBJECT_SET: 8,
+    PIRANHA_PLANT_OBJECT_SET: 9,
+    GIANT_OBJECT_SET: 9,
+    ICE_OBJECT_SET: 10,
+    UNDERGROUND_OBJECT_SET: 11,
+    ENEMY_ITEM_OBJECT_SET: ENEMY_OBJECT_DEFINITION,
 }
 
 

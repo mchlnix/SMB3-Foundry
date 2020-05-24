@@ -5,8 +5,17 @@ PLAINS_OBJECT_SET = 0x01
 DUNGEON_OBJECT_SET = 0x02
 HILLY_OBJECT_SET = 0x03
 SKY_OBJECT_SET = 0x04
+PIRANHA_PLANT_OBJECT_SET = 0x05
+WATER_OBJECT_SET = 0x06
+MUSHROOM_OBJECT_SET = 0x07
+PIPE_OBJECT_SET = 0x08
 DESERT_OBJECT_SET = 0x09
+AIR_SHIP_OBJECT_SET = 0x0A
+GIANT_OBJECT_SET = 0x0B
+ICE_OBJECT_SET = 0x0C
+CLOUDY_OBJECT_SET = 0x0D
 UNDERGROUND_OBJECT_SET = 0x0E
+SPADE_BONUS_OBJECT_SET = 0x0F
 ENEMY_ITEM_OBJECT_SET = 0x10
 
 PLAINS_GRAPHICS_SET = 0x01
@@ -190,41 +199,41 @@ _object_length_lookup_table = [
 ]
 
 _object_set_to_object_length_lookup_table = {
-    0: _object_length_lookup_table[0],
-    1: _object_length_lookup_table[0],
-    7: _object_length_lookup_table[0],
-    15: _object_length_lookup_table[0],
-    3: _object_length_lookup_table[1],
-    14: _object_length_lookup_table[1],
-    4: _object_length_lookup_table[2],
-    12: _object_length_lookup_table[2],
-    2: _object_length_lookup_table[3],
-    10: _object_length_lookup_table[4],
-    5: _object_length_lookup_table[5],
-    11: _object_length_lookup_table[5],
-    13: _object_length_lookup_table[5],
-    9: _object_length_lookup_table[6],
-    6: _object_length_lookup_table[7],
-    8: _object_length_lookup_table[7],
+    WORLD_MAP_OBJECT_SET: _object_length_lookup_table[0],
+    PLAINS_OBJECT_SET: _object_length_lookup_table[0],
+    MUSHROOM_OBJECT_SET: _object_length_lookup_table[0],
+    SPADE_BONUS_OBJECT_SET: _object_length_lookup_table[0],
+    HILLY_OBJECT_SET: _object_length_lookup_table[1],
+    UNDERGROUND_OBJECT_SET: _object_length_lookup_table[1],
+    SKY_OBJECT_SET: _object_length_lookup_table[2],
+    ICE_OBJECT_SET: _object_length_lookup_table[2],
+    DUNGEON_OBJECT_SET: _object_length_lookup_table[3],
+    AIR_SHIP_OBJECT_SET: _object_length_lookup_table[4],
+    PIRANHA_PLANT_OBJECT_SET: _object_length_lookup_table[5],
+    GIANT_OBJECT_SET: _object_length_lookup_table[5],
+    CLOUDY_OBJECT_SET: _object_length_lookup_table[5],
+    DESERT_OBJECT_SET: _object_length_lookup_table[6],
+    WATER_OBJECT_SET: _object_length_lookup_table[7],
+    PIPE_OBJECT_SET: _object_length_lookup_table[7],
     # 16: Enemy/Item set always 3 bytes
 }
 
 _ending_graphic_offset = {
-    0: 0,
-    1: 0,
-    2: 0,
-    3: 0,
-    7: 0,
-    10: 0,
-    13: 0,
-    14: 0,  # Underground
-    15: 0,
-    16: 0,
-    4: 1,
-    12: 1,
-    5: 2,
-    9: 2,
-    11: 2,
-    6: 3,
-    8: 3,
+    WORLD_MAP_OBJECT_SET: 0,
+    PLAINS_OBJECT_SET: 0,
+    DUNGEON_OBJECT_SET: 0,
+    HILLY_OBJECT_SET: 0,
+    MUSHROOM_OBJECT_SET: 0,
+    AIR_SHIP_OBJECT_SET: 0,
+    CLOUDY_OBJECT_SET: 0,
+    UNDERGROUND_OBJECT_SET: 0,  # Underground
+    SPADE_BONUS_OBJECT_SET: 0,
+    ENEMY_ITEM_OBJECT_SET: 0,
+    SKY_OBJECT_SET: 1,
+    ICE_OBJECT_SET: 1,
+    PIRANHA_PLANT_OBJECT_SET: 2,
+    DESERT_OBJECT_SET: 2,
+    GIANT_OBJECT_SET: 2,
+    WATER_OBJECT_SET: 3,
+    PIPE_OBJECT_SET: 3,
 }
