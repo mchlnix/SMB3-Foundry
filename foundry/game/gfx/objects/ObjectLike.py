@@ -2,6 +2,9 @@ import abc
 from dataclasses import dataclass
 
 from PySide2.QtCore import QRect
+from foundry.game.Size import Size
+from foundry.game.Position import Position
+from foundry.game.Rect import Rect
 
 EXPANDS_NOT = 0b00
 EXPANDS_HORIZ = 0b01
@@ -50,18 +53,8 @@ class ObjectLike(abc.ABC):
         pass
 
     def get_rect(self, block_length=1) -> QRect:
-        if block_length != 1:
-            x, y = self.rect.topLeft().toTuple()
-            w, h = self.rect.size().toTuple()
-
-            x *= block_length
-            w *= block_length
-            y *= block_length
-            h *= block_length
-
-            return QRect(x, y, w, h)
-        else:
-            return self.rect
+        """Scales the rect to the correct dimensions"""
+        return Rect.scale_from(Rect.from_qrect(self.rect), block_length)
 
     @abc.abstractmethod
     def change_type(self, new_type):
