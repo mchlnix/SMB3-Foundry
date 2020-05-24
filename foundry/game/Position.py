@@ -54,8 +54,10 @@ class Position:
         """Adds both x and y together"""
         if isinstance(other, Position):
             return Position(self.x + other.x, self.y + other.y)
-        else:
+        elif isinstance(other, (int, float)):
             return Position(self.x + other, self.y + other)
+        else:
+            return NotImplemented
 
     def __radd__(self, other):
         """Adds both x and y together"""
@@ -65,22 +67,26 @@ class Position:
         """Subtract both x and y together"""
         if isinstance(other, Position):
             return Position(self.x - other.x, self.y - other.y)
-        else:
+        elif isinstance(other, (int, float)):
             return Position(self.x - other, self.y - other)
+        else:
+            return NotImplemented
 
     def __rsub__(self, other):
         """Subtract both x and y together"""
         if isinstance(other, Position):
             return Position(other.x - self.x, other.y - self.y)
-        else:
+        elif isinstance(other, (int, float)):
             return Position(other - self.x, other - self.y)
 
     def __mul__(self, other):
         """Multiply both x and y together"""
         if isinstance(other, Position):
             return Position(self.x * other.x, self.y * other.y)
-        else:
+        elif isinstance(other, (int, float)):
             return Position(self.x * other, self.y * other)
+        else:
+            return NotImplemented
 
     def __rmul__(self, other):
         """Multiply both x and y together"""
@@ -90,17 +96,19 @@ class Position:
         """Divide both x and y together"""
         if isinstance(other, Position):
             return Position(self.x / other.x, self.y / other.y)
-        else:
+        elif isinstance(other, (int, float)):
             return Position(self.x / other, self.y / other)
+        else:
+            return NotImplemented
 
     def __rtruediv__(self, other):
         """Divide both x and y together"""
         if isinstance(other, Position):
             return Position(other.x / self.x, other.y / self.y)
-        else:
+        elif isinstance(other, (int, float)):
             return Position(other / self.x, other / self.y)
-
-    
+        else:
+            return NotImplemented
 
 
 class LevelPosition(Position):
