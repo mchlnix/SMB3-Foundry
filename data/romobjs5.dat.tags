@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wxHexEditor_XML_TAG>
+  <filename path="/home/michael/Gits/SMB3Foundry/data/romobjs5.dat">
+    <TAG id="0">
+      <start_offset>147</start_offset>
+      <end_offset>147</end_offset>
+      <tag_text></tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#3CC613</note_colour>
+    </TAG>
+  </filename>
+</wxHexEditor_XML_TAG>

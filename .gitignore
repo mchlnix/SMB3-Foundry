@@ -4,7 +4,6 @@ venv
 .coverage
 .idea
 .mypy_cache
-*.tags
 *.nes
 __pycache__
 build/
