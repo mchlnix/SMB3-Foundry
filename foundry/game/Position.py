@@ -110,6 +110,114 @@ class Position:
         else:
             return NotImplemented
 
+    def __floordiv__(self, other):
+        """Divide both x and y together"""
+        if isinstance(other, Position):
+            return Position(self.x // other.x, self.y // other.y)
+        elif isinstance(other, (int, float)):
+            return Position(self.x // other, self.y // other)
+        else:
+            return NotImplemented
+
+    def __rfloordiv__(self, other):
+        """Divide both x and y together"""
+        if isinstance(other, Position):
+            return Position(other.x // self.x, other.y // self.y)
+        elif isinstance(other, (int, float)):
+            return Position(other // self.x, other // self.y)
+        else:
+            return NotImplemented
+
+    def __mod__(self, other):
+        """Mod both x and y together"""
+        if isinstance(other, Position):
+            return Position(self.x % other.x, self.y % other.y)
+        elif isinstance(other, (int, float)):
+            return Position(self.x % other, self.y % other)
+        else:
+            return NotImplemented
+
+    def __rmod__(self, other):
+        """Mod both x and y together"""
+        if isinstance(other, Position):
+            return Position(other.x % self.x, other.y % self.y)
+        elif isinstance(other, (int, float)):
+            return Position(other % self.x, other % self.y)
+        else:
+            return NotImplemented
+
+    def __iadd__(self, other):
+        """Implicity add"""
+        if isinstance(other, Position):
+            self.x += other.x
+            self.y += other.y
+        elif isinstance(other, (int, float)):
+            self.x += other
+            self.y += other
+        else:
+            return NotImplemented
+        return self
+
+    def __isub__(self, other):
+        """Implicity subtract"""
+        if isinstance(other, Position):
+            self.x -= other.x
+            self.y -= other.y
+        elif isinstance(other, (int, float)):
+            self.x -= other
+            self.y -= other
+        else:
+            return NotImplemented
+        return self
+
+    def __imul__(self, other):
+        """Implicity multiply"""
+        if isinstance(other, Position):
+            self.x *= other.x
+            self.y *= other.y
+        elif isinstance(other, (int, float)):
+            self.x *= other
+            self.y *= other
+        else:
+            return NotImplemented
+        return self
+
+    def __itruediv__(self, other):
+        """Implicity division"""
+        if isinstance(other, Position):
+            self.x /= other.x
+            self.y /= other.y
+        elif isinstance(other, (int, float)):
+            self.x /= other
+            self.y /= other
+        else:
+            return NotImplemented
+        return self
+
+    def __ifloordiv__(self, other):
+        """Implicity divide"""
+        if isinstance(other, Position):
+            self.x //= other.x
+            self.y //= other.y
+        elif isinstance(other, (int, float)):
+            self.x //= other
+            self.y //= other
+        else:
+            return NotImplemented
+        return self
+
+    def __imod__(self, other):
+        """Implicity mod"""
+        if isinstance(other, Position):
+            self.x %= other.x
+            self.y %= other.y
+        elif isinstance(other, (int, float)):
+            self.x %= other
+            self.y %= other
+        else:
+            return NotImplemented
+        return self
+
 
 class LevelPosition(Position):
     SCREEN_WIDTH = 0x10
