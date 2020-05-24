@@ -37,7 +37,7 @@ YouTube Video of Version 1.0, check [Releases](https://github.com/mchlnix/SMB3-F
  
 ## User Manual
 
-The beginning of a user manual is available [here](https://githb.com/mchlnix/SMB3-Foundry/blob/master/MANUAL.md). It is more technical, explaining basic concepts of the SMB3 game, rather than the actual use of the editor.
+The beginning of a user manual is available [here](https://github.com/mchlnix/SMB3-Foundry/blob/master/MANUAL.md). It is more technical, explaining basic concepts of the SMB3 game, rather than the actual use of the editor.
 
 ## Contact
 
