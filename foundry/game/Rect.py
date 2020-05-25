@@ -26,11 +26,127 @@ class Rect(QRect):
         """Legacy method for qrects"""
         return Position.from_qt(qrect.topLeft())
 
+    def to_relative_position(self, obj) -> Position:
+        """Return the position of a position assuming it is inside the rect"""
+        if isinstance(obj, Rect):
+            return obj.pos + self.pos
+        elif isinstance(obj, Position):
+            return obj + self.pos
+        else:
+            return NotImplemented
+
+    def relative_position(self, obj) -> Position:
+        """Gets the relative position of a rect"""
+        if isinstance(obj, Rect):
+            return obj.pos - self.pos
+        elif isinstance(obj, Position):
+            return obj - self.pos
+        else:
+            return NotImplemented
+
+    def normalize_position(self, obj) -> Position:
+        """Normalizes a position in terms of this rect"""
+        if isinstance(obj, Rect):
+            return obj.pos + self.pos
+        elif isinstance(obj, Position):
+            return obj + self.pos
+        else:
+            return NotImplemented
+
+    def pos_from_relative_rect_position(self, rect, pos):
+        """
+        Finds the position of a relative position inside another rect in terms of this rect
+        :param Rect rect: The relative Rect
+        :param Position pos: The relative Position
+        :return: The real position
+        :rtype Position
+        """
+        return self.normalize_position(rect.normalize_position(pos))
+
+    def pos_index_relative_rect_positions(self, rect, width=True) -> int:
+        """
+        Makes a generator that finds the position of a relative position inside another rect in terms of this rect
+        as an index
+        :param rect: Rect rect: The relative Rect
+        :param width: Determines if the width or height is the low or high value
+        :return: An index for a matrix
+        :rtype: int
+        """
+        positions = rect.positions(width)
+        for pos in positions:
+            normalized_pos = self.pos_from_relative_rect_position(rect, pos)
+            yield self.index_position(normalized_pos, width)
+
+    def index_position(self, pos: Position, width=True) -> int:
+        """
+        Converts position to an index for a matrix
+        :param Position pos: A relative position for a matrix
+        :param bool width: Determines if the width or height is the low or high value
+        :return: An index for a matrix
+        :rtype: int
+        """
+        return self.abs_size.index_position(pos, width)
+
+    def width_positions(self) -> Position:
+        """
+        Provides a generator for every relative position inside the width
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        generator = self._index_positions(width=True)
+        yield generator
+
+    def height_positions(self):
+        """
+        Provides a generator for every relative position inside the height
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        generator = self._index_positions(width=False)
+        yield next(generator)
+
+    def positions(self, width=True):
+        """
+        Provides every single idx from the matrix of positions in terms of the current rect's position
+        :param bool width: Determines if we are finding the width or height
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        for pos in self.relative_positions(width):
+            other_positions = self.relative_positions(not width)
+            yield(next(pos) + next(other_positions))
+
+    def relative_positions(self, width=True):
+        """
+        Provides every single idx from the matrix of positions
+        :param bool width: Determines if we are finding the width or height
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        positions = self._index_positions(not width)
+        for pos in positions:
+            other_pos = self._index_positions(width)
+            yield pos + other_pos
+
+    def _index_positions(self, width=True):
+        """
+        Provides a generator for every relative position inside the width/height
+        :param bool width: Determines if we are finding the width or height
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        if width:
+            return self.abs_size.width_positions()
+        else:
+            return self.abs_size.height_positions()
+
     @classmethod
     def scale_from(cls, rect: QRect, scale_factor: int):
         """Returns a new rect with the scaled dimensions"""
-        pos = Position.scale_from(Rect._abs_pos(rect), scale_factor)
-        size = Size.scale_from(Rect._abs_size(rect), scale_factor)
+        pos = Rect._abs_pos(rect)
+        pos *= scale_factor
+        size = Rect._abs_size(rect)
+        size *= scale_factor
         return cls.from_size_and_position(size, pos)
 
     @classmethod

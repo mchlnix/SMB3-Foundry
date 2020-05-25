@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from PySide2.QtCore import QSize
+from foundry.game.Position import Position
 
 
 @dataclass
@@ -27,15 +28,56 @@ class Size:
     def to_qt(self) -> QSize:
         return QSize(self.width, self.height)
 
-    def scale_to(self, scale_factor):
-        """Scales width and height by a scale factor"""
-        self.width *= scale_factor
-        self.height *= scale_factor
+    def width_positions(self) -> Position:
+        """
+        Provides a generator for every relative position inside the width
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        generator = self._index_positions(width=True)
+        yield generator
 
-    @classmethod
-    def scale_from(cls, size, scale_factor: int):
-        """Scales width and height by a scale factor and produces a new size"""
-        return cls(size.width * scale_factor, size.height * scale_factor)
+    def height_positions(self):
+        """
+        Provides a generator for every relative position inside the height
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        generator = self._index_positions(width=False)
+        yield next(generator)
+
+    def positions(self, width=True):
+        """
+        Provides every single idx from the matrix of positions
+        :param bool width: Determines if we are finding the width or height
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        positions = self._index_positions(not width)
+        for pos in positions:
+            other_pos = self._index_positions(width)
+            yield pos + other_pos
+
+    def index_position(self, pos: Position, width=True) -> int:
+        """
+        Converts position to an index for a matrix
+        :param Position pos: A relative position for a matrix
+        :param bool width: Determines if the width or height is the low or high value
+        :return: An index for a matrix
+        :rtype: int
+        """
+        return pos.to_index(self.width if width else self.height, width)
+
+    def _index_positions(self, width=True):
+        """
+        Provides a generator for every relative position inside the width/height
+        :param bool width: Determines if we are finding the width or height
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        scaler = self.width if width else self.height
+        for idx in range(scaler):
+            yield Position(idx, 0) if self.width else Position(0, idx)
 
     @classmethod
     def from_qt(cls, qsize: QSize):

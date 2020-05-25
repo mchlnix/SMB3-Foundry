@@ -35,10 +35,16 @@ class Position:
         """Returns the qpoint version of position"""
         return QPoint(int(self.x), int(self.y))
 
-    def scale_to(self, scale_factor):
-        """Scales both x and y by a scale factor"""
-        self.x *= scale_factor
-        self.y *= scale_factor
+    def to_index(self, mod: int, width: bool = True):
+        """
+        Converts position to an index for a matrix
+        :param int mod: Determines how big the width or height is
+        :param bool width: Determines if the width or height is the low or high value
+        :return: An index for a matrix
+        :rtype: int
+        """
+        hi, lo = self.x if not width else self.y, self.x if width else self.y
+        return hi * mod + lo
 
     @classmethod
     def from_qt(cls, qpoint: QPoint):
