@@ -3,6 +3,7 @@ from typing import List
 from PySide2.QtCore import QPoint
 from PySide2.QtGui import QImage, QPainter, Qt, QColor
 
+from foundry.game.File import ROM
 from foundry.game.gfx.Palette import NESPalette
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
@@ -12,6 +13,16 @@ TSA_BANK_0 = 0 * 256
 TSA_BANK_1 = 1 * 256
 TSA_BANK_2 = 2 * 256
 TSA_BANK_3 = 3 * 256
+
+
+def get_block(block_index, palette_group, pattern_table, tsa_data):
+    if block_index > 0xFF:
+        rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
+        block = Block(rom_block_index, palette_group, pattern_table, tsa_data)
+    else:
+        block = Block(block_index, palette_group, pattern_table, tsa_data)
+
+    return block
 
 
 class Block:

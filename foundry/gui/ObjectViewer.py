@@ -2,9 +2,9 @@ from typing import Union
 
 from PySide2.QtCore import QPoint, QSize
 from PySide2.QtGui import QPaintEvent, QPainter
-from PySide2.QtWidgets import QComboBox, QLayout, QStatusBar, QToolBar, QWidget
+from PySide2.QtWidgets import QComboBox, QHBoxLayout, QLayout, QStatusBar, QToolBar, QVBoxLayout, QWidget
 
-from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
@@ -68,9 +68,16 @@ class ObjectViewer(CustomChildWindow):
 
         self.setStatusBar(self.status_bar)
 
-        self.setCentralWidget(self.drawing_area)
-
         self.drawing_area.update()
+
+        self.block_list = BlockArray(self, self.drawing_area.current_object)
+
+        central_widget = QWidget()
+        central_widget.setLayout(QVBoxLayout())
+        central_widget.layout().addWidget(self.drawing_area)
+        central_widget.layout().addWidget(self.block_list)
+
+        self.setCentralWidget(central_widget)
 
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
@@ -103,6 +110,7 @@ class ObjectViewer(CustomChildWindow):
         object_data[3] = self.spin_length.value()
 
         self.drawing_area.update_object(object_data)
+        self.block_list.update_object(self.drawing_area.current_object)
 
         if self.drawing_area.current_object.is_4byte:
             self.spin_length.setEnabled(True)
@@ -137,6 +145,9 @@ class ObjectDrawArea(QWidget):
         self.update_object()
 
     def resize(self, size: QSize):
+        if isinstance(self.current_object, Jump):
+            return
+
         self.setMinimumSize(
             QSize(self.current_object.rendered_width * Block.WIDTH, self.current_object.rendered_height * Block.HEIGHT)
         )
@@ -162,3 +173,54 @@ class ObjectDrawArea(QWidget):
         )
 
         self.current_object.draw(painter, Block.WIDTH, transparent=True)
+
+
+class BlockArray(QWidget):
+    def __init__(self, parent, level_object: LevelObject):
+        super(BlockArray, self).__init__(parent)
+
+        self.setLayout(QHBoxLayout())
+
+        self.setContentsMargins(0, 0, 0, 0)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
+
+        self.level_object = level_object
+
+        self.update_object(level_object)
+
+    def update_object(self, level_object: LevelObject):
+        self.level_object = level_object
+
+        while self.layout().count() > 1:
+            item = self.layout().takeAt(0)
+            item.widget().deleteLater()
+
+        for block_index in self.level_object.blocks:
+            block = get_block(
+                block_index,
+                self.level_object.palette_group,
+                self.level_object.pattern_table,
+                self.level_object.tsa_data,
+            )
+            self.layout().addWidget(BlockArea(block))
+
+        self.update()
+
+
+class BlockArea(QWidget):
+    def __init__(self, block: Block):
+        super(BlockArea, self).__init__()
+
+        self.block = block
+
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setToolTip(hex(self.block.index))
+
+    def sizeHint(self):
+        return QSize(Block.WIDTH, Block.HEIGHT)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+
+        self.block.draw(painter, 0, 0, Block.WIDTH)
