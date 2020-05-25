@@ -611,6 +611,15 @@ class LevelObject(ObjectLike):
                 print(f"Didn't render {self.description}")
                 # breakpoint()
 
+            if self.description.lower() == "black boss room background":
+                new_width = SCREEN_WIDTH
+                new_height = SCREEN_HEIGHT
+
+                base_x = self.x_position // SCREEN_WIDTH * SCREEN_WIDTH
+                base_y = 0
+
+                blocks_to_draw = SCREEN_WIDTH * SCREEN_HEIGHT * [self.blocks[0]]
+
         # for not yet implemented objects and single block objects
         if blocks_to_draw:
             self.rendered_blocks = blocks_to_draw
