@@ -362,6 +362,8 @@ class Level(LevelLike):
 
         self._parse_header()
 
+        self.reload()
+
     @property
     def pipe_ends_level(self):
         return self.header.pipe_ends_level
@@ -445,6 +447,8 @@ class Level(LevelLike):
         self.header_bytes[7] |= index
 
         self._parse_header()
+
+        self.reload()
 
     @property
     def time_index(self):
