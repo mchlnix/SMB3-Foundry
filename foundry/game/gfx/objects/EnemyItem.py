@@ -1,7 +1,7 @@
 from PySide2.QtCore import QRect, QSize
 from PySide2.QtGui import QColor, QImage, QPainter, Qt
 
-from foundry.game.ObjectDefinitions import enemy_handle_x, enemy_handle_y
+from foundry.game.ObjectDefinitions import enemy_handle_x, enemy_handle_x2, enemy_handle_y
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.Palette import NESPalette
 from foundry.game.gfx.GraphicsSet import GraphicsSet
@@ -22,7 +22,7 @@ class EnemyObject(ObjectLike):
         self.length = 0
 
         self.obj_index = data[0]
-        self.x_position = data[1]
+        self.x_position = data[1] - int(enemy_handle_x2[self.obj_index])
         self.y_position = data[2]
 
         self.domain = 0
@@ -147,7 +147,7 @@ class EnemyObject(ObjectLike):
         self._setup()
 
     def to_bytes(self):
-        return bytearray([self.obj_index, self.x_position, self.y_position])
+        return bytearray([self.obj_index, self.x_position + int(enemy_handle_x2[self.obj_index]), self.y_position])
 
     def as_image(self) -> QImage:
         image = QImage(QSize(self.width * Block.SIDE_LENGTH, self.height * Block.SIDE_LENGTH), QImage.Format_RGBA8888,)

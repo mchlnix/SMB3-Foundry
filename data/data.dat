@@ -1,4 +1,4 @@
-; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemyhandle_x enemyhandle_y
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 0,0x00,0x00,1,1,<0>,9,0,0,White Mario Finished Stage
 0,0x01,0x01,1,1,<1>,9,0,0,White Luigi Finished Stage
 0,0x02,0x02,1,1,<2>,9,0,0,Black Square
