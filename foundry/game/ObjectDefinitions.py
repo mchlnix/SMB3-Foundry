@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 
 from foundry import data_dir
@@ -21,26 +22,43 @@ from smb3parse.objects.object_set import (
     WORLD_MAP_OBJECT_SET,
 )
 
-HORIZONTAL = 0
-VERTICAL = 1  # vertical downward
-DIAG_DOWN_LEFT = 2
-DESERT_PIPE_BOX = 3
-DIAG_DOWN_RIGHT = 4
-DIAG_UP_RIGHT = 5
-HORIZ_TO_GROUND = 6
-HORIZONTAL_2 = 7  # special case of horizontal, floating boxes, ceilings
-DIAG_WEIRD = 8  #
-SINGLE_BLOCK_OBJECT = 9
-CENTERED = 10  # like spinning platforms
-PYRAMID_TO_GROUND = 11  # to the ground or next object
-PYRAMID_2 = 12  # doesn't exist?
-TO_THE_SKY = 13
-ENDING = 14
 
-UNIFORM = 0
-END_ON_TOP_OR_LEFT = 1
-END_ON_BOTTOM_OR_RIGHT = 2
-TWO_ENDS = 3
+class GeneratorType(Enum):
+    """
+    Level objects are generated using different methods, depending on their generator type. Some objects extend until
+    they hit another object, some extend up to the sky. To identify in what way a specific type of level object is
+    constructed, this enum lists the known generator types.
+    """
+
+    HORIZONTAL = 0
+    VERTICAL = 1  # vertical downward
+    DIAG_DOWN_LEFT = 2
+    DESERT_PIPE_BOX = 3
+    DIAG_DOWN_RIGHT = 4
+    DIAG_UP_RIGHT = 5
+    HORIZ_TO_GROUND = 6
+    HORIZONTAL_2 = 7  # special case of horizontal, floating boxes, ceilings
+    DIAG_WEIRD = 8  #
+    SINGLE_BLOCK_OBJECT = 9
+    CENTERED = 10  # like spinning platforms
+    PYRAMID_TO_GROUND = 11  # to the ground or next object
+    PYRAMID_2 = 12  # doesn't exist?
+    TO_THE_SKY = 13
+    ENDING = 14
+
+
+class EndType(Enum):
+    """
+    Some level objects have blocks designated to be used at their ends. For example pipes, which can be extended, but
+    always end at one side with the same couple of blocks. To keep track of where those special blocks are to be placed,
+    this enum is used. When the value is TWO_ENDS they are always on opposite sides and whether they are left and right
+    or top and bottom depends on the generator type of the object.
+    """
+
+    UNIFORM = 0
+    END_ON_TOP_OR_LEFT = 1
+    END_ON_BOTTOM_OR_RIGHT = 2
+    TWO_ENDS = 3
 
 
 ENEMY_OBJECT_DEFINITION = 12

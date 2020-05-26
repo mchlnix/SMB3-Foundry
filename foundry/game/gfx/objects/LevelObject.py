@@ -4,29 +4,10 @@ from PySide2.QtCore import QRect, QSize
 from PySide2.QtGui import QImage, QPainter
 
 from foundry.game.File import ROM
-from foundry.game.ObjectDefinitions import (
-    DESERT_PIPE_BOX,
-    DIAG_DOWN_LEFT,
-    DIAG_DOWN_RIGHT,
-    DIAG_UP_RIGHT,
-    DIAG_WEIRD,
-    ENDING,
-    END_ON_BOTTOM_OR_RIGHT,
-    END_ON_TOP_OR_LEFT,
-    HORIZONTAL,
-    HORIZONTAL_2,
-    HORIZ_TO_GROUND,
-    PYRAMID_2,
-    PYRAMID_TO_GROUND,
-    SINGLE_BLOCK_OBJECT,
-    TO_THE_SKY,
-    TWO_ENDS,
-    UNIFORM,
-    VERTICAL,
-)
+from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
@@ -34,24 +15,29 @@ from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXP
 SKY = 0
 GROUND = 27
 
-ENDING_STR = {0: "Uniform", 1: "Top or Left", 2: "Bottom or Right", 3: "Top & Bottom/Left & Right"}
+ENDING_STR = {
+    EndType.UNIFORM: "Uniform",
+    EndType.END_ON_TOP_OR_LEFT: "Top or Left",
+    EndType.END_ON_BOTTOM_OR_RIGHT: "Bottom or Right",
+    EndType.TWO_ENDS: "Top & Bottom/Left & Right",
+}
 
 ORIENTATION_TO_STR = {
-    0: "Horizontal",
-    1: "Vertical",
-    2: "Diagonal ↙",
-    3: "Desert Pipe Box",
-    4: "Diagonal ↘",
-    5: "Diagonal ↗",
-    6: "Horizontal to the Ground",
-    7: "Horizontal Alternative",
-    8: "Diagonal Weird",  # up left?
-    9: "Single Block",
-    10: "Centered",
-    11: "Pyramid to Ground",
-    12: "Pyramid Alternative",
-    13: "To the Sky",
-    14: "Ending",
+    GeneratorType.HORIZONTAL: "Horizontal",
+    GeneratorType.VERTICAL: "Vertical",
+    GeneratorType.DIAG_DOWN_LEFT: "Diagonal ↙",
+    GeneratorType.DESERT_PIPE_BOX: "Desert Pipe Box",
+    GeneratorType.DIAG_DOWN_RIGHT: "Diagonal ↘",
+    GeneratorType.DIAG_UP_RIGHT: "Diagonal ↗",
+    GeneratorType.HORIZ_TO_GROUND: "Horizontal to the Ground",
+    GeneratorType.HORIZONTAL_2: "Horizontal Alternative",
+    GeneratorType.DIAG_WEIRD: "Diagonal Weird",  # up left?
+    GeneratorType.SINGLE_BLOCK_OBJECT: "Single Block",
+    GeneratorType.CENTERED: "Centered",
+    GeneratorType.PYRAMID_TO_GROUND: "Pyramid to Ground",
+    GeneratorType.PYRAMID_2: "Pyramid Alternative",
+    GeneratorType.TO_THE_SKY: "To the Sky",
+    GeneratorType.ENDING: "Ending",
 }
 
 # todo what is this, exactly?
@@ -130,6 +116,9 @@ class LevelObject(ObjectLike):
         else:
             self.ground_level = GROUND
 
+        self._length = 0
+        self.secondary_length = 0
+
         self._setup()
 
     def _setup(self):
@@ -161,8 +150,8 @@ class LevelObject(ObjectLike):
 
         self.width = object_data.bmp_width
         self.height = object_data.bmp_height
-        self.orientation = object_data.orientation
-        self.ending = object_data.ending
+        self.orientation = GeneratorType(object_data.orientation)
+        self.ending = EndType(object_data.ending)
         self.description = object_data.description
 
         self.blocks = [int(block) for block in object_data.rom_object_design]
@@ -242,7 +231,7 @@ class LevelObject(ObjectLike):
 
         blocks_to_draw = []
 
-        if self.orientation == TO_THE_SKY:
+        if self.orientation == GeneratorType.TO_THE_SKY:
             base_x = self.x_position
             base_y = SKY
 
@@ -251,7 +240,7 @@ class LevelObject(ObjectLike):
 
             blocks_to_draw.extend(self.blocks[-self.width :])
 
-        elif self.orientation == DESERT_PIPE_BOX:
+        elif self.orientation == GeneratorType.DESERT_PIPE_BOX:
             # segments are the horizontal sections, which are 8 blocks long
             # two of those are drawn per length bit
             # rows are the 4 block high rows Mario can walk in
@@ -293,8 +282,13 @@ class LevelObject(ObjectLike):
             for segment_number in range(segments):
                 blocks_to_draw.extend(self.blocks[start:stop])
 
-        elif self.orientation in [DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT, DIAG_WEIRD]:
-            if self.ending == UNIFORM:
+        elif self.orientation in [
+            GeneratorType.DIAG_DOWN_LEFT,
+            GeneratorType.DIAG_DOWN_RIGHT,
+            GeneratorType.DIAG_UP_RIGHT,
+            GeneratorType.DIAG_WEIRD,
+        ]:
+            if self.ending == EndType.UNIFORM:
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * self.width
 
@@ -302,17 +296,17 @@ class LevelObject(ObjectLike):
                 right = [BLANK]
                 slopes = self.blocks
 
-            elif self.ending == END_ON_TOP_OR_LEFT:
+            elif self.ending == EndType.END_ON_TOP_OR_LEFT:
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * (self.width - 1)  # without fill block
 
-                if self.orientation in [DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
+                if self.orientation in [GeneratorType.DIAG_DOWN_RIGHT, GeneratorType.DIAG_UP_RIGHT]:
                     fill_block = self.blocks[0:1]
                     slopes = self.blocks[1:]
 
                     left = fill_block
                     right = [BLANK]
-                elif self.orientation == DIAG_DOWN_LEFT:
+                elif self.orientation == GeneratorType.DIAG_DOWN_LEFT:
                     fill_block = self.blocks[-1:]
                     slopes = self.blocks[0:-1]
 
@@ -326,7 +320,7 @@ class LevelObject(ObjectLike):
                     right = [BLANK]
                     left = fill_block
 
-            elif self.ending == END_ON_BOTTOM_OR_RIGHT:
+            elif self.ending == EndType.END_ON_BOTTOM_OR_RIGHT:
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * (self.width - 1)  # without fill block
 
@@ -356,24 +350,24 @@ class LevelObject(ObjectLike):
 
                 rows.append(amount_left * left + slopes[offset : offset + slope_width] + amount_right * right)
 
-            if self.orientation in [DIAG_UP_RIGHT]:
+            if self.orientation in [GeneratorType.DIAG_UP_RIGHT]:
                 for row in rows:
                     row.reverse()
 
-            if self.orientation in [DIAG_DOWN_RIGHT, DIAG_UP_RIGHT]:
+            if self.orientation in [GeneratorType.DIAG_DOWN_RIGHT, GeneratorType.DIAG_UP_RIGHT]:
                 if not self.height > self.width:  # special case for 60 degree platform wire down right
                     rows.reverse()
 
-            if self.orientation in [DIAG_UP_RIGHT]:
+            if self.orientation in [GeneratorType.DIAG_UP_RIGHT]:
                 base_y -= new_height - 1
 
-            if self.orientation in [DIAG_DOWN_LEFT]:
+            if self.orientation in [GeneratorType.DIAG_DOWN_LEFT]:
                 base_x -= new_width - slope_width
 
             for row in rows:
                 blocks_to_draw.extend(row)
 
-        elif self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
+        elif self.orientation in [GeneratorType.PYRAMID_TO_GROUND, GeneratorType.PYRAMID_2]:
             # since pyramids grow horizontally in both directions when extending
             # we need to check for new ground every time it grows
 
@@ -413,7 +407,7 @@ class LevelObject(ObjectLike):
 
                 blocks_to_draw.extend(blank_blocks * [blank])
 
-        elif self.orientation == ENDING:
+        elif self.orientation == GeneratorType.ENDING:
             page_width = 16
             page_limit = page_width - self.x_position % page_width
 
@@ -444,11 +438,11 @@ class LevelObject(ObjectLike):
 
             # Mushroom/Fire flower/Star is categorized as an enemy
 
-        elif self.orientation == VERTICAL:
+        elif self.orientation == GeneratorType.VERTICAL:
             new_height = self.length + 1
             new_width = self.width
 
-            if self.ending == UNIFORM:
+            if self.ending == EndType.UNIFORM:
                 if self.is_4byte:
                     # there is one VERTICAL 4-byte object: Vertically oriented X-blocks
                     # the width is the primary expansion
@@ -459,7 +453,7 @@ class LevelObject(ObjectLike):
                         for y in range(self.height):
                             blocks_to_draw.append(self.blocks[x % self.width])
 
-            elif self.ending == END_ON_TOP_OR_LEFT:
+            elif self.ending == EndType.END_ON_TOP_OR_LEFT:
                 # in case the drawn object is smaller than its actual size
                 for y in range(min(self.height, new_height)):
                     offset = y * self.width
@@ -475,7 +469,7 @@ class LevelObject(ObjectLike):
                     for _ in range(additional_rows):
                         blocks_to_draw.extend(last_row)
 
-            elif self.ending == END_ON_BOTTOM_OR_RIGHT:
+            elif self.ending == EndType.END_ON_BOTTOM_OR_RIGHT:
                 additional_rows = new_height - self.height
 
                 # assume only the first row needs to repeat
@@ -491,7 +485,7 @@ class LevelObject(ObjectLike):
                     offset = y * self.width
                     blocks_to_draw.extend(self.blocks[offset : offset + self.width])
 
-            elif self.ending == TWO_ENDS:
+            elif self.ending == EndType.TWO_ENDS:
                 # object exists on ships
                 top_row = self.blocks[0 : self.width]
                 bottom_row = self.blocks[-self.width :]
@@ -508,10 +502,10 @@ class LevelObject(ObjectLike):
                 if new_height > 1:
                     blocks_to_draw.extend(bottom_row)
 
-        elif self.orientation in [HORIZONTAL, HORIZ_TO_GROUND, HORIZONTAL_2]:
+        elif self.orientation in [GeneratorType.HORIZONTAL, GeneratorType.HORIZ_TO_GROUND, GeneratorType.HORIZONTAL_2]:
             new_width = self.length + 1
 
-            if self.orientation == HORIZ_TO_GROUND:
+            if self.orientation == GeneratorType.HORIZ_TO_GROUND:
                 # to the ground only, until it hits something
                 for y in range(base_y, self.ground_level):
                     bottom_row = QRect(base_x, y, new_width, 1)
@@ -531,13 +525,13 @@ class LevelObject(ObjectLike):
                 if self.is_single_block:
                     new_width = self.length
 
-            elif self.orientation == HORIZONTAL_2 and self.ending == TWO_ENDS:
+            elif self.orientation == GeneratorType.HORIZONTAL_2 and self.ending == EndType.TWO_ENDS:
                 # floating platforms seem to just be one shorter for some reason
                 new_width -= 1
             else:
                 new_height = self.height + self.secondary_length
 
-            if self.ending == UNIFORM and not self.is_4byte:
+            if self.ending == EndType.UNIFORM and not self.is_4byte:
                 for y in range(new_height):
                     offset = (y % self.height) * self.width
 
@@ -547,7 +541,7 @@ class LevelObject(ObjectLike):
                 # in case of giant blocks
                 new_width *= self.width
 
-            elif self.ending == UNIFORM and self.is_4byte:
+            elif self.ending == EndType.UNIFORM and self.is_4byte:
                 # 4 byte objects
                 top = self.blocks[0:1]
                 bottom = self.blocks[-1:]
@@ -563,7 +557,7 @@ class LevelObject(ObjectLike):
                 for _ in range(1, new_height):
                     blocks_to_draw.extend(new_width * bottom)
 
-            elif self.ending == END_ON_TOP_OR_LEFT:
+            elif self.ending == EndType.END_ON_TOP_OR_LEFT:
                 for y in range(new_height):
                     offset = y * self.width
 
@@ -572,7 +566,7 @@ class LevelObject(ObjectLike):
                     for x in range(1, new_width):
                         blocks_to_draw.append(self.blocks[offset + 1])
 
-            elif self.ending == END_ON_BOTTOM_OR_RIGHT:
+            elif self.ending == EndType.END_ON_BOTTOM_OR_RIGHT:
                 for y in range(new_height):
                     offset = y * self.width
 
@@ -581,7 +575,7 @@ class LevelObject(ObjectLike):
 
                     blocks_to_draw.append(self.blocks[offset + self.width - 1])
 
-            elif self.ending == TWO_ENDS:
+            elif self.ending == EndType.TWO_ENDS:
                 top_and_bottom_line = 2
 
                 for y in range(self.height):
@@ -607,7 +601,7 @@ class LevelObject(ObjectLike):
                 if new_rows >= 0:
                     blocks_to_draw = top_row + middle_blocks * new_rows + bottom_row
         else:
-            if not self.orientation == SINGLE_BLOCK_OBJECT:
+            if not self.orientation == GeneratorType.SINGLE_BLOCK_OBJECT:
                 print(f"Didn't render {self.description}")
                 # breakpoint()
 
@@ -705,31 +699,39 @@ class LevelObject(ObjectLike):
         if self.is_4byte:
             expands |= EXPANDS_BOTH
 
-        elif self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND] or self.orientation in [
-            DIAG_DOWN_LEFT,
-            DIAG_DOWN_RIGHT,
-            DIAG_UP_RIGHT,
-            DIAG_WEIRD,
+        elif self.orientation in [
+            GeneratorType.HORIZONTAL,
+            GeneratorType.HORIZONTAL_2,
+            GeneratorType.HORIZ_TO_GROUND,
+        ] or self.orientation in [
+            GeneratorType.DIAG_DOWN_LEFT,
+            GeneratorType.DIAG_DOWN_RIGHT,
+            GeneratorType.DIAG_UP_RIGHT,
+            GeneratorType.DIAG_WEIRD,
         ]:
             expands |= EXPANDS_HORIZ
 
-        elif self.orientation in [VERTICAL, DIAG_WEIRD]:
+        elif self.orientation in [GeneratorType.VERTICAL, GeneratorType.DIAG_WEIRD]:
             expands |= EXPANDS_VERT
 
         return expands
 
     def primary_expansion(self):
-        if self.orientation in [HORIZONTAL, HORIZONTAL_2, HORIZ_TO_GROUND] or self.orientation in [
-            DIAG_DOWN_LEFT,
-            DIAG_DOWN_RIGHT,
-            DIAG_UP_RIGHT,
-            DIAG_WEIRD,
+        if self.orientation in [
+            GeneratorType.HORIZONTAL,
+            GeneratorType.HORIZONTAL_2,
+            GeneratorType.HORIZ_TO_GROUND,
+        ] or self.orientation in [
+            GeneratorType.DIAG_DOWN_LEFT,
+            GeneratorType.DIAG_DOWN_RIGHT,
+            GeneratorType.DIAG_UP_RIGHT,
+            GeneratorType.DIAG_WEIRD,
         ]:
             if self.is_4byte:
                 return EXPANDS_VERT
             else:
                 return EXPANDS_HORIZ
-        elif self.orientation in [VERTICAL]:
+        elif self.orientation in [GeneratorType.VERTICAL]:
             if self.is_4byte:
                 return EXPANDS_HORIZ
             else:
@@ -893,7 +895,7 @@ class LevelObject(ObjectLike):
             x_position = self.x_position
             y_position = self.y_position
 
-        if self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
+        if self.orientation in [GeneratorType.PYRAMID_TO_GROUND, GeneratorType.PYRAMID_2]:
             x_position = self.rendered_base_x - 1 + self.rendered_width // 2
 
         data.append((self.domain << 5) | y_position)
