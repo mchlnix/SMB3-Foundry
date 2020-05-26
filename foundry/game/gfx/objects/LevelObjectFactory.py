@@ -3,7 +3,7 @@ from typing import Optional, List
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.Palette import load_palette
-from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.GraphicsSet import GraphicsSet
 
 
 class LevelObjectFactory:
@@ -11,7 +11,7 @@ class LevelObjectFactory:
     graphic_set: int
     palette_group_index: int
 
-    pattern_table: Optional[PatternTable] = None
+    graphics_set: Optional[GraphicsSet] = None
     palette_group: list = []
 
     def __init__(
@@ -36,7 +36,7 @@ class LevelObjectFactory:
 
     def set_graphic_set(self, graphic_set: int):
         self.graphic_set = graphic_set
-        self.pattern_table = PatternTable(self.graphic_set)
+        self.graphics_set = GraphicsSet(self.graphic_set)
 
     def set_palette_group_index(self, palette_group_index: int):
         self.palette_group_index = palette_group_index
@@ -46,14 +46,14 @@ class LevelObjectFactory:
         if Jump.is_jump(data):
             return Jump(data)
 
-        assert self.pattern_table is not None
+        assert self.graphics_set is not None
 
         # todo get rid of index by fixing ground map
         return LevelObject(
             data,
             self.object_set,
             self.palette_group,
-            self.pattern_table,
+            self.graphics_set,
             self.objects_ref,
             self.vertical_level,
             index,

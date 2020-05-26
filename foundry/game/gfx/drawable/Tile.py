@@ -16,7 +16,7 @@ class Tile:
     PIXEL_COUNT = WIDTH * HEIGHT
     SIZE = 2 * PIXEL_COUNT // 8  # 1 pixel is defined by 2 bits
 
-    def __init__(self, object_index, palette_group, palette_index, pattern_table, mirrored=False):
+    def __init__(self, object_index, palette_group, palette_index, graphics_set, mirrored=False):
         start = object_index * Tile.SIZE
 
         self.cached_tiles = dict()
@@ -28,7 +28,7 @@ class Tile:
         self.pixels = bytearray()
         self.mask_pixels = bytearray()
 
-        self.data = pattern_table.data[start : start + Tile.SIZE]
+        self.data = graphics_set.data[start : start + Tile.SIZE]
 
         if mirrored:
             self._mirror()

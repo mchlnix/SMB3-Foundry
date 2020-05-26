@@ -6,7 +6,7 @@ from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
-from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
@@ -72,10 +72,10 @@ def _block_from_index(block_index: int, level: Level) -> Block:
     """
 
     palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
-    pattern_table = PatternTable(level.header.graphic_set_index)
+    graphics_set = GraphicsSet(level.header.graphic_set_index)
     tsa_data = ROM().get_tsa_data(level.object_set_number)
 
-    return Block(block_index, palette_group, pattern_table, tsa_data)
+    return Block(block_index, palette_group, graphics_set, tsa_data)
 
 
 class LevelDrawer:

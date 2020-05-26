@@ -6,7 +6,7 @@ from PySide2.QtWidgets import QStyle, QComboBox, QToolBar, QWidget, QLayout, QSt
 
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
-from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable.Block import Block
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
@@ -136,7 +136,7 @@ class BlockBank(QWidget):
 
         painter.drawRect(QRect(QPoint(0, 0), self.size()))
 
-        pattern_table = PatternTable(self.object_set)
+        graphics_set = GraphicsSet(self.object_set)
         palette = load_palette(self.object_set, 0)
         tsa_data = ROM.get_tsa_data(self.object_set)
 
@@ -145,7 +145,7 @@ class BlockBank(QWidget):
         block_length = Block.WIDTH * self.zoom
 
         for i in range(self.sprites):
-            block = Block(i, palette, pattern_table, tsa_data)
+            block = Block(i, palette, graphics_set, tsa_data)
 
             x = (i % horizontal) * block_length
             y = (i // horizontal) * block_length

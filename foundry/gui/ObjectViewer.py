@@ -200,7 +200,7 @@ class BlockArray(QWidget):
             block = get_block(
                 block_index,
                 self.level_object.palette_group,
-                self.level_object.pattern_table,
+                self.level_object.graphics_set,
                 self.level_object.tsa_data,
             )
             self.layout().addWidget(BlockArea(block))

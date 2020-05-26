@@ -61,29 +61,29 @@ common_set2chr_index = {
 }
 
 
-class PatternTable:
-    def __init__(self, graphic_set):
+class GraphicsSet:
+    def __init__(self, graphic_set_number):
         self.data = bytearray()
-        self.graphics_set = graphic_set
+        self.number = graphic_set_number
 
         segments = []
 
-        if graphic_set == WORLD_MAP:
+        if graphic_set_number == WORLD_MAP:
             segments = [0x14, 0x16, 0x20, 0x21, 0x22, 0x23]
-        if graphic_set not in graphic_set2chr_index and graphic_set not in common_set2chr_index:
-            self._read_in([graphic_set, graphic_set + 2])
+        if graphic_set_number not in graphic_set2chr_index and graphic_set_number not in common_set2chr_index:
+            self._read_in([graphic_set_number, graphic_set_number + 2])
         else:
-            gfx_index = graphic_set2chr_index[graphic_set]
-            common_index = common_set2chr_index[graphic_set]
+            gfx_index = graphic_set2chr_index[graphic_set_number]
+            common_index = common_set2chr_index[graphic_set_number]
 
             segments.append(gfx_index)
             segments.append(common_index)
 
-            if graphic_set == SPADE_ROULETTE:
+            if graphic_set_number == SPADE_ROULETTE:
                 segments.extend([0x20, 0x21, 0x22, 0x23])
-            elif graphic_set == N_SPADE:
+            elif graphic_set_number == N_SPADE:
                 segments.extend([0x28, 0x29, 0x5A, 0x31])
-            elif graphic_set == VS_2P:
+            elif graphic_set_number == VS_2P:
                 segments.extend([0x04, 0x05, 0x06, 0x07])
             else:
                 segments.extend([0x00, 0x00, 0x00, 0x00])

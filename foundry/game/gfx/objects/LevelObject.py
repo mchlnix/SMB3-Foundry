@@ -26,7 +26,7 @@ from foundry.game.ObjectDefinitions import (
 )
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.Palette import bg_color_for_object_set
-from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
@@ -96,7 +96,7 @@ class LevelObject(ObjectLike):
         data: bytearray,
         object_set: int,
         palette_group,
-        pattern_table: PatternTable,
+        graphics_set: GraphicsSet,
         objects_ref: List["LevelObject"],
         is_vertical: bool,
         index: int,
@@ -104,7 +104,7 @@ class LevelObject(ObjectLike):
     ):
         self.object_set = ObjectSet(object_set)
 
-        self.pattern_table = pattern_table
+        self.graphics_set = graphics_set
         self.tsa_data = ROM.get_tsa_data(object_set)
 
         self.x_position = 0
@@ -660,9 +660,7 @@ class LevelObject(ObjectLike):
 
     def _draw_block(self, painter: QPainter, block_index, x, y, block_length, transparent):
         if block_index not in self.block_cache:
-            self.block_cache[block_index] = get_block(
-                block_index, self.palette_group, self.pattern_table, self.tsa_data
-            )
+            self.block_cache[block_index] = get_block(block_index, self.palette_group, self.graphics_set, self.tsa_data)
 
         self.block_cache[block_index].draw(
             painter,
