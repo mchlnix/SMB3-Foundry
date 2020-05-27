@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.Palette import load_palette
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.ObjectSet import ObjectSet
@@ -20,7 +20,7 @@ class LevelObjectFactory:
         object_set: int,
         graphic_set: int,
         palette_group_index: int,
-        objects_ref: List[LevelObject],
+        objects_ref: List[LevelObjectController],
         vertical_level: bool,
         size_minimal: bool = False,
     ):
@@ -48,16 +48,16 @@ class LevelObjectFactory:
             return Jump(data)
 
         assert self.pattern_table is not None
-
-        # todo get rid of index by fixing ground map
-        return LevelObject.from_data(
+        level_object = LevelObjectController.from_data(
             data=data,
             object_set=ObjectSet(self.object_set),
             palette_group=self.palette_group,
             pattern_table=self.pattern_table,
             objects_ref=self.objects_ref,
-            is_vertical=self.vertical_level
+            is_vertical=self.vertical_level,
+            object_factory_idx=index
         )
+        return level_object
 
     def from_properties(
         self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int,
@@ -73,7 +73,7 @@ class LevelObjectFactory:
 
         obj = self.from_data(data, index)
 
-        if isinstance(obj, LevelObject):
+        if isinstance(obj, LevelObjectController):
             obj.set_position(x, y)
 
         return obj

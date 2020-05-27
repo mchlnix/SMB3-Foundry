@@ -47,3 +47,6 @@ class Jump:
         data[2] |= ((horiz & 0xF) << 4) + (horiz >> 4)
 
         return Jump(data)
+
+    def __repr__(self):
+        return f"Jump({self.data})"

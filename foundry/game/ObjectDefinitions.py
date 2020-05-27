@@ -216,6 +216,9 @@ class ObjectDefinition:
         """Logs all of the class' attributes"""
         logging.debug(f"{self}")
 
+    def __repr__(self):
+        return f"ObjectDefinition {self.description}"
+
     @classmethod
     def from_string(cls, string: str):
         """Legacy method for old data.dat file"""

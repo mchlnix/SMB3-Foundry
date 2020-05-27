@@ -56762,7 +56762,8 @@
       end: 207
       start: 192
   28:
-    block_design: *id001
+    block_design:
+      - 62
     bmp:
       ending: 0
       obj_generator: Vertical
@@ -56798,7 +56799,8 @@
       end: 239
       start: 224
   30:
-    block_design: *id001
+    block_design:
+      - 64
     bmp:
       ending: 0
       obj_generator: Vertical

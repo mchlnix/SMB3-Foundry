@@ -3,7 +3,7 @@ from typing import Optional
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QFormLayout, QSizePolicy, QWidget
 
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
@@ -63,19 +63,23 @@ class SpinnerPanel(QWidget):
 
         self.set_type(obj.obj_index)
 
-        self.enable_domain(isinstance(obj, LevelObject), obj.domain)
+        self.enable_domain(isinstance(obj, LevelObjectController), obj.domain)
 
-        if isinstance(obj, LevelObject) and obj.is_4byte:
+        if isinstance(obj, LevelObjectController) and obj.is_4byte:
             self.set_length(obj.length)
         else:
             self.enable_length(False)
 
         self.blockSignals(False)
 
+        print(obj.properties())
+        print(self.get_type(), self.get_domain(), self.get_length())
+
     def get_type(self):
         return self.spin_type.value()
 
     def set_type(self, object_type: int):
+        assert object_type is not None
         self.spin_type.setValue(object_type)
         self.spin_type.setEnabled(True)
 
@@ -83,6 +87,7 @@ class SpinnerPanel(QWidget):
         return self.spin_domain.value()
 
     def set_domain(self, domain: int):
+        assert domain is not None
         self.spin_domain.setValue(domain)
         self.spin_domain.setEnabled(True)
 
@@ -90,6 +95,7 @@ class SpinnerPanel(QWidget):
         return self.spin_length.value()
 
     def set_length(self, length: int):
+        assert length is not None
         self.spin_length.setValue(length)
         self.spin_length.setEnabled(True)
 

@@ -31,6 +31,14 @@ class Position:
         """Provides an offset to the y position"""
         return self.y + offset
 
+    def invert(self):
+        """
+        Invert the y and x positions
+        :return: The inverted position
+        :rtype: Position
+        """
+        return Position(self._y, self._x)
+
     def to_qt(self) -> QPoint:
         """Returns the qpoint version of position"""
         return QPoint(int(self.x), int(self.y))
@@ -45,6 +53,16 @@ class Position:
         """
         hi, lo = self.x if not width else self.y, self.x if width else self.y
         return hi * mod + lo
+
+    @classmethod
+    def from_pos(cls, pos):
+        """
+        Makes a position from a position
+        :param Position pos: The position to be copied
+        :return: The copied position
+        :rtype: Position
+        """
+        return Position(pos._x, pos._y)
 
     @classmethod
     def from_qt(cls, qpoint: QPoint):

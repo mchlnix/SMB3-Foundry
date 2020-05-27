@@ -26,6 +26,13 @@ class Rect(QRect):
         """Legacy method for qrects"""
         return Position.from_qt(qrect.topLeft())
 
+    def dirty_intersecting(self, rect):
+        for pos in self.positions():
+            for other_pos in rect.positions():
+                if pos == other_pos:
+                    return True
+        return False
+
     def to_relative_position(self, obj) -> Position:
         """Return the position of a position assuming it is inside the rect"""
         if isinstance(obj, Rect):
@@ -49,7 +56,7 @@ class Rect(QRect):
         if isinstance(obj, Rect):
             return obj.pos + self.pos
         elif isinstance(obj, Position):
-            return obj + self.pos
+            return obj + self.abs_pos
         else:
             return NotImplemented
 
@@ -77,6 +84,14 @@ class Rect(QRect):
             normalized_pos = self.pos_from_relative_rect_position(rect, pos)
             yield self.index_position(normalized_pos, width)
 
+    @property
+    def indexes(self):
+        """
+        Provides the total amount of positions (width * height)
+        :return: int
+        """
+        return self.abs_size.width * self.abs_size.height
+
     def index_position(self, pos: Position, width=True) -> int:
         """
         Converts position to an index for a matrix
@@ -94,7 +109,7 @@ class Rect(QRect):
         :rtype: Generator of Positions
         """
         generator = self._index_positions(width=True)
-        yield generator
+        yield next(generator)
 
     def height_positions(self):
         """
@@ -113,8 +128,7 @@ class Rect(QRect):
         :rtype: Generator of Positions
         """
         for pos in self.relative_positions(width):
-            other_positions = self.relative_positions(not width)
-            yield(next(pos) + next(other_positions))
+            yield pos + self.abs_pos
 
     def relative_positions(self, width=True):
         """
@@ -123,10 +137,9 @@ class Rect(QRect):
         :return: A generator of relative positions
         :rtype: Generator of Positions
         """
-        positions = self._index_positions(not width)
-        for pos in positions:
-            other_pos = self._index_positions(width)
-            yield pos + other_pos
+        for pos in self._index_positions(not width):
+            for other_pos in self._index_positions(width):
+                yield pos + other_pos
 
     def _index_positions(self, width=True):
         """

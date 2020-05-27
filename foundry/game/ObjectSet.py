@@ -33,3 +33,9 @@ class ObjectSet:
             raise ValueError(f"This method shouldn't be called for the {self.name}")
 
         return self._internal_object_set.object_length(domain, object_id)
+
+    def __str__(self):
+        return f"ObjectSet({self.object_set_number}) aka {self.name}"
+
+    def __repr__(self):
+        return f"ObjectSet({self.object_set_number})"

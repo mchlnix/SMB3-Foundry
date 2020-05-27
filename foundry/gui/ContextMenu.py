@@ -5,7 +5,7 @@ from PySide2.QtCore import QPoint
 from PySide2.QtWidgets import QMenu
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.level.LevelRef import LevelRef
 
 
@@ -65,7 +65,7 @@ class ContextMenu(QMenu):
         self.add_object_action = self.addAction("Add Object")
         self.add_object_action.setProperty(ID_PROP, CMAction.ADD_OBJECT)
 
-    def set_copied_objects(self, objects: List[Union[LevelObject, EnemyObject]]):
+    def set_copied_objects(self, objects: List[Union[LevelObjectController, EnemyObject]]):
         if not objects:
             return
 
@@ -84,7 +84,7 @@ class ContextMenu(QMenu):
 
         self.copied_objects_origin = min_x, min_y
 
-    def get_copied_objects(self) -> Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]]:
+    def get_copied_objects(self) -> Tuple[List[Union[LevelObjectController, EnemyObject]], Tuple[int, int]]:
         return self.copied_objects, self.copied_objects_origin
 
     def set_position(self, position: QPoint):

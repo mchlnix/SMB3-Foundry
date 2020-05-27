@@ -28,14 +28,48 @@ class Size:
     def to_qt(self) -> QSize:
         return QSize(self.width, self.height)
 
+    def get_relational_position(self, pos: Position) -> int:
+        """
+        Returns a number to indicate the position in relation to the size
+        :param Position pos: the relative position
+        :return: The index (0 - 8) going from left to right, top to bottom.
+        :rtype: int
+        """
+        return self.get_scaler_relational_position(pos.x) + \
+            (self.get_scaler_relational_position(pos.y, width=False) * 3)
+
+    def get_scaler_relational_position(self, pos, width=True) -> int:
+        """
+        Returns a number to indicate the position in relation to the width
+        :param pos: The positional parameter
+        :param width: If we are using the width or height
+        :return: The index (0 - 2) going from left to right or top to bottom
+        :rtype: int
+        """
+        scaler = self.width if width else self.height
+        if pos == 0:
+            return 0
+        elif pos == scaler - 1:
+            return 2
+        else:
+            return 1
+
+    def invert(self):
+        """
+        Invert the width and height
+        :return: The inverted size
+        :rtype: Size
+        """
+        return Size(self._height, self._width)
+
     def width_positions(self) -> Position:
         """
         Provides a generator for every relative position inside the width
         :return: A generator of relative positions
         :rtype: Generator of Positions
         """
-        generator = self._index_positions(width=True)
-        yield generator
+        for pos in range(self.width):
+            yield Position(pos, 0)
 
     def height_positions(self):
         """
@@ -43,8 +77,8 @@ class Size:
         :return: A generator of relative positions
         :rtype: Generator of Positions
         """
-        generator = self._index_positions(width=False)
-        yield next(generator)
+        for pos in range(self.height):
+            yield Position(0, pos)
 
     def positions(self, width=True):
         """
@@ -55,8 +89,8 @@ class Size:
         """
         positions = self._index_positions(not width)
         for pos in positions:
-            other_pos = self._index_positions(width)
-            yield pos + other_pos
+            for other_pos in self._index_positions(width):
+                yield pos + other_pos
 
     def index_position(self, pos: Position, width=True) -> int:
         """
@@ -77,7 +111,18 @@ class Size:
         """
         scaler = self.width if width else self.height
         for idx in range(scaler):
-            yield Position(idx, 0) if self.width else Position(0, idx)
+            yield Position(idx, 0) if width else Position(0, idx)
+
+    @classmethod
+    def from_size(cls, size):
+        """
+        Makes a size from a size
+        :param Size size: The size to be copied
+        :return: The copied size
+        :rtype: Size
+        """
+        return Size(size._width, size._height)
+
 
     @classmethod
     def from_qt(cls, qsize: QSize):
