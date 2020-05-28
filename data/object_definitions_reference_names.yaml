@@ -1,0 +1,23 @@
+Horizontal: 0
+Vertical: 1
+Diagonal Left-Down: 2
+Desert Pipe Box: 3
+Diagonal Right-Down: 4
+Diagonal Right-Up: 5
+Horizontal to the Ground: 6
+Horizontal Alternative: 7
+Diagonal Weird: 8
+Single Block: 9
+Centered: 10
+Pyramid to Ground: 11
+Pyramid Alternative: 12
+To the Sky: 13
+Ending: 14
+Upward Pipe: 15
+Downward Pipe: 16
+Rightward Pipe: 17
+Leftward Pipe: 18
+Diagonal Right-Down 30 Degrees: 19
+Diagonal Left-Down 30 Degrees: 20
+Horizontal With Top: 21
+Horizontal With Sides: 22

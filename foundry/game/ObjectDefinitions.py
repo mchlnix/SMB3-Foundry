@@ -22,6 +22,14 @@ PYRAMID_TO_GROUND = 11  # to the ground or next object
 PYRAMID_2 = 12  # doesn't exist?
 TO_THE_SKY = 13
 ENDING = 14
+UPWARD_PIPE = 15
+DOWNWARD_PIPE = 16
+RIGHTWARD_PIPE = 17
+LEFTWARD_PIPE = 18
+DIAG_DOWN_RIGHT_30 = 19
+DIAG_DOWN_LEFT_30 = 20
+HORIZONTAL_WITH_TOP = 21
+HORIZONTAL_WITH_SIDE = 22
 
 UNIFORM = 0
 END_ON_TOP_OR_LEFT = 1
@@ -88,51 +96,13 @@ class BitMapPicture:
     offset_x: int = 0
     offset_y: int = 0
 
-    STR_TO_ORIENTATION = {
-        "Horizontal": 0,
-        "Vertical": 1,
-        "Diagonal Left-Down": 2,
-        "Desert Pipe Box": 3,
-        "Diagonal Right-Down": 4,
-        "Diagonal Right-Up": 5,
-        "Horizontal to the Ground": 6,
-        "Horizontal Alternative": 7,
-        "Diagonal Weird": 8,
-        "Single Block": 9,
-        "Centered": 10,
-        "Pyramid to Ground": 11,
-        "Pyramid Alternative": 12,
-        "To the Sky": 13,
-        "Ending": 14,
-    }
-
-    ORIENTATION_TO_STR = {
-        0: "Horizontal",
-        1: "Vertical",
-        2: "Diagonal Left-Down",
-        3: "Desert Pipe Box",
-        4: "Diagonal Right-Down",
-        5: "Diagonal Right-Up",
-        6: "Horizontal to the Ground",
-        7: "Horizontal Alternative",
-        8: "Diagonal Weird",  # up left?
-        9: "Single Block",
-        10: "Centered",
-        11: "Pyramid to Ground",
-        12: "Pyramid Alternative",
-        13: "To the Sky",
-        14: "Ending",
-    }
+    with open(data_dir.joinpath("object_definitions_reference_names.yaml")) as f:
+        STR_TO_ORIENTATION = yaml.load(f, Loader=Loader)
 
     @property
     def orientation(self):
         """Legacy property for compatibility"""
         return self.obj_generator
-
-    @property
-    def obj_generator_name(self):
-        """Provides the name of the generator"""
-        return self.ORIENTATION_TO_STR[self.obj_generator]
 
     @classmethod
     def from_dict(cls, dic):
