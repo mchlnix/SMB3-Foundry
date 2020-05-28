@@ -40,9 +40,9 @@ class SpinnerPanel(QWidget):
         self.spin_length.valueChanged.connect(self.object_change.emit)
 
         spinner_layout = QFormLayout()
-        spinner_layout.addRow("Bank/Domain:", self.spin_domain)
-        spinner_layout.addRow("Type:", self.spin_type)
-        spinner_layout.addRow("Length:", self.spin_length)
+        spinner_layout.addRow("Domain:", self.spin_domain)
+        spinner_layout.addRow("Index:", self.spin_type)
+        spinner_layout.addRow("Overload:", self.spin_length)
 
         self.setLayout(spinner_layout)
 
@@ -71,9 +71,6 @@ class SpinnerPanel(QWidget):
             self.enable_length(False)
 
         self.blockSignals(False)
-
-        print(obj.properties())
-        print(self.get_type(), self.get_domain(), self.get_length())
 
     def get_type(self):
         return self.spin_type.value()
