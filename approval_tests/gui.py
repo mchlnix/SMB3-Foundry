@@ -1,7 +1,16 @@
 from typing import Union
 
-from PySide2.QtGui import QPixmap
-from PySide2.QtWidgets import QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QVBoxLayout
+from PySide2.QtGui import QGuiApplication, QPixmap, Qt
+from PySide2.QtWidgets import (
+    QDialog,
+    QDialogButtonBox,
+    QHBoxLayout,
+    QLabel,
+    QScrollArea,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
 
 image_source = Union[QPixmap, str]
 
@@ -23,18 +32,51 @@ class ApprovalDialog(QDialog):
 
         main_layout = QVBoxLayout(self)
 
-        self.image_layout = QVBoxLayout()
-
         ref_image = QLabel()
         ref_image.setPixmap(reference_image)
 
         gen_image = QLabel()
         gen_image.setPixmap(generated_image)
 
+        scroll_area = QScrollArea()
+
+        self.layout().addWidget(scroll_area)
+
+        screen_width, screen_height = QGuiApplication.primaryScreen().size().toTuple()
+
+        if reference_image.width() + gen_image.width() >= screen_width:
+            self.image_layout = QVBoxLayout()
+        else:
+            self.image_layout = QHBoxLayout()
+
         self.image_layout.addStretch()
         self.image_layout.addWidget(ref_image)
         self.image_layout.addWidget(gen_image)
         self.image_layout.addStretch()
+
+        scroll_area.setWidget(QWidget())
+        scroll_area.setWidgetResizable(True)
+
+        scroll_area.widget().setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        scroll_area.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+
+        scroll_area.widget().setLayout(self.image_layout)
+
+        def _sizeHint():
+            orig_size = scroll_area.widget().sizeHint()
+
+            orig_size.setHeight(orig_size.height() + 20)
+            orig_size.setWidth(orig_size.width() + 20)
+
+            if orig_size.width() > screen_width - 20:
+                orig_size.setWidth(screen_width - 20)
+
+            if orig_size.height() > screen_height - 20:
+                orig_size.setHeight(screen_height - 20)
+
+            return orig_size
+
+        scroll_area.sizeHint = _sizeHint
 
         button_box = QDialogButtonBox()
 
@@ -43,8 +85,8 @@ class ApprovalDialog(QDialog):
 
         button_box.addButton("Accept as new Reference", QDialogButtonBox.ApplyRole).clicked.connect(self._on_overwrite)
 
-        main_layout.addLayout(self.image_layout)
-        main_layout.addWidget(button_box)
+        main_layout.addWidget(scroll_area)
+        main_layout.addWidget(button_box, alignment=Qt.AlignCenter)
 
     def _on_overwrite(self):
         self.done(QDialogButtonBox.Apply)
