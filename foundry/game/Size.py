@@ -62,7 +62,32 @@ class Size:
         """
         return Size(self._height, self._width)
 
-    def width_positions(self) -> Position:
+    def flip_rows(self, l: list, width: bool = True):
+        """
+        Flip the list in terms of the width or height
+        :param l: The list to be flipped
+        :param width: Flip along the vertical or horizontal axis
+        :return: A flipped list
+        :rtype: list
+        """
+        rows = []
+        for pos in self.height_positions() if width else self.width_positions():
+            row = []
+            for other_pos in self.reversed_width_positions() if width else self.reversed_height_positions():
+                row.append(l[self.index_position(pos + other_pos)])
+            rows.extend(row)
+        return rows
+
+    def reversed_width_positions(self):
+        """
+        Provides a reversed generator for every relative position inside the width
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        for pos in reversed(range(self.width)):
+            yield Position(pos, 0)
+
+    def width_positions(self):
         """
         Provides a generator for every relative position inside the width
         :return: A generator of relative positions
@@ -70,6 +95,15 @@ class Size:
         """
         for pos in range(self.width):
             yield Position(pos, 0)
+
+    def reversed_height_positions(self):
+        """
+        Provides a reversed generator for every relative position inside the height
+        :return: A generator of relative positions
+        :rtype: Generator of Positions
+        """
+        for pos in reversed(range(self.height)):
+            yield Position(0, pos)
 
     def height_positions(self):
         """
