@@ -5,44 +5,27 @@ from PySide2.QtGui import QImage, QPainter
 from foundry.game.File import ROM
 
 from foundry.game.ObjectDefinitions import (
-    DESERT_PIPE_BOX,
-    DIAG_DOWN_LEFT,
-    DIAG_DOWN_RIGHT,
-    DIAG_UP_RIGHT,
-    DIAG_WEIRD,
-    ENDING,
-    END_ON_BOTTOM_OR_RIGHT,
-    END_ON_TOP_OR_LEFT,
-    HORIZONTAL,
-    HORIZONTAL_2,
-    HORIZ_TO_GROUND,
-    PYRAMID_2,
-    PYRAMID_TO_GROUND,
-    SINGLE_BLOCK_OBJECT,
-    TO_THE_SKY,
-    TWO_ENDS,
-    UNIFORM,
-    VERTICAL,
+    DESERT_PIPE_BOX, DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT, DIAG_WEIRD, ENDING, HORIZONTAL, HORIZONTAL_2,
+    HORIZ_TO_GROUND, PYRAMID_2, PYRAMID_TO_GROUND, SINGLE_BLOCK_OBJECT, TO_THE_SKY, VERTICAL, UPWARD_PIPE,
+    DOWNWARD_PIPE, RIGHTWARD_PIPE, LEFTWARD_PIPE, DIAG_DOWN_RIGHT_30, DIAG_DOWN_LEFT_30, HORIZONTAL_WITH_TOP,
+    HORIZONTAL_WITH_SIDE
 )
 
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.PatternTable import PatternTable
-from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
+from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.gfx.objects.LevelObject import LevelObject, BlockGenerator
 from foundry.game.gfx.objects.LevelObjects import (
-    LevelObjectToSky, LevelObjectDesertPipeBox, LevelObjectDiagnalDownLeft, LevelObjectDiagnalDownRight,
-    LevelObjectDiagnalUpRight, LevelObjectDiagnalWeird, LevelObjectPyramidToGround, LevelObjectEndingBackground,
+    LevelObjectToSky, LevelObjectDesertPipeBox, LevelObjectDiagnalDownLeft45, LevelObjectDiagnalDownRight45,
+    LevelObjectDiagnalUpRight45, LevelObjectDiagnalWeird45, LevelObjectPyramidToGround, LevelObjectEndingBackground,
     LevelObjectVertical, LevelObjectHorizontal, LevelObjectHorizontalToGround, LevelObjectHorizontalAlt,
-    SingleBlock
+    SingleBlock, LevelObjectUpwardPipe, LevelObjectDownwardPipe, LevelObjectRightwardPipe, LevelObjectLeftwardPipe,
+    LevelObjectDiagnalDownRight30, LevelObjectDiagnalDownLeft30, LevelObjectHorizontalWithTop,
+    LevelObjectHorizontalWithSides
 )
 
 from foundry.game.Size import Size
-from foundry.game.Position import Position, LevelPosition
-from foundry.game.Range import Range
-from foundry.game.Rect import Rect
+from foundry.game.Position import Position
 
 
 class LevelObjectController(ObjectLike):
@@ -86,6 +69,10 @@ class LevelObjectController(ObjectLike):
             size,
             object_factory_idx
         )
+
+    @property
+    def size(self):
+        return self.level_object.size
 
     @property
     def index_in_level(self):
@@ -352,8 +339,8 @@ class LevelObjectController(ObjectLike):
     def draw(self, painter: QPainter, block_length, transparent):
         self.level_object.draw(painter, block_length, transparent)
 
-    def set_position(self, x, y):
-        self.level_object.set_position(x, y)
+    def set_position(self, pos: Position):
+        self.level_object.set_position(pos)
 
     def move_by(self, dx, dy):
         self.level_object.move_by(dx, dy)
@@ -412,10 +399,10 @@ class LevelObjectController(ObjectLike):
     LEVEL_OBJECTS = {
         TO_THE_SKY: LevelObjectToSky,
         DESERT_PIPE_BOX: LevelObjectDesertPipeBox,
-        DIAG_DOWN_LEFT: LevelObjectDiagnalDownLeft,
-        DIAG_DOWN_RIGHT: LevelObjectDiagnalDownRight,
-        DIAG_UP_RIGHT: LevelObjectDiagnalUpRight,
-        DIAG_WEIRD: LevelObjectDiagnalWeird,
+        DIAG_DOWN_LEFT: LevelObjectDiagnalDownLeft45,
+        DIAG_DOWN_RIGHT: LevelObjectDiagnalDownRight45,
+        DIAG_UP_RIGHT: LevelObjectDiagnalUpRight45,
+        DIAG_WEIRD: LevelObjectDiagnalWeird45,
         PYRAMID_TO_GROUND: LevelObjectPyramidToGround,
         PYRAMID_2: LevelObjectPyramidToGround,
         ENDING: LevelObjectEndingBackground,
@@ -423,7 +410,15 @@ class LevelObjectController(ObjectLike):
         HORIZONTAL: LevelObjectHorizontal,
         HORIZ_TO_GROUND: LevelObjectHorizontalToGround,
         HORIZONTAL_2: LevelObjectHorizontalAlt,
-        SINGLE_BLOCK_OBJECT: SingleBlock
+        SINGLE_BLOCK_OBJECT: SingleBlock,
+        UPWARD_PIPE: LevelObjectUpwardPipe,
+        DOWNWARD_PIPE: LevelObjectDownwardPipe,
+        RIGHTWARD_PIPE: LevelObjectRightwardPipe,
+        LEFTWARD_PIPE: LevelObjectLeftwardPipe,
+        DIAG_DOWN_RIGHT_30: LevelObjectDiagnalDownRight30,
+        DIAG_DOWN_LEFT_30: LevelObjectDiagnalDownLeft30,
+        HORIZONTAL_WITH_TOP: LevelObjectHorizontalWithTop,
+        HORIZONTAL_WITH_SIDE: LevelObjectHorizontalWithSides
     }
 
     def _level_object(self):

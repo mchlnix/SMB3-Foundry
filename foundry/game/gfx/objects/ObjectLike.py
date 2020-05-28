@@ -33,7 +33,7 @@ class ObjectLike(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def set_position(self, x, y):
+    def set_position(self, pos):
         pass
 
     @abc.abstractmethod
@@ -73,3 +73,9 @@ class ObjectLike(abc.ABC):
 
     def primary_expansion(self):
         return EXPANDS_NOT
+
+    @staticmethod
+    def in_bounds(pos):
+        pos.x = max(pos.x, 0)
+        pos.y = max(pos.y, 0)
+        return pos

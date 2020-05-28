@@ -3,6 +3,7 @@ import logging
 
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.LevelObject import LevelObject, SKY, GROUND, BLANK
+from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
 from foundry.game.ObjectDefinitions import (
     DESERT_PIPE_BOX,
     DIAG_DOWN_LEFT,
@@ -47,8 +48,6 @@ class LevelObjectToSky(LevelObject):
 
         self._confirm_render(size, base_pos, blocks_to_draw)
 
-    def __repr__(self):
-        return f"LevelObjectToSky {self.description} at {self.x_position}, {self.y_position}"
 
 class LevelObjectDesertPipeBox(LevelObject):
     LINES_PER_ROW = 4
@@ -85,151 +84,202 @@ class LevelObjectDesertPipeBox(LevelObject):
 
         self._confirm_render(base_size, pos, blocks_to_draw)
 
-    def __repr__(self):
-        return f"LevelObjectDesertPipeBox {self.description} at {self.x_position}, {self.y_position}"
-
 
 class LevelObjectDiagnal(LevelObject):
-    def _render(self):
-        """Base render function for diagnal blocks, useless unless extended"""
-        pos, size = Position.from_pos(self.pos), Size.from_size(self.bmp.size)
-        rows = []
+    def expands(self):
+        return EXPANDS_HORIZ
 
-        ending_functions = {
-            UNIFORM: self._render_uniform,
-            END_ON_TOP_OR_LEFT: self._render_end_on_top_or_left,
-            END_ON_BOTTOM_OR_RIGHT: self._render_end_on_bottom_or_right,
-            TWO_ENDS: self._render_two_ends
-        }
-        base_size, left, right, slopes = ending_functions[self.ending]()
+    def slope(self):
+        """The slope from self.blocks"""
+        raise NotImplemented
 
-        slope_width = size.width if size.height > size.width else len(slopes)
-        for elevation in range(base_size.height):
-            amount_right = (elevation // size.height) * slope_width
-            amount_left = base_size.width - slope_width - amount_right
-            offset = elevation % size.height
-            rows.append(amount_left * left + slopes[offset: offset + slope_width] + amount_right * right)
-
-        return base_size, pos, rows, slope_width
-
-    def _render_uniform(self):
-        """Update values for the ending UNIFORM"""
-        base_size = Size((self.size.width + 1) * self.bmp.size.width, (self.size.width + 1) * self.bmp.size.height)
-        left, right, slopes = [BLANK], [BLANK], self.blocks
-        return base_size, left, right, slopes
+    def body(self):
+        """The body from self.blocks"""
+        raise NotImplemented
 
     @abstractmethod
-    def _render_end_on_top_or_left(self):
-        """Updates values for the ending END_ON_TOP_OR_LEFT"""
-
-    def _render_end_on_bottom_or_right(self):
-        """Updates values for the ending END_ON_BOTTOM_OR_RIGHT"""
-        width = (self.size.width + 1)
-        base_size = Size(width * (self.bmp.size.width - 1), width * self.bmp.size.height)  # without fill block
-        fill_block = self.blocks[-1:]
-        left, right, slopes = [BLANK], fill_block, self.blocks[0:-1]
-        return base_size, left, right, slopes
-
-    def _render_two_ends(self):
-        """Updates values for the ending TWO_ENDS"""
-        raise NotImplementedError  # todo add two ends functionality
-
-    def __repr__(self):
-        return f"LevelObjectDiagnal {self.description} at {self.x_position}, {self.y_position}"
-
-
-class LevelObjectDiagnalDownLeft(LevelObjectDiagnal):
     def _render(self):
-        blocks_to_draw = []
-        base_size, pos, rows, slope_width = super()._render()
-        pos.x -= base_size.width - slope_width
-        for row in rows:
-            blocks_to_draw.extend(row)
+        """The render routine for the level object"""
 
-        self._confirm_render(base_size, pos, blocks_to_draw)
+    @abstractmethod
+    def get_block_from_position(self, pos):
+        """Returns the corresponding block for a given position"""
 
-    def _render_end_on_top_or_left(self):
-        """Updates values for the ending END_ON_TOP_OR_LEFT"""
-        return self._render_end_on_bottom_or_right()
+    def expands(self):
+        return EXPANDS_HORIZ
 
-    def __repr__(self):
-        return f"LevelObjectDiagnalDownLeft {self.description} at {self.x_position}, {self.y_position}"
+    def primary_expansion(self):
+        return EXPANDS_HORIZ
+
+    @abstractmethod
+    def render_slope(self):
+        """Returns the size, pos, and blocks_to_draw of the rendered slope"""
 
 
-class LevelObjectDiagnalDownRight(LevelObjectDiagnal):
+class LevelObjectDiagnal45(LevelObjectDiagnal):
+    def slope(self):
+        """The slope from self.blocks"""
+        raise NotImplemented
+
+    def body(self):
+        """The body from self.blocks"""
+        raise NotImplemented
+
+    @abstractmethod
     def _render(self):
-        blocks_to_draw = []
-        size, pos, rows, slope_width = super()._render()
-        if not self.bmp.size.height > self.bmp.size.width:  # special case for 60 degree platform wire down right
-            rows.reverse()
+        """The render routine for the level object"""
 
-        pos.x -= size.height - 1
-        for row in rows:
-            blocks_to_draw.extend(row)
+    def render_slope(self):
+        pos, size = Position.from_pos(self.pos), Size(self.size.width + 1, self.size.width + 1)
+        blocks_to_draw = [self.get_block_from_position(pos) for pos in size.positions()]
+        return size, pos, blocks_to_draw
+
+    def get_block_from_position(self, pos):
+        if pos.x == pos.y:
+            return self.slope
+        elif pos.x < pos.y:
+            return self.body
+        else:
+            return BLANK
+
+
+class LevelObjectDiagnal30(LevelObjectDiagnal):
+    def slope(self):
+        """The slope from self.blocks"""
+        raise NotImplemented
+
+    def body(self):
+        """The body from self.blocks"""
+        raise NotImplemented
+
+    @abstractmethod
+    def _render(self):
+        """The render routine for the level object"""
+
+    def render_slope(self):
+        pos, size = Position.from_pos(self.pos), Size((self.size.width + 1) * 2, self.size.width + 1)
+        blocks_to_draw = [self.get_block_from_position(pos) for pos in size.positions()]
+        return size, pos, blocks_to_draw
+
+    def get_block_from_position(self, pos):
+        if pos.x // 2 == pos.y:
+            return self.slope[pos.x % 2]
+        elif pos.x // 2 < pos.y:
+            return self.body
+        else:
+            return BLANK
+
+
+class DownRightDiagnal(LevelObjectDiagnal):
+    def _render(self):
+        self._confirm_render(*self.render_slope())
+
+
+class DownLeftDiagnal(LevelObjectDiagnal):
+    HORZ_OFFSET = 0
+
+    def _render(self):
+        size, pos, blocks_to_draw = self.render_slope()
+        blocks_to_draw = size.flip_rows(blocks_to_draw)
+        pos = pos - Position(size.width - self.HORZ_OFFSET, 0)
+        self._confirm_render(size, pos, blocks_to_draw)
+
+
+class LevelObjectDiagnalDownLeft45(DownLeftDiagnal, LevelObjectDiagnal45):
+    HORZ_OFFSET = 1
+
+    @property
+    def slope(self):
+        return self.blocks[0]
+
+    @property
+    def body(self):
+        return self.blocks[1] if len(self.blocks) == 2 else BLANK
+
+
+class LevelObjectDiagnalDownLeft30(DownLeftDiagnal, LevelObjectDiagnal30):
+    HORZ_OFFSET = 2
+
+    @property
+    def slope(self):
+        return [self.blocks[1], self.blocks[0]]
+
+    @property
+    def body(self):
+        return self.blocks[2] if len(self.blocks) == 3 else BLANK
+
+
+class LevelObjectDiagnalDownRight30(DownRightDiagnal, LevelObjectDiagnal30):
+    @property
+    def slope(self):
+        return self.blocks[1:]
+
+    @property
+    def body(self):
+        return self.blocks[0]
+
+
+class LevelObjectDiagnalDownRight45(DownRightDiagnal, LevelObjectDiagnal45):
+    @property
+    def slope(self):
+        return self.blocks[1] if len(self.blocks) == 2 else self.blocks[0]
+
+    @property
+    def body(self):
+        return self.blocks[0] if len(self.blocks) == 2 else BLANK
+
+
+class LevelObjectDiagnalUpRight45(LevelObjectDiagnal45):
+    @property
+    def slope(self):
+        if len(self.blocks) == 2:
+            return self.blocks[1]
+        else:
+            return self.blocks[0]
+
+    @property
+    def body(self):
+        try:
+            return self.blocks[0]
+        except IndexError:
+            return 0
+
+    def _render(self):
+        size, pos, blocks_to_draw = self.render_slope()
+        blocks_to_draw.reverse()
 
         self._confirm_render(size, pos, blocks_to_draw)
 
-    def _render_end_on_top_or_left(self):
-        """Updates values for the ending END_ON_TOP_OR_LEFT"""
-        base_size = Size((self.size.width + 1) * self.bmp.size.width, (self.size.width + 1) * self.bmp.size.height)
-        fill_block = self.blocks[0:1]
-        left, right, slopes = fill_block, [BLANK], self.blocks[1:]
-        return base_size, left, right, slopes
 
-    def __repr__(self):
-        return f"LevelObjectDiagnalDownRight {self.description} at {self.x_position}, {self.y_position}"
+class LevelObjectDiagnalWeird45(LevelObjectDiagnal45):
+    @property
+    def slope(self):
+        if len(self.blocks) == 2:
+            return self.blocks[1]
+        else:
+            return self.blocks[0]
 
+    @property
+    def body(self):
+        try:
+            return self.blocks[0]
+        except IndexError:
+            return 0
 
-class LevelObjectDiagnalUpRight(LevelObjectDiagnal):
+    def expands(self):
+        return EXPANDS_HORIZ | EXPANDS_VERT
+
     def _render(self):
-        blocks_to_draw = []
-        base_size, pos, rows, slope_width = super()._render()
+        size, pos, blocks_to_draw = self.render_slope()
 
-        for row in rows:
-            row.reverse()
-        if not self.bmp.size.height > self.bmp.size.width:  # special case for 60 degree platform wire down right
-            rows.reverse()
-        pos.y -= base_size.height - 1
-
-        for row in rows:
-            blocks_to_draw.extend(row)
-
-        self._confirm_render(base_size, pos, blocks_to_draw)
-
-    def _render_end_on_top_or_left(self):
-        """Updates values for the ending END_ON_TOP_OR_LEFT"""
-        base_size = Size((self.size.width + 1) * self.bmp.size.width, (self.size.width + 1) * self.bmp.size.height)
-        fill_block = self.blocks[0:1]
-        left, right, slopes = fill_block, [BLANK], self.blocks[1:]
-        return base_size, left, right, slopes
-
-    def __repr__(self):
-        return f"LevelObjectDiagnalUpRight {self.description} at {self.x_position}, {self.y_position}"
-
-
-class LevelObjectDiagnalWeird(LevelObjectDiagnal):
-    def _render(self):
-        blocks_to_draw = []
-        base_size, pos, rows, slope_width = super()._render()
-
-        for row in rows:
-            blocks_to_draw.extend(row)
-
-        self._confirm_render(base_size, pos, blocks_to_draw)
-
-    def _render_end_on_top_or_left(self):
-        """Updates values for the ending END_ON_TOP_OR_LEFT"""
-        base_size = Size((self.size.width + 1) * self.bmp.size.width, (self.size.width + 1) * self.bmp.size.height)
-        fill_block = self.blocks[0:1]
-        left, right, slopes = fill_block, [BLANK], self.blocks[1:]
-        return base_size, left, right, slopes
-
-    def __repr__(self):
-        return f"LevelObjectDiagnalWeird {self.description} at {self.x_position}, {self.y_position}"
+        self._confirm_render(size, pos, blocks_to_draw)
 
 
 class LevelObjectPyramidToGround(LevelObject):
     """Makes a pyramid that grows horizontally in both directions that extends to the ground"""
+    def expands(self):
+        return EXPANDS_HORIZ
+
     def _render(self):
         """Draws a pyramid that expands every block"""
         pos, size = self.pos, Size.from_size(self.bmp.size)
@@ -258,14 +308,14 @@ class LevelObjectPyramidToGround(LevelObject):
 
         self._confirm_render(size, pos, blocks_to_draw)
 
-    def __repr__(self):
-        return f"LevelObjectPyramidToGround {self.description} at {self.x_position}, {self.y_position}"
-
 
 class LevelObjectEndingBackground(LevelObject):
     GROUND = 26
     ENDING_GRAPHIC_HEIGHT = 6
     FLOOR_HEIGHT = 1
+
+    def expands(self):
+        return EXPANDS_HORIZ
 
     @property
     def fade_tile(self):
@@ -304,30 +354,33 @@ class LevelObjectEndingBackground(LevelObject):
 
         self._confirm_render(rect.abs_size, Position(posi.x, 0), blocks_to_draw)
 
-    def __repr__(self):
-        return f"LevelObjectEndingBackground {self.description} at {self.x_position}, {self.y_position}"
-
 
 class LevelObjectVertical(LevelObject):
+    def expands(self):
+        return EXPANDS_VERT
+
+    def primary_expansion(self):
+        return EXPANDS_HORIZ | EXPANDS_VERT if self.is_4byte else EXPANDS_VERT
+
     @property
     def height_leng(self):
         # invert height and length
-        return self.length
+        return self.size.width
 
     @height_leng.setter
     def height_leng(self, value):
         # invert height and length
-        self.length = value
+        self.size.width = value
 
     @property
     def hlength(self):
         # invert height and length
-        return self.height_len
+        return self.size.height
 
     @hlength.setter
     def hlength(self, value):
         # invert height and length
-        self.height_len = value
+        self.size.height = value
 
     def get_block_from_position(self, overload=0):
         """
@@ -367,7 +420,7 @@ class LevelObjectVertical(LevelObject):
     def _render_uniform(self, pos, size, blocks_to_draw):
         """Update values for the ending UNIFORM"""
         for po in Rect.from_size_and_position(size, pos).positions():
-            for _ in range(self.width):
+            for _ in range(self.bmp.size.width):
                 try:
                     blocks_to_draw.append(self.blocks[0])
                 except IndexError:
@@ -384,17 +437,17 @@ class LevelObjectVertical(LevelObject):
 
     def _render_end_on_bottom_or_right(self, pos, size, blocks_to_draw):
         """Updates values for the ending END_ON_BOTTOM_OR_RIGHT"""
-        additional_rows = size.height - self.height
+        additional_rows = size.height - self.bmp.size.height
 
         # assume only the first row needs to repeat
         # todo true for giant blocks?
         if additional_rows > 0:
-            last_row = self.blocks[0: self.width]
+            last_row = self.blocks[0: self.bmp.size.width]
             for _ in range(additional_rows):
                 blocks_to_draw.extend(last_row)
 
         # in case the drawn object is smaller than its actual size
-        for y in range(min(self.height, size.height)):
+        for y in range(min(self.bmp.size.height, size.height)):
             offset = y * self.bmp.size.width
             blocks_to_draw.extend(self.blocks[offset: offset + self.bmp.size.width])
         return pos, size, blocks_to_draw
@@ -411,111 +464,91 @@ class LevelObjectVertical(LevelObject):
         # repeat second to last row
         if additional_rows > 0:
             for _ in range(additional_rows):
-                blocks_to_draw.extend(self.blocks[-2 * self.width: -self.width])
+                blocks_to_draw.extend(self.blocks[-2 * self.bmp.size.width: -self.bmp.size.width])
 
         if size.height > 1:
             blocks_to_draw.extend(bottom_row)
         return pos, size, blocks_to_draw
 
-    def __repr__(self):
-        return f"LevelObjectVertical {self.description} at {self.x_position}, {self.y_position}"
-
 
 class LevelObjectHorizontal(LevelObject):
+    def expands(self):
+        return EXPANDS_HORIZ
+
+    def primary_expansion(self):
+        return EXPANDS_HORIZ | EXPANDS_VERT if self.is_4byte else EXPANDS_HORIZ
+
+    def get_block_position(self, pos, size):
+        try:
+            return self.blocks[pos.y]
+        except IndexError:
+            return self.blocks[0]
+
+    def get_blocks(self, pos, size):
+        return [self.get_block_position(po, size) for po in size.positions()]
+
     def _render(self):
         """Draws an blocks to the sky from a given y position"""
         pos, size = Position.from_pos(self.pos), self.bmp.size + Size(self.size.width, self.size.height)
-        blocks_to_draw = []
-
-        ending_functions = {
-            UNIFORM: self._render_uniform,
-            END_ON_TOP_OR_LEFT: self._render_end_on_top_or_left,
-            END_ON_BOTTOM_OR_RIGHT: self._render_end_on_bottom_or_right,
-            TWO_ENDS: self._render_two_ends
-        }
-        pos, size, blocks_to_draw = ending_functions[self.ending](pos, size, blocks_to_draw)
-
+        blocks_to_draw = self.get_blocks(pos, size)
         self._confirm_render(size, pos, blocks_to_draw)
 
+
+class LevelObjectHorizontalWithTop(LevelObjectHorizontal):
     @property
-    def top_block(self):
-        return self.blocks[0:1]
+    def top(self):
+        return self.blocks[0]
 
     @property
-    def bottom_block(self):
-        return self.blocks[-1:]
+    def body(self):
+        return self.blocks[1]
 
-    def _render_uniform(self, pos, size, blocks_to_draw):
-        """Update values for the ending UNIFORM"""
-        if self.is_4byte:
-            # ceilings are one shorter than normal
-            if self.bmp.size.height > self.bmp.size.width:
-                size.height -= 1
+    def get_block_position(self, pos, size):
+        return self.top if pos.y == 0 else self.body
 
-            for po in size.positions():
-                blocks_to_draw.append(self.top_block if po.y == 0 else self.bottom_block)
+
+class LevelObjectHorizontalWithSides(LevelObjectHorizontal):
+    @property
+    def left(self):
+        return self.blocks[0]
+
+    @property
+    def right(self):
+        return self.blocks[2] if len(self.blocks) == 3 else self.blocks[0]
+
+    @property
+    def body(self):
+        return self.blocks[1] if len(self.blocks) == 3 else self.blocks[0]
+
+    def get_block_position(self, pos, size):
+        if pos.x == 0:
+            return self.left
+        elif pos.x == size.width - 1:
+            return self.right
         else:
-            for po in size.positions():
-                try:
-                    blocks_to_draw.append(self.blocks[0])
-                except IndexError:
-                    blocks_to_draw.append(0)
+            return self.body
 
-        return pos, size, blocks_to_draw
 
-    def _render_end_on_top_or_left(self, pos, size, blocks_to_draw):
-        """Updates values for the ending END_ON_TOP_OR_LEFT"""
-        blocks = self.get_block_from_position()
-        for po in size.positions():
-            blocks_to_draw.append(blocks[size.get_relational_position(po)])
-        return pos, size, blocks_to_draw
+class LevelObjectHorizontalWithSidesAndTop(LevelObjectHorizontal):
+    @property
+    def left(self):
+        return self.blocks[0]
 
-    def _render_end_on_bottom_or_right(self, pos, size, blocks_to_draw):
-        """Updates values for the ending END_ON_BOTTOM_OR_RIGHT"""
-        blocks = self.get_block_from_position(overload=1)
-        for po in size.positions():
-            blocks_to_draw.append(blocks[size.get_relational_position(po)])
-        return pos, size, blocks_to_draw
+    @property
+    def right(self):
+        return self.blocks[2] if len(self.blocks) == 3 else self.blocks[0]
 
-    def get_block_from_position(self, overload=0):
-        """
-        Provides the correct blocks for the provided amount
-        :param List blocks: The blocks provided
-        :return: The blocks
-        :rtype: List
-        """
-        if len(self.blocks) == 9:
-            lt, mt, rt, lm, mm, rm, lb, mb, rb = self.blocks
-        elif len(self.blocks) == 6:
-            lt, mt, rt, lb, mb, rb = self.blocks
-            lm, mm, rm = lb, mb, rb
-        elif len(self.blocks) == 4:
-            if overload == 0:
-                lt, mt, lb, mb = self.blocks
-                rt, rb = mt, mb
-            else:
-                lt, rt, lb, rb = self.blocks
-                mt, mb = rt, rb
-            lm, mm, rm = lb, mb, rb
-        elif len(self.blocks) == 3:
-            lt, mt, rt = self.blocks
-            lb, mb, rb, lm, mm, rm = lt, mt, rt, lt, mt, rt
+    @property
+    def body(self):
+        return self.blocks[1] if len(self.blocks) == 3 else self.blocks[0]
+
+    def get_block_position(self, pos, size):
+        if pos.x == 0:
+            return self.left
+        elif pos.x == size.width - 1:
+            return self.right
         else:
-            lt, mt = self.blocks
-            lb, lm = lt, lt
-            mb, mm, rb, rm, rt = mt, mt, mt, mt, mt
-
-        return [lt, mt, rt, lm, mm, rm, lb, mb, rb]
-
-    def _render_two_ends(self, pos, size, blocks_to_draw):
-        """Updates values for the ending TWO_ENDS"""
-        blocks = self.get_block_from_position()
-        for po in size.positions():
-            blocks_to_draw.append(blocks[size.get_relational_position(po)])
-        return pos, size, blocks_to_draw
-
-    def __repr__(self):
-        return f"LevelObjectHorizontal {self.description} at {self.x_position}, {self.y_position}"
+            return self.body
 
 
 class LevelObjectHorizontalToGround(LevelObjectHorizontal):
@@ -524,7 +557,6 @@ class LevelObjectHorizontalToGround(LevelObjectHorizontal):
         pos, size = Position.from_pos(self.pos), self.bmp.size + Size(self.size.width - 1, self.size.height)
         blocks_to_draw = []
 
-        print(f"{self}")
         for y in range(pos.y, self.ground_level):
             size = Size(size.width, y - pos.y + 1)
             bottom_rect = Rect.from_size_and_position(Size(size.width, 1), pos)
@@ -536,20 +568,10 @@ class LevelObjectHorizontalToGround(LevelObjectHorizontal):
             size.height = self.ground_level - pos.y
 
         if self.is_single_block:
-            size.width = self.length
+            size.width = self.size.width
 
-        ending_functions = {
-            UNIFORM: self._render_uniform,
-            END_ON_TOP_OR_LEFT: self._render_end_on_top_or_left,
-            END_ON_BOTTOM_OR_RIGHT: self._render_end_on_bottom_or_right,
-            TWO_ENDS: self._render_two_ends
-        }
-        pos, size, blocks_to_draw = ending_functions[self.ending](pos, size, blocks_to_draw)
-
+        super()._render()
         self._confirm_render(size, pos, blocks_to_draw)
-
-    def __repr__(self):
-        return f"LevelObjectHorizontalToGround {self.description} at {self.x_position}, {self.y_position}"
 
 
 class LevelObjectHorizontalAlt(LevelObjectHorizontal):
@@ -569,14 +591,116 @@ class LevelObjectHorizontalAlt(LevelObjectHorizontal):
                 blocks_to_draw.append(self.blocks[0])
         return pos, size, blocks_to_draw
 
-    def __repr__(self):
-        return f"LevelObjectHorizontalAlt {self.description} at {self.x_position}, {self.y_position}"
-
 
 class SingleBlock(LevelObject):
     def _render(self):
         """Draws a singular block"""
         self._confirm_render(self.bmp.size, self.pos, self.blocks)
 
-    def __repr__(self):
-        return f"SingleBlock {self.description} at {self.x_position}, {self.y_position}"
+
+class LevelObjectPipe(LevelObject):
+    def expands(self):
+        return EXPANDS_HORIZ
+
+    def primary_expansion(self):
+        return EXPANDS_NOT
+
+    @property
+    def pipe_entrance(self):
+        try:
+            return [self.blocks[0], self.blocks[1]]
+        except IndexError:
+            print(f"{self} does not have a pipe entrance")
+
+    @property
+    def pipe_body(self):
+        try:
+            return [self.blocks[2], self.blocks[3]]
+        except IndexError:
+            print(f"{self} does not have a pipe body")
+
+
+class LevelObjectDownwardPipe(LevelObjectPipe):
+    def _render(self):
+        """Draws an upward pipe"""
+        pos, size = Position.from_pos(self.pos), Size(2, self.size.width + 1)
+        blocks_to_draw = []
+        for po in size.height_positions():
+            if po.y == 0:
+                blocks_to_draw.extend(self.pipe_entrance)
+            else:
+                blocks_to_draw.extend(self.pipe_body)
+
+        self._confirm_render(size, pos, blocks_to_draw)
+
+
+class LevelObjectUpwardPipe(LevelObjectPipe):
+    def _render(self):
+        """Draws an downward pipe"""
+        pos, size = Position.from_pos(self.pos), Size(2, self.size.width + 1)
+        blocks_to_draw = []
+        for po in size.height_positions():
+            if po.y == self.size.width:
+                blocks_to_draw.extend(self.pipe_entrance)
+            else:
+                blocks_to_draw.extend(self.pipe_body)
+
+        self._confirm_render(size, pos, blocks_to_draw)
+
+
+class LevelObjectLeftwardPipe(LevelObjectPipe):
+    @property
+    def pipe_entrance(self):
+        try:
+            return [self.blocks[1], self.blocks[3]]
+        except IndexError:
+            print(f"{self} does not have a pipe entrance")
+
+    @property
+    def pipe_body(self):
+        try:
+            return [self.blocks[0], self.blocks[2]]
+        except IndexError:
+            print(f"{self} does not have a pipe body")
+
+    def _render(self):
+        """Draws an downward pipe"""
+        pos, size = Position.from_pos(self.pos), Size(self.size.width + 1, 2)
+        blocks_to_draw = []
+        for height in size.height_positions():
+            for width in size.width_positions():
+                if width.x == self.size.width:
+                    blocks_to_draw.append(self.pipe_entrance[height.y])
+                else:
+                    blocks_to_draw.append(self.pipe_body[height.y])
+
+        self._confirm_render(size, pos, blocks_to_draw)
+
+
+class LevelObjectRightwardPipe(LevelObjectPipe):
+    @property
+    def pipe_entrance(self):
+        try:
+            return [self.blocks[0], self.blocks[2]]
+        except IndexError:
+            print(f"{self} does not have a pipe entrance")
+
+    @property
+    def pipe_body(self):
+        try:
+            return [self.blocks[1], self.blocks[3]]
+        except IndexError:
+            print(f"{self} does not have a pipe body")
+
+    def _render(self):
+        """Draws an downward pipe"""
+        pos, size = Position.from_pos(self.pos), Size(self.size.width + 1, 2)
+        blocks_to_draw = []
+        for height in size.height_positions():
+            for width in size.width_positions():
+                if width.x == 0:
+                    blocks_to_draw.append(self.pipe_entrance[height.y])
+                else:
+                    blocks_to_draw.append(self.pipe_body[height.y])
+
+        self._confirm_render(size, pos, blocks_to_draw)

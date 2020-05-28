@@ -6,6 +6,8 @@ from foundry.game.gfx.Palette import load_palette
 from foundry.game.gfx.PatternTable import PatternTable
 from foundry.game.ObjectSet import ObjectSet
 
+from foundry.game.Position import Position
+
 
 class LevelObjectFactory:
     object_set: int
@@ -74,6 +76,6 @@ class LevelObjectFactory:
         obj = self.from_data(data, index)
 
         if isinstance(obj, LevelObjectController):
-            obj.set_position(x, y)
+            obj.set_position(Position(x, y))
 
         return obj

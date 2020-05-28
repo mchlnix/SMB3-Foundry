@@ -5251,7 +5251,7 @@
     - 119475
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
@@ -5380,7 +5380,7 @@
     - 119477
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
@@ -5859,8 +5859,8 @@
     - 116366
     - 116373
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -5884,8 +5884,8 @@
     - 116366
     - 116373
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -5909,8 +5909,8 @@
     - 116366
     - 116373
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -5934,8 +5934,8 @@
     - 116306
     - 116307
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -5959,8 +5959,8 @@
     - 116308
     - 116309
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -5984,8 +5984,8 @@
     - 116610
     - 116703
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -6009,8 +6009,8 @@
     - 116611
     - 116703
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -6340,8 +6340,8 @@
     - 116703
     - 116610
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -6365,8 +6365,8 @@
     - 116703
     - 116611
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -6452,7 +6452,7 @@
     - 118623
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -6473,7 +6473,7 @@
     - 118624
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -6494,7 +6494,7 @@
     - 118625
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -6515,7 +6515,7 @@
     - 118626
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -6536,7 +6536,7 @@
     - 118627
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -6557,7 +6557,7 @@
     - 118628
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -6578,7 +6578,7 @@
     - 118629
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -6599,7 +6599,7 @@
     - 118630
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -10685,8 +10685,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -10710,8 +10710,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -10735,8 +10735,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -10760,8 +10760,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -10785,8 +10785,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -10810,8 +10810,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -10835,8 +10835,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -11320,8 +11320,8 @@
     - 185
     - 181
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -11345,8 +11345,8 @@
     - 185
     - 181
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -11432,7 +11432,7 @@
     - 225
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -11453,7 +11453,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -11474,7 +11474,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -11495,7 +11495,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -11516,7 +11516,7 @@
     - 217
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -11537,7 +11537,7 @@
     - 118628
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -11558,7 +11558,7 @@
     - 74
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -11579,7 +11579,7 @@
     - 123
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -13188,8 +13188,8 @@
     - 158
     - 159
     bmp:
-      ending: 1
-      obj_generator: Diagonal Right-Down
+      ending: 0
+      obj_generator: Diagonal Right-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -13212,7 +13212,7 @@
     - 166
     bmp:
       ending: 1
-      obj_generator: Diagonal Left-Down
+      obj_generator: Diagonal Left-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -13235,7 +13235,7 @@
     - 166
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -13281,7 +13281,7 @@
     - 159
     bmp:
       ending: 1
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -13304,7 +13304,7 @@
     - 166
     bmp:
       ending: 1
-      obj_generator: Diagonal Left-Down
+      obj_generator: Diagonal Left-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -13373,7 +13373,7 @@
     - 232
     bmp:
       ending: 1
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -13395,8 +13395,8 @@
     - 230
     - 249
     bmp:
-      ending: 1
-      obj_generator: Diagonal Left-Down
+      ending: 0
+      obj_generator: Diagonal Left-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -13863,7 +13863,7 @@
     - 195
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -13941,7 +13941,7 @@
     - 166
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -13962,7 +13962,7 @@
     - 166
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -13983,7 +13983,7 @@
     - 249
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -14089,8 +14089,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -16328,7 +16328,7 @@
     - 132
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
@@ -17027,8 +17027,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -17052,8 +17052,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -17077,8 +17077,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -17102,8 +17102,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -17127,8 +17127,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -17152,8 +17152,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -17177,8 +17177,8 @@
     - 182
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -17508,8 +17508,8 @@
     - 185
     - 182
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -17533,8 +17533,8 @@
     - 185
     - 181
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -17620,7 +17620,7 @@
     - 225
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -17641,7 +17641,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -17662,7 +17662,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -17683,7 +17683,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -17704,7 +17704,7 @@
     - 217
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -17744,7 +17744,7 @@
     - 123
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -21915,8 +21915,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -21940,8 +21940,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -21966,7 +21966,7 @@
     - 187
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -21990,8 +21990,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -22015,8 +22015,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -22040,8 +22040,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -22065,8 +22065,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -22396,8 +22396,8 @@
     - 185
     - 182
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -22421,8 +22421,8 @@
     - 185
     - 182
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -22508,7 +22508,7 @@
     - 225
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -22529,7 +22529,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -22550,7 +22550,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -22571,7 +22571,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -22592,7 +22592,7 @@
     - 217
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -22632,7 +22632,7 @@
     - 123
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -23081,7 +23081,7 @@
     - 149
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -26820,7 +26820,7 @@
     - 187
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -26845,7 +26845,7 @@
     - 187
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -26870,7 +26870,7 @@
     - 187
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -26894,8 +26894,8 @@
     - 186
     - 187
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -26919,8 +26919,8 @@
     - 186
     - 187
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -26944,8 +26944,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -26969,8 +26969,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -27504,8 +27504,8 @@
     - 185
     - 181
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -27529,8 +27529,8 @@
     - 185
     - 181
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -27616,7 +27616,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -27637,7 +27637,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -27658,7 +27658,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -27679,7 +27679,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -27700,7 +27700,7 @@
     - 140
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -27721,7 +27721,7 @@
     - 141
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -27742,7 +27742,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -28218,7 +28218,7 @@
     - 52
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -28315,7 +28315,7 @@
     - 0
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -32218,7 +32218,7 @@
     - 187
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -32243,7 +32243,7 @@
     - 187
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -32267,8 +32267,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -32292,8 +32292,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -32317,8 +32317,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -32342,8 +32342,8 @@
     - 182
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -32367,8 +32367,8 @@
     - 182
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -32698,8 +32698,8 @@
     - 185
     - 182
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -32723,8 +32723,8 @@
     - 185
     - 182
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -32810,7 +32810,7 @@
     - 225
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -32831,7 +32831,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -32852,7 +32852,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -32873,7 +32873,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -32894,7 +32894,7 @@
     - 217
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -32915,7 +32915,7 @@
     - 240
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -32936,7 +32936,7 @@
     - 123
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -33432,8 +33432,8 @@
     - 182
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -37687,8 +37687,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -37712,8 +37712,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -37737,8 +37737,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -37762,8 +37762,8 @@
     - 189
     - 190
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -37787,8 +37787,8 @@
     - 189
     - 187
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -37812,8 +37812,8 @@
     - 173
     - 173
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -37837,8 +37837,8 @@
     - 173
     - 173
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -38168,8 +38168,8 @@
     - 189
     - 189
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -38193,8 +38193,8 @@
     - 189
     - 189
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -38280,7 +38280,7 @@
     - 225
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -38301,7 +38301,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -38322,7 +38322,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -38343,7 +38343,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -38364,7 +38364,7 @@
     - 217
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -38385,7 +38385,7 @@
     - 141
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -38406,7 +38406,7 @@
     - 123
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -41939,8 +41939,8 @@
     - 158
     - 157
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -41964,8 +41964,8 @@
     - 185
     - 158
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -42701,8 +42701,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -42726,8 +42726,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -42751,8 +42751,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -42776,8 +42776,8 @@
     - 189
     - 190
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -42801,8 +42801,8 @@
     - 189
     - 190
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -42826,8 +42826,8 @@
     - 182
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -42851,8 +42851,8 @@
     - 182
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -43182,8 +43182,8 @@
     - 157
     - 158
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -43207,8 +43207,8 @@
     - 157
     - 158
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -43294,7 +43294,7 @@
     - 225
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -43315,7 +43315,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -43336,7 +43336,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -43357,7 +43357,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -43378,7 +43378,7 @@
     - 217
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -43419,7 +43419,7 @@
     - 123
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -43812,8 +43812,8 @@
     - 189
     - 190
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -43837,8 +43837,8 @@
     - 182
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -44083,7 +44083,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -47622,8 +47622,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -47647,8 +47647,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -47672,8 +47672,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -47697,8 +47697,8 @@
     - 173
     - 190
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -47722,8 +47722,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -47747,8 +47747,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -47772,8 +47772,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -48103,8 +48103,8 @@
     - 185
     - 181
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -48128,8 +48128,8 @@
     - 185
     - 181
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -48215,7 +48215,7 @@
     - 225
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -48236,7 +48236,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -48257,7 +48257,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -48278,7 +48278,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -48299,7 +48299,7 @@
     - 217
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -48320,7 +48320,7 @@
     - 141
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -48341,7 +48341,7 @@
     - 123
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -48814,8 +48814,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -48839,8 +48839,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -48863,7 +48863,7 @@
     - 123
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -51775,7 +51775,7 @@
     - 37
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -52492,8 +52492,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -52517,8 +52517,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -52542,8 +52542,8 @@
     - 186
     - 187
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -52567,8 +52567,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -52592,8 +52592,8 @@
     - 173
     - 174
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -52617,8 +52617,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -52642,8 +52642,8 @@
     - 181
     - 185
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -52973,8 +52973,8 @@
     - 185
     - 181
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -52998,8 +52998,8 @@
     - 185
     - 181
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -53085,7 +53085,7 @@
     - 225
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -53106,7 +53106,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -53127,7 +53127,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -53148,7 +53148,7 @@
     - 222
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -53169,7 +53169,7 @@
     - 217
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -53209,7 +53209,7 @@
     - 123
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -57253,7 +57253,7 @@
     block_design: *id001
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -57273,8 +57273,8 @@
   56:
     block_design: *id001
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -57294,8 +57294,8 @@
   57:
     block_design: *id001
     bmp:
-      ending: 1
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -57315,8 +57315,8 @@
   58:
     block_design: *id001
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -57336,8 +57336,8 @@
   59:
     block_design: *id001
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -57357,8 +57357,8 @@
   60:
     block_design: *id001
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -57378,8 +57378,8 @@
   61:
     block_design: *id001
     bmp:
-      ending: 1
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -57765,8 +57765,8 @@
   78:
     block_design: *id001
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -57786,8 +57786,8 @@
   79:
     block_design: *id001
     bmp:
-      ending: 2
-      obj_generator: Horizontal
+      ending: 0
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -57865,7 +57865,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -57884,7 +57884,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -57903,7 +57903,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -57922,7 +57922,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -57941,7 +57941,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -57960,7 +57960,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -57979,7 +57979,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -57998,7 +57998,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -59014,7 +59014,7 @@
     block_design: *id001
     bmp:
       ending: 1
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -59034,7 +59034,7 @@
     block_design: *id001
     bmp:
       ending: 1
-      obj_generator: Diagonal Left-Down
+      obj_generator: Diagonal Left-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -59054,7 +59054,7 @@
     block_design: *id001
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -59094,7 +59094,7 @@
     block_design: *id001
     bmp:
       ending: 1
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -59114,7 +59114,7 @@
     block_design: *id001
     bmp:
       ending: 1
-      obj_generator: Diagonal Left-Down
+      obj_generator: Diagonal Left-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -59174,7 +59174,7 @@
     block_design: *id001
     bmp:
       ending: 1
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -59194,7 +59194,7 @@
     block_design: *id001
     bmp:
       ending: 1
-      obj_generator: Diagonal Left-Down
+      obj_generator: Diagonal Left-Down 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -59596,7 +59596,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
@@ -59632,7 +59632,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -59705,7 +59705,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -59724,7 +59724,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -59743,7 +59743,7 @@
     block_design: *id001
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -59837,8 +59837,8 @@
   153:
     block_design: *id001
     bmp:
-      ending: 2
-      obj_generator: Vertical
+      ending: 0
+      obj_generator: Upward Pipe
       offset_x: 0
       offset_y: 0
       size:
