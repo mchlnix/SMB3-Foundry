@@ -8,7 +8,9 @@ from foundry.game.ObjectDefinitions import (
     DESERT_PIPE_BOX, DIAG_DOWN_LEFT, DIAG_DOWN_RIGHT, DIAG_UP_RIGHT, DIAG_WEIRD, ENDING, HORIZONTAL, HORIZONTAL_2,
     HORIZ_TO_GROUND, PYRAMID_2, PYRAMID_TO_GROUND, SINGLE_BLOCK_OBJECT, TO_THE_SKY, VERTICAL, UPWARD_PIPE,
     DOWNWARD_PIPE, RIGHTWARD_PIPE, LEFTWARD_PIPE, DIAG_DOWN_RIGHT_30, DIAG_DOWN_LEFT_30, HORIZONTAL_WITH_TOP,
-    HORIZONTAL_WITH_SIDE
+    HORIZONTAL_WITH_SIDE, VERTICAL_WITH_TOP, VERTICAL_WITH_ALL_SIDES, HORIZTONAL_WITH_ALL_SIDES,
+    VERTICAL_WITH_TOP_AND_BOTTOM, DIAG_DOWN_LEFT_60, DIAG_DOWN_RIGHT_60, HORIZONTAL_WITH_BOTTOM, DIAG_UP_LEFT,
+    DIAG_UP_RIGHT_30, VERTICAL_WITH_DOUBLE_TOP, VERTICAL_WITH_BOTTOM
 )
 
 from foundry.game.ObjectSet import ObjectSet
@@ -21,7 +23,10 @@ from foundry.game.gfx.objects.LevelObjects import (
     LevelObjectVertical, LevelObjectHorizontal, LevelObjectHorizontalToGround, LevelObjectHorizontalAlt,
     SingleBlock, LevelObjectUpwardPipe, LevelObjectDownwardPipe, LevelObjectRightwardPipe, LevelObjectLeftwardPipe,
     LevelObjectDiagnalDownRight30, LevelObjectDiagnalDownLeft30, LevelObjectHorizontalWithTop,
-    LevelObjectHorizontalWithSides
+    LevelObjectHorizontalWithSides, LevelObjectVerticalWithTop, LevelObjectHorizontalWithAllSides,
+    LevelObjectVerticalWithAllSides, LevelObjectVerticalWithTopAndBottom, LevelObjectDiagnalDownLeft60,
+    LevelObjectDiagnalDownRight60, LevelObjectHorizontalWithBottom, LevelObjectDiagnalUpLeft45,
+    LevelObjectDiagnalUpRight30, LevelObjectVerticalWithDoubleTop, LevelObjectVerticalWithBottom
 )
 
 from foundry.game.Size import Size
@@ -343,7 +348,7 @@ class LevelObjectController(ObjectLike):
         self.level_object.set_position(pos)
 
     def move_by(self, dx, dy):
-        self.level_object.move_by(dx, dy)
+        self.level_object.move_by(Position(dx, dy))
 
     def get_position(self):
         return self.level_object.get_position()
@@ -418,7 +423,18 @@ class LevelObjectController(ObjectLike):
         DIAG_DOWN_RIGHT_30: LevelObjectDiagnalDownRight30,
         DIAG_DOWN_LEFT_30: LevelObjectDiagnalDownLeft30,
         HORIZONTAL_WITH_TOP: LevelObjectHorizontalWithTop,
-        HORIZONTAL_WITH_SIDE: LevelObjectHorizontalWithSides
+        HORIZONTAL_WITH_SIDE: LevelObjectHorizontalWithSides,
+        VERTICAL_WITH_TOP: LevelObjectVerticalWithTop,
+        VERTICAL_WITH_ALL_SIDES: LevelObjectVerticalWithAllSides,
+        HORIZTONAL_WITH_ALL_SIDES: LevelObjectHorizontalWithAllSides,
+        VERTICAL_WITH_TOP_AND_BOTTOM: LevelObjectVerticalWithTopAndBottom,
+        DIAG_DOWN_LEFT_60: LevelObjectDiagnalDownLeft60,
+        DIAG_DOWN_RIGHT_60: LevelObjectDiagnalDownRight60,
+        HORIZONTAL_WITH_BOTTOM: LevelObjectHorizontalWithBottom,
+        DIAG_UP_LEFT: LevelObjectDiagnalUpLeft45,
+        DIAG_UP_RIGHT_30: LevelObjectDiagnalUpRight30,
+        VERTICAL_WITH_DOUBLE_TOP: LevelObjectVerticalWithDoubleTop,
+        VERTICAL_WITH_BOTTOM: LevelObjectVerticalWithBottom
     }
 
     def _level_object(self):

@@ -157,7 +157,6 @@ class Size:
         """
         return Size(size._width, size._height)
 
-
     @classmethod
     def from_qt(cls, qsize: QSize):
         """Returns the Qsize version of the object"""
@@ -235,6 +234,8 @@ class Size:
             return Size(other.width // self.width, other.height // self.height)
         elif isinstance(other, (int, float)):
             return Size(other // self.width, other // self.height)
+        elif isinstance(other, Position):
+            return Position(other.x // self.width, other.y // self.height)
         else:
             return NotImplemented
 
@@ -251,6 +252,8 @@ class Size:
             return Size(other.width % self.width, other.height % self.height)
         elif isinstance(other, (int, float)):
             return Size(other % self.width, other % self.height)
+        elif isinstance(other, Position):
+            return Position(other.x % self.width, other.y % self.height)
         else:
             return NotImplemented
 

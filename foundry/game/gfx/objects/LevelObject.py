@@ -1,30 +1,13 @@
 from abc import abstractmethod
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple
 from dataclasses import dataclass
 
-from PySide2.QtCore import QRect, QSize
 from PySide2.QtGui import QImage, QPainter
 
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import (
-    DESERT_PIPE_BOX,
-    DIAG_DOWN_LEFT,
-    DIAG_DOWN_RIGHT,
-    DIAG_UP_RIGHT,
-    DIAG_WEIRD,
-    ENDING,
-    END_ON_BOTTOM_OR_RIGHT,
-    END_ON_TOP_OR_LEFT,
-    HORIZONTAL,
-    HORIZONTAL_2,
-    HORIZ_TO_GROUND,
     PYRAMID_2,
-    PYRAMID_TO_GROUND,
-    SINGLE_BLOCK_OBJECT,
-    TO_THE_SKY,
-    TWO_ENDS,
-    UNIFORM,
-    VERTICAL
+    PYRAMID_TO_GROUND
 )
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.objects.Jump import Jump
@@ -36,6 +19,7 @@ from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXP
 
 from foundry.game.Size import Size
 from foundry.game.Position import Position
+from foundry.game.Rect import Rect
 
 SKY = 0
 GROUND = 27
@@ -91,6 +75,7 @@ class BlockCache:
             self.cache[block_index] = block
         return self.cache[block_index]
 
+
 @dataclass
 class BlockGenerator:
     size: Size
@@ -120,6 +105,10 @@ class BlockGenerator:
     def is_4byte(self):
         """Returns if the object takes 4 bytes"""
         return self._is_4byte(self.object_set, self.type)
+
+    @property
+    def bytes(self):
+        return self.object_set.get_definition_of(self.type).bytes
 
     @staticmethod
     def _is_4byte(object_set, type):
@@ -219,7 +208,7 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         self.ground_level = GROUND
 
-        self.rect = QRect()
+        self.rect = Rect()
 
         self._render()
 
@@ -290,10 +279,10 @@ class LevelObject(ObjectLike, BlockGenerator):
     def set_position(self, pos: Position):
         positional_difference, self.rendered_position = self.pos - self.rendered_position, self.in_bounds(pos)
         self.pos = self.rendered_position + positional_difference
-        self._render()
+        self.render()
 
-    def move_by(self, dx: int, dy: int):
-        self.set_position(self.rendered_position + Position(dx, dy))
+    def move_by(self, pos: Position):
+        self.set_position(self.rendered_position + pos)
 
     def get_position(self):
         return self.pos.y, self.pos.y
@@ -349,7 +338,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             base_index = (self.obj_index // 0x10) * 0x10
 
             self.obj_index = base_index + length
-            self.size.height = self.obj_index
+            self.size.width = self.obj_index
         else:
             length = y - self.pos.y
             length = max(0, length)
@@ -408,48 +397,33 @@ class LevelObject(ObjectLike, BlockGenerator):
         ]
 
     def display_size(self, zoom_factor: int = 1):
-        return QSize(self.rendered_size.width * Block.SIDE_LENGTH, self.rendered_size.height * Block.SIDE_LENGTH) * zoom_factor
+        size = self.rendered_position * Block.SIDE_LENGTH * zoom_factor
+        return size.to_qt()
 
     def as_image(self) -> QImage:
-        self.rendered_position.x = 0
-        self.rendered_position.y = 0
-
-        image = QImage(
-            QSize(self.rendered_size.width * Block.SIDE_LENGTH, self.rendered_size.height * Block.SIDE_LENGTH),
-            QImage.Format_RGB888,
-        )
-
+        self.rendered_position = Position(0, 0)
+        size = self.rendered_size * Block.SIDE_LENGTH
+        image = QImage(size.to_qt(), QImage.Format_RGB888)
         bg_color = bg_color_for_object_set(self.object_set.number, 0)
-
         image.fill(bg_color)
-
         painter = QPainter(image)
-
         self.draw(painter, Block.SIDE_LENGTH, True)
-
         return image
 
     def to_bytes(self) -> bytearray:
         data = bytearray()
 
         if self.vertical_level:
-            # todo from vertical to non-vertical is bugged, because it
-            # seems like you can't convert the coordinates 1:1
-            # there seems to be ambiguity
-
             offset = self.pos.y // SCREEN_HEIGHT
-
-            x_position = self.pos.x + offset * SCREEN_WIDTH
-            y_position = self.pos.y % SCREEN_HEIGHT
+            pos = Position(self.pos.x + offset * SCREEN_WIDTH, self.pos.y % SCREEN_HEIGHT)
         else:
-            x_position = self.pos.x
-            y_position = self.pos.y
+            pos = self.pos
 
         if self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
-            x_position = self.rendered_position.x - 1 + self.rendered_size.width // 2
+            pos.x = self.rendered_position.x - 1 + self.rendered_size.width // 2
 
-        data.append((self.domain << 5) | y_position)
-        data.append(x_position)
+        data.append((self.domain << 5) | pos.y)
+        data.append(max(min(pos.x, 0xFF), 0))
 
         if not self.is_4byte and not self.is_single_block:
             third_byte = (self.obj_index & 0xF0) + self.size.width
@@ -476,17 +450,9 @@ class LevelObject(ObjectLike, BlockGenerator):
         return self.index_in_level < other.index_in_level
 
     def _confirm_render(self, size: Size, pos: Position, blocks: list):
-        # for not yet implemented objects and single block objects
-        if blocks:
-            self.rendered_blocks = blocks
-        else:
-            self.rendered_blocks = self.blocks
-
-        self.rendered_size = size
-        self.rendered_position = pos
-        self.rendered_blocks = blocks
-
-        self.rect = QRect(self.rendered_position.x, self.rendered_position.y, self.rendered_size.width, self.rendered_size.height)
+        blocks = blocks if blocks else self.blocks
+        self.rendered_size, self.rendered_position, self.rendered_blocks = size, pos, blocks
+        self.rect = Rect.from_size_and_position(self.rendered_size, self.rendered_position)
 
     def _get_obj_index(self):
         try:
@@ -498,6 +464,6 @@ class LevelObject(ObjectLike, BlockGenerator):
     def _if_intersects(self, rect):
         return any(
             [
-                rect.intersects(obj.get_rect()) for obj in self.objects_ref[0: self._get_obj_index()]
+                rect.intersects(obj.get_rect()) for obj in self.objects_ref[:self._get_obj_index()]
             ]
         )

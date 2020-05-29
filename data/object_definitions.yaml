@@ -4986,8 +4986,8 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
-        width: 3
+        height: 1
+        width: 1
     bytes: 3
     description: White Block Platform (Extends to ground)
     domain: 0
@@ -5021,8 +5021,8 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
-        width: 3
+        height: 1
+        width: 1
     bytes: 3
     description: Orange Block Platform (Extends to ground)
     domain: 0
@@ -5056,8 +5056,8 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
-        width: 3
+        height: 1
+        width: 1
     bytes: 3
     description: Green Block Platform (Extends to ground)
     domain: 0
@@ -5091,8 +5091,8 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
-        width: 3
+        height: 1
+        width: 1
     bytes: 3
     description: Blue Block Platform (Extends to ground)
     domain: 0
@@ -5112,28 +5112,28 @@
   20:
     block_design:
     - 119176
-    - 119188
-    - 119200
     - 119177
+    - 119188
     - 119189
+    - 119200
     - 119201
     bmp:
       ending: 3
-      obj_generator: Horizontal Alternative
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: White Block Platform (Floating)
     domain: 0
     object_design:
     - 54
-    - 55
-    - 56
     - 48
+    - 55
     - 49
+    - 56
     - 50
     range:
       end: 95
@@ -5141,19 +5141,19 @@
   21:
     block_design:
     - 119179
-    - 119191
-    - 119203
     - 119180
+    - 119191
     - 119192
+    - 119203
     - 119204
     bmp:
       ending: 3
-      obj_generator: Horizontal Alternative
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: Orange Block Platform (Floating)
     domain: 0
@@ -5170,19 +5170,19 @@
   22:
     block_design:
     - 119182
-    - 119194
-    - 119206
     - 119183
+    - 119194
     - 119195
+    - 119206
     - 119207
     bmp:
       ending: 3
-      obj_generator: Horizontal Alternative
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: Green Block Platform (Floating)
     domain: 0
@@ -5199,19 +5199,19 @@
   23:
     block_design:
     - 119185
-    - 119197
-    - 119209
     - 119186
+    - 119197
     - 119198
+    - 119209
     - 119210
     bmp:
       ending: 3
-      obj_generator: Horizontal Alternative
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: Blue Block Platform (Floating)
     domain: 0
@@ -5256,7 +5256,7 @@
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
     description: Gap
     domain: 0
@@ -5294,14 +5294,17 @@
     - 119566
     - 119567
     - 119568
+    - 119566
+    - 119567
+    - 119568
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With All Sides
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
-        width: 3
+        height: 1
+        width: 1
     bytes: 4
     description: Flat Ground
     domain: 0
@@ -5323,14 +5326,17 @@
     - 119569
     - 119570
     - 119571
+    - 119569
+    - 119570
+    - 119571
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With All Sides
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
-        width: 3
+        height: 1
+        width: 1
     bytes: 4
     description: Underwater Flat Ground
     domain: 0
@@ -5347,19 +5353,19 @@
   29:
     block_design:
     - 119721
-    - 119723
-    - 119725
     - 119722
+    - 119723
     - 119724
+    - 119725
     - 119726
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: Background Clouds
     domain: 0
@@ -5385,7 +5391,7 @@
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
     description: Underwater gap
     domain: 0
@@ -6390,11 +6396,11 @@
     - 118504
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
@@ -6456,7 +6462,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Waterfall
@@ -6477,7 +6483,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -6498,7 +6504,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -6519,7 +6525,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -6540,7 +6546,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -6561,7 +6567,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Blue X-Blocks
@@ -6643,11 +6649,11 @@
     - 116313
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-Ended Vertical Pipe
@@ -9915,7 +9921,7 @@
       start: 15
   16:
     block_design:
-    - 166
+    - 171
     - 155
     bmp:
       ending: 1
@@ -9937,7 +9943,7 @@
   17:
     block_design:
     - 153
-    - 166
+    - 171
     bmp:
       ending: 1
       obj_generator: Diagonal Left-Down
@@ -9958,7 +9964,7 @@
   18:
     block_design:
     - 0
-    - 166
+    - 171
     bmp:
       ending: 2
       obj_generator: Diagonal Right-Down
@@ -9978,7 +9984,7 @@
       start: 48
   19:
     block_design:
-    - 166
+    - 171
     - 0
     bmp:
       ending: 1
@@ -9999,7 +10005,7 @@
       start: 64
   20:
     block_design:
-    - 166
+    - 171
     - 155
     bmp:
       ending: 1
@@ -10021,7 +10027,7 @@
   21:
     block_design:
     - 153
-    - 166
+    - 171
     bmp:
       ending: 1
       obj_generator: Diagonal Left-Down
@@ -10042,10 +10048,10 @@
   22:
     block_design:
     - 160
-    - 166
+    - 171
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Left-Up
       offset_x: 0
       offset_y: 0
       size:
@@ -10062,11 +10068,11 @@
       start: 112
   23:
     block_design:
-    - 166
+    - 171
     - 161
     bmp:
       ending: 1
-      obj_generator: Diagonal Weird
+      obj_generator: Diagonal Right-Up
       offset_x: 0
       offset_y: 0
       size:
@@ -10125,16 +10131,16 @@
       start: 160
   26:
     block_design:
-    - 195
+    - 233
     - 249
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Left-Up
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 2
+        width: 1
     bytes: 3
     description: 45 Degree Underwater Hill - Up/Left
     domain: 0
@@ -10147,10 +10153,10 @@
   27:
     block_design:
     - 249
-    - 195
+    - 234
     bmp:
       ending: 1
-      obj_generator: Diagonal Weird
+      obj_generator: Diagonal Right-Up
       offset_x: 0
       offset_y: 0
       size:
@@ -11370,7 +11376,7 @@
     - 120
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
@@ -11436,7 +11442,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Waterfall
@@ -11457,7 +11463,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -11478,7 +11484,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -11499,7 +11505,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -11520,7 +11526,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -11541,7 +11547,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Blue X-Blocks
@@ -11623,7 +11629,7 @@
     - 174
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
@@ -11870,42 +11876,42 @@
       start: 1
   95:
     block_design:
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
     - 153
     - 166
     - 161
-    - 73
+    - -1
     - 153
     - 153
     - 166
     - 161
-    - 73
-    - 73
+    - -1
+    - -1
     - 153
     - 166
     - 161
-    - 73
-    - 73
+    - -1
+    - -1
     - 153
     - 166
     - 161
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
     - 166
     - 161
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 161
     - 3
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -11962,37 +11968,37 @@
     - 160
     - 166
     - 155
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 160
     - 166
     - 155
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 160
     - 166
     - 155
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 160
     - 166
     - 155
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 160
     - 166
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 160
     - 160
     bmp:
@@ -12285,50 +12291,50 @@
     block_design:
     - 158
     - 159
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
     - 166
     - 166
     - 158
     - 159
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 162
     - 163
     - 166
     - 166
     - 158
     - 159
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 162
     - 163
     - 166
     - 166
     - 158
     - 159
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 162
     - 163
     - 166
     - 166
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
     - 162
     - 163
     bmp:
@@ -12412,14 +12418,14 @@
     - 166
     - 164
     - 165
-    - 73
-    - 73
+    - -1
+    - -1
     - 162
     - 163
     - 164
     - 165
-    - 73
-    - 73
+    - -1
+    - -1
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -12461,38 +12467,38 @@
       start: 8
   102:
     block_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
     - 156
     - 157
     - 158
     - 159
-    - 73
-    - 73
+    - -1
+    - -1
     - 156
     - 157
     - 166
@@ -12574,54 +12580,54 @@
       start: 9
   103:
     block_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
     - 167
     - 154
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
     - 167
-    - 166
-    - 166
-    - 73
-    - 73
-    - 73
-    - 73
+    - 171
+    - 171
+    - -1
+    - -1
+    - -1
+    - -1
     - 167
-    - 166
-    - 166
-    - 166
-    - 73
-    - 73
-    - 73
+    - 171
+    - 171
+    - 171
+    - -1
+    - -1
+    - -1
     - 167
-    - 166
-    - 166
-    - 166
-    - 166
-    - 73
-    - 73
+    - 171
+    - 171
+    - 171
+    - 171
+    - -1
+    - -1
     - 167
-    - 166
-    - 166
-    - 166
-    - 166
-    - 166
-    - 73
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - -1
     - 167
-    - 166
-    - 166
-    - 166
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -12694,40 +12700,40 @@
     - 3
     - 3
     - 3
-    - 166
-    - 166
+    - 171
+    - 171
     - 169
     - 3
     - 3
     - 3
     - 3
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
     - 169
     - 3
     - 3
     - 3
-    - 166
-    - 166
-    - 166
-    - 166
-    - 169
-    - 2
-    - 2
-    - 166
-    - 166
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
+    - 171
     - 169
     - 2
-    - 166
-    - 166
-    - 166
-    - 166
-    - 166
-    - 166
+    - 2
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 169
+    - 2
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
     - 169
     bmp:
       ending: 0
@@ -13184,7 +13190,7 @@
       start: 15
   109:
     block_design:
-    - 166
+    - 171
     - 158
     - 159
     bmp:
@@ -13209,7 +13215,7 @@
     block_design:
     - 156
     - 157
-    - 166
+    - 171
     bmp:
       ending: 1
       obj_generator: Diagonal Left-Down 30 Degrees
@@ -13301,7 +13307,7 @@
     block_design:
     - 156
     - 157
-    - 166
+    - 171
     bmp:
       ending: 1
       obj_generator: Diagonal Left-Down 30 Degrees
@@ -13324,7 +13330,7 @@
     block_design:
     - 162
     - 163
-    - 166
+    - 171
     bmp:
       ending: 2
       obj_generator: Diagonal Right-Down
@@ -13345,12 +13351,12 @@
       start: 112
   116:
     block_design:
-    - 166
+    - 171
     - 164
     - 165
     bmp:
       ending: 1
-      obj_generator: Diagonal Weird
+      obj_generator: Diagonal Right-Up 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -13867,7 +13873,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water
@@ -13899,7 +13905,7 @@
       start: 64
   144:
     block_design:
-    - 166
+    - 171
     bmp:
       ending: 0
       obj_generator: Horizontal
@@ -13959,14 +13965,14 @@
   147:
     block_design:
     - 154
-    - 166
+    - 171
     bmp:
       ending: 0
       obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Flat Land - Hilly
@@ -13987,7 +13993,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Flat Land - Underwater
@@ -14019,15 +14025,15 @@
       start: 160
   150:
     block_design:
-    - 166
+    - 171
     - 166
     bmp:
       ending: 0
-      obj_generator: Horizontal Alternative
+      obj_generator: Horizontal With Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Ceiling
@@ -14040,15 +14046,15 @@
       start: 176
   151:
     block_design:
-    - 166
+    - 171
     - 166
     bmp:
       ending: 0
-      obj_generator: Horizontal Alternative
+      obj_generator: Horizontal With Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Underwater Ceiling
@@ -14066,12 +14072,12 @@
     - 131
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
     description: Small Background Hills
     domain: 4
@@ -14471,19 +14477,19 @@
   173:
     block_design:
     - 31
-    - 32
-    - 33
     - 9
+    - 32
     - 10
+    - 33
     - 11
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: Background Clouds
     domain: 5
@@ -14543,9 +14549,12 @@
     - 153
     - 153
     - 153
+    - 153
+    - 153
+    - 153
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With All Sides
       offset_x: 0
       offset_y: 0
       size:
@@ -16230,17 +16239,14 @@
     - 74
     - 75
     - 76
-    - 153
-    - 153
-    - 153
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
-        width: 3
+        height: 1
+        width: 1
     bytes: 4
     description: Wooden platform
     domain: 0
@@ -16257,19 +16263,19 @@
   17:
     block_design:
     - 77
-    - 78
-    - 79
     - 80
+    - 78
     - 81
+    - 79
     - 82
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: Wooden block platform
     domain: 0
@@ -16361,8 +16367,8 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
-        width: 3
+        height: 1
+        width: 1
     bytes: 3
     description: Green platform
     domain: 0
@@ -16499,7 +16505,7 @@
     - 205
     bmp:
       ending: 0
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Down 60 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -16520,7 +16526,7 @@
     - 207
     bmp:
       ending: 0
-      obj_generator: Diagonal Left-Down
+      obj_generator: Diagonal Left-Down 60 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -17558,7 +17564,7 @@
     - 120
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
@@ -17807,11 +17813,11 @@
     - 174
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-Ended Vertical Pipe
@@ -21360,12 +21366,12 @@
     - 19
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
     description: Stretch platform
     domain: 0
@@ -22446,11 +22452,11 @@
     - 120
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
@@ -22512,7 +22518,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Waterfall
@@ -22533,7 +22539,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -22554,7 +22560,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -22575,7 +22581,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -22695,11 +22701,11 @@
     - 174
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-Ended Vertical Pipe
@@ -23216,7 +23222,7 @@
     - 14
     bmp:
       ending: 0
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Down 60 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -23237,7 +23243,7 @@
     - 16
     bmp:
       ending: 0
-      obj_generator: Diagonal Left-Down
+      obj_generator: Diagonal Left-Down 60 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -26013,13 +26019,12 @@
     - 228
     - 229
     bmp:
-      ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
     description: Wooden Ship Beam
     domain: 0
@@ -26033,28 +26038,27 @@
   17:
     block_design:
     - 226
+    - 0
     - 228
+    - 0
     - 229
     - 0
-    - 0
-    - 0
     bmp:
-      ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 4
     description: Wooden Ship Beam
     domain: 0
     object_design:
     - 70
+    - 153
     - 71
+    - 153
     - 73
-    - 153
-    - 153
     - 153
     range:
       end: 47
@@ -26064,17 +26068,14 @@
     - 249
     - 250
     - 251
-    - 0
-    - 0
-    - 0
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
-        width: 3
+        height: 1
+        width: 1
     bytes: 4
     description: Wooden Ship Beam with 2 strips of wood
     domain: 0
@@ -26095,11 +26096,11 @@
     - 233
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Wooden Ship Pillar
@@ -26140,15 +26141,15 @@
     - 235
     - 236
     - 237
-    - 244
-    - 245
+    - 238
+    - 230
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Thick Wooden Ship Beam
@@ -26167,14 +26168,15 @@
     block_design:
     - 157
     - 129
+    - 129
     bmp:
       ending: 1
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 2
+        width: 1
     bytes: 3
     description: Corkscrew - Left terminus
     domain: 0
@@ -26187,15 +26189,16 @@
   23:
     block_design:
     - 129
+    - 129
     - 157
     bmp:
       ending: 2
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 2
+        width: 1
     bytes: 3
     description: Corkscrew - Right terminus
     domain: 0
@@ -26211,11 +26214,11 @@
     - 156
     bmp:
       ending: 2
-      obj_generator: Vertical
+      obj_generator: Vertical With Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 3
     description: Corkscrew - Lower terminus
@@ -26232,11 +26235,11 @@
     - 130
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 3
     description: Corkscrew - Upper terminus
@@ -27554,11 +27557,11 @@
     - 115
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
@@ -27620,7 +27623,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Waterfall
@@ -27641,7 +27644,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -27662,7 +27665,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -27683,7 +27686,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -27704,7 +27707,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -27721,11 +27724,11 @@
     - 141
     bmp:
       ending: 0
-      obj_generator: Horizontal With Top
+      obj_generator: Horizontal
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Blue X-Blocks
@@ -27805,11 +27808,11 @@
     - 187
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-Ended Vertical Pipe
@@ -28246,12 +28249,12 @@
     - 145
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With All Sides
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
-        width: 3
+        height: 1
+        width: 1
     bytes: 4
     description: Metal box platform
     domain: 3
@@ -28284,12 +28287,12 @@
     - 78
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With All Sides
       offset_x: 0
       offset_y: 0
       size:
-        height: 4
-        width: 3
+        height: 1
+        width: 1
     bytes: 3
     description: Crate
     domain: 3
@@ -28338,12 +28341,12 @@
     - 229
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 4
+        width: 1
     bytes: 4
     description: Wooden Tank Beam
     domain: 3
@@ -28363,7 +28366,7 @@
     - 185
     bmp:
       ending: 1
-      obj_generator: Horizontal
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -28388,7 +28391,7 @@
     - 181
     bmp:
       ending: 2
-      obj_generator: Horizontal
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -28409,14 +28412,15 @@
     block_design:
     - 44
     - 45
+    - 45
     bmp:
       ending: 1
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 2
+        width: 1
     bytes: 3
     description: Leftward Bullet Shooter
     domain: 3
@@ -28433,12 +28437,12 @@
     - 190
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
     description: Tank Wheels
     domain: 3
@@ -31647,28 +31651,28 @@
   27:
     block_design:
     - 209
-    - 210
-    - 211
     - 232
+    - 210
     - 233
+    - 211
     - 234
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: World 5-style Cloud Platform - Blue Background
     domain: 0
     object_design:
     - 49
-    - 50
-    - 51
     - 46
+    - 50
     - 47
+    - 51
     - 48
     range:
       end: 207
@@ -31676,28 +31680,28 @@
   28:
     block_design:
     - 212
-    - 213
-    - 214
     - 235
+    - 213
     - 236
+    - 214
     - 237
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: World 5-style Cloud Platform - White Background
     domain: 0
     object_design:
     - 55
-    - 56
-    - 57
     - 52
+    - 56
     - 53
+    - 57
     - 54
     range:
       end: 223
@@ -31705,19 +31709,19 @@
   29:
     block_design:
     - 14
-    - 10
-    - 15
     - 38
+    - 10
     - 34
+    - 15
     - 36
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 4
     description: Clouds C
     domain: 0
@@ -31738,12 +31742,12 @@
     - 228
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
     description: World 6-style Cloud Platform
     domain: 0
@@ -32748,11 +32752,11 @@
     - 120
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
@@ -32814,7 +32818,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Waterfall
@@ -32835,7 +32839,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -32856,7 +32860,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -32877,7 +32881,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -32898,7 +32902,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -32915,11 +32919,11 @@
     - 240
     bmp:
       ending: 0
-      obj_generator: Horizontal With Top
+      obj_generator: Horizontal
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Blue X-Blocks
@@ -32999,11 +33003,11 @@
     - 174
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-Ended Vertical Pipe
@@ -38218,11 +38222,11 @@
     - 120
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
@@ -38284,7 +38288,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Waterfall
@@ -38305,7 +38309,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -38326,7 +38330,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -38347,7 +38351,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -38368,7 +38372,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -38389,7 +38393,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Blue X-Blocks
@@ -38469,11 +38473,11 @@
     - 174
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-Ended Vertical Pipe
@@ -41913,11 +41917,11 @@
     - 178
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-ended pipe
@@ -41990,7 +41994,7 @@
     - 200
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Downward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -42014,11 +42018,11 @@
     - 203
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Small Vertical background pipe
@@ -42038,7 +42042,7 @@
     - 195
     bmp:
       ending: 1
-      obj_generator: Horizontal
+      obj_generator: Rightward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -42063,7 +42067,7 @@
     - 196
     bmp:
       ending: 2
-      obj_generator: Horizontal
+      obj_generator: Leftward Pipe
       offset_x: 0
       offset_y: 0
       size:
@@ -42087,12 +42091,12 @@
     - 206
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
     description: Small Horizontal background pipe
     domain: 0
@@ -42185,11 +42189,11 @@
     - 144
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 3
     description: Background Aquatic Plants
@@ -43232,11 +43236,11 @@
     - 120
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
@@ -43298,7 +43302,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Waterfall
@@ -43319,7 +43323,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -43340,7 +43344,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -43361,7 +43365,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -43382,7 +43386,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -43402,7 +43406,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Blue X-Blocks
@@ -43482,11 +43486,11 @@
     - 178
     bmp:
       ending: 3
-      obj_generator: Vertical
-      offset_x: 0
+      obj_generator: Vertical With Top And Bottom
+      offset_x: 0f
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-Ended Vertical Pipe
@@ -43893,8 +43897,8 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
-        width: 3
+        height: 1
+        width: 1
     bytes: 3
     description: Gray platform
     domain: 3
@@ -43919,14 +43923,17 @@
     - 125
     - 126
     - 127
+    - 125
+    - 126
+    - 127
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With All Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 4
     description: Orange Block Platform
     domain: 3
@@ -44004,12 +44011,12 @@
     - 206
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
     description: Double Ended Small Horizontal Pipe
     domain: 3
@@ -44087,7 +44094,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water
@@ -46494,7 +46501,7 @@
 9:
   0:
     block_design:
-    - 102
+    - 192
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -46507,13 +46514,13 @@
     description: Piranha Plant Muncher A
     domain: 0
     object_design:
-    - 38
+    - 102
     range:
       end: 0
       start: 0
   1:
     block_design:
-    - 194
+    - 192
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -46526,7 +46533,7 @@
     description: Piranha Plant Muncher B
     domain: 0
     object_design:
-    - 39
+    - 102
     range:
       end: 1
       start: 1
@@ -46994,11 +47001,11 @@
     - 172
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 3
     bytes: 3
     description: Giant Downward Pipe
@@ -47043,15 +47050,15 @@
       start: 144
   25:
     block_design:
-    - 175
-    - 186
+    - 152
+    - 153
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 3
     description: Piranha Plant Small Downward Pipe A
@@ -47064,15 +47071,15 @@
       start: 160
   26:
     block_design:
-    - 175
-    - 186
+    - 152
+    - 153
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 3
     description: Piranha Plant Small Downward Pipe B
@@ -48153,11 +48160,11 @@
     - 120
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
@@ -48219,7 +48226,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Waterfall
@@ -48240,7 +48247,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -48261,7 +48268,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -48282,7 +48289,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -48303,7 +48310,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -48324,7 +48331,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Blue X-Blocks
@@ -48406,11 +48413,11 @@
     - 174
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-Ended Vertical Pipe
@@ -51700,14 +51707,17 @@
     - 153
     - 153
     - 153
+    - 153
+    - 153
+    - 153
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With All Sides
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
-        width: 3
+        height: 1
+        width: 1
     bytes: 4
     description: Icy flat ground
     domain: 0
@@ -51743,19 +51753,19 @@
   18:
     block_design:
     - 142
-    - 143
-    - 144
     - 80
+    - 143
     - 83
+    - 144
     - 84
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: Green topped wooden platform
     domain: 0
@@ -51845,8 +51855,8 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
-        width: 3
+        height: 1
+        width: 1
     bytes: 3
     description: Snowy Platform
     domain: 0
@@ -51942,19 +51952,19 @@
   27:
     block_design:
     - 8
-    - 9
-    - 10
     - 11
+    - 9
     - 12
+    - 10
     - 13
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: Background Clouds
     domain: 0
@@ -51974,7 +51984,7 @@
     - 205
     bmp:
       ending: 0
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Down 60 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -51995,7 +52005,7 @@
     - 207
     bmp:
       ending: 0
-      obj_generator: Diagonal Left-Down
+      obj_generator: Diagonal Left-Down 60 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -53023,11 +53033,11 @@
     - 120
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
@@ -53272,11 +53282,11 @@
     - 174
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-Ended Vertical Pipe
@@ -56651,7 +56661,7 @@
     block_design: *id001
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Left-Up
       offset_x: 0
       offset_y: 0
       size:
@@ -56727,7 +56737,7 @@
     block_design: *id001
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Left-Up
       offset_x: 0
       offset_y: 0
       size:
@@ -57808,7 +57818,7 @@
     block_design: *id001
     bmp:
       ending: 1
-      obj_generator: Vertical
+      obj_generator: Vertical With Double Top
       offset_x: 0
       offset_y: 0
       size:
@@ -57869,7 +57879,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Waterfall
@@ -57888,7 +57898,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -57907,7 +57917,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -57926,7 +57936,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -57945,7 +57955,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -57964,7 +57974,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Blue X-Blocks
@@ -58035,11 +58045,11 @@
     block_design: *id001
     bmp:
       ending: 3
-      obj_generator: Vertical
+      obj_generator: Vertical With Top And Bottom
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 2
     bytes: 3
     description: Double-Ended Vertical Pipe
@@ -58465,50 +58475,50 @@
     object_design:
     - 121
     - 122
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
     - 56
     - 56
     - 121
     - 122
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 125
     - 126
     - 56
     - 56
     - 121
     - 122
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 125
     - 126
     - 56
     - 56
     - 121
     - 122
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
     - 125
     - 126
     - 56
     - 56
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
+    - -1
     - 125
     - 126
     range:
@@ -59154,7 +59164,7 @@
     block_design: *id001
     bmp:
       ending: 1
-      obj_generator: Diagonal Weird
+      obj_generator: Diagonal Right-Up 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -60198,7 +60208,13 @@
       end: 47
       start: 32
   173:
-    block_design: *id001
+    block_design:
+      - 92
+      - 93
+      - 94
+      - 95
+      - 96
+      - 97
     bmp:
       ending: 3
       obj_generator: Horizontal
@@ -60206,7 +60222,7 @@
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: Background Clouds
     domain: 5

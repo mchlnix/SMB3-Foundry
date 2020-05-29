@@ -37,7 +37,7 @@ class ObjectLike(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def move_by(self, dx, dy):
+    def move_by(self, pos):
         pass
 
     @abc.abstractmethod
