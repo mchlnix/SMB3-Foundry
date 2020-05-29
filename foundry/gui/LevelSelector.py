@@ -1,5 +1,15 @@
 from PySide2.QtGui import QCloseEvent, QKeyEvent, Qt
-from PySide2.QtWidgets import QDialog, QLabel, QListWidget, QComboBox, QPushButton, QGridLayout
+from PySide2.QtWidgets import (
+    QDialog,
+    QLabel,
+    QListWidget,
+    QComboBox,
+    QPushButton,
+    QGridLayout,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from foundry.game.level.Level import Level
 from foundry.gui.Spinner import Spinner
@@ -82,26 +92,37 @@ class LevelSelector(QDialog):
         self.button_cancel = QPushButton("Cancel", self)
         self.button_cancel.clicked.connect(self.close)
 
-        self.window_layout = QGridLayout(self)
+        source_selector = QTabWidget()
 
-        self.window_layout.addWidget(self.world_label, 0, 0)
-        self.window_layout.addWidget(self.level_label, 0, 1)
+        stock_level_widget = QWidget()
+        stock_level_layout = QGridLayout(stock_level_widget)
 
-        self.window_layout.addWidget(self.world_list, 1, 0)
-        self.window_layout.addWidget(self.level_list, 1, 1)
+        stock_level_layout.addWidget(self.world_label, 0, 0)
+        stock_level_layout.addWidget(self.level_label, 0, 1)
 
-        self.window_layout.addWidget(self.enemy_data_label, 2, 0)
-        self.window_layout.addWidget(self.object_data_label, 2, 1)
-        self.window_layout.addWidget(self.enemy_data_spinner, 3, 0)
-        self.window_layout.addWidget(self.object_data_spinner, 3, 1)
+        stock_level_layout.addWidget(self.world_list, 1, 0)
+        stock_level_layout.addWidget(self.level_list, 1, 1)
 
-        self.window_layout.addWidget(self.object_set_label, 4, 0)
-        self.window_layout.addWidget(self.object_set_dropdown, 4, 1)
+        source_selector.addTab(stock_level_widget, "Stock Levels")
 
-        self.window_layout.addWidget(self.button_ok, 5, 0)
-        self.window_layout.addWidget(self.button_cancel, 5, 1)
+        data_layout = QGridLayout()
 
-        self.setLayout(self.window_layout)
+        data_layout.addWidget(self.enemy_data_label, 0, 0)
+        data_layout.addWidget(self.object_data_label, 0, 1)
+        data_layout.addWidget(self.enemy_data_spinner, 1, 0)
+        data_layout.addWidget(self.object_data_spinner, 1, 1)
+
+        data_layout.addWidget(self.object_set_label, 2, 0)
+        data_layout.addWidget(self.object_set_dropdown, 2, 1)
+
+        data_layout.addWidget(self.button_ok, 3, 0)
+        data_layout.addWidget(self.button_cancel, 3, 1)
+
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(source_selector)
+        main_layout.addLayout(data_layout)
+
+        self.setLayout(main_layout)
 
         self.world_list.setCurrentRow(1)  # select Level 1-1
         self.on_world_click()
