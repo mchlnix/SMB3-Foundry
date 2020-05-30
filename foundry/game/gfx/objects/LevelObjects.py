@@ -633,7 +633,10 @@ class LevelObjectHorizontal(LevelObject):
         try:
             return self.blocks[idx]
         except IndexError:
-            return self.blocks[0]
+            try:
+                return self.blocks[0]
+            except IndexError:
+                print(self, "does not have any blocks")
 
     def get_blocks(self, size):
         return [self.get_block_position(po, size) for po in size.positions()]
