@@ -16551,12 +16551,12 @@
     - 33
     bmp:
       ending: 3
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Sides
       offset_x: 0
       offset_y: 0
       size:
         height: 2
-        width: 3
+        width: 1
     bytes: 3
     description: World 5-style Cloud Platform
     domain: 0
@@ -17630,7 +17630,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Waterfall
@@ -17651,7 +17651,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -17672,7 +17672,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -17714,7 +17714,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -31709,18 +31709,21 @@
   29:
     block_design:
     - 14
-    - 38
     - 10
-    - 34
     - 15
+    - 38
+    - 34
+    - 36
+    - 38
+    - 34
     - 36
     bmp:
       ending: 3
-      obj_generator: Horizontal With Sides
+      obj_generator: Horizontal With All Sides
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Clouds C
@@ -33330,9 +33333,11 @@
     block_design:
     - 10
     - 34
+    - 34
+    - 34
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -33351,9 +33356,11 @@
     block_design:
     - 195
     - 238
+    - 238
+    - 238
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
@@ -43932,7 +43939,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Orange Block Platform
@@ -53099,7 +53106,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Weird Waterfall
@@ -53120,7 +53127,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to left)
@@ -53141,7 +53148,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (still)
@@ -53162,7 +53169,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -53223,7 +53230,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Weird Quicksand (doesn't act like it)

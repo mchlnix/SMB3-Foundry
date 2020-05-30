@@ -46,7 +46,7 @@ class LevelObjectDesertPipeBox(LevelObject):
         rows_per_box = self.bmp.size.height
         segment_width = size.width
         segments = (self.size.width + 1) * 2
-        base_size = Size(segments * segment_width, self.LINES_PER_ROW * rows_per_box)
+        base_size = Size(segments * segment_width, self.LINES_PER_ROW * rows_per_box + 1)
 
         for row_number in range(rows_per_box):
             for line in range(self.LINES_PER_ROW):

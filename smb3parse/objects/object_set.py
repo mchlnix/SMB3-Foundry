@@ -124,6 +124,7 @@ class ObjectSet:
 
         :return: The byte length of the object.
         :rtype: int
+        """
         return load_object_definition_tile(self.number, object_id, domain).bytes
 
 

@@ -174,7 +174,7 @@ class ObjectDrawArea(QWidget):
 
 
 class BlockArray(QWidget):
-    def __init__(self, parent, level_object: LevelObject):
+    def __init__(self, parent, level_object: "LevelObject"):
         super(BlockArray, self).__init__(parent)
 
         self.setLayout(QHBoxLayout())
@@ -187,7 +187,7 @@ class BlockArray(QWidget):
 
         self.update_object(level_object)
 
-    def update_object(self, level_object: LevelObject):
+    def update_object(self, level_object: "LevelObject"):
         self.level_object = level_object
 
         while self.layout().count() > 1:

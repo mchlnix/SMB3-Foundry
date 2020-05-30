@@ -14,7 +14,7 @@ from foundry.game.ObjectDefinitions import (
 )
 
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.GraphicsSet import GraphicsSet as PatternTable
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.gfx.objects.LevelObject import LevelObject, BlockGenerator
 from foundry.game.gfx.objects.LevelObjects import (

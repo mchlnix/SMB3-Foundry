@@ -3,7 +3,7 @@ from typing import Optional, List
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.Palette import load_palette
-from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.GraphicsSet import GraphicsSet as GraphicsSet
 from foundry.game.ObjectSet import ObjectSet
 
 from foundry.game.Position import Position
@@ -49,12 +49,12 @@ class LevelObjectFactory:
         if Jump.is_jump(data):
             return Jump(data)
 
-        assert self.pattern_table is not None
+        assert self.graphics_set is not None
         level_object = LevelObjectController.from_data(
             data=data,
             object_set=ObjectSet(self.object_set),
             palette_group=self.palette_group,
-            pattern_table=self.pattern_table,
+            pattern_table=self.graphics_set,
             objects_ref=self.objects_ref,
             is_vertical=self.vertical_level,
             object_factory_idx=index

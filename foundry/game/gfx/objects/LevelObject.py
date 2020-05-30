@@ -24,14 +24,6 @@ from foundry.game.Rect import Rect
 SKY = 0
 GROUND = 27
 
-ENDING_STR = {
-    EndType.UNIFORM: "Uniform",
-    EndType.END_ON_TOP_OR_LEFT: "Top or Left",
-    EndType.END_ON_BOTTOM_OR_RIGHT: "Bottom or Right",
-    EndType.TWO_ENDS: "Top & Bottom/Left & Right",
-}
-
-
 # not all objects provide a block index for blank block
 BLANK = -1
 
@@ -189,7 +181,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             self,
             object_set: ObjectSet,
             palette_group,
-            pattern_table: PatternTable,
+            pattern_table: "PatternTable",
             objects_ref: List["LevelObjectController"],
             is_vertical: bool,
             domain: int,
@@ -219,7 +211,7 @@ class LevelObject(ObjectLike, BlockGenerator):
         self._render()
 
     @classmethod
-    def from_data(cls, data: bytearray, object_set: ObjectSet, palette_group, pattern_table: PatternTable,
+    def from_data(cls, data: bytearray, object_set: ObjectSet, palette_group, pattern_table: "PatternTable",
                   objects_ref: List["LevelObjectController"], is_vertical: bool, object_factory_idx):
         bg = BlockGenerator.from_bytes(object_set, data, is_vertical)
         domain, index, position, size = bg.domain, bg.index, bg.pos, bg.size
@@ -398,8 +390,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             ("y", self.rendered_position.y),
             ("Width", self.rendered_size.width),
             ("Height", self.rendered_size.height),
-            ("Orientation", self.orientation),
-            ("Ending", ENDING_STR[self.ending]),
+            ("Orientation", self.orientation)
         ]
 
     def display_size(self, zoom_factor: int = 1):
