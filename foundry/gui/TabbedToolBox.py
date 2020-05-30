@@ -42,6 +42,18 @@ class TabbedToolBox(QTabWidget):
 
         self.show_level_object_tab()
 
+        self.setWhatsThis(
+            "<b>Object Toolbox</b><br/>"
+            "Contains all objects and enemies/items, that can be placed in this type of level. Which are "
+            "available depends on the object set, that is selected for this level.<br/>"
+            "You can drag and drop objects into the level or click to select them. After selecting "
+            "an object, you can place it by clicking the middle mouse button anywhere in the level."
+            "<br/><br/>"
+            "Note: Some items, like blocks with items in them, are displayed as they appear in the ROM, "
+            "mouse over them and check their names in the ToolTip, or use the object dropdown to find "
+            "them directly."
+        )
+
     def sizeHint(self):
         size = super().sizeHint()
         width = self._recent_toolbox.sizeHint().width()

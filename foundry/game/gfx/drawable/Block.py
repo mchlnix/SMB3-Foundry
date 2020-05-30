@@ -3,8 +3,9 @@ from typing import List
 from PySide2.QtCore import QPoint
 from PySide2.QtGui import QImage, QPainter, Qt, QColor
 
+from foundry.game.File import ROM
 from foundry.game.gfx.Palette import NESPalette
-from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Tile import Tile
 
@@ -12,6 +13,16 @@ TSA_BANK_0 = 0 * 256
 TSA_BANK_1 = 1 * 256
 TSA_BANK_2 = 2 * 256
 TSA_BANK_3 = 3 * 256
+
+
+def get_block(block_index, palette_group, graphics_set, tsa_data):
+    if block_index > 0xFF:
+        rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
+        block = Block(rom_block_index, palette_group, graphics_set, tsa_data)
+    else:
+        block = Block(block_index, palette_group, graphics_set, tsa_data)
+
+    return block
 
 
 class Block:
@@ -29,7 +40,7 @@ class Block:
         self,
         block_index: int,
         palette_group: List[List[int]],
-        pattern_table: PatternTable,
+        graphics_set: GraphicsSet,
         tsa_data: bytes,
         mirrored=False,
     ):
@@ -39,22 +50,22 @@ class Block:
 
         self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
 
-        self._block_id = (block_index, self.bg_color.toTuple(), pattern_table.graphics_set)
+        self._block_id = (block_index, self.bg_color.toTuple(), graphics_set.number)
 
         lu = tsa_data[TSA_BANK_0 + block_index]
         ld = tsa_data[TSA_BANK_1 + block_index]
         ru = tsa_data[TSA_BANK_2 + block_index]
         rd = tsa_data[TSA_BANK_3 + block_index]
 
-        self.lu_tile = Tile(lu, palette_group, palette_index, pattern_table)
-        self.ld_tile = Tile(ld, palette_group, palette_index, pattern_table)
+        self.lu_tile = Tile(lu, palette_group, palette_index, graphics_set)
+        self.ld_tile = Tile(ld, palette_group, palette_index, graphics_set)
 
         if mirrored:
-            self.ru_tile = Tile(lu, palette_group, palette_index, pattern_table, mirrored=True)
-            self.rd_tile = Tile(ld, palette_group, palette_index, pattern_table, mirrored=True)
+            self.ru_tile = Tile(lu, palette_group, palette_index, graphics_set, mirrored=True)
+            self.rd_tile = Tile(ld, palette_group, palette_index, graphics_set, mirrored=True)
         else:
-            self.ru_tile = Tile(ru, palette_group, palette_index, pattern_table)
-            self.rd_tile = Tile(rd, palette_group, palette_index, pattern_table)
+            self.ru_tile = Tile(ru, palette_group, palette_index, graphics_set)
+            self.rd_tile = Tile(rd, palette_group, palette_index, graphics_set)
 
         self.image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format_RGB888)
         painter = QPainter(self.image)

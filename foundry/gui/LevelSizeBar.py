@@ -17,6 +17,17 @@ class LevelSizeBar(QWidget):
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
 
+        self.setWhatsThis(
+            "<b>Level Size Bar</b><br/>"
+            "The objects inside a level, like platforms and item blocks, are stored as bytes in the ROM. "
+            "Since levels are stored one after another, saving a level with more objects, than it originally "
+            "had, would overwrite another level and probably cause the game to crash, if you would enter it, "
+            "while playing.<br/>"
+            "This bar shows, how much of the available space for level objects is currently taken up. It will turn "
+            "red, when too many level objects have been placed (or if the level objects would result in more bytes, "
+            "than the level originally had)."
+        )
+
     def sizeHint(self) -> QSize:
         size = super(LevelSizeBar, self).sizeHint()
 
@@ -37,7 +48,7 @@ class LevelSizeBar(QWidget):
         if self.level is None:
             return
 
-        total_length = max(self.current_value, self.original_value)
+        total_length = max(self.current_value, self.original_value, 1)
 
         pixels_per_byte = event.rect().width() / total_length
 

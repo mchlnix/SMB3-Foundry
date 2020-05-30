@@ -363,6 +363,8 @@ class Level(LevelLike):
 
         self._parse_header()
 
+        self.reload()
+
     @property
     def pipe_ends_level(self):
         return self.header.pipe_ends_level
@@ -446,6 +448,8 @@ class Level(LevelLike):
         self.header_bytes[7] |= index
 
         self._parse_header()
+
+        self.reload()
 
     @property
     def time_index(self):
@@ -673,6 +677,7 @@ class Level(LevelLike):
         # only write 0xFF, even though the stock ROM would use 0xFF00 or 0xFF01
         # this is done to keep compatibility to older editors
         m3l_bytes.append(0xFF)
+        m3l_bytes.append(0x01)
 
         for enemy in sorted(self.enemies, key=lambda _enemy: _enemy.x_position):
             m3l_bytes.extend(enemy.to_bytes())
@@ -703,6 +708,10 @@ class Level(LevelLike):
 
         object_bytes = m3l_bytes[:object_size]
         enemy_bytes = m3l_bytes[object_size:]
+
+        if len(enemy_bytes) % 3 - len(b"\xFF") == 1:
+            # compatibility with workshop
+            enemy_bytes = enemy_bytes[1:]
 
         self._load_level_data(object_bytes, enemy_bytes)
 

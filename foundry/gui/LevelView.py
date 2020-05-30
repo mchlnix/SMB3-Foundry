@@ -93,6 +93,20 @@ class LevelView(QWidget):
         # dragged in from the object toolbar
         self.currently_dragged_object: Optional[Union[LevelObjectController, EnemyObject]] = None
 
+        self.setWhatsThis(
+            "<b>Level View</b><br/>"
+            "This renders the level as it would appear in game plus additional information, that can be "
+            "toggled in the View menu.<br/>"
+            "It supports selecting multiple objects, moving, copy/pasting and resizing them using the "
+            "mouse or the usual keyboard shortcuts.<br/>"
+            "There are still occasional rendering errors, or small inconsistencies. If you find them, "
+            "please report the kind of object (name or values in the SpinnerPanel) and the level or "
+            "object set they appear in, in the discord and @Michael or on the github page under Help."
+            "<br/><br/>"
+            ""
+            "If all else fails, click the play button up top to see your level in game in seconds."
+        )
+
     @property
     def transparency(self):
         return self.level_drawer.transparency

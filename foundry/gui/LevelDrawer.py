@@ -1,10 +1,12 @@
+from itertools import product
+
 from PySide2.QtCore import QPoint, QRect
 from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
 from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
-from foundry.game.gfx.PatternTable import PatternTable
+from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
@@ -12,6 +14,7 @@ from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
+from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
@@ -60,6 +63,22 @@ ITEM_ARROW = _load_from_png(53, 53)
 EMPTY_IMAGE = _load_from_png(0, 53)
 
 
+def _block_from_index(block_index: int, level: Level) -> Block:
+    """
+    Returns the block at the given index, from the TSA table for the given level.
+
+    :param block_index:
+    :param level:
+    :return:
+    """
+
+    palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
+    graphics_set = GraphicsSet(level.header.graphic_set_index)
+    tsa_data = ROM().get_tsa_data(level.object_set_number)
+
+    return Block(block_index, palette_group, graphics_set, tsa_data)
+
+
 class LevelDrawer:
     def __init__(self):
         self.draw_jumps = False
@@ -79,8 +98,10 @@ class LevelDrawer:
     def draw(self, painter: QPainter, level: Level):
         self._draw_background(painter, level)
 
-        if level.object_set_number == 9:  # desert
-            self._draw_floor(painter, level)
+        if level.object_set_number == DESERT_OBJECT_SET:
+            self._draw_desert_default_graphics(painter, level)
+        elif level.object_set_number == DUNGEON_OBJECT_SET:
+            self._draw_dungeon_default_graphics(painter, level)
 
         # painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
         # painter.setBrush(Qt.NoBrush)
@@ -94,9 +115,6 @@ class LevelDrawer:
 
         if self.draw_mario:
             self._draw_mario(painter, level)
-
-        if self.draw_grid:
-            self._draw_grid(painter, level)
 
         if self.draw_jumps:
             self._draw_jumps(painter, level)
@@ -113,15 +131,37 @@ class LevelDrawer:
 
         painter.restore()
 
-    def _draw_floor(self, painter: QPainter, level: Level):
+    def _draw_dungeon_default_graphics(self, painter: QPainter, level: Level):
+        # draw_background
+        bg_block = _block_from_index(140, level)
+
+        for x, y in product(range(level.width), range(level.height)):
+            bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
+
+        # draw ceiling
+        ceiling_block = _block_from_index(139, level)
+
+        for x in range(level.width):
+            ceiling_block.draw(painter, x * self.block_length, 0, self.block_length)
+
+        # draw floor
+        upper_floor_blocks = [_block_from_index(20, level), _block_from_index(21, level)]
+        lower_floor_blocks = [_block_from_index(22, level), _block_from_index(23, level)]
+
+        upper_y = (GROUND - 2) * self.block_length
+        lower_y = (GROUND - 1) * self.block_length
+
+        for block_x in range(level.width):
+            pixel_x = block_x * self.block_length
+
+            upper_floor_blocks[block_x % 2].draw(painter, pixel_x, upper_y, self.block_length)
+            lower_floor_blocks[block_x % 2].draw(painter, pixel_x, lower_y, self.block_length)
+
+    def _draw_desert_default_graphics(self, painter: QPainter, level: Level):
         floor_level = (GROUND - 1) * self.block_length
         floor_block_index = 86
 
-        palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
-        pattern_table = PatternTable(level.header.graphic_set_index)
-        tsa_data = ROM().get_tsa_data(level.object_set_number)
-
-        floor_block = Block(floor_block_index, palette_group, pattern_table, tsa_data)
+        floor_block = _block_from_index(floor_block_index, level)
 
         for x in range(level.width):
             floor_block.draw(painter, x * self.block_length, floor_level, self.block_length)

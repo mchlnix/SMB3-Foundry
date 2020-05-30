@@ -20,6 +20,17 @@ class ObjectList(QListWidget):
 
         self.itemSelectionChanged.connect(self.on_selection_changed)
 
+        self.setWhatsThis(
+            "<b>Object List</b><br/>"
+            "This lists all the objects and enemies/items in the level. They appear in the order, "
+            "that they are stored in the ROM as, which also decides which objects get drawn "
+            "before/behind which.<br/>"
+            "Enemies/items are always listed last, since they are also stored separately from the level "
+            "objects.<br/><br/>"
+            "Note: While Jumps are technically level objects, they are omitted here, since they are "
+            "listed in a separate list below."
+        )
+
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.RightButton:
             self.on_right_down(event)

@@ -49,27 +49,6 @@ TWO_ENDS = 3
 
 ENEMY_OBJECT_DEFINITION = 12
 
-OBJECT_SET_TO_DEFINITION = {
-    0: 0,
-    1: 1,
-    7: 1,
-    15: 1,
-    3: 2,
-    114: 2,
-    4: 3,
-    2: 4,
-    10: 5,
-    13: 6,
-    9: 7,
-    6: 8,
-    8: 8,
-    5: 9,
-    11: 9,
-    12: 10,
-    14: 11,
-    16: 12,
-}
-
 
 logging.basicConfig(filename=data_dir.joinpath("logs/obj_def.log"), level=logging.CRITICAL)
 

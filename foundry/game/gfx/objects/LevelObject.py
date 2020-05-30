@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from PySide2.QtGui import QImage, QPainter
 
 from foundry.game.File import ROM
+
 from foundry.game.ObjectDefinitions import (
     PYRAMID_2,
     PYRAMID_TO_GROUND
@@ -12,8 +13,7 @@ from foundry.game.ObjectDefinitions import (
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.Palette import bg_color_for_object_set
-from foundry.game.gfx.PatternTable import PatternTable
-from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
 
@@ -24,7 +24,13 @@ from foundry.game.Rect import Rect
 SKY = 0
 GROUND = 27
 
-ENDING_STR = {0: "Uniform", 1: "Top or Left", 2: "Bottom or Right", 3: "Top & Bottom/Left & Right"}
+ENDING_STR = {
+    EndType.UNIFORM: "Uniform",
+    EndType.END_ON_TOP_OR_LEFT: "Top or Left",
+    EndType.END_ON_BOTTOM_OR_RIGHT: "Bottom or Right",
+    EndType.TWO_ENDS: "Top & Bottom/Left & Right",
+}
+
 
 # not all objects provide a block index for blank block
 BLANK = -1

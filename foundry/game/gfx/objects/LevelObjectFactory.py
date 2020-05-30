@@ -14,7 +14,7 @@ class LevelObjectFactory:
     graphic_set: int
     palette_group_index: int
 
-    pattern_table: Optional[PatternTable] = None
+    graphics_set: Optional[GraphicsSet] = None
     palette_group: list = []
 
     def __init__(
@@ -39,7 +39,7 @@ class LevelObjectFactory:
 
     def set_graphic_set(self, graphic_set: int):
         self.graphic_set = graphic_set
-        self.pattern_table = PatternTable(self.graphic_set)
+        self.graphics_set = GraphicsSet(self.graphic_set)
 
     def set_palette_group_index(self, palette_group_index: int):
         self.palette_group_index = palette_group_index

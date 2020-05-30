@@ -112,7 +112,7 @@ An example of a 4 byte object is the ground in Level 1-1, the value of the fourt
     y - Y position in the level, 5 Bit
     x - X position in the level, 8 Bit / 1 Byte
     i - Object ID, 8 Bit / 1 Byte
-    4 - optional 4th byte denoting additional length, 8 Bit / 1 Byte
+    4 - Optional 4th byte denoting additional length, 8 Bit / 1 Byte
 
 ##### Domain
 
@@ -149,9 +149,9 @@ Jumps are a third kind of object. They are the exclusive object type of the 8th 
     dddu_ssss aaaa_yyyy xxxx_xxxx
     
     d - Domain, always 111 in binary, meaning 7, 3 Bit
-    u - unused, 1 Bit
-    a - a number describing the action Mario enters the level with, 4 Bit
-    y - a number describing a possible y position Mario enters the level from, 4 Bit
+    u - Unused, 1 Bit
+    a - Number describing the action Mario enters the level with, 4 Bit
+    y - Number describing a possible y position Mario enters the level from, 4 Bit
     x - X position Mario enters the level from, 8 Bit / 1 Byte
     
 ##### Exit Action
@@ -212,7 +212,7 @@ See also [Level Loading](#Level-Loading)
 
 ### Level Loading
 
-When the player stands in a location on the world map and presses the A button, the rom will first do a check, if the block the player is standing on is marked as "enterable".
+When the player stands in a location on the world map and presses the A button, the ROM will first do a check, if the block the player is standing on is marked as "enterable".
 
 If this is the case, then the position of the player is split up into its screen, row and column value.
 
