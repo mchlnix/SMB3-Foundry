@@ -13,10 +13,8 @@ class LevelRef(QObject):
         super(LevelRef, self).__init__()
         self._internal_level: Optional[Level] = None
 
-    def load_level(
-        self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set_number: int
-    ):
-        self._internal_level = Level(world, level, object_data_offset, enemy_data_offset, object_set_number)
+    def load_level(self, level_name: str, object_data_offset: int, enemy_data_offset: int, object_set_number: int):
+        self._internal_level = Level(level_name, object_data_offset, enemy_data_offset, object_set_number)
 
         self._internal_level.data_changed.connect(self.data_changed.emit)
         self._internal_level.jumps_changed.connect(self.jumps_changed.emit)

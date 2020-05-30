@@ -50,7 +50,7 @@ with open(data_dir / "levels.dat", "r") as level_data_file:
         if object_set_number == WORLD_MAP_OBJECT_SET:
             continue
 
-        level_data.append((world_no, level_no, level_address, enemy_address, object_set_number))
+        level_data.append((level_name, level_address, enemy_address, object_set_number))
         test_name.append(f"Level {world_no}-{level_no} - {level_name}")
 
 

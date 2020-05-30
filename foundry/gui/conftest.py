@@ -1,6 +1,6 @@
 import pytest
 
-from foundry.conftest import level_1, level_1_1_enemy_address, level_1_1_object_address, world_1
+from foundry.conftest import level_1_1_enemy_address, level_1_1_object_address
 from foundry.gui.MainWindow import MainWindow
 from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
@@ -20,6 +20,6 @@ def main_window(qtbot):
 
 
 def mocked_open_rom_and_level_select(self: MainWindow, _):
-    self.update_level(world_1, level_1, level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
+    self.update_level("Level 1-1", level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
 
     return True

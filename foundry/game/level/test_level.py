@@ -10,7 +10,7 @@ from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
 @pytest.fixture
 def level(rom, qtbot):
-    return Level(1, 1, level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
+    return Level("Level 1-1", level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
 
 
 @pytest.mark.parametrize(

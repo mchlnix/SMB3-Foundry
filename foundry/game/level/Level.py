@@ -2,7 +2,6 @@ from typing import List, Optional, Tuple, Union, overload
 
 from PySide2.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
-from foundry.game.Data import Mario3Level
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -49,7 +48,7 @@ class Level(LevelLike):
 
     HEADER_LENGTH = 9  # bytes
 
-    def __init__(self, world: int, level: int, layout_address: int, enemy_data_offset: int, object_set_number: int):
+    def __init__(self, level_name: str, layout_address: int, enemy_data_offset: int, object_set_number: int):
         super(Level, self).__init__(object_set_number, layout_address)
 
         self._signal_emitter = LevelSignaller()
@@ -60,18 +59,7 @@ class Level(LevelLike):
 
         self.undo_stack = UndoStack()
 
-        level_index = Level.world_indexes[world] + level
-
-        level_data: Mario3Level = Level.offsets[level_index]
-
-        if world == 0:
-            self.name = level_data.name
-        else:
-            self.name = f"Level {world}-{level}, '{level_data.name}'"
-
-        # TODO get rid of this; only used for naming and M3L header
-        self.world = world
-        self.level_number = level
+        self.name = level_name
 
         self.header_offset = layout_address
         self.enemy_offset = enemy_data_offset
@@ -662,10 +650,12 @@ class Level(LevelLike):
         self.changed = True
 
     def to_m3l(self) -> bytearray:
+        world_number = level_number = 1
+
         m3l_bytes = bytearray()
 
-        m3l_bytes.append(self.world)
-        m3l_bytes.append(self.level_number)
+        m3l_bytes.append(world_number)
+        m3l_bytes.append(level_number)
         m3l_bytes.append(self.object_set_number)
 
         m3l_bytes.extend(self.header_bytes)
@@ -686,7 +676,7 @@ class Level(LevelLike):
         return m3l_bytes
 
     def from_m3l(self, m3l_bytes: bytearray):
-        self.world, self.level_number, self.object_set_number = m3l_bytes[:3]
+        world_number, level_number, self.object_set_number = m3l_bytes[:3]
         self.object_set = ObjectSet(self.object_set_number)
 
         self.header_offset = self.enemy_offset = 0

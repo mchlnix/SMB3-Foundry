@@ -58,8 +58,8 @@ class LevelSelector(QDialog):
         self.setWindowTitle("Level Selector")
         self.setModal(True)
 
-        self.selected_world = 1
-        self.selected_level = 1
+        self.level_name = ""
+
         self.object_set = 0
         self.object_data_offset = 0x0
         self.enemy_data_offset = 0x0

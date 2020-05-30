@@ -445,7 +445,7 @@ class MainWindow(QMainWindow):
 
         world, level = world_and_level_for_level_address(level_address)
 
-        self.update_level(world, level, level_address, enemy_address, object_set)
+        self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
 
     def on_play(self):
         """
@@ -762,13 +762,12 @@ class MainWindow(QMainWindow):
         if not self.safe_to_change():
             return
 
-        world = self.level_view.level_ref.world
-        level = self.level_view.level_ref.level_number
+        level_name = self.level_view.level_ref.name
         object_data = self.level_view.level_ref.header_offset
         enemy_data = self.level_view.level_ref.enemy_offset
         object_set = self.level_view.level_ref.object_set_number
 
-        self.update_level(world, level, object_data, enemy_data, object_set)
+        self.update_level(level_name, object_data, enemy_data, object_set)
 
     def _on_placeable_object_selected(self, level_object: Union[LevelObject, EnemyObject]):
         if self.sender() is self.object_toolbar:
@@ -878,15 +877,16 @@ class MainWindow(QMainWindow):
         if not self.safe_to_change():
             return
 
-        level_was_selected = self.level_selector.exec_() == QDialog.Accepted
+        level_selector = LevelSelector(self)
+
+        level_was_selected = level_selector.exec_() == QDialog.Accepted
 
         if level_was_selected:
             self.update_level(
-                self.level_selector.selected_world,
-                self.level_selector.selected_level,
-                self.level_selector.object_data_offset,
-                self.level_selector.enemy_data_offset,
-                self.level_selector.object_set,
+                level_selector.level_name,
+                level_selector.object_data_offset,
+                level_selector.enemy_data_offset,
+                level_selector.object_set,
             )
 
         return level_was_selected
@@ -906,9 +906,9 @@ class MainWindow(QMainWindow):
     def on_header_editor(self, _):
         HeaderEditor(self, self.level_ref).exec_()
 
-    def update_level(self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set: int):
+    def update_level(self, level_name: str, object_data_offset: int, enemy_data_offset: int, object_set: int):
         try:
-            self.level_ref.load_level(world, level, object_data_offset, enemy_data_offset, object_set)
+            self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
         except IndexError:
             QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
 
