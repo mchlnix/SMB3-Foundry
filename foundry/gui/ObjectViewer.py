@@ -6,7 +6,7 @@ from PySide2.QtWidgets import QComboBox, QHBoxLayout, QLayout, QStatusBar, QTool
 
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
@@ -81,8 +81,6 @@ class ObjectViewer(CustomChildWindow):
 
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
-        return
-
     def on_object_set(self):
         self.object_set = self.object_set_dropdown.currentIndex() + 1
 
@@ -152,10 +150,10 @@ class ObjectDrawArea(QWidget):
             QSize(self.current_object.rendered_width * Block.WIDTH, self.current_object.rendered_height * Block.HEIGHT)
         )
 
-    def update_object(self, object_data: Union[bytearray, LevelObject, Jump] = None):
+    def update_object(self, object_data: Union[bytearray, LevelObjectController, Jump] = None):
         if object_data is None:
             object_data = self.current_object.data
-        elif isinstance(object_data, (LevelObject, Jump)):
+        elif isinstance(object_data, (LevelObjectController, Jump)):
             object_data = object_data.data
 
         self.current_object = self.object_factory.from_data(object_data, 0)

@@ -4,6 +4,8 @@ from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, ObjectSet as _Ob
 
 class ObjectSet:
     def __init__(self, object_set_number: int):
+        self.object_set_number = object_set_number
+
         self._internal_object_set = _ObjectSet(object_set_number)
 
         self.number = self._internal_object_set.number
@@ -29,3 +31,9 @@ class ObjectSet:
             raise ValueError(f"This method shouldn't be called for the {self.name}")
 
         return self._internal_object_set.object_length(domain, object_id)
+
+    def __str__(self):
+        return f"ObjectSet({self.object_set_number}) aka {self.name}"
+
+    def __repr__(self):
+        return f"ObjectSet({self.object_set_number})"

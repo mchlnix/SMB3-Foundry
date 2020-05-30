@@ -30,6 +30,7 @@ class LevelRef(QObject):
 
     @property
     def selected_objects(self):
+        print(f"Selected {[obj for obj in self._internal_level.get_all_objects() if obj.selected]}")
         return [obj for obj in self._internal_level.get_all_objects() if obj.selected]
 
     @selected_objects.setter

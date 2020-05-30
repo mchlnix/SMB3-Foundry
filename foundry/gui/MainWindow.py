@@ -4,6 +4,7 @@ import shlex
 import subprocess
 import tempfile
 from typing import Tuple, Union
+import sys
 
 from PySide2.QtCore import QSize
 from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
@@ -35,7 +36,7 @@ from foundry import (
 )
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
@@ -770,7 +771,8 @@ class MainWindow(QMainWindow):
 
         self.update_level(world, level, object_data, enemy_data, object_set)
 
-    def _on_placeable_object_selected(self, level_object: Union[LevelObject, EnemyObject]):
+    def _on_placeable_object_selected(self, level_object: Union[LevelObjectController, EnemyObject]):
+        print("o", level_object)
         if self.sender() is self.object_toolbar:
             self.object_dropdown.select_object(level_object)
         else:
@@ -855,7 +857,7 @@ class MainWindow(QMainWindow):
 
         obj_type = self.spinner_panel.get_type()
 
-        if isinstance(selected_object, LevelObject):
+        if isinstance(selected_object, LevelObjectController):
             domain = self.spinner_panel.get_domain()
 
             if selected_object.is_4byte:
@@ -907,13 +909,7 @@ class MainWindow(QMainWindow):
         HeaderEditor(self, self.level_ref).exec_()
 
     def update_level(self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set: int):
-        try:
-            self.level_ref.load_level(world, level, object_data_offset, enemy_data_offset, object_set)
-        except IndexError:
-            QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
-
-            return
-
+        self.level_ref.load_level(world, level, object_data_offset, enemy_data_offset, object_set)
         self.set_up_gui_for_level()
 
     def set_up_gui_for_level(self):
@@ -982,7 +978,7 @@ class MainWindow(QMainWindow):
 
         self.object_toolbar.add_recent_object(level_object)
 
-        if isinstance(level_object, LevelObject):
+        if isinstance(level_object, LevelObjectController):
             self.level_view.create_object_at(*pos, level_object.domain, level_object.obj_index)
         elif isinstance(level_object, EnemyObject):
             self.level_view.add_enemy(level_object.obj_index, *pos, -1)

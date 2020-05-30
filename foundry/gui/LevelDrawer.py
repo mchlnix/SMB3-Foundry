@@ -10,7 +10,8 @@ from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
-from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
+from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET
@@ -310,7 +311,7 @@ class LevelDrawer:
         painter.restore()
 
     @staticmethod
-    def _object_in_jump_area(level: Level, level_object: LevelObject):
+    def _object_in_jump_area(level: Level, level_object: LevelObjectController):
         for jump in level.jumps:
             screen = jump.screen_index
 
@@ -318,7 +319,6 @@ class LevelDrawer:
                 rect = QRect(0, SCREEN_WIDTH * screen, SCREEN_WIDTH, SCREEN_HEIGHT,)
             else:
                 rect = QRect(SCREEN_WIDTH * screen, 0, SCREEN_WIDTH, GROUND,)
-
             if rect.contains(QPoint(*level_object.get_position())):
                 return True
         else:

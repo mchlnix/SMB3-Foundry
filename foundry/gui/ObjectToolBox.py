@@ -8,7 +8,8 @@ from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
 from foundry.game.gfx.Palette import bg_color_for_palette
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon_object
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
+from foundry.game.gfx.objects.LevelObject import get_minimal_icon_object
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 from smb3parse.objects.enemy_item import EnemyItem
@@ -21,7 +22,7 @@ class ObjectIcon(QWidget):
     clicked: SignalInstance = Signal()
     object_placed: SignalInstance = Signal()
 
-    def __init__(self, level_object: Optional[LevelObject] = None):
+    def __init__(self, level_object: Optional[LevelObjectController] = None):
         super(ObjectIcon, self).__init__()
 
         size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -49,7 +50,7 @@ class ObjectIcon(QWidget):
 
         object_bytes = bytearray()
 
-        if isinstance(self.object, LevelObject):
+        if isinstance(self.object, LevelObjectController):
             object_bytes.append(0)
         else:
             object_bytes.append(1)
@@ -63,7 +64,7 @@ class ObjectIcon(QWidget):
         if drag.exec_() == Qt.MoveAction:
             self.object_placed.emit()
 
-    def set_object(self, level_object: Union[LevelObject, EnemyObject]):
+    def set_object(self, level_object: Union[LevelObjectController, EnemyObject]):
         if level_object is not None:
             self.object = get_minimal_icon_object(level_object)
 
@@ -128,7 +129,7 @@ class ObjectToolBox(QWidget):
 
         self._layout.setAlignment(Qt.AlignHCenter)
 
-    def add_object(self, level_object: Union[EnemyItem, LevelObject], index: int = -1):
+    def add_object(self, level_object: Union[EnemyItem, LevelObjectController], index: int = -1):
         icon = ObjectIcon(level_object)
 
         icon.clicked.connect(self._on_icon_clicked)
@@ -154,7 +155,7 @@ class ObjectToolBox(QWidget):
                 domain=domain, object_index=obj_index, x=0, y=0, length=None, index=0
             )
 
-            if not isinstance(level_object, LevelObject) or level_object.description in ["MSG_NOTHING", "MSG_CRASH"]:
+            if not isinstance(level_object, LevelObjectController) or level_object.description in ["MSG_NOTHING", "MSG_CRASH"]:
                 continue
 
             self.add_object(level_object)
