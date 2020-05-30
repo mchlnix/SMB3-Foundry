@@ -160,9 +160,12 @@ class WorldMap(LevelBase):
         if not self.is_enterable(tile):
             return None
 
-        row_address, column_address, level_offset_address, enemy_offset_address = self.level_indexes(
-            screen, player_row, player_column
-        )
+        level_indexes = self.level_indexes(screen, player_row, player_column)
+
+        if level_indexes is None:
+            return None
+
+        row_address, column_address, level_offset_address, enemy_offset_address = level_indexes
 
         level_offset = self._rom.little_endian(level_offset_address)
 
@@ -380,6 +383,6 @@ def _get_special_enterable_tiles(rom: Rom) -> bytearray:
 
 
 def _get_completable_tiles(rom: Rom) -> bytearray:
-    completable_tile_amount = rom.find(COMPLETABLE_LIST_END_MARKER, COMPLETABLE_TILES_LIST) - COMPLETABLE_TILES_LIST - 1
+    completable_tile_amount = rom.find(COMPLETABLE_LIST_END_MARKER, COMPLETABLE_TILES_LIST) - COMPLETABLE_TILES_LIST
 
     return rom.read(COMPLETABLE_TILES_LIST, completable_tile_amount)
