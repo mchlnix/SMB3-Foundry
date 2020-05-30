@@ -282,8 +282,6 @@ class MainWindow(QMainWindow):
 
         self.menuBar().addMenu(help_menu)
 
-        self.level_selector = LevelSelector(parent=self)
-
         self.block_viewer = None
         self.object_viewer = None
 

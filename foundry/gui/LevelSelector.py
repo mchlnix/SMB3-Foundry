@@ -1,18 +1,25 @@
-from PySide2.QtGui import QCloseEvent, QKeyEvent, Qt
+from PySide2.QtCore import QMargins, QSize, Signal, SignalInstance
+from PySide2.QtGui import QCloseEvent, QKeyEvent, QMouseEvent, Qt
 from PySide2.QtWidgets import (
+    QComboBox,
     QDialog,
+    QGridLayout,
     QLabel,
     QListWidget,
-    QComboBox,
     QPushButton,
-    QGridLayout,
+    QScrollArea,
+    QScrollBar,
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.Level import Level
+from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.Spinner import Spinner
+from foundry.gui.WorldMapView import WorldMapView
+from smb3parse.levels import WORLD_COUNT
 
 WORLD_ITEMS = [
     "World Maps",
@@ -92,8 +99,6 @@ class LevelSelector(QDialog):
         self.button_cancel = QPushButton("Cancel", self)
         self.button_cancel.clicked.connect(self.close)
 
-        source_selector = QTabWidget()
-
         stock_level_widget = QWidget()
         stock_level_layout = QGridLayout(stock_level_widget)
 
@@ -103,7 +108,16 @@ class LevelSelector(QDialog):
         stock_level_layout.addWidget(self.world_list, 1, 0)
         stock_level_layout.addWidget(self.level_list, 1, 1)
 
-        source_selector.addTab(stock_level_widget, "Stock Levels")
+        self.source_selector = QTabWidget()
+        self.source_selector.addTab(stock_level_widget, "Stock Levels")
+
+        for world_number in range(WORLD_COUNT):
+            world_number += 1
+
+            world_map_select = WorldMapLevelSelect(world_number)
+            world_map_select.level_selected.connect(self._on_level_selected_via_world_map)
+
+            self.source_selector.addTab(world_map_select, f"World {world_number}")
 
         data_layout = QGridLayout()
 
@@ -119,7 +133,7 @@ class LevelSelector(QDialog):
         data_layout.addWidget(self.button_cancel, 3, 1)
 
         main_layout = QVBoxLayout()
-        main_layout.addWidget(source_selector)
+        main_layout.addWidget(self.source_selector)
         main_layout.addLayout(data_layout)
 
         self.setLayout(main_layout)
@@ -154,22 +168,21 @@ class LevelSelector(QDialog):
 
         assert index >= 0
 
-        self.selected_world = self.world_list.currentRow()
-        self.selected_level = index + 1
-
-        level_is_overworld = self.selected_world == OVERWORLD_MAPS_INDEX
+        level_is_overworld = self.world_list.currentRow() == OVERWORLD_MAPS_INDEX
 
         if level_is_overworld:
-            level_array_offset = self.selected_level
+            level_array_offset = index + 1
+            self.level_name = ""
         else:
-            level_array_offset = Level.world_indexes[self.selected_world] + self.selected_level
+            level_array_offset = Level.world_indexes[self.world_list.currentRow()] + index + 1
+            self.level_name = f"World {self.world_list.currentRow()}, "
+
+        self.level_name += f"{Level.offsets[level_array_offset].name}"
 
         object_data_for_lvl = Level.offsets[level_array_offset].rom_level_offset
 
         if not level_is_overworld:
             object_data_for_lvl -= Level.HEADER_LENGTH
-
-        self.object_data_spinner.setValue(object_data_for_lvl)
 
         if not level_is_overworld:
             enemy_data_for_lvl = Level.offsets[level_array_offset].enemy_offset
@@ -180,19 +193,29 @@ class LevelSelector(QDialog):
             # data in look up table is off by one, since workshop ignores the first byte
             enemy_data_for_lvl -= 1
 
-        self.enemy_data_spinner.setValue(enemy_data_for_lvl)
         self.enemy_data_spinner.setEnabled(not level_is_overworld)
 
-        # if self.selected_world >= WORLD_1_INDEX:
+        # if self.world_list.currentRow() >= WORLD_1_INDEX:
         object_set_index = Level.offsets[level_array_offset].real_obj_set
-        self.object_set_dropdown.setCurrentIndex(object_set_index)
+        self.button_ok.setDisabled(level_is_overworld)
 
-        self.button_ok.setDisabled(self.selected_world == 0)
+        self._fill_in_data(object_set_index, object_data_for_lvl, enemy_data_for_lvl)
 
-    def on_ok(self, _):
-        if self.selected_world == 0:
-            return
+    def _fill_in_data(self, object_set: int, layout_address: int, enemy_address: int):
+        self.object_set_dropdown.setCurrentIndex(object_set)
+        self.object_data_spinner.setValue(layout_address)
+        self.enemy_data_spinner.setValue(enemy_address)
 
+    def _on_level_selected_via_world_map(
+        self, level_name: str, object_set: int, layout_address: int, enemy_address: int
+    ):
+        self.level_name = level_name
+
+        self._fill_in_data(object_set, layout_address, enemy_address)
+
+        self.on_ok()
+
+    def on_ok(self, _=None):
         self.object_set = self.object_set_dropdown.currentIndex()
         self.object_data_offset = self.object_data_spinner.value()
         # skip the first byte, because it seems useless
@@ -202,3 +225,56 @@ class LevelSelector(QDialog):
 
     def closeEvent(self, _close_event: QCloseEvent):
         self.reject()
+
+
+class WorldMapLevelSelect(QScrollArea):
+    level_selected: SignalInstance = Signal(str, int, int, int)
+
+    def __init__(self, world_number: int):
+        super(WorldMapLevelSelect, self).__init__()
+
+        self.world = WorldMap(world_number)
+
+        self.world_view = WorldMapView(self, self.world)
+        self.world_view.setMouseTracking(True)
+
+        self.setWidget(self.world_view)
+
+        self.setMouseTracking(True)
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        x, y = self.world_view.mapFromParent(event.pos()).toTuple()
+
+        x //= Block.WIDTH * 2
+        y //= Block.HEIGHT * 2
+
+        try:
+            if self.world.level_at_position(x, y) is None:
+                self.setCursor(Qt.ArrowCursor)
+            else:
+                self.setCursor(Qt.PointingHandCursor)
+        except ValueError:
+            pass
+
+        return super(WorldMapLevelSelect, self).mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        x, y = self.world_view.mapFromParent(event.pos()).toTuple()
+
+        x //= Block.WIDTH * 2
+        y //= Block.HEIGHT * 2
+
+        try:
+            level_info = self.world.level_at_position(x, y)
+        except ValueError:
+            level_info = None
+
+        if level_info is not None:
+            self.level_selected.emit(self.world.level_name_at_position(x, y), *level_info)
+
+    def sizeHint(self) -> QSize:
+        orig_size = super(WorldMapLevelSelect, self).sizeHint()
+
+        scrollbar_width = QScrollBar().sizeHint().width()
+
+        return orig_size.grownBy(QMargins(scrollbar_width, scrollbar_width, 0, 0))

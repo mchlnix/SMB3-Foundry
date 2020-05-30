@@ -1,5 +1,27 @@
+from collections import defaultdict
 from typing import List, Tuple
+from warnings import warn
 
+from smb3parse.constants import (
+    TILE_BOWSER_CASTLE,
+    TILE_CASTLE_BOTTOM,
+    TILE_DUNGEON_1,
+    TILE_DUNGEON_2,
+    TILE_HAND_TRAP,
+    TILE_LEVEL_1,
+    TILE_LEVEL_10,
+    TILE_MUSHROOM_HOUSE_1,
+    TILE_MUSHROOM_HOUSE_2,
+    TILE_PIPE,
+    TILE_POND,
+    TILE_PYRAMID,
+    TILE_QUICKSAND,
+    TILE_SPADE_HOUSE,
+    TILE_SPIRAL_TOWER_1,
+    TILE_SPIRAL_TOWER_2,
+    TILE_STAR_1,
+    TILE_STAR_2,
+)
 from smb3parse.levels import (
     BASE_OFFSET,
     COMPLETABLE_LIST_END_MARKER,
@@ -28,6 +50,28 @@ from smb3parse.levels import (
 )
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
+
+TILE_NAMES = defaultdict(lambda: "NO NAME")
+TILE_NAMES.update(
+    {
+        TILE_MUSHROOM_HOUSE_1: "Mushroom House",
+        TILE_MUSHROOM_HOUSE_2: "Mushroom House",
+        TILE_SPIRAL_TOWER_1: "Spiral Tower",
+        TILE_SPIRAL_TOWER_2: "Spiral Tower",
+        TILE_DUNGEON_1: "Dungeon",
+        TILE_DUNGEON_2: "Dungeon",
+        TILE_QUICKSAND: "Quicksand",
+        TILE_PYRAMID: "Pyramid",
+        TILE_PIPE: "Pipe",
+        TILE_POND: "Pond",
+        TILE_CASTLE_BOTTOM: "Peach's Castle",
+        TILE_BOWSER_CASTLE: "Bowser's Lair",
+        TILE_HAND_TRAP: "Hand Trap",
+        TILE_SPADE_HOUSE: "Spade Bonus",
+        TILE_STAR_1: "Star",
+        TILE_STAR_2: "Star",
+    }
+)
 
 
 def list_world_map_addresses(rom: Rom) -> List[int]:
@@ -157,6 +201,10 @@ class WorldMap(LevelBase):
 
         tile = self.tile_at(screen, player_row, player_column)
 
+        if tile in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
+            warn("Spade and mushroom house currently not supported, when getting a level address.")
+            return None
+
         if not self.is_enterable(tile):
             return None
 
@@ -273,6 +321,17 @@ class WorldMap(LevelBase):
         enemy_offset_position = enemy_list_start + col_index * OFFSET_SIZE
 
         return row_position, col_position, level_offset_position, enemy_offset_position
+
+    def level_name_for_position(self, screen: int, player_row: int, player_column: int) -> str:
+        tile = self.tile_at(screen, player_row, player_column)
+
+        if not self.is_enterable(tile):
+            return ""
+
+        if tile in range(TILE_LEVEL_1, TILE_LEVEL_10 + 1):
+            return f"Level {self.number}-{tile - TILE_LEVEL_1 + 1}"
+
+        return f"Level {self.number}-{TILE_NAMES[tile]}"
 
     def tile_at(self, screen: int, row: int, column: int) -> int:
         """
