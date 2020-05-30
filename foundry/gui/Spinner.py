@@ -10,4 +10,5 @@ class Spinner(QSpinBox):
         self.setRange(0, maximum)
         self.setDisplayIntegerBase(base)
 
-        self.setPrefix("0x")
+        if base == 16:
+            self.setPrefix("0x")
