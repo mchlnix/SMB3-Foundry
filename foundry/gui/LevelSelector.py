@@ -10,6 +10,7 @@ from PySide2.QtWidgets import (
     QScrollArea,
     QScrollBar,
     QTabWidget,
+    QToolTip,
     QVBoxLayout,
     QWidget,
 )
@@ -249,10 +250,28 @@ class WorldMapLevelSelect(QScrollArea):
         y //= Block.HEIGHT * 2
 
         try:
-            if self.world.level_at_position(x, y) is None:
+            level_info = self.world.level_at_position(x, y)
+
+            if level_info is None:
                 self.setCursor(Qt.ArrowCursor)
+
+                self.setToolTip("")
+                QToolTip.hideText()
             else:
                 self.setCursor(Qt.PointingHandCursor)
+
+                level_name = self.world.level_name_at_position(x, y)
+
+                object_set = level_info[0]
+                object_set_name = OBJECT_SET_ITEMS[object_set].split(" ", 1)[1]
+                layout_address, enemy_address = map(hex, level_info[1:])
+
+                self.setToolTip(
+                    f"<b>{level_name}</b><br/>"
+                    f"<u>Type:</u> {object_set_name}<br/>"
+                    f"<u>Objects:</u> {layout_address}<br/>"
+                    f"<u>Enemies:</u> {enemy_address}"
+                )
         except ValueError:
             pass
 
