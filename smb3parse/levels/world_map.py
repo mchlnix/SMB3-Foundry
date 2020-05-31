@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List
+from typing import Generator, List
 from warnings import warn
 
 from smb3parse.constants import (
@@ -49,6 +49,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
+from smb3parse.levels.level import Level
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
 
@@ -218,7 +219,7 @@ class WorldMap(LevelBase):
 
         level_offset = self._rom.little_endian(level_offset_address)
 
-        assert 0xA000 <= level_offset < 0xC000  # suppose that level layouts are only in this range?
+        assert 0xA000 <= level_offset < 0xC000, level_offset  # suppose that level layouts are only in this range?
 
         correct_row_value = self._rom.int(row_address)
         object_set_number = correct_row_value & 0x0F
@@ -377,7 +378,7 @@ class WorldMap(LevelBase):
             or tile_index in self._special_enterable_tiles
         )
 
-    def gen_positions(self):
+    def gen_positions(self) -> Generator["WorldMapPosition", None, None]:
         """
         Returns a generator, which yield WorldMapPosition objects, one screen at a time, one row at a time.
         """
@@ -385,6 +386,19 @@ class WorldMap(LevelBase):
             for row in range(WORLD_MAP_HEIGHT):
                 for column in range(WORLD_MAP_SCREEN_WIDTH):
                     yield WorldMapPosition(self, screen, row, column)
+
+    def gen_levels(self):
+        """
+        Returns a generator, which yields all levels accessible from this world map.
+        """
+        for position in self.gen_positions():
+            level_info_tuple = self.level_for_position(position.screen, position.row, position.column)
+
+            if level_info_tuple is None:
+                continue
+
+            else:
+                yield Level(self._rom, *level_info_tuple)
 
     @staticmethod
     def from_world_number(rom: Rom, world_number: int) -> "WorldMap":
