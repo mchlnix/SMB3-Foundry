@@ -1,3 +1,4 @@
+import qdarkstyle
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import (
     QButtonGroup,
@@ -13,14 +14,24 @@ from PySide2.QtWidgets import (
 
 from foundry import icon, icon_dir
 from foundry.gui.CustomDialog import CustomDialog
-from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings
+from foundry.gui.settings import (
+    RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings, DRACULA_STYLE_SET, RETRO_STYLE_SET
+)
 
 load_settings()
 
 
+def get_gui_style():
+    if SETTINGS["gui_style"] == DRACULA_STYLE_SET:
+        return qdarkstyle.load_stylesheet()
+    else:
+        return ""
+
+
 class SettingsDialog(CustomDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, sender=None):
         super(SettingsDialog, self).__init__(parent, "Settings")
+        self.sender = sender
 
         mouse_box = QGroupBox("Mouse", self)
         mouse_layout = QHBoxLayout(mouse_box)
@@ -40,6 +51,27 @@ class SettingsDialog(CustomDialog):
         mouse_layout.addWidget(QLabel("Resize mode:"))
         mouse_layout.addWidget(self.lmb_radio)
         mouse_layout.addWidget(rmb_radio)
+
+        # ----------------------------------
+
+        gui_style_box = QGroupBox("GUI", self)
+        gui_style = QHBoxLayout(gui_style_box)
+
+        self.retro_style_radio = QRadioButton("Retro")
+        dracula_style_radio = QRadioButton("Dracula")
+
+        self.retro_style_radio.setChecked(SETTINGS["gui_style"] == RETRO_STYLE_SET)
+        dracula_style_radio.setChecked(SETTINGS["gui_style"] == DRACULA_STYLE_SET)
+
+        self.retro_style_radio.toggled.connect(self._update_settings)
+
+        radio_style_group = QButtonGroup()
+        radio_style_group.addButton(self.retro_style_radio)
+        radio_style_group.addButton(dracula_style_radio)
+
+        gui_style.addWidget(QLabel("Style:"))
+        gui_style.addWidget(self.retro_style_radio)
+        gui_style.addWidget(dracula_style_radio)
 
         # ----------------------------------
 
@@ -75,6 +107,7 @@ class SettingsDialog(CustomDialog):
 
         layout = QVBoxLayout(self)
         layout.addWidget(mouse_box)
+        layout.addWidget(gui_style_box)
         layout.addWidget(command_box)
         layout.addWidget(QLabel("Command used to play the rom:"))
         layout.addWidget(self.command_label)
@@ -93,6 +126,18 @@ class SettingsDialog(CustomDialog):
         else:
             SETTINGS["resize_mode"] = RESIZE_RIGHT_CLICK
 
+        if self.retro_style_radio.isChecked():
+            SETTINGS["gui_style"] = RETRO_STYLE_SET
+        else:
+            SETTINGS["gui_style"] = DRACULA_STYLE_SET
+
+        if SETTINGS["gui_style"] == DRACULA_STYLE_SET:
+            self.setStyleSheet(qdarkstyle.load_stylesheet())
+            self.sender.setStyleSheet(qdarkstyle.load_stylesheet())
+        else:
+            self.setStyleSheet("")
+            self.sender.setStyleSheet("")
+
         self.update()
 
     def _get_emulator_path(self):
@@ -109,5 +154,5 @@ class SettingsDialog(CustomDialog):
         super(SettingsDialog, self).on_exit()
 
 
-def show_settings():
-    SettingsDialog().exec_()
+def show_settings(sender):
+    SettingsDialog(None, sender).exec_()

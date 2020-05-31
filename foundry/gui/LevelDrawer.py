@@ -89,6 +89,7 @@ class LevelDrawer:
         self.draw_items_in_blocks = True
         self.draw_invisible_items = True
         self.transparency = False
+        self.background_enabled = False
 
         self.block_length = Block.WIDTH
 
@@ -96,7 +97,8 @@ class LevelDrawer:
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), width=1)
 
     def draw(self, painter: QPainter, level: Level):
-        self._draw_background(painter, level)
+        if self.background_enabled:
+            self._draw_background(painter, level)
 
         if level.object_set_number == DESERT_OBJECT_SET:
             self._draw_desert_default_graphics(painter, level)

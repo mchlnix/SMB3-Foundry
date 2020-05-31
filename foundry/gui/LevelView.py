@@ -507,10 +507,10 @@ class LevelView(QWidget):
         self.update()
 
     def zoom_out(self):
-        self.set_zoom(self.zoom / 2)
+        self.set_zoom(max(self.zoom - 1, 1))
 
     def zoom_in(self):
-        self.set_zoom(self.zoom * 2)
+        self.set_zoom(min(self.zoom + 1, 10))
 
     def start_selection_square(self, position):
         self.selection_square.start(position)

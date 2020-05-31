@@ -3,12 +3,15 @@ import pathlib
 
 RESIZE_LEFT_CLICK = "LMB"
 RESIZE_RIGHT_CLICK = "RMB"
+DRACULA_STYLE_SET = "DRACULA"
+RETRO_STYLE_SET = "RETRO"
 
 SETTINGS = dict()
 SETTINGS["instaplay_emulator"] = "fceux"
 SETTINGS["instaplay_arguments"] = "%f"
 
 SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
+SETTINGS["gui_style"] = DRACULA_STYLE_SET
 
 SETTINGS["draw_mario"] = True
 SETTINGS["draw_jumps"] = False
@@ -18,6 +21,7 @@ SETTINGS["draw_jump_on_objects"] = True
 SETTINGS["draw_items_in_blocks"] = True
 SETTINGS["draw_invisible_items"] = True
 SETTINGS["block_transparency"] = True
+SETTINGS["background_enabled"] = False
 
 default_settings_dir = pathlib.Path.home() / ".smb3foundry"
 default_settings_dir.mkdir(parents=True, exist_ok=True)

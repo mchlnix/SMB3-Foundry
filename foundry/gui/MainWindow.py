@@ -3,6 +3,7 @@ import pathlib
 import shlex
 import subprocess
 import tempfile
+import qdarkstyle
 from typing import Tuple, Union
 import sys
 
@@ -55,9 +56,9 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
-from foundry.gui.SettingsDialog import show_settings
+from foundry.gui.SettingsDialog import show_settings, get_gui_style
 from foundry.gui.SpinnerPanel import SpinnerPanel
-from foundry.gui.settings import SETTINGS, save_settings
+from foundry.gui.settings import SETTINGS, save_settings, DRACULA_STYLE_SET
 from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
@@ -76,6 +77,7 @@ ID_RESIZE_TYPE = 511
 ID_JUMP_OBJECTS = 512
 ID_ITEM_BLOCKS = 513
 ID_INVISIBLE_ITEMS = 514
+ID_BACKGROUND_ENABLED = 515
 
 CHECKABLE_MENU_ITEMS = [
     ID_TRANSPARENCY,
@@ -86,6 +88,7 @@ CHECKABLE_MENU_ITEMS = [
     ID_JUMP_OBJECTS,
     ID_ITEM_BLOCKS,
     ID_INVISIBLE_ITEMS,
+    ID_BACKGROUND_ENABLED
 ]
 
 ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
@@ -101,7 +104,8 @@ class MainWindow(QMainWindow):
     def __init__(self, path_to_rom=""):
         super(MainWindow, self).__init__()
 
-        self.setWindowIcon(icon("foundry.ico"))
+        self.setWindowIcon(icon("tanooki.ico"))
+        self.setStyleSheet(get_gui_style())
 
         file_menu = QMenu("File")
 
@@ -130,7 +134,7 @@ class MainWindow(QMainWindow):
         """
         file_menu.addSeparator()
         settings_action = file_menu.addAction("&Settings")
-        settings_action.triggered.connect(show_settings)
+        settings_action.triggered.connect(lambda: show_settings(self))
         file_menu.addSeparator()
         exit_action = file_menu.addAction("&Exit")
         exit_action.triggered.connect(lambda _: self.close())
@@ -237,6 +241,11 @@ class MainWindow(QMainWindow):
         action.setCheckable(True)
         action.setChecked(SETTINGS["block_transparency"])
 
+        action = view_menu.addAction("&Background")
+        action.setProperty(ID_PROP, ID_BACKGROUND_ENABLED)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["background_enabled"])
+
         view_menu.addSeparator()
         view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
         """
@@ -333,7 +342,7 @@ class MainWindow(QMainWindow):
         level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
         level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         level_toolbar.setOrientation(Qt.Horizontal)
-        level_toolbar.setFloatable(False)
+        level_toolbar.setFloatable(True)
 
         level_toolbar.addWidget(self.spinner_panel)
         level_toolbar.addWidget(self.object_dropdown)
@@ -351,7 +360,7 @@ class MainWindow(QMainWindow):
         object_toolbar = QToolBar("Object Toolbar", self)
         object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
         object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        object_toolbar.setFloatable(False)
+        object_toolbar.setFloatable(True)
 
         object_toolbar.addWidget(self.object_toolbar)
         object_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
@@ -362,7 +371,7 @@ class MainWindow(QMainWindow):
         menu_toolbar.setOrientation(Qt.Horizontal)
         menu_toolbar.setIconSize(QSize(20, 20))
 
-        menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(show_settings)
+        menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(lambda: show_settings(self))
         menu_toolbar.addSeparator()
         menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
         menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
@@ -552,7 +561,6 @@ class MainWindow(QMainWindow):
     def on_open_rom(self, path_to_rom="") -> bool:
         if not self.safe_to_change():
             return False
-
         if not path_to_rom:
             # otherwise ask the user what new file to open
             path_to_rom, _ = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
@@ -823,6 +831,8 @@ class MainWindow(QMainWindow):
             self.level_view.draw_grid = checked
         elif item_id == ID_TRANSPARENCY:
             self.level_view.transparency = checked
+        elif item_id == ID_BACKGROUND_ENABLED:
+            self.level_view.background_enabled = checked
         elif item_id == ID_JUMPS:
             self.level_view.draw_jumps = checked
         elif item_id == ID_MARIO:
@@ -844,6 +854,7 @@ class MainWindow(QMainWindow):
         SETTINGS["draw_items_in_blocks"] = self.level_view.draw_items_in_blocks
         SETTINGS["draw_invisible_items"] = self.level_view.draw_invisible_items
         SETTINGS["block_transparency"] = self.level_view.transparency
+        SETTINGS["background_enabled"] = self.level_view.background_enabled
 
         save_settings()
 
@@ -860,12 +871,17 @@ class MainWindow(QMainWindow):
         if isinstance(selected_object, LevelObjectController):
             domain = self.spinner_panel.get_domain()
 
-            if selected_object.is_4byte:
+            if selected_object.bytes == 4:
                 length = self.spinner_panel.get_length()
             else:
                 length = None
+            if selected_object.bytes >= 5:
+                length = self.spinner_panel.get_length()
+                overflow = [self.spinner_panel.get_index()]
+            else:
+                overflow = None
 
-            self.level_view.replace_object(selected_object, domain, obj_type, length)
+            self.level_view.replace_object(selected_object, domain, obj_type, length, overflow=overflow)
         else:
             self.level_view.replace_enemy(selected_object, obj_type)
 
