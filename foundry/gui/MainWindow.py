@@ -893,6 +893,9 @@ class MainWindow(QMainWindow):
         if self.block_viewer is None:
             self.block_viewer = BlockViewer(parent=self)
 
+        if self.level_ref.level is not None:
+            self.block_viewer.object_set = self.level_ref.object_set.number
+
         self.block_viewer.show()
 
     def on_object_viewer(self, _):

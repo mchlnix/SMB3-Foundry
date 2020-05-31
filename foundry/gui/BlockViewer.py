@@ -17,7 +17,7 @@ class BlockViewer(CustomChildWindow):
     def __init__(self, parent):
         super(BlockViewer, self).__init__(parent, "Block Viewer")
 
-        self.object_set = 0
+        self._object_set = 0
         self.sprite_bank = BlockBank(parent=self, object_set=self.object_set)
 
         self.setCentralWidget(self.sprite_bank)
@@ -52,15 +52,21 @@ class BlockViewer(CustomChildWindow):
 
         return
 
+    @property
+    def object_set(self):
+        return self._object_set
+
+    @object_set.setter
+    def object_set(self, value):
+        self._object_set = value
+
+        self._after_object_set()
+
     def prev_object_set(self):
         self.object_set = max(self.object_set - 1, 0)
 
-        self._after_object_set()
-
     def next_object_set(self):
         self.object_set = min(self.object_set + 1, 0xE)
-
-        self._after_object_set()
 
     def _after_object_set(self):
         self.sprite_bank.object_set = self.object_set
