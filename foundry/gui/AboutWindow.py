@@ -1,7 +1,7 @@
 from PySide2.QtGui import QPixmap, Qt
 from PySide2.QtWidgets import QBoxLayout, QFrame, QLabel
 
-from foundry import data_dir
+from foundry import data_dir, get_current_version_name
 from foundry.gui.CustomDialog import CustomDialog
 
 LINK_SMB3F = "https://github.com/mchlnix/SMB3-Foundry"
@@ -27,7 +27,7 @@ class AboutDialog(CustomDialog):
 
         text_layout = QBoxLayout(QBoxLayout.TopToBottom)
 
-        text_layout.addWidget(QLabel("SMB3 Foundry", self))
+        text_layout.addWidget(QLabel(f"SMB3 Foundry v{get_current_version_name()}", self))
         text_layout.addWidget(QHLine())
         text_layout.addWidget(LinkLabel(self, f'By <a href="{LINK_SMB3F}">Michael</a>'))
         text_layout.addWidget((QLabel("", self)))
