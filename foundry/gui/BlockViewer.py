@@ -1,12 +1,13 @@
 from math import ceil
 
-from PySide2.QtCore import QSize, QRect, QPoint
-from PySide2.QtGui import QPaintEvent, QPainter, QColor, QBrush, QResizeEvent, QMouseEvent
-from PySide2.QtWidgets import QStyle, QComboBox, QToolBar, QWidget, QLayout, QStatusBar
+from PySide2.QtCore import QPoint, QRect, QSize
+from PySide2.QtGui import QBrush, QMouseEvent, QPaintEvent, QPainter, QResizeEvent
+from PySide2.QtWidgets import QComboBox, QLayout, QStatusBar, QToolBar, QWidget
 
+from foundry import icon
 from foundry.game.File import ROM
-from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.drawable.Block import Block
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
@@ -23,18 +24,16 @@ class BlockViewer(CustomChildWindow):
 
         self.toolbar = QToolBar(self)
 
-        self.prev_os_action = self.toolbar.addAction(
-            self.style().standardIcon(QStyle.SP_ArrowLeft), "Previous object set"
-        )
+        self.prev_os_action = self.toolbar.addAction(icon("arrow-left.svg"), "Previous object set")
         self.prev_os_action.triggered.connect(self.prev_object_set)
 
-        self.next_os_action = self.toolbar.addAction(self.style().standardIcon(QStyle.SP_ArrowRight), "Next object set")
+        self.next_os_action = self.toolbar.addAction(icon("arrow-right.svg"), "Next object set")
         self.next_os_action.triggered.connect(self.next_object_set)
 
-        self.zoom_out_action = self.toolbar.addAction("-")
+        self.zoom_out_action = self.toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
         self.zoom_out_action.triggered.connect(self.sprite_bank.zoom_out)
 
-        self.zoom_in_action = self.toolbar.addAction("+")
+        self.zoom_in_action = self.toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
         self.zoom_in_action.triggered.connect(self.sprite_bank.zoom_in)
 
         self.bank_dropdown = QComboBox(parent=self.toolbar)
