@@ -11,6 +11,7 @@ from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
+from smb3parse.levels import LEVEL_MAX_LENGTH
 
 SKY = 0
 GROUND = 27
@@ -613,6 +614,15 @@ class LevelObject(ObjectLike):
                 base_y = 0
 
                 blocks_to_draw = SCREEN_WIDTH * SCREEN_HEIGHT * [self.blocks[0]]
+            elif self.description.lower() in [
+                "blue background",
+                "starry background",
+                "underground background under this",
+            ]:
+                new_width = LEVEL_MAX_LENGTH
+                new_height = GROUND - base_y
+
+                blocks_to_draw = [self.blocks[0]] * new_width * new_height
 
         # for not yet implemented objects and single block objects
         if blocks_to_draw:
