@@ -93,12 +93,14 @@ class ObjectViewer(CustomChildWindow):
         self.drawing_area.change_object_set(self.object_set)
 
         self.drawing_area.change_graphic_set(gfx_set)
+        self.block_list.update_object(self.drawing_area.current_object)
         self.status_bar.showMessage(self.drawing_area.current_object.description)
 
     def on_graphic_set(self):
         gfx_set = self.graphic_set_dropdown.currentIndex()
 
         self.drawing_area.change_graphic_set(gfx_set)
+        self.block_list.update_object(self.drawing_area.current_object)
         self.status_bar.showMessage(self.drawing_area.current_object.description)
 
     def on_spin(self, _):
@@ -192,7 +194,7 @@ class BlockArray(QWidget):
     def update_object(self, level_object: LevelObject):
         self.level_object = level_object
 
-        while self.layout().count() > 1:
+        while self.layout().count():
             item = self.layout().takeAt(0)
             item.widget().deleteLater()
 
