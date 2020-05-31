@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wxHexEditor_XML_TAG>
-  <filename path="/home/michael/Gits/SMB3Foundry/data/romobjs2.dat">
+  <filename path="/home/michael/Gits/SMB3Foundry/data/romobjs11.dat">
     <TAG id="0">
       <start_offset>2</start_offset>
       <end_offset>2</end_offset>
@@ -11,7 +11,7 @@
     <TAG id="1">
       <start_offset>4</start_offset>
       <end_offset>4</end_offset>
-      <tag_text>Upper Left Hill Corner - Hilly</tag_text>
+      <tag_text>Upper Left HIll Corner - Hilly</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
@@ -102,7 +102,7 @@
     <TAG id="14">
       <start_offset>30</start_offset>
       <end_offset>30</end_offset>
-      <tag_text>Sets proper background color (?)</tag_text>
+      <tag_text>MSG_NOTHING</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
@@ -529,14 +529,14 @@
     <TAG id="75">
       <start_offset>264</start_offset>
       <end_offset>264</end_offset>
-      <tag_text>MSG_NOTHING</tag_text>
+      <tag_text>Blue background</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="76">
       <start_offset>266</start_offset>
       <end_offset>266</end_offset>
-      <tag_text>Underground Background under this</tag_text>
+      <tag_text>Starry background</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
@@ -619,1123 +619,1123 @@
     </TAG>
     <TAG id="88">
       <start_offset>304</start_offset>
-      <end_offset>311</end_offset>
+      <end_offset>305</end_offset>
       <tag_text>Blue X-Blocks</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="89">
-      <start_offset>313</start_offset>
-      <end_offset>314</end_offset>
+      <start_offset>307</start_offset>
+      <end_offset>308</end_offset>
       <tag_text>Weird Quicksand (doesn't act like it)</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="90">
-      <start_offset>316</start_offset>
-      <end_offset>317</end_offset>
+      <start_offset>310</start_offset>
+      <end_offset>311</end_offset>
       <tag_text>Normal Quicksand</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="91">
-      <start_offset>319</start_offset>
-      <end_offset>319</end_offset>
+      <start_offset>313</start_offset>
+      <end_offset>313</end_offset>
       <tag_text>White Turtle Bricks</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="92">
-      <start_offset>321</start_offset>
-      <end_offset>326</end_offset>
+      <start_offset>315</start_offset>
+      <end_offset>320</end_offset>
       <tag_text>Double-Ended Vertical Pipe</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="93">
-      <start_offset>328</start_offset>
-      <end_offset>375</end_offset>
+      <start_offset>322</start_offset>
+      <end_offset>369</end_offset>
       <tag_text>Underground Tunnel A</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="94">
-      <start_offset>377</start_offset>
-      <end_offset>424</end_offset>
+      <start_offset>371</start_offset>
+      <end_offset>418</end_offset>
       <tag_text>Underground Tunnel B</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="95">
-      <start_offset>426</start_offset>
-      <end_offset>461</end_offset>
+      <start_offset>420</start_offset>
+      <end_offset>455</end_offset>
       <tag_text>45 Degree Diagonal Hill Strip A</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="96">
-      <start_offset>463</start_offset>
-      <end_offset>498</end_offset>
+      <start_offset>457</start_offset>
+      <end_offset>492</end_offset>
       <tag_text>45 Degree Diagonal Hill Strip B</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="97">
-      <start_offset>500</start_offset>
-      <end_offset>531</end_offset>
+      <start_offset>494</start_offset>
+      <end_offset>541</end_offset>
       <tag_text>Horizontal Hill Strip</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="98">
-      <start_offset>533</start_offset>
-      <end_offset>544</end_offset>
+      <start_offset>543</start_offset>
+      <end_offset>554</end_offset>
       <tag_text>1 Hill Strip</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="99">
-      <start_offset>546</start_offset>
-      <end_offset>593</end_offset>
+      <start_offset>556</start_offset>
+      <end_offset>603</end_offset>
       <tag_text>30 Degree Diagonal Hill Strip A</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="100">
-      <start_offset>595</start_offset>
-      <end_offset>642</end_offset>
+      <start_offset>605</start_offset>
+      <end_offset>652</end_offset>
       <tag_text>30 Degree Diagonal Hill Strip B</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="101">
-      <start_offset>644</start_offset>
-      <end_offset>667</end_offset>
+      <start_offset>654</start_offset>
+      <end_offset>677</end_offset>
       <tag_text>Triangular Hill Object A</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="102">
-      <start_offset>669</start_offset>
-      <end_offset>716</end_offset>
+      <start_offset>679</start_offset>
+      <end_offset>726</end_offset>
       <tag_text>Triangular Hill Object B</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="103">
-      <start_offset>718</start_offset>
-      <end_offset>765</end_offset>
+      <start_offset>728</start_offset>
+      <end_offset>775</end_offset>
       <tag_text>Steps A</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="104">
-      <start_offset>767</start_offset>
-      <end_offset>808</end_offset>
+      <start_offset>777</start_offset>
+      <end_offset>824</end_offset>
       <tag_text>Steps B</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="105">
-      <start_offset>810</start_offset>
-      <end_offset>829</end_offset>
+      <start_offset>826</start_offset>
+      <end_offset>873</end_offset>
       <tag_text>Square Hill Object</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="106">
-      <start_offset>831</start_offset>
-      <end_offset>878</end_offset>
+      <start_offset>875</start_offset>
+      <end_offset>922</end_offset>
       <tag_text>Flat Land and Water Pits</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="107">
-      <start_offset>880</start_offset>
-      <end_offset>927</end_offset>
+      <start_offset>924</start_offset>
+      <end_offset>971</end_offset>
       <tag_text>30-Degree Hill and Water Pits A</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="108">
-      <start_offset>929</start_offset>
-      <end_offset>976</end_offset>
+      <start_offset>973</start_offset>
+      <end_offset>1020</end_offset>
       <tag_text>30-Degree Hill and Water Pits B</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="109">
-      <start_offset>978</start_offset>
-      <end_offset>980</end_offset>
+      <start_offset>1022</start_offset>
+      <end_offset>1024</end_offset>
       <tag_text>30 Degree Underground Hill - Down/Right</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="110">
-      <start_offset>982</start_offset>
-      <end_offset>984</end_offset>
+      <start_offset>1026</start_offset>
+      <end_offset>1028</end_offset>
       <tag_text>30 Degree Underground Hill - Down/Left</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="111">
-      <start_offset>986</start_offset>
-      <end_offset>988</end_offset>
+      <start_offset>1030</start_offset>
+      <end_offset>1032</end_offset>
       <tag_text>Weird 30-Degree Hill</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="112">
-      <start_offset>990</start_offset>
-      <end_offset>992</end_offset>
+      <start_offset>1034</start_offset>
+      <end_offset>1036</end_offset>
       <tag_text>Weird 30-Degree Hill</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="113">
-      <start_offset>994</start_offset>
-      <end_offset>996</end_offset>
+      <start_offset>1038</start_offset>
+      <end_offset>1040</end_offset>
       <tag_text>30 Degree Hill - Down/Right</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="114">
-      <start_offset>998</start_offset>
-      <end_offset>1000</end_offset>
+      <start_offset>1042</start_offset>
+      <end_offset>1044</end_offset>
       <tag_text>30 Degree Hill - Down/Left</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="115">
-      <start_offset>1002</start_offset>
-      <end_offset>1004</end_offset>
+      <start_offset>1046</start_offset>
+      <end_offset>1048</end_offset>
       <tag_text>30 Degree Hill - Up/Left</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="116">
-      <start_offset>1006</start_offset>
-      <end_offset>1008</end_offset>
+      <start_offset>1050</start_offset>
+      <end_offset>1052</end_offset>
       <tag_text>30 Degree Hill - Up/Right</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="117">
-      <start_offset>1010</start_offset>
-      <end_offset>1012</end_offset>
+      <start_offset>1054</start_offset>
+      <end_offset>1056</end_offset>
       <tag_text>30 Degree Underwater Hill - Down/Right</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="118">
-      <start_offset>1014</start_offset>
-      <end_offset>1016</end_offset>
+      <start_offset>1058</start_offset>
+      <end_offset>1060</end_offset>
       <tag_text>30 Degree Underwater Hill - Down/Left</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="119">
-      <start_offset>1018</start_offset>
-      <end_offset>1020</end_offset>
+      <start_offset>1062</start_offset>
+      <end_offset>1064</end_offset>
       <tag_text>30 Degree Underwater Hill - Up/Left</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="120">
-      <start_offset>1022</start_offset>
-      <end_offset>1024</end_offset>
+      <start_offset>1066</start_offset>
+      <end_offset>1068</end_offset>
       <tag_text>30 Degree Underwater Hill - Up/Right</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="121">
-      <start_offset>1026</start_offset>
-      <end_offset>1026</end_offset>
+      <start_offset>1070</start_offset>
+      <end_offset>1070</end_offset>
       <tag_text>Underground Wall - Right Side</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="122">
-      <start_offset>1028</start_offset>
-      <end_offset>1028</end_offset>
+      <start_offset>1072</start_offset>
+      <end_offset>1072</end_offset>
       <tag_text>Hilly Wall - Right Side</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="123">
-      <start_offset>1030</start_offset>
-      <end_offset>1030</end_offset>
+      <start_offset>1074</start_offset>
+      <end_offset>1074</end_offset>
       <tag_text>Dark Underground Wall - Right Side</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="124">
-      <start_offset>1032</start_offset>
-      <end_offset>1032</end_offset>
+      <start_offset>1076</start_offset>
+      <end_offset>1076</end_offset>
       <tag_text>Small Background Cloud</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="125">
-      <start_offset>1034</start_offset>
-      <end_offset>1034</end_offset>
+      <start_offset>1078</start_offset>
+      <end_offset>1078</end_offset>
       <tag_text>Weird</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="126">
-      <start_offset>1036</start_offset>
-      <end_offset>1036</end_offset>
+      <start_offset>1080</start_offset>
+      <end_offset>1080</end_offset>
       <tag_text>Weird</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="127">
-      <start_offset>1038</start_offset>
-      <end_offset>1038</end_offset>
+      <start_offset>1082</start_offset>
+      <end_offset>1082</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="128">
-      <start_offset>1040</start_offset>
-      <end_offset>1040</end_offset>
+      <start_offset>1084</start_offset>
+      <end_offset>1084</end_offset>
       <tag_text>Weird</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="129">
-      <start_offset>1042</start_offset>
-      <end_offset>1042</end_offset>
+      <start_offset>1086</start_offset>
+      <end_offset>1086</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="130">
-      <start_offset>1044</start_offset>
-      <end_offset>1044</end_offset>
+      <start_offset>1088</start_offset>
+      <end_offset>1088</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="131">
-      <start_offset>1046</start_offset>
-      <end_offset>1046</end_offset>
+      <start_offset>1090</start_offset>
+      <end_offset>1090</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="132">
-      <start_offset>1048</start_offset>
-      <end_offset>1048</end_offset>
+      <start_offset>1092</start_offset>
+      <end_offset>1092</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="133">
-      <start_offset>1050</start_offset>
-      <end_offset>1050</end_offset>
+      <start_offset>1094</start_offset>
+      <end_offset>1094</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="134">
-      <start_offset>1052</start_offset>
-      <end_offset>1052</end_offset>
+      <start_offset>1096</start_offset>
+      <end_offset>1096</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="135">
-      <start_offset>1054</start_offset>
-      <end_offset>1054</end_offset>
+      <start_offset>1098</start_offset>
+      <end_offset>1098</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="136">
-      <start_offset>1056</start_offset>
-      <end_offset>1056</end_offset>
+      <start_offset>1100</start_offset>
+      <end_offset>1100</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="137">
-      <start_offset>1058</start_offset>
-      <end_offset>1058</end_offset>
+      <start_offset>1102</start_offset>
+      <end_offset>1102</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="138">
-      <start_offset>1060</start_offset>
-      <end_offset>1060</end_offset>
+      <start_offset>1104</start_offset>
+      <end_offset>1104</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="139">
-      <start_offset>1062</start_offset>
-      <end_offset>1062</end_offset>
+      <start_offset>1106</start_offset>
+      <end_offset>1106</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="140">
-      <start_offset>1064</start_offset>
-      <end_offset>1064</end_offset>
+      <start_offset>1108</start_offset>
+      <end_offset>1108</end_offset>
       <tag_text>Gap</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="141">
-      <start_offset>1066</start_offset>
-      <end_offset>1066</end_offset>
+      <start_offset>1110</start_offset>
+      <end_offset>1110</end_offset>
       <tag_text>Gap with Black Stars (Underground levels only)</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="142">
-      <start_offset>1068</start_offset>
-      <end_offset>1069</end_offset>
+      <start_offset>1112</start_offset>
+      <end_offset>1113</end_offset>
       <tag_text>Water</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="143">
-      <start_offset>1071</start_offset>
-      <end_offset>1071</end_offset>
+      <start_offset>1115</start_offset>
+      <end_offset>1115</end_offset>
       <tag_text>Underground Wall</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="144">
-      <start_offset>1073</start_offset>
-      <end_offset>1073</end_offset>
+      <start_offset>1117</start_offset>
+      <end_offset>1117</end_offset>
       <tag_text>Hilly Wall</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="145">
-      <start_offset>1075</start_offset>
-      <end_offset>1075</end_offset>
+      <start_offset>1119</start_offset>
+      <end_offset>1119</end_offset>
       <tag_text>Dark Underground Wall</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="146">
-      <start_offset>1077</start_offset>
-      <end_offset>1078</end_offset>
+      <start_offset>1121</start_offset>
+      <end_offset>1122</end_offset>
       <tag_text>Flat Land - Underground</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="147">
-      <start_offset>1080</start_offset>
-      <end_offset>1081</end_offset>
+      <start_offset>1124</start_offset>
+      <end_offset>1125</end_offset>
       <tag_text>Flat Land - Hilly</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="148">
-      <start_offset>1083</start_offset>
-      <end_offset>1084</end_offset>
+      <start_offset>1127</start_offset>
+      <end_offset>1128</end_offset>
       <tag_text>Flat Land - Underwater</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="149">
-      <start_offset>1086</start_offset>
-      <end_offset>1086</end_offset>
+      <start_offset>1130</start_offset>
+      <end_offset>1130</end_offset>
       <tag_text>Weird Black Wall</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="150">
-      <start_offset>1088</start_offset>
-      <end_offset>1089</end_offset>
+      <start_offset>1132</start_offset>
+      <end_offset>1133</end_offset>
       <tag_text>Ceiling</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="151">
-      <start_offset>1091</start_offset>
-      <end_offset>1092</end_offset>
+      <start_offset>1135</start_offset>
+      <end_offset>1136</end_offset>
       <tag_text>Underwater Ceiling</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="152">
-      <start_offset>1094</start_offset>
-      <end_offset>1096</end_offset>
+      <start_offset>1138</start_offset>
+      <end_offset>1140</end_offset>
       <tag_text>Small Background Hills</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="153">
-      <start_offset>1098</start_offset>
-      <end_offset>1101</end_offset>
+      <start_offset>1142</start_offset>
+      <end_offset>1145</end_offset>
       <tag_text>Upward Pipe to End of Level</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="154">
-      <start_offset>1103</start_offset>
-      <end_offset>1103</end_offset>
+      <start_offset>1147</start_offset>
+      <end_offset>1147</end_offset>
       <tag_text>Weird</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="155">
-      <start_offset>1105</start_offset>
-      <end_offset>1105</end_offset>
+      <start_offset>1149</start_offset>
+      <end_offset>1149</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="156">
-      <start_offset>1107</start_offset>
-      <end_offset>1107</end_offset>
+      <start_offset>1151</start_offset>
+      <end_offset>1151</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="157">
-      <start_offset>1109</start_offset>
-      <end_offset>1109</end_offset>
+      <start_offset>1153</start_offset>
+      <end_offset>1153</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="158">
-      <start_offset>1111</start_offset>
-      <end_offset>1111</end_offset>
+      <start_offset>1155</start_offset>
+      <end_offset>1155</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="159">
-      <start_offset>1113</start_offset>
-      <end_offset>1113</end_offset>
+      <start_offset>1157</start_offset>
+      <end_offset>1157</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="160">
-      <start_offset>1115</start_offset>
-      <end_offset>1115</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="161">
-      <start_offset>1117</start_offset>
-      <end_offset>1117</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="162">
-      <start_offset>1119</start_offset>
-      <end_offset>1119</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="163">
-      <start_offset>1121</start_offset>
-      <end_offset>1121</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="164">
-      <start_offset>1123</start_offset>
-      <end_offset>1123</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="165">
-      <start_offset>1125</start_offset>
-      <end_offset>1125</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="166">
-      <start_offset>1127</start_offset>
-      <end_offset>1127</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="167">
-      <start_offset>1129</start_offset>
-      <end_offset>1129</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="168">
-      <start_offset>1131</start_offset>
-      <end_offset>1131</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="169">
-      <start_offset>1133</start_offset>
-      <end_offset>1133</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="170">
-      <start_offset>1135</start_offset>
-      <end_offset>1135</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="171">
-      <start_offset>1137</start_offset>
-      <end_offset>1137</end_offset>
-      <tag_text>Background like at bottom of hilly level</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="172">
-      <start_offset>1139</start_offset>
-      <end_offset>1139</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="173">
-      <start_offset>1141</start_offset>
-      <end_offset>1146</end_offset>
-      <tag_text>Background Clouds</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="174">
-      <start_offset>1148</start_offset>
-      <end_offset>1148</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="175">
-      <start_offset>1150</start_offset>
-      <end_offset>1150</end_offset>
-      <tag_text>Hilly Wall - 50=right;; 51=left (SMAS only)</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="176">
-      <start_offset>1152</start_offset>
-      <end_offset>1157</end_offset>
-      <tag_text>Flat Ground with green on top (SMAS only)</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="177">
       <start_offset>1159</start_offset>
       <end_offset>1159</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="178">
+    <TAG id="161">
       <start_offset>1161</start_offset>
       <end_offset>1161</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="179">
+    <TAG id="162">
       <start_offset>1163</start_offset>
       <end_offset>1163</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="180">
+    <TAG id="163">
       <start_offset>1165</start_offset>
       <end_offset>1165</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="181">
+    <TAG id="164">
       <start_offset>1167</start_offset>
       <end_offset>1167</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="182">
+    <TAG id="165">
       <start_offset>1169</start_offset>
       <end_offset>1169</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="183">
+    <TAG id="166">
       <start_offset>1171</start_offset>
       <end_offset>1171</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="184">
+    <TAG id="167">
       <start_offset>1173</start_offset>
       <end_offset>1173</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="185">
+    <TAG id="168">
       <start_offset>1175</start_offset>
       <end_offset>1175</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="186">
+    <TAG id="169">
       <start_offset>1177</start_offset>
       <end_offset>1177</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="187">
+    <TAG id="170">
       <start_offset>1179</start_offset>
       <end_offset>1179</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="188">
+    <TAG id="171">
       <start_offset>1181</start_offset>
       <end_offset>1181</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
+      <tag_text>Background like at bottom of hilly level</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="189">
+    <TAG id="172">
       <start_offset>1183</start_offset>
       <end_offset>1183</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="190">
+    <TAG id="173">
       <start_offset>1185</start_offset>
-      <end_offset>1185</end_offset>
+      <end_offset>1190</end_offset>
+      <tag_text>Background Clouds</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="174">
+      <start_offset>1192</start_offset>
+      <end_offset>1192</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="191">
-      <start_offset>1187</start_offset>
-      <end_offset>1187</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
+    <TAG id="175">
+      <start_offset>1194</start_offset>
+      <end_offset>1194</end_offset>
+      <tag_text>Hilly Wall - 50=right;; 51=left (SMAS only)</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="192">
-      <start_offset>1189</start_offset>
-      <end_offset>1189</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="193">
-      <start_offset>1191</start_offset>
-      <end_offset>1191</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="194">
-      <start_offset>1193</start_offset>
-      <end_offset>1193</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="195">
-      <start_offset>1195</start_offset>
-      <end_offset>1195</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="196">
-      <start_offset>1197</start_offset>
-      <end_offset>1197</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="197">
-      <start_offset>1199</start_offset>
-      <end_offset>1199</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="198">
-      <start_offset>1201</start_offset>
+    <TAG id="176">
+      <start_offset>1196</start_offset>
       <end_offset>1201</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
+      <tag_text>Flat Ground with green on top (SMAS only)</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="199">
+    <TAG id="177">
       <start_offset>1203</start_offset>
       <end_offset>1203</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="200">
+    <TAG id="178">
       <start_offset>1205</start_offset>
       <end_offset>1205</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="201">
+    <TAG id="179">
       <start_offset>1207</start_offset>
       <end_offset>1207</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="202">
+    <TAG id="180">
       <start_offset>1209</start_offset>
       <end_offset>1209</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="203">
+    <TAG id="181">
       <start_offset>1211</start_offset>
       <end_offset>1211</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="204">
+    <TAG id="182">
       <start_offset>1213</start_offset>
       <end_offset>1213</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="205">
+    <TAG id="183">
       <start_offset>1215</start_offset>
       <end_offset>1215</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="206">
+    <TAG id="184">
       <start_offset>1217</start_offset>
       <end_offset>1217</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="207">
+    <TAG id="185">
       <start_offset>1219</start_offset>
       <end_offset>1219</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="208">
+    <TAG id="186">
       <start_offset>1221</start_offset>
       <end_offset>1221</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="209">
+    <TAG id="187">
       <start_offset>1223</start_offset>
       <end_offset>1223</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="210">
+    <TAG id="188">
       <start_offset>1225</start_offset>
       <end_offset>1225</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="211">
+    <TAG id="189">
       <start_offset>1227</start_offset>
       <end_offset>1227</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="212">
+    <TAG id="190">
       <start_offset>1229</start_offset>
       <end_offset>1229</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="213">
+    <TAG id="191">
       <start_offset>1231</start_offset>
       <end_offset>1231</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="214">
+    <TAG id="192">
       <start_offset>1233</start_offset>
       <end_offset>1233</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="215">
+    <TAG id="193">
       <start_offset>1235</start_offset>
       <end_offset>1235</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="216">
+    <TAG id="194">
       <start_offset>1237</start_offset>
       <end_offset>1237</end_offset>
       <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="217">
+    <TAG id="195">
       <start_offset>1239</start_offset>
       <end_offset>1239</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="218">
+    <TAG id="196">
       <start_offset>1241</start_offset>
       <end_offset>1241</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="219">
+    <TAG id="197">
       <start_offset>1243</start_offset>
       <end_offset>1243</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="220">
+    <TAG id="198">
       <start_offset>1245</start_offset>
       <end_offset>1245</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="221">
+    <TAG id="199">
       <start_offset>1247</start_offset>
       <end_offset>1247</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="222">
+    <TAG id="200">
       <start_offset>1249</start_offset>
       <end_offset>1249</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="223">
+    <TAG id="201">
       <start_offset>1251</start_offset>
       <end_offset>1251</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="224">
+    <TAG id="202">
       <start_offset>1253</start_offset>
       <end_offset>1253</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="225">
+    <TAG id="203">
       <start_offset>1255</start_offset>
       <end_offset>1255</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="226">
+    <TAG id="204">
       <start_offset>1257</start_offset>
       <end_offset>1257</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="227">
+    <TAG id="205">
       <start_offset>1259</start_offset>
       <end_offset>1259</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="228">
+    <TAG id="206">
       <start_offset>1261</start_offset>
       <end_offset>1261</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="229">
+    <TAG id="207">
       <start_offset>1263</start_offset>
       <end_offset>1263</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="230">
+    <TAG id="208">
       <start_offset>1265</start_offset>
       <end_offset>1265</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="231">
+    <TAG id="209">
       <start_offset>1267</start_offset>
       <end_offset>1267</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="232">
+    <TAG id="210">
       <start_offset>1269</start_offset>
       <end_offset>1269</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="233">
+    <TAG id="211">
       <start_offset>1271</start_offset>
       <end_offset>1271</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="234">
+    <TAG id="212">
       <start_offset>1273</start_offset>
       <end_offset>1273</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="235">
+    <TAG id="213">
       <start_offset>1275</start_offset>
       <end_offset>1275</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="236">
+    <TAG id="214">
       <start_offset>1277</start_offset>
       <end_offset>1277</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="237">
+    <TAG id="215">
       <start_offset>1279</start_offset>
       <end_offset>1279</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="238">
+    <TAG id="216">
       <start_offset>1281</start_offset>
       <end_offset>1281</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="239">
+    <TAG id="217">
       <start_offset>1283</start_offset>
       <end_offset>1283</end_offset>
       <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="240">
+    <TAG id="218">
       <start_offset>1285</start_offset>
       <end_offset>1285</end_offset>
       <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="241">
+    <TAG id="219">
       <start_offset>1287</start_offset>
       <end_offset>1287</end_offset>
       <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="242">
+    <TAG id="220">
       <start_offset>1289</start_offset>
       <end_offset>1289</end_offset>
       <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="243">
+    <TAG id="221">
       <start_offset>1291</start_offset>
       <end_offset>1291</end_offset>
       <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="244">
+    <TAG id="222">
       <start_offset>1293</start_offset>
       <end_offset>1293</end_offset>
       <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="245">
+    <TAG id="223">
       <start_offset>1295</start_offset>
       <end_offset>1295</end_offset>
       <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="246">
+    <TAG id="224">
       <start_offset>1297</start_offset>
       <end_offset>1297</end_offset>
       <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="247">
+    <TAG id="225">
       <start_offset>1299</start_offset>
       <end_offset>1299</end_offset>
       <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-  </filename>
+    <TAG id="226">
+      <start_offset>1301</start_offset>
+      <end_offset>1301</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="227">
+      <start_offset>1303</start_offset>
+      <end_offset>1303</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="228">
+      <start_offset>1305</start_offset>
+      <end_offset>1305</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="229">
+      <start_offset>1307</start_offset>
+      <end_offset>1307</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="230">
+      <start_offset>1309</start_offset>
+      <end_offset>1309</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="231">
+      <start_offset>1311</start_offset>
+      <end_offset>1311</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="232">
+      <start_offset>1313</start_offset>
+      <end_offset>1313</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="233">
+      <start_offset>1315</start_offset>
+      <end_offset>1315</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="234">
+      <start_offset>1317</start_offset>
+      <end_offset>1317</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="235">
+      <start_offset>1319</start_offset>
+      <end_offset>1319</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="236">
+      <start_offset>1321</start_offset>
+      <end_offset>1321</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="237">
+      <start_offset>1323</start_offset>
+      <end_offset>1323</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="238">
+      <start_offset>1325</start_offset>
+      <end_offset>1325</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="239">
+      <start_offset>1327</start_offset>
+      <end_offset>1327</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="240">
+      <start_offset>1329</start_offset>
+      <end_offset>1329</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="241">
+      <start_offset>1331</start_offset>
+      <end_offset>1331</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="242">
+      <start_offset>1333</start_offset>
+      <end_offset>1333</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="243">
+      <start_offset>1335</start_offset>
+      <end_offset>1335</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="244">
+      <start_offset>1337</start_offset>
+      <end_offset>1337</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="245">
+      <start_offset>1339</start_offset>
+      <end_offset>1339</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="246">
+      <start_offset>1341</start_offset>
+      <end_offset>1341</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="247">
+      <start_offset>1343</start_offset>
+      <end_offset>1343</end_offset>
+      <tag_text>MSG_POINTER</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+</filename>
 </wxHexEditor_XML_TAG>
