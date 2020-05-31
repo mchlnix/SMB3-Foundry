@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Tuple
+from typing import List
 from warnings import warn
 
 from smb3parse.constants import (
@@ -48,6 +48,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
 )
+from smb3parse.levels.WorldMapPosition import WorldMapPosition
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
 
@@ -396,41 +397,6 @@ class WorldMap(LevelBase):
 
     def __repr__(self):
         return f"World {self.number}"
-
-
-class WorldMapPosition:
-    def __init__(self, world: WorldMap, screen: int, row: int, column: int):
-        self.world = world
-        self.screen = screen
-        self.row = row
-        self.column = column
-
-    @property
-    def level_info(self) -> Tuple[int, int, int]:
-        return self.world.level_for_position(self.screen, self.row, self.column)
-
-    def can_have_level(self):
-        return self.world.is_enterable(self.tile())
-
-    def tile(self):
-        return self.world.tile_at(self.screen, self.row, self.column)
-
-    def tuple(self):
-        return self.world.number, self.screen, self.row, self.column
-
-    def __eq__(self, other):
-        if not isinstance(other, WorldMapPosition):
-            return False
-
-        return (
-            self.world.number == other.world.number
-            and self.screen == other.screen
-            and self.row == other.row
-            and self.column == other.column
-        )
-
-    def __repr__(self):
-        return f"WorldMapPosition({self.world}, screen={self.screen}, row={self.row}, column={self.column})"
 
 
 def _get_normal_enterable_tiles(rom: Rom) -> bytearray:
