@@ -1,4 +1,7 @@
-class Jump:
+from foundry.game.gfx.objects.ObjectLike import ObjectLike
+
+
+class Jump(ObjectLike):
     POINTER_DOMAIN = 0b111
 
     SIZE = 3  # bytes
@@ -8,6 +11,10 @@ class Jump:
 
         # domain: 0b1110
         # unused: 0b0001
+
+        self.blocks = []
+        self.is_4byte = False
+        self.description = "Jump object"
 
         assert self.is_jump(data)
 
@@ -47,3 +54,33 @@ class Jump:
         data[2] |= ((horiz & 0xF) << 4) + (horiz >> 4)
 
         return Jump(data)
+
+    def render(self):
+        pass
+
+    def draw(self, dc, zoom, transparent):
+        pass
+
+    def get_status_info(self):
+        return []
+
+    def set_position(self, x, y):
+        pass
+
+    def move_by(self, dx, dy):
+        pass
+
+    def get_position(self):
+        return 0, 0
+
+    def resize_by(self, dx, dy):
+        pass
+
+    def point_in(self, x, y):
+        return False
+
+    def change_type(self, new_type):
+        pass
+
+    def __contains__(self, point):
+        return False

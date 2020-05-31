@@ -178,6 +178,9 @@ class ObjectDrawArea(QWidget):
         self.update()
 
     def paintEvent(self, event: QPaintEvent):
+        if not isinstance(self.current_object, LevelObject):
+            return
+
         painter = QPainter(self)
 
         painter.translate(
