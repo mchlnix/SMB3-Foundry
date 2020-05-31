@@ -13,6 +13,7 @@ from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
 from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
+from smb3parse.levels import LEVEL_MAX_LENGTH
 from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET
 
 png = QImage(str(data_dir / "gfx.png"))
@@ -60,6 +61,13 @@ RIGHT_ARROW = _load_from_png(36, 53)
 ITEM_ARROW = _load_from_png(53, 53)
 
 EMPTY_IMAGE = _load_from_png(0, 53)
+
+
+SPECIAL_BACKGROUND_OBJECTS = [
+    "blue background",
+    "starry background",
+    "underground background under this",
+]
 
 
 def _block_from_index(block_index: int, level: Level) -> Block:
@@ -168,7 +176,20 @@ class LevelDrawer:
     def _draw_objects(self, painter: QPainter, level: Level):
         for level_object in level.get_all_objects():
             level_object.render()
-            level_object.draw(painter, self.block_length, self.transparency)
+
+            if level_object.description.lower() in SPECIAL_BACKGROUND_OBJECTS:
+                width = LEVEL_MAX_LENGTH
+                height = GROUND - level_object.y_position
+
+                blocks_to_draw = [level_object.blocks[0]] * width * height
+
+                for index, block_index in enumerate(blocks_to_draw):
+                    x = level_object.x_position + index % width
+                    y = level_object.y_position + index // width
+
+                    level_object._draw_block(painter, block_index, x, y, self.block_length, False)
+            else:
+                level_object.draw(painter, self.block_length, self.transparency)
 
             if level_object.selected:
                 painter.save()
