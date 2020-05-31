@@ -412,9 +412,9 @@ class LevelObject(ObjectLike):
             page_limit = page_width - self.x_position % page_width
 
             new_width = page_width + page_limit + 1
-            new_height = (GROUND - 1) - SKY
+            new_height = (self.ground_level - 1) - SKY
 
-            for y in range(SKY, GROUND - 1):
+            for y in range(SKY, self.ground_level - 1):
                 blocks_to_draw.append(self.blocks[0])
                 blocks_to_draw.extend([self.blocks[1]] * (new_width - 1))
 
@@ -427,7 +427,7 @@ class LevelObject(ObjectLike):
             ending_graphic_height = 6
             floor_height = 1
 
-            y_offset = GROUND - floor_height - ending_graphic_height
+            y_offset = self.ground_level - floor_height - ending_graphic_height
 
             for y in range(ending_graphic_height):
                 for x in range(page_width):
