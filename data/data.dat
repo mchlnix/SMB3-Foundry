@@ -2727,7 +2727,7 @@
 7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
 7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
 
-0,0x00,0x00,1,1,<38>,9,0,0,Upper Left Hill Corner - UngerGround
+0,0x00,0x00,1,1,<38>,9,0,0,Upper Left Hill Corner - UnderGround
 0,0x01,0x01,1,1,<39>,9,0,0,Upper Left HIll Corner - Hilly
 0,0x02,0x02,1,1,<40>,9,0,0,Upper Left Hill Corner - UnderWater
 0,0x03,0x03,1,1,<41>,9,0,0,Upper Right Hill Corner - UnderGround
