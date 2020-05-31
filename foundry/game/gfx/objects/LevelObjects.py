@@ -648,6 +648,18 @@ class LevelObjectHorizontal(LevelObject):
         self._confirm_render(size, pos, blocks_to_draw)
 
 
+class LevelObjectHorizontal5Byte(LevelObjectHorizontal):
+    def get_block_position(self, pos, size):
+        idx = self.bmp.size.index_position(pos % self.bmp.size)
+        try:
+            return self.overflow[idx]
+        except IndexError:
+            try:
+                return 0
+            except IndexError:
+                print(self, "does not have any blocks")
+
+
 class LevelObjectHorizontalWithTop(EndOnTop, LevelObjectHorizontal):
     pass
 

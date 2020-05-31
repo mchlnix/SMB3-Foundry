@@ -6996,14 +6996,14 @@
     - 0
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Horizontal 5 Byte Object
       offset_x: 0
       offset_y: 0
       size:
         height: 1
         width: 1
-    bytes: 3
-    description: MSG_CRASH
+    bytes: 5
+    description: 5 Byte Object
     domain: 3
     object_design:
     - 145
@@ -28274,16 +28274,16 @@
   113:
     block_design:
     - 92
-    - 93
-    - 94
     - 73
-    - 74
-    - 75
     - 73
-    - 74
-    - 75
     - 76
+    - 93
+    - 74
+    - 74
     - 77
+    - 94
+    - 75
+    - 75
     - 78
     bmp:
       ending: 3
@@ -28291,7 +28291,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 1
+        height: 4
         width: 1
     bytes: 3
     description: Crate

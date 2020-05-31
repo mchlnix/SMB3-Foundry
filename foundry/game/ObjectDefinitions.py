@@ -41,6 +41,7 @@ DIAG_UP_LEFT = 30
 DIAG_UP_RIGHT_30 = 31
 VERTICAL_WITH_DOUBLE_TOP = 32
 VERTICAL_WITH_BOTTOM = 33
+HORIZONTAL_FIVE_BYTE = 34
 
 UNIFORM = 0
 END_ON_TOP_OR_LEFT = 1
@@ -151,7 +152,7 @@ class ObjectDefinition:
     @property
     def is_4byte(self):
         """Legacy property for compatibility"""
-        return self.bytes == 4
+        return self.bytes >= 4
 
     @property
     def object_design_length(self):

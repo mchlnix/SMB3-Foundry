@@ -80,6 +80,7 @@ class BlockGenerator:
     object_set: ObjectSet
     domain: int
     index: int
+    overflow: list
     pos: Position
     object_factory_idx: int
 
@@ -106,7 +107,12 @@ class BlockGenerator:
 
     @property
     def bytes(self):
-        return self.object_set.get_definition_of(self.type).bytes
+        return self._bytes(self.object_set, self.type)
+
+    @staticmethod
+    def _bytes(object_set, type):
+        """Returns if an object is 4 bytes from the object set from a given type"""
+        return object_set.get_definition_of(type).bytes
 
     @staticmethod
     def _is_4byte(object_set, type):
@@ -172,7 +178,16 @@ class BlockGenerator:
         else:
             length = index & 0b0000_1111
             height = 0
-        return cls(object_set=object_set, domain=domain, index=index, pos=Position(x_pos, y_pos),
+
+        bytes = cls._bytes(object_set, cls._type(index, domain))
+        if bytes > 4:
+            overflow = data[4:] if len(data) > 3 else [0 for _ in range(bytes - 4)]
+            if len(overflow) == 0:
+                overflow = [0]
+        else:
+            overflow = []
+
+        return cls(object_set=object_set, domain=domain, index=index, overflow=overflow, pos=Position(x_pos, y_pos),
                    size=Size(length, height), object_factory_idx=object_factory_idx)
 
 
@@ -186,6 +201,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             is_vertical: bool,
             domain: int,
             index: int,
+            overflow: list,
             position: Position,
             size: Size,
             object_factory_idx: int
@@ -193,7 +209,7 @@ class LevelObject(ObjectLike, BlockGenerator):
         self.object_set, self.palette_group = object_set, palette_group
         self.pattern_table, self.objects_ref, self.vertical_level = pattern_table, objects_ref, is_vertical
         self.domain, self.index, self.pos = domain, index, position
-        self.size = size
+        self.size, self.overflow = size, overflow
         self.object_factory_idx = object_factory_idx
 
         self.index_in_level = len(self.objects_ref)
@@ -283,7 +299,7 @@ class LevelObject(ObjectLike, BlockGenerator):
         self.set_position(self.rendered_position + pos)
 
     def get_position(self):
-        return self.pos.y, self.pos.y
+        return self.pos.x, self.pos.y
 
     def expands(self):
         return EXPANDS_NOT
@@ -417,11 +433,10 @@ class LevelObject(ObjectLike, BlockGenerator):
             pos = self.pos
 
         if self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
-            pos.x = self.rendered_position.x - 1 + self.rendered_size.width // 2
+            pos.x = self.pos.x - 1 + self.rendered_size.width // 2
 
         data.append((self.domain << 5) | pos.y)
-        data.append(max(min(pos.x, 0xFF), 0))
-
+        data.append(pos.x)
         if not self.is_4byte and not self.is_single_block:
             third_byte = (self.obj_index & 0xF0) + self.size.width
         else:

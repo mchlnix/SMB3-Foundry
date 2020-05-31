@@ -66,6 +66,7 @@ class LevelView(QWidget):
         self.draw_expansions = SETTINGS["draw_expansion"]
         self.draw_mario = SETTINGS["draw_mario"]
         self.transparency = SETTINGS["block_transparency"]
+        self.background_enabled = SETTINGS["background_enabled"]
         self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
         self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
         self.draw_invisible_items = SETTINGS["draw_invisible_items"]
@@ -106,6 +107,14 @@ class LevelView(QWidget):
             ""
             "If all else fails, click the play button up top to see your level in game in seconds."
         )
+
+    @property
+    def background_enabled(self):
+        return self.level_drawer.background_enabled
+
+    @background_enabled.setter
+    def background_enabled(self, value):
+        self.level_drawer.background_enabled = value
 
     @property
     def transparency(self):
@@ -678,12 +687,12 @@ class LevelView(QWidget):
 
         self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
 
-    def replace_object(self, obj: LevelObjectController, domain: int, obj_index: int, length: int):
+    def replace_object(self, obj: LevelObjectController, domain: int, obj_index: int, length: int, overflow: list):
         self.remove_object(obj)
 
         x, y = obj.get_position()
 
-        new_obj = self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level)
+        new_obj = self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level, overflow)
         new_obj.selected = obj.selected
 
     def replace_enemy(self, old_enemy: EnemyObject, enemy_index: int):

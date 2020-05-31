@@ -601,12 +601,12 @@ class Level(LevelLike):
         self.add_enemy(0x72, x, y, len(self.enemies))
 
     def add_object(
-        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int = -1
+        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int = -1, overflow: int = None
     ) -> LevelObjectController:
         if index == -1 or index is None:
             index = len(self.objects)
 
-        obj = self.object_factory.from_properties(domain, object_index, x, y, length, index)
+        obj = self.object_factory.from_properties(domain, object_index, x, y, length, index, overflow=overflow)
         self.objects.insert(index, obj)
 
         self.changed = True

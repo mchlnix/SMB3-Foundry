@@ -10,7 +10,7 @@ from foundry.game.ObjectDefinitions import (
     DOWNWARD_PIPE, RIGHTWARD_PIPE, LEFTWARD_PIPE, DIAG_DOWN_RIGHT_30, DIAG_DOWN_LEFT_30, HORIZONTAL_WITH_TOP,
     HORIZONTAL_WITH_SIDE, VERTICAL_WITH_TOP, VERTICAL_WITH_ALL_SIDES, HORIZTONAL_WITH_ALL_SIDES,
     VERTICAL_WITH_TOP_AND_BOTTOM, DIAG_DOWN_LEFT_60, DIAG_DOWN_RIGHT_60, HORIZONTAL_WITH_BOTTOM, DIAG_UP_LEFT,
-    DIAG_UP_RIGHT_30, VERTICAL_WITH_DOUBLE_TOP, VERTICAL_WITH_BOTTOM
+    DIAG_UP_RIGHT_30, VERTICAL_WITH_DOUBLE_TOP, VERTICAL_WITH_BOTTOM, HORIZONTAL_FIVE_BYTE
 )
 
 from foundry.game.ObjectSet import ObjectSet
@@ -26,7 +26,8 @@ from foundry.game.gfx.objects.LevelObjects import (
     LevelObjectHorizontalWithSides, LevelObjectVerticalWithTop, LevelObjectHorizontalWithAllSides,
     LevelObjectVerticalWithAllSides, LevelObjectVerticalWithTopAndBottom, LevelObjectDiagnalDownLeft60,
     LevelObjectDiagnalDownRight60, LevelObjectHorizontalWithBottom, LevelObjectDiagnalUpLeft45,
-    LevelObjectDiagnalUpRight30, LevelObjectVerticalWithDoubleTop, LevelObjectVerticalWithBottom
+    LevelObjectDiagnalUpRight30, LevelObjectVerticalWithDoubleTop, LevelObjectVerticalWithBottom,
+    LevelObjectHorizontal5Byte
 )
 
 from foundry.game.Size import Size
@@ -43,6 +44,7 @@ class LevelObjectController(ObjectLike):
             is_vertical: bool,
             domain: int,
             index: int,
+            overflow: int,
             position: Position,
             size: Size,
             object_factory_idx: int
@@ -50,7 +52,7 @@ class LevelObjectController(ObjectLike):
         self._object_set, self._palette_group = object_set, palette_group
         self._pattern_table, self._objects_ref, self._vertical_level = pattern_table, objects_ref, is_vertical
         self._domain, self._index, self._pos = domain, index, position
-        self._size = size
+        self._size, self._overflow = size, overflow
         self._object_factory_idx = object_factory_idx
 
         self._selected = False
@@ -61,7 +63,7 @@ class LevelObjectController(ObjectLike):
     def from_data(cls, data: bytearray, object_set: ObjectSet, palette_group, pattern_table: PatternTable,
                   objects_ref: List["LevelObject"], is_vertical: bool, object_factory_idx=0):
         bg = BlockGenerator.from_bytes(object_set, data, is_vertical)
-        domain, index, position, size = bg.domain, bg.index, bg.pos, bg.size
+        domain, index, position, size, overflow = bg.domain, bg.index, bg.pos, bg.size, bg.overflow
         return cls(
             object_set,
             palette_group,
@@ -70,10 +72,19 @@ class LevelObjectController(ObjectLike):
             is_vertical,
             domain,
             index,
+            overflow,
             position,
             size,
             object_factory_idx
         )
+
+    @property
+    def bytes(self):
+        return self.level_object.bytes
+
+    @property
+    def overflow(self):
+        return self.level_object.overflow
 
     @property
     def size(self):
@@ -434,7 +445,8 @@ class LevelObjectController(ObjectLike):
         DIAG_UP_LEFT: LevelObjectDiagnalUpLeft45,
         DIAG_UP_RIGHT_30: LevelObjectDiagnalUpRight30,
         VERTICAL_WITH_DOUBLE_TOP: LevelObjectVerticalWithDoubleTop,
-        VERTICAL_WITH_BOTTOM: LevelObjectVerticalWithBottom
+        VERTICAL_WITH_BOTTOM: LevelObjectVerticalWithBottom,
+        HORIZONTAL_FIVE_BYTE: LevelObjectHorizontal5Byte
     }
 
     def _level_object(self):
@@ -450,6 +462,7 @@ class LevelObjectController(ObjectLike):
             "is_vertical": self._vertical_level,
             "domain": self._domain,
             "index": self._index,
+            "overflow": self._overflow,
             "position": self._pos,
             "size": self._size,
             "object_factory_idx": self._object_factory_idx

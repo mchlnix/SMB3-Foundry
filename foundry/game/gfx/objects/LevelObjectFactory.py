@@ -62,7 +62,7 @@ class LevelObjectFactory:
         return level_object
 
     def from_properties(
-        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int,
+        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int, overflow: int = None,
     ):
         data = bytearray(3)
 
@@ -72,6 +72,8 @@ class LevelObjectFactory:
 
         if length is not None:
             data.append(length)
+        if overflow is not None:
+            data.extend(overflow)
 
         obj = self.from_data(data, index)
 

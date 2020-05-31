@@ -39,10 +39,15 @@ class SpinnerPanel(QWidget):
         self.spin_length.setEnabled(False)
         self.spin_length.valueChanged.connect(self.object_change.emit)
 
+        self.spin_index = Spinner(self, maximum=0xFF)
+        self.spin_index.setEnabled(False)
+        self.spin_index.valueChanged.connect(self.object_change.emit)
+
         spinner_layout = QFormLayout()
         spinner_layout.addRow("Domain:", self.spin_domain)
         spinner_layout.addRow("Index:", self.spin_type)
         spinner_layout.addRow("Overload:", self.spin_length)
+        spinner_layout.addRow("Type:", self.spin_index)
 
         self.setLayout(spinner_layout)
 
@@ -87,6 +92,14 @@ class SpinnerPanel(QWidget):
         else:
             self.enable_length(False)
 
+        if isinstance(obj, LevelObjectController) and obj.bytes >= 5:
+            try:
+                self.set_index(obj.overflow[0])
+            except:
+                self.set_index(0)
+        else:
+            self.enable_index(False)
+
         self.blockSignals(False)
 
     def get_type(self):
@@ -113,6 +126,14 @@ class SpinnerPanel(QWidget):
         self.spin_length.setValue(length)
         self.spin_length.setEnabled(True)
 
+    def get_index(self) -> int:
+        return self.spin_index.value()
+
+    def set_index(self, index: int):
+        assert index is not None
+        self.spin_index.setValue(index)
+        self.spin_index.setEnabled(True)
+
     def enable_type(self, enable: bool, value: int = 0):
         self.spin_type.setValue(value)
         self.spin_type.setEnabled(enable)
@@ -125,10 +146,15 @@ class SpinnerPanel(QWidget):
         self.spin_length.setValue(value)
         self.spin_length.setEnabled(enable)
 
+    def enable_index(self, enable: bool, value: int = 0):
+        self.spin_index.setValue(value)
+        self.spin_index.setEnabled(enable)
+
     def clear_spinners(self):
         self.set_type(0x00)
         self.set_domain(0x00)
         self.set_length(0x00)
+        self.set_index(0x00)
 
     def disable_all(self):
         self.blockSignals(True)
