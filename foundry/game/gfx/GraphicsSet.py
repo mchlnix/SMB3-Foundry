@@ -61,6 +61,42 @@ common_set2chr_index = {
 }
 
 
+GRAPHIC_SET_NAMES = [
+    "Mario graphics (1)",
+    "Plain",
+    "Dungeon",
+    "Underground (1)",
+    "Sky",
+    "Pipe/Water (1, Piranha Plant)",
+    "Pipe/Water (2, Water)",
+    "Mushroom house (1)",
+    "Pipe/Water (3, Pipe)",
+    "Desert",
+    "Ship",
+    "Giant",
+    "Ice",
+    "Clouds",
+    "Underground (2)",
+    "Spade bonus room",
+    "Spade bonus",
+    "Mushroom house (2)",
+    "Pipe/Water (4)",
+    "Hills",
+    "Plain 2",
+    "Tank",
+    "Castle",
+    "Mario graphics (2)",
+    "Animated graphics (1)",
+    "Animated graphics (2)",
+    "Animated graphics (3)",
+    "Animated graphics (4)",
+    "Animated graphics (P-Switch)",
+    "Game font/Course Clear graphics",
+    "Animated graphics (5)",
+    "Animated graphics (6)",
+]
+
+
 class GraphicsSet:
     def __init__(self, graphic_set_number):
         self.data = bytearray()

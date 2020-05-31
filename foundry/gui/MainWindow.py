@@ -902,6 +902,20 @@ class MainWindow(QMainWindow):
         if self.object_viewer is None:
             self.object_viewer = ObjectViewer(parent=self)
 
+        if self.level_ref.level is not None:
+            object_set = self.level_ref.object_set.number
+            graphics_set = self.level_ref.graphic_set
+
+            self.object_viewer.set_object_and_graphic_set(object_set, graphics_set)
+
+            if len(self.level_view.get_selected_objects()) == 1:
+                selected_object = self.level_view.get_selected_objects()[0]
+
+                if isinstance(selected_object, LevelObject):
+                    self.object_viewer.set_object(
+                        selected_object.domain, selected_object.obj_index, selected_object.length
+                    )
+
         self.object_viewer.show()
 
     def on_header_editor(self, _):

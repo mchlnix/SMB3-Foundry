@@ -15,6 +15,7 @@ from PySide2.QtWidgets import (
     QWidget,
 )
 
+from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
@@ -57,41 +58,6 @@ MUSIC_ITEMS = [
     "P-Switch/Mushroom house (1)",
     "No music",
     "World 7 map",
-]
-
-GRAPHIC_SETS = [
-    "Mario graphics (1)",
-    "Plain",
-    "Fortress",
-    "Underground (1)",
-    "Sky",
-    "Pipe/Water (1, Piranha Plant)",
-    "Pipe/Water (2, Water)",
-    "Mushroom house (1)",
-    "Pipe/Water (3, Pipe)",
-    "Desert",
-    "Ship",
-    "Giant",
-    "Ice",
-    "Clouds",
-    "Underground (2)",
-    "Spade bonus room",
-    "Spade bonus",
-    "Mushroom house (2)",
-    "Pipe/Water (4)",
-    "Hills",
-    "Plain 2",
-    "Tank",
-    "Castle",
-    "Mario graphics (2)",
-    "Animated graphics (1)",
-    "Animated graphics (2)",
-    "Animated graphics (3)",
-    "Animated graphics (4)",
-    "Animated graphics (P-Switch)",
-    "Game font/Course Clear graphics",
-    "Animated graphics (5)",
-    "Animated graphics (6)",
 ]
 
 TIMES = ["300", "400", "200", "Unlimited"]
@@ -205,7 +171,7 @@ class HeaderEditor(CustomDialog):
         self.enemy_palette_spinner.valueChanged.connect(self.on_spin)
 
         self.graphic_set_dropdown = QComboBox()
-        self.graphic_set_dropdown.addItems(GRAPHIC_SETS)
+        self.graphic_set_dropdown.addItems(GRAPHIC_SET_NAMES)
         self.graphic_set_dropdown.activated.connect(self.on_combo)
 
         form = QFormLayout()

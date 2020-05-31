@@ -4,6 +4,7 @@ from PySide2.QtCore import QPoint, QSize
 from PySide2.QtGui import QPaintEvent, QPainter
 from PySide2.QtWidgets import QComboBox, QHBoxLayout, QLayout, QStatusBar, QToolBar, QVBoxLayout, QWidget
 
+from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject
@@ -48,7 +49,7 @@ class ObjectViewer(CustomChildWindow):
         self.object_set_dropdown.setCurrentIndex(0)
 
         self.graphic_set_dropdown = QComboBox(_toolbar)
-        self.graphic_set_dropdown.addItems([f"Graphics Set {gfx_set}" for gfx_set in range(32)])
+        self.graphic_set_dropdown.addItems(GRAPHIC_SET_NAMES)
         self.graphic_set_dropdown.setCurrentIndex(1)
 
         self.object_set_dropdown.currentIndexChanged.connect(self.on_object_set)
@@ -59,9 +60,7 @@ class ObjectViewer(CustomChildWindow):
 
         self.addToolBar(_toolbar)
 
-        self.object_set = 1
-
-        self.drawing_area = ObjectDrawArea(self, self.object_set)
+        self.drawing_area = ObjectDrawArea(self, 1)
 
         self.status_bar = QStatusBar(parent=self)
         self.status_bar.showMessage(self.drawing_area.current_object.description)
@@ -83,33 +82,39 @@ class ObjectViewer(CustomChildWindow):
 
         return
 
-    def on_object_set(self):
-        self.object_set = self.object_set_dropdown.currentIndex() + 1
+    def set_object_and_graphic_set(self, object_set: int, graphics_set: int):
+        self.object_set_dropdown.setCurrentIndex(object_set - 1)
+        self.graphic_set_dropdown.setCurrentIndex(graphics_set)
 
-        gfx_set = self.object_set
+        self.drawing_area.change_object_set(object_set)
+        self.drawing_area.change_graphic_set(graphics_set)
 
-        self.graphic_set_dropdown.setCurrentIndex(gfx_set)
-
-        self.drawing_area.change_object_set(self.object_set)
-
-        self.drawing_area.change_graphic_set(gfx_set)
         self.block_list.update_object(self.drawing_area.current_object)
         self.status_bar.showMessage(self.drawing_area.current_object.description)
+
+    def on_object_set(self):
+        object_set = self.object_set_dropdown.currentIndex() + 1
+        graphics_set = object_set
+
+        self.set_object_and_graphic_set(object_set, graphics_set)
 
     def on_graphic_set(self):
-        gfx_set = self.graphic_set_dropdown.currentIndex()
+        object_set = self.object_set_dropdown.currentIndex() + 1
+        graphics_set = self.graphic_set_dropdown.currentIndex()
 
-        self.drawing_area.change_graphic_set(gfx_set)
-        self.block_list.update_object(self.drawing_area.current_object)
-        self.status_bar.showMessage(self.drawing_area.current_object.description)
+        self.set_object_and_graphic_set(object_set, graphics_set)
 
-    def on_spin(self, _):
+    def set_object(self, domain: int, obj_index: int, secondary_length: int):
         object_data = bytearray(4)
 
-        object_data[0] = self.spin_domain.value() << 5
+        object_data[0] = domain << 5
         object_data[1] = 0
-        object_data[2] = self.spin_type.value()
-        object_data[3] = self.spin_length.value()
+        object_data[2] = obj_index
+        object_data[3] = secondary_length
+
+        self.spin_domain.setValue(domain)
+        self.spin_type.setValue(obj_index)
+        self.spin_length.setValue(secondary_length)
 
         self.drawing_area.update_object(object_data)
         self.block_list.update_object(self.drawing_area.current_object)
@@ -123,6 +128,13 @@ class ObjectViewer(CustomChildWindow):
         self.drawing_area.update()
 
         self.status_bar.showMessage(self.drawing_area.current_object.description)
+
+    def on_spin(self, _):
+        domain = self.spin_domain.value()
+        obj_index = self.spin_type.value()
+        secondary_length = self.spin_length.value()
+
+        self.set_object(domain, obj_index, secondary_length)
 
 
 class ObjectDrawArea(QWidget):
