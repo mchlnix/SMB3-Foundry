@@ -6,6 +6,7 @@ from PySide2.QtCore import QPoint, QRect, QSize
 
 from foundry import data_dir
 from foundry.conftest import compare_images
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.LevelView import LevelView
@@ -58,6 +59,8 @@ with open(data_dir / "levels.dat", "r") as level_data_file:
 def test_level(level_info, qtbot):
     level_ref = LevelRef()
     level_ref.load_level(*level_info)
+
+    Block._block_cache.clear()
 
     # monkeypatch level names, since the level name data is broken atm
     level_ref.level.name = current_test_name()
