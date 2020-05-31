@@ -597,7 +597,7 @@ class MainWindow(QMainWindow):
         if not self.level_ref:
             return True
 
-        if self.level_ref.changed:
+        if self.level_ref.level.changed:
             answer = QMessageBox.question(
                 self,
                 "Please confirm",
