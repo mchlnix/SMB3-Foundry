@@ -553,10 +553,16 @@ class LevelObject(ObjectLike):
                 if self.height > self.width:
                     new_height -= 1
 
-                blocks_to_draw.extend(new_width * top)
+                if self.orientation == GeneratorType.HORIZONTAL_2:
+                    for _ in range(0, new_height - 1):
+                        blocks_to_draw.extend(new_width * top)
 
-                for _ in range(1, new_height):
                     blocks_to_draw.extend(new_width * bottom)
+                else:
+                    blocks_to_draw.extend(new_width * top)
+
+                    for _ in range(1, new_height):
+                        blocks_to_draw.extend(new_width * bottom)
 
             elif self.ending == EndType.END_ON_TOP_OR_LEFT:
                 for y in range(new_height):
