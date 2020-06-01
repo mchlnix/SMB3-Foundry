@@ -17,6 +17,7 @@ class ObjectSet:
         else:
             self.name = self._internal_object_set.name
 
+        self.background_block = self._internal_object_set.background_block
         self.definitions = load_object_definitions(self.number)
 
     def get_definition_of(self, object_id: int) -> ObjectDefinition:

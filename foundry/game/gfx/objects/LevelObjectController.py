@@ -10,7 +10,7 @@ from foundry.game.ObjectDefinitions import (
     DOWNWARD_PIPE, RIGHTWARD_PIPE, LEFTWARD_PIPE, DIAG_DOWN_RIGHT_30, DIAG_DOWN_LEFT_30, HORIZONTAL_WITH_TOP,
     HORIZONTAL_WITH_SIDE, VERTICAL_WITH_TOP, VERTICAL_WITH_ALL_SIDES, HORIZTONAL_WITH_ALL_SIDES,
     VERTICAL_WITH_TOP_AND_BOTTOM, DIAG_DOWN_LEFT_60, DIAG_DOWN_RIGHT_60, HORIZONTAL_WITH_BOTTOM, DIAG_UP_LEFT,
-    DIAG_UP_RIGHT_30, VERTICAL_WITH_DOUBLE_TOP, VERTICAL_WITH_BOTTOM, HORIZONTAL_FIVE_BYTE
+    DIAG_UP_RIGHT_30, VERTICAL_WITH_DOUBLE_TOP, VERTICAL_WITH_BOTTOM, HORIZONTAL_FIVE_BYTE, HORIZONTAL_BACKGROUND_FILL
 )
 
 from foundry.game.ObjectSet import ObjectSet
@@ -27,7 +27,7 @@ from foundry.game.gfx.objects.LevelObjects import (
     LevelObjectVerticalWithAllSides, LevelObjectVerticalWithTopAndBottom, LevelObjectDiagnalDownLeft60,
     LevelObjectDiagnalDownRight60, LevelObjectHorizontalWithBottom, LevelObjectDiagnalUpLeft45,
     LevelObjectDiagnalUpRight30, LevelObjectVerticalWithDoubleTop, LevelObjectVerticalWithBottom,
-    LevelObjectHorizontal5Byte
+    LevelObjectHorizontal5Byte, LevelObjectFillBackgroundHorizontalLevel
 )
 
 from foundry.game.Size import Size
@@ -77,6 +77,9 @@ class LevelObjectController(ObjectLike):
             size,
             object_factory_idx
         )
+
+    def get_blocks_and_positions(self):
+        return self.level_object.get_blocks_and_positions()
 
     @property
     def bytes(self):
@@ -446,7 +449,8 @@ class LevelObjectController(ObjectLike):
         DIAG_UP_RIGHT_30: LevelObjectDiagnalUpRight30,
         VERTICAL_WITH_DOUBLE_TOP: LevelObjectVerticalWithDoubleTop,
         VERTICAL_WITH_BOTTOM: LevelObjectVerticalWithBottom,
-        HORIZONTAL_FIVE_BYTE: LevelObjectHorizontal5Byte
+        HORIZONTAL_FIVE_BYTE: LevelObjectHorizontal5Byte,
+        HORIZONTAL_BACKGROUND_FILL: LevelObjectFillBackgroundHorizontalLevel
     }
 
     def _level_object(self):

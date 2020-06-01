@@ -42,6 +42,7 @@ DIAG_UP_RIGHT_30 = 31
 VERTICAL_WITH_DOUBLE_TOP = 32
 VERTICAL_WITH_BOTTOM = 33
 HORIZONTAL_FIVE_BYTE = 34
+HORIZONTAL_BACKGROUND_FILL = 35
 
 UNIFORM = 0
 END_ON_TOP_OR_LEFT = 1
@@ -237,8 +238,10 @@ def load_obj_definitions_from_yaml(file_path):
 
     for key, tileset in obj_definitions.items():
         for k, tile in tileset.items():
+            obj_design = tile["object_design"] if "object_design" in tile else [0]
+            obj_design = [int(obj[1:], 16) if isinstance(obj, str) and obj.startswith("$") else int(obj) for obj in obj_design]
             tileset[k] = ObjectDefinition(
-                object_design=tile["object_design"] if "object_design" in tile else [0],
+                object_design=obj_design,
                 domain=tile["domain"] if "domain" in tile else 0,
                 bmp=BitMapPicture.from_dict(tile["bmp"]),
                 range=Range.from_dict(tile["range"]),

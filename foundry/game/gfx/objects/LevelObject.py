@@ -56,8 +56,14 @@ def get_minimal_icon_object(level_object):
 
 
 class BlockCache:
-    def __init__(self):
+    def __init__(self, obj_set: int = 0):
         self.cache = {}
+        self.obj_set = 0
+
+    def set_obj_set(self, obj_set: int):
+        if obj_set != self.obj_set:
+            self.cache = {}
+            self.obj_set = obj_set
 
     @staticmethod
     def is_from_memory(block_index):
@@ -277,6 +283,14 @@ class LevelObject(ObjectLike, BlockGenerator):
     @abstractmethod
     def _render(self):
         pass
+
+    def get_blocks_and_positions(self):
+        blocks = []
+        for idx, pos in enumerate(self.rendered_size.positions()):
+            if idx < len(self.rendered_blocks) and self.rendered_blocks[idx] != BLANK:
+                po = pos + self.rendered_position
+                blocks.append([self.rendered_blocks[idx], po])
+        return blocks
 
     def draw(self, painter: QPainter, block_length, transparent):
         for idx, pos in enumerate(self.rendered_size.positions()):

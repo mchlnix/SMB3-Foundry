@@ -11264,17 +11264,17 @@
       start: 12
   75:
     block_design:
-    - 146
+    - 2
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Horizontal Background Fill
       offset_x: 0
       offset_y: 0
       size:
         height: 1
         width: 1
     bytes: 3
-    description: MSG_NOTHING
+    description: Sky Fill
     domain: 2
     object_design:
     - 146
@@ -11283,17 +11283,17 @@
       start: 13
   76:
     block_design:
-    - 146
+    - 134
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Horizontal Background Fill
       offset_x: 0
       offset_y: 0
       size:
         height: 1
         width: 1
     bytes: 3
-    description: MSG_NOTHING
+    description: Underground Fill
     domain: 2
     object_design:
     - 146
@@ -11302,17 +11302,17 @@
       start: 14
   77:
     block_design:
-    - 148
+    - 192
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Horizontal Background Fill
       offset_x: 0
       offset_y: 0
       size:
         height: 1
         width: 1
     bytes: 3
-    description: Weird
+    description: Weird Background
     domain: 2
     object_design:
     - 148
@@ -11650,54 +11650,54 @@
       start: 240
   93:
     block_design:
-    - 169
-    - 3
-    - 3
-    - 90
-    - 167
-    - 154
-    - 154
-    - 154
+    - 53
+    - 2
+    - 2
+    - 2
+    - 51
+    - 38
+    - 38
+    - 38
     - 170
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 168
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
     - 170
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 168
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
     - 170
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 160
-    - 166
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
+    - 171
     - 155
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 160
-    - 166
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
+    - 171
     - 155
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 160
-    - 166
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -11709,108 +11709,59 @@
     bytes: 3
     description: Underground Tunnel A
     domain: 3
-    object_design:
-    - 41
-    - 90
-    - 90
-    - 90
-    - 38
-    - 76
-    - 76
-    - 76
-    - 162
-    - 73
-    - 73
-    - 73
-    - 64
-    - 56
-    - 56
-    - 56
-    - 162
-    - 73
-    - 73
-    - 73
-    - 64
-    - 56
-    - 56
-    - 56
-    - 162
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 56
-    - 56
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 56
-    - 56
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
     range:
       end: 0
       start: 0
   94:
     block_design:
-    - 154
-    - 154
-    - 154
-    - 169
-    - 90
-    - 90
-    - 90
-    - 167
-    - 166
-    - 166
-    - 166
-    - 248
+    - 38
+    - 38
+    - 38
+    - 53
     - 2
     - 2
     - 2
+    - 51
+    - 171
+    - 171
+    - 171
+    - 170
+    - 134
+    - 134
+    - 134
     - 168
-    - 166
-    - 166
-    - 166
-    - 248
-    - 2
-    - 2
-    - 3
+    - 171
+    - 171
+    - 171
+    - 170
+    - 134
+    - 134
+    - 134
     - 168
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
     - 161
-    - 2
-    - 2
-    - 2
+    - 134
+    - 134
+    - 134
     - 168
-    - 166
-    - 166
+    - 171
+    - 171
     - 161
-    - 2
-    - 2
-    - 2
+    - 134
+    - 134
+    - 134
     - 153
-    - 166
-    - 166
+    - 171
+    - 171
     - 161
-    - 2
-    - 2
-    - 2
+    - 134
+    - 134
+    - 134
     - 153
-    - 166
-    - 166
+    - 171
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -11822,96 +11773,59 @@
     bytes: 3
     description: Underground Tunnel B
     domain: 3
-    object_design:
-    - 76
-    - 76
-    - 76
-    - 41
-    - 90
-    - 90
-    - 90
-    - 41
-    - 56
-    - 56
-    - 56
-    - 162
-    - 73
-    - 73
-    - 73
-    - 64
-    - 56
-    - 56
-    - 56
-    - 162
-    - 73
-    - 73
-    - 73
-    - 64
-    - 56
-    - 56
-    - 56
-    - 57
-    - 73
-    - 73
-    - 73
-    - 64
-    - 56
-    - 56
-    - 57
-    - 73
-    - 73
-    - 73
-    - 51
-    - 56
-    - 56
-    - 57
-    - 73
-    - 73
-    - 73
-    - 51
-    - 56
-    - 56
     range:
       end: 1
       start: 1
   95:
     block_design:
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
     - 153
-    - 166
+    - 171
     - 161
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 153
+    - 171
+    - 161
+    - 134
+    - 134
+    - 134
+    - 134
     - 153
-    - 166
+    - 171
     - 161
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 153
-    - 166
+    - 171
     - 161
-    - -1
-    - -1
-    - 153
-    - 166
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 171
     - 161
-    - -1
-    - -1
-    - -1
-    - 166
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 161
-    - -1
-    - -1
-    - -1
-    - -1
-    - 161
-    - 3
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -11919,87 +11833,62 @@
       offset_y: 0
       size:
         height: 6
-        width: 6
+        width: 8
     bytes: 3
     description: 45 Degree Diagonal Hill Strip A
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 51
-    - 56
-    - 57
-    - 73
-    - 73
-    - 51
-    - 56
-    - 57
-    - 73
-    - 73
-    - 51
-    - 56
-    - 57
-    - 73
-    - 73
-    - 51
-    - 56
-    - 57
-    - 73
-    - 73
-    - 73
-    - 56
-    - 57
-    - 73
-    - 73
-    - 73
-    - 73
-    - 57
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
     range:
       end: 2
       start: 2
   96:
     block_design:
+    - 134
+    - 134
     - 160
-    - 166
+    - 171
     - 155
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 2
     - 160
-    - 166
+    - 171
     - 155
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 2
     - 160
-    - 166
+    - 171
     - 155
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 2
     - 160
-    - 166
+    - 171
     - 155
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 2
     - 160
-    - 166
-    - -1
-    - -1
-    - -1
-    - -1
-    - 160
+    - 171
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 2
     - 160
     bmp:
       ending: 0
@@ -12008,68 +11897,31 @@
       offset_y: 0
       size:
         height: 6
-        width: 6
+        width: 8
     bytes: 3
     description: 45 Degree Diagonal Hill Strip B
     domain: 3
-    object_design:
-    - 55
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 55
     range:
       end: 3
       start: 3
   97:
     block_design:
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 154
     - 154
     - 154
@@ -12086,67 +11938,22 @@
     - 166
     - 166
     - 166
-    bmp:
-      ending: 0
-      obj_generator: Single Block
-      offset_x: 0
-      offset_y: 0
-      size:
-        height: 4
-        width: 8
-    bytes: 3
-    description: Horizontal Hill Strip
-    domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    range:
-      end: 4
-      start: 4
-  98:
-    block_design:
-    - 168
-    - 170
-    - 168
-    - 170
-    - 168
-    - 170
-    - 168
-    - 170
-    - 168
-    - 170
-    - 168
-    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -12154,76 +11961,127 @@
       offset_y: 0
       size:
         height: 6
-        width: 2
+        width: 8
+    bytes: 3
+    description: Horizontal Hill Strip
+    domain: 3
+    range:
+      end: 4
+      start: 4
+  98:
+    block_design:
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    bmp:
+      ending: 0
+      obj_generator: Single Block
+      offset_x: 0
+      offset_y: 0
+      size:
+        height: 6
+        width: 8
     bytes: 3
     description: 1 Hill Strip
     domain: 3
-    object_design:
-    - 64
-    - 162
-    - 64
-    - 162
-    - 64
-    - 162
-    - 64
-    - 162
-    - 64
-    - 162
-    - 64
-    - 162
     range:
       end: 5
       start: 5
   99:
     block_design:
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 156
     - 157
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
     - 156
     - 157
-    - 166
-    - 166
-    - 3
-    - 3
+    - 171
+    - 171
+    - 134
+    - 134
     - 156
     - 157
-    - 166
-    - 166
+    - 171
+    - 171
     - 164
     - 165
     - 156
     - 157
-    - 166
-    - 166
+    - 171
+    - 171
     - 164
     - 165
-    - 3
-    - 3
-    - 166
-    - 166
+    - 134
+    - 134
+    - 171
+    - 171
     - 164
     - 165
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
     - 164
     - 165
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -12235,55 +12093,6 @@
     bytes: 3
     description: 30 Degree Diagonal Hill Strip A
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 89
-    - 91
-    - 73
-    - 73
-    - 73
-    - 73
-    - 89
-    - 91
-    - 56
-    - 56
-    - 73
-    - 73
-    - 89
-    - 91
-    - 56
-    - 56
-    - 127
-    - 128
-    - 89
-    - 91
-    - 56
-    - 56
-    - 127
-    - 128
-    - 73
-    - 73
-    - 56
-    - 56
-    - 127
-    - 128
-    - 73
-    - 73
-    - 73
-    - 73
-    - 127
-    - 128
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
     range:
       end: 6
       start: 6
@@ -12291,50 +12100,50 @@
     block_design:
     - 158
     - 159
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - 166
-    - 166
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 171
+    - 171
     - 158
     - 159
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 162
     - 163
-    - 166
-    - 166
+    - 171
+    - 171
     - 158
     - 159
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 162
     - 163
-    - 166
-    - 166
+    - 171
+    - 171
     - 158
     - 159
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 162
     - 163
-    - 166
-    - 166
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
+    - 171
+    - 171
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 162
     - 163
     bmp:
@@ -12348,55 +12157,6 @@
     bytes: 3
     description: 30 Degree Diagonal Hill Strip B
     domain: 3
-    object_design:
-    - 87
-    - 88
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 56
-    - 56
-    - 87
-    - 88
-    - 73
-    - 73
-    - 73
-    - 73
-    - 125
-    - 126
-    - 56
-    - 56
-    - 87
-    - 88
-    - 73
-    - 73
-    - 73
-    - 73
-    - 125
-    - 126
-    - 56
-    - 56
-    - 87
-    - 88
-    - 73
-    - 73
-    - 73
-    - 73
-    - 125
-    - 126
-    - 56
-    - 56
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 125
-    - 126
     range:
       end: 7
       start: 7
@@ -12412,99 +12172,98 @@
     - 169
     - 162
     - 163
-    - 166
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
+    - 171
     - 164
     - 165
-    - -1
-    - -1
+    - 134
+    - 134
     - 162
     - 163
     - 164
     - 165
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 6
         width: 8
     bytes: 3
     description: Triangular Hill Object A
     domain: 3
-    object_design:
-    - 38
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 41
-    - 125
-    - 126
-    - 56
-    - 56
-    - 56
-    - 56
-    - 127
-    - 128
-    - 73
-    - 73
-    - 125
-    - 126
-    - 127
-    - 128
-    - 73
-    - 73
     range:
       end: 8
       start: 8
   102:
     block_design:
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 156
     - 157
     - 158
     - 159
-    - -1
-    - -1
+    - 134
+    - 134
     - 156
     - 157
-    - 166
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
+    - 171
     - 158
     - 159
     - 172
@@ -12526,101 +12285,52 @@
     bytes: 3
     description: Triangular Hill Object B
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 89
-    - 91
-    - 87
-    - 88
-    - 73
-    - 73
-    - 89
-    - 91
-    - 56
-    - 56
-    - 56
-    - 56
-    - 87
-    - 88
-    - 44
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    - 46
     range:
       end: 9
       start: 9
   103:
     block_design:
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 167
     - 154
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 167
     - 171
     - 171
-    - -1
-    - -1
-    - -1
-    - -1
-    - 167
-    - 171
-    - 171
-    - 171
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 167
     - 171
     - 171
     - 171
-    - 171
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
     - 167
     - 171
     - 171
     - 171
     - 171
+    - 134
+    - 134
+    - 167
     - 171
-    - -1
+    - 171
+    - 171
+    - 171
+    - 171
+    - 134
     - 167
     - 171
     - 171
@@ -12639,55 +12349,6 @@
     bytes: 3
     description: Steps A
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 38
-    - 76
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 38
-    - 50
-    - 50
-    - 73
-    - 73
-    - 73
-    - 73
-    - 38
-    - 50
-    - 50
-    - 50
-    - 73
-    - 73
-    - 73
-    - 38
-    - 50
-    - 50
-    - 50
-    - 50
-    - 73
-    - 73
-    - 38
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
-    - 73
-    - 38
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
     range:
       end: 10
       start: 10
@@ -12695,46 +12356,52 @@
     block_design:
     - 154
     - 169
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 171
     - 171
     - 169
-    - 3
-    - 3
-    - 3
-    - 3
-    - 171
-    - 171
-    - 171
-    - 169
-    - 3
-    - 3
-    - 3
-    - 171
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 171
     - 171
     - 171
     - 169
-    - 2
-    - 2
-    - 171
+    - 134
+    - 134
+    - 134
+    - 134
     - 171
     - 171
     - 171
     - 171
     - 169
-    - 2
-    - 171
+    - 134
+    - 134
+    - 134
     - 171
     - 171
     - 171
     - 171
     - 171
     - 169
+    - 134
+    - 134
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 169
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -12742,163 +12409,127 @@
       offset_y: 0
       size:
         height: 6
-        width: 7
+        width: 8
     bytes: 3
     description: Steps B
     domain: 3
-    object_design:
-    - 76
-    - 41
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 50
-    - 50
-    - 41
-    - 73
-    - 73
-    - 73
-    - 73
-    - 50
-    - 50
-    - 50
-    - 41
-    - 73
-    - 73
-    - 73
-    - 50
-    - 50
-    - 50
-    - 50
-    - 41
-    - 73
-    - 73
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
-    - 41
-    - 73
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
-    - 41
     range:
       end: 11
       start: 11
   105:
     block_design:
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 167
     - 169
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 172
     - 191
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
       offset_x: 0
       offset_y: 0
       size:
-        height: 4
-        width: 5
+        height: 6
+        width: 8
     bytes: 3
     description: Square Hill Object
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 38
-    - 41
-    - 73
-    - 73
-    - 73
-    - 44
-    - 46
     range:
       end: 12
       start: 12
   106:
     block_design:
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 2
-    - 2
-    - 2
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 247
     - 194
     - 245
-    - 227
+    - 154
     - 247
     - 194
     - 245
-    - 227
+    - 154
     - 248
     - 195
     - 246
-    - 249
+    - 171
     - 248
     - 195
     - 246
-    - 249
-    - 249
+    - 171
+    - 171
     - 227
-    - 249
-    - 249
-    - 249
+    - 171
+    - 171
+    - 171
     - 227
-    - 249
-    - 249
+    - 171
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -12910,108 +12541,59 @@
     bytes: 3
     description: Flat Land & Water Pits
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 43
-    - 74
-    - 40
-    - 78
-    - 43
-    - 74
-    - 40
-    - 78
-    - 161
-    - 75
-    - 63
-    - 53
-    - 161
-    - 75
-    - 63
-    - 53
-    - 53
-    - 78
-    - 53
-    - 53
-    - 53
-    - 78
-    - 53
-    - 53
     range:
       end: 13
       start: 13
   107:
     block_design:
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 167
     - 154
-    - 3
-    - 3
+    - 134
+    - 134
     - 156
     - 157
     - 247
     - 194
     - 246
-    - 249
-    - 3
-    - 3
+    - 171
+    - 134
+    - 134
     - 168
-    - 249
+    - 171
     - 248
     - 195
     - 246
-    - 249
+    - 171
     - 247
     - 194
     - 246
-    - 249
-    - 249
+    - 171
+    - 171
     - 227
-    - 249
-    - 249
+    - 171
+    - 171
     - 248
     - 195
     - 246
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
     - 227
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -13023,108 +12605,59 @@
     bytes: 3
     description: 30-Degree Hill & Water Pits A
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 39
-    - 77
-    - 73
-    - 73
-    - 123
-    - 124
-    - 43
-    - 74
-    - 63
-    - 53
-    - 73
-    - 73
-    - 63
-    - 53
-    - 161
-    - 75
-    - 63
-    - 53
-    - 43
-    - 74
-    - 63
-    - 53
-    - 53
-    - 78
-    - 53
-    - 53
-    - 161
-    - 75
-    - 63
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
-    - 78
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
     range:
       end: 14
       start: 14
   108:
     block_design:
     - 169
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 248
     - 194
     - 245
     - 158
     - 159
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 248
     - 195
     - 246
-    - 249
-    - 170
-    - 3
-    - 3
-    - 3
-    - 249
+    - 171
+    - 171
+    - 134
+    - 134
+    - 134
+    - 171
     - 227
-    - 249
-    - 249
-    - 248
+    - 171
+    - 171
+    - 171
     - 194
     - 245
     - 154
-    - 249
-    - 249
-    - 249
-    - 249
-    - 248
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
     - 195
     - 246
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
     - 227
-    - 249
-    - 249
+    - 171
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -13136,55 +12669,6 @@
     bytes: 3
     description: 30-Degree Hill & Water Pits B
     domain: 3
-    object_design:
-    - 42
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 161
-    - 74
-    - 40
-    - 121
-    - 122
-    - 73
-    - 73
-    - 73
-    - 161
-    - 75
-    - 63
-    - 53
-    - 161
-    - 73
-    - 73
-    - 73
-    - 53
-    - 78
-    - 53
-    - 53
-    - 161
-    - 74
-    - 40
-    - 77
-    - 53
-    - 53
-    - 53
-    - 53
-    - 161
-    - 75
-    - 63
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
-    - 78
-    - 53
-    - 53
     range:
       end: 15
       start: 15
@@ -56263,7 +55747,7 @@
 11:
   0:
     block_design:
-    - 167
+    - 51
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -56273,7 +55757,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Upper Left Hill Corner - UnderGround
+    description: Upper Left Hill Corner - Aboveground
     domain: 0
     object_design:
     - 38
@@ -56320,7 +55804,7 @@
       start: 2
   3:
     block_design:
-    - 169
+    - 53
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -56330,7 +55814,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Upper Right Hill Corner - UnderGround
+    description: Upper Right Hill Corner - Aboveground
     domain: 0
     object_design:
     - 41
@@ -56377,7 +55861,7 @@
       start: 5
   6:
     block_design:
-    - 0
+    - 255
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -56387,7 +55871,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Weird
+    description: Lower Left Corner - Aboveground (Not Implemented)
     domain: 0
     object_design:
     - 148
@@ -56406,7 +55890,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Lower Left Hill Corner
+    description: Lower Left Corner - Hilly
     domain: 0
     object_design:
     - 44
@@ -56425,7 +55909,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Lower Left Hill Corner - UnderWater
+    description: Lower Left Hill Corner - Underwater
     domain: 0
     object_design:
     - 45
@@ -56434,7 +55918,7 @@
       start: 8
   9:
     block_design:
-    - 0
+    - 255
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -56444,7 +55928,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Weird
+    description: Lower Right Corner - Aboveground
     domain: 0
     object_design:
     - 148
@@ -56539,7 +56023,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Sets proper background color (?)
+    description: MSG_NOTHING
     domain: 0
     object_design:
     - 146
@@ -56569,8 +56053,8 @@
       start: 15
   16:
     block_design:
-    - 171
-    - 155
+    - 55
+    - 39
     bmp:
       ending: 1
       obj_generator: Diagonal Right-Down
@@ -56578,20 +56062,17 @@
       offset_y: 0
       size:
         height: 1
-        width: 2
+        width: 1
     bytes: 3
-    description: 45 Degree Underground Hill - Down/Right
+    description: 45 Degree Aboveground Hill - Down/Right
     domain: 0
-    object_design:
-    - 50
-    - 49
     range:
       end: 31
       start: 16
   17:
     block_design:
-    - 153
-    - 171
+    - 37
+    - 55
     bmp:
       ending: 1
       obj_generator: Diagonal Left-Down
@@ -56601,53 +56082,44 @@
         height: 1
         width: 2
     bytes: 3
-    description: 45 Degree Underground Hill - Down/Left
+    description: 45 Degree Aboveground Hill - Down/Left
     domain: 0
-    object_design:
-    - 51
-    - 50
     range:
       end: 47
       start: 32
   18:
     block_design:
-    - 0
-    - 171
+    - 255
+    - 55
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Right-Up
       offset_x: 0
       offset_y: 0
       size:
         height: 1
         width: 2
     bytes: 3
-    description: Weird 45 Degree Hill
+    description: 45 Degree Aboveground Hill - Up/Right (Not Implemented)
     domain: 0
-    object_design:
-    - 153
-    - 50
     range:
       end: 63
       start: 48
   19:
     block_design:
-    - 171
-    - 0
+    - 55
+    - 255
     bmp:
       ending: 1
-      obj_generator: Diagonal Weird
+      obj_generator: Diagonal Left-Up
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 2
+        width: 1
     bytes: 3
-    description: Weird 45 Degree Hill
+    description: 45 Degree Aboveground Hill - Up/Left (Not Implemented)
     domain: 0
-    object_design:
-    - 50
-    - 153
     range:
       end: 79
       start: 64
@@ -56821,7 +56293,7 @@
       start: 192
   28:
     block_design:
-    - 168
+    - 52
     bmp:
       ending: 0
       obj_generator: Vertical
@@ -56831,10 +56303,8 @@
         height: 1
         width: 1
     bytes: 3
-    description: Underground Wall - Left Side
+    description: Aboveground Wall - Left Side
     domain: 0
-    object_design:
-    - 62
     range:
       end: 223
       start: 208
@@ -56869,7 +56339,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Dark Underground Wall - Left Side
+    description: Underground Wall - Left Side
     domain: 0
     object_design:
     - 64
@@ -57912,17 +57382,17 @@
       start: 12
   75:
     block_design:
-    - 146
+    - 2
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Horizontal Background Fill
       offset_x: 0
       offset_y: 0
       size:
         height: 1
         width: 1
     bytes: 3
-    description: MSG_NOTHING
+    description: Sky Fill
     domain: 2
     object_design:
     - 146
@@ -57931,17 +57401,17 @@
       start: 13
   76:
     block_design:
-    - 146
+    - 134
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Horizontal Background Fill
       offset_x: 0
       offset_y: 0
       size:
         height: 1
         width: 1
     bytes: 3
-    description: MSG_NOTHING
+    description: Underground Fill
     domain: 2
     object_design:
     - 146
@@ -57950,17 +57420,17 @@
       start: 14
   77:
     block_design:
-    - 148
+    - 192
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Horizontal Background Fill
       offset_x: 0
       offset_y: 0
       size:
         height: 1
         width: 1
     bytes: 3
-    description: Weird
+    description: Weird Background
     domain: 2
     object_design:
     - 148
@@ -58298,54 +57768,54 @@
       start: 240
   93:
     block_design:
-    - 169
-    - 3
-    - 3
-    - 90
-    - 167
-    - 154
-    - 154
-    - 154
+    - 53
+    - 2
+    - 2
+    - 2
+    - 51
+    - 38
+    - 38
+    - 38
     - 170
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 168
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
     - 170
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 168
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
     - 170
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 160
-    - 166
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
+    - 171
     - 155
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 160
-    - 166
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
+    - 171
     - 155
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 160
-    - 166
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -58357,108 +57827,59 @@
     bytes: 3
     description: Underground Tunnel A
     domain: 3
-    object_design:
-    - 41
-    - 90
-    - 90
-    - 90
-    - 38
-    - 76
-    - 76
-    - 76
-    - 162
-    - 73
-    - 73
-    - 73
-    - 64
-    - 56
-    - 56
-    - 56
-    - 162
-    - 73
-    - 73
-    - 73
-    - 64
-    - 56
-    - 56
-    - 56
-    - 162
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 56
-    - 56
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 56
-    - 56
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
     range:
       end: 0
       start: 0
   94:
     block_design:
-    - 154
-    - 154
-    - 154
-    - 169
-    - 90
-    - 90
-    - 90
-    - 167
-    - 166
-    - 166
-    - 166
-    - 248
+    - 38
+    - 38
+    - 38
+    - 53
     - 2
     - 2
     - 2
+    - 51
+    - 171
+    - 171
+    - 171
+    - 170
+    - 134
+    - 134
+    - 134
     - 168
-    - 166
-    - 166
-    - 166
-    - 248
-    - 2
-    - 2
-    - 3
+    - 171
+    - 171
+    - 171
+    - 170
+    - 134
+    - 134
+    - 134
     - 168
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
     - 161
-    - 2
-    - 2
-    - 2
+    - 134
+    - 134
+    - 134
     - 168
-    - 166
-    - 166
+    - 171
+    - 171
     - 161
-    - 2
-    - 2
-    - 2
+    - 134
+    - 134
+    - 134
     - 153
-    - 166
-    - 166
+    - 171
+    - 171
     - 161
-    - 2
-    - 2
-    - 2
+    - 134
+    - 134
+    - 134
     - 153
-    - 166
-    - 166
+    - 171
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -58470,96 +57891,59 @@
     bytes: 3
     description: Underground Tunnel B
     domain: 3
-    object_design:
-    - 76
-    - 76
-    - 76
-    - 41
-    - 90
-    - 90
-    - 90
-    - 41
-    - 56
-    - 56
-    - 56
-    - 162
-    - 73
-    - 73
-    - 73
-    - 64
-    - 56
-    - 56
-    - 56
-    - 162
-    - 73
-    - 73
-    - 73
-    - 64
-    - 56
-    - 56
-    - 56
-    - 57
-    - 73
-    - 73
-    - 73
-    - 64
-    - 56
-    - 56
-    - 57
-    - 73
-    - 73
-    - 73
-    - 51
-    - 56
-    - 56
-    - 57
-    - 73
-    - 73
-    - 73
-    - 51
-    - 56
-    - 56
     range:
       end: 1
       start: 1
   95:
     block_design:
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
     - 153
-    - 166
+    - 171
     - 161
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 153
+    - 171
+    - 161
+    - 134
+    - 134
+    - 134
+    - 134
     - 153
-    - 166
+    - 171
     - 161
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 153
-    - 166
+    - 171
     - 161
-    - -1
-    - -1
-    - 153
-    - 166
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 171
     - 161
-    - -1
-    - -1
-    - -1
-    - 166
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 161
-    - -1
-    - -1
-    - -1
-    - -1
-    - 161
-    - 3
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -58567,87 +57951,62 @@
       offset_y: 0
       size:
         height: 6
-        width: 6
+        width: 8
     bytes: 3
     description: 45 Degree Diagonal Hill Strip A
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 51
-    - 56
-    - 57
-    - 73
-    - 73
-    - 51
-    - 56
-    - 57
-    - 73
-    - 73
-    - 51
-    - 56
-    - 57
-    - 73
-    - 73
-    - 51
-    - 56
-    - 57
-    - 73
-    - 73
-    - 73
-    - 56
-    - 57
-    - 73
-    - 73
-    - 73
-    - 73
-    - 57
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
     range:
       end: 2
       start: 2
   96:
     block_design:
+    - 134
+    - 134
     - 160
-    - 166
+    - 171
     - 155
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 2
     - 160
-    - 166
+    - 171
     - 155
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 2
     - 160
-    - 166
+    - 171
     - 155
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 2
     - 160
-    - 166
+    - 171
     - 155
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 2
     - 160
-    - 166
-    - -1
-    - -1
-    - -1
-    - -1
-    - 160
+    - 171
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 2
     - 160
     bmp:
       ending: 0
@@ -58656,68 +58015,31 @@
       offset_y: 0
       size:
         height: 6
-        width: 6
+        width: 8
     bytes: 3
     description: 45 Degree Diagonal Hill Strip B
     domain: 3
-    object_design:
-    - 55
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 49
-    - 73
-    - 73
-    - 73
-    - 73
-    - 55
-    - 56
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 55
     range:
       end: 3
       start: 3
   97:
     block_design:
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 154
     - 154
     - 154
@@ -58734,67 +58056,22 @@
     - 166
     - 166
     - 166
-    bmp:
-      ending: 0
-      obj_generator: Single Block
-      offset_x: 0
-      offset_y: 0
-      size:
-        height: 4
-        width: 8
-    bytes: 3
-    description: Horizontal Hill Strip
-    domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    range:
-      end: 4
-      start: 4
-  98:
-    block_design:
-    - 168
-    - 170
-    - 168
-    - 170
-    - 168
-    - 170
-    - 168
-    - 170
-    - 168
-    - 170
-    - 168
-    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -58802,76 +58079,127 @@
       offset_y: 0
       size:
         height: 6
-        width: 2
+        width: 8
+    bytes: 3
+    description: Horizontal Hill Strip
+    domain: 3
+    range:
+      end: 4
+      start: 4
+  98:
+    block_design:
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 168
+    - 170
+    - 134
+    - 134
+    - 134
+    bmp:
+      ending: 0
+      obj_generator: Single Block
+      offset_x: 0
+      offset_y: 0
+      size:
+        height: 6
+        width: 8
     bytes: 3
     description: 1 Hill Strip
     domain: 3
-    object_design:
-    - 64
-    - 162
-    - 64
-    - 162
-    - 64
-    - 162
-    - 64
-    - 162
-    - 64
-    - 162
-    - 64
-    - 162
     range:
       end: 5
       start: 5
   99:
     block_design:
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 156
     - 157
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
     - 156
     - 157
-    - 166
-    - 166
-    - 3
-    - 3
+    - 171
+    - 171
+    - 134
+    - 134
     - 156
     - 157
-    - 166
-    - 166
+    - 171
+    - 171
     - 164
     - 165
     - 156
     - 157
-    - 166
-    - 166
+    - 171
+    - 171
     - 164
     - 165
-    - 3
-    - 3
-    - 166
-    - 166
+    - 134
+    - 134
+    - 171
+    - 171
     - 164
     - 165
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
     - 164
     - 165
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -58883,55 +58211,6 @@
     bytes: 3
     description: 30 Degree Diagonal Hill Strip A
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 89
-    - 91
-    - 73
-    - 73
-    - 73
-    - 73
-    - 89
-    - 91
-    - 56
-    - 56
-    - 73
-    - 73
-    - 89
-    - 91
-    - 56
-    - 56
-    - 127
-    - 128
-    - 89
-    - 91
-    - 56
-    - 56
-    - 127
-    - 128
-    - 73
-    - 73
-    - 56
-    - 56
-    - 127
-    - 128
-    - 73
-    - 73
-    - 73
-    - 73
-    - 127
-    - 128
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
     range:
       end: 6
       start: 6
@@ -58939,50 +58218,50 @@
     block_design:
     - 158
     - 159
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - 166
-    - 166
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 171
+    - 171
     - 158
     - 159
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 162
     - 163
-    - 166
-    - 166
+    - 171
+    - 171
     - 158
     - 159
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 162
     - 163
-    - 166
-    - 166
+    - 171
+    - 171
     - 158
     - 159
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 162
     - 163
-    - 166
-    - 166
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
+    - 171
+    - 171
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 162
     - 163
     bmp:
@@ -58996,55 +58275,6 @@
     bytes: 3
     description: 30 Degree Diagonal Hill Strip B
     domain: 3
-    object_design:
-    - 87
-    - 88
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 56
-    - 56
-    - 87
-    - 88
-    - 73
-    - 73
-    - 73
-    - 73
-    - 125
-    - 126
-    - 56
-    - 56
-    - 87
-    - 88
-    - 73
-    - 73
-    - 73
-    - 73
-    - 125
-    - 126
-    - 56
-    - 56
-    - 87
-    - 88
-    - 73
-    - 73
-    - 73
-    - 73
-    - 125
-    - 126
-    - 56
-    - 56
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 125
-    - 126
     range:
       end: 7
       start: 7
@@ -59060,99 +58290,98 @@
     - 169
     - 162
     - 163
-    - 166
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
+    - 171
     - 164
     - 165
-    - -1
-    - -1
+    - 134
+    - 134
     - 162
     - 163
     - 164
     - 165
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 6
         width: 8
     bytes: 3
     description: Triangular Hill Object A
     domain: 3
-    object_design:
-    - 38
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 76
-    - 41
-    - 125
-    - 126
-    - 56
-    - 56
-    - 56
-    - 56
-    - 127
-    - 128
-    - 73
-    - 73
-    - 125
-    - 126
-    - 127
-    - 128
-    - 73
-    - 73
     range:
       end: 8
       start: 8
   102:
     block_design:
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 156
     - 157
     - 158
     - 159
-    - -1
-    - -1
+    - 134
+    - 134
     - 156
     - 157
-    - 166
-    - 166
-    - 166
-    - 166
+    - 171
+    - 171
+    - 171
+    - 171
     - 158
     - 159
     - 172
@@ -59174,101 +58403,52 @@
     bytes: 3
     description: Triangular Hill Object B
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 89
-    - 91
-    - 87
-    - 88
-    - 73
-    - 73
-    - 89
-    - 91
-    - 56
-    - 56
-    - 56
-    - 56
-    - 87
-    - 88
-    - 44
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    - 79
-    - 46
     range:
       end: 9
       start: 9
   103:
     block_design:
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 167
     - 154
-    - -1
-    - -1
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 167
     - 171
     - 171
-    - -1
-    - -1
-    - -1
-    - -1
-    - 167
-    - 171
-    - 171
-    - 171
-    - -1
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
+    - 134
     - 167
     - 171
     - 171
     - 171
-    - 171
-    - -1
-    - -1
+    - 134
+    - 134
+    - 134
     - 167
     - 171
     - 171
     - 171
     - 171
+    - 134
+    - 134
+    - 167
     - 171
-    - -1
+    - 171
+    - 171
+    - 171
+    - 171
+    - 134
     - 167
     - 171
     - 171
@@ -59287,55 +58467,6 @@
     bytes: 3
     description: Steps A
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 38
-    - 76
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 38
-    - 50
-    - 50
-    - 73
-    - 73
-    - 73
-    - 73
-    - 38
-    - 50
-    - 50
-    - 50
-    - 73
-    - 73
-    - 73
-    - 38
-    - 50
-    - 50
-    - 50
-    - 50
-    - 73
-    - 73
-    - 38
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
-    - 73
-    - 38
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
     range:
       end: 10
       start: 10
@@ -59343,46 +58474,52 @@
     block_design:
     - 154
     - 169
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 171
     - 171
     - 169
-    - 3
-    - 3
-    - 3
-    - 3
-    - 171
-    - 171
-    - 171
-    - 169
-    - 3
-    - 3
-    - 3
-    - 171
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 171
     - 171
     - 171
     - 169
-    - 2
-    - 2
-    - 171
+    - 134
+    - 134
+    - 134
+    - 134
     - 171
     - 171
     - 171
     - 171
     - 169
-    - 2
-    - 171
+    - 134
+    - 134
+    - 134
     - 171
     - 171
     - 171
     - 171
     - 171
     - 169
+    - 134
+    - 134
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 169
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -59390,163 +58527,127 @@
       offset_y: 0
       size:
         height: 6
-        width: 7
+        width: 8
     bytes: 3
     description: Steps B
     domain: 3
-    object_design:
-    - 76
-    - 41
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 50
-    - 50
-    - 41
-    - 73
-    - 73
-    - 73
-    - 73
-    - 50
-    - 50
-    - 50
-    - 41
-    - 73
-    - 73
-    - 73
-    - 50
-    - 50
-    - 50
-    - 50
-    - 41
-    - 73
-    - 73
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
-    - 41
-    - 73
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
-    - 50
-    - 41
     range:
       end: 11
       start: 11
   105:
     block_design:
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 167
     - 169
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 172
     - 191
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     bmp:
       ending: 0
       obj_generator: Single Block
       offset_x: 0
       offset_y: 0
       size:
-        height: 4
-        width: 5
+        height: 6
+        width: 8
     bytes: 3
     description: Square Hill Object
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 38
-    - 41
-    - 73
-    - 73
-    - 73
-    - 44
-    - 46
     range:
       end: 12
       start: 12
   106:
     block_design:
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 2
-    - 2
-    - 2
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 247
     - 194
     - 245
-    - 227
+    - 154
     - 247
     - 194
     - 245
-    - 227
+    - 154
     - 248
     - 195
     - 246
-    - 249
+    - 171
     - 248
     - 195
     - 246
-    - 249
-    - 249
+    - 171
+    - 171
     - 227
-    - 249
-    - 249
-    - 249
+    - 171
+    - 171
+    - 171
     - 227
-    - 249
-    - 249
+    - 171
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -59558,108 +58659,59 @@
     bytes: 3
     description: Flat Land & Water Pits
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 43
-    - 74
-    - 40
-    - 78
-    - 43
-    - 74
-    - 40
-    - 78
-    - 161
-    - 75
-    - 63
-    - 53
-    - 161
-    - 75
-    - 63
-    - 53
-    - 53
-    - 78
-    - 53
-    - 53
-    - 53
-    - 78
-    - 53
-    - 53
     range:
       end: 13
       start: 13
   107:
     block_design:
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 167
     - 154
-    - 3
-    - 3
+    - 134
+    - 134
     - 156
     - 157
     - 247
     - 194
     - 246
-    - 249
-    - 3
-    - 3
+    - 171
+    - 134
+    - 134
     - 168
-    - 249
+    - 171
     - 248
     - 195
     - 246
-    - 249
+    - 171
     - 247
     - 194
     - 246
-    - 249
-    - 249
+    - 171
+    - 171
     - 227
-    - 249
-    - 249
+    - 171
+    - 171
     - 248
     - 195
     - 246
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
     - 227
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -59671,108 +58723,59 @@
     bytes: 3
     description: 30-Degree Hill & Water Pits A
     domain: 3
-    object_design:
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 39
-    - 77
-    - 73
-    - 73
-    - 123
-    - 124
-    - 43
-    - 74
-    - 63
-    - 53
-    - 73
-    - 73
-    - 63
-    - 53
-    - 161
-    - 75
-    - 63
-    - 53
-    - 43
-    - 74
-    - 63
-    - 53
-    - 53
-    - 78
-    - 53
-    - 53
-    - 161
-    - 75
-    - 63
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
-    - 78
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
     range:
       end: 14
       start: 14
   108:
     block_design:
     - 169
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
+    - 134
     - 248
     - 194
     - 245
     - 158
     - 159
-    - 3
-    - 3
-    - 3
+    - 134
+    - 134
+    - 134
     - 248
     - 195
     - 246
-    - 249
-    - 170
-    - 3
-    - 3
-    - 3
-    - 249
+    - 171
+    - 171
+    - 134
+    - 134
+    - 134
+    - 171
     - 227
-    - 249
-    - 249
-    - 248
+    - 171
+    - 171
+    - 171
     - 194
     - 245
     - 154
-    - 249
-    - 249
-    - 249
-    - 249
-    - 248
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
     - 195
     - 246
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
-    - 249
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
+    - 171
     - 227
-    - 249
-    - 249
+    - 171
+    - 171
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -59784,63 +58787,14 @@
     bytes: 3
     description: 30-Degree Hill & Water Pits B
     domain: 3
-    object_design:
-    - 42
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 73
-    - 161
-    - 74
-    - 40
-    - 121
-    - 122
-    - 73
-    - 73
-    - 73
-    - 161
-    - 75
-    - 63
-    - 53
-    - 161
-    - 73
-    - 73
-    - 73
-    - 53
-    - 78
-    - 53
-    - 53
-    - 161
-    - 74
-    - 40
-    - 77
-    - 53
-    - 53
-    - 53
-    - 53
-    - 161
-    - 75
-    - 63
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
-    - 53
-    - 78
-    - 53
-    - 53
     range:
       end: 15
       start: 15
   109:
     block_design:
-    - 171
-    - 158
-    - 159
+    - 55
+    - 42
+    - 43
     bmp:
       ending: 0
       obj_generator: Diagonal Right-Down 30 Degrees
@@ -59850,20 +58804,16 @@
         height: 1
         width: 3
     bytes: 3
-    description: 30 Degree Underground Hill - Down/Right
+    description: 30 Degree Aboveground Hill - Down/Right
     domain: 3
-    object_design:
-    - 50
-    - 87
-    - 88
     range:
       end: 31
       start: 16
   110:
     block_design:
-    - 156
-    - 157
-    - 171
+    - 40
+    - 41
+    - 55
     bmp:
       ending: 1
       obj_generator: Diagonal Left-Down 30 Degrees
@@ -59873,7 +58823,7 @@
         height: 1
         width: 3
     bytes: 3
-    description: 30 Degree Underground Hill - Down/Left
+    description: 30 Degree Aboveground Hill - Down/Left
     domain: 3
     object_design:
     - 89
@@ -59884,42 +58834,38 @@
       start: 32
   111:
     block_design:
-    - 3
-    - 3
-    - 166
+    - 255
+    - 255
+    - 55
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Down 30 Degrees
+      obj_generator: Diagonal Right-Up 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
-    description: Weird 30-Degree Hill
+    description: 30 Degree Aboveground Hill - Up/Left (Not Implemented)
     domain: 3
-    object_design:
-    - 153
-    - 153
-    - 50
     range:
       end: 63
       start: 48
   112:
     block_design:
-    - 166
-    - 3
-    - 3
+    - 55
+    - 255
+    - 255
     bmp:
       ending: 1
-      obj_generator: Diagonal Weird
+      obj_generator: Diagonal Right-Up 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
-    description: Weird 30-Degree Hill
+    description: 30 Degree Aboveground Hill - Up/Right (Not Implemented)
     domain: 3
     object_design:
     - 50
@@ -60114,7 +59060,7 @@
       start: 192
   121:
     block_design:
-    - 248
+    - 54
     bmp:
       ending: 0
       obj_generator: Vertical
@@ -60124,7 +59070,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Underground Wall - Right Side
+    description: Aboveground Wall - Right Side
     domain: 3
     object_design:
     - 160
@@ -60162,7 +59108,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Dark Underground Wall - Right Side
+    description: Underground Wall - Right Side
     domain: 3
     object_design:
     - 162
@@ -60190,7 +59136,7 @@
       start: 0
   125:
     block_design:
-    - 148
+    - 136
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -60200,7 +59146,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Weird
+    description: Unused Background Object
     domain: 4
     object_design:
     - 148
@@ -60209,7 +59155,7 @@
       start: 1
   126:
     block_design:
-    - 148
+    - 137
     bmp:
       ending: 0
       obj_generator: Single Block
@@ -60219,7 +59165,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Weird
+    description: Unused Background Object
     domain: 4
     object_design:
     - 148
@@ -60257,7 +59203,7 @@
         height: 1
         width: 1
     bytes: 3
-    description: Weird
+    description: MSG_CRASH
     domain: 4
     object_design:
     - 148
@@ -60485,7 +59431,7 @@
         height: 1
         width: 1
     bytes: 4
-    description: Gap
+    description: Sky Fill
     domain: 4
     object_design:
     - 02
@@ -60494,7 +59440,7 @@
       start: 16
   141:
     block_design:
-    - 0
+    - 134
     bmp:
       ending: 0
       obj_generator: Horizontal
@@ -60504,7 +59450,7 @@
         height: 1
         width: 1
     bytes: 4
-    description: Gap with Black Stars (Underground levels only)
+    description: Underground Fill
     domain: 4
     object_design:
     - 73
@@ -60534,7 +59480,7 @@
       start: 48
   143:
     block_design:
-    - 166
+    - 55
     bmp:
       ending: 0
       obj_generator: Horizontal
@@ -60544,7 +59490,7 @@
         height: 1
         width: 1
     bytes: 4
-    description: Underground Wall
+    description: Aboveground Fill
     domain: 4
     object_design:
     - 50
@@ -60563,7 +59509,7 @@
         height: 1
         width: 1
     bytes: 4
-    description: Hilly Wall
+    description: Hilly Fill
     domain: 4
     object_design:
     - 53
@@ -60582,7 +59528,7 @@
         height: 1
         width: 1
     bytes: 4
-    description: Dark Underground Wall
+    description: Underground Fill
     domain: 4
     object_design:
     - 56
@@ -60591,18 +59537,18 @@
       start: 96
   146:
     block_design:
-    - 171
-    - 166
+    - 38
+    - 55
     bmp:
       ending: 0
       obj_generator: Horizontal With Top
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
-    description: Flat Land - Underground
+    description: Flat Land - Aboveground
     domain: 4
     object_design:
     - 76
@@ -60654,17 +59600,18 @@
       start: 144
   149:
     block_design:
-    - 0
+    - 255
+    - 255
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Horizontal With Bottom
       offset_x: 0
       offset_y: 0
       size:
         height: 1
         width: 1
     bytes: 4
-    description: Weird Black Wall
+    description: Ceiling - Aboveground (Not Implemented)
     domain: 4
     object_design:
     - 148
@@ -60684,7 +59631,7 @@
         height: 1
         width: 1
     bytes: 4
-    description: Ceiling
+    description: Ceiling - Hilly
     domain: 4
     object_design:
     - 56
@@ -60705,7 +59652,7 @@
         height: 1
         width: 1
     bytes: 4
-    description: Underwater Ceiling
+    description: Ceiling Underwater
     domain: 4
     object_design:
     - 56

@@ -3,6 +3,7 @@ from itertools import product
 from PySide2.QtCore import QPoint, QRect
 from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
+from foundry.gui.settings import SETTINGS
 from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
@@ -11,10 +12,14 @@ from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH, BlockCache
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET
+from foundry.game.ObjectSet import ObjectSet
+from foundry.game.Size import Size
+from foundry.game.Position import Position
+from foundry.game.Rect import Rect
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
@@ -81,33 +86,25 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.draw_jumps = False
-        self.draw_grid = False
-        self.draw_expansions = False
-        self.draw_mario = False
-        self.draw_jumps_on_objects = True
-        self.draw_items_in_blocks = True
-        self.draw_invisible_items = True
-        self.transparency = False
-        self.background_enabled = False
+        self.draw_jumps = SETTINGS["draw_jumps"]
+        self.draw_grid = SETTINGS["draw_grid"]
+        self.draw_expansions = SETTINGS["draw_expansion"]
+        self.draw_mario = SETTINGS["draw_mario"]
+        self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
+        self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
+        self.draw_invisible_items = SETTINGS["draw_invisible_items"]
+        self.transparency = SETTINGS["block_transparency"]
+        self.background_enabled = SETTINGS["background_enabled"]
 
         self.block_length = Block.WIDTH
 
         self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), width=1)
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), width=1)
 
+        self.block_cache = BlockCache()
+
     def draw(self, painter: QPainter, level: Level):
-        if self.background_enabled:
-            self._draw_background(painter, level)
-
-        if level.object_set_number == DESERT_OBJECT_SET:
-            self._draw_desert_default_graphics(painter, level)
-        elif level.object_set_number == DUNGEON_OBJECT_SET:
-            self._draw_dungeon_default_graphics(painter, level)
-
-        # painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
-        # painter.setBrush(Qt.NoBrush)
-
+        self.block_cache = BlockCache()
         self._draw_objects(painter, level)
 
         self._draw_overlays(painter, level)
@@ -168,11 +165,96 @@ class LevelDrawer:
         for x in range(level.width):
             floor_block.draw(painter, x * self.block_length, floor_level, self.block_length)
 
-    def _draw_objects(self, painter: QPainter, level: Level):
-        for level_object in level.get_all_objects():
-            level_object.render()
-            level_object.draw(painter, self.block_length, self.transparency)
+    def _get_background(self, level: Level):
+        background_routine_by_objectset = {
+            0: self.default_background,
+            1: self.default_background,
+            2: self.fortress_background,
+            3: self.default_background,
+            4: self.sky_background,
+            5: self.default_background,
+            6: self.default_background,
+            7: self.default_background,
+            8: self.desert_background,
+            9: self.default_background,
+            10: self.default_background,
+            11: self.default_background,
+            12: self.sky_background,
+            13: self.default_background,
+            14: self.default_background,
+            15: self.default_background
+        }
 
+        return background_routine_by_objectset[level.object_set_number](level)
+
+    def default_background(self, level: Level):
+        object_set = ObjectSet(level.object_set_number)
+        level_rect = level.get_rect()
+        return [object_set.background_block for _ in level_rect.positions()]
+
+    def sky_background(self, level: Level):
+        blocks = []
+        object_set = ObjectSet(level.object_set_number)
+        level_rect = level.get_rect()
+        for pos in level_rect.positions():
+            if pos.y != 0:
+                blocks.append(object_set.background_block)
+            else:
+                blocks.append(0x86)
+        return blocks
+
+    def desert_background(self, level: Level):
+        blocks = []
+        object_set = ObjectSet(level.object_set_number)
+        level_rect = level.get_rect()
+        for pos in level_rect.positions():
+            if pos.y != GROUND - 1:
+                blocks.append(object_set.background_block)
+            else:
+                blocks.append(0x56)
+        return blocks
+
+    def fortress_background(self, level: Level):
+        blocks = []
+        fortress_blocks = [0x14, 0x15, 0x16, 0x17]
+        object_set = ObjectSet(level.object_set_number)
+        level_rect = level.get_rect()
+        for pos in level_rect.positions():
+            if pos.y == 0:
+                blocks.append(0xE5)
+            elif pos.y == 1:
+                blocks.append(0x8E)
+            elif pos.y == GROUND - 1:
+                blocks.append(fortress_blocks[2 + pos.x % 2])
+            elif pos.y == GROUND - 2:
+                blocks.append(fortress_blocks[pos.x % 2])
+            else:
+                blocks.append(object_set.background_block)
+        return blocks
+
+    def _draw_objects(self, painter: QPainter, level: Level):
+        level_rect = level.get_rect()
+        objects = self._get_background(level)
+        for level_object in level.get_all_objects():
+            if not isinstance(level_object, LevelObjectController):
+                continue
+            for block in level_object.get_blocks_and_positions():
+                if block[0] == -1:
+                    continue
+                try:
+                    objects[level_rect.index_position(block[1])] = block[0]
+                except IndexError:
+                    pass
+        palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
+        tsa_data = ROM.get_tsa_data(level.object_set_number)
+        for pos in level_rect.positions():
+            self.block_cache.block(
+                palette_group, GraphicsSet(level.header.graphic_set_index), tsa_data,
+                objects[level_rect.index_position(pos)]).draw(
+                painter, pos.x * self.block_length, pos.y * self.block_length,
+                block_length=self.block_length, selected=False, transparent=self.transparency,
+            )
+        for level_object in level.get_all_objects():
             if level_object.selected:
                 painter.save()
 
@@ -180,6 +262,11 @@ class LevelDrawer:
                 painter.drawRect(level_object.get_rect(self.block_length))
 
                 painter.restore()
+            if isinstance(level_object, LevelObjectController):
+                continue
+            level_object.render()
+            level_object.draw(painter, self.block_length, self.transparency)
+
 
     def _draw_overlays(self, painter: QPainter, level: Level):
         painter.save()

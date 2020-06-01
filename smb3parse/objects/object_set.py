@@ -54,6 +54,7 @@ class ObjectSetLevelData:
     name: str = ""
     jump_offset: int = 0x10010
     range: Range = Range(0, 0)
+    background_block: int = 0
 
     @property
     def level_offset(self):
@@ -65,10 +66,14 @@ class ObjectSetLevelData:
         jump_offset = dic["jump_offset"]
         jump_offset = int(jump_offset[1:], 16) if \
             isinstance(jump_offset, str) and jump_offset.startswith("$") else int(dic["jump_offset"])
+        background_block = dic["background_block"]
+        background_block = int(background_block[1:], 16) if \
+            isinstance(background_block, str) and background_block.startswith("$") else int(dic["background_block"])
         return cls(
             name=dic["name"],
             jump_offset=jump_offset,
-            range=Range.from_dict(dic["range"])
+            range=Range.from_dict(dic["range"]),
+            background_block=background_block
         )
 
 
@@ -87,8 +92,12 @@ class ObjectSet:
         if self.number == ENEMY_ITEM_OBJECT_SET:
             self.level_offset = 0
             self.name = "Enemy/Item Object set"
+            self.background_block = None
         else:
-            self.name, self.level_offset, self._level_range = astuple(object_set_level_data[object_set_number])
+            self.name = object_set_level_data[object_set_number].name
+            self.level_offset = object_set_level_data[object_set_number].jump_offset
+            self._level_range = object_set_level_data[object_set_number].range
+            self.background_block = object_set_level_data[object_set_number].background_block
 
             self._ending_graphic_offset = _ending_graphic_offset[object_set_number]
 

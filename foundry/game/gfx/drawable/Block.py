@@ -48,7 +48,10 @@ class Block:
 
         palette_index = (block_index & 0b1100_0000) >> 6
 
-        self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
+        try:
+            self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
+        except IndexError:
+            self.bg_color = QColor(*NESPalette[0])
 
         self._block_id = (block_index, self.bg_color.toTuple(), graphics_set.number)
 
@@ -96,6 +99,7 @@ class Block:
             image.setAlphaChannel(mask)
 
             if not transparent:  # or self._whole_block_is_transparent:
+                print("Not transparent")
                 image = self._replace_transparent_with_background(image)
 
             if selected:

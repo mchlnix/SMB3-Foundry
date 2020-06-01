@@ -14,6 +14,8 @@ from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from foundry.gui.UndoStack import UndoStack
 from smb3parse.levels.level_header import LevelHeader
+from foundry.game.Rect import Rect
+
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
 LEVEL_POINTER_OFFSET = 0x10010  # also no idea
@@ -56,7 +58,7 @@ class Level(LevelLike):
 
         self.attached_to_rom = True
 
-        self.object_set = ObjectSet(object_set_number)
+        self.object_set = ObjectSet(self.object_set_number)
 
         self.undo_stack = UndoStack()
 
@@ -225,7 +227,7 @@ class Level(LevelLike):
     def get_rect(self, block_length: int = 1):
         width, height = self.size
 
-        return QRect(QPoint(0, 0), QSize(width, height) * block_length)
+        return Rect(QPoint(0, 0), QSize(width, height) * block_length)
 
     def attach_to_rom(self, header_offset: int, enemy_item_offset: int):
         self.header_offset = header_offset

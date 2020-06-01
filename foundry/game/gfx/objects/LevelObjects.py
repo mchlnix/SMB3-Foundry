@@ -769,6 +769,14 @@ class SingleBlock(LevelObject):
         self._confirm_render(self.bmp.size, self.pos, self.blocks)
 
 
+class LevelObjectFillBackgroundHorizontalLevel(LevelObject):
+    def _render(self):
+        self.pos = Position(0, 0)
+        self.size = Size(16 * 15, 26)
+        blocks = [self.blocks[0] for _ in range(16 * 15 * 26)]
+        self._confirm_render(self.size, self.pos, blocks)
+
+
 class LevelObjectPipe(LevelObject):
     def expands(self):
         return EXPANDS_HORIZ
