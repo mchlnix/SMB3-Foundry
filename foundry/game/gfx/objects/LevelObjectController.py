@@ -84,6 +84,9 @@ class LevelObjectController(ObjectLike):
     def get_blocks_and_positions(self):
         return self.level_object.get_blocks_and_positions()
 
+    def to_asm6(self):
+        return self.level_object.to_asm6()
+
     @property
     def bytes(self):
         return self.level_object.bytes

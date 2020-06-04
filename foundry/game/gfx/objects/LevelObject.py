@@ -20,6 +20,7 @@ from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXP
 from foundry.game.Size import Size
 from foundry.game.Position import Position
 from foundry.game.Rect import Rect
+from smb3parse.asm6_converter import to_hex
 
 import time
 
@@ -446,14 +447,32 @@ class LevelObject(ObjectLike, BlockGenerator):
         self.draw(painter, Block.SIDE_LENGTH, True)
         return image
 
+    def vertical_offset_pos(self, pos: Position):
+        if self.vertical_level:
+            offset = pos.y // SCREEN_HEIGHT
+            return Position(pos.x + offset * SCREEN_WIDTH, pos.y % SCREEN_HEIGHT)
+        else:
+            return pos
+
+    def to_asm6(self) -> str:
+        pos = self.vertical_offset_pos(self.pos)
+        if not self.is_4byte:
+            third_byte = f"{to_hex(self.obj_index & 0xF0)} | {to_hex(self.size.width)}"
+        else:
+            third_byte = f"{to_hex(self.obj_index)}"
+
+        if self.is_4byte:
+            fourth_byte = f", {to_hex(self.size.width)}"
+        else:
+            fourth_byte = ""
+        s = f"\t.byte {to_hex(self.domain)} | {to_hex(self.pos.y)}, {to_hex(max(min(pos.x, 0xFF), 0))}, " \
+            f"{third_byte} {fourth_byte}; {self.description}\n"
+        return s
+
     def to_bytes(self) -> bytearray:
         data = bytearray()
 
-        if self.vertical_level:
-            offset = self.pos.y // SCREEN_HEIGHT
-            pos = Position(self.pos.x + offset * SCREEN_WIDTH, self.pos.y % SCREEN_HEIGHT)
-        else:
-            pos = self.pos
+        pos = self.vertical_offset_pos(self.pos)
 
         if self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
             pos.x = self.pos.x - 1 + self.rendered_size.width // 2

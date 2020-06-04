@@ -15,6 +15,7 @@ from foundry.game.level.LevelLike import LevelLike
 from foundry.gui.UndoStack import UndoStack
 from smb3parse.levels.level_header import LevelHeader
 from foundry.game.Rect import Rect
+from smb3parse.asm6_converter import to_hex
 
 
 ENEMY_POINTER_OFFSET = 0x10  # no idea why
@@ -662,6 +663,32 @@ class Level(LevelLike):
             self.enemies.remove(obj)
 
         self.changed = True
+
+    SEPERATOR = ";---------------------------------------------------------------------------\n"
+
+    def to_asm6(self) -> str:
+        name = f"Level_{self.world}-{self.level_number}"
+        s = f"; {name}\n; Object Set {self.object_set_number}\n" \
+            f"{self.asm6_level_header(name)}\n{self.asm6_level_objects()}\n{self.asm6_level_enemies()}"
+        return s
+
+    def asm6_level_header(self, name):
+        return self.header.to_asm6(name)
+
+    def asm6_level_objects(self):
+        s = ""
+        for obj in self.objects + self.jumps:
+            s = f"{s}{obj.to_asm6()}"
+        s = f"{s}\t.byte $FF"
+        return s
+
+    def asm6_level_enemies(self):
+        s = ""
+        for obj in self.enemies:
+            b = obj.to_bytes()
+            s = f"{s}\t.byte {to_hex(b[0])}, {to_hex(b[1])}, {to_hex(b[2])}; {obj.description}\n"
+        s = f"{s}\t.byte $FF"
+        return s
 
     def to_m3l(self) -> bytearray:
         m3l_bytes = bytearray()

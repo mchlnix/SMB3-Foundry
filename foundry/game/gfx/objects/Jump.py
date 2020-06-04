@@ -1,3 +1,6 @@
+from smb3parse.asm6_converter import to_hex
+
+
 class Jump:
     POINTER_DOMAIN = 0b111
 
@@ -16,6 +19,14 @@ class Jump:
         self.exit_action = data[1] & 0x0F
         # for some reason those are flipped, meaning 5678, 1234
         self.exit_horizontal = ((data[2] & 0xF) << 4) + (data[2] >> 4)
+
+    def to_asm6(self):
+        s = f"\t; Pointer on screen {to_hex(self.screen_index)}\n" \
+            f"\t.byte {to_hex(self.POINTER_DOMAIN << 5)} | {to_hex(self.screen_index)}, " \
+            f"{to_hex(self.exit_vertical << 4)} | {to_hex(self.exit_action)}, " \
+            f"{self.data[2]}" \
+            f"; Domain | Screen, Y Exit | Action, X Exit\n"
+        return s
 
     def to_bytes(self):
         return self.data

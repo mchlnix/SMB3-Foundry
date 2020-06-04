@@ -63,8 +63,10 @@ from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
 
+
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
+ASM6_FILE_FILER = "ASM files (*.asm);; All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 ID_RELOAD_LEVEL = 303
@@ -136,6 +138,9 @@ class MainWindow(QMainWindow):
         """
         self.save_m3l_action = file_menu.addAction("&Save M3L")
         self.save_m3l_action.triggered.connect(self.on_save_m3l)
+
+        self.save_asm6_action = file_menu.addAction("&Save ASM6")
+        self.save_asm6_action.triggered.connect(self.on_save_asm6)
         """
         file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", "")
         file_menu.AppendSeparator()
@@ -724,6 +729,25 @@ class MainWindow(QMainWindow):
         self.update_title()
 
         self.level_view.level_ref.changed = False
+
+    def on_save_asm6(self, _):
+        suggested_file = self.level_view.level_ref.name
+
+        if not suggested_file.endswith(".asm"):
+            suggested_file += ".asm"
+
+        pathname, _ = QFileDialog.getSaveFileName(self, caption="Save asm as", filter=ASM6_FILE_FILER)
+
+        if not pathname:
+            return
+
+        level = self.level_view.level_ref
+
+        try:
+            with open(pathname, "w+") as asm6_file:
+                asm6_file.write(level.to_asm6())
+        except IOError as exp:
+            QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
 
     def on_save_m3l(self, _):
         suggested_file = self.level_view.level_ref.name
