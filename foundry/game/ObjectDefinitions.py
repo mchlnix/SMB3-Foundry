@@ -43,6 +43,11 @@ VERTICAL_WITH_DOUBLE_TOP = 32
 VERTICAL_WITH_BOTTOM = 33
 HORIZONTAL_FIVE_BYTE = 34
 HORIZONTAL_BACKGROUND_FILL = 35
+DIAG_UP_Left_30 = 36
+HORIZ_TO_GROUND_PLAINS = 37
+BUSH_PREFAB = 38
+HORIZ_FLOATING_PLATFORM = 39
+FORTRESS_PILLARS = 40
 
 UNIFORM = 0
 END_ON_TOP_OR_LEFT = 1
@@ -79,7 +84,8 @@ logging.basicConfig(filename=data_dir.joinpath("logs/obj_def.log"), level=loggin
 class Block_Design:
     """Defines the design of an object"""
     def __init__(self, blocks: list = None):
-        self.blocks = blocks if blocks else []
+        blocks = blocks if blocks else []
+        self.blocks = [int(obj[1:], 16) if isinstance(obj, str) and obj.startswith("$") else int(obj) for obj in blocks]
 
     @classmethod
     def from_dat_file(cls, data, len, pos):
@@ -238,7 +244,7 @@ def load_obj_definitions_from_yaml(file_path):
 
     for key, tileset in obj_definitions.items():
         for k, tile in tileset.items():
-            obj_design = tile["object_design"] if "object_design" in tile else [0]
+            obj_design = tile["object_design"] if "object_design" in tile and tile["object_design"] else [0]
             obj_design = [int(obj[1:], 16) if isinstance(obj, str) and obj.startswith("$") else int(obj) for obj in obj_design]
             tileset[k] = ObjectDefinition(
                 object_design=obj_design,

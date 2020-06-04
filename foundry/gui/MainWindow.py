@@ -780,7 +780,6 @@ class MainWindow(QMainWindow):
         self.update_level(world, level, object_data, enemy_data, object_set)
 
     def _on_placeable_object_selected(self, level_object: Union[LevelObjectController, EnemyObject]):
-        print("o", level_object)
         if self.sender() is self.object_toolbar:
             self.object_dropdown.select_object(level_object)
         else:

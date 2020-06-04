@@ -25,6 +25,8 @@ from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
+from foundry.game.Position import Position
+
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
 
@@ -430,23 +432,23 @@ class LevelView(QWidget):
     def dragging(self, event: QMouseEvent):
         self.dragging_happened = True
 
-        x, y = event.pos().toTuple()
-
-        level_x, level_y = self.to_level_point(x, y)
-
-        dx = level_x - self.last_mouse_position[0]
-        dy = level_y - self.last_mouse_position[1]
-
-        self.last_mouse_position = level_x, level_y
+        pos = Position(*event.pos().toTuple())
+        level_pos = Position(*self.to_level_point(pos.x, pos.y))
+        level_pos_change = level_pos - Position(self.last_mouse_position[0], self.last_mouse_position[1])
 
         selected_objects = self.get_selected_objects()
 
-        for obj in selected_objects:
-            obj.move_by(dx, dy)
+        if level_pos_change.x or level_pos_change.y:
+            for obj in selected_objects:
+                if isinstance(obj, LevelObjectController):
+                    obj.set_position(level_pos)
+                else:
+                    obj.move_by(level_pos_change.x, level_pos_change.y)
 
-            self.level_ref.changed = True
+                self.level_ref.changed = True
 
-        self.update()
+            self.last_mouse_position = level_pos.x, level_pos.y
+            self.update()
 
     def on_left_mouse_button_up(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:

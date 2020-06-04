@@ -101,7 +101,7 @@ class Level(LevelLike):
             object_set=self.object_set_number,
             graphic_set=self.header.graphic_set_index,
             palette_group_index=self.header.object_palette_index,
-            objects_ref=self.objects,
+            objects_ref=[],
             vertical_level=bool(self.header.is_vertical),
         )
         self.enemy_item_factory = EnemyItemFactory(self.object_set_number, self.header.enemy_palette_index)
@@ -208,7 +208,6 @@ class Level(LevelLike):
             level_object = self.object_factory.from_data(obj_data, len(self.objects))
 
             if isinstance(level_object, LevelObjectController):
-                print(level_object)
                 self.objects.append(level_object)
             elif isinstance(level_object, Jump):
                 self.jumps.append(level_object)

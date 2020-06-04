@@ -102,6 +102,10 @@ class Rect(QRect):
         """
         return self.abs_size.index_position(pos, width)
 
+    def position_from_index(self, x: int) -> Position:
+        """Provides the position from a index"""
+        return Position(x % self.abs_size.width, x // self.abs_size.width)
+
     def width_positions(self) -> Position:
         """
         Provides a generator for every relative position inside the width
@@ -119,6 +123,10 @@ class Rect(QRect):
         """
         generator = self._index_positions(width=False)
         yield next(generator)
+
+    def position_indexes(self):
+        """Provides a range of position index to iterate over"""
+        return range(self.abs_size.height * self.abs_size.width)
 
     def positions(self, width=True):
         """

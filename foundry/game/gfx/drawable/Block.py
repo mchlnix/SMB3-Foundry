@@ -1,7 +1,7 @@
 from typing import List
 
 from PySide2.QtCore import QPoint
-from PySide2.QtGui import QImage, QPainter, Qt, QColor
+from PySide2.QtGui import QImage, QPainter, Qt, QColor, QPixmap
 
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import NESPalette
@@ -85,6 +85,29 @@ class Block:
         else:
             self._whole_block_is_transparent = False
 
+    def to_pixmap(self, block_length, selected=False, transparent=False):
+        block_attributes = (self._block_id, block_length, selected, transparent)
+
+        if block_attributes not in Block._block_cache:
+            image = self.image.copy()
+
+            if block_length != Block.WIDTH:
+                image = image.scaled(block_length, block_length)
+
+            # mask out the transparent pixels first
+            mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+            image.setAlphaChannel(mask)
+
+            if not transparent:  # or self._whole_block_is_transparent:
+                image = self._replace_transparent_with_background(image)
+
+            if selected:
+                apply_selection_overlay(image, mask)
+
+            pixmap = QPixmap.fromImage(image)
+            Block._block_cache[block_attributes] = pixmap
+        return Block._block_cache[block_attributes]
+
     def draw(self, painter: QPainter, x, y, block_length, selected=False, transparent=False):
         block_attributes = (self._block_id, block_length, selected, transparent)
 
@@ -99,15 +122,16 @@ class Block:
             image.setAlphaChannel(mask)
 
             if not transparent:  # or self._whole_block_is_transparent:
-                print("Not transparent")
                 image = self._replace_transparent_with_background(image)
 
             if selected:
                 apply_selection_overlay(image, mask)
 
-            Block._block_cache[block_attributes] = image
+            pixmap = QPixmap.fromImage(image)
+            Block._block_cache[block_attributes] = pixmap
 
-        painter.drawImage(x, y, Block._block_cache[block_attributes])
+        if not self._whole_block_is_transparent:
+            painter.drawPixmap(x, y, Block._block_cache[block_attributes])
 
     def _replace_transparent_with_background(self, image):
         # draw image on background layer, to fill transparent pixels

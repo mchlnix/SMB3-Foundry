@@ -15,11 +15,8 @@ from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH, BlockCache
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
-from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.Size import Size
-from foundry.game.Position import Position
-from foundry.game.Rect import Rect
+
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
@@ -102,6 +99,10 @@ class LevelDrawer:
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), width=1)
 
         self.block_cache = BlockCache()
+        self.block_from_rom = {}
+        self.block_quick = []
+        self.block_quick_object_set = -1
+        self.block_quick_block_length = -1
 
     def draw(self, painter: QPainter, level: Level):
         self.block_cache = BlockCache()
@@ -121,50 +122,6 @@ class LevelDrawer:
         if self.draw_grid:
             self._draw_grid(painter, level)
 
-    def _draw_background(self, painter: QPainter, level: Level):
-        painter.save()
-
-        bg_color = bg_color_for_object_set(level.object_set_number, level.header.object_palette_index)
-
-        painter.fillRect(level.get_rect(self.block_length), bg_color)
-
-        painter.restore()
-
-    def _draw_dungeon_default_graphics(self, painter: QPainter, level: Level):
-        # draw_background
-        bg_block = _block_from_index(140, level)
-
-        for x, y in product(range(level.width), range(level.height)):
-            bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
-
-        # draw ceiling
-        ceiling_block = _block_from_index(139, level)
-
-        for x in range(level.width):
-            ceiling_block.draw(painter, x * self.block_length, 0, self.block_length)
-
-        # draw floor
-        upper_floor_blocks = [_block_from_index(20, level), _block_from_index(21, level)]
-        lower_floor_blocks = [_block_from_index(22, level), _block_from_index(23, level)]
-
-        upper_y = (GROUND - 2) * self.block_length
-        lower_y = (GROUND - 1) * self.block_length
-
-        for block_x in range(level.width):
-            pixel_x = block_x * self.block_length
-
-            upper_floor_blocks[block_x % 2].draw(painter, pixel_x, upper_y, self.block_length)
-            lower_floor_blocks[block_x % 2].draw(painter, pixel_x, lower_y, self.block_length)
-
-    def _draw_desert_default_graphics(self, painter: QPainter, level: Level):
-        floor_level = (GROUND - 1) * self.block_length
-        floor_block_index = 86
-
-        floor_block = _block_from_index(floor_block_index, level)
-
-        for x in range(level.width):
-            floor_block.draw(painter, x * self.block_length, floor_level, self.block_length)
-
     def _get_background(self, level: Level):
         background_routine_by_objectset = {
             0: self.default_background,
@@ -175,8 +132,8 @@ class LevelDrawer:
             5: self.default_background,
             6: self.default_background,
             7: self.default_background,
-            8: self.desert_background,
-            9: self.default_background,
+            8: self.default_background,
+            9: self.desert_background,
             10: self.default_background,
             11: self.default_background,
             12: self.sky_background,
@@ -190,7 +147,7 @@ class LevelDrawer:
     def default_background(self, level: Level):
         object_set = ObjectSet(level.object_set_number)
         level_rect = level.get_rect()
-        return [object_set.background_block for _ in level_rect.positions()]
+        return [object_set.background_block for _ in level_rect.position_indexes()]
 
     def sky_background(self, level: Level):
         blocks = []
@@ -232,28 +189,58 @@ class LevelDrawer:
                 blocks.append(object_set.background_block)
         return blocks
 
-    def _draw_objects(self, painter: QPainter, level: Level):
-        level_rect = level.get_rect()
-        objects = self._get_background(level)
+    def _get_objects(self, level, blocks, level_rect):
+        width = level_rect.abs_size.width
         for level_object in level.get_all_objects():
             if not isinstance(level_object, LevelObjectController):
                 continue
             for block in level_object.get_blocks_and_positions():
-                if block[0] == -1:
-                    continue
-                try:
-                    objects[level_rect.index_position(block[1])] = block[0]
-                except IndexError:
-                    pass
-        palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
-        tsa_data = ROM.get_tsa_data(level.object_set_number)
-        for pos in level_rect.positions():
-            self.block_cache.block(
-                palette_group, GraphicsSet(level.header.graphic_set_index), tsa_data,
-                objects[level_rect.index_position(pos)]).draw(
-                painter, pos.x * self.block_length, pos.y * self.block_length,
-                block_length=self.block_length, selected=False, transparent=self.transparency,
-            )
+                if block[0] >= 0:
+                    try:
+                        blocks[block[1].x + block[1].y * width] = block[0]
+                    except IndexError:
+                        pass
+        return blocks
+
+    def get_blocks(self, level):
+        if len(self.block_quick) == 0 or self.block_quick_object_set != level.object_set_number or self.block_length != \
+                self.block_quick_block_length:
+            self.block_quick_object_set = level.object_set_number
+            palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
+            tsa_data = ROM.get_tsa_data(level.object_set_number)
+            graphics_set = GraphicsSet(level.header.graphic_set_index)
+            blocks = []
+            for i in range(0xFF):
+                blocks.append(self.block_cache.block(palette_group, graphics_set, tsa_data, i).to_pixmap(
+                    self.block_length, False, self.transparency
+                ))
+            self.block_quick = blocks
+
+        return self.block_quick
+
+    def render_blocks(self, painter, blocks, pixmaps, level_rect):
+        current_block = None
+        brushes = [QBrush(pix) for pix in pixmaps]
+        x_length = self.block_length * level_rect.abs_size.width
+        painter.setPen(Qt.NoPen)
+        x, y = -self.block_length, -self.block_length
+        for idx, block in enumerate(blocks):
+            x += self.block_length
+            x %= x_length
+            if x == 0:
+                y += self.block_length
+            if current_block != blocks[idx]:
+                current_block = blocks[idx]
+                painter.setBrush(brushes[blocks[idx]])
+            painter.drawRect(x, y, self.block_length, self.block_length)
+        painter.setBrush(Qt.NoBrush)
+
+    def _draw_objects(self, painter: QPainter, level: Level):
+        level_rect = level.get_rect()
+        blocks = self._get_objects(level, self._get_background(level), level_rect)
+        pixmaps = self.get_blocks(level)
+        self.render_blocks(painter, blocks, pixmaps, level_rect)
+
         for level_object in level.get_all_objects():
             if level_object.selected:
                 painter.save()
@@ -266,7 +253,6 @@ class LevelDrawer:
                 continue
             level_object.render()
             level_object.draw(painter, self.block_length, self.transparency)
-
 
     def _draw_overlays(self, painter: QPainter, level: Level):
         painter.save()

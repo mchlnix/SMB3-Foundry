@@ -59,6 +59,7 @@ class LevelObjectFactory:
             is_vertical=self.vertical_level,
             object_factory_idx=index
         )
+        self.objects_ref.append(level_object)
         return level_object
 
     def from_properties(
@@ -79,5 +80,4 @@ class LevelObjectFactory:
 
         if isinstance(obj, LevelObjectController):
             obj.set_position(Position(x, y))
-
         return obj

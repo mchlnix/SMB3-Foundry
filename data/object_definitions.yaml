@@ -4527,7 +4527,7 @@
     - 117620
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Bush Prefab
       offset_x: 0
       offset_y: 0
       size:
@@ -4576,7 +4576,7 @@
     - 117633
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Bush Prefab
       offset_x: 0
       offset_y: 0
       size:
@@ -4653,7 +4653,7 @@
     - 117682
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Bush Prefab
       offset_x: 0
       offset_y: 0
       size:
@@ -4982,7 +4982,7 @@
     - 118881
     bmp:
       ending: 3
-      obj_generator: Horizontal to the Ground
+      obj_generator: Horizontal To Ground Plains
       offset_x: 0
       offset_y: 0
       size:
@@ -5017,7 +5017,7 @@
     - 118884
     bmp:
       ending: 3
-      obj_generator: Horizontal to the Ground
+      obj_generator: Horizontal To Ground Plains
       offset_x: 0
       offset_y: 0
       size:
@@ -5052,7 +5052,7 @@
     - 118887
     bmp:
       ending: 3
-      obj_generator: Horizontal to the Ground
+      obj_generator: Horizontal To Ground Plains
       offset_x: 0
       offset_y: 0
       size:
@@ -5087,7 +5087,7 @@
     - 118890
     bmp:
       ending: 3
-      obj_generator: Horizontal to the Ground
+      obj_generator: Horizontal To Ground Plains
       offset_x: 0
       offset_y: 0
       size:
@@ -5119,7 +5119,7 @@
     - 119201
     bmp:
       ending: 3
-      obj_generator: Horizontal With Sides
+      obj_generator: Horizontal Floating Platform
       offset_x: 0
       offset_y: 0
       size:
@@ -5148,7 +5148,7 @@
     - 119204
     bmp:
       ending: 3
-      obj_generator: Horizontal With Sides
+      obj_generator: Horizontal Floating Platform
       offset_x: 0
       offset_y: 0
       size:
@@ -5177,7 +5177,7 @@
     - 119207
     bmp:
       ending: 3
-      obj_generator: Horizontal With Sides
+      obj_generator: Horizontal Floating Platform
       offset_x: 0
       offset_y: 0
       size:
@@ -5206,7 +5206,7 @@
     - 119210
     bmp:
       ending: 3
-      obj_generator: Horizontal With Sides
+      obj_generator: Horizontal Floating Platform
       offset_x: 0
       offset_y: 0
       size:
@@ -10761,10 +10761,10 @@
       start: 176
   58:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116306
+    - 116307
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -10776,20 +10776,15 @@
     bytes: 3
     description: Upward Pipe (CAN go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 32
-    - 33
     range:
       end: 207
       start: 192
   59:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116308
+    - 116309
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -10801,11 +10796,6 @@
     bytes: 3
     description: Upward Pipe (CAN'T go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 26
-    - 27
     range:
       end: 223
       start: 208
@@ -11075,7 +11065,7 @@
     - 151
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Bush Prefab
       offset_x: 0
       offset_y: 0
       size:
@@ -11124,7 +11114,7 @@
     - 151
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Bush Prefab
       offset_x: 0
       offset_y: 0
       size:
@@ -11201,7 +11191,7 @@
     - 151
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Bush Prefab
       offset_x: 0
       offset_y: 0
       size:
@@ -16587,10 +16577,10 @@
       start: 176
   58:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116306
+    - 116307
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -16602,20 +16592,15 @@
     bytes: 3
     description: Upward Pipe (CAN go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 32
-    - 33
     range:
       end: 207
       start: 192
   59:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116308
+    - 116309
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -16627,11 +16612,6 @@
     bytes: 3
     description: Upward Pipe (CAN'T go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 26
-    - 27
     range:
       end: 223
       start: 208
@@ -20581,13 +20561,15 @@
       start: 15
   16:
     block_design:
-    - 135
-    - 146
-    - 0
-    - 0
+    - $84
+    - $86
+    - $87
+    - $92
+    - $91
+    - $8B
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Fortress Pillars
       offset_x: 0
       offset_y: 0
       size:
@@ -20596,23 +20578,20 @@
     bytes: 3
     description: Bottom of background with pillars A
     domain: 0
-    object_design:
-    - 49
-    - 50
-    - 153
-    - 153
     range:
       end: 31
       start: 16
   17:
     block_design:
-    - 131
-    - 139
-    - 0
-    - 0
+    - $81
+    - $82
+    - $83
+    - $8F
+    - $8D
+    - $8C
     bmp:
       ending: 0
-      obj_generator: Horizontal
+      obj_generator: Fortress Pillars
       offset_x: 0
       offset_y: 0
       size:
@@ -20621,11 +20600,6 @@
     bytes: 3
     description: Bottom of background with pillars B
     domain: 0
-    object_design:
-    - 51
-    - 52
-    - 153
-    - 153
     range:
       end: 47
       start: 32
@@ -20695,13 +20669,13 @@
   21:
     block_design:
     - 6
-    - 0
-    - 0
-    - 0
+    - -1
+    - -1
+    - -1
     - 8
-    - 0
-    - 0
-    - 0
+    - -1
+    - -1
+    - -1
     bmp:
       ending: 0
       obj_generator: Horizontal
@@ -20713,36 +20687,27 @@
     bytes: 3
     description: Dungeon windows
     domain: 0
-    object_design:
-    - 57
-    - 153
-    - 153
-    - 153
-    - 58
-    - 153
-    - 153
-    - 153
     range:
       end: 111
       start: 96
   22:
     block_design:
     - 6
-    - 0
-    - 0
-    - 0
+    - -1
+    - -1
+    - -1
     - 7
-    - 0
-    - 0
-    - 0
+    - -1
+    - -1
+    - -1
     - 7
-    - 0
-    - 0
-    - 0
+    - -1
+    - -1
+    - -1
     - 8
-    - 0
-    - 0
-    - 0
+    - -1
+    - -1
+    - -1
     bmp:
       ending: 0
       obj_generator: Horizontal
@@ -20754,32 +20719,15 @@
     bytes: 3
     description: Long dungeon windows
     domain: 0
-    object_design:
-    - 57
-    - 153
-    - 153
-    - 153
-    - 59
-    - 153
-    - 153
-    - 153
-    - 59
-    - 153
-    - 153
-    - 153
-    - 58
-    - 153
-    - 153
-    - 153
     range:
       end: 127
       start: 112
   23:
     block_design:
     - 7
-    - 0
-    - 0
-    - 0
+    - -1
+    - -1
+    - -1
     bmp:
       ending: 0
       obj_generator: Horizontal
@@ -20791,11 +20739,6 @@
     bytes: 3
     description: Middle section of dungeon windows
     domain: 0
-    object_design:
-    - 59
-    - 153
-    - 153
-    - 153
     range:
       end: 143
       start: 128
@@ -21475,10 +21418,10 @@
       start: 176
   58:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116306
+    - 116307
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -21490,20 +21433,15 @@
     bytes: 3
     description: Upward Pipe (CAN go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 32
-    - 33
     range:
       end: 207
       start: 192
   59:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116308
+    - 116309
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -21515,11 +21453,6 @@
     bytes: 3
     description: Upward Pipe (CAN'T go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 26
-    - 27
     range:
       end: 223
       start: 208
@@ -26376,10 +26309,10 @@
       start: 176
   58:
     block_design:
-    - 186
-    - 187
-    - 186
-    - 187
+    - 116366
+    - 116373
+    - 116306
+    - 116307
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -26391,20 +26324,15 @@
     bytes: 3
     description: Upward Pipe (CAN go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 32
-    - 33
     range:
       end: 207
       start: 192
   59:
     block_design:
-    - 186
-    - 187
-    - 186
-    - 187
+    - 116366
+    - 116373
+    - 116308
+    - 116309
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -26416,11 +26344,6 @@
     bytes: 3
     description: Upward Pipe (CAN'T go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 26
-    - 27
     range:
       end: 223
       start: 208
@@ -31778,10 +31701,10 @@
       start: 176
   58:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116306
+    - 116307
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -31793,20 +31716,15 @@
     bytes: 3
     description: Upward Pipe (CAN go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 32
-    - 33
     range:
       end: 207
       start: 192
   59:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116308
+    - 116309
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -31818,11 +31736,6 @@
     bytes: 3
     description: Upward Pipe (CAN'T go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 26
-    - 27
     range:
       end: 223
       start: 208
@@ -37252,10 +37165,10 @@
       start: 176
   58:
     block_design:
-    - 186
-    - 187
-    - 189
-    - 190
+    - 116366
+    - 116373
+    - 116306
+    - 116307
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -37267,20 +37180,15 @@
     bytes: 3
     description: Upward Pipe (CAN go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 32
-    - 33
     range:
       end: 207
       start: 192
   59:
     block_design:
-    - 186
-    - 187
-    - 189
-    - 187
+    - 116366
+    - 116373
+    - 116308
+    - 116309
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -37292,11 +37200,6 @@
     bytes: 3
     description: Upward Pipe (CAN'T go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 26
-    - 27
     range:
       end: 223
       start: 208
@@ -42266,10 +42169,10 @@
       start: 176
   58:
     block_design:
-    - 186
-    - 187
-    - 189
-    - 190
+    - 116366
+    - 116373
+    - 116306
+    - 116307
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -42281,20 +42184,15 @@
     bytes: 3
     description: Upward Pipe (CAN go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 32
-    - 33
     range:
       end: 207
       start: 192
   59:
     block_design:
-    - 186
-    - 187
-    - 189
-    - 190
+    - 116366
+    - 116373
+    - 116308
+    - 116309
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -42306,11 +42204,6 @@
     bytes: 3
     description: Upward Pipe (CAN'T go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 26
-    - 27
     range:
       end: 223
       start: 208
@@ -47190,10 +47083,10 @@
       start: 176
   58:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 190
+    - 116366
+    - 116373
+    - 116306
+    - 116307
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -47205,20 +47098,15 @@
     bytes: 3
     description: Upward Pipe (CAN go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 32
-    - 33
     range:
       end: 207
       start: 192
   59:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116308
+    - 116309
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -47230,11 +47118,6 @@
     bytes: 3
     description: Upward Pipe (CAN'T go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 26
-    - 27
     range:
       end: 223
       start: 208
@@ -52063,10 +51946,10 @@
       start: 176
   58:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116306
+    - 116307
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -52078,20 +51961,15 @@
     bytes: 3
     description: Upward Pipe (CAN go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 32
-    - 33
     range:
       end: 207
       start: 192
   59:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116308
+    - 116309
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -52103,11 +51981,6 @@
     bytes: 3
     description: Upward Pipe (CAN'T go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 26
-    - 27
     range:
       end: 223
       start: 208
@@ -56879,10 +56752,10 @@
       start: 176
   58:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116306
+    - 116307
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -56894,20 +56767,15 @@
     bytes: 3
     description: Upward Pipe (CAN go up)
     domain: 1
-    object_design:
-    - 30
-    - 31
-    - 32
-    - 33
     range:
       end: 207
       start: 192
   59:
     block_design:
-    - 186
-    - 187
-    - 173
-    - 174
+    - 116366
+    - 116373
+    - 116308
+    - 116309
     bmp:
       ending: 0
       obj_generator: Upward Pipe
@@ -56920,10 +56788,6 @@
     description: Upward Pipe (CAN'T go up)
     domain: 1
     object_design:
-    - 30
-    - 31
-    - 26
-    - 27
     range:
       end: 223
       start: 208
@@ -57193,7 +57057,7 @@
     - 151
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Bush Prefab
       offset_x: 0
       offset_y: 0
       size:
@@ -57242,7 +57106,7 @@
     - 151
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Bush Prefab
       offset_x: 0
       offset_y: 0
       size:
@@ -57319,7 +57183,7 @@
     - 151
     bmp:
       ending: 0
-      obj_generator: Single Block
+      obj_generator: Bush Prefab
       offset_x: 0
       offset_y: 0
       size:
@@ -58839,7 +58703,7 @@
     - 55
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Up 30 Degrees
+      obj_generator: Diagonal Left-Up 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -58927,7 +58791,7 @@
     - 171
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Left-Up 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -59019,7 +58883,7 @@
     - 166
     bmp:
       ending: 2
-      obj_generator: Diagonal Right-Down
+      obj_generator: Diagonal Left-Up 30 Degrees
       offset_x: 0
       offset_y: 0
       size:
@@ -59042,7 +58906,7 @@
     - 165
     bmp:
       ending: 1
-      obj_generator: Diagonal Weird
+      obj_generator: Diagonal Right-Up 30 Degrees
       offset_x: 0
       offset_y: 0
       size:

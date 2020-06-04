@@ -21,6 +21,8 @@ from foundry.game.Size import Size
 from foundry.game.Position import Position
 from foundry.game.Rect import Rect
 
+import time
+
 SKY = 0
 GROUND = 27
 
@@ -223,12 +225,15 @@ class LevelObject(ObjectLike, BlockGenerator):
         self.block_cache = BlockCache()
         self.rendered_position = Position(0, 0)
         self.rendered_size = Size(0, 0)
+        self.rendered_positions = []
+        self.last_rect = None
 
         self.selected = False
 
         self.ground_level = GROUND
 
         self.rect = Rect()
+
 
         self._render()
 
@@ -275,7 +280,13 @@ class LevelObject(ObjectLike, BlockGenerator):
 
     @property
     def blocks(self):
-        return [int(block) for block in self.object_set.get_definition_of(self.type).rom_object_design]
+        bcks = []
+        for idx, block in enumerate([int(block) for block in self.object_set.get_definition_of(self.type).rom_object_design]):
+            if block <= 0xFF:
+                bcks.append(block)
+            else:
+                bcks.append(ROM().get_byte(block))
+        return bcks
 
     def render(self):
         self._render()
@@ -284,13 +295,11 @@ class LevelObject(ObjectLike, BlockGenerator):
     def _render(self):
         pass
 
+    def backtrace_update(self):
+        """By default blocks do not need to update when blocks above them move"""
+
     def get_blocks_and_positions(self):
-        blocks = []
-        for idx, pos in enumerate(self.rendered_size.positions()):
-            if idx < len(self.rendered_blocks) and self.rendered_blocks[idx] != BLANK:
-                po = pos + self.rendered_position
-                blocks.append([self.rendered_blocks[idx], po])
-        return blocks
+        return self.rendered_positions
 
     def draw(self, painter: QPainter, block_length, transparent):
         for idx, pos in enumerate(self.rendered_size.positions()):
@@ -304,13 +313,14 @@ class LevelObject(ObjectLike, BlockGenerator):
             block_length=block_length, selected=self.selected, transparent=transparent,
         )
 
-    def set_position(self, pos: Position):
-        positional_difference, self.rendered_position = self.pos - self.rendered_position, self.in_bounds(pos)
-        self.pos = self.rendered_position + positional_difference
-        self.render()
+    def set_position(self, pos):
+        self.pos = pos
+        self.pos.x = max(self.pos.x, 0)
+        self.pos.y = min(max(self.pos.y, 0), 26)
+        self._render()
 
-    def move_by(self, pos: Position):
-        self.set_position(self.rendered_position + pos)
+    def move_by(self, pos):
+        self.set_position(pos + self.pos)
 
     def get_position(self):
         return self.pos.x, self.pos.y
@@ -450,7 +460,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             pos.x = self.pos.x - 1 + self.rendered_size.width // 2
 
         data.append((self.domain << 5) | pos.y)
-        data.append(pos.x)
+        data.append(max(min(pos.x, 0xFF), 0))
         if not self.is_4byte and not self.is_single_block:
             third_byte = (self.obj_index & 0xF0) + self.size.width
         else:
@@ -475,10 +485,19 @@ class LevelObject(ObjectLike, BlockGenerator):
     def __lt__(self, other):
         return self.index_in_level < other.index_in_level
 
+    def _render_positions(self):
+        if self.rect != self.last_rect:
+            self.rendered_positions = tuple(zip(
+                self.rendered_blocks,
+                [pos + self.rendered_position for pos in self.rendered_size.positions()])
+            )
+            self.last_rect = self.rect
+
     def _confirm_render(self, size: Size, pos: Position, blocks: list):
         blocks = blocks if blocks else self.blocks
         self.rendered_size, self.rendered_position, self.rendered_blocks = size, pos, blocks
         self.rect = Rect.from_size_and_position(self.rendered_size, self.rendered_position)
+        self._render_positions()
 
     def _get_obj_index(self):
         try:
@@ -493,3 +512,93 @@ class LevelObject(ObjectLike, BlockGenerator):
                 rect.intersects(obj.get_rect()) for obj in self.objects_ref[:self._get_obj_index()]
             ]
         )
+
+    def _get_background(self):
+        background_routine_by_objectset = {
+            0: self.default_background,
+            1: self.default_background,
+            2: self.fortress_background,
+            3: self.default_background,
+            4: self.sky_background,
+            5: self.default_background,
+            6: self.default_background,
+            7: self.default_background,
+            8: self.default_background,
+            9: self.desert_background,
+            10: self.default_background,
+            11: self.default_background,
+            12: self.sky_background,
+            13: self.default_background,
+            14: self.default_background,
+            15: self.default_background
+        }
+
+        return background_routine_by_objectset[self.object_set.object_set_number]()
+
+    def default_background(self):
+        return [self.object_set.background_block for _ in range(16 * 15 * 27)]
+
+    def sky_background(self):
+        blocks = []
+        level_rect = Rect.from_size_and_position(Size(16 * 15, 27), Position(0, 0))
+        for pos in level_rect.positions():
+            if pos.y != 0:
+                blocks.append(self.object_set.background_block)
+            else:
+                blocks.append(0x86)
+        return blocks
+
+    def desert_background(self):
+        blocks = []
+        level_rect = Rect.from_size_and_position(Size(16 * 15, 27), Position(0, 0))
+        for pos in level_rect.positions():
+            if pos.y != GROUND - 1:
+                blocks.append(self.object_set.background_block)
+            else:
+                blocks.append(0x56)
+        return blocks
+
+    def fortress_background(self):
+        blocks = []
+        fortress_blocks = [0x14, 0x15, 0x16, 0x17]
+        level_rect = Rect.from_size_and_position(Size(16 * 15, 27), Position(0, 0))
+        for pos in level_rect.positions():
+            if pos.y == 0:
+                blocks.append(0xE5)
+            elif pos.y == 1:
+                blocks.append(0x8E)
+            elif pos.y == GROUND - 1:
+                blocks.append(fortress_blocks[2 + pos.x % 2])
+            elif pos.y == GROUND - 2:
+                blocks.append(fortress_blocks[pos.x % 2])
+            else:
+                blocks.append(self.object_set.background_block)
+        return blocks
+
+    def _get_blocks(self, level_objs):
+        """Renders the level objects into memory"""
+        level_rect = Rect.from_size_and_position(Size(16 * 15, 27), Position(0, 0))
+        objects = self._get_background()
+        for level_object in level_objs:
+            for block in level_object.get_blocks_and_positions():
+                if block[0] == -1:
+                    continue
+                try:
+                    objects[level_rect.index_position(block[1])] = block[0]
+                except IndexError:
+                    pass
+        for idx, obj in enumerate(objects):
+            if obj > 0xFF:
+                objects[idx] = ROM().get_byte(obj)
+
+        return objects
+
+    def _get_block_at_position(self, blocks: List, pos: Position):
+        """Finds a block in level space"""
+        if pos.y > 26:
+            pos = Position(pos.x + (pos.y // 26) * 0x10, pos.y % 26)  # offset by the screen
+        level_rect = Rect.from_size_and_position(Size(16 * 15, 26), Position(0, 0))
+        try:
+            return blocks[level_rect.index_position(pos)]
+        except IndexError:
+            return 0

@@ -10,7 +10,8 @@ from foundry.game.ObjectDefinitions import (
     DOWNWARD_PIPE, RIGHTWARD_PIPE, LEFTWARD_PIPE, DIAG_DOWN_RIGHT_30, DIAG_DOWN_LEFT_30, HORIZONTAL_WITH_TOP,
     HORIZONTAL_WITH_SIDE, VERTICAL_WITH_TOP, VERTICAL_WITH_ALL_SIDES, HORIZTONAL_WITH_ALL_SIDES,
     VERTICAL_WITH_TOP_AND_BOTTOM, DIAG_DOWN_LEFT_60, DIAG_DOWN_RIGHT_60, HORIZONTAL_WITH_BOTTOM, DIAG_UP_LEFT,
-    DIAG_UP_RIGHT_30, VERTICAL_WITH_DOUBLE_TOP, VERTICAL_WITH_BOTTOM, HORIZONTAL_FIVE_BYTE, HORIZONTAL_BACKGROUND_FILL
+    DIAG_UP_RIGHT_30, VERTICAL_WITH_DOUBLE_TOP, VERTICAL_WITH_BOTTOM, HORIZONTAL_FIVE_BYTE, HORIZONTAL_BACKGROUND_FILL,
+    DIAG_UP_Left_30, HORIZ_TO_GROUND_PLAINS, BUSH_PREFAB, HORIZ_FLOATING_PLATFORM, FORTRESS_PILLARS
 )
 
 from foundry.game.ObjectSet import ObjectSet
@@ -27,7 +28,9 @@ from foundry.game.gfx.objects.LevelObjects import (
     LevelObjectVerticalWithAllSides, LevelObjectVerticalWithTopAndBottom, LevelObjectDiagnalDownLeft60,
     LevelObjectDiagnalDownRight60, LevelObjectHorizontalWithBottom, LevelObjectDiagnalUpLeft45,
     LevelObjectDiagnalUpRight30, LevelObjectVerticalWithDoubleTop, LevelObjectVerticalWithBottom,
-    LevelObjectHorizontal5Byte, LevelObjectFillBackgroundHorizontalLevel
+    LevelObjectHorizontal5Byte, LevelObjectFillBackgroundHorizontalLevel, LevelObjectDiagnalUpLeft30,
+    LevelObjectPlainsPlatformToGround, LevelObjectBushPrefab, LevelObjectPlainsPlatformFloating,
+    LevelObjectFortressPillars
 )
 
 from foundry.game.Size import Size
@@ -40,7 +43,7 @@ class LevelObjectController(ObjectLike):
             object_set: ObjectSet,
             palette_group,
             pattern_table: PatternTable,
-            objects_ref: List["LevelObject"],
+            objects_ref: List["LevelObjectController"],
             is_vertical: bool,
             domain: int,
             index: int,
@@ -450,7 +453,12 @@ class LevelObjectController(ObjectLike):
         VERTICAL_WITH_DOUBLE_TOP: LevelObjectVerticalWithDoubleTop,
         VERTICAL_WITH_BOTTOM: LevelObjectVerticalWithBottom,
         HORIZONTAL_FIVE_BYTE: LevelObjectHorizontal5Byte,
-        HORIZONTAL_BACKGROUND_FILL: LevelObjectFillBackgroundHorizontalLevel
+        HORIZONTAL_BACKGROUND_FILL: LevelObjectFillBackgroundHorizontalLevel,
+        DIAG_UP_Left_30: LevelObjectDiagnalUpLeft30,
+        HORIZ_TO_GROUND_PLAINS: LevelObjectPlainsPlatformToGround,
+        BUSH_PREFAB: LevelObjectBushPrefab,
+        HORIZ_FLOATING_PLATFORM: LevelObjectPlainsPlatformFloating,
+        FORTRESS_PILLARS: LevelObjectFortressPillars
     }
 
     def _level_object(self):
