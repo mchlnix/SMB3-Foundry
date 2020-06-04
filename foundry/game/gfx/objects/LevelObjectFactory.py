@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.Palette import load_palette
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 
@@ -63,6 +63,12 @@ class LevelObjectFactory:
     def from_properties(
         self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int,
     ):
+        if self.vertical_level:
+            offset = y // SCREEN_HEIGHT
+            y %= SCREEN_HEIGHT
+
+            x += offset * SCREEN_WIDTH
+
         data = bytearray(3)
 
         data[0] = domain << 5 | y
@@ -73,8 +79,5 @@ class LevelObjectFactory:
             data.append(length)
 
         obj = self.from_data(data, index)
-
-        if isinstance(obj, LevelObject):
-            obj.set_position(x, y)
 
         return obj
