@@ -338,18 +338,40 @@ class MainWindow(QMainWindow):
 
         splitter.setChildrenCollapsible(False)
 
+        spinner_toolbar = QToolBar("Level Spinner Toolbar", self)
+        spinner_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        spinner_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        spinner_toolbar.setOrientation(Qt.Horizontal)
+        spinner_toolbar.setFloatable(True)
+        spinner_toolbar.addWidget(self.spinner_panel)
+        spinner_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        self.addToolBar(Qt.RightToolBarArea, spinner_toolbar)
+
+        dropdown_toolbar = QToolBar("Object Dropdown Toolbar", self)
+        dropdown_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        dropdown_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        dropdown_toolbar.setOrientation(Qt.Horizontal)
+        dropdown_toolbar.setFloatable(True)
+        dropdown_toolbar.addWidget(self.object_dropdown)
+        dropdown_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        self.addToolBar(Qt.RightToolBarArea, dropdown_toolbar)
+
+        size_toolbar = QToolBar("Size Toolbar", self)
+        size_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        size_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        size_toolbar.setOrientation(Qt.Horizontal)
+        size_toolbar.setFloatable(True)
+        size_toolbar.addWidget(self.level_size_bar)
+        size_toolbar.addWidget(self.enemy_size_bar)
+        size_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        self.addToolBar(Qt.RightToolBarArea, size_toolbar)
+
         level_toolbar = QToolBar("Level Info Toolbar", self)
         level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
         level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         level_toolbar.setOrientation(Qt.Horizontal)
         level_toolbar.setFloatable(True)
-
-        level_toolbar.addWidget(self.spinner_panel)
-        level_toolbar.addWidget(self.object_dropdown)
-        level_toolbar.addWidget(self.level_size_bar)
-        level_toolbar.addWidget(self.enemy_size_bar)
         level_toolbar.addWidget(splitter)
-
         level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
 
         self.addToolBar(Qt.RightToolBarArea, level_toolbar)

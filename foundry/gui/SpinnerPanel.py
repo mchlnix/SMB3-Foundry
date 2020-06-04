@@ -164,5 +164,6 @@ class SpinnerPanel(QWidget):
         self.enable_type(False)
         self.enable_domain(False)
         self.enable_length(False)
+        self.enable_type(False)
 
         self.blockSignals(False)
