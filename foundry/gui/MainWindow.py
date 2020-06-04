@@ -79,6 +79,12 @@ ID_ITEM_BLOCKS = 513
 ID_INVISIBLE_ITEMS = 514
 ID_BACKGROUND_ENABLED = 515
 
+ID_VISUAL_OBJECT_TOOLBAR = 600
+ID_OBJECT_ATTRIBUTE_TOOLBAR = 601
+ID_COMPACT_TOOLBAR = 602
+ID_BYTES_COUNTER_TOOLBAR = 603
+ID_OBJECT_LIST_TOOLBAR = 604
+
 CHECKABLE_MENU_ITEMS = [
     ID_TRANSPARENCY,
     ID_GRID_LINES,
@@ -88,7 +94,12 @@ CHECKABLE_MENU_ITEMS = [
     ID_JUMP_OBJECTS,
     ID_ITEM_BLOCKS,
     ID_INVISIBLE_ITEMS,
-    ID_BACKGROUND_ENABLED
+    ID_BACKGROUND_ENABLED,
+    ID_VISUAL_OBJECT_TOOLBAR,
+    ID_OBJECT_ATTRIBUTE_TOOLBAR,
+    ID_COMPACT_TOOLBAR,
+    ID_BYTES_COUNTER_TOOLBAR,
+    ID_OBJECT_LIST_TOOLBAR,
 ]
 
 ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
@@ -262,6 +273,40 @@ class MainWindow(QMainWindow):
 
         self.menuBar().addMenu(view_menu)
 
+        tool_menu = QMenu("Tools")
+        tool_menu.triggered.connect(self.on_menu)
+
+        tool_menu.addSection("Object Selectors")
+
+        action = tool_menu.addAction("Visual Object Selector")
+        action.setProperty(ID_PROP, ID_VISUAL_OBJECT_TOOLBAR)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["visual_object_toolbar"])
+
+        action = tool_menu.addAction("Compact Object Selector")
+        action.setProperty(ID_PROP, ID_COMPACT_TOOLBAR)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["compact_object_toolbar"])
+
+        action = tool_menu.addAction("Object Attribute Toolbar")
+        action.setProperty(ID_PROP, ID_OBJECT_ATTRIBUTE_TOOLBAR)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["object_attribute_toolbar"])
+
+        tool_menu.addSeparator()
+
+        action = tool_menu.addAction("Byte Counter")
+        action.setProperty(ID_PROP, ID_OBJECT_LIST_TOOLBAR)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["bytes_counter_toolbar"])
+
+        action = tool_menu.addAction("Object List")
+        action.setProperty(ID_PROP, ID_BYTES_COUNTER_TOOLBAR)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["object_list_toolbar"])
+
+        self.menuBar().addMenu(tool_menu)
+
         help_menu = QMenu("Help")
         """
         help_menu.Append(ID_ENEMY_COMPATIBILITY, "&Enemy Compatibility", "")
@@ -338,56 +383,28 @@ class MainWindow(QMainWindow):
 
         splitter.setChildrenCollapsible(False)
 
-        spinner_toolbar = QToolBar("Level Spinner Toolbar", self)
-        spinner_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        spinner_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        spinner_toolbar.setOrientation(Qt.Horizontal)
-        spinner_toolbar.setFloatable(True)
-        spinner_toolbar.addWidget(self.spinner_panel)
-        spinner_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
-        self.addToolBar(Qt.RightToolBarArea, spinner_toolbar)
-
-        dropdown_toolbar = QToolBar("Object Dropdown Toolbar", self)
-        dropdown_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        dropdown_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        dropdown_toolbar.setOrientation(Qt.Horizontal)
-        dropdown_toolbar.setFloatable(True)
-        dropdown_toolbar.addWidget(self.object_dropdown)
-        dropdown_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
-        self.addToolBar(Qt.RightToolBarArea, dropdown_toolbar)
-
-        size_toolbar = QToolBar("Size Toolbar", self)
-        size_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        size_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        size_toolbar.setOrientation(Qt.Horizontal)
-        size_toolbar.setFloatable(True)
-        size_toolbar.addWidget(self.level_size_bar)
-        size_toolbar.addWidget(self.enemy_size_bar)
-        size_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
-        self.addToolBar(Qt.RightToolBarArea, size_toolbar)
-
-        level_toolbar = QToolBar("Level Info Toolbar", self)
-        level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        level_toolbar.setOrientation(Qt.Horizontal)
-        level_toolbar.setFloatable(True)
-        level_toolbar.addWidget(splitter)
-        level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
-
-        self.addToolBar(Qt.RightToolBarArea, level_toolbar)
-
         self.object_toolbar = ObjectToolBar(self)
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
-        object_toolbar = QToolBar("Object Toolbar", self)
-        object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        object_toolbar.setFloatable(True)
+        self.visual_object_toolbar = self.add_toolbox("Object Toolbar", self.object_toolbar, 1)
+        if SETTINGS["visual_object_toolbar"] != 0:
+            self.visual_object_toolbar.toggleViewAction().trigger()
 
-        object_toolbar.addWidget(self.object_toolbar)
-        object_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        self.compact_object_toolbar = self.add_toolbox("Object Dropdown Toolbar", self.object_dropdown, 2)
+        if SETTINGS["compact_object_toolbar"] != 0:
+            self.compact_object_toolbar.toggleViewAction().trigger()
 
-        self.addToolBar(Qt.LeftToolBarArea, object_toolbar)
+        self.object_attribute_toolbar = self.add_toolbox("Level Spinner Toolbar", self.spinner_panel, 2)
+        if SETTINGS["object_attribute_toolbar"] != 0:
+            self.object_attribute_toolbar.toggleViewAction().trigger()
+
+        self.bytes_counter_toolbar = self.add_toolbox("Size Toolbar", [self.level_size_bar, self.enemy_size_bar], 2)
+        if SETTINGS["bytes_counter_toolbar"] != 0:
+            self.bytes_counter_toolbar.toggleViewAction().trigger()
+
+        self.object_list_toolbar = self.add_toolbox("Level Info", splitter, 2)
+        if SETTINGS["object_list_toolbar"] != 0:
+            self.object_list_toolbar.toggleViewAction().trigger()
 
         menu_toolbar = QToolBar("Menu Toolbar", self)
         menu_toolbar.setOrientation(Qt.Horizontal)
@@ -866,6 +883,21 @@ class MainWindow(QMainWindow):
             self.level_view.draw_items_in_blocks = checked
         elif item_id == ID_INVISIBLE_ITEMS:
             self.level_view.draw_invisible_items = checked
+        elif item_id == ID_VISUAL_OBJECT_TOOLBAR:
+            self.visual_object_toolbar.toggleViewAction().trigger()
+            SETTINGS["visual_object_toolbar"] = not SETTINGS["visual_object_toolbar"]
+        elif item_id == ID_OBJECT_ATTRIBUTE_TOOLBAR:
+            self.object_attribute_toolbar.toggleViewAction().trigger()
+            SETTINGS["object_attribute_toolbar"] = not SETTINGS["object_attribute_toolbar"]
+        elif item_id == ID_COMPACT_TOOLBAR:
+            self.compact_object_toolbar.toggleViewAction().trigger()
+            SETTINGS["compact_object_toolbar"] = not SETTINGS["compact_object_toolbar"]
+        elif item_id == ID_BYTES_COUNTER_TOOLBAR:
+            self.bytes_counter_toolbar.toggleViewAction().trigger()
+            SETTINGS["bytes_counter_toolbar"] = not SETTINGS["bytes_counter_toolbar"]
+        elif item_id == ID_OBJECT_LIST_TOOLBAR:
+            self.object_list_toolbar.toggleViewAction().trigger()
+            SETTINGS["object_list_toolbar"] = not SETTINGS["object_list_toolbar"]
 
         SETTINGS["draw_mario"] = self.level_view.draw_mario
         SETTINGS["draw_jumps"] = self.level_view.draw_jumps
@@ -1032,3 +1064,23 @@ class MainWindow(QMainWindow):
             return
 
         super(MainWindow, self).closeEvent(event)
+
+    def add_toolbox(self, name, widget, side):
+        toolbar = QToolBar(name, self)
+        toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        toolbar.setOrientation(Qt.Horizontal)
+        toolbar.setFloatable(True)
+        toolbar.toggleViewAction().setChecked(True)
+        toolbar.toggleViewAction().trigger()
+        if isinstance(widget, list):
+            for wig in widget:
+                toolbar.addWidget(wig)
+        else:
+            toolbar.addWidget(widget)
+        toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        if side == 1:
+            self.addToolBar(Qt.LeftToolBarArea, toolbar)
+        else:
+            self.addToolBar(Qt.RightToolBarArea, toolbar)
+        return toolbar

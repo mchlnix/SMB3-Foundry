@@ -23,6 +23,13 @@ SETTINGS["draw_invisible_items"] = True
 SETTINGS["block_transparency"] = True
 SETTINGS["background_enabled"] = False
 
+SETTINGS["visual_object_toolbar"] = True
+SETTINGS["object_attribute_toolbar"] = True
+SETTINGS["compact_object_toolbar"] = True
+SETTINGS["bytes_counter_toolbar"] = True
+SETTINGS["object_list_toolbar"] = True
+
+
 default_settings_dir = pathlib.Path.home() / ".smb3foundry"
 default_settings_dir.mkdir(parents=True, exist_ok=True)
 
