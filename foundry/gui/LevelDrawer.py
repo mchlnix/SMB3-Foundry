@@ -17,7 +17,6 @@ from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXP
 from foundry.game.level.Level import Level
 from foundry.game.ObjectSet import ObjectSet
 
-
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
 
@@ -103,9 +102,11 @@ class LevelDrawer:
         self.block_quick = []
         self.block_quick_object_set = -1
         self.block_quick_block_length = -1
+        self.block_transparency = -1
 
     def draw(self, painter: QPainter, level: Level):
         self.block_cache = BlockCache()
+
         self._draw_objects(painter, level)
 
         self._draw_overlays(painter, level)
@@ -204,7 +205,7 @@ class LevelDrawer:
 
     def get_blocks(self, level):
         if len(self.block_quick) == 0 or self.block_quick_object_set != level.object_set_number or self.block_length != \
-                self.block_quick_block_length:
+                self.block_quick_block_length or self.block_transparency != self.transparency:
             self.block_quick_object_set = level.object_set_number
             palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
             tsa_data = ROM.get_tsa_data(level.object_set_number)
@@ -214,7 +215,9 @@ class LevelDrawer:
                 blocks.append(self.block_cache.block(palette_group, graphics_set, tsa_data, i).to_pixmap(
                     self.block_length, False, self.transparency
                 ))
+            self.block_quick_block_length = self.block_length
             self.block_quick = blocks
+            self.block_transparency = self.transparency
 
         return self.block_quick
 

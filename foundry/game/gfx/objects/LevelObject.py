@@ -234,8 +234,7 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         self.rect = Rect()
 
-
-        self._render()
+        self.render()
 
     @classmethod
     def from_data(cls, data: bytearray, object_set: ObjectSet, palette_group, pattern_table: "PatternTable",
@@ -317,7 +316,7 @@ class LevelObject(ObjectLike, BlockGenerator):
         self.pos = pos
         self.pos.x = max(self.pos.x, 0)
         self.pos.y = min(max(self.pos.y, 0), 26)
-        self._render()
+        self.render()
 
     def move_by(self, pos):
         self.set_position(pos + self.pos)
@@ -361,7 +360,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             else:
                 raise ValueError("Resize impossible", self)
 
-        self._render()
+        self.render()
 
     def resize_y(self, y: int):
         if self.expands() & EXPANDS_VERT == 0:
@@ -389,7 +388,7 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         self._calculate_lengths()
 
-        self._render()
+        self.render()
 
     def _calculate_lengths(self):
         if self.is_single_block:

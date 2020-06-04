@@ -455,8 +455,9 @@ class LevelObjectEndingBackground(LevelObject):
 
 
 class EndOnAllSides(LevelObject):
-    def get_block_position(self, pos, size):
-        offset_idx = self.bmp.size.width * self.bmp.size.height
+    def get_block_position(self, pos, size, offset_idx=None):
+        if offset_idx is None:
+            offset_idx = self.bmp.size.width * self.bmp.size.height
         idx = self.bmp.size.index_position(pos % self.bmp.size) + \
             size.get_relational_position(pos // self.bmp.size) * offset_idx
         try:
@@ -465,7 +466,28 @@ class EndOnAllSides(LevelObject):
             return self.blocks[0]
 
 
-class EndOnTopAndBottom(LevelObject):
+class LevelObjectBlockGetter(LevelObject):
+    @abstractmethod
+    def offset(self, pos, size):
+        """Finds the correct offset for a tile"""
+
+    def get_block_position(self, pos, size, offset_idx=None):
+        """Gets a block at a specific position"""
+        if offset_idx is None:
+            offset_idx = self.bmp.size.width * self.bmp.size.height
+        idx = self.bmp.size.index_position(pos % self.bmp.size) + self.offset(pos, size) * offset_idx
+        try:
+            return self.blocks[idx]
+        except IndexError:
+            return self.blocks[0]
+
+    def get_blocks(self, size):
+        """Returns every block for a given size"""
+        offset_idx = self.bmp.size.width * self.bmp.size.height
+        return [self.get_block_position(pos, size, offset_idx) for pos in size.positions()]
+
+
+class EndOnTopAndBottom(LevelObjectBlockGetter):
     def offset(self, pos, size):
         if pos.y // self.bmp.size.height == 0:
             return 0
@@ -474,16 +496,8 @@ class EndOnTopAndBottom(LevelObject):
         else:
             return 1
 
-    def get_block_position(self, pos, size):
-        offset_idx = self.bmp.size.width * self.bmp.size.height
-        idx = self.bmp.size.index_position(pos % self.bmp.size) + self.offset(pos, size) * offset_idx
-        try:
-            return self.blocks[idx]
-        except IndexError:
-            return self.blocks[0]
 
-
-class EndOnBottom(LevelObject):
+class EndOnBottom(LevelObjectBlockGetter):
     @property
     def bottom(self):
         return 1
@@ -498,16 +512,8 @@ class EndOnBottom(LevelObject):
         else:
             return self.body
 
-    def get_block_position(self, pos, size):
-        offset_idx = self.bmp.size.width * self.bmp.size.height
-        idx = self.bmp.size.index_position(pos % self.bmp.size) + self.offset(pos, size) * offset_idx
-        try:
-            return self.blocks[idx]
-        except IndexError:
-            return self.blocks[0]
 
-
-class EndOnTop(LevelObject):
+class EndOnTop(LevelObjectBlockGetter):
     @property
     def top(self):
         return 0
@@ -522,16 +528,8 @@ class EndOnTop(LevelObject):
         else:
             return self.body
 
-    def get_block_position(self, pos, size):
-        offset_idx = self.bmp.size.width * self.bmp.size.height
-        idx = self.bmp.size.index_position(pos % self.bmp.size) + self.offset(pos, size) * offset_idx
-        try:
-            return self.blocks[idx]
-        except IndexError:
-            return self.blocks[0]
 
-
-class EndOnDoubleTop(LevelObject):
+class EndOnDoubleTop(LevelObjectBlockGetter):
     @property
     def top(self):
         return 0
@@ -552,108 +550,8 @@ class EndOnDoubleTop(LevelObject):
         else:
             return self.body
 
-    def get_block_position(self, pos, size):
-        offset_idx = self.bmp.size.width * self.bmp.size.height
-        idx = self.bmp.size.index_position(pos % self.bmp.size) + self.offset(pos, size) * offset_idx
-        try:
-            return self.blocks[idx]
-        except IndexError:
-            return self.blocks[0]
 
-
-class LevelObjectVertical(LevelObject):
-    def expands(self):
-        return EXPANDS_VERT
-
-    def primary_expansion(self):
-        if self.is_4byte:
-            return EXPANDS_HORIZ | EXPANDS_VERT
-        else:
-            return EXPANDS_VERT
-
-    def get_block_position(self, pos, _):
-        idx = self.bmp.size.index_position(pos % self.bmp.size)
-        try:
-            return self.blocks[idx]
-        except IndexError:
-            return self.blocks[0]
-
-    def get_blocks(self, size):
-        return [self.get_block_position(po, size) for po in size.positions()]
-
-    def _render(self):
-        """Draws an blocks to the sky from a given y position"""
-        pos, size = Position.from_pos(self.pos), self.bmp.size * (self.size.invert() + Size(1, 1))
-        blocks_to_draw = self.get_blocks(size)
-        self._confirm_render(size, pos, blocks_to_draw)
-
-
-class LevelObjectVerticalWithTop(EndOnTop, LevelObjectVertical):
-    pass
-
-
-class LevelObjectVerticalWithDoubleTop(EndOnDoubleTop, LevelObjectVertical):
-    pass
-
-
-class LevelObjectVerticalWithAllSides(EndOnAllSides, LevelObjectVertical):
-    pass
-
-
-class LevelObjectVerticalWithTopAndBottom(EndOnTopAndBottom, LevelObjectVertical):
-    pass
-
-
-class LevelObjectVerticalWithBottom(EndOnBottom, LevelObjectVertical):
-    pass
-
-
-class LevelObjectHorizontal(LevelObject):
-    def expands(self):
-        return EXPANDS_HORIZ
-
-    def primary_expansion(self):
-        return EXPANDS_HORIZ | EXPANDS_VERT if self.is_4byte else EXPANDS_HORIZ
-
-    def get_block_position(self, pos, size):
-        idx = self.bmp.size.index_position(pos % self.bmp.size)
-        try:
-            return self.blocks[idx]
-        except IndexError:
-            return self.blocks[0]
-
-    def get_blocks(self, size):
-        return [self.get_block_position(po, size) for po in size.positions()]
-
-    def _render(self):
-        """Draws an blocks to the sky from a given y position"""
-        pos, size = Position.from_pos(self.pos), self.bmp.size * (self.size + Size(1, 1))
-        blocks_to_draw = self.get_blocks(size)
-        self._confirm_render(size, pos, blocks_to_draw)
-
-
-class LevelObjectHorizontal5Byte(LevelObjectHorizontal):
-    def get_block_position(self, pos, size):
-        idx = self.bmp.size.index_position(pos % self.bmp.size)
-        try:
-            return self.overflow[idx]
-        except IndexError:
-            return 0
-
-
-class LevelObjectHorizontalWithTop(EndOnTop, LevelObjectHorizontal):
-    pass
-
-
-class LevelObjectHorizontalWithBottom(EndOnBottom, LevelObjectHorizontal):
-    pass
-
-
-class LevelObjectHorizontalWithAllSides(EndOnAllSides, LevelObjectHorizontal):
-    pass
-
-
-class EndOnSides(LevelObject):
+class EndOnSides(LevelObjectBlockGetter):
     @property
     def left_offset(self):
         return 0
@@ -674,13 +572,88 @@ class EndOnSides(LevelObject):
         else:
             return self.body_offset
 
-    def get_block_position(self, pos, size):
-        offset_idx = self.bmp.size.width * self.bmp.size.height
-        idx = self.bmp.size.index_position(pos % self.bmp.size) + self.offset(pos, size) * offset_idx
+
+class VerticalLevelObject:
+    def expands(self):
+        return EXPANDS_VERT
+
+    def primary_expansion(self):
+        if self.is_4byte:
+            return EXPANDS_HORIZ | EXPANDS_VERT
+        else:
+            return EXPANDS_VERT
+
+
+class LevelObjectVertical(LevelObjectBlockGetter, VerticalLevelObject):
+    def offset(self, *_):
+        return 0
+
+    def _render(self):
+        """Draws blocks vertically"""
+        pos, size = Position.from_pos(self.pos), self.bmp.size * (self.size.invert() + Size(1, 1))
+        blocks_to_draw = self.get_blocks(size)
+        self._confirm_render(size, pos, blocks_to_draw)
+
+
+class LevelObjectVerticalWithTop(EndOnTop, LevelObjectVertical):
+    """Vertical generator with a custom top"""
+
+
+class LevelObjectVerticalWithDoubleTop(EndOnDoubleTop, LevelObjectVertical):
+    """Vertical generator with two custom tops"""
+
+
+class LevelObjectVerticalWithAllSides(EndOnAllSides, LevelObjectVertical):
+    """Vertical generator with custom sides and edges"""
+
+
+class LevelObjectVerticalWithTopAndBottom(EndOnTopAndBottom, LevelObjectVertical):
+    """Vertical generator with a custom bottom and top"""
+
+
+class LevelObjectVerticalWithBottom(EndOnBottom, LevelObjectVertical):
+    """Vertical generator with a custom bottom"""
+
+
+class HorizontalLevelObject:
+    def expands(self):
+        return EXPANDS_HORIZ
+
+    def primary_expansion(self):
+        return EXPANDS_HORIZ | EXPANDS_VERT if self.is_4byte else EXPANDS_HORIZ
+
+
+class LevelObjectHorizontal(LevelObjectBlockGetter, HorizontalLevelObject):
+    def offset(self, *_):
+        return 0
+
+    def _render(self):
+        """Draws an blocks to the sky from a given y position"""
+        pos, size = Position.from_pos(self.pos), self.bmp.size * (self.size + Size(1, 1))
+        blocks_to_draw = self.get_blocks(size)
+        self._confirm_render(size, pos, blocks_to_draw)
+
+
+class LevelObjectHorizontal5Byte(LevelObjectHorizontal):
+    """An object that has an additional byte to determine the block displayed"""
+    def get_block_position(self, pos, *_):
+        idx = self.bmp.size.index_position(pos % self.bmp.size)
         try:
-            return self.blocks[idx]
+            return self.overflow[idx]
         except IndexError:
-            return self.blocks[0]
+            return 0
+
+
+class LevelObjectHorizontalWithTop(EndOnTop, LevelObjectHorizontal):
+    """Horizontal generator with a custom top"""
+
+
+class LevelObjectHorizontalWithBottom(EndOnBottom, LevelObjectHorizontal):
+    """Horizontal generator with a custom bottom"""
+
+
+class LevelObjectHorizontalWithAllSides(EndOnAllSides, LevelObjectHorizontal):
+    """Horizontal generator with custom sides and edges"""
 
 
 class LevelObjectHorizontalWithSides(EndOnSides, LevelObjectHorizontal):
@@ -700,7 +673,7 @@ class LevelObjectHorizontalWithSidesAndTop(LevelObjectHorizontal):
     def body(self):
         return self.blocks[1] if len(self.blocks) == 3 else self.blocks[0]
 
-    def get_block_position(self, pos, size):
+    def get_block_position(self, pos, size, *_):
         if pos.x == 0:
             return self.left
         elif pos.x == size.width - 1:
