@@ -1,3 +1,6 @@
+from PySide2.QtCore import QRect
+
+from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 
 
@@ -81,6 +84,19 @@ class Jump(ObjectLike):
 
     def change_type(self, new_type):
         pass
+
+    def get_rect(self, block_length=1, vertical=False) -> QRect:
+        if vertical:
+            return QRect(
+                0,
+                block_length * (1 + SCREEN_HEIGHT * self.screen_index),
+                block_length * SCREEN_WIDTH,
+                block_length * SCREEN_HEIGHT,
+            )
+        else:
+            return QRect(
+                block_length * SCREEN_WIDTH * self.screen_index, 0, block_length * SCREEN_WIDTH, block_length * GROUND,
+            )
 
     def __contains__(self, point):
         return False

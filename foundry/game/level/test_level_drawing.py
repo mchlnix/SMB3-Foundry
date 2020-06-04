@@ -75,3 +75,18 @@ def test_level(level_info, qtbot):
     level_view.setGeometry(rect)
 
     _test_level_against_reference(level_view, qtbot)
+
+
+@pytest.mark.parametrize("jump_test_name", ["jump_vertical_ref", "jump_horizontal_ref"])
+def test_draw_jumps(jump_test_name, level, qtbot):
+    with open(str(Path(__file__).parent / f"{jump_test_name}.m3l"), "rb") as m3l_file:
+        level.from_m3l(bytearray(m3l_file.read()))
+
+        ref = LevelRef()
+        ref._internal_level = level
+
+        view = LevelView(None, ref, ContextMenu(ref))
+        view.draw_jumps = True
+        view.draw_grid = False
+
+        compare_images(jump_test_name, str(Path(__file__).parent / f"{jump_test_name}.png"), view.grab())
