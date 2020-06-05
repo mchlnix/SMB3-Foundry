@@ -640,11 +640,13 @@ class MainWindow(QMainWindow):
                 QMessageBox.Ok,
             )
 
-            answer = self.level_selector.exec_()
+            level_selector = LevelSelector(self)
+
+            answer = level_selector.exec_()
 
             if answer == QMessageBox.Accepted:
                 self.level_view.level_ref.attach_to_rom(
-                    self.level_selector.object_data_offset, self.level_selector.enemy_data_offset
+                    level_selector.object_data_offset, level_selector.enemy_data_offset
                 )
 
                 if is_save_as:
