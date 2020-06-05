@@ -84,6 +84,9 @@ class LevelObjectController(ObjectLike):
     def get_blocks_and_positions(self):
         return self.level_object.get_blocks_and_positions()
 
+    def icon(self):
+        return self.level_object.icon()
+
     def to_asm6(self):
         return self.level_object.to_asm6()
 
@@ -102,6 +105,10 @@ class LevelObjectController(ObjectLike):
     @property
     def index_in_level(self):
         return self.level_object.index_in_level
+
+    @property
+    def index(self):
+        return self.level_object.index
 
     @property
     def obj_index(self):

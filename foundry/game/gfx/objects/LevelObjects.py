@@ -15,18 +15,25 @@ logging.basicConfig(filename=data_dir.joinpath("logs/lvl_objs.log"), level=loggi
 
 
 class LevelObjectToSky(LevelObject):
-    def _render(self):
+    def icon(self):
+        self.size = Size(1, 2)
+        self._render(False)
+
+    def _render(self, regular=True):
         """
         Draws an blocks to the sky from a given y position
         Note: This class is a very unique case and needs to be updated if desired to be used by bigger applications
         """
-        pos, size = Position(self.pos.x, SKY), Size(self.bmp.size.width, self.pos.y - SKY + 1)
-        blocks_to_draw = []
+        if regular:
+            pos, size = Position(self.pos.x, SKY), Size(self.bmp.size.width, self.pos.y - SKY + 1)
+            blocks_to_draw = []
 
-        for _ in range(self.pos.y - SKY):
-            blocks_to_draw.append(self.blocks[0])
-        blocks_to_draw.append(self.blocks[1])
-
+            for _ in range(self.pos.y - SKY):
+                blocks_to_draw.append(self.blocks[0])
+            blocks_to_draw.append(self.blocks[1])
+        else:
+            pos, size = Position.from_pos(self.pos), Size.from_size(self.size)
+            blocks_to_draw = self.blocks
         self._confirm_render(size, pos, blocks_to_draw)
 
 
@@ -455,6 +462,10 @@ class LevelObjectEndingBackground(LevelObject):
 
 
 class EndOnAllSides(LevelObject):
+    def icon(self):
+        self.size = Size(2, 2)
+        self.render()
+
     def get_block_position(self, pos, size, offset_idx=None):
         if offset_idx is None:
             offset_idx = self.bmp.size.width * self.bmp.size.height
@@ -488,6 +499,10 @@ class LevelObjectBlockGetter(LevelObject):
 
 
 class EndOnTopAndBottom(LevelObjectBlockGetter):
+    def icon(self):
+        self.size = Size(2, 0)
+        self.render()
+
     def offset(self, pos, size):
         if pos.y // self.bmp.size.height == 0:
             return 0
@@ -498,6 +513,10 @@ class EndOnTopAndBottom(LevelObjectBlockGetter):
 
 
 class EndOnBottom(LevelObjectBlockGetter):
+    def icon(self):
+        self.size = Size(1, 1)
+        self.render()
+
     @property
     def bottom(self):
         return 1
@@ -514,6 +533,10 @@ class EndOnBottom(LevelObjectBlockGetter):
 
 
 class EndOnTop(LevelObjectBlockGetter):
+    def icon(self):
+        self.size = Size(1, 1)
+        self.render()
+
     @property
     def top(self):
         return 0
@@ -530,6 +553,10 @@ class EndOnTop(LevelObjectBlockGetter):
 
 
 class EndOnDoubleTop(LevelObjectBlockGetter):
+    def icon(self):
+        self.size = Size(2, 0)
+        self.render()
+
     @property
     def top(self):
         return 0
@@ -552,6 +579,10 @@ class EndOnDoubleTop(LevelObjectBlockGetter):
 
 
 class EndOnSides(LevelObjectBlockGetter):
+    def icon(self):
+        self.size = Size(2, 0)
+        self.render()
+
     @property
     def left_offset(self):
         return 0
@@ -585,6 +616,10 @@ class VerticalLevelObject:
 
 
 class LevelObjectVertical(LevelObjectBlockGetter, VerticalLevelObject):
+    def icon(self):
+        self.size = Size(0, 0)
+        self.render()
+
     def offset(self, *_):
         return 0
 
@@ -624,6 +659,10 @@ class HorizontalLevelObject:
 
 
 class LevelObjectHorizontal(LevelObjectBlockGetter, HorizontalLevelObject):
+    def icon(self):
+        self.size = Size(0, 0)
+        self.render()
+
     def offset(self, *_):
         return 0
 
@@ -683,23 +722,43 @@ class LevelObjectHorizontalWithSidesAndTop(LevelObjectHorizontal):
 
 
 class LevelObjectHorizontalToGround(LevelObjectHorizontalWithAllSides):
-    def _render(self):
+    def icon(self):
+        self.size = Size(3, 3)
+        self._render(False)
+
+    def _icon_render(self):
         """Draws an blocks to the sky from a given y position"""
         pos = Position.from_pos(self.pos)
-        size = self.size if self.is_single_block else self.size + Size(1, 0)
-        for _ in range(pos.y, self.ground_level):
-            size.height += 1
-            bottom_rect = Rect.from_size_and_position(size, pos)
-            if self._if_intersects(bottom_rect):
-                size.height -= 1
-                break
-        else:
-            size.height = self.ground_level - pos.y
+        size = self.size
         blocks_to_draw = self.get_blocks(size)
+        self._confirm_render(size, pos, blocks_to_draw)
+
+    def _render(self, regular=True):
+        """Draws an blocks to the sky from a given y position"""
+        if regular:
+            pos = Position.from_pos(self.pos)
+            size = self.size if self.is_single_block else self.size + Size(1, 0)
+            for _ in range(pos.y, self.ground_level):
+                size.height += 1
+                bottom_rect = Rect.from_size_and_position(size, pos)
+                if self._if_intersects(bottom_rect):
+                    size.height -= 1
+                    break
+            else:
+                size.height = self.ground_level - pos.y
+            blocks_to_draw = self.get_blocks(size)
+        else:
+            pos = Position.from_pos(self.pos)
+            size = Size.from_size(self.size)
+            blocks_to_draw = self.get_blocks(size)
         self._confirm_render(size, pos, blocks_to_draw)
 
 
 class LevelObjectPlainsPlatformFloating(LevelObject):
+    def icon(self):
+        self.size = Size(2, 2)
+        self.render()
+
     @property
     def main_blocks(self):
         try:
@@ -743,6 +802,10 @@ class LevelObjectInteractable(LevelObject):
 
 
 class LevelObjectPlainsPlatformToGround(LevelObjectInteractable):
+    def icon(self):
+        self.size = Size(3, 3)
+        self._render(False)
+
     @property
     def main_blocks(self):
         try:
@@ -782,6 +845,14 @@ class LevelObjectPlainsPlatformToGround(LevelObjectInteractable):
                 return 0xC4
         return block
 
+    def get_icon_position(self, pos, size):
+        offset_idx = self.bmp.size.width * self.bmp.size.height
+        idx = self.bmp.size.index_position(pos % self.bmp.size) + \
+            size.get_relational_position(pos // self.bmp.size) * offset_idx
+        try:
+            return self.main_blocks[idx]
+        except IndexError:
+            return self.blocks[0]
 
     def get_block_position(self, pos, base_pos, size, level_blocks):
         reg_size = size - Size(1, 0)
@@ -823,14 +894,21 @@ class LevelObjectPlainsPlatformToGround(LevelObjectInteractable):
                 break
         return size
 
-    def _render(self):
+    def _render(self, regular=True):
         """Draws an blocks to the sky from a given y position"""
-        level_blocks = self._get_blocks(self.objects_ref[:self._get_obj_index()])
-        pos = Position.from_pos(self.pos)
-        size = Size(self.size.width, 0) + self._find_size(level_blocks, pos) + Size(2, 0)
-        blocks_to_draw = []
-        for po in size.positions():
-            blocks_to_draw.append(self.get_block_position(po, pos, size, level_blocks))
+        if regular:
+            level_blocks = self._get_blocks(self.objects_ref[:self._get_obj_index()])
+            pos = Position.from_pos(self.pos)
+            size = Size(self.size.width, 0) + self._find_size(level_blocks, pos) + Size(2, 0)
+            blocks_to_draw = []
+            for po in size.positions():
+                blocks_to_draw.append(self.get_block_position(po, pos, size, level_blocks))
+        else:
+            pos = Position.from_pos(self.pos)
+            size = Size.from_size(self.size)
+            blocks_to_draw = []
+            for po in size.positions():
+                blocks_to_draw.append(self.get_icon_position(po, size))
         self._confirm_render(size, pos, blocks_to_draw)
 
 
@@ -973,16 +1051,26 @@ class LevelObjectHorizontalAlt(LevelObjectHorizontal):
 
 
 class SingleBlock(LevelObject):
+    def icon(self):
+        self.render()
+
     def _render(self):
         """Draws a singular block"""
         self._confirm_render(self.bmp.size, self.pos, self.blocks)
 
 
 class LevelObjectFillBackgroundHorizontalLevel(LevelObject):
-    def _render(self):
-        self.pos = Position(0, 0)
-        self.size = Size(16 * 15, 26)
-        blocks = [self.blocks[0] for _ in range(16 * 15 * 26)]
+    def icon(self):
+        self.size = Size(1, 1)
+        self._render(False)
+
+    def _render(self, regular=True):
+        if regular:
+            self.pos = Position(0, 0)
+            self.size = Size(16 * 15, 26)
+            blocks = [self.blocks[0] for _ in range(16 * 15 * 26)]
+        else:
+            blocks = [self.blocks[0] for _ in range(self.size.width * self.size.height)]
         self._confirm_render(self.size, self.pos, blocks)
 
 

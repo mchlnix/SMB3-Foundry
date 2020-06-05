@@ -44,16 +44,8 @@ def get_minimal_icon_object(level_object):
         return level_object
     if isinstance(level_object, Jump):
         return None
-    while (
-            any(block not in level_object.rendered_blocks for block in
-                level_object.blocks) and level_object.size.width < 0x10
-    ):
-        level_object.size.width += 1
 
-        if level_object.is_4byte:
-            level_object.size.height += 1
-
-        level_object.render()
+    level_object.icon()
 
     return level_object
 
@@ -92,6 +84,7 @@ class BlockGenerator:
     overflow: list
     pos: Position
     object_factory_idx: int
+    bytes: int
 
     @property
     def y_pos(self):
@@ -112,21 +105,12 @@ class BlockGenerator:
     @property
     def is_4byte(self):
         """Returns if the object takes 4 bytes"""
-        return self._is_4byte(self.object_set, self.type)
-
-    @property
-    def bytes(self):
-        return self._bytes(self.object_set, self.type)
+        return self.bytes == 4
 
     @staticmethod
     def _bytes(object_set, type):
         """Returns if an object is 4 bytes from the object set from a given type"""
         return object_set.get_definition_of(type).bytes
-
-    @staticmethod
-    def _is_4byte(object_set, type):
-        """Returns if an object is 4 bytes from the object set from a given type"""
-        return object_set.get_definition_of(type).is_4byte
 
     @property
     def is_single_block(self):
@@ -176,9 +160,10 @@ class BlockGenerator:
             x_pos %= SCREEN_WIDTH
         index = data[2]
 
+        bytes = cls._bytes(object_set, cls._type(index, domain))
         if cls._is_single_block(index):
             length, height = 1, 0
-        elif cls._is_4byte(object_set, cls._type(index, domain)):
+        elif bytes >= 4:
             height = index & 0b0000_1111
             try:
                 length = data[3]
@@ -188,7 +173,6 @@ class BlockGenerator:
             length = index & 0b0000_1111
             height = 0
 
-        bytes = cls._bytes(object_set, cls._type(index, domain))
         if bytes > 4:
             overflow = data[4:] if len(data) > 3 else [0 for _ in range(bytes - 4)]
             if len(overflow) == 0:
@@ -197,7 +181,7 @@ class BlockGenerator:
             overflow = []
 
         return cls(object_set=object_set, domain=domain, index=index, overflow=overflow, pos=Position(x_pos, y_pos),
-                   size=Size(length, height), object_factory_idx=object_factory_idx)
+                   size=Size(length, height), object_factory_idx=object_factory_idx, bytes=bytes)
 
 
 class LevelObject(ObjectLike, BlockGenerator):
@@ -220,6 +204,7 @@ class LevelObject(ObjectLike, BlockGenerator):
         self.domain, self.index, self.pos = domain, index, position
         self.size, self.overflow = size, overflow
         self.object_factory_idx = object_factory_idx
+        self.bytes = self._bytes(self.object_set, self.type)
 
         self.index_in_level = len(self.objects_ref)
 
@@ -295,6 +280,10 @@ class LevelObject(ObjectLike, BlockGenerator):
     def _render(self):
         pass
 
+    def icon(self):
+        self.size = Size(1, 1)
+        self.render()
+
     def backtrace_update(self):
         """By default blocks do not need to update when blocks above them move"""
 
@@ -347,10 +336,10 @@ class LevelObject(ObjectLike, BlockGenerator):
             length = max(0, length)
             length = min(length, 0x0F)
 
-            base_index = (self.obj_index // 0x10) * 0x10
+            index = (self.obj_index // 0x10) * 0x10
 
-            self.obj_index = base_index + length
-            self.size.width = self.obj_index
+            self.index = index + length
+            self.size.width = self.index
         else:
             length = x - self.pos.x
             length = max(0, length)
@@ -373,10 +362,10 @@ class LevelObject(ObjectLike, BlockGenerator):
             length = max(0, length)
             length = min(length, 0x0F)
 
-            base_index = (self.obj_index // 0x10) * 0x10
+            index = (self.index // 0x10) * 0x10
 
-            self.obj_index = base_index + length
-            self.size.width = self.obj_index
+            self.index = index + length
+            self.size.width = self.index
         else:
             length = y - self.pos.y
             length = max(0, length)
@@ -395,7 +384,7 @@ class LevelObject(ObjectLike, BlockGenerator):
         if self.is_single_block:
             self._length = 1
         else:
-            self._length = self.obj_index & 0b0000_1111
+            self._length = self.index & 0b0000_1111
 
         if self.is_4byte:
             self.size.height = self.size.width
@@ -456,17 +445,12 @@ class LevelObject(ObjectLike, BlockGenerator):
 
     def to_asm6(self) -> str:
         pos = self.vertical_offset_pos(self.pos)
-        if not self.is_4byte:
-            third_byte = f"{to_hex(self.obj_index & 0xF0)} | {to_hex(self.size.width)}"
-        else:
-            third_byte = f"{to_hex(self.obj_index)}"
-
         if self.is_4byte:
             fourth_byte = f", {to_hex(self.size.width)}"
         else:
             fourth_byte = ""
         s = f"\t.byte {to_hex(self.domain)} | {to_hex(self.pos.y)}, {to_hex(max(min(pos.x, 0xFF), 0))}, " \
-            f"{third_byte} {fourth_byte}; {self.description}\n"
+            f"{to_hex(self.index)}{fourth_byte}; {self.description}\n"
         return s
 
     def to_bytes(self) -> bytearray:
@@ -479,12 +463,7 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         data.append((self.domain << 5) | pos.y)
         data.append(max(min(pos.x, 0xFF), 0))
-        if not self.is_4byte and not self.is_single_block:
-            third_byte = (self.obj_index & 0xF0) + self.size.width
-        else:
-            third_byte = self.obj_index
-
-        data.append(third_byte)
+        data.append(self.index)
 
         if self.is_4byte:
             data.append(self.size.width)

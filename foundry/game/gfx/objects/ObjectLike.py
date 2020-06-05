@@ -18,7 +18,6 @@ class ObjectLike(abc.ABC):
     domain: int = 0
     description: str = ""
     rect: QRect = QRect()
-    is_4byte: bool = False
 
     @abc.abstractmethod
     def render(self):

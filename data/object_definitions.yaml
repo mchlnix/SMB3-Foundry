@@ -11370,7 +11370,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
@@ -15813,14 +15813,10 @@
       offset_y: 0
       size:
         height: 1
-        width: 3
+        width: 1
     bytes: 3
     description: Double Background Bushes
     domain: 0
-    object_design:
-    - 54
-    - 55
-    - 56
     range:
       end: 95
       start: 80
@@ -17032,7 +17028,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
@@ -17157,7 +17153,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Water (moves to right)
@@ -22019,7 +22015,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -22508,7 +22504,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Lava
@@ -25559,7 +25555,7 @@
     - 236
     - 237
     - 238
-    - 230
+    - 239
     bmp:
       ending: 3
       obj_generator: Vertical With Top And Bottom
@@ -37780,7 +37776,7 @@
   88:
     block_design:
     - 240
-    - 141
+    - 240
     bmp:
       ending: 0
       obj_generator: Horizontal With Top
@@ -47698,7 +47694,7 @@
   88:
     block_design:
     - 240
-    - 141
+    - 240
     bmp:
       ending: 0
       obj_generator: Horizontal With Top
@@ -48248,7 +48244,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Lava
@@ -52547,7 +52543,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
     description: Background used in Bowser's Castle
@@ -57362,7 +57358,7 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 3
+        height: 1
         width: 1
     bytes: 3
     description: Bullet Bill Machine
