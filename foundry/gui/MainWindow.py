@@ -533,6 +533,9 @@ class MainWindow(QMainWindow):
             self, caption="Save Screenshot", dir=recommended_file, filter=IMG_FILE_FILTER
         )
 
+        if not pathname:
+            return False
+
         # Proceed loading the file chosen by the user
         self.level_view.make_screenshot().save(pathname)
 
@@ -658,7 +661,7 @@ class MainWindow(QMainWindow):
 
         if is_save_as:
             pathname, _ = QFileDialog.getSaveFileName(self, caption="Save ROM as", filter=ROM_FILE_FILTER)
-            if pathname is None:
+            if not pathname:
                 return  # the user changed their mind
         else:
             pathname = ROM.path
