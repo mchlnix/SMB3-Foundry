@@ -804,7 +804,7 @@ class LevelView(QWidget):
 
             return self.level_ref.level.enemy_item_factory.from_properties(enemy_id, 0, 0)
 
-    def paintEvent(self, event: QPaintEvent):
+    def paintEvent(self, event: QPaintEvent, force=False):
         painter = QPainter(self)
 
         if self.level_ref is None:
@@ -812,7 +812,7 @@ class LevelView(QWidget):
 
         self.level_drawer.block_length = self.block_length
 
-        self.level_drawer.draw(painter, self.level_ref.level)
+        self.level_drawer.draw(painter, self.level_ref.level, force)
 
         self.selection_square.draw(painter)
 

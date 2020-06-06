@@ -43,8 +43,10 @@ class Block:
         graphics_set: GraphicsSet,
         tsa_data: bytes,
         mirrored=False,
+        custom=False
     ):
         self.index = block_index
+        self.custom = custom
 
         palette_index = (block_index & 0b1100_0000) >> 6
 
@@ -55,10 +57,13 @@ class Block:
 
         self._block_id = (block_index, self.bg_color.toTuple(), graphics_set.number)
 
-        lu = tsa_data[TSA_BANK_0 + block_index]
-        ld = tsa_data[TSA_BANK_1 + block_index]
-        ru = tsa_data[TSA_BANK_2 + block_index]
-        rd = tsa_data[TSA_BANK_3 + block_index]
+        if len(tsa_data) > 0x10:
+            lu = tsa_data[TSA_BANK_0 + block_index]
+            ld = tsa_data[TSA_BANK_1 + block_index]
+            ru = tsa_data[TSA_BANK_2 + block_index]
+            rd = tsa_data[TSA_BANK_3 + block_index]
+        else:
+            lu, ld, ru, rd, *_ = tsa_data
 
         self.lu_tile = Tile(lu, palette_group, palette_index, graphics_set)
         self.ld_tile = Tile(ld, palette_group, palette_index, graphics_set)
@@ -88,7 +93,7 @@ class Block:
     def to_pixmap(self, block_length, selected=False, transparent=False):
         block_attributes = (self._block_id, block_length, selected, transparent)
 
-        if block_attributes not in Block._block_cache:
+        if block_attributes not in Block._block_cache or self.custom:
             image = self.image.copy()
 
             if block_length != Block.WIDTH:
@@ -105,13 +110,16 @@ class Block:
                 apply_selection_overlay(image, mask)
 
             pixmap = QPixmap.fromImage(image)
-            Block._block_cache[block_attributes] = pixmap
+            if not self.custom:
+                Block._block_cache[block_attributes] = pixmap
+            else:
+                return pixmap
         return Block._block_cache[block_attributes]
 
     def draw(self, painter: QPainter, x, y, block_length, selected=False, transparent=False):
         block_attributes = (self._block_id, block_length, selected, transparent)
 
-        if block_attributes not in Block._block_cache:
+        if self.custom or block_attributes not in Block._block_cache:
             image = self.image.copy()
 
             if block_length != Block.WIDTH:
@@ -128,10 +136,17 @@ class Block:
                 apply_selection_overlay(image, mask)
 
             pixmap = QPixmap.fromImage(image)
-            Block._block_cache[block_attributes] = pixmap
+            if not self.custom:
+                Block._block_cache[block_attributes] = pixmap
+            else:
+                painter.drawPixmap(x, y, pixmap)
 
-        if not self._whole_block_is_transparent:
+        if not self._whole_block_is_transparent and not self.custom:
             painter.drawPixmap(x, y, Block._block_cache[block_attributes])
+
+    @staticmethod
+    def reset_cache():
+        Block._block_cache = {}
 
     def _replace_transparent_with_background(self, image):
         # draw image on background layer, to fill transparent pixels

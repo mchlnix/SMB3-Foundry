@@ -91,6 +91,7 @@ class LevelDrawer:
         self.draw_invisible_items = SETTINGS["draw_invisible_items"]
         self.transparency = SETTINGS["block_transparency"]
         self.background_enabled = SETTINGS["background_enabled"]
+        self.tsa_data = None
 
         self.block_length = Block.WIDTH
 
@@ -104,10 +105,10 @@ class LevelDrawer:
         self.block_quick_block_length = -1
         self.block_transparency = -1
 
-    def draw(self, painter: QPainter, level: Level):
+    def draw(self, painter: QPainter, level: Level, force=False):
         self.block_cache = BlockCache()
 
-        self._draw_objects(painter, level)
+        self._draw_objects(painter, level, force)
 
         self._draw_overlays(painter, level)
 
@@ -203,14 +204,16 @@ class LevelDrawer:
                         pass
         return blocks
 
-    def get_blocks(self, level):
+    def get_blocks(self, level, force=False):
         if len(self.block_quick) == 0 or self.block_quick_object_set != level.object_set_number or self.block_length != \
-                self.block_quick_block_length or self.block_transparency != self.transparency:
+                self.block_quick_block_length or self.block_transparency != self.transparency or force:
             self.block_quick_object_set = level.object_set_number
             palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
             tsa_data = ROM.get_tsa_data(level.object_set_number)
             graphics_set = GraphicsSet(level.header.graphic_set_index)
             blocks = []
+            Block._block_cache = {}
+            self.block_cache = BlockCache()
             for i in range(0xFF):
                 blocks.append(self.block_cache.block(palette_group, graphics_set, tsa_data, i).to_pixmap(
                     self.block_length, False, self.transparency
@@ -238,10 +241,10 @@ class LevelDrawer:
             painter.drawRect(x, y, self.block_length, self.block_length)
         painter.setBrush(Qt.NoBrush)
 
-    def _draw_objects(self, painter: QPainter, level: Level):
+    def _draw_objects(self, painter: QPainter, level: Level, force=False):
         level_rect = level.get_rect()
         blocks = self._get_objects(level, self._get_background(level), level_rect)
-        pixmaps = self.get_blocks(level)
+        pixmaps = self.get_blocks(level, force)
         self.render_blocks(painter, blocks, pixmaps, level_rect)
 
         for level_object in level.get_all_objects():

@@ -1089,6 +1089,9 @@ class MainWindow(QMainWindow):
 
         super(MainWindow, self).closeEvent(event)
 
+    def force_update_level_view(self):
+        self.level_view.paintEvent(0, True)
+
     def add_toolbox(self, name, widget, side):
         toolbar = QToolBar(name, self)
         toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
