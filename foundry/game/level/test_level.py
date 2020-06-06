@@ -1,16 +1,9 @@
 import pytest
 
-from foundry.conftest import level_1_1_enemy_address, level_1_1_object_address
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.level.Level import Level
-from smb3parse.objects.object_set import PLAINS_OBJECT_SET
-
-
-@pytest.fixture
-def level(rom, qtbot):
-    return Level(1, 1, level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
+from foundry.game.level.Level import LEVEL_DEFAULT_HEIGHT
 
 
 @pytest.mark.parametrize(
@@ -78,3 +71,26 @@ def test_not_too_big_nothing(level):
 
     # THEN the level is not too big
     assert not level.is_too_big()
+
+
+def test_level_insert_in_vertical_level(level):
+    # GIVEN a vertical level without objects
+    level.is_vertical = True
+
+    level.objects.clear()
+    level.enemies.clear()
+    level.jumps.clear()
+
+    # WHEN an object is added at a Y-value, too large for horizontal levels
+    domain = object_index = 0x00
+    x, y = 0, LEVEL_DEFAULT_HEIGHT * 2
+
+    level.add_object(domain, object_index, x, y, None)
+
+    # THEN that object is still the same and at the correct position
+    added_object = level.objects[0]
+
+    assert added_object.domain == domain
+    assert added_object.obj_index == object_index
+    assert added_object.rendered_base_x == x
+    assert added_object.rendered_base_y == y

@@ -6,9 +6,10 @@ from PySide2.QtWidgets import (
     QStyle, QComboBox, QToolBar, QWidget, QLayout, QStatusBar, QVBoxLayout, QGridLayout, QSizePolicy, QHBoxLayout
 )
 
+from foundry import icon
 from foundry.game.File import ROM
-from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.drawable.Tile import Tile
 from foundry.gui.CustomChildWindow import CustomChildWindow
@@ -21,7 +22,7 @@ class BlockViewer(CustomChildWindow):
         super(BlockViewer, self).__init__(parent, "Block Viewer")
         self.main = parent
 
-        self.object_set = 0
+        self._object_set = 0
         self.sprite_bank = BlockBank(parent=self, object_set=self.object_set)
         self.add_toolbox("Block Viewer", self.sprite_bank, Qt.LeftToolBarArea)
 
@@ -71,15 +72,21 @@ class BlockViewer(CustomChildWindow):
     def set_tsa(self, tsa):
         self.sprite_bank.set_tsa(tsa)
 
+    @property
+    def object_set(self):
+        return self._object_set
+
+    @object_set.setter
+    def object_set(self, value):
+        self._object_set = value
+
+        self._after_object_set()
+
     def prev_object_set(self):
         self.object_set = max(self.object_set - 1, 0)
 
-        self._after_object_set()
-
     def next_object_set(self):
         self.object_set = min(self.object_set + 1, 0xE)
-
-        self._after_object_set()
 
     def _after_object_set(self):
         self.sprite_bank.object_set = self.object_set

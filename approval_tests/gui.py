@@ -58,7 +58,7 @@ class ApprovalDialog(QDialog):
         scroll_area.setWidgetResizable(True)
 
         scroll_area.widget().setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        scroll_area.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        scroll_area.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Maximum)
 
         scroll_area.widget().setLayout(self.image_layout)
 

@@ -342,8 +342,6 @@ class MainWindow(QMainWindow):
 
         self.menuBar().addMenu(help_menu)
 
-        self.level_selector = LevelSelector(parent=self)
-
         self.block_viewer = None
         self.object_viewer = None
 
@@ -499,7 +497,7 @@ class MainWindow(QMainWindow):
 
         world, level = world_and_level_for_level_address(level_address)
 
-        self.update_level(world, level, level_address, enemy_address, object_set)
+        self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
 
     def on_play(self):
         """
@@ -589,6 +587,9 @@ class MainWindow(QMainWindow):
             self, caption="Save Screenshot", dir=recommended_file, filter=IMG_FILE_FILTER
         )
 
+        if not pathname:
+            return False
+
         # Proceed loading the file chosen by the user
         self.level_view.make_screenshot().save(pathname)
 
@@ -652,7 +653,7 @@ class MainWindow(QMainWindow):
         if not self.level_ref:
             return True
 
-        if self.level_ref.changed:
+        if self.level_ref.level.changed:
             answer = QMessageBox.question(
                 self,
                 "Please confirm",
@@ -695,11 +696,13 @@ class MainWindow(QMainWindow):
                 QMessageBox.Ok,
             )
 
-            answer = self.level_selector.exec_()
+            level_selector = LevelSelector(self)
+
+            answer = level_selector.exec_()
 
             if answer == QMessageBox.Accepted:
                 self.level_view.level_ref.attach_to_rom(
-                    self.level_selector.object_data_offset, self.level_selector.enemy_data_offset
+                    level_selector.object_data_offset, level_selector.enemy_data_offset
                 )
 
                 if is_save_as:
@@ -711,7 +714,7 @@ class MainWindow(QMainWindow):
 
         if is_save_as:
             pathname, _ = QFileDialog.getSaveFileName(self, caption="Save ROM as", filter=ROM_FILE_FILTER)
-            if pathname is None:
+            if not pathname:
                 return  # the user changed their mind
         else:
             pathname = ROM.path
@@ -834,13 +837,12 @@ class MainWindow(QMainWindow):
         if not self.safe_to_change():
             return
 
-        world = self.level_view.level_ref.world
-        level = self.level_view.level_ref.level_number
+        level_name = self.level_view.level_ref.name
         object_data = self.level_view.level_ref.header_offset
         enemy_data = self.level_view.level_ref.enemy_offset
         object_set = self.level_view.level_ref.object_set_number
 
-        self.update_level(world, level, object_data, enemy_data, object_set)
+        self.update_level(level_name, object_data, enemy_data, object_set)
 
     def _on_placeable_object_selected(self, level_object: Union[LevelObjectController, EnemyObject]):
         if self.sender() is self.object_toolbar:
@@ -973,15 +975,16 @@ class MainWindow(QMainWindow):
         if not self.safe_to_change():
             return
 
-        level_was_selected = self.level_selector.exec_() == QDialog.Accepted
+        level_selector = LevelSelector(self)
+
+        level_was_selected = level_selector.exec_() == QDialog.Accepted
 
         if level_was_selected:
             self.update_level(
-                self.level_selector.selected_world,
-                self.level_selector.selected_level,
-                self.level_selector.object_data_offset,
-                self.level_selector.enemy_data_offset,
-                self.level_selector.object_set,
+                level_selector.level_name,
+                level_selector.object_data_offset,
+                level_selector.enemy_data_offset,
+                level_selector.object_set,
             )
 
         return level_was_selected
@@ -990,19 +993,39 @@ class MainWindow(QMainWindow):
         if self.block_viewer is None:
             self.block_viewer = BlockViewer(parent=self)
 
+        if self.level_ref.level is not None:
+            self.block_viewer.object_set = self.level_ref.object_set.number
+
         self.block_viewer.show()
 
     def on_object_viewer(self, _):
         if self.object_viewer is None:
             self.object_viewer = ObjectViewer(parent=self)
 
+        if self.level_ref.level is not None:
+            object_set = self.level_ref.object_set.number
+            graphics_set = self.level_ref.graphic_set
+
+            self.object_viewer.set_object_and_graphic_set(object_set, graphics_set)
+
+            if len(self.level_view.get_selected_objects()) == 1:
+                selected_object = self.level_view.get_selected_objects()[0]
+
+                if isinstance(selected_object, LevelObject):
+                    self.object_viewer.set_object(
+                        selected_object.domain, selected_object.obj_index, selected_object.length
+                    )
+
         self.object_viewer.show()
 
     def on_header_editor(self, _):
         HeaderEditor(self, self.level_ref).exec_()
 
-    def update_level(self, world: int, level: int, object_data_offset: int, enemy_data_offset: int, object_set: int):
-        self.level_ref.load_level(world, level, object_data_offset, enemy_data_offset, object_set)
+    def update_level(self, level_name: str, object_data_offset: int, enemy_data_offset: int, object_set: int):
+        try:
+            self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
+        except IndexError:
+            QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
         self.set_up_gui_for_level()
 
     def set_up_gui_for_level(self):

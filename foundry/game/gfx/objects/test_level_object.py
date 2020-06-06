@@ -1,16 +1,21 @@
 import os
+from itertools import product
 from pathlib import Path
 
 import pytest
 
+from foundry import root_dir
 from foundry.conftest import compare_images
+from foundry.game.File import ROM
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.gui.ObjectViewer import ObjectDrawArea
+from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
 from smb3parse.objects.object_set import (
     DUNGEON_GRAPHICS_SET,
     DUNGEON_OBJECT_SET,
     HILLY_GRAPHICS_SET,
     HILLY_OBJECT_SET,
+    MAX_OBJECT_SET,
     PLAINS_GRAPHICS_SET,
     PLAINS_OBJECT_SET,
     UNDERGROUND_GRAPHICS_SET,
@@ -157,3 +162,28 @@ def test_change_attribute_to_bytes(attribute, increase):
     setattr(cloud_object, attribute, getattr(cloud_object, attribute) + increase)
 
     assert cloud_object.to_bytes() != initial_bytes
+
+
+def gen_object_factories():
+    ROM(root_dir.joinpath("SMB3.nes"))
+
+    for object_set in range(1, MAX_OBJECT_SET + 1):
+        yield LevelObjectFactory(object_set, object_set, 0, [], False)
+
+
+def gen_object_ids():
+    for id_ in range(0x10):
+        yield id_
+
+    for id_ in range(0x10, MAX_ID_VALUE, 0x10):
+        yield id_
+        yield id_ + 6
+
+
+@pytest.mark.parametrize(
+    "factory, domain, obj_id", list(product(gen_object_factories(), range(0, MAX_DOMAIN), gen_object_ids()))
+)
+def test_all_objects(factory, domain, obj_id, qtbot):
+    level_object = factory.from_properties(domain, obj_id, 0, 0, 8, 0)
+
+    _test_object_against_reference(level_object, qtbot)

@@ -1,5 +1,27 @@
-from typing import List, Tuple
+from collections import defaultdict
+from typing import Generator, List
+from warnings import warn
 
+from smb3parse.constants import (
+    TILE_BOWSER_CASTLE,
+    TILE_CASTLE_BOTTOM,
+    TILE_DUNGEON_1,
+    TILE_DUNGEON_2,
+    TILE_HAND_TRAP,
+    TILE_LEVEL_1,
+    TILE_LEVEL_10,
+    TILE_MUSHROOM_HOUSE_1,
+    TILE_MUSHROOM_HOUSE_2,
+    TILE_PIPE,
+    TILE_POND,
+    TILE_PYRAMID,
+    TILE_QUICKSAND,
+    TILE_SPADE_HOUSE,
+    TILE_SPIRAL_TOWER_1,
+    TILE_SPIRAL_TOWER_2,
+    TILE_STAR_1,
+    TILE_STAR_2,
+)
 from smb3parse.levels import (
     BASE_OFFSET,
     COMPLETABLE_LIST_END_MARKER,
@@ -26,8 +48,32 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
 )
+from smb3parse.levels.WorldMapPosition import WorldMapPosition
+from smb3parse.levels.level import Level
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
+
+TILE_NAMES = defaultdict(lambda: "NO NAME")
+TILE_NAMES.update(
+    {
+        TILE_MUSHROOM_HOUSE_1: "Mushroom House",
+        TILE_MUSHROOM_HOUSE_2: "Mushroom House",
+        TILE_SPIRAL_TOWER_1: "Spiral Tower",
+        TILE_SPIRAL_TOWER_2: "Spiral Tower",
+        TILE_DUNGEON_1: "Dungeon",
+        TILE_DUNGEON_2: "Dungeon",
+        TILE_QUICKSAND: "Quicksand",
+        TILE_PYRAMID: "Pyramid",
+        TILE_PIPE: "Pipe",
+        TILE_POND: "Pond",
+        TILE_CASTLE_BOTTOM: "Peach's Castle",
+        TILE_BOWSER_CASTLE: "Bowser's Lair",
+        TILE_HAND_TRAP: "Hand Trap",
+        TILE_SPADE_HOUSE: "Spade Bonus",
+        TILE_STAR_1: "Star",
+        TILE_STAR_2: "Star",
+    }
+)
 
 
 def list_world_map_addresses(rom: Rom) -> List[int]:
@@ -157,16 +203,23 @@ class WorldMap(LevelBase):
 
         tile = self.tile_at(screen, player_row, player_column)
 
+        if tile in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
+            warn("Spade and mushroom house currently not supported, when getting a level address.")
+            return None
+
         if not self.is_enterable(tile):
             return None
 
-        row_address, column_address, level_offset_address, enemy_offset_address = self.level_indexes(
-            screen, player_row, player_column
-        )
+        level_indexes = self.level_indexes(screen, player_row, player_column)
+
+        if level_indexes is None:
+            return None
+
+        row_address, column_address, level_offset_address, enemy_offset_address = level_indexes
 
         level_offset = self._rom.little_endian(level_offset_address)
 
-        assert 0xA000 <= level_offset < 0xC000  # suppose that level layouts are only in this range?
+        assert 0xA000 <= level_offset < 0xC000, level_offset  # suppose that level layouts are only in this range?
 
         correct_row_value = self._rom.int(row_address)
         object_set_number = correct_row_value & 0x0F
@@ -271,6 +324,17 @@ class WorldMap(LevelBase):
 
         return row_position, col_position, level_offset_position, enemy_offset_position
 
+    def level_name_for_position(self, screen: int, player_row: int, player_column: int) -> str:
+        tile = self.tile_at(screen, player_row, player_column)
+
+        if not self.is_enterable(tile):
+            return ""
+
+        if tile in range(TILE_LEVEL_1, TILE_LEVEL_10 + 1):
+            return f"Level {self.number}-{tile - TILE_LEVEL_1 + 1}"
+
+        return f"Level {self.number}-{TILE_NAMES[tile]}"
+
     def tile_at(self, screen: int, row: int, column: int) -> int:
         """
         Returns the tile value at the given coordinates. We define (0, 0) to be the topmost, leftmost tile, under the
@@ -314,7 +378,7 @@ class WorldMap(LevelBase):
             or tile_index in self._special_enterable_tiles
         )
 
-    def gen_positions(self):
+    def gen_positions(self) -> Generator["WorldMapPosition", None, None]:
         """
         Returns a generator, which yield WorldMapPosition objects, one screen at a time, one row at a time.
         """
@@ -322,6 +386,19 @@ class WorldMap(LevelBase):
             for row in range(WORLD_MAP_HEIGHT):
                 for column in range(WORLD_MAP_SCREEN_WIDTH):
                     yield WorldMapPosition(self, screen, row, column)
+
+    def gen_levels(self):
+        """
+        Returns a generator, which yields all levels accessible from this world map.
+        """
+        for position in self.gen_positions():
+            level_info_tuple = self.level_for_position(position.screen, position.row, position.column)
+
+            if level_info_tuple is None:
+                continue
+
+            else:
+                yield Level(self._rom, *level_info_tuple)
 
     @staticmethod
     def from_world_number(rom: Rom, world_number: int) -> "WorldMap":
@@ -336,41 +413,6 @@ class WorldMap(LevelBase):
         return f"World {self.number}"
 
 
-class WorldMapPosition:
-    def __init__(self, world: WorldMap, screen: int, row: int, column: int):
-        self.world = world
-        self.screen = screen
-        self.row = row
-        self.column = column
-
-    @property
-    def level_info(self) -> Tuple[int, int, int]:
-        return self.world.level_for_position(self.screen, self.row, self.column)
-
-    def can_have_level(self):
-        return self.world.is_enterable(self.tile())
-
-    def tile(self):
-        return self.world.tile_at(self.screen, self.row, self.column)
-
-    def tuple(self):
-        return self.world.number, self.screen, self.row, self.column
-
-    def __eq__(self, other):
-        if not isinstance(other, WorldMapPosition):
-            return False
-
-        return (
-            self.world.number == other.world.number
-            and self.screen == other.screen
-            and self.row == other.row
-            and self.column == other.column
-        )
-
-    def __repr__(self):
-        return f"WorldMapPosition({self.world}, screen={self.screen}, row={self.row}, column={self.column})"
-
-
 def _get_normal_enterable_tiles(rom: Rom) -> bytearray:
     return rom.read(TILE_ATTRIBUTES_TS0_OFFSET, 4)
 
@@ -380,6 +422,6 @@ def _get_special_enterable_tiles(rom: Rom) -> bytearray:
 
 
 def _get_completable_tiles(rom: Rom) -> bytearray:
-    completable_tile_amount = rom.find(COMPLETABLE_LIST_END_MARKER, COMPLETABLE_TILES_LIST) - COMPLETABLE_TILES_LIST - 1
+    completable_tile_amount = rom.find(COMPLETABLE_LIST_END_MARKER, COMPLETABLE_TILES_LIST) - COMPLETABLE_TILES_LIST
 
     return rom.read(COMPLETABLE_TILES_LIST, completable_tile_amount)

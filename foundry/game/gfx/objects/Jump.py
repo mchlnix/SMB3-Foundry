@@ -1,6 +1,5 @@
 from smb3parse.asm6_converter import to_hex
 
-
 class Jump:
     POINTER_DOMAIN = 0b111
 
@@ -11,6 +10,10 @@ class Jump:
 
         # domain: 0b1110
         # unused: 0b0001
+
+        self.blocks = []
+        self.is_4byte = False
+        self.description = "Jump object"
 
         assert self.is_jump(data)
 

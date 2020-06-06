@@ -65,6 +65,12 @@ class LevelObjectFactory:
     def from_properties(
         self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int, overflow: int = None,
     ):
+        if self.vertical_level:
+            offset = y // SCREEN_HEIGHT
+            y %= SCREEN_HEIGHT
+
+            x += offset * SCREEN_WIDTH
+
         data = bytearray(3)
 
         data[0] = domain << 5 | y

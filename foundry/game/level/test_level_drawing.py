@@ -6,6 +6,7 @@ from PySide2.QtCore import QPoint, QRect, QSize
 
 from foundry import data_dir
 from foundry.conftest import compare_images
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.LevelView import LevelView
@@ -50,7 +51,7 @@ with open(data_dir / "levels.dat", "r") as level_data_file:
         if object_set_number == WORLD_MAP_OBJECT_SET:
             continue
 
-        level_data.append((world_no, level_no, level_address, enemy_address, object_set_number))
+        level_data.append((level_name, level_address, enemy_address, object_set_number))
         test_name.append(f"Level {world_no}-{level_no} - {level_name}")
 
 
@@ -59,14 +60,33 @@ def test_level(level_info, qtbot):
     level_ref = LevelRef()
     level_ref.load_level(*level_info)
 
+    Block._block_cache.clear()
+
     # monkeypatch level names, since the level name data is broken atm
     level_ref.level.name = current_test_name()
 
     level_view = LevelView(None, level_ref, ContextMenu(level_ref))
     level_view.transparency = True
+    level_view.draw_jumps = False
+    level_view.draw_grid = False
 
     rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16)
 
     level_view.setGeometry(rect)
 
     _test_level_against_reference(level_view, qtbot)
+
+
+@pytest.mark.parametrize("jump_test_name", ["jump_vertical_ref", "jump_horizontal_ref"])
+def test_draw_jumps(jump_test_name, level, qtbot):
+    with open(str(Path(__file__).parent / f"{jump_test_name}.m3l"), "rb") as m3l_file:
+        level.from_m3l(bytearray(m3l_file.read()))
+
+        ref = LevelRef()
+        ref._internal_level = level
+
+        view = LevelView(None, ref, ContextMenu(ref))
+        view.draw_jumps = True
+        view.draw_grid = False
+
+        compare_images(jump_test_name, str(Path(__file__).parent / f"{jump_test_name}.png"), view.grab())

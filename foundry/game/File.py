@@ -1,7 +1,6 @@
 from os.path import basename
 from typing import List, Optional
 
-from smb3parse.levels.world_map import list_world_map_addresses
 from smb3parse.util.rom import Rom
 
 WORLD_COUNT = 9  # includes warp zone

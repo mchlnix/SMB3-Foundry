@@ -119,3 +119,17 @@ class WorldMap(LevelLike):
 
     def remove_object(self, obj):
         self.objects.remove(obj)
+
+    def level_at_position(self, x: int, y: int):
+        screen = x // WORLD_MAP_SCREEN_WIDTH + 1
+
+        x %= WORLD_MAP_SCREEN_WIDTH
+
+        return self._internal_world_map.level_for_position(screen, y, x)
+
+    def level_name_at_position(self, x: int, y: int) -> str:
+        screen = x // WORLD_MAP_SCREEN_WIDTH + 1
+
+        x %= WORLD_MAP_SCREEN_WIDTH
+
+        return self._internal_world_map.level_name_for_position(screen, y, x)

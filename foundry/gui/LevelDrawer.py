@@ -1,4 +1,5 @@
 from itertools import product
+from typing import Tuple
 
 from PySide2.QtCore import QPoint, QRect
 from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
@@ -62,6 +63,13 @@ RIGHT_ARROW = _load_from_png(36, 53)
 ITEM_ARROW = _load_from_png(53, 53)
 
 EMPTY_IMAGE = _load_from_png(0, 53)
+
+
+SPECIAL_BACKGROUND_OBJECTS = [
+    "blue background",
+    "starry background",
+    "underground background under this",
+]
 
 
 def _block_from_index(block_index: int, level: Level) -> Block:
@@ -194,6 +202,7 @@ class LevelDrawer:
     def _get_objects(self, level, blocks, level_rect):
         width = level_rect.abs_size.width
         for level_object in level.get_all_objects():
+
             if not isinstance(level_object, LevelObjectController):
                 continue
             for block in level_object.get_blocks_and_positions():
@@ -287,11 +296,17 @@ class LevelDrawer:
                 # center() is one pixel off for some reason
                 pos = rect.topLeft() + QPoint(*(rect.size() / 2).toTuple())
 
+                trigger_position = level_object.get_position()
+
                 if "left" in name:
                     image = LEFT_ARROW
 
                     pos.setX(rect.right())
                     pos.setY(pos.y() - self.block_length / 2)
+
+                    # leftward pipes trigger on the column to the left of the opening
+                    x, y = level_object.get_rect().bottomRight().toTuple()
+                    trigger_position = (x - 1, y)
 
                 elif "right" in name:
                     image = RIGHT_ARROW
@@ -304,12 +319,17 @@ class LevelDrawer:
                     pos.setX(pos.x() - self.block_length / 2)
                     pos.setY(rect.top() - self.block_length)
                 else:
+                    # upwards pipe
                     image = UP_ARROW
 
                     pos.setX(pos.x() - self.block_length / 2)
                     pos.setY(rect.bottom())
 
-                if not self._object_in_jump_area(level, level_object):
+                    # upwards pipes trigger on the second to last row
+                    x, y = level_object.get_rect().bottomLeft().toTuple()
+                    trigger_position = (x, y - 1)
+
+                if not self._object_in_jump_area(level, trigger_position):
                     image = NO_JUMP
 
             elif "door" == name or "door (can go" in name or "invisible door" in name:
@@ -319,7 +339,10 @@ class LevelDrawer:
 
                 pos.setY(rect.top() - self.block_length)
 
-                if not self._object_in_jump_area(level, level_object):
+                x, y = level_object.get_position()
+
+                # jumps seemingly trigger on the bottom block
+                if not self._object_in_jump_area(level, (x, y + 1)):
                     image = NO_JUMP
 
             # "?" - blocks, note blocks, wooden blocks and bricks
@@ -394,7 +417,7 @@ class LevelDrawer:
     @staticmethod
     def _object_in_jump_area(level: Level, level_object: LevelObjectController):
         for jump in level.jumps:
-            screen = jump.screen_index
+            jump_rect = jump.get_rect(1, level.is_vertical)
 
             if level.is_vertical:
                 rect = QRect(0, SCREEN_WIDTH * screen, SCREEN_WIDTH, SCREEN_HEIGHT,)
@@ -445,22 +468,7 @@ class LevelDrawer:
         for jump in level.jumps:
             painter.setBrush(QBrush(QColor(0xFF, 0x00, 0x00), Qt.FDiagPattern))
 
-            screen = jump.screen_index
-
-            if level.is_vertical:
-                painter.drawRect(
-                    0,
-                    self.block_length * SCREEN_WIDTH * screen,
-                    self.block_length * SCREEN_WIDTH,
-                    self.block_length * SCREEN_HEIGHT,
-                )
-            else:
-                painter.drawRect(
-                    self.block_length * SCREEN_WIDTH * screen,
-                    0,
-                    self.block_length * SCREEN_WIDTH,
-                    self.block_length * GROUND,
-                )
+            painter.drawRect(jump.get_rect(self.block_length, level.is_vertical))
 
     def _draw_grid(self, painter: QPainter, level: Level):
         panel_width, panel_height = level.get_rect(self.block_length).size().toTuple()
@@ -476,7 +484,7 @@ class LevelDrawer:
 
         if level.is_vertical:
             for y in range(0, panel_height, self.block_length * SCREEN_HEIGHT):
-                painter.drawLine(0, y, panel_width, y)
+                painter.drawLine(0, self.block_length + y, panel_width, self.block_length + y)
         else:
             for x in range(0, panel_width, self.block_length * SCREEN_WIDTH):
                 painter.drawLine(x, 0, x, panel_height)
