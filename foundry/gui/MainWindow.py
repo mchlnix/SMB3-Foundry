@@ -4,6 +4,7 @@ import shlex
 import subprocess
 import tempfile
 from typing import Tuple, Union
+from warnings import warn
 
 from PySide2.QtCore import QSize
 from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
@@ -846,7 +847,7 @@ class MainWindow(QMainWindow):
     def on_spin(self, _):
         selected_objects = self.level_ref.selected_objects
 
-        assert len(selected_objects) == 1, print(selected_objects)
+        assert len(selected_objects) == 1, warn(selected_objects, RuntimeWarning)
 
         selected_object = selected_objects[0]
 

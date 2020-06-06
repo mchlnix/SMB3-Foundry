@@ -1,4 +1,5 @@
 from typing import List, Optional, Tuple, Union
+from warnings import warn
 
 from PySide2.QtCore import QRect, QSize
 from PySide2.QtGui import QImage, QPainter
@@ -331,7 +332,7 @@ class LevelObject(ObjectLike):
                 right = fill_block
             else:
                 # todo other two ends not used with diagonals?
-                print(self.description)
+                warn(self.description, RuntimeWarning)
                 self.rendered_blocks = []
                 return
 
@@ -593,7 +594,7 @@ class LevelObject(ObjectLike):
                     blocks_to_draw.append(right)
 
                 if not len(blocks_to_draw) % self.height == 0:
-                    print(f"Blocks to draw are not divisible by height. {self}")
+                    warn(f"Blocks to draw are not divisible by height. {self}", RuntimeWarning)
 
                 new_width = int(len(blocks_to_draw) / self.height)
 
@@ -608,7 +609,7 @@ class LevelObject(ObjectLike):
                     blocks_to_draw = top_row + middle_blocks * new_rows + bottom_row
         else:
             if not self.orientation == GeneratorType.SINGLE_BLOCK_OBJECT:
-                print(f"Didn't render {self.description}")
+                warn(f"Didn't render {self.description}", RuntimeWarning)
                 # breakpoint()
 
             if self.description.lower() == "black boss room background":
@@ -632,17 +633,17 @@ class LevelObject(ObjectLike):
         self.rendered_base_y = base_y
 
         if new_width and not self.rendered_height == len(self.rendered_blocks) / new_width:
-            print(
+            warn(
                 f"Not enough Blocks for calculated height: {self.description}. "
                 f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}"
-            )
+            , RuntimeWarning)
 
             self.rendered_height = len(self.rendered_blocks) / new_width
         elif new_width == 0:
-            print(
+            warn(
                 f"Calculated Width is 0, setting to 1: {self.description}. "
                 f"Blocks to draw: {len(self.rendered_blocks)}. Rendered height: {self.rendered_height}"
-            )
+            , RuntimeWarning)
 
             self.rendered_width = 1
 
