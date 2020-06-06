@@ -8,6 +8,7 @@ from smb3parse.levels import (
     LEVEL_MIN_LENGTH,
 )
 from smb3parse.objects.object_set import ObjectSet, assert_valid_object_set_number
+from smb3parse.asm6_converter import to_hex
 
 MARIO_X_POSITIONS = [0x18, 0x70, 0xD8, 0x80]  # 0x10249
 MARIO_Y_POSITIONS = [0x17, 0x04, 0x00, 0x14, 0x07, 0x0B, 0x0F, 0x18]  # 0x3D7A0 + 0x3D7A8
@@ -57,9 +58,17 @@ class LevelHeader:
         self.music_index = self.data[8] & 0b0000_1111
 
         self.jump_level_address = (
-            (self.data[1] << 8) + self.data[0] + LEVEL_BASE_OFFSET + self.jump_object_set.level_offset
+            (self.data[1] << 8) + self.data[0] + self.jump_object_set.level_offset
         )
         self.jump_enemy_address = (self.data[3] << 8) + self.data[2] + ENEMY_BASE_OFFSET
+
+    @property
+    def alt_obj_address(self):
+        return self.jump_level_address - self.jump_object_set.level_offset
+
+    @property
+    def alt_spr_address(self):
+        return self.jump_enemy_address - ENEMY_BASE_OFFSET
 
     def mario_position(self):
         x = MARIO_X_POSITIONS[self.start_x_index] >> 4
@@ -69,3 +78,18 @@ class LevelHeader:
             y += (self.screens - 1) * 15  # TODO: Why?
 
         return x, y
+
+    def to_asm6(self, name):
+        s = f"{name}_header:" \
+            f"\n\t.word {to_hex(self.alt_obj_address)}; Alt object layout" \
+            f"\n\t.word {to_hex(self.alt_spr_address)}; Alt sprite layout" \
+            f"\n\t.byte {to_hex(self.screens)} | {to_hex(self.start_y_index << 5)}; Screens | Y Start" \
+            f"\n\t.byte {to_hex(self.start_x_index << 5)} | {to_hex(self.enemy_palette_index << 3)} | " \
+            f"{to_hex(self.object_palette_index)}; X Start | Sprite Palette | Block Palette" \
+            f"\n\t.byte {'LEVEL3_PIPENOTEXIT' if self.pipe_ends_level else '$00'} | " \
+            f"{to_hex(self.scroll_type_index << 5)} | {to_hex(self.is_vertical)} | " \
+            f"{to_hex(self.jump_object_set_number)}; Pipe exit | Scroll type | Vertical | Alt object set" \
+            f"\n\t.byte {to_hex(self.start_action << 5)} | {to_hex(self.graphic_set_index)}" \
+            f"; Start action | Graphic set" \
+            f"\n\t.byte {to_hex(self.time_index << 6)} | {to_hex(self.music_index)}; Time | Music"
+        return s

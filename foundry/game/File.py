@@ -41,7 +41,7 @@ class ROM(Rom):
         self.position = 0
 
     @staticmethod
-    def get_tsa_data(object_set: int) -> bytearray:
+    def tsa_offset(object_set: int) -> int:
         rom = ROM()
 
         tsa_index = rom.int(TSA_OS_LIST + object_set)
@@ -50,7 +50,19 @@ class ROM(Rom):
             # todo why is the tsa index in the wrong (seemingly) false?
             tsa_index += 1
 
-        tsa_start = TSA_BASE_OS + tsa_index * TSA_TABLE_INTERVAL
+        tsa_index = rom.int(TSA_OS_LIST + object_set)
+
+        if object_set == 0:
+            # todo why is the tsa index in the wrong (seemingly) false?
+            tsa_index += 1
+
+        return TSA_BASE_OS + tsa_index * TSA_TABLE_INTERVAL
+
+    @staticmethod
+    def get_tsa_data(object_set: int) -> bytearray:
+        rom = ROM()
+
+        tsa_start = ROM.tsa_offset(object_set)
 
         return rom.read(tsa_start, TSA_TABLE_SIZE)
 

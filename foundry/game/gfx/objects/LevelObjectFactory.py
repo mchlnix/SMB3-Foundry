@@ -1,9 +1,12 @@
 from typing import Optional, List
 
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.Palette import load_palette
-from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.GraphicsSet import GraphicsSet as GraphicsSet
+from foundry.game.ObjectSet import ObjectSet
+
+from foundry.game.Position import Position
 
 
 class LevelObjectFactory:
@@ -19,7 +22,7 @@ class LevelObjectFactory:
         object_set: int,
         graphic_set: int,
         palette_group_index: int,
-        objects_ref: List[LevelObject],
+        objects_ref: List[LevelObjectController],
         vertical_level: bool,
         size_minimal: bool = False,
     ):
@@ -47,21 +50,20 @@ class LevelObjectFactory:
             return Jump(data)
 
         assert self.graphics_set is not None
-
-        # todo get rid of index by fixing ground map
-        return LevelObject(
-            data,
-            self.object_set,
-            self.palette_group,
-            self.graphics_set,
-            self.objects_ref,
-            self.vertical_level,
-            index,
-            size_minimal=self.size_minimal,
+        level_object = LevelObjectController.from_data(
+            data=data,
+            object_set=ObjectSet(self.object_set),
+            palette_group=self.palette_group,
+            pattern_table=self.graphics_set,
+            objects_ref=self.objects_ref,
+            is_vertical=self.vertical_level,
+            object_factory_idx=index
         )
+        self.objects_ref.append(level_object)
+        return level_object
 
     def from_properties(
-        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int,
+        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int, overflow: int = None,
     ):
         if self.vertical_level:
             offset = y // SCREEN_HEIGHT
@@ -77,7 +79,11 @@ class LevelObjectFactory:
 
         if length is not None:
             data.append(length)
+        if overflow is not None:
+            data.extend(overflow)
 
         obj = self.from_data(data, index)
 
+        if isinstance(obj, LevelObjectController):
+            obj.set_position(Position(x, y))
         return obj

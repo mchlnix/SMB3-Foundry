@@ -3,7 +3,9 @@ import pathlib
 import shlex
 import subprocess
 import tempfile
+import qdarkstyle
 from typing import Tuple, Union
+import sys
 
 from PySide2.QtCore import QSize
 from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
@@ -35,7 +37,7 @@ from foundry import (
 )
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
@@ -54,15 +56,17 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
-from foundry.gui.SettingsDialog import show_settings
+from foundry.gui.SettingsDialog import show_settings, get_gui_style
 from foundry.gui.SpinnerPanel import SpinnerPanel
-from foundry.gui.settings import SETTINGS, save_settings
+from foundry.gui.settings import SETTINGS, save_settings, DRACULA_STYLE_SET
 from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
 
+
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
+ASM6_FILE_FILER = "ASM files (*.asm);; All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 ID_RELOAD_LEVEL = 303
@@ -75,6 +79,13 @@ ID_RESIZE_TYPE = 511
 ID_JUMP_OBJECTS = 512
 ID_ITEM_BLOCKS = 513
 ID_INVISIBLE_ITEMS = 514
+ID_BACKGROUND_ENABLED = 515
+
+ID_VISUAL_OBJECT_TOOLBAR = 600
+ID_OBJECT_ATTRIBUTE_TOOLBAR = 601
+ID_COMPACT_TOOLBAR = 602
+ID_BYTES_COUNTER_TOOLBAR = 603
+ID_OBJECT_LIST_TOOLBAR = 604
 
 CHECKABLE_MENU_ITEMS = [
     ID_TRANSPARENCY,
@@ -85,6 +96,12 @@ CHECKABLE_MENU_ITEMS = [
     ID_JUMP_OBJECTS,
     ID_ITEM_BLOCKS,
     ID_INVISIBLE_ITEMS,
+    ID_BACKGROUND_ENABLED,
+    ID_VISUAL_OBJECT_TOOLBAR,
+    ID_OBJECT_ATTRIBUTE_TOOLBAR,
+    ID_COMPACT_TOOLBAR,
+    ID_BYTES_COUNTER_TOOLBAR,
+    ID_OBJECT_LIST_TOOLBAR,
 ]
 
 ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
@@ -100,7 +117,8 @@ class MainWindow(QMainWindow):
     def __init__(self, path_to_rom=""):
         super(MainWindow, self).__init__()
 
-        self.setWindowIcon(icon("foundry.ico"))
+        self.setWindowIcon(icon("tanooki.ico"))
+        self.setStyleSheet(get_gui_style())
 
         file_menu = QMenu("File")
 
@@ -120,6 +138,9 @@ class MainWindow(QMainWindow):
         """
         self.save_m3l_action = file_menu.addAction("&Save M3L")
         self.save_m3l_action.triggered.connect(self.on_save_m3l)
+
+        self.save_asm6_action = file_menu.addAction("&Save ASM6")
+        self.save_asm6_action.triggered.connect(self.on_save_asm6)
         """
         file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", "")
         file_menu.AppendSeparator()
@@ -129,7 +150,7 @@ class MainWindow(QMainWindow):
         """
         file_menu.addSeparator()
         settings_action = file_menu.addAction("&Settings")
-        settings_action.triggered.connect(show_settings)
+        settings_action.triggered.connect(lambda: show_settings(self))
         file_menu.addSeparator()
         exit_action = file_menu.addAction("&Exit")
         exit_action.triggered.connect(lambda _: self.close())
@@ -236,6 +257,11 @@ class MainWindow(QMainWindow):
         action.setCheckable(True)
         action.setChecked(SETTINGS["block_transparency"])
 
+        action = view_menu.addAction("&Background")
+        action.setProperty(ID_PROP, ID_BACKGROUND_ENABLED)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["background_enabled"])
+
         view_menu.addSeparator()
         view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
         """
@@ -251,6 +277,40 @@ class MainWindow(QMainWindow):
         """
 
         self.menuBar().addMenu(view_menu)
+
+        tool_menu = QMenu("Tools")
+        tool_menu.triggered.connect(self.on_menu)
+
+        tool_menu.addSection("Object Selectors")
+
+        action = tool_menu.addAction("Visual Object Selector")
+        action.setProperty(ID_PROP, ID_VISUAL_OBJECT_TOOLBAR)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["visual_object_toolbar"])
+
+        action = tool_menu.addAction("Compact Object Selector")
+        action.setProperty(ID_PROP, ID_COMPACT_TOOLBAR)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["compact_object_toolbar"])
+
+        action = tool_menu.addAction("Object Attribute Toolbar")
+        action.setProperty(ID_PROP, ID_OBJECT_ATTRIBUTE_TOOLBAR)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["object_attribute_toolbar"])
+
+        tool_menu.addSeparator()
+
+        action = tool_menu.addAction("Byte Counter")
+        action.setProperty(ID_PROP, ID_OBJECT_LIST_TOOLBAR)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["bytes_counter_toolbar"])
+
+        action = tool_menu.addAction("Object List")
+        action.setProperty(ID_PROP, ID_BYTES_COUNTER_TOOLBAR)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["object_list_toolbar"])
+
+        self.menuBar().addMenu(tool_menu)
 
         help_menu = QMenu("Help")
         """
@@ -326,40 +386,34 @@ class MainWindow(QMainWindow):
 
         splitter.setChildrenCollapsible(False)
 
-        level_toolbar = QToolBar("Level Info Toolbar", self)
-        level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        level_toolbar.setOrientation(Qt.Horizontal)
-        level_toolbar.setFloatable(False)
-
-        level_toolbar.addWidget(self.spinner_panel)
-        level_toolbar.addWidget(self.object_dropdown)
-        level_toolbar.addWidget(self.level_size_bar)
-        level_toolbar.addWidget(self.enemy_size_bar)
-        level_toolbar.addWidget(splitter)
-
-        level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
-
-        self.addToolBar(Qt.RightToolBarArea, level_toolbar)
-
         self.object_toolbar = ObjectToolBar(self)
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
-        object_toolbar = QToolBar("Object Toolbar", self)
-        object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        object_toolbar.setFloatable(False)
+        self.visual_object_toolbar = self.add_toolbox("Object Toolbar", self.object_toolbar, 1)
+        if SETTINGS["visual_object_toolbar"] != 0:
+            self.visual_object_toolbar.toggleViewAction().trigger()
 
-        object_toolbar.addWidget(self.object_toolbar)
-        object_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        self.compact_object_toolbar = self.add_toolbox("Object Dropdown Toolbar", self.object_dropdown, 2)
+        if SETTINGS["compact_object_toolbar"] != 0:
+            self.compact_object_toolbar.toggleViewAction().trigger()
 
-        self.addToolBar(Qt.LeftToolBarArea, object_toolbar)
+        self.object_attribute_toolbar = self.add_toolbox("Level Spinner Toolbar", self.spinner_panel, 2)
+        if SETTINGS["object_attribute_toolbar"] != 0:
+            self.object_attribute_toolbar.toggleViewAction().trigger()
+
+        self.bytes_counter_toolbar = self.add_toolbox("Size Toolbar", [self.level_size_bar, self.enemy_size_bar], 2)
+        if SETTINGS["bytes_counter_toolbar"] != 0:
+            self.bytes_counter_toolbar.toggleViewAction().trigger()
+
+        self.object_list_toolbar = self.add_toolbox("Level Info", splitter, 2)
+        if SETTINGS["object_list_toolbar"] != 0:
+            self.object_list_toolbar.toggleViewAction().trigger()
 
         menu_toolbar = QToolBar("Menu Toolbar", self)
         menu_toolbar.setOrientation(Qt.Horizontal)
         menu_toolbar.setIconSize(QSize(20, 20))
 
-        menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(show_settings)
+        menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(lambda: show_settings(self))
         menu_toolbar.addSeparator()
         menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
         menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
@@ -552,7 +606,6 @@ class MainWindow(QMainWindow):
     def on_open_rom(self, path_to_rom="") -> bool:
         if not self.safe_to_change():
             return False
-
         if not path_to_rom:
             # otherwise ask the user what new file to open
             path_to_rom, _ = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
@@ -680,6 +733,25 @@ class MainWindow(QMainWindow):
 
         self.level_view.level_ref.changed = False
 
+    def on_save_asm6(self, _):
+        suggested_file = self.level_view.level_ref.name
+
+        if not suggested_file.endswith(".asm"):
+            suggested_file += ".asm"
+
+        pathname, _ = QFileDialog.getSaveFileName(self, caption="Save asm as", filter=ASM6_FILE_FILER)
+
+        if not pathname:
+            return
+
+        level = self.level_view.level_ref
+
+        try:
+            with open(pathname, "w+") as asm6_file:
+                asm6_file.write(level.to_asm6())
+        except IOError as exp:
+            QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
+
     def on_save_m3l(self, _):
         suggested_file = self.level_view.level_ref.name
 
@@ -772,7 +844,7 @@ class MainWindow(QMainWindow):
 
         self.update_level(level_name, object_data, enemy_data, object_set)
 
-    def _on_placeable_object_selected(self, level_object: Union[LevelObject, EnemyObject]):
+    def _on_placeable_object_selected(self, level_object: Union[LevelObjectController, EnemyObject]):
         if self.sender() is self.object_toolbar:
             self.object_dropdown.select_object(level_object)
         else:
@@ -823,6 +895,8 @@ class MainWindow(QMainWindow):
             self.level_view.draw_grid = checked
         elif item_id == ID_TRANSPARENCY:
             self.level_view.transparency = checked
+        elif item_id == ID_BACKGROUND_ENABLED:
+            self.level_view.background_enabled = checked
         elif item_id == ID_JUMPS:
             self.level_view.draw_jumps = checked
         elif item_id == ID_MARIO:
@@ -835,6 +909,21 @@ class MainWindow(QMainWindow):
             self.level_view.draw_items_in_blocks = checked
         elif item_id == ID_INVISIBLE_ITEMS:
             self.level_view.draw_invisible_items = checked
+        elif item_id == ID_VISUAL_OBJECT_TOOLBAR:
+            self.visual_object_toolbar.toggleViewAction().trigger()
+            SETTINGS["visual_object_toolbar"] = not SETTINGS["visual_object_toolbar"]
+        elif item_id == ID_OBJECT_ATTRIBUTE_TOOLBAR:
+            self.object_attribute_toolbar.toggleViewAction().trigger()
+            SETTINGS["object_attribute_toolbar"] = not SETTINGS["object_attribute_toolbar"]
+        elif item_id == ID_COMPACT_TOOLBAR:
+            self.compact_object_toolbar.toggleViewAction().trigger()
+            SETTINGS["compact_object_toolbar"] = not SETTINGS["compact_object_toolbar"]
+        elif item_id == ID_BYTES_COUNTER_TOOLBAR:
+            self.bytes_counter_toolbar.toggleViewAction().trigger()
+            SETTINGS["bytes_counter_toolbar"] = not SETTINGS["bytes_counter_toolbar"]
+        elif item_id == ID_OBJECT_LIST_TOOLBAR:
+            self.object_list_toolbar.toggleViewAction().trigger()
+            SETTINGS["object_list_toolbar"] = not SETTINGS["object_list_toolbar"]
 
         SETTINGS["draw_mario"] = self.level_view.draw_mario
         SETTINGS["draw_jumps"] = self.level_view.draw_jumps
@@ -844,6 +933,7 @@ class MainWindow(QMainWindow):
         SETTINGS["draw_items_in_blocks"] = self.level_view.draw_items_in_blocks
         SETTINGS["draw_invisible_items"] = self.level_view.draw_invisible_items
         SETTINGS["block_transparency"] = self.level_view.transparency
+        SETTINGS["background_enabled"] = self.level_view.background_enabled
 
         save_settings()
 
@@ -857,15 +947,20 @@ class MainWindow(QMainWindow):
 
         obj_type = self.spinner_panel.get_type()
 
-        if isinstance(selected_object, LevelObject):
+        if isinstance(selected_object, LevelObjectController):
             domain = self.spinner_panel.get_domain()
 
-            if selected_object.is_4byte:
+            if selected_object.bytes == 4:
                 length = self.spinner_panel.get_length()
             else:
                 length = None
+            if selected_object.bytes >= 5:
+                length = self.spinner_panel.get_length()
+                overflow = [self.spinner_panel.get_index()]
+            else:
+                overflow = None
 
-            self.level_view.replace_object(selected_object, domain, obj_type, length)
+            self.level_view.replace_object(selected_object, domain, obj_type, length, overflow=overflow)
         else:
             self.level_view.replace_enemy(selected_object, obj_type)
 
@@ -931,9 +1026,6 @@ class MainWindow(QMainWindow):
             self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
         except IndexError:
             QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
-
-            return
-
         self.set_up_gui_for_level()
 
     def set_up_gui_for_level(self):
@@ -1002,7 +1094,7 @@ class MainWindow(QMainWindow):
 
         self.object_toolbar.add_recent_object(level_object)
 
-        if isinstance(level_object, LevelObject):
+        if isinstance(level_object, LevelObjectController):
             self.level_view.create_object_at(*pos, level_object.domain, level_object.obj_index)
         elif isinstance(level_object, EnemyObject):
             self.level_view.add_enemy(level_object.obj_index, *pos, -1)
@@ -1019,3 +1111,26 @@ class MainWindow(QMainWindow):
             return
 
         super(MainWindow, self).closeEvent(event)
+
+    def force_update_level_view(self):
+        self.level_view.paintEvent(0, True)
+
+    def add_toolbox(self, name, widget, side):
+        toolbar = QToolBar(name, self)
+        toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        toolbar.setOrientation(Qt.Horizontal)
+        toolbar.setFloatable(True)
+        toolbar.toggleViewAction().setChecked(True)
+        toolbar.toggleViewAction().trigger()
+        if isinstance(widget, list):
+            for wig in widget:
+                toolbar.addWidget(wig)
+        else:
+            toolbar.addWidget(widget)
+        toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        if side == 1:
+            self.addToolBar(Qt.LeftToolBarArea, toolbar)
+        else:
+            self.addToolBar(Qt.RightToolBarArea, toolbar)
+        return toolbar

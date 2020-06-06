@@ -28,8 +28,14 @@ class EnemySizeBar(LevelSizeBar):
 
     @property
     def current_value(self):
-        return self.level.current_enemies_size()
+        try:
+            return self.level.current_enemies_size()
+        except TypeError:
+            return 0
 
     @property
     def original_value(self):
-        return self.level.enemy_size_on_disk
+        try:
+            return self.level.enemy_size_on_disk
+        except TypeError:
+            return 0

@@ -22,8 +22,19 @@ class EnemyObject(ObjectLike):
         self.length = 0
 
         self.obj_index = data[0]
-        self.x_position = data[1] - int(enemy_handle_x2[self.obj_index])
-        self.y_position = data[2]
+
+        self.x_position = 0
+        self.y_position = 0
+
+        try:
+            self.x_position = data[1] - int(enemy_handle_x[self.obj_index])
+        except IndexError:
+            print(self, "found no x position in data", data, "with obj idx of", self.obj_index)
+
+        try:
+            self.y_position = data[2]
+        except IndexError:
+            print(self, "found no y position in data", data, "with obj idx of", self.obj_index)
 
         self.domain = 0
 
@@ -147,7 +158,7 @@ class EnemyObject(ObjectLike):
         self._setup()
 
     def to_bytes(self):
-        return bytearray([self.obj_index, self.x_position + int(enemy_handle_x2[self.obj_index]), self.y_position])
+        return bytearray([self.obj_index, self.x_position + int(enemy_handle_x[self.obj_index]), self.y_position])
 
     def as_image(self) -> QImage:
         image = QImage(QSize(self.width * Block.SIDE_LENGTH, self.height * Block.SIDE_LENGTH), QImage.Format_RGBA8888,)

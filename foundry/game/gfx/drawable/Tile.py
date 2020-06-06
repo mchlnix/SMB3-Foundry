@@ -1,7 +1,8 @@
-from PySide2.QtGui import QImage
+from PySide2.QtCore import QPoint
+from PySide2.QtGui import QImage, QPainter, Qt, QColor, QPixmap
 
 from foundry.game.gfx.Palette import NESPalette
-from foundry.game.gfx.drawable import bit_reverse, MASK_COLOR
+from foundry.game.gfx.drawable import bit_reverse, MASK_COLOR, apply_selection_overlay
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 
@@ -22,7 +23,10 @@ class Tile:
         self.cached_tiles = dict()
 
         self.palette = palette_group[palette_index]
-        # self.palette = DEFAULT_PALETTE
+        try:
+            self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
+        except IndexError:
+            self.bg_color = QColor(*NESPalette[0])
 
         self.data = bytearray()
         self.pixels = bytearray()
@@ -68,6 +72,37 @@ class Tile:
             self.cached_tiles[tile_length] = image
 
         return self.cached_tiles[tile_length]
+
+    def _replace_transparent_with_background(self, image, tile_length):
+        # draw image on background layer, to fill transparent pixels
+        background = self.as_image(tile_length)
+        background.fill(self.bg_color)
+
+        _painter = QPainter(background)
+        _painter.drawImage(QPoint(), image)
+        _painter.end()
+
+        return background
+
+    def draw(self, painter: QPainter, x, y, tile_length, selected=False, transparent=False):
+        image = self.as_image(tile_length)
+
+        if tile_length != Tile.WIDTH:
+            image = image.scaled(tile_length, tile_length)
+
+        # mask out the transparent pixels first
+        mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+        image.setAlphaChannel(mask)
+
+        if not transparent:
+            image = self._replace_transparent_with_background(image, tile_length)
+
+        if selected:
+            apply_selection_overlay(image, mask)
+
+        pixmap = QPixmap.fromImage(image)
+
+        painter.drawPixmap(x, y, pixmap)
 
     def _mirror(self):
         for byte in range(len(self.data)):

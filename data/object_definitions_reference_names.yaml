@@ -1,0 +1,41 @@
+Horizontal: 0
+Vertical: 1
+Diagonal Left-Down: 2
+Desert Pipe Box: 3
+Diagonal Right-Down: 4
+Diagonal Right-Up: 5
+Horizontal to the Ground: 6
+Horizontal Alternative: 7
+Diagonal Weird: 8
+Single Block: 9
+Centered: 10
+Pyramid to Ground: 11
+Pyramid Alternative: 12
+To the Sky: 13
+Ending: 14
+Upward Pipe: 15
+Downward Pipe: 16
+Rightward Pipe: 17
+Leftward Pipe: 18
+Diagonal Right-Down 30 Degrees: 19
+Diagonal Left-Down 30 Degrees: 20
+Horizontal With Top: 21
+Horizontal With Sides: 22
+Vertical With Top: 23
+Vertical With All Sides: 24
+Horizontal With All Sides: 25
+Vertical With Top And Bottom: 26
+Diagonal Left-Down 60 Degrees: 27
+Diagonal Right-Down 60 Degrees: 28
+Horizontal With Bottom: 29
+Diagonal Left-Up: 30
+Diagonal Right-Up 30 Degrees: 31
+Vertical With Double Top: 32
+Vertical With Bottom: 33
+Horizontal 5 Byte Object: 34
+Horizontal Background Fill: 35
+Diagonal Left-Up 30 Degrees: 36
+Horizontal To Ground Plains: 37
+Bush Prefab: 38
+Horizontal Floating Platform: 39
+Fortress Pillars: 40

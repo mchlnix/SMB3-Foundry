@@ -15,7 +15,7 @@ from PySide2.QtWidgets import QSizePolicy, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
@@ -24,6 +24,8 @@ from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
+
+from foundry.game.Position import Position
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
@@ -66,6 +68,7 @@ class LevelView(QWidget):
         self.draw_expansions = SETTINGS["draw_expansion"]
         self.draw_mario = SETTINGS["draw_mario"]
         self.transparency = SETTINGS["block_transparency"]
+        self.background_enabled = SETTINGS["background_enabled"]
         self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
         self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
         self.draw_invisible_items = SETTINGS["draw_invisible_items"]
@@ -91,7 +94,7 @@ class LevelView(QWidget):
         self.resizing_happened = False
 
         # dragged in from the object toolbar
-        self.currently_dragged_object: Optional[Union[LevelObject, EnemyObject]] = None
+        self.currently_dragged_object: Optional[Union[LevelObjectController, EnemyObject]] = None
 
         self.setWhatsThis(
             "<b>Level View</b><br/>"
@@ -106,6 +109,14 @@ class LevelView(QWidget):
             ""
             "If all else fails, click the play button up top to see your level in game in seconds."
         )
+
+    @property
+    def background_enabled(self):
+        return self.level_drawer.background_enabled
+
+    @background_enabled.setter
+    def background_enabled(self, value):
+        self.level_drawer.background_enabled = value
 
     @property
     def transparency(self):
@@ -227,7 +238,7 @@ class LevelView(QWidget):
         if self.mouse_mode not in RESIZE_MODES:
             self.setCursor(Qt.ArrowCursor)
 
-    def cursor_on_edge_of_object(self, level_object: Union[LevelObject, EnemyObject], pos: QPoint, edge_width: int = 4):
+    def cursor_on_edge_of_object(self, level_object: Union[LevelObjectController, EnemyObject], pos: QPoint, edge_width: int = 4):
         right = (level_object.get_rect().left() + level_object.get_rect().width()) * self.block_length
         bottom = (level_object.get_rect().top() + level_object.get_rect().height()) * self.block_length
 
@@ -421,23 +432,23 @@ class LevelView(QWidget):
     def dragging(self, event: QMouseEvent):
         self.dragging_happened = True
 
-        x, y = event.pos().toTuple()
-
-        level_x, level_y = self.to_level_point(x, y)
-
-        dx = level_x - self.last_mouse_position[0]
-        dy = level_y - self.last_mouse_position[1]
-
-        self.last_mouse_position = level_x, level_y
+        pos = Position(*event.pos().toTuple())
+        level_pos = Position(*self.to_level_point(pos.x, pos.y))
+        level_pos_change = level_pos - Position(self.last_mouse_position[0], self.last_mouse_position[1])
 
         selected_objects = self.get_selected_objects()
 
-        for obj in selected_objects:
-            obj.move_by(dx, dy)
+        if level_pos_change.x or level_pos_change.y:
+            for obj in selected_objects:
+                if isinstance(obj, LevelObjectController):
+                    obj.set_position(level_pos)
+                else:
+                    obj.move_by(level_pos_change.x, level_pos_change.y)
 
-            self.level_ref.changed = True
+                self.level_ref.changed = True
 
-        self.update()
+            self.last_mouse_position = level_pos.x, level_pos.y
+            self.update()
 
     def on_left_mouse_button_up(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
@@ -498,10 +509,10 @@ class LevelView(QWidget):
         self.update()
 
     def zoom_out(self):
-        self.set_zoom(self.zoom / 2)
+        self.set_zoom(max(self.zoom - 1, 1))
 
     def zoom_in(self):
-        self.set_zoom(self.zoom * 2)
+        self.set_zoom(min(self.zoom + 1, 10))
 
     def start_selection_square(self, position):
         self.selection_square.start(position)
@@ -514,7 +525,10 @@ class LevelView(QWidget):
 
         sel_rect = self.selection_square.get_adjusted_rect(self.block_length, self.block_length)
 
-        touched_objects = [obj for obj in self.level_ref.get_all_objects() if sel_rect.intersects(obj.get_rect())]
+        touched_objects = []
+        for obj in self.level_ref.get_all_objects():
+            if sel_rect.intersects(obj.get_rect()):
+                touched_objects.append(obj)
 
         if touched_objects != self.level_ref.selected_objects:
             self._set_selected_objects(touched_objects)
@@ -546,7 +560,7 @@ class LevelView(QWidget):
 
         self.level_ref.selected_objects = objects
 
-    def get_selected_objects(self) -> List[Union[LevelObject, EnemyObject]]:
+    def get_selected_objects(self) -> List[Union[LevelObjectController, EnemyObject]]:
         return self.level_ref.selected_objects
 
     def remove_selected_objects(self):
@@ -636,7 +650,7 @@ class LevelView(QWidget):
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)
 
-    def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
+    def object_at(self, x: int, y: int) -> Optional[Union[LevelObjectController, EnemyObject]]:
         level_x, level_y = self.to_level_point(x, y)
 
         return self.level_ref.level.object_at(level_x, level_y)
@@ -647,10 +661,10 @@ class LevelView(QWidget):
 
         return level_x, level_y
 
-    def index_of(self, obj: Union[LevelObject, EnemyObject]) -> int:
+    def index_of(self, obj: Union[LevelObjectController, EnemyObject]) -> int:
         return self.level_ref.index_of(obj)
 
-    def get_object(self, index: int) -> Union[LevelObject, EnemyObject]:
+    def get_object(self, index: int) -> Union[LevelObjectController, EnemyObject]:
         return self.level_ref.get_object(index)
 
     def create_object_at(self, x: int, y: int, domain: int = 0, object_index: int = 0):
@@ -675,12 +689,12 @@ class LevelView(QWidget):
 
         self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
 
-    def replace_object(self, obj: LevelObject, domain: int, obj_index: int, length: int):
+    def replace_object(self, obj: LevelObjectController, domain: int, obj_index: int, length: int, overflow: list):
         self.remove_object(obj)
 
         x, y = obj.get_position()
 
-        new_obj = self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level)
+        new_obj = self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level, overflow)
         new_obj.selected = obj.selected
 
     def replace_enemy(self, old_enemy: EnemyObject, enemy_index: int):
@@ -704,7 +718,7 @@ class LevelView(QWidget):
 
     def paste_objects_at(
         self,
-        paste_data: Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]],
+        paste_data: Tuple[List[Union[LevelObjectController, EnemyObject]], Tuple[int, int]],
         x: Optional[int] = None,
         y: Optional[int] = None,
     ):
@@ -766,7 +780,7 @@ class LevelView(QWidget):
 
         level_object = self.get_object_from_mime_data(event.mimeData())
 
-        if isinstance(level_object, LevelObject):
+        if isinstance(level_object, LevelObjectController):
             self.level_ref.level.add_object(level_object.domain, level_object.obj_index, x, y, None)
         else:
             self.level_ref.level.add_enemy(level_object.obj_index, x, y)
@@ -777,7 +791,7 @@ class LevelView(QWidget):
 
         self.level_ref.data_changed.emit()
 
-    def get_object_from_mime_data(self, mime_data: QMimeData) -> Union[LevelObject, EnemyObject]:
+    def get_object_from_mime_data(self, mime_data: QMimeData) -> Union[LevelObjectController, EnemyObject]:
         object_type, *object_bytes = mime_data.data("application/level-object")
 
         if object_type == b"\x00":
@@ -790,7 +804,7 @@ class LevelView(QWidget):
 
             return self.level_ref.level.enemy_item_factory.from_properties(enemy_id, 0, 0)
 
-    def paintEvent(self, event: QPaintEvent):
+    def paintEvent(self, event: QPaintEvent, force=False):
         painter = QPainter(self)
 
         if self.level_ref is None:
@@ -798,7 +812,7 @@ class LevelView(QWidget):
 
         self.level_drawer.block_length = self.block_length
 
-        self.level_drawer.draw(painter, self.level_ref.level)
+        self.level_drawer.draw(painter, self.level_ref.level, force)
 
         self.selection_square.draw(painter)
 

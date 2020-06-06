@@ -3,8 +3,8 @@ from typing import Union
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QScrollArea, QTabWidget
 
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.gui.ObjectToolBox import ObjectIcon, ObjectToolBox
 
 
@@ -80,7 +80,7 @@ class TabbedToolBox(QTabWidget):
 
         if self._recent_toolbox.has_object(level_object) and recent_tab_showing:
             pass
-        elif isinstance(level_object, LevelObject):
+        elif isinstance(level_object, LevelObjectController):
             self.show_level_object_tab()
         elif isinstance(level_object, EnemyObject):
             self.show_enemy_item_tab()
@@ -93,7 +93,7 @@ class TabbedToolBox(QTabWidget):
         self._enemies_toolbox.clear()
         self._enemies_toolbox.add_from_enemy_set(object_set_index)
 
-    def add_recent_object(self, level_object: Union[EnemyObject, LevelObject]):
+    def add_recent_object(self, level_object: Union[EnemyObject, LevelObjectController]):
         self._recent_toolbox.place_at_front(level_object)
 
     def _on_object_dragged(self, object_icon: ObjectIcon):

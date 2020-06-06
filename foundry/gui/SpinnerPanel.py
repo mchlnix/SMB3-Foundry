@@ -3,7 +3,7 @@ from typing import Optional
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QFormLayout, QSizePolicy, QWidget
 
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
@@ -39,10 +39,15 @@ class SpinnerPanel(QWidget):
         self.spin_length.setEnabled(False)
         self.spin_length.valueChanged.connect(self.object_change.emit)
 
+        self.spin_index = Spinner(self, maximum=0xFF)
+        self.spin_index.setEnabled(False)
+        self.spin_index.valueChanged.connect(self.object_change.emit)
+
         spinner_layout = QFormLayout()
-        spinner_layout.addRow("Bank/Domain:", self.spin_domain)
+        spinner_layout.addRow("Domain:", self.spin_domain)
         spinner_layout.addRow("Index:", self.spin_type)
-        spinner_layout.addRow("Length:", self.spin_length)
+        spinner_layout.addRow("Overload:", self.spin_length)
+        spinner_layout.addRow("Type:", self.spin_index)
 
         self.setLayout(spinner_layout)
 
@@ -80,12 +85,20 @@ class SpinnerPanel(QWidget):
 
         self.set_type(obj.obj_index)
 
-        self.enable_domain(isinstance(obj, LevelObject), obj.domain)
+        self.enable_domain(isinstance(obj, LevelObjectController), obj.domain)
 
-        if isinstance(obj, LevelObject) and obj.is_4byte:
+        if isinstance(obj, LevelObjectController) and obj.is_4byte:
             self.set_length(obj.length)
         else:
             self.enable_length(False)
+
+        if isinstance(obj, LevelObjectController) and obj.bytes >= 5:
+            try:
+                self.set_index(obj.overflow[0])
+            except:
+                self.set_index(0)
+        else:
+            self.enable_index(False)
 
         self.blockSignals(False)
 
@@ -93,6 +106,7 @@ class SpinnerPanel(QWidget):
         return self.spin_type.value()
 
     def set_type(self, object_type: int):
+        assert object_type is not None
         self.spin_type.setValue(object_type)
         self.spin_type.setEnabled(True)
 
@@ -100,6 +114,7 @@ class SpinnerPanel(QWidget):
         return self.spin_domain.value()
 
     def set_domain(self, domain: int):
+        assert domain is not None
         self.spin_domain.setValue(domain)
         self.spin_domain.setEnabled(True)
 
@@ -107,8 +122,17 @@ class SpinnerPanel(QWidget):
         return self.spin_length.value()
 
     def set_length(self, length: int):
+        assert length is not None
         self.spin_length.setValue(length)
         self.spin_length.setEnabled(True)
+
+    def get_index(self) -> int:
+        return self.spin_index.value()
+
+    def set_index(self, index: int):
+        assert index is not None
+        self.spin_index.setValue(index)
+        self.spin_index.setEnabled(True)
 
     def enable_type(self, enable: bool, value: int = 0):
         self.spin_type.setValue(value)
@@ -122,10 +146,15 @@ class SpinnerPanel(QWidget):
         self.spin_length.setValue(value)
         self.spin_length.setEnabled(enable)
 
+    def enable_index(self, enable: bool, value: int = 0):
+        self.spin_index.setValue(value)
+        self.spin_index.setEnabled(enable)
+
     def clear_spinners(self):
         self.set_type(0x00)
         self.set_domain(0x00)
         self.set_length(0x00)
+        self.set_index(0x00)
 
     def disable_all(self):
         self.blockSignals(True)
@@ -135,5 +164,6 @@ class SpinnerPanel(QWidget):
         self.enable_type(False)
         self.enable_domain(False)
         self.enable_length(False)
+        self.enable_type(False)
 
         self.blockSignals(False)
