@@ -1,5 +1,6 @@
 from bisect import bisect_right
 from typing import List, Optional, Tuple, Union
+from warnings import warn
 
 from PySide2.QtCore import QMimeData, QPoint, QSize
 from PySide2.QtGui import (
@@ -727,7 +728,7 @@ class LevelView(QWidget):
             try:
                 pasted_objects.append(self.level_ref.paste_object_at(level_x + offset_x, level_y + offset_y, obj))
             except ValueError:
-                print("Tried pasting outside of level.")
+                warn("Tried pasting outside of level.", RuntimeWarning)
 
         self.select_objects(pasted_objects)
 
