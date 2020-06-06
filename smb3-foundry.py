@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 import os
 import sys
+import traceback
+import logging
+logger = logging.getLogger(__name__)
 
-from PySide2.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication, QMessageBox
 
 # change into the tmp directory pyinstaller uses for the data
 from foundry.gui.settings import load_settings, save_settings
 
 if hasattr(sys, "_MEIPASS"):
-    print(f"Changing current dir to {getattr(sys, '_MEIPASS')}")
+    logger.info(f"Changing current dir to {getattr(sys, '_MEIPASS')}")
     os.chdir(getattr(sys, "_MEIPASS"))
 
 from foundry.gui.MainWindow import MainWindow
@@ -30,4 +33,11 @@ if __name__ == "__main__":
     else:
         path = ""
 
-    main(path)
+    try:
+        main(path)
+    except Exception as e:
+        box = QMessageBox()
+        box.setWindowTitle('Crash report')
+        box.setText(f"An unexpected error occurred! Please contact the developers at https://github.com/mchlnix/SMB3-Foundry/issues with the error below:\n\n{str(e)}\n\n{traceback.format_exc()}")
+        box.exec_()
+        raise
