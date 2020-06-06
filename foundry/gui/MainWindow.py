@@ -56,6 +56,7 @@ from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.SettingsDialog import show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
+from foundry.gui.WarningList import WarningList
 from foundry.gui.settings import SETTINGS, save_settings
 from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
@@ -401,6 +402,16 @@ class MainWindow(QMainWindow):
         whats_this_action.setIcon(icon("help-circle.svg"))
         whats_this_action.setText("Starts 'What's this?' mode")
         menu_toolbar.addAction(whats_this_action)
+
+        menu_toolbar.addSeparator()
+        self.warning_list = WarningList(self, self.level_ref)
+
+        warning_action = menu_toolbar.addAction(icon("alert-triangle.svg"), "Warning Panel")
+        warning_action.setWhatsThis("Shows a list of warnings.")
+        warning_action.triggered.connect(self.warning_list.show)
+        warning_action.setDisabled(True)
+
+        self.warning_list.warnings_updated.connect(warning_action.setEnabled)
 
         self.addToolBar(Qt.TopToolBarArea, menu_toolbar)
 
