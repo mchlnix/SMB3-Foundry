@@ -417,14 +417,17 @@ class LevelDrawer:
     @staticmethod
     def _object_in_jump_area(level: Level, level_object: LevelObjectController):
         for jump in level.jumps:
-            jump_rect = jump.get_rect(1, level.is_vertical)
+            screen = jump.screen_index
 
             if level.is_vertical:
-                rect = QRect(0, SCREEN_WIDTH * screen, SCREEN_WIDTH, SCREEN_HEIGHT,)
+                rect = QRect(0, SCREEN_WIDTH * screen, SCREEN_WIDTH, SCREEN_HEIGHT, )
             else:
-                rect = QRect(SCREEN_WIDTH * screen, 0, SCREEN_WIDTH, GROUND,)
-            if rect.contains(QPoint(*level_object.get_position())):
-                return True
+                rect = QRect(SCREEN_WIDTH * screen, 0, SCREEN_WIDTH, GROUND, )
+            try:
+                if rect.contains(QPoint(*level_object.get_position())):
+                    return True
+            except AttributeError:
+                return False
         else:
             return False
 
