@@ -449,9 +449,12 @@ class LevelObject(ObjectLike):
                     new_width = (self.obj_index & 0x0F) + 1
 
                 for _ in range(new_height):
-                    for x in range(new_width):
-                        for y in range(self.height):
-                            blocks_to_draw.append(self.blocks[x % self.width])
+                    for y in range(self.height):
+                        for x in range(new_width):
+                            blocks_to_draw.append(self.blocks[y * self.height + x % self.width])
+
+                # adjust height for giant blocks, so that the rect is correct
+                new_height *= self.height
 
             elif self.ending == EndType.END_ON_TOP_OR_LEFT:
                 # in case the drawn object is smaller than its actual size
