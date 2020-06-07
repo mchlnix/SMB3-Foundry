@@ -17,8 +17,6 @@ from smb3parse.objects.object_set import (
     HILLY_OBJECT_SET,
     MAX_OBJECT_SET,
     MUSHROOM_OBJECT_SET,
-    PLAINS_GRAPHICS_SET,
-    PLAINS_OBJECT_SET,
     SPADE_BONUS_OBJECT_SET,
     UNDERGROUND_GRAPHICS_SET,
     UNDERGROUND_OBJECT_SET,
@@ -123,21 +121,6 @@ def test_object_rendering_1_0_1(object_index, domain, object_set, graphic_set, q
     level_object = object_factory.from_properties(domain, object_index, 0, 0, 8, 0)
 
     _test_object_against_reference(level_object, qtbot)
-
-
-@pytest.mark.parametrize(
-    "object_set, graphics_set",
-    list(zip(range(PLAINS_OBJECT_SET, MAX_OBJECT_SET + 1), range(PLAINS_GRAPHICS_SET, 0x0F + 1),)),
-)
-def test_ending_object(object_set, graphics_set, qtbot):
-    if object_set in [MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
-        pytest.skip()
-
-    object_factory = LevelObjectFactory(object_set, graphics_set, 0, [], False)
-
-    ending_object = object_factory.from_properties(0x2, 0x09, 0, 0, None, 0)
-
-    _test_object_against_reference(ending_object, qtbot)
 
 
 def test_no_change_to_bytes():

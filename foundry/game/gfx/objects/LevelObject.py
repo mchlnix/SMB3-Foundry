@@ -446,6 +446,12 @@ class LevelObject(ObjectLike):
                     block_position = (y_offset + y) * new_width + x + page_limit + 1
                     blocks_to_draw[block_position] = block_index
 
+            # the ending object is seemingly always 1 block too wide (going into the next screen)
+            for end_of_line in range(len(blocks_to_draw) - 1, 0, -new_width):
+                del blocks_to_draw[end_of_line]
+
+            new_width -= 1
+
             # Mushroom/Fire flower/Star is categorized as an enemy
 
         elif self.orientation == GeneratorType.VERTICAL:
