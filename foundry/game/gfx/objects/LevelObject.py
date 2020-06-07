@@ -242,6 +242,8 @@ class LevelObject(ObjectLike):
 
             blocks_to_draw.extend(self.blocks[-self.width :])
 
+            new_height = self.y_position + (self.height - 1)
+
         elif self.orientation == GeneratorType.DESERT_PIPE_BOX:
             # segments are the horizontal sections, which are 8 blocks long
             # two of those are drawn per length bit
@@ -726,7 +728,11 @@ class LevelObject(ObjectLike):
     def set_position(self, x, y):
         # todo also check for the upper bounds
         x = max(0, x)
-        y = max(0, y)
+
+        if self.orientation == GeneratorType.TO_THE_SKY:
+            y = self.rendered_base_y + y
+        else:
+            y = max(0, y)
 
         x_diff = self.x_position - self.rendered_base_x
         y_diff = self.y_position - self.rendered_base_y
