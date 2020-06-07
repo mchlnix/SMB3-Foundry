@@ -16,10 +16,13 @@ from smb3parse.objects.object_set import (
     HILLY_GRAPHICS_SET,
     HILLY_OBJECT_SET,
     MAX_OBJECT_SET,
+    MUSHROOM_OBJECT_SET,
     PLAINS_GRAPHICS_SET,
     PLAINS_OBJECT_SET,
+    SPADE_BONUS_OBJECT_SET,
     UNDERGROUND_GRAPHICS_SET,
     UNDERGROUND_OBJECT_SET,
+    WORLD_MAP_OBJECT_SET,
 )
 
 reference_image_dir = Path(__file__).parent.joinpath("test_refs")
@@ -167,7 +170,10 @@ def test_change_attribute_to_bytes(attribute, increase):
 def gen_object_factories():
     ROM(root_dir.joinpath("SMB3.nes"))
 
-    for object_set in range(1, MAX_OBJECT_SET + 1):
+    for object_set in range(MAX_OBJECT_SET + 1):
+        if object_set in [WORLD_MAP_OBJECT_SET, MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
+            continue
+
         yield LevelObjectFactory(object_set, object_set, 0, [], False)
 
 
