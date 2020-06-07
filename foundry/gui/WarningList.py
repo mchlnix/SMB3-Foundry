@@ -54,6 +54,8 @@ class WarningList(QWidget):
         for warning in self.warnings:
             self.layout().addWidget(QLabel(warning))
 
+        super(WarningList, self).update()
+
     def show(self):
         pos = QCursor.pos()
         pos.setY(pos.y() + 10)
@@ -64,3 +66,5 @@ class WarningList(QWidget):
 
     def focusOutEvent(self, event: QFocusEvent):
         self.hide()
+
+        super(WarningList, self).focusOutEvent(event)
