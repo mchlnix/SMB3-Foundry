@@ -3,6 +3,9 @@ import os
 import sys
 import traceback
 import logging
+
+from foundry import github_issue_link
+
 logger = logging.getLogger(__name__)
 
 from PySide2.QtWidgets import QApplication, QMessageBox
@@ -37,7 +40,10 @@ if __name__ == "__main__":
         main(path)
     except Exception as e:
         box = QMessageBox()
-        box.setWindowTitle('Crash report')
-        box.setText(f"An unexpected error occurred! Please contact the developers at https://github.com/mchlnix/SMB3-Foundry/issues with the error below:\n\n{str(e)}\n\n{traceback.format_exc()}")
+        box.setWindowTitle("Crash report")
+        box.setText(
+            f"An unexpected error occurred! Please contact the developers at {github_issue_link} "
+            f"with the error below:\n\n{str(e)}\n\n{traceback.format_exc()}"
+        )
         box.exec_()
         raise

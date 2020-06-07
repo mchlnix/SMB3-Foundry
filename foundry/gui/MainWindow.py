@@ -1,10 +1,10 @@
+import logging
 import os
 import pathlib
 import shlex
 import subprocess
 import tempfile
 from typing import Tuple, Union
-from warnings import warn
 
 from PySide2.QtCore import QSize
 from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
@@ -863,7 +863,9 @@ class MainWindow(QMainWindow):
     def on_spin(self, _):
         selected_objects = self.level_ref.selected_objects
 
-        assert len(selected_objects) == 1, warn(selected_objects, RuntimeWarning)
+        if len(selected_objects) != 1:
+            logging.error(selected_objects, RuntimeWarning)
+            return
 
         selected_object = selected_objects[0]
 

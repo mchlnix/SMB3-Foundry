@@ -342,7 +342,7 @@ class LevelObject(ObjectLike):
                 right = fill_block
             else:
                 # todo other two ends not used with diagonals?
-                warn(self.description, RuntimeWarning)
+                warn(f"{self.description} was not rendered.", RuntimeWarning)
                 self.rendered_blocks = []
                 return
 
@@ -684,15 +684,17 @@ class LevelObject(ObjectLike):
         if new_width and not self.rendered_height == len(self.rendered_blocks) / new_width:
             warn(
                 f"Not enough Blocks for calculated height: {self.description}. "
-                f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}"
-            , RuntimeWarning)
+                f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}",
+                RuntimeWarning,
+            )
 
             self.rendered_height = len(self.rendered_blocks) / new_width
         elif new_width == 0:
             warn(
                 f"Calculated Width is 0, setting to 1: {self.description}. "
-                f"Blocks to draw: {len(self.rendered_blocks)}. Rendered height: {self.rendered_height}"
-            , RuntimeWarning)
+                f"Blocks to draw: {len(self.rendered_blocks)}. Rendered height: {self.rendered_height}",
+                RuntimeWarning,
+            )
 
             self.rendered_width = 1
 
