@@ -12756,7 +12756,7 @@
       start: 64
   113:
     block_design:
-    - 166
+    - 171
     - 158
     - 159
     bmp:
@@ -13425,10 +13425,10 @@
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 4
-    description: Flat Land - Underground
+    description: Flat Land - Aboveground
     domain: 4
     object_design:
     - 76
@@ -58736,7 +58736,7 @@
       start: 64
   113:
     block_design:
-    - 166
+    - 171
     - 158
     - 159
     bmp:

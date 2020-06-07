@@ -662,10 +662,8 @@ class Level(LevelLike):
 
         self.changed = True
 
-    SEPERATOR = ";---------------------------------------------------------------------------\n"
-
     def to_asm6(self) -> str:
-        name = f"Level_{self.world}-{self.level_number}"
+        name = f"Level_{self.name}"
         s = f"; {name}\n; Object Set {self.object_set_number}\n" \
             f"{self.asm6_level_header(name)}\n{self.asm6_level_objects()}\n{self.asm6_level_enemies()}"
         return s
