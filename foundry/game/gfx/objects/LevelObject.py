@@ -270,6 +270,9 @@ class LevelObject(ObjectLike):
                     for segment_number in range(segments):
                         blocks_to_draw.extend(self.blocks[start:stop])
 
+            # draw another last row
+            new_height += 1
+
             if is_pipe_box_type_b:
                 # draw another open row
                 start = segment_width
@@ -281,6 +284,12 @@ class LevelObject(ObjectLike):
 
             for segment_number in range(segments):
                 blocks_to_draw.extend(self.blocks[start:stop])
+
+            # every line repeats the last block again for some reason
+            for end_of_line in range(len(blocks_to_draw), 0, -new_width):
+                blocks_to_draw.insert(end_of_line, blocks_to_draw[end_of_line - 1])
+
+            new_width += 1
 
         elif self.orientation in [
             GeneratorType.DIAG_DOWN_LEFT,
