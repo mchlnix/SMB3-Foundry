@@ -11,6 +11,7 @@ from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
+from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
 SKY = 0
 GROUND = 27
@@ -537,6 +538,10 @@ class LevelObject(ObjectLike):
                 if self.is_single_block:
                     new_width = self.length
 
+                min_height = min(self.height, 2)
+
+                new_height = max(min_height, new_height)
+
             elif self.orientation == GeneratorType.HORIZONTAL_2 and self.ending == EndType.TWO_ENDS:
                 # floating platforms seem to just be one shorter for some reason
                 new_width -= 1
@@ -594,14 +599,38 @@ class LevelObject(ObjectLike):
                     blocks_to_draw.append(self.blocks[offset + self.width - 1])
 
             elif self.ending == EndType.TWO_ENDS:
-                top_and_bottom_line = 2
+                if self.orientation == GeneratorType.HORIZONTAL and self.is_4byte:
+                    # flat ground objects have an artificial limit of 2 lines
+                    if (
+                        self.object_set.number == PLAINS_OBJECT_SET
+                        and self.domain == 0
+                        and self.obj_index in range(0xC0, 0xE0)
+                    ):
+                        self.height = new_height = min(2, self.secondary_length + 1)
+                    else:
+                        new_height = self.secondary_length + 1
+
+                if self.width > len(self.blocks):
+                    raise ValueError(f"{self} does not provide enough blocks to fill a row.")
+                else:
+                    start = 0
+                    end = self.width
 
                 for y in range(self.height):
-                    offset = y * self.width
-                    left, *middle, right = self.blocks[offset : offset + self.width]
+                    new_start = y * self.width
+                    new_end = (y + 1) * self.width
+
+                    if new_end > len(self.blocks):
+                        # repeat the last line of blocks to fill the object
+                        pass
+                    else:
+                        start = new_start
+                        end = new_end
+
+                    left, *middle, right = self.blocks[start:end]
 
                     blocks_to_draw.append(left)
-                    blocks_to_draw.extend(middle * (new_width - top_and_bottom_line))
+                    blocks_to_draw.extend(middle * (new_width - 2))
                     blocks_to_draw.append(right)
 
                 if not len(blocks_to_draw) % self.height == 0:
@@ -610,14 +639,16 @@ class LevelObject(ObjectLike):
                 new_width = int(len(blocks_to_draw) / self.height)
 
                 top_row = blocks_to_draw[0:new_width]
+                middle_blocks = blocks_to_draw[new_width : new_width * 2]
                 bottom_row = blocks_to_draw[-new_width:]
 
-                middle_blocks = blocks_to_draw[new_width:-new_width]
+                blocks_to_draw = top_row
 
-                new_rows = new_height - top_and_bottom_line
+                for y in range(1, new_height - 1):
+                    blocks_to_draw.extend(middle_blocks)
 
-                if new_rows >= 0:
-                    blocks_to_draw = top_row + middle_blocks * new_rows + bottom_row
+                if new_height > 1:
+                    blocks_to_draw.extend(bottom_row)
         else:
             if not self.orientation == GeneratorType.SINGLE_BLOCK_OBJECT:
                 print(f"Didn't render {self.description}")
