@@ -18,6 +18,7 @@ SETTINGS["draw_jump_on_objects"] = True
 SETTINGS["draw_items_in_blocks"] = True
 SETTINGS["draw_invisible_items"] = True
 SETTINGS["block_transparency"] = True
+SETTINGS["object_scroll_enabled"] = False
 
 default_settings_dir = pathlib.Path.home() / ".smb3foundry"
 default_settings_dir.mkdir(parents=True, exist_ok=True)
