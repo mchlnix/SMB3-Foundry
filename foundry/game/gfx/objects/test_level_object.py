@@ -127,14 +127,12 @@ def test_object_rendering_1_0_1(object_index, domain, object_set, graphic_set, q
 
 @pytest.mark.parametrize(
     "object_set, graphics_set",
-    list(
-        zip(
-            range(PLAINS_OBJECT_SET, UNDERGROUND_OBJECT_SET + 1),
-            range(PLAINS_GRAPHICS_SET, UNDERGROUND_GRAPHICS_SET + 1),
-        )
-    ),
+    list(zip(range(PLAINS_OBJECT_SET, MAX_OBJECT_SET + 1), range(PLAINS_GRAPHICS_SET, 0x0F + 1),)),
 )
 def test_ending_object(object_set, graphics_set, qtbot):
+    if object_set in [MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
+        pytest.skip()
+
     object_factory = LevelObjectFactory(object_set, graphics_set, 0, [], False)
 
     ending_object = object_factory.from_properties(0x2, 0x09, 0, 0, None, 0)
