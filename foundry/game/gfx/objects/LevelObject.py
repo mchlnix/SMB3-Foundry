@@ -196,6 +196,10 @@ class LevelObject(ObjectLike):
             self.type = (self.obj_index >> 4) + domain_offset + 16 - 1
 
     @property
+    def object_info(self):
+        return self.object_set.number, self.domain, self.obj_index
+
+    @property
     def length(self):
         return self._length
 

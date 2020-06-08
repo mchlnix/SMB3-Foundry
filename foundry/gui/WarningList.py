@@ -8,6 +8,7 @@ from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.game.gfx.objects.LevelObject import GROUND
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.util import clear_layout
+from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
 
 class WarningList(QWidget):
@@ -46,7 +47,7 @@ class WarningList(QWidget):
 
         # level objects to ground hitting the level edge
         for obj in level.objects:
-            if obj.description.lower() == "weird vine":
+            if obj.object_info == (PLAINS_OBJECT_SET, 0, 0x06):
                 continue
 
             if obj.orientation in [GeneratorType.HORIZ_TO_GROUND, GeneratorType.PYRAMID_TO_GROUND]:
