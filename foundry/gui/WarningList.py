@@ -4,6 +4,8 @@ from PySide2.QtCore import QRect, Qt, Signal, SignalInstance
 from PySide2.QtGui import QCursor, QFocusEvent
 from PySide2.QtWidgets import QLabel, QVBoxLayout, QWidget
 
+from foundry.game.ObjectDefinitions import GeneratorType
+from foundry.game.gfx.objects.LevelObject import GROUND
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.util import clear_layout
 
@@ -40,7 +42,13 @@ class WarningList(QWidget):
         # level objects and enemies are inside the level
         for obj in level.get_all_objects():
             if not level.get_rect().contains(obj.get_rect()):
-                self.warnings.append(f"{obj} at {obj.get_position()} is outside of level bounds.")
+                self.warnings.append(f"{obj} is outside of level bounds.")
+
+        # level objects to ground hitting the level edge
+        for obj in level.objects:
+            if obj.orientation in [GeneratorType.HORIZ_TO_GROUND, GeneratorType.PYRAMID_TO_GROUND]:
+                if obj.y_position + obj.rendered_height == GROUND:
+                    self.warnings.append(f"{obj} extends until the level bottom. This can crash the game.")
 
         self.update()
 
