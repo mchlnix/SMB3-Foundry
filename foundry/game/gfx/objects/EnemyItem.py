@@ -22,7 +22,7 @@ class EnemyObject(ObjectLike):
         self.length = 0
 
         self.obj_index = data[0]
-        self.x_position = data[1] - int(enemy_handle_x2[self.obj_index])
+        self.x_position = data[1] - enemy_handle_x2[self.obj_index]
         self.y_position = data[2]
 
         self.domain = 0
@@ -36,11 +36,18 @@ class EnemyObject(ObjectLike):
 
         self.png_data = png_data
 
-        self.rect = QRect()
-
         self.selected = False
 
         self._setup()
+
+    @property
+    def rect(self):
+        return QRect(
+            self.x_position + enemy_handle_x[self.obj_index],
+            self.y_position + enemy_handle_y[self.obj_index],
+            self.width,
+            self.height,
+        )
 
     def _setup(self):
         obj_def = self.object_set.get_definition_of(self.obj_index)
@@ -49,8 +56,6 @@ class EnemyObject(ObjectLike):
 
         self.width = obj_def.bmp_width
         self.height = obj_def.bmp_height
-
-        self.rect = QRect(self.x_position, self.y_position, self.width, self.height)
 
         self._render(obj_def)
 
@@ -74,8 +79,8 @@ class EnemyObject(ObjectLike):
             x = self.x_position + (i % self.width)
             y = self.y_position + (i // self.width)
 
-            x_offset = int(enemy_handle_x[self.obj_index])
-            y_offset = int(enemy_handle_y[self.obj_index])
+            x_offset = enemy_handle_x[self.obj_index]
+            y_offset = enemy_handle_y[self.obj_index]
 
             x += x_offset
             y += y_offset
@@ -112,8 +117,6 @@ class EnemyObject(ObjectLike):
 
         self.x_position = x
         self.y_position = y
-
-        self.rect = QRect(self.x_position, self.y_position, self.width, self.height)
 
     def move_by(self, dx, dy):
         new_x = self.x_position + dx
