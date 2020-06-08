@@ -46,6 +46,9 @@ class WarningList(QWidget):
 
         # level objects to ground hitting the level edge
         for obj in level.objects:
+            if obj.description.lower() == "weird vine":
+                continue
+
             if obj.orientation in [GeneratorType.HORIZ_TO_GROUND, GeneratorType.PYRAMID_TO_GROUND]:
                 if obj.y_position + obj.rendered_height == GROUND:
                     self.warnings.append(f"{obj} extends until the level bottom. This can crash the game.")

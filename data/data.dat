@@ -243,7 +243,7 @@
 0,0x03,0x03,3,1,<187,188,189>,9,0,0,White Mushrooms;; Flowers and Stars
 0,0x04,0x04,1,2,<45,151>,9,0,0,Door (CAN go in)
 0,0x05,0x05,1,2,<46,152>,9,0,0,Door (CAN'T go in)
-0,0x06,0x06,1,1,<148>,9,0,0,Weird Vine
+0,0x06,0x06,1,1,<148>,6,0,0,Vine extending downwards
 0,0x07,0x07,1,1,<47>,9,0,0,Small Background Cloud
 0,0x08,0x08,1,1,<146>,9,0,0,MSG_NOTHING
 0,0x09,0x09,1,1,<146>,9,0,0,MSG_NOTHING
