@@ -7,6 +7,7 @@ import pytest
 from foundry import root_dir
 from foundry.conftest import compare_images
 from foundry.game.File import ROM
+from foundry.game.gfx.objects.LevelObject import get_minimal_icon_object
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.gui.ObjectViewer import ObjectDrawArea
 from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
@@ -27,7 +28,7 @@ reference_image_dir = Path(__file__).parent.joinpath("test_refs")
 os.makedirs(reference_image_dir, exist_ok=True)
 
 
-def _test_object_against_reference(level_object, qtbot):
+def _test_object_against_reference(level_object, qtbot, minimal=False):
     object_set_number = level_object.object_set.number
     view = ObjectDrawArea(None, object_set_number, object_set_number)
 
@@ -38,6 +39,10 @@ def _test_object_against_reference(level_object, qtbot):
     view.setGeometry(0, 0, *level_object.display_size().toTuple())
 
     image_name = f"object_set_{object_set_number}_domain_{level_object.domain}_index_{hex(level_object.obj_index)}.png"
+
+    if minimal:
+        image_name = "minimal_" + image_name
+
     ref_image_path = str(reference_image_dir.joinpath(image_name))
 
     compare_images(image_name, ref_image_path, view.grab())
@@ -174,3 +179,12 @@ def test_all_objects(factory, domain, obj_id, qtbot):
     level_object = factory.from_properties(domain, obj_id, 0, 0, 8, 0)
 
     _test_object_against_reference(level_object, qtbot)
+
+
+@pytest.mark.parametrize(
+    "factory, domain, obj_id", list(product(gen_object_factories(), range(0, MAX_DOMAIN), gen_object_ids()))
+)
+def test_all_minimal_objects(factory, domain, obj_id, qtbot):
+    level_object = factory.from_properties(domain, obj_id, 0, 0, 0, 0)
+
+    _test_object_against_reference(get_minimal_icon_object(level_object), qtbot, minimal=True)
