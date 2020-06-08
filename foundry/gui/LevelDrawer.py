@@ -15,7 +15,7 @@ from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_W
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from smb3parse.levels import LEVEL_MAX_LENGTH
-from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET
+from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET, ICE_OBJECT_SET
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
@@ -110,6 +110,8 @@ class LevelDrawer:
             self._draw_desert_default_graphics(painter, level)
         elif level.object_set_number == DUNGEON_OBJECT_SET:
             self._draw_dungeon_default_graphics(painter, level)
+        elif level.object_set_number == ICE_OBJECT_SET:
+            self._draw_ice_default_graphics(painter, level)
 
         # painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
         # painter.setBrush(Qt.NoBrush)
@@ -173,6 +175,12 @@ class LevelDrawer:
 
         for x in range(level.width):
             floor_block.draw(painter, x * self.block_length, floor_level, self.block_length)
+
+    def _draw_ice_default_graphics(self, painter: QPainter, level: Level):
+        bg_block = _block_from_index(0x80, level)
+
+        for x, y in product(range(level.width), range(level.height)):
+            bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
 
     def _draw_objects(self, painter: QPainter, level: Level):
         for level_object in level.get_all_objects():
