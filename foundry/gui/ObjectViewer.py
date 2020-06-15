@@ -12,6 +12,7 @@ from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
+from foundry.gui.util import clear_layout
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2
@@ -209,9 +210,7 @@ class BlockArray(QWidget):
     def update_object(self, level_object: LevelObject):
         self.level_object = level_object
 
-        while self.layout().count():
-            item = self.layout().takeAt(0)
-            item.widget().deleteLater()
+        clear_layout(self.layout())
 
         for block_index in self.level_object.blocks:
             block = get_block(

@@ -1,23 +1,30 @@
 from itertools import product
+from typing import Tuple
 
-from PySide2.QtCore import QPoint, QRect
+from PySide2.QtCore import QPoint, QPointF, QRect
 from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
 from foundry import data_dir
 from foundry.game.File import ROM
-from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
-from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from smb3parse.levels import LEVEL_MAX_LENGTH
-from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET
+from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET, ICE_OBJECT_SET
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
+
+AScroll_Movement = 0x13959
+AScroll_MovementRepeat = 0x13A47
+AScroll_VelAccel = 0x13B35
+AScroll_MovementLoopStart = 0x13B39
+AScroll_HorizontalInitMove = 0x01ECC
 
 
 def _make_image_selected(image: QImage) -> QImage:
@@ -109,6 +116,8 @@ class LevelDrawer:
             self._draw_desert_default_graphics(painter, level)
         elif level.object_set_number == DUNGEON_OBJECT_SET:
             self._draw_dungeon_default_graphics(painter, level)
+        elif level.object_set_number == ICE_OBJECT_SET:
+            self._draw_ice_default_graphics(painter, level)
 
         # painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
         # painter.setBrush(Qt.NoBrush)
@@ -128,6 +137,8 @@ class LevelDrawer:
 
         if self.draw_grid:
             self._draw_grid(painter, level)
+
+        self._draw_auto_scroll(painter, level)
 
     def _draw_background(self, painter: QPainter, level: Level):
         painter.save()
@@ -172,6 +183,12 @@ class LevelDrawer:
 
         for x in range(level.width):
             floor_block.draw(painter, x * self.block_length, floor_level, self.block_length)
+
+    def _draw_ice_default_graphics(self, painter: QPainter, level: Level):
+        bg_block = _block_from_index(0x80, level)
+
+        for x, y in product(range(level.width), range(level.height)):
+            bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
 
     def _draw_objects(self, painter: QPainter, level: Level):
         for level_object in level.get_all_objects():
@@ -226,11 +243,17 @@ class LevelDrawer:
                 # center() is one pixel off for some reason
                 pos = rect.topLeft() + QPoint(*(rect.size() / 2).toTuple())
 
+                trigger_position = level_object.get_position()
+
                 if "left" in name:
                     image = LEFT_ARROW
 
                     pos.setX(rect.right())
                     pos.setY(pos.y() - self.block_length / 2)
+
+                    # leftward pipes trigger on the column to the left of the opening
+                    x, y = level_object.get_rect().bottomRight().toTuple()
+                    trigger_position = (x - 1, y)
 
                 elif "right" in name:
                     image = RIGHT_ARROW
@@ -243,12 +266,17 @@ class LevelDrawer:
                     pos.setX(pos.x() - self.block_length / 2)
                     pos.setY(rect.top() - self.block_length)
                 else:
+                    # upwards pipe
                     image = UP_ARROW
 
                     pos.setX(pos.x() - self.block_length / 2)
                     pos.setY(rect.bottom())
 
-                if not self._object_in_jump_area(level, level_object):
+                    # upwards pipes trigger on the second to last row
+                    x, y = level_object.get_rect().bottomLeft().toTuple()
+                    trigger_position = (x, y - 1)
+
+                if not self._object_in_jump_area(level, trigger_position):
                     image = NO_JUMP
 
             elif "door" == name or "door (can go" in name or "invisible door" in name:
@@ -258,7 +286,10 @@ class LevelDrawer:
 
                 pos.setY(rect.top() - self.block_length)
 
-                if not self._object_in_jump_area(level, level_object):
+                x, y = level_object.get_position()
+
+                # jumps seemingly trigger on the bottom block
+                if not self._object_in_jump_area(level, (x, y + 1)):
                     image = NO_JUMP
 
             # "?" - blocks, note blocks, wooden blocks and bricks
@@ -331,16 +362,11 @@ class LevelDrawer:
         painter.restore()
 
     @staticmethod
-    def _object_in_jump_area(level: Level, level_object: LevelObject):
+    def _object_in_jump_area(level: Level, pos: Tuple[int, int]):
         for jump in level.jumps:
-            screen = jump.screen_index
+            jump_rect = jump.get_rect(1, level.is_vertical)
 
-            if level.is_vertical:
-                rect = QRect(0, SCREEN_WIDTH * screen, SCREEN_WIDTH, SCREEN_HEIGHT,)
-            else:
-                rect = QRect(SCREEN_WIDTH * screen, 0, SCREEN_WIDTH, GROUND,)
-
-            if rect.contains(QPoint(*level_object.get_position())):
+            if jump_rect.contains(QPoint(*pos)):
                 return True
         else:
             return False
@@ -385,22 +411,7 @@ class LevelDrawer:
         for jump in level.jumps:
             painter.setBrush(QBrush(QColor(0xFF, 0x00, 0x00), Qt.FDiagPattern))
 
-            screen = jump.screen_index
-
-            if level.is_vertical:
-                painter.drawRect(
-                    0,
-                    self.block_length * SCREEN_WIDTH * screen,
-                    self.block_length * SCREEN_WIDTH,
-                    self.block_length * SCREEN_HEIGHT,
-                )
-            else:
-                painter.drawRect(
-                    self.block_length * SCREEN_WIDTH * screen,
-                    0,
-                    self.block_length * SCREEN_WIDTH,
-                    self.block_length * GROUND,
-                )
+            painter.drawRect(jump.get_rect(self.block_length, level.is_vertical))
 
     def _draw_grid(self, painter: QPainter, level: Level):
         panel_width, panel_height = level.get_rect(self.block_length).size().toTuple()
@@ -416,7 +427,120 @@ class LevelDrawer:
 
         if level.is_vertical:
             for y in range(0, panel_height, self.block_length * SCREEN_HEIGHT):
-                painter.drawLine(0, y, panel_width, y)
+                painter.drawLine(0, self.block_length + y, panel_width, self.block_length + y)
         else:
             for x in range(0, panel_width, self.block_length * SCREEN_WIDTH):
                 painter.drawLine(x, 0, x, panel_height)
+
+    def _draw_auto_scroll(self, painter: QPainter, level: Level):
+        pixel_length = self.block_length // Block.WIDTH
+
+        scroll_brush = QBrush(Qt.blue)
+        scroll_pen = QPen(scroll_brush, 2 * pixel_length)
+
+        accel_brush = QBrush(Qt.red)
+        accel_pen = QPen(accel_brush, 2 * pixel_length)
+
+        painter.setPen(scroll_pen)
+        painter.setBrush(scroll_brush)
+
+        for enemy in level.enemies:
+            if enemy.obj_index == 0xD3:
+                break
+        else:
+            return
+
+        auto_scroll_row = enemy.y_position
+
+        auto_scroll_type_index = auto_scroll_row >> 4
+        auto_scroll_routine_index = auto_scroll_row & 0x0F
+
+        if auto_scroll_type_index != 0:
+            return
+
+        rom = ROM()
+
+        first_movement_command_index = (rom.int(AScroll_HorizontalInitMove + auto_scroll_routine_index) + 1) % 256
+        last_movement_command_index = (rom.int(AScroll_HorizontalInitMove + auto_scroll_routine_index + 1) + 1) % 256
+
+        movement_count = last_movement_command_index - first_movement_command_index
+
+        level_h_vel = 0
+        level_v_vel = 0
+
+        current_pos = self._determine_auto_scroll_start(level)
+
+        for movement_command_index in range(movement_count):
+            movement_command = rom.int(AScroll_Movement + first_movement_command_index + movement_command_index)
+            movement_repeat = rom.int(AScroll_MovementRepeat + first_movement_command_index + movement_command_index)
+
+            is_acceleration_command = (movement_command >> 4) == 0
+
+            if is_acceleration_command:
+                # set speed
+                h_acceleration_index = (movement_command & 0b00001100) >> 2
+                v_acceleration_index = movement_command & 0b00000011
+
+                h_acceleration = rom.int(AScroll_VelAccel + h_acceleration_index)
+                v_acceleration = rom.int(AScroll_VelAccel + v_acceleration_index)
+
+                if h_acceleration == 0xFF:
+                    h_acceleration = -0x01
+
+                if v_acceleration == 0xFF:
+                    v_acceleration = -0x01
+
+                h_acceleration <<= 4
+                v_acceleration <<= 4
+
+                movement_ticks = movement_repeat
+                movement_repeat = 1
+            else:
+                auto_scroll_loop_selector = movement_command & 0x0F
+
+                assert auto_scroll_loop_selector in [0, 1], auto_scroll_loop_selector
+
+                movement_ticks = rom.int(AScroll_MovementLoopStart - 2 + auto_scroll_loop_selector)
+
+                h_acceleration = 0
+                v_acceleration = 0
+
+            if is_acceleration_command and (h_acceleration or v_acceleration):
+                painter.setPen(accel_pen)
+                painter.setBrush(accel_brush)
+            else:
+                painter.setPen(scroll_pen)
+                painter.setBrush(scroll_brush)
+
+            # circle at start of new command
+            painter.drawEllipse(current_pos, 4 * pixel_length, 4 * pixel_length)
+
+            if is_acceleration_command and (h_acceleration or v_acceleration):
+                for _ in range(movement_ticks):
+                    level_h_vel += h_acceleration
+                    level_v_vel += v_acceleration
+
+                    old_pos = current_pos
+                    current_pos += QPointF(4 * level_h_vel / 256, 2 * level_v_vel / 256) * pixel_length
+
+                    painter.drawLine(old_pos, current_pos)
+            else:
+                h_updates_per_tick = 4  # got those by reading the auto scroll routine
+                v_updates_per_tick = 2
+
+                old_pos = QPointF(current_pos)
+
+                h_movement = h_updates_per_tick * level_h_vel / 256 * movement_ticks * movement_repeat
+                v_movement = v_updates_per_tick * level_v_vel / 256 * movement_ticks * movement_repeat
+
+                current_pos += QPointF(h_movement, v_movement) * pixel_length
+
+                painter.drawLine(old_pos, current_pos)
+
+    def _determine_auto_scroll_start(self, level: Level) -> QPointF:
+        # only support horizontal levels for now
+        _, mario_y = level.header.mario_position()
+
+        scroll_x, scroll_y = SCREEN_WIDTH, mario_y + 3  # height of
+
+        return QPointF(scroll_x, scroll_y) * self.block_length

@@ -243,7 +243,7 @@
 0,0x03,0x03,3,1,<187,188,189>,9,0,0,White Mushrooms;; Flowers and Stars
 0,0x04,0x04,1,2,<45,151>,9,0,0,Door (CAN go in)
 0,0x05,0x05,1,2,<46,152>,9,0,0,Door (CAN'T go in)
-0,0x06,0x06,1,1,<148>,9,0,0,Weird Vine
+0,0x06,0x06,1,1,<148>,6,0,0,Vine extending downwards
 0,0x07,0x07,1,1,<47>,9,0,0,Small Background Cloud
 0,0x08,0x08,1,1,<146>,9,0,0,MSG_NOTHING
 0,0x09,0x09,1,1,<146>,9,0,0,MSG_NOTHING
@@ -1511,7 +1511,7 @@
 0,0xB0,0xBF,1,1,<148>,9,0,0,Weird
 0,0xC0,0xCF,3,2,<49,50,51,46,47,48>,0,3,0,World 5-style Cloud Platform - Blue Background
 0,0xD0,0xDF,3,2,<55,56,57,52,53,54>,0,3,0,World 5-style Cloud Platform - White Background
-0,0xE0,0xEF,3,2,<77,78,79,61,62,63>,0,3,1,Clouds C
+0,0xE0,0xEF,3,3,<77,78,79,61,62,63,0,0,0>,0,3,1,Clouds C
 0,0xF0,0xFF,3,1,<58,59,60>,0,3,0,World 6-style Cloud Platform
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf

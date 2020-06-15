@@ -6,12 +6,19 @@ from PySide2.QtGui import QPixmap
 from approval_tests.gui import ApprovalDialog
 from foundry import root_dir
 from foundry.game.File import ROM
+from foundry.game.level.Level import Level
+from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
 level_1_1_object_address = 0x1FB92
 level_1_1_enemy_address = 0xC537 + 1
 
 level_1_2_object_address = 0x20F3A
 level_1_2_enemy_address = 0xC6BA + 1
+
+
+@pytest.fixture
+def level(rom, qtbot):
+    return Level("Level 1-1", level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
 
 
 @pytest.fixture(scope="module", autouse=True)

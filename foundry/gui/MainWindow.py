@@ -1,3 +1,4 @@
+import logging
 import os
 import pathlib
 import shlex
@@ -57,6 +58,7 @@ from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.SettingsDialog import show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
+from foundry.gui.WarningList import WarningList
 from foundry.gui.settings import SETTINGS, save_settings
 from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
@@ -403,6 +405,16 @@ class MainWindow(QMainWindow):
         whats_this_action.setText("Starts 'What's this?' mode")
         menu_toolbar.addAction(whats_this_action)
 
+        menu_toolbar.addSeparator()
+        self.warning_list = WarningList(self, self.level_ref)
+
+        warning_action = menu_toolbar.addAction(icon("alert-triangle.svg"), "Warning Panel")
+        warning_action.setWhatsThis("Shows a list of warnings.")
+        warning_action.triggered.connect(self.warning_list.show)
+        warning_action.setDisabled(True)
+
+        self.warning_list.warnings_updated.connect(warning_action.setEnabled)
+
         self.addToolBar(Qt.TopToolBarArea, menu_toolbar)
 
         self.status_bar = ObjectStatusBar(self, self.level_ref)
@@ -534,6 +546,9 @@ class MainWindow(QMainWindow):
             self, caption="Save Screenshot", dir=recommended_file, filter=IMG_FILE_FILTER
         )
 
+        if not pathname:
+            return False
+
         # Proceed loading the file chosen by the user
         self.level_view.make_screenshot().save(pathname)
 
@@ -598,7 +613,7 @@ class MainWindow(QMainWindow):
         if not self.level_ref:
             return True
 
-        if self.level_ref.changed:
+        if self.level_ref.level.changed:
             answer = QMessageBox.question(
                 self,
                 "Please confirm",
@@ -641,11 +656,13 @@ class MainWindow(QMainWindow):
                 QMessageBox.Ok,
             )
 
-            answer = self.level_selector.exec_()
+            level_selector = LevelSelector(self)
+
+            answer = level_selector.exec_()
 
             if answer == QMessageBox.Accepted:
                 self.level_view.level_ref.attach_to_rom(
-                    self.level_selector.object_data_offset, self.level_selector.enemy_data_offset
+                    level_selector.object_data_offset, level_selector.enemy_data_offset
                 )
 
                 if is_save_as:
@@ -657,7 +674,7 @@ class MainWindow(QMainWindow):
 
         if is_save_as:
             pathname, _ = QFileDialog.getSaveFileName(self, caption="Save ROM as", filter=ROM_FILE_FILTER)
-            if pathname is None:
+            if not pathname:
                 return  # the user changed their mind
         else:
             pathname = ROM.path
@@ -847,7 +864,9 @@ class MainWindow(QMainWindow):
     def on_spin(self, _):
         selected_objects = self.level_ref.selected_objects
 
-        assert len(selected_objects) == 1, warn(selected_objects, RuntimeWarning)
+        if len(selected_objects) != 1:
+            logging.error(selected_objects, RuntimeWarning)
+            return
 
         selected_object = selected_objects[0]
 

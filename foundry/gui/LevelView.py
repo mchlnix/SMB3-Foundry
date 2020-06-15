@@ -256,24 +256,28 @@ class LevelView(QWidget):
             super(LevelView, self).mouseReleaseEvent(event)
 
     def wheelEvent(self, event: QWheelEvent):
-        x, y = event.pos().toTuple()
+        if SETTINGS["object_scroll_enabled"]:
+            x, y = event.pos().toTuple()
 
-        obj_under_cursor = self.object_at(x, y)
+            obj_under_cursor = self.object_at(x, y)
 
-        if obj_under_cursor is None:
+            if obj_under_cursor is None:
+                return False
+
+            if isinstance(self.level_ref.level, WorldMap):
+                return False
+
+            # scrolling through the level could unintentionally change objects, if the cursor would wander onto them.
+            # this is annoying (to me) so only change already selected objects
+            if obj_under_cursor not in self.level_ref.selected_objects:
+                return False
+
+            self.change_object_on_mouse_wheel(event.pos(), event.angleDelta().y())
+
+            return True
+        else:
+            super(LevelView, self).wheelEvent(event)
             return False
-
-        if isinstance(self.level_ref.level, WorldMap):
-            return False
-
-        # scrolling through the level could unintentionally change objects, if the cursor would wander onto them.
-        # this is annoying (to me) so only change already selected objects
-        if obj_under_cursor not in self.level_ref.selected_objects:
-            return False
-
-        self.change_object_on_mouse_wheel(event.pos(), event.angleDelta().y())
-
-        return True
 
     @undoable
     def change_object_on_mouse_wheel(self, cursor_position: QPoint, y_delta: int):

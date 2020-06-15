@@ -4,6 +4,7 @@ from PySide2.QtGui import QWheelEvent, Qt
 
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.LevelView import LevelView
+from foundry.gui.settings import SETTINGS
 from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, PLAINS_OBJECT_SET
 
 
@@ -78,6 +79,8 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
     level_view = main_window.level_view
     object_under_cursor = level_view.object_at(x, y)
     original_type = object_under_cursor.type
+
+    SETTINGS["object_scroll_enabled"] = True
 
     # WHEN level view is scrolled horizontally, the object is selected and the scroll wheel is used on it
     main_window.scroll_panel.horizontalScrollBar().setMaximum(level_view.width())

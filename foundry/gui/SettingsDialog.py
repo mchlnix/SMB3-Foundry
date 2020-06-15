@@ -1,6 +1,6 @@
-from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import (
     QButtonGroup,
+    QCheckBox,
     QFileDialog,
     QGroupBox,
     QHBoxLayout,
@@ -11,7 +11,7 @@ from PySide2.QtWidgets import (
     QVBoxLayout,
 )
 
-from foundry import icon, icon_dir
+from foundry import icon
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings
 
@@ -23,7 +23,21 @@ class SettingsDialog(CustomDialog):
         super(SettingsDialog, self).__init__(parent, "Settings")
 
         mouse_box = QGroupBox("Mouse", self)
-        mouse_layout = QHBoxLayout(mouse_box)
+        mouse_box.setLayout(QVBoxLayout())
+
+        scroll_layout = QHBoxLayout()
+
+        label = QLabel("Scroll objects with mouse wheel:")
+        label.setToolTip("Select an object and scroll up and down to change its type.")
+        self._scroll_check_box = QCheckBox("Enabled")
+        self._scroll_check_box.setChecked(SETTINGS["object_scroll_enabled"])
+        self._scroll_check_box.toggled.connect(self._update_settings)
+
+        scroll_layout.addWidget(label)
+        scroll_layout.addStretch(1)
+        scroll_layout.addWidget(self._scroll_check_box)
+
+        resize_layout = QHBoxLayout()
 
         self.lmb_radio = QRadioButton("Left Mouse Button")
         rmb_radio = QRadioButton("Right Mouse Button")
@@ -37,11 +51,15 @@ class SettingsDialog(CustomDialog):
         radio_group.addButton(self.lmb_radio)
         radio_group.addButton(rmb_radio)
 
-        mouse_layout.addWidget(QLabel("Resize mode:"))
-        mouse_layout.addWidget(self.lmb_radio)
-        mouse_layout.addWidget(rmb_radio)
+        resize_layout.addWidget(QLabel("Object resize mode:"))
+        resize_layout.addStretch(1)
+        resize_layout.addWidget(self.lmb_radio)
+        resize_layout.addWidget(rmb_radio)
 
-        # ----------------------------------
+        mouse_box.layout().addLayout(scroll_layout)
+        mouse_box.layout().addLayout(resize_layout)
+
+        # emulator command
 
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText("Path to emulator")
@@ -73,6 +91,8 @@ class SettingsDialog(CustomDialog):
         command_layout.addWidget(QLabel("Command arguments (%f will be replaced with rom path):"))
         command_layout.addWidget(self.command_arguments_input)
 
+        # ----------------------
+
         layout = QVBoxLayout(self)
         layout.addWidget(mouse_box)
         layout.addWidget(command_box)
@@ -92,6 +112,8 @@ class SettingsDialog(CustomDialog):
             SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
         else:
             SETTINGS["resize_mode"] = RESIZE_RIGHT_CLICK
+
+        SETTINGS["object_scroll_enabled"] = self._scroll_check_box.isChecked()
 
         self.update()
 

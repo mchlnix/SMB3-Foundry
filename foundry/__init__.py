@@ -15,6 +15,7 @@ icon_dir = data_dir.joinpath("icons")
 releases_link = "https://github.com/mchlnix/SMB3-Foundry/releases"
 feature_video_link = "https://www.youtube.com/watch?v=7_22cAffMmE"
 github_link = "https://github.com/mchlnix/SMB3-Foundry"
+github_issue_link = "https://github.com/mchlnix/SMB3-Foundry/issues"
 discord_link = "https://discord.gg/pm87gm7"
 
 

@@ -50,7 +50,8 @@ class Block:
 
         self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
 
-        self._block_id = (block_index, self.bg_color.toTuple(), graphics_set.number)
+        # can't hash list, so turn it into a string instead
+        self._block_id = (block_index, str(palette_group), graphics_set.number)
 
         lu = tsa_data[TSA_BANK_0 + block_index]
         ld = tsa_data[TSA_BANK_1 + block_index]

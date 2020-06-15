@@ -83,15 +83,6 @@ class Level(LevelLike):
         self.changed = False
 
     def _load_level_data(self, object_data: bytearray, enemy_data: bytearray, new_level: bool = True):
-        self.object_factory = LevelObjectFactory(
-            self.object_set_number,
-            self.header.graphic_set_index,
-            self.header.object_palette_index,
-            self.objects,
-            bool(self.header.is_vertical),
-        )
-        self.enemy_item_factory = EnemyItemFactory(self.object_set_number, self.header.enemy_palette_index)
-
         self._load_objects(object_data)
         self._load_enemies(enemy_data)
 
@@ -147,6 +138,15 @@ class Level(LevelLike):
 
     def _parse_header(self):
         self.header = LevelHeader(self.header_bytes, self.object_set_number)
+
+        self.object_factory = LevelObjectFactory(
+            self.object_set_number,
+            self.header.graphic_set_index,
+            self.header.object_palette_index,
+            self.objects,
+            bool(self.header.is_vertical),
+        )
+        self.enemy_item_factory = EnemyItemFactory(self.object_set_number, self.header.enemy_palette_index)
 
         self.size = self.header.width, self.header.height
 
@@ -721,7 +721,12 @@ class Level(LevelLike):
 
         enemies = bytearray()
 
-        for enemy in sorted(self.enemies, key=lambda _enemy: _enemy.x_position):
+        if self.is_vertical:
+            enemies_objects = sorted(self.enemies, key=lambda _enemy: _enemy.y_position)
+        else:
+            enemies_objects = sorted(self.enemies, key=lambda _enemy: _enemy.x_position)
+
+        for enemy in enemies_objects:
             enemies.extend(enemy.to_bytes())
 
         enemies.append(0xFF)
