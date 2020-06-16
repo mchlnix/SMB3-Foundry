@@ -38,7 +38,8 @@ class AboutDialog(CustomDialog):
         text_layout.addWidget(
             LinkLabel(
                 self,
-                f'<a href="{LINK_SOUTHBIRD}">Captain Southbird</a> for the <a href="{LINK_DISASM}">SMB3 Disassembly</a>',
+                f'<a href="{LINK_SOUTHBIRD}">Captain Southbird</a> '
+                f'for the <a href="{LINK_DISASM}">SMB3 Disassembly</a>',
             )
         )
         text_layout.addWidget(
