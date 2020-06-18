@@ -54,6 +54,12 @@ class WarningList(QWidget):
                 if obj.y_position + obj.rendered_height == GROUND:
                     self.warnings.append(f"{obj} extends until the level bottom. This can crash the game.")
 
+        # autoscroll objects are below y=0x60
+        for item in level.enemies:
+            if item.obj_index == 0xD3:
+                if item.y_position >= 0x60:
+                    self.warnings.append(f"{item}'s y-position is too low. Maximum is 95 or 0x5F.")
+
         self.update()
 
         self.warnings_updated.emit(bool(self.warnings))
