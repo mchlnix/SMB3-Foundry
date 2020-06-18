@@ -374,8 +374,13 @@ class LevelObject(ObjectLike):
                     row.reverse()
 
             if self.orientation in [GeneratorType.DIAG_DOWN_RIGHT, GeneratorType.DIAG_UP_RIGHT]:
-                if not self.height > self.width:  # special case for 60 degree platform wire down right
+                if not self.height > self.width:
                     rows.reverse()
+
+            if self.orientation == GeneratorType.DIAG_DOWN_RIGHT and self.height > self.width:
+                # special case for 60 degree platform wire down right
+                for row in rows:
+                    row.reverse()
 
             if self.orientation in [GeneratorType.DIAG_UP_RIGHT]:
                 base_y -= new_height - 1
