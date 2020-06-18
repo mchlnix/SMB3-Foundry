@@ -17,6 +17,14 @@ AScroll_MovementLoopTicks = 0x13B70
 AScroll_HorizontalInitMove = 0x01ECD
 
 
+HORIZONTAL_SCROLL_0 = 0
+HORIZONTAL_SCROLL_1 = 1
+UP_RIGHT_DIAG_SCROLL = 2
+SPIKE_CEILING_SCROLL = 3
+UP_TIL_DOOR_SCROLL = 4
+WATER_LEVEL_SCROLL = 5
+
+
 class AutoScrollDrawer:
     def __init__(self, auto_scroll_row: int, level: Level):
         self.auto_scroll_row = auto_scroll_row
@@ -50,7 +58,16 @@ class AutoScrollDrawer:
         auto_scroll_type_index = self.auto_scroll_row >> 4
         auto_scroll_routine_index = self.auto_scroll_row & 0b0001_1111
 
-        if auto_scroll_type_index not in [0, 1]:
+        if auto_scroll_type_index in [
+            SPIKE_CEILING_SCROLL,
+            UP_TIL_DOOR_SCROLL,
+            WATER_LEVEL_SCROLL,
+            UP_RIGHT_DIAG_SCROLL,
+        ]:
+            # not visualized
+            return
+        elif auto_scroll_type_index not in [HORIZONTAL_SCROLL_0, HORIZONTAL_SCROLL_1]:
+            # illegal value, those appear in the vanilla ROM, though; so error out
             return
 
         first_movement_command_index = (
@@ -70,10 +87,7 @@ class AutoScrollDrawer:
 
             self._execute_movement_command(painter, movement_command, movement_repeat)
 
-        painter = None
-
     def _execute_movement_command(self, painter: QPainter, command: int, repeat: int):
-        assert painter is not None
         h_updates_per_tick = 4  # got those by reading the auto scroll routine
         v_updates_per_tick = 2
 
