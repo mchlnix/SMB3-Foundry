@@ -1,6 +1,7 @@
 from os.path import basename
 from typing import List, Optional
 
+from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset
 from smb3parse.util.rom import Rom
 
 WORLD_COUNT = 9  # includes warp zone
@@ -10,11 +11,9 @@ WORLD_COUNT = 9  # includes warp zone
 
 OS_SIZE = 2  # byte
 
-TSA_OS_LIST = 0x3C3F9
+TSA_OS_LIST = PAGE_A000_ByTileset
 TSA_TABLE_SIZE = 0x400
 TSA_TABLE_INTERVAL = TSA_TABLE_SIZE + 0x1C00
-
-TSA_BASE_OS = 0x00010
 
 
 class ROM(Rom):
@@ -50,7 +49,7 @@ class ROM(Rom):
             # todo why is the tsa index in the wrong (seemingly) false?
             tsa_index += 1
 
-        tsa_start = TSA_BASE_OS + tsa_index * TSA_TABLE_INTERVAL
+        tsa_start = BASE_OFFSET + tsa_index * TSA_TABLE_INTERVAL
 
         return rom.read(tsa_start, TSA_TABLE_SIZE)
 

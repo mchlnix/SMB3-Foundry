@@ -6,16 +6,15 @@ from PySide2.QtGui import QBrush, QPainter, QPen, Qt
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.level.Level import Level
-
-
-AScroll_Movement = 0x13959
-AScroll_MovementRepeat = 0x13A47
-AScroll_VelAccel = 0x13B35
-AScroll_MovementLoopStart = 0x13B38
-AScroll_MovementLoop = 0x13B42
-AScroll_MovementLoopTicks = 0x13B70
-AScroll_HorizontalInitMove = 0x01ECD
-
+from smb3parse.constants import (
+    AScroll_HorizontalInitMove,
+    AScroll_Movement,
+    AScroll_MovementLoop,
+    AScroll_MovementLoopStart,
+    AScroll_MovementLoopTicks,
+    AScroll_MovementRepeat,
+    AScroll_VelAccel,
+)
 
 HORIZONTAL_SCROLL_0 = 0
 HORIZONTAL_SCROLL_1 = 1
@@ -70,10 +69,8 @@ class AutoScrollDrawer:
             # illegal value, those appear in the vanilla ROM, though; so error out
             return
 
-        first_movement_command_index = (
-            self.rom.int(AScroll_HorizontalInitMove - 1 + auto_scroll_routine_index) + 1
-        ) % 256
-        last_movement_command_index = (self.rom.int(AScroll_HorizontalInitMove + auto_scroll_routine_index)) % 256
+        first_movement_command_index = (self.rom.int(AScroll_HorizontalInitMove + auto_scroll_routine_index) + 1) % 256
+        last_movement_command_index = (self.rom.int(AScroll_HorizontalInitMove + auto_scroll_routine_index + 1)) % 256
 
         self.horizontal_speed = 0
         self.vertical_speed = 0
@@ -118,16 +115,18 @@ class AutoScrollDrawer:
         else:
             auto_scroll_loop_selector = command >> 4
 
+            loop_start_offset = AScroll_MovementLoopStart - 2 + auto_scroll_loop_selector
+
             if auto_scroll_loop_selector in [0, 1]:
                 # normal movement command
-                movement_ticks = self.rom.int(AScroll_MovementLoopStart - 1 + auto_scroll_loop_selector)
+                movement_ticks = self.rom.int(loop_start_offset)
 
                 h_acceleration = 0
                 v_acceleration = 0
             else:
                 # loop command
-                movement_loop_start_index = self.rom.int(AScroll_MovementLoopStart - 1 + auto_scroll_loop_selector)
-                movement_loop_end_index = self.rom.int(AScroll_MovementLoopStart - 1 + auto_scroll_loop_selector + 1)
+                movement_loop_start_index = self.rom.int(loop_start_offset)
+                movement_loop_end_index = self.rom.int(loop_start_offset + 1)
 
                 number_of_commands = movement_loop_end_index - movement_loop_start_index
 
