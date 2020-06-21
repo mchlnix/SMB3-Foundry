@@ -98,6 +98,7 @@ class LevelDrawer:
         self.draw_jumps_on_objects = True
         self.draw_items_in_blocks = True
         self.draw_invisible_items = True
+        self.draw_autoscroll = True
         self.transparency = False
 
         self.block_length = Block.WIDTH
@@ -134,7 +135,8 @@ class LevelDrawer:
         if self.draw_grid:
             self._draw_grid(painter, level)
 
-        self._draw_auto_scroll(painter, level)
+        if self.draw_autoscroll:
+            self._draw_auto_scroll(painter, level)
 
     def _draw_background(self, painter: QPainter, level: Level):
         painter.save()

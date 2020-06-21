@@ -78,6 +78,7 @@ ID_RESIZE_TYPE = 511
 ID_JUMP_OBJECTS = 512
 ID_ITEM_BLOCKS = 513
 ID_INVISIBLE_ITEMS = 514
+ID_AUTOSCROLL = 515
 
 CHECKABLE_MENU_ITEMS = [
     ID_TRANSPARENCY,
@@ -88,6 +89,7 @@ CHECKABLE_MENU_ITEMS = [
     ID_JUMP_OBJECTS,
     ID_ITEM_BLOCKS,
     ID_INVISIBLE_ITEMS,
+    ID_AUTOSCROLL,
 ]
 
 ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
@@ -205,6 +207,11 @@ class MainWindow(QMainWindow):
         action.setProperty(ID_PROP, ID_INVISIBLE_ITEMS)
         action.setCheckable(True)
         action.setChecked(SETTINGS["draw_invisible_items"])
+
+        action = self.view_menu.addAction("Autoscroll Path")
+        action.setProperty(ID_PROP, ID_AUTOSCROLL)
+        action.setCheckable(True)
+        action.setChecked(SETTINGS["draw_autoscroll"])
 
         self.view_menu.addSeparator()
 
@@ -842,6 +849,8 @@ class MainWindow(QMainWindow):
             self.level_view.draw_items_in_blocks = checked
         elif item_id == ID_INVISIBLE_ITEMS:
             self.level_view.draw_invisible_items = checked
+        elif item_id == ID_AUTOSCROLL:
+            self.level_view.draw_autoscroll = checked
 
         SETTINGS["draw_mario"] = self.level_view.draw_mario
         SETTINGS["draw_jumps"] = self.level_view.draw_jumps
@@ -850,6 +859,7 @@ class MainWindow(QMainWindow):
         SETTINGS["draw_jump_on_objects"] = self.level_view.draw_jumps_on_objects
         SETTINGS["draw_items_in_blocks"] = self.level_view.draw_items_in_blocks
         SETTINGS["draw_invisible_items"] = self.level_view.draw_invisible_items
+        SETTINGS["draw_autoscroll"] = self.level_view.draw_autoscroll
         SETTINGS["block_transparency"] = self.level_view.transparency
 
         save_settings()

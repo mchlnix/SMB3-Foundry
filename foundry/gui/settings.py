@@ -17,6 +17,7 @@ SETTINGS["draw_expansion"] = False
 SETTINGS["draw_jump_on_objects"] = True
 SETTINGS["draw_items_in_blocks"] = True
 SETTINGS["draw_invisible_items"] = True
+SETTINGS["draw_autoscroll"] = False
 SETTINGS["block_transparency"] = True
 SETTINGS["object_scroll_enabled"] = False
 
