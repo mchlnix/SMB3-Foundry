@@ -2,7 +2,7 @@ from PySide2.QtCore import QRect, QSize, Qt
 from PySide2.QtGui import QColor, QPaintEvent, QPainter
 from PySide2.QtWidgets import QSizePolicy, QWidget
 
-from foundry.game.level.Level import Level
+from foundry.game.level.LevelRef import LevelRef
 
 
 class LevelSizeBar(QWidget):
@@ -11,7 +11,7 @@ class LevelSizeBar(QWidget):
     def __init__(self, parent, level):
         super(LevelSizeBar, self).__init__(parent)
 
-        self.level: Level = level
+        self.level: LevelRef = level
 
         self.level.data_changed.connect(self.update)
 
@@ -45,7 +45,7 @@ class LevelSizeBar(QWidget):
 
         painter.fillRect(event.rect(), self.palette().base())
 
-        if self.level is None:
+        if self.level.level is None:
             return
 
         total_length = max(self.current_value, self.original_value, 1)
