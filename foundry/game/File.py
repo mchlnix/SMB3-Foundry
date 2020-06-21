@@ -90,6 +90,10 @@ class ROM(Rom):
     def set_additional_data(additional_data):
         ROM.additional_data = additional_data
 
+    @staticmethod
+    def is_loaded() -> bool:
+        return bool(ROM.path)
+
     def seek(self, position: int) -> int:
         if position > len(ROM.rom_data) or position < 0:
             return -1
