@@ -15,6 +15,7 @@ from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_W
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
+from smb3parse.constants import OBJ_AUTOSCROLL
 from smb3parse.levels import LEVEL_MAX_LENGTH
 from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET, ICE_OBJECT_SET
 
@@ -429,7 +430,7 @@ class LevelDrawer:
 
     def _draw_auto_scroll(self, painter: QPainter, level: Level):
         for item in level.enemies:
-            if item.obj_index == 0xD3:
+            if item.obj_index == OBJ_AUTOSCROLL:
                 break
         else:
             return

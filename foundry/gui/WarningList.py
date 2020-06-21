@@ -7,7 +7,9 @@ from PySide2.QtWidgets import QLabel, QVBoxLayout, QWidget
 from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.game.gfx.objects.LevelObject import GROUND
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.HeaderEditor import SCROLL_DIRECTIONS
 from foundry.gui.util import clear_layout
+from smb3parse.constants import OBJ_AUTOSCROLL
 from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
 
@@ -54,11 +56,17 @@ class WarningList(QWidget):
                 if obj.y_position + obj.rendered_height == GROUND:
                     self.warnings.append(f"{obj} extends until the level bottom. This can crash the game.")
 
-        # autoscroll objects are below y=0x60
+        # autoscroll objects
         for item in level.enemies:
-            if item.obj_index == 0xD3:
+            if item.obj_index == OBJ_AUTOSCROLL:
                 if item.y_position >= 0x60:
                     self.warnings.append(f"{item}'s y-position is too low. Maximum is 95 or 0x5F.")
+
+                if level.header.scroll_type_index != 0:
+                    self.warnings.append(
+                        f"Level has auto scrolling enabled, but the scrolling type in the level header is not "
+                        f"'{SCROLL_DIRECTIONS[0]}. This might not work as expected."
+                    )
 
         self.update()
 
