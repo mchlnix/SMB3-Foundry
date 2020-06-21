@@ -30,6 +30,8 @@ TILE_BOWSER_CASTLE = 0xCC  # TILE_BOWSERCASTLELL
 TILE_HAND_TRAP = 0xE6
 TILE_SPADE_HOUSE = 0xE8
 
+OBJ_AUTOSCROLL = 0xD3
+
 
 def update_global_offsets(path_to_global_list: Union[str, Path]):
     path_to_global_list = Path(path_to_global_list)

@@ -41,6 +41,7 @@ from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
+from foundry.gui.AutoScrollEditor import AutoScrollEditor
 from foundry.gui.BlockViewer import BlockViewer
 from foundry.gui.ContextMenu import CMAction, ContextMenu
 from foundry.gui.EnemySizeBar import EnemySizeBar
@@ -163,6 +164,8 @@ class MainWindow(QMainWindow):
         self.reload_action = self.level_menu.addAction("&Reload Level")
         self.reload_action.triggered.connect(self.reload_level)
         self.level_menu.addSeparator()
+        self.edit_autoscroll = self.level_menu.addAction("Edit Autoscrolling")
+        self.edit_autoscroll.triggered.connect(self.on_edit_autoscroll)
         self.edit_header_action = self.level_menu.addAction("&Edit Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
         """
@@ -928,6 +931,9 @@ class MainWindow(QMainWindow):
                     )
 
         self.object_viewer.show()
+
+    def on_edit_autoscroll(self, _):
+        AutoScrollEditor(self, self.level_ref).exec_()
 
     def on_header_editor(self, _):
         HeaderEditor(self, self.level_ref).exec_()
