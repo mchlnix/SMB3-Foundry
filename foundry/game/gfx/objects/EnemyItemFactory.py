@@ -13,7 +13,7 @@ class EnemyItemFactory:
 
     definitions: list = []
 
-    def __init__(self, object_set, palette_index):
+    def __init__(self, object_set: int, palette_index: int):
         png = QImage(str(data_dir.joinpath("gfx.png")))
 
         png.convertTo(QImage.Format_RGB888)

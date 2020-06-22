@@ -70,6 +70,7 @@ class LevelView(QWidget):
         self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
         self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
         self.draw_invisible_items = SETTINGS["draw_invisible_items"]
+        self.draw_autoscroll = SETTINGS["draw_autoscroll"]
 
         self.zoom = 1
         self.block_length = Block.SIDE_LENGTH * self.zoom
@@ -171,6 +172,14 @@ class LevelView(QWidget):
     @draw_invisible_items.setter
     def draw_invisible_items(self, value):
         self.level_drawer.draw_invisible_items = value
+
+    @property
+    def draw_autoscroll(self):
+        return self.level_drawer.draw_autoscroll
+
+    @draw_autoscroll.setter
+    def draw_autoscroll(self, value):
+        self.level_drawer.draw_autoscroll = value
 
     def mousePressEvent(self, event: QMouseEvent):
         pressed_button = event.button()

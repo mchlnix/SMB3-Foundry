@@ -69,6 +69,7 @@ def test_level(level_info, qtbot):
     level_view.transparency = True
     level_view.draw_jumps = False
     level_view.draw_grid = False
+    level_view.draw_autoscroll = True
 
     rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16)
 

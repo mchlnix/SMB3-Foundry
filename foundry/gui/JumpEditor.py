@@ -1,6 +1,5 @@
 from typing import Optional
 
-from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QComboBox, QDialogButtonBox, QFormLayout, QGroupBox, QVBoxLayout, QWidget
 
 from foundry.game.gfx.objects.Jump import Jump

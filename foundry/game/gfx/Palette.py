@@ -4,12 +4,13 @@ from PySide2.QtGui import QColor
 
 from foundry import root_dir
 from foundry.game.File import ROM
+from smb3parse.constants import PalSet_Maps, Palette_By_Tileset
 from smb3parse.levels import BASE_OFFSET
 
-MAP_PALETTE_ADDRESS = 0x36BE2
+MAP_PALETTE_ADDRESS = PalSet_Maps
 
 PALETTE_BASE_ADDRESS = BASE_OFFSET + 0x2C000
-PALETTE_OFFSET_LIST = BASE_OFFSET + 0x377D2
+PALETTE_OFFSET_LIST = Palette_By_Tileset
 PALETTE_OFFSET_SIZE = 2  # bytes
 
 LEVEL_PALETTE_GROUPS_PER_OBJECT_SET = 8

@@ -16,7 +16,6 @@ def read_string_dict(path):
 
 MAX_LEVEL_SECTIONS = 65
 SMB3_LEVEL_COUNT = 298
-MAP_ENEMY_OFFSET = 0x16070
 
 MapscreenPointerLocation = namedtuple("MapscreenPointerLocation", "count offset")
 ObjectInfo = namedtuple("ObjectInfo", "index subindex x y width height x2 y2 obj objtype rect drag")
