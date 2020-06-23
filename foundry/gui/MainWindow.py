@@ -751,6 +751,11 @@ class MainWindow(QMainWindow):
 
         if item_id in CHECKABLE_MENU_ITEMS:
             self.on_menu_item_checked(action)
+            self.level_view.update()
+
+            # if setting a checkbox, keep the menu open
+            menu_of_action: QMenu = self.sender()
+            menu_of_action.exec_()
 
         elif item_id in self.context_menu.get_all_menu_item_ids():
             x, y = self.context_menu.get_position()
