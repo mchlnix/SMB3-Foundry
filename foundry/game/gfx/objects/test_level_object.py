@@ -178,6 +178,9 @@ def gen_object_ids():
 def test_all_objects(factory, domain, obj_id, qtbot):
     level_object = factory.from_properties(domain, obj_id, 0, 0, 8, 0)
 
+    if level_object.description == "MSG_CRASH":
+        pytest.skip("MSG_CRASH")
+
     _test_object_against_reference(level_object, qtbot)
 
 
@@ -186,5 +189,8 @@ def test_all_objects(factory, domain, obj_id, qtbot):
 )
 def test_all_minimal_objects(factory, domain, obj_id, qtbot):
     level_object = factory.from_properties(domain, obj_id, 0, 0, 0, 0)
+
+    if level_object.description == "MSG_CRASH":
+        pytest.skip("MSG_CRASH")
 
     _test_object_against_reference(get_minimal_icon_object(level_object), qtbot, minimal=True)
