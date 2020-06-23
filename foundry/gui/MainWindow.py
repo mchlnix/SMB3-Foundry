@@ -183,7 +183,8 @@ class MainWindow(QMainWindow):
         view_blocks_action.triggered.connect(self.on_block_viewer)
         view_objects_action = self.object_menu.addAction("&View Objects")
         view_objects_action.triggered.connect(self.on_object_viewer)
-        view_palettes_action = self.object_menu.addAction("View Palettes")
+        self.object_menu.addSeparator()
+        view_palettes_action = self.object_menu.addAction("View Object Palettes")
         view_palettes_action.triggered.connect(self.on_palette_viewer)
 
         self.menuBar().addMenu(self.object_menu)
