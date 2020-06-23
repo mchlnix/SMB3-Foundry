@@ -56,6 +56,7 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
+from foundry.gui.PaletteViewer import PaletteViewer
 from foundry.gui.SettingsDialog import show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
@@ -182,6 +183,8 @@ class MainWindow(QMainWindow):
         view_blocks_action.triggered.connect(self.on_block_viewer)
         view_objects_action = self.object_menu.addAction("&View Objects")
         view_objects_action.triggered.connect(self.on_object_viewer)
+        view_palettes_action = self.object_menu.addAction("View Palettes")
+        view_palettes_action.triggered.connect(self.on_palette_viewer)
 
         self.menuBar().addMenu(self.object_menu)
 
@@ -941,6 +944,9 @@ class MainWindow(QMainWindow):
                     )
 
         self.object_viewer.show()
+
+    def on_palette_viewer(self, _):
+        PaletteViewer(self, self.level_ref).exec_()
 
     def on_edit_autoscroll(self, _):
         AutoScrollEditor(self, self.level_ref).exec_()
