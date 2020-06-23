@@ -2,15 +2,16 @@ from math import ceil
 
 from PySide2.QtCore import QPoint, QRect, QSize
 from PySide2.QtGui import QBrush, QMouseEvent, QPaintEvent, QPainter, QResizeEvent
-from PySide2.QtWidgets import QComboBox, QLayout, QStatusBar, QToolBar, QWidget
+from PySide2.QtWidgets import QComboBox, QLabel, QLayout, QStatusBar, QToolBar, QWidget
 
 from foundry import icon
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
+from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET, bg_color_for_object_set, load_palette
 from foundry.game.gfx.drawable.Block import Block
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
+from foundry.gui.Spinner import Spinner
 
 
 class BlockViewer(CustomChildWindow):
@@ -18,7 +19,7 @@ class BlockViewer(CustomChildWindow):
         super(BlockViewer, self).__init__(parent, "Block Viewer")
 
         self._object_set = 0
-        self.sprite_bank = BlockBank(parent=self, object_set=self.object_set)
+        self.sprite_bank = BlockBank(parent=self)
 
         self.setCentralWidget(self.sprite_bank)
 
@@ -42,7 +43,12 @@ class BlockViewer(CustomChildWindow):
 
         self.bank_dropdown.currentIndexChanged.connect(self.on_combo)
 
+        self.palette_group_spinner = Spinner(self, maximum=PALETTE_GROUPS_PER_OBJECT_SET - 1, base=10)
+        self.palette_group_spinner.valueChanged.connect(self.on_palette)
+
         self.toolbar.addWidget(self.bank_dropdown)
+        self.toolbar.addWidget(QLabel(" Object Palette: "))
+        self.toolbar.addWidget(self.palette_group_spinner)
 
         self.addToolBar(self.toolbar)
 
@@ -61,6 +67,14 @@ class BlockViewer(CustomChildWindow):
         self._object_set = value
 
         self._after_object_set()
+
+    @property
+    def palette_group(self):
+        return self.palette_group_spinner.value()
+
+    @palette_group.setter
+    def palette_group(self, value):
+        self.palette_group_spinner.setValue(value)
 
     def prev_object_set(self):
         self.object_set = max(self.object_set - 1, 0)
@@ -82,9 +96,13 @@ class BlockViewer(CustomChildWindow):
 
         self.sprite_bank.update()
 
+    def on_palette(self, value):
+        self.sprite_bank.palette_group = value
+        self.sprite_bank.update()
+
 
 class BlockBank(QWidget):
-    def __init__(self, parent, object_set=0, zoom=2):
+    def __init__(self, parent, object_set=0, palette_group=0, zoom=2):
         super(BlockBank, self).__init__(parent)
         self.setMouseTracking(True)
 
@@ -94,13 +112,12 @@ class BlockBank(QWidget):
         self.sprites_vert = ceil(self.sprites / self.sprites_horiz)
 
         self.object_set = object_set
+        self.palette_group = palette_group
         self.zoom = zoom
 
         self._size = QSize(self.sprites_horiz * Block.WIDTH * self.zoom, self.sprites_vert * Block.HEIGHT * self.zoom)
 
         self.setFixedSize(self._size)
-
-        return
 
     def resizeEvent(self, event: QResizeEvent):
         self.update()
@@ -142,7 +159,7 @@ class BlockBank(QWidget):
         painter.drawRect(QRect(QPoint(0, 0), self.size()))
 
         graphics_set = GraphicsSet(self.object_set)
-        palette = load_palette(self.object_set, 0)
+        palette = load_palette(self.object_set, self.palette_group)
         tsa_data = ROM.get_tsa_data(self.object_set)
 
         horizontal = self.sprites_horiz

@@ -928,6 +928,7 @@ class MainWindow(QMainWindow):
 
         if self.level_ref.level is not None:
             self.block_viewer.object_set = self.level_ref.object_set.number
+            self.block_viewer.palette_group = self.level_ref.object_palette_index
 
         self.block_viewer.show()
 
