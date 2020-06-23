@@ -51,12 +51,16 @@ with open(data_dir / "levels.dat", "r") as level_data_file:
         if object_set_number == WORLD_MAP_OBJECT_SET:
             continue
 
-        level_data.append((level_name, level_address, enemy_address, object_set_number))
+        level_data.append((level_name, level_address, enemy_address, object_set_number, False))
+        level_data.append((level_name, level_address, enemy_address, object_set_number, True))
+
+        test_name.append(f"Level {world_no}-{level_no} - {level_name}, no transparency")
         test_name.append(f"Level {world_no}-{level_no} - {level_name}")
 
 
 @pytest.mark.parametrize("level_info", level_data, ids=test_name)
 def test_level(level_info, qtbot):
+    *level_info, transparent = level_info
     level_ref = LevelRef()
     level_ref.load_level(*level_info)
 
@@ -66,7 +70,7 @@ def test_level(level_info, qtbot):
     level_ref.level.name = current_test_name()
 
     level_view = LevelView(None, level_ref, ContextMenu(level_ref))
-    level_view.transparency = True
+    level_view.transparency = transparent
     level_view.draw_jumps = False
     level_view.draw_grid = False
     level_view.draw_autoscroll = True

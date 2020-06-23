@@ -1,13 +1,12 @@
-from typing import List
-
 from PySide2.QtCore import QPoint
-from PySide2.QtGui import QImage, QPainter, Qt, QColor
+from PySide2.QtGui import QColor, QImage, QPainter, Qt
 
 from foundry.game.File import ROM
-from foundry.game.gfx.Palette import NESPalette
 from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import NESPalette, PaletteGroup
 from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Tile import Tile
+from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET
 
 TSA_BANK_0 = 0 * 256
 TSA_BANK_1 = 1 * 256
@@ -37,18 +36,16 @@ class Block:
     _block_cache = {}
 
     def __init__(
-        self,
-        block_index: int,
-        palette_group: List[List[int]],
-        graphics_set: GraphicsSet,
-        tsa_data: bytes,
-        mirrored=False,
+        self, block_index: int, palette_group: PaletteGroup, graphics_set: GraphicsSet, tsa_data: bytes, mirrored=False,
     ):
         self.index = block_index
 
         palette_index = (block_index & 0b1100_0000) >> 6
 
-        self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
+        if graphics_set.number == CLOUDY_GRAPHICS_SET:
+            self.bg_color = QColor(*NESPalette[palette_group[palette_index][2]])
+        else:
+            self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
 
         # can't hash list, so turn it into a string instead
         self._block_id = (block_index, str(palette_group), graphics_set.number)

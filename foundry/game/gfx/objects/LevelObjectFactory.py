@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
-from foundry.game.gfx.Palette import load_palette
+from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 
 
@@ -40,7 +40,7 @@ class LevelObjectFactory:
 
     def set_palette_group_index(self, palette_group_index: int):
         self.palette_group_index = palette_group_index
-        self.palette_group = load_palette(self.object_set, self.palette_group_index)
+        self.palette_group = load_palette_group(self.object_set, self.palette_group_index)
 
     def from_data(self, data: bytearray, index: int):
         if Jump.is_jump(data):

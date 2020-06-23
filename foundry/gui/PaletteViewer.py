@@ -9,7 +9,7 @@ from foundry.game.gfx.Palette import (
     NESPalette,
     PALETTES_PER_PALETTES_GROUP,
     PALETTE_GROUPS_PER_OBJECT_SET,
-    load_palette,
+    load_palette_group,
 )
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
@@ -34,7 +34,7 @@ class PaletteViewer(CustomDialog):
             group_box_layout = QVBoxLayout(group_box)
             group_box_layout.setSpacing(0)
 
-            palette = load_palette(self.level_ref.level.object_set_number, palette_group)
+            palette = load_palette_group(self.level_ref.level.object_set_number, palette_group)
 
             for palette_no in range(PALETTES_PER_PALETTES_GROUP):
                 group_box_layout.addWidget(PaletteWidget(palette, palette_no))

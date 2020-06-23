@@ -7,7 +7,7 @@ from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
+from foundry.game.gfx.Palette import NESPalette, bg_color_for_object_set, load_palette_group
 from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
@@ -17,7 +17,7 @@ from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
 from smb3parse.constants import OBJ_AUTOSCROLL
 from smb3parse.levels import LEVEL_MAX_LENGTH
-from smb3parse.objects.object_set import DESERT_OBJECT_SET, DUNGEON_OBJECT_SET, ICE_OBJECT_SET
+from smb3parse.objects.object_set import CLOUDY_OBJECT_SET, DESERT_OBJECT_SET, DUNGEON_OBJECT_SET, ICE_OBJECT_SET
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
@@ -70,6 +70,7 @@ SPECIAL_BACKGROUND_OBJECTS = [
     "blue background",
     "starry background",
     "underground background under this",
+    "sets background to actual background color",
 ]
 
 
@@ -82,7 +83,7 @@ def _block_from_index(block_index: int, level: Level) -> Block:
     :return:
     """
 
-    palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
+    palette_group = load_palette_group(level.object_set_number, level.header.object_palette_index)
     graphics_set = GraphicsSet(level.header.graphic_set_index)
     tsa_data = ROM().get_tsa_data(level.object_set_number)
 
@@ -141,7 +142,12 @@ class LevelDrawer:
     def _draw_background(self, painter: QPainter, level: Level):
         painter.save()
 
-        bg_color = bg_color_for_object_set(level.object_set_number, level.header.object_palette_index)
+        if level.object_set_number == CLOUDY_OBJECT_SET:
+            bg_color = QColor(
+                *NESPalette[load_palette_group(level.object_set_number, level.header.object_palette_index)[3][2]]
+            )
+        else:
+            bg_color = bg_color_for_object_set(level.object_set_number, level.header.object_palette_index)
 
         painter.fillRect(level.get_rect(self.block_length), bg_color)
 

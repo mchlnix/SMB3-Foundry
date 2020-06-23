@@ -29,6 +29,8 @@ PALETTE_DATA_SIZE = (
     * COLORS_PER_PALETTE
 )
 
+PaletteGroup = List[bytearray]
+
 palette_file = root_dir.joinpath("data", "Default.pal")
 
 with open(palette_file, "rb") as f:
@@ -46,12 +48,12 @@ for i in range(COLOR_COUNT):
     offset += BYTES_IN_COLOR
 
 
-def load_palette(object_set: int, palette_group: int):
+def load_palette_group(object_set: int, palette_group_index: int) -> PaletteGroup:
     """
     Basically does, what the Setup_PalData routine does.
 
     :param object_set: Level_Tileset in the disassembly.
-    :param palette_group: Palette_By_Tileset. Defined in the level header.
+    :param palette_group_index: Palette_By_Tileset. Defined in the level header.
 
     :return: A list of 4 groups of 4 colors.
     """
@@ -61,7 +63,7 @@ def load_palette(object_set: int, palette_group: int):
     palette_offset = rom.little_endian(palette_offset_position)
 
     palette_address = PALETTE_BASE_ADDRESS + palette_offset
-    palette_address += palette_group * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
+    palette_address += palette_group_index * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
 
     palettes = []
 
@@ -74,10 +76,10 @@ def load_palette(object_set: int, palette_group: int):
 
 
 def bg_color_for_object_set(object_set_number: int, palette_group_index: int) -> QColor:
-    palette = load_palette(object_set_number, palette_group_index)
+    palette_group = load_palette_group(object_set_number, palette_group_index)
 
-    return QColor(*bg_color_for_palette(palette))
+    return QColor(*bg_color_for_palette(palette_group))
 
 
-def bg_color_for_palette(palette: List[bytearray]):
+def bg_color_for_palette(palette: PaletteGroup):
     return NESPalette[palette[0][0]]
