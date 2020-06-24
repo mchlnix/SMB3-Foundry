@@ -1,4 +1,4 @@
-from PySide2.QtCore import QPoint, QPointF
+from PySide2.QtCore import QPoint, QPointF, QRectF, QSizeF
 from PySide2.QtGui import QBrush, QPainter, QPen, QPolygonF, Qt
 
 from foundry.game.File import ROM
@@ -87,6 +87,12 @@ class AutoScrollDrawer:
             movement_repeat = self.rom.int(AScroll_MovementRepeat + movement_command_index)
 
             self._execute_movement_command(painter, movement_command, movement_repeat)
+
+        stop_marker = QRectF(QPoint(0, 0), QSizeF(10, 10) * self.pixel_length)
+        stop_marker.moveCenter(self.current_pos)
+
+        painter.setPen(Qt.NoPen)
+        painter.drawRect(stop_marker)
 
         painter.setPen(self.scroll_pen)
         painter.setBrush(self.scroll_brush)
