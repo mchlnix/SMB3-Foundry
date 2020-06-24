@@ -3,6 +3,7 @@ from PySide2.QtWidgets import QBoxLayout, QFrame, QLabel
 
 from foundry import data_dir, get_current_version_name
 from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.HorizontalLine import HorizontalLine
 
 LINK_SMB3F = "https://github.com/mchlnix/SMB3-Foundry"
 LINK_HUKKA = "http://hukka.ncn.fi/index.php?about"
@@ -30,7 +31,7 @@ class AboutDialog(CustomDialog):
         text_layout = QBoxLayout(QBoxLayout.TopToBottom)
 
         text_layout.addWidget(QLabel(f"SMB3 Foundry v{get_current_version_name()}", self))
-        text_layout.addWidget(QHLine())
+        text_layout.addWidget(HorizontalLine())
         text_layout.addWidget(LinkLabel(self, f'By <a href="{LINK_SMB3F}">Michael</a>'))
         text_layout.addWidget((QLabel("", self)))
         text_layout.addWidget(QLabel("With thanks to:", self))
@@ -66,11 +67,3 @@ class LinkLabel(QLabel):
         self.setTextFormat(Qt.RichText)
         self.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.setOpenExternalLinks(True)
-
-
-# taken from https://stackoverflow.com/a/41068447/4252230
-class QHLine(QFrame):
-    def __init__(self):
-        super(QHLine, self).__init__()
-        self.setFrameShape(QFrame.HLine)
-        self.setFrameShadow(QFrame.Sunken)

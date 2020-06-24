@@ -9,13 +9,38 @@ from PySide2.QtWidgets import (
     QPushButton,
     QRadioButton,
     QVBoxLayout,
+    QComboBox
 )
 
-from foundry import icon
+from PySide2.QtGui import QIcon, QImage, QColor, Qt, QPixmap
+#from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
+from PySide2.QtCore import QRect
+from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
+
+from foundry import icon, data_dir
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings
+from foundry.gui.HorizontalLine import HorizontalLine
 
 load_settings()
+
+POWERUPS_NAME = 0
+POWERUPS_X = 1
+POWERUPS_Y = 2
+POWERUPS_VALUE = 3
+POWERUPS = {
+        "none": ["Small Mario", 32, 53, 0],
+        "mushroom": ["Big Mario", 6, 48, 1],
+        "leaf": ["Raccoon Mario", 57, 53, 3],
+        "fire flower": ["Fire Mario", 16, 53, 2],
+        "tanooki suit": ["Tanooki Mario", 54, 53, 5],
+        "frog suit": ["Frog Mario", 56, 53, 4],
+        "hammer suit": ["Hammer Mario", 58, 53, 6],
+        "P-wing": ["Racoon Mario with P-Wing", 55, 53, 8]
+        }
+
+png = QImage(str(data_dir / "gfx.png"))
+png.convertTo(QImage.Format_RGB888)
 
 
 class SettingsDialog(CustomDialog):
@@ -90,14 +115,27 @@ class SettingsDialog(CustomDialog):
         command_layout.addLayout(command_input_layout)
         command_layout.addWidget(QLabel("Command arguments (%f will be replaced with rom path):"))
         command_layout.addWidget(self.command_arguments_input)
+        command_layout.addWidget(QLabel("Command used to play the rom:"))
+        command_layout.addWidget(self.command_label)
+
+        command_layout.addWidget(HorizontalLine())
+
+        command_layout.addWidget(QLabel("Power up of Mario when playing level:"))
+        self.powerup_combo_box = QComboBox()
+
+        for key, value in POWERUPS.items():
+            self.powerup_combo_box.addItem(self._load_from_png(value[POWERUPS_X], value[POWERUPS_Y]), value[POWERUPS_NAME], value[POWERUPS_VALUE])
+
+        self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
+        self.powerup_combo_box.setCurrentIndex(0)
+
+        command_layout.addWidget(self.powerup_combo_box)
 
         # ----------------------
 
         layout = QVBoxLayout(self)
         layout.addWidget(mouse_box)
         layout.addWidget(command_box)
-        layout.addWidget(QLabel("Command used to play the rom:"))
-        layout.addWidget(self.command_label)
 
         self.update()
 
@@ -115,6 +153,9 @@ class SettingsDialog(CustomDialog):
 
         SETTINGS["object_scroll_enabled"] = self._scroll_check_box.isChecked()
 
+        SETTINGS["default_powerup"] = self.powerup_combo_box.currentData()
+        print(SETTINGS["default_powerup"])
+
         self.update()
 
     def _get_emulator_path(self):
@@ -125,10 +166,21 @@ class SettingsDialog(CustomDialog):
 
         self.emulator_command_input.setText(path_to_emulator)
 
+    def _load_from_png(self, x: int, y: int) -> QIcon:
+        image = png.copy(QRect(x * 16, y * 16, 16, 16))
+        mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+        image.setAlphaChannel(mask)
+        
+        pixmap = QPixmap.fromImage(image)
+        icon = QIcon(pixmap)
+
+        return icon
+
     def on_exit(self):
         save_settings()
 
         super(SettingsDialog, self).on_exit()
+
 
 
 def show_settings():

@@ -64,6 +64,7 @@ from foundry.gui.settings import SETTINGS, save_settings
 from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
+from smb3parse.constants import BASE_OFFSET, Title_PrepForWorldMap
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
@@ -473,6 +474,9 @@ class MainWindow(QMainWindow):
         if not self._put_current_level_to_level_1_1(path_to_temp_rom):
             return
 
+        if not self._set_default_powerup(path_to_temp_rom):
+            return
+
         arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
         arguments = shlex.split(arguments, posix=False)
 
@@ -494,11 +498,15 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
 
-    def _put_current_level_to_level_1_1(self, path_to_rom) -> bool:
+    def _open_rom(self, path_to_rom):
         with open(path_to_rom, "rb") as smb3_rom:
             data = smb3_rom.read()
 
         rom = SMB3Rom(bytearray(data))
+        return rom
+
+    def _put_current_level_to_level_1_1(self, path_to_rom) -> bool:
+        rom = self._open_rom(path_to_rom)
 
         # load world-1 data
         world_1 = SMB3World.from_world_number(rom, 1)
@@ -535,6 +543,16 @@ class MainWindow(QMainWindow):
         rom.save_to(path_to_rom)
 
         return True
+
+    def _set_default_powerup(self, path_to_rom) -> bool:
+        rom = self._open_rom(path_to_rom)
+
+        powerup = SETTINGS["default_powerup"]
+        rom.write(0x1 + Title_PrepForWorldMap, bytes([powerup]))
+
+        rom.save_to(path_to_rom)
+        return True
+        
 
     def on_screenshot(self, _) -> bool:
         if self.level_view is None:
