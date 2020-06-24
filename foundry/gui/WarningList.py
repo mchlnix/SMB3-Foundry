@@ -5,6 +5,7 @@ from PySide2.QtGui import QCursor, QFocusEvent
 from PySide2.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from foundry.game.ObjectDefinitions import GeneratorType
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import GROUND
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.HeaderEditor import SCROLL_DIRECTIONS
@@ -44,6 +45,9 @@ class WarningList(QWidget):
 
         # level objects and enemies are inside the level
         for obj in level.get_all_objects():
+            if isinstance(obj, EnemyObject) and obj.obj_index == OBJ_AUTOSCROLL:
+                continue
+
             if not level.get_rect().contains(obj.get_rect()):
                 self.warnings.append(f"{obj} is outside of level bounds.")
 
