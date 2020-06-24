@@ -1,10 +1,9 @@
+from PySide2.QtCore import QPoint, QPointF
+from PySide2.QtGui import QBrush, QPainter, QPen, QPolygonF, Qt
+
 from foundry.game.File import ROM
-
-from PySide2.QtCore import QPointF
-from PySide2.QtGui import QBrush, QPainter, QPen, Qt
-
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_WIDTH
 from foundry.game.level.Level import Level
 from smb3parse.constants import (
     AScroll_HorizontalInitMove,
@@ -22,6 +21,9 @@ UP_RIGHT_DIAG_SCROLL = 2
 SPIKE_CEILING_SCROLL = 3
 UP_TIL_DOOR_SCROLL = 4
 WATER_LEVEL_SCROLL = 5
+
+
+_ASCROLL_SCREEN_HEIGHT = 12
 
 
 class AutoScrollDrawer:
@@ -42,7 +44,9 @@ class AutoScrollDrawer:
         self.scroll_pen = Qt.NoPen
         self.scroll_brush = Qt.NoBrush
 
-    def draw(self, painter, block_length: int):
+        self.screen_polygon = QPolygonF()
+
+    def draw(self, painter: QPainter, block_length: int):
         self.pixel_length = block_length / Block.WIDTH
 
         self.scroll_brush = QBrush(Qt.blue)
@@ -83,6 +87,12 @@ class AutoScrollDrawer:
             movement_repeat = self.rom.int(AScroll_MovementRepeat + movement_command_index)
 
             self._execute_movement_command(painter, movement_command, movement_repeat)
+
+        painter.setPen(self.scroll_pen)
+        painter.setBrush(self.scroll_brush)
+
+        painter.setOpacity(0.2)
+        painter.drawPolygon(self.screen_polygon)
 
     def _execute_movement_command(self, painter: QPainter, command: int, repeat: int):
         h_updates_per_tick = 4  # got those by reading the auto scroll routine
@@ -153,6 +163,8 @@ class AutoScrollDrawer:
         # circle at start of new command
         painter.drawEllipse(self.current_pos, 4 * self.pixel_length, 4 * self.pixel_length)
 
+        self._add_points_for_position(self.current_pos)
+
         if is_acceleration_command and (h_acceleration or v_acceleration):
             for _ in range(movement_ticks):
                 self.horizontal_speed += h_acceleration
@@ -168,6 +180,7 @@ class AutoScrollDrawer:
                 )
 
                 painter.drawLine(old_pos, self.current_pos)
+                self._add_points_for_position(self.current_pos)
         else:
             old_pos = QPointF(self.current_pos)
 
@@ -178,10 +191,44 @@ class AutoScrollDrawer:
 
             painter.drawLine(old_pos, self.current_pos)
 
+            self._add_points_for_line(old_pos, self.current_pos)
+
+    def _add_points_for_position(self, pos: QPointF):
+        self.screen_polygon = self.screen_polygon.united(QPolygonF.fromList(self._rect_for_point(pos)))
+
+    def _add_points_for_line(self, start: QPointF, stop: QPointF):
+        start_points = self._rect_for_point(start)
+        stop_points = self._rect_for_point(stop)
+
+        point_list = []
+
+        if start.y() == stop.y():
+            point_list.extend([start_points[0], stop_points[1], stop_points[2], start_points[3]])
+        elif start.y() < stop.y():
+            point_list.extend(start_points[0:2])
+            point_list.extend(stop_points[1:4])
+            point_list.append(start_points[3])
+        else:
+            point_list.append(start_points[0])
+            point_list.extend(stop_points[0:3])
+            point_list.extend(start_points[2:4])
+
+        self.screen_polygon = self.screen_polygon.united(QPolygonF.fromList(point_list))
+
+    def _rect_for_point(self, pos: QPointF):
+        top_right = (pos - QPointF(0, _ASCROLL_SCREEN_HEIGHT // 2) * self.pixel_length * Block.WIDTH)
+        bottom_right = (pos + QPoint(0,
+                                     _ASCROLL_SCREEN_HEIGHT - _ASCROLL_SCREEN_HEIGHT // 2) * self.pixel_length * Block.WIDTH)
+
+        top_left = top_right - QPointF(SCREEN_WIDTH, 0) * self.pixel_length * Block.WIDTH
+        bottom_left = bottom_right - QPointF(SCREEN_WIDTH, 0) * self.pixel_length * Block.WIDTH
+
+        return top_left, top_right, bottom_right, bottom_left
+
     def _determine_auto_scroll_start(self, block_length: int) -> QPointF:
         # only support horizontal levels for now
         _, mario_y = self.level.header.mario_position()
 
-        scroll_x, scroll_y = SCREEN_WIDTH, min(mario_y + 3, GROUND - SCREEN_HEIGHT // 2)  # height of
+        scroll_x, scroll_y = SCREEN_WIDTH, min(mario_y + 2, GROUND - _ASCROLL_SCREEN_HEIGHT // 2)
 
         return QPointF(scroll_x, scroll_y) * block_length
