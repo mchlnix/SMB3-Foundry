@@ -9,11 +9,12 @@ from PySide2.QtWidgets import (
     QPushButton,
     QRadioButton,
     QVBoxLayout,
-    QComboBox
+    QComboBox,
 )
 
 from PySide2.QtGui import QIcon, QImage, QColor, Qt, QPixmap
-#from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
+
+# from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 from PySide2.QtCore import QRect
 from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
 
@@ -29,15 +30,15 @@ POWERUPS_X = 1
 POWERUPS_Y = 2
 POWERUPS_VALUE = 3
 POWERUPS = {
-        "none": ["Small Mario", 32, 53, 0],
-        "mushroom": ["Big Mario", 6, 48, 1],
-        "leaf": ["Raccoon Mario", 57, 53, 3],
-        "fire flower": ["Fire Mario", 16, 53, 2],
-        "tanooki suit": ["Tanooki Mario", 54, 53, 5],
-        "frog suit": ["Frog Mario", 56, 53, 4],
-        "hammer suit": ["Hammer Mario", 58, 53, 6],
-        "P-wing": ["Racoon Mario with P-Wing", 55, 53, 8]
-        }
+    "none": ["Small Mario", 32, 53, 0],
+    "mushroom": ["Big Mario", 6, 48, 1],
+    "leaf": ["Raccoon Mario", 57, 53, 3],
+    "fire flower": ["Fire Mario", 16, 53, 2],
+    "tanooki suit": ["Tanooki Mario", 54, 53, 5],
+    "frog suit": ["Frog Mario", 56, 53, 4],
+    "hammer suit": ["Hammer Mario", 58, 53, 6],
+    "P-wing": ["Racoon Mario with P-Wing", 55, 53, 8],
+}
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
@@ -124,7 +125,9 @@ class SettingsDialog(CustomDialog):
         self.powerup_combo_box = QComboBox()
 
         for key, value in POWERUPS.items():
-            self.powerup_combo_box.addItem(self._load_from_png(value[POWERUPS_X], value[POWERUPS_Y]), value[POWERUPS_NAME], value[POWERUPS_VALUE])
+            self.powerup_combo_box.addItem(
+                self._load_from_png(value[POWERUPS_X], value[POWERUPS_Y]), value[POWERUPS_NAME], value[POWERUPS_VALUE]
+            )
 
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
         self.powerup_combo_box.setCurrentIndex(0)
@@ -170,7 +173,7 @@ class SettingsDialog(CustomDialog):
         image = png.copy(QRect(x * 16, y * 16, 16, 16))
         mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
         image.setAlphaChannel(mask)
-        
+
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
 
@@ -180,7 +183,6 @@ class SettingsDialog(CustomDialog):
         save_settings()
 
         super(SettingsDialog, self).on_exit()
-
 
 
 def show_settings():

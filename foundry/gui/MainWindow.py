@@ -552,7 +552,6 @@ class MainWindow(QMainWindow):
 
         rom.save_to(path_to_rom)
         return True
-        
 
     def on_screenshot(self, _) -> bool:
         if self.level_view is None:
