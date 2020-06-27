@@ -13,8 +13,6 @@ from PySide2.QtWidgets import (
 )
 
 from PySide2.QtGui import QIcon, QImage, QColor, Qt, QPixmap
-
-# from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 from PySide2.QtCore import QRect
 from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
 
@@ -32,16 +30,15 @@ POWERUPS_VALUE = 3
 POWERUPS_PWING = 4
 POWERUPS = {
     "none": ["Small Mario", 32, 53, 0, False],
-    "mushroom": ["Big Mario", 6, 48, 1, False],
-    "leaf": ["Raccoon Mario", 57, 53, 3, False],
-    "fire flower": ["Fire Mario", 16, 53, 2, False],
-    "tanooki suit": ["Tanooki Mario", 54, 53, 5, False],
-    "frog suit": ["Frog Mario", 56, 53, 4, False],
-    "hammer suit": ["Hammer Mario", 58, 53, 6, False],
-    
+    "mushroom": ["Big Mario", 6, 48, POWERUP_MUSHROOM, False],
+    "leaf": ["Raccoon Mario", 57, 53, POWERUP_RACCOON, False],
+    "fire flower": ["Fire Mario", 16, 53, POWERUP_FIREFLOWER, False],
+    "tanooki suit": ["Tanooki Mario", 54, 53, POWERUP_TANOOKI, False],
+    "frog suit": ["Frog Mario", 56, 53, POWERUP_FROG, False],
+    "hammer suit": ["Hammer Mario", 58, 53, POWERUP_HAMMER, False],
     # Even though P-Wing ca *technically* be combined, it only really works with Raccoon and Tanooki suit
-    "P-wing Raccoon": ["Raccoon Mario with P-Wing", 55, 53, 3, True],
-    "P-wing Tanooki": ["Tanooki Mario with P-Wing", 55, 53, 5, True],
+    "P-wing Raccoon": ["Raccoon Mario with P-Wing", 55, 53, POWERUP_RACCOON, True],
+    "P-wing Tanooki": ["Tanooki Mario with P-Wing", 55, 53, POWERUP_TANOOKI, True],
 }
 
 png = QImage(str(data_dir / "gfx.png"))
@@ -132,7 +129,9 @@ class SettingsDialog(CustomDialog):
             powerupIcon = self._load_from_png(value[POWERUPS_X], value[POWERUPS_Y])
             label = value[POWERUPS_NAME]
 
-            self.powerup_combo_box.addItem(powerupIcon, value[POWERUPS_NAME], (value[POWERUPS_VALUE], value[POWERUPS_PWING]))
+            self.powerup_combo_box.addItem(
+                powerupIcon, value[POWERUPS_NAME], (value[POWERUPS_VALUE], value[POWERUPS_PWING])
+            )
 
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
         self.powerup_combo_box.setCurrentIndex(0)

@@ -549,7 +549,7 @@ class MainWindow(QMainWindow):
 
         (powerup, hasPWing) = SETTINGS["default_powerup"]
 
-        rom.write(Title_PrepForWorldMap + 0x1, bytes([ powerup ]))
+        rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))
 
         nop = 0xEA
         rts = 0x60
@@ -563,16 +563,27 @@ class MainWindow(QMainWindow):
             Map_Power_DispLow = 0xF3
 
             # We need to start one byte before Title_DebugMenu to remove the RTS of Title_PrepForWorldMap
-            rom.write(Title_DebugMenu - 0x1, bytes([
-                lda, 0x8,
-                staAbsolute, Map_Power_DispLow, Map_Power_DispHigh,
-
-                #The RTS to get out of the now extended Title_PrepForWorldMap
-                rts 
-            ]))
+            # The assembly code below reads as follows:
+            # LDA 0x08
+            # STA $03F3
+            # RTS
+            rom.write(
+                Title_DebugMenu - 0x1,
+                bytes(
+                    [
+                        lda,
+                        0x8,
+                        staAbsolute,
+                        Map_Power_DispLow,
+                        Map_Power_DispHigh,
+                        # The RTS to get out of the now extended Title_PrepForWorldMap
+                        rts,
+                    ]
+                ),
+            )
 
             # Remove code that resets the powerup value by replacing it with no-operations
-            # Otherwise this code would copy the value of the normal powerup here 
+            # Otherwise this code would copy the value of the normal powerup here
             # (So if the powerup would be Raccoon Mario, Map_Power_Disp would also be set as Raccoon Mario instead of P-wing
             Map_Power_DispResetLocation = 0x3C5A2
             rom.write(Map_Power_DispResetLocation, bytes([nop, nop, nop]))
