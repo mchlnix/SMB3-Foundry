@@ -29,15 +29,19 @@ POWERUPS_NAME = 0
 POWERUPS_X = 1
 POWERUPS_Y = 2
 POWERUPS_VALUE = 3
+POWERUPS_PWING = 4
 POWERUPS = {
-    "none": ["Small Mario", 32, 53, 0],
-    "mushroom": ["Big Mario", 6, 48, 1],
-    "leaf": ["Raccoon Mario", 57, 53, 3],
-    "fire flower": ["Fire Mario", 16, 53, 2],
-    "tanooki suit": ["Tanooki Mario", 54, 53, 5],
-    "frog suit": ["Frog Mario", 56, 53, 4],
-    "hammer suit": ["Hammer Mario", 58, 53, 6],
-    "P-wing": ["Racoon Mario with P-Wing", 55, 53, 8],
+    "none": ["Small Mario", 32, 53, 0, False],
+    "mushroom": ["Big Mario", 6, 48, 1, False],
+    "leaf": ["Raccoon Mario", 57, 53, 3, False],
+    "fire flower": ["Fire Mario", 16, 53, 2, False],
+    "tanooki suit": ["Tanooki Mario", 54, 53, 5, False],
+    "frog suit": ["Frog Mario", 56, 53, 4, False],
+    "hammer suit": ["Hammer Mario", 58, 53, 6, False],
+    
+    # Even though P-Wing ca *technically* be combined, it only really works with Raccoon and Tanooki suit
+    "P-wing Raccoon": ["Raccoon Mario with P-Wing", 55, 53, 3, True],
+    "P-wing Tanooki": ["Tanooki Mario with P-Wing", 55, 53, 5, True],
 }
 
 png = QImage(str(data_dir / "gfx.png"))
@@ -125,9 +129,10 @@ class SettingsDialog(CustomDialog):
         self.powerup_combo_box = QComboBox()
 
         for key, value in POWERUPS.items():
-            self.powerup_combo_box.addItem(
-                self._load_from_png(value[POWERUPS_X], value[POWERUPS_Y]), value[POWERUPS_NAME], value[POWERUPS_VALUE]
-            )
+            powerupIcon = self._load_from_png(value[POWERUPS_X], value[POWERUPS_Y])
+            label = value[POWERUPS_NAME]
+
+            self.powerup_combo_box.addItem(powerupIcon, value[POWERUPS_NAME], (value[POWERUPS_VALUE], value[POWERUPS_PWING]))
 
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
         self.powerup_combo_box.setCurrentIndex(0)

@@ -64,7 +64,7 @@ from foundry.gui.settings import SETTINGS, save_settings
 from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
-from smb3parse.constants import BASE_OFFSET, Title_PrepForWorldMap
+from smb3parse.constants import BASE_OFFSET, Title_PrepForWorldMap, Title_DebugMenu
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
@@ -547,8 +547,35 @@ class MainWindow(QMainWindow):
     def _set_default_powerup(self, path_to_rom) -> bool:
         rom = self._open_rom(path_to_rom)
 
-        powerup = SETTINGS["default_powerup"]
-        rom.write(0x1 + Title_PrepForWorldMap, bytes([powerup]))
+        (powerup, hasPWing) = SETTINGS["default_powerup"]
+
+        rom.write(Title_PrepForWorldMap + 0x1, bytes([ powerup ]))
+
+        nop = 0xEA
+        rts = 0x60
+        lda = 0xA9
+        staAbsolute = 0x8D
+
+        # If a P-wing powerup is selected, another variable needs to be set with the P-wing value
+        # This piece of code overwrites a part of Title_DebugMenu
+        if hasPWing:
+            Map_Power_DispHigh = 0x03
+            Map_Power_DispLow = 0xF3
+
+            # We need to start one byte before Title_DebugMenu to remove the RTS of Title_PrepForWorldMap
+            rom.write(Title_DebugMenu - 0x1, bytes([
+                lda, 0x8,
+                staAbsolute, Map_Power_DispLow, Map_Power_DispHigh,
+
+                #The RTS to get out of the now extended Title_PrepForWorldMap
+                rts 
+            ]))
+
+            # Remove code that resets the powerup value by replacing it with no-operations
+            # Otherwise this code would copy the value of the normal powerup here 
+            # (So if the powerup would be Raccoon Mario, Map_Power_Disp would also be set as Raccoon Mario instead of P-wing
+            Map_Power_DispResetLocation = 0x3C5A2
+            rom.write(Map_Power_DispResetLocation, bytes([nop, nop, nop]))
 
         rom.save_to(path_to_rom)
         return True
