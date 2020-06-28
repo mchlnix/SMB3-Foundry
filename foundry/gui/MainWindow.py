@@ -5,7 +5,6 @@ import shlex
 import subprocess
 import tempfile
 from typing import Tuple, Union
-from warnings import warn
 
 from PySide2.QtCore import QSize
 from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
@@ -62,7 +61,7 @@ from foundry.gui.SettingsDialog import show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.settings import SETTINGS, save_settings
-from smb3parse.constants import TILE_LEVEL_1
+from smb3parse.constants import TILE_LEVEL_1, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
 from smb3parse.constants import BASE_OFFSET, Title_PrepForWorldMap, Title_DebugMenu
