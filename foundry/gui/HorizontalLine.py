@@ -1,5 +1,6 @@
 from PySide2.QtWidgets import QFrame
 
+
 # taken from https://stackoverflow.com/a/41068447/4252230
 class HorizontalLine(QFrame):
     def __init__(self):
