@@ -20,7 +20,14 @@ from foundry import icon, data_dir
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings
 from foundry.gui.HorizontalLine import HorizontalLine
-from smb3parse.constants import POWERUP_MUSHROOM, POWERUP_RACCOON, POWERUP_FIREFLOWER, POWERUP_TANOOKI, POWERUP_FROG, POWERUP_HAMMER
+from smb3parse.constants import (
+    POWERUP_MUSHROOM,
+    POWERUP_RACCOON,
+    POWERUP_FIREFLOWER,
+    POWERUP_TANOOKI,
+    POWERUP_FROG,
+    POWERUP_HAMMER,
+)
 
 load_settings()
 
