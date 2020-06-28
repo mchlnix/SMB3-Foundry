@@ -57,7 +57,7 @@ from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.PaletteViewer import PaletteViewer
-from foundry.gui.SettingsDialog import show_settings
+from foundry.gui.SettingsDialog import POWERUPS, show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.settings import SETTINGS, save_settings
@@ -542,7 +542,7 @@ class MainWindow(QMainWindow):
     def _set_default_powerup(self, path_to_rom) -> bool:
         rom = self._open_rom(path_to_rom)
 
-        (powerup, hasPWing) = SETTINGS["default_powerup"]
+        *_, powerup, hasPWing = POWERUPS[SETTINGS["default_powerup"]]
 
         rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))
 
