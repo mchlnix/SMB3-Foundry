@@ -56,7 +56,7 @@ matrix:
         on:
           tags: true
 
-    - name: "Windows"
+    - name: "Windows 64Bit"
       os: windows
       language: shell # python is not supported yet
       env:
@@ -74,12 +74,43 @@ matrix:
         - true;
       after_success:
         - pyinstaller smb3-foundry.spec
-        - mv dist/smb3-foundry.exe dist/win-smb3-foundry.exe
+        - mv dist/smb3-foundry.exe dist/win64-smb3-foundry.exe
       deploy:
         provider: releases
         api_key:
           secure: zapduKP5v3rW86Zczy2bithNEklLL2y1TA/tmyumjgP5hqVyG8oOzDxI0sw4rzQkJWmdXC1t1dV7UzG9lF9FK2IvWrVOTlCH8/wpqReDNLLkUtI+hKIZERCpUC7pFKookIr9CWtjH+rObauPvjv6GjmejJmgncIl2SktCCp1ZBY/d/d2rmUDiyX2xgcRPjExxpLrFskrVdfo6EaQmPZn+X/WQEYY+Aksm8bstsn/0XgXmIy/ey9xP1EF+aLfeK7vRLe3LOgRda6DlcU4LpvXRuk1Y4opgMC943qukJNNlxub8N0iaSCreNQSa2HdY/tar/CAW9WuHeszfGMJgwyaBP15cs1T4WQwHFdr7mDCySnNMo7VjVGH3nsSlQYzlhtiBFiENX/XPg0DLn3IshrOVARQYJ5uvP6n+qLmsiGNMvvfwkmVIopkbuDpZt/0HdgwAXYzsoHJE+NkVc1XZnr3y8J+7RGCA286P05wg1kCGw742LphspIQUD2SrvNpbdRQ2nMJ6JXW8j1MC6AYtmxFUATDbIkZEdwtQN/lYnly9VvezXjN7BAwLu1bFv3Q2nRP90hf9qALOmdXscaSadTauei0MNs2OGclOKFgd/do8ITZKNxKLWzH1UrJ5tMFuGvHS47aQdV5xG31kQORMYKzRa4e88g2h26SlLh1BX6FhwA=
-        file: dist/win-smb3-foundry.exe
+        file: dist/win64-smb3-foundry.exe
+        skip_cleanup: true
+        prerelease: true
+        on:
+          tags: true
+
+    - name: "Windows 32Bit"
+      os: windows
+      language: shell # python is not supported yet
+      env:
+        - PY36PATH=/c/Python36:/c/Python36/Scripts
+        - PATH=$PY36PATH:$PATH
+      before_install:
+        - wget -q https://www.python.org/ftp/python/3.8.3/python-3.8.3.exe
+        - sleep 5
+        - ./python-3.8.3.exe -quiet PrependPath=1
+        - python3 .ci-tag-check.py
+        - python3 -m pip install --upgrade pip
+        - python3 -m pip install -r requirements.txt
+        - python3 -m pip install pyinstaller
+      install:
+        - true;
+      script:
+        - true;
+      after_success:
+        - pyinstaller smb3-foundry.spec
+        - mv dist/smb3-foundry.exe dist/win32-smb3-foundry.exe
+      deploy:
+        provider: releases
+        api_key:
+          secure: zapduKP5v3rW86Zczy2bithNEklLL2y1TA/tmyumjgP5hqVyG8oOzDxI0sw4rzQkJWmdXC1t1dV7UzG9lF9FK2IvWrVOTlCH8/wpqReDNLLkUtI+hKIZERCpUC7pFKookIr9CWtjH+rObauPvjv6GjmejJmgncIl2SktCCp1ZBY/d/d2rmUDiyX2xgcRPjExxpLrFskrVdfo6EaQmPZn+X/WQEYY+Aksm8bstsn/0XgXmIy/ey9xP1EF+aLfeK7vRLe3LOgRda6DlcU4LpvXRuk1Y4opgMC943qukJNNlxub8N0iaSCreNQSa2HdY/tar/CAW9WuHeszfGMJgwyaBP15cs1T4WQwHFdr7mDCySnNMo7VjVGH3nsSlQYzlhtiBFiENX/XPg0DLn3IshrOVARQYJ5uvP6n+qLmsiGNMvvfwkmVIopkbuDpZt/0HdgwAXYzsoHJE+NkVc1XZnr3y8J+7RGCA286P05wg1kCGw742LphspIQUD2SrvNpbdRQ2nMJ6JXW8j1MC6AYtmxFUATDbIkZEdwtQN/lYnly9VvezXjN7BAwLu1bFv3Q2nRP90hf9qALOmdXscaSadTauei0MNs2OGclOKFgd/do8ITZKNxKLWzH1UrJ5tMFuGvHS47aQdV5xG31kQORMYKzRa4e88g2h26SlLh1BX6FhwA=
+        file: dist/win32-smb3-foundry.exe
         skip_cleanup: true
         prerelease: true
         on:
