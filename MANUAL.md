@@ -2,6 +2,8 @@
 
 This document is supposed to help new users take their first steps using this Super Mario Bros. 3 (SMB3) Level editor. It will explain core concepts of SMB3 hacking, but is not meant to be an exhaustive resource on that topic.
 
+It is also still a work in process.
+
 ## What is this?
 
 This editor takes a ROM file of the Nintendo Entertainment System (NES) game Super Mario Bros. 3 and allows the user to edit the level, change their order, appearance, music etc.
