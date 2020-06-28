@@ -8,7 +8,7 @@ from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import bg_color_for_object_set
+from foundry.game.gfx.Palette import PaletteGroup, bg_color_for_object_set
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
@@ -85,7 +85,7 @@ class LevelObject(ObjectLike):
         self,
         data: bytearray,
         object_set: int,
-        palette_group,
+        palette_group: PaletteGroup,
         graphics_set: GraphicsSet,
         objects_ref: List["LevelObject"],
         is_vertical: bool,

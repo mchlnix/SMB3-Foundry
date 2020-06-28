@@ -1,7 +1,9 @@
 from PySide2.QtGui import QImage
 
-from foundry.game.gfx.Palette import NESPalette
-from foundry.game.gfx.drawable import bit_reverse, MASK_COLOR
+from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import NESPalette, PaletteGroup
+from foundry.game.gfx.drawable import MASK_COLOR, bit_reverse
+from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 
@@ -16,7 +18,14 @@ class Tile:
     PIXEL_COUNT = WIDTH * HEIGHT
     SIZE = 2 * PIXEL_COUNT // 8  # 1 pixel is defined by 2 bits
 
-    def __init__(self, object_index, palette_group, palette_index, graphics_set, mirrored=False):
+    def __init__(
+        self,
+        object_index: int,
+        palette_group: PaletteGroup,
+        palette_index: int,
+        graphics_set: GraphicsSet,
+        mirrored=False,
+    ):
         start = object_index * Tile.SIZE
 
         self.cached_tiles = dict()
@@ -29,6 +38,11 @@ class Tile:
         self.mask_pixels = bytearray()
 
         self.data = graphics_set.data[start : start + Tile.SIZE]
+
+        if graphics_set.number == CLOUDY_GRAPHICS_SET:
+            self.background_color_index = 2
+        else:
+            self.background_color_index = 0
 
         if mirrored:
             self._mirror()
@@ -50,7 +64,7 @@ class Tile:
             color = self.palette[color_index]
 
             # add alpha values
-            if color_index == BACKGROUND_COLOR_INDEX:
+            if color_index == self.background_color_index:
                 self.pixels.extend(MASK_COLOR)
             else:
                 self.pixels.extend(NESPalette[color])

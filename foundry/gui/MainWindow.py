@@ -57,6 +57,7 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
+from foundry.gui.PaletteViewer import PaletteViewer
 from foundry.gui.SettingsDialog import show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
@@ -161,20 +162,13 @@ class MainWindow(QMainWindow):
         self.select_level_action = self.level_menu.addAction("&Select Level")
         self.select_level_action.triggered.connect(self.open_level_selector)
 
-        """
-        self.level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
-        self.level_menu.AppendSeparator()
-        """
         self.reload_action = self.level_menu.addAction("&Reload Level")
         self.reload_action.triggered.connect(self.reload_level)
         self.level_menu.addSeparator()
-        self.edit_autoscroll = self.level_menu.addAction("Edit Autoscrolling")
-        self.edit_autoscroll.triggered.connect(self.on_edit_autoscroll)
         self.edit_header_action = self.level_menu.addAction("&Edit Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
-        """
-        self.level_menu.Append(ID_EDIT_POINTERS, "&Edit Pointers", "")
-        """
+        self.edit_autoscroll = self.level_menu.addAction("Edit Autoscrolling")
+        self.edit_autoscroll.triggered.connect(self.on_edit_autoscroll)
 
         self.menuBar().addMenu(self.level_menu)
 
@@ -184,6 +178,9 @@ class MainWindow(QMainWindow):
         view_blocks_action.triggered.connect(self.on_block_viewer)
         view_objects_action = self.object_menu.addAction("&View Objects")
         view_objects_action.triggered.connect(self.on_object_viewer)
+        self.object_menu.addSeparator()
+        view_palettes_action = self.object_menu.addAction("View Object Palettes")
+        view_palettes_action.triggered.connect(self.on_palette_viewer)
 
         self.menuBar().addMenu(self.object_menu)
 
@@ -804,6 +801,11 @@ class MainWindow(QMainWindow):
 
         if item_id in CHECKABLE_MENU_ITEMS:
             self.on_menu_item_checked(action)
+            self.level_view.update()
+
+            # if setting a checkbox, keep the menu open
+            menu_of_action: QMenu = self.sender()
+            menu_of_action.exec_()
 
         elif item_id in self.context_menu.get_all_menu_item_ids():
             x, y = self.context_menu.get_position()
@@ -975,6 +977,7 @@ class MainWindow(QMainWindow):
 
         if self.level_ref.level is not None:
             self.block_viewer.object_set = self.level_ref.object_set.number
+            self.block_viewer.palette_group = self.level_ref.object_palette_index
 
         self.block_viewer.show()
 
@@ -997,6 +1000,9 @@ class MainWindow(QMainWindow):
                     )
 
         self.object_viewer.show()
+
+    def on_palette_viewer(self, _):
+        PaletteViewer(self, self.level_ref).exec_()
 
     def on_edit_autoscroll(self, _):
         AutoScrollEditor(self, self.level_ref).exec_()

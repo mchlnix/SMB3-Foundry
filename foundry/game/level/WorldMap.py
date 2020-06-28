@@ -1,7 +1,7 @@
 from PySide2.QtCore import QPoint, QSize
 
 from foundry.game.File import ROM
-from foundry.game.gfx.Palette import load_palette
+from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.MapObject import MapObject
@@ -26,7 +26,7 @@ class WorldMap(LevelLike):
         self.name = f"World {world_index} - Overworld"
 
         self.graphics_set = GraphicsSet(OVERWORLD_GRAPHIC_SET)
-        self.palette_group = load_palette(WORLD_MAP_OBJECT_SET, 0)
+        self.palette_group = load_palette_group(WORLD_MAP_OBJECT_SET, 0)
 
         self.object_set = WORLD_MAP_OBJECT_SET
         self.tsa_data = ROM.get_tsa_data(self.object_set)
