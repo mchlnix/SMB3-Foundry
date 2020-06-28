@@ -30,6 +30,26 @@ matrix:
         on:
           tags: true
 
+    - name: "Codestyle and flake8"
+      os: linux
+      dist: bionic
+      language: python
+      python: "3.6"
+      virtualenv:
+        system_site_packages: true
+      before_install:
+        - python3 .ci-tag-check.py
+        - python3 -m pip install --upgrade pip
+        - python3 -m pip install flake8 black
+        - black -l 120 --check
+        - flake8 foundry smb3parse
+      install:
+        - true;
+      script:
+        - true;
+      after_success:
+        - true;
+
     - name: "Mac OSX"
       os: osx
       osx_image: xcode10.2  # Python 3.7.2 running on macOS 10.14.3
