@@ -61,10 +61,9 @@ from foundry.gui.SettingsDialog import show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.settings import SETTINGS, save_settings
-from smb3parse.constants import TILE_LEVEL_1, Title_PrepForWorldMap
+from smb3parse.constants import BASE_OFFSET, TILE_LEVEL_1, Title_PrepForWorldMap, Title_DebugMenu
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
-from smb3parse.constants import BASE_OFFSET, Title_PrepForWorldMap, Title_DebugMenu
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
