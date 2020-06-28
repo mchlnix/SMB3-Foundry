@@ -89,16 +89,16 @@ matrix:
       os: windows
       language: shell # python is not supported yet
       env:
-        - PY36PATH=/c/Python36:/c/Python36/Scripts
-        - PATH=$PY36PATH:$PATH
+        - PY38PATH=/c/Python38:/c/Python38/Scripts
+        - PATH=$PY38PATH:$PATH
       before_install:
         - wget -q https://www.python.org/ftp/python/3.8.3/python-3.8.3.exe
-        - sleep 5
-        - ./python-3.8.3.exe -quiet PrependPath=1
-        - python3 .ci-tag-check.py
-        - python3 -m pip install --upgrade pip
-        - python3 -m pip install -r requirements.txt
-        - python3 -m pip install pyinstaller
+        - ./python-3.8.3.exe -quiet PrependPath=1 TargetDir="C:\Python38"
+        - python --version
+        - python .ci-tag-check.py
+        - python -m pip install --upgrade pip
+        - python -m pip install -r requirements.txt
+        - python -m pip install pyinstaller
       install:
         - true;
       script:
