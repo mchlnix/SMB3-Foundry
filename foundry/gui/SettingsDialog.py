@@ -13,8 +13,6 @@ from PySide2.QtWidgets import (
 )
 
 from PySide2.QtGui import QIcon, QImage, QColor, Qt, QPixmap
-
-# from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 from PySide2.QtCore import QRect
 from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
 
@@ -22,6 +20,14 @@ from foundry import icon, data_dir
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings
 from foundry.gui.HorizontalLine import HorizontalLine
+from smb3parse.constants import (
+    POWERUP_MUSHROOM,
+    POWERUP_RACCOON,
+    POWERUP_FIREFLOWER,
+    POWERUP_TANOOKI,
+    POWERUP_FROG,
+    POWERUP_HAMMER,
+)
 
 load_settings()
 
@@ -29,15 +35,18 @@ POWERUPS_NAME = 0
 POWERUPS_X = 1
 POWERUPS_Y = 2
 POWERUPS_VALUE = 3
+POWERUPS_PWING = 4
 POWERUPS = {
-    "none": ["Small Mario", 32, 53, 0],
-    "mushroom": ["Big Mario", 6, 48, 1],
-    "leaf": ["Raccoon Mario", 57, 53, 3],
-    "fire flower": ["Fire Mario", 16, 53, 2],
-    "tanooki suit": ["Tanooki Mario", 54, 53, 5],
-    "frog suit": ["Frog Mario", 56, 53, 4],
-    "hammer suit": ["Hammer Mario", 58, 53, 6],
-    "P-wing": ["Racoon Mario with P-Wing", 55, 53, 8],
+    "none": ["Small Mario", 32, 53, 0, False],
+    "mushroom": ["Big Mario", 6, 48, POWERUP_MUSHROOM, False],
+    "leaf": ["Raccoon Mario", 57, 53, POWERUP_RACCOON, False],
+    "fire flower": ["Fire Mario", 16, 53, POWERUP_FIREFLOWER, False],
+    "tanooki suit": ["Tanooki Mario", 54, 53, POWERUP_TANOOKI, False],
+    "frog suit": ["Frog Mario", 56, 53, POWERUP_FROG, False],
+    "hammer suit": ["Hammer Mario", 58, 53, POWERUP_HAMMER, False],
+    # Even though P-Wing ca *technically* be combined, it only really works with Raccoon and Tanooki suit
+    "P-wing Raccoon": ["Raccoon Mario with P-Wing", 55, 53, POWERUP_RACCOON, True],
+    "P-wing Tanooki": ["Tanooki Mario with P-Wing", 55, 53, POWERUP_TANOOKI, True],
 }
 
 png = QImage(str(data_dir / "gfx.png"))
@@ -125,8 +134,11 @@ class SettingsDialog(CustomDialog):
         self.powerup_combo_box = QComboBox()
 
         for key, value in POWERUPS.items():
+            powerupIcon = self._load_from_png(value[POWERUPS_X], value[POWERUPS_Y])
+            label = value[POWERUPS_NAME]
+
             self.powerup_combo_box.addItem(
-                self._load_from_png(value[POWERUPS_X], value[POWERUPS_Y]), value[POWERUPS_NAME], value[POWERUPS_VALUE]
+                powerupIcon, value[POWERUPS_NAME], (value[POWERUPS_VALUE], value[POWERUPS_PWING])
             )
 
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
