@@ -701,7 +701,7 @@ class MainWindow(QMainWindow):
             if answer == QMessageBox.No:
                 return
 
-        if not self.level_view.level_ref.attached_to_rom:
+        if not self.level_ref.attached_to_rom:
             QMessageBox.information(
                 self,
                 "Importing M3L into ROM",
@@ -732,7 +732,7 @@ class MainWindow(QMainWindow):
         else:
             pathname = ROM.path
 
-        level = self.level_view.level_ref
+        level = self.level_ref.level
 
         for offset, data in level.to_bytes():
             ROM().bulk_write(data, offset)
@@ -744,7 +744,8 @@ class MainWindow(QMainWindow):
 
         self.update_title()
 
-        self.level_view.level_ref.changed = False
+        if not is_save_as:
+            level.changed = False
 
     def on_save_m3l(self, _):
         suggested_file = self.level_view.level_ref.name
