@@ -96,6 +96,7 @@ class Level(LevelLike):
             palette_group_index=self.header.object_palette_index,
             objects_ref=[],
             vertical_level=bool(self.header.is_vertical),
+            render=self.qt
         )
         self.enemy_item_factory = EnemyItemFactory(self.object_set_number, self.header.enemy_palette_index)
 

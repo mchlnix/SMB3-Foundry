@@ -50,8 +50,10 @@ class LevelObjectController(ObjectLike):
             overflow: int,
             position: Position,
             size: Size,
-            object_factory_idx: int
+            object_factory_idx: int,
+            render: bool = True
     ):
+        self.render = render
         self._object_set, self._palette_group = object_set, palette_group
         self._pattern_table, self._objects_ref, self._vertical_level = pattern_table, objects_ref, is_vertical
         self._domain, self._index, self._pos = domain, index, position
@@ -64,7 +66,7 @@ class LevelObjectController(ObjectLike):
 
     @classmethod
     def from_data(cls, data: bytearray, object_set: ObjectSet, palette_group, pattern_table: PatternTable,
-                  objects_ref: List["LevelObject"], is_vertical: bool, object_factory_idx=0):
+                  objects_ref: List["LevelObject"], is_vertical: bool, object_factory_idx=0, render: bool = True):
         bg = BlockGenerator.from_bytes(object_set, data, is_vertical)
         domain, index, position, size, overflow = bg.domain, bg.index, bg.pos, bg.size, bg.overflow
         return cls(
@@ -78,7 +80,8 @@ class LevelObjectController(ObjectLike):
             overflow,
             position,
             size,
-            object_factory_idx
+            object_factory_idx,
+            render
         )
 
     def get_blocks_and_positions(self):
@@ -487,7 +490,8 @@ class LevelObjectController(ObjectLike):
             "overflow": self._overflow,
             "position": self._pos,
             "size": self._size,
-            "object_factory_idx": self._object_factory_idx
+            "object_factory_idx": self._object_factory_idx,
+            "render": self.render
         }
         return self.LEVEL_OBJECTS[self._orientation](**level_kwargs)
 

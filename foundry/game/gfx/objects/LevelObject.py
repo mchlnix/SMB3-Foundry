@@ -197,7 +197,8 @@ class LevelObject(ObjectLike, BlockGenerator):
             overflow: list,
             position: Position,
             size: Size,
-            object_factory_idx: int
+            object_factory_idx: int,
+            render: bool = True
     ):
         self.object_set, self.palette_group = object_set, palette_group
         self.pattern_table, self.objects_ref, self.vertical_level = pattern_table, objects_ref, is_vertical
@@ -205,6 +206,7 @@ class LevelObject(ObjectLike, BlockGenerator):
         self.size, self.overflow = size, overflow
         self.object_factory_idx = object_factory_idx
         self.bytes = self._bytes(self.object_set, self.type)
+        self.does_render = render
 
         self.index_in_level = len(self.objects_ref)
 
@@ -224,7 +226,7 @@ class LevelObject(ObjectLike, BlockGenerator):
 
     @classmethod
     def from_data(cls, data: bytearray, object_set: ObjectSet, palette_group, pattern_table: "PatternTable",
-                  objects_ref: List["LevelObjectController"], is_vertical: bool, object_factory_idx):
+                  objects_ref: List["LevelObjectController"], is_vertical: bool, object_factory_idx, render):
         bg = BlockGenerator.from_bytes(object_set, data, is_vertical)
         domain, index, position, size = bg.domain, bg.index, bg.pos, bg.size
         return cls(
@@ -237,7 +239,8 @@ class LevelObject(ObjectLike, BlockGenerator):
             index,
             position,
             size,
-            object_factory_idx
+            object_factory_idx,
+            render
         )
 
     def properties(self):
@@ -274,7 +277,8 @@ class LevelObject(ObjectLike, BlockGenerator):
         return bcks
 
     def render(self):
-        self._render()
+        if self.does_render:
+            self._render()
 
     @abstractmethod
     def _render(self):
