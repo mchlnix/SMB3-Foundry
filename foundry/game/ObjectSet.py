@@ -21,7 +21,11 @@ class ObjectSet:
         self.definitions = load_object_definitions(self.number)
 
     def get_definition_of(self, object_id: int) -> ObjectDefinition:
-        return self.definitions[object_id]
+        try:
+            return self.definitions[object_id]
+        except KeyError:
+            print(f"The sprite {object_id} does not exist")
+            return self.definitions[0]
 
     def get_ending_offset(self) -> int:
         if self.number == ENEMY_OBJECT_SET:

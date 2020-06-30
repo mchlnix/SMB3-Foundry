@@ -34,7 +34,7 @@ UNDERGROUND_GRAPHICS_SET = 0x0E
 ENEMY_ITEM_GRAPHICS_SET = 0x4C
 
 MIN_OBJECT_SET = WORLD_MAP_OBJECT_SET
-MAX_OBJECT_SET = 0x0F
+MAX_OBJECT_SET = 18
 
 # amount of consecutive objects in a group, that share the same byte length
 OBJECT_GROUP_SIZE = 16

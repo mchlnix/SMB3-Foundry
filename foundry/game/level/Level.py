@@ -52,16 +52,19 @@ class Level(LevelLike):
 
     HEADER_LENGTH = 9  # bytes
 
-    def __init__(self, level_name: str, layout_address: int, enemy_data_offset: int, object_set_number: int):
+    def __init__(self, level_name: str, layout_address: int, enemy_data_offset: int, object_set_number: int, qt=True):
         super(Level, self).__init__(object_set_number, layout_address)
 
-        self._signal_emitter = LevelSignaller()
+        self.qt = qt
+        if qt:
+            self._signal_emitter = LevelSignaller()
 
         self.attached_to_rom = True
 
         self.object_set = ObjectSet(self.object_set_number)
 
-        self.undo_stack = UndoStack()
+        if qt:
+            self.undo_stack = UndoStack()
 
         self.name = level_name
 
@@ -102,8 +105,9 @@ class Level(LevelLike):
         if new_level:
             self._update_level_size()
 
-            self.undo_stack.clear(self.to_bytes())
-            self._signal_emitter.data_changed.emit()
+            if self.qt:
+                self.undo_stack.clear(self.to_bytes())
+                self._signal_emitter.data_changed.emit()
 
     @property
     def width(self):
@@ -115,11 +119,15 @@ class Level(LevelLike):
 
     @property
     def data_changed(self):
-        return self._signal_emitter.data_changed
+        if self.qt:
+            return self._signal_emitter.data_changed
+        return False
 
     @property
     def jumps_changed(self):
-        return self._signal_emitter.jumps_changed
+        if self.qt:
+            return self._signal_emitter.jumps_changed
+        return False
 
     def reload(self):
         (_, header_and_object_data), (_, enemy_data) = self.to_bytes()
@@ -165,7 +173,8 @@ class Level(LevelLike):
 
         self.changed = True
 
-        self.data_changed.emit()
+        if self.qt:
+            self.data_changed.emit()
 
     def _load_enemies(self, data: bytearray):
         self.enemies.clear()
@@ -663,10 +672,19 @@ class Level(LevelLike):
         self.changed = True
 
     def to_asm6(self) -> str:
-        name = f"Level_{self.name}"
-        s = f"; {name}\n; Object Set {self.object_set_number}\n" \
-            f"{self.asm6_level_header(name)}\n{self.asm6_level_objects()}\n{self.asm6_level_enemies()}"
+        s = f"; {self.name}\n; Object Set {self.object_set_number}\n" \
+            f"{self.name}_generators:\n" \
+            f"{self.asm6_level_header(f'{self.name}')}\n{self.asm6_level_objects()}\n" \
+            f"{self.name}_objects:\n{self.asm6_level_enemies()}"
         return s
+
+    @property
+    def next_level(self):
+        return self.header.next_level
+
+    @next_level.setter
+    def next_level(self, level):
+        self.header.next_level = level
 
     def asm6_level_header(self, name):
         return self.header.to_asm6(name)
@@ -770,13 +788,13 @@ class Level(LevelLike):
 
         return (self.header_offset, data), (self.enemy_offset, enemies)
 
-    def from_bytes(self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray], new_level=True):
+    def from_bytes(self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray], new_level=True, qt=False):
 
         self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data
 
-        self.header_bytes = object_bytes[0 : Level.HEADER_LENGTH]
-        objects = object_bytes[Level.HEADER_LENGTH :]
+        self.header_bytes = object_bytes[0: Level.HEADER_LENGTH]
+        objects = object_bytes[Level.HEADER_LENGTH:]
 
         self._parse_header()
         self._load_level_data(objects, enemies, new_level)

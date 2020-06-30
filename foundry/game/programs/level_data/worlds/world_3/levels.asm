@@ -1,0 +1,36 @@
+world_levels_3:
+	.byte 104
+	.byte 105
+	.byte 9
+	.byte 106
+	.byte 104
+	.byte 104
+	.byte 107
+	.byte 104
+	.byte 104
+	.byte 108
+	.byte 109
+	.byte 39
+	.byte 110
+	.byte 104
+	.byte 104
+	.byte 111
+	.byte 112
+	.byte 104
+	.byte 113
+	.byte 104
+	.byte 114
+	.byte 104
+	.byte 104
+	.byte 104
+	.byte 39
+	.byte 7
+	.byte 104
+	.byte 104
+	.byte 104
+	.byte 115
+	.byte 4
+	.byte 116
+	.byte 117
+	.byte 7
+world_levels_3_end:

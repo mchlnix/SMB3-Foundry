@@ -59,7 +59,7 @@ ENEMY_OBJECT_DEFINITION = 12
 OBJECT_SET_TO_DEFINITION = {
     0: 0,
     1: 1,
-    7: 1,
+    7: 8,
     15: 1,
     3: 2,
     114: 2,
@@ -75,6 +75,8 @@ OBJECT_SET_TO_DEFINITION = {
     12: 10,
     14: 11,
     16: 12,
+    17: 12,
+    18: 13
 }
 
 
@@ -342,4 +344,5 @@ def load_object_definition_tile(object_set: int, tile: int, domain: int):
     for _, obj in object_metadata[object_definition].items():
         if obj.range.is_inside(tile) and obj.domain == domain:
             return obj
-    return None
+    raise ValueError(f"Object in domain: {domain}, idx: {tile} is invalid in tileset: {object_set} "
+                     f"using object definition: {object_definition}")

@@ -438,6 +438,22 @@ class LevelObject(ObjectLike, BlockGenerator):
 
     def vertical_offset_pos(self, pos: Position):
         if self.vertical_level:
+            #y_pos = data[0] & 0b0001_1111
+            #x_pos = data[1]
+            #y_pos += (x_pos // SCREEN_WIDTH) * SCREEN_HEIGHT
+            #x_pos %= SCREEN_WIDTH
+
+            #y_hi, y_lo = pos.y & 0xF0, pos.y & 0x0F
+            #x_lo = pos.x & 0x0F
+
+            #pos = Position(x_lo + y_hi, y_lo)
+            #print(pos)
+
+            #offset = (pos.x // SCREEN_WIDTH) * SCREEN_HEIGHT
+
+            #pos.y += offset
+            #pos.x %= SCREEN_WIDTH
+
             offset = pos.y // SCREEN_HEIGHT
             return Position(pos.x + offset * SCREEN_WIDTH, pos.y % SCREEN_HEIGHT)
         else:
@@ -445,11 +461,13 @@ class LevelObject(ObjectLike, BlockGenerator):
 
     def to_asm6(self) -> str:
         pos = self.vertical_offset_pos(self.pos)
+        #if self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
+        #    pos.x = self.pos.x - 1 + self.rendered_size.width // 2
         if self.is_4byte:
             fourth_byte = f", {to_hex(self.size.width)}"
         else:
             fourth_byte = ""
-        s = f"\t.byte {to_hex(self.domain)} | {to_hex(self.pos.y)}, {to_hex(max(min(pos.x, 0xFF), 0))}, " \
+        s = f"\t.byte {to_hex(self.domain << 5)} | {to_hex(pos.y)}, {to_hex(max(min(pos.x, 0xFF), 0))}, " \
             f"{to_hex(self.index)}{fourth_byte}; {self.description}\n"
         return s
 
@@ -458,8 +476,8 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         pos = self.vertical_offset_pos(self.pos)
 
-        if self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
-            pos.x = self.pos.x - 1 + self.rendered_size.width // 2
+        #if self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
+        #    pos.x = self.pos.x - 1 + self.rendered_size.width // 2
 
         data.append((self.domain << 5) | pos.y)
         data.append(max(min(pos.x, 0xFF), 0))

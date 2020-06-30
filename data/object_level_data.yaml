@@ -110,3 +110,31 @@
         start: $A010
         end: $C00F
     background_block: $00
+16:
+    name: Bonus Game Intro
+    jump_offset: $10010
+    range:
+        start: $A010
+        end: $C00F
+    background_block: $00
+17:
+    name: Spade Game
+    jump_offset: $10010
+    range:
+        start: $A010
+        end: $C00F
+    background_block: $00
+18:
+    name: N Spade
+    jump_offset: $10010
+    range:
+        start: $A010
+        end: $C00F
+    background_block: $00
+19:
+    name: VS
+    jump_offset: $1C010
+    range:
+        start: $A010
+        end: $C00F
+    background_block: $00

@@ -111,6 +111,22 @@ class ROM(Rom):
 
         return 0
 
+    def get_word(self, position: int = -1) -> int:
+        if position >= 0:
+            k = self.seek(position) >= 0
+        else:
+            k = self.position < len(ROM.rom_data)
+
+        if k:
+            hi, lo = ROM.rom_data[self.position + 1], ROM.rom_data[self.position]
+            return_word = lo + (hi << 8)
+        else:
+            return_word = 0
+
+        self.position += 2
+
+        return return_word
+
     def get_byte(self, position: int = -1) -> int:
         if position >= 0:
             k = self.seek(position) >= 0

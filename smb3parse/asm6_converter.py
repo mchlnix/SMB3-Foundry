@@ -1,4 +1,38 @@
 from dataclasses import dataclass
+import yaml
+from yaml import CLoader as Loader
+from foundry import data_dir
+
+with open(data_dir.joinpath("smb3_variables.yaml")) as f:
+    variables = yaml.load(f, Loader=Loader)
+
+
+def to_int(s: str):
+    if isinstance(s, int):
+        return s
+    if s.startswith('$'):
+        s = s[1:]
+        if s in variables:
+            return variables[s]
+        else:
+            try:
+                return int(s, 16)
+            except ValueError:
+                print(s, "is not a variable")
+    else:
+        try:
+            return int(s)
+        except ValueError:
+            return s
+
+
+def to_label(s: str):
+    s = s.replace(' ', '_')
+    s = s.replace('(', "_")
+    s = s.replace(')', "_")
+    s = s.replace('/', "_")
+    s = s.replace('#', '_')
+    return s
 
 
 def to_hex(i: int):

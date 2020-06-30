@@ -2,7 +2,6 @@ from typing import Optional
 
 from smb3parse.levels import HEADER_LENGTH, LevelBase
 from smb3parse.levels.level_header import LevelHeader
-from smb3parse.levels.world_map import WorldMapPosition
 from smb3parse.objects.object_set import assert_valid_object_set_number
 from smb3parse.util.rom import Rom
 
@@ -24,7 +23,7 @@ class Level(LevelBase):
 
         self.header = LevelHeader(self.header_bytes, self.object_set_number)
 
-    def set_world_map_position(self, position: WorldMapPosition):
+    def set_world_map_position(self, position: "WorldMapPosition"):
         self.world_map_position = position
 
     def __eq__(self, other):
@@ -38,7 +37,7 @@ class Level(LevelBase):
         )
 
     @staticmethod
-    def from_world_map(rom: Rom, world_map_position: WorldMapPosition) -> Optional["Level"]:
+    def from_world_map(rom: Rom, world_map_position: "WorldMapPosition") -> Optional["Level"]:
         level_info = world_map_position.level_info
 
         if level_info is None:
