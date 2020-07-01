@@ -12,6 +12,7 @@ from PySide2.QtWidgets import (
     QAction,
     QDialog,
     QFileDialog,
+    QHBoxLayout,
     QMainWindow,
     QMenu,
     QMessageBox,
@@ -22,6 +23,7 @@ from PySide2.QtWidgets import (
     QSplitter,
     QToolBar,
     QWhatsThis,
+    QWidget,
 )
 
 from foundry import (
@@ -315,12 +317,26 @@ class MainWindow(QMainWindow):
         self.jump_list.edit_jump.connect(self.on_jump_edit)
         self.jump_list.remove_jump.connect(self.on_jump_removed)
 
+        jump_buttons = QWidget()
+        jump_buttons.setLayout(QHBoxLayout())
+        jump_buttons.layout().setContentsMargins(0, 0, 0, 0)
+
+        add_jump_button = QPushButton("Add Jump")
+        add_jump_button.clicked.connect(self.on_jump_added)
+
+        set_jump_destination_button = QPushButton("Set Jump Destination")
+        set_jump_destination_button.clicked.connect(self._show_jump_dest)
+
+        jump_buttons.layout().addWidget(add_jump_button)
+        jump_buttons.layout().addWidget(set_jump_destination_button)
+
         splitter = QSplitter(self)
         splitter.setOrientation(Qt.Vertical)
 
         splitter.addWidget(self.object_list)
         splitter.setStretchFactor(0, 1)
         splitter.addWidget(self.jump_list)
+        splitter.addWidget(jump_buttons)
 
         splitter.setChildrenCollapsible(False)
 
@@ -493,12 +509,19 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
 
-    def _open_rom(self, path_to_rom):
+    @staticmethod
+    def _open_rom(path_to_rom):
         with open(path_to_rom, "rb") as smb3_rom:
             data = smb3_rom.read()
 
         rom = SMB3Rom(bytearray(data))
         return rom
+
+    def _show_jump_dest(self):
+        header_editor = HeaderEditor(self, self.level_ref)
+        header_editor.tab_widget.setCurrentIndex(3)
+
+        header_editor.exec_()
 
     def _put_current_level_to_level_1_1(self, path_to_rom) -> bool:
         rom = self._open_rom(path_to_rom)

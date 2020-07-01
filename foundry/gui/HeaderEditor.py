@@ -86,8 +86,8 @@ class HeaderEditor(CustomDialog):
 
         main_layout = QVBoxLayout(self)
 
-        tab_widget = QTabWidget(self)
-        main_layout.addWidget(tab_widget)
+        self.tab_widget = QTabWidget(self)
+        main_layout.addWidget(self.tab_widget)
 
         # level settings
 
@@ -134,7 +134,7 @@ class HeaderEditor(CustomDialog):
         widget = QWidget()
         widget.setLayout(form)
 
-        tab_widget.addTab(widget, "Level")
+        self.tab_widget.addTab(widget, "Level")
 
         # player settings
 
@@ -160,7 +160,7 @@ class HeaderEditor(CustomDialog):
         widget = QWidget()
         widget.setLayout(form)
 
-        tab_widget.addTab(widget, "Mario")
+        self.tab_widget.addTab(widget, "Mario")
 
         # graphic settings
 
@@ -184,7 +184,7 @@ class HeaderEditor(CustomDialog):
         widget = QWidget()
         widget.setLayout(form)
 
-        tab_widget.addTab(widget, "Graphics")
+        self.tab_widget.addTab(widget, "Graphics")
 
         # next area settings
 
@@ -213,7 +213,7 @@ class HeaderEditor(CustomDialog):
         widget = QWidget()
         widget.setLayout(form)
 
-        tab_widget.addTab(widget, "Jump Destination")
+        self.tab_widget.addTab(widget, "Jump Destination")
 
         self.header_bytes_label = QLabel()
 
