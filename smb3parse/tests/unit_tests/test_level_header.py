@@ -37,17 +37,17 @@ def test_construction(header_bytes, object_set_number):
 
 def test_value_error():
     with pytest.raises(ValueError, match="A level header is made up of"):
-        LevelHeader(bytearray(HEADER_LENGTH + 1), MIN_OBJECT_SET)
+        LevelHeader.legacy_from_bytes(bytearray(HEADER_LENGTH + 1), MIN_OBJECT_SET)
 
     with pytest.raises(ValueError, match="Object set number"):
-        LevelHeader(bytearray(HEADER_LENGTH), MAX_OBJECT_SET + 1)
+        LevelHeader.legacy_from_bytes(bytearray(HEADER_LENGTH), MAX_OBJECT_SET + 1)
 
 
 def test_level_1_1():
     object_set_number = 1
     level_header_bytes = bytearray([0x93, 0xBC, 0x06, 0xC0, 0xEA, 0x80, 0x81, 0x01, 0x00])
 
-    level_header = LevelHeader(level_header_bytes, object_set_number)
+    level_header = LevelHeader.legacy_from_bytes(level_header_bytes, object_set_number)
 
     assert level_header.width == 0xB0  # blocks
     assert level_header.height == DEFAULT_HORIZONTAL_HEIGHT  # blocks
@@ -65,7 +65,7 @@ def test_level_1_1():
 
     assert level_header.object_palette_index == 0
     assert level_header.enemy_palette_index == 0
-    assert level_header.graphic_set_index == 1
+    assert level_header.graphic_set == 1
 
     assert level_header.jump_enemy_address == 0xC016
     assert level_header.jump_level_address == 0x1FCA3
@@ -93,7 +93,7 @@ def test_level_1_1_bonus():
 
     assert level_header.object_palette_index == 5
     assert level_header.enemy_palette_index == 0
-    assert level_header.graphic_set_index == 1
+    assert level_header.graphic_set == 1
 
     assert level_header.jump_enemy_address == 0xC537
     assert level_header.jump_level_address == 0x1FB92
