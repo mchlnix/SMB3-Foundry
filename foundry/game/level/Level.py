@@ -789,6 +789,12 @@ class Level(LevelLike):
 
         return (self.header_offset, data), (self.enemy_offset, enemies)
 
+    def to_bytes_joined(self) -> list:
+        """Combines bytes of both generators and objects into one"""
+        gens, objs = self.to_bytes()
+        data = list(gens[1] + objs[1])
+        return data
+
     def from_bytes(self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray], new_level=True, qt=False):
 
         self.header_offset, object_bytes = object_data
