@@ -1,28 +1,27 @@
 from abc import abstractmethod
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from dataclasses import dataclass
 
 from PySide2.QtGui import QImage, QPainter
 
 from foundry.game.File import ROM
 
-from foundry.game.ObjectDefinitions import (
-    PYRAMID_2,
-    PYRAMID_TO_GROUND
-)
 from foundry.game.ObjectSet import ObjectSet
+from foundry.game.ObjectDefinitions import BitMapPicture
+
 from foundry.game.gfx.objects.Jump import Jump
+from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import bg_color_for_object_set
-from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
 
 from foundry.game.Size import Size
+from PySide2.QtCore import QSize
 from foundry.game.Position import Position
 from foundry.game.Rect import Rect
 from smb3parse.asm6_converter import to_hex
 
-import time
 
 SKY = 0
 GROUND = 27
@@ -51,20 +50,22 @@ def get_minimal_icon_object(level_object):
 
 
 class BlockCache:
-    def __init__(self, obj_set: int = 0):
+    def __init__(self, obj_set: int = 0) -> None:
         self.cache = {}
-        self.obj_set = 0
+        self.obj_set = obj_set
 
-    def set_obj_set(self, obj_set: int):
+    def set_obj_set(self, obj_set: int) -> None:
         if obj_set != self.obj_set:
             self.cache = {}
             self.obj_set = obj_set
 
     @staticmethod
-    def is_from_memory(block_index):
+    def is_from_memory(block_index: int) -> bool:
         return block_index > 0xFF
 
-    def block(self, palette_group, pattern_table, tsa_data, block_index):
+    def block(
+            self, palette_group: List[List[int]], pattern_table: GraphicsSet, tsa_data: bytes, block_index: int
+    ):
         if block_index not in self.cache:
             if self.is_from_memory(block_index):
                 block = Block(ROM().get_byte(block_index), palette_group, pattern_table, tsa_data)
@@ -87,58 +88,58 @@ class BlockGenerator:
     bytes: int
 
     @property
-    def y_pos(self):
+    def y_pos(self) -> int:
         return self.pos.y
 
     @y_pos.setter
-    def y_pos(self, y: int):
+    def y_pos(self, y: int) -> None:
         self.pos.y = y
 
     @property
-    def x_pos(self):
+    def x_pos(self) -> int:
         return self.pos.x
 
     @x_pos.setter
-    def x_pos(self, x: int):
+    def x_pos(self, x: int) -> None:
         self.pos.x = x
 
     @property
-    def is_4byte(self):
+    def is_4byte(self) -> bool:
         """Returns if the object takes 4 bytes"""
         return self.bytes == 4
 
     @staticmethod
-    def _bytes(object_set, type):
+    def _bytes(object_set: ObjectSet, type: int) -> int:
         """Returns if an object is 4 bytes from the object set from a given type"""
         return object_set.get_definition_of(type).bytes
 
     @property
-    def is_single_block(self):
+    def is_single_block(self) -> bool:
         """Returns if a block is a single block"""
         return self._is_single_block(self.index)
 
     @staticmethod
-    def _is_single_block(index):
+    def _is_single_block(index: int) -> bool:
         """Returns if the index is in the range for single blocks"""
         return index <= 0x0F
 
     @property
-    def domain_offset(self):
+    def domain_offset(self) -> int:
         """Returns the offset for type of a domain"""
         return self._domain_offset(self.domain)
 
     @staticmethod
-    def _domain_offset(domain):
+    def _domain_offset(domain: int) -> int:
         """Returns the correct offset for a type from a given domain"""
         return domain * 0x1F
 
     @property
-    def type(self):
+    def type(self) -> int:
         """Returns the type of the block"""
         return self._type(self.index, self.domain)
 
     @staticmethod
-    def _type(index, domain):
+    def _type(index: int, domain: int) -> int:
         """Returns the type of the block from a given index and domain
         For every domain there is 16 single-block types and 15 multi-block types
         Single-block objects exist at the beginning of every domain
@@ -150,7 +151,12 @@ class BlockGenerator:
             return (index >> 4) + BlockGenerator._domain_offset(domain) + 15
 
     @classmethod
-    def from_bytes(cls, object_set: ObjectSet, data: bytearray, is_vertical: bool = False, object_factory_idx=0):
+    def from_bytes(
+            cls,
+            object_set: ObjectSet,
+            data: bytearray,
+            is_vertical: bool = False,
+            object_factory_idx: int = 0) -> "BlockGenerator":
         """Fabricates an object from bytes in rom"""
         domain = (data[0] & 0b1110_0000) >> 5
         y_pos = data[0] & 0b0001_1111
@@ -188,8 +194,8 @@ class LevelObject(ObjectLike, BlockGenerator):
     def __init__(
             self,
             object_set: ObjectSet,
-            palette_group,
-            pattern_table: "PatternTable",
+            palette_group: List[List[int]],
+            pattern_table: GraphicsSet,
             objects_ref: List["LevelObjectController"],
             is_vertical: bool,
             domain: int,
@@ -208,123 +214,141 @@ class LevelObject(ObjectLike, BlockGenerator):
         self.bytes = self._bytes(self.object_set, self.type)
         self.does_render = render
 
-        self.index_in_level = len(self.objects_ref)
+        self.index_in_level: int = len(self.objects_ref)
 
-        self.block_cache = BlockCache()
-        self.rendered_position = Position(0, 0)
-        self.rendered_size = Size(0, 0)
-        self.rendered_positions = []
-        self.last_rect = None
+        self.block_cache: BlockCache = BlockCache()
+        self.rendered_position: Position = Position(0, 0)
+        self.rendered_size: Size = Size(0, 0)
+        self.rendered_positions: List[Tuple[Position, int]] = []
+        self.last_rect: Optional[Rect] = None
 
-        self.selected = False
+        self.selected: bool = False
 
-        self.ground_level = GROUND
+        self.ground_level: int = GROUND
 
-        self.rect = Rect()
+        self.rect: Rect = Rect()
 
         self.render()
 
     @classmethod
-    def from_data(cls, data: bytearray, object_set: ObjectSet, palette_group, pattern_table: "PatternTable",
-                  objects_ref: List["LevelObjectController"], is_vertical: bool, object_factory_idx, render):
+    def from_data(
+            cls,
+            data: bytearray,
+            object_set: ObjectSet,
+            palette_group: List[List[int]],
+            pattern_table: GraphicsSet,
+            objects_ref: List["LevelObjectController"],
+            is_vertical: bool,
+            object_factory_idx: int,
+            render: bool):
         bg = BlockGenerator.from_bytes(object_set, data, is_vertical)
         domain, index, position, size = bg.domain, bg.index, bg.pos, bg.size
         return cls(
-            object_set,
-            palette_group,
-            pattern_table,
-            objects_ref,
-            is_vertical,
-            domain,
-            index,
-            position,
-            size,
-            object_factory_idx,
-            render
+            object_set=object_set,
+            palette_group=palette_group,
+            pattern_table=pattern_table,
+            objects_ref=objects_ref,
+            is_vertical=is_vertical,
+            domain=domain,
+            index=index,
+            overflow=[],
+            position=position,
+            size=size,
+            object_factory_idx=object_factory_idx,
+            render=render
         )
 
-    def properties(self):
-        return [self.description, self.domain, self.index, self.size.width]
+    def properties(self) -> Tuple[str, int, int, int]:
+        return self.description, self.domain, self.index, self.size.width
 
     @property
-    def tsa_data(self):
+    def tsa_data(self) -> bytearray:
         return ROM.get_tsa_data(self.object_set.object_set_number)
 
     @property
-    def bmp(self):
+    def bmp(self) -> BitMapPicture:
         return self.object_set.get_definition_of(self.type).bmp
 
     @property
-    def orientation(self):
+    def orientation(self) -> int:
         return self.object_set.get_definition_of(self.type).orientation
 
     @property
-    def ending(self):
+    def ending(self) -> int:
         return self.object_set.get_definition_of(self.type).ending
 
     @property
-    def description(self):
+    def description(self) -> str:
         return self.object_set.get_definition_of(self.type).description
 
     @property
-    def blocks(self):
+    def blocks(self) -> List[int]:
         bcks = []
-        for idx, block in enumerate([int(block) for block in self.object_set.get_definition_of(self.type).rom_object_design]):
+        for idx, block in enumerate(
+                [int(block) for block in self.object_set.get_definition_of(self.type).rom_object_design]
+        ):
             if block <= 0xFF:
                 bcks.append(block)
             else:
                 bcks.append(ROM().get_byte(block))
         return bcks
 
-    def render(self):
+    def render(self) -> None:
         if self.does_render:
             self._render()
 
     @abstractmethod
-    def _render(self):
+    def _render(self) -> None:
         pass
 
-    def icon(self):
+    def icon(self) -> None:
         self.size = Size(1, 1)
         self.render()
 
-    def backtrace_update(self):
+    def backtrace_update(self) -> None:
         """By default blocks do not need to update when blocks above them move"""
 
-    def get_blocks_and_positions(self):
+    def get_blocks_and_positions(self) -> List[Tuple[Position, int]]:
         return self.rendered_positions
 
-    def draw(self, painter: QPainter, block_length, transparent):
+    def draw(self, painter: QPainter, block_length: int, transparent: bool) -> None:
         for idx, pos in enumerate(self.rendered_size.positions()):
             if idx < len(self.rendered_blocks) and self.rendered_blocks[idx] != BLANK:
                 po = pos + self.rendered_position
                 self._draw_block(painter, self.rendered_blocks[idx], po, block_length, transparent)
 
-    def _draw_block(self, painter: QPainter, block_index, position, block_length, transparent):
+    def _draw_block(
+            self,
+            painter: QPainter,
+            block_index: int,
+            position: Position,
+            block_length: int,
+            transparent: bool
+            ) -> None:
         self.block_cache.block(self.palette_group, self.pattern_table, self.tsa_data, block_index).draw(
             painter, position.x * block_length, position.y * block_length,
             block_length=block_length, selected=self.selected, transparent=transparent,
         )
 
-    def set_position(self, pos):
+    def set_position(self, pos: Position) -> None:
         self.pos = pos
         self.pos.x = max(self.pos.x, 0)
         self.pos.y = min(max(self.pos.y, 0), 26)
         self.render()
 
-    def move_by(self, pos):
+    def move_by(self, pos: Position) -> None:
         self.set_position(pos + self.pos)
 
-    def get_position(self):
+    def get_position(self) -> Tuple[int, int]:
         return self.pos.x, self.pos.y
 
-    def expands(self):
+    def expands(self) -> int:
         return EXPANDS_NOT
 
-    def primary_expansion(self):
+    def primary_expansion(self) -> int:
         return EXPANDS_BOTH
 
-    def resize_x(self, x: int):
+    def resize_x(self, x: int) -> None:
         if self.expands() & EXPANDS_HORIZ == 0:
             return
 
@@ -356,7 +380,7 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         self.render()
 
-    def resize_y(self, y: int):
+    def resize_y(self, y: int) -> None:
         if self.expands() & EXPANDS_VERT == 0:
             return
 
@@ -384,7 +408,7 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         self.render()
 
-    def _calculate_lengths(self):
+    def _calculate_lengths(self) -> None:
         if self.is_single_block:
             self._length = 1
         else:
@@ -393,21 +417,21 @@ class LevelObject(ObjectLike, BlockGenerator):
         if self.is_4byte:
             self.size.height = self.size.width
 
-    def resize_by(self, dx: int, dy: int):
+    def resize_by(self, dx: int, dy: int) -> None:
         if dx:
             self.resize_x(self.pos.x + dx)
 
         if dy:
             self.resize_y(self.pos.y + dy)
 
-    def increment_type(self):
+    def increment_type(self) -> None:
         self.change_type(True)
 
-    def decrement_type(self):
+    def decrement_type(self) -> None:
         self.change_type(False)
 
-    def change_type(self, increment: int):
-        pass
+    def change_type(self, increment: int) -> None:
+        """"""
 
     def __contains__(self, item: Tuple[int, int]) -> bool:
         x, y = item
@@ -426,7 +450,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             ("Orientation", self.orientation)
         ]
 
-    def display_size(self, zoom_factor: int = 1):
+    def display_size(self, zoom_factor: int = 1) -> QSize:
         size = self.rendered_position * Block.SIDE_LENGTH * zoom_factor
         return size.to_qt()
 
@@ -440,24 +464,8 @@ class LevelObject(ObjectLike, BlockGenerator):
         self.draw(painter, Block.SIDE_LENGTH, True)
         return image
 
-    def vertical_offset_pos(self, pos: Position):
+    def vertical_offset_pos(self, pos: Position) -> Position:
         if self.vertical_level:
-            #y_pos = data[0] & 0b0001_1111
-            #x_pos = data[1]
-            #y_pos += (x_pos // SCREEN_WIDTH) * SCREEN_HEIGHT
-            #x_pos %= SCREEN_WIDTH
-
-            #y_hi, y_lo = pos.y & 0xF0, pos.y & 0x0F
-            #x_lo = pos.x & 0x0F
-
-            #pos = Position(x_lo + y_hi, y_lo)
-            #print(pos)
-
-            #offset = (pos.x // SCREEN_WIDTH) * SCREEN_HEIGHT
-
-            #pos.y += offset
-            #pos.x %= SCREEN_WIDTH
-
             offset = pos.y // SCREEN_HEIGHT
             return Position(pos.x + offset * SCREEN_WIDTH, pos.y % SCREEN_HEIGHT)
         else:
@@ -465,8 +473,6 @@ class LevelObject(ObjectLike, BlockGenerator):
 
     def to_asm6(self) -> str:
         pos = self.vertical_offset_pos(self.pos)
-        #if self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
-        #    pos.x = self.pos.x - 1 + self.rendered_size.width // 2
         if self.is_4byte:
             fourth_byte = f", {to_hex(self.size.width)}"
         else:
@@ -480,9 +486,6 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         pos = self.vertical_offset_pos(self.pos)
 
-        #if self.orientation in [PYRAMID_TO_GROUND, PYRAMID_2]:
-        #    pos.x = self.pos.x - 1 + self.rendered_size.width // 2
-
         data.append((self.domain << 5) | pos.y)
         data.append(max(min(pos.x, 0xFF), 0))
         data.append(self.index)
@@ -495,16 +498,16 @@ class LevelObject(ObjectLike, BlockGenerator):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__} {self.description} at {self.pos.x}, {self.pos.y}"
 
-    def __eq__(self, other):
+    def __eq__(self, other: "LevelObject") -> bool:
         try:
             return self.to_bytes() == other.to_bytes()
         except KeyError:
             return False
 
-    def __lt__(self, other):
+    def __lt__(self, other: "LevelObject") -> bool:
         return self.index_in_level < other.index_in_level
 
-    def _render_positions(self):
+    def _render_positions(self) -> None:
         if self.rect != self.last_rect:
             self.rendered_positions = tuple(zip(
                 self.rendered_blocks,
@@ -512,20 +515,20 @@ class LevelObject(ObjectLike, BlockGenerator):
             )
             self.last_rect = self.rect
 
-    def _confirm_render(self, size: Size, pos: Position, blocks: list):
+    def _confirm_render(self, size: Size, pos: Position, blocks: list) -> None:
         blocks = blocks if blocks else self.blocks
         self.rendered_size, self.rendered_position, self.rendered_blocks = size, pos, blocks
         self.rect = Rect.from_size_and_position(self.rendered_size, self.rendered_position)
         self._render_positions()
 
-    def _get_obj_index(self):
+    def _get_obj_index(self) -> int:
         try:
             return self.objects_ref.index(self)
         except ValueError:
             # the object has not been added yet, so stick with the one given in the constructor
             return self.object_factory_idx
 
-    def _if_intersects(self, rect):
+    def _if_intersects(self, rect: Rect) -> bool:
         return any(
             [
                 rect.intersects(obj.get_rect()) for obj in self.objects_ref[:self._get_obj_index()]
@@ -554,10 +557,10 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         return background_routine_by_objectset[self.object_set.object_set_number]()
 
-    def default_background(self):
+    def default_background(self) -> List[int]:
         return [self.object_set.background_block for _ in range(16 * 15 * 27)]
 
-    def sky_background(self):
+    def sky_background(self) -> List[int]:
         blocks = []
         level_rect = Rect.from_size_and_position(Size(16 * 15, 27), Position(0, 0))
         for pos in level_rect.positions():
@@ -567,7 +570,7 @@ class LevelObject(ObjectLike, BlockGenerator):
                 blocks.append(0x86)
         return blocks
 
-    def desert_background(self):
+    def desert_background(self) -> List[int]:
         blocks = []
         level_rect = Rect.from_size_and_position(Size(16 * 15, 27), Position(0, 0))
         for pos in level_rect.positions():
@@ -577,7 +580,7 @@ class LevelObject(ObjectLike, BlockGenerator):
                 blocks.append(0x56)
         return blocks
 
-    def fortress_background(self):
+    def fortress_background(self) -> List[int]:
         blocks = []
         fortress_blocks = [0x14, 0x15, 0x16, 0x17]
         level_rect = Rect.from_size_and_position(Size(16 * 15, 27), Position(0, 0))
@@ -594,7 +597,7 @@ class LevelObject(ObjectLike, BlockGenerator):
                 blocks.append(self.object_set.background_block)
         return blocks
 
-    def _get_blocks(self, level_objs):
+    def _get_blocks(self, level_objs: List["LevelObject"]) -> List[int]:
         """Renders the level objects into memory"""
         level_rect = Rect.from_size_and_position(Size(16 * 15, 27), Position(0, 0))
         objects = self._get_background()
@@ -612,7 +615,8 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         return objects
 
-    def _get_block_at_position(self, blocks: List, pos: Position):
+    @staticmethod
+    def _get_block_at_position(blocks: List[int], pos: Position) -> int:
         """Finds a block in level space"""
         if pos.y > 26:
             pos = Position(pos.x + (pos.y // 26) * 0x10, pos.y % 26)  # offset by the screen
