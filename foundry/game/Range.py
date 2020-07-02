@@ -7,6 +7,11 @@ class Range:
     start: int = 0
     end: int = 0
 
+    @property
+    def size(self):
+        """The end - start"""
+        return abs(self.start - self.end)
+
     def is_inside(self, idx: int) -> bool:
         """Determines if an idx is inside the range"""
         try:
