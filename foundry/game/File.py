@@ -17,6 +17,55 @@ TSA_TABLE_INTERVAL = TSA_TABLE_SIZE + 0x1C00
 TSA_BASE_OS = 0x00010
 
 
+def to_word(byte_1: int, byte_2: int):
+    """Converts two bytes into a word"""
+    return (byte_2 << 8) + byte_1
+
+
+def get_bank_offset(bank: int):
+    """Helper function for getting the bank offset quickly"""
+    return bank * 0x2000 + 0x10
+
+
+class BankHandler:
+    """Handles multiple banks and allow them to work in sync"""
+    def __init__(self, banks):
+        self.amount_of_banks = banks
+        self.banks = [Bank() for _ in range(banks)]
+
+    def add_data(self, data: list):
+        """Adds a list of data to the bank"""
+        for idx, bank in enumerate(self.banks):
+            offset = bank.add_data(data)
+            if offset is not None:
+                return idx, offset
+        else:
+            return None
+
+    def save_to_rom(self, bank_idx):
+        """Saves each bank to ROM"""
+        for idx, bank in enumerate(self.banks):
+            bank.save_to_rom(bank_idx + idx)
+
+
+class Bank:
+    """Handles the bank element of the game.  Very useful for converting data for NES ready data"""
+    def __init__(self):
+        self.data = []
+
+    def add_data(self, data: List[int]):
+        """Adds a string of data to the bank"""
+        len = len(self.data)
+        if len + len(data) < 0x2000:
+            self.data.extend(list(bytearray(data)))
+            return len
+        return None
+
+    def save_to_rom(self, bank_idx: int, offset: int=0):
+        """Saves the data inside the bank to ROM"""
+        ROM().bulk_write(bytearray(self.data), get_bank_offset(bank_idx) + offset)
+
+
 class ROM(Rom):
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
 
