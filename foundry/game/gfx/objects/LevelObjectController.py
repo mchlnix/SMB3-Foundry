@@ -384,10 +384,10 @@ class LevelObjectController(ObjectLike):
         return self.level_object.get_position()
 
     def expands(self):
-        return self.level_object.expands()
+        return self.level_object.expands
 
     def primary_expansion(self):
-        return self.level_object.primary_expansion()
+        return self.level_object.primary_expansion
 
     def resize_x(self, x: int):
         self.level_object.resize_x(x)

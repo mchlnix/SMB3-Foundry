@@ -16,6 +16,14 @@ logging.basicConfig(filename=data_dir.joinpath("logs/lvl_objs.log"), level=loggi
 
 
 class LevelObjectToSky(LevelObject):
+    @property
+    def expands(self):
+        return EXPANDS_NOT
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_NOT
+
     def icon(self) -> None:
         self.size = Size(1, 2)
         self._render(False)
@@ -40,6 +48,14 @@ class LevelObjectToSky(LevelObject):
 
 class LevelObjectDesertPipeBox(LevelObject):
     LINES_PER_ROW = 4
+
+    @property
+    def expands(self):
+        return EXPANDS_HORIZ
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_HORIZ
 
     def _render(self) -> None:
         """
@@ -96,9 +112,11 @@ class LevelObjectDiagnal(LevelObject):
     def get_block_from_position(self, pos: Position) -> int:
         """Returns the corresponding block for a given position"""
 
+    @property
     def expands(self) -> int:
         return EXPANDS_HORIZ
 
+    @property
     def primary_expansion(self) -> int:
         return EXPANDS_HORIZ
 
@@ -171,13 +189,11 @@ class LevelObjectDiagnal60(LevelObjectDiagnal):
     @abstractmethod
     def slope(self) -> List[int]:
         """The slope from self.blocks"""
-        return []
 
     @property
     @abstractmethod
     def body(self) -> Optional[int]:
         """The body from self.blocks"""
-        return None
 
     @abstractmethod
     def _render(self) -> None:
@@ -217,11 +233,11 @@ class LevelObjectDiagnalDownLeft45(DownLeftDiagnal, LevelObjectDiagnal45):
 
     @property
     def slope(self) -> int:
-        return self.blocks[0]
+        return self.get_block(0)
 
     @property
     def body(self) -> int:
-        return self.blocks[1] if len(self.blocks) == 2 else BLANK
+        return self.get_block(1)
 
 
 class LevelObjectDiagnalDownLeft30(DownLeftDiagnal, LevelObjectDiagnal30):
@@ -229,21 +245,21 @@ class LevelObjectDiagnalDownLeft30(DownLeftDiagnal, LevelObjectDiagnal30):
 
     @property
     def slope(self) -> List[int]:
-        return [self.blocks[1], self.blocks[0]]
+        return [self.get_block(1), self.get_block(0)]
 
     @property
     def body(self) -> int:
-        return self.blocks[2] if len(self.blocks) == 3 else BLANK
+        return self.get_block(2)
 
 
 class LevelObjectDiagnalDownRight60(DownRightDiagnal, LevelObjectDiagnal60):
     @property
     def slope(self) -> List[int]:
-        return [self.blocks[0], self.blocks[1]]
+        return [self.get_block(0), self.get_block(1)]
 
     @property
     def body(self) -> int:
-        return self.blocks[2] if len(self.blocks) == 3 else BLANK
+        return self.get_block(2)
 
 
 class LevelObjectDiagnalDownLeft60(DownLeftDiagnal, LevelObjectDiagnal60):
@@ -252,11 +268,11 @@ class LevelObjectDiagnalDownLeft60(DownLeftDiagnal, LevelObjectDiagnal60):
 
     @property
     def slope(self) -> List[int]:
-        return [self.blocks[0], self.blocks[1]]
+        return [self.get_block(0), self.get_block(1)]
 
     @property
-    def body(self) -> List[int]:
-        return self.blocks[2] if len(self.blocks) == 3 else BLANK
+    def body(self) -> int:
+        return self.get_block(2)
 
     def _render(self) -> None:
         size, pos, blocks_to_draw = self.render_slope()
@@ -268,21 +284,21 @@ class LevelObjectDiagnalDownLeft60(DownLeftDiagnal, LevelObjectDiagnal60):
 class LevelObjectDiagnalDownRight30(DownRightDiagnal, LevelObjectDiagnal30):
     @property
     def slope(self) -> List[int]:
-        return self.blocks[1:]
+        return [self.get_block(1), self.get_block(2)]
 
     @property
     def body(self) -> int:
-        return self.blocks[0]
+        return self.get_block(0)
 
 
 class LevelObjectDiagnalUpRight30(LevelObjectDiagnal30):
     @property
     def slope(self) -> List[int]:
-        return [self.blocks[1], self.blocks[2]]
+        return [self.get_block(1), self.get_block(2)]
 
     @property
     def body(self) -> int:
-        return self.blocks[0]
+        return self.get_block(0)
 
     def _render(self) -> None:
         size, pos, blocks_to_draw = self.render_slope()
@@ -294,11 +310,11 @@ class LevelObjectDiagnalUpRight30(LevelObjectDiagnal30):
 class LevelObjectDiagnalUpLeft30(LevelObjectDiagnal30):
     @property
     def slope(self) -> List[int]:
-        return [self.blocks[1], self.blocks[0]]
+        return [self.get_block(1), self.get_block(0)]
 
     @property
     def body(self) -> int:
-        return self.blocks[2]
+        return self.get_block(2)
 
     def _render(self) -> None:
         size, pos, blocks_to_draw = self.render_slope()
@@ -309,27 +325,21 @@ class LevelObjectDiagnalUpLeft30(LevelObjectDiagnal30):
 class LevelObjectDiagnalDownRight45(DownRightDiagnal, LevelObjectDiagnal45):
     @property
     def slope(self) -> int:
-        return self.blocks[1] if len(self.blocks) == 2 else self.blocks[0]
+        return self.get_block(1)
 
     @property
     def body(self) -> int:
-        return self.blocks[0] if len(self.blocks) == 2 else BLANK
+        return self.get_block(0)
 
 
 class LevelObjectDiagnalUpRight45(LevelObjectDiagnal45):
     @property
     def slope(self) -> int:
-        if len(self.blocks) == 2:
-            return self.blocks[1]
-        else:
-            return self.blocks[0]
+        return self.get_block(1)
 
     @property
     def body(self) -> int:
-        if len(self.blocks) == 2:
-            return self.blocks[0]
-        else:
-            return BLANK
+        return self.get_block(0)
 
     def _render(self) -> None:
         size, pos, blocks_to_draw = self.render_slope()
@@ -344,17 +354,11 @@ class LevelObjectDiagnalUpRight45(LevelObjectDiagnal45):
 class LevelObjectDiagnalUpLeft45(LevelObjectDiagnal45):
     @property
     def slope(self) -> int:
-        if len(self.blocks) == 2:
-            return self.blocks[0]
-        else:
-            return self.blocks[1]
+        return self.get_block(0)
 
     @property
     def body(self) -> int:
-        if len(self.blocks) == 2:
-            return self.blocks[1]
-        else:
-            return BLANK
+        return self.get_block(1)
 
     def _render(self) -> None:
         size, pos, blocks_to_draw = self.render_slope()
@@ -366,20 +370,19 @@ class LevelObjectDiagnalUpLeft45(LevelObjectDiagnal45):
 class LevelObjectDiagnalWeird45(LevelObjectDiagnal45):
     @property
     def slope(self) -> int:
-        if len(self.blocks) == 2:
-            return self.blocks[1]
-        else:
-            return self.blocks[0]
+        return self.get_block(1)
 
     @property
     def body(self) -> int:
-        try:
-            return self.blocks[0]
-        except IndexError:
-            return 0
+        return self.get_block(0)
 
+    @property
     def expands(self) -> int:
-        return EXPANDS_HORIZ | EXPANDS_VERT
+        return EXPANDS_BOTH
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_BOTH
 
     def _render(self) -> None:
         size, pos, blocks_to_draw = self.render_slope()
@@ -389,7 +392,12 @@ class LevelObjectDiagnalWeird45(LevelObjectDiagnal45):
 
 class LevelObjectPyramidToGround(LevelObject):
     """Makes a pyramid that grows horizontally in both directions that extends to the ground"""
+    @property
     def expands(self) -> int:
+        return EXPANDS_NOT
+
+    @property
+    def primary_expansion(self) -> int:
         return EXPANDS_NOT
 
     def _render(self) -> None:
@@ -426,16 +434,21 @@ class LevelObjectEndingBackground(LevelObject):
     ENDING_GRAPHIC_HEIGHT = 6
     FLOOR_HEIGHT = 1
 
+    @property
     def expands(self) -> int:
-        return EXPANDS_HORIZ
+        return EXPANDS_NOT
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_NOT
 
     @property
     def fade_tile(self) -> int:
-        return self.blocks[0]
+        return self.get_block(0)
 
     @property
     def background(self) -> int:
-        return self.blocks[1]
+        return self.get_block(1)
 
     @property
     def page_limit(self) -> int:
@@ -482,10 +495,7 @@ class EndOnAllSides(LevelObject, ABC):
             offset_idx = self.bmp.size.width * self.bmp.size.height
         idx = self.bmp.size.index_position(pos % self.bmp.size) + \
             size.get_relational_position(pos // self.bmp.size) * offset_idx
-        try:
-            return self.blocks[idx]
-        except IndexError:
-            return self.blocks[0]
+        return self.get_block(idx)
 
 
 class LevelObjectBlockGetter(LevelObject):
@@ -498,10 +508,7 @@ class LevelObjectBlockGetter(LevelObject):
         if offset_idx is None:
             offset_idx = self.bmp.size.width * self.bmp.size.height
         idx = self.bmp.size.index_position(pos % self.bmp.size) + self.offset(pos, size) * offset_idx
-        try:
-            return self.blocks[idx]
-        except IndexError:
-            return self.blocks[0]
+        return self.get_block(idx)
 
     def get_blocks(self, size: Size) -> List[int]:
         """Returns every block for a given size"""
@@ -615,18 +622,17 @@ class EndOnSides(LevelObjectBlockGetter, ABC):
             return self.body_offset
 
 
-class VerticalLevelObject:
+class LevelObjectVertical(LevelObjectBlockGetter):
+    @property
     def expands(self) -> int:
         return EXPANDS_VERT
 
     def primary_expansion(self) -> int:
         if self.is_4byte:
-            return EXPANDS_HORIZ | EXPANDS_VERT
+            return EXPANDS_BOTH
         else:
             return EXPANDS_VERT
 
-
-class LevelObjectVertical(LevelObjectBlockGetter, VerticalLevelObject):
     def icon(self) -> None:
         self.size = Size(0, 0)
         self.render()
@@ -661,15 +667,17 @@ class LevelObjectVerticalWithBottom(EndOnBottom, LevelObjectVertical):
     """Vertical generator with a custom bottom"""
 
 
-class HorizontalLevelObject:
+class LevelObjectHorizontal(LevelObjectBlockGetter):
+    @property
     def expands(self) -> int:
         return EXPANDS_HORIZ
 
     def primary_expansion(self) -> int:
-        return EXPANDS_HORIZ | EXPANDS_VERT if self.is_4byte else EXPANDS_HORIZ
+        if self.is_4byte:
+            return EXPANDS_BOTH
+        else:
+            return EXPANDS_HORIZ
 
-
-class LevelObjectHorizontal(LevelObjectBlockGetter, HorizontalLevelObject):
     def icon(self) -> None:
         self.size = Size(0, 0)
         self.render()
@@ -713,15 +721,15 @@ class LevelObjectHorizontalWithSides(EndOnSides, LevelObjectHorizontal):
 class LevelObjectHorizontalWithSidesAndTop(LevelObjectHorizontal):
     @property
     def left(self) -> int:
-        return self.blocks[0]
+        return self.get_block(0)
 
     @property
     def right(self) -> int:
-        return self.blocks[2] if len(self.blocks) == 3 else self.blocks[0]
+        return self.get_block(2)
 
     @property
     def body(self) -> int:
-        return self.blocks[1] if len(self.blocks) == 3 else self.blocks[0]
+        return self.get_block(1)
 
     def get_block_position(self, pos: Position, size: Size, *_) -> int:
         if pos.x == 0:
@@ -766,16 +774,21 @@ class LevelObjectHorizontalToGround(LevelObjectHorizontalWithAllSides):
 
 
 class LevelObjectPlainsPlatformFloating(LevelObject):
+    @property
+    def expands(self) -> int:
+        return EXPANDS_HORIZ
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_HORIZ
+
     def icon(self) -> None:
         self.size = Size(2, 2)
         self.render()
 
     @property
     def main_blocks(self) -> List[int]:
-        try:
-            return self.blocks[:9]
-        except IndexError:
-            return self.blocks
+        return [self.get_block(idx) for idx in range(9)]
 
     @property
     def shadow_block(self) -> List[int]:
@@ -806,91 +819,70 @@ class LevelObjectPlainsPlatformFloating(LevelObject):
         self._confirm_render(size, pos, blocks_to_draw)
 
 
-class LevelObjectInteractable(LevelObject):
+class LevelObjectInteractable(LevelObject, ABC):
     """Re-renders the object if something is moved"""
     def backtrace_update(self) -> None:
         self.render()
 
 
 class LevelObjectPlainsPlatformToGround(LevelObjectInteractable):
+    @property
+    def expands(self) -> int:
+        return EXPANDS_HORIZ
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_HORIZ
+
     def icon(self) -> None:
         self.size = Size(3, 3)
         self._render(False)
 
     @property
     def main_blocks(self) -> List[int]:
-        try:
-            return self.blocks[:9]
-        except IndexError:
-            return self.blocks
-
-    @property
-    def shadow_stopped(self) -> List[int]:
-        return [
-            0x07, 0x09, 0x0A, 0x0D, 0x47, 0x49, 0x4A, 0x4D, 0x87, 0x89, 0x8A, 0x8D, 0xC7, 0xC9, 0xCA, 0xCD,
-            0x90, 0x94, 0x91, 0x95, 0x92, 0x96, 0x93, 0x97, 0x98
-        ]
-
-    @property
-    def shadow_block(self) -> List[int]:
-        return [
-            0x0C, 0x0C, 0x0F, 0x0F, 0x4C, 0x4C, 0x4F, 0x4F, 0x8C, 0x8C, 0x8F, 0x8F, 0xCC, 0xCC, 0xCF, 0xCF,
-            0x99, 0x9E, 0x9A, 0x9F, 0x9B, 0x9E, 0x9C, 0x9E, 0x9E
-        ]
+        return [self.get_block(idx) for idx in range(9)]
 
     def get_correct_shadow(self, block: int, y: int) -> int:
         if y == 0:
-            if block == 0x80:
-                return 0xC0
-            elif block == 0x90 or block == 0x9F:
-                return 0x9D
-            else:
+            try:
+                return self.CORNER_SHADOWS[block]
+            except KeyError:
                 return block & 0xC0 | 0x0B
         else:
-            if block == 0x53 or block == 0x57:
-                return -1
-            else:
-                for idx, stopped in enumerate(self.shadow_stopped):
-                    if block == stopped:
-                        return self.shadow_block[idx]
+            try:
+                return self.SHADOW_TO_BLOCK[block]
+            except KeyError:
                 return 0xC4
 
     def get_icon_position(self, pos: Position, size: Size) -> int:
         offset_idx = self.bmp.size.width * self.bmp.size.height
         idx = self.bmp.size.index_position(pos % self.bmp.size) + \
             size.get_relational_position(pos // self.bmp.size) * offset_idx
-        try:
-            return self.main_blocks[idx]
-        except IndexError:
-            return self.blocks[0]
+        return self.main_blocks[idx]
 
-    def get_block_position(self, pos: Position, base_pos: Position, size: Size, level_blocks: List[int]):
+    CORNER_SHADOWS = {
+        0x80: 0xC0, 0x90: 0x9D, 0x9F: 0x9D
+    }
+
+    SHADOW_TO_BLOCK = {
+        0x53: 0x00, 0x57: 0x00,
+        0x07: 0x0C, 0x09: 0x0C, 0x0A: 0x0F, 0x0D: 0x0F,
+        0x47: 0x4C, 0x49: 0x4C, 0x4A: 0x4F, 0x4D: 0x4F,
+        0x87: 0x8C, 0x89: 0x8C, 0x8A: 0x8F, 0x8D: 0x8F,
+        0xC7: 0xCC, 0xC9: 0xCC, 0xCA: 0xCF, 0xCD: 0xCF,
+        0x90: 0x99, 0x94: 0x9E, 0x91: 0x9A, 0x95: 0x9F, 0x92: 0x9B, 0x96: 0x9E, 0x93: 0x9C, 0x97: 0x9E, 0x98: 0x9E
+    }
+
+    def get_block_position(self, pos: Position, base_pos: Position, size: Size, level_blocks: List[int]) -> int:
         reg_size = size - Size(1, 0)
         if pos.x >= reg_size.width:  # get shadow
             block = self._get_block_at_position(level_blocks, pos + base_pos)
-            if pos.y == 0:
-                if block == 0x80:
-                    return 0xC0
-                elif block == 0x90 or block == 0x9F:
-                    return 0x9D
-                else:
-                    return block & 0xC0 | 0x0B
-            else:
-                if block == 0x53 or block == 0x57:
-                    return -1
-                else:
-                    for idx, stopped in enumerate(self.shadow_stopped):
-                        if block == stopped:
-                            return self.shadow_block[idx]
-                    return 0xC4
+            return self.get_correct_shadow(block, pos.y)
         else:
             offset_idx = self.bmp.size.width * self.bmp.size.height
             idx = self.bmp.size.index_position(pos % self.bmp.size) + \
                 reg_size.get_relational_position(pos // self.bmp.size) * offset_idx
-            try:
-                return self.main_blocks[idx]
-            except IndexError:
-                return self.blocks[0]
+            return self.main_blocks[idx]
 
     def _find_size(self, level_blocks: List[int], pos: Position) -> Size:
         """Finds how big tall the platform will be"""
@@ -923,11 +915,16 @@ class LevelObjectPlainsPlatformToGround(LevelObjectInteractable):
 
 
 class LevelObjectBushPrefab(LevelObjectInteractable):
+    @property
+    def expands(self) -> int:
+        return EXPANDS_NOT
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_NOT
+
     def get_block_position(self, pos: Position, idx: int, level_blocks: List[int]) -> int:
-        try:
-            block = self.blocks[idx]
-        except IndexError:
-            return BLANK
+        block = self.blocks[idx]
         if block == BLANK or block == 0x80:
             return BLANK
         if block == 0x93 or block == 0x94:
@@ -944,52 +941,43 @@ class LevelObjectBushPrefab(LevelObjectInteractable):
         """Draws a bush blocks with the correct blocks"""
         level_blocks = self._get_blocks(self.objects_ref[:self._get_obj_index()])
         pos, size = Position.from_pos(self.pos), Size.from_size(self.bmp.size)
-        blocks_to_draw = [self.get_block_position(po + pos, idx, level_blocks) for idx, po in enumerate(size.positions())]
+        blocks_to_draw = [self.get_block_position(po + pos, idx, level_blocks)
+                          for idx, po in enumerate(size.positions())]
         self._confirm_render(size, pos, blocks_to_draw)
 
 
 class LevelObjectFortressPillars(LevelObjectInteractable):
     @property
+    def expands(self) -> int:
+        return EXPANDS_HORIZ
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_HORIZ
+
+    @property
     def top_pillar(self) -> int:
-        try:
-            return self.blocks[0]
-        except IndexError:
-            return 0
+        return self.get_block(0)
 
     @property
     def middle_pillar(self) -> int:
-        try:
-            return self.blocks[1]
-        except IndexError:
-            return 0
+        return self.get_block(1)
 
     @property
     def bottom_pillar(self) -> int:
-        try:
-            return self.blocks[2]
-        except IndexError:
-            return 0
+        return self.get_block(2)
 
     @property
     def top_shadow(self) -> int:
-        try:
-            return self.blocks[3]
-        except IndexError:
-            return 0
+        return self.get_block(3)
 
     @property
     def middle_shadow(self) -> int:
-        try:
-            return self.blocks[4]
-        except IndexError:
-            return 0
+        return self.get_block(4)
 
     @property
     def continue_block(self) -> int:
-        try:
-            return self.blocks[5]
-        except IndexError:
-            return 0
+        return self.get_block(5)
 
     def get_pillar(
             self, x: int, base_pos: Position, size: Size, level_blocks: List[int]
@@ -1065,6 +1053,14 @@ class LevelObjectHorizontalAlt(LevelObjectHorizontal):
 
 
 class SingleBlock(LevelObject):
+    @property
+    def expands(self) -> int:
+        return EXPANDS_NOT
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_NOT
+
     def icon(self) -> None:
         self.render()
 
@@ -1074,6 +1070,12 @@ class SingleBlock(LevelObject):
 
 
 class LevelObjectFillBackgroundHorizontalLevel(LevelObject):
+    def expands(self) -> int:
+        return EXPANDS_NOT
+
+    def primary_expansion(self) -> int:
+        return EXPANDS_NOT
+
     def icon(self) -> None:
         self.size = Size(1, 1)
         self._render(False)
@@ -1088,29 +1090,25 @@ class LevelObjectFillBackgroundHorizontalLevel(LevelObject):
         self._confirm_render(self.size, self.pos, blocks)
 
 
-class LevelObjectPipe(LevelObject):
-    def expands(self) -> int:
-        return EXPANDS_HORIZ
-
-    def primary_expansion(self) -> int:
-        return EXPANDS_HORIZ
-
+class LevelObjectPipe(LevelObject, ABC):
     @property
     def pipe_entrance(self) -> List[int]:
-        try:
-            return [self.blocks[0], self.blocks[1]]
-        except IndexError:
-            return [0, 0]
+        return [self.get_block(0), self.get_block(1)]
 
     @property
     def pipe_body(self) -> List[int]:
-        try:
-            return [self.blocks[2], self.blocks[3]]
-        except IndexError:
-            return [0, 0]
+        return [self.get_block(2), self.get_block(3)]
 
 
 class LevelObjectDownwardPipe(LevelObjectPipe):
+    @property
+    def expands(self) -> int:
+        return EXPANDS_VERT
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_VERT
+
     def _render(self) -> None:
         """Draws an upward pipe"""
         pos, size = Position.from_pos(self.pos), Size(2, self.size.width + 1)
@@ -1125,6 +1123,14 @@ class LevelObjectDownwardPipe(LevelObjectPipe):
 
 
 class LevelObjectUpwardPipe(LevelObjectPipe):
+    @property
+    def expands(self) -> int:
+        return EXPANDS_VERT
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_VERT
+
     def _render(self) -> None:
         """Draws an downward pipe"""
         pos, size = Position.from_pos(self.pos), Size(2, self.size.width + 1)
@@ -1140,18 +1146,20 @@ class LevelObjectUpwardPipe(LevelObjectPipe):
 
 class LevelObjectLeftwardPipe(LevelObjectPipe):
     @property
+    def expands(self) -> int:
+        return EXPANDS_HORIZ
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_HORIZ
+
+    @property
     def pipe_entrance(self) -> List[int]:
-        try:
-            return [self.blocks[1], self.blocks[3]]
-        except IndexError:
-            return [0, 0]
+        return [self.get_block(1), self.get_block(3)]
 
     @property
     def pipe_body(self) -> List[int]:
-        try:
-            return [self.blocks[0], self.blocks[2]]
-        except IndexError:
-            return [0, 0]
+        return [self.get_block(0), self.get_block(2)]
 
     def _render(self) -> None:
         """Draws an downward pipe"""
@@ -1169,18 +1177,20 @@ class LevelObjectLeftwardPipe(LevelObjectPipe):
 
 class LevelObjectRightwardPipe(LevelObjectPipe):
     @property
+    def expands(self) -> int:
+        return EXPANDS_HORIZ
+
+    @property
+    def primary_expansion(self) -> int:
+        return EXPANDS_HORIZ
+
+    @property
     def pipe_entrance(self) -> List[int]:
-        try:
-            return [self.blocks[0], self.blocks[2]]
-        except IndexError:
-            return [0, 0]
+        return [self.get_block(0), self.get_block(2)]
 
     @property
     def pipe_body(self) -> List[int]:
-        try:
-            return [self.blocks[1], self.blocks[3]]
-        except IndexError:
-            return [0, 0]
+        return [self.get_block(1), self.get_block(3)]
 
     def _render(self) -> None:
         """Draws an downward pipe"""

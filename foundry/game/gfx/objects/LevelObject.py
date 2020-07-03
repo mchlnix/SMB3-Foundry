@@ -342,23 +342,27 @@ class LevelObject(ObjectLike, BlockGenerator):
     def get_position(self) -> Tuple[int, int]:
         return self.pos.x, self.pos.y
 
+    @property
+    @abstractmethod
     def expands(self) -> int:
-        return EXPANDS_NOT
+        """Determines how the object expands"""
 
+    @property
+    @abstractmethod
     def primary_expansion(self) -> int:
-        return EXPANDS_BOTH
+        """Determines what the primary expansion is"""
 
     def resize_x(self, x: int) -> None:
-        if self.expands() & EXPANDS_HORIZ == 0:
+        if self.expands & EXPANDS_HORIZ == 0:
             return
 
-        if self.primary_expansion() == EXPANDS_HORIZ and self.is_4byte:
+        if self.primary_expansion == EXPANDS_HORIZ and self.is_4byte:
             length = x - self.pos.x
             length = max(0, length)
             length = min(length, 0xFF)
             self.size.width = length
 
-        elif self.primary_expansion() == EXPANDS_HORIZ:
+        elif self.primary_expansion == EXPANDS_HORIZ:
             length = x - self.pos.x
 
             length = max(0, length)
@@ -381,10 +385,10 @@ class LevelObject(ObjectLike, BlockGenerator):
         self.render()
 
     def resize_y(self, y: int) -> None:
-        if self.expands() & EXPANDS_VERT == 0:
+        if self.expands & EXPANDS_VERT == 0:
             return
 
-        if self.primary_expansion() == EXPANDS_VERT:
+        if self.primary_expansion == EXPANDS_VERT:
             length = y - self.pos.y
 
             length = max(0, length)
@@ -625,3 +629,13 @@ class LevelObject(ObjectLike, BlockGenerator):
             return blocks[level_rect.index_position(pos)]
         except IndexError:
             return 0
+
+    def get_block(self, index: int) -> int:
+        try:
+            block = self.blocks[index]
+        except IndexError:
+            try:
+                block = self.blocks[0]
+            except IndexError:
+                block = 0
+        return block
