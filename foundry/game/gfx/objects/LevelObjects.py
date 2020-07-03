@@ -1,5 +1,5 @@
 from typing import List, Tuple, Union, Optional
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 import logging
 
 from foundry.game.File import ROM
@@ -197,12 +197,12 @@ class LevelObjectDiagnal60(LevelObjectDiagnal):
             return BLANK
 
 
-class DownRightDiagnal(LevelObjectDiagnal):
+class DownRightDiagnal(LevelObjectDiagnal, ABC):
     def _render(self) -> None:
         self._confirm_render(*self.render_slope())
 
 
-class DownLeftDiagnal(LevelObjectDiagnal):
+class DownLeftDiagnal(LevelObjectDiagnal, ABC):
     HORZ_OFFSET = 0
 
     def _render(self) -> None:
@@ -472,7 +472,7 @@ class LevelObjectEndingBackground(LevelObject):
         self._confirm_render(rect.abs_size, Position(posi.x, 0), blocks_to_draw)
 
 
-class EndOnAllSides(LevelObject):
+class EndOnAllSides(LevelObject, ABC):
     def icon(self) -> None:
         self.size = Size(2, 2)
         self.render()
@@ -509,7 +509,7 @@ class LevelObjectBlockGetter(LevelObject):
         return [self.get_block_position(pos, size, offset_idx) for pos in size.positions()]
 
 
-class EndOnTopAndBottom(LevelObjectBlockGetter):
+class EndOnTopAndBottom(LevelObjectBlockGetter, ABC):
     def icon(self) -> None:
         self.size = Size(2, 0)
         self.render()
@@ -523,7 +523,7 @@ class EndOnTopAndBottom(LevelObjectBlockGetter):
             return 1
 
 
-class EndOnBottom(LevelObjectBlockGetter):
+class EndOnBottom(LevelObjectBlockGetter, ABC):
     def icon(self) -> None:
         self.size = Size(1, 1)
         self.render()
@@ -543,7 +543,7 @@ class EndOnBottom(LevelObjectBlockGetter):
             return self.body
 
 
-class EndOnTop(LevelObjectBlockGetter):
+class EndOnTop(LevelObjectBlockGetter, ABC):
     def icon(self) -> None:
         self.size = Size(1, 1)
         self.render()
@@ -563,7 +563,7 @@ class EndOnTop(LevelObjectBlockGetter):
             return self.body
 
 
-class EndOnDoubleTop(LevelObjectBlockGetter):
+class EndOnDoubleTop(LevelObjectBlockGetter, ABC):
     def icon(self) -> None:
         self.size = Size(2, 0)
         self.render()
@@ -589,7 +589,7 @@ class EndOnDoubleTop(LevelObjectBlockGetter):
             return self.body
 
 
-class EndOnSides(LevelObjectBlockGetter):
+class EndOnSides(LevelObjectBlockGetter, ABC):
     def icon(self) -> None:
         self.size = Size(2, 0)
         self.render()

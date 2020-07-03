@@ -74,6 +74,9 @@ class LevelHandler:
     def __init__(self, levels: List[SimpleLevel]):
         self.levels = levels
 
+    def __repr__(self):
+        return f"LevelHandler({self.levels})"
+
     def save_level(self, idx: int, level: Level):
         """Saves a level and moves levels to make space"""
         level_ranges = find_level_data_regions(self.levels)
@@ -83,7 +86,6 @@ class LevelHandler:
         lvl_data[idx] = bytearray(gens + objs)
         gen_pointers[idx] = level_ranges[idx].start + len(gens)
         save_levels(lvl_data, gen_pointers)
-
 
     @classmethod
     def form_lists(cls, gen_pointers: List[int], obj_pointers: List[int], tilesets: List[int], banks: List[int]):

@@ -39,7 +39,7 @@ class LevelHeader:
     jump_enemy_address: int = None
 
     @classmethod
-    def legacy_from_bytes(cls, data: [bytearray, bytes], tileset: int):
+    def legacy_from_bytes(cls, data: [bytearray, bytes], *args):
         """
         A function to load the base header of SMB3
         Note: This routine does not fully load the header.
