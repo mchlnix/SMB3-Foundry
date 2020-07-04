@@ -283,10 +283,14 @@ class LevelDrawer:
                 if not self._object_in_jump_area(level, trigger_position):
                     image = NO_JUMP
 
-            elif "door" == name or "door (can go" in name or "invisible door" in name:
+            elif "door" == name or "door (can go" in name or "invisible door" in name or "red invisible note" in name:
                 fill_object = False
 
-                image = DOWN_ARROW
+                if "note" in name:
+                    image = UP_ARROW
+                else:
+                    # door
+                    image = DOWN_ARROW
 
                 pos.setY(rect.top() - self.block_length)
 
