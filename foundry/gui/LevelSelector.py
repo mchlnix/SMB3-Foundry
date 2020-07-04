@@ -217,6 +217,9 @@ class LevelSelector(QDialog):
         self.on_ok()
 
     def on_ok(self, _=None):
+        if self.world_list.currentRow() == OVERWORLD_MAPS_INDEX:
+            return
+
         self.object_set = self.object_set_dropdown.currentIndex()
         self.object_data_offset = self.object_data_spinner.value()
         # skip the first byte, because it seems useless
