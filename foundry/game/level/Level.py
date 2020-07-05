@@ -150,8 +150,6 @@ class Level(LevelLike):
 
         self.size = self.header.width, self.header.height
 
-        self.changed = True
-
         self.data_changed.emit()
 
     def _load_enemies(self, data: bytearray):
@@ -596,8 +594,6 @@ class Level(LevelLike):
         obj = self.object_factory.from_properties(domain, object_index, x, y, length, index)
         self.objects.insert(index, obj)
 
-        self.changed = True
-
         return obj
 
     def add_enemy(self, object_index: int, x: int, y: int, index: int = -1) -> EnemyObject:
@@ -609,8 +605,6 @@ class Level(LevelLike):
         enemy = self.enemy_item_factory.from_data([object_index, x, y], -1)
 
         self.enemies.insert(index, enemy)
-
-        self.changed = True
 
         return enemy
 
@@ -646,8 +640,6 @@ class Level(LevelLike):
             self.objects.remove(obj)
         elif isinstance(obj, EnemyObject):
             self.enemies.remove(obj)
-
-        self.changed = True
 
     def to_m3l(self) -> bytearray:
         world_number = level_number = 1

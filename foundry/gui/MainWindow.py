@@ -57,7 +57,7 @@ from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.PaletteViewer import PaletteViewer
-from foundry.gui.SettingsDialog import show_settings
+from foundry.gui.SettingsDialog import POWERUPS, show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.settings import SETTINGS, save_settings
@@ -542,7 +542,7 @@ class MainWindow(QMainWindow):
     def _set_default_powerup(self, path_to_rom) -> bool:
         rom = self._open_rom(path_to_rom)
 
-        (powerup, hasPWing) = SETTINGS["default_powerup"]
+        *_, powerup, hasPWing = POWERUPS[SETTINGS["default_powerup"]]
 
         rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))
 
@@ -701,7 +701,7 @@ class MainWindow(QMainWindow):
             if answer == QMessageBox.No:
                 return
 
-        if not self.level_view.level_ref.attached_to_rom:
+        if not self.level_ref.attached_to_rom:
             QMessageBox.information(
                 self,
                 "Importing M3L into ROM",
@@ -732,7 +732,7 @@ class MainWindow(QMainWindow):
         else:
             pathname = ROM.path
 
-        level = self.level_view.level_ref
+        level = self.level_ref.level
 
         for offset, data in level.to_bytes():
             ROM().bulk_write(data, offset)
@@ -744,7 +744,8 @@ class MainWindow(QMainWindow):
 
         self.update_title()
 
-        self.level_view.level_ref.changed = False
+        if not is_save_as:
+            level.changed = False
 
     def on_save_m3l(self, _):
         suggested_file = self.level_view.level_ref.name
