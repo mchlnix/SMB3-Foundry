@@ -43,12 +43,24 @@ matrix:
         - python3 -m pip install flake8 black
         - black -l 120 --check
         - flake8 foundry smb3parse
+        - npm install -g markdown-pdf
+        - wget https://github.com/sindresorhus/github-markdown-css/blob/gh-pages/github-markdown.css
+        - markdown-pdf --css-path github-markdwon.css MANUAL.md
       install:
         - true;
       script:
         - true;
       after_success:
         - true;
+      deploy:
+        provider: releases
+        api_key:
+          secure: zapduKP5v3rW86Zczy2bithNEklLL2y1TA/tmyumjgP5hqVyG8oOzDxI0sw4rzQkJWmdXC1t1dV7UzG9lF9FK2IvWrVOTlCH8/wpqReDNLLkUtI+hKIZERCpUC7pFKookIr9CWtjH+rObauPvjv6GjmejJmgncIl2SktCCp1ZBY/d/d2rmUDiyX2xgcRPjExxpLrFskrVdfo6EaQmPZn+X/WQEYY+Aksm8bstsn/0XgXmIy/ey9xP1EF+aLfeK7vRLe3LOgRda6DlcU4LpvXRuk1Y4opgMC943qukJNNlxub8N0iaSCreNQSa2HdY/tar/CAW9WuHeszfGMJgwyaBP15cs1T4WQwHFdr7mDCySnNMo7VjVGH3nsSlQYzlhtiBFiENX/XPg0DLn3IshrOVARQYJ5uvP6n+qLmsiGNMvvfwkmVIopkbuDpZt/0HdgwAXYzsoHJE+NkVc1XZnr3y8J+7RGCA286P05wg1kCGw742LphspIQUD2SrvNpbdRQ2nMJ6JXW8j1MC6AYtmxFUATDbIkZEdwtQN/lYnly9VvezXjN7BAwLu1bFv3Q2nRP90hf9qALOmdXscaSadTauei0MNs2OGclOKFgd/do8ITZKNxKLWzH1UrJ5tMFuGvHS47aQdV5xG31kQORMYKzRa4e88g2h26SlLh1BX6FhwA=
+        file: MANUAL.pdf
+        skip_cleanup: true
+        prerelease: true
+        on:
+          tags: true
 
     - name: "Mac OSX"
       os: osx

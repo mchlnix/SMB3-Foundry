@@ -2,6 +2,8 @@
 
 This document is supposed to help new users take their first steps using this Super Mario Bros. 3 (SMB3) Level editor. It will explain core concepts of SMB3 hacking, but is not meant to be an exhaustive resource on that topic.
 
+It is also still a work in process.
+
 ## What is this?
 
 This editor takes a ROM file of the Nintendo Entertainment System (NES) game Super Mario Bros. 3 and allows the user to edit the level, change their order, appearance, music etc.
@@ -75,6 +77,36 @@ You can buy specialty hardware and "dump" the contents of an actual SMB3 cartrid
 Or find someone who dumped the contents of a real ROM memory chip and uploaded it onto the internet. While this is how most people do it and definitely easier, it is technically software piracy and therefore illegal, regardless of SMB3 being more than 30 years old.
 
 Also make sure, that you have a ROM file of the North American release of SMB3, as it is currently the only supported version.
+
+## How do I ...?
+
+### Change what object is in front of another?
+
+When right clicking on an object, either in the Level View, or the Object List, you have the option of putting the selected object in the fore- or background. Internally, the order in which the objects appear in the object list, determine which objects get drawn first and are therefor in the background.
+
+### Change Marios starting position?
+
+Mario has a set number of possible starting positions, which can be set in the level header. This also let's you choose what action Mario should perform, when entering the level (sliding in, or coming out of a pipe, for example).
+
+### Change where I end up after entering a pipe or door?
+
+Pipes and doors lead to the level defined in the level header. But where exactly in that level and with what animation Mario emrges is left up to the Jump object, that is responsible for the part of the level the pipe or door is located at.
+
+Turn on the Jump Areas in the View menu, to see where Jumps are possible and add or edit Jumps in the Jump list, by right clicking on it. You can change the area, x and y position and the action of Mario in that way.
+
+Tip: If you select actions like "Mario emerging from a Pipe", make sure that there is a pipe in that location, in the level you jump into.
+
+### Change the level, I jump to when entering a pipe or door?
+
+The "Jump Destination" is found in the Level Header. Even though there can be multiple Jumps, with different attributes in a level, all of them lead to the same level in the end.
+
+To give the illusion that a level can jump to multiple different locations, you can create a target level, with separate areas (separated by a big wall, for example) and have one Jump lead to the first area, and the other to the other area.
+
+### Change the color scheme of a level?
+
+The object palette group, which determines the available colors for the level objects, and the enemy palette group, which does the same thing for the enemies and special items, is found in the Level Header.
+
+Note, that the changes to the enemy palette are not visible in the editor, so should you want to do that, you'll have to play your level in an emulator, to see those changes.
 
 ## Terminology
 
