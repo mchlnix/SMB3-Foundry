@@ -72,8 +72,17 @@ class WarningList(QWidget):
                         f"'{SCROLL_DIRECTIONS[0]}. This might not work as expected."
                     )
 
-        self.update()
+        if len([item for item in level.enemies if item.obj_index == OBJ_AUTOSCROLL]) > 1:
+            self.warnings.append("Level has more than one AutoScrolling items. Does that work?")
 
+        # no items, that would crash the game
+        for obj in level.objects:
+            if obj.description == "MSG_CRASH":
+                self.warnings.append(
+                    f"Object at {obj.get_position()} will likely cause the game to crash, when loading or on screen."
+                )
+
+        self.update()
         self.warnings_updated.emit(bool(self.warnings))
 
     def update(self):

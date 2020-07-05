@@ -36,18 +36,18 @@ POWERUPS_X = 1
 POWERUPS_Y = 2
 POWERUPS_VALUE = 3
 POWERUPS_PWING = 4
-POWERUPS = {
-    "none": ["Small Mario", 32, 53, 0, False],
-    "mushroom": ["Big Mario", 6, 48, POWERUP_MUSHROOM, False],
-    "leaf": ["Raccoon Mario", 57, 53, POWERUP_RACCOON, False],
-    "fire flower": ["Fire Mario", 16, 53, POWERUP_FIREFLOWER, False],
-    "tanooki suit": ["Tanooki Mario", 54, 53, POWERUP_TANOOKI, False],
-    "frog suit": ["Frog Mario", 56, 53, POWERUP_FROG, False],
-    "hammer suit": ["Hammer Mario", 58, 53, POWERUP_HAMMER, False],
-    # Even though P-Wing ca *technically* be combined, it only really works with Raccoon and Tanooki suit
-    "P-wing Raccoon": ["Raccoon Mario with P-Wing", 55, 53, POWERUP_RACCOON, True],
-    "P-wing Tanooki": ["Tanooki Mario with P-Wing", 55, 53, POWERUP_TANOOKI, True],
-}
+POWERUPS = [
+    ("Small Mario", 32, 53, 0, False),
+    ("Big Mario", 6, 48, POWERUP_MUSHROOM, False),
+    ("Raccoon Mario", 57, 53, POWERUP_RACCOON, False),
+    ("Fire Mario", 16, 53, POWERUP_FIREFLOWER, False),
+    ("Tanooki Mario", 54, 53, POWERUP_TANOOKI, False),
+    ("Frog Mario", 56, 53, POWERUP_FROG, False),
+    ("Hammer Mario", 58, 53, POWERUP_HAMMER, False),
+    # Even though P-Wing can *technically* be combined, it only really works with Raccoon and Tanooki suit
+    ("Raccoon Mario with P-Wing", 55, 53, POWERUP_RACCOON, True),
+    ("Tanooki Mario with P-Wing", 55, 53, POWERUP_TANOOKI, True),
+]
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
@@ -133,16 +133,14 @@ class SettingsDialog(CustomDialog):
         command_layout.addWidget(QLabel("Power up of Mario when playing level:"))
         self.powerup_combo_box = QComboBox()
 
-        for key, value in POWERUPS.items():
-            powerupIcon = self._load_from_png(value[POWERUPS_X], value[POWERUPS_Y])
-            label = value[POWERUPS_NAME]
+        for name, x, y, value, p_wing in POWERUPS:
+            powerup_icon = self._load_from_png(x, y)
 
-            self.powerup_combo_box.addItem(
-                powerupIcon, value[POWERUPS_NAME], (value[POWERUPS_VALUE], value[POWERUPS_PWING])
-            )
+            self.powerup_combo_box.addItem(powerup_icon, name)
 
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
-        self.powerup_combo_box.setCurrentIndex(0)
+
+        self.powerup_combo_box.setCurrentIndex(SETTINGS["default_powerup"])
 
         command_layout.addWidget(self.powerup_combo_box)
 
@@ -168,8 +166,7 @@ class SettingsDialog(CustomDialog):
 
         SETTINGS["object_scroll_enabled"] = self._scroll_check_box.isChecked()
 
-        SETTINGS["default_powerup"] = self.powerup_combo_box.currentData()
-        print(SETTINGS["default_powerup"])
+        SETTINGS["default_powerup"] = self.powerup_combo_box.currentIndex()
 
         self.update()
 
@@ -181,7 +178,8 @@ class SettingsDialog(CustomDialog):
 
         self.emulator_command_input.setText(path_to_emulator)
 
-    def _load_from_png(self, x: int, y: int) -> QIcon:
+    @staticmethod
+    def _load_from_png(x: int, y: int) -> QIcon:
         image = png.copy(QRect(x * 16, y * 16, 16, 16))
         mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
         image.setAlphaChannel(mask)
