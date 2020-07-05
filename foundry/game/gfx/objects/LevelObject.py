@@ -538,6 +538,11 @@ class LevelObject(ObjectLike):
         elif self.orientation in [GeneratorType.HORIZONTAL, GeneratorType.HORIZ_TO_GROUND, GeneratorType.HORIZONTAL_2]:
             new_width = self.length + 1
 
+            downwards_extending_vine = 1, 0, 0x06
+            wooden_sky_pole = 4, 0, 0x04
+            if self.object_info == downwards_extending_vine or self.object_info == wooden_sky_pole:
+                new_width -= 1
+
             if self.orientation == GeneratorType.HORIZ_TO_GROUND:
                 # to the ground only, until it hits something
                 for y in range(base_y, self.ground_level):
