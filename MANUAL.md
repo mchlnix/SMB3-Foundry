@@ -38,7 +38,19 @@ The Linux version is the definitive version, since that is what the developer is
 
 ### The easy way
 
-The easiest way is using the single executable for your operating system. You might have to give it executable rights on Linux and Mac, which is done using the terminal.
+The easiest way is using the single executable for your operating system. You might have to give it executable rights on Linux and [Mac](https://support.apple.com/guide/terminal/make-a-file-executable-apdd100908f-06b3-4e63-8a87-32e71241bab4/mac), which is done using the terminal.
+
+Open a terminal and navigate to the directory, you've downloaded the executable to.
+
+```shell script
+$ cd Downloads  # cd = change directory
+$ ls            # ls = list directory contents
+...
+linux-smb3-foundry
+...
+```
+
+Then:
 
 ```shell script
 $ chmod 755 linux-smb3-foundry
