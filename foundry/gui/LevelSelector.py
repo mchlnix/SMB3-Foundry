@@ -112,7 +112,7 @@ class LevelSelector(QDialog):
         self.source_selector = QTabWidget()
         self.source_selector.addTab(stock_level_widget, "Stock Levels")
 
-        for world_number in range(WORLD_COUNT):
+        for world_number in range(WORLD_COUNT - 1):
             world_number += 1
 
             world_map_select = WorldMapLevelSelect(world_number)
