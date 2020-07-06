@@ -32,7 +32,7 @@ The specific features of an editor are highly dependent on the game it is made f
 
 ## Installation
 
-The editor is packages as a single file executable for Windows, Linux and Mac, which you can download from the [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) tab. 
+The editor is packaged as a single file executable for Windows, Linux and Mac, which you can download from the [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) tab.
 
 The Linux version is the definitive version, since that is what the developer is using to develop it, but since the underlying technology is platform independent, there shouldn't be any big incompatibilities between the versions.
 
