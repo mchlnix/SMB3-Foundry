@@ -1,8 +1,10 @@
+from typing import Tuple
 import yaml
 from yaml import CLoader as Loader
+import csv
 import logging
 from foundry import data_dir
-from dataclasses import dataclass
+from dataclasses import dataclass, astuple
 
 from foundry.game.Range import Range
 from foundry.game.Size import Size
@@ -57,27 +59,107 @@ TWO_ENDS = 3
 ENEMY_OBJECT_DEFINITION = 12
 
 OBJECT_SET_TO_DEFINITION = {
-    0: 0,
-    1: 1,
-    7: 8,
-    15: 1,
-    3: 2,
-    114: 2,
-    4: 3,
-    2: 4,
-    10: 5,
-    13: 6,
-    9: 7,
-    6: 8,
-    8: 8,
-    5: 9,
-    11: 9,
-    12: 10,
-    14: 11,
-    16: 12,
-    17: 12,
-    18: 13
+    0: 0, 1: 1, 2: 4, 3: 2,
+    4: 3, 5: 9, 6: 8, 7: 8,
+    8: 8, 9: 7, 10: 5, 11: 9,
+    12: 10, 13: 6, 14: 11, 15: 1,
+    16: 12, 17: 12, 18: 13
 }
+
+
+def get_tileset_offset(tileset: int) -> int:
+    return OBJECT_SET_TO_DEFINITION[tileset]
+
+
+def get_definition_of(tileset: int, type: int) -> "ObjectDefinition":
+    """
+    Provides a given ObjectDefinition from a given tileset and object ID
+    :param tileset: The tileset index
+    :param type: The object id
+    :return: The corresponding ObjectDefinition
+    """
+    try:
+        return object_metadata[get_tileset_offset(tileset)][type]
+    except KeyError:
+        print(f"The object does is undefined at {tileset}, {type}")
+        raise KeyError
+
+
+def get_generator_from_domain_and_index(tileset: int, domain: int, index: int) -> "ObjectDefinition":
+    """
+    Provides a given ObjectDefinition from a given tileset, domain, and index
+    :param tileset: The tileset index
+    :param domain: The domain (0 - 7) for the object
+    :param index: The index (0 - 255) for the object
+    :return: The corresponding ObjectDefinition
+    """
+    return get_definition_of(tileset=tileset, type=get_type(domain=domain, index=index))
+
+
+def get_tileset_from_index(index: int) -> int:
+    return index >> 11
+
+
+def return_domain_and_index_from_generator(obj_def: int) -> Tuple[int, int]:
+    """
+    Provide the correct index and domain from a given generator
+    :param obj_def: The generator index
+    :return: (domain, index)
+    """
+    return (obj_def & 0x700) >> 8, obj_def & 0xFF
+
+
+def get_generator_from_tileset_and_index(tileset: int, index: int) -> "ObjectDefinition":
+    """
+    Provides a given ObjectDefinition from a given tileset and index
+    :param tileset: The tileset index
+    :param index: The index (0 - 2047) for the object
+    :return: The corresponding ObjectDefinition
+    """
+    index, domain = index & 0xFF, index >> 8
+    return get_generator_from_domain_and_index(tileset=tileset, domain=domain, index=index)
+
+
+def get_generator_from_index(index: int) -> "ObjectDefinition":
+    """
+    Provides a given ObjectDefinition from a given tileset and index
+    :param index: The index (0 - 2047) + tileset << 11
+    :return: The corresponding ObjectDefinition
+    """
+    tileset, index = index >> 11, index & 0x7FF
+    return get_generator_from_tileset_and_index(tileset, index)
+
+
+def get_type(domain: int, index: int) -> int:
+    """
+    Provides the type of an object from a given domain and index
+    The game contains two types of generators in memory.
+    The first set of generators are simple generators which are single objects that only occur when the index high
+    nibble is clear.
+    The second set of generators take up the next 15 sets of low nibbles providing 16 different options.  Thus, the
+    second set of generators is often seen as the complex generators.
+    :param domain: The domain (0 - 7) for the object
+    :param index: The index (0 - 255) for the object
+    :return: The corresponding type
+    """
+    if index < 0x10:
+        return index + domain * 0x1F
+    else:
+        return (index >> 4) + domain * 0x1F + 15
+
+
+def from_type(type: int) -> int:
+    """
+    Converts a type back into an index
+    :param type: The type to be returned
+    :return: The index of the object definition, excluding the tileset
+    """
+    domain = type // 0x1F
+    index = type % 0x1F
+    if index < 0x10:
+        return domain << 8 + index
+    else:
+        return domain << 8 + index << 4
 
 
 logging.basicConfig(filename=data_dir.joinpath("logs/obj_def.log"), level=logging.CRITICAL)
@@ -149,7 +231,7 @@ class BitMapPicture:
 @dataclass
 class ObjectDefinition:
     """Determines what an object (Block generator or sprite generator is)"""
-    object_design: list
+    object_design: tuple
     domain: int = 0
     bmp: BitMapPicture = BitMapPicture.from_ints(1, 1, 0, 0)
     range: Range = Range(-1, -1)
@@ -179,7 +261,7 @@ class ObjectDefinition:
         return self.block_design.blocks
 
     @rom_object_design.setter
-    def rom_object_design(self, design: list):
+    def rom_object_design(self, design: tuple):
         """Legacy property for compatibility"""
         self.object_design = design
 
@@ -224,7 +306,7 @@ class ObjectDefinition:
             offset_x, offset_y = "0", "0"
 
         return cls(
-            object_design=[int(i) for i in object_design],
+            object_design=tuple([int(i) for i in object_design]),
             domain=int(domain),
             range=Range(start=int(min_value, 16), end=int(max_value, 16)),
             bmp=BitMapPicture.from_ints(
@@ -249,7 +331,7 @@ def load_obj_definitions_from_yaml(file_path):
             obj_design = tile["object_design"] if "object_design" in tile and tile["object_design"] else [0]
             obj_design = [int(obj[1:], 16) if isinstance(obj, str) and obj.startswith("$") else int(obj) for obj in obj_design]
             tileset[k] = ObjectDefinition(
-                object_design=obj_design,
+                object_design=tuple(obj_design),
                 domain=tile["domain"] if "domain" in tile else 0,
                 bmp=BitMapPicture.from_dict(tile["bmp"]),
                 range=Range.from_dict(tile["range"]),
@@ -293,6 +375,43 @@ def load_obj_definitions_from_dat(file_path):
                     enemy_handle_y.append(y)
                 idx += 1
     return obj_metadata
+
+
+def combine_obj_definitions_to_total():
+    obj_defs = {}
+    for tileset in object_metadata.keys():
+        if tileset == 0 or tileset == 12:
+            continue
+        for item in object_metadata[tileset].keys():
+            obj_defs.update({object_metadata[tileset][item].description: object_metadata[tileset][item]})
+    with open('object_definitions.csv', 'w', newline="") as f:
+        csv_out = csv.writer(f)
+        csv_out.writerow(
+            ['Description',
+             'Domain',
+             'Size',
+             'Bytes',
+             'Generator',
+             'Width',
+             'Height',
+             'X Offset',
+             'Y Offset',
+             'Block Design'
+             ])
+        for key, row in obj_defs.items():
+            row = (
+                row.description,
+                row.domain,
+                row.range.size + 1,
+                row.bytes,
+                row.bmp.obj_generator,
+                row.bmp.size.width,
+                row.bmp.size.height,
+                row.bmp.offset_x,
+                row.bmp.offset_y,
+                row.block_design.blocks
+            )
+            csv_out.writerow(row)
 
 
 object_metadata = load_obj_definitions_from_yaml(data_dir.joinpath("object_definitions.yaml"))
