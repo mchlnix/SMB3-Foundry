@@ -1,1 +1,7 @@
 PySide2>=5.14.2.1
+
+QDarkStyle~=2.8.1
+PyYAML~=5.3.1
+numpy~=1.16.4
+perfplot~=0.8.1
+pandas~=1.0.3
