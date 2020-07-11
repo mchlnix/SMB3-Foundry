@@ -88,9 +88,9 @@ class BlockGeneratorHandler:
         return get_type(domain=domain, index=index)
 
     @type.setter
-    def type(self, type: int) -> None:
+    def type(self, t: int) -> None:
         tileset = get_tileset_from_index(self.block_generator.generator_definition)
-        generator_definition = tileset << 11 + from_type(type)
+        generator_definition = (tileset << 11) + from_type(t)
         position, size = self.block_generator.position, self.block_generator.base_size
         self._block_generator = BlockGeneratorBase.generator_from_attributes(generator_definition, position, size)
 
@@ -101,7 +101,7 @@ class BlockGeneratorHandler:
 
     @tileset.setter
     def tileset(self, tileset: int) -> None:
-        generator_definition = tileset << 11 + self.block_generator.generator_definition & 0b0111_1111_1111
+        generator_definition = (tileset << 11) + self.block_generator.generator_definition & 0b0111_1111_1111
         position, size = self.block_generator.position, self.block_generator.base_size
         self._block_generator = BlockGeneratorBase.generator_from_attributes(generator_definition, position, size)
 
@@ -113,7 +113,7 @@ class BlockGeneratorHandler:
 
 
 def get_object_definition_index_from_data(tileset: int, data: bytearray) -> int:
-    return tileset << 11 + (data[0] & 0b1110_0000) << 3 + data[2]
+    return (tileset << 11) + ((data[0] & 0b1110_0000) << 3) + data[2]
 
 
 def get_simple_size(size: int) -> int:
@@ -333,7 +333,7 @@ class SlopeGenerator(BlockGeneratorBase):
         :return: A tuple providing the supposed tileset and bytes provided in game.
         """
         tileset, domain, index, width, height, x, y = self.get_properties()
-        return tileset, bytearray([domain << 5 + y, x, (index & 0xF0) + width])
+        return tileset, bytearray([(domain << 5) + y, x, (index & 0xF0) + width])
 
     def change_width(self, amount: int = 1) -> "BlockGeneratorBase":
         """
@@ -342,7 +342,7 @@ class SlopeGenerator(BlockGeneratorBase):
         :return: A new block generator
         """
         tileset, data = self.to_bytes()
-        data[2] = data[2] & 0xF0 + self.get_simple_size(size_offset=amount)
+        data[2] &= 0xF0 + self.get_simple_size(amount)
         return SlopeGenerator.from_bytes(tileset=tileset, data=data)
 
     def change_height(self, amount: int = 1) -> "BlockGeneratorBase":
@@ -363,7 +363,7 @@ class SlopeGenerator(BlockGeneratorBase):
         """
         generator_index = get_object_definition_index_from_data(tileset=tileset, data=data)
         position = Position(data[1], data[0] & 0b0001_1111)
-        size = Size(1 + data[2] & 0x0F, 1 + data[2] & 0x0F)
+        size = Size(1 + (data[2] & 0x0F), 1 + (data[2] & 0x0F))
         return cls(generator_definition=generator_index, position=position, base_size=size)
 
 
@@ -381,7 +381,7 @@ class VerticalGenerator(BlockGeneratorBase):
             return f"\t.byte {to_hex(domain << 5)} | {to_hex(y)}, {to_hex(x)}, " \
                 f"{to_hex(index + width)}, {to_hex(height)} ; {self.generator.description}\n"
         else:
-            return NotImplemented
+            raise NotImplementedError
 
     def to_bytes(self) -> Tuple[int, bytearray]:
         """
@@ -391,11 +391,11 @@ class VerticalGenerator(BlockGeneratorBase):
         tileset, domain, index, width, height, x, y = self.get_properties()
 
         if self.generator.bytes == 3:
-            return tileset, bytearray([domain << 5 + y, x, (index & 0xF0) + height])
+            return tileset, bytearray([(domain << 5) + y, x, (index & 0xF0) + height])
         elif self.generator.bytes == 4:
-            return tileset, bytearray([domain << 5 + y, x, (index & 0xF0) + width, height])
+            return tileset, bytearray([(domain << 5) + y, x, (index & 0xF0) + width, height])
         else:
-            return NotImplemented
+            raise NotImplementedError
 
     def change_width(self, amount: int = 1) -> "BlockGeneratorBase":
         """
@@ -407,7 +407,7 @@ class VerticalGenerator(BlockGeneratorBase):
             return self
         elif self.generator.bytes == 4:
             tileset, data = self.to_bytes()
-            data[2] = data[2] & 0xF0 + self.get_simple_size(size_offset=amount)
+            data[2] &= 0xF0 + self.get_simple_size(size_offset=amount)
             return SlopeGenerator.from_bytes(tileset=tileset, data=data)
         else:
             return NotImplemented
@@ -420,14 +420,14 @@ class VerticalGenerator(BlockGeneratorBase):
         """
         if self.generator.bytes == 3:
             tileset, data = self.to_bytes()
-            data[2] = data[2] & 0xF0 + self.get_simple_size(size_offset=amount)
+            data[2] &= 0xF0 + self.get_simple_size(size_offset=amount)
             return SlopeGenerator.from_bytes(tileset=tileset, data=data)
         elif self.generator.bytes == 4:
             tileset, data = self.to_bytes()
             data[3] = self.get_complex_size(size_offset=amount)
             return SlopeGenerator.from_bytes(tileset=tileset, data=data)
         else:
-            return NotImplemented
+            raise NotImplementedError
 
     @classmethod
     def from_bytes(cls, tileset: int, data: bytearray) -> "VerticalGenerator":
@@ -441,9 +441,9 @@ class VerticalGenerator(BlockGeneratorBase):
         position = Position(data[1], data[0] & 0b0001_1111)
         gen = get_generator_from_index(generator_index)
         if gen.bytes == 3:
-            size = Size(1, 1 + data[2] & 0x0F)
+            size = Size(1, 1 + (data[2] & 0x0F))
         elif gen.bytes == 4:
-            size = Size(1 + data[2] & 0x0F, 1 + data[3])
+            size = Size(1 + (data[2] & 0x0F), 1 + data[3])
         else:
             return NotImplemented
         return cls(generator_definition=generator_index, position=position, base_size=size)
@@ -463,7 +463,7 @@ class HorizontalGenerator(BlockGeneratorBase):
             return f"\t.byte {to_hex(domain << 5)} | {to_hex(y)}, {to_hex(x)}, " \
                 f"{to_hex(index + height)}, {to_hex(width)} ; {self.generator.description}\n"
         else:
-            return NotImplemented
+            raise NotImplementedError
 
     def to_bytes(self) -> Tuple[int, bytearray]:
         """
@@ -473,11 +473,11 @@ class HorizontalGenerator(BlockGeneratorBase):
         tileset, domain, index, width, height, x, y = self.get_properties()
         gen = get_generator_from_index(self.generator_definition)
         if gen.bytes == 3:
-            return tileset, bytearray([domain << 5 + y, x, (index & 0xF0) + width])
+            return tileset, bytearray([(domain << 5) + y, x, (index & 0xF0) + width])
         elif gen.bytes == 4:
-            return tileset, bytearray([domain << 5 + y, x, (index & 0xF0) + height, width])
+            return tileset, bytearray([(domain << 5) + y, x, (index & 0xF0) + height, width])
         else:
-            return NotImplemented
+            raise NotImplementedError
 
     def change_width(self, amount: int = 1) -> "BlockGeneratorBase":
         """
@@ -487,14 +487,14 @@ class HorizontalGenerator(BlockGeneratorBase):
         """
         if self.generator.bytes == 3:
             tileset, data = self.to_bytes()
-            data[2] = data[2] & 0xF0 + self.get_simple_size(size_offset=amount)
+            data[2] &= 0xF0 + self.get_simple_size(size_offset=amount)
             return SlopeGenerator.from_bytes(tileset=tileset, data=data)
         elif self.generator.bytes == 4:
             tileset, data = self.to_bytes()
             data[3] = self.get_complex_size(size_offset=amount)
             return SlopeGenerator.from_bytes(tileset=tileset, data=data)
         else:
-            return NotImplemented
+            raise NotImplementedError
 
     def change_height(self, amount: int = 1) -> "BlockGeneratorBase":
         """
@@ -504,14 +504,14 @@ class HorizontalGenerator(BlockGeneratorBase):
         """
         if self.generator.bytes == 3:
             tileset, data = self.to_bytes()
-            data[2] = data[2] & 0xF0 + self.get_simple_size(size_offset=amount)
+            data[2] &= 0xF0 + self.get_simple_size(size_offset=amount)
             return SlopeGenerator.from_bytes(tileset=tileset, data=data)
         elif self.generator.bytes == 4:
             tileset, data = self.to_bytes()
             data[3] = self.get_complex_size(size_offset=amount)
             return SlopeGenerator.from_bytes(tileset=tileset, data=data)
         else:
-            return NotImplemented
+            raise NotImplementedError
 
     @classmethod
     def from_bytes(cls, tileset: int, data: bytearray) -> "HorizontalGenerator":
@@ -525,11 +525,11 @@ class HorizontalGenerator(BlockGeneratorBase):
         position = Position(data[1], data[0] & 0b0001_1111)
         gen = get_generator_from_index(generator_index)
         if gen.bytes == 3:
-            size = Size(1 + data[2] & 0x0F, 1)
+            size = Size(1 + (data[2] & 0x0F), 1)
         elif gen.bytes == 4:
-            size = Size(1 + data[3], 1 + data[2] & 0x0F)
+            size = Size(1 + data[3], 1 + (data[2] & 0x0F))
         else:
-            return NotImplemented
+            raise NotImplementedError
         return cls(generator_definition=generator_index, position=position, base_size=size)
 
 
@@ -549,7 +549,7 @@ class SimpleGenerator(BlockGeneratorBase):
         :return: A tuple providing the supposed tileset and bytes provided in game.
         """
         tileset, domain, index, width, height, x, y = self.get_properties()
-        return tileset, bytearray([domain << 5 + y, x, index])
+        return tileset, bytearray([(domain << 5) + y, x, index])
 
     def change_width(self, amount: int = 1) -> "BlockGeneratorBase":
         """
