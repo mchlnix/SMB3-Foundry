@@ -157,9 +157,9 @@ def from_type(type: int) -> int:
     domain = type // 0x1F
     index = type % 0x1F
     if index < 0x10:
-        return domain << 8 + index
+        return (domain << 8) + index
     else:
-        return domain << 8 + index << 4
+        return (domain << 8) + ((index - 0xF) << 4)
 
 
 logging.basicConfig(filename=data_dir.joinpath("logs/obj_def.log"), level=logging.CRITICAL)
