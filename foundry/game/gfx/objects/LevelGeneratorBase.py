@@ -73,6 +73,10 @@ class BlockGeneratorHandler:
         self._block_generator = self._block_generator.change_size(size)
 
     @property
+    def bmp_size(self) -> Size:
+        return self.block_generator.bmp_size
+
+    @property
     def real_size(self) -> Size:
         """The actual amount of space the generator should take up"""
         return self.block_generator.real_size
@@ -103,6 +107,9 @@ class BlockGeneratorHandler:
 
     def to_bytes(self) -> Tuple[int, bytearray]:
         return self.block_generator.to_bytes()
+
+    def to_asm6(self) -> str:
+        return self.block_generator.to_asm6()
 
 
 def get_object_definition_index_from_data(tileset: int, data: bytearray) -> int:
@@ -175,11 +182,16 @@ class BlockGeneratorBase(ABC):
     @property
     def real_size(self):
         """The actual size the generator should take up"""
-        return self.base_size * self.generator.bmp.size
+        return self.base_size * self.bmp_size
+
+    @property
+    def bmp_size(self):
+        """The base size of the generator in terms of its units"""
+        return self.generator.bmp.size
 
     @property
     def base_size(self):
-        """The base size of the generator in terms of its units"""
+        """The width and height in terms of its bytes"""
         return self._base_size
 
     def change_size(self, size: Size) -> "BlockGeneratorBase":
