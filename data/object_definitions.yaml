@@ -6997,7 +6997,7 @@
       size:
         height: 1
         width: 1
-    bytes: 5
+    bytes: 4
     description: 5 Byte Object
     domain: 3
     object_design:
