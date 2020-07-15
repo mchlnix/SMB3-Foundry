@@ -1,109 +1,128 @@
+from typing import List
+from operator import add
+from functools import cached_property, lru_cache
 from PySide2.QtCore import QPoint
 from PySide2.QtGui import QImage, QPainter, Qt, QColor, QPixmap
+import numpy as np
 
 from foundry.game.gfx.Palette import NESPalette
-from foundry.game.gfx.drawable import bit_reverse, MASK_COLOR, apply_selection_overlay
+from foundry.game.gfx.drawable import MASK_COLOR
+from foundry.game.Size import Size
+from foundry.game.gfx.GraphicsPage import GraphicsPage
+from foundry.game.Position import Position
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 
 BACKGROUND_COLOR_INDEX = 0
 
 
+@lru_cache
+def get_byte_bits(b: int, reverse: bool = False, false_value: int = 0, true_value: int = 1) -> List[int]:
+    """Returns a bit array of True and False values in terms of a specific int"""
+    if reverse:
+        return [true_value if b & (0x80 >> i) else false_value for i in range(8)]
+    else:
+        return [true_value if b & (0b1 << i) else false_value for i in range(8)]
+
+
+def get_tile_row(byte_1: int, byte_2: int) -> map:
+    """Returns a map of a tile row"""
+    return map(add, get_byte_bits(byte_1, True), get_byte_bits(byte_2, True, true_value=2))
+
+
+def get_color(b: int, palette):
+    """Gets the appropriate color for a given pixel and palette"""
+    # add alpha values
+    if b == BACKGROUND_COLOR_INDEX:
+        return MASK_COLOR
+    else:
+        return NESPalette[palette[b]]
+
+
 class Tile:
-    SIDE_LENGTH = 8  # pixel
-    WIDTH = SIDE_LENGTH
-    HEIGHT = SIDE_LENGTH
+    """A single 8x8 tile in game"""
+    image: QPixmap
 
-    PIXEL_COUNT = WIDTH * HEIGHT
-    SIZE = 2 * PIXEL_COUNT // 8  # 1 pixel is defined by 2 bits
+    image_length = 8
+    image_height = image_length
 
-    def __init__(self, object_index, palette_group, palette_index, graphics_set, mirrored=False):
-        start = object_index * Tile.SIZE
+    def __init__(self, pixels: bytes) -> None:
+        self.pixels = pixels
 
-        self.cached_tiles = dict()
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.pixels})"
 
-        self.palette = palette_group[palette_index]
-        try:
-            self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
-        except IndexError:
-            self.bg_color = QColor(*NESPalette[0])
+    @classmethod
+    def from_palette_and_pixels(cls, plane_1: List[int], plane_2: List[int], palette):
+        """Returns a tiles pixels"""
+        pixels = bytearray()
+        for (byte_1, byte_2) in zip(plane_1, plane_2):
+            for pixel in get_tile_row(byte_1, byte_2):
+                pixels.extend(get_color(pixel, palette))
+        return cls(bytes(pixels))
 
-        self.data = bytearray()
-        self.pixels = bytearray()
-        self.mask_pixels = bytearray()
+    @classmethod
+    def from_rom(cls, object_index: int, palette_group: List[List[int]], palette_index: int, graphics_set: GraphicsPage):
+        """Returns a tile directly from rom"""
+        start = object_index * 0x10
+        palette = palette_group[palette_index]
+        return cls.from_palette_and_pixels(
+            graphics_set.data[start: start + 0x08], graphics_set.data[start + 0x08: start + 0x10], palette
+        )
 
-        self.data = graphics_set.data[start : start + Tile.SIZE]
+    @property
+    def default_size(self):
+        """The default size of a tile"""
+        return Size(self.image_length, self.image_length)
 
-        if mirrored:
-            self._mirror()
+    @property
+    def pixel_count(self) -> int:
+        """The amount of pixels inside a tile"""
+        return self.default_size.width * self.default_size.height
 
-        for i in range(Tile.PIXEL_COUNT):
-            byte_index = i // Tile.HEIGHT
-            bit_index = 2 ** (7 - (i % Tile.WIDTH))
+    @lru_cache
+    def qimage_custom(self, width: int = image_length, height: int = image_length, horizontal_mirror: bool = False,
+                      vertical_mirror: bool = False, transparent: bool = False) -> QImage:
+        """A sized qimage"""
+        image = self.qimage_transparent if transparent else self.qimage
+        return image.mirrored(horizontal_mirror, vertical_mirror).scaled(width, height)
 
-            left_bit = right_bit = 0
-
-            if self.data[byte_index] & bit_index:
-                left_bit = 1
-
-            if self.data[PIXEL_OFFSET + byte_index] & bit_index:
-                right_bit = 1
-
-            color_index = (right_bit << 1) | left_bit
-
-            color = self.palette[color_index]
-
-            # add alpha values
-            if color_index == BACKGROUND_COLOR_INDEX:
-                self.pixels.extend(MASK_COLOR)
-            else:
-                self.pixels.extend(NESPalette[color])
-
-        assert len(self.pixels) == 3 * Tile.PIXEL_COUNT
-
-    def as_image(self, tile_length=8):
-        if tile_length not in self.cached_tiles.keys():
-            width = height = tile_length
-
-            image = QImage(self.pixels, self.WIDTH, self.HEIGHT, QImage.Format_RGB888)
-
-            image = image.scaled(width, height)
-
-            self.cached_tiles[tile_length] = image
-
-        return self.cached_tiles[tile_length]
-
-    def _replace_transparent_with_background(self, image, tile_length):
-        # draw image on background layer, to fill transparent pixels
-        background = self.as_image(tile_length)
-        background.fill(self.bg_color)
-
-        _painter = QPainter(background)
-        _painter.drawImage(QPoint(), image)
-        _painter.end()
-
-        return background
-
-    def draw(self, painter: QPainter, x, y, tile_length, selected=False, transparent=False):
-        image = self.as_image(tile_length)
-
-        if tile_length != Tile.WIDTH:
-            image = image.scaled(tile_length, tile_length)
-
-        # mask out the transparent pixels first
-        mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+    @cached_property
+    def qimage_transparent(self) -> QImage:
+        """Returns a qimage with an alpha channel"""
+        image = self.qimage
+        mask = self.qimage_mask(image=image)
         image.setAlphaChannel(mask)
+        return image
 
-        if not transparent:
-            image = self._replace_transparent_with_background(image, tile_length)
+    def qimage_mask(self, image: QImage) -> QImage:
+        """Makes a mask of the image"""
+        return image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
 
-        if selected:
-            apply_selection_overlay(image, mask)
+    @cached_property
+    def qimage(self) -> QImage:
+        """Returns a qimage"""
+        image = QImage(self.pixels, self.default_size.width, self.default_size.height, QImage.Format_RGB888)
+        return image
 
-        pixmap = QPixmap.fromImage(image)
+    @lru_cache
+    def qpixmap_custom(self, width: int = image_length, height: int = image_length, horizontal_mirror: bool = False,
+                       vertical_mirror: bool = False, transparent: bool = True) -> QPixmap:
+        """A sized qpixmap"""
+        return QPixmap.fromImage(self.qimage_custom(width, height, horizontal_mirror, vertical_mirror, transparent))
 
-        painter.drawPixmap(x, y, pixmap)
+    @cached_property
+    def qpixmap(self) -> QPixmap:
+        """Returns a qpixmap"""
+        return QPixmap.fromImage(self.qimage)
 
-    def _mirror(self):
-        for byte in range(len(self.data)):
-            self.data[byte] = bit_reverse[self.data[byte]]
+    @cached_property
+    def numpy_image(self) -> np.array:
+        """Returns a 2d numpy array of the object"""
+        return np.reshape(np.asarray(bytearray(self.pixels), dtype="ubyte"), (self.default_size.width, 3*self.default_size.height))
+
+    def draw(self, painter: QPainter, pos: Position, size: Size, horizontal_mirror: bool = False,
+             vertical_mirror: bool = False, transparent: bool = False):
+        """Draws the image onto the screen"""
+        pixmap = self.qpixmap_custom(size.width, size.height, horizontal_mirror, vertical_mirror, transparent)
+        painter.drawPixmap(pos.x, pos.y, pixmap)
