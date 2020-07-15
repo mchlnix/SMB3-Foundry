@@ -1,14 +1,16 @@
 from time import time
+from functools import wraps
 
 
-class Timer:
-    """Times how long a function takes to complete"""
-    def __init__(self, func):
-        self.function = func
-
-    def __call__(self, *args, **kwargs):
+def timer(func):
+    """Times a function"""
+    @wraps(func)
+    def inner(*args, **kwargs):
         start_time = time()
-        result = self.function(*args, **kwargs)
+        result = func(*args, **kwargs)
         end_time = time()
-        print(f"Execution took {end_time - start_time} seconds")
+        print(f"Execution of {func.__name__} took {end_time - start_time} seconds")
         return result
+    return inner
+
+
