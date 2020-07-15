@@ -199,7 +199,7 @@ class BlockSelector(QWidget):
         palette = load_palette(self.object_set, 0)
 
         block_length = Block.WIDTH * self.zoom
-        block = Block(self.block, palette, graphics_set, self.tsa_data, custom=True)
+        block = Block.from_rom(self.block, palette, graphics_set, self.tsa_data)
         block.draw(painter, 0, 0, block_length)
 
         tile_len = self.block_length // 2
@@ -394,7 +394,7 @@ class BlockBankViewer(QWidget):
         block_length = Block.WIDTH * self.zoom
 
         for i in range(self.sprites):
-            block = Block(i, palette, graphics_set, self.tsa_data, custom=True)
+            block = Block.from_rom(i, palette, graphics_set, self.tsa_data)
 
             x = (i % horizontal) * block_length
             y = (i // horizontal) * block_length
@@ -581,10 +581,9 @@ class PatternDisplayerViewer(QWidget):
         block_length = Block.WIDTH * self.zoom
 
         for i in range(self.sprites):
-            tile = Tile(i, palette, 0, graphics_set)
+            tile = Tile.from_rom(i, palette, 0, graphics_set)
 
             x = (i % horizontal) * block_length
             y = (i // horizontal) * block_length
-            selected = i == self.selected
 
-            tile.draw(painter, x, y, block_length, selected=selected, transparent=transparent)
+            tile.draw(painter, x, y, block_length, transparent=transparent)
