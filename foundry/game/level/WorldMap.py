@@ -49,7 +49,7 @@ class WorldMap(LevelLike):
             x = screen_offset + (index % WORLD_MAP_SCREEN_WIDTH)
             y = (index // WORLD_MAP_SCREEN_WIDTH) % WORLD_MAP_HEIGHT
 
-            block = Block(world_position.tile(), self.palette_group, self.graphics_set, self.tsa_data)
+            block = Block.from_rom(world_position.tile(), self.palette_group, self.graphics_set, self.tsa_data)
 
             self.objects.append(MapObject(block, x, y))
 
@@ -68,7 +68,7 @@ class WorldMap(LevelLike):
 
     @property
     def q_size(self):
-        return QSize(*self.size) * Block.SIDE_LENGTH
+        return QSize(*self.size) * Block.image_length
 
     @staticmethod
     def _array_index(obj):
@@ -79,7 +79,7 @@ class WorldMap(LevelLike):
 
     def draw(self, dc, zoom, transparency=None, show_expansion=None):
         for obj in self.objects:
-            obj.draw(dc, Block.SIDE_LENGTH * zoom, transparency)
+            obj.draw(dc, Block.image_length * zoom, transparency)
 
     def index_of(self, obj):
         return self.objects.index(obj)
