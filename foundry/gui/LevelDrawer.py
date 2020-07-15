@@ -13,7 +13,7 @@ from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH, BlockCache
+from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.game.ObjectSet import ObjectSet
@@ -85,7 +85,7 @@ def _block_from_index(block_index: int, level: Level) -> Block:
     graphics_set = GraphicsPage(level.header.graphic_set_index)
     tsa_data = ROM().get_tsa_data(level.object_set_number)
 
-    return Block(block_index, palette_group, graphics_set, tsa_data)
+    return Block.from_rom(block_index, palette_group, graphics_set, tsa_data)
 
 
 class LevelDrawer:
@@ -101,12 +101,11 @@ class LevelDrawer:
         self.background_enabled = SETTINGS["background_enabled"]
         self.tsa_data = None
 
-        self.block_length = Block.WIDTH
+        self.block_length = Block.default_size
 
         self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), width=1)
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), width=1)
 
-        self.block_cache = BlockCache()
         self.block_from_rom = {}
         self.block_quick = []
         self.block_quick_object_set = -1
@@ -114,8 +113,6 @@ class LevelDrawer:
         self.block_transparency = -1
 
     def draw(self, painter: QPainter, level: Level, force=False):
-        self.block_cache = BlockCache()
-
         self._draw_objects(painter, level, force)
 
         self._draw_overlays(painter, level)
@@ -213,6 +210,7 @@ class LevelDrawer:
                         pass
         return blocks
 
+
     def get_blocks(self, level, force=False):
         if len(self.block_quick) == 0 or self.block_quick_object_set != level.object_set_number or self.block_length != \
                 self.block_quick_block_length or self.block_transparency != self.transparency or force:
@@ -221,11 +219,9 @@ class LevelDrawer:
             tsa_data = ROM.get_tsa_data(level.object_set_number)
             graphics_set = GraphicsPage(level.header.graphic_set_index)
             blocks = []
-            Block._block_cache = {}
-            self.block_cache = BlockCache()
             for i in range(0xFF):
-                blocks.append(self.block_cache.block(palette_group, graphics_set, tsa_data, i).to_pixmap(
-                    self.block_length, False, self.transparency
+                blocks.append(Block.from_rom(i, palette_group, graphics_set, tsa_data).qpixmap_custom(
+                    self.block_length, self.block_length, transparent=self.transparency
                 ))
             self.block_quick_block_length = self.block_length
             self.block_quick = blocks
