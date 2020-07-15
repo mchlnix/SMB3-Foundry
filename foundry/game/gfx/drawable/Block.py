@@ -1,168 +1,49 @@
 from typing import List
-
-from PySide2.QtCore import QPoint
-from PySide2.QtGui import QImage, QPainter, Qt, QColor, QPixmap
+import numpy as np
 
 from foundry.game.File import ROM
-from foundry.game.gfx.Palette import NESPalette
-from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
+from foundry.game.gfx.GraphicsPage import GraphicsPage
 from foundry.game.gfx.drawable.Tile import Tile
 
 TSA_BANK_0 = 0 * 256
 TSA_BANK_1 = 1 * 256
 TSA_BANK_2 = 2 * 256
 TSA_BANK_3 = 3 * 256
+TSA_BANKS = [TSA_BANK_0, TSA_BANK_2, TSA_BANK_1, TSA_BANK_3]
 
 
 def get_block(block_index, palette_group, graphics_set, tsa_data):
     if block_index > 0xFF:
         rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
-        block = Block(rom_block_index, palette_group, graphics_set, tsa_data)
+        block = Block.from_rom(rom_block_index, palette_group, graphics_set, tsa_data)
     else:
-        block = Block(block_index, palette_group, graphics_set, tsa_data)
+        block = Block.from_rom(block_index, palette_group, graphics_set, tsa_data)
 
     return block
 
 
-class Block:
-    SIDE_LENGTH = 2 * Tile.SIDE_LENGTH
-    WIDTH = SIDE_LENGTH
-    HEIGHT = SIDE_LENGTH
+class Block(Tile):
+    image_length = 0x10
+    image_height = image_length
 
-    PIXEL_COUNT = WIDTH * HEIGHT
+    def __init__(self, pixels: bytes, index: int = 0) -> None:
+        super().__init__(pixels=pixels)
+        self.index = index
 
-    tsa_data = bytes()
-
-    _block_cache = {}
-
-    def __init__(
-        self,
-        block_index: int,
-        palette_group: List[List[int]],
-        graphics_set: GraphicsSet,
-        tsa_data: bytes,
-        mirrored=False,
-        custom=False
+    @classmethod
+    def from_rom(
+            cls,
+            block_index: int,
+            palette_group: List[List[int]],
+            graphics_set: GraphicsPage,
+            tsa_data: bytes,
+            mirrored=False
     ):
-        self.index = block_index
-        self.custom = custom
-
+        """Returns a block directly from rom"""
         palette_index = (block_index & 0b1100_0000) >> 6
-
-        try:
-            self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
-        except IndexError:
-            self.bg_color = QColor(*NESPalette[0])
-
-        self._block_id = (block_index, self.bg_color.toTuple(), graphics_set.number)
-
-        if len(tsa_data) > 0x10:
-            lu = tsa_data[TSA_BANK_0 + block_index]
-            ld = tsa_data[TSA_BANK_1 + block_index]
-            ru = tsa_data[TSA_BANK_2 + block_index]
-            rd = tsa_data[TSA_BANK_3 + block_index]
-        else:
-            lu, ld, ru, rd, *_ = tsa_data
-
-        self.lu_tile = Tile(lu, palette_group, palette_index, graphics_set)
-        self.ld_tile = Tile(ld, palette_group, palette_index, graphics_set)
-
-        if mirrored:
-            self.ru_tile = Tile(lu, palette_group, palette_index, graphics_set, mirrored=True)
-            self.rd_tile = Tile(ld, palette_group, palette_index, graphics_set, mirrored=True)
-        else:
-            self.ru_tile = Tile(ru, palette_group, palette_index, graphics_set)
-            self.rd_tile = Tile(rd, palette_group, palette_index, graphics_set)
-
-        self.image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format_RGB888)
-        painter = QPainter(self.image)
-
-        painter.drawImage(QPoint(0, 0), self.lu_tile.as_image())
-        painter.drawImage(QPoint(Tile.WIDTH, 0), self.ru_tile.as_image())
-        painter.drawImage(QPoint(0, Tile.HEIGHT), self.ld_tile.as_image())
-        painter.drawImage(QPoint(Tile.WIDTH, Tile.HEIGHT), self.rd_tile.as_image())
-
-        painter.end()
-
-        if _image_only_one_color(self.image) and self.image.pixelColor(0, 0) == QColor(*MASK_COLOR):
-            self._whole_block_is_transparent = True
-        else:
-            self._whole_block_is_transparent = False
-
-    def to_pixmap(self, block_length, selected=False, transparent=False):
-        block_attributes = (self._block_id, block_length, selected, transparent)
-
-        if block_attributes not in Block._block_cache or self.custom:
-            image = self.image.copy()
-
-            if block_length != Block.WIDTH:
-                image = image.scaled(block_length, block_length)
-
-            # mask out the transparent pixels first
-            mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
-            image.setAlphaChannel(mask)
-
-            if not transparent:  # or self._whole_block_is_transparent:
-                image = self._replace_transparent_with_background(image)
-
-            if selected:
-                apply_selection_overlay(image, mask)
-
-            pixmap = QPixmap.fromImage(image)
-            if not self.custom:
-                Block._block_cache[block_attributes] = pixmap
-            else:
-                return pixmap
-        return Block._block_cache[block_attributes]
-
-    def draw(self, painter: QPainter, x, y, block_length, selected=False, transparent=False):
-        block_attributes = (self._block_id, block_length, selected, transparent)
-
-        if self.custom or block_attributes not in Block._block_cache:
-            image = self.image.copy()
-
-            if block_length != Block.WIDTH:
-                image = image.scaled(block_length, block_length)
-
-            # mask out the transparent pixels first
-            mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
-            image.setAlphaChannel(mask)
-
-            if not transparent:  # or self._whole_block_is_transparent:
-                image = self._replace_transparent_with_background(image)
-
-            if selected:
-                apply_selection_overlay(image, mask)
-
-            pixmap = QPixmap.fromImage(image)
-            if not self.custom:
-                Block._block_cache[block_attributes] = pixmap
-            else:
-                painter.drawPixmap(x, y, pixmap)
-
-        if not self._whole_block_is_transparent and not self.custom:
-            painter.drawPixmap(x, y, Block._block_cache[block_attributes])
-
-    @staticmethod
-    def reset_cache():
-        Block._block_cache = {}
-
-    def _replace_transparent_with_background(self, image):
-        # draw image on background layer, to fill transparent pixels
-        background = image.copy()
-        background.fill(self.bg_color)
-
-        _painter = QPainter(background)
-        _painter.drawImage(QPoint(), image)
-        _painter.end()
-
-        return background
-
-
-def _image_only_one_color(image):
-    copy = image.copy()
-
-    copy.convertTo(QImage.Format_Indexed8)
-
-    return copy.colorCount() == 1
+        image = np.empty((Block.image_length, Block.image_length * 3), dtype="ubyte")
+        for idx in range(4):
+            tile = Tile.from_rom(tsa_data[TSA_BANKS[idx] + block_index], palette_group, palette_index, graphics_set)
+            x_off, y_off = (idx % 2) * 3 * Tile.image_length, (idx // 2) * Tile.image_length
+            image[y_off:y_off + Tile.image_length, x_off:x_off + 3 * Tile.image_length] = tile.numpy_image
+        return cls(bytes(image.flatten().tolist()), block_index)
