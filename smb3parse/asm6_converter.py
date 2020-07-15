@@ -1,29 +1,53 @@
 from dataclasses import dataclass
 import yaml
 from yaml import CLoader as Loader
+
 from foundry import data_dir
 
 with open(data_dir.joinpath("smb3_variables.yaml")) as f:
     variables = yaml.load(f, Loader=Loader)
 
 
-def to_int(s: str):
+def handle_partitioning(s):
+    """Handles if we have a | diving the characters"""
+    if ' | ' in s:
+        result = 0
+        for ele in [to_int(st) for st in s.split(' | ')]:
+            result |= ele
+        return result
+    elif ' & ' in s:
+        result = 0
+        for ele in [to_int(st) for st in s.split(' & ')]:
+            result &= ele
+        return result
+    else:
+        return s
+
+
+def convert_str_to_int_white_space(s: str) -> int:
+    """Removes whitespace"""
+    return to_int(s.strip())
+
+
+def convert_str_to_int(s: str) -> int:
+    """Assumes that we have already determined this is a value to be converted"""
+    if s.startswith('$'):
+        return int(s[1:], 16)
+    try:
+        return variables[s]
+    except KeyError:
+        return int(s)
+
+
+def to_int(s: str) -> int:
+    """Converts value to an int"""
+    s = handle_partitioning(s)
     if isinstance(s, int):
         return s
     if s.startswith('$'):
-        s = s[1:]
-        if s in variables:
-            return variables[s]
-        else:
-            try:
-                return int(s, 16)
-            except ValueError:
-                print(s, "is not a variable")
+        return convert_str_to_int(s[1:])
     else:
-        try:
-            return int(s)
-        except ValueError:
-            return s
+        return int(s)
 
 
 def to_label(s: str):
