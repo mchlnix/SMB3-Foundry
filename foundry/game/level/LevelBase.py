@@ -1,7 +1,7 @@
 from typing import List, Dict
 from foundry.game.File import ROM
 from smb3parse.levels.level_header import LevelHeader
-from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
+from foundry.game.gfx.objects.LevelGeneratorBase import BlockGeneratorHandler
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.level.LevelConstants import LEGACY_HEADER_LENGTH
 
@@ -13,7 +13,7 @@ def read_generator_data(start: int, tileset: int):
 class LevelBase:
     """Provides the fundamental structure for level data"""
     def __init__(self, header: LevelHeader,
-                 generators: List[LevelObjectController] = None, objects: List[EnemyObject] = None):
+                 generators: List[BlockGeneratorHandler] = None, objects: List[EnemyObject] = None):
         self._header = header
         self._generators = generators if generators is not None else []
         self._objects = objects if objects is not None else []
@@ -33,11 +33,11 @@ class LevelBase:
         self._header = header
 
     @property
-    def generators(self) -> List[LevelObjectController]:
+    def generators(self) -> List[BlockGeneratorHandler]:
         return self._generators
 
     @generators.setter
-    def generators(self, generators: List[LevelObjectController]):
+    def generators(self, generators: List[BlockGeneratorHandler]):
         self._generators = generators
 
     @property
