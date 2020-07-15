@@ -246,8 +246,8 @@ class WorldMapLevelSelect(QScrollArea):
     def mouseMoveEvent(self, event: QMouseEvent):
         x, y = self.world_view.mapFromParent(event.pos()).toTuple()
 
-        x //= Block.WIDTH * 2
-        y //= Block.HEIGHT * 2
+        x //= Block.image_length * 2
+        y //= Block.image_length * 2
 
         try:
             level_info = self.world.level_at_position(x, y)
@@ -280,8 +280,8 @@ class WorldMapLevelSelect(QScrollArea):
     def mouseReleaseEvent(self, event: QMouseEvent):
         x, y = self.world_view.mapFromParent(event.pos()).toTuple()
 
-        x //= Block.WIDTH * 2
-        y //= Block.HEIGHT * 2
+        x //= Block.image_length * 2
+        y //= Block.image_length * 2
 
         try:
             level_info = self.world.level_at_position(x, y)

@@ -74,7 +74,7 @@ class LevelView(QWidget):
         self.draw_invisible_items = SETTINGS["draw_invisible_items"]
 
         self.zoom = 1
-        self.block_length = Block.SIDE_LENGTH * self.zoom
+        self.block_length = Block.image_length * self.zoom
 
         self.changed = False
 
@@ -504,7 +504,7 @@ class LevelView(QWidget):
             return
 
         self.zoom = zoom
-        self.block_length = int(Block.SIDE_LENGTH * self.zoom)
+        self.block_length = int(Block.image_length * self.zoom)
 
         self.update()
 

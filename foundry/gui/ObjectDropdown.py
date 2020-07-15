@@ -124,6 +124,6 @@ class ObjectDropdown(QComboBox):
 
     @staticmethod
     def _resize_bitmap(source_image: QImage) -> QImage:
-        image = source_image.scaled(Block.SIDE_LENGTH, Block.SIDE_LENGTH)
+        image = source_image.scaled(Block.image_length, Block.image_length)
 
         return image

@@ -10,7 +10,7 @@ from foundry.game.ObjectSet import ObjectSet
 from foundry.game.ObjectDefinitions import BitMapPicture
 
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.GraphicsPage import GraphicsPage
 from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -47,33 +47,6 @@ def get_minimal_icon_object(level_object):
     level_object.icon()
 
     return level_object
-
-
-class BlockCache:
-    def __init__(self, obj_set: int = 0) -> None:
-        self.cache = {}
-        self.obj_set = obj_set
-
-    def set_obj_set(self, obj_set: int) -> None:
-        if obj_set != self.obj_set:
-            self.cache = {}
-            self.obj_set = obj_set
-
-    @staticmethod
-    def is_from_memory(block_index: int) -> bool:
-        return block_index > 0xFF
-
-    def block(
-            self, palette_group: List[List[int]], pattern_table: GraphicsSet, tsa_data: bytes, block_index: int
-    ):
-        if block_index not in self.cache:
-            if self.is_from_memory(block_index):
-                block = Block(ROM().get_byte(block_index), palette_group, pattern_table, tsa_data)
-            else:
-                block = Block(block_index, palette_group, pattern_table, tsa_data)
-
-            self.cache[block_index] = block
-        return self.cache[block_index]
 
 
 @dataclass
@@ -195,7 +168,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             self,
             object_set: ObjectSet,
             palette_group: List[List[int]],
-            pattern_table: GraphicsSet,
+            pattern_table: GraphicsPage,
             objects_ref: List["LevelObjectController"],
             is_vertical: bool,
             domain: int,
@@ -461,6 +434,7 @@ class LevelObject(ObjectLike, BlockGenerator):
     def as_image(self) -> QImage:
         self.rendered_position = Position(0, 0)
         size = self.rendered_size * Block.SIDE_LENGTH
+        size = self.rendered_size * Block.image_length
         image = QImage(size.to_qt(), QImage.Format_RGB888)
         bg_color = bg_color_for_object_set(self.object_set.number, 0)
         image.fill(bg_color)

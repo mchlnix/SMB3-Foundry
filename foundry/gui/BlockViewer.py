@@ -8,7 +8,7 @@ from PySide2.QtWidgets import (
 
 from foundry import icon
 from foundry.game.File import ROM
-from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.GraphicsPage import GraphicsPage
 from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.drawable.Tile import Tile
@@ -195,7 +195,7 @@ class BlockSelector(QWidget):
         painter.setBrush(QBrush(bg_color))
         painter.drawRect(QRect(QPoint(0, 0), self.size()))
 
-        graphics_set = GraphicsSet(self.object_set)
+        graphics_set = GraphicsPage(self.object_set)
         palette = load_palette(self.object_set, 0)
 
         block_length = Block.WIDTH * self.zoom
@@ -384,7 +384,7 @@ class BlockBankViewer(QWidget):
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
 
-        graphics_set = GraphicsSet(self.object_set)
+        graphics_set = GraphicsPage(self.object_set)
         palette = load_palette(self.object_set, 0)
 
         transparent = SETTINGS["block_transparency"]
@@ -572,7 +572,7 @@ class PatternDisplayerViewer(QWidget):
 
         painter.drawRect(QRect(QPoint(0, 0), self.size()))
 
-        graphics_set = GraphicsSet(self.object_set)
+        graphics_set = GraphicsPage(self.object_set)
         palette = load_palette(self.object_set, 0)
         transparent = SETTINGS["block_transparency"]
 

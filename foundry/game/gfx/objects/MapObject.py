@@ -1,6 +1,8 @@
 from PySide2.QtCore import QRect
 
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.Size import Size
+from foundry.game.Position import Position
 
 map_object_names = {
     0x00: "Mario Clear (Blue)",
@@ -166,11 +168,9 @@ class MapObject(ObjectLike):
     def draw(self, dc, block_length, _=None):
         self.block.draw(
             dc,
-            self.x_position * block_length,
-            self.y_position * block_length,
-            block_length=block_length,
-            selected=self.selected,
-            transparent=False,
+            Position(self.x_position * block_length, self.y_position * block_length),
+            Size(block_length, block_length),
+            transparent=False
         )
 
     def get_status_info(self):
