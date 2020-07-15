@@ -74,7 +74,7 @@ class EnemyObject(ObjectLike):
             x = (block_id % 64) * Block.image_length
             y = (block_id // 64) * Block.image_length
 
-            self.blocks.append(self.png_data.copy(QRect(x, y, Block.WIDTH, Block.HEIGHT)))
+            self.blocks.append(self.png_data.copy(QRect(x, y, Block.image_length, Block.image_length)))
 
     def render(self):
         # nothing to re-render since enemies are just copied over
