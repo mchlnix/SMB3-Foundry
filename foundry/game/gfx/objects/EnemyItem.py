@@ -71,8 +71,8 @@ class EnemyObject(ObjectLike):
         block_ids = obj_def.object_design
 
         for block_id in block_ids:
-            x = (block_id % 64) * Block.WIDTH
-            y = (block_id // 64) * Block.WIDTH
+            x = (block_id % 64) * Block.image_length
+            y = (block_id // 64) * Block.image_length
 
             self.blocks.append(self.png_data.copy(QRect(x, y, Block.WIDTH, Block.HEIGHT)))
 
@@ -100,7 +100,7 @@ class EnemyObject(ObjectLike):
             if self.selected:
                 apply_selection_overlay(block, mask)
 
-            if block_length != Block.SIDE_LENGTH:
+            if block_length != Block.image_length:
                 block = block.scaled(block_length, block_length)
 
             painter.drawImage(x * block_length, y * block_length, block)
@@ -161,13 +161,13 @@ class EnemyObject(ObjectLike):
         return bytearray([self.obj_index, self.x_position + int(enemy_handle_x[self.obj_index]), self.y_position])
 
     def as_image(self) -> QImage:
-        image = QImage(QSize(self.width * Block.SIDE_LENGTH, self.height * Block.SIDE_LENGTH), QImage.Format_RGBA8888,)
+        image = QImage(QSize(self.width * Block.image_length, self.height * Block.image_length), QImage.Format_RGBA8888,)
 
         image.fill(QColor(0, 0, 0, 0))
 
         painter = QPainter(image)
 
-        self.draw(painter, Block.SIDE_LENGTH, True)
+        self.draw(painter, Block.image_length, True)
 
         return image
 

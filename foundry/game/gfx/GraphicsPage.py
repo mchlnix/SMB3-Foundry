@@ -97,7 +97,7 @@ GRAPHIC_SET_NAMES = [
 ]
 
 
-class GraphicsSet:
+class GraphicsPage:
     def __init__(self, graphic_set_number):
         self.data = bytearray()
         self.number = graphic_set_number

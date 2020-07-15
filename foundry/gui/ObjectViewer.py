@@ -4,7 +4,7 @@ from PySide2.QtCore import QPoint, QSize
 from PySide2.QtGui import QPaintEvent, QPainter
 from PySide2.QtWidgets import QComboBox, QHBoxLayout, QLayout, QStatusBar, QToolBar, QVBoxLayout, QWidget
 
-from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
+from foundry.game.gfx.GraphicsPage import GRAPHIC_SET_NAMES
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController

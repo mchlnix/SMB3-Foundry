@@ -12,7 +12,7 @@ from foundry.game.ObjectSet import ObjectSet
 from foundry.game.ObjectDefinitions import BitMapPicture
 
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.GraphicsPage import GraphicsPage
 from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject

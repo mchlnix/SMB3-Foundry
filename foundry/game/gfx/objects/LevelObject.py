@@ -189,7 +189,6 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         self.index_in_level: int = len(self.objects_ref)
 
-        self.block_cache: BlockCache = BlockCache()
         self.rendered_position: Position = Position(0, 0)
         self.rendered_size: Size = Size(0, 0)
         self.rendered_positions: List[Tuple[Position, int]] = []
@@ -209,7 +208,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             data: bytearray,
             object_set: ObjectSet,
             palette_group: List[List[int]],
-            pattern_table: GraphicsSet,
+            pattern_table: GraphicsPage,
             objects_ref: List["LevelObjectController"],
             is_vertical: bool,
             object_factory_idx: int,
@@ -290,17 +289,13 @@ class LevelObject(ObjectLike, BlockGenerator):
                 po = pos + self.rendered_position
                 self._draw_block(painter, self.rendered_blocks[idx], po, block_length, transparent)
 
+
     def _draw_block(
-            self,
-            painter: QPainter,
-            block_index: int,
-            position: Position,
-            block_length: int,
-            transparent: bool
-            ) -> None:
-        self.block_cache.block(self.palette_group, self.pattern_table, self.tsa_data, block_index).draw(
-            painter, position.x * block_length, position.y * block_length,
-            block_length=block_length, selected=self.selected, transparent=transparent,
+            self, painter: QPainter, block_index: int, position: Position, block_length: int, transparent: bool
+        ) -> None:
+        Block.from_rom(block_index, self.palette_group, self.pattern_table, self.tsa_data).draw(
+            painter, pos=Position(position.x * block_length, position.y * block_length),
+            size=Size(block_length, block_length), transparent=transparent,
         )
 
     def set_position(self, pos: Position) -> None:
@@ -428,18 +423,17 @@ class LevelObject(ObjectLike, BlockGenerator):
         ]
 
     def display_size(self, zoom_factor: int = 1) -> QSize:
-        size = self.rendered_position * Block.SIDE_LENGTH * zoom_factor
+        size = self.rendered_position * Block.image_length * zoom_factor
         return size.to_qt()
 
     def as_image(self) -> QImage:
         self.rendered_position = Position(0, 0)
-        size = self.rendered_size * Block.SIDE_LENGTH
         size = self.rendered_size * Block.image_length
         image = QImage(size.to_qt(), QImage.Format_RGB888)
         bg_color = bg_color_for_object_set(self.object_set.number, 0)
         image.fill(bg_color)
         painter = QPainter(image)
-        self.draw(painter, Block.SIDE_LENGTH, True)
+        self.draw(painter, Block.image_length, True)
         return image
 
     def vertical_offset_pos(self, pos: Position) -> Position:
