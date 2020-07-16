@@ -1,0 +1,900 @@
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 
+-
+    size:
+        width: 3 
+        height: 1 
+    palette: 1 
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 0 # BOUNCEDOWNUP
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 0 # WARPHIDE
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 3 # PSWITCHDOOR
+-
+    size:
+        width: 3 
+        height: 1 
+    palette: 1 # AIRSHIPANCHOR
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 # POWERUP_1UP
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 0 # POWERUP_STARMAN
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # POWERUP_MUSHROOM
+-
+    size:
+        width: 3 
+        height: 2 
+    palette: 2 # BOSS_KOOPALING
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 3 
+        height: 1 
+    palette: 1 
+-
+    size:
+        width: 3 
+        height: 2 
+    palette: 3 # SPINYCHEEP
+-
+    size:
+        width: 4 
+        height: 3 
+    palette: 1 # BOSS_BOWSER
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 # POWERUP_FIREFLOWER
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 3 
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 0 # BOUNCELEFTRIGHT
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 
+-
+    size:
+        width: 3 
+        height: 2 
+    palette: 1 
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # POWERUP_SUPERLEAF
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 # GROWINGVINE
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 0 # POWERUP_MUSHCARD
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 0 # POWERUP_FIRECARD
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 0 # POWERUP_STARCARD
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 1 # CLOUDPLATFORM_FAST
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 3 # WOODENPLAT_RIDER
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 3 # OSCILLATING_H
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 3 # OSCILLATING_V
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 # SPIKE
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # PATOOIE
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 # GOOMBAINSHOE
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 1 # CLOUDPLATFORM
+-
+    size:
+        width: 3 
+        height: 2 
+    palette: 1 # BIGBERTHA
+-
+    size:
+        width: 4 
+        height: 1 
+    palette: 2 # INVISIBLELIFT
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # BOO
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 1 # HOTFOOT_SHY
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # BOOSTRETCH
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # BOOSTRETCH_FLIP
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 # NIPPER
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # TOAD
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 # TOADHOUSEITEM
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 3 # WOODENPLATFORM
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 3 # OSCILLATING_HS
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 3 # OSCILLATING_VS
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 # NIPPERHOPPING
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 2 # FALLINGPLATFORM
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # CHARGINGCHEEPCHEEP
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 3 # WOODENPLATFORMFALL
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 # NIPPERFIREBREATHER
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 3 # WOODENPLATFORMFLOAT
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 # DRYBONES
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 3 # BUSTERBEATLE
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # ENDLEVELCARD
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # CHEEPCHEEPPOOL2POOL
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # CHEEPCHEEPPOOL2POOL2
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 3 # WOODENPLATUNSTABLE
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 1 # HOTFOOT
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # PIRANHASPIKEBALL
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 0 # GIANTBLOCKCTL
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # TINYCHEEPCHEEP
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 1 # FLOATINGBGCLOUD
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # BOOMBOOMQBALL
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 3 # BOOMBOOMJUMP
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 3 # BOOMBOOMFLY
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # CHAINCHOMPFREE
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 3 # BOBOMBEXPLODE
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # ROTODISCDUAL
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 3 # TREASUREBOX
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # PODOBOOCEILING
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 3 # DONUTLIFTSHAKEFALL
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 3 # BOBOMB
+-
+    size:
+        width: 3 
+        height: 1 
+    palette: 1 # PIRANHASIDEWAYSLEFT
+-
+    size:
+        width: 3 
+        height: 1 
+    palette: 1 # PIRANHASIDEWAYSRIGHT
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # FIRECHOMP
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # FIRESNAKE
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # ROTODISCCLOCKWISE
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # ROTODISCCCLOCKWISE
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # ICEBLOCK
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 2 # TORNADO
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # ROTODISCDUALOPPOSE
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # ROTODISCDUALOPPOSE2
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # ROTODISCDUALCCLOCK
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 3 # BLOOPERWITHKIDS
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 3 # BLOOPER
+-
+    size:
+        width: 3 
+        height: 2 
+    palette: 1 # BIGBERTHABIRTHER
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # CHEEPCHEEPHOPPER
+-
+    size:
+        width: 4 
+        height: 1 
+    palette: 0 # WATERCURRENTUPWARD
+-
+    size:
+        width: 4 
+        height: 1 
+    palette: 0 # WATERCURRENTDOWNARD
+-
+    size:
+        width: 3 
+        height: 2 
+    palette: 2 # LAVALOTUS
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 3 # TWIRLINGBUZZY
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # TWIRLINGSPINY
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 2 # BLOOPERCHILDSHOOT
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 3 # PILEDRIVER
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # GREENTROOPA
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # REDTROOPA
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # PARATROOPAGREENHOP
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # FLYINGREDPARATROOPA
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 3 # BUZZYBEATLE
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # SPINY
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 3 # GOOMBA
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # PARAGOOMBA
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 3 # PARAGOOMBAWITHMICROS
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # BOSSATTACK
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # JUMPINGCHEEPCHEEP
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # GREENCHEEP
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 3 # BULLETBILL
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 3 # BULLETBILLHOMING
+-
+    size:
+        width: 3 
+        height: 3 
+    palette: 2 # BIGGREENTROOPA
+-
+    size:
+        width: 3 
+        height: 3 
+    palette: 1 # BIGREDTROOPA
+-
+    size:
+        width: 3 
+        height: 3 
+    palette: 3 # BIGGOOMBA
+-
+    size:
+        width: 3 
+        height: 3 
+    palette: 2 # BIGGREENPIRANHA
+-
+    size:
+        width: 3 
+        height: 3 
+    palette: 2 # BIGGREENHOPPER
+-
+    size:
+        width: 3 
+        height: 3 
+    palette: 1 # BIGREDPIRANHA
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # FLYINGGREENPARATROOPA
+-
+    size:
+        width: 2 
+        height: 3 
+    palette: 3 # HAMMERBRO
+-
+    size:
+        width: 2 
+        height: 3 
+    palette: 2 # BOOMERANGBRO
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # LAKITU
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # SPINYEGG
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # SPINYEGGDUD
+-
+    size:
+        width: 3 
+        height: 3 
+    palette: 2 # HEAVYBRO
+-
+    size:
+        width: 2 
+        height: 3 
+    palette: 1 # FIREBRO
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 3 # ORANGECHEEP
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 # CHAINCHOMP
+-
+    size:
+        width: 6 
+        height: 2 
+    palette: 2 # THWOMP
+-
+    size:
+        width: 6 
+        height: 2 
+    palette: 2 # THWOMPLEFTSLIDE
+-
+    size:
+        width: 6 
+        height: 2 
+    palette: 2 # THWOMPRIGHTSLIDE
+-
+    size:
+        width: 6 
+        height: 2 
+    palette: 2 # THWOMPUPDOWN
+-
+    size:
+        width: 6 
+        height: 2 
+    palette: 2 # THWOMPDIAGONALUL
+-
+    size:
+        width: 6 
+        height: 2 
+    palette: 2 # THWOMPDIAGONALDL
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 # TILTINGPLATFORM
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 # TWIRLINGPLATCWNS
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 # TWIRLINGPLATCW
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 # TWIRLINGPERIODIC
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 0 # BIGQBLOCK_3UP
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 0 # BIGQBLOCK_MUSHROOM
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 0 # BIGQBLOCK_FIREFLOWER
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 0 # BIGQBLOCK_SUPERLEAF
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 0 # BIGQBLOCK_TANOOKI
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 0 # BIGQBLOCK_FROG
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 0 # BIGQBLOCK_HAMMER
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 0 
+-
+    size:
+        width: 2 
+        height: 3 
+    palette: 1 # FIREJET_UPWARD
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # PODOBOO
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # PARABEETLE
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # GREENPIRANHA
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # GREENPIRANHA_FLIPPED
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # REDPIRANHA
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # REDPIRANHA_FLIPPED
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # GREENPIRANHA_FIRE
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 2 # GREENPIRANHA_FIREC
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # VENUSFIRETRAP
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # VENUSFIRETRAP_CEIL
+-
+    size:
+        width: 4 
+        height: 1 
+    palette: 0 # ARROWONE
+-
+    size:
+        width: 4 
+        height: 1 
+    palette: 0 # ARROWANY
+-
+    size:
+        width: 1 
+        height: 1 
+    palette: 2 # AIRSHIPPROP
+-
+    size:
+        width: 4 
+        height: 1 
+    palette: 2 
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 1 # FIREJET_LEFT
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 1 # ROCKYWRENCH
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 2 # BOLTLIFT
+-
+    size:
+        width: 2 
+        height: 2 
+    palette: 3 # ENEMYSUN
+-
+    size:
+        width: 4 
+        height: 2 
+    palette: 3 # BIGCANNONBALL
+-
+    size:
+        width: 6 
+        height: 1 
+    palette: 1 # FIREJET_RIGHT
+-
+    size:
+        width: 2 
+        height: 3 
+    palette: 1 # FIREJET_UPSIDEDOWN
+-
+    size:
+        width: 2 
+        height: 1 
+    palette: 1 

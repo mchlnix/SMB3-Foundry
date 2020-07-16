@@ -13,6 +13,7 @@ def handle_partitioning(s):
     if ' | ' in s:
         result = 0
         for ele in [to_int(st) for st in s.split(' | ')]:
+            print(result, ele)
             result |= ele
         return result
     elif ' & ' in s:
@@ -36,6 +37,8 @@ def convert_str_to_int(s: str) -> int:
     try:
         return variables[s]
     except KeyError:
+        return int(s, 16)
+    except TypeError:
         return int(s)
 
 
@@ -47,7 +50,10 @@ def to_int(s: str) -> int:
     if s.startswith('$'):
         return convert_str_to_int(s[1:])
     else:
-        return int(s)
+        try:
+            return int(s, 16)
+        except ValueError:
+            return convert_str_to_int(s)
 
 
 def to_label(s: str):

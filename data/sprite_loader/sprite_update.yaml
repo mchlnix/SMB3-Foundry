@@ -1,0 +1,180 @@
+0x00: ObjNorm_DoNothing           # Object $00
+0x01: ObjNorm_Obj01               # Object $01
+0x02: ObjNorm_Obj02               # Object $02
+0x03: ObjNorm_DoNothing           # Object $03
+0x04: ObjNorm_Obj04               # Object $04
+0x05: ObjNorm_Obj05               # Object $05
+0x06: ObjNorm_BounceDU            # Object $06 - OBJ_BOUNCEDOWNUP
+0x07: ObjNorm_WarpHide            # Object $07 - OBJ_WARPHIDE
+0x08: ObjNorm_PDoor               # Object $08 - OBJ_PSWITCHDOOR
+0x09: ObjNorm_Anchor              # Object $09 - OBJ_AIRSHIPANCHOR
+0x0A: ObjNorm_Obj0A               # Object $0A
+0x0B: ObjNorm_PUp1UpMush          # Object $0B - OBJ_POWERUP_1UP
+0x0C: ObjNorm_StarOrSuit          # Object $0C - OBJ_POWERUP_STARMAN
+0x0D: ObjNorm_PUpMush             # Object $0D - OBJ_POWERUP_MUSHROOM
+0x0E: ObjNorm_Koopaling           # Object $0E - OBJ_BOSS_KOOPALING
+0x0F: ObjNorm_DoNothing           # Object $0F
+0x10: ObjNorm_DoNothing           # Object $10
+0x11: ObjNorm_DoNothing           # Object $11
+0x12: ObjNorm_DoNothing           # Object $12
+0x13: ObjNorm_DoNothing           # Object $13
+0x14: ObjNorm_DoNothing           # Object $14
+0x15: ObjNorm_DoNothing           # Object $15
+0x16: ObjNorm_DoNothing           # Object $16
+0x17: ObjNorm_SpinyCheep          # Object $17 - OBJ_SPINYCHEEP
+0x18: ObjNorm_Bowser              # Object $18 - OBJ_BOSS_BOWSER
+0x19: ObjNorm_FireFlower          # Object $19 - OBJ_POWERUP_FIREFLOWER
+0x1A: ObjNorm_Obj1A               # Object $1A
+0x1B: ObjNorm_BounceLR            # Object $1B - OBJ_BOUNCELEFTRIGHT
+0x1C: ObjNorm_Obj1C               # Object $1C
+0x1D: ObjNorm_DoNothing           # Object $1D
+0x1E: ObjNorm_SuperLeaf           # Object $1E - OBJ_POWERUP_SUPERLEAF
+0x1F: ObjNorm_Vine                # Object $1F - OBJ_GROWINGVINE
+0x20: ObjNorm_DoNothing           # Object $20
+0x21: ObjNorm_Card                # Object $21 - OBJ_POWERUP_MUSHCARD
+0x22: ObjNorm_Card                # Object $22 - OBJ_POWERUP_FIRECARD
+0x23: ObjNorm_Card                # Object $23 - OBJ_POWERUP_STARCARD
+0x24: ObjNorm_CloudPlat           # Object $24 - OBJ_CLOUDPLATFORM_FAST
+0x25: ObjNorm_PipewayCtlr         # Object $25 - OBJ_PIPEWAYCONTROLLER
+0x26: ObjNorm_WoodenPlatRider     # Object $26 - OBJ_WOODENPLAT_RIDER
+0x27: ObjNorm_OscillatingH        # Object $27 - OBJ_OSCILLATING_H
+0x28: ObjNorm_OscillatingV        # Object $28 - OBJ_OSCILLATING_V
+0x29: ObjNorm_Spike               # Object $29 - OBJ_SPIKE
+0x2A: ObjNorm_Patooie             # Object $2A - OBJ_PATOOIE
+0x2B: ObjNorm_GoombaInShoe        # Object $2B - OBJ_GOOMBAINSHOE
+0x2C: ObjNorm_CloudPlat           # Object $2C - OBJ_CLOUDPLATFORM
+0x2D: ObjNorm_BigBertha           # Object $2D - OBJ_BIGBERTHA
+0x2E: ObjNorm_InvisibleLift       # Object $2E - OBJ_INVISIBLELIFT
+0x2F: ObjNorm_Boo                 # Object $2F - OBJ_BOO
+0x30: ObjNorm_HotfootShy          # Object $30 - OBJ_HOTFOOT_SHY
+0x31: ObjNorm_Stretch             # Object $31 - OBJ_BOOSTRETCH
+0x32: ObjNorm_Stretch             # Object $32 - OBJ_BOOSTRETCH_FLIP
+0x33: ObjNorm_Nipper              # Object $33 - OBJ_NIPPER
+0x34: ObjNorm_Toad                # Object $34 - OBJ_TOAD
+0x35: ObjNorm_ToadHouseItem       # Object $35 - OBJ_TOADHOUSEITEM
+0x36: ObjNorm_WoodenPlatform      # Object $36 - OBJ_WOODENPLATFORM
+0x37: ObjNorm_OscillatingH        # Object $37 - OBJ_OSCILLATING_HS
+0x38: ObjNorm_OscillatingV        # Object $38 - OBJ_OSCILLATING_VS
+0x39: ObjNorm_Nipper              # Object $39 - OBJ_NIPPERHOPPING
+0x3A: ObjNorm_PathFollowPlat      # Object $3A - OBJ_FALLINGPLATFORM
+0x3B: ObjNorm_CharginCheepCheep   # Object $3B - OBJ_CHARGINGCHEEPCHEEP
+0x3C: ObjNorm_PathFollowPlat      # Object $3C - OBJ_WOODENPLATFORMFALL
+0x3D: ObjNorm_NipperFireBreathe   # Object $3D - OBJ_NIPPERFIREBREATHER
+0x3E: ObjNorm_WoodenPlatFloat     # Object $3E - OBJ_WOODENPLATFORMFLOAT
+0x3F: ObjNorm_DryBones            # Object $3F - OBJ_DRYBONES
+0x40: ObjNorm_BusterBeatle        # Object $40 - OBJ_BUSTERBEATLE
+0x41: ObjNorm_EndLevelCard        # Object $41 - OBJ_ENDLEVELCARD
+0x42: ObjNorm_CheepCheepP2P       # Object $42 - OBJ_CHEEPCHEEPPOOL2POOL
+0x43: ObjNorm_CheepCheepP2P2      # Object $43 - OBJ_CHEEPCHEEPPOOL2POOL2
+0x44: ObjNorm_PathFollowPlat      # Object $44 - OBJ_WOODENPLATUNSTABLE
+0x45: ObjNorm_Hotfoot             # Object $45 - OBJ_HOTFOOT
+0x46: ObjNorm_PiranhaSpikeBall    # Object $46 - OBJ_PIRANHASPIKEBALL
+0x47: ObjNorm_GiantBlockCtl       # Object $47 - OBJ_GIANTBLOCKCTL
+0x48: ObjNorm_TinyCheepCheep      # Object $48 - OBJ_TINYCHEEPCHEEP
+0x49: ObjNorm_FloatingBGCloud     # Object $49 - OBJ_FLOATINGBGCLOUD
+0x4A: ObjNorm_BoomBoomQBall       # Object $4A - OBJ_BOOMBOOMQBALL
+0x4B: ObjNorm_BoomBoom            # Object $4B - OBJ_BOOMBOOMJUMP
+0x4C: ObjNorm_BoomBoom            # Object $4C - OBJ_BOOMBOOMFLY
+0x4D: ObjNorm_DoNothing           # Object $4D
+0x4E: ObjNorm_DoNothing           # Object $4E
+0x4F: ObjNorm_ChainChompFree      # Object $4F - OBJ_CHAINCHOMPFREE
+0x50: ObjNorm_BobOmb              # Object $50 - OBJ_BOBOMBEXPLODE
+0x51: ObjNorm_RotoDiscDual        # Object $51 - OBJ_ROTODISCDUAL
+0x52: ObjNorm_TreasureBox         # Object $52 - OBJ_TREASUREBOX
+0x53: ObjNorm_PodobooCeiling      # Object $53 - OBJ_PODOBOOCEILING
+0x54: ObjNorm_DonutLift           # Object $54 - OBJ_DONUTLIFTSHAKEFALL
+0x55: ObjNorm_BobOmb              # Object $55 - OBJ_BOBOMB
+0x56: ObjNorm_PiranhaSideways     # Object $56 - OBJ_PIRANHASIDEWAYSLEFT
+0x57: ObjNorm_PiranhaSideways     # Object $57 - OBJ_PIRANHASIDEWAYSRIGHT
+0x58: ObjNorm_FireChomp           # Object $58 - OBJ_FIRECHOMP
+0x59: ObjNorm_FireSnake           # Object $59 - OBJ_FIRESNAKE
+0x5A: ObjNorm_RotoDisc            # Object $5A - OBJ_ROTODISCCLOCKWISE
+0x5B: ObjNorm_RotoDisc            # Object $5B - OBJ_ROTODISCCCLOCKWISE
+0x5C: ObjNorm_IceBlock            # Object $5C - OBJ_ICEBLOCK
+0x5D: ObjNorm_Tornado             # Object $5D - OBJ_TORNADO
+0x5E: ObjNorm_RotoDiscDualOpp     # Object $5E - OBJ_ROTODISCDUALOPPOSE
+0x5F: ObjNorm_RotoDiscDualOpp2    # Object $5F - OBJ_ROTODISCDUALOPPOSE2
+0x60: ObjNorm_RotoDiscDual        # Object $60 - OBJ_ROTODISCDUALCCLOCK
+0x61: ObjNorm_Blooper             # Object $61 - OBJ_BLOOPERWITHKIDS
+0x62: ObjNorm_Blooper             # Object $62 - OBJ_BLOOPER
+0x63: ObjNorm_BigBerthaBirther    # Object $63 - OBJ_BIGBERTHABIRTHER
+0x64: ObjNorm_CheepCheepHopper    # Object $64 - OBJ_CHEEPCHEEPHOPPER
+0x65: ObjNorm_WaterCurrent        # Object $65 - OBJ_WATERCURRENTUPWARD
+0x66: ObjNorm_WaterCurrent        # Object $66 - OBJ_WATERCURRENTDOWNARD
+0x67: ObjNorm_LavaLotus           # Object $67 - OBJ_LAVALOTUS
+0x68: ObjNorm_TwirlingShell       # Object $68 - OBJ_TWIRLINGBUZZY
+0x69: ObjNorm_TwirlingShell       # Object $69 - OBJ_TWIRLINGSPINY
+0x6A: ObjNorm_Blooper             # Object $6A - OBJ_BLOOPERCHILDSHOOT
+0x6B: ObjNorm_PileDriver          # Object $6B - OBJ_PILEDRIVER
+0x6C: ObjNorm_GroundTroop         # Object $6C - OBJ_GREENTROOPA
+0x6D: ObjNorm_RedTroopa           # Object $6D - OBJ_REDTROOPA
+0x6E: ObjNorm_GroundTroop         # Object $6E - OBJ_PARATROOPAGREENHOP
+0x6F: ObjNorm_FlyingRedTroopa     # Object $6F - OBJ_FLYINGREDPARATROOPA
+0x70: ObjNorm_GroundTroop         # Object $70 - OBJ_BUZZYBEATLE
+0x71: ObjNorm_GroundTroop         # Object $71 - OBJ_SPINY
+0x72: ObjNorm_GroundTroop         # Object $72 - OBJ_GOOMBA
+0x73: ObjNorm_ParaGoomba          # Object $73 - OBJ_PARAGOOMBA
+0x74: ObjNorm_ParaGoombaBomber    # Object $74 - OBJ_PARAGOOMBAWITHMICROS
+0x75: ObjNorm_BossAttack          # Object $75 - OBJ_BOSSATTACK
+0x76: ObjNorm_JumpingCheepCheep   # Object $76 - OBJ_JUMPINGCHEEPCHEEP
+0x77: ObjNorm_SpikeCheep          # Object $77 - OBJ_GREENCHEEP
+0x78: ObjNorm_BulletBill          # Object $78 - OBJ_BULLETBILL
+0x79: ObjNorm_BulletBill          # Object $79 - OBJ_BULLETBILLHOMING
+0x7A: ObjNorm_GroundTroop         # Object $7A - OBJ_BIGGREENTROOPA
+0x7B: ObjNorm_RedTroopa           # Object $7B - OBJ_BIGREDTROOPA
+0x7C: ObjNorm_GroundTroop         # Object $7C - OBJ_BIGGOOMBA
+0x7D: ObjNorm_BigPiranha          # Object $7D - OBJ_BIGGREENPIRANHA
+0x7E: ObjNorm_GroundTroop         # Object $7E - OBJ_BIGGREENHOPPER
+0x7F: ObjNorm_BigPiranha          # Object $7F - OBJ_BIGREDPIRANHA
+0x80: ObjNorm_FlyingGreenPara     # Object $80 - OBJ_FLYINGGREENPARATROOPA
+0x81: ObjNorm_HammerBro           # Object $81 - OBJ_HAMMERBRO
+0x82: ObjNorm_BoomerangBro        # Object $82 - OBJ_BOOMERANGBRO
+0x83: ObjNorm_Lakitu              # Object $83 - OBJ_LAKITU
+0x84: ObjNorm_SpinyEgg            # Object $84 - OBJ_SPINYEGG
+0x85: ObjNorm_SpinyEggDud         # Object $85 - OBJ_SPINYEGGDUD
+0x86: ObjNorm_HeavyBro            # Object $86 - OBJ_HEAVYBRO
+0x87: ObjNorm_FireBro             # Object $87 - OBJ_FIREBRO
+0x88: ObjNorm_OrangeCheep         # Object $88 - OBJ_ORANGECHEEP
+0x89: ObjNorm_ChainChomp          # Object $89 - OBJ_CHAINCHOMP
+0x8A: ObjNorm_Thwomp              # Object $8A - OBJ_THWOMP
+0x8B: ObjNorm_ThwompLRSlide       # Object $8B - OBJ_THWOMPLEFTSLIDE
+0x8C: ObjNorm_ThwompLRSlide       # Object $8C - OBJ_THWOMPRIGHTSLIDE
+0x8D: ObjNorm_ThwompVertical      # Object $8D - OBJ_THWOMPUPDOWN
+0x8E: ObjNorm_ThwompVertical      # Object $8E - OBJ_THWOMPDIAGONALUL
+0x8F: ObjNorm_ThwompVertical      # Object $8F - OBJ_THWOMPDIAGONALDL
+0x90: ObjNorm_TiltingPlatform     # Object $90 - OBJ_TILTINGPLATFORM
+0x91: ObjNorm_TwirlingPlatCWNS    # Object $91 - OBJ_TWIRLINGPLATCWNS
+0x92: ObjNorm_TwirlingPlatCW      # Object $92 - OBJ_TWIRLINGPLATCW
+0x93: ObjNorm_TwirlingPlatCW      # Object $93 - OBJ_TWIRLINGPERIODIC
+0x94: ObjNorm_BigQBlock           # Object $94 - OBJ_BIGQBLOCK_3UP
+0x95: ObjNorm_BigQBlock           # Object $95 - OBJ_BIGQBLOCK_MUSHROOM
+0x96: ObjNorm_BigQBlock           # Object $96 - OBJ_BIGQBLOCK_FIREFLOWER
+0x97: ObjNorm_BigQBlock           # Object $97 - OBJ_BIGQBLOCK_SUPERLEAF
+0x98: ObjNorm_BigQBlock           # Object $98 - OBJ_BIGQBLOCK_TANOOKI
+0x99: ObjNorm_BigQBlock           # Object $99 - OBJ_BIGQBLOCK_FROG
+0x9A: ObjNorm_BigQBlock           # Object $9A - OBJ_BIGQBLOCK_HAMMER
+0x9B: ObjNorm_DoNothing           # Object $9B
+0x9C: ObjNorm_DoNothing           # Object $9C
+0x9D: ObjNorm_FireJet             # Object $9D - OBJ_FIREJET_UPWARD
+0x9E: ObjNorm_Podoboo             # Object $9E - OBJ_PODOBOO
+0x9F: ObjNorm_ParaBeetle          # Object $9F - OBJ_PARABEETLE
+0xA0: ObjNorm_Piranha             # Object $A0 - OBJ_GREENPIRANHA
+0xA1: ObjNorm_Piranha             # Object $A1 - OBJ_GREENPIRANHA_FLIPPED
+0xA2: ObjNorm_Piranha             # Object $A2 - OBJ_REDPIRANHA
+0xA3: ObjNorm_Piranha             # Object $A3 - OBJ_REDPIRANHA_FLIPPED
+0xA4: ObjNorm_Piranha             # Object $A4 - OBJ_GREENPIRANHA_FIRE
+0xA5: ObjNorm_Piranha             # Object $A5 - OBJ_GREENPIRANHA_FIREC
+0xA6: ObjNorm_Piranha             # Object $A6 - OBJ_VENUSFIRETRAP
+0xA7: ObjNorm_Piranha             # Object $A7 - OBJ_VENUSFIRETRAP_CEIL
+0xA8: ObjNorm_ArrowPlatform       # Object $A8 - OBJ_ARROWONE
+0xA9: ObjNorm_ArrowPlatform       # Object $A9 - OBJ_ARROWANY
+0xAA: ObjNorm_AirshipPropellar    # Object $AA - OBJ_AIRSHIPPROP
+0xAB: FireJetLR_SpriteVisibleTest # Object $AB (this call doesn't make any sense!!)
+0xAC: ObjNorm_FireJet             # Object $AC - OBJ_FIREJET_LEFT
+0xAD: ObjNorm_RockyWrench         # Object $AD - OBJ_ROCKYWRENCH
+0xAE: ObjNorm_BoltLift            # Object $AE - OBJ_BOLTLIFT
+0xAF: ObjNorm_Sun                 # Object $AF - OBJ_ENEMYSUN
+0xB0: ObjNorm_BigCannonBall       # Object $B0 - OBJ_BIGCANNONBALL
+0xB1: ObjNorm_FireJet             # Object $B1 - OBJ_FIREJET_RIGHT
+0xB2: ObjNorm_FireJet             # Object $B2 - OBJ_FIREJET_UPSIDEDOWN
+0xB3: ObjNorm_ObjB3               # Object $B3

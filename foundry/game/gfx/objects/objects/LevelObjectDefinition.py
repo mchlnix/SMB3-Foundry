@@ -14,6 +14,7 @@ class ObjectOperation:
     update: int
     hit: int
     pause_action: int
+    kill_action: int
     ignores_stomping: bool
     shelled: bool
     can_squash: bool
@@ -60,3 +61,6 @@ class LevelObjectDefinition:
         self.operation = operation
         self.animations = animations
         self.hitbox = hitbox
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.operation}, {self.animations}, {self.hitbox})"

@@ -1,0 +1,180 @@
+0x00: ObjHit_DoNothing                            # Object $00
+0x01: ObjHit_Obj01                                # Object $01
+0x02: ObjHit_DoNothing                            # Object $02
+0x03: ObjHit_DoNothing                            # Object $03
+0x04: ObjHit_Obj04                                # Object $04
+0x05: ObjHit_Obj05                                # Object $05
+0x06: ObjHit_DoNothing                            # Object $06 - OBJ_BOUNCEDOWNUP
+0x07: ObjHit_DoNothing                            # Object $07 - OBJ_WARPHIDE
+0x08: ObjHit_DoNothing                            # Object $08 - OBJ_PSWITCHDOOR
+0x09: ObjHit_DoNothing                            # Object $09 - OBJ_AIRSHIPANCHOR
+0x0A: ObjHit_Obj0A                                # Object $0A
+0x0B: ObjHit_PUp1UpMush                           # Object $0B - OBJ_POWERUP_1UP
+0x0C: ObjHit_StarOrSuit                           # Object $0C - OBJ_POWERUP_STARMAN
+0x0D: ObjHit_PUpMush                              # Object $0D - OBJ_POWERUP_MUSHROOM
+0x0E: ObjHit_Koopaling                            # Object $0E - OBJ_BOSS_KOOPALING
+0x0F: ObjHit_DoNothing                            # Object $0F
+0x10: ObjHit_DoNothing                            # Object $10
+0x11: ObjHit_DoNothing                            # Object $11
+0x12: ObjHit_DoNothing                            # Object $12
+0x13: ObjHit_DoNothing                            # Object $13
+0x14: ObjHit_DoNothing                            # Object $14
+0x15: ObjHit_DoNothing                            # Object $15
+0x16: ObjHit_DoNothing                            # Object $16
+0x17: ObjHit_DoNothing                            # Object $17 - OBJ_SPINYCHEEP
+0x18: OCSPECIAL_HIGHSCORE                         # Object $18 - OBJ_BOSS_BOWSER
+0x19: ObjHit_FireFlower                           # Object $19 - OBJ_POWERUP_FIREFLOWER
+0x1A: ObjHit_Obj1A                                # Object $1A
+0x1B: ObjHit_BoundLR                              # Object $1B - OBJ_BOUNCELEFTRIGHT
+0x1C: ObjHit_DoNothing                            # Object $1C
+0x1D: ObjHit_DoNothing                            # Object $1D
+0x1E: ObjHit_SuperLeaf                            # Object $1E - OBJ_POWERUP_SUPERLEAF
+0x1F: ObjHit_DoNothing                            # Object $1F - OBJ_GROWINGVINE
+0x20: ObjHit_DoNothing                            # Object $20
+0x21: ObjHit_Card                                 # Object $21 - OBJ_POWERUP_MUSHCARD
+0x22: ObjHit_Card                                 # Object $22 - OBJ_POWERUP_FIRECARD
+0x23: ObjHit_Card                                 # Object $23 - OBJ_POWERUP_STARCARD
+0x24: ObjHit_CloudPlat                            # Object $24 - OBJ_CLOUDPLATFORM_FAST
+0x25: ObjHit_DoNothing                            # Object $25 - OBJ_PIPEWAYCONTROLLER
+0x26: ObjHit_DoNothing                            # Object $26 - OBJ_WOODENPLAT_RIDER
+0x27: ObjHit_DoNothing                            # Object $27 - OBJ_OSCILLATING_H
+0x28: ObjHit_DoNothing                            # Object $28 - OBJ_OSCILLATING_V
+0x29: ObjHit_DoNothing                            # Object $29 - OBJ_SPIKE
+0x2A: Player_GetHurt                              # Object $2A - OBJ_PATOOIE
+0x2B: ObjHit_GoombaInShoe                         # Object $2B - OBJ_GOOMBAINSHOE
+0x2C: ObjHit_CloudPlat                            # Object $2C - OBJ_CLOUDPLATFORM
+0x2D: ObjHit_DoNothing                            # Object $2D - OBJ_BIGBERTHA
+0x2E: ObjHit_DoNothing                            # Object $2E - OBJ_INVISIBLELIFT
+0x2F: Player_GetHurt                              # Object $2F - OBJ_BOO
+0x30: Player_GetHurt                              # Object $30 - OBJ_HOTFOOT_SHY
+0x31: Player_GetHurt                              # Object $31 - OBJ_BOOSTRETCH
+0x32: Player_GetHurt                              # Object $32 - OBJ_BOOSTRETCH_FLIP
+0x33: Player_GetHurt                              # Object $33 - OBJ_NIPPER
+0x34: ObjHit_DoNothing                            # Object $34 - OBJ_TOAD
+0x35: ObjHit_DoNothing                            # Object $35 - OBJ_TOADHOUSEITEM
+0x36: ObjHit_DoNothing                            # Object $36 - OBJ_WOODENPLATFORM
+0x37: ObjHit_DoNothing                            # Object $37 - OBJ_OSCILLATING_HS
+0x38: ObjHit_DoNothing                            # Object $38 - OBJ_OSCILLATING_VS
+0x39: Player_GetHurt                              # Object $39 - OBJ_NIPPERHOPPING
+0x3A: ObjHit_DoNothing                            # Object $3A - OBJ_FALLINGPLATFORM
+0x3B: Player_GetHurt                              # Object $3B - OBJ_CHARGINGCHEEPCHEEP
+0x3C: ObjHit_DoNothing                            # Object $3C - OBJ_WOODENPLATFORMFALL
+0x3D: Player_GetHurt                              # Object $3D - OBJ_NIPPERFIREBREATHER
+0x3E: ObjHit_DoNothing                            # Object $3E - OBJ_WOODENPLATFORMFLOAT
+0x3F: ObjHit_DryBones                             # Object $3F - OBJ_DRYBONES
+0x40: ObjHit_DoNothing                            # Object $40 - OBJ_BUSTERBEATLE
+0x41: ObjHit_EndLevelCard                         # Object $41 - OBJ_ENDLEVELCARD
+0x42: Player_GetHurt                              # Object $42 - OBJ_CHEEPCHEEPPOOL2POOL
+0x43: Player_GetHurt                              # Object $43 - OBJ_CHEEPCHEEPPOOL2POOL2
+0x44: ObjHit_DoNothing                            # Object $44 - OBJ_WOODENPLATUNSTABLE
+0x45: Player_GetHurt                              # Object $45 - OBJ_HOTFOOT
+0x46: Player_GetHurt                              # Object $46 - OBJ_PIRANHASPIKEBALL
+0x47: ObjHit_DoNothing                            # Object $47 - OBJ_GIANTBLOCKCTL
+0x48: ObjHit_DoNothing                            # Object $48 - OBJ_TINYCHEEPCHEEP
+0x49: ObjHit_DoNothing                            # Object $49 - OBJ_FLOATINGBGCLOUD
+0x4A: ObjHit_DoNothing                            # Object $4A - OBJ_BOOMBOOMQBALL
+0x4B: ObjHit_DoNothing                            # Object $4B - OBJ_BOOMBOOMJUMP
+0x4C: ObjHit_DoNothing                            # Object $4C - OBJ_BOOMBOOMFLY
+0x4D: ObjHit_DoNothing                            # Object $4D
+0x4E: ObjHit_DoNothing                            # Object $4E
+0x4F: ObjHit_DoNothing                            # Object $4F - OBJ_CHAINCHOMPFREE
+0x50: ObjHit_DoNothing                            # Object $50 - OBJ_BOBOMBEXPLODE
+0x51: ObjHit_DoNothing                            # Object $51 - OBJ_ROTODISCDUAL
+0x52: ObjHit_DoNothing                            # Object $52 - OBJ_TREASUREBOX
+0x53: ObjHit_DoNothing                            # Object $53 - OBJ_PODOBOOCEILING
+0x54: ObjHit_DoNothing                            # Object $54 - OBJ_DONUTLIFTSHAKEFALL
+0x55: ObjHit_DoNothing                            # Object $55 - OBJ_BOBOMB
+0x56: ObjHit_DoNothing                            # Object $56 - OBJ_PIRANHASIDEWAYSLEFT
+0x57: ObjHit_DoNothing                            # Object $57 - OBJ_PIRANHASIDEWAYSRIGHT
+0x58: ObjHit_DoNothing                            # Object $58 - OBJ_FIRECHOMP
+0x59: ObjHit_DoNothing                            # Object $59 - OBJ_FIRESNAKE
+0x5A: ObjHit_DoNothing                            # Object $5A - OBJ_ROTODISCCLOCKWISE
+0x5B: ObjHit_DoNothing                            # Object $5B - OBJ_ROTODISCCCLOCKWISE
+0x5C: ObjHit_DoNothing                            # Object $5C - OBJ_ICEBLOCK
+0x5D: ObjHit_DoNothing                            # Object $5D - OBJ_TORNADO
+0x5E: ObjHit_DoNothing                            # Object $5E - OBJ_ROTODISCDUALOPPOSE
+0x5F: ObjHit_DoNothing                            # Object $5F - OBJ_ROTODISCDUALOPPOSE2
+0x60: ObjHit_DoNothing                            # Object $60 - OBJ_ROTODISCDUALCCLOCK
+0x61: ObjHit_DoNothing                            # Object $61 - OBJ_BLOOPERWITHKIDS
+0x62: ObjHit_DoNothing                            # Object $62 - OBJ_BLOOPER
+0x63: ObjHit_DoNothing                            # Object $63 - OBJ_BIGBERTHABIRTHER
+0x64: ObjHit_DoNothing                            # Object $64 - OBJ_CHEEPCHEEPHOPPER
+0x65: ObjHit_DoNothing                            # Object $65 - OBJ_WATERCURRENTUPWARD
+0x66: ObjHit_DoNothing                            # Object $66 - OBJ_WATERCURRENTDOWNARD
+0x67: ObjHit_DoNothing                            # Object $67 - OBJ_LAVALOTUS
+0x68: OCSPECIAL_KILLCHANGETO | OBJ_BUZZYBEATLE    # Object $68 - OBJ_TWIRLINGBUZZY
+0x69: OCSPECIAL_KILLCHANGETO | OBJ_SPINY          # Object $69 - OBJ_TWIRLINGSPINY
+0x6A: ObjHit_DoNothing                            # Object $6A - OBJ_BLOOPERCHILDSHOOT
+0x6B: ObjHit_DoNothing                            # Object $6B - OBJ_PILEDRIVER
+0x6C: 0                                           # Object $6C - OBJ_GREENTROOPA
+0x6D: 0                                           # Object $6D - OBJ_REDTROOPA
+0x6E: OCSPECIAL_KILLCHANGETO | OBJ_GREENTROOPA    # Object $6E - OBJ_PARATROOPAGREENHOP
+0x6F: OCSPECIAL_KILLCHANGETO | OBJ_REDTROOPA      # Object $6F - OBJ_FLYINGREDPARATROOPA
+0x70: 0                                       # Object $70 - OBJ_BUZZYBEATLE
+0x71: 0                                       # Object $71 - OBJ_SPINY
+0x72: 0                                       # Object $72 - OBJ_GOOMBA
+0x73: OCSPECIAL_KILLCHANGETO | OBJ_GOOMBA         # Object $73 - OBJ_PARAGOOMBA
+0x74: OCSPECIAL_KILLCHANGETO | OBJ_GOOMBA         # Object $74 - OBJ_PARAGOOMBAWITHMICROS
+0x75: OCSPECIAL_KILLCHANGETO | OBJ_GOOMBA         # Object $75 - OBJ_BOSSATTACK (OCSPECIAL_KILLCHANGETO must be a mistake, but interesting!)
+0x76: 0                                       # Object $76 - OBJ_JUMPINGCHEEPCHEEP
+0x77: 0                                       # Object $77 - OBJ_GREENCHEEP
+0x78: 0                                       # Object $78 - OBJ_BULLETBILL
+0x79: 0                                       # Object $79 - OBJ_BULLETBILLHOMING
+0x7A: 0                                       # Object $7A - OBJ_BIGGREENTROOPA
+0x7B: 0                                       # Object $7B - OBJ_BIGREDTROOPA
+0x7C: 0                                       # Object $7C - OBJ_BIGGOOMBA
+0x7D: 0                                       # Object $7D - OBJ_BIGGREENPIRANHA
+0x7E: OCSPECIAL_KILLCHANGETO | OBJ_BIGGREENTROOPA # Object $7E - OBJ_BIGGREENHOPPER
+0x7F: 0                                       # Object $7F - OBJ_BIGREDPIRANHA
+0x80: OCSPECIAL_KILLCHANGETO | OBJ_GREENTROOPA    # Object $80 - OBJ_FLYINGGREENPARATROOPA
+0x81: OCSPECIAL_HIGHSCORE                         # Object $81 - OBJ_HAMMERBRO
+0x82: OCSPECIAL_HIGHSCORE                         # Object $82 - OBJ_BOOMERANGBRO
+0x83: OCSPECIAL_HIGHSCORE                         # Object $83 - OBJ_LAKITU
+0x84: 0                                       # Object $84 - OBJ_SPINYEGG
+0x85: 0                                       # Object $85 - OBJ_SPINYEGGDUD
+0x86: OCSPECIAL_HIGHSCORE                         # Object $86 - OBJ_HEAVYBRO
+0x87: OCSPECIAL_HIGHSCORE                         # Object $87 - OBJ_FIREBRO
+0x88: 0                                       # Object $88 - OBJ_ORANGECHEEP
+0x89: 0                                       # Object $89 - OBJ_CHAINCHOMP
+0x8A: 0                                       # Object $8A - OBJ_THWOMP
+0x8B: 0                                       # Object $8B - OBJ_THWOMPLEFTSLIDE
+0x8C: 0                                       # Object $8C - OBJ_THWOMPRIGHTSLIDE
+0x8D: 0                                       # Object $8D - OBJ_THWOMPUPDOWN
+0x8E: 0                                       # Object $8E - OBJ_THWOMPDIAGONALUL
+0x8F: 0                                       # Object $8F - OBJ_THWOMPDIAGONALDL
+0x90: ObjHit_DoNothing                            # Object $90 - OBJ_TILTINGPLATFORM
+0x91: ObjHit_DoNothing                            # Object $91 - OBJ_TWIRLINGPLATCWNS
+0x92: ObjHit_DoNothing                            # Object $92 - OBJ_TWIRLINGPLATCW
+0x93: ObjHit_DoNothing                            # Object $93 - OBJ_TWIRLINGPERIODIC
+0x94: ObjHit_DoNothing                            # Object $94 - OBJ_BIGQBLOCK_3UP
+0x95: ObjHit_DoNothing                            # Object $95 - OBJ_BIGQBLOCK_MUSHROOM
+0x96: ObjHit_DoNothing                            # Object $96 - OBJ_BIGQBLOCK_FIREFLOWER
+0x97: ObjHit_DoNothing                            # Object $97 - OBJ_BIGQBLOCK_SUPERLEAF
+0x98: ObjHit_DoNothing                            # Object $98 - OBJ_BIGQBLOCK_TANOOKI
+0x99: ObjHit_DoNothing                            # Object $99 - OBJ_BIGQBLOCK_FROG
+0x9A: ObjHit_DoNothing                            # Object $9A - OBJ_BIGQBLOCK_HAMMER
+0x9B: ObjHit_DoNothing                            # Object $9B
+0x9C: ObjHit_DoNothing                            # Object $9C
+0x9D: ObjHit_DoNothing                            # Object $9D - OBJ_FIREJET_UPWARD
+0x9E: ObjHit_DoNothing                            # Object $9E - OBJ_PODOBOO
+0x9F: ObjHit_DoNothing                            # Object $9F - OBJ_PARABEETLE
+0xA0: ObjHit_DoNothing                            # Object $A0 - OBJ_GREENPIRANHA
+0xA1: ObjHit_DoNothing                            # Object $A1 - OBJ_GREENPIRANHA_FLIPPED
+0xA2: ObjHit_DoNothing                            # Object $A2 - OBJ_REDPIRANHA
+0xA3: ObjHit_DoNothing                            # Object $A3 - OBJ_REDPIRANHA_FLIPPED
+0xA4: ObjHit_DoNothing                            # Object $A4 - OBJ_GREENPIRANHA_FIRE
+0xA5: ObjHit_DoNothing                            # Object $A5 - OBJ_GREENPIRANHA_FIREC
+0xA6: ObjHit_DoNothing                            # Object $A6 - OBJ_VENUSFIRETRAP
+0xA7: ObjHit_DoNothing                            # Object $A7 - OBJ_VENUSFIRETRAP_CEIL
+0xA8: ObjHit_DoNothing                            # Object $A8 - OBJ_ARROWONE
+0xA9: ObjHit_DoNothing                            # Object $A9 - OBJ_ARROWANY
+0xAA: ObjHit_DoNothing                            # Object $AA - OBJ_AIRSHIPPROP
+0xAB: ObjHit_DoNothing                            # Object $AB
+0xAC: ObjHit_DoNothing                            # Object $AC - OBJ_FIREJET_LEFT
+0xAD: ObjHit_DoNothing                            # Object $AD - OBJ_ROCKYWRENCH
+0xAE: ObjHit_DoNothing                            # Object $AE - OBJ_BOLTLIFT
+0xAF: ObjHit_DoNothing                            # Object $AF - OBJ_ENEMYSUN
+0xB0: 0                                       # Object $B0 - OBJ_BIGCANNONBALL
+0xB1: 0                                       # Object $B1 - OBJ_FIREJET_RIGHT
+0xB2: 0                                       # Object $B2 - OBJ_FIREJET_UPSIDEDOWN
+0xB3: 0                                       # Object $B3

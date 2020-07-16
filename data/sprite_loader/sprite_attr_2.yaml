@@ -1,0 +1,180 @@
+0x00: OA2_TDOGRP0                                          # Object $00
+0x01: OA2_TDOGRP1                                          # Object $01
+0x02: OA2_TDOGRP1                                          # Object $02
+0x03: OA2_TDOGRP5                                          # Object $03
+0x04: OA2_TDOGRP2                                          # Object $04
+0x05: OA2_TDOGRP1                                          # Object $05
+0x06: OA2_TDOGRP1                                          # Object $06 - OBJ_BOUNCEDOWNUP
+0x07: OA2_TDOGRP0                                          # Object $07 - OBJ_WARPHIDE
+0x08: OA2_TDOGRP0                                          # Object $08 - OBJ_PSWITCHDOOR
+0x09: OA2_TDOGRP1                                          # Object $09 - OBJ_AIRSHIPANCHOR
+0x0A: OA2_TDOGRP1                                          # Object $0A
+0x0B: OA2_TDOGRP1                                          # Object $0B - OBJ_POWERUP_1UP
+0x0C: OA2_TDOGRP1                                          # Object $0C - OBJ_POWERUP_STARMAN
+0x0D: OA2_TDOGRP1                                          # Object $0D - OBJ_POWERUP_MUSHROOM
+0x0E: OA2_TDOGRP6                                          # Object $0E - OBJ_BOSS_KOOPALING
+0x0F: OA2_TDOGRP0                                          # Object $0F
+0x10: OA2_TDOGRP0                                          # Object $10
+0x11: OA2_TDOGRP0                                          # Object $11
+0x12: OA2_TDOGRP0                                          # Object $12
+0x13: OA2_TDOGRP0                                          # Object $13
+0x14: OA2_TDOGRP0                                          # Object $14
+0x15: OA2_TDOGRP0                                          # Object $15
+0x16: OA2_TDOGRP5                                          # Object $16
+0x17: OA2_TDOGRP1                                          # Object $17 - OBJ_SPINYCHEEP
+0x18: OA2_STOMPDONTCARE | OA2_TDOGRP12                     # Object $18 - OBJ_BOSS_BOWSER
+0x19: OA2_TDOGRP1                                          # Object $19 - OBJ_POWERUP_FIREFLOWER
+0x1A: OA2_TDOGRP1                                          # Object $1A
+0x1B: OA2_TDOGRP1                                          # Object $1B - OBJ_BOUNCELEFTRIGHT
+0x1C: OA2_TDOGRP1                                          # Object $1C
+0x1D: OA2_TDOGRP2                                          # Object $1D
+0x1E: OA2_TDOGRP1                                          # Object $1E - OBJ_POWERUP_SUPERLEAF
+0x1F: OA2_TDOGRP1                                          # Object $1F - OBJ_GROWINGVINE
+0x20: OA2_TDOGRP0                                          # Object $20
+0x21: OA2_TDOGRP1                                          # Object $21 - OBJ_POWERUP_MUSHCARD
+0x22: OA2_TDOGRP1                                          # Object $22 - OBJ_POWERUP_FIRECARD
+0x23: OA2_TDOGRP1                                          # Object $23 - OBJ_POWERUP_STARCARD
+0x24: OA2_TDOGRP2                                          # Object $24 - OBJ_CLOUDPLATFORM_FAST
+0x25: OA2_TDOGRP0                                          # Object $25
+0x26: OA2_TDOGRP2                                          # Object $26 - OBJ_WOODENPLAT_RIDER
+0x27: OA2_TDOGRP2                                          # Object $27 - OBJ_OSCILLATING_H
+0x28: OA2_TDOGRP2                                          # Object $28 - OBJ_OSCILLATING_V
+0x29: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $29 - OBJ_SPIKE
+0x2A: OA2_TDOGRP2                                          # Object $2A - OBJ_PATOOIE
+0x2B: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $2B - OBJ_GOOMBAINSHOE
+0x2C: OA2_TDOGRP2                                          # Object $2C - OBJ_CLOUDPLATFORM
+0x2D: OA2_TDOGRP0                                          # Object $2D - OBJ_BIGBERTHA
+0x2E: OA2_TDOGRP2                                          # Object $2E - OBJ_INVISIBLELIFT
+0x2F: OA2_TDOGRP1                                          # Object $2F - OBJ_BOO
+0x30: OA2_TDOGRP0                                          # Object $30 - OBJ_HOTFOOT_SHY
+0x31: OA2_TDOGRP1                                          # Object $31 - OBJ_BOOSTRETCH
+0x32: OA2_TDOGRP1                                          # Object $32 - OBJ_BOOSTRETCH_FLIP
+0x33: OA2_TDOGRP1                                          # Object $33 - OBJ_NIPPER
+0x34: OA2_TDOGRP2                                          # Object $34 - OBJ_TOAD
+0x35: OA2_TDOGRP0                                          # Object $35 - OBJ_TOADHOUSEITEM
+0x36: OA2_TDOGRP2                                          # Object $36 - OBJ_WOODENPLATFORM
+0x37: OA2_TDOGRP2                                          # Object $37 - OBJ_OSCILLATING_HS
+0x38: OA2_TDOGRP2                                          # Object $38 - OBJ_OSCILLATING_VS
+0x39: OA2_TDOGRP1                                          # Object $39 - OBJ_NIPPERHOPPING
+0x3A: OA2_TDOGRP9                                          # Object $3A - OBJ_FALLINGPLATFORM
+0x3B: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $3B - OBJ_CHARGINGCHEEPCHEEP
+0x3C: OA2_TDOGRP9                                          # Object $3C - OBJ_WOODENPLATFORMFALL
+0x3D: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $3D - OBJ_NIPPERFIREBREATHER
+0x3E: OA2_TDOGRP9                                          # Object $3E - OBJ_WOODENPLATFORMFLOAT
+0x3F: OA2_TDOGRP1                                          # Object $3F - OBJ_DRYBONES
+0x40: OA2_NOSHELLORSQUASH | OA2_GNDPLAYERMOD | OA2_TDOGRP1 # Object $40 - OBJ_BUSTERBEATLE
+0x41: OA2_TDOGRP0                                          # Object $41 - OBJ_ENDLEVELCARD
+0x42: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $42 - OBJ_CHEEPCHEEPPOOL2POOL
+0x43: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $43 - OBJ_CHEEPCHEEPPOOL2POOL2
+0x44: OA2_TDOGRP9                                          # Object $44 - OBJ_WOODENPLATUNSTABLE
+0x45: OA2_TDOGRP0                                          # Object $45 - OBJ_HOTFOOT
+0x46: OA2_TDOGRP2                                          # Object $46 - OBJ_PIRANHASPIKEBALL
+0x47: OA2_TDOGRP1                                          # Object $47 - OBJ_GIANTBLOCKCTL
+0x48: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $48 - OBJ_TINYCHEEPCHEEP
+0x49: OA2_TDOGRP0                                          # Object $49 - OBJ_FLOATINGBGCLOUD
+0x4A: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $4A - OBJ_BOOMBOOMQBALL
+0x4B: OA2_STOMPDONTCARE | OA2_TDOGRP2                      # Object $4B - OBJ_BOOMBOOMJUMP
+0x4C: OA2_STOMPDONTCARE | OA2_TDOGRP2                      # Object $4C - OBJ_BOOMBOOMFLY
+0x4D: OA2_TDOGRP0                                          # Object $4D
+0x4E: OA2_TDOGRP0                                          # Object $4E
+0x4F: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $4F - OBJ_CHAINCHOMPFREE
+0x50: OA2_STOMPDONTCARE | OA2_TDOGRP1                      # Object $50 - OBJ_BOBOMBEXPLODE
+0x51: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $51 - OBJ_ROTODISCDUAL
+0x52: OA2_STOMPDONTCARE | OA2_TDOGRP1                      # Object $52 - OBJ_TREASUREBOX
+0x53: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $53 - OBJ_PODOBOOCEILING
+0x54: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $54 - OBJ_DONUTLIFTSHAKEFALL
+0x55: OA2_STOMPDONTCARE | OA2_TDOGRP1                      # Object $55 - OBJ_BOBOMB
+0x56: OA2_TDOGRP0                                          # Object $56 - OBJ_PIRANHASIDEWAYSLEFT
+0x57: OA2_TDOGRP0                                          # Object $57 - OBJ_PIRANHASIDEWAYSRIGHT
+0x58: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $58 - OBJ_FIRECHOMP
+0x59: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $59 - OBJ_FIRESNAKE
+0x5A: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $5A - OBJ_ROTODISCCLOCKWISE
+0x5B: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $5B - OBJ_ROTODISCCCLOCKWISE
+0x5C: OA2_GNDPLAYERMOD | OA2_TDOGRP1                       # Object $5C - OBJ_ICEBLOCK
+0x5D: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $5D - OBJ_TORNADO
+0x5E: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $5E - OBJ_ROTODISCDUALOPPOSE
+0x5F: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $5F - OBJ_ROTODISCDUALOPPOSE2
+0x60: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $60 - OBJ_ROTODISCDUALCCLOCK
+0x61: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $61 - OBJ_BLOOPERWITHKIDS
+0x62: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $62 - OBJ_BLOOPER
+0x63: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $63 - OBJ_BIGBERTHABIRTHER
+0x64: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $64 - OBJ_CHEEPCHEEPHOPPER
+0x65: OA2_TDOGRP0                                          # Object $65 - OBJ_WATERCURRENTUPWARD
+0x66: OA2_TDOGRP0                                          # Object $66 - OBJ_WATERCURRENTDOWNARD
+0x67: OA2_TDOGRP0                                          # Object $67 - OBJ_LAVALOTUS
+0x68: OA2_TDOGRP1                                          # Object $68 - OBJ_TWIRLINGBUZZY
+0x69: OA2_TDOGRP1                                          # Object $69 - OBJ_TWIRLINGSPINY
+0x6A: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $6A - OBJ_BLOOPERCHILDSHOOT
+0x6B: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $6B - OBJ_PILEDRIVER
+0x6C: OA2_GNDPLAYERMOD | OA2_TDOGRP1                       # Object $6C - OBJ_GREENTROOPA
+0x6D: OA2_GNDPLAYERMOD | OA2_TDOGRP1                       # Object $6D - OBJ_REDTROOPA
+0x6E: OA2_TDOGRP1                                          # Object $6E - OBJ_PARATROOPAGREENHOP
+0x6F: OA2_TDOGRP1                                          # Object $6F - OBJ_FLYINGREDPARATROOPA
+0x70: OA2_GNDPLAYERMOD | OA2_TDOGRP1                       # Object $70 - OBJ_BUZZYBEATLE
+0x71: OA2_GNDPLAYERMOD | OA2_TDOGRP1                       # Object $71 - OBJ_SPINY
+0x72: OA2_GNDPLAYERMOD | OA2_TDOGRP1                       # Object $72 - OBJ_GOOMBA
+0x73: OA2_TDOGRP1                                          # Object $73 - OBJ_PARAGOOMBA
+0x74: OA2_TDOGRP1                                          # Object $74 - OBJ_PARAGOOMBAWITHMICROS
+0x75: OA2_STOMPDONTCARE | OA2_TDOGRP1                      # Object $75 - OBJ_BOSSATTACK
+0x76: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $76 - OBJ_JUMPINGCHEEPCHEEP
+0x77: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $77 - OBJ_GREENCHEEP
+0x78: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $78 - OBJ_BULLETBILL
+0x79: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $79 - OBJ_BULLETBILLHOMING
+0x7A: OA2_GNDPLAYERMOD | OA2_TDOGRP2                       # Object $7A - OBJ_BIGGREENTROOPA
+0x7B: OA2_GNDPLAYERMOD | OA2_TDOGRP2                       # Object $7B - OBJ_BIGREDTROOPA
+0x7C: OA2_GNDPLAYERMOD | OA2_TDOGRP2                       # Object $7C - OBJ_BIGGOOMBA
+0x7D: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $7D - OBJ_BIGGREENPIRANHA
+0x7E: OA2_GNDPLAYERMOD | OA2_TDOGRP2                       # Object $7E - OBJ_BIGGREENHOPPER
+0x7F: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $7F - OBJ_BIGREDPIRANHA
+0x80: OA2_GNDPLAYERMOD | OA2_TDOGRP1                       # Object $80 - OBJ_FLYINGGREENPARATROOPA
+0x81: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $81 - OBJ_HAMMERBRO
+0x82: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $82 - OBJ_BOOMERANGBRO
+0x83: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $83 - OBJ_LAKITU
+0x84: OA2_GNDPLAYERMOD | OA2_TDOGRP1                       # Object $84 - OBJ_SPINYEGG
+0x85: OA2_GNDPLAYERMOD | OA2_TDOGRP1                       # Object $85 - OBJ_SPINYEGGDUD
+0x86: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $86 - OBJ_HEAVYBRO
+0x87: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $87 - OBJ_FIREBRO
+0x88: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $88 - OBJ_ORANGECHEEP
+0x89: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $89 - OBJ_CHAINCHOMP
+0x8A: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $8A - OBJ_THWOMP
+0x8B: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $8B - OBJ_THWOMPLEFTSLIDE
+0x8C: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $8C - OBJ_THWOMPRIGHTSLIDE
+0x8D: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $8D - OBJ_THWOMPUPDOWN
+0x8E: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $8E - OBJ_THWOMPDIAGONALUL
+0x8F: OA2_NOSHELLORSQUASH | OA2_TDOGRP2                    # Object $8F - OBJ_THWOMPDIAGONALDL
+0x90: OA2_TDOGRP0                                          # Object $90 - OBJ_TILTINGPLATFORM
+0x91: OA2_TDOGRP0                                          # Object $91 - OBJ_TWIRLINGPLATCWNS
+0x92: OA2_TDOGRP0                                          # Object $92 - OBJ_TWIRLINGPLATCW
+0x93: OA2_TDOGRP0                                          # Object $93 - OBJ_TWIRLINGPERIODIC
+0x94: OA2_TDOGRP0                                          # Object $94 - OBJ_BIGQBLOCK_3UP
+0x95: OA2_TDOGRP0                                          # Object $95 - OBJ_BIGQBLOCK_MUSHROOM
+0x96: OA2_TDOGRP0                                          # Object $96 - OBJ_BIGQBLOCK_FIREFLOWER
+0x97: OA2_TDOGRP0                                          # Object $97 - OBJ_BIGQBLOCK_SUPERLEAF
+0x98: OA2_TDOGRP0                                          # Object $98 - OBJ_BIGQBLOCK_TANOOKI
+0x99: OA2_TDOGRP0                                          # Object $99 - OBJ_BIGQBLOCK_FROG
+0x9A: OA2_TDOGRP0                                          # Object $9A - OBJ_BIGQBLOCK_HAMMER
+0x9B: OA2_TDOGRP0                                          # Object $9B
+0x9C: OA2_TDOGRP0                                          # Object $9C
+0x9D: OA2_TDOGRP0                                          # Object $9D - OBJ_FIREJET_UPWARD
+0x9E: OA2_TDOGRP0                                          # Object $9E - OBJ_PODOBOO
+0x9F: OA2_STOMPDONTCARE | OA2_TDOGRP1                      # Object $9F - OBJ_PARABEETLE
+0xA0: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $A0 - OBJ_GREENPIRANHA
+0xA1: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $A1 - OBJ_GREENPIRANHA_FLIPPED
+0xA2: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $A2 - OBJ_REDPIRANHA
+0xA3: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $A3 - OBJ_REDPIRANHA_FLIPPED
+0xA4: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $A4 - OBJ_GREENPIRANHA_FIRE
+0xA5: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $A5 - OBJ_GREENPIRANHA_FIREC
+0xA6: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $A6 - OBJ_VENUSFIRETRAP
+0xA7: OA2_NOSHELLORSQUASH | OA2_TDOGRP1                    # Object $A7 - OBJ_VENUSFIRETRAP_CEIL
+0xA8: OA2_TDOGRP0                                          # Object $A8 - OBJ_ARROWONE
+0xA9: OA2_TDOGRP0                                          # Object $A9 - OBJ_ARROWANY
+0xAA: OA2_TDOGRP0                                          # Object $AA - OBJ_AIRSHIPPROP
+0xAB: OA2_STOMPDONTCARE | OA2_TDOGRP1                      # Object $AB
+0xAC: OA2_STOMPDONTCARE | OA2_TDOGRP1                      # Object $AC - OBJ_FIREJET_LEFT
+0xAD: OA2_STOMPDONTCARE | OA2_TDOGRP1                      # Object $AD - OBJ_ROCKYWRENCH
+0xAE: OA2_STOMPDONTCARE | OA2_TDOGRP10                     # Object $AE - OBJ_BOLTLIFT
+0xAF: OA2_STOMPDONTCARE | OA2_TDOGRP1                      # Object $AF - OBJ_ENEMYSUN
+0xB0: OA2_NOSHELLORSQUASH | OA2_TDOGRP0                    # Object $B0 - OBJ_BIGCANNONBALL
+0xB1: OA2_TDOGRP0                                          # Object $B1 - OBJ_FIREJET_RIGHT
+0xB2: OA2_TDOGRP0                                          # Object $B2 - OBJ_FIREJET_UPSIDEDOWN
+0xB3: OA2_TDOGRP11                                         # Object $B3
