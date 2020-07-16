@@ -35,7 +35,7 @@ class Block(Tile):
             cls,
             block_index: int,
             palette_group: List[List[int]],
-            graphics_set: GraphicsPage,
+            graphics_page: GraphicsPage,
             tsa_data: bytes,
             mirrored=False
     ):
@@ -43,7 +43,7 @@ class Block(Tile):
         palette_index = (block_index & 0b1100_0000) >> 6
         image = np.empty((Block.image_length, Block.image_length * 3), dtype="ubyte")
         for idx in range(4):
-            tile = Tile.from_rom(tsa_data[TSA_BANKS[idx] + block_index], palette_group, palette_index, graphics_set)
+            tile = Tile.from_rom(tsa_data[TSA_BANKS[idx] + block_index], palette_group, palette_index, graphics_page)
             x_off, y_off = (idx % 2) * 3 * Tile.image_length, (idx // 2) * Tile.image_length
             image[y_off:y_off + Tile.image_length, x_off:x_off + 3 * Tile.image_length] = tile.numpy_image
         return cls(bytes(image.flatten().tolist()), block_index)
