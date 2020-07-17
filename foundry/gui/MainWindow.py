@@ -3,9 +3,7 @@ import pathlib
 import shlex
 import subprocess
 import tempfile
-import qdarkstyle
 from typing import Tuple, Union
-import sys
 
 from PySide2.QtCore import QSize
 from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
