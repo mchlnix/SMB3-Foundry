@@ -10,11 +10,11 @@ from foundry.gui.settings import load_settings, save_settings
 
 def handle_settings(func: Callable) -> Callable:
     """Returns a function that will load and save the settings"""
-    @wraps
+    @wraps(func)
     def inner(*args, **kwargs):
         """Loads the settings, runs the function, and saves the settings"""
         load_settings()
-        result = func(args, kwargs)
+        result = func(*args, **kwargs)
         save_settings()
         return result
     return inner
