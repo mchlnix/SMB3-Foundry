@@ -10,7 +10,7 @@ Tile: The class for loading any NES graphic
 from typing import List
 from operator import add
 from functools import cached_property
-from methodtools import lru_cache  # functools has a similar lru_cache, but can leak memory and is less class friendly
+from functools import lru_cache as lru_cache
 from PySide2.QtGui import QImage, QPainter, Qt, QColor, QPixmap
 import numpy as np
 
@@ -105,7 +105,9 @@ class Tile:
         return cls(bytes(pixels))
 
     @classmethod
-    def from_rom(cls, object_index: int, palette_group: List[List[int]], palette_index: int, graphics_page: GraphicsPage):
+    def from_rom(
+            cls, object_index: int, palette_group: List[List[int]], palette_index: int, graphics_page: GraphicsPage
+    ):
         """
         Makes a Tile directly from the ROM
         :param object_index: The index into the graphics page (0 - 0xFF)
@@ -155,7 +157,6 @@ class Tile:
         image.setAlphaChannel(qimage_mask(image=image))
         return image
 
-
     @cached_property
     def qimage(self) -> QImage:
         """
@@ -188,7 +189,7 @@ class Tile:
         return QPixmap.fromImage(self.qimage)
 
     @cached_property
-    def numpy_image(self) -> np.array[np.dtype: np.ubyte]:
+    def numpy_image(self) -> "np.array[np.dtype: np.ubyte]":
         """
         Makes a 2D virtualization of the data in terms of a numpy array
         :return: np.array[dtype: byte, shape(Tile.default_size.width, Tile.default_size.height * 3)]
