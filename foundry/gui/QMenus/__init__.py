@@ -91,6 +91,14 @@ class MenuElement:
         """The action to be called"""
 
 
+class MenuElementUpdater(MenuElement, ABC):
+    """A Menu Element that updates all the observers on the action command"""
+
+    def __init__(self, parent, add_action: bool = True) -> None:
+        self.action = ObservedAndRequired(self.action)
+        super().__init__(parent, add_action)
+
+
 class MenuElementSafe(MenuElement, ABC):
     """A Menu Element that contains a test to see if something is safe to do"""
     def __init__(self, parent, add_action: bool = True) -> None:
