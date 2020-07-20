@@ -4,7 +4,6 @@ Provides a class to help with observing events
 
 
 from typing import Callable
-from foundry.decorators.Required import Required
 
 
 class Observed:
@@ -47,7 +46,10 @@ class ObservedAndRequired:
     def notify_observers(self, result) -> None:
         """Notifies every observer"""
         for observer in self.observers:
-            observer(result)
+            if isinstance(result, tuple):
+                observer(*result)
+            else:
+                observer(result)
 
     def attach_observer(self, observer: Callable) -> None:
         """Adds an observer"""
