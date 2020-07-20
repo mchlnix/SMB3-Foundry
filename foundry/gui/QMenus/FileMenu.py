@@ -1,11 +1,22 @@
-
-from typing import Callable
-from functools import wraps, update_wrapper
-from abc import abstractmethod
-from PySide2.QtWidgets import QFileDialog, QMessageBox, QWidget
+"""
+File menus to help streamline gui in regards to loading and saving files of different types
+ROM_FILE_FILTER: The file filter for loading ROM (.nes or .rom) files
+M3L_FILE_FILTER: The file filter for loading M3L files
+ASM6_FILE_FILTER: The file filter for loading ASM6 (.asm) files
+IMG_FILE_FILTER: The file filter for loading IMG (.png) files
+FileMenu: The default file menu (used by the MainWindow)
+FileMenuLight: A more reusable form the FileMenu
+ExitMenuElement: An element to exit the program
+SettingsMenuElement: An element to load the settings
+OpenROMMenuElement: An element to load the ROM
+OpenM3LMenuElement: An element to load a M3L file
+SaveROMMenuElement: An element to save the ROM directly from the ROM's path
+SaveROMasMenuElement: An element to save the ROM
+SaveM3LMenuElement: An element to save M3L files
+SaveASM6MenuElement: An element to save ASM6 files
+"""
 
 from foundry.gui.SettingsDialog import show_settings
-from foundry.decorators.Observer import Observed, ObservedAndRequired
 from . import Menu, MenuElement, MenuElementOpen, MenuElementSave
 
 
