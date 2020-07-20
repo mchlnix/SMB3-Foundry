@@ -7,3 +7,4 @@ perfplot~=0.8.1
 pandas~=1.0.5
 methodtools>=0.4.2
 qimage2ndarray>=1.8.3
+notifyr>=1.1
