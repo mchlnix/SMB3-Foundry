@@ -24,6 +24,7 @@ from foundry.game.gfx.Palette import (
 )
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.util import clear_layout
 
 
 class PaletteViewer(CustomDialog):
@@ -167,3 +168,33 @@ class ColorTable(QWidget):
             self.ok_clicked.emit(color_index)
 
         self.close()
+
+
+class SidePalette(QWidget):
+    def __init__(self, level_ref: LevelRef):
+        super(SidePalette, self).__init__()
+
+        self.level_ref = level_ref
+
+        self.level_ref.data_changed.connect(self.update)
+
+        self.setLayout(QVBoxLayout(self))
+        self.layout().setSpacing(0)
+
+        self.setWhatsThis(
+            "<b>Object Palettes</b><br/>"
+            "This shows the current palette group of the level, which can be changed in the level header "
+            "editor.<br/>"
+            "By clicking on the individual colors, you can change them.<br/><br/>"
+            ""
+            "Note: The first color (the left most one) is always the same among all 4 palettes."
+        )
+
+    def update(self):
+        clear_layout(self.layout())
+
+        palette_group_index = self.level_ref.object_palette_index
+        palette = load_palette_group(self.level_ref.object_set_number, palette_group_index)
+
+        for palette_no in range(PALETTES_PER_PALETTES_GROUP):
+            self.layout().addWidget(PaletteWidget(palette, palette_no))

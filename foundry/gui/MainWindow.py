@@ -24,6 +24,7 @@ from PySide2.QtWidgets import (
     QSizePolicy,
     QSplitter,
     QToolBar,
+    QVBoxLayout,
     QWhatsThis,
     QWidget,
 )
@@ -64,7 +65,7 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
-from foundry.gui.PaletteViewer import PaletteViewer
+from foundry.gui.PaletteViewer import PaletteViewer, SidePalette
 from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
@@ -322,6 +323,17 @@ class MainWindow(QMainWindow):
         self.level_size_bar = LevelSizeBar(self, self.level_ref)
         self.enemy_size_bar = EnemySizeBar(self, self.level_ref)
 
+        size_and_palette = QWidget()
+        size_and_palette.setLayout(QHBoxLayout())
+        size_and_palette.layout().setContentsMargins(0, 0, 0, 0)
+
+        size_layout = QVBoxLayout()
+        size_layout.addWidget(self.level_size_bar)
+        size_layout.addWidget(self.enemy_size_bar)
+
+        size_and_palette.layout().addLayout(size_layout, stretch=1)
+        size_and_palette.layout().addWidget(SidePalette(self.level_ref))
+
         self.jump_list = JumpList(self, self.level_ref)
         self.jump_list.add_jump.connect(self.on_jump_added)
         self.jump_list.edit_jump.connect(self.on_jump_edit)
@@ -358,8 +370,7 @@ class MainWindow(QMainWindow):
 
         level_toolbar.addWidget(self.spinner_panel)
         level_toolbar.addWidget(self.object_dropdown)
-        level_toolbar.addWidget(self.level_size_bar)
-        level_toolbar.addWidget(self.enemy_size_bar)
+        level_toolbar.addWidget(size_and_palette)
         level_toolbar.addWidget(splitter)
 
         level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
