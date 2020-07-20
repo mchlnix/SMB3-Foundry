@@ -4,10 +4,17 @@ The container for all the local file menu functions
 
 from typing import Callable
 from PySide2.QtWidgets import QMenu, QAction, QMessageBox, QFileDialog
+from PySide2.QtCore import QUrl
+from PySide2.QtGui import QDesktopServices, QIcon
 from abc import abstractmethod, ABC
 
 from foundry.decorators.Required import Required, SmartRequired
 from foundry.decorators.Observer import Observed, ObservedAndRequired
+
+
+def open_url(url: str):
+    """Opens a given URL"""
+    QDesktopServices.openUrl(QUrl(url))
 
 
 class Menu(QMenu):
