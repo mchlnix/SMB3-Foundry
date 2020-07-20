@@ -8,6 +8,7 @@ from PySide2.QtCore import QUrl
 from PySide2.QtGui import QDesktopServices, QIcon
 from abc import abstractmethod, ABC
 
+from foundry import icon_dir, data_dir
 from foundry.decorators.Required import Required, SmartRequired
 from foundry.decorators.Observer import Observed, ObservedAndRequired
 
@@ -15,6 +16,19 @@ from foundry.decorators.Observer import Observed, ObservedAndRequired
 def open_url(url: str):
     """Opens a given URL"""
     QDesktopServices.openUrl(QUrl(url))
+
+
+def icon(icon_name: str):
+    """Gets an icon"""
+    icon_path = icon_dir / icon_name
+    data_path = data_dir / icon_name
+
+    if icon_path.exists():
+        return QIcon(str(icon_path))
+    elif data_path.exists():
+        return QIcon(str(data_path))
+    else:
+        raise FileNotFoundError(icon_path)
 
 
 class Menu(QMenu):
