@@ -12,6 +12,7 @@ class Observed:
         self.function = function
         self.notify_observers = self.notify
         self.attach_observer = self.attach
+        self.delete_observer = self.delete
         self.observers = []
 
     def __call__(self, *args, **kwargs):
@@ -27,6 +28,11 @@ class Observed:
     def attach(self, observer: Callable) -> None:
         """Adds an observer"""
         self.observers.append(observer)
+
+    def delete(self, observer: Callable) -> None:
+        """Deletes an observer"""
+        self.observers.remove(observer)
+
 
 
 class ObservedAndRequired:
@@ -55,6 +61,10 @@ class ObservedAndRequired:
         """Adds an observer"""
         self.observers.append(observer)
 
+    def delete_observer(self, observer: Callable) -> None:
+        """Deletes an observer"""
+        self.observers.remove(observer)
+
     def notify_required(self) -> bool:
         """Notifies every observer and determines if it is safe to continue"""
         for observer in self.required:
@@ -65,3 +75,9 @@ class ObservedAndRequired:
     def attach_required(self, observer: Callable, *_) -> None:
         """Adds an observer"""
         self.required.append(observer)
+
+    def delete_required(self, observer: Callable, *_) -> None:
+        """Removes a required"""
+        self.required.remove(observer)
+
+
