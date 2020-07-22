@@ -15,7 +15,7 @@ LINK_BLUEFINCH = "https://www.twitch.tv/bluefinch3000"
 LINK_JOE_SMO = "https://github.com/TheJoeSmo"
 LINK_PIJOKRA = "https://github.com/PiJoKra"
 LINK_MICHAEL = "https://github.com/mchlnix"
-
+LINK_SKYYANNICK = "https://www.youtube.com/channel/UCnI_HjFGbyRmfOBWzzxK6LA"
 
 class AboutDialog(CustomDialog):
     def __init__(self, parent):
@@ -42,7 +42,7 @@ class AboutDialog(CustomDialog):
         text_layout.addWidget(LinkLabel(self, f'Testers: '))
         text_layout.addWidget(LinkLabel(self, f'  • <a href="{LINK_BLUEFINCH}">BlueFinch</a>  '
                                               f'  • ZacMario  '
-                                              f'  • SKJyannick'))
+                                              f'  • <a href="{LINK_SKYYANNICK}">SKJyannick</a>'))
         text_layout.addWidget(LinkLabel(self, f''))
         text_layout.addWidget(LinkLabel(self, f'Special Thanks To:'))
         text_layout.addWidget(LinkLabel(self, f'  • <a href="{LINK_HUKKA}">Hukka</a> for our predecessor '
