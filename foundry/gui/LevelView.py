@@ -23,7 +23,7 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.SelectionSquare import SelectionSquare
-from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
+from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, get_setting
 
 from foundry.game.Position import Position
 
@@ -63,15 +63,15 @@ class LevelView(QWidget):
 
         self.level_drawer = LevelDrawer()
 
-        self.draw_grid = SETTINGS["draw_grid"]
-        self.draw_jumps = SETTINGS["draw_jumps"]
-        self.draw_expansions = SETTINGS["draw_expansion"]
-        self.draw_mario = SETTINGS["draw_mario"]
-        self.transparency = SETTINGS["block_transparency"]
-        self.background_enabled = SETTINGS["background_enabled"]
-        self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
-        self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
-        self.draw_invisible_items = SETTINGS["draw_invisible_items"]
+        self.draw_grid = get_setting("draw_grid", True)
+        self.draw_jumps = get_setting("draw_jumps", True)
+        self.draw_expansions = get_setting("draw_expansion", True)
+        self.draw_mario = get_setting("draw_mario", True)
+        self.transparency = get_setting("block_transparency", True)
+        self.background_enabled = get_setting("background_enabled", True)
+        self.draw_jumps_on_objects = get_setting("draw_jump_on_objects", True)
+        self.draw_items_in_blocks = get_setting("draw_items_in_blocks", True)
+        self.draw_invisible_items = get_setting("draw_invisible_items", True)
 
         self.zoom = 1
         self.block_length = Block.image_length * self.zoom
@@ -207,7 +207,7 @@ class LevelView(QWidget):
         elif self.selection_square.active:
             self.set_selection_end(event.pos())
 
-        elif SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK:
+        elif get_setting("resize_mode", RESIZE_LEFT_CLICK) == RESIZE_LEFT_CLICK:
             self.set_cursor_for_position(event)
 
         return super(LevelView, self).mouseMoveEvent(event)
@@ -320,7 +320,7 @@ class LevelView(QWidget):
 
         self.last_mouse_position = level_x, level_y
 
-        if self.select_objects_on_click(event) and SETTINGS["resize_mode"] == RESIZE_RIGHT_CLICK:
+        if self.select_objects_on_click(event) and get_setting("resize_mode", RESIZE_LEFT_CLICK) == RESIZE_RIGHT_CLICK:
             self.try_start_resize(MODE_RESIZE_DIAG, event)
 
     def try_start_resize(self, resize_mode: int, event: QMouseEvent):
@@ -409,7 +409,7 @@ class LevelView(QWidget):
             if obj is not None:
                 edge = self.cursor_on_edge_of_object(obj, event.pos())
 
-                if SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK and edge:
+                if get_setting("resize_mode", RESIZE_LEFT_CLICK) == RESIZE_LEFT_CLICK and edge:
 
                     self.try_start_resize(self._resize_mode_from_edge(edge), event)
                 else:

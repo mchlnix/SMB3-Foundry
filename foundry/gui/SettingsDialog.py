@@ -15,17 +15,16 @@ from PySide2.QtWidgets import (
 from foundry import icon, icon_dir
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.settings import (
-    RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings, DRACULA_STYLE_SET, RETRO_STYLE_SET
+    RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, load_settings, save_settings, DRACULA_STYLE_SET, RETRO_STYLE_SET,
+    get_setting, set_setting
 )
 
 load_settings()
 
 
 def get_gui_style():
-    if SETTINGS["gui_style"] == DRACULA_STYLE_SET:
+    if get_setting("gui_style", RETRO_STYLE_SET) == DRACULA_STYLE_SET:
         return qdarkstyle.load_stylesheet()
-    else:
-        return ""
 
 
 class SettingsDialog(CustomDialog):
@@ -39,8 +38,8 @@ class SettingsDialog(CustomDialog):
         self.lmb_radio = QRadioButton("Left Mouse Button")
         rmb_radio = QRadioButton("Right Mouse Button")
 
-        self.lmb_radio.setChecked(SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK)
-        rmb_radio.setChecked(SETTINGS["resize_mode"] == RESIZE_RIGHT_CLICK)
+        self.lmb_radio.setChecked(get_setting("resize_mode", RESIZE_LEFT_CLICK) == RESIZE_LEFT_CLICK)
+        rmb_radio.setChecked(get_setting("resize_mode", RESIZE_LEFT_CLICK) == RESIZE_RIGHT_CLICK)
 
         self.lmb_radio.toggled.connect(self._update_settings)
 
@@ -60,8 +59,8 @@ class SettingsDialog(CustomDialog):
         self.retro_style_radio = QRadioButton("Retro")
         dracula_style_radio = QRadioButton("Dracula")
 
-        self.retro_style_radio.setChecked(SETTINGS["gui_style"] == RETRO_STYLE_SET)
-        dracula_style_radio.setChecked(SETTINGS["gui_style"] == DRACULA_STYLE_SET)
+        self.retro_style_radio.setChecked(get_setting("gui_style", RETRO_STYLE_SET) == RETRO_STYLE_SET)
+        dracula_style_radio.setChecked(get_setting("gui_style", RETRO_STYLE_SET) == DRACULA_STYLE_SET)
 
         self.retro_style_radio.toggled.connect(self._update_settings)
 
@@ -77,7 +76,7 @@ class SettingsDialog(CustomDialog):
 
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText("Path to emulator")
-        self.emulator_command_input.setText(SETTINGS["instaplay_emulator"])
+        self.emulator_command_input.setText(get_setting("instaplay_emulator", ""))
 
         self.emulator_command_input.textChanged.connect(self._update_settings)
 
@@ -86,7 +85,7 @@ class SettingsDialog(CustomDialog):
 
         self.command_arguments_input = QLineEdit(self)
         self.command_arguments_input.setPlaceholderText("%f")
-        self.command_arguments_input.setText(SETTINGS["instaplay_arguments"])
+        self.command_arguments_input.setText(get_setting("instaplay_arguments", ""))
 
         self.command_arguments_input.textEdited.connect(self._update_settings)
 
@@ -115,23 +114,23 @@ class SettingsDialog(CustomDialog):
         self.update()
 
     def update(self):
-        self.command_label.setText(f" > {SETTINGS['instaplay_emulator']} {SETTINGS['instaplay_arguments']}")
+        self.command_label.setText(f" > {get_setting('instaplay_emulator', '')} {get_setting('instaplay_arguments', '')}")
 
     def _update_settings(self, _):
-        SETTINGS["instaplay_emulator"] = self.emulator_command_input.text()
-        SETTINGS["instaplay_arguments"] = self.command_arguments_input.text()
+        set_setting("instaplay_emulator", self.emulator_command_input.text())
+        set_setting("instaplay_arguments", self.command_arguments_input.text())
 
         if self.lmb_radio.isChecked():
-            SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
+            set_setting("resize_mode", RESIZE_LEFT_CLICK)
         else:
-            SETTINGS["resize_mode"] = RESIZE_RIGHT_CLICK
+            set_setting("resize_mode", RESIZE_RIGHT_CLICK)
 
         if self.retro_style_radio.isChecked():
-            SETTINGS["gui_style"] = RETRO_STYLE_SET
+            set_setting("gui_style", RETRO_STYLE_SET)
         else:
-            SETTINGS["gui_style"] = DRACULA_STYLE_SET
+            set_setting("gui_style", DRACULA_STYLE_SET)
 
-        if SETTINGS["gui_style"] == DRACULA_STYLE_SET:
+        if get_setting("gui_style", RETRO_STYLE_SET) == DRACULA_STYLE_SET:
             self.setStyleSheet(qdarkstyle.load_stylesheet())
             self.sender.setStyleSheet(qdarkstyle.load_stylesheet())
         else:
