@@ -20,6 +20,9 @@ class Observed:
         self.notify(result)
         return result
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.function}) with observers: {self.observers}"
+
     def notify(self, result) -> None:
         """Notifies every observer"""
         for observer in self.observers:
