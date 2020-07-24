@@ -15,9 +15,9 @@ from foundry.game.gfx.objects.objects.LevelObjectDefinition import Animation
 
 class SpriteElement:
     """A grouping of sprites to make a frame of an object"""
-    sprites: np.array[np.dtype: Sprite]
+    sprites: np.array
 
-    def __init__(self, sprites: np.array[np.dtype: object]) -> None:
+    def __init__(self, sprites: np.array) -> None:
         self.sprites = sprites
 
     def __repr__(self):
@@ -106,7 +106,7 @@ class SpriteElement:
         return QPixmap.fromImage(self.qimage)
 
     @cached_property
-    def numpy_image(self) -> np.array[np.dtype: np.ubyte]:
+    def numpy_image(self) -> np.array:
         """
         Makes a 2D virtualization of the data in terms of a numpy array
         :return: np.array[dtype: byte, shape(self.image_width, self.image_height * 3)]
