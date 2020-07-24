@@ -7,6 +7,8 @@ from typing import Optional
 from PySide2.QtWidgets import QWidget, QLineEdit, QSizePolicy, QFormLayout
 
 from foundry.decorators.Observer import Observed
+from foundry.gui.QCore import LABEL_TINY, MARGIN_TIGHT
+from foundry.gui.QLabel import Label
 
 
 class LineEdit(QLineEdit):
@@ -33,9 +35,12 @@ class LineEditPanel(QWidget):
         self.parent = parent
         self.line_edit = line_edit
         self.on_text_update = self.line_edit.on_text_update
-        spinner_layout = QFormLayout()
-        spinner_layout.addRow(name, self.line_edit)
-        self.setLayout(spinner_layout)
+        line_edit_layout = QFormLayout()
+        line_edit_layout.setContentsMargins(MARGIN_TIGHT, 0, MARGIN_TIGHT, 0)
+        self.label = Label(self, name)
+        self.label.setFixedWidth(LABEL_TINY)
+        line_edit_layout.addRow(self.label, self.line_edit)
+        self.setLayout(line_edit_layout)
 
 
 
