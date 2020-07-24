@@ -15,6 +15,5 @@ class Toolbar(QToolBar):
         toolbar.toggleViewAction().setChecked(True)
         toolbar.addWidget(widget)
         toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea | Qt.TopToolBarArea | Qt.BottomToolBarArea)
-        parent.addToolBar(side)
+        parent.addToolBar(side, toolbar)
         return toolbar
-    
