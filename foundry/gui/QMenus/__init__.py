@@ -3,7 +3,6 @@ The container for all the local file menu functions
 """
 
 from typing import Callable
-from typing import Callable, Union
 from PySide2.QtWidgets import QMenu, QAction, QMessageBox, QFileDialog
 from PySide2.QtCore import QUrl
 from PySide2.QtGui import QDesktopServices, QIcon
