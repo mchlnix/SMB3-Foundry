@@ -128,7 +128,7 @@ class Sprite:
         return QPixmap.fromImage(self.qimage)
 
     @cached_property
-    def numpy_image(self) -> np.array[np.dtype: np.ubyte]:
+    def numpy_image(self) -> np.array:
         """
         Makes a 2D virtualization of the data in terms of a numpy array
         :return: np.array[dtype: byte, shape(Tile.default_size.width, Tile.default_size.height * 3)]
