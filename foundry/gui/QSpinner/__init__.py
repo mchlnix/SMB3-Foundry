@@ -1,17 +1,22 @@
 """
 This module contains the base functionality for spinners
 Spinner: A generic spinner with extended functionality
+SpinnerPanel: A generic spinner with a label
 """
 
-from PySide2.QtWidgets import QSpinBox
+from typing import Optional
+from PySide2.QtWidgets import QWidget, QSpinBox, QSizePolicy, QFormLayout
 
 from foundry.decorators.Observer import Observed
+from foundry.gui.QCore import MARGIN_TIGHT, LABEL_TINY
+from foundry.gui.QLabel import Label
 
 
 class Spinner(QSpinBox):
     """A generic spinner with extended functionality"""
     def __init__(self, parent, minimum=0, maximum=0xFFFFFF):
-        super(Spinner, self).__init__(parent)
+        super().__init__(parent)
+        self.setContentsMargins(0, 0, 0, 0)
         self.on_text_change = Observed(self.on_text_change)
         self.textChanged.connect(self.on_text_change)
         self.on_value_change = Observed(self.on_value_change)
@@ -30,3 +35,29 @@ class Spinner(QSpinBox):
         Extends the connect functionality from Qt
         """
         return new_value
+
+
+class SpinnerPanel(QWidget):
+    """A spinner panel with a basic form layout"""
+    def __init__(self, parent: Optional[QWidget], name: str, spinner: Spinner):
+        super(SpinnerPanel, self).__init__(parent)
+        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setContentsMargins(MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT)
+
+        self.parent = parent
+        self.spinner = spinner
+        self.on_text_change = self.spinner.on_text_change
+        self.on_value_change = self.spinner.on_value_change
+        spinner_layout = QFormLayout()
+        spinner_layout.setContentsMargins(MARGIN_TIGHT, 0, MARGIN_TIGHT, 0)
+        self.label = Label(self, name)
+        self.label.setFixedWidth(LABEL_TINY)
+        spinner_layout.addRow(self.label, self.spinner)
+        self.setLayout(spinner_layout)
+
+
+
+
+
+
+
