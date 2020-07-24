@@ -14,7 +14,7 @@ from functools import lru_cache as lru_cache
 from PySide2.QtGui import QImage, QPainter, Qt, QColor, QPixmap
 import numpy as np
 
-from foundry.game.gfx.Palette import NESPalette
+from foundry.game.gfx.Palette import PaletteController
 from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.game.Size import Size
 from foundry.game.gfx.GraphicsPage import GraphicsPage
@@ -23,6 +23,7 @@ from foundry.game.Position import Position
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 
 BACKGROUND_COLOR_INDEX = 0
+palette_controller = PaletteController()
 
 
 @lru_cache
@@ -62,7 +63,7 @@ def get_color(b: int, palette):
     if b == BACKGROUND_COLOR_INDEX:
         return MASK_COLOR
     else:
-        return NESPalette[palette[b]]
+        return palette_controller.colors[palette[b]]
 
 
 def qimage_mask(image: QImage) -> QImage:
