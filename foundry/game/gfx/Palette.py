@@ -1,4 +1,7 @@
-from typing import List
+from typing import List, Tuple, Union
+from collections import namedtuple
+import yaml
+from yaml import CLoader
 
 from PySide2.QtGui import QColor
 
@@ -25,31 +28,51 @@ PALETTE_DATA_SIZE = (
     * COLORS_PER_PALETTE
 )
 
-palette_file = root_dir.joinpath("data", "Default.pal")
 
-with open(palette_file, "rb") as f:
-    color_data = f.read()
-
-offset = 0x18  # first color position
-
-NESPalette = []
-COLOR_COUNT = 64
-BYTES_IN_COLOR = 3 + 1  # bytes + separator
-
-for i in range(COLOR_COUNT):
-    NESPalette.append([color_data[offset], color_data[offset + 1], color_data[offset + 2]])
-
-    offset += BYTES_IN_COLOR
+palette_file = root_dir.joinpath("data", "palette.yaml")
 
 
-def load_palette(object_set: int, palette_group: int):
+Color = namedtuple("Color", "red green blue")
+Palette = namedtuple("Palette", "color_0 color_1 color_2 color_3")
+PaletteSet = namedtuple("PaletteSet", "palette_0 palette_1 palette_2 palette_3")
+
+
+_NES_PAL_CONTROLLER = None
+
+
+def _load_nes_colors():
+    with open(palette_file) as f:
+        d = yaml.load(f, Loader=CLoader)
+    return {idx: Color(c["red"], c["green"], c["blue"]) for idx, c in enumerate(d)}
+
+
+def load_palette_group(palette_set: Union[List[Palette], Tuple[Palette]]) -> PaletteSet:
+    """Loads a palette group from a list of lists"""
+    try:
+        return PaletteSet(*palette_set[0:4])
+    except IndexError as e:
+        print(e, f"Not a valid length for a palette set: {palette_set}")
+
+
+class PaletteController:
+    """A singleton that contains important NES palette information"""
+    def __new__(cls, *args, **kwargs) -> "PaletteController":
+        global _NES_PAL_CONTROLLER
+        if _NES_PAL_CONTROLLER is None:
+            _NES_PAL_CONTROLLER = super().__new__(cls, *args, **kwargs)
+            _NES_PAL_CONTROLLER.colors = _load_nes_colors()
+        return _NES_PAL_CONTROLLER
+
+    def get_qcolor(self, color_idx: int) -> QColor:
+        """Converts the color to a qcolor"""
+        return QColor(self.colors[color_idx][0], self.colors[color_idx][1], self.colors[color_idx][2])
+
+
+def load_palette(object_set: int, palette_group: int) -> PaletteSet:
     """
-    Basically does, what the Setup_PalData routine does.
-
     :param object_set: Level_Tileset in the disassembly.
     :param palette_group: Palette_By_Tileset. Defined in the level header.
-
-    :return: A list of 4 groups of 4 colors.
+    :return: Returns a struct
     """
     rom = ROM()
 
@@ -62,18 +85,22 @@ def load_palette(object_set: int, palette_group: int):
     palettes = []
 
     for _ in range(PALETTES_PER_PALETTES_GROUP):
-        palettes.append(rom.read(palette_address, COLORS_PER_PALETTE))
-
+        palettes.append(Palette(*rom.read(palette_address, COLORS_PER_PALETTE)))
         palette_address += COLORS_PER_PALETTE
 
-    return palettes
+    return load_palette_group(palettes)
 
 
-def bg_color_for_object_set(object_set_number: int, palette_group_index: int) -> QColor:
-    palette = load_palette(object_set_number, palette_group_index)
+def bg_color_for_object_set(tile_set: int, palette_group_index: int) -> QColor:
+    palette = load_palette(tile_set, palette_group_index)
 
     return QColor(*bg_color_for_palette(palette))
 
 
-def bg_color_for_palette(palette: List[bytearray]):
-    return NESPalette[palette[0][0]]
+def bg_color_for_palette(palette_set: PaletteSet):
+    """
+    Gets the background color of a palette set
+    :param palette_set: PaletteSet
+    :return: A tuple representing the color data
+    """
+    return PaletteController().colors[palette_set[0][0]]
