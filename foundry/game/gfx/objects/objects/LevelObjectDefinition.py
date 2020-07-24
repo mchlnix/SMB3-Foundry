@@ -53,6 +53,7 @@ class Hitbox:
 
 class LevelObjectDefinition:
     """The definition for an object"""
+    name: str
     operation: ObjectOperation
     animations: List[Animation]
     hitbox: Hitbox
