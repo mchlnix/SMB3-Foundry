@@ -13,7 +13,6 @@ class Toolbar(QToolBar):
         toolbar.setOrientation(Qt.Horizontal)
         toolbar.setFloatable(True)
         toolbar.toggleViewAction().setChecked(True)
-        toolbar.toggleViewAction().trigger()
         toolbar.addWidget(widget)
         toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea | Qt.TopToolBarArea | Qt.BottomToolBarArea)
         parent.addToolBar(side)
