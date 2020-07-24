@@ -9,7 +9,7 @@ class Toolbar(QToolBar):
         """Makes a default toolbox"""
         toolbar = QToolBar(name, parent)
         toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        toolbar.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         toolbar.setOrientation(Qt.Horizontal)
         toolbar.setFloatable(True)
         toolbar.toggleViewAction().setChecked(True)
