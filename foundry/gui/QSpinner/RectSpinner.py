@@ -6,19 +6,19 @@ the_rect: The rect provided from the RectSpinner
 
 from typing import Optional
 from PySide2.QtWidgets import QWidget, QSizePolicy, QVBoxLayout, QLayout
+from PySide2.QtGui import Qt
 
 from foundry.gui.QLabel import Label
 from foundry.decorators.Observer import Observed
 from foundry.gui.QSpinner.MultiSpinner import MultiSpinnerPanel
 from foundry.gui.QSpinner.PositionSpinner import PositionSpinner
 from foundry.gui.QSpinner.SizeSpinner import SizeSpinner
-from foundry.gui.QCore import LABEL_TIGHT
 from foundry.game.Rect import Rect
 
 
 class RectSpinner(QWidget):
     """A class for keeping track of a rect"""
-    def __init__(self, parent: Optional[QWidget], name: str, rect: Rect = Rect(6, 0, 1, 0)) -> None:
+    def __init__(self, parent: Optional[QWidget], name: str, rect: Rect = Rect(0, 0, 0, 0)) -> None:
         super().__init__(parent)
         self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         layout = QVBoxLayout()
@@ -27,7 +27,7 @@ class RectSpinner(QWidget):
         layout.setSizeConstraint(QLayout.SetFixedSize)
 
         self.label = Label(self, name)
-        self.label.setFixedWidth(LABEL_TIGHT)
+        self.label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.label)
         self.position_spinner = MultiSpinnerPanel(self, "Position", PositionSpinner(self))
         layout.addWidget(self.position_spinner)
