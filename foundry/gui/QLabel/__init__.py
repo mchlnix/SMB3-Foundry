@@ -2,9 +2,8 @@
 This module includes all the different Labels for including text
 """
 
-from typing import Callable, Optional
+from typing import Optional
 from PySide2.QtWidgets import QWidget, QLabel, QSizePolicy
-from PySide2.QtGui import Qt
 
 
 class Label(QLabel):
