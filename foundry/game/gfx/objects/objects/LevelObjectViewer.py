@@ -72,37 +72,31 @@ class MainWindow(QMainWindow):
         self.scroll_panel.setWidget(self.object_view)
         self.setCentralWidget(self.scroll_panel)
 
-        name_text = LineEditPanel(self, "name", LineEdit(self, "test"))
+        name_text = LineEditPanel(self, "Name", LineEdit(self, "test"))
         self.name_toolbar = Toolbar.default_toolbox(self, "name_toolbar", name_text, Qt.RightToolBarArea)
 
-        page_spinner = SpinnerPanel(self, "page", HexSpinner(self, 0, 0xFF))
+        page_spinner = SpinnerPanel(self, "Page", HexSpinner(self, 0, 0xFF))
         self.page_toolbar = Toolbar.default_toolbox(self, "page_toolbar", page_spinner, Qt.RightToolBarArea)
 
-        graphic_spinner = SpinnerPanel(self, "sprite", HexSpinner(self, 0, 0xFF))
+        graphic_spinner = SpinnerPanel(self, "Sprite", HexSpinner(self, 0, 0xFF))
         self.graphic_toolbar = Toolbar.default_toolbox(self, "graphic_spinner", graphic_spinner, Qt.RightToolBarArea)
 
-        horizontal_mirror_checkbox = CheckboxPanel(self, "horizontal mirror", CheckBox(self, ""))
+        horizontal_mirror_checkbox = CheckboxPanel(self, "Horizontal Mirror", CheckBox(self, ""))
         self.horizontal_mirror_toolbar = Toolbar.default_toolbox(
             self, "horizontal_mirror_toolbar", horizontal_mirror_checkbox, Qt.RightToolBarArea
         )
 
-        vertical_mirror_checkbox = CheckboxPanel(self, "vertical mirror", CheckBox(self, ""))
+        vertical_mirror_checkbox = CheckboxPanel(self, "Vertical Mirror", CheckBox(self, ""))
         self.vertical_mirror_toolbar = Toolbar.default_toolbox(
             self, "vertical_mirror_toolbar", vertical_mirror_checkbox, Qt.RightToolBarArea
         )
 
-        position_spinner = PositionSpinner(self)
-        self.pos_toolbar = Toolbar.default_toolbox(
-            self, "position_toolbar", MultiSpinnerPanel(self, "Position", position_spinner), Qt.RightToolBarArea
+        self.hitbox_toolbar = Toolbar.default_toolbox(
+            self, "hitbox_toolbar", RectSpinner(self, "Hitbox"), Qt.RightToolBarArea
         )
 
-        size_spinner = SizeSpinner(self)
-        self.size_toolbar = Toolbar.default_toolbox(
-            self, "size_toolbar", MultiSpinnerPanel(self, "Size", size_spinner), Qt.RightToolBarArea
-        )
-
-        self.rect_toolbar = Toolbar.default_toolbox(
-            self, "rect_toolbar", RectSpinner(self, "Rect"), Qt.RightToolBarArea
+        self.bounding_box_toolbox = Toolbar.default_toolbox(
+            self, "bounding_box_toolbar", RectSpinner(self, "Bounding Box"), Qt.RightToolBarArea
         )
 
         self.showMaximized()
