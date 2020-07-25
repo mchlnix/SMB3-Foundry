@@ -15,6 +15,8 @@ class LineEdit(QLineEdit):
     """A generic spinner with extended functionality"""
     def __init__(self, parent, text):
         super().__init__(parent)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.setText(text)
         self.on_text_update = Observed(lambda value: value)
         self.textEdited.connect(self.on_text_update.notify_observers)
@@ -30,17 +32,17 @@ class LineEditPanel(QWidget):
     """A spinner panel with a basic form layout"""
     def __init__(self, parent: Optional[QWidget], name: str, line_edit: LineEdit):
         super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
 
         self.parent = parent
         self.line_edit = line_edit
         self.on_text_update = self.line_edit.on_text_update
-        line_edit_layout = QFormLayout()
-        line_edit_layout.setContentsMargins(MARGIN_TIGHT, 0, MARGIN_TIGHT, 0)
+        panel_layout = QFormLayout()
+        panel_layout.setContentsMargins(MARGIN_TIGHT, 0, MARGIN_TIGHT, 0)
         self.label = Label(self, name)
-        self.label.setFixedWidth(LABEL_TINY)
-        line_edit_layout.addRow(self.label, self.line_edit)
-        self.setLayout(line_edit_layout)
+        panel_layout.addRow(self.label, self.line_edit)
+        self.setLayout(panel_layout)
 
 
 
