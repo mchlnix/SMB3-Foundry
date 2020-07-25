@@ -3,7 +3,7 @@ NESPaletteSelector
 """
 
 from typing import Optional, Callable
-from PySide2.QtWidgets import QVBoxLayout, QWidget
+from PySide2.QtWidgets import QVBoxLayout, QWidget, QSizePolicy
 
 from foundry.gui.QDialog import Dialog
 from foundry.gui.Custom.Palette import ColorPicker
@@ -41,6 +41,7 @@ class ColorPickerPopup(Dialog):
 
     def __init__(self, parent, title="Select a Color", action: Optional[Callable] = None) -> None:
         super().__init__(parent, title)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
 
         layout = QVBoxLayout(self)
         self.color_picker = ColorPicker(self)
