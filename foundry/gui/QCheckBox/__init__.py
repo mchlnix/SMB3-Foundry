@@ -29,7 +29,7 @@ class CheckboxPanel(QWidget):
     """A spinner panel with a basic form layout"""
     def __init__(self, parent: Optional[QWidget], name: str, checkbox: CheckBox):
         super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
 
         self.parent = parent
         self.checkbox = checkbox
