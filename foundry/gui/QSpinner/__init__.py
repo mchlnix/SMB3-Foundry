@@ -17,6 +17,7 @@ class Spinner(QSpinBox):
     def __init__(self, parent, minimum=0, maximum=0xFFFFFF):
         super().__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.on_text_change = Observed(self.on_text_change)
         self.textChanged.connect(self.on_text_change)
         self.on_value_change = Observed(self.on_value_change)
@@ -41,8 +42,8 @@ class SpinnerPanel(QWidget):
     """A spinner panel with a basic form layout"""
     def __init__(self, parent: Optional[QWidget], name: str, spinner: Spinner):
         super(SpinnerPanel, self).__init__(parent)
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.setContentsMargins(MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.setContentsMargins(0, 0, 0, 0)
 
         self.parent = parent
         self.spinner = spinner
@@ -50,9 +51,7 @@ class SpinnerPanel(QWidget):
         self.on_value_change = self.spinner.on_value_change
         spinner_layout = QFormLayout()
         spinner_layout.setContentsMargins(MARGIN_TIGHT, 0, MARGIN_TIGHT, 0)
-        self.label = Label(self, name)
-        self.label.setFixedWidth(LABEL_TINY)
-        spinner_layout.addRow(self.label, self.spinner)
+        spinner_layout.addRow(Label(self, name), self.spinner)
         self.setLayout(spinner_layout)
 
 
