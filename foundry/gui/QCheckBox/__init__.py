@@ -5,6 +5,7 @@ from PySide2.QtWidgets import QCheckBox, QFormLayout, QWidget, QSizePolicy
 
 from foundry.gui.QLabel import Label
 from foundry.decorators.Observer import Observed
+from foundry.gui.QCore import MARGIN_TIGHT
 
 
 class CheckBox(QCheckBox):
@@ -36,5 +37,6 @@ class CheckboxPanel(QWidget):
         self.action = self.checkbox.action
         self.add_observer = self.checkbox.add_observer
         spinner_layout = QFormLayout()
+        spinner_layout.setContentsMargins(MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT)
         spinner_layout.addRow(self.checkbox, Label(self.parent, name))
         self.setLayout(spinner_layout)
