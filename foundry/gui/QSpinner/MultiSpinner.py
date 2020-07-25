@@ -13,6 +13,7 @@ from PySide2.QtGui import Qt
 from foundry.gui.QLabel import Label
 from foundry.gui.QSpinner import Spinner, SpinnerPanel
 from foundry.decorators.Observer import Observed
+from foundry.gui.QCore import MARGIN_TIGHT
 
 
 @dataclass
@@ -29,10 +30,9 @@ class MultiSpinner(QWidget):
         super().__init__(parent)
         self.parent = parent
 
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.grid = QGridLayout()
         self.grid.setContentsMargins(0, 0, 0, 0)
-        self.grid.setSpacing(0)
         self.grid.setDefaultPositioning(len(spinners), Qt.Horizontal)
         self.spinners = []
         self.action = Observed(lambda *_: [spinner.spinner.value() for spinner in self.spinners])
@@ -53,16 +53,15 @@ class MultiSpinnerPanel(QWidget):
     """A spinner panel with a basic form layout"""
     def __init__(self, parent: Optional[QWidget], name: str, spinner: MultiSpinner):
         super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.setContentsMargins(0, 0, 0, 0)
 
         self.parent = parent
         self.spinner = spinner
         self.action = self.spinner.action
         self.add_observer = self.spinner.add_observer
         spinner_layout = QGridLayout()
-        spinner_layout.setSpacing(0)
-        spinner_layout.setContentsMargins(0, 0, 0, 0)
-        spinner_layout.setSizeConstraint(QLayout.SetFixedSize)
+        spinner_layout.setContentsMargins(0, MARGIN_TIGHT, 0, MARGIN_TIGHT)
         spinner_layout.setDefaultPositioning(2, Qt.Horizontal)
         label = Label(self, name)
         label.setFixedWidth(80)
