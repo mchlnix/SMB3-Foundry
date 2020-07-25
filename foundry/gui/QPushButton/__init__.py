@@ -29,16 +29,6 @@ class PushButton(QPushButton):
         """
         return new_value
 
-    @classmethod
-    def as_tiny(cls, *args, **kwargs) -> "PushButton":
-        """Makes a tiny push button"""
-        button = cls(*args, **kwargs)
-        button.setMinimumHeight(BUTTON_TINY)
-        button.setMinimumWidth(BUTTON_TINY)
-        button.setMinimumWidth(BUTTON_TINY)
-        button.setMaximumHeight(BUTTON_TINY)
-        return button
-
 
 class ColoredPushButton(PushButton):
     """A colored push button"""
