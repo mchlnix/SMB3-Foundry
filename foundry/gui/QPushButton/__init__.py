@@ -15,7 +15,7 @@ class PushButton(QPushButton):
     """A generic push button with extended functionality"""
     def __init__(self, parent: Optional[QWidget], name: Optional[str] = ""):
         super().__init__(parent=parent, text=name)
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.action = Observed(self.action)
         self.clicked.connect(self.action)
 
@@ -51,7 +51,7 @@ class PushButtonPanel(QWidget):
     """A push button panel with a basic form layout"""
     def __init__(self, parent: Optional[QWidget], name: str, button: PushButton):
         super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
 
         self.parent = parent
         self.button = button
