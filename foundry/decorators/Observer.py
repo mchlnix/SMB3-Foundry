@@ -30,12 +30,13 @@ class Observed:
 
     def attach(self, observer: Callable) -> None:
         """Adds an observer"""
+        if observer is None:
+            raise NotImplementedError
         self.observers.append(observer)
 
     def delete(self, observer: Callable) -> None:
         """Deletes an observer"""
         self.observers.remove(observer)
-
 
 
 class ObservedAndRequired:
@@ -82,5 +83,3 @@ class ObservedAndRequired:
     def delete_required(self, observer: Callable, *_) -> None:
         """Removes a required"""
         self.required.remove(observer)
-
-
