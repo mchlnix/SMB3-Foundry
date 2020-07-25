@@ -14,17 +14,17 @@ from foundry.gui.QSpinner.MultiSpinner import MultiSpinnerPanel
 from foundry.gui.QSpinner.PositionSpinner import PositionSpinner
 from foundry.gui.QSpinner.SizeSpinner import SizeSpinner
 from foundry.game.Rect import Rect
+from foundry.gui.QCore import MARGIN_TIGHT
 
 
 class RectSpinner(QWidget):
     """A class for keeping track of a rect"""
     def __init__(self, parent: Optional[QWidget], name: str, rect: Rect = Rect(0, 0, 0, 0)) -> None:
         super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-        layout.setSizeConstraint(QLayout.SetFixedSize)
+        layout.setContentsMargins(MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT)
 
         self.label = Label(self, name)
         self.label.setAlignment(Qt.AlignCenter)
