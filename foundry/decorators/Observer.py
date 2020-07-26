@@ -16,9 +16,12 @@ class Observed:
         self.observers = []
 
     def __call__(self, *args, **kwargs):
-        result = self.function(*args, **kwargs)
-        self.notify(result)
-        return result
+        try:
+            result = self.function(*args, **kwargs)
+            self.notify(result)
+            return result
+        except TypeError as err:
+            print(f"{err}: {self} did not provide the result result from {self.function}({args}, {kwargs})")
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.function}) with observers: {self.observers}"
