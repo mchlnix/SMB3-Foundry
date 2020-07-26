@@ -1,6 +1,5 @@
 
 
-from abc import abstractmethod
 from PySide2.QtWidgets import QSizePolicy
 
 
