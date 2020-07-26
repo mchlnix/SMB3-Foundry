@@ -5,14 +5,14 @@ import numpy as np
 from PySide2.QtGui import QImage, QPainter, QPixmap
 
 from foundry.game.Size import Size
-from foundry.game.gfx.GraphicsPage import GraphicsPage
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.Position import Position
 from foundry.game.gfx.drawable.Tile import Tile, qimage_mask
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import SpriteGraphic
 
 
 @lru_cache
-def make_sprite(sprite_idx: int, pal_group: List[List[int]], graphics_page: GraphicsPage, palette_idx: int) -> "Sprite":
+def make_sprite(sprite_idx: int, pal_group: List[List[int]], graphics_page: PatternTableHandler, palette_idx: int) -> "Sprite":
     """Makes a sprite and stores it in a cache"""
     return Sprite.from_rom(sprite_idx, pal_group, palette_idx, graphics_page)
 
@@ -36,7 +36,7 @@ class Sprite:
             graphic: SpriteGraphic,
             palette_group: List[List[int]],
             palette_index: int,
-            graphics_page: GraphicsPage):
+            graphics_page: PatternTableHandler):
         """Makes a sprite from a sprite graphic"""
         return cls.from_rom(
             graphic.graphic, palette_group, palette_index, graphics_page, graphic.horizontal_flip, graphic.vertical_flip
@@ -48,7 +48,7 @@ class Sprite:
             sprite_index: int,
             palette_group: List[List[int]],
             palette_index: int,
-            graphics_page: GraphicsPage,
+            graphics_page: PatternTableHandler,
             horizontal_mirror: bool = False,
             vertical_mirror: bool = False
     ):

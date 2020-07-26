@@ -7,7 +7,7 @@ import numpy as np
 
 from foundry.game.Size import Size
 from foundry.game.Position import Position
-from foundry.game.gfx.GraphicsPage import GraphicsPage
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.drawable.Tile import qimage_mask
 from foundry.game.gfx.drawable.Sprite import Sprite
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import Animation
@@ -128,7 +128,7 @@ class SpriteElement:
         """Makes a sprite element from an animation"""
         return cls.from_list_and_size(
             sprites=[Sprite.from_sprite_graphic(
-                graphic, palette_group, animation.palette, GraphicsPage(animation.page)
+                graphic, palette_group, animation.palette, PatternTableHandler(animation.page)
             ) for graphic in animation.graphics],
             size=animation.size
         )

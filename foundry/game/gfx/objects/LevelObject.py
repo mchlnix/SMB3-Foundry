@@ -10,7 +10,7 @@ from foundry.game.ObjectSet import ObjectSet
 from foundry.game.ObjectDefinitions import BitMapPicture
 
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.GraphicsPage import GraphicsPage
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import bg_color_for_object_set
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -168,7 +168,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             self,
             object_set: ObjectSet,
             palette_group: List[List[int]],
-            pattern_table: GraphicsPage,
+            pattern_table: PatternTableHandler,
             objects_ref: List["LevelObjectController"],
             is_vertical: bool,
             domain: int,
@@ -208,7 +208,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             data: bytearray,
             object_set: ObjectSet,
             palette_group: List[List[int]],
-            pattern_table: GraphicsPage,
+            pattern_table: PatternTableHandler,
             objects_ref: List["LevelObjectController"],
             is_vertical: bool,
             object_factory_idx: int,

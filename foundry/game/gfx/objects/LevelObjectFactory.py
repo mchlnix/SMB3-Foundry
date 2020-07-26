@@ -3,7 +3,7 @@ from typing import Optional, List
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.Palette import load_palette
-from foundry.game.gfx.GraphicsPage import GraphicsPage as GraphicsPage
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.ObjectSet import ObjectSet
 
 from foundry.game.Position import Position
@@ -14,7 +14,7 @@ class LevelObjectFactory:
     graphic_set: int
     palette_group_index: int
 
-    graphics_set: Optional[GraphicsPage] = None
+    graphics_set: Optional[PatternTableHandler] = None
     palette_group: list = []
 
     def __init__(
@@ -41,7 +41,7 @@ class LevelObjectFactory:
 
     def set_graphic_set(self, graphic_set: int):
         self.graphic_set = graphic_set
-        self.graphics_set = GraphicsPage(self.graphic_set)
+        self.graphics_set = PatternTableHandler(self.graphic_set)
 
     def set_palette_group_index(self, palette_group_index: int):
         self.palette_group_index = palette_group_index

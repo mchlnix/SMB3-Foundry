@@ -4,7 +4,7 @@ from PySide2.QtGui import QColor, QImage, QPainter, Qt
 from foundry.game.ObjectDefinitions import enemy_handle_x, enemy_handle_x2, enemy_handle_y
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.Palette import bg_color_for_palette
-from foundry.game.gfx.GraphicsPage import GraphicsPage
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
@@ -38,7 +38,7 @@ class EnemyObject(ObjectLike):
 
         self.domain = 0
 
-        self.graphics_set = GraphicsPage(ENEMY_ITEM_GRAPHICS_SET)
+        self.graphics_set = PatternTableHandler(ENEMY_ITEM_GRAPHICS_SET)
         self.palette_group = palette_group
 
         self.object_set = ObjectSet(ENEMY_ITEM_OBJECT_SET)

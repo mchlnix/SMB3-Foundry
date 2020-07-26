@@ -8,7 +8,7 @@ from foundry.gui.settings import SETTINGS
 from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
-from foundry.game.gfx.GraphicsPage import GraphicsPage
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
@@ -82,7 +82,7 @@ def _block_from_index(block_index: int, level: Level) -> Block:
     """
 
     palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
-    graphics_set = GraphicsPage(level.header.graphic_set_index)
+    graphics_set = PatternTableHandler(level.header.graphic_set_index)
     tsa_data = ROM().get_tsa_data(level.object_set_number)
 
     return Block.from_rom(block_index, palette_group, graphics_set, tsa_data)
@@ -217,7 +217,7 @@ class LevelDrawer:
             self.block_quick_object_set = level.object_set_number
             palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
             tsa_data = ROM.get_tsa_data(level.object_set_number)
-            graphics_set = GraphicsPage(level.header.graphic_set_index)
+            graphics_set = PatternTableHandler(level.header.graphic_set_index)
             blocks = []
             for i in range(0xFF):
                 blocks.append(Block.from_rom(i, palette_group, graphics_set, tsa_data).qpixmap_custom(

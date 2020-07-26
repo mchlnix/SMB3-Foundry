@@ -17,7 +17,7 @@ import numpy as np
 from foundry.game.gfx.Palette import PaletteController
 from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.game.Size import Size
-from foundry.game.gfx.GraphicsPage import GraphicsPage
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.Position import Position
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
@@ -107,7 +107,7 @@ class Tile:
 
     @classmethod
     def from_rom(
-            cls, object_index: int, palette_group: List[List[int]], palette_index: int, graphics_page: GraphicsPage
+            cls, object_index: int, palette_group: List[List[int]], palette_index: int, graphics_page: PatternTableHandler
     ):
         """
         Makes a Tile directly from the ROM

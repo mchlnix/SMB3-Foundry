@@ -2,7 +2,7 @@ from typing import List
 import numpy as np
 
 from foundry.game.File import ROM
-from foundry.game.gfx.GraphicsPage import GraphicsPage
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.drawable.Tile import Tile
 
 TSA_BANK_0 = 0 * 256
@@ -35,7 +35,7 @@ class Block(Tile):
             cls,
             block_index: int,
             palette_group: List[List[int]],
-            graphics_page: GraphicsPage,
+            graphics_page: PatternTableHandler,
             tsa_data: bytes,
             mirrored=False
     ):

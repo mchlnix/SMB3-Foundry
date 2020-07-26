@@ -97,7 +97,7 @@ GRAPHIC_SET_NAMES = [
 ]
 
 
-class GraphicsPage:
+class PatternTableHandler:
     def __init__(self, page: int):
         self.data = bytearray()
         self.page = page
