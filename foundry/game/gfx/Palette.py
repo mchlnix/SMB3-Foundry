@@ -1,5 +1,6 @@
 from typing import List, Tuple, Union
 from collections import namedtuple
+from dataclasses import dataclass
 import yaml
 from yaml import CLoader
 
@@ -33,8 +34,81 @@ palette_file = root_dir.joinpath("data", "palette.yaml")
 
 
 Color = namedtuple("Color", "red green blue")
-Palette = namedtuple("Palette", "color_0 color_1 color_2 color_3")
-PaletteSet = namedtuple("PaletteSet", "palette_0 palette_1 palette_2 palette_3")
+
+
+@dataclass
+class Palette:
+    """Defines a basic palette"""
+    color_0: Color
+    color_1: Color
+    color_2: Color
+    color_3: Color
+
+    def __getitem__(self, item: int) -> Color:
+        if item == 0:
+            return self.color_0
+        elif item == 1:
+            return self.color_1
+        elif item == 2:
+            return self.color_2
+        elif item == 3:
+            return self.color_3
+        else:
+            raise NotImplementedError
+
+    def __setitem__(self, key: int, value: Color):
+        if key == 0:
+            self.color_0 = value
+        elif key == 1:
+            self.color_1 = value
+        elif key == 2:
+            self.color_2 = value
+        elif key == 3:
+            self.color_3 = value
+        else:
+            raise NotImplementedError
+
+
+@dataclass
+class PaletteSet:
+    """Defines a set of palettes"""
+    palette_0: Palette
+    palette_1: Palette
+    palette_2: Palette
+    palette_3: Palette
+
+    def __getitem__(self, item: int) -> Palette:
+        if item == 0:
+            return self.palette_0
+        elif item == 1:
+            return self.palette_1
+        elif item == 2:
+            return self.palette_2
+        elif item == 3:
+            return self.palette_3
+        else:
+            raise NotImplementedError
+
+    def __setitem__(self, key: int, value: Palette) -> None:
+        if key == 0:
+            self.palette_0 = value
+        elif key == 1:
+            self.palette_1 = value
+        elif key == 2:
+            self.palette_2 = value
+        elif key == 3:
+            self.palette_3 = value
+        else:
+            raise NotImplementedError
+
+    @property
+    def background_color(self) -> Color:
+        """The background color of the palette"""
+        return self.palette_0.color_0
+
+    @background_color.setter
+    def background_color(self, color: Color) -> None:
+        self.palette_0.color_0 = color
 
 
 _NES_PAL_CONTROLLER = None
