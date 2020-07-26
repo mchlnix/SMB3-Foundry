@@ -125,6 +125,7 @@ def _load_nes_colors_inverse():
         d = yaml.load(f, Loader=CLoader)
     return {Color(c["red"], c["green"], c["blue"]): idx for idx, c in enumerate(d)}
 
+
 def load_palette_group(palette_set: Union[List[Palette], Tuple[Palette]]) -> PaletteSet:
     """Loads a palette group from a list of lists"""
     try:
