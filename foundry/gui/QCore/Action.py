@@ -77,7 +77,6 @@ class AbstractActionObject:
 
     def steal_action(self, action_name: str, action_object: "AbstractActionObject", prefix: Optional[str] = ""):
         """Steals a single action from an action object"""
-        print(self, action_object, action_name)
         has_actions(action_object)
         if action_name not in action_object._actions:
             raise KeyError(f"The action {action_name} does not exist in {action_object}")
