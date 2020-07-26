@@ -2,26 +2,35 @@
 This module includes a tool button with extended functionality
 """
 
-from typing import Callable, Optional
-from PySide2.QtWidgets import QToolButton, QFormLayout, QWidget, QSizePolicy
+from typing import List, Optional
+from PySide2.QtWidgets import QToolButton, QWidget
 
-from foundry.gui.QCore import BUTTON_TINY, MARGIN_TIGHT
-from foundry.gui.QLabel import Label
-from foundry.decorators.Observer import Observed
+from foundry.gui.QCore import BUTTON_TINY
 from foundry.game.gfx.Palette import Color
+from foundry.gui.QCore.util import DefaultSizePartial
+from foundry.gui.QCore.Action import Action, AbstractActionObject
+from foundry.decorators.Observer import Observed
 
 
-class ColoredToolButton(QToolButton):
+class ColoredToolButton(QToolButton, AbstractActionObject, DefaultSizePartial):
     """A generic tool button with extended functionality"""
-    def __init__(self, parent: Optional[QWidget], color: Color, return_call=None):
-        super().__init__(parent=parent)
-        self.return_call = return_call
+    def __init__(self, parent: Optional[QWidget], color: Color):
+        QToolButton.__init__(self, parent)
+        DefaultSizePartial.__init__(self)
+        AbstractActionObject.__init__(self)
         self.color = color
 
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.setContentsMargins(MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT)
-        self._action = Observed(self._action)
-        self.clicked.connect(self._action)
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.parent}, {self.color})"
+
+    def get_actions(self) -> List[Action]:
+        """Gets the actions for the object"""
+        return [
+            Action.from_signal("clicked", self.clicked, False),
+            Action.from_signal("pressed", self.pressed, False),
+            Action.from_signal("released", self.released, False),
+            Action("color_change", Observed(lambda color: color))
+        ]
 
     @property
     def color(self) -> Color:
@@ -32,35 +41,16 @@ class ColoredToolButton(QToolButton):
     def color(self, color: Color) -> None:
         self._color = color
         self.setStyleSheet(f"background-color:rgb({color.red},{color.green},{color.blue})")
-
-    def add_observer(self, observer: Callable) -> None:
-        """Adds an observer to the value"""
-        self._action.attach_observer(observer)
-
-    def _action(self, *_) -> int:
-        """
-        Extends the connect functionality from Qt
-        """
-        return self.color if self.return_call is None else self.return_call
+        self.color_change_action.observer(color)
 
     @classmethod
     def as_tiny(cls, *args, **kwargs) -> "ColoredToolButton":
         """Makes a tiny push button"""
-        button = cls(*args, **kwargs)
-        button.setFixedWidth(BUTTON_TINY)
-        button.setFixedHeight(BUTTON_TINY)
-        return button
+        try:
+            button = cls(*args, **kwargs)
+            button.setFixedWidth(BUTTON_TINY)
+            button.setFixedHeight(BUTTON_TINY)
+            return button
+        except TypeError as err:
+            raise TypeError(err, f"Did not create {cls} from {args} and {kwargs}")
 
-
-class ToolButtonPanel(QWidget):
-    """A tool button panel with a basic form layout"""
-    def __init__(self, parent: Optional[QWidget], name: str, button: ColoredToolButton):
-        super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-
-        self.parent = parent
-        self.button = button
-        self.add_observer = self.button.add_observer
-        panel_layout = QFormLayout()
-        panel_layout.addRow(self.button, Label(self.parent, name))
-        self.setLayout(panel_layout)
