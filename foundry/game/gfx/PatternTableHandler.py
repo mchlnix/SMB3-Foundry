@@ -1,4 +1,8 @@
+
+from dataclasses import dataclass
+
 from foundry.game.File import ROM
+
 
 CHR_ROM_OFFSET = 0x40010
 CHR_ROM_SEGMENT_SIZE = 0x400
@@ -95,6 +99,17 @@ GRAPHIC_SET_NAMES = [
     "Animated graphics (5)",
     "Animated graphics (6)",
 ]
+
+
+@dataclass
+class PatternTable:
+    """Represents the game's pattern table for the chr data"""
+    background_0: int
+    background_1: int
+    sprite_0: int
+    sprite_1: int
+    sprite_2: int
+    sprite_3: int
 
 
 class PatternTableHandler:
