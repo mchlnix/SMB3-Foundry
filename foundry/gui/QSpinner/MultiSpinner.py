@@ -5,15 +5,16 @@ MultiSpinner: Creates multiple spinners as one widget
 MultiSpinnerPanel: Creates multiple spinner pannels as one widget
 """
 
-from typing import Optional, Callable, List
+from typing import Optional, List
 from dataclasses import dataclass
-from PySide2.QtWidgets import QWidget, QSizePolicy, QGridLayout, QLayout
+from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtGui import Qt
 
-from foundry.gui.QLabel import Label
-from foundry.gui.QSpinner import Spinner, SpinnerPanel
+from . import Spinner
 from foundry.decorators.Observer import Observed
-from foundry.gui.QCore import MARGIN_TIGHT
+from foundry.gui.QWidget import Widget
+from foundry.gui.QWidget.Panel import Panel
+from foundry.gui.QCore.Action import Action, AbstractActionObject
 
 
 @dataclass
@@ -24,48 +25,48 @@ class SpinnerAttributes:
     max: int = 0xFFFFFF
 
 
-class MultiSpinner(QWidget):
+class MultiSpinner(Widget, AbstractActionObject):
     """A spinner in charge of the keeping the position"""
     def __init__(self, parent: Optional[QWidget], spinners: List[SpinnerAttributes]) -> None:
-        super().__init__(parent)
-        self.parent = parent
+        Widget.__init__(self, parent)
+        AbstractActionObject.__init__(self)
 
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        self.grid = QGridLayout()
-        self.grid.setContentsMargins(0, 0, 0, 0)
-        self.grid.setDefaultPositioning(len(spinners), Qt.Horizontal)
+        self._set_up_layout(spinners)
+        self._initialize_internal_observers()
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.parent}, {self.spinners})"
+
+    def _set_up_layout(self, spinners: List[SpinnerAttributes]) -> None:
+        """Returns the widgets layout"""
         self.spinners = []
-        self.action = Observed(lambda *_: [spinner.spinner.value() for spinner in self.spinners])
+        grid = QGridLayout()
+        grid.setContentsMargins(0, 0, 0, 0)
+        grid.setDefaultPositioning(len(spinners), Qt.Horizontal)
+
         for idx, spinner in enumerate(spinners):
-            spin = SpinnerPanel(self, spinner.name, Spinner(self, spinner.min, spinner.max))
-            spin.on_value_change.attach(self.action)
+            spin = Spinner(self, spinner.min, spinner.max)
             self.spinners.append(spin)
-            self.grid.addWidget(spin)
-            self.grid.setColumnStretch(idx, 1)
-        self.setLayout(self.grid)
+            grid.addWidget(Panel(self, spinner.name, spin))
+        self.setLayout(grid)
 
-    def add_observer(self, observer: Callable):
-        """Adds an observer"""
-        self.action.attach(observer)
+    def _initialize_internal_observers(self) -> None:
+        """Initializes internal observers for special events"""
+        for spinner in self.spinners:
+            spinner.value_changed_action.observer.attach(lambda *_: self._update_changed_values())
+            spinner.text_changed_action.observer.attach(lambda *_: self._update_text_values())
 
+    def _update_changed_values(self):
+        """Returns the changed values from the spinners"""
+        self.values_changed_action.observer([spinner.value() for spinner in self.spinners])
 
-class MultiSpinnerPanel(QWidget):
-    """A spinner panel with a basic form layout"""
-    def __init__(self, parent: Optional[QWidget], name: str, spinner: MultiSpinner):
-        super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        self.setContentsMargins(0, 0, 0, 0)
+    def _update_text_values(self):
+        """Returns the changed text from the spinners"""
+        self.text_changed_action.observer([spinner.text() for spinner in self.spinners])
 
-        self.parent = parent
-        self.spinner = spinner
-        self.action = self.spinner.action
-        self.add_observer = self.spinner.add_observer
-        spinner_layout = QGridLayout()
-        spinner_layout.setContentsMargins(0, MARGIN_TIGHT, 0, MARGIN_TIGHT)
-        spinner_layout.setDefaultPositioning(2, Qt.Horizontal)
-        label = Label(self, name)
-        label.setFixedWidth(80)
-        spinner_layout.addWidget(label)
-        spinner_layout.addWidget(self.spinner)
-
-        self.setLayout(spinner_layout)
+    def get_actions(self) -> List[Action]:
+        """Gets the actions for the object"""
+        return [
+            Action("values_changed", Observed(lambda palette_set: palette_set)),
+            Action("text_changed", Observed(lambda palette_set: palette_set)),
+        ]
