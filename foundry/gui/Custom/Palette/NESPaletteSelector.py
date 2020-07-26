@@ -2,53 +2,83 @@
 NESPaletteSelector
 """
 
-from typing import Optional, Callable
-from PySide2.QtWidgets import QVBoxLayout, QWidget, QSizePolicy
+from typing import List, Optional, Callable, Union
+from PySide2.QtWidgets import QVBoxLayout, QWidget
 
 from foundry.gui.QDialog import Dialog
 from foundry.gui.Custom.Palette import ColorPicker
 from foundry.gui.QToolButton import ColoredToolButton
 from foundry.game.gfx.Palette import Color, PaletteController
 from foundry.decorators.Observer import Observed
+from foundry.gui.QCore.Action import Action
 
 
 _palette_controller = PaletteController()
 
 
 class ColorPickerButton(ColoredToolButton):
-    def __init__(self, parent: Optional[QWidget], color: Color, return_call=None):
-        super().__init__(parent, color)
-        self.action = Observed(lambda *_: self.color if self._return_call is None else self._return_call)
-        self._action.attach_observer(self.call_pop_up)
-        self._return_call = return_call
+    """A colored button that pops up a dialog whenever clicked"""
+    def __init__(self, parent: Optional[QWidget], color: Union[int, Color]):
+        if isinstance(color, int):
+            color_index, color = color, _palette_controller.colors[color]
+        else:
+            color_index, color = _palette_controller.colors_inverse[color], color
 
-    def add_observer(self, observer: Callable) -> None:
-        """Adds an observer to the value"""
-        self.action.attach_observer(observer)
+        ColoredToolButton.__init__(self, parent, color)
+        self._color_index = color_index
+
+        self._initialize_internal_observers()
+
+    def _initialize_internal_observers(self):
+        """Initializes internal observers for special events"""
+        self.clicked_action.observer.attach(self.call_pop_up)
+
+    def get_actions(self) -> List[Action]:
+        """Gets the actions for the object"""
+        return [
+            Action.from_signal("clicked", self.clicked, False),
+            Action.from_signal("pressed", self.pressed, False),
+            Action.from_signal("released", self.released, False),
+            Action("color_change", Observed(lambda color: color)),
+            Action("color_index_change", Observed(lambda color_index: color_index)),
+        ]
 
     def call_pop_up(self, *_):
         """Calls on a pop up to select a new color"""
-        ColorPickerPopup(self, action=lambda value: self.on_pop_up_finish(_palette_controller.colors[value])).exec_()
+        ColorPickerPopup(self, action=lambda value: setattr(self, "color_index", value)).exec_()
 
-    def on_pop_up_finish(self, value: Color):
-        """Called when the pop up finishes"""
-        self.color = value
-        self.action()
+    @property
+    def color_index(self) -> int:
+        """Returns the current color index of the button"""
+        return self._color_index
+
+    @color_index.setter
+    def color_index(self, color_index: int) -> None:
+        self._color_index = color_index
+        self.color = _palette_controller.colors[color_index]
+
+        self.color_index_change_action.observer(color_index)
 
 
 class ColorPickerPopup(Dialog):
     """Allows you to pick a custom color and returns the value"""
 
     def __init__(self, parent, title="Select a Color", action: Optional[Callable] = None) -> None:
-        super().__init__(parent, title)
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        Dialog.__init__(self, parent, title)
 
+        self._set_up_layout()
+        self._initialize_internal_observers(action)
+
+    def _set_up_layout(self) -> None:
+        """Returns the widgets layout"""
         layout = QVBoxLayout(self)
         self.color_picker = ColorPicker(self)
-        self.color_picker.add_observer(lambda *_: self.accept())
-        if action is not None:
-            self.color_picker.add_observer(lambda result: action(result))
         layout.addWidget(self.color_picker)
-
         self.setLayout(layout)
 
+    def _initialize_internal_observers(self, action) -> None:
+        """Initializes internal observers for special events"""
+        self.color_picker.color_index_selected_action.observer.attach(lambda *_: self.accept())  # closes the dialog
+
+        if action is not None:
+            self.color_picker.color_index_selected_action.observer.attach(lambda value: action(value))
