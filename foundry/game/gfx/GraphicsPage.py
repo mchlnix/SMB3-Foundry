@@ -98,28 +98,28 @@ GRAPHIC_SET_NAMES = [
 
 
 class GraphicsPage:
-    def __init__(self, graphic_set_number):
+    def __init__(self, page: int):
         self.data = bytearray()
-        self.number = graphic_set_number
+        self.page = page
 
         segments = []
 
-        if graphic_set_number == WORLD_MAP:
+        if page == WORLD_MAP:
             segments = [0x14, 0x16, 0x20, 0x21, 0x22, 0x23]
-        if graphic_set_number not in graphic_set2chr_index and graphic_set_number not in common_set2chr_index:
-            self._read_in([graphic_set_number, graphic_set_number + 2])
+        if page not in graphic_set2chr_index and page not in common_set2chr_index:
+            self._read_in([page, page + 2])
         else:
-            gfx_index = graphic_set2chr_index[graphic_set_number]
-            common_index = common_set2chr_index[graphic_set_number]
+            gfx_index = graphic_set2chr_index[page]
+            common_index = common_set2chr_index[page]
 
             segments.append(gfx_index)
             segments.append(common_index)
 
-            if graphic_set_number == SPADE_ROULETTE:
+            if page == SPADE_ROULETTE:
                 segments.extend([0x20, 0x21, 0x22, 0x23])
-            elif graphic_set_number == N_SPADE:
+            elif page == N_SPADE:
                 segments.extend([0x28, 0x29, 0x5A, 0x31])
-            elif graphic_set_number == VS_2P:
+            elif page == VS_2P:
                 segments.extend([0x04, 0x05, 0x06, 0x07])
             else:
                 segments.extend([0x00, 0x00, 0x00, 0x00])
