@@ -11,53 +11,43 @@ from PySide2.QtWidgets import QComboBox, QWidget, QSizePolicy, QFormLayout
 from foundry.gui.QCore import MARGIN_TIGHT
 from foundry.gui.QLabel import Label
 from foundry.decorators.Observer import Observed
+from foundry.gui.QCore.util import set_tight_size_policy
+from foundry.gui.QCore.Action import Action, AbstractActionObject
 
 
 ComboBoxOption = namedtuple("ComboBoxOption", "name action")
 
 
-class ComboBox(QComboBox):
+class ComboBox(QComboBox, AbstractActionObject):
     """A default combobox with extended observer functionality"""
     def __init__(self, parent: Optional[QWidget], options: Optional[List[ComboBoxOption]] = None) -> None:
-        super().__init__(parent)
+        QComboBox.__init__(self, parent)
+        AbstractActionObject.__init__(self)
         self.parent = parent
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        self.setContentsMargins(MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT, MARGIN_TIGHT)
 
-        self.action = Observed(lambda opt: opt)
+        self._set_size_policies()
+
         self.items_count = 0
         if options is not None:
             for option in options:
                 self.add_item(option)
-        self.currentIndexChanged.connect(self.action)
 
     def add_item(self, option: ComboBoxOption) -> None:
         """Adds an item to the drop down with an action"""
         self.addItem(option.name)
         index = self.items_count
-        self.add_observer(lambda result: option.action() if result == index else result)
+        self.index_changed_action.observer.attach(lambda result: option.action() if result == index else result)
         self.items_count += 1
 
-    def add_observer(self, observer: Callable) -> None:
-        """Adds an observer to the value"""
-        self.action.attach(observer)
+    def get_actions(self) -> List[Action]:
+        """Gets the actions for the object"""
+        return [
+            Action.from_signal("index_changed", self.currentIndexChanged),
+        ]
 
-
-class ComboBoxPanel(QWidget):
-    """A tool button panel with a basic form layout"""
-    def __init__(self, parent: Optional[QWidget], name: str, combo_box: ComboBox):
-        super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        self.setContentsMargins(0, 0, 0, 0)
-
-        self.parent = parent
-        self.combo_box = combo_box
-        self.add_observer = self.combo_box.add_observer
-        self.add_item = self.combo_box.add_item
-        panel_layout = QFormLayout()
-        panel_layout.setContentsMargins(MARGIN_TIGHT, 0, MARGIN_TIGHT, 0)
-        panel_layout.addRow(Label(self.parent, name), self.combo_box)
-        self.setLayout(panel_layout)
+    def _set_size_policies(self):
+        """Sets the size policy and margin of the widget"""
+        set_tight_size_policy(self)
 
 
 
