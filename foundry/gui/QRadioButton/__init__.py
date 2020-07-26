@@ -2,42 +2,24 @@
 This module includes a radio button with extended functionality
 """
 
-from typing import Callable, Optional
-from PySide2.QtWidgets import QRadioButton, QFormLayout, QWidget, QSizePolicy
+from typing import List, Optional
+from PySide2.QtWidgets import QRadioButton, QWidget
 
-from foundry.gui.QLabel import Label
-from foundry.decorators.Observer import Observed
+from foundry.gui.QCore.util import DefaultSizePartial
+from foundry.gui.QCore.Action import Action, AbstractActionObject
 
 
-class RadioButton(QRadioButton):
+class RadioButton(QRadioButton, AbstractActionObject, DefaultSizePartial):
     """A generic radio button with extended functionality"""
     def __init__(self, parent: Optional[QWidget], name: Optional[str] = ""):
-        super().__init__(parent=parent, text=name)
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        self.action = Observed(self.action)
-        self.clicked.connect(self.action)
+        QRadioButton.__init__(parent, name)
+        DefaultSizePartial.__init__(self)
+        AbstractActionObject.__init__(self)
 
-    def add_observer(self, observer: Callable) -> None:
-        """Adds an observer to the value"""
-        self.aciton.attach_observer(observer)
-
-    def action(self, new_value: int, *_) -> int:
-        """
-        Extends the connect functionality from Qt
-        """
-        return new_value
-
-
-class RadioButtonPanel(QWidget):
-    """A radio button panel with a basic form layout"""
-    def __init__(self, parent: Optional[QWidget], name: str, button: RadioButton):
-        super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-
-        self.parent = parent
-        self.button = button
-        self.action = self.button.action
-        self.add_observer = self.button.add_observer
-        panel_layout = QFormLayout()
-        panel_layout.addRow(self.button, Label(self.parent, name))
-        self.setLayout(panel_layout)
+    def get_actions(self) -> List[Action]:
+        """Gets the actions for the object"""
+        return [
+            Action.from_signal("clicked", self.clicked, False),
+            Action.from_signal("pressed", self.pressed, False),
+            Action.from_signal("released", self.released, False)
+        ]
