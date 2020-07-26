@@ -46,6 +46,11 @@ def _load_nes_colors():
     return {idx: Color(c["red"], c["green"], c["blue"]) for idx, c in enumerate(d)}
 
 
+def _load_nes_colors_inverse():
+    with open(palette_file) as f:
+        d = yaml.load(f, Loader=CLoader)
+    return {Color(c["red"], c["green"], c["blue"]): idx for idx, c in enumerate(d)}
+
 def load_palette_group(palette_set: Union[List[Palette], Tuple[Palette]]) -> PaletteSet:
     """Loads a palette group from a list of lists"""
     try:
@@ -61,6 +66,7 @@ class PaletteController:
         if _NES_PAL_CONTROLLER is None:
             _NES_PAL_CONTROLLER = super().__new__(cls, *args, **kwargs)
             _NES_PAL_CONTROLLER.colors = _load_nes_colors()
+            _NES_PAL_CONTROLLER.colors_inverse = _load_nes_colors_inverse()
         return _NES_PAL_CONTROLLER
 
     def get_qcolor(self, color_idx: int) -> QColor:
