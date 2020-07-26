@@ -14,7 +14,7 @@ class Panel(AbstractActionWidget):
     def __init__(self, parent: Optional[QWidget], name: str, element: AbstractActionWidget):
         self.parent = parent
         self.element = element
-        super().__init__(parent)
+        QWidget.__init__(self, parent)
         self._set_size_policies()
 
         self.label = Label(self, name)
