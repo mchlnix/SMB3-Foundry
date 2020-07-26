@@ -7,11 +7,14 @@ from PySide2.QtGui import Qt, QKeyEvent
 from PySide2.QtWidgets import QDialog
 
 
-class Dialog(QDialog):
+from foundry.gui.QCore.util import DefaultSizePartial
+
+
+class Dialog(QDialog, DefaultSizePartial):
     """This class makes the default Dialog window"""
     def __init__(self, parent, title="Title"):
-        super().__init__(parent)
-
+        QDialog.__init__(self, parent)
+        DefaultSizePartial.__init__(self)
         self.setWindowTitle(title)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
