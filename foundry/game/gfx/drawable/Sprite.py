@@ -1,6 +1,6 @@
 from typing import List
 from functools import cached_property
-from methodtools import lru_cache  # functools has a similar lru_cache, but can leak memory and is less class friendly
+from functools import lru_cache  # functools has a similar lru_cache, but can leak memory and is less class friendly
 import numpy as np
 from PySide2.QtGui import QImage, QPainter, QPixmap
 
