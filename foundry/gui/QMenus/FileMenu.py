@@ -94,9 +94,9 @@ class OpenRomMenuElement(MenuElementOpen):
     """A menu element that handles opening a ROM"""
 
     def __init__(self, parent, add_action: bool = True) -> None:
-        from foundry.game.File import ROM
+        from foundry.game.File import load_from_file
         super().__init__(parent, add_action)
-        self.open.attach_observer(ROM.load_from_file)
+        self.open.attach_observer(load_from_file)
 
     @property
     def base_name(self) -> str:
