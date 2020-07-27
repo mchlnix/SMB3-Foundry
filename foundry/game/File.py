@@ -98,6 +98,11 @@ class ROM(Rom):
         return f"{self.__class__.__name__}({self.path})"
 
     @property
+    def chr_offset(self) -> int:
+        """Provides the offset for the chr data"""
+        return self.get_byte(5) * 0x2000 + 0x10
+
+    @property
     def position(self) -> int:
         """The current index in ROM"""
         return self._position
