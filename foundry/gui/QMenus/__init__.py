@@ -182,7 +182,7 @@ class MenuElementOpen(MenuElementSafe, ABC):
     """A Menu Element that contains tests required for opening"""
     def __init__(self, parent, add_action: bool = True) -> None:
         self.action = ObservedAndRequired(self.action)
-        self.open = Observed(self.open)
+        self.open = Observed(lambda path: path)
         super().__init__(parent, add_action)
 
     def action(self):
@@ -192,15 +192,12 @@ class MenuElementOpen(MenuElementSafe, ABC):
             return False
 
         try:
+            print(path)
             self.open(path)
         except IOError as exp:
             QMessageBox.warning(self.parent, type(exp).__name__, f"Cannot open file '{path}'.")
             return False
         return True
-
-    def open(self, path: str) -> str:
-        """Opens a file from a path"""
-        return path
 
 
 class MenuElementSave(MenuElementSafe, ABC):
