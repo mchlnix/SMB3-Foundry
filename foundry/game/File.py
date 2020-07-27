@@ -112,7 +112,7 @@ class ROM(Rom):
         if position is None or position < 0:
             return  # Do not want to change the position
         if position > len(self.rom_data):
-            raise IndexError(f"Invalid position: {position} inside rom of length: {len(self.rom_data)}")
+            raise IndexError(f"Invalid position: {hex(position)} inside rom of length: {hex(len(self.rom_data))}")
         self._position = position
 
     def load_from_file(self, pathname: str):
