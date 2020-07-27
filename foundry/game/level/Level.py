@@ -82,8 +82,8 @@ class Level(LevelLike):
 
         self.object_offset = self.header_offset + Level.HEADER_LENGTH
 
-        object_data = ROM.rom_data[self.object_offset :]
-        enemy_data = ROM.rom_data[self.enemy_offset :]
+        object_data = ROM().rom_data[self.object_offset :]
+        enemy_data = ROM().rom_data[self.enemy_offset :]
 
         self._load_level_data(object_data, enemy_data)
 
