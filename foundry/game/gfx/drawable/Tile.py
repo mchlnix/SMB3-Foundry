@@ -63,7 +63,10 @@ def get_color(b: int, palette):
     if b == BACKGROUND_COLOR_INDEX:
         return MASK_COLOR
     else:
-        return palette_controller.colors[palette[b]]
+        try:
+            return palette_controller.colors[palette[b]]
+        except KeyError:
+            return palette[b]  # the palette has the correct color already
 
 
 def qimage_mask(image: QImage) -> QImage:
