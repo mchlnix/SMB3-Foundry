@@ -522,8 +522,8 @@ class MainWindow(QMainWindow):
         return True
 
     def update_title(self):
-        if self.level_view.level_ref is not None and ROM is not None:
-            title = f"{self.level_view.level_ref.name} - {ROM.name}"
+        if self.level_view.level_ref is not None and ROM() is not None:
+            title = f"{self.level_view.level_ref.name} - {ROM().name}"
         else:
             title = "SMB3Foundry"
 
