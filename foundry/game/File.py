@@ -65,23 +65,38 @@ class Bank:
         ROM().bulk_write(bytearray(self.data), get_bank_offset(bank_idx) + offset)
 
 
+def load_from_file(pathname: str) -> None:
+    """Loads a new ROM"""
+    if _ROM is None:
+        ROM(pathname)
+    else:
+        _ROM.load_from_file(pathname)
+
+
 class ROM(Rom):
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
 
-    def __new__(cls, pathname: Optional[str] = None):
-        if _ROM is not None:
-            return _ROM
-        else:
-            super().__new__(cls)
+    def __new__(cls, *args, **kwargs):
+        global _ROM
+        if _ROM is None:
+            _ROM = super().__new__(cls)
+        return _ROM
 
     def __init__(self, pathname: Optional[str] = None):
-        if pathname is None:
-            raise ValueError("Rom has not been loaded")
-        self.path = pathname
-        self.name = basename(pathname)
-        self.load_from_file(pathname)
-        Rom.__init__(self, self.rom_data)
-        self._position = 0
+        if _ROM is None or not hasattr(_ROM, "path"):
+            if pathname is None:
+                raise ValueError("Rom has not been loaded")
+            self.path = pathname
+            self.name = basename(pathname)
+            self.rom_data = bytearray()
+            self.additional_data = bytearray()
+            self.load_from_file(pathname)
+            Rom.__init__(self, self.rom_data)
+            self._position = 0
+        print(_ROM)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.path})"
 
     @property
     def position(self) -> int:
@@ -98,6 +113,8 @@ class ROM(Rom):
 
     def load_from_file(self, pathname: str):
         """Loads a file from memory"""
+        if pathname is None:
+            raise ValueError("INVALID PATH")
         with open(pathname, "rb") as rom:
             data = bytearray(rom.read())
 
