@@ -38,7 +38,7 @@ class EnemyObject(ObjectLike):
 
         self.domain = 0
 
-        self.graphics_set = PatternTableHandler(ENEMY_ITEM_GRAPHICS_SET)
+        self.graphics_set = PatternTableHandler.from_tileset(ENEMY_ITEM_GRAPHICS_SET)
         self.palette_group = palette_group
 
         self.object_set = ObjectSet(ENEMY_ITEM_OBJECT_SET)
