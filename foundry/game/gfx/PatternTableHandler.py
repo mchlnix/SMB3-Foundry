@@ -1,5 +1,7 @@
 
 from typing import Tuple
+from dataclasses import dataclass, astuple
+from functools import lru_cache
 
 from foundry.game.File import ROM
 
