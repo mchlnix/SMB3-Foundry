@@ -53,12 +53,10 @@ class Sprite:
             vertical_mirror: bool = False
     ):
         """Returns a block directly from rom"""
-        image = np.empty((Sprite.image_length, Sprite.image_length * 3), dtype="ubyte")
+        image = np.empty((16, 24), dtype="ubyte")
         tile_offset = (0x100 * sprite_index & 0b01) + ((sprite_index >> 2) * 2)
-        for idx in range(2):
-            tile = Tile.from_rom(tile_offset + idx, palette_group, palette_index, graphics_page)
-            y_off = idx * Tile.image_height
-            image[y_off:y_off + Tile.image_height, 0:3 * Tile.image_length] = tile.numpy_image
+        image[0: 8, 0: 24] = Tile.from_rom(tile_offset, palette_group, palette_index, graphics_page).numpy_image
+        image[8: 16, 0: 24] = Tile.from_rom(tile_offset + 1, palette_group, palette_index, graphics_page).numpy_image
         return cls(bytes(image.flatten().tolist()), horizontal_mirror, vertical_mirror)
 
     @property
