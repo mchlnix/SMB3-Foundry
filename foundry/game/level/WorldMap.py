@@ -25,7 +25,7 @@ class WorldMap(LevelLike):
 
         self.name = f"World {world_index} - Overworld"
 
-        self.graphics_set = PatternTableHandler(OVERWORLD_GRAPHIC_SET)
+        self.graphics_set = PatternTableHandler.from_world_map()
         self.palette_group = load_palette(WORLD_MAP_OBJECT_SET, 0)
 
         self.object_set = WORLD_MAP_OBJECT_SET
