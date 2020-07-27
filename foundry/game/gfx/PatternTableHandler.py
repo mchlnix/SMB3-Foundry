@@ -146,7 +146,7 @@ class PatternTableHandler:
             self._read_in_chr_rom_segment(segment)
 
     def _read_in_chr_rom_segment(self, index):
-        offset = CHR_ROM_OFFSET + index * CHR_ROM_SEGMENT_SIZE
+        offset = ROM().chr_offset + index * CHR_ROM_SEGMENT_SIZE
         chr_rom_data = ROM().bulk_read(2 * CHR_ROM_SEGMENT_SIZE, offset)
 
         self.data.extend(chr_rom_data)
