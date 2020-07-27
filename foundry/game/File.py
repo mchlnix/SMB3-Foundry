@@ -100,7 +100,7 @@ class ROM(Rom):
     @property
     def chr_offset(self) -> int:
         """Provides the offset for the chr data"""
-        return self.get_byte(5) * 0x2000 + 0x10
+        return self.get_byte(5) * 0x4000 + 0x10
 
     @property
     def position(self) -> int:

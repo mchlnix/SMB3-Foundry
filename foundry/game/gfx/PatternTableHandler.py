@@ -1,11 +1,10 @@
 
-from dataclasses import dataclass
+from typing import Tuple
 
 from foundry.game.File import ROM
 
 
-CHR_ROM_OFFSET = 0x40010
-CHR_ROM_SEGMENT_SIZE = 0x400
+CHR_PAGE = CHR_ROM_SEGMENT_SIZE = 0x400
 
 WORLD_MAP = 0
 SPADE_ROULETTE = 16
@@ -113,40 +112,59 @@ class PatternTable:
 
 
 class PatternTableHandler:
-    def __init__(self, page: int):
-        self.data = bytearray()
-        self.page = page
+    """Makes an artificial PPU for the graphics"""
+    def __init__(self, pattern_table: PatternTable):
+        if isinstance(pattern_table, int):
+            raise TypeError(f"Invalid {pattern_table}, must be PatternTable")
+        self.pattern_table = pattern_table
 
-        segments = []
+    @property
+    def data(self) -> bytearray:
+        """The data for the pattern table"""
 
-        if page == WORLD_MAP:
-            segments = [0x14, 0x16, 0x20, 0x21, 0x22, 0x23]
-        if page not in graphic_set2chr_index and page not in common_set2chr_index:
-            self._read_in([page, page + 2])
+        @lru_cache
+        def get_data(pattern_table: Tuple[int, int, int, int, int, int]) -> bytearray:
+            """Caches the data for quick access"""
+            data = bytearray()
+            offset = ROM().chr_offset
+            for i in range(2):
+                data.extend(ROM().bulk_read(CHR_PAGE * 2, offset + CHR_PAGE * (pattern_table[i] & 0b1111_1110)))
+            for i in range(2, 6):
+                data.extend(ROM().bulk_read(CHR_PAGE, offset + CHR_PAGE * pattern_table[i]))
+            return data
+
+        return get_data(astuple(self.pattern_table))
+
+    @classmethod
+    def from_world_map(cls):
+        """Makes a pattern table handler for the world map"""
+        return cls(PatternTable(0x14, 0x16, 0x20, 0x21, 0x22, 0x23))
+
+    @classmethod
+    def from_tileset(cls, tileset: int):
+        """Makes a pattern table handler from a tileset"""
+        ptn_tbl = PatternTable(0, 0, 0, 0, 0, 0)
+
+        if tileset not in graphic_set2chr_index and tileset not in common_set2chr_index:
+            ptn_tbl.background_0 = tileset
+            ptn_tbl.background_1 = tileset
         else:
-            gfx_index = graphic_set2chr_index[page]
-            common_index = common_set2chr_index[page]
+            ptn_tbl.background_0 = graphic_set2chr_index[tileset]
+            ptn_tbl.background_1 = common_set2chr_index[tileset]
 
-            segments.append(gfx_index)
-            segments.append(common_index)
-
-            if page == SPADE_ROULETTE:
-                segments.extend([0x20, 0x21, 0x22, 0x23])
-            elif page == N_SPADE:
-                segments.extend([0x28, 0x29, 0x5A, 0x31])
-            elif page == VS_2P:
-                segments.extend([0x04, 0x05, 0x06, 0x07])
-            else:
-                segments.extend([0x00, 0x00, 0x00, 0x00])
-
-        self._read_in(segments)
-
-    def _read_in(self, segments):
-        for segment in segments:
-            self._read_in_chr_rom_segment(segment)
-
-    def _read_in_chr_rom_segment(self, index):
-        offset = ROM().chr_offset + index * CHR_ROM_SEGMENT_SIZE
-        chr_rom_data = ROM().bulk_read(2 * CHR_ROM_SEGMENT_SIZE, offset)
-
-        self.data.extend(chr_rom_data)
+            if tileset == SPADE_ROULETTE:
+                ptn_tbl.sprite_0 = 0x20
+                ptn_tbl.sprite_1 = 0x21
+                ptn_tbl.sprite_2 = 0x22
+                ptn_tbl.sprite_3 = 0x23
+            elif tileset == N_SPADE:
+                ptn_tbl.sprite_0 = 0x28
+                ptn_tbl.sprite_1 = 0x29
+                ptn_tbl.sprite_2 = 0x5A
+                ptn_tbl.sprite_3 = 0x31
+            elif tileset == VS_2P:
+                ptn_tbl.sprite_0 = 0x04
+                ptn_tbl.sprite_1 = 0x05
+                ptn_tbl.sprite_2 = 0x06
+                ptn_tbl.sprite_3 = 0x07
+        return cls(ptn_tbl)
