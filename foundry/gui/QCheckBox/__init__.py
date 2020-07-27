@@ -1,6 +1,6 @@
 
 
-from typing import List
+from typing import List, Optional
 from PySide2.QtWidgets import QCheckBox
 
 from foundry.gui.QCore.util import DefaultSizePartial
@@ -9,7 +9,7 @@ from foundry.gui.QCore.Action import Action, AbstractActionObject
 
 class CheckBox(QCheckBox, AbstractActionObject, DefaultSizePartial):
     """A generic spinner with extended functionality"""
-    def __init__(self, parent, name):
+    def __init__(self, parent, name : Optional[str] = ""):
         QCheckBox.__init__(self, parent, name)
         DefaultSizePartial.__init__(self)
         AbstractActionObject.__init__(self)
