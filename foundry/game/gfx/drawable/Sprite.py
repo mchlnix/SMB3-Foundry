@@ -54,7 +54,7 @@ class Sprite:
     ):
         """Returns a block directly from rom"""
         image = np.empty((Sprite.image_length, Sprite.image_length * 3), dtype="ubyte")
-        tile_offset = 2 * (sprite_index // 2)
+        tile_offset = (0x100 * sprite_index & 0b01) + ((sprite_index >> 2) * 2)
         for idx in range(2):
             tile = Tile.from_rom(tile_offset + idx, palette_group, palette_index, graphics_page)
             y_off = idx * Tile.image_height
