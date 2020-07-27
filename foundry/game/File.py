@@ -93,7 +93,6 @@ class ROM(Rom):
             self.load_from_file(pathname)
             Rom.__init__(self, self.rom_data)
             self._position = 0
-        print(_ROM)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.path})"
