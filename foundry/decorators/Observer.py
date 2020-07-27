@@ -3,6 +3,7 @@ Provides a class to help with observing events
 """
 
 
+from inspect import signature
 from typing import Callable
 
 
@@ -16,12 +17,10 @@ class Observed:
         self.observers = []
 
     def __call__(self, *args, **kwargs):
-        try:
-            result = self.function(*args, **kwargs)
-            self.notify(result)
-            return result
-        except TypeError as err:
-            print(f"{err}: {self} did not provide the result result from {self.function}({args}, {kwargs})")
+        result = self.function(*args, **kwargs)
+        self.notify(result)
+
+        return result
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.function}) with observers: {self.observers}"
@@ -30,6 +29,10 @@ class Observed:
         """Notifies every observer"""
         for observer in self.observers:
             observer(result)
+            try:
+                observer(result)
+            except TypeError:
+                raise TypeError(f"{observer.__name__}{str(signature(observer))} received {result}")
 
     def attach(self, observer: Callable) -> None:
         """Adds an observer"""
