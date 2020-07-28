@@ -18,4 +18,8 @@ def set_tight_size_policy(instance):
 class DefaultSizePartial:
     """A partial class for setting the default size to the widget"""
     def __init__(self):
+        self.set_size_policy()
+
+    def set_size_policy(self):
+        """Sets the size policy of the widget"""
         set_tight_size_policy(self)
