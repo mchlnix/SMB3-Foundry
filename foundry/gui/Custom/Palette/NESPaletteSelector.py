@@ -45,7 +45,11 @@ class ColorPickerButton(ColoredToolButton):
 
     def call_pop_up(self, *_):
         """Calls on a pop up to select a new color"""
-        ColorPickerPopup(self, action=lambda value: setattr(self, "color_index", value)).exec_()
+        ColorPickerPopup(self, action=lambda value: self.pop_up_finished(value)).exec_()
+
+    def pop_up_finished(self, value: int) -> None:
+        """The method called on pop up finish"""
+        self.color_index = value
 
     @property
     def color_index(self) -> int:
