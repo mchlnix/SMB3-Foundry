@@ -3,7 +3,8 @@ This module includes a tool button with extended functionality
 """
 
 from typing import List, Optional
-from PySide2.QtWidgets import QToolButton, QWidget
+from PySide2.QtWidgets import QToolButton, QWidget, QSizePolicy
+from PySide2.QtCore import QSize, Qt
 
 from foundry.gui.QCore import BUTTON_TINY
 from foundry.game.gfx.Palette import Color
@@ -22,6 +23,10 @@ class ColoredToolButton(QToolButton, AbstractActionObject, DefaultSizePartial):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.color})"
+
+    def sizeHint(self) -> QSize:
+        """The size hint for the button"""
+        return QSize(BUTTON_TINY, BUTTON_TINY)
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
@@ -52,9 +57,9 @@ class ColoredToolButton(QToolButton, AbstractActionObject, DefaultSizePartial):
         """Makes a tiny push button"""
         try:
             button = cls(*args, **kwargs)
-            button.setFixedWidth(BUTTON_TINY)
-            button.setFixedHeight(BUTTON_TINY)
+            button.setBaseSize(BUTTON_TINY, BUTTON_TINY)
+            button.setMinimumWidth(BUTTON_TINY)
+            button.setMinimumHeight(BUTTON_TINY)
             return button
         except TypeError as err:
             raise TypeError(err, f"Did not create {cls} from {args} and {kwargs}")
-
