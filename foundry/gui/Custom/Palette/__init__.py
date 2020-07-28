@@ -5,6 +5,7 @@ from PySide2.QtWidgets import QGridLayout, QWidget, QLayout, QHBoxLayout
 from PySide2.QtGui import Qt
 
 from foundry.gui.QCore import MARGIN_TIGHT
+from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET, DEFAULT_PALETTE
 from foundry.gui.QToolButton import ColoredToolButton
 from foundry.game.gfx.Palette import PaletteController, PaletteSet, Palette, Color
 from foundry.decorators.Observer import Observed
@@ -13,16 +14,12 @@ from foundry.gui.QCore.Action import Action, AbstractActionObject
 
 
 _palette_controller = PaletteController()
-_default_color_index = 0
-_default_color = _palette_controller.colors[_default_color_index]
-_default_palette = Palette(_default_color, _default_color, _default_color, _default_color)
-_default_palette_set = PaletteSet(_default_palette, _default_palette, _default_palette, _default_palette)
 
 
 class PaletteSetEditor(Widget, AbstractActionObject):
     """A widget to help with editing a palette set"""
 
-    def __init__(self, parent: Optional[QWidget], palette: Optional[PaletteSet] = _default_palette_set) -> None:
+    def __init__(self, parent: Optional[QWidget], palette: Optional[PaletteSet] = DEFAULT_PALETTE_SET) -> None:
         from foundry.gui.Custom.Palette.NESPaletteSelector import ColorPickerButton
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
@@ -70,7 +67,7 @@ class PaletteSetEditor(Widget, AbstractActionObject):
 
 class PaletteEditor(Widget, AbstractActionObject):
     """A widget to help edit a single palette"""
-    def __init__(self, parent: Optional[QWidget], palette: Optional[Palette] = _default_palette) -> None:
+    def __init__(self, parent: Optional[QWidget], palette: Optional[Palette] = DEFAULT_PALETTE) -> None:
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
         self.parent = parent
@@ -90,7 +87,7 @@ class PaletteEditor(Widget, AbstractActionObject):
         hbox.setSizeConstraint(QLayout.SetFixedSize)
         hbox.setSpacing(0)
         for idx in range(3):
-            button = ColorPickerButton.as_tiny(self, idx)
+            button = ColorPickerButton.as_tiny(self, self.palette[idx])
             self.buttons.append(button)
             hbox.addWidget(button)
         self.setLayout(hbox)
