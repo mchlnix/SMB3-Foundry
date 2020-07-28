@@ -39,9 +39,13 @@ class ColoredToolButton(QToolButton, AbstractActionObject, DefaultSizePartial):
 
     @color.setter
     def color(self, color: Color) -> None:
+        self._set_color(color)
+        self.color_change_action.observer(color)
+
+    def _set_color(self, color: Color) -> None:
+        """Sets the color without sending a message to the signal, use sparingly"""
         self._color = color
         self.setStyleSheet(f"background-color:rgb({color.red},{color.green},{color.blue})")
-        self.color_change_action.observer(color)
 
     @classmethod
     def as_tiny(cls, *args, **kwargs) -> "ColoredToolButton":
