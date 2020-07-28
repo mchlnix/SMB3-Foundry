@@ -4,6 +4,7 @@ PaletteSelector
 
 from typing import Optional, List
 from PySide2.QtWidgets import QWidget, QHBoxLayout
+from PySide2.QtGui import Qt
 
 from . import PaletteEditor
 from foundry.gui.QSpinner import Spinner
@@ -35,6 +36,7 @@ class PaletteSelector(Widget, AbstractActionObject):
         """Returns the widgets layout"""
         hbox = QHBoxLayout()
         hbox.setContentsMargins(0, 0, 0, 0)
+        hbox.setAlignment(Qt.AlignVCenter)
 
         self.palette_editor = PaletteEditor(self, self.palette)
         hbox.addWidget(self.palette_editor)
