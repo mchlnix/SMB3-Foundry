@@ -84,7 +84,7 @@ class PaletteEditor(Widget, AbstractActionObject):
         from foundry.gui.Custom.Palette.NESPaletteSelector import ColorPickerButton
         self.buttons = []
         hbox = QHBoxLayout()
-        hbox.setSizeConstraint(QLayout.SetFixedSize)
+        hbox.setContentsMargins(0, 0, 0, 0)
         hbox.setSpacing(0)
         for idx in range(3):
             button = ColorPickerButton.as_tiny(self, self.palette[idx])
