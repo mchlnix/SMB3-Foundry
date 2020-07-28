@@ -74,7 +74,7 @@ class PaletteEditor(Widget, AbstractActionObject):
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
         self.parent = parent
-        self.palette = palette
+        self._palette = palette
 
         self._set_up_layout()
         self._initialize_internal_observers()
@@ -116,6 +116,21 @@ class PaletteEditor(Widget, AbstractActionObject):
         return [
             Action("palette_changed", Observed(lambda palette: palette)),
         ]
+
+    @property
+    def palette(self) -> Palette:
+        """The palette we are controlling"""
+        return self._palette
+
+    @palette.setter
+    def palette(self, palette: Palette) -> None:
+        self._set_palette(palette)
+        self.palette_changed_action(palette)
+
+    def _set_palette(self, palette: Palette) -> None:
+        """Sets the palette without making an update"""
+        self._palette = palette
+        self._push_palette_to_buttons()
 
 
 class ColorPicker(Widget, AbstractActionObject):
