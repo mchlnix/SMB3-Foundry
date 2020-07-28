@@ -106,6 +106,11 @@ class PaletteEditor(Widget, AbstractActionObject):
         self.palette[idx] = color
         self.palette_changed_action.observer(self.palette)
 
+    def _push_palette_to_buttons(self) -> None:
+        """Pushes the palette onto the palette buttons"""
+        for idx, button in enumerate(self.buttons):
+            button._set_color(self.palette[idx])  # pushes the color to the button without updating the palette
+
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
