@@ -43,7 +43,7 @@ class PaletteSetEditor(Widget, AbstractActionObject):
         self.palette_editors = []
 
         hbox = QHBoxLayout()
-        hbox.setSpacing(MARGIN_TIGHT)
+        hbox.setContentsMargins(0, 0, 0, 0)
 
         self.background_button = ColorPickerButton.as_tiny(self, self.palette.background_color)
         hbox.addWidget(self.background_button)
