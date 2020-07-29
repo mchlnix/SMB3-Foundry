@@ -3,7 +3,7 @@ from typing import Tuple
 from dataclasses import dataclass, astuple
 from functools import lru_cache
 
-from foundry.game.File import ROM
+from foundry.game.File import ROM, _ROM
 
 
 CHR_PAGE = CHR_ROM_SEGMENT_SIZE = 0x400
@@ -116,26 +116,22 @@ class PatternTable:
 class PatternTableHandler:
     """Makes an artificial PPU for the graphics"""
     def __init__(self, pattern_table: PatternTable):
-        if isinstance(pattern_table, int):
-            raise TypeError(f"Invalid {pattern_table}, must be PatternTable")
         self.pattern_table = pattern_table
+        self.data = self.get_data(astuple(self.pattern_table))
 
-    @property
-    def data(self) -> bytearray:
-        """The data for the pattern table"""
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.pattern_table}) with data {self.data}"
 
-        @lru_cache
-        def get_data(pattern_table: Tuple[int, int, int, int, int, int]) -> bytearray:
-            """Caches the data for quick access"""
-            data = bytearray()
-            offset = ROM().chr_offset
-            for i in range(2):
-                data.extend(ROM().bulk_read(CHR_PAGE * 2, offset + CHR_PAGE * (pattern_table[i] & 0b1111_1110)))
-            for i in range(2, 6):
-                data.extend(ROM().bulk_read(CHR_PAGE, offset + CHR_PAGE * pattern_table[i]))
-            return data
-
-        return get_data(astuple(self.pattern_table))
+    def get_data(self, pattern_table: Tuple[int, int, int, int, int, int]) -> bytearray:
+        """Caches the data for quick access"""
+        data = bytearray()
+        offset = ROM().chr_offset
+        for i in range(2):
+            data.extend(ROM().bulk_read(CHR_PAGE * 2, offset + CHR_PAGE * (pattern_table[i] & 0b1111_1110)))
+        for i in range(2, 6):
+            data.extend(ROM().bulk_read(CHR_PAGE, offset + CHR_PAGE * pattern_table[i]))
+        data.extend([0 for _ in range(0x10)])
+        return data
 
     @classmethod
     def from_world_map(cls):
