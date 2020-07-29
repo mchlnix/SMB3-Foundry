@@ -54,7 +54,7 @@ class Sprite:
     ):
         """Returns a block directly from rom"""
         image = np.empty((16, 24), dtype="ubyte")
-        tile_offset = (0x100 * sprite_index & 0b01) + ((sprite_index >> 2) * 2)
+        tile_offset = (0x100 * (sprite_index & 0b01)) + (sprite_index & 0b1111_1110)
         image[0: 8, 0: 24] = Tile.from_rom(tile_offset, palette_group, palette_index, graphics_page).numpy_image
         image[8: 16, 0: 24] = Tile.from_rom(tile_offset + 1, palette_group, palette_index, graphics_page).numpy_image
         return cls(bytes(image.flatten().tolist()), horizontal_mirror, vertical_mirror)
@@ -62,7 +62,7 @@ class Sprite:
     @property
     def default_size(self):
         """The default size of a tile"""
-        return Size(self.image_length, self.image_length)
+        return Size(self.image_length, self.image_height)
 
     @property
     def pixel_count(self) -> int:
