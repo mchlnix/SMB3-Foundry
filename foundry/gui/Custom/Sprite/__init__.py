@@ -3,17 +3,23 @@
 from typing import List, Optional
 from PySide2.QtWidgets import QWidget
 from PySide2.QtGui import QPaintEvent, QPainter
-from PySide2.QtCore import QSize
+from PySide2.QtCore import QSize, Qt
+
+from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
+from foundry.gui.QCore.object_definitions import DEFAULT_SPRITE_GRAPHIC
+from foundry.gui.QCore.pattern_table import PATTERN_TBL_DEFAULT
+from foundry.gui.QCore.Action import Action, AbstractActionObject
 
 from foundry.game.gfx.Palette import PaletteController, PaletteSet, Palette, Color
-from foundry.decorators.Observer import Observed
+from foundry.game.gfx.objects.objects.LevelObjectDefinition import SpriteGraphic
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
-from foundry.gui.QWidget import Widget
-from foundry.gui.QCore.Action import Action, AbstractActionObject
-from foundry.game.gfx.objects.objects.LevelObjectDefinition import SpriteGraphic, Animation
 from foundry.game.gfx.drawable.Sprite import Sprite
 from foundry.game.Size import Size
 from foundry.game.Position import Position
+
+from foundry.decorators.Observer import Observed
+
+from foundry.gui.QWidget import Widget
 
 
 class SpriteDisplayer(Widget, AbstractActionObject):
@@ -21,18 +27,20 @@ class SpriteDisplayer(Widget, AbstractActionObject):
     def __init__(
             self,
             parent: Optional[QWidget],
-            animation: Animation,
-            palette: PaletteSet,
-            pattern_table: PatternTableHandler,
-            index: int = 0
+            graphic: SpriteGraphic = DEFAULT_SPRITE_GRAPHIC,
+            palette_index: int = 0,
+            palette: PaletteSet = DEFAULT_PALETTE_SET,
+            pattern_table: Optional[PatternTableHandler] = None
     ) -> None:
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
         self.parent = parent
         self._palette = palette
+        if pattern_table is None:
+            pattern_table = PatternTableHandler(PATTERN_TBL_DEFAULT)
         self._pattern_table = pattern_table
-        self._animation = animation
-        self._index = index
+        self._palette_index = palette_index
+        self._sprite_graphic = graphic
 
         self.paint_event_action.observer.attach(lambda *_: self._trigger_refresh())
 
@@ -53,38 +61,24 @@ class SpriteDisplayer(Widget, AbstractActionObject):
     @pattern_table.setter
     def pattern_table(self, pattern_table: PatternTableHandler) -> None:
         self._pattern_table = pattern_table
-        self.pattern_table_from_animation()
-
-    def pattern_table_from_animation(self) -> None:
-        """Updates the pattern table for animation"""
-        ptn = self.pattern_table.pattern_table
-        page = self.animation.page
-        ptn.sprite_2 = page
-        ptn.sprite_3 = page
-        self._pattern_table = ptn
 
     @property
-    def animation(self) -> Animation:
-        """The animation for the sprite"""
-        return self._animation
+    def palette_index(self) -> int:
+        """The palette index for the sprite"""
+        return self._palette_index
 
-    @animation.setter
-    def animation(self, animation: Animation) -> None:
-        self._animation = animation
-
-    @property
-    def index(self) -> int:
-        """The index into the animation"""
-        return self._index
-
-    @index.setter
-    def index(self, index: int) -> None:
-        self._index = index
+    @palette_index.setter
+    def palette_index(self, index: int) -> None:
+        self._palette_index = index
 
     @property
     def sprite_graphic(self) -> SpriteGraphic:
         """Provides the current sprite graphic we are indexing to"""
-        return self.animation.graphics[self.index]
+        return self._sprite_graphic
+
+    @sprite_graphic.setter
+    def sprite_graphic(self, graphic: SpriteGraphic) -> None:
+        self._sprite_graphic = graphic
 
     @property
     def graphic(self) -> int:
@@ -101,7 +95,7 @@ class SpriteDisplayer(Widget, AbstractActionObject):
         return Sprite.from_sprite_graphic(
             graphic=self.sprite_graphic,
             palette_group=self.palette,
-            palette_index=self.animation.palette,
+            palette_index=self.palette_index,
             graphics_page=self.pattern_table
         )
 
@@ -111,9 +105,15 @@ class SpriteDisplayer(Widget, AbstractActionObject):
             Action("paint_event", Observed(lambda *_: True)),
         ]
 
+    def resizeEvent(self, event):
+        """Resizes the widget to the correct size"""
+        new_size = QSize(8, 16)
+        new_size.scale(event.size(), Qt.KeepAspectRatio)
+        self.resize(new_size)
+
     def sizeHint(self) -> QSize:
         """The minimum amount of space required for the widget"""
-        return QSize(32, 64)
+        return QSize(8, 16)
 
     def _trigger_refresh(self):
         print("updating")
@@ -122,8 +122,3 @@ class SpriteDisplayer(Widget, AbstractActionObject):
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
         self.sprite.draw(painter, Position(0, 0), Size(painter.device().width(), painter.device().height()))
-
-
-
-
-
