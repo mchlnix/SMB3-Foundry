@@ -5,6 +5,7 @@ This serves as a generic implementation of the AbstractObserver
 
 import random
 import logging
+from inspect import signature
 from foundry import log_dir
 from typing import Callable, Any, Dict, Optional, Hashable
 
@@ -42,6 +43,9 @@ class Observable(AbstractObservable):
             except NameError:
                 _logger.debug(f"Removed deleted observer with identification {key}")
                 self.delete_observable(key)  # the observer no longer exists
+            except TypeError as err:
+                _logger.error(f"{err}: {observer.__name__}{str(signature(observer))} received {result}")
+                raise TypeError(f"{observer.__name__}{str(signature(observer))} received {result}")
 
     def attach_observer(self, observer: Callable, identifier: Optional[Hashable] = None) -> None:
         """Attach an observer"""
