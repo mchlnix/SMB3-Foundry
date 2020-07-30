@@ -37,7 +37,11 @@ class Observable(AbstractObservable):
         """Update all the observers"""
         _logger.debug(f"{self} notified {self.observers.values()} result {result}")
         for key, observer in self.observers.items():
-            observer(result)
+            try:
+                observer(result)
+            except NameError:
+                _logger.debug(f"Removed deleted observer with identification {key}")
+                self.delete_observable(key)  # the observer no longer exists
 
     def attach_observer(self, observer: Callable, identifier: Optional[Hashable] = None) -> None:
         """Attach an observer"""

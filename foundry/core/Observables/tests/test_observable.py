@@ -37,6 +37,21 @@ def test_attach_multiple_observers():
     assert len(subject.observers) == 10
 
 
+def test_attach_object_that_was_deleted():
+    """Tests what happens if a class observer is deleted"""
+    class TestClass:
+        """A basic class"""
+        def test_func(self, value):
+            """A function that does something"""
+            return value
+
+    subject = Observable()
+    test = TestClass()
+    subject.attach_observer(lambda value: test.test_func(value))
+    del test
+    subject(0)
+
+
 def test_no_same_id():
     """Tests if observable can only have one id"""
     subject = Observable()
