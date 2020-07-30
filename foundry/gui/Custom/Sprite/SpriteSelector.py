@@ -16,7 +16,7 @@ from foundry.game.gfx.Palette import PaletteSet
 from foundry.gui.QWidget import Widget
 from foundry.gui.Custom.Sprite import SpriteDisplayerTracker
 
-from foundry.core.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import Observable
 
 
 class SpriteSelector(Widget, AbstractActionObject):

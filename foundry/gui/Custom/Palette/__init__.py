@@ -8,7 +8,7 @@ from foundry.gui.QCore import MARGIN_TIGHT
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET, DEFAULT_PALETTE
 from foundry.gui.QToolButton import ColoredToolButton
 from foundry.game.gfx.Palette import PaletteController, PaletteSet, Palette, Color
-from foundry.core.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import Observable
 from foundry.gui.QWidget import Widget
 from foundry.gui.QCore.Action import Action, AbstractActionObject
 

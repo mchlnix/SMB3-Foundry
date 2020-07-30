@@ -11,7 +11,7 @@ from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtGui import Qt
 
 from . import Spinner
-from foundry.core.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import Observable
 from foundry.gui.QWidget import Widget
 from foundry.gui.QWidget.Panel import Panel
 from foundry.gui.QCore.Action import Action, AbstractActionObject

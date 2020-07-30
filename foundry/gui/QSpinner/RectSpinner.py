@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QWidget, QGridLayout, QVBoxLayout
 from PySide2.QtGui import Qt
 
 from foundry.gui.QLabel import Label
-from foundry.core.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import Observable
 from foundry.gui.QWidget import Widget
 from foundry.gui.QCore.Action import Action, AbstractActionObject
 from foundry.gui.QSpinner.PositionSpinner import PositionSpinner
