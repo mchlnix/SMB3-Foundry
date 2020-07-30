@@ -10,7 +10,7 @@ from . import PaletteEditor
 from foundry.gui.QSpinner import Spinner
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.game.gfx.Palette import PaletteSet, Palette
-from foundry.core.Observable import Observable
+from foundry.core.ObservableDecorator import Observable
 from foundry.gui.QWidget import Widget
 from foundry.gui.QCore.Action import Action, AbstractActionObject
 

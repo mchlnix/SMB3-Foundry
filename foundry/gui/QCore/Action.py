@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import Signal
 
-from foundry.core.Observable import Observable
+from foundry.core.ObservableDecorator import Observable
 
 
 def has_actions(action_object):
