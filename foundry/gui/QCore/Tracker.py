@@ -16,7 +16,7 @@ from foundry.gui.QCore import SINGLE_CLICK, DOUBLE_CLICK
 
 from foundry.gui.QWidget import Widget
 
-from foundry.decorators.Observer import Observed
+from foundry.core.Observer import Observed
 
 
 class PartialTrackingObject:

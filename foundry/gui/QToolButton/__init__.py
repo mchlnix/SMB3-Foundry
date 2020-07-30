@@ -3,14 +3,14 @@ This module includes a tool button with extended functionality
 """
 
 from typing import List, Optional
-from PySide2.QtWidgets import QToolButton, QWidget, QSizePolicy
-from PySide2.QtCore import QSize, Qt
+from PySide2.QtWidgets import QToolButton, QWidget
+from PySide2.QtCore import QSize
 
 from foundry.gui.QCore import BUTTON_TINY
 from foundry.game.gfx.Palette import Color
 from foundry.gui.QCore.util import DefaultSizePartial
 from foundry.gui.QCore.Action import Action, AbstractActionObject
-from foundry.decorators.Observer import Observed
+from foundry.core.Observer import Observed
 
 
 class ColoredToolButton(QToolButton, AbstractActionObject, DefaultSizePartial):

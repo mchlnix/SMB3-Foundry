@@ -1,12 +1,12 @@
 
 
 from typing import Optional, List
-from abc import abstractmethod, ABC
+from abc import abstractmethod
 from dataclasses import dataclass
 from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import Signal
 
-from foundry.decorators.Observer import Observed
+from foundry.core.Observer import Observed
 
 
 def has_actions(action_object):

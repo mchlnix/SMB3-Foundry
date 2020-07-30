@@ -10,7 +10,7 @@ from PySide2.QtWidgets import QWidget
 
 from foundry.gui.QSpinner.MultiSpinner import MultiSpinner, SpinnerAttributes
 from foundry.game.Position import Position
-from foundry.decorators.Observer import Observed
+from foundry.core.Observer import Observed
 from foundry.gui.QCore.Action import Action
 
 

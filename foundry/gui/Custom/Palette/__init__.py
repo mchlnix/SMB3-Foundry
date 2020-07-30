@@ -1,14 +1,14 @@
 
 
 from typing import Optional, List
-from PySide2.QtWidgets import QGridLayout, QWidget, QLayout, QHBoxLayout
+from PySide2.QtWidgets import QGridLayout, QWidget, QHBoxLayout
 from PySide2.QtGui import Qt
 
 from foundry.gui.QCore import MARGIN_TIGHT
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET, DEFAULT_PALETTE
 from foundry.gui.QToolButton import ColoredToolButton
 from foundry.game.gfx.Palette import PaletteController, PaletteSet, Palette, Color
-from foundry.decorators.Observer import Observed
+from foundry.core.Observer import Observed
 from foundry.gui.QWidget import Widget
 from foundry.gui.QCore.Action import Action, AbstractActionObject
 

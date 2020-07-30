@@ -9,7 +9,7 @@ from foundry.gui.QDialog import Dialog
 from foundry.gui.Custom.Palette import ColorPicker
 from foundry.gui.QToolButton import ColoredToolButton
 from foundry.game.gfx.Palette import Color, PaletteController
-from foundry.decorators.Observer import Observed
+from foundry.core.Observer import Observed
 from foundry.gui.QCore.Action import Action
 
 

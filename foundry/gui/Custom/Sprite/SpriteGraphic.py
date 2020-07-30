@@ -17,7 +17,7 @@ from foundry.gui.QWidget import Widget
 
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import SpriteGraphic
 
-from foundry.decorators.Observer import Observed
+from foundry.core.Observer import Observed
 
 
 class SpriteGraphicWidget(Widget, AbstractActionObject):

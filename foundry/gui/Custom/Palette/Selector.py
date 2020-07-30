@@ -9,8 +9,8 @@ from PySide2.QtGui import Qt
 from . import PaletteEditor
 from foundry.gui.QSpinner import Spinner
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
-from foundry.game.gfx.Palette import PaletteController, PaletteSet, Palette
-from foundry.decorators.Observer import Observed
+from foundry.game.gfx.Palette import PaletteSet, Palette
+from foundry.core.Observer import Observed
 from foundry.gui.QWidget import Widget
 from foundry.gui.QCore.Action import Action, AbstractActionObject
 

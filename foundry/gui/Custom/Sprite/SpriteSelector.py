@@ -1,25 +1,22 @@
 
 
 from typing import Optional, List
-from PySide2.QtWidgets import QWidget, QGridLayout, QVBoxLayout
+from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtGui import Qt
 
 from foundry.gui.QCore.Action import Action, AbstractActionObject
-from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET, DEFAULT_PALETTE
+from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.gui.QCore.pattern_table import PATTERN_TBL_DEFAULT
 from foundry.gui.QCore import MARGIN_TIGHT
 
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import SpriteGraphic
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
-from foundry.game.gfx.Palette import Palette, PaletteSet
+from foundry.game.gfx.Palette import PaletteSet
 
-from foundry.gui.QLabel import Label
 from foundry.gui.QWidget import Widget
-from foundry.gui.Custom.Sprite import SpriteDisplayer, SpriteDisplayerTracker
-from foundry.gui.QSpinner.HexSpinner import HexSpinner
-from foundry.gui.QCheckBox.SpriteFlipCheckbox import SpriteFlipCheckbox
+from foundry.gui.Custom.Sprite import SpriteDisplayerTracker
 
-from foundry.decorators.Observer import Observed
+from foundry.core.Observer import Observed
 
 
 class SpriteSelector(Widget, AbstractActionObject):

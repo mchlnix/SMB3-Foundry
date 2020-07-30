@@ -4,13 +4,10 @@ ComboBoxOption: The tuple for adding an combobox option with a action built in
 ComboBox: The drop down with extended functionality
 """
 
-from typing import Callable, Optional, List
+from typing import Optional, List
 from collections import namedtuple
-from PySide2.QtWidgets import QComboBox, QWidget, QSizePolicy, QFormLayout
+from PySide2.QtWidgets import QComboBox, QWidget
 
-from foundry.gui.QCore import MARGIN_TIGHT
-from foundry.gui.QLabel import Label
-from foundry.decorators.Observer import Observed
 from foundry.gui.QCore.util import set_tight_size_policy
 from foundry.gui.QCore.Action import Action, AbstractActionObject
 
