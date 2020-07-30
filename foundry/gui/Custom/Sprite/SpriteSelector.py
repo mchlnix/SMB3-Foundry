@@ -15,7 +15,7 @@ from foundry.game.gfx.Palette import Palette, PaletteSet
 
 from foundry.gui.QLabel import Label
 from foundry.gui.QWidget import Widget
-from foundry.gui.Custom.Sprite import SpriteDisplayer
+from foundry.gui.Custom.Sprite import SpriteDisplayer, SpriteDisplayerTracker
 from foundry.gui.QSpinner.HexSpinner import HexSpinner
 from foundry.gui.QCheckBox.SpriteFlipCheckbox import SpriteFlipCheckbox
 
@@ -48,7 +48,9 @@ class SpriteSelector(Widget, AbstractActionObject):
         grid_layout.setSpacing(MARGIN_TIGHT)
         grid_layout.setDefaultPositioning(0x10, Qt.Horizontal)
         for idx in range(1, 0x200, 2):
-            sprite = SpriteDisplayer(self, SpriteGraphic(idx), self.palette_index, self.palette, self.pattern_table)
+            sprite = SpriteDisplayerTracker(
+                self, SpriteGraphic(idx), self.palette_index, self.palette, self.pattern_table
+            )
             self.sprites.append(sprite)
             grid_layout.addWidget(sprite)
 
@@ -66,7 +68,7 @@ class SpriteSelector(Widget, AbstractActionObject):
         return self._pattern_table
 
     @pattern_table.setter
-    def pattern_table(self, pattern_table: int) -> None:
+    def pattern_table(self, pattern_table: PatternTableHandler) -> None:
         self._pattern_table = pattern_table
 
     @property
