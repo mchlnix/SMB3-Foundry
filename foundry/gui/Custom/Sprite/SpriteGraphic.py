@@ -8,13 +8,16 @@ from typing import Optional, List
 from PySide2.QtWidgets import QWidget, QGridLayout, QVBoxLayout
 from PySide2.QtGui import Qt
 
-from foundry.gui.QLabel import Label
-from foundry.decorators.Observer import Observed
-from foundry.gui.QWidget import Widget
 from foundry.gui.QCore.Action import Action, AbstractActionObject
-from foundry.gui.QSpinner.HexSpinner import HexSpinner
+
 from foundry.gui.QCheckBox.SpriteFlipCheckbox import SpriteFlipCheckbox
+from foundry.gui.QSpinner.HexSpinner import HexSpinner
+from foundry.gui.QLabel import Label
+from foundry.gui.QWidget import Widget
+
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import SpriteGraphic
+
+from foundry.decorators.Observer import Observed
 
 
 class SpriteGraphicWidget(Widget, AbstractActionObject):
