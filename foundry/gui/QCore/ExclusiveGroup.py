@@ -5,7 +5,7 @@ ExclusiveGroup: A class for merging multiple observables into one signal
 
 from typing import Optional, List, Hashable, Dict
 
-from foundry.core.Observer import Observed
+from foundry.core.Observable import Observed
 
 from foundry.gui.QCore.Action import AbstractActionObject, Action
 

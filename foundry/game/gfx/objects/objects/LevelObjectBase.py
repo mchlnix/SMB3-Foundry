@@ -9,7 +9,7 @@ from foundry.game.Rect import Rect
 from foundry.game.gfx.drawable.SpriteElement import SpriteElement
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import LevelObjectDefinition, Animation, SpriteGraphic, \
     ObjectOperation
-from foundry.core.Observer import Observed
+from foundry.core.Observable import Observed
 
 
 class LevelObject:

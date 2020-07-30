@@ -10,7 +10,7 @@ from foundry.gui.QCore import BUTTON_TINY
 from foundry.game.gfx.Palette import Color
 from foundry.gui.QCore.util import DefaultSizePartial
 from foundry.gui.QCore.Action import Action, AbstractActionObject
-from foundry.core.Observer import Observed
+from foundry.core.Observable import Observed
 
 
 class ColoredToolButton(QToolButton, AbstractActionObject, DefaultSizePartial):

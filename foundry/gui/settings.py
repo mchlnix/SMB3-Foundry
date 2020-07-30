@@ -2,7 +2,7 @@ import json
 import pathlib
 from typing import Union, Callable
 
-from foundry.core.Observer import Observed
+from foundry.core.Observable import Observed
 
 RESIZE_LEFT_CLICK = "LMB"
 RESIZE_RIGHT_CLICK = "RMB"

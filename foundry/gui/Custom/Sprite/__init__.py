@@ -18,7 +18,7 @@ from foundry.game.gfx.drawable.Sprite import Sprite
 from foundry.game.Size import Size
 from foundry.game.Position import Position
 
-from foundry.core.Observer import Observed
+from foundry.core.Observable import Observed
 
 from foundry.gui.QWidget import Widget
 

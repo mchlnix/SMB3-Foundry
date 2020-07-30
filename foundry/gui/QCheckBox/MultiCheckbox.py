@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtGui import Qt
 
 from . import CheckBox
-from foundry.core.Observer import Observed
+from foundry.core.Observable import Observed
 from foundry.gui.QWidget import Widget
 from foundry.gui.QWidget.Panel import Panel
 from foundry.gui.QCore.Action import Action, AbstractActionObject

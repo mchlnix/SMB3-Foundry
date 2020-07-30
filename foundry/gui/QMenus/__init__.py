@@ -10,7 +10,7 @@ from abc import abstractmethod, ABC
 
 from foundry import icon_dir, data_dir
 from foundry.decorators.Required import Required, SmartRequired
-from foundry.core.Observer import Observed, ObservedAndRequired
+from foundry.core.Observable import Observed, ObservedAndRequired
 
 
 def open_url(url: str):
