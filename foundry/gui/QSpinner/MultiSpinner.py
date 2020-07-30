@@ -53,8 +53,8 @@ class MultiSpinner(Widget, AbstractActionObject):
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
         for spinner in self.spinners:
-            spinner.value_changed_action.observer.attach(lambda *_: self._update_changed_values())
-            spinner.text_changed_action.observer.attach(lambda *_: self._update_text_values())
+            spinner.value_changed_action.observer.attach_observer(lambda *_: self._update_changed_values())
+            spinner.text_changed_action.observer.attach_observer(lambda *_: self._update_text_values())
 
     def _update_changed_values(self):
         """Returns the changed values from the spinners"""

@@ -30,7 +30,7 @@ class SpriteGraphicWidget(Widget, AbstractActionObject):
 
         self._set_up_layout()
         self._initialize_internal_observers()
-        self.graphic_changed_action.observer.attach(lambda gfx: print(gfx))
+        self.graphic_changed_action.observer.attach_observer(lambda gfx: print(gfx))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.name}, {self._sprite_graphic})"
@@ -43,8 +43,8 @@ class SpriteGraphicWidget(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
-        self.graphic_spinner.value_changed_action.observer.attach(lambda *_: self._update_graphic())
-        self.mirror_checkbox.values_changed_action.observer.attach(lambda *_: self._update_graphic())
+        self.graphic_spinner.value_changed_action.observer.attach_observer(lambda *_: self._update_graphic())
+        self.mirror_checkbox.values_changed_action.observer.attach_observer(lambda *_: self._update_graphic())
 
     def _update_graphic(self) -> None:
         self._sprite_graphic = SpriteGraphic(

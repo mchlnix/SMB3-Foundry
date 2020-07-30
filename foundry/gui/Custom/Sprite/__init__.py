@@ -43,7 +43,7 @@ class SpriteDisplayer(Widget, AbstractActionObject):
         self._palette_index = palette_index
         self._sprite_graphic = graphic
 
-        self.paint_event_action.observer.attach(lambda *_: self._trigger_refresh())
+        self.paint_event_action.observer.attach_observer(lambda *_: self._trigger_refresh())
 
     @property
     def palette(self) -> PaletteSet:

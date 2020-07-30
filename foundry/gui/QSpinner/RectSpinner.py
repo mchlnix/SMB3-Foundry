@@ -27,7 +27,7 @@ class RectSpinner(Widget, AbstractActionObject):
 
         self._set_up_layout()
         self._initialize_internal_observers()
-        self.rect_changed_action.observer.attach(lambda rect: print(rect))
+        self.rect_changed_action.observer.attach_observer(lambda rect: print(rect))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.name}, {self.the_rect})"
@@ -40,8 +40,8 @@ class RectSpinner(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
-        self.position_spinner.position_changed_action.observer.attach(lambda *_: self._update_rect())
-        self.size_spinner.size_changed_action.observer.attach(lambda *_: self._update_rect())
+        self.position_spinner.position_changed_action.observer.attach_observer(lambda *_: self._update_rect())
+        self.size_spinner.size_changed_action.observer.attach_observer(lambda *_: self._update_rect())
 
     def _update_rect(self) -> None:
         self._rect = Rect.from_size_and_position(self.size_spinner.the_size, self.position_spinner.position)

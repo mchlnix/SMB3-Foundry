@@ -11,7 +11,6 @@ class Observable:
     """A class that is observable"""
     def __init__(self, function):
         self.function = function
-        self.attach_observer = self.attach
         self.delete_observer = self.delete
         self.observers = []
 
@@ -33,7 +32,7 @@ class Observable:
             except TypeError:
                 raise TypeError(f"{observer.__name__}{str(signature(observer))} received {result}")
 
-    def attach(self, observer: Callable) -> None:
+    def attach_observer(self, observer: Callable) -> None:
         """Adds an observer"""
         if observer is None:
             raise NotImplementedError

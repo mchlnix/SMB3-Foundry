@@ -33,7 +33,7 @@ class ComboBox(QComboBox, AbstractActionObject):
         """Adds an item to the drop down with an action"""
         self.addItem(option.name)
         index = self.items_count
-        self.index_changed_action.observer.attach(lambda result: option.action() if result == index else result)
+        self.index_changed_action.observer.attach_observer(lambda result: option.action() if result == index else result)
         self.items_count += 1
 
     def get_actions(self) -> List[Action]:

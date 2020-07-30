@@ -38,8 +38,8 @@ class ExclusiveGroup(AbstractActionObject):
 
     def add_observable_with_return(self, observable: Observable, identifier: Hashable) -> None:
         """Provides the interface for special returns, but must be hashable"""
-        observable.attach(lambda *_: setattr(self, "_last_selected", identifier))
-        observable.attach(lambda *_: self.update_action.observer(identifier))
+        observable.attach_observer(lambda *_: setattr(self, "_last_selected", identifier))
+        observable.attach_observer(lambda *_: self.update_action.observer(identifier))
         self.subscriptions.update({identifier: observable})
 
     @property

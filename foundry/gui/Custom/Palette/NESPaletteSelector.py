@@ -31,7 +31,7 @@ class ColorPickerButton(ColoredToolButton):
 
     def _initialize_internal_observers(self):
         """Initializes internal observers for special events"""
-        self.clicked_action.observer.attach(self.call_pop_up)
+        self.clicked_action.observer.attach_observer(self.call_pop_up)
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
@@ -82,7 +82,7 @@ class ColorPickerPopup(Dialog):
 
     def _initialize_internal_observers(self, action) -> None:
         """Initializes internal observers for special events"""
-        self.color_picker.color_index_selected_action.observer.attach(lambda *_: self.accept())  # closes the dialog
+        self.color_picker.color_index_selected_action.observer.attach_observer(lambda *_: self.accept())  # closes the dialog
 
         if action is not None:
-            self.color_picker.color_index_selected_action.observer.attach(lambda value: action(value))
+            self.color_picker.color_index_selected_action.observer.attach_observer(lambda value: action(value))

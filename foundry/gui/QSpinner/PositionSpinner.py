@@ -21,7 +21,7 @@ class PositionSpinner(MultiSpinner):
         self.parent = parent
         self._position = position
 
-        self.position_changed_action.observer.attach(lambda rect: print(rect))
+        self.position_changed_action.observer.attach_observer(lambda rect: print(rect))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.position})"

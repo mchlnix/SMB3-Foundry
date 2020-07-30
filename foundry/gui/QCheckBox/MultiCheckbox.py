@@ -42,7 +42,7 @@ class MultiCheckbox(Widget, AbstractActionObject):
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
         for checkbox in self.checkboxes:
-            checkbox.state_changed_action.observer.attach(lambda *_: self._update_changed_values())
+            checkbox.state_changed_action.observer.attach_observer(lambda *_: self._update_changed_values())
 
     def _update_changed_values(self):
         """Returns the changed values from the spinners"""

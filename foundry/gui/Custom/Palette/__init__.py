@@ -31,11 +31,11 @@ class PaletteSetEditor(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
-        self.background_button.color_change_action.observer.attach(
+        self.background_button.color_change_action.observer.attach_observer(
             lambda *_: setattr(self.palette, "background_color", self.background_button.color)
         )
         for idx, palette in enumerate(self.palette_editors):
-            palette.palette_changed_action.observer.attach(lambda pal, i=idx: self._set_palette_set_color(i, pal))
+            palette.palette_changed_action.observer.attach_observer(lambda pal, i=idx: self._set_palette_set_color(i, pal))
 
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
@@ -95,7 +95,7 @@ class PaletteEditor(Widget, AbstractActionObject):
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
         for idx, button in enumerate(self.buttons):
-            button.color_change_action.observer.attach(
+            button.color_change_action.observer.attach_observer(
                 lambda color, i=idx: self._set_palette_color(i, color)
             )
 
@@ -145,9 +145,9 @@ class ColorPicker(Widget, AbstractActionObject):
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
         for idx, button in enumerate(self.buttons):
-            button.clicked_action.observer.attach(
+            button.clicked_action.observer.attach_observer(
                 lambda *_, btn=button: self.color_selected_action.observer(getattr(btn, "color")))
-            button.clicked_action.observer.attach(
+            button.clicked_action.observer.attach_observer(
                 lambda *_, i=idx: self.color_index_selected_action.observer(i)
             )
 
