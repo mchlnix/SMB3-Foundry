@@ -10,6 +10,8 @@ root_dir = Path(__file__).parent.parent
 
 data_dir = root_dir.joinpath("data")
 
+log_dir = data_dir.joinpath("logs")
+
 icon_dir = data_dir.joinpath("icons")
 
 releases_link = "https://github.com/mchlnix/SMB3-Foundry/releases"
