@@ -3,43 +3,14 @@ Provides a class to help with observing events
 """
 
 
-from inspect import signature
 from typing import Callable
 
+from .AbstractObservableDecorator import AbstractObservableDecorator
+from .Observable import Observable
 
-    """A class that is observable"""
-    def __init__(self, function):
-        self.function = function
-        self.observers = []
 
-    def __call__(self, *args, **kwargs):
-        result = self.function(*args, **kwargs)
-        self.notify_observers(result)
-
-        return result
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.function}) with observers: {self.observers}"
-
-    def notify_observers(self, result) -> None:
-        """Notifies every observer"""
-        for observer in self.observers:
-            observer(result)
-            try:
-                observer(result)
-            except TypeError:
-                raise TypeError(f"{observer.__name__}{str(signature(observer))} received {result}")
-
-    def attach_observer(self, observer: Callable) -> None:
-        """Adds an observer"""
-        if observer is None:
-            raise NotImplementedError
-        self.observers.append(observer)
-
-    def delete_observer(self, observer: Callable) -> None:
-        """Deletes an observer"""
-        self.observers.remove(observer)
 class ObservableDecorator(AbstractObservableDecorator, Observable):
+    """A class that is observable"""
 
 
 class ObservedAndRequired:
