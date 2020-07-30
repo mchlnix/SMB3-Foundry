@@ -11,21 +11,20 @@ class Observable:
     """A class that is observable"""
     def __init__(self, function):
         self.function = function
-        self.notify_observers = self.notify
         self.attach_observer = self.attach
         self.delete_observer = self.delete
         self.observers = []
 
     def __call__(self, *args, **kwargs):
         result = self.function(*args, **kwargs)
-        self.notify(result)
+        self.notify_observers(result)
 
         return result
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.function}) with observers: {self.observers}"
 
-    def notify(self, result) -> None:
+    def notify_observers(self, result) -> None:
         """Notifies every observer"""
         for observer in self.observers:
             observer(result)
