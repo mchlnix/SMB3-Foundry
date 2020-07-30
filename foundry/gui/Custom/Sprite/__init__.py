@@ -5,10 +5,11 @@ from PySide2.QtWidgets import QWidget
 from PySide2.QtGui import QPaintEvent, QPainter
 from PySide2.QtCore import QSize, Qt
 
-from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.gui.QCore.object_definitions import DEFAULT_SPRITE_GRAPHIC
-from foundry.gui.QCore.pattern_table import PATTERN_TBL_DEFAULT
 from foundry.gui.QCore.Action import Action, AbstractActionObject
+from foundry.gui.QCore.pattern_table import PATTERN_TBL_DEFAULT
+from foundry.gui.QCore.Tracker import PartialTrackingObject
+from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 
 from foundry.game.gfx.Palette import PaletteController, PaletteSet, Palette, Color
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import SpriteGraphic
@@ -116,9 +117,34 @@ class SpriteDisplayer(Widget, AbstractActionObject):
         return QSize(8, 16)
 
     def _trigger_refresh(self):
-        print("updating")
         self.update()
 
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
         self.sprite.draw(painter, Position(0, 0), Size(painter.device().width(), painter.device().height()))
+
+
+class SpriteDisplayerTracker(PartialTrackingObject, SpriteDisplayer):
+    """SpriteDisplayer with Tracking abilities"""
+
+    def __init__(
+            self,
+            parent: Optional[QWidget],
+            graphic: SpriteGraphic = DEFAULT_SPRITE_GRAPHIC,
+            palette_index: int = 0,
+            palette: PaletteSet = DEFAULT_PALETTE_SET,
+            pattern_table: Optional[PatternTableHandler] = None
+    ) -> None:
+        SpriteDisplayer.__init__(self, parent, graphic, palette_index, palette, pattern_table)
+        PartialTrackingObject.__init__(self)
+
+    def get_actions(self) -> List[Action]:
+        """Gets the actions for the object"""
+        return [
+            Action("paint_event", Observed(lambda *_: True)),
+            Action("pressed", Observed(lambda button: button)),
+            Action("released", Observed(lambda button: button)),
+            Action("single_clicked", Observed(lambda button: button)),
+            Action("double_clicked", Observed(lambda button: button)),
+            Action("mouse_moved", Observed(lambda pos: pos))
+        ]
