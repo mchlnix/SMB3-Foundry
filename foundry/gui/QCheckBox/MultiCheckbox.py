@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtGui import Qt
 
 from . import CheckBox
-from foundry.core.Observable import Observed
+from foundry.core.Observable import Observable
 from foundry.gui.QWidget import Widget
 from foundry.gui.QWidget.Panel import Panel
 from foundry.gui.QCore.Action import Action, AbstractActionObject
@@ -51,5 +51,5 @@ class MultiCheckbox(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("values_changed", Observed(lambda palette_set: palette_set)),
+            Action("values_changed", Observable(lambda palette_set: palette_set)),
         ]

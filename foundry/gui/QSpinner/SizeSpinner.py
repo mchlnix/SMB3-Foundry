@@ -10,7 +10,7 @@ from PySide2.QtWidgets import QWidget
 
 from foundry.gui.QSpinner.MultiSpinner import MultiSpinner, SpinnerAttributes
 from foundry.game.Size import Size
-from foundry.core.Observable import Observed
+from foundry.core.Observable import Observable
 from foundry.gui.QCore.Action import Action
 
 
@@ -33,9 +33,9 @@ class SizeSpinner(MultiSpinner):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("values_changed", Observed(lambda value: value)),
-            Action("size_changed", Observed(lambda size: size)),
-            Action("text_changed", Observed(lambda text: text)),
+            Action("values_changed", Observable(lambda value: value)),
+            Action("size_changed", Observable(lambda size: size)),
+            Action("text_changed", Observable(lambda text: text)),
         ]
 
     @property

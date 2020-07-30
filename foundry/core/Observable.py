@@ -7,7 +7,7 @@ from inspect import signature
 from typing import Callable
 
 
-class Observed:
+class Observable:
     """A class that is observable"""
     def __init__(self, function):
         self.function = function

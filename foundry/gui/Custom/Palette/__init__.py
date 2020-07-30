@@ -8,7 +8,7 @@ from foundry.gui.QCore import MARGIN_TIGHT
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET, DEFAULT_PALETTE
 from foundry.gui.QToolButton import ColoredToolButton
 from foundry.game.gfx.Palette import PaletteController, PaletteSet, Palette, Color
-from foundry.core.Observable import Observed
+from foundry.core.Observable import Observable
 from foundry.gui.QWidget import Widget
 from foundry.gui.QCore.Action import Action, AbstractActionObject
 
@@ -61,7 +61,7 @@ class PaletteSetEditor(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("palette_set_changed", Observed(lambda palette_set: palette_set)),
+            Action("palette_set_changed", Observable(lambda palette_set: palette_set)),
         ]
 
 
@@ -111,7 +111,7 @@ class PaletteEditor(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("palette_changed", Observed(lambda palette: palette)),
+            Action("palette_changed", Observable(lambda palette: palette)),
         ]
 
     @property
@@ -167,6 +167,6 @@ class ColorPicker(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("color_selected", Observed(lambda color: color)),
-            Action("color_index_selected", Observed(lambda color_idx: color_idx))
+            Action("color_selected", Observable(lambda color: color)),
+            Action("color_index_selected", Observable(lambda color_idx: color_idx))
         ]

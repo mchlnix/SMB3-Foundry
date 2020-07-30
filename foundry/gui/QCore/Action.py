@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import Signal
 
-from foundry.core.Observable import Observed
+from foundry.core.Observable import Observable
 
 
 def has_actions(action_object):
@@ -23,7 +23,7 @@ class Action:
     observer: The observer be called
     """
     name: str
-    observer: Observed
+    observer: Observable
 
     @property
     def alt_name(self) -> str:
@@ -34,9 +34,9 @@ class Action:
     def from_signal(cls, name: str, signal: Signal, pass_result: bool = True) -> "Action":
         """Makes an action from a signal"""
         if pass_result:
-            observer = Observed(lambda result: result)
+            observer = Observable(lambda result: result)
         else:
-            observer = Observed(lambda *_: True)
+            observer = Observable(lambda *_: True)
         signal.connect(observer)
         return Action(name, observer)
 

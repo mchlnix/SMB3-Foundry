@@ -16,7 +16,7 @@ from foundry.gui.QCore import SINGLE_CLICK, DOUBLE_CLICK
 
 from foundry.gui.QWidget import Widget
 
-from foundry.core.Observable import Observed
+from foundry.core.Observable import Observable
 
 
 class PartialTrackingObject:
@@ -32,11 +32,11 @@ class PartialTrackingObject:
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("pressed", Observed(lambda button: button)),
-            Action("released", Observed(lambda button: button)),
-            Action("single_clicked", Observed(lambda button: button)),
-            Action("double_clicked", Observed(lambda button: button)),
-            Action("mouse_moved", Observed(lambda pos: pos))
+            Action("pressed", Observable(lambda button: button)),
+            Action("released", Observable(lambda button: button)),
+            Action("single_clicked", Observable(lambda button: button)),
+            Action("double_clicked", Observable(lambda button: button)),
+            Action("mouse_moved", Observable(lambda pos: pos))
         ]
 
     def mousePressEvent(self, event: QMouseEvent) -> None:

@@ -10,7 +10,7 @@ from . import PaletteEditor
 from foundry.gui.QSpinner import Spinner
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.game.gfx.Palette import PaletteSet, Palette
-from foundry.core.Observable import Observed
+from foundry.core.Observable import Observable
 from foundry.gui.QWidget import Widget
 from foundry.gui.QCore.Action import Action, AbstractActionObject
 
@@ -58,8 +58,8 @@ class PaletteSelector(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("palette_set_changed", Observed(lambda palette_set: palette_set)),
-            Action("palette_changed", Observed(lambda palette: palette)),
+            Action("palette_set_changed", Observable(lambda palette_set: palette_set)),
+            Action("palette_changed", Observable(lambda palette: palette)),
         ]
 
     @property

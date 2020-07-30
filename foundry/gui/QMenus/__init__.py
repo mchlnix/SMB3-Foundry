@@ -10,7 +10,7 @@ from abc import abstractmethod, ABC
 
 from foundry import icon_dir, data_dir
 from foundry.decorators.Required import Required, SmartRequired
-from foundry.core.Observable import Observed, ObservedAndRequired
+from foundry.core.Observable import Observable, ObservedAndRequired
 
 
 def open_url(url: str):
@@ -57,7 +57,7 @@ class MenuAction(QAction):
     """An action from a menu"""
     def __init__(self, parent: Menu, value: bool, name: str = "", add_action: bool = True) -> None:
         super().__init__(parent)
-        self.action = Observed(self.action)
+        self.action = Observable(self.action)
         self.parent = parent
         self.name = name
         self.setCheckable(True)
@@ -182,7 +182,7 @@ class MenuElementOpen(MenuElementSafe, ABC):
     """A Menu Element that contains tests required for opening"""
     def __init__(self, parent, add_action: bool = True) -> None:
         self.action = ObservedAndRequired(self.action)
-        self.open = Observed(lambda path: path)
+        self.open = Observable(lambda path: path)
         super().__init__(parent, add_action)
 
     def action(self):
@@ -203,7 +203,7 @@ class MenuElementOpen(MenuElementSafe, ABC):
 class MenuElementSave(MenuElementSafe, ABC):
     """A Menu Element that contains tests required for saving"""
     def __init__(self, parent, add_action: bool = True) -> None:
-        self.save = Observed(self.save)
+        self.save = Observable(self.save)
         self.can_change = Required(self.can_change)
         self.action = ObservedAndRequired(self.action)
         super().__init__(parent, add_action)

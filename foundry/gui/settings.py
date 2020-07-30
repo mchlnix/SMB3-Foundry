@@ -2,7 +2,7 @@ import json
 import pathlib
 from typing import Union, Callable
 
-from foundry.core.Observable import Observed
+from foundry.core.Observable import Observable
 
 RESIZE_LEFT_CLICK = "LMB"
 RESIZE_RIGHT_CLICK = "RMB"
@@ -43,7 +43,7 @@ SETTINGS = {}
 class Setting:
     """A setting that can automatically update all observers when changed"""
     def __init__(self, name: str, value: Union[bool, int, float, str]) -> None:
-        self.action = Observed(self.action)
+        self.action = Observable(self.action)
         self.name = name
         self._value = value
 
