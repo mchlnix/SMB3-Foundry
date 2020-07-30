@@ -11,7 +11,6 @@ class Observable:
     """A class that is observable"""
     def __init__(self, function):
         self.function = function
-        self.delete_observer = self.delete
         self.observers = []
 
     def __call__(self, *args, **kwargs):
@@ -38,7 +37,7 @@ class Observable:
             raise NotImplementedError
         self.observers.append(observer)
 
-    def delete(self, observer: Callable) -> None:
+    def delete_observer(self, observer: Callable) -> None:
         """Deletes an observer"""
         self.observers.remove(observer)
 
