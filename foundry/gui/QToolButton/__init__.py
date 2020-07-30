@@ -10,7 +10,7 @@ from foundry.gui.QCore import BUTTON_TINY
 from foundry.game.gfx.Palette import Color
 from foundry.gui.QCore.util import DefaultSizePartial
 from foundry.gui.QCore.Action import Action, AbstractActionObject
-from foundry.core.Observables.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 
 
 class ColoredToolButton(QToolButton, AbstractActionObject, DefaultSizePartial):
@@ -34,7 +34,7 @@ class ColoredToolButton(QToolButton, AbstractActionObject, DefaultSizePartial):
             Action.from_signal("clicked", self.clicked, False),
             Action.from_signal("pressed", self.pressed, False),
             Action.from_signal("released", self.released, False),
-            Action("color_change", Observable(lambda color: color))
+            Action("color_change", ObservableDecorator(lambda color: color))
         ]
 
     @property

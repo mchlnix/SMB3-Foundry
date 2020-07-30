@@ -17,7 +17,7 @@ from foundry.gui.QWidget import Widget
 
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import SpriteGraphic
 
-from foundry.core.Observables.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 
 
 class SpriteGraphicWidget(Widget, AbstractActionObject):
@@ -38,7 +38,7 @@ class SpriteGraphicWidget(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("graphic_changed", Observable(lambda graphic: graphic)),
+            Action("graphic_changed", ObservableDecorator(lambda graphic: graphic)),
         ]
 
     def _initialize_internal_observers(self) -> None:

@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QWidget, QGridLayout, QVBoxLayout
 from PySide2.QtGui import Qt
 
 from foundry.gui.QLabel import Label
-from foundry.core.Observables.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QWidget import Widget
 from foundry.gui.QCore.Action import Action, AbstractActionObject
 from foundry.gui.QSpinner.PositionSpinner import PositionSpinner
@@ -35,7 +35,7 @@ class RectSpinner(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("rect_changed", Observable(lambda rect: rect)),
+            Action("rect_changed", ObservableDecorator(lambda rect: rect)),
         ]
 
     def _initialize_internal_observers(self) -> None:

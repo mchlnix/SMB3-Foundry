@@ -7,7 +7,6 @@ from inspect import signature
 from typing import Callable
 
 
-class Observable:
     """A class that is observable"""
     def __init__(self, function):
         self.function = function
@@ -40,6 +39,7 @@ class Observable:
     def delete_observer(self, observer: Callable) -> None:
         """Deletes an observer"""
         self.observers.remove(observer)
+class ObservableDecorator(AbstractObservableDecorator, Observable):
 
 
 class ObservedAndRequired:

@@ -16,7 +16,7 @@ from foundry.game.gfx.Palette import PaletteSet
 from foundry.gui.QWidget import Widget
 from foundry.gui.Custom.Sprite import SpriteDisplayerTracker
 
-from foundry.core.Observables.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 
 
 class SpriteSelector(Widget, AbstractActionObject):
@@ -56,7 +56,7 @@ class SpriteSelector(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("sprite_selected", Observable(lambda index: index)),
+            Action("sprite_selected", ObservableDecorator(lambda index: index)),
         ]
 
     @property

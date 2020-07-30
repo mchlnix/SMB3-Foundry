@@ -10,7 +10,7 @@ from PySide2.QtWidgets import QWidget
 
 from foundry.gui.QSpinner.MultiSpinner import MultiSpinner, SpinnerAttributes
 from foundry.game.Position import Position
-from foundry.core.Observables.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QCore.Action import Action
 
 
@@ -35,9 +35,9 @@ class PositionSpinner(MultiSpinner):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("values_changed", Observable(lambda value: value)),
-            Action("position_changed", Observable(lambda pos: pos)),
-            Action("text_changed", Observable(lambda text: text)),
+            Action("values_changed", ObservableDecorator(lambda value: value)),
+            Action("position_changed", ObservableDecorator(lambda pos: pos)),
+            Action("text_changed", ObservableDecorator(lambda text: text)),
         ]
 
     @property

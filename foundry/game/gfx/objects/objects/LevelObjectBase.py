@@ -9,7 +9,7 @@ from foundry.game.Rect import Rect
 from foundry.game.gfx.drawable.SpriteElement import SpriteElement
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import LevelObjectDefinition, Animation, SpriteGraphic, \
     ObjectOperation
-from foundry.core.Observables.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 
 
 class LevelObject:
@@ -27,16 +27,16 @@ class LevelObject:
         self.palette_group = palette_group
 
         # Makes a bunch of observers to send updates to various gui elements
-        self.action_name = Observable(lambda value: value)
-        self.action_page = Observable(lambda value: value)
-        self.action_size = Observable(lambda value: value)
-        self.action_palette = Observable(lambda value: value)
-        self.action_graphic = Observable(lambda value: value)
-        self.action_horizontal_mirror = Observable(lambda value: value)
-        self.action_vertical_mirror = Observable(lambda value: value)
-        self.action_operation = Observable(lambda value: value)
-        self.action_hitbox = Observable(lambda value: value)
-        self.action_bounding_box = Observable(lambda value: value)
+        self.action_name = ObservableDecorator(lambda value: value)
+        self.action_page = ObservableDecorator(lambda value: value)
+        self.action_size = ObservableDecorator(lambda value: value)
+        self.action_palette = ObservableDecorator(lambda value: value)
+        self.action_graphic = ObservableDecorator(lambda value: value)
+        self.action_horizontal_mirror = ObservableDecorator(lambda value: value)
+        self.action_vertical_mirror = ObservableDecorator(lambda value: value)
+        self.action_operation = ObservableDecorator(lambda value: value)
+        self.action_hitbox = ObservableDecorator(lambda value: value)
+        self.action_bounding_box = ObservableDecorator(lambda value: value)
 
     @property
     def name(self) -> str:

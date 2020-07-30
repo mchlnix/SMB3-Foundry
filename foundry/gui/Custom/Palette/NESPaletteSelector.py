@@ -9,7 +9,7 @@ from foundry.gui.QDialog import Dialog
 from foundry.gui.Custom.Palette import ColorPicker
 from foundry.gui.QToolButton import ColoredToolButton
 from foundry.game.gfx.Palette import Color, PaletteController
-from foundry.core.Observables.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QCore.Action import Action
 
 
@@ -39,8 +39,8 @@ class ColorPickerButton(ColoredToolButton):
             Action.from_signal("clicked", self.clicked, False),
             Action.from_signal("pressed", self.pressed, False),
             Action.from_signal("released", self.released, False),
-            Action("color_change", Observable(lambda color: color)),
-            Action("color_index_change", Observable(lambda color_index: color_index)),
+            Action("color_change", ObservableDecorator(lambda color: color)),
+            Action("color_index_change", ObservableDecorator(lambda color_index: color_index)),
         ]
 
     def call_pop_up(self, *_):

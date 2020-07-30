@@ -18,7 +18,7 @@ from foundry.game.gfx.drawable.Sprite import Sprite
 from foundry.game.Size import Size
 from foundry.game.Position import Position
 
-from foundry.core.Observables.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 
 from foundry.gui.QWidget import Widget
 
@@ -103,7 +103,7 @@ class SpriteDisplayer(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("paint_event", Observable(lambda *_: True)),
+            Action("paint_event", ObservableDecorator(lambda *_: True)),
         ]
 
     def resizeEvent(self, event):
@@ -141,10 +141,10 @@ class SpriteDisplayerTracker(PartialTrackingObject, SpriteDisplayer):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("paint_event", Observable(lambda *_: True)),
-            Action("pressed", Observable(lambda button: button)),
-            Action("released", Observable(lambda button: button)),
-            Action("single_clicked", Observable(lambda button: button)),
-            Action("double_clicked", Observable(lambda button: button)),
-            Action("mouse_moved", Observable(lambda pos: pos))
+            Action("paint_event", ObservableDecorator(lambda *_: True)),
+            Action("pressed", ObservableDecorator(lambda button: button)),
+            Action("released", ObservableDecorator(lambda button: button)),
+            Action("single_clicked", ObservableDecorator(lambda button: button)),
+            Action("double_clicked", ObservableDecorator(lambda button: button)),
+            Action("mouse_moved", ObservableDecorator(lambda pos: pos))
         ]

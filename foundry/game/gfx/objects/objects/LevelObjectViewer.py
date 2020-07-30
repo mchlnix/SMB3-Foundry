@@ -20,7 +20,7 @@ from foundry.decorators.SaveSettings import handle_settings
 from foundry.gui.QMenus.FileMenu import FileMenuLight, OpenRomMenuElement
 from foundry.gui.QMenus.HelpMenu import HelpMenu
 from foundry.game.gfx.objects.objects.LevelObjectBase import LevelObject
-from foundry.core.Observables.ObservableDecorator import Observable
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.Custom.Palette.Selector import PaletteSelector
 from foundry.gui.Custom.Palette import PaletteSetEditor
 from foundry.gui.QCheckBox.SpriteFlipCheckbox import SpriteFlipCheckbox
@@ -137,7 +137,7 @@ class ObjectViewer(QWidget):
         super(ObjectViewer, self).__init__(parent)
         self.level_object = object
 
-        self.update = Observable(self.update)
+        self.update = ObservableDecorator(self.update)
         self.update.attach_observer(lambda *_: self.resize_by_size_hint)
 
         self.level_object.action_page.attach_observer(self.update)
