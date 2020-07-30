@@ -5,39 +5,32 @@ A standalone object viewer for testing and modifying objects
 from typing import Optional
 import sys
 from PySide2.QtWidgets import (
-    QApplication, QAction, QDialog, QFileDialog, QMainWindow, QMenu, QMessageBox, QPushButton, QScrollArea, QShortcut,
-    QSizePolicy, QSplitter, QToolBar, QWhatsThis, QWidget
+    QApplication, QMainWindow, QScrollArea, QSizePolicy, QWidget
 )
 from PySide2.QtGui import QPaintEvent, QPainter
 
 # change into the tmp directory pyinstaller uses for the data
 from foundry.game.File import ROM
 from foundry import (
-    discord_link, feature_video_link, get_current_version_name, get_latest_version_name, github_link,
-    icon, open_url, releases_link,
-)
+    icon, )
 from PySide2.QtGui import Qt
 
-from foundry.gui.SettingsDialog import show_settings, get_gui_style
+from foundry.gui.SettingsDialog import get_gui_style
 from foundry.decorators.SaveSettings import handle_settings
 from foundry.gui.QMenus.FileMenu import FileMenuLight, OpenRomMenuElement
 from foundry.gui.QMenus.HelpMenu import HelpMenu
 from foundry.game.gfx.objects.objects.LevelObjectBase import LevelObject
-from foundry.decorators.Observer import Observed
-from foundry.gui.QSpinner import Spinner
-from foundry.gui.QSpinner.PositionSpinner import PositionSpinner
-from foundry.gui.QSpinner.SizeSpinner import SizeSpinner
-from foundry.gui.Custom.Palette import ColorPicker, PaletteEditor, PaletteSetEditor
+from foundry.core.Observable import Observable
+from foundry.gui.Custom.Palette.Selector import PaletteSelector
+from foundry.gui.Custom.Palette import PaletteSetEditor
 from foundry.gui.QCheckBox.SpriteFlipCheckbox import SpriteFlipCheckbox
-from foundry.gui.Custom.Palette.NESPaletteSelector import ColorPickerPopup
-from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET, DEFAULT_PALETTE
-from foundry.game.gfx.PatternTableHandler import PatternTableHandler, PatternTable
+from foundry.gui.Custom.Sprite.SpriteGraphic import SpriteGraphicWidget
+from foundry.gui.Custom.Sprite.SpriteSelector import SpriteSelector
 from foundry.gui.Custom.Sprite import SpriteDisplayer
 from foundry.gui.QComboBox import ComboBox, ComboBoxOption
 from foundry.gui.QSpinner.RectSpinner import RectSpinner
-from foundry.gui.QCheckBox import CheckBox
 from foundry.gui.QSpinner.HexSpinner import HexSpinner
-from foundry.gui.QWidget.Panel import Panel, ReversedPanel
+from foundry.gui.QWidget.Panel import Panel
 from foundry.gui.QLineEdit import LineEdit
 from foundry.gui.QToolbar import Toolbar
 from foundry.game.gfx.objects.objects.LevelObjectDefinitionLoader import object_definitions
@@ -53,8 +46,11 @@ ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 def main(path_to_rom):
     """Handles the main window"""
     app = QApplication()
-    if OpenRomMenuElement(None, False).action():
+    open_rom_ele = OpenRomMenuElement(None, False)
+    if open_rom_ele.action():
         MainWindow(path_to_rom)
+    else:
+        raise TypeError("Did not load ROM")
     app.exec_()
 
 
@@ -65,6 +61,8 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(icon("tanooki.ico"))
         self.setStyleSheet(get_gui_style())
 
+        if ROM() is None:
+            raise TypeError()
 
         self.file_menu = FileMenuLight(self)
         self.menuBar().addMenu(self.file_menu)
@@ -87,19 +85,24 @@ class MainWindow(QMainWindow):
         graphic_spinner = Panel(self, "Sprite", HexSpinner(self, 0, 0xFF))
         self.graphic_toolbar = Toolbar.default_toolbox(self, "graphic_spinner", graphic_spinner, Qt.RightToolBarArea)
 
-        horizontal_mirror_checkbox = Panel(self, "Horizontal Mirror", CheckBox(self, ""))
-        self.horizontal_mirror_toolbar = Toolbar.default_toolbox(
-            self, "horizontal_mirror_toolbar", horizontal_mirror_checkbox, Qt.RightToolBarArea
-        )
-
-        vertical_mirror_checkbox = ReversedPanel(self, "Vertical Mirror", CheckBox(self, ""))
-        self.vertical_mirror_toolbar = Toolbar.default_toolbox(
-            self, "vertical_mirror_toolbar", vertical_mirror_checkbox, Qt.RightToolBarArea
+        palette_selector = Panel(self, "Palette", PaletteSelector(self, 0))
+        self.palette_selector_toolbar = Toolbar.default_toolbox(
+            self, "palette_selector_toolbar", palette_selector, Qt.RightToolBarArea
         )
 
         mirror_checkbox = Panel(self, "Mirroring", SpriteFlipCheckbox(self, True))
         self.mirroing_toolbar = Toolbar.default_toolbox(
             self, "mirring_toolbar", mirror_checkbox, Qt.RightToolBarArea
+        )
+
+        graphic_widget = SpriteGraphicWidget(self, "Sprite Graphic")
+        self.sprite_graphic_toolbar = Toolbar.default_toolbox(
+            self, "sprite_graphic_toolbar", graphic_widget, Qt.RightToolBarArea
+        )
+
+        sprite_selector = SpriteSelector(self)
+        self.sprite_selector_toolbar = Toolbar.default_toolbox(
+            self, "sprite_selector_toolbar", sprite_selector, Qt.RightToolBarArea
         )
 
         self.hitbox_toolbar = Toolbar.default_toolbox(
@@ -121,13 +124,7 @@ class MainWindow(QMainWindow):
             self, "drop_down_toobox", Panel(self, "Test", dropdown), Qt.RightToolBarArea
         )
 
-        print(object_definitions[0].animations, object_definitions[0].hitbox)
-        sprite_viewer = SpriteDisplayer(
-            self,
-            object_definitions[0].hitbox,
-            DEFAULT_PALETTE_SET,
-            PatternTableHandler(PatternTable(0, 0, 0, 0, 0, 0))
-        )
+        sprite_viewer = SpriteDisplayer(self)
         self.sprite_viewer_toolbox = Toolbar.default_toolbox(
             self, "sprite_viewer_toolbox", Panel(self, "Viewer", sprite_viewer), Qt.RightToolBarArea
         )
@@ -140,7 +137,7 @@ class ObjectViewer(QWidget):
         super(ObjectViewer, self).__init__(parent)
         self.level_object = object
 
-        self.update = Observed(self.update)
+        self.update = Observable(self.update)
         self.update.attach_observer(lambda *_: self.resize_by_size_hint)
 
         self.level_object.action_page.attach_observer(self.update)
