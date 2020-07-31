@@ -35,8 +35,8 @@ class AbstractRequirable:
 
     @abstractmethod
     def attach_requirement(self, requirement: Callable, identifier: Optional[Hashable] = None) -> None:
-        """Attach an observer"""
+        """Attach a requirement"""
 
     @abstractmethod
     def delete_requirement(self, identifier: Hashable) -> None:
-        """Removes an observer"""
+        """Removes a requirement"""
