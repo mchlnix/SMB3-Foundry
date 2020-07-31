@@ -1,4 +1,7 @@
-
+"""
+This module includes the AbstractObservableDecorator
+This serves as the base interface for a observable decorator
+"""
 
 from abc import ABC
 from typing import Callable
