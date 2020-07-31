@@ -9,7 +9,7 @@ from PySide2.QtGui import QDesktopServices, QIcon
 from abc import abstractmethod, ABC
 
 from foundry import icon_dir, data_dir
-from foundry.core.Requirable.Requirable import Requirable, SmartRequirable
+from foundry.core.Requirable.RequirableDecorator import Requirable, SmartRequirable
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator, ObservedAndRequired
 
 
