@@ -9,7 +9,7 @@ from PySide2.QtGui import QDesktopServices, QIcon
 from abc import abstractmethod, ABC
 
 from foundry import icon_dir, data_dir
-from foundry.core.Requirable.Required import Required, SmartRequired
+from foundry.core.Requirable.Requirable import Requirable, SmartRequirable
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator, ObservedAndRequired
 
 
@@ -133,7 +133,7 @@ class MenuElementUpdater(MenuElement, ABC):
 class MenuElementSafe(MenuElement, ABC):
     """A Menu Element that contains a test to see if something is safe to do"""
     def __init__(self, parent, add_action: bool = True) -> None:
-        self.find_warnings = SmartRequired(self.find_warnings)
+        self.find_warnings = SmartRequirable(self.find_warnings)
         super().__init__(parent, add_action)
         self.path_to_rom = ""
         self.action.attach_required(observer=self.safe_to_change)
@@ -204,7 +204,7 @@ class MenuElementSave(MenuElementSafe, ABC):
     """A Menu Element that contains tests required for saving"""
     def __init__(self, parent, add_action: bool = True) -> None:
         self.save = ObservableDecorator(self.save)
-        self.can_change = Required(self.can_change)
+        self.can_change = Requirable(self.can_change)
         self.action = ObservedAndRequired(self.action)
         super().__init__(parent, add_action)
         self.action.attach_required(observer=self.can_change)

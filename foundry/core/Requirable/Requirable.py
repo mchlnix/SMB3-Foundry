@@ -5,7 +5,7 @@ Provides a class decorator to help with requiring other methods
 from typing import Callable, Tuple
 
 
-class Required:
+class Requirable:
     """A class that is observable"""
     def __init__(self, function):
         self.function = function
@@ -31,7 +31,7 @@ class Required:
         self.observers.append(observer)
 
 
-class SmartRequired(Required):
+class SmartRequirable(Requirable):
     """Runs code that is required and determines if we should run the main function."""
     def __call__(self, *args, **kwargs):
         safe, reason, additional_info = self.notify()
