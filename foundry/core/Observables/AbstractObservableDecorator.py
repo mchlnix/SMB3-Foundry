@@ -26,3 +26,4 @@ class AbstractObservableDecorator(AbstractObservable, ABC):
     def __call__(self, *args, **kwargs) -> None:
         result = self.function(*args, **kwargs)
         super(AbstractObservableDecorator, self).__call__(result)
+        return result
