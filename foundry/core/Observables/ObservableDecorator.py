@@ -1,7 +1,7 @@
 """
-Provides a class to help with observing events
+This module includes ObservableDecorator
+This serves as a generic implementation of the AbstractObservableDecorator
 """
-
 
 from typing import Callable
 
@@ -10,7 +10,14 @@ from .Observable import Observable
 
 
 class ObservableDecorator(AbstractObservableDecorator, Observable):
-    """A class that is observable"""
+    """
+    The implementation for a generic observable decorator
+    observables: A group of callables that will be notified of the result
+    function: The function being decorated
+    notify_observers: Notifies the observables
+    attach_observer: Adds a callable to the dict of observables
+    delete_observer: Removes a callable to the dict of observables
+    """
 
 
 class ObservedAndRequired:
