@@ -1,5 +1,6 @@
 """
-Provides a class decorator to help with requiring other methods
+This module includes the RequirableDecorator
+This serves as the base implementation of what requirable decorator does
 """
 
 from .AbstractRequirableDecorator import AbstractRequirableDecorator
