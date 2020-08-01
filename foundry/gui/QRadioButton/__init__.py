@@ -6,7 +6,8 @@ from typing import List, Optional
 from PySide2.QtWidgets import QRadioButton, QWidget
 
 from foundry.gui.QCore.util import DefaultSizePartial
-from foundry.core.Action.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action
+from foundry.core.Action.AbstractActionObject import AbstractActionObject
 
 
 class RadioButton(QRadioButton, AbstractActionObject, DefaultSizePartial):

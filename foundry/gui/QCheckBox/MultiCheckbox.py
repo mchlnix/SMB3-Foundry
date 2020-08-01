@@ -11,7 +11,8 @@ from . import CheckBox
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QWidget import Widget
 from foundry.gui.QWidget.Panel import Panel
-from foundry.core.Action.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action
+from ...core.Action.AbstractActionObject import AbstractActionObject
 
 
 class MultiCheckbox(Widget, AbstractActionObject):

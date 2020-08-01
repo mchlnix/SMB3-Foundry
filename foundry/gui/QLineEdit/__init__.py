@@ -7,7 +7,8 @@ from typing import List
 from PySide2.QtWidgets import QLineEdit
 
 from foundry.gui.QCore.util import DefaultSizePartial
-from foundry.core.Action.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action
+from foundry.core.Action.AbstractActionObject import AbstractActionObject
 
 
 class LineEdit(QLineEdit, AbstractActionObject, DefaultSizePartial):

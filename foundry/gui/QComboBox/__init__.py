@@ -9,7 +9,8 @@ from collections import namedtuple
 from PySide2.QtWidgets import QComboBox, QWidget
 
 from foundry.gui.QCore.util import set_tight_size_policy
-from foundry.core.Action.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action
+from foundry.core.Action.AbstractActionObject import AbstractActionObject
 
 
 ComboBoxOption = namedtuple("ComboBoxOption", "name action")

@@ -8,7 +8,8 @@ from typing import Optional, List
 from PySide2.QtWidgets import QWidget, QGridLayout, QVBoxLayout
 from PySide2.QtGui import Qt
 
-from foundry.core.Action.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action
+from foundry.core.Action.AbstractActionObject import AbstractActionObject
 
 from foundry.gui.QCheckBox.SpriteFlipCheckbox import SpriteFlipCheckbox
 from foundry.gui.QSpinner.HexSpinner import HexSpinner

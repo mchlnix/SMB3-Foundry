@@ -7,7 +7,8 @@ from PySide2.QtWidgets import QPushButton, QWidget
 from PySide2.QtGui import QColor
 
 from foundry.gui.QCore.util import DefaultSizePartial
-from foundry.core.Action.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action
+from foundry.core.Action.AbstractActionObject import AbstractActionObject
 
 
 class PushButton(QPushButton, AbstractActionObject, DefaultSizePartial):
