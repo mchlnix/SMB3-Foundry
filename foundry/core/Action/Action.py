@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import Signal
 
+from foundry.core.Observables.Observable import Observable
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 
 
@@ -23,7 +24,7 @@ class Action:
     observer: The observer be called
     """
     name: str
-    observer: ObservableDecorator
+    observer: Observable
 
     @property
     def alt_name(self) -> str:
