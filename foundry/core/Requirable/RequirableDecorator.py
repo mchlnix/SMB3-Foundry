@@ -19,7 +19,7 @@ class RequirableDecorator(AbstractRequirableDecorator, Requirable):
     """
 
 
-class SmartRequirable(Requirable):
+class SmartRequirableDecorator(RequirableDecorator):
     """Runs code that is required and determines if we should run the main function."""
     def __call__(self, *args, **kwargs):
         safe, reason, additional_info = self.determine_if_safe()
@@ -30,8 +30,8 @@ class SmartRequirable(Requirable):
 
     def determine_if_safe(self) -> Tuple[bool, str, str]:
         """Notifies every observer and determines if it is safe to continue"""
-        for observer in self.observers:
-            safe, reason, additional_info = observer()
+        for requirement in self.requirements:
+            safe, reason, additional_info = requirement()
             if not safe:
                 return False, reason, additional_info
         return True, '', ''
