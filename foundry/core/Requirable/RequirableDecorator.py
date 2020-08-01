@@ -10,7 +10,7 @@ class Requirable:
     def __init__(self, function):
         self.function = function
         self.notify_required = self.determine_if_safe
-        self.attach_required = self.attach
+        self.attach_required = self.attach_requirement
         self.observers = []
 
     def __call__(self, *args, **kwargs):
@@ -26,7 +26,7 @@ class Requirable:
                 return False
         return True
 
-    def attach(self, observer: Callable, *_) -> None:
+    def attach_requirement(self, observer: Callable, *_) -> None:
         """Adds an observer"""
         self.observers.append(observer)
 
