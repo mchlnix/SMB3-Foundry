@@ -21,7 +21,7 @@ class Action:
     observer: Observable
 
     @property
-    def alt_name(self) -> str:
+    def reference_name(self) -> str:
         """The alt name of the action"""
         return f"{self.name}_action"
 

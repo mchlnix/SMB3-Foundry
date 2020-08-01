@@ -20,9 +20,9 @@ class AbstractActionObject:
 
     def add_action(self, action: Action, name: Optional[str] = None) -> None:
         """Adds an action"""
-        if not hasattr(action, "observer") or not hasattr(action, "alt_name"):
+        if not hasattr(action, "observer") or not hasattr(action, "reference_name"):
             raise AttributeError(f"{name} {action} is not an Action")
-        name = name if name is not None else action.alt_name
+        name = name if name is not None else action.reference_name
         self._actions[name] = action
         setattr(self, name, action)  # sets the class variable reflectively
 
