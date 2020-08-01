@@ -9,7 +9,7 @@ from PySide2.QtCore import QSize
 from foundry.gui.QCore import BUTTON_TINY
 from foundry.game.gfx.Palette import Color
 from foundry.gui.QCore.util import DefaultSizePartial
-from foundry.gui.QCore.Action import Action, AbstractActionObject
+from foundry.core.Action import Action, AbstractActionObject
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 
 

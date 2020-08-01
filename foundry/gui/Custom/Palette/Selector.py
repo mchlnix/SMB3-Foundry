@@ -12,7 +12,7 @@ from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.game.gfx.Palette import PaletteSet, Palette
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QWidget import Widget
-from foundry.gui.QCore.Action import Action, AbstractActionObject
+from foundry.core.Action import Action, AbstractActionObject
 
 
 class PaletteSelector(Widget, AbstractActionObject):

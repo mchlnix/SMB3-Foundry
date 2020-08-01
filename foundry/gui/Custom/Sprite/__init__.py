@@ -6,7 +6,7 @@ from PySide2.QtGui import QPaintEvent, QPainter
 from PySide2.QtCore import QSize, Qt
 
 from foundry.gui.QCore.object_definitions import DEFAULT_SPRITE_GRAPHIC
-from foundry.gui.QCore.Action import Action, AbstractActionObject
+from foundry.core.Action import Action, AbstractActionObject
 from foundry.gui.QCore.pattern_table import PATTERN_TBL_DEFAULT
 from foundry.gui.QCore.Tracker import PartialTrackingObject
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET

@@ -14,7 +14,7 @@ from . import Spinner
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QWidget import Widget
 from foundry.gui.QWidget.Panel import Panel
-from foundry.gui.QCore.Action import Action, AbstractActionObject
+from foundry.core.Action import Action, AbstractActionObject
 
 
 @dataclass

@@ -4,7 +4,7 @@ from typing import Optional, List
 from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtGui import Qt
 
-from foundry.gui.QCore.Action import Action, AbstractActionObject
+from foundry.core.Action import Action, AbstractActionObject
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.gui.QCore.pattern_table import PATTERN_TBL_DEFAULT
 from foundry.gui.QCore import MARGIN_TIGHT
