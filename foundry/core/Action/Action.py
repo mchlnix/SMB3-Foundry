@@ -1,3 +1,8 @@
+"""
+This module includes Action
+This serves as the base implementation of an Action
+"""
+
 from dataclasses import dataclass
 from PySide2.QtCore import Signal
 
