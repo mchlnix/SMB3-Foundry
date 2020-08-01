@@ -6,14 +6,9 @@ from dataclasses import dataclass
 from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import Signal
 
+from foundry.core.Action import has_actions
 from foundry.core.Observables.Observable import Observable
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
-
-
-def has_actions(action_object):
-    """Raises an error if the action object does not have _actions"""
-    if not hasattr(action_object, "_actions"):
-        raise AttributeError(f"The object {action_object} does not have variable _actions")
 
 
 @dataclass
