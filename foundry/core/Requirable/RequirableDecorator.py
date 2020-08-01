@@ -9,17 +9,17 @@ class Requirable:
     """A class that is observable"""
     def __init__(self, function):
         self.function = function
-        self.notify_required = self.notify
+        self.notify_required = self.determine_if_safe
         self.attach_required = self.attach
         self.observers = []
 
     def __call__(self, *args, **kwargs):
-        if self.notify():
+        if self.determine_if_safe():
             result = self.function(*args, **kwargs)
             return result
         return False
 
-    def notify(self) -> bool:
+    def determine_if_safe(self) -> bool:
         """Notifies every observer and determines if it is safe to continue"""
         for observer in self.observers:
             if not observer():
@@ -34,13 +34,13 @@ class Requirable:
 class SmartRequirable(Requirable):
     """Runs code that is required and determines if we should run the main function."""
     def __call__(self, *args, **kwargs):
-        safe, reason, additional_info = self.notify()
+        safe, reason, additional_info = self.determine_if_safe()
         if safe:
             result = self.function(*args, **kwargs)
             return result
         return safe, reason, additional_info
 
-    def notify(self) -> Tuple[bool, str, str]:
+    def determine_if_safe(self) -> Tuple[bool, str, str]:
         """Notifies every observer and determines if it is safe to continue"""
         for observer in self.observers:
             safe, reason, additional_info = observer()
