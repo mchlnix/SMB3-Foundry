@@ -9,21 +9,21 @@ def test_initialization():
     assert isinstance(subject, Requirable)
 
 
-def test_attach_observer():
+def test_attach_requirement():
     """Tests if we can attach an requirement"""
     subject = Requirable()
     subject.attach_requirement(lambda *_: True, 0)
     assert 0 in subject.requirements
 
 
-def test_attach_random_observer():
+def test_attach_random_requirement():
     """Tests if we can attach an requirement without specifying a key"""
     subject = Requirable()
     subject.attach_requirement(lambda *_: True)
     assert len(subject.requirements) == 1
 
 
-def test_attach_multiple_observers():
+def test_attach_multiple_requirements():
     """Tests if we can attach multiple requirements"""
     subject = Requirable()
     for _ in range(10):
@@ -70,7 +70,7 @@ def test_requirement_failed():
     assert not subject()
 
 
-def test_observer_deletion():
+def test_requirement_deletion():
     """Tests if we can delete a requirement"""
     subject = Requirable()
     subject.attach_requirement(lambda *_: True, 0)
