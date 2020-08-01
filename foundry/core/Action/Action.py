@@ -1,11 +1,6 @@
-
-
-from typing import Optional
 from dataclasses import dataclass
-from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import Signal
 
-from foundry.core.Action.AbstractActionObject import AbstractActionObject
 from foundry.core.Observables.Observable import Observable
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 
@@ -34,10 +29,3 @@ class Action:
             observer = ObservableDecorator(lambda *_: True)
         signal.connect(observer)
         return Action(name, observer)
-
-
-class AbstractActionWidget(QWidget, AbstractActionObject):
-    """This class acts as a QWidget and keeps all the features of an abstract action object"""
-    def __init__(self, parent: Optional[QWidget]) -> None:
-        QWidget.__init__(self, parent)
-        AbstractActionObject.__init__(self)

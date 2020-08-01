@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from typing import Optional, List
 
+from PySide2.QtWidgets import QWidget
+
 from foundry.core.Action import has_actions
 from foundry.core.Action.Action import Action
 
@@ -45,3 +47,10 @@ class AbstractActionObject:
         if action_name not in action_object._actions:
             raise KeyError(f"The action {action_name} does not exist in {action_object}")
         self.add_action(action_object._actions[action_name], f"{prefix}_{action_name}")
+
+
+class AbstractActionWidget(QWidget, AbstractActionObject):
+    """This class acts as a QWidget and keeps all the features of an abstract action object"""
+    def __init__(self, parent: Optional[QWidget]) -> None:
+        QWidget.__init__(self, parent)
+        AbstractActionObject.__init__(self)
