@@ -4,7 +4,7 @@ from typing import List, Optional
 from PySide2.QtWidgets import QCheckBox
 
 from foundry.gui.QCore.util import DefaultSizePartial
-from foundry.core.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action, AbstractActionObject
 
 
 class CheckBox(QCheckBox, AbstractActionObject, DefaultSizePartial):

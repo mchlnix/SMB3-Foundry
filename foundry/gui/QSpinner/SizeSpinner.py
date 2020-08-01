@@ -11,7 +11,7 @@ from PySide2.QtWidgets import QWidget
 from foundry.gui.QSpinner.MultiSpinner import MultiSpinner, SpinnerAttributes
 from foundry.game.Size import Size
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
-from foundry.core.Action import Action
+from foundry.core.Action.Action import Action
 
 
 class SizeSpinner(MultiSpinner):

@@ -10,7 +10,7 @@ from PySide2.QtWidgets import QWidget, QApplication
 from PySide2.QtGui import QMouseEvent
 from PySide2.QtCore import QTimer, Qt
 
-from foundry.core.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action, AbstractActionObject
 
 from foundry.gui.QCore import SINGLE_CLICK, DOUBLE_CLICK
 

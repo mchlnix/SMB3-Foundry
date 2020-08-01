@@ -11,7 +11,7 @@ from PySide2.QtGui import Qt
 from foundry.gui.QLabel import Label
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QWidget import Widget
-from foundry.core.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action, AbstractActionObject
 from foundry.gui.QSpinner.PositionSpinner import PositionSpinner
 from foundry.gui.QSpinner.SizeSpinner import SizeSpinner
 from foundry.game.Rect import Rect

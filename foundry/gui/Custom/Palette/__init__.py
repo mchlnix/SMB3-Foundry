@@ -10,7 +10,7 @@ from foundry.gui.QToolButton import ColoredToolButton
 from foundry.game.gfx.Palette import PaletteController, PaletteSet, Palette, Color
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QWidget import Widget
-from foundry.core.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action, AbstractActionObject
 
 
 _palette_controller = PaletteController()

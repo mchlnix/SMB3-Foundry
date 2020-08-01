@@ -6,7 +6,7 @@ from PySide2.QtWidgets import QWidget, QLayout, QFormLayout
 from foundry.gui.QCore import MARGIN_TIGHT
 from foundry.gui.QCore.util import set_tight_size_policy
 from foundry.gui.QLabel import Label
-from foundry.core.Action import Action, AbstractActionWidget
+from foundry.core.Action.Action import Action, AbstractActionWidget
 
 
 class Panel(AbstractActionWidget):

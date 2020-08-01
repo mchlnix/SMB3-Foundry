@@ -7,7 +7,7 @@ from typing import Optional, List, Hashable, Dict
 
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 
-from foundry.core.Action import AbstractActionObject, Action
+from foundry.core.Action.Action import AbstractActionObject, Action
 
 
 class ExclusiveGroup(AbstractActionObject):

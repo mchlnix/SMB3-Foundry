@@ -8,7 +8,7 @@ from typing import Optional, List
 from PySide2.QtWidgets import QSpinBox, QWidget
 
 from foundry.gui.QCore.util import DefaultSizePartial
-from foundry.core.Action import Action, AbstractActionObject
+from foundry.core.Action.Action import Action, AbstractActionObject
 
 
 class Spinner(QSpinBox, AbstractActionObject, DefaultSizePartial):
