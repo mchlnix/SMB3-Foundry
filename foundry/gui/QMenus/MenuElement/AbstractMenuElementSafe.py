@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from PySide2.QtWidgets import QFileDialog, QMessageBox
 
 from foundry.core.Requirable.RequirableSmartDecorator import SmartRequirableDecorator
-from foundry.gui.QMenus import AbstractMenuElement
+from foundry.gui.QMenus.MenuElement.AbstractMenuElement import AbstractMenuElement
 
 
 class AbstractMenuElementSafe(AbstractMenuElement, ABC):
