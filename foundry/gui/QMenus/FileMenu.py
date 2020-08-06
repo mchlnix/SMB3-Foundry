@@ -28,18 +28,6 @@ ASM6_FILE_FILER = "ASM files (*.asm);; All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 
-class MenuElementExitApplication(AbstractMenuElement):
-    """A menu element that handles exiting the window"""
-    @property
-    def base_name(self) -> str:
-        """The real name of the element"""
-        return "Exit"
-
-    def action(self):
-        """Exits the window"""
-        self.parent.close()
-
-
 class SettingsMenuElement(AbstractMenuElement):
     """A menu element that handles opening the settings"""
     @property

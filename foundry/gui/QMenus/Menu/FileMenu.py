@@ -1,6 +1,7 @@
 from foundry.gui.QMenus import Menu
 from foundry.gui.QMenus.FileMenu import OpenRomMenuElement, OpenM3LMenuElement, SaveROMMenuElement, \
-    SaveROMasMenuElement, SaveM3LMenuElement, SaveASM6MenuElement, SettingsMenuElement, MenuElementExitApplication
+    SaveROMasMenuElement, SaveM3LMenuElement, SaveASM6MenuElement, SettingsMenuElement
+from foundry.gui.QMenus.MenuElement.MenuElementExitApplication import MenuElementExitApplication
 
 
 class FileMenu(Menu):
