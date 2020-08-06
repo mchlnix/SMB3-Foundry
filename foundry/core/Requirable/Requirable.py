@@ -67,6 +67,8 @@ class Requirable(AbstractRequirable):
 
     def attach_required(self, requirement: Callable, identifier: Optional[Hashable] = None) -> None:
         """Attach a requirement"""
+        if not callable(requirement):
+            raise TypeError("Must be callable")
         while identifier is None:
             temp_id = random.randint(10000, 10000000)
             if temp_id not in self.requirements:
