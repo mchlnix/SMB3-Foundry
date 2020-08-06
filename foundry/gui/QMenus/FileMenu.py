@@ -12,7 +12,7 @@ OpenROMMenuElement: An element to load the ROM
 MenuElementOpenM3L: An element to load a M3L file
 MenuElementSaveROM: An element to save the ROM directly from the ROM's path
 MenuElementSaveROMas: An element to save the ROM
-SaveM3LMenuElement: An element to save M3L files
+MenuElementSaveM3L: An element to save M3L files
 SaveASM6MenuElement: An element to save ASM6 files
 """
 
@@ -124,7 +124,7 @@ class MenuElementSaveROMas(AbstractMenuElementSave):
         return ROM_FILE_FILTER
 
 
-class SaveM3LMenuElement(AbstractMenuElementSave):
+class MenuElementSaveM3L(AbstractMenuElementSave):
     """A menu element that handles saving a ROM"""
     @property
     def base_name(self) -> str:
