@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import Optional
 
 from foundry.gui.QMenus import Menu
+from foundry.core.Action.Action import Action
 
 
 class AbstractMenuElement:
@@ -27,3 +28,12 @@ class AbstractMenuElement:
     @abstractmethod
     def action(self) -> None:
         """The action to be called"""
+
+
+def generate_menu_element(suffix: str, name: str, action: Action):
+    """create the subclasses dynamically"""
+    return type(
+        f"{AbstractMenuElement.__class__.__name__}{suffix}",
+        (AbstractMenuElement, object),
+        {'action': action, 'name': name}
+    )
