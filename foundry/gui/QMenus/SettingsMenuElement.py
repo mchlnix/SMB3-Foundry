@@ -4,7 +4,8 @@ SettingsMenuAction: The menu action in charge of settings
 """
 
 
-from . import Menu, MenuAction
+from . import Menu
+from .MenuAction.MenuAction import MenuAction
 from foundry.gui.settings import set_setting, get_setting
 
 
