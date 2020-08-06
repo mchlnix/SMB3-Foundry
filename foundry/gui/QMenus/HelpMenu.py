@@ -2,9 +2,6 @@
 Prefabs for help menus
 """
 
-import json
-import urllib.request
-import urllib.error
 from PySide2.QtGui import Qt
 from PySide2.QtWidgets import QMessageBox, QPushButton
 from typing import Tuple, Optional
@@ -12,29 +9,11 @@ from typing import Tuple, Optional
 from .Menu.Menu import Menu
 from ...core.util import RELEASES_LINK, FEATURE_VIDEO_LINK, GIT_LINK, DISCORD_LINK
 from ...core.util.get_current_version_name import get_current_version_name
+from ...core.util.get_latest_version_name import get_latest_version_name
 from ...core.util.icon import icon
 from ...core.util.open_url import open_url
 from .MenuElement.AbstractMenuElementUpdater import AbstractMenuElementUpdater
 from foundry.gui.AboutWindow import AboutDialog
-
-
-def get_latest_version_name(timeout: int = 10) -> str:
-    """Get github's last version name"""
-    owner = "mchlnix"
-    repo = "SMB3-Foundry"
-    api_call = f"https://api.github.com/repos/{owner}/{repo}/releases"
-
-    try:
-        request = urllib.request.urlopen(api_call, timeout=timeout)
-    except urllib.error.URLError as ue:
-        raise ValueError(f"Network error {ue}")
-
-    data = request.read()
-
-    try:
-        return json.loads(data)[0]["tag_name"].strip()
-    except (KeyError, IndexError, json.JSONDecodeError):
-        raise ValueError("Parsing the received information failed.")
 
 
 class HelpMenu(Menu):
