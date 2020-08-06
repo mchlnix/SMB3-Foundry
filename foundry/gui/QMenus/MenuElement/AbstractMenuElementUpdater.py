@@ -1,7 +1,7 @@
 from abc import ABC
 
 from foundry.core.Observables.ObservableDecorator import ObservedAndRequired
-from foundry.gui.QMenus import AbstractMenuElement
+from foundry.gui.QMenus.MenuElement.AbstractMenuElement import AbstractMenuElement
 
 
 class AbstractMenuElementUpdater(AbstractMenuElement, ABC):

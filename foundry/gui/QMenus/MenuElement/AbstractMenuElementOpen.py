@@ -3,7 +3,7 @@ from abc import ABC
 from PySide2.QtWidgets import QMessageBox
 
 from foundry.core.Observables.ObservableDecorator import ObservedAndRequired, ObservableDecorator
-from foundry.gui.QMenus import AbstractMenuElementSafe
+from foundry.gui.QMenus.MenuElement.AbstractMenuElementSafe import AbstractMenuElementSafe
 
 
 class MenuElementOpen(AbstractMenuElementSafe, ABC):

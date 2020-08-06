@@ -4,7 +4,7 @@ from PySide2.QtWidgets import QFileDialog, QMessageBox
 
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator, ObservedAndRequired
 from foundry.core.Requirable.RequirableDecorator import RequirableDecorator
-from foundry.gui.QMenus import AbstractMenuElementSafe
+from foundry.gui.QMenus.MenuElement.AbstractMenuElementSafe import AbstractMenuElementSafe
 
 
 class AbstractMenuElementSave(AbstractMenuElementSafe, ABC):
