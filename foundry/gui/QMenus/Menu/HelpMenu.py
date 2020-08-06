@@ -1,5 +1,6 @@
-from foundry.gui.QMenus.HelpMenu import MenuElementFeatureVideo, GitMenuElement, \
+from foundry.gui.QMenus.HelpMenu import GitMenuElement, \
     DiscordMenuElement, AboutMenuElement
+from foundry.gui.QMenus.MenuElement.MenuElementFeatureVideo import MenuElementFeatureVideo
 from foundry.gui.QMenus.MenuElement.MenuElementCheckForUpdate import MenuElementCheckForUpdate
 from foundry.gui.QMenus.Menu.Menu import Menu
 
