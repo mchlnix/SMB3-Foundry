@@ -149,7 +149,6 @@ class MenuElementOpen(MenuElementSafe, ABC):
             return False
 
         try:
-            print(path)
             self.open(path)
         except IOError as exp:
             QMessageBox.warning(self.parent, type(exp).__name__, f"Cannot open file '{path}'.")
