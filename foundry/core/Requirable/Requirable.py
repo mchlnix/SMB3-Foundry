@@ -65,7 +65,7 @@ class Requirable(AbstractRequirable):
 
         return value
 
-    def attach_requirement(self, requirement: Callable, identifier: Optional[Hashable] = None) -> None:
+    def attach_required(self, requirement: Callable, identifier: Optional[Hashable] = None) -> None:
         """Attach a requirement"""
         while identifier is None:
             temp_id = random.randint(10000, 10000000)
@@ -75,7 +75,7 @@ class Requirable(AbstractRequirable):
         _logger.debug(f"{self} attached {requirement} with key {identifier} to {self.requirements}")
         self.requirements.update({identifier: requirement})
 
-    def delete_requirement(self, identifier: Hashable) -> None:
+    def delete_required(self, identifier: Hashable) -> None:
         """Removes a requirement"""
         try:
             del self.requirements[identifier]
