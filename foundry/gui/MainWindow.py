@@ -61,7 +61,7 @@ from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
 from foundry.gui.QMenus.Menu.Menu import Menu
-from foundry.gui.QMenus.FileMenu import MenuElementOpenRom
+from foundry.gui.QMenus.MenuElement.MenuElementOpenROM import MenuElementOpenRom
 from foundry.gui.QMenus.Menu.FileMenu import FileMenu
 from foundry.gui.QMenus.HelpMenu import HelpMenu
 from foundry.gui.QMenus.SettingsMenuElement import SettingsMenuAction
