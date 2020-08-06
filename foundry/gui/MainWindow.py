@@ -64,7 +64,7 @@ from foundry.gui.QMenus.Menu.Menu import Menu
 from foundry.gui.QMenus.MenuElement.MenuElementOpenROM import MenuElementOpenROM
 from foundry.gui.QMenus.Menu.FileMenu import FileMenu
 from foundry.gui.QMenus.Menu.HelpMenu import HelpMenu
-from foundry.gui.QMenus.SettingsMenuElement import SettingsMenuAction
+from foundry.gui.QMenus.SettingsMenuElement import MenuActionSettings
 
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
@@ -193,35 +193,35 @@ class MainWindow(QMainWindow):
         view_menu = Menu(parent=self, title="View")
         view_menu.triggered.connect(self.on_menu)
 
-        action = SettingsMenuAction(view_menu, "draw_mario", "Mario")
+        action = MenuActionSettings(view_menu, "draw_mario", "Mario")
         action.add_observer(lambda value: setattr(self.level_view, "draw_mario", value))
 
-        action = SettingsMenuAction(view_menu, "draw_jump_on_objects", "Warps")
+        action = MenuActionSettings(view_menu, "draw_jump_on_objects", "Warps")
         action.add_observer(lambda value: setattr(self.level_view, "draw_jumps_on_objects", value))
 
-        action = SettingsMenuAction(view_menu, "draw_items_in_blocks", "Items in Blocks")
+        action = MenuActionSettings(view_menu, "draw_items_in_blocks", "Items in Blocks")
         action.add_observer(lambda value: setattr(self.level_view, "draw_items_in_blocks", value))
 
-        action = SettingsMenuAction(view_menu, "draw_invisible_items", "Invisible items")
+        action = MenuActionSettings(view_menu, "draw_invisible_items", "Invisible items")
         action.add_observer(lambda value: setattr(self.level_view, "draw_invisible_items", value))
 
         view_menu.addSeparator()
 
-        action = SettingsMenuAction(view_menu, "draw_jumps", "Jump Zones")
+        action = MenuActionSettings(view_menu, "draw_jumps", "Jump Zones")
         action.add_observer(lambda value: setattr(self.level_view, "draw_jumps", value))
 
-        action = SettingsMenuAction(view_menu, "draw_grid", "Grid Lines")
+        action = MenuActionSettings(view_menu, "draw_grid", "Grid Lines")
         action.add_observer(lambda value: setattr(self.level_view, "draw_grid", value))
 
-        action = SettingsMenuAction(view_menu, "draw_expansion", "Reisze Type")
+        action = MenuActionSettings(view_menu, "draw_expansion", "Reisze Type")
         action.add_observer(lambda value: setattr(self.level_view, "draw_expansions", value))
 
         view_menu.addSeparator()
 
-        action = SettingsMenuAction(view_menu, "block_transparency", "Block Transparency")
+        action = MenuActionSettings(view_menu, "block_transparency", "Block Transparency")
         action.add_observer(lambda value: setattr(self.level_view, "transparency", value))
 
-        action = SettingsMenuAction(view_menu, "background_enabled", "Background")
+        action = MenuActionSettings(view_menu, "background_enabled", "Background")
         action.add_observer(lambda value: setattr(self.level_view, "background_enabled", value))
 
         view_menu.addSeparator()
@@ -245,21 +245,21 @@ class MainWindow(QMainWindow):
 
         tool_menu.addSection("Object Selectors")
 
-        action = SettingsMenuAction(tool_menu, "visual_object_toolbar", "Visual Object Selector")
+        action = MenuActionSettings(tool_menu, "visual_object_toolbar", "Visual Object Selector")
         #action.add_observer(self.visual_object_toolbar.toggleViewAction().trigger)
 
-        action = SettingsMenuAction(tool_menu, "compact_object_toolbar", "Compact Object Selector")
+        action = MenuActionSettings(tool_menu, "compact_object_toolbar", "Compact Object Selector")
         #action.add_observer(self.compact_object_toolbar.toggleViewAction().trigger)
 
-        action = SettingsMenuAction(tool_menu, "object_attribute_toolbar", "Object Attribute Toolbar")
+        action = MenuActionSettings(tool_menu, "object_attribute_toolbar", "Object Attribute Toolbar")
         #action.add_observer(self.object_attribute_toolbar.toggleViewAction().trigger)
 
         tool_menu.addSeparator()
 
-        action = SettingsMenuAction(tool_menu, "bytes_counter_toolbar", "Byte Counter")
+        action = MenuActionSettings(tool_menu, "bytes_counter_toolbar", "Byte Counter")
         #action.add_observer(self.bytes_counter_toolbar.toggleViewAction().trigger)
 
-        action = SettingsMenuAction(tool_menu, "object_list_toolbar", "Object List")
+        action = MenuActionSettings(tool_menu, "object_list_toolbar", "Object List")
         #action.add_observer(self.object_list_toolbar.toggleViewAction().trigger)
 
         self.menuBar().addMenu(tool_menu)
