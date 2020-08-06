@@ -1,4 +1,4 @@
-from foundry.gui.QMenus.FileMenu import M3L_FILE_FILTER
+from foundry.core.util import M3L_FILE_FILTER
 from foundry.gui.QMenus.MenuElement.AbstractMenuElementOpen import MenuElementOpen
 
 

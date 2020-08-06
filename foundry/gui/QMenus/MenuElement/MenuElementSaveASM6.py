@@ -1,4 +1,4 @@
-from foundry.gui.QMenus.FileMenu import ASM6_FILE_FILER
+from foundry.core.util import ASM6_FILE_FILER
 from foundry.gui.QMenus.MenuElement.AbstractMenuElementSave import AbstractMenuElementSave
 
 
