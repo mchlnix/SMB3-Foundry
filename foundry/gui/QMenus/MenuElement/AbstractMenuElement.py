@@ -3,7 +3,7 @@ from abc import abstractmethod
 from foundry.gui.QMenus import Menu
 
 
-class MenuElement:
+class AbstractMenuElement:
     """An element of a menu"""
     def __init__(self, parent: Menu, add_action: bool = True) -> None:
         self.parent = parent

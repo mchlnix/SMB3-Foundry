@@ -17,7 +17,7 @@ SaveASM6MenuElement: An element to save ASM6 files
 """
 
 from foundry.gui.SettingsDialog import show_settings
-from . import Menu, MenuElement, MenuElementOpen, MenuElementSave
+from . import Menu, AbstractMenuElement, MenuElementOpen, MenuElementSave
 
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
@@ -66,7 +66,7 @@ class FileMenuLight(Menu):
         self.add_action(self.exit_action.name, self.exit_action.action)
 
 
-class ExitMenuElement(MenuElement):
+class ExitMenuElement(AbstractMenuElement):
     """A menu element that handles exiting the window"""
     @property
     def base_name(self) -> str:
@@ -78,7 +78,7 @@ class ExitMenuElement(MenuElement):
         self.parent.close()
 
 
-class SettingsMenuElement(MenuElement):
+class SettingsMenuElement(AbstractMenuElement):
     """A menu element that handles opening the settings"""
     @property
     def base_name(self) -> str:
