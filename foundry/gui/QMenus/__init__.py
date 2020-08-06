@@ -11,8 +11,8 @@ from abc import ABC
 from foundry import icon_dir, data_dir
 from foundry.core.Requirable.RequirableDecorator import RequirableDecorator
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator, ObservedAndRequired
-from foundry.gui.QMenus import AbstractMenuElement, MenuElementSafe
-from foundry.gui.QMenus.MenuElement.AbstractMenuElementSafe import MenuElementSafe
+from foundry.gui.QMenus import AbstractMenuElement, AbstractMenuElementSafe
+from foundry.gui.QMenus.MenuElement.AbstractMenuElementSafe import AbstractMenuElementSafe
 from foundry.gui.QMenus.MenuElement.AbstractMenuElement import AbstractMenuElement
 
 
@@ -87,7 +87,7 @@ class MenuAction(QAction):
         return self.value
 
 
-class MenuElementOpen(MenuElementSafe, ABC):
+class MenuElementOpen(AbstractMenuElementSafe, ABC):
     """A Menu Element that contains tests required for opening"""
     def __init__(self, parent, add_action: bool = True) -> None:
         self.action = ObservedAndRequired(self.action)
@@ -108,7 +108,7 @@ class MenuElementOpen(MenuElementSafe, ABC):
         return True
 
 
-class MenuElementSave(MenuElementSafe, ABC):
+class MenuElementSave(AbstractMenuElementSafe, ABC):
     """A Menu Element that contains tests required for saving"""
     def __init__(self, parent, add_action: bool = True) -> None:
         self.save = ObservableDecorator(self.save)

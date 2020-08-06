@@ -6,7 +6,7 @@ from foundry.core.Requirable.RequirableSmartDecorator import SmartRequirableDeco
 from foundry.gui.QMenus import AbstractMenuElement
 
 
-class MenuElementSafe(AbstractMenuElement, ABC):
+class AbstractMenuElementSafe(AbstractMenuElement, ABC):
     """A Menu Element that contains a test to see if something is safe to do"""
     def __init__(self, parent, add_action: bool = True) -> None:
         self.find_warnings = SmartRequirableDecorator(self.find_warnings)
