@@ -1,24 +1,4 @@
-"""
-File menus to help streamline gui in regards to loading and saving files of different types
-ROM_FILE_FILTER: The file filter for loading ROM (.nes or .rom) files
-M3L_FILE_FILTER: The file filter for loading M3L files
-ASM6_FILE_FILTER: The file filter for loading ASM6 (.asm) files
-IMG_FILE_FILTER: The file filter for loading IMG (.png) files
-FileMenu: The default file menu (used by the MainWindow)
-FileMenuLight: A more reusable form the FileMenu
-MenuElementExitApplication: An element to exit the program
-MenuElementSettings: An element to load the settings
-OpenROMMenuElement: An element to load the ROM
-MenuElementOpenM3L: An element to load a M3L file
-MenuElementSaveROM: An element to save the ROM directly from the ROM's path
-MenuElementSaveROMas: An element to save the ROM
-MenuElementSaveM3L: An element to save M3L files
-MenuElementSaveASM6: An element to save ASM6 files
-"""
-
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
 ASM6_FILE_FILER = "ASM files (*.asm);; All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
-
-
