@@ -9,6 +9,7 @@ class AbstractMenuElement:
     """An element of a menu"""
     def __init__(self, parent: Optional[Menu] = None, add_action: Optional[bool] = True) -> None:
         self.parent = parent
+        self.name = ""
         if add_action and parent is not None:
             add_action = getattr(parent, "add_action", None)
             if callable(add_action):
@@ -19,11 +20,6 @@ class AbstractMenuElement:
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.parent})"
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """The name of the element"""
 
     @abstractmethod
     def action(self) -> None:
