@@ -4,7 +4,7 @@ from foundry.core.Observables.ObservableDecorator import ObservedAndRequired
 from foundry.gui.QMenus import AbstractMenuElement
 
 
-class MenuElementUpdater(AbstractMenuElement, ABC):
+class AbstractMenuElementUpdater(AbstractMenuElement, ABC):
     """A Menu Element that updates all the observers on the action command"""
 
     def __init__(self, parent, add_action: bool = True) -> None:

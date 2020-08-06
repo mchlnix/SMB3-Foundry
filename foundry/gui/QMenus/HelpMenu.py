@@ -11,7 +11,7 @@ from PySide2.QtWidgets import QMessageBox, QPushButton
 from typing import Tuple, Optional
 
 from . import Menu, icon, open_url
-from .MenuElement.AbstractMenuElementUpdater import MenuElementUpdater
+from .MenuElement.AbstractMenuElementUpdater import AbstractMenuElementUpdater
 from foundry.gui.AboutWindow import AboutDialog
 from foundry import root_dir
 
@@ -88,7 +88,7 @@ def ask_for_update(needs_updating: bool, _: str, latest_version: str) -> None:
         info_box.exec_()
 
 
-class CheckForUpdateMenuElement(MenuElementUpdater):
+class CheckForUpdateMenuElement(AbstractMenuElementUpdater):
     """Menu Element that checks for an update"""
     def __init__(self, parent, add_action: bool = True) -> None:
         super().__init__(parent, add_action)
@@ -123,7 +123,7 @@ class CheckForUpdateMenuElement(MenuElementUpdater):
         return "Check For Updates"
 
 
-class FeatureVideoMenuElement(MenuElementUpdater):
+class FeatureVideoMenuElement(AbstractMenuElementUpdater):
     """A menu element to load the feature video's link"""
     def action(self) -> None:
         """Loads the feature video"""
@@ -135,7 +135,7 @@ class FeatureVideoMenuElement(MenuElementUpdater):
         return "Feature Video on YouTube"
 
 
-class GitMenuElement(MenuElementUpdater):
+class GitMenuElement(AbstractMenuElementUpdater):
     """A menu element to load the github repository"""
 
     def action(self) -> None:
@@ -148,7 +148,7 @@ class GitMenuElement(MenuElementUpdater):
         return "Github Repository"
 
 
-class DiscordMenuElement(MenuElementUpdater):
+class DiscordMenuElement(AbstractMenuElementUpdater):
     """A menu element to give a discord invite"""
 
     def action(self) -> None:
@@ -161,7 +161,7 @@ class DiscordMenuElement(MenuElementUpdater):
         return "SMB3 Rom Hacking Discord"
 
 
-class AboutMenuElement(MenuElementUpdater):
+class AboutMenuElement(AbstractMenuElementUpdater):
     """A menu element to give a discord invite"""
 
     def action(self) -> None:
