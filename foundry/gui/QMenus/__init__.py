@@ -4,19 +4,13 @@ The container for all the local file menu functions
 
 from typing import Callable
 from PySide2.QtWidgets import QAction
-from PySide2.QtCore import QUrl
-from PySide2.QtGui import QDesktopServices, QIcon
+from PySide2.QtGui import QIcon
 
 from foundry import icon_dir, data_dir
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QMenus.Menu.Menu import Menu
 from foundry.gui.QMenus.MenuElement.AbstractMenuElementSafe import AbstractMenuElementSafe
 from foundry.gui.QMenus.MenuElement.AbstractMenuElement import AbstractMenuElement
-
-
-def open_url(url: str):
-    """Opens a given URL"""
-    QDesktopServices.openUrl(QUrl(url))
 
 
 def icon(icon_name: str):
