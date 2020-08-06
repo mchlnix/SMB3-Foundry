@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 from PySide2.QtGui import QImage, QPainter
 
-import foundry.core.util.icon
 from foundry.game.File import ROM
 
 from foundry.game.ObjectSet import ObjectSet
@@ -45,7 +44,7 @@ def get_minimal_icon_object(level_object):
     if isinstance(level_object, Jump):
         return None
 
-    foundry.core.util.icon.icon()
+    level_object.icon()
 
     return level_object
 
