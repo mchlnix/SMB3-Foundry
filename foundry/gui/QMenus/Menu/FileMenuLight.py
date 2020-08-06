@@ -1,5 +1,5 @@
 from foundry.gui.QMenus import Menu
-from foundry.gui.QMenus.FileMenu import OpenRomMenuElement, SaveROMMenuElement, SaveROMasMenuElement, \
+from foundry.gui.QMenus.FileMenu import MenuElementOpenRom, SaveROMMenuElement, SaveROMasMenuElement, \
     SaveASM6MenuElement, MenuElementSettings
 from foundry.gui.QMenus.MenuElement.MenuElementExitApplication import MenuElementExitApplication
 
@@ -10,7 +10,7 @@ class FileMenuLight(Menu):
         super().__init__(parent, "File")
         self.parent = parent
 
-        self.open_rom_action = OpenRomMenuElement(self)
+        self.open_rom_action = MenuElementOpenRom(self)
         self.addSeparator()
         self.save_rom_action = SaveROMMenuElement(self)
         self.save_rom_as_action = SaveROMasMenuElement(self)

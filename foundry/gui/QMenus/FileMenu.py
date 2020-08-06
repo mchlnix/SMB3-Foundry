@@ -40,7 +40,7 @@ class MenuElementSettings(AbstractMenuElement):
         show_settings(self.parent)
 
 
-class OpenRomMenuElement(MenuElementOpen):
+class MenuElementOpenRom(MenuElementOpen):
     """A menu element that handles opening a ROM"""
 
     def __init__(self, parent, add_action: bool = True) -> None:

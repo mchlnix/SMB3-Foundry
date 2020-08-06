@@ -61,7 +61,7 @@ from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
 from foundry.gui.QMenus import Menu
-from foundry.gui.QMenus.FileMenu import OpenRomMenuElement
+from foundry.gui.QMenus.FileMenu import MenuElementOpenRom
 from foundry.gui.QMenus.Menu.FileMenu import FileMenu
 from foundry.gui.QMenus.HelpMenu import HelpMenu
 from foundry.gui.QMenus.SettingsMenuElement import SettingsMenuAction
@@ -400,7 +400,7 @@ class MainWindow(QMainWindow):
 
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
 
-        self.open_rom_ele = OpenRomMenuElement(self, False)
+        self.open_rom_ele = MenuElementOpenRom(self, False)
         self.open_rom = self.open_rom_ele.action
         self.open_rom.attach_observer(self.open_level_selector)
         if not self.open_rom():

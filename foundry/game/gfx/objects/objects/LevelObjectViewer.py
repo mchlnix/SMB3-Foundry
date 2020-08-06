@@ -17,7 +17,7 @@ from PySide2.QtGui import Qt
 
 from foundry.gui.SettingsDialog import get_gui_style
 from foundry.decorators.SaveSettings import handle_settings
-from foundry.gui.QMenus.FileMenu import OpenRomMenuElement
+from foundry.gui.QMenus.FileMenu import MenuElementOpenRom
 from foundry.gui.QMenus.Menu.FileMenuLight import FileMenuLight
 from foundry.gui.QMenus.HelpMenu import HelpMenu
 from foundry.game.gfx.objects.objects.LevelObjectBase import LevelObject
@@ -47,7 +47,7 @@ ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 def main(path_to_rom):
     """Handles the main window"""
     app = QApplication()
-    open_rom_ele = OpenRomMenuElement(None, False)
+    open_rom_ele = MenuElementOpenRom(None, False)
     if open_rom_ele.action():
         MainWindow(path_to_rom)
     else:
