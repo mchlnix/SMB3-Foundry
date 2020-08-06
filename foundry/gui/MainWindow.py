@@ -64,7 +64,7 @@ from foundry.gui.QMenus.Menu.Menu import Menu
 from foundry.gui.QMenus.MenuElement.MenuElementOpenROM import MenuElementOpenROM
 from foundry.gui.QMenus.Menu.FileMenu import FileMenu
 from foundry.gui.QMenus.Menu.HelpMenu import HelpMenu
-from foundry.gui.QMenus.SettingsMenuElement import MenuActionSettings
+from foundry.gui.QMenus.MenuAction.MenuActionSettings import MenuActionSettings
 
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
