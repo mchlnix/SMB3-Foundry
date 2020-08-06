@@ -11,21 +11,11 @@ from typing import Tuple, Optional
 
 from .Menu.Menu import Menu
 from ...core.util import RELEASES_LINK, FEATURE_VIDEO_LINK, GIT_LINK, DISCORD_LINK
+from ...core.util.get_current_version_name import get_current_version_name
 from ...core.util.icon import icon
 from ...core.util.open_url import open_url
 from .MenuElement.AbstractMenuElementUpdater import AbstractMenuElementUpdater
 from foundry.gui.AboutWindow import AboutDialog
-from foundry import root_dir
-
-
-def get_current_version_name() -> str:
-    """Get version name"""
-    version_file = root_dir / "VERSION"
-
-    if not version_file.exists():
-        raise LookupError("Version file not found.")
-
-    return version_file.read_text().strip()
 
 
 def get_latest_version_name(timeout: int = 10) -> str:
