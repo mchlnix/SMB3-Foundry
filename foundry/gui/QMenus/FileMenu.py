@@ -9,7 +9,7 @@ FileMenuLight: A more reusable form the FileMenu
 MenuElementExitApplication: An element to exit the program
 MenuElementSettings: An element to load the settings
 OpenROMMenuElement: An element to load the ROM
-OpenM3LMenuElement: An element to load a M3L file
+MenuElementOpenM3L: An element to load a M3L file
 SaveROMMenuElement: An element to save the ROM directly from the ROM's path
 SaveROMasMenuElement: An element to save the ROM
 SaveM3LMenuElement: An element to save M3L files
@@ -64,7 +64,7 @@ class MenuElementOpenRom(MenuElementOpen):
         return ROM_FILE_FILTER
 
 
-class OpenM3LMenuElement(MenuElementOpen):
+class MenuElementOpenM3L(MenuElementOpen):
     """A menu element that handles opening a M3L"""
     @property
     def base_name(self) -> str:
