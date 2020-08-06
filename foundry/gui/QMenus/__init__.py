@@ -12,6 +12,7 @@ from foundry import icon_dir, data_dir
 from foundry.core.Requirable.RequirableDecorator import RequirableDecorator
 from foundry.core.Requirable.RequirableSmartDecorator import SmartRequirableDecorator
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator, ObservedAndRequired
+from foundry.gui.QMenus import AbstractMenuElement
 
 
 def open_url(url: str):
@@ -121,14 +122,6 @@ class MenuElement:
     @abstractmethod
     def action(self) -> None:
         """The action to be called"""
-
-
-class MenuElementUpdater(MenuElement, ABC):
-    """A Menu Element that updates all the observers on the action command"""
-
-    def __init__(self, parent, add_action: bool = True) -> None:
-        self.action = ObservedAndRequired(self.action)
-        super().__init__(parent, add_action)
 
 
 class MenuElementSafe(MenuElement, ABC):

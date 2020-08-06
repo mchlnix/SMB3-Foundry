@@ -10,7 +10,8 @@ from PySide2.QtGui import QDesktopServices, Qt
 from PySide2.QtWidgets import QMessageBox, QPushButton
 from typing import Tuple, Optional
 
-from . import Menu, MenuElementUpdater, icon, open_url
+from . import Menu, icon, open_url
+from .MenuElement.AbstractMenuElementUpdater import MenuElementUpdater
 from foundry.gui.AboutWindow import AboutDialog
 from foundry import root_dir
 
