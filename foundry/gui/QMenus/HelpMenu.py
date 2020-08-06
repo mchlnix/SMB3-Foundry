@@ -8,7 +8,7 @@ from .MenuElement.AbstractMenuElementUpdater import AbstractMenuElementUpdater
 from foundry.gui.AboutWindow import AboutDialog
 
 
-class FeatureVideoMenuElement(AbstractMenuElementUpdater):
+class MenuElementFeatureVideo(AbstractMenuElementUpdater):
     """A menu element to load the feature video's link"""
     def action(self) -> None:
         """Loads the feature video"""
