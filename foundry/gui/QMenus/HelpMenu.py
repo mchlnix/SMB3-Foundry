@@ -5,23 +5,17 @@ Prefabs for help menus
 import json
 import urllib.request
 import urllib.error
-from PySide2.QtCore import QUrl
-from PySide2.QtGui import QDesktopServices, Qt
+from PySide2.QtGui import Qt
 from PySide2.QtWidgets import QMessageBox, QPushButton
 from typing import Tuple, Optional
 
 from .Menu.Menu import Menu
+from ...core.util import RELEASES_LINK, FEATURE_VIDEO_LINK, GIT_LINK, DISCORD_LINK
 from ...core.util.icon import icon
 from ...core.util.open_url import open_url
 from .MenuElement.AbstractMenuElementUpdater import AbstractMenuElementUpdater
 from foundry.gui.AboutWindow import AboutDialog
 from foundry import root_dir
-
-
-RELEASES_LINK = "https://github.com/mchlnix/SMB3-Foundry/releases"
-FEATURE_VIDEO_LINK = "https://www.youtube.com/watch?v=7_22cAffMmE"
-GIT_LINK = "https://github.com/mchlnix/SMB3-Foundry"
-DISCORD_LINK = "https://discord.gg/pm87gm7"
 
 
 def get_current_version_name() -> str:
