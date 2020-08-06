@@ -16,8 +16,6 @@ MenuElementSaveM3L: An element to save M3L files
 MenuElementSaveASM6: An element to save ASM6 files
 """
 
-from foundry.gui.SettingsDialog import show_settings
-from .MenuElement.AbstractMenuElement import AbstractMenuElement
 from .MenuElement.AbstractMenuElementSave import AbstractMenuElementSave
 from .MenuElement.AbstractMenuElementOpen import MenuElementOpen
 
@@ -26,18 +24,6 @@ ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
 ASM6_FILE_FILER = "ASM files (*.asm);; All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
-
-
-class MenuElementSettings(AbstractMenuElement):
-    """A menu element that handles opening the settings"""
-    @property
-    def base_name(self) -> str:
-        """The real name of the element"""
-        return "Settings"
-
-    def action(self):
-        """Shows the settings"""
-        show_settings(self.parent)
 
 
 class MenuElementOpenRom(MenuElementOpen):
