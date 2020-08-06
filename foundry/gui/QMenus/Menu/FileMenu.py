@@ -1,6 +1,6 @@
 from foundry.gui.QMenus import Menu
 from foundry.gui.QMenus.FileMenu import OpenRomMenuElement, OpenM3LMenuElement, SaveROMMenuElement, \
-    SaveROMasMenuElement, SaveM3LMenuElement, SaveASM6MenuElement, SettingsMenuElement, ExitApplicationMenuElement
+    SaveROMasMenuElement, SaveM3LMenuElement, SaveASM6MenuElement, SettingsMenuElement, MenuElementExitApplication
 
 
 class FileMenu(Menu):
@@ -20,5 +20,5 @@ class FileMenu(Menu):
         self.settings_action = SettingsMenuElement(self.parent, False)
         self.add_action(self.settings_action.name, self.settings_action.action)
         self.addSeparator()
-        self.exit_action = ExitApplicationMenuElement(self.parent, False)
+        self.exit_action = MenuElementExitApplication(self.parent, False)
         self.add_action(self.exit_action.name, self.exit_action.action)
