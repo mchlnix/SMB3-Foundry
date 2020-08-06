@@ -5,6 +5,7 @@ This serves as the base interface for a requirable decorator
 
 from abc import ABC
 from typing import Callable, Any
+from inspect import signature
 
 from .AbstractRequirable import AbstractRequirable
 
@@ -21,6 +22,8 @@ class AbstractRequirableDecorator(AbstractRequirable, ABC):
 
     def __init__(self, function: Callable):
         super(AbstractRequirableDecorator, self).__init__()
+        if not callable(function):
+            raise TypeError("Must be callable")
         self.function = function
 
     def main_function(self, *args, **kwargs) -> Any:
