@@ -17,7 +17,6 @@ SaveASM6MenuElement: An element to save ASM6 files
 """
 
 from foundry.gui.SettingsDialog import show_settings
-from foundry.gui.QMenus import Menu
 from .MenuElement.AbstractMenuElement import AbstractMenuElement
 from .MenuElement.AbstractMenuElementSave import AbstractMenuElementSave
 from .MenuElement.AbstractMenuElementOpen import MenuElementOpen
@@ -27,25 +26,6 @@ ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
 ASM6_FILE_FILER = "ASM files (*.asm);; All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
-
-
-class FileMenuLight(Menu):
-    """A menu for loading files"""
-    def __init__(self, parent):
-        super().__init__(parent, "File")
-        self.parent = parent
-
-        self.open_rom_action = OpenRomMenuElement(self)
-        self.addSeparator()
-        self.save_rom_action = SaveROMMenuElement(self)
-        self.save_rom_as_action = SaveROMasMenuElement(self)
-        self.save_asm6_action = SaveASM6MenuElement(self)
-        self.addSeparator()
-        self.settings_action = SettingsMenuElement(self.parent, False)
-        self.add_action(self.settings_action.name, self.settings_action.action)
-        self.addSeparator()
-        self.exit_action = ExitMenuElement(self.parent, False)
-        self.add_action(self.exit_action.name, self.exit_action.action)
 
 
 class ExitMenuElement(AbstractMenuElement):
