@@ -137,7 +137,7 @@ class MenuElementSafe(MenuElement, ABC):
         self.find_warnings = SmartRequirableDecorator(self.find_warnings)
         super().__init__(parent, add_action)
         self.path_to_rom = ""
-        self.action.attach_required(observer=self.safe_to_change)
+        self.action.attach_required(self.safe_to_change)
 
     @property
     def path(self) -> str:
@@ -208,7 +208,7 @@ class MenuElementSave(MenuElementSafe, ABC):
         self.can_change = RequirableDecorator(self.can_change)
         self.action = ObservedAndRequired(self.action)
         super().__init__(parent, add_action)
-        self.action.attach_required(observer=self.can_change)
+        self.action.attach_required(self.can_change)
 
     @property
     def path(self) -> str:
