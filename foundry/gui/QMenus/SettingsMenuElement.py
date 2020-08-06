@@ -1,5 +1,5 @@
 """
-This module includes the SettingsMenuElement, which provides an interface to easily add boolean settings to the menu
+This module includes the MenuElementSettings, which provides an interface to easily add boolean settings to the menu
 SettingsMenuAction: The menu action in charge of settings
 """
 

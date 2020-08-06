@@ -7,7 +7,7 @@ IMG_FILE_FILTER: The file filter for loading IMG (.png) files
 FileMenu: The default file menu (used by the MainWindow)
 FileMenuLight: A more reusable form the FileMenu
 MenuElementExitApplication: An element to exit the program
-SettingsMenuElement: An element to load the settings
+MenuElementSettings: An element to load the settings
 OpenROMMenuElement: An element to load the ROM
 OpenM3LMenuElement: An element to load a M3L file
 SaveROMMenuElement: An element to save the ROM directly from the ROM's path
@@ -28,7 +28,7 @@ ASM6_FILE_FILER = "ASM files (*.asm);; All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 
-class SettingsMenuElement(AbstractMenuElement):
+class MenuElementSettings(AbstractMenuElement):
     """A menu element that handles opening the settings"""
     @property
     def base_name(self) -> str:
