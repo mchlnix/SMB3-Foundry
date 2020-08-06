@@ -1,7 +1,7 @@
 from foundry.gui.QMenus.Menu.Menu import Menu
 from foundry.gui.QMenus.FileMenu import MenuElementOpenM3L, MenuElementSaveROM, \
     MenuElementSaveROMas, MenuElementSaveM3L, MenuElementSaveASM6
-from foundry.gui.QMenus.MenuElement.MenuElementOpenROM import MenuElementOpenRom
+from foundry.gui.QMenus.MenuElement.MenuElementOpenROM import MenuElementOpenROM
 from foundry.gui.QMenus.MenuElement.MenuElementSettings import MenuElementSettings
 from foundry.gui.QMenus.MenuElement.MenuElementExitApplication import MenuElementExitApplication
 
@@ -12,7 +12,7 @@ class FileMenu(Menu):
         super().__init__(parent, "File")
         self.parent = parent
 
-        self.open_rom_action = MenuElementOpenRom(self)
+        self.open_rom_action = MenuElementOpenROM(self)
         self.open_m3l_action = MenuElementOpenM3L(self)
         self.addSeparator()
         self.save_rom_action = MenuElementSaveROM(self)

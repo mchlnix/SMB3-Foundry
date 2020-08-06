@@ -2,7 +2,7 @@ from foundry.gui.QMenus.FileMenu import ROM_FILE_FILTER
 from foundry.gui.QMenus.MenuElement.AbstractMenuElementOpen import MenuElementOpen
 
 
-class MenuElementOpenRom(MenuElementOpen):
+class MenuElementOpenROM(MenuElementOpen):
     """A menu element that handles opening a ROM"""
 
     def __init__(self, parent, add_action: bool = True) -> None:
