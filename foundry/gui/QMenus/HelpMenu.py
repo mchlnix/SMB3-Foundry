@@ -6,7 +6,7 @@ from .MenuElement.AbstractMenuElementUpdater import AbstractMenuElementUpdater
 from foundry.gui.AboutWindow import AboutDialog
 
 
-class AboutMenuElement(AbstractMenuElementUpdater):
+class MenuElementAbout(AbstractMenuElementUpdater):
     """A menu element to give a discord invite"""
 
     def action(self) -> None:
