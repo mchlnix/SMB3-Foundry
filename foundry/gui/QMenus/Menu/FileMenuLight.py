@@ -1,5 +1,5 @@
 from foundry.gui.QMenus import Menu
-from foundry.gui.QMenus.FileMenu import MenuElementSaveASM6
+from foundry.gui.QMenus.MenuElement.MenuElementSaveASM6 import MenuElementSaveASM6
 from foundry.gui.QMenus.MenuElement.MenuElementSaveROMas import MenuElementSaveROMas
 from foundry.gui.QMenus.MenuElement.MenuElementSaveROM import MenuElementSaveROM
 from foundry.gui.QMenus.MenuElement.MenuElementOpenROM import MenuElementOpenROM

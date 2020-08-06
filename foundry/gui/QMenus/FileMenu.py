@@ -16,28 +16,9 @@ MenuElementSaveM3L: An element to save M3L files
 MenuElementSaveASM6: An element to save ASM6 files
 """
 
-from .MenuElement.AbstractMenuElementSave import AbstractMenuElementSave
-
-
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
 ASM6_FILE_FILER = "ASM files (*.asm);; All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 
-class MenuElementSaveASM6(AbstractMenuElementSave):
-    """A menu element that handles saving a ROM"""
-    @property
-    def base_name(self) -> str:
-        """The real name of the element"""
-        return "Save ASM6"
-
-    @property
-    def caption(self) -> str:
-        """Provides the caption to ask for a file"""
-        return "Save ASM6 as"
-
-    @property
-    def file_filter(self) -> str:
-        """Provides the filter for finding the desired file"""
-        return ASM6_FILE_FILER
