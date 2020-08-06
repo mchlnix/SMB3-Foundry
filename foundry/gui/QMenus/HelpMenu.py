@@ -1,5 +1,0 @@
-"""
-Prefabs for help menus
-"""
-
-
