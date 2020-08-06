@@ -17,7 +17,8 @@ SaveASM6MenuElement: An element to save ASM6 files
 """
 
 from foundry.gui.SettingsDialog import show_settings
-from . import Menu, AbstractMenuElement, MenuElementSave
+from . import Menu, AbstractMenuElement
+from .MenuElement.AbstractMenuElementSave import MenuElementSave
 from .MenuElement.AbstractMenuElementOpen import MenuElementOpen
 
 
