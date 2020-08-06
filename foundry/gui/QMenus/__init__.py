@@ -3,7 +3,7 @@ The container for all the local file menu functions
 """
 
 from typing import Callable
-from PySide2.QtWidgets import QMenu, QAction, QMessageBox, QFileDialog
+from PySide2.QtWidgets import QAction, QMessageBox, QFileDialog
 from PySide2.QtCore import QUrl
 from PySide2.QtGui import QDesktopServices, QIcon
 from abc import ABC
@@ -11,7 +11,7 @@ from abc import ABC
 from foundry import icon_dir, data_dir
 from foundry.core.Requirable.RequirableDecorator import RequirableDecorator
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator, ObservedAndRequired
-from foundry.gui.QMenus import AbstractMenuElement, AbstractMenuElementSafe
+from foundry.gui.QMenus.Menu.Menu import Menu
 from foundry.gui.QMenus.MenuElement.AbstractMenuElementSafe import AbstractMenuElementSafe
 from foundry.gui.QMenus.MenuElement.AbstractMenuElement import AbstractMenuElement
 
@@ -32,28 +32,6 @@ def icon(icon_name: str):
         return QIcon(str(data_path))
     else:
         raise FileNotFoundError(icon_path)
-
-
-class Menu(QMenu):
-    """A default menu"""
-    def __init__(self, parent, title="", *args, **kwargs) -> None:
-        super().__init__(parent=parent, title=title)
-        self.parent = parent
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.parent})"
-
-    """The custom extensions for the QMenu class"""
-    def add_action(self, name: str, on_click: Callable) -> QAction:
-        """
-        Adds an item to the list automatically and makes a trigger that connects to the callable
-        :param name: The name of the menu item
-        :param on_click: The callable to be called
-        :return: None
-        """
-        action = self.addAction(name)
-        action.triggered.connect(on_click)
-        return action
 
 
 class MenuAction(QAction):
