@@ -1,4 +1,4 @@
-from foundry.gui.QMenus.HelpMenu import MenuElementAbout
+from foundry.gui.QMenus.MenuElement.MenuElementAbout import MenuElementAbout
 from foundry.gui.QMenus.MenuElement.MenuElementDiscord import MenuElementDiscord
 from foundry.gui.QMenus.MenuElement.MenuElementGithub import MenuElementGithub
 from foundry.gui.QMenus.MenuElement.MenuElementFeatureVideo import MenuElementFeatureVideo
