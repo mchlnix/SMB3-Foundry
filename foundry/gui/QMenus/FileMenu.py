@@ -13,7 +13,7 @@ MenuElementOpenM3L: An element to load a M3L file
 MenuElementSaveROM: An element to save the ROM directly from the ROM's path
 MenuElementSaveROMas: An element to save the ROM
 MenuElementSaveM3L: An element to save M3L files
-SaveASM6MenuElement: An element to save ASM6 files
+MenuElementSaveASM6: An element to save ASM6 files
 """
 
 from foundry.gui.SettingsDialog import show_settings
@@ -142,7 +142,7 @@ class MenuElementSaveM3L(AbstractMenuElementSave):
         return M3L_FILE_FILTER
 
 
-class SaveASM6MenuElement(AbstractMenuElementSave):
+class MenuElementSaveASM6(AbstractMenuElementSave):
     """A menu element that handles saving a ROM"""
     @property
     def base_name(self) -> str:
