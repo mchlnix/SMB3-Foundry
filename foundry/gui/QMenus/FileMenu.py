@@ -18,7 +18,7 @@ SaveASM6MenuElement: An element to save ASM6 files
 
 from foundry.gui.SettingsDialog import show_settings
 from . import Menu, AbstractMenuElement
-from .MenuElement.AbstractMenuElementSave import MenuElementSave
+from .MenuElement.AbstractMenuElementSave import AbstractMenuElementSave
 from .MenuElement.AbstractMenuElementOpen import MenuElementOpen
 
 
@@ -134,7 +134,7 @@ class OpenM3LMenuElement(MenuElementOpen):
         return M3L_FILE_FILTER
 
 
-class SaveROMMenuElement(MenuElementSave):
+class SaveROMMenuElement(AbstractMenuElementSave):
     """A menu element that handles saving a ROM"""
     @property
     def path(self) -> str:
@@ -158,7 +158,7 @@ class SaveROMMenuElement(MenuElementSave):
         return ROM_FILE_FILTER
 
 
-class SaveROMasMenuElement(MenuElementSave):
+class SaveROMasMenuElement(AbstractMenuElementSave):
     """A menu element that handles saving a ROM"""
     @property
     def base_name(self) -> str:
@@ -176,7 +176,7 @@ class SaveROMasMenuElement(MenuElementSave):
         return ROM_FILE_FILTER
 
 
-class SaveM3LMenuElement(MenuElementSave):
+class SaveM3LMenuElement(AbstractMenuElementSave):
     """A menu element that handles saving a ROM"""
     @property
     def base_name(self) -> str:
@@ -194,7 +194,7 @@ class SaveM3LMenuElement(MenuElementSave):
         return M3L_FILE_FILTER
 
 
-class SaveASM6MenuElement(MenuElementSave):
+class SaveASM6MenuElement(AbstractMenuElementSave):
     """A menu element that handles saving a ROM"""
     @property
     def base_name(self) -> str:

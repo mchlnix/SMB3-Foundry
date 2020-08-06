@@ -7,7 +7,7 @@ from foundry.core.Requirable.RequirableDecorator import RequirableDecorator
 from foundry.gui.QMenus import AbstractMenuElementSafe
 
 
-class MenuElementSave(AbstractMenuElementSafe, ABC):
+class AbstractMenuElementSave(AbstractMenuElementSafe, ABC):
     """A Menu Element that contains tests required for saving"""
     def __init__(self, parent, add_action: bool = True) -> None:
         self.save = ObservableDecorator(self.save)
