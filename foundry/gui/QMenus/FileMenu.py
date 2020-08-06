@@ -138,7 +138,7 @@ class SaveROMMenuElement(MenuElementSave):
     def path(self) -> str:
         """Gets the path to the desired location"""
         from foundry.game.File import ROM
-        return ROM.path
+        return ROM().path
 
     @property
     def base_name(self) -> str:
