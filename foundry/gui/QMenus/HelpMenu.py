@@ -6,7 +6,6 @@ from PySide2.QtGui import Qt
 from PySide2.QtWidgets import QMessageBox
 from typing import Tuple, Optional
 
-from .Menu.Menu import Menu
 from ...core.util import FEATURE_VIDEO_LINK, GIT_LINK, DISCORD_LINK
 from ...core.util.ask_for_update import ask_for_update
 from ...core.util.get_current_version_name import get_current_version_name
@@ -14,23 +13,6 @@ from ...core.util.get_latest_version_name import get_latest_version_name
 from ...core.util.open_url import open_url
 from .MenuElement.AbstractMenuElementUpdater import AbstractMenuElementUpdater
 from foundry.gui.AboutWindow import AboutDialog
-
-
-class HelpMenu(Menu):
-    """A menu for providing help"""
-    def __init__(self, parent):
-        super().__init__(parent, "Help")
-        self.parent = parent
-
-        self.updater_action = CheckForUpdateMenuElement(self.parent, False)
-        self.add_action(self.updater_action.name, self.updater_action.action)
-        self.addSeparator()
-        self.feature_video_action = FeatureVideoMenuElement(self)
-        self.git_action = GitMenuElement(self)
-        self.discord_action = DiscordMenuElement(self)
-        self.about_action = AboutMenuElement(self.parent, False)
-        self.addSeparator()
-        self.add_action(self.about_action.name, self.about_action.action)
 
 
 class CheckForUpdateMenuElement(AbstractMenuElementUpdater):

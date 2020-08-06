@@ -19,7 +19,7 @@ from foundry.gui.SettingsDialog import get_gui_style
 from foundry.decorators.SaveSettings import handle_settings
 from foundry.gui.QMenus.MenuElement.MenuElementOpenROM import MenuElementOpenROM
 from foundry.gui.QMenus.Menu.FileMenuLight import FileMenuLight
-from foundry.gui.QMenus.HelpMenu import HelpMenu
+from foundry.gui.QMenus.Menu.HelpMenu import HelpMenu
 from foundry.game.gfx.objects.objects.LevelObjectBase import LevelObject
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.Custom.Palette.Selector import PaletteSelector
