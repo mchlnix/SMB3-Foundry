@@ -15,7 +15,7 @@ from .MenuElement.AbstractMenuElementUpdater import AbstractMenuElementUpdater
 from foundry.gui.AboutWindow import AboutDialog
 
 
-class CheckForUpdateMenuElement(AbstractMenuElementUpdater):
+class MenuElementCheckForUpdate(AbstractMenuElementUpdater):
     """Menu Element that checks for an update"""
     def __init__(self, parent, add_action: bool = True) -> None:
         super().__init__(parent, add_action)

@@ -1,4 +1,4 @@
-from foundry.gui.QMenus.HelpMenu import CheckForUpdateMenuElement, FeatureVideoMenuElement, GitMenuElement, \
+from foundry.gui.QMenus.HelpMenu import MenuElementCheckForUpdate, FeatureVideoMenuElement, GitMenuElement, \
     DiscordMenuElement, AboutMenuElement
 from foundry.gui.QMenus.Menu.Menu import Menu
 
@@ -9,7 +9,7 @@ class HelpMenu(Menu):
         super().__init__(parent, "Help")
         self.parent = parent
 
-        self.updater_action = CheckForUpdateMenuElement(self.parent, False)
+        self.updater_action = MenuElementCheckForUpdate(self.parent, False)
         self.add_action(self.updater_action.name, self.updater_action.action)
         self.addSeparator()
         self.feature_video_action = FeatureVideoMenuElement(self)
