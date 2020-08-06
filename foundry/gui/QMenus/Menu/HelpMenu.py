@@ -1,4 +1,4 @@
-from foundry.gui.QMenus.HelpMenu import GitMenuElement, \
+from foundry.gui.QMenus.HelpMenu import MenuElementGithub, \
     DiscordMenuElement, AboutMenuElement
 from foundry.gui.QMenus.MenuElement.MenuElementFeatureVideo import MenuElementFeatureVideo
 from foundry.gui.QMenus.MenuElement.MenuElementCheckForUpdate import MenuElementCheckForUpdate
@@ -15,7 +15,7 @@ class HelpMenu(Menu):
         self.add_action(self.updater_action.name, self.updater_action.action)
         self.addSeparator()
         self.feature_video_action = MenuElementFeatureVideo(self)
-        self.git_action = GitMenuElement(self)
+        self.git_action = MenuElementGithub(self)
         self.discord_action = DiscordMenuElement(self)
         self.about_action = AboutMenuElement(self.parent, False)
         self.addSeparator()

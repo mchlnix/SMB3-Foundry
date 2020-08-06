@@ -8,7 +8,7 @@ from .MenuElement.AbstractMenuElementUpdater import AbstractMenuElementUpdater
 from foundry.gui.AboutWindow import AboutDialog
 
 
-class GitMenuElement(AbstractMenuElementUpdater):
+class MenuElementGithub(AbstractMenuElementUpdater):
     """A menu element to load the github repository"""
 
     def action(self) -> None:
