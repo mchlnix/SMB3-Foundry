@@ -40,7 +40,7 @@ def test_reference_name():
 def test_attach_requirement():
     """Tests if a requirement can be added"""
     action = new_test_case()
-    action.requirable.attach_required(lambda *_: False)
+    action.requirable.attach_requirement(lambda *_: False)
     assert 1 == len(action.requirable.requirements)
 
 
@@ -58,7 +58,7 @@ def test_lock_on_function():
     global variable_for_testing
     variable_for_testing = True
     action = new_test_case()
-    action.requirable.attach_required(lambda *_: get_var_for_testing())
+    action.requirable.attach_requirement(lambda *_: get_var_for_testing())
     action.observable()
     action.observable()
     assert not variable_for_testing

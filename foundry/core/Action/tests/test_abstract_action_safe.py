@@ -62,7 +62,7 @@ def test_attach_warning():
     """Tests attaching a warning successful"""
     action = new_test_case()
     warning = SmartRequirableDecorator(warning_succeed)
-    action.warning_checks.attach_required(warning)
+    action.warning_checks.attach_requirement(warning)
     assert 1 == len(action.warning_checks.requirements)
 
 
@@ -70,7 +70,7 @@ def test_warning_failing():
     """Tests when a warning returns False"""
     action = new_test_case()
     warning = SmartRequirableDecorator(warning_fail)
-    action.warning_checks.attach_required(warning)
+    action.warning_checks.attach_requirement(warning)
     assert not action.observable()
 
 
@@ -78,7 +78,7 @@ def test_warning_succeeding():
     """Tests when a warning returns True"""
     action = new_test_case()
     warning = SmartRequirableDecorator(warning_succeed)
-    action.warning_checks.attach_required(warning)
+    action.warning_checks.attach_requirement(warning)
     assert action.observable()
 
 
@@ -86,7 +86,7 @@ def test_warning_changing():
     """Tests when a warning fails then succeeds"""
     action = new_test_case()
     warning = ChangingWarningTest(False)
-    action.warning_checks.attach_required(warning)
+    action.warning_checks.attach_requirement(warning)
     assert not action.observable()
     warning.state = True
     assert action.observable()
@@ -96,7 +96,7 @@ def test_warning_message():
     """Tests warning message is received when failing"""
     action = new_test_case()
     warning = SmartRequirableDecorator(warning_fail)
-    action.warning_checks.attach_required(warning)
+    action.warning_checks.attach_requirement(warning)
     action.observable()
     assert TEST_REASON == action.reason
     assert TEST_ADDITIONAL == action.additional_info

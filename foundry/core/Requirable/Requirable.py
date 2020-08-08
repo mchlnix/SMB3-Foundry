@@ -65,7 +65,7 @@ class Requirable(AbstractRequirable):
 
         return value
 
-    def attach_required(self, requirement: Callable, identifier: Optional[Hashable] = None) -> None:
+    def attach_requirement(self, requirement: Callable, identifier: Optional[Hashable] = None) -> None:
         """Attach a requirement"""
         if not callable(requirement):
             raise TypeError("Must be callable")
@@ -77,7 +77,7 @@ class Requirable(AbstractRequirable):
         _logger.debug(f"{self} attached {requirement} with key {identifier} to {self.requirements}")
         self.requirements.update({identifier: requirement})
 
-    def delete_required(self, identifier: Hashable) -> None:
+    def delete_requirement(self, identifier: Hashable) -> None:
         """Removes a requirement"""
         try:
             del self.requirements[identifier]
