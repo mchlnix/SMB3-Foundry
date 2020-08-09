@@ -14,7 +14,7 @@ from ..Observables.ObservableDecorator import ObservableDecorator
 
 
 class AbstractActionSelectFile(Action):
-    """An interface to select a file with multiple safely"""
+    """An interface to select a file with multiple safety checks"""
     warning_action: AbstractActionSafe
     observable: ActionLock
 
