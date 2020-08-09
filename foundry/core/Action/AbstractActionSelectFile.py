@@ -21,7 +21,7 @@ class AbstractActionSelectFile(Action):
     def __init__(self, name: str, action: Callable = ActionSafe) -> None:
         """
         :param name: The name of the action
-        :param action: The constructor for a action for a AbstractActionSafe
+        :param action: The constructor for a action for an AbstractActionSafe
         """
         self.name = name
         self.file_selected_observer = ObservableDecorator(lambda path: path)
