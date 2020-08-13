@@ -17,7 +17,7 @@ class FileMenu(Menu):
         self.parent = parent
 
         self.open_rom_action = MenuElementOpen.from_rom_file(self)
-        self.open_m3l_action = MenuElementOpenM3L(self)
+        self.open_m3l_action = MenuElementOpen.from_m3l_file(self)
         self.addSeparator()
         self.save_rom_action = MenuElementSaveROM(self)
         self.save_rom_as_action = MenuElementSaveROMas(self)

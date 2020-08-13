@@ -130,7 +130,8 @@ class MainWindow(QMainWindow):
         self.file_menu.open_rom_action._action.attach_warning(self.safe_to_change)
         self.file_menu.open_rom_action._action.attach_observer(load_from_file)
         self.file_menu.open_rom_action._action.attach_observer(self.open_level_selector)
-        self.file_menu.open_m3l_action.find_warnings.attach_requirement(self.safe_to_change)
+        self.file_menu.open_m3l_action._action.attach_warning(self.safe_to_change)
+        self.file_menu.open_m3l_action._action.attach_observer(self.open_m3l)
         self.file_menu.save_rom_action.find_warnings.attach_requirement(self.safe_to_change)
         self.file_menu.save_rom_action.can_change.attach_requirement(lambda: self.can_save_rom(False))
         self.file_menu.save_rom_action.save.attach_observer(self.save_rom)
@@ -580,6 +581,11 @@ class MainWindow(QMainWindow):
             ROM().bulk_write(data, offset)
 
         ROM().save_to_file(path_to_rom)
+
+    def open_m3l(self, path: str) -> None:
+        """Opens a M3L"""
+        with open(path, "rb") as m3l_file:
+            self.level_view.from_m3l(bytearray(m3l_file.read()))
 
     def save_m3l(self, path_to_rom: str) -> None:
         """Saves a M3L"""
