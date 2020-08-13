@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Optional
 
-from foundry.gui.QMenus import Menu
+from foundry.gui.QMenus.Menu.Menu import Menu
 from foundry.core.Action.Action import Action
 
 
