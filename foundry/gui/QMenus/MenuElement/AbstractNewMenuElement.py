@@ -9,7 +9,8 @@ class AbstractMenuElement:
     """An element of a menu"""
     def __init__(self, parent: Optional[Menu] = None, add_action: Optional[bool] = True) -> None:
         self.parent = parent
-        self.name = ""
+        if not hasattr(self, 'name'):
+            self.name = ""
         if add_action and parent is not None:
             add_action = getattr(parent, "add_action", None)
             if callable(add_action):
