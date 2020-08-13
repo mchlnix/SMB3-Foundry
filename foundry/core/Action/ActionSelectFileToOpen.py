@@ -7,7 +7,6 @@ from .AbstractActionSelectFile import AbstractActionSelectFile
 from ..util.ask_user_for_file import ask_user_for_file
 
 
-
 class ActionSelectFileToOpen(AbstractActionSelectFile):
     """A generic implementation of an action for opening files"""
     def __init__(self, name: str, func: Callable, caption: str, file_filter: str) -> None:
