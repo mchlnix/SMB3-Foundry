@@ -61,7 +61,10 @@ from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
 from foundry.gui.QMenus.Menu.Menu import Menu
-from foundry.gui.QMenus.MenuElement.MenuElementOpenROM import MenuElementOpenROM
+from foundry.core.Action.ActionSelectFileToOpen import ActionSelectFileToOpen
+from foundry.core.Action.ActionSafe import ActionSafe
+from foundry.core.util import ROM_FILE_FILTER
+from foundry.game.File import load_from_file
 from foundry.gui.QMenus.Menu.MenuFile import FileMenu
 from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
 from foundry.gui.QMenus.MenuAction.MenuActionSettings import MenuActionSettings
@@ -124,8 +127,9 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(get_gui_style())
 
         self.file_menu = FileMenu(self)
-        self.file_menu.open_rom_action.find_warnings.attach_requirement(self.safe_to_change)
-        self.file_menu.open_rom_action.action.attach_observer(self.open_level_selector)
+        self.file_menu.open_rom_action._action.attach_warning(self.safe_to_change)
+        self.file_menu.open_rom_action._action.attach_observer(load_from_file)
+        self.file_menu.open_rom_action._action.attach_observer(self.open_level_selector)
         self.file_menu.open_m3l_action.find_warnings.attach_requirement(self.safe_to_change)
         self.file_menu.save_rom_action.find_warnings.attach_requirement(self.safe_to_change)
         self.file_menu.save_rom_action.can_change.attach_requirement(lambda: self.can_save_rom(False))
@@ -400,10 +404,11 @@ class MainWindow(QMainWindow):
 
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
 
-        self.open_rom_ele = MenuElementOpenROM(self, False)
-        self.open_rom = self.open_rom_ele.action
-        self.open_rom.attach_observer(self.open_level_selector)
-        if not self.open_rom():
+        self.select_rom_action = ActionSelectFileToOpen("open_rom", ActionSafe, "Select ROM", ROM_FILE_FILTER)
+        self.select_rom_action.attach_observer(load_from_file)
+        self.select_rom_action.attach_observer(self.open_level_selector)
+
+        if not self.select_rom_action.observable.observable():
             self.deleteLater()
 
         self.showMaximized()
