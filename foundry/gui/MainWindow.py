@@ -139,7 +139,7 @@ class MainWindow(QMainWindow):
         self.file_menu.save_rom_as_action._action.attach_requirement(lambda: self.can_save_rom(True))
         self.file_menu.save_rom_as_action._action.attach_observer(self.save_rom)
         self.file_menu.save_m3l_action._action.attach_observer(self.save_m3l)
-        self.file_menu.save_asm6_action.save.attach_observer(self.save_asm6)
+        self.file_menu.save_asm6_action._action.attach_observer(self.save_asm6)
         self.menuBar().addMenu(self.file_menu)
 
         """

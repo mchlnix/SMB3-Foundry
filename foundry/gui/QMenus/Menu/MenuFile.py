@@ -23,7 +23,7 @@ class FileMenu(Menu):
         self.save_rom_action = MenuElementSaveROM(self)
         self.save_rom_as_action = MenuElementSaveAs.from_rom_file(self)
         self.save_m3l_action = MenuElementSaveAs.from_m3l_file(self)
-        self.save_asm6_action = MenuElementSaveASM6(self)
+        self.save_asm6_action = MenuElementSaveAs.from_asm6_file(self)
         self.addSeparator()
         self.settings_action = MenuElementSettings(self.parent, False)
         self.add_action(self.settings_action.name, self.settings_action.action)
