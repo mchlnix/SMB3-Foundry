@@ -31,14 +31,14 @@ class MenuElementSaveAs(AbstractMenuElement):
     @classmethod
     def from_rom_file(cls, parent: Menu, menu_name: str = "Save ROM as", add_action: bool = True) -> "MenuElementSaveAs":
         """Makes a menu element open for a rom"""
-        return cls(parent, "Select ROM", ROM_FILE_FILTER, "save_rom_as", menu_name, add_action)
+        return cls(parent, "Save ROM as", ROM_FILE_FILTER, "save_rom_as", menu_name, add_action)
 
     @classmethod
     def from_m3l_file(cls, parent: Menu, menu_name: str = "Save M3L as", add_action: bool = True) -> "MenuElementSaveAs":
         """Makes a menu element open for a m3l"""
-        return cls(parent, "Select M3L", M3L_FILE_FILTER, "save_m3l_as", menu_name, add_action)
+        return cls(parent, "Save M3L as", M3L_FILE_FILTER, "save_m3l_as", menu_name, add_action)
 
     @classmethod
     def from_asm6_file(cls, parent: Menu, menu_name: str = "Save ASM6 as", add_action: bool = True) -> "MenuElementSaveAs":
         """Makes a menu element open for a asm6"""
-        return cls(parent, "Select ASM6", ASM6_FILE_FILER, "save_asm6_as", menu_name, add_action)
+        return cls(parent, "Save ASM6 as", ASM6_FILE_FILER, "save_asm6_as", menu_name, add_action)
