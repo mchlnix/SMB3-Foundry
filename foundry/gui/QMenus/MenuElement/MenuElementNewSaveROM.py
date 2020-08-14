@@ -7,8 +7,8 @@ from foundry.core.Action.ActionSaveROM import ActionSaveROM
 from .AbstractNewMenuElement import AbstractMenuElement
 
 
-class MenuElementSaveAs(AbstractMenuElement):
-    """A menu element for opening files"""
+class MenuElementSaveROM(AbstractMenuElement):
+    """A menu element for saving the rom directly"""
     def __init__(
             self,
             parent: Menu,
