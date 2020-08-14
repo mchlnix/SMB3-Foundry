@@ -2,13 +2,14 @@ from foundry.gui.QMenus.Menu.Menu import Menu
 from foundry.gui.QMenus.MenuElement.MenuElementSaveASM6 import MenuElementSaveASM6
 from foundry.gui.QMenus.MenuElement.MenuElementSaveM3L import MenuElementSaveM3L
 from foundry.gui.QMenus.MenuElement.MenuElementSaveROMas import MenuElementSaveROMas
-from foundry.gui.QMenus.MenuElement.MenuElementSaveROM import MenuElementSaveROM
+#from foundry.gui.QMenus.MenuElement.MenuElementSaveROM import MenuElementSaveROM
 from foundry.gui.QMenus.MenuElement.MenuElementOpenM3L import MenuElementOpenM3L
 from foundry.gui.QMenus.MenuElement.MenuElementOpenROM import MenuElementOpenROM
 from foundry.gui.QMenus.MenuElement.MenuElementSettings import MenuElementSettings
 from foundry.gui.QMenus.MenuElement.MenuElementExitApplication import MenuElementExitApplication
 from foundry.gui.QMenus.MenuElement.MenuElementNewOpen import MenuElementOpen
 from foundry.gui.QMenus.MenuElement.MenuElementSaveAs import MenuElementSaveAs
+from foundry.gui.QMenus.MenuElement.MenuElementNewSaveROM import MenuElementSaveROM
 
 
 class FileMenu(Menu):
