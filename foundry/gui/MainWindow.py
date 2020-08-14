@@ -566,8 +566,10 @@ class MainWindow(QMainWindow):
                     # if we save to another rom, don't consider the level
                     # attached (to the current rom)
                     self.level_view.level_ref.attached_to_rom = False
+                    return False
             else:
-                return
+                return True
+        return True
 
     def safe_to_save(self):
         """Determines if it is safe to save"""
