@@ -25,7 +25,7 @@ from smb3parse.constants import (
 from smb3parse.levels import (
     OBJECT_BASE_OFFSET,
     WORLD_MIN_Y_POSITION,
-    LAYOUT_LIST_OFFSET,
+    WORLD_LAYOUT_LIST_OFFSET,
     LevelBase,
     WORD_BYTE_SIZE,
 )
@@ -64,7 +64,7 @@ TILE_NAMES.update(
 
 
 def list_world_map_addresses(rom: Rom) -> List[int]:
-    offsets = rom.read(LAYOUT_LIST_OFFSET, WORLD_COUNT * WORD_BYTE_SIZE)
+    offsets = rom.read(WORLD_LAYOUT_LIST_OFFSET, WORLD_COUNT * WORD_BYTE_SIZE)
 
     addresses = []
 

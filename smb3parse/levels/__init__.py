@@ -21,7 +21,7 @@ Offset for a lot of world related parsing.
 Offset for level related parsing. Currently only used in Header.
 """
 
-LAYOUT_LIST_OFFSET = WORLD_DATA_OFFSET + 0xA598
+WORLD_LAYOUT_LIST_OFFSET = WORLD_DATA_OFFSET + 0xA598
 
 """
 The first 4 bytes describe minimal indexes an overworld tile must have to be enterable.
