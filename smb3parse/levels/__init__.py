@@ -99,7 +99,7 @@ WORLD_SPECIAL_ENTERABLE_BLOCKS = UNKNOWN_OFFSET + 0xCDAF  # Map_EnterSpecialTile
 A list of tile values, that are also enterable, like the castle and the toad house.
 """
 
-SPECIAL_ENTERABLE_TILE_AMOUNT = 11  # the rom mistakenly uses 0x1A
+WORLD_SPECIAL_ENTERABLE_BLOCKS_COUNT = 11  # the rom mistakenly uses 0x1A
 
 WORLD_MAP_SCREEN_SIZE = WORLD_MAP_HEIGHT * SCREEN_WIDTH  # bytes
 
