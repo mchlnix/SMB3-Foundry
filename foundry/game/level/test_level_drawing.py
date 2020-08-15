@@ -10,7 +10,7 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.LevelView import LevelView
-from smb3parse.levels import HEADER_LENGTH
+from smb3parse.levels import LEVEL_HEADER_LENGTH
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 reference_image_dir = Path(__file__).parent.joinpath("test_refs")
@@ -42,7 +42,7 @@ with open(data_dir / "levels.dat", "r") as level_data_file:
         world_no = int(world_no)
         level_no = int(level_no)
 
-        level_address = int(level_address, 16) - HEADER_LENGTH
+        level_address = int(level_address, 16) - LEVEL_HEADER_LENGTH
 
         enemy_address = int(enemy_address, 16)
 

@@ -2,7 +2,7 @@ from smb3parse.levels import (
     DEFAULT_HORIZONTAL_HEIGHT,
     DEFAULT_VERTICAL_WIDTH,
     ENEMY_BASE_OFFSET,
-    HEADER_LENGTH,
+    LEVEL_HEADER_LENGTH,
     LEVEL_PARTITION_LENGTH,
     LEVEL_MIN_LENGTH,
 )
@@ -22,8 +22,8 @@ LEGACY_TIMES = [400, 300, 200, 0]
 
 class LevelHeader:
     def __init__(self, header_bytes: [bytearray, bytes], object_set_number: int):
-        if len(header_bytes) != HEADER_LENGTH:
-            raise ValueError(f"A level header is made up of {HEADER_LENGTH} bytes, but {len(header_bytes)} were given.")
+        if len(header_bytes) != LEVEL_HEADER_LENGTH:
+            raise ValueError(f"A level header is made up of {LEVEL_HEADER_LENGTH} bytes, but {len(header_bytes)} were given.")
 
         assert_valid_object_set_number(object_set_number)
 

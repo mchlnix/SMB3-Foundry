@@ -1,6 +1,6 @@
 from typing import Optional
 
-from smb3parse.levels import HEADER_LENGTH, LevelBase
+from smb3parse.levels import LEVEL_HEADER_LENGTH, LevelBase
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.objects.object_set import assert_valid_object_set_number
 from smb3parse.util.rom import Rom
@@ -17,9 +17,9 @@ class Level(LevelBase):
 
         self._rom = rom
 
-        self.header_address = self.layout_address - HEADER_LENGTH
+        self.header_address = self.layout_address - LEVEL_HEADER_LENGTH
 
-        self.header_bytes = self._rom.read(self.header_address, HEADER_LENGTH)
+        self.header_bytes = self._rom.read(self.header_address, LEVEL_HEADER_LENGTH)
 
         self.header = LevelHeader.legacy_from_bytes(self.header_bytes, self.object_set_number)
 
