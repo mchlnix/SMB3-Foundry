@@ -1,4 +1,4 @@
-from smb3parse.levels import LEVEL_BASE_HEIGHT
+from foundry.core.util import LEVEL_BASE_HEIGHT
 from smb3parse.objects import InLevelObject
 
 

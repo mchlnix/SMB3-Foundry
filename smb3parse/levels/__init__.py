@@ -1,6 +1,7 @@
 from abc import ABC
 
-from foundry.core.util import ROM_HEADER_OFFSET, WORLD_MAP_HEIGHT, SCREEN_WIDTH
+from foundry.core.util import ROM_HEADER_OFFSET, WORLD_MAP_HEIGHT, SCREEN_WIDTH, LEVEL_MIN_LENGTH, LEVEL_MAX_LENGTH, \
+    LEVEL_PARTITION_LENGTH
 from smb3parse.objects.object_set import ObjectSet
 
 OFFSET_SIZE = 2  # byte
@@ -101,17 +102,6 @@ A list of tile values, that are also enterable, like the castle and the toad hou
 SPECIAL_ENTERABLE_TILE_AMOUNT = 11  # the rom mistakenly uses 0x1A
 
 WORLD_MAP_SCREEN_SIZE = WORLD_MAP_HEIGHT * SCREEN_WIDTH  # bytes
-
-# in bytes
-LEVEL_HEADER_LENGTH = 9
-
-# in blocks
-LEVEL_MIN_LENGTH = 0x10
-LEVEL_MAX_LENGTH = 0x100
-LEVEL_PARTITION_LENGTH = 0x10
-
-LEVEL_BASE_HEIGHT = 27
-LEVEL_BASE_WIDTH = 16
 
 
 def is_valid_level_length(level_length: int) -> bool:

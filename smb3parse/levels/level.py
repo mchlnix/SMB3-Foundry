@@ -1,6 +1,7 @@
 from typing import Optional
 
-from smb3parse.levels import LEVEL_HEADER_LENGTH, LevelBase
+from smb3parse.levels import LevelBase
+from foundry.core.util import LEVEL_HEADER_LENGTH
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.objects.object_set import assert_valid_object_set_number
 from smb3parse.util.rom import Rom

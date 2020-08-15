@@ -10,7 +10,7 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.LevelView import LevelView
-from smb3parse.levels import LEVEL_HEADER_LENGTH
+from foundry.core.util import LEVEL_HEADER_LENGTH
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 reference_image_dir = Path(__file__).parent.joinpath("test_refs")
