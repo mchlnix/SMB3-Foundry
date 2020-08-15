@@ -43,7 +43,7 @@ from smb3parse.levels import (
     VALID_COLUMNS,
     VALID_ROWS,
     WORLD_COUNT,
-    OVERWORLD_DATA_OFFSET,
+    WORLD_DATA_OFFSET,
     WORLD_MAP_HEIGHT,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
@@ -86,7 +86,7 @@ def list_world_map_addresses(rom: Rom) -> List[int]:
 
         world_map_offset = (offsets[index + 1] << 8) + offsets[index]
 
-        addresses.append(OVERWORLD_DATA_OFFSET + world_map_offset)
+        addresses.append(WORLD_DATA_OFFSET + world_map_offset)
 
     return addresses
 
@@ -157,16 +157,16 @@ class WorldMap(LevelBase):
     def _parse_structure_data_block(self, rom: Rom):
         structure_block_offset = rom.little_endian(STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.world_index)
 
-        self.structure_block_start = OVERWORLD_DATA_OFFSET + structure_block_offset
+        self.structure_block_start = WORLD_DATA_OFFSET + structure_block_offset
 
         # the indexes into the y_pos list, where the levels for the n-th screen start
         y_pos_start_by_screen = rom.read(self.structure_block_start, 4)
 
-        level_y_pos_list_start = OVERWORLD_DATA_OFFSET + rom.little_endian(
+        level_y_pos_list_start = WORLD_DATA_OFFSET + rom.little_endian(
             LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
         )
 
-        level_x_pos_list_start = OVERWORLD_DATA_OFFSET + rom.little_endian(
+        level_x_pos_list_start = WORLD_DATA_OFFSET + rom.little_endian(
             LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
         )
 
@@ -272,11 +272,11 @@ class WorldMap(LevelBase):
         :return: The memory addresses of the row, column and level offset position.
         """
 
-        level_y_pos_list_start = OVERWORLD_DATA_OFFSET + self._rom.little_endian(
+        level_y_pos_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(
             LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
         )
 
-        level_x_pos_list_start = OVERWORLD_DATA_OFFSET + self._rom.little_endian(
+        level_x_pos_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(
             LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
         )
 
@@ -313,12 +313,12 @@ class WorldMap(LevelBase):
 
         # get level offset
         level_list_offset_position = LEVELS_IN_WORLD_LIST_OFFSET + self.world_index * OFFSET_SIZE
-        level_list_address = OVERWORLD_DATA_OFFSET + self._rom.little_endian(level_list_offset_position)
+        level_list_address = WORLD_DATA_OFFSET + self._rom.little_endian(level_list_offset_position)
 
         level_offset_position = level_list_address + OFFSET_SIZE * col_index
 
         enemy_list_start_offset = LEVEL_ENEMY_LIST_OFFSET + self.world_index * OFFSET_SIZE
-        enemy_list_start = OVERWORLD_DATA_OFFSET + self._rom.little_endian(enemy_list_start_offset)
+        enemy_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(enemy_list_start_offset)
 
         enemy_offset_position = enemy_list_start + col_index * OFFSET_SIZE
 
