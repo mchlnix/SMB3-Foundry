@@ -52,7 +52,7 @@ WORLD_LEVEL_OBJECT_POINTER_POINTER = WORLD_DATA_OFFSET + 0xB400
 """
 """
 
-WORLD_LEVEL_POINTER_POINTER = WORLD_DATA_OFFSET + 0xB412
+WORLD_LEVEL_GENERATOR_POINTER_POINTER = WORLD_DATA_OFFSET + 0xB412
 """
 The memory locations of levels inside a world map are listed in a row. This offset points to the memory locations of
 these lists for every world. The first 2 bytes following this offset point to the levels in world 1, the next 2 for
