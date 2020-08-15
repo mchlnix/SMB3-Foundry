@@ -74,12 +74,12 @@ FIRST_VALID_ROW = 2
 Tiles in rows before this one are part of the border and not valid overworld tiles.
 """
 
-VALID_ROWS = range(FIRST_VALID_ROW, FIRST_VALID_ROW + WORLD_MAP_HEIGHT)
+WORLD_VALID_LEVEL_Y_POSITIONS = range(FIRST_VALID_ROW, FIRST_VALID_ROW + WORLD_MAP_HEIGHT)
 """
 A range of row values, where Mario could possibly stand.
 """
 
-VALID_COLUMNS = range(SCREEN_WIDTH)
+WORLD_VALID_LEVEL_X_POSITIONS = range(SCREEN_WIDTH)
 """
 A range of column values, where Mario could possibly stand.
 """

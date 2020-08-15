@@ -38,8 +38,8 @@ from smb3parse.levels import (
     SPECIAL_ENTERABLE_TILE_AMOUNT,
     WORLD_SCREEN_LEVEL_POINTER_POINTER,
     WORLD_BLOCK_ATTRIBUTES_OFFSET,
-    VALID_COLUMNS,
-    VALID_ROWS,
+    WORLD_VALID_LEVEL_X_POSITIONS,
+    WORLD_VALID_LEVEL_Y_POSITIONS,
     WORLD_DATA_OFFSET,
     WORLD_MAP_SCREEN_SIZE,
 )
@@ -341,12 +341,12 @@ class WorldMap(LevelBase):
         :param column:
         :return:
         """
-        if row + FIRST_VALID_ROW not in VALID_ROWS:
+        if row + FIRST_VALID_ROW not in WORLD_VALID_LEVEL_Y_POSITIONS:
             raise ValueError(
                 f"Given row {row} is outside the valid range for world maps. First valid row is " f"{FIRST_VALID_ROW}."
             )
 
-        if column not in VALID_COLUMNS:
+        if column not in WORLD_VALID_LEVEL_X_POSITIONS:
             raise ValueError(
                 f"Given column {column} is outside the valid range for world maps. Remember the black " f"border."
             )
