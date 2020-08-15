@@ -13,7 +13,7 @@ One additional byte, at the beginning of every enemy data, where I don't know wh
 
 UNKNOWN_OFFSET = ROM_HEADER_OFFSET + 0x8000  # offset used for uncategorized stuff. TODO find a name
 
-WORLD_MAP_BASE_OFFSET = ROM_HEADER_OFFSET + 0xE000
+OVERWORLD_DATA_OFFSET = ROM_HEADER_OFFSET + 0xE000
 """
 Offset for a lot of world related parsing.
 """
@@ -23,37 +23,37 @@ LEVEL_BASE_OFFSET = ROM_HEADER_OFFSET + 0x10000
 Offset for level related parsing. Currently only used in Header.
 """
 
-LAYOUT_LIST_OFFSET = WORLD_MAP_BASE_OFFSET + 0xA598
+LAYOUT_LIST_OFFSET = OVERWORLD_DATA_OFFSET + 0xA598
 
-TILE_ATTRIBUTES_TS0_OFFSET = WORLD_MAP_BASE_OFFSET + 0xA400
+TILE_ATTRIBUTES_TS0_OFFSET = OVERWORLD_DATA_OFFSET + 0xA400
 """
 The first 4 bytes describe minimal indexes an overworld tile must have to be enterable.
 """
 
-STRUCTURE_DATA_OFFSETS = WORLD_MAP_BASE_OFFSET + 0xB3CA  # Map_ByXHi_InitIndex
+STRUCTURE_DATA_OFFSETS = OVERWORLD_DATA_OFFSET + 0xB3CA  # Map_ByXHi_InitIndex
 """
 This lists the start of a block of world meta data. 9 worlds means 9 times 2 bytes of offsets. The block starts with a
 0x00, so that also marks the end of the block before it.
 """
 
-LEVEL_Y_POS_LISTS = WORLD_MAP_BASE_OFFSET + 0xB3DC  # Map_ByRowType
+LEVEL_Y_POS_LISTS = OVERWORLD_DATA_OFFSET + 0xB3DC  # Map_ByRowType
 """
 This list contains the offsets to the y positions/row indexes of the levels of a world map. Since world maps can have up
 to 4 screens, the offset could points to 4 consecutive lists, so we need to know the amount of levels per screen, to
 make sense of them.
 """
 
-LEVEL_X_POS_LISTS = WORLD_MAP_BASE_OFFSET + 0xB3EE  # Map_ByScrCol
+LEVEL_X_POS_LISTS = OVERWORLD_DATA_OFFSET + 0xB3EE  # Map_ByScrCol
 """
 This list contains the offsets to the x positions/column indexes of the levels in a world map. They are listed in a row
 for all 4 screens.
 """
 
-LEVEL_ENEMY_LIST_OFFSET = WORLD_MAP_BASE_OFFSET + 0xB400
+LEVEL_ENEMY_LIST_OFFSET = OVERWORLD_DATA_OFFSET + 0xB400
 """
 """
 
-LEVELS_IN_WORLD_LIST_OFFSET = WORLD_MAP_BASE_OFFSET + 0xB412
+LEVELS_IN_WORLD_LIST_OFFSET = OVERWORLD_DATA_OFFSET + 0xB412
 """
 The memory locations of levels inside a world map are listed in a row. This offset points to the memory locations of
 these lists for every world. The first 2 bytes following this offset point to the levels in world 1, the next 2 for
@@ -92,7 +92,7 @@ VALID_COLUMNS = range(WORLD_MAP_SCREEN_WIDTH)
 A range of column values, where Mario could possibly stand.
 """
 
-COMPLETABLE_TILES_LIST = WORLD_MAP_BASE_OFFSET + 0xA447  # Map_Completable_Tiles
+COMPLETABLE_TILES_LIST = OVERWORLD_DATA_OFFSET + 0xA447  # Map_Completable_Tiles
 """
 A list of tile values, that are completable, like the Toad House.
 """
