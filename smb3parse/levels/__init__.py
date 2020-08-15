@@ -6,7 +6,7 @@ from smb3parse.objects.object_set import ObjectSet
 
 WORD_BYTE_SIZE = 2  # byte
 
-ENEMY_BASE_OFFSET = ROM_HEADER_OFFSET  # + 1
+OBJECT_BASE_OFFSET = ROM_HEADER_OFFSET  # + 1
 """
 One additional byte, at the beginning of every enemy data, where I don't know what does
 """

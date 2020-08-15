@@ -1,5 +1,5 @@
 from smb3parse.levels import (
-    ENEMY_BASE_OFFSET,
+    OBJECT_BASE_OFFSET,
 )
 from foundry.core.util import LEVEL_BASE_OFFSET, LEVEL_HEADER_LENGTH, LEVEL_MIN_LENGTH, LEVEL_PARTITION_LENGTH, \
     LEVEL_BASE_HEIGHT, LEVEL_BASE_WIDTH
@@ -62,7 +62,7 @@ class LevelHeader:
         self.jump_level_address = (
             (self.data[1] << 8) + self.data[0] + self.jump_object_set.level_offset
         )
-        self.jump_enemy_address = (self.data[3] << 8) + self.data[2] + ENEMY_BASE_OFFSET
+        self.jump_enemy_address = (self.data[3] << 8) + self.data[2] + OBJECT_BASE_OFFSET
         self.next_level = 0
 
     @property
@@ -71,7 +71,7 @@ class LevelHeader:
 
     @property
     def alt_spr_address(self):
-        return self.jump_enemy_address - ENEMY_BASE_OFFSET
+        return self.jump_enemy_address - OBJECT_BASE_OFFSET
 
     def mario_position(self):
         x = MARIO_X_POSITIONS[self.start_x_index] >> 4

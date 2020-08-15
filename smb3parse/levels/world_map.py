@@ -23,7 +23,7 @@ from smb3parse.constants import (
     TILE_STAR_2,
 )
 from smb3parse.levels import (
-    ENEMY_BASE_OFFSET,
+    OBJECT_BASE_OFFSET,
     WORLD_MIN_Y_POSITION,
     LAYOUT_LIST_OFFSET,
     LevelBase,
@@ -216,7 +216,7 @@ class WorldMap(LevelBase):
         absolute_level_address = 0x0010 + object_set_offset + level_offset
 
         # get enemy address
-        enemy_address = ENEMY_BASE_OFFSET + self._rom.little_endian(enemy_offset_address)
+        enemy_address = OBJECT_BASE_OFFSET + self._rom.little_endian(enemy_offset_address)
 
         return object_set_number, absolute_level_address, enemy_address
 
