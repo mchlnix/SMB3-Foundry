@@ -24,7 +24,7 @@ from smb3parse.constants import (
 )
 from smb3parse.levels import (
     ENEMY_BASE_OFFSET,
-    FIRST_VALID_ROW,
+    WORLD_MIN_Y_POSITION,
     LAYOUT_LIST_OFFSET,
     LevelBase,
     OFFSET_SIZE,
@@ -234,7 +234,7 @@ class WorldMap(LevelBase):
             screen, row, column
         )
 
-        row_value = ((row + FIRST_VALID_ROW) << 4) + object_set_number
+        row_value = ((row + WORLD_MIN_Y_POSITION) << 4) + object_set_number
         self._rom.write(row_address, bytes([row_value]))
 
         column_value = ((screen - 1) << 4) + column
@@ -278,7 +278,7 @@ class WorldMap(LevelBase):
             value = self._rom.int(level_y_pos_list_start + row_index)
 
             # adjust the value, so that we ignore the black border tiles around the map
-            row = (value >> 4) - FIRST_VALID_ROW
+            row = (value >> 4) - WORLD_MIN_Y_POSITION
 
             if row == player_row:
                 break
@@ -332,9 +332,9 @@ class WorldMap(LevelBase):
         :param column:
         :return:
         """
-        if row + FIRST_VALID_ROW not in WORLD_VALID_LEVEL_Y_POSITIONS:
+        if row + WORLD_MIN_Y_POSITION not in WORLD_VALID_LEVEL_Y_POSITIONS:
             raise ValueError(
-                f"Given row {row} is outside the valid range for world maps. First valid row is " f"{FIRST_VALID_ROW}."
+                f"Given row {row} is outside the valid range for world maps. First valid row is " f"{WORLD_MIN_Y_POSITION}."
             )
 
         if column not in WORLD_VALID_LEVEL_X_POSITIONS:

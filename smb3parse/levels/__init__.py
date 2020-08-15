@@ -62,7 +62,7 @@ the RAM, which means, to address levels at different parts in the ROM these part
 Same with the ROM page and addresses 0xC000 - 0xFFFF.
 """
 
-FIRST_VALID_ROW = 2
+WORLD_MIN_Y_POSITION = 2
 """
 Tiles in rows before this one are part of the border and not valid overworld tiles.
 """
