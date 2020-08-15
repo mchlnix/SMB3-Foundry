@@ -39,7 +39,7 @@ from smb3parse.levels import (
     SPECIAL_ENTERABLE_TILES_LIST,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
     STRUCTURE_DATA_OFFSETS,
-    TILE_ATTRIBUTES_TS0_OFFSET,
+    WORLD_BLOCK_ATTRIBUTES_OFFSET,
     VALID_COLUMNS,
     VALID_ROWS,
     WORLD_COUNT,
@@ -414,7 +414,7 @@ class WorldMap(LevelBase):
 
 
 def _get_normal_enterable_tiles(rom: Rom) -> bytearray:
-    return rom.read(TILE_ATTRIBUTES_TS0_OFFSET, 4)
+    return rom.read(WORLD_BLOCK_ATTRIBUTES_OFFSET, 4)
 
 
 def _get_special_enterable_tiles(rom: Rom) -> bytearray:
