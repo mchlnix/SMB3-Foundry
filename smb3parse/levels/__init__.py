@@ -11,7 +11,7 @@ OBJECT_BASE_OFFSET = ROM_HEADER_OFFSET  # + 1
 One additional byte, at the beginning of every enemy data, where I don't know what does
 """
 
-UNKNOWN_OFFSET = ROM_HEADER_OFFSET + 0x8000  # offset used for uncategorized stuff. TODO find a name
+WORLD_UNKNOWN_OFFSET = ROM_HEADER_OFFSET + 0x8000  # offset used for uncategorized stuff. TODO find a name
 
 """
 Offset for a lot of world related parsing.
