@@ -7,10 +7,9 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.MapObject import MapObject
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.levels.world_map import (
-    WORLD_MAP_SCREEN_SIZE,
     WorldMap as _WorldMap,
 )
-from foundry.core.util import WORLD_MAP_HEIGHT, SCREEN_WIDTH
+from foundry.core.util import WORLD_MAP_HEIGHT, SCREEN_WIDTH, WORLD_MAP_SCREEN_SIZE
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 OVERWORLD_GRAPHIC_SET = 0

@@ -1,7 +1,7 @@
 from abc import ABC
 
-from foundry.core.util import ROM_HEADER_OFFSET, WORLD_MAP_HEIGHT, SCREEN_WIDTH, LEVEL_MIN_LENGTH, LEVEL_MAX_LENGTH, \
-    LEVEL_PARTITION_LENGTH
+from foundry.core.util import ROM_HEADER_OFFSET, LEVEL_MIN_LENGTH, LEVEL_MAX_LENGTH, \
+    LEVEL_PARTITION_LENGTH, WORLD_DATA_OFFSET
 from smb3parse.objects.object_set import ObjectSet
 
 OFFSET_SIZE = 2  # byte
@@ -13,7 +13,6 @@ One additional byte, at the beginning of every enemy data, where I don't know wh
 
 UNKNOWN_OFFSET = ROM_HEADER_OFFSET + 0x8000  # offset used for uncategorized stuff. TODO find a name
 
-WORLD_DATA_OFFSET = ROM_HEADER_OFFSET + 0xE000
 """
 Offset for a lot of world related parsing.
 """
@@ -24,35 +23,29 @@ Offset for level related parsing. Currently only used in Header.
 
 LAYOUT_LIST_OFFSET = WORLD_DATA_OFFSET + 0xA598
 
-WORLD_BLOCK_ATTRIBUTES_OFFSET = WORLD_DATA_OFFSET + 0xA400
 """
 The first 4 bytes describe minimal indexes an overworld tile must have to be enterable.
 """
 
-WORLD_SCREEN_LEVEL_POINTER_POINTER = WORLD_DATA_OFFSET + 0xB3CA  # Map_ByXHi_InitIndex
 """
 This lists the start of a block of world meta data. 9 worlds means 9 times 2 bytes of offsets. The block starts with a
 0x00, so that also marks the end of the block before it.
 """
 
-WORLD_LEVEL_Y_POSITIONS_POINTER = WORLD_DATA_OFFSET + 0xB3DC  # Map_ByRowType
 """
 This list contains the offsets to the y positions/row indexes of the levels of a world map. Since world maps can have up
 to 4 screens, the offset could points to 4 consecutive lists, so we need to know the amount of levels per screen, to
 make sense of them.
 """
 
-WORLD_LEVEL_X_POSITIONS_POINTER = WORLD_DATA_OFFSET + 0xB3EE  # Map_ByScrCol
 """
 This list contains the offsets to the x positions/column indexes of the levels in a world map. They are listed in a row
 for all 4 screens.
 """
 
-WORLD_LEVEL_OBJECT_POINTER_POINTER = WORLD_DATA_OFFSET + 0xB400
 """
 """
 
-WORLD_LEVEL_GENERATOR_POINTER_POINTER = WORLD_DATA_OFFSET + 0xB412
 """
 The memory locations of levels inside a world map are listed in a row. This offset points to the memory locations of
 these lists for every world. The first 2 bytes following this offset point to the levels in world 1, the next 2 for
@@ -74,34 +67,25 @@ FIRST_VALID_ROW = 2
 Tiles in rows before this one are part of the border and not valid overworld tiles.
 """
 
-WORLD_VALID_LEVEL_Y_POSITIONS = range(FIRST_VALID_ROW, FIRST_VALID_ROW + WORLD_MAP_HEIGHT)
 """
 A range of row values, where Mario could possibly stand.
 """
 
-WORLD_VALID_LEVEL_X_POSITIONS = range(SCREEN_WIDTH)
 """
 A range of column values, where Mario could possibly stand.
 """
 
-WORLD_COMPLETABLE_BLOCKS = WORLD_DATA_OFFSET + 0xA447  # Map_Completable_Tiles
 """
 A list of tile values, that are completable, like the Toad House.
 """
 
-WORLD_COMPLETABLE_BLOCKS_END = 0x00  # MCT_END
 """
 A value, that specifies the end of the completable tiles, rather than a set address.
 """
 
-WORLD_SPECIAL_ENTERABLE_BLOCKS = UNKNOWN_OFFSET + 0xCDAF  # Map_EnterSpecialTiles
 """
 A list of tile values, that are also enterable, like the castle and the toad house.
 """
-
-WORLD_SPECIAL_ENTERABLE_BLOCKS_COUNT = 11  # the rom mistakenly uses 0x1A
-
-WORLD_MAP_SCREEN_SIZE = WORLD_MAP_HEIGHT * SCREEN_WIDTH  # bytes
 
 
 def is_valid_level_length(level_length: int) -> bool:
