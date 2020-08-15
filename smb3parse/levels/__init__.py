@@ -108,14 +108,14 @@ HEADER_LENGTH = 9
 # in blocks
 LEVEL_MIN_LENGTH = 0x10
 LEVEL_MAX_LENGTH = 0x100
-LEVEL_LENGTH_INTERVAL = 0x10
+LEVEL_PARTITION_LENGTH = 0x10
 
 DEFAULT_HORIZONTAL_HEIGHT = 27
 DEFAULT_VERTICAL_WIDTH = 16
 
 
 def is_valid_level_length(level_length: int) -> bool:
-    return level_length in range(LEVEL_MIN_LENGTH, LEVEL_MAX_LENGTH + 1, LEVEL_LENGTH_INTERVAL)
+    return level_length in range(LEVEL_MIN_LENGTH, LEVEL_MAX_LENGTH + 1, LEVEL_PARTITION_LENGTH)
 
 
 class LevelBase(ABC):

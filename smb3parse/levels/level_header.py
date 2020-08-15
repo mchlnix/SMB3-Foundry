@@ -3,7 +3,7 @@ from smb3parse.levels import (
     DEFAULT_VERTICAL_WIDTH,
     ENEMY_BASE_OFFSET,
     HEADER_LENGTH,
-    LEVEL_LENGTH_INTERVAL,
+    LEVEL_PARTITION_LENGTH,
     LEVEL_MIN_LENGTH,
 )
 from foundry.core.util import LEVEL_BASE_OFFSET
@@ -35,7 +35,7 @@ class LevelHeader:
         self.start_y_index = (self.data[4] & 0b1110_0000) >> 5
 
         self.screens = self.data[4] & 0b0000_1111
-        self.length = LEVEL_MIN_LENGTH + self.screens * LEVEL_LENGTH_INTERVAL
+        self.length = LEVEL_MIN_LENGTH + self.screens * LEVEL_PARTITION_LENGTH
         self.width = self.length
         self.height = DEFAULT_HORIZONTAL_HEIGHT
 

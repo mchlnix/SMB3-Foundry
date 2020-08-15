@@ -3,7 +3,7 @@ from smb3parse.levels import (
     DEFAULT_VERTICAL_WIDTH,
     ENEMY_BASE_OFFSET,
     HEADER_LENGTH,
-    LEVEL_LENGTH_INTERVAL,
+    LEVEL_PARTITION_LENGTH,
     LEVEL_MIN_LENGTH,
 )
 from foundry.core.util import LEVEL_BASE_OFFSET
@@ -51,7 +51,7 @@ class LevelHeader:
         jump_object_set_number = data[6] & 0b0000_1111  # for indexing purposes
         jump_object_set = ObjectSet(jump_object_set_number)
         vertical = True if data[6] & 0b0001_0000 else False
-        length = LEVEL_MIN_LENGTH + ((data[4] & 0b0000_1111) * LEVEL_LENGTH_INTERVAL)
+        length = LEVEL_MIN_LENGTH + ((data[4] & 0b0000_1111) * LEVEL_PARTITION_LENGTH)
         return cls(
             next_level=0,
             next_tileset=data[6] & 0b0000_1111,
@@ -197,7 +197,7 @@ class LevelHeader:
     @property
     def length(self) -> int:
         """Legacy routine"""
-        return LEVEL_MIN_LENGTH + self.screens * LEVEL_LENGTH_INTERVAL
+        return LEVEL_MIN_LENGTH + self.screens * LEVEL_PARTITION_LENGTH
 
     @property
     def width(self) -> int:
@@ -223,12 +223,12 @@ class LevelHeader:
     def screens(self):
         """Legacy routine"""
         length = self.size.width if self.vertical else self.size.height
-        return (length - LEVEL_MIN_LENGTH) // LEVEL_LENGTH_INTERVAL
+        return (length - LEVEL_MIN_LENGTH) // LEVEL_PARTITION_LENGTH
 
     @screens.setter
     def screens(self, screens: int):
         """Legacy routine for compatibility"""
-        length = LEVEL_MIN_LENGTH + (screens * LEVEL_LENGTH_INTERVAL)
+        length = LEVEL_MIN_LENGTH + (screens * LEVEL_PARTITION_LENGTH)
         self.size = Size(DEFAULT_VERTICAL_WIDTH, length) if self.vertical else Size(length, DEFAULT_HORIZONTAL_HEIGHT)
 
     ASM6_SCREENS = [
@@ -331,7 +331,7 @@ class LevelHeader:
         self.start_y_index = (self.data[4] & 0b1110_0000) >> 5
 
         self.screens = self.data[4] & 0b0000_1111
-        self.length = LEVEL_MIN_LENGTH + self.screens * LEVEL_LENGTH_INTERVAL
+        self.length = LEVEL_MIN_LENGTH + self.screens * LEVEL_PARTITION_LENGTH
         self.width = self.length
         self.height = DEFAULT_HORIZONTAL_HEIGHT
 
