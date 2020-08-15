@@ -27,7 +27,7 @@ from smb3parse.levels import (
     WORLD_MIN_Y_POSITION,
     LAYOUT_LIST_OFFSET,
     LevelBase,
-    OFFSET_SIZE,
+    WORD_BYTE_SIZE,
 )
 from foundry.core.util import ROM_HEADER_OFFSET, PAGE_A_BY_TILESET, WORLD_COUNT, WORLD_MAP_HEIGHT, SCREEN_WIDTH, \
     WORLD_DATA_OFFSET, WORLD_BLOCK_ATTRIBUTES_OFFSET, WORLD_SCREEN_LEVEL_POINTER_POINTER, \
@@ -64,7 +64,7 @@ TILE_NAMES.update(
 
 
 def list_world_map_addresses(rom: Rom) -> List[int]:
-    offsets = rom.read(LAYOUT_LIST_OFFSET, WORLD_COUNT * OFFSET_SIZE)
+    offsets = rom.read(LAYOUT_LIST_OFFSET, WORLD_COUNT * WORD_BYTE_SIZE)
 
     addresses = []
 
@@ -142,7 +142,7 @@ class WorldMap(LevelBase):
         return self.level_count_s1 + self.level_count_s2 + self.level_count_s3 + self.level_count_s4
 
     def _parse_structure_data_block(self, rom: Rom):
-        structure_block_offset = rom.little_endian(WORLD_SCREEN_LEVEL_POINTER_POINTER + OFFSET_SIZE * self.world_index)
+        structure_block_offset = rom.little_endian(WORLD_SCREEN_LEVEL_POINTER_POINTER + WORD_BYTE_SIZE * self.world_index)
 
         self.structure_block_start = WORLD_DATA_OFFSET + structure_block_offset
 
@@ -150,11 +150,11 @@ class WorldMap(LevelBase):
         y_pos_start_by_screen = rom.read(self.structure_block_start, 4)
 
         level_y_pos_list_start = WORLD_DATA_OFFSET + rom.little_endian(
-            WORLD_LEVEL_Y_POSITIONS_POINTER + OFFSET_SIZE * self.world_index
+            WORLD_LEVEL_Y_POSITIONS_POINTER + WORD_BYTE_SIZE * self.world_index
         )
 
         level_x_pos_list_start = WORLD_DATA_OFFSET + rom.little_endian(
-            WORLD_LEVEL_X_POSITIONS_POINTER + OFFSET_SIZE * self.world_index
+            WORLD_LEVEL_X_POSITIONS_POINTER + WORD_BYTE_SIZE * self.world_index
         )
 
         level_y_pos_list_end = level_x_pos_list_start - level_y_pos_list_start
@@ -260,11 +260,11 @@ class WorldMap(LevelBase):
         """
 
         level_y_pos_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(
-            WORLD_LEVEL_Y_POSITIONS_POINTER + OFFSET_SIZE * self.world_index
+            WORLD_LEVEL_Y_POSITIONS_POINTER + WORD_BYTE_SIZE * self.world_index
         )
 
         level_x_pos_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(
-            WORLD_LEVEL_X_POSITIONS_POINTER + OFFSET_SIZE * self.world_index
+            WORLD_LEVEL_X_POSITIONS_POINTER + WORD_BYTE_SIZE * self.world_index
         )
 
         row_amount = col_amount = level_x_pos_list_start - level_y_pos_list_start
@@ -299,15 +299,15 @@ class WorldMap(LevelBase):
         col_position = level_x_pos_list_start + col_index
 
         # get level offset
-        level_list_offset_position = WORLD_LEVEL_GENERATOR_POINTER_POINTER + self.world_index * OFFSET_SIZE
+        level_list_offset_position = WORLD_LEVEL_GENERATOR_POINTER_POINTER + self.world_index * WORD_BYTE_SIZE
         level_list_address = WORLD_DATA_OFFSET + self._rom.little_endian(level_list_offset_position)
 
-        level_offset_position = level_list_address + OFFSET_SIZE * col_index
+        level_offset_position = level_list_address + WORD_BYTE_SIZE * col_index
 
-        enemy_list_start_offset = WORLD_LEVEL_OBJECT_POINTER_POINTER + self.world_index * OFFSET_SIZE
+        enemy_list_start_offset = WORLD_LEVEL_OBJECT_POINTER_POINTER + self.world_index * WORD_BYTE_SIZE
         enemy_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(enemy_list_start_offset)
 
-        enemy_offset_position = enemy_list_start + col_index * OFFSET_SIZE
+        enemy_offset_position = enemy_list_start + col_index * WORD_BYTE_SIZE
 
         return row_position, col_position, level_offset_position, enemy_offset_position
 

@@ -4,7 +4,7 @@ from foundry.core.util import ROM_HEADER_OFFSET, LEVEL_MIN_LENGTH, LEVEL_MAX_LEN
     LEVEL_PARTITION_LENGTH, WORLD_DATA_OFFSET
 from smb3parse.objects.object_set import ObjectSet
 
-OFFSET_SIZE = 2  # byte
+WORD_BYTE_SIZE = 2  # byte
 
 ENEMY_BASE_OFFSET = ROM_HEADER_OFFSET  # + 1
 """
