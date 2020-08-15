@@ -1,6 +1,6 @@
 import pytest
 
-from smb3parse.levels import WORLD_MAP_HEIGHT, SCREEN_WIDTH
+from foundry.core.util import WORLD_MAP_HEIGHT, SCREEN_WIDTH
 from smb3parse.levels.world_map import (
     WorldMap,
     _get_special_enterable_tiles,

@@ -3,10 +3,10 @@ from smb3parse.levels import (
     DEFAULT_VERTICAL_WIDTH,
     ENEMY_BASE_OFFSET,
     HEADER_LENGTH,
-    LEVEL_BASE_OFFSET,
     LEVEL_LENGTH_INTERVAL,
     LEVEL_MIN_LENGTH,
 )
+from foundry.core.util import LEVEL_BASE_OFFSET
 from smb3parse.objects.object_set import ObjectSet, assert_valid_object_set_number
 from smb3parse.asm6_converter import to_hex
 from dataclasses import dataclass

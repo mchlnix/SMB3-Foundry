@@ -1,10 +1,9 @@
 from abc import ABC
 
+from foundry.core.util import ROM_HEADER_OFFSET, WORLD_MAP_HEIGHT, SCREEN_WIDTH
 from smb3parse.objects.object_set import ObjectSet
 
 OFFSET_SIZE = 2  # byte
-
-ROM_HEADER_OFFSET = 0x10  # the size of the rom header identifying the rom
 
 ENEMY_BASE_OFFSET = ROM_HEADER_OFFSET  # + 1
 """
@@ -18,7 +17,6 @@ WORLD_DATA_OFFSET = ROM_HEADER_OFFSET + 0xE000
 Offset for a lot of world related parsing.
 """
 
-LEVEL_BASE_OFFSET = ROM_HEADER_OFFSET + 0x10000
 """
 Offset for level related parsing. Currently only used in Header.
 """
@@ -60,22 +58,15 @@ these lists for every world. The first 2 bytes following this offset point to th
 world 2 etc.
 """
 
-PAGE_A_BY_TILESET = ROM_HEADER_OFFSET + 0x34000 + 0x83E9  # PAGE_A000_ByTileset
 """
 A list of values, which specify which ROM page should be loaded into addresses 0xA000 - 0xBFFF for a given object set.
 This is necessary, since the ROM is larger then the addressable RAM in the NES. The offsets of levels are always into
 the RAM, which means, to address levels at different parts in the ROM these parts need to be loaded into the RAM first.
 """
 
-PAGE_C_BY_TILESET = ROM_HEADER_OFFSET + 0x34000 + 0x83D6  # PAGE_C000_ByTileset
 """
 Same with the ROM page and addresses 0xC000 - 0xFFFF.
 """
-
-WORLD_COUNT = 9  # includes warp zone
-
-WORLD_MAP_HEIGHT = 9  # blocks
-SCREEN_WIDTH = 16  # blocks
 
 FIRST_VALID_ROW = 2
 """

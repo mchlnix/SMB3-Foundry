@@ -6,7 +6,7 @@ import pytest
 from foundry.conftest import compare_images
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.WorldMapView import WorldMapView
-from smb3parse.levels import WORLD_COUNT
+from foundry.core.util import WORLD_COUNT
 
 reference_image_dir = Path(__file__).parent.joinpath("test_refs")
 os.makedirs(reference_image_dir, exist_ok=True)

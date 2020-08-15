@@ -20,7 +20,7 @@ from foundry.game.level.Level import Level
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldMapView import WorldMapView
-from smb3parse.levels import WORLD_COUNT
+from foundry.core.util import WORLD_COUNT
 
 WORLD_ITEMS = [
     "World Maps",

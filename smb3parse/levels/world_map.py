@@ -23,7 +23,6 @@ from smb3parse.constants import (
     TILE_STAR_2,
 )
 from smb3parse.levels import (
-    ROM_HEADER_OFFSET,
     COMPLETABLE_LIST_END_MARKER,
     COMPLETABLE_TILES_LIST,
     ENEMY_BASE_OFFSET,
@@ -34,7 +33,6 @@ from smb3parse.levels import (
     LEVEL_X_POS_LISTS,
     LEVEL_Y_POS_LISTS,
     LevelBase,
-    PAGE_A_BY_TILESET,
     OFFSET_SIZE,
     SPECIAL_ENTERABLE_TILES_LIST,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
@@ -42,12 +40,10 @@ from smb3parse.levels import (
     WORLD_BLOCK_ATTRIBUTES_OFFSET,
     VALID_COLUMNS,
     VALID_ROWS,
-    WORLD_COUNT,
     WORLD_DATA_OFFSET,
-    WORLD_MAP_HEIGHT,
     WORLD_MAP_SCREEN_SIZE,
-    SCREEN_WIDTH,
 )
+from foundry.core.util import ROM_HEADER_OFFSET, PAGE_A_BY_TILESET, WORLD_COUNT, WORLD_MAP_HEIGHT, SCREEN_WIDTH
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
 from smb3parse.levels.level import Level
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET

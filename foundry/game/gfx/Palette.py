@@ -8,7 +8,7 @@ from PySide2.QtGui import QColor
 
 from foundry import root_dir
 from foundry.game.File import ROM
-from smb3parse.levels import ROM_HEADER_OFFSET
+from foundry.core.util import ROM_HEADER_OFFSET
 
 MAP_PALETTE_ADDRESS = 0x36BE2
 
