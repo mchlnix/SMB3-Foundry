@@ -67,7 +67,7 @@ This is necessary, since the ROM is larger then the addressable RAM in the NES. 
 the RAM, which means, to address levels at different parts in the ROM these parts need to be loaded into the RAM first.
 """
 
-OFFSET_BY_OBJECT_SET_C000 = ROM_HEADER_OFFSET + 0x34000 + 0x83D6  # PAGE_C000_ByTileset
+PAGE_C_BY_TILESET = ROM_HEADER_OFFSET + 0x34000 + 0x83D6  # PAGE_C000_ByTileset
 """
 Same with the ROM page and addresses 0xC000 - 0xFFFF.
 """
