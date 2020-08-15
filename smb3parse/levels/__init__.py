@@ -89,7 +89,7 @@ WORLD_COMPLETABLE_BLOCKS = WORLD_DATA_OFFSET + 0xA447  # Map_Completable_Tiles
 A list of tile values, that are completable, like the Toad House.
 """
 
-COMPLETABLE_LIST_END_MARKER = 0x00  # MCT_END
+WORLD_COMPLETABLE_BLOCKS_END = 0x00  # MCT_END
 """
 A value, that specifies the end of the completable tiles, rather than a set address.
 """

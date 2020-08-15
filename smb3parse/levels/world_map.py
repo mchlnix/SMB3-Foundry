@@ -23,7 +23,7 @@ from smb3parse.constants import (
     TILE_STAR_2,
 )
 from smb3parse.levels import (
-    COMPLETABLE_LIST_END_MARKER,
+    WORLD_COMPLETABLE_BLOCKS_END,
     WORLD_COMPLETABLE_BLOCKS,
     ENEMY_BASE_OFFSET,
     FIRST_VALID_ROW,
@@ -418,6 +418,6 @@ def _get_special_enterable_tiles(rom: Rom) -> bytearray:
 
 
 def _get_completable_tiles(rom: Rom) -> bytearray:
-    completable_tile_amount = rom.find(COMPLETABLE_LIST_END_MARKER, WORLD_COMPLETABLE_BLOCKS) - WORLD_COMPLETABLE_BLOCKS
+    completable_tile_amount = rom.find(WORLD_COMPLETABLE_BLOCKS_END, WORLD_COMPLETABLE_BLOCKS) - WORLD_COMPLETABLE_BLOCKS
 
     return rom.read(WORLD_COMPLETABLE_BLOCKS, completable_tile_amount)
