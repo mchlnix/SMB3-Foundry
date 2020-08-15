@@ -29,7 +29,7 @@ WORLD_BLOCK_ATTRIBUTES_OFFSET = WORLD_DATA_OFFSET + 0xA400
 The first 4 bytes describe minimal indexes an overworld tile must have to be enterable.
 """
 
-STRUCTURE_DATA_OFFSETS = WORLD_DATA_OFFSET + 0xB3CA  # Map_ByXHi_InitIndex
+WORLD_SCREEN_LEVEL_POINTER_POINTER = WORLD_DATA_OFFSET + 0xB3CA  # Map_ByXHi_InitIndex
 """
 This lists the start of a block of world meta data. 9 worlds means 9 times 2 bytes of offsets. The block starts with a
 0x00, so that also marks the end of the block before it.

@@ -36,7 +36,7 @@ from smb3parse.levels import (
     OFFSET_SIZE,
     SPECIAL_ENTERABLE_TILES_LIST,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
-    STRUCTURE_DATA_OFFSETS,
+    WORLD_SCREEN_LEVEL_POINTER_POINTER,
     WORLD_BLOCK_ATTRIBUTES_OFFSET,
     VALID_COLUMNS,
     VALID_ROWS,
@@ -151,7 +151,7 @@ class WorldMap(LevelBase):
         return self.level_count_s1 + self.level_count_s2 + self.level_count_s3 + self.level_count_s4
 
     def _parse_structure_data_block(self, rom: Rom):
-        structure_block_offset = rom.little_endian(STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.world_index)
+        structure_block_offset = rom.little_endian(WORLD_SCREEN_LEVEL_POINTER_POINTER + OFFSET_SIZE * self.world_index)
 
         self.structure_block_start = WORLD_DATA_OFFSET + structure_block_offset
 
