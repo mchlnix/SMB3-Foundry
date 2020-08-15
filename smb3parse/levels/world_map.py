@@ -34,7 +34,7 @@ from smb3parse.levels import (
     WORLD_LEVEL_Y_POSITIONS_POINTER,
     LevelBase,
     OFFSET_SIZE,
-    SPECIAL_ENTERABLE_TILES_LIST,
+    WORLD_SPECIAL_ENTERABLE_BLOCKS,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
     WORLD_SCREEN_LEVEL_POINTER_POINTER,
     WORLD_BLOCK_ATTRIBUTES_OFFSET,
@@ -414,7 +414,7 @@ def _get_normal_enterable_tiles(rom: Rom) -> bytearray:
 
 
 def _get_special_enterable_tiles(rom: Rom) -> bytearray:
-    return rom.read(SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
+    return rom.read(WORLD_SPECIAL_ENTERABLE_BLOCKS, SPECIAL_ENTERABLE_TILE_AMOUNT)
 
 
 def _get_completable_tiles(rom: Rom) -> bytearray:

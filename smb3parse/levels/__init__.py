@@ -94,7 +94,7 @@ WORLD_COMPLETABLE_BLOCKS_END = 0x00  # MCT_END
 A value, that specifies the end of the completable tiles, rather than a set address.
 """
 
-SPECIAL_ENTERABLE_TILES_LIST = UNKNOWN_OFFSET + 0xCDAF  # Map_EnterSpecialTiles
+WORLD_SPECIAL_ENTERABLE_BLOCKS = UNKNOWN_OFFSET + 0xCDAF  # Map_EnterSpecialTiles
 """
 A list of tile values, that are also enterable, like the castle and the toad house.
 """
