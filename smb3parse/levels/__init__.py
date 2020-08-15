@@ -84,7 +84,7 @@ WORLD_VALID_LEVEL_X_POSITIONS = range(SCREEN_WIDTH)
 A range of column values, where Mario could possibly stand.
 """
 
-COMPLETABLE_TILES_LIST = WORLD_DATA_OFFSET + 0xA447  # Map_Completable_Tiles
+WORLD_COMPLETABLE_BLOCKS = WORLD_DATA_OFFSET + 0xA447  # Map_Completable_Tiles
 """
 A list of tile values, that are completable, like the Toad House.
 """
