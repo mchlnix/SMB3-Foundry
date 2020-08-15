@@ -48,7 +48,7 @@ This list contains the offsets to the x positions/column indexes of the levels i
 for all 4 screens.
 """
 
-LEVEL_ENEMY_LIST_OFFSET = WORLD_DATA_OFFSET + 0xB400
+WORLD_LEVEL_OBJECT_POINTER_POINTER = WORLD_DATA_OFFSET + 0xB400
 """
 """
 

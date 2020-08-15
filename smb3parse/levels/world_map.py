@@ -29,7 +29,7 @@ from smb3parse.levels import (
     FIRST_VALID_ROW,
     LAYOUT_LIST_OFFSET,
     WORLD_LEVEL_POINTER_POINTER,
-    LEVEL_ENEMY_LIST_OFFSET,
+    WORLD_LEVEL_OBJECT_POINTER_POINTER,
     LEVEL_X_POS_LISTS,
     LEVEL_Y_POS_LISTS,
     LevelBase,
@@ -313,7 +313,7 @@ class WorldMap(LevelBase):
 
         level_offset_position = level_list_address + OFFSET_SIZE * col_index
 
-        enemy_list_start_offset = LEVEL_ENEMY_LIST_OFFSET + self.world_index * OFFSET_SIZE
+        enemy_list_start_offset = WORLD_LEVEL_OBJECT_POINTER_POINTER + self.world_index * OFFSET_SIZE
         enemy_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(enemy_list_start_offset)
 
         enemy_offset_position = enemy_list_start + col_index * OFFSET_SIZE
