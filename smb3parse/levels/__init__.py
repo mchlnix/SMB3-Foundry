@@ -75,7 +75,7 @@ Same with the ROM page and addresses 0xC000 - 0xFFFF.
 WORLD_COUNT = 9  # includes warp zone
 
 WORLD_MAP_HEIGHT = 9  # blocks
-WORLD_MAP_SCREEN_WIDTH = 16  # blocks
+SCREEN_WIDTH = 16  # blocks
 
 FIRST_VALID_ROW = 2
 """
@@ -87,7 +87,7 @@ VALID_ROWS = range(FIRST_VALID_ROW, FIRST_VALID_ROW + WORLD_MAP_HEIGHT)
 A range of row values, where Mario could possibly stand.
 """
 
-VALID_COLUMNS = range(WORLD_MAP_SCREEN_WIDTH)
+VALID_COLUMNS = range(SCREEN_WIDTH)
 """
 A range of column values, where Mario could possibly stand.
 """
@@ -109,7 +109,7 @@ A list of tile values, that are also enterable, like the castle and the toad hou
 
 SPECIAL_ENTERABLE_TILE_AMOUNT = 11  # the rom mistakenly uses 0x1A
 
-WORLD_MAP_SCREEN_SIZE = WORLD_MAP_HEIGHT * WORLD_MAP_SCREEN_WIDTH  # bytes
+WORLD_MAP_SCREEN_SIZE = WORLD_MAP_HEIGHT * SCREEN_WIDTH  # bytes
 
 # in bytes
 HEADER_LENGTH = 9

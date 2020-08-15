@@ -46,7 +46,7 @@ from smb3parse.levels import (
     WORLD_DATA_OFFSET,
     WORLD_MAP_HEIGHT,
     WORLD_MAP_SCREEN_SIZE,
-    WORLD_MAP_SCREEN_WIDTH,
+    SCREEN_WIDTH,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
 from smb3parse.levels.level import Level
@@ -142,7 +142,7 @@ class WorldMap(LevelBase):
             )
 
         self.screen_count = len(self.layout_bytes) // WORLD_MAP_SCREEN_SIZE
-        self.width = int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
+        self.width = int(self.screen_count * SCREEN_WIDTH)
 
         self._parse_structure_data_block(rom)
 
@@ -358,7 +358,7 @@ class WorldMap(LevelBase):
         if screen - 1 not in range(self.screen_count):
             raise ValueError(f"World {self.number} has {self.screen_count} screens. " f"Given number {screen} invalid.")
 
-        return self.layout_bytes[(screen - 1) * WORLD_MAP_SCREEN_SIZE + row * WORLD_MAP_SCREEN_WIDTH + column]
+        return self.layout_bytes[(screen - 1) * WORLD_MAP_SCREEN_SIZE + row * SCREEN_WIDTH + column]
 
     def is_enterable(self, tile_index: int) -> bool:
         """
@@ -384,7 +384,7 @@ class WorldMap(LevelBase):
         """
         for screen in range(1, self.screen_count + 1):
             for row in range(WORLD_MAP_HEIGHT):
-                for column in range(WORLD_MAP_SCREEN_WIDTH):
+                for column in range(SCREEN_WIDTH):
                     yield WorldMapPosition(self, screen, row, column)
 
     def gen_levels(self):

@@ -1,6 +1,6 @@
 import pytest
 
-from smb3parse.levels import WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
+from smb3parse.levels import WORLD_MAP_HEIGHT, SCREEN_WIDTH
 from smb3parse.levels.world_map import (
     WorldMap,
     _get_special_enterable_tiles,
@@ -64,7 +64,7 @@ def test_list_all_world_maps_screen_counts(rom):
 
 def test_list_all_world_maps_width(rom):
     for world_map, screen_count in zip(get_all_world_maps(rom), world_map_screen_counts):
-        assert world_map.width == screen_count * WORLD_MAP_SCREEN_WIDTH
+        assert world_map.width == screen_count * SCREEN_WIDTH
 
 
 @pytest.mark.parametrize(

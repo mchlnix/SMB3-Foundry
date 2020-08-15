@@ -9,7 +9,7 @@ from foundry.game.level.LevelLike import LevelLike
 from smb3parse.levels.world_map import (
     WORLD_MAP_HEIGHT,
     WORLD_MAP_SCREEN_SIZE,
-    WORLD_MAP_SCREEN_WIDTH,
+    SCREEN_WIDTH,
     WorldMap as _WorldMap,
 )
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
@@ -44,10 +44,10 @@ class WorldMap(LevelLike):
         self.objects.clear()
 
         for index, world_position in enumerate(self._internal_world_map.gen_positions()):
-            screen_offset = (index // WORLD_MAP_SCREEN_SIZE) * WORLD_MAP_SCREEN_WIDTH
+            screen_offset = (index // WORLD_MAP_SCREEN_SIZE) * SCREEN_WIDTH
 
-            x = screen_offset + (index % WORLD_MAP_SCREEN_WIDTH)
-            y = (index // WORLD_MAP_SCREEN_WIDTH) % WORLD_MAP_HEIGHT
+            x = screen_offset + (index % SCREEN_WIDTH)
+            y = (index // SCREEN_WIDTH) % WORLD_MAP_HEIGHT
 
             block = Block.from_rom(world_position.tile(), self.palette_group, self.graphics_set, self.tsa_data)
 
@@ -72,7 +72,7 @@ class WorldMap(LevelLike):
 
     @staticmethod
     def _array_index(obj):
-        return obj.y_position * WORLD_MAP_SCREEN_WIDTH + obj.x_position
+        return obj.y_position * SCREEN_WIDTH + obj.x_position
 
     def get_object_names(self):
         return [obj.name for obj in self.objects]
@@ -121,15 +121,15 @@ class WorldMap(LevelLike):
         self.objects.remove(obj)
 
     def level_at_position(self, x: int, y: int):
-        screen = x // WORLD_MAP_SCREEN_WIDTH + 1
+        screen = x // SCREEN_WIDTH + 1
 
-        x %= WORLD_MAP_SCREEN_WIDTH
+        x %= SCREEN_WIDTH
 
         return self._internal_world_map.level_for_position(screen, y, x)
 
     def level_name_at_position(self, x: int, y: int) -> str:
-        screen = x // WORLD_MAP_SCREEN_WIDTH + 1
+        screen = x // SCREEN_WIDTH + 1
 
-        x %= WORLD_MAP_SCREEN_WIDTH
+        x %= SCREEN_WIDTH
 
         return self._internal_world_map.level_name_for_position(screen, y, x)
