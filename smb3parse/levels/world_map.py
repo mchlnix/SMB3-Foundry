@@ -34,7 +34,7 @@ from smb3parse.levels import (
     LEVEL_X_POS_LISTS,
     LEVEL_Y_POS_LISTS,
     LevelBase,
-    OFFSET_BY_OBJECT_SET_A000,
+    PAGE_A_BY_TILESET,
     OFFSET_SIZE,
     SPECIAL_ENTERABLE_TILES_LIST,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
@@ -224,7 +224,7 @@ class WorldMap(LevelBase):
         correct_row_value = self._rom.int(row_address)
         object_set_number = correct_row_value & 0x0F
 
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
+        object_set_offset = (self._rom.int(PAGE_A_BY_TILESET + object_set_number) * 2 - 10) * 0x1000
 
         absolute_level_address = 0x0010 + object_set_offset + level_offset
 
@@ -253,7 +253,7 @@ class WorldMap(LevelBase):
         column_value = ((screen - 1) << 4) + column
         self._rom.write(column_address, bytes([column_value]))
 
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
+        object_set_offset = (self._rom.int(PAGE_A_BY_TILESET + object_set_number) * 2 - 10) * 0x1000
         level_offset = level_address - object_set_offset - ROM_HEADER_OFFSET
 
         self._rom.write_little_endian(level_offset_address, level_offset)

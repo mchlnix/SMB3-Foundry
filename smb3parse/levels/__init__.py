@@ -60,7 +60,7 @@ these lists for every world. The first 2 bytes following this offset point to th
 world 2 etc.
 """
 
-OFFSET_BY_OBJECT_SET_A000 = ROM_HEADER_OFFSET + 0x34000 + 0x83E9  # PAGE_A000_ByTileset
+PAGE_A_BY_TILESET = ROM_HEADER_OFFSET + 0x34000 + 0x83E9  # PAGE_A000_ByTileset
 """
 A list of values, which specify which ROM page should be loaded into addresses 0xA000 - 0xBFFF for a given object set.
 This is necessary, since the ROM is larger then the addressable RAM in the NES. The offsets of levels are always into
