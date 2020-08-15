@@ -1,17 +1,12 @@
 from abc import ABC
 
-from foundry.core.util import ROM_HEADER_OFFSET, LEVEL_MIN_LENGTH, LEVEL_MAX_LENGTH, \
-    LEVEL_PARTITION_LENGTH, WORLD_DATA_OFFSET
+from foundry.core.util import LEVEL_MIN_LENGTH, LEVEL_MAX_LENGTH, \
+    LEVEL_PARTITION_LENGTH
 from smb3parse.objects.object_set import ObjectSet
 
-WORD_BYTE_SIZE = 2  # byte
-
-OBJECT_BASE_OFFSET = ROM_HEADER_OFFSET  # + 1
 """
 One additional byte, at the beginning of every enemy data, where I don't know what does
 """
-
-WORLD_UNKNOWN_OFFSET = ROM_HEADER_OFFSET + 0x8000  # offset used for uncategorized stuff. TODO find a name
 
 """
 Offset for a lot of world related parsing.
@@ -20,8 +15,6 @@ Offset for a lot of world related parsing.
 """
 Offset for level related parsing. Currently only used in Header.
 """
-
-WORLD_LAYOUT_LIST_OFFSET = WORLD_DATA_OFFSET + 0xA598
 
 """
 The first 4 bytes describe minimal indexes an overworld tile must have to be enterable.
@@ -62,7 +55,6 @@ the RAM, which means, to address levels at different parts in the ROM these part
 Same with the ROM page and addresses 0xC000 - 0xFFFF.
 """
 
-WORLD_MIN_Y_POSITION = 2
 """
 Tiles in rows before this one are part of the border and not valid overworld tiles.
 """
