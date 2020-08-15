@@ -4,21 +4,21 @@ from smb3parse.objects.object_set import ObjectSet
 
 OFFSET_SIZE = 2  # byte
 
-BASE_OFFSET = 0x10  # the size of the rom header identifying the rom
+ROM_HEADER_OFFSET = 0x10  # the size of the rom header identifying the rom
 
-ENEMY_BASE_OFFSET = BASE_OFFSET  # + 1
+ENEMY_BASE_OFFSET = ROM_HEADER_OFFSET  # + 1
 """
 One additional byte, at the beginning of every enemy data, where I don't know what does
 """
 
-UNKNOWN_OFFSET = BASE_OFFSET + 0x8000  # offset used for uncategorized stuff. TODO find a name
+UNKNOWN_OFFSET = ROM_HEADER_OFFSET + 0x8000  # offset used for uncategorized stuff. TODO find a name
 
-WORLD_MAP_BASE_OFFSET = BASE_OFFSET + 0xE000
+WORLD_MAP_BASE_OFFSET = ROM_HEADER_OFFSET + 0xE000
 """
 Offset for a lot of world related parsing.
 """
 
-LEVEL_BASE_OFFSET = BASE_OFFSET + 0x10000
+LEVEL_BASE_OFFSET = ROM_HEADER_OFFSET + 0x10000
 """
 Offset for level related parsing. Currently only used in Header.
 """
@@ -60,14 +60,14 @@ these lists for every world. The first 2 bytes following this offset point to th
 world 2 etc.
 """
 
-OFFSET_BY_OBJECT_SET_A000 = BASE_OFFSET + 0x34000 + 0x83E9  # PAGE_A000_ByTileset
+OFFSET_BY_OBJECT_SET_A000 = ROM_HEADER_OFFSET + 0x34000 + 0x83E9  # PAGE_A000_ByTileset
 """
 A list of values, which specify which ROM page should be loaded into addresses 0xA000 - 0xBFFF for a given object set.
 This is necessary, since the ROM is larger then the addressable RAM in the NES. The offsets of levels are always into
 the RAM, which means, to address levels at different parts in the ROM these parts need to be loaded into the RAM first.
 """
 
-OFFSET_BY_OBJECT_SET_C000 = BASE_OFFSET + 0x34000 + 0x83D6  # PAGE_C000_ByTileset
+OFFSET_BY_OBJECT_SET_C000 = ROM_HEADER_OFFSET + 0x34000 + 0x83D6  # PAGE_C000_ByTileset
 """
 Same with the ROM page and addresses 0xC000 - 0xFFFF.
 """

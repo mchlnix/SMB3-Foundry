@@ -23,7 +23,7 @@ from smb3parse.constants import (
     TILE_STAR_2,
 )
 from smb3parse.levels import (
-    BASE_OFFSET,
+    ROM_HEADER_OFFSET,
     COMPLETABLE_LIST_END_MARKER,
     COMPLETABLE_TILES_LIST,
     ENEMY_BASE_OFFSET,
@@ -254,11 +254,11 @@ class WorldMap(LevelBase):
         self._rom.write(column_address, bytes([column_value]))
 
         object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
-        level_offset = level_address - object_set_offset - BASE_OFFSET
+        level_offset = level_address - object_set_offset - ROM_HEADER_OFFSET
 
         self._rom.write_little_endian(level_offset_address, level_offset)
 
-        enemy_offset = enemy_address - BASE_OFFSET
+        enemy_offset = enemy_address - ROM_HEADER_OFFSET
 
         self._rom.write_little_endian(enemy_offset_address, enemy_offset)
 
