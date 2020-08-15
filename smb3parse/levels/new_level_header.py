@@ -1,6 +1,6 @@
 from smb3parse.levels import (
-    DEFAULT_HORIZONTAL_HEIGHT,
-    DEFAULT_VERTICAL_WIDTH,
+    LEVEL_BASE_HEIGHT,
+    LEVEL_BASE_WIDTH,
     ENEMY_BASE_OFFSET,
     LEVEL_HEADER_LENGTH,
     LEVEL_PARTITION_LENGTH,
@@ -56,7 +56,7 @@ class LevelHeader:
             next_level=0,
             next_tileset=data[6] & 0b0000_1111,
             vertical=vertical,
-            size=Size(DEFAULT_VERTICAL_WIDTH, length) if vertical else Size(length, DEFAULT_HORIZONTAL_HEIGHT),
+            size=Size(LEVEL_BASE_WIDTH, length) if vertical else Size(length, LEVEL_BASE_HEIGHT),
             start_pos=cls.get_legacy_start_position((data[5] & 0b0110_0000) >> 5, (data[4] & 0b1110_0000) >> 5),
             start_action=(data[7] & 0b1110_0000) >> 5,
             scroll_type=(data[6] & 0b0110_0000) >> 5,
@@ -229,7 +229,7 @@ class LevelHeader:
     def screens(self, screens: int):
         """Legacy routine for compatibility"""
         length = LEVEL_MIN_LENGTH + (screens * LEVEL_PARTITION_LENGTH)
-        self.size = Size(DEFAULT_VERTICAL_WIDTH, length) if self.vertical else Size(length, DEFAULT_HORIZONTAL_HEIGHT)
+        self.size = Size(LEVEL_BASE_WIDTH, length) if self.vertical else Size(length, LEVEL_BASE_HEIGHT)
 
     ASM6_SCREENS = [
         "LEVEL1_SIZE_01", "LEVEL1_SIZE_02", "LEVEL1_SIZE_03", "LEVEL1_SIZE_04",
@@ -333,7 +333,7 @@ class LevelHeader:
         self.screens = self.data[4] & 0b0000_1111
         self.length = LEVEL_MIN_LENGTH + self.screens * LEVEL_PARTITION_LENGTH
         self.width = self.length
-        self.height = DEFAULT_HORIZONTAL_HEIGHT
+        self.height = LEVEL_BASE_HEIGHT
 
         self.start_x_index = (self.data[5] & 0b0110_0000) >> 5
 
@@ -346,7 +346,7 @@ class LevelHeader:
 
         if self.is_vertical:
             self.height = self.length
-            self.width = DEFAULT_VERTICAL_WIDTH
+            self.width = LEVEL_BASE_WIDTH
 
         self.jump_object_set_number = self.data[6] & 0b0000_1111  # for indexing purposes
         self.jump_object_set = ObjectSet(self.jump_object_set_number)
