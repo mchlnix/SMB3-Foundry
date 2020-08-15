@@ -92,7 +92,7 @@ class Level(LevelLike):
     def _load_level_data(self, object_data: bytearray, enemy_data: bytearray, new_level: bool = True):
         self.object_factory = LevelObjectFactory(
             object_set=self.object_set_number,
-            graphic_set=self.header.graphic_set,
+            graphic_set=self.header.graphic_set_index,
             palette_group_index=self.header.object_palette_index,
             objects_ref=[],
             vertical_level=bool(self.header.is_vertical),
@@ -159,11 +159,11 @@ class Level(LevelLike):
         return len(self.enemies) * ENEMY_SIZE
 
     def _parse_header(self):
-        self.header = LevelHeader.legacy_from_bytes(self.header_bytes, self.object_set_number)
+        self.header = LevelHeader(self.header_bytes, self.object_set_number)
 
         self.object_factory = LevelObjectFactory(
             self.object_set_number,
-            self.header.graphic_set,
+            self.header.graphic_set_index,
             self.header.object_palette_index,
             self.objects,
             bool(self.header.is_vertical),
@@ -447,11 +447,11 @@ class Level(LevelLike):
 
     @property
     def graphic_set(self):
-        return self.header.graphic_set
+        return self.header.graphic_set_index
 
     @graphic_set.setter
     def graphic_set(self, index):
-        if index == self.header.graphic_set:
+        if index == self.header.graphic_set_index:
             return
 
         self.header_bytes[7] &= 0b1110_0000
