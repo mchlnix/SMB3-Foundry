@@ -30,8 +30,8 @@ from smb3parse.levels import (
     LAYOUT_LIST_OFFSET,
     WORLD_LEVEL_GENERATOR_POINTER_POINTER,
     WORLD_LEVEL_OBJECT_POINTER_POINTER,
-    LEVEL_X_POS_LISTS,
-    LEVEL_Y_POS_LISTS,
+    WORLD_LEVEL_X_POSITIONS_POINTER,
+    WORLD_LEVEL_Y_POSITIONS_POINTER,
     LevelBase,
     OFFSET_SIZE,
     SPECIAL_ENTERABLE_TILES_LIST,
@@ -159,11 +159,11 @@ class WorldMap(LevelBase):
         y_pos_start_by_screen = rom.read(self.structure_block_start, 4)
 
         level_y_pos_list_start = WORLD_DATA_OFFSET + rom.little_endian(
-            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
+            WORLD_LEVEL_Y_POSITIONS_POINTER + OFFSET_SIZE * self.world_index
         )
 
         level_x_pos_list_start = WORLD_DATA_OFFSET + rom.little_endian(
-            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
+            WORLD_LEVEL_X_POSITIONS_POINTER + OFFSET_SIZE * self.world_index
         )
 
         level_y_pos_list_end = level_x_pos_list_start - level_y_pos_list_start
@@ -269,11 +269,11 @@ class WorldMap(LevelBase):
         """
 
         level_y_pos_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(
-            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
+            WORLD_LEVEL_Y_POSITIONS_POINTER + OFFSET_SIZE * self.world_index
         )
 
         level_x_pos_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(
-            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
+            WORLD_LEVEL_X_POSITIONS_POINTER + OFFSET_SIZE * self.world_index
         )
 
         row_amount = col_amount = level_x_pos_list_start - level_y_pos_list_start

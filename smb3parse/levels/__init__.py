@@ -35,14 +35,14 @@ This lists the start of a block of world meta data. 9 worlds means 9 times 2 byt
 0x00, so that also marks the end of the block before it.
 """
 
-LEVEL_Y_POS_LISTS = WORLD_DATA_OFFSET + 0xB3DC  # Map_ByRowType
+WORLD_LEVEL_Y_POSITIONS_POINTER = WORLD_DATA_OFFSET + 0xB3DC  # Map_ByRowType
 """
 This list contains the offsets to the y positions/row indexes of the levels of a world map. Since world maps can have up
 to 4 screens, the offset could points to 4 consecutive lists, so we need to know the amount of levels per screen, to
 make sense of them.
 """
 
-LEVEL_X_POS_LISTS = WORLD_DATA_OFFSET + 0xB3EE  # Map_ByScrCol
+WORLD_LEVEL_X_POSITIONS_POINTER = WORLD_DATA_OFFSET + 0xB3EE  # Map_ByScrCol
 """
 This list contains the offsets to the x positions/column indexes of the levels in a world map. They are listed in a row
 for all 4 screens.
