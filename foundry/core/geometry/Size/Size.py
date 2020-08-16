@@ -174,64 +174,80 @@ class Size:
         return cls(width, height)
 
     def __add__(self, other: Union["Size", int, float]) -> "Size":
-        if isinstance(other, Size):
-            return Size(self.width + other.width, self.height + other.height)
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             return Size(self.width + other, self.height + other)
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            return Size(self.width + other.width, self.height + other.height)
 
     def __radd__(self, other: Union["Size", int, float]) -> "Size":
         return self.__add__(other)
 
     def __sub__(self, other: Union["Size", int, float]) -> "Size":
-        if isinstance(other, Size):
-            return Size(self.width - other.width, self.height - other.height)
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             return Size(self.width - other, self.height - other)
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            return Size(self.width - other.width, self.height - other.height)
 
     def __rsub__(self, other: Union["Size", int, float]) -> "Size":
-        if isinstance(other, Size):
-            return Size(other.width - self.width, other.height - self.height)
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             return Size(other - self.width, other - self.height)
+        else:
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            return Size(other.width - self.width, other.height - self.height)
 
     def __mul__(self, other: Union["Size", int, float]) -> "Size":
-        if isinstance(other, Size):
-            return Size(self.width * other.width, self.height * other.height)
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             return Size(self.width * other, self.height * other)
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            return Size(self.width * other.width, self.height * other.height)
 
     def __rmul__(self, other: Union["Size", int, float]) -> "Size":
         return self.__mul__(other)
 
     def __truediv__(self, other: Union["Size", int, float]) -> "Size":
-        if isinstance(other, Size):
-            return Size(self.width / other.width, self.height / other.height)
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             return Size(self.width / other, self.height / other)
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            return Size(self.width / other.width, self.height / other.height)
 
     def __rtruediv__(self, other: Union["Size", int, float]) -> "Size":
-        if isinstance(other, Size):
-            return Size(other.width / self.width, other.height / self.height)
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             return Size(other / self.width, other / self.height)
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            return Size(other.width / self.width, other.height / self.height)
 
     def __floordiv__(self, other: Union["Size", int, float]) -> "Size":
-        if isinstance(other, Size):
-            return Size(self.width // other.width, self.height // other.height)
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             return Size(self.width // other, self.height // other)
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            return Size(self.width // other.width, self.height // other.height)
 
     @overload
     def __rfloordiv__(self, other: Position) -> Position:
@@ -252,12 +268,14 @@ class Size:
             return NotImplemented
 
     def __mod__(self, other: Union["Size", int, float]) -> "Size":
-        if isinstance(other, Size):
-            return Size(self.width % other.width, self.height % other.height)
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             return Size(self.width % other, self.height % other)
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            return Size(self.width % other.width, self.height % other.height)
 
     @overload
     def __rmod__(self, other: Position) -> Position:
@@ -279,72 +297,84 @@ class Size:
 
     def __iadd__(self, other: Union["Size", int, float]) -> "Size":
         """Implicity add"""
-        if isinstance(other, Size):
-            self.width += other.width
-            self.height += other.height
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             self.width += other
             self.height += other
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            self.width += other.width
+            self.height += other.height
         return self
 
     def __isub__(self, other: Union["Size", int, float]) -> "Size":
         """Implicity subtract"""
-        if isinstance(other, Size):
-            self.width -= other.width
-            self.height -= other.height
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             self.width -= other
             self.height -= other
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            self.width -= other.width
+            self.height -= other.height
         return self
 
     def __imul__(self, other: Union["Size", int, float]) -> "Size":
         """Implicity multiply"""
-        if isinstance(other, Size):
-            self.width *= other.width
-            self.height *= other.height
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             self.width *= other
             self.height *= other
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            self.width *= other.width
+            self.height *= other.height
         return self
 
     def __itruediv__(self, other: Union["Size", int, float]) -> "Size":
         """Implicity division"""
-        if isinstance(other, Size):
-            self.width /= other.width
-            self.height /= other.height
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             self.width /= other
             self.height /= other
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            self.width /= other.width
+            self.height /= other.height
         return self
 
     def __ifloordiv__(self, other: Union["Size", int, float]) -> "Size":
         """Implicity divide"""
-        if isinstance(other, Size):
-            self.width //= other.width
-            self.height //= other.height
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             self.width //= other
             self.height //= other
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            self.width //= other.width
+            self.height //= other.height
         return self
 
     def __imod__(self, other: Union["Size", int, float]) -> "Size":
         """Implicity mod"""
-        if isinstance(other, Size):
-            self.width %= other.width
-            self.height %= other.height
-        elif isinstance(other, (int, float)):
+        if isinstance(other, (int, float)):
             self.width %= other
             self.height %= other
         else:
-            return NotImplemented
+            if not hasattr(other, "_width"):
+                raise AttributeError(f"{other} has no property _width")
+            if not hasattr(other, "_height"):
+                raise AttributeError(f"{other} has no property _height")
+            self.width %= other.width
+            self.height %= other.height
         return self
