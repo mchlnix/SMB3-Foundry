@@ -6,7 +6,7 @@ from foundry.core.geometry.Size.Size import Size
 
 
 TEST_FLOATING_SIZES = [Size(1.0001, 7.3333), Size(7.3333, 1.0001), Size(41.7171, 7.4545), Size(7.4545, 41.7171)]
-TEST_SIZES = [Size(1, 7), Size(7, 1), Size(41, 7), Size(7, 41)]
+TEST_SIZES = [Size(6.5757, 7.3333), Size(7.3333, 6.5757), Size(41, 7), Size(7, 41)]
 TEST_NUMS = [1, 7, 41]
 
 
