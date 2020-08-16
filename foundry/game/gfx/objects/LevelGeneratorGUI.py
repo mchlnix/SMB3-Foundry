@@ -20,7 +20,7 @@ from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXP
 
 from foundry.game.ObjectDefinitions import ObjectDefinition as GeneratorDefinition
 from smb3parse.objects.object_set import _ending_graphic_offset
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from PySide2.QtCore import QSize
 from foundry.game.Position import Position, LevelPosition
 from foundry.game.Rect import Rect

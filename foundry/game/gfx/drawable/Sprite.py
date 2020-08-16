@@ -4,7 +4,7 @@ from functools import lru_cache  # functools has a similar lru_cache, but can le
 import numpy as np
 from PySide2.QtGui import QImage, QPainter, QPixmap
 
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.Position import Position
 from foundry.game.gfx.drawable.Tile import Tile, qimage_mask

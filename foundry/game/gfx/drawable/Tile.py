@@ -16,7 +16,7 @@ import numpy as np
 
 from foundry.game.gfx.Palette import PaletteController
 from foundry.game.gfx.drawable import MASK_COLOR
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.Position import Position
 

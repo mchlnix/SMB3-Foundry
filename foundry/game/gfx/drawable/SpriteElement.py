@@ -5,7 +5,7 @@ from PySide2.QtGui import QImage, QPainter, QPixmap
 from qimage2ndarray import array2qimage
 import numpy as np
 
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from foundry.game.Position import Position
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.drawable.Tile import qimage_mask

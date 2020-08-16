@@ -7,7 +7,7 @@ from foundry import data_dir
 from dataclasses import dataclass, astuple
 
 from foundry.game.Range import Range
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 
 HORIZONTAL = 0
 VERTICAL = 1  # vertical downward

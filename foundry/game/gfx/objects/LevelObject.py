@@ -16,7 +16,7 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
 
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from PySide2.QtCore import QSize
 from foundry.game.Position import Position
 from foundry.game.Rect import Rect

@@ -1,7 +1,7 @@
 from PySide2.QtCore import QRect
 
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from foundry.game.Position import Position
 
 map_object_names = {

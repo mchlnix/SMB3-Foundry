@@ -4,7 +4,7 @@ Prefabs for object definitions
 
 
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import Animation, SpriteGraphic
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 
 
 DEFAULT_SPRITE_GRAPHIC = SpriteGraphic(1)

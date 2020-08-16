@@ -3,7 +3,7 @@
 from typing import List
 from PySide2.QtGui import QPainter
 
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from foundry.game.Position import Position
 from foundry.game.Rect import Rect
 from foundry.game.gfx.drawable.SpriteElement import SpriteElement

@@ -1,6 +1,8 @@
-from typing import Union, Generator, overload
 from dataclasses import dataclass
+from typing import Union, Generator, overload
+
 from PySide2.QtCore import QSize
+
 from foundry.game.Position import Position
 
 

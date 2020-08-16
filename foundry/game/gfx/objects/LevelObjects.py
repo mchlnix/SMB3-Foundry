@@ -6,7 +6,7 @@ from foundry.game.File import ROM
 from foundry.game.gfx.objects.LevelObject import LevelObject, SKY, GROUND, BLANK
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT
 
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from foundry.game.Position import Position, LevelPosition
 from foundry.game.Range import Range
 from foundry.game.Rect import Rect

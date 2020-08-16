@@ -1,5 +1,5 @@
 from PySide2.QtCore import QRect
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from foundry.game.Position import Position
 
 
