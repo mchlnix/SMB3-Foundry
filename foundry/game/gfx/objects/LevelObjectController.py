@@ -14,7 +14,7 @@ from foundry.game.ObjectDefinitions import (
     DIAG_UP_Left_30, HORIZ_TO_GROUND_PLAINS, BUSH_PREFAB, HORIZ_FLOATING_PLATFORM, FORTRESS_PILLARS
 )
 
-from foundry.game.ObjectSet import ObjectSet
+from foundry.game.Tileset import Tileset
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler as PatternTable
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.gfx.objects.LevelObject import LevelObject, BlockGenerator
@@ -40,7 +40,7 @@ from foundry.game.Position import Position
 class LevelObjectController(ObjectLike):
     def __init__(
             self,
-            object_set: ObjectSet,
+            object_set: Tileset,
             palette_group,
             pattern_table: PatternTable,
             objects_ref: List["LevelObjectController"],
@@ -65,7 +65,7 @@ class LevelObjectController(ObjectLike):
         self.level_object = self._level_object()
 
     @classmethod
-    def from_data(cls, data: bytearray, object_set: ObjectSet, palette_group, pattern_table: PatternTable,
+    def from_data(cls, data: bytearray, object_set: Tileset, palette_group, pattern_table: PatternTable,
                   objects_ref: List["LevelObject"], is_vertical: bool, object_factory_idx=0, render: bool = True):
         bg = BlockGenerator.from_bytes(object_set, data, is_vertical)
         domain, index, position, size, overflow = bg.domain, bg.index, bg.pos, bg.size, bg.overflow

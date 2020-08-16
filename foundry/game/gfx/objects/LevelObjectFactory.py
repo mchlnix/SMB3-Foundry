@@ -4,7 +4,7 @@ from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.Palette import load_palette
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
-from foundry.game.ObjectSet import ObjectSet
+from foundry.game.Tileset import Tileset
 
 from foundry.game.Position import Position
 
@@ -54,7 +54,7 @@ class LevelObjectFactory:
         assert self.graphics_set is not None
         level_object = LevelObjectController.from_data(
             data=data,
-            object_set=ObjectSet(self.object_set),
+            object_set=Tileset(self.object_set),
             palette_group=self.palette_group,
             pattern_table=self.graphics_set,
             objects_ref=self.objects_ref,

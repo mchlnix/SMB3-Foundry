@@ -16,7 +16,7 @@ from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
-from foundry.game.ObjectSet import ObjectSet
+from foundry.game.Tileset import Tileset
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
@@ -152,13 +152,13 @@ class LevelDrawer:
         return background_routine_by_objectset[level.object_set_number](level)
 
     def default_background(self, level: Level):
-        object_set = ObjectSet(level.object_set_number)
+        object_set = Tileset(level.object_set_number)
         level_rect = level.get_rect()
         return [object_set.background_block for _ in level_rect.position_indexes()]
 
     def sky_background(self, level: Level):
         blocks = []
-        object_set = ObjectSet(level.object_set_number)
+        object_set = Tileset(level.object_set_number)
         level_rect = level.get_rect()
         for pos in level_rect.positions():
             if pos.y != 0:
@@ -169,7 +169,7 @@ class LevelDrawer:
 
     def desert_background(self, level: Level):
         blocks = []
-        object_set = ObjectSet(level.object_set_number)
+        object_set = Tileset(level.object_set_number)
         level_rect = level.get_rect()
         for pos in level_rect.positions():
             if pos.y != GROUND - 1:
@@ -181,7 +181,7 @@ class LevelDrawer:
     def fortress_background(self, level: Level):
         blocks = []
         fortress_blocks = [0x14, 0x15, 0x16, 0x17]
-        object_set = ObjectSet(level.object_set_number)
+        object_set = Tileset(level.object_set_number)
         level_rect = level.get_rect()
         for pos in level_rect.positions():
             if pos.y == 0:

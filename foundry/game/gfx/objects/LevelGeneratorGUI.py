@@ -8,7 +8,7 @@ from PySide2.QtGui import QImage, QPainter
 
 from foundry.game.File import ROM
 
-from foundry.game.ObjectSet import ObjectSet
+from foundry.game.Tileset import Tileset
 from foundry.game.ObjectDefinitions import BitMapPicture
 
 from foundry.game.gfx.objects.Jump import Jump

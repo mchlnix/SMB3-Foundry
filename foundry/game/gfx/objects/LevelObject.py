@@ -6,7 +6,7 @@ from PySide2.QtGui import QImage, QPainter
 
 from foundry.game.File import ROM
 
-from foundry.game.ObjectSet import ObjectSet
+from foundry.game.Tileset import Tileset
 from foundry.game.ObjectDefinitions import BitMapPicture
 
 from foundry.game.gfx.objects.Jump import Jump
@@ -52,7 +52,7 @@ def get_minimal_icon_object(level_object):
 @dataclass
 class BlockGenerator:
     size: Size
-    object_set: ObjectSet
+    object_set: Tileset
     domain: int
     index: int
     overflow: list
@@ -82,7 +82,7 @@ class BlockGenerator:
         return self.bytes == 4
 
     @staticmethod
-    def _bytes(object_set: ObjectSet, type: int) -> int:
+    def _bytes(object_set: Tileset, type: int) -> int:
         """Returns if an object is 4 bytes from the object set from a given type"""
         return object_set.get_definition_of(type).bytes
 
@@ -126,7 +126,7 @@ class BlockGenerator:
     @classmethod
     def from_bytes(
             cls,
-            object_set: ObjectSet,
+            object_set: Tileset,
             data: bytearray,
             is_vertical: bool = False,
             object_factory_idx: int = 0) -> "BlockGenerator":
@@ -166,7 +166,7 @@ class BlockGenerator:
 class LevelObject(ObjectLike, BlockGenerator):
     def __init__(
             self,
-            object_set: ObjectSet,
+            object_set: Tileset,
             palette_group: List[List[int]],
             pattern_table: PatternTableHandler,
             objects_ref: List["LevelObjectController"],
@@ -206,7 +206,7 @@ class LevelObject(ObjectLike, BlockGenerator):
     def from_data(
             cls,
             data: bytearray,
-            object_set: ObjectSet,
+            object_set: Tileset,
             palette_group: List[List[int]],
             pattern_table: PatternTableHandler,
             objects_ref: List["LevelObjectController"],

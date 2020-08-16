@@ -5,7 +5,7 @@ from PySide2.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.Data import Mario3Level
 from foundry.game.File import ROM
-from foundry.game.ObjectSet import ObjectSet
+from foundry.game.Tileset import Tileset
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.Jump import Jump
@@ -61,7 +61,7 @@ class Level(LevelLike):
 
         self.attached_to_rom = True
 
-        self.object_set = ObjectSet(self.object_set_number)
+        self.object_set = Tileset(self.object_set_number)
 
         if qt:
             self.undo_stack = UndoStack()
@@ -733,7 +733,7 @@ class Level(LevelLike):
 
     def from_m3l(self, m3l_bytes: bytearray):
         world_number, level_number, self.object_set_number = m3l_bytes[:3]
-        self.object_set = ObjectSet(self.object_set_number)
+        self.object_set = Tileset(self.object_set_number)
 
         self.header_offset = self.enemy_offset = 0
 
