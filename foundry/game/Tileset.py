@@ -33,7 +33,7 @@ class Tileset:
 
         return self._internal_object_set.ending_graphic_offset
 
-    def get_object_byte_length(self, domain: int, object_id: int) -> int:
+    def get_generator_byte_length(self, domain: int, object_id: int) -> int:
         if self.number == ENEMY_OBJECT_SET:
             raise ValueError(f"This method shouldn't be called for the {self.name}")
 

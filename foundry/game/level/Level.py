@@ -208,7 +208,7 @@ class Level(LevelLike):
             domain = (obj_data[0] & 0b1110_0000) >> 5
 
             obj_id = obj_data[2]
-            has_length_byte = self.object_set.get_object_byte_length(domain, obj_id) == 4
+            has_length_byte = self.object_set.get_generator_byte_length(domain, obj_id) == 4
 
             if has_length_byte:
                 fourth_byte, data = data[0], data[1:]
