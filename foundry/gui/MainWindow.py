@@ -319,23 +319,23 @@ class MainWindow(QMainWindow):
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
         self.visual_object_toolbar = self.add_toolbox("Object Toolbar", self.object_toolbar, 1)
-        if SETTINGS["visual_object_toolbar"] != 0:
+        if get_setting("visual_object_toolbar", True) != 0:
             self.visual_object_toolbar.toggleViewAction().trigger()
 
         self.compact_object_toolbar = self.add_toolbox("Object Dropdown Toolbar", self.object_dropdown, 2)
-        if SETTINGS["compact_object_toolbar"] != 0:
+        if get_setting("compact_object_toolbar", True) != 0:
             self.compact_object_toolbar.toggleViewAction().trigger()
 
         self.object_attribute_toolbar = self.add_toolbox("Level Spinner Toolbar", self.spinner_panel, 2)
-        if SETTINGS["object_attribute_toolbar"] != 0:
+        if get_setting("object_attribute_toolbar", True) != 0:
             self.object_attribute_toolbar.toggleViewAction().trigger()
 
         self.bytes_counter_toolbar = self.add_toolbox("Size Toolbar", [self.level_size_bar, self.enemy_size_bar], 2)
-        if SETTINGS["bytes_counter_toolbar"] != 0:
+        if get_setting("bytes_counter_toolbar", True) != 0:
             self.bytes_counter_toolbar.toggleViewAction().trigger()
 
         self.object_list_toolbar = self.add_toolbox("Level Info", splitter, 2)
-        if SETTINGS["object_list_toolbar"] != 0:
+        if get_setting("object_list_toolbar", True) != 0:
             self.object_list_toolbar.toggleViewAction().trigger()
 
         menu_toolbar = QToolBar("Menu Toolbar", self)
