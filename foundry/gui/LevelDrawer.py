@@ -76,7 +76,6 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.draw_invisible_items = SETTINGS["draw_invisible_items"]
         self.transparency = SETTINGS["block_transparency"]
         self.background_enabled = SETTINGS["background_enabled"]
         self.tsa_data = None
@@ -355,7 +354,7 @@ class LevelDrawer:
                 painter.drawImage(arrow_pos, ITEM_ARROW.scaled(self.block_length, self.block_length))
 
             elif "invisible" in name:
-                if not self.draw_invisible_items:
+                if not get_setting("draw_invisible_items", True):
                     continue
 
                 if "coin" in name:
@@ -366,7 +365,7 @@ class LevelDrawer:
                     image = EMPTY_IMAGE
 
             elif "silver coins" in name:
-                if not self.draw_invisible_items:
+                if not get_setting("draw_invisible_items", True):
                     continue
 
                 image = SILVER_COIN
