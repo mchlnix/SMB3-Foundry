@@ -332,7 +332,7 @@ class LevelObjectController(ObjectLike):
 
     @property
     def tsa_data(self):
-        return ROM.get_tsa_data(self.level_object.object_set.object_set_number)
+        return ROM.get_tsa_data(self.level_object.object_set.index)
 
     @property
     def width(self):

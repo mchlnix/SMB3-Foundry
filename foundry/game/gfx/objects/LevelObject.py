@@ -235,7 +235,7 @@ class LevelObject(ObjectLike, BlockGenerator):
 
     @property
     def tsa_data(self) -> bytearray:
-        return ROM.get_tsa_data(self.object_set.object_set_number)
+        return ROM.get_tsa_data(self.object_set.index)
 
     @property
     def bmp(self) -> BitMapPicture:
@@ -527,7 +527,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             15: self.default_background
         }
 
-        return background_routine_by_objectset[self.object_set.object_set_number]()
+        return background_routine_by_objectset[self.object_set.index]()
 
     def default_background(self) -> List[int]:
         return [self.object_set.background_block for _ in range(16 * 15 * 27)]

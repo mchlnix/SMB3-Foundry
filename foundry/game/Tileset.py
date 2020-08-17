@@ -6,7 +6,7 @@ ENEMY_OBJECT_SET = 16
 
 class Tileset:
     def __init__(self, object_set_number: int):
-        self.object_set_number = object_set_number
+        self.index = object_set_number
 
         self._internal_object_set = _ObjectSet(object_set_number)
 
@@ -40,7 +40,7 @@ class Tileset:
         return self._internal_object_set.object_length(domain, object_id)
 
     def __str__(self):
-        return f"Tileset({self.object_set_number}) aka {self.name}"
+        return f"Tileset({self.index}) aka {self.name}"
 
     def __repr__(self):
-        return f"Tileset({self.object_set_number})"
+        return f"Tileset({self.index})"
