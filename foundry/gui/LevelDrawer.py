@@ -76,7 +76,6 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
         self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
         self.draw_invisible_items = SETTINGS["draw_invisible_items"]
         self.transparency = SETTINGS["block_transparency"]
@@ -266,7 +265,7 @@ class LevelDrawer:
 
             # pipe entries
             if "pipe" in name and "can go" in name:
-                if not self.draw_jumps_on_objects:
+                if not get_setting("draw_jump_on_objects", True):
                     continue
 
                 fill_object = False
