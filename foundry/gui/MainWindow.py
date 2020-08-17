@@ -447,10 +447,10 @@ class MainWindow(QMainWindow):
         if not self._put_current_level_to_level_1_1(path_to_temp_rom):
             return
 
-        arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
+        arguments = get_setting("instaplay_arguments", "").replace("%f", str(path_to_temp_rom))
         arguments = shlex.split(arguments, posix=False)
 
-        emu_path = pathlib.Path(SETTINGS["instaplay_emulator"])
+        emu_path = pathlib.Path(get_setting("instaplay_emulator", ""))
 
         if emu_path.is_absolute():
             if emu_path.exists():
@@ -461,7 +461,7 @@ class MainWindow(QMainWindow):
                 )
                 return
         else:
-            emulator = SETTINGS["instaplay_emulator"]
+            emulator = get_setting("instaplay_emulator", "")
 
         try:
             subprocess.run([emulator, *arguments])
