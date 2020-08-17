@@ -76,7 +76,6 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.draw_grid = SETTINGS["draw_grid"]
         self.draw_expansions = SETTINGS["draw_expansion"]
         self.draw_mario = SETTINGS["draw_mario"]
         self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
@@ -111,7 +110,7 @@ class LevelDrawer:
         if get_setting("draw_jumps", True):
             self._draw_jumps(painter, level)
 
-        if self.draw_grid:
+        if get_setting("draw_grid", False):
             self._draw_grid(painter, level)
 
     def _get_background(self, level: Level):
