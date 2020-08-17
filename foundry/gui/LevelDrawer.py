@@ -76,7 +76,6 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
         self.draw_invisible_items = SETTINGS["draw_invisible_items"]
         self.transparency = SETTINGS["block_transparency"]
         self.background_enabled = SETTINGS["background_enabled"]
@@ -324,7 +323,7 @@ class LevelDrawer:
 
             # "?" - blocks, note blocks, wooden blocks and bricks
             elif "'?' with" in name or "brick with" in name or "bricks with" in name or "block with" in name:
-                if not self.draw_items_in_blocks:
+                if not get_setting("draw_items_in_blocks", True):
                     continue
 
                 pos.setY(pos.y() - self.block_length)
