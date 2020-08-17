@@ -1,15 +1,12 @@
-from itertools import product
-from typing import Tuple
-
 from PySide2.QtCore import QPoint, QRect
 from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
+from foundry.core.util.add_selection_graphic_to_image import add_selection_graphic_to_image
 from foundry.gui.settings import SETTINGS
 from foundry import data_dir
 from foundry.game.File import ROM
-from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
+from foundry.game.gfx.Palette import load_palette
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
-from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
@@ -20,17 +17,6 @@ from foundry.game.Tileset import Tileset
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
-
-
-def add_selection_graphic_to_image(image: QImage) -> QImage:
-    alpha_mask = image.createAlphaMask()
-    alpha_mask.invertPixels()
-
-    selected_image = QImage(image)
-
-    apply_selection_overlay(selected_image, alpha_mask)
-
-    return selected_image
 
 
 def _load_from_png(x: int, y: int):
