@@ -22,7 +22,7 @@ png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
 
 
-def _make_image_selected(image: QImage) -> QImage:
+def make_image_selected(image: QImage) -> QImage:
     alpha_mask = image.createAlphaMask()
     alpha_mask.invertPixels()
 
@@ -402,7 +402,7 @@ class LevelDrawer:
                     painter.drawImage(adapted_pos, image)
 
                     if level_object.selected:
-                        painter.drawImage(adapted_pos, _make_image_selected(image))
+                        painter.drawImage(adapted_pos, make_image_selected(image))
 
             else:
                 image = image.scaled(self.block_length, self.block_length)
