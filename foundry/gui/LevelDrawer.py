@@ -2,7 +2,7 @@ from PySide2.QtCore import QPoint, QRect
 from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
 from foundry.core.util.add_selection_graphic_to_image import add_selection_graphic_to_image
-from foundry.gui.settings import SETTINGS
+from foundry.gui.settings import SETTINGS, observe_setting, get_setting
 from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import load_palette
@@ -76,7 +76,6 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.draw_jumps = SETTINGS["draw_jumps"]
         self.draw_grid = SETTINGS["draw_grid"]
         self.draw_expansions = SETTINGS["draw_expansion"]
         self.draw_mario = SETTINGS["draw_mario"]
@@ -109,7 +108,7 @@ class LevelDrawer:
         if self.draw_mario:
             self._draw_mario(painter, level)
 
-        if self.draw_jumps:
+        if get_setting("draw_jumps", True):
             self._draw_jumps(painter, level)
 
         if self.draw_grid:
