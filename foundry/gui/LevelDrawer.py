@@ -76,7 +76,6 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.draw_mario = SETTINGS["draw_mario"]
         self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
         self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
         self.draw_invisible_items = SETTINGS["draw_invisible_items"]
@@ -103,7 +102,7 @@ class LevelDrawer:
         if get_setting("draw_expansion", True):
             self._draw_expansions(painter, level)
 
-        if self.draw_mario:
+        if get_setting("draw_mario", True):
             self._draw_mario(painter, level)
 
         if get_setting("draw_jumps", True):
