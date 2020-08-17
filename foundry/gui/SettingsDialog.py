@@ -15,9 +15,9 @@ from PySide2.QtWidgets import (
 from foundry import icon, icon_dir
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.settings import (
-    RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, load_settings, save_settings, DRACULA_STYLE_SET, RETRO_STYLE_SET,
-    get_setting, set_setting
+    load_settings, save_settings, get_setting, set_setting
 )
+from foundry.core.util import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, DRACULA_STYLE_SET, RETRO_STYLE_SET
 
 load_settings()
 

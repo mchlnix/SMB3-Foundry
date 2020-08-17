@@ -23,7 +23,8 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.SelectionSquare import SelectionSquare
-from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, get_setting
+from foundry.gui.settings import get_setting
+from foundry.core.util import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK
 
 from foundry.game.Position import Position
 

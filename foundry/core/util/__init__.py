@@ -1,3 +1,5 @@
+import pathlib
+
 RELEASES_LINK = "https://github.com/mchlnix/SMB3-Foundry/releases"
 FEATURE_VIDEO_LINK = "https://www.youtube.com/watch?v=7_22cAffMmE"
 GIT_LINK = "https://github.com/mchlnix/SMB3-Foundry"
@@ -38,3 +40,9 @@ WORLD_MAP_SCREEN_SIZE = WORLD_MAP_HEIGHT * SCREEN_WIDTH  # bytes
 WORD_BYTE_SIZE = 2  # byte
 OBJECT_BASE_OFFSET = ROM_HEADER_OFFSET  # + 1
 WORLD_LAYOUT_LIST_OFFSET = WORLD_DATA_OFFSET + 0xA598
+RESIZE_LEFT_CLICK = "LMB"
+RESIZE_RIGHT_CLICK = "RMB"
+DRACULA_STYLE_SET = "DRACULA"
+RETRO_STYLE_SET = "RETRO"
+default_settings_dir = pathlib.Path.home() / ".smb3foundry"
+default_settings_path = default_settings_dir / "settings"

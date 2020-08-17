@@ -1,19 +1,12 @@
 import json
-import pathlib
 from typing import Union, Callable, Dict
 
 from foundry.core.Action.Action import Action
 from foundry.core.State.State import State
+from foundry.core.util import default_settings_dir, default_settings_path
 
-RESIZE_LEFT_CLICK = "LMB"
-RESIZE_RIGHT_CLICK = "RMB"
-DRACULA_STYLE_SET = "DRACULA"
-RETRO_STYLE_SET = "RETRO"
-
-default_settings_dir = pathlib.Path.home() / ".smb3foundry"
 default_settings_dir.mkdir(parents=True, exist_ok=True)
 
-default_settings_path = default_settings_dir / "settings"
 SETTINGS = {}
 
 
