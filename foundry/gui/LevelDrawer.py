@@ -76,7 +76,6 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.background_enabled = SETTINGS["background_enabled"]
         self.tsa_data = None
 
         self.block_length = Block.default_size
