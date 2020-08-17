@@ -76,7 +76,6 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.transparency = SETTINGS["block_transparency"]
         self.background_enabled = SETTINGS["background_enabled"]
         self.tsa_data = None
 
@@ -192,7 +191,8 @@ class LevelDrawer:
 
     def get_blocks(self, level, force=False):
         if len(self.block_quick) == 0 or self.block_quick_object_set != level.object_set_number or self.block_length != \
-                self.block_quick_block_length or self.block_transparency != self.transparency or force:
+                self.block_quick_block_length or self.block_transparency != get_setting("block_transparency", True) \
+                or force:
             self.block_quick_object_set = level.object_set_number
             palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
             tsa_data = ROM.get_tsa_data(level.object_set_number)
@@ -200,11 +200,11 @@ class LevelDrawer:
             blocks = []
             for i in range(0xFF):
                 blocks.append(Block.from_rom(i, palette_group, graphics_set, tsa_data).qpixmap_custom(
-                    self.block_length, self.block_length, transparent=self.transparency
+                    self.block_length, self.block_length, transparent=get_setting("block_transparency", True)
                 ))
             self.block_quick_block_length = self.block_length
             self.block_quick = blocks
-            self.block_transparency = self.transparency
+            self.block_transparency = get_setting("block_transparency", True)
 
         return self.block_quick
 
@@ -242,7 +242,7 @@ class LevelDrawer:
             if isinstance(level_object, LevelObjectController):
                 continue
             level_object.render()
-            level_object.draw(painter, self.block_length, self.transparency)
+            level_object.draw(painter, self.block_length, get_setting("block_transparency", True))
 
     def _draw_overlays(self, painter: QPainter, level: Level):
         painter.save()
