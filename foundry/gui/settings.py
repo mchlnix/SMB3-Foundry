@@ -10,7 +10,7 @@ default_settings_dir.mkdir(parents=True, exist_ok=True)
 SETTINGS = {}
 
 
-def watch_setting(name: str, default_value: Union[bool, int, float, str], observer: Callable) -> None:
+def observe_setting(name: str, default_value: Union[bool, int, float, str], observer: Callable) -> None:
     """Observes a setting"""
     if name not in SETTINGS:
         SETTINGS.update({name: State(name, default_value, Action)})
