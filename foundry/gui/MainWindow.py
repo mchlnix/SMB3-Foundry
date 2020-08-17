@@ -741,19 +741,19 @@ class MainWindow(QMainWindow):
             self.level_view.draw_invisible_items = checked
         elif item_id == ID_VISUAL_OBJECT_TOOLBAR:
             self.visual_object_toolbar.toggleViewAction().trigger()
-            SETTINGS["visual_object_toolbar"] = not SETTINGS["visual_object_toolbar"]
+            set_setting("visual_object_toolbar", not get_setting("visual_object_toolbar", True))
         elif item_id == ID_OBJECT_ATTRIBUTE_TOOLBAR:
             self.object_attribute_toolbar.toggleViewAction().trigger()
-            SETTINGS["object_attribute_toolbar"] = not SETTINGS["object_attribute_toolbar"]
+            set_setting("object_attribute_toolbar", not get_setting("object_attribute_toolbar", True))
         elif item_id == ID_COMPACT_TOOLBAR:
             self.compact_object_toolbar.toggleViewAction().trigger()
-            SETTINGS["compact_object_toolbar"] = not SETTINGS["compact_object_toolbar"]
+            set_setting("compact_object_toolbar", not get_setting("compact_object_toolbar", True))
         elif item_id == ID_BYTES_COUNTER_TOOLBAR:
             self.bytes_counter_toolbar.toggleViewAction().trigger()
-            SETTINGS["bytes_counter_toolbar"] = not SETTINGS["bytes_counter_toolbar"]
+            set_setting("bytes_counter_toolbar", not get_setting("bytes_counter_toolbar", True))
         elif item_id == ID_OBJECT_LIST_TOOLBAR:
             self.object_list_toolbar.toggleViewAction().trigger()
-            SETTINGS["object_list_toolbar"] = not SETTINGS["object_list_toolbar"]
+            set_setting("object_list_toolbar", not get_setting("object_list_toolbar", True))
 
         SETTINGS["draw_mario"] = self.level_view.draw_mario
         SETTINGS["draw_jumps"] = self.level_view.draw_jumps
