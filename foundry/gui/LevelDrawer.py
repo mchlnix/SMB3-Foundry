@@ -76,7 +76,6 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.draw_expansions = SETTINGS["draw_expansion"]
         self.draw_mario = SETTINGS["draw_mario"]
         self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
         self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
@@ -101,7 +100,7 @@ class LevelDrawer:
 
         self._draw_overlays(painter, level)
 
-        if self.draw_expansions:
+        if get_setting("draw_expansion", True):
             self._draw_expansions(painter, level)
 
         if self.draw_mario:
@@ -416,7 +415,7 @@ class LevelDrawer:
             if level_object.selected:
                 painter.drawRect(level_object.get_rect(self.block_length))
 
-            if self.draw_expansions:
+            if get_setting("draw_expansion", True):
                 painter.save()
 
                 painter.setPen(Qt.NoPen)
