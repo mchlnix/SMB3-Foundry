@@ -142,36 +142,16 @@ class MainWindow(QMainWindow):
         self.file_menu.save_asm6_action._action.attach_observer(self.save_asm6)
         self.menuBar().addMenu(self.file_menu)
 
-        """
-        edit_menu = wx.Menu()
-
-        edit_menu.Append(ID_EDIT_LEVEL, "&Edit Level", "")
-        edit_menu.Append(ID_EDIT_OBJ_DEFS, "&Edit Object Definitions", "")
-        edit_menu.Append(ID_EDIT_PALETTE, "&Edit Palette", "")
-        edit_menu.Append(ID_EDIT_GRAPHICS, "&Edit Graphics", "")
-        edit_menu.Append(ID_EDIT_MISC, "&Edit Miscellaneous", "")
-        edit_menu.AppendSeparator()
-        edit_menu.Append(ID_FREE_FORM_MODE, "&Free form Mode", "")
-        edit_menu.Append(ID_LIMIT_SIZE, "&Limit Size", "")
-        """
-
         level_menu = QMenu("Level")
 
         select_level_action = level_menu.addAction("&Select Level")
         select_level_action.triggered.connect(self.open_level_selector)
 
-        """
-        level_menu.Append(ID_GOTO_NEXT_AREA, "&Go to next Area", "")
-        level_menu.AppendSeparator()
-        """
         self.reload_action = level_menu.addAction("&Reload Level")
         self.reload_action.triggered.connect(self.reload_level)
         level_menu.addSeparator()
         self.edit_header_action = level_menu.addAction("&Edit Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
-        """
-        level_menu.Append(ID_EDIT_POINTERS, "&Edit Pointers", "")
-        """
 
         self.menuBar().addMenu(level_menu)
 
@@ -181,17 +161,6 @@ class MainWindow(QMainWindow):
         view_blocks_action.triggered.connect(self.on_block_viewer)
         view_objects_action = object_menu.addAction("&View Objects")
         view_objects_action.triggered.connect(self.on_object_viewer)
-        """
-        object_menu.AppendSeparator()
-        object_menu.Append(ID_CLONE_OBJECT_ENEMY, "&Clone Object/Enemy", "")
-        object_menu.AppendSeparator()
-        object_menu.Append(ID_ADD_3_BYTE_OBJECT, "&Add 3 Byte Object", "")
-        object_menu.Append(ID_ADD_4_BYTE_OBJECT, "&Add 4 Byte Object", "")
-        object_menu.Append(ID_ADD_ENEMY, "&Add Enemy", "")
-        object_menu.AppendSeparator()
-        object_menu.Append(ID_DELETE_OBJECT_ENEMY, "&Delete Object/Enemy", "")
-        object_menu.Append(ID_DELETE_ALL, "&Delete All", "")
-        """
 
         self.menuBar().addMenu(object_menu)
 
@@ -231,17 +200,6 @@ class MainWindow(QMainWindow):
 
         view_menu.addSeparator()
         view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
-        """
-        view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
-        view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
-        view_menu.AppendSeparator()
-        view_menu.Append(ID_ZOOM, "&Zoom", "")
-        view_menu.AppendSeparator()
-        view_menu.Append(ID_USE_ROM_GRAPHICS, "&Use ROM Graphics", "")
-        view_menu.Append(ID_PALETTE, "&Palette", "")
-        view_menu.AppendSeparator()
-        view_menu.Append(ID_MORE, "&More", "")
-        """
 
         self.menuBar().addMenu(view_menu)
 
