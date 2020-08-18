@@ -24,11 +24,8 @@ from PySide2.QtWidgets import (
 )
 
 from foundry import (
-    discord_link,
-    feature_video_link,
     get_current_version_name,
     get_latest_version_name,
-    github_link,
     icon,
     open_url,
     releases_link,
@@ -63,54 +60,17 @@ from smb3parse.util.rom import Rom as SMB3Rom
 from foundry.gui.QMenus.Menu.Menu import Menu
 from foundry.core.Action.ActionSelectFileToOpen import ActionSelectFileToOpen
 from foundry.core.Action.ActionSafe import ActionSafe
-from foundry.core.util import ROM_FILE_FILTER, IMG_FILE_FILTER
+from foundry.core.util import ROM_FILE_FILTER, IMG_FILE_FILTER, ID_GRID_LINES, ID_TRANSPARENCY, ID_JUMPS, ID_MARIO, \
+    ID_RESIZE_TYPE, ID_JUMP_OBJECTS, ID_ITEM_BLOCKS, ID_INVISIBLE_ITEMS, ID_BACKGROUND_ENABLED, \
+    ID_VISUAL_OBJECT_TOOLBAR, ID_OBJECT_ATTRIBUTE_TOOLBAR, ID_COMPACT_TOOLBAR, ID_BYTES_COUNTER_TOOLBAR, \
+    ID_OBJECT_LIST_TOOLBAR, CHECKABLE_MENU_ITEMS, ID_PROP
 from foundry.game.File import load_from_file
 from foundry.gui.QMenus.Menu.MenuFile import FileMenu
 from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
 from foundry.gui.QMenus.MenuAction.MenuActionSettings import MenuActionSettings
 
-ID_RELOAD_LEVEL = 303
-
-ID_GRID_LINES = 501
-ID_TRANSPARENCY = 508
-ID_JUMPS = 509
-ID_MARIO = 510
-ID_RESIZE_TYPE = 511
-ID_JUMP_OBJECTS = 512
-ID_ITEM_BLOCKS = 513
-ID_INVISIBLE_ITEMS = 514
-ID_BACKGROUND_ENABLED = 515
-
-ID_VISUAL_OBJECT_TOOLBAR = 600
-ID_OBJECT_ATTRIBUTE_TOOLBAR = 601
-ID_COMPACT_TOOLBAR = 602
-ID_BYTES_COUNTER_TOOLBAR = 603
-ID_OBJECT_LIST_TOOLBAR = 604
-
-CHECKABLE_MENU_ITEMS = [
-    ID_TRANSPARENCY,
-    ID_GRID_LINES,
-    ID_JUMPS,
-    ID_MARIO,
-    ID_RESIZE_TYPE,
-    ID_JUMP_OBJECTS,
-    ID_ITEM_BLOCKS,
-    ID_INVISIBLE_ITEMS,
-    ID_BACKGROUND_ENABLED,
-    ID_VISUAL_OBJECT_TOOLBAR,
-    ID_OBJECT_ATTRIBUTE_TOOLBAR,
-    ID_COMPACT_TOOLBAR,
-    ID_BYTES_COUNTER_TOOLBAR,
-    ID_OBJECT_LIST_TOOLBAR,
-]
-
-ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
 
 # mouse modes
-
-MODE_FREE = 0
-MODE_DRAG = 1
-MODE_RESIZE = 2
 
 
 class MainWindow(QMainWindow):
