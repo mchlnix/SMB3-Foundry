@@ -63,17 +63,11 @@ from smb3parse.util.rom import Rom as SMB3Rom
 from foundry.gui.QMenus.Menu.Menu import Menu
 from foundry.core.Action.ActionSelectFileToOpen import ActionSelectFileToOpen
 from foundry.core.Action.ActionSafe import ActionSafe
-from foundry.core.util import ROM_FILE_FILTER
+from foundry.core.util import ROM_FILE_FILTER, IMG_FILE_FILTER
 from foundry.game.File import load_from_file
 from foundry.gui.QMenus.Menu.MenuFile import FileMenu
 from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
 from foundry.gui.QMenus.MenuAction.MenuActionSettings import MenuActionSettings
-
-
-ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
-M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
-ASM6_FILE_FILER = "ASM files (*.asm);; All files (*)"
-IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 ID_RELOAD_LEVEL = 303
 
