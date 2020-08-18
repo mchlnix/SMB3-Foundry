@@ -119,35 +119,35 @@ class MainWindow(QMainWindow):
         view_menu.triggered.connect(self.on_menu)
 
         action = MenuActionSettings(view_menu, "draw_mario", "Mario")
-        action.add_observer(lambda value: setattr(self.level_view, "draw_mario", value))
+        action.add_observer(lambda value: set_setting("draw_mario", value))
 
         action = MenuActionSettings(view_menu, "draw_jump_on_objects", "Warps")
-        action.add_observer(lambda value: setattr(self.level_view, "draw_jumps_on_objects", value))
+        action.add_observer(lambda value: set_setting("draw_jumps_on_objects", value))
 
         action = MenuActionSettings(view_menu, "draw_items_in_blocks", "Items in Blocks")
-        action.add_observer(lambda value: setattr(self.level_view, "draw_items_in_blocks", value))
+        action.add_observer(lambda value: set_setting("draw_items_in_blocks", value))
 
         action = MenuActionSettings(view_menu, "draw_invisible_items", "Invisible items")
-        action.add_observer(lambda value: setattr(self.level_view, "draw_invisible_items", value))
+        action.add_observer(lambda value: set_setting("draw_invisible_items", value))
 
         view_menu.addSeparator()
 
         action = MenuActionSettings(view_menu, "draw_jumps", "Jump Zones")
-        action.add_observer(lambda value: setattr(self.level_view, "draw_jumps", value))
+        action.add_observer(lambda value: set_setting("draw_jumps", value))
 
         action = MenuActionSettings(view_menu, "draw_grid", "Grid Lines")
-        action.add_observer(lambda value: setattr(self.level_view, "draw_grid", value))
+        action.add_observer(lambda value: set_setting("draw_grid", value))
 
         action = MenuActionSettings(view_menu, "draw_expansion", "Reisze Type")
-        action.add_observer(lambda value: setattr(self.level_view, "draw_expansions", value))
+        action.add_observer(lambda value: set_setting("draw_expansions", value))
 
         view_menu.addSeparator()
 
         action = MenuActionSettings(view_menu, "block_transparency", "Block Transparency")
-        action.add_observer(lambda value: setattr(self.level_view, "transparency", value))
+        action.add_observer(lambda value: set_setting("transparency", value))
 
         action = MenuActionSettings(view_menu, "background_enabled", "Background")
-        action.add_observer(lambda value: setattr(self.level_view, "background_enabled", value))
+        action.add_observer(lambda value: set_setting("background_enabled", value))
 
         view_menu.addSeparator()
         view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
