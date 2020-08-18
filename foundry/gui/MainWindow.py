@@ -159,22 +159,14 @@ class MainWindow(QMainWindow):
 
         tool_menu.addSection("Object Selectors")
 
-        action = MenuActionSettings(tool_menu, "visual_object_toolbar", "Visual Object Selector")
-        #action.add_observer(self.visual_object_toolbar.toggleViewAction().trigger)
-
-        action = MenuActionSettings(tool_menu, "compact_object_toolbar", "Compact Object Selector")
-        #action.add_observer(self.compact_object_toolbar.toggleViewAction().trigger)
-
-        action = MenuActionSettings(tool_menu, "object_attribute_toolbar", "Object Attribute Toolbar")
-        #action.add_observer(self.object_attribute_toolbar.toggleViewAction().trigger)
+        MenuActionSettings(tool_menu, "visual_object_toolbar", "Visual Object Selector")
+        MenuActionSettings(tool_menu, "compact_object_toolbar", "Compact Object Selector")
+        MenuActionSettings(tool_menu, "object_attribute_toolbar", "Object Attribute Toolbar")
 
         tool_menu.addSeparator()
 
-        action = MenuActionSettings(tool_menu, "bytes_counter_toolbar", "Byte Counter")
-        #action.add_observer(self.bytes_counter_toolbar.toggleViewAction().trigger)
-
-        action = MenuActionSettings(tool_menu, "object_list_toolbar", "Object List")
-        #action.add_observer(self.object_list_toolbar.toggleViewAction().trigger)
+        MenuActionSettings(tool_menu, "bytes_counter_toolbar", "Byte Counter")
+        MenuActionSettings(tool_menu, "object_list_toolbar", "Object List")
 
         self.menuBar().addMenu(tool_menu)
 
