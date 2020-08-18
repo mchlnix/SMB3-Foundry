@@ -755,16 +755,6 @@ class MainWindow(QMainWindow):
             self.object_list_toolbar.toggleViewAction().trigger()
             set_setting("object_list_toolbar", not get_setting("object_list_toolbar", True))
 
-        SETTINGS["draw_mario"] = self.level_view.draw_mario
-        SETTINGS["draw_jumps"] = self.level_view.draw_jumps
-        SETTINGS["draw_grid"] = self.level_view.draw_grid
-        SETTINGS["draw_expansion"] = self.level_view.draw_expansions
-        SETTINGS["draw_jump_on_objects"] = self.level_view.draw_jumps_on_objects
-        SETTINGS["draw_items_in_blocks"] = self.level_view.draw_items_in_blocks
-        SETTINGS["draw_invisible_items"] = self.level_view.draw_invisible_items
-        SETTINGS["block_transparency"] = self.level_view.transparency
-        SETTINGS["background_enabled"] = self.level_view.background_enabled
-
         save_settings()
 
     @undoable
