@@ -70,9 +70,6 @@ from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
 from foundry.gui.QMenus.MenuAction.MenuActionSettings import MenuActionSettings
 
 
-# mouse modes
-
-
 class MainWindow(QMainWindow):
     def __init__(self, path_to_rom=""):
         super(MainWindow, self).__init__()
