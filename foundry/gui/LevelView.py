@@ -64,16 +64,6 @@ class LevelView(QWidget):
 
         self.level_drawer = LevelDrawer()
 
-        self.draw_grid = get_setting("draw_grid", True)
-        self.draw_jumps = get_setting("draw_jumps", True)
-        self.draw_expansions = get_setting("draw_expansion", True)
-        self.draw_mario = get_setting("draw_mario", True)
-        self.transparency = get_setting("block_transparency", True)
-        self.background_enabled = get_setting("background_enabled", True)
-        self.draw_jumps_on_objects = get_setting("draw_jump_on_objects", True)
-        self.draw_items_in_blocks = get_setting("draw_items_in_blocks", True)
-        self.draw_invisible_items = get_setting("draw_invisible_items", True)
-
         self.zoom = 1
         self.block_length = Block.image_length * self.zoom
 
@@ -110,78 +100,6 @@ class LevelView(QWidget):
             ""
             "If all else fails, click the play button up top to see your level in game in seconds."
         )
-
-    @property
-    def background_enabled(self):
-        return self.level_drawer.background_enabled
-
-    @background_enabled.setter
-    def background_enabled(self, value):
-        self.level_drawer.background_enabled = value
-
-    @property
-    def transparency(self):
-        return self.level_drawer.transparency
-
-    @transparency.setter
-    def transparency(self, value):
-        self.level_drawer.transparency = value
-
-    @property
-    def draw_grid(self):
-        return self.level_drawer.draw_grid
-
-    @draw_grid.setter
-    def draw_grid(self, value):
-        self.level_drawer.draw_grid = value
-
-    @property
-    def draw_jumps(self):
-        return self.level_drawer.draw_jumps
-
-    @draw_jumps.setter
-    def draw_jumps(self, value):
-        self.level_drawer.draw_jumps = value
-
-    @property
-    def draw_mario(self):
-        return self.level_drawer.draw_mario
-
-    @draw_mario.setter
-    def draw_mario(self, value):
-        self.level_drawer.draw_mario = value
-
-    @property
-    def draw_expansions(self):
-        return self.level_drawer.draw_expansions
-
-    @draw_expansions.setter
-    def draw_expansions(self, value):
-        self.level_drawer.draw_expansions = value
-
-    @property
-    def draw_jumps_on_objects(self):
-        return self.level_drawer.draw_jumps_on_objects
-
-    @draw_jumps_on_objects.setter
-    def draw_jumps_on_objects(self, value):
-        self.level_drawer.draw_jumps_on_objects = value
-
-    @property
-    def draw_items_in_blocks(self):
-        return self.level_drawer.draw_items_in_blocks
-
-    @draw_items_in_blocks.setter
-    def draw_items_in_blocks(self, value):
-        self.level_drawer.draw_items_in_blocks = value
-
-    @property
-    def draw_invisible_items(self):
-        return self.level_drawer.draw_invisible_items
-
-    @draw_invisible_items.setter
-    def draw_invisible_items(self, value):
-        self.level_drawer.draw_invisible_items = value
 
     def mousePressEvent(self, event: QMouseEvent):
         pressed_button = event.button()
