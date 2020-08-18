@@ -2,7 +2,7 @@
 
 from foundry.gui.QMenus import Menu
 
-from foundry.core.util import ROM_FILE_FILTER, M3L_FILE_FILTER, ASM6_FILE_FILER
+from foundry.core.util import ROM_FILE_FILTER, M3L_FILE_FILTER, ASM6_FILE_FILTER
 
 from foundry.core.Action.ActionSaveAs import ActionSaveAs
 from foundry.core.Action.ActionSafe import ActionSafe
@@ -41,4 +41,4 @@ class MenuElementSaveAs(AbstractMenuElement):
     @classmethod
     def from_asm6_file(cls, parent: Menu, menu_name: str = "Save ASM6 as", add_action: bool = True) -> "MenuElementSaveAs":
         """Makes a menu element open for a asm6"""
-        return cls(parent, "Save ASM6 as", ASM6_FILE_FILER, "save_asm6_as", menu_name, add_action)
+        return cls(parent, "Save ASM6 as", ASM6_FILE_FILTER, "save_asm6_as", menu_name, add_action)

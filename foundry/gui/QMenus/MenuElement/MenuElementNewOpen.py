@@ -2,7 +2,7 @@
 
 from foundry.gui.QMenus import Menu
 
-from foundry.core.util import ROM_FILE_FILTER, M3L_FILE_FILTER, ASM6_FILE_FILER
+from foundry.core.util import ROM_FILE_FILTER, M3L_FILE_FILTER, ASM6_FILE_FILTER
 
 from foundry.core.Action.ActionSelectFileToOpen import ActionSelectFileToOpen
 from foundry.core.Action.ActionSafe import ActionSafe
@@ -41,4 +41,4 @@ class MenuElementOpen(AbstractMenuElement):
     @classmethod
     def from_asm6_file(cls, parent: Menu, menu_name: str = "Open ASM6", add_action: bool = True) -> "MenuElementOpen":
         """Makes a menu element open for a asm6"""
-        return cls(parent, "Select ASM6", ASM6_FILE_FILER, "open_asm6_file", menu_name, add_action)
+        return cls(parent, "Select ASM6", ASM6_FILE_FILTER, "open_asm6_file", menu_name, add_action)

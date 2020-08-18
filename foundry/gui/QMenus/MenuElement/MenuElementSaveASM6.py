@@ -1,4 +1,4 @@
-from foundry.core.util import ASM6_FILE_FILER
+from foundry.core.util import ASM6_FILE_FILTER
 from foundry.gui.QMenus.MenuElement.AbstractMenuElementSave import AbstractMenuElementSave
 
 
@@ -17,4 +17,4 @@ class MenuElementSaveASM6(AbstractMenuElementSave):
     @property
     def file_filter(self) -> str:
         """Provides the filter for finding the desired file"""
-        return ASM6_FILE_FILER
+        return ASM6_FILE_FILTER
