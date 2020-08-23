@@ -38,7 +38,7 @@ class SettingsContainer:
         return f"{self.__class__.__name__}(name={self.name}, settings{self.settings_states})"
 
     @classmethod
-    def from_json_file(cls, name: str, base_dir: str, force: bool = False) -> "SettingsContainer":
+    def from_json_file(cls, name: str, base_dir: str = default_settings_dir, force: bool = False) -> "SettingsContainer":
         """Loads a container from a file"""
         import json
         try:
