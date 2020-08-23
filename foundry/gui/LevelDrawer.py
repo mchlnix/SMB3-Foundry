@@ -97,13 +97,70 @@ class LevelDrawer:
 
     def draw(self, painter: QPainter, level: Level, force=False):
         """The draw routine for LevelDrawer"""
+        transparency: bool = _level_drawer_container.safe_get_setting("block_transparency", True)
 
         def draw_objects():
             """Draws the objects of the level"""
+
+            def get_objects(blocks, level_rect):
+                width = level_rect.abs_size.width
+                for level_object in level.get_all_objects():
+
+                    if not isinstance(level_object, LevelObjectController):
+                        continue
+                    for block in level_object.get_blocks_and_positions():
+                        if block[0] >= 0:
+                            try:
+                                blocks[block[1].x + block[1].y * width] = block[0]
+                            except IndexError:
+                                pass
+                return blocks
+
+
+            def get_blocks(level, force=False):
+                #  todo: Convert if statement to an observable that gets updated automatically
+                if len(
+                        self.block_quick) == 0 or self.block_quick_object_set != level.object_set_number or self.block_length != \
+                        self.block_quick_block_length or self.block_transparency != _level_drawer_container.safe_get_setting(
+                    "block_transparency", True) \
+                        or force:
+                    self.block_quick_object_set = level.object_set_number
+                    palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
+                    tsa_data = ROM.get_tsa_data(level.object_set_number)
+                    graphics_set = PatternTableHandler.from_tileset(level.header.graphic_set_index)
+                    blocks = []
+                    for i in range(0xFF):
+                        blocks.append(Block.from_rom(i, palette_group, graphics_set, tsa_data).qpixmap_custom(
+                            self.block_length, self.block_length,
+                            transparent=_level_drawer_container.safe_get_setting("block_transparency", True)
+                        ))
+                    self.block_quick_block_length = self.block_length
+                    self.block_quick = blocks
+                    self.block_transparency = _level_drawer_container.safe_get_setting("block_transparency", True)
+
+                return self.block_quick
+
+            def render_blocks(blocks, pixmaps, level_rect):
+                current_block = None
+                brushes = [QBrush(pix) for pix in pixmaps]
+                x_length = self.block_length * level_rect.abs_size.width
+                painter.setPen(Qt.NoPen)
+                x, y = -self.block_length, -self.block_length
+                for idx, block in enumerate(blocks):
+                    x += self.block_length
+                    x %= x_length
+                    if x == 0:
+                        y += self.block_length
+                    if current_block != blocks[idx]:
+                        current_block = blocks[idx]
+                        painter.setBrush(brushes[blocks[idx]])
+                    painter.drawRect(x, y, self.block_length, self.block_length)
+                painter.setBrush(Qt.NoBrush)
+
             level_rect = level.get_rect()
-            blocks = self._get_objects(level, self._get_background(level), level_rect)
-            pixmaps = self.get_blocks(level, force)
-            self.render_blocks(painter, blocks, pixmaps, level_rect)
+            blocks = get_objects(self._get_background(level), level_rect)
+            pixmaps = get_blocks(level, force)
+            render_blocks(blocks, pixmaps, level_rect)
 
             for level_object in level.get_all_objects():
                 if level_object.selected:
@@ -116,8 +173,7 @@ class LevelDrawer:
                 if isinstance(level_object, LevelObjectController):
                     continue
                 level_object.render()
-                level_object.draw(painter, self.block_length,
-                                  _level_drawer_container.safe_get_setting("block_transparency", True))
+                level_object.draw(painter, self.block_length, transparency)
 
         draw_objects()
 
@@ -136,6 +192,7 @@ class LevelDrawer:
             self._draw_grid(painter, level)
 
     def _get_background(self, level: Level):
+        #  todo: Remove function to return premade background from plugin
         background_routine_by_objectset = {
             0: self.default_background,
             1: self.default_background,
@@ -202,57 +259,7 @@ class LevelDrawer:
                 blocks.append(object_set.background_block)
         return blocks
 
-    def _get_objects(self, level, blocks, level_rect):
-        width = level_rect.abs_size.width
-        for level_object in level.get_all_objects():
 
-            if not isinstance(level_object, LevelObjectController):
-                continue
-            for block in level_object.get_blocks_and_positions():
-                if block[0] >= 0:
-                    try:
-                        blocks[block[1].x + block[1].y * width] = block[0]
-                    except IndexError:
-                        pass
-        return blocks
-
-
-    def get_blocks(self, level, force=False):
-        #  todo: Convert if statement to an observable that gets updated automatically
-        if len(self.block_quick) == 0 or self.block_quick_object_set != level.object_set_number or self.block_length != \
-                self.block_quick_block_length or self.block_transparency != _level_drawer_container.safe_get_setting("block_transparency", True) \
-                or force:
-            self.block_quick_object_set = level.object_set_number
-            palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
-            tsa_data = ROM.get_tsa_data(level.object_set_number)
-            graphics_set = PatternTableHandler.from_tileset(level.header.graphic_set_index)
-            blocks = []
-            for i in range(0xFF):
-                blocks.append(Block.from_rom(i, palette_group, graphics_set, tsa_data).qpixmap_custom(
-                    self.block_length, self.block_length, transparent=_level_drawer_container.safe_get_setting("block_transparency", True)
-                ))
-            self.block_quick_block_length = self.block_length
-            self.block_quick = blocks
-            self.block_transparency = _level_drawer_container.safe_get_setting("block_transparency", True)
-
-        return self.block_quick
-
-    def render_blocks(self, painter, blocks, pixmaps, level_rect):
-        current_block = None
-        brushes = [QBrush(pix) for pix in pixmaps]
-        x_length = self.block_length * level_rect.abs_size.width
-        painter.setPen(Qt.NoPen)
-        x, y = -self.block_length, -self.block_length
-        for idx, block in enumerate(blocks):
-            x += self.block_length
-            x %= x_length
-            if x == 0:
-                y += self.block_length
-            if current_block != blocks[idx]:
-                current_block = blocks[idx]
-                painter.setBrush(brushes[blocks[idx]])
-            painter.drawRect(x, y, self.block_length, self.block_length)
-        painter.setBrush(Qt.NoBrush)
 
     def _draw_overlays(self, painter: QPainter, level: Level):
         painter.save()
