@@ -1,9 +1,10 @@
-from typing import List
+from typing import List, Union
 import numpy as np
 
 from foundry.game.File import ROM
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.drawable.Tile import Tile
+from foundry.game.gfx.Palette import PaletteSet
 
 TSA_BANK_0 = 0 * 256
 TSA_BANK_1 = 1 * 256
@@ -34,7 +35,7 @@ class Block(Tile):
     def from_rom(
             cls,
             block_index: int,
-            palette_group: List[List[int]],
+            palette_group: Union[PaletteSet, List[List[int]]],
             graphics_page: PatternTableHandler,
             tsa_data: bytes,
             mirrored=False
