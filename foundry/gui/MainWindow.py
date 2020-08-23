@@ -35,6 +35,7 @@ from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.LevelDrawer import _level_drawer_container
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.BlockViewer import BlockViewer
@@ -118,17 +119,17 @@ class MainWindow(QMainWindow):
         view_menu = Menu(parent=self, title="View")
         view_menu.triggered.connect(self.on_menu)
 
-        MenuActionSettings(view_menu, "draw_mario", "Mario")
-        MenuActionSettings(view_menu, "draw_jump_on_objects", "Warps")
-        MenuActionSettings(view_menu, "draw_items_in_blocks", "Items in Blocks")
-        MenuActionSettings(view_menu, "draw_invisible_items", "Invisible items")
+        MenuActionSettings(view_menu, "draw_mario", "Mario", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "draw_jump_on_objects", "Warps", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "draw_items_in_blocks", "Items in Blocks", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "draw_invisible_items", "Invisible items", container=_level_drawer_container)
         view_menu.addSeparator()
-        MenuActionSettings(view_menu, "draw_jumps", "Jump Zones")
-        MenuActionSettings(view_menu, "draw_grid", "Grid Lines")
-        MenuActionSettings(view_menu, "draw_expansion", "Reisze Type")
+        MenuActionSettings(view_menu, "draw_jumps", "Jump Zones", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "draw_grid", "Grid Lines", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "draw_expansion", "Reisze Type", container=_level_drawer_container)
         view_menu.addSeparator()
-        MenuActionSettings(view_menu, "block_transparency", "Block Transparency")
-        MenuActionSettings(view_menu, "background_enabled", "Background")
+        MenuActionSettings(view_menu, "block_transparency", "Block Transparency", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "background_enabled", "Background", container=_level_drawer_container)
         view_menu.addSeparator()
         view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
 

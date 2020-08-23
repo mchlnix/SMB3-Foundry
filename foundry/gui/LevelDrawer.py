@@ -2,7 +2,8 @@ from PySide2.QtCore import QPoint, QRect
 from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
 from foundry.core.util.add_selection_graphic_to_image import add_selection_graphic_to_image
-from foundry.gui.settings import get_setting
+from foundry.gui.settings import _main_container
+from foundry.core.Settings.SettingsContainer import SettingsContainer
 from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import load_palette
@@ -14,6 +15,11 @@ from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_W
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.game.Tileset import Tileset
+
+
+_level_drawer_container = SettingsContainer.from_json_file("level_drawer", force=True)
+_main_container.set_setting_container("level_drawer", _level_drawer_container)
+
 
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
@@ -94,16 +100,16 @@ class LevelDrawer:
 
         self._draw_overlays(painter, level)
 
-        if get_setting("draw_expansion", True):
+        if _level_drawer_container.safe_get_setting("draw_expansion", True):
             self._draw_expansions(painter, level)
 
-        if get_setting("draw_mario", True):
+        if _level_drawer_container.safe_get_setting("draw_mario", True):
             self._draw_mario(painter, level)
 
-        if get_setting("draw_jumps", True):
+        if _level_drawer_container.safe_get_setting("draw_jumps", True):
             self._draw_jumps(painter, level)
 
-        if get_setting("draw_grid", False):
+        if _level_drawer_container.safe_get_setting("draw_grid", False):
             self._draw_grid(painter, level)
 
     def _get_background(self, level: Level):
@@ -189,8 +195,9 @@ class LevelDrawer:
 
 
     def get_blocks(self, level, force=False):
+        #  todo: Convert if statement to an observable that gets updated automatically
         if len(self.block_quick) == 0 or self.block_quick_object_set != level.object_set_number or self.block_length != \
-                self.block_quick_block_length or self.block_transparency != get_setting("block_transparency", True) \
+                self.block_quick_block_length or self.block_transparency != _level_drawer_container.safe_get_setting("block_transparency", True) \
                 or force:
             self.block_quick_object_set = level.object_set_number
             palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
@@ -199,11 +206,11 @@ class LevelDrawer:
             blocks = []
             for i in range(0xFF):
                 blocks.append(Block.from_rom(i, palette_group, graphics_set, tsa_data).qpixmap_custom(
-                    self.block_length, self.block_length, transparent=get_setting("block_transparency", True)
+                    self.block_length, self.block_length, transparent=_level_drawer_container.safe_get_setting("block_transparency", True)
                 ))
             self.block_quick_block_length = self.block_length
             self.block_quick = blocks
-            self.block_transparency = get_setting("block_transparency", True)
+            self.block_transparency = _level_drawer_container.safe_get_setting("block_transparency", True)
 
         return self.block_quick
 
@@ -241,7 +248,7 @@ class LevelDrawer:
             if isinstance(level_object, LevelObjectController):
                 continue
             level_object.render()
-            level_object.draw(painter, self.block_length, get_setting("block_transparency", True))
+            level_object.draw(painter, self.block_length, _level_drawer_container.safe_get_setting("block_transparency", True))
 
     def _draw_overlays(self, painter: QPainter, level: Level):
         painter.save()
@@ -262,7 +269,7 @@ class LevelDrawer:
 
             # pipe entries
             if "pipe" in name and "can go" in name:
-                if not get_setting("draw_jump_on_objects", True):
+                if not _level_drawer_container.safe_get_setting("draw_jump_on_objects", True):
                     continue
 
                 fill_object = False
@@ -321,7 +328,7 @@ class LevelDrawer:
 
             # "?" - blocks, note blocks, wooden blocks and bricks
             elif "'?' with" in name or "brick with" in name or "bricks with" in name or "block with" in name:
-                if not get_setting("draw_items_in_blocks", True):
+                if not _level_drawer_container.safe_get_setting("draw_items_in_blocks", True):
                     continue
 
                 pos.setY(pos.y() - self.block_length)
@@ -353,7 +360,7 @@ class LevelDrawer:
                 painter.drawImage(arrow_pos, ITEM_ARROW.scaled(self.block_length, self.block_length))
 
             elif "invisible" in name:
-                if not get_setting("draw_invisible_items", True):
+                if not _level_drawer_container.safe_get_setting("draw_invisible_items", True):
                     continue
 
                 if "coin" in name:
@@ -364,7 +371,7 @@ class LevelDrawer:
                     image = EMPTY_IMAGE
 
             elif "silver coins" in name:
-                if not get_setting("draw_invisible_items", True):
+                if not _level_drawer_container.safe_get_setting("draw_invisible_items", True):
                     continue
 
                 image = SILVER_COIN
@@ -410,7 +417,7 @@ class LevelDrawer:
             if level_object.selected:
                 painter.drawRect(level_object.get_rect(self.block_length))
 
-            if get_setting("draw_expansion", True):
+            if _level_drawer_container.safe_get_setting("draw_expansion", True):
                 painter.save()
 
                 painter.setPen(Qt.NoPen)
