@@ -1,3 +1,5 @@
+
+from typing import List
 from PySide2.QtCore import QPoint, QRect
 from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
@@ -116,7 +118,7 @@ class LevelDrawer:
                 return blocks
 
 
-            def get_blocks(level, force=False):
+            def get_blocks(level: Level, force=False):
                 #  todo: Convert if statement to an observable that gets updated automatically
                 """
                 if self.block_quick_object_set != level.object_set_number or self.block_length != \
@@ -126,18 +128,21 @@ class LevelDrawer:
                 """
 
                 if self.request_render_level_blocks or force:
-                    palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
+                    palette_set = load_palette(level.object_set_number, level.header.object_palette_index)
                     tsa_data = ROM.get_tsa_data(level.object_set_number)
-                    graphics_set = PatternTableHandler.from_tileset(level.header.graphic_set_index)
+                    pattern_table = PatternTableHandler.from_tileset(level.header.graphic_set_index)
+
                     blocks = []
                     for i in range(0xFF):
-                        blocks.append(Block.from_rom(i, palette_group, graphics_set, tsa_data).qpixmap_custom(
-                            self.block_length, self.block_length,
-                            transparent=_level_drawer_container.safe_get_setting("block_transparency", True)
-                        ))
-                    self.block_quick_block_length = self.block_length
-                    self.block_transparency = _level_drawer_container.safe_get_setting("block_transparency", True)
+                        blocks.append(
+                            Block.from_rom(i, palette_set, pattern_table, tsa_data).qpixmap_custom(
+                                self.block_length,
+                                self.block_length,
+                                transparent=transparency
+                            )
+                        )
                     self.last_level_blocks = blocks
+
                 return self.last_level_blocks
 
             def render_blocks(blocks, pixmaps, level_rect):
