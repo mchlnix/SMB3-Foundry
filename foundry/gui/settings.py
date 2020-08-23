@@ -1,53 +1,37 @@
-import json
-from typing import Union, Callable, Dict
 
-from foundry.core.Action.Action import Action
-from foundry.core.State.State import State
-from foundry.core.util import default_settings_dir, default_settings_path
+
+from typing import Callable, Dict, Hashable
+
+from foundry.core.Settings.SettingsContainer import SettingsContainer
+from foundry.core.util import default_settings_dir
 
 default_settings_dir.mkdir(parents=True, exist_ok=True)
 
-SETTINGS = {}
+
+_main_container = SettingsContainer.from_json_file("main", default_settings_dir, True)
 
 
-def observe_setting(name: str, default_value: Union[bool, int, float, str], observer: Callable) -> None:
+def observe_setting(name: str, default_value: Hashable, observer: Callable) -> None:
     """Observes a setting"""
-    if name not in SETTINGS:
-        SETTINGS.update({name: State(name, default_value, Action)})
-    SETTINGS[name].observer.attach_observer(observer)
+    if name not in _main_container.settings_states:
+        _main_container.set_setting(name, default_value)
+    _main_container.observe_setting(name, observer)
 
 
-def get_setting(name: str, default_value: Union[bool, int, float, str]) -> Union[bool, int, float, str]:
+def get_setting(name: str, default_value: Hashable) -> Hashable:
     """Gets the correct setting or returns the default value"""
-    if name not in SETTINGS:
-        SETTINGS.update({name: State(name, default_value, Action)})
-    return SETTINGS[name].state
+    if name not in _main_container.settings_states:
+        _main_container.set_setting(name, default_value)
+    return _main_container.get_setting(name)
 
 
-def set_setting(name: str, value: Union[bool, int, float, str]) -> None:
+def set_setting(name: str, value: Hashable) -> None:
     """Sets the correct setting or creates it"""
-    if value is None:
-        raise NotImplementedError
-    print(name, value)
-    if name not in SETTINGS:
-        SETTINGS.update({name: State(name, value, Action)})
-    else:
-        SETTINGS[name].state = value
+    _main_container.set_setting(name, value)
 
 
 def load_settings():
     """Loads the known settings"""
-    if not default_settings_path.exists():
-        return
-
-    try:
-        with open(str(default_settings_path), "r") as settings_file:
-            settings_dict = json.loads(settings_file.read())
-    except json.JSONDecodeError:
-        return
-
-    for key, value in settings_dict.items():
-        set_setting(key, value)
 
 
 def convert_settings(settings: Dict) -> dict:
@@ -60,5 +44,4 @@ def convert_settings(settings: Dict) -> dict:
 
 def save_settings():
     """Saves the settings"""
-    with open(str(default_settings_path), "w") as settings_file:
-        settings_file.write(json.dumps(convert_settings(SETTINGS), indent=4, sort_keys=True))
+    _main_container.save_to_json(default_settings_dir)
