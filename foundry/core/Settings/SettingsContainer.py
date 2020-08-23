@@ -75,6 +75,14 @@ class SettingsContainer:
                 self._create_setting_container(name)
         return self.settings_containers[name]()
 
+    def safe_get_setting(self, name: str, default_value: Hashable) -> Hashable:
+        """Returns a given setting no matter what"""
+        try:
+            return self.get_setting(name)
+        except KeyError:
+            self.set_setting(name, default_value)
+            return self.get_setting(name)
+
     def get_setting(self, name: str) -> Hashable:
         """Returns a given setting"""
         _logger.debug(f"{self} getting setting with name {name}")
