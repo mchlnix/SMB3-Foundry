@@ -96,7 +96,30 @@ class LevelDrawer:
         self.block_transparency = -1
 
     def draw(self, painter: QPainter, level: Level, force=False):
-        self._draw_objects(painter, level, force)
+        """The draw routine for LevelDrawer"""
+
+        def draw_objects():
+            """Draws the objects of the level"""
+            level_rect = level.get_rect()
+            blocks = self._get_objects(level, self._get_background(level), level_rect)
+            pixmaps = self.get_blocks(level, force)
+            self.render_blocks(painter, blocks, pixmaps, level_rect)
+
+            for level_object in level.get_all_objects():
+                if level_object.selected:
+                    painter.save()
+
+                    painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
+                    painter.drawRect(level_object.get_rect(self.block_length))
+
+                    painter.restore()
+                if isinstance(level_object, LevelObjectController):
+                    continue
+                level_object.render()
+                level_object.draw(painter, self.block_length,
+                                  _level_drawer_container.safe_get_setting("block_transparency", True))
+
+        draw_objects()
 
         self._draw_overlays(painter, level)
 
@@ -230,25 +253,6 @@ class LevelDrawer:
                 painter.setBrush(brushes[blocks[idx]])
             painter.drawRect(x, y, self.block_length, self.block_length)
         painter.setBrush(Qt.NoBrush)
-
-    def _draw_objects(self, painter: QPainter, level: Level, force=False):
-        level_rect = level.get_rect()
-        blocks = self._get_objects(level, self._get_background(level), level_rect)
-        pixmaps = self.get_blocks(level, force)
-        self.render_blocks(painter, blocks, pixmaps, level_rect)
-
-        for level_object in level.get_all_objects():
-            if level_object.selected:
-                painter.save()
-
-                painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
-                painter.drawRect(level_object.get_rect(self.block_length))
-
-                painter.restore()
-            if isinstance(level_object, LevelObjectController):
-                continue
-            level_object.render()
-            level_object.draw(painter, self.block_length, _level_drawer_container.safe_get_setting("block_transparency", True))
 
     def _draw_overlays(self, painter: QPainter, level: Level):
         painter.save()
