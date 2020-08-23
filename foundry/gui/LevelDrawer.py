@@ -14,6 +14,7 @@ from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
+from foundry.game.Rect import Rect
 from foundry.game.Tileset import Tileset
 
 
@@ -89,11 +90,9 @@ class LevelDrawer:
         self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), width=1)
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), width=1)
 
+        self.request_render_level_blocks = True
+        self.last_level_blocks = []
         self.block_from_rom = {}
-        self.block_quick = []
-        self.block_quick_object_set = -1
-        self.block_quick_block_length = -1
-        self.block_transparency = -1
 
     def draw(self, painter: QPainter, level: Level, force=False):
         """The draw routine for LevelDrawer"""
@@ -119,12 +118,14 @@ class LevelDrawer:
 
             def get_blocks(level, force=False):
                 #  todo: Convert if statement to an observable that gets updated automatically
-                if len(
-                        self.block_quick) == 0 or self.block_quick_object_set != level.object_set_number or self.block_length != \
-                        self.block_quick_block_length or self.block_transparency != _level_drawer_container.safe_get_setting(
+                """
+                if self.block_quick_object_set != level.object_set_number or self.block_length != \
+                    self.block_quick_block_length or self.block_transparency != _level_drawer_container.safe_get_setting(
                     "block_transparency", True) \
                         or force:
-                    self.block_quick_object_set = level.object_set_number
+                """
+
+                if self.request_render_level_blocks or force:
                     palette_group = load_palette(level.object_set_number, level.header.object_palette_index)
                     tsa_data = ROM.get_tsa_data(level.object_set_number)
                     graphics_set = PatternTableHandler.from_tileset(level.header.graphic_set_index)
@@ -135,10 +136,9 @@ class LevelDrawer:
                             transparent=_level_drawer_container.safe_get_setting("block_transparency", True)
                         ))
                     self.block_quick_block_length = self.block_length
-                    self.block_quick = blocks
                     self.block_transparency = _level_drawer_container.safe_get_setting("block_transparency", True)
-
-                return self.block_quick
+                    self.last_level_blocks = blocks
+                return self.last_level_blocks
 
             def render_blocks(blocks, pixmaps, level_rect):
                 current_block = None
@@ -157,7 +157,7 @@ class LevelDrawer:
                     painter.drawRect(x, y, self.block_length, self.block_length)
                 painter.setBrush(Qt.NoBrush)
 
-            level_rect = level.get_rect()
+            level_rect: Rect = level.get_rect()
             blocks = get_objects(self._get_background(level), level_rect)
             pixmaps = get_blocks(level, force)
             render_blocks(blocks, pixmaps, level_rect)
