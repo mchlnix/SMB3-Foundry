@@ -47,6 +47,13 @@ class SettingsContainer:
         except json.JSONDecodeError:
             if force:
                 return cls(name, {})
+            else:
+                raise json.JSONDecodeError
+        except FileNotFoundError:
+            if force:
+                return cls(name, {})
+            else:
+                raise FileNotFoundError
 
     def save_to_json(self, base_dir: str) -> None:
         """Saves the settings to json"""
