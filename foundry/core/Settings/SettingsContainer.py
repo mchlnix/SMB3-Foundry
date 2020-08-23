@@ -58,10 +58,10 @@ class SettingsContainer:
     def save_to_json(self, base_dir: str) -> None:
         """Saves the settings to json"""
         import json
-        with open(f"{base_dir}/{self.name}", "w") as settings_file:
+        with open(f"{base_dir}/{self.name}", "w+") as settings_file:
             settings_file.write(json.dumps(self.settings_states, indent=4, sort_keys=True))
         for key in self.settings_containers:
-            self.settings_containers[key]().save_to_json()
+            self.settings_containers[key]().save_to_json(base_dir)
 
     def get_setting_container(self, name: str) -> "SettingsContainer":
         """Returns a given setting"""
