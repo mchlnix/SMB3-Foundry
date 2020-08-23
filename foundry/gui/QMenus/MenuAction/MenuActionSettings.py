@@ -4,7 +4,7 @@ from typing import Optional
 
 from foundry.gui.QMenus import Menu
 from foundry.gui.QMenus.MenuAction.MenuAction import MenuAction
-from foundry.gui.settings import get_setting, set_setting, _main_container
+from foundry.core.Settings.util import _main_container, get_setting, set_setting
 from foundry.core.Settings.SettingsContainer import SettingsContainer
 
 

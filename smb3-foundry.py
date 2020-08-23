@@ -5,7 +5,7 @@ import sys
 from PySide2.QtWidgets import QApplication
 
 # change into the tmp directory pyinstaller uses for the data
-from foundry.gui.settings import load_settings, save_settings
+from foundry.core.Settings.util import load_settings, save_settings
 
 if hasattr(sys, "_MEIPASS"):
     print(f"Changing current dir to {getattr(sys, '_MEIPASS')}")

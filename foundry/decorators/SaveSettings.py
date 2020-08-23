@@ -5,7 +5,7 @@ Provides a context decorator to help with saving and loading settings
 from typing import Callable
 from functools import wraps
 
-from foundry.gui.settings import load_settings, save_settings
+from foundry.core.Settings.util import load_settings, save_settings
 
 
 def handle_settings(func: Callable) -> Callable:

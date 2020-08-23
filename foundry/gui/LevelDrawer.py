@@ -2,7 +2,7 @@ from PySide2.QtCore import QPoint, QRect
 from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
 from foundry.core.util.add_selection_graphic_to_image import add_selection_graphic_to_image
-from foundry.gui.settings import _main_container
+from foundry.core.Settings.util import _main_container
 from foundry.core.Settings.SettingsContainer import SettingsContainer
 from foundry import data_dir
 from foundry.game.File import ROM

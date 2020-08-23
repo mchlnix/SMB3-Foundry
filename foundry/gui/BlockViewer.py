@@ -14,7 +14,7 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.drawable.Tile import Tile
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
-from foundry.gui.settings import get_setting
+from foundry.core.Settings.util import get_setting
 
 
 class BlockViewer(CustomChildWindow):

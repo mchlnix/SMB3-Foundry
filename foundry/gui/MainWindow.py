@@ -54,7 +54,7 @@ from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.SettingsDialog import show_settings, get_gui_style
 from foundry.gui.SpinnerPanel import SpinnerPanel
-from foundry.gui.settings import save_settings, set_setting, get_setting
+from foundry.core.Settings.util import get_setting, set_setting, save_settings
 from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
