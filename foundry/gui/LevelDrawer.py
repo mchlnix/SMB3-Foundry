@@ -1,5 +1,6 @@
 
-from typing import List
+import numpy
+from typing import Dict
 from PySide2.QtCore import QPoint, QRect
 from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
@@ -102,23 +103,83 @@ class LevelDrawer:
 
         def draw_objects():
             """Draws the objects of the level"""
+            level_rect: Rect = level.get_rect()
+            width, height = level_rect.abs_size.width, level_rect.abs_size.height
+            real_width, real_height = self.block_length * width, self.block_length * height
+            level_blocks = numpy.empty((width, height), dtype="ubyte")
 
-            def get_objects(blocks, level_rect):
-                width = level_rect.abs_size.width
+            def level_init():
+                """"Initializes the numpy level array"""
+                #  todo: Remove function to return premade background from plugin
+
+                def fill_background():
+                    """Fills the entire background with a block"""
+                    level_blocks.fill(Tileset(level.object_set_number).background_block)
+
+                def fill_sky_background():
+                    """Fills the entire background and sets the top to a different block"""
+                    fill_background()
+                    sky_top = numpy.full(width, 0x86, dtype="ubyte")
+                    level_blocks[0, :] = sky_top
+
+                def fill_desert_background():
+                    """Fills the entire background and sets the bottom to the desert ground"""
+                    fill_background()
+                    ground = numpy.full(width, 0x56, dtype="ubyte")
+                    level_blocks[-1, :] = ground
+
+                def fill_fortress_background():
+                    """Fills the entire background and sets the bottom floor for the fortress"""
+                    fill_background()
+                    ground = numpy.empty((width), dtype="ubyte")
+                    ground[::2] = 0x14
+                    ground[1::2] = 0x15
+                    level_blocks[-2, :] = ground
+                    ground = numpy.empty((width), dtype="ubyte")
+                    ground[::2] = 0x16
+                    ground[1::2] = 0x17
+                    level_blocks[-1, :] = ground
+
+                background_routine_by_objectset = {
+                    0: fill_background,
+                    1: fill_background,
+                    2: fill_fortress_background,
+                    3: fill_background,
+                    4: fill_sky_background,
+                    5: fill_background,
+                    6: fill_background,
+                    7: fill_background,
+                    8: fill_background,
+                    9: fill_desert_background,
+                    10: fill_background,
+                    11: fill_background,
+                    12: fill_sky_background,
+                    13: fill_background,
+                    14: fill_background,
+                    15: fill_background
+                }
+
+                background_routine_by_objectset[level.object_set_number]()
+
+            level_init()
+
+            def get_objects():
+                """Generates the blocks from the generators"""
                 for level_object in level.get_all_objects():
 
                     if not isinstance(level_object, LevelObjectController):
                         continue
-                    for block in level_object.get_blocks_and_positions():
-                        if block[0] >= 0:
-                            try:
-                                blocks[block[1].x + block[1].y * width] = block[0]
-                            except IndexError:
-                                pass
-                return blocks
+                    for (block, pos) in level_object.get_blocks_and_positions():
+                        if block == -1:
+                            continue
+                        try:
+                            level_blocks[pos.x, pos.y] = block
+                        except IndexError:
+                            pass
 
+            get_objects()
 
-            def get_blocks(level: Level, force=False):
+            def get_blocks():
                 #  todo: Convert if statement to an observable that gets updated automatically
                 """
                 if self.block_quick_object_set != level.object_set_number or self.block_length != \
@@ -132,40 +193,36 @@ class LevelDrawer:
                     tsa_data = ROM.get_tsa_data(level.object_set_number)
                     pattern_table = PatternTableHandler.from_tileset(level.header.graphic_set_index)
 
-                    blocks = []
+                    blocks = {}
                     for i in range(0xFF):
-                        blocks.append(
-                            Block.from_rom(i, palette_set, pattern_table, tsa_data).qpixmap_custom(
-                                self.block_length,
-                                self.block_length,
-                                transparent=transparency
-                            )
+                        blocks.update(
+                            {
+                                i: Block.from_rom(i, palette_set, pattern_table, tsa_data).qpixmap_custom(
+                                    self.block_length,
+                                    self.block_length,
+                                    transparent=transparency
+                                )
+                            }
                         )
                     self.last_level_blocks = blocks
 
                 return self.last_level_blocks
 
-            def render_blocks(blocks, pixmaps, level_rect):
-                current_block = None
-                brushes = [QBrush(pix) for pix in pixmaps]
-                x_length = self.block_length * level_rect.abs_size.width
+            def render_blocks(blocks: Dict):
+                current_block = 0
+                brushes = [QBrush(block) for block in blocks.values()]
                 painter.setPen(Qt.NoPen)
-                x, y = -self.block_length, -self.block_length
-                for idx, block in enumerate(blocks):
-                    x += self.block_length
-                    x %= x_length
-                    if x == 0:
-                        y += self.block_length
-                    if current_block != blocks[idx]:
-                        current_block = blocks[idx]
-                        painter.setBrush(brushes[blocks[idx]])
-                    painter.drawRect(x, y, self.block_length, self.block_length)
+
+                for ix, iy in numpy.ndindex(level_blocks.shape):
+                    block = level_blocks[ix, iy]
+                    if current_block != block:
+                        current_block = block
+
+                        painter.setBrush(brushes[current_block])
+                    painter.drawRect(ix * self.block_length, iy * self.block_length, self.block_length, self.block_length)
                 painter.setBrush(Qt.NoBrush)
 
-            level_rect: Rect = level.get_rect()
-            blocks = get_objects(self._get_background(level), level_rect)
-            pixmaps = get_blocks(level, force)
-            render_blocks(blocks, pixmaps, level_rect)
+            render_blocks(get_blocks())
 
             for level_object in level.get_all_objects():
                 if level_object.selected:
@@ -195,75 +252,6 @@ class LevelDrawer:
 
         if _level_drawer_container.safe_get_setting("draw_grid", False):
             self._draw_grid(painter, level)
-
-    def _get_background(self, level: Level):
-        #  todo: Remove function to return premade background from plugin
-        background_routine_by_objectset = {
-            0: self.default_background,
-            1: self.default_background,
-            2: self.fortress_background,
-            3: self.default_background,
-            4: self.sky_background,
-            5: self.default_background,
-            6: self.default_background,
-            7: self.default_background,
-            8: self.default_background,
-            9: self.desert_background,
-            10: self.default_background,
-            11: self.default_background,
-            12: self.sky_background,
-            13: self.default_background,
-            14: self.default_background,
-            15: self.default_background
-        }
-
-        return background_routine_by_objectset[level.object_set_number](level)
-
-    def default_background(self, level: Level):
-        object_set = Tileset(level.object_set_number)
-        level_rect = level.get_rect()
-        return [object_set.background_block for _ in level_rect.position_indexes()]
-
-    def sky_background(self, level: Level):
-        blocks = []
-        object_set = Tileset(level.object_set_number)
-        level_rect = level.get_rect()
-        for pos in level_rect.positions():
-            if pos.y != 0:
-                blocks.append(object_set.background_block)
-            else:
-                blocks.append(0x86)
-        return blocks
-
-    def desert_background(self, level: Level):
-        blocks = []
-        object_set = Tileset(level.object_set_number)
-        level_rect = level.get_rect()
-        for pos in level_rect.positions():
-            if pos.y != GROUND - 1:
-                blocks.append(object_set.background_block)
-            else:
-                blocks.append(0x56)
-        return blocks
-
-    def fortress_background(self, level: Level):
-        blocks = []
-        fortress_blocks = [0x14, 0x15, 0x16, 0x17]
-        object_set = Tileset(level.object_set_number)
-        level_rect = level.get_rect()
-        for pos in level_rect.positions():
-            if pos.y == 0:
-                blocks.append(0xE5)
-            elif pos.y == 1:
-                blocks.append(0x8E)
-            elif pos.y == GROUND - 1:
-                blocks.append(fortress_blocks[2 + pos.x % 2])
-            elif pos.y == GROUND - 2:
-                blocks.append(fortress_blocks[pos.x % 2])
-            else:
-                blocks.append(object_set.background_block)
-        return blocks
-
 
 
     def _draw_overlays(self, painter: QPainter, level: Level):
