@@ -20,6 +20,10 @@ class Action:
     name: str
     observer: Observable
 
+    def __call__(self, *args, **kwargs) -> None:
+        """Calls the observer as if we wrote self.observer(*args, **kwargs)"""
+        self.observer(*args, **kwargs)
+
     @property
     def reference_name(self) -> str:
         """The alt name of the action"""
