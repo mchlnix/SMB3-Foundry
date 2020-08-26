@@ -1,6 +1,6 @@
 from PySide2.QtCore import QRect
 from foundry.core.geometry.Size.Size import Size
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 
 
 class Rect(QRect):

@@ -18,7 +18,7 @@ from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXP
 
 from foundry.core.geometry.Size.Size import Size
 from PySide2.QtCore import QSize
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 from foundry.game.Rect import Rect
 from smb3parse.asm6_converter import to_hex
 

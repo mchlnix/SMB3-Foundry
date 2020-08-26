@@ -34,7 +34,7 @@ from foundry.game.gfx.objects.LevelObjects import (
 )
 
 from foundry.core.geometry.Size.Size import Size
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 
 
 class LevelObjectController(ObjectLike):

@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from foundry import data_dir
 from smb3parse.asm6_converter import to_hex
 from foundry.core.geometry.Size.Size import Size
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 from foundry.game.level.LevelConstants import SCREEN_WIDTH, SCREEN_HEIGHT
 from foundry.game.ObjectDefinitions import ObjectDefinition as GeneratorDefinition
 from foundry.game.ObjectDefinitions import get_generator_from_index, return_domain_and_index_from_generator, \

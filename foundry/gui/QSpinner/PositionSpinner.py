@@ -9,7 +9,7 @@ from typing import Optional, List
 from PySide2.QtWidgets import QWidget
 
 from foundry.gui.QSpinner.MultiSpinner import MultiSpinner, SpinnerAttributes
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.core.Action.Action import Action
 

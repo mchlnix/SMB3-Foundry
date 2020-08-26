@@ -3,7 +3,7 @@ from typing import Union, Generator, overload
 
 from PySide2.QtCore import QSize
 
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 
 
 @dataclass

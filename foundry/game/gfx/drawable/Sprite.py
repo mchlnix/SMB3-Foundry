@@ -6,7 +6,7 @@ from PySide2.QtGui import QImage, QPainter, QPixmap
 
 from foundry.core.geometry.Size.Size import Size
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 from foundry.game.gfx.drawable.Tile import Tile, qimage_mask
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import SpriteGraphic
 

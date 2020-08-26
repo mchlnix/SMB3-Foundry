@@ -6,7 +6,7 @@ from foundry.game.gfx.Palette import load_palette
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.Tileset import Tileset
 
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 
 
 class LevelObjectFactory:

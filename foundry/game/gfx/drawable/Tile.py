@@ -18,7 +18,7 @@ from foundry.game.gfx.Palette import PaletteController
 from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.core.geometry.Size.Size import Size
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 

@@ -26,7 +26,7 @@ from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.core.Action.Action import Action
 from foundry.core.Action.AbstractActionObject import AbstractActionWidget
 
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 
 _logger = logging.getLogger(__name__)
 _logger.setLevel(logging.DEBUG)

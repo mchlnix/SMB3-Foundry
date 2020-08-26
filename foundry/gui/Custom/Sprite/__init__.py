@@ -17,7 +17,7 @@ from foundry.game.gfx.objects.objects.LevelObjectDefinition import SpriteGraphic
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.drawable.Sprite import Sprite
 from foundry.core.geometry.Size.Size import Size
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 

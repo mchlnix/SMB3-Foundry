@@ -6,7 +6,7 @@ from qimage2ndarray import array2qimage
 import numpy as np
 
 from foundry.core.geometry.Size.Size import Size
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.drawable.Tile import qimage_mask
 from foundry.game.gfx.drawable.Sprite import Sprite

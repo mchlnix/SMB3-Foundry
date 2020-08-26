@@ -37,7 +37,7 @@ from foundry.gui.QToolbar import Toolbar
 from foundry.game.gfx.objects.objects.LevelObjectDefinitionLoader import object_definitions
 from foundry.game.gfx.Palette import load_palette
 from foundry.core.geometry.Size.Size import Size
-from foundry.game.Position import Position
+from foundry.core.geometry.Position.Position import Position
 
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"

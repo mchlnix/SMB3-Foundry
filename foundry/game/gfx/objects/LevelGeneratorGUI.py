@@ -22,7 +22,8 @@ from foundry.game.ObjectDefinitions import ObjectDefinition as GeneratorDefiniti
 from smb3parse.objects.object_set import _ending_graphic_offset
 from foundry.core.geometry.Size.Size import Size
 from PySide2.QtCore import QSize
-from foundry.game.Position import Position, LevelPosition
+from foundry.game.Position import LevelPosition
+from foundry.core.geometry.Position.Position import Position
 from foundry.game.Rect import Rect
 from foundry.game.Range import Range
 from smb3parse.asm6_converter import to_hex
