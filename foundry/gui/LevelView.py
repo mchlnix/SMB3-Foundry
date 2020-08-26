@@ -1,16 +1,13 @@
+
+
+import logging
+from foundry import log_dir
+
 from bisect import bisect_right
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, Callable
 
 from PySide2.QtCore import QMimeData, QPoint, QSize
-from PySide2.QtGui import (
-    QDragEnterEvent,
-    QDragMoveEvent,
-    QMouseEvent,
-    QPaintEvent,
-    QPainter,
-    QWheelEvent,
-    Qt,
-)
+from PySide2.QtGui import QDragEnterEvent, QDragMoveEvent, QMouseEvent, QPaintEvent, QPainter, QWheelEvent, Qt
 from PySide2.QtWidgets import QSizePolicy, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
@@ -25,8 +22,18 @@ from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.core.Settings.util import get_setting
 from foundry.core.util import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
+from foundry.core.Action.Action import Action
+from foundry.core.Action.AbstractActionObject import AbstractActionWidget
 
 from foundry.game.Position import Position
+
+_logger = logging.getLogger(__name__)
+_logger.setLevel(logging.DEBUG)
+_handler = logging.FileHandler(f"{log_dir}/level_view.log")
+_formatter = logging.Formatter('%(asctime)s | %(name)s |  %(levelname)s: %(message)s')
+_handler.setFormatter(_formatter)
+_logger.addHandler(_handler)
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
@@ -49,7 +56,7 @@ def undoable(func):
     return wrapped
 
 
-class LevelView(QWidget):
+class LevelView(AbstractActionWidget):
     def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: ContextMenu):
         super(LevelView, self).__init__(parent)
 
@@ -87,6 +94,8 @@ class LevelView(QWidget):
         # dragged in from the object toolbar
         self.currently_dragged_object: Optional[Union[LevelObjectController, EnemyObject]] = None
 
+        self.initialize_actions()
+
         self.setWhatsThis(
             "<b>Level View</b><br/>"
             "This renders the level as it would appear in game plus additional information, that can be "
@@ -101,32 +110,101 @@ class LevelView(QWidget):
             "If all else fails, click the play button up top to see your level in game in seconds."
         )
 
-    def mousePressEvent(self, event: QMouseEvent):
-        pressed_button = event.button()
+    on_click_action: Action
+    on_left_click_action: Action
+    on_right_click_action: Action
 
-        if pressed_button == Qt.LeftButton:
-            self.on_left_mouse_button_down(event)
-        elif pressed_button == Qt.RightButton:
-            self.on_right_mouse_button_down(event)
-        else:
-            return super(LevelView, self).mousePressEvent(event)
+    on_mouse_move_action: Action
+    on_mouse_move_drag_action: Action
+    on_mouse_horizontal_resize_action: Action
+    on_mouse_vertical_resize_action: Action
+    on_mouse_diagonal_resize_action: Action
+    on_move_selection_box_action: Action
 
-    def mouseMoveEvent(self, event: QMouseEvent):
-        if self.mouse_mode == MODE_DRAG:
-            self.setCursor(Qt.ClosedHandCursor)
-            self.dragging(event)
+    def get_actions(self) -> List[Action]:
+        """Gets the actions for the object"""
+        return [
+            Action("on_click", ObservableDecorator(lambda event: event)),
+            Action("on_left_click", ObservableDecorator(lambda event: self.on_left_mouse_button_down(event))),
+            Action("on_right_click", ObservableDecorator(lambda event: self.on_right_mouse_button_down(event))),
 
-        elif self.mouse_mode in RESIZE_MODES:
+            Action("on_mouse_move", ObservableDecorator(lambda event: event)),
+            Action("on_mouse_move_drag", ObservableDecorator(lambda event: event)),
+            Action("on_mouse_horizontal_resize", ObservableDecorator(lambda event: event)),
+            Action("on_mouse_vertical_resize", ObservableDecorator(lambda event: event)),
+            Action("on_mouse_diagonal_resize", ObservableDecorator(lambda event: event)),
+            Action("on_move_selection_box", ObservableDecorator(lambda event: event))
+        ]
+
+    def initialize_actions(self):
+        """Setups up any prefab actions"""
+        def log_event(name: str):
+            """A decorator for logging events"""
+            def log_event_wrapper(event: QMouseEvent) -> None:
+                """Logs the event"""
+                _logger.info(f"{name} updated with event {event}")
+            return log_event_wrapper
+        for action in self._actions.values():
+            action.observer.attach_observer(log_event(action.name))
+
+        def determine_if_click(type_of_click, func: Callable):
+            """A decorator for determining if it is a specific click"""
+            def determine_if_click_wrapper(event: QMouseEvent):
+                """Determines if something is a specific click"""
+                if event.button() == type_of_click:
+                    func(event)
+            return determine_if_click_wrapper
+
+        on_left_click = determine_if_click(Qt.LeftButton, self.on_left_click_action)
+        self.on_click_action.observer.attach_observer(lambda event: on_left_click(event))
+        on_right_click = determine_if_click(Qt.RightButton, self.on_right_click_action)
+        self.on_click_action.observer.attach_observer(lambda event: on_right_click(event))
+
+        def determine_move_type(move_type, func: Callable):
+            """A decorator for determining if a specific type of movement"""
+            def determine_move_type_wrapper(event: QMouseEvent):
+                """Runs the function if the correct type of movement"""
+                if self.mouse_mode == move_type:
+                    func(event)
+            return determine_move_type_wrapper
+
+        on_drag = determine_move_type(MODE_DRAG, self.on_mouse_move_drag_action)
+        self.on_mouse_move_action.observer.attach_observer(lambda event: on_drag(event))
+        on_horizontal_resize = determine_move_type(MODE_RESIZE_HORIZ, self.on_mouse_horizontal_resize_action)
+        self.on_mouse_move_action.observer.attach_observer(lambda event: on_horizontal_resize(event))
+        on_vertical_resize = determine_move_type(MODE_RESIZE_VERT, self.on_mouse_vertical_resize_action)
+        self.on_mouse_move_action.observer.attach_observer(lambda event: on_vertical_resize(event))
+        on_diagonal_resize = determine_move_type(MODE_RESIZE_DIAG, self.on_mouse_diagonal_resize_action)
+        self.on_mouse_move_action.observer.attach_observer(lambda event: on_diagonal_resize(event))
+
+        self.on_mouse_move_drag_action.observer.attach_observer(lambda *_: self.setCursor(Qt.ClosedHandCursor))
+        self.on_mouse_move_drag_action.observer.attach_observer(lambda event: self.dragging(event))
+
+        def resize(event: QMouseEvent):
             previously_selected_objects = self.level_ref.selected_objects
-
             self.resizing(event)
-
             self.level_ref.selected_objects = previously_selected_objects
 
-        elif self.selection_square.active:
-            self.set_selection_end(event.pos())
+        self.on_mouse_horizontal_resize_action.observer.attach_observer(lambda event: resize(event))
+        self.on_mouse_vertical_resize_action.observer.attach_observer(lambda event: resize(event))
+        self.on_mouse_diagonal_resize_action.observer.attach_observer(lambda event: resize(event))
 
-        elif get_setting("resize_mode", RESIZE_LEFT_CLICK) == RESIZE_LEFT_CLICK:
+        def select_box(event: QMouseEvent):
+            if self.selection_square.active:
+                self.on_move_selection_box_action(event)
+
+        self.on_mouse_move_action.observer.attach_observer(lambda event: select_box(event))
+        self.on_move_selection_box_action.observer.attach_observer(lambda event: self.set_selection_end(event.pos()))
+
+    def mousePressEvent(self, event: QMouseEvent):
+        """The built in action for handling when a click takes place"""
+        self.on_click_action(event)
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        """Handles movement with the mouse"""
+        self.on_mouse_move_action(event)
+
+        if get_setting("resize_mode", RESIZE_LEFT_CLICK) == RESIZE_LEFT_CLICK:
             self.set_cursor_for_position(event)
 
         return super(LevelView, self).mouseMoveEvent(event)
