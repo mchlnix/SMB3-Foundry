@@ -1,5 +1,11 @@
 import pathlib
 
+LEFT_CLICK = "left_click"
+RIGHT_CLICK = "right_click"
+MIDDLE_CLICK = "middle_click"
+BACK_CLICK = "back_click"
+FORWARD_CLICK = "forward_click"
+CUSTOM_CLICK = "custom_click"
 RELEASES_LINK = "https://github.com/mchlnix/SMB3-Foundry/releases"
 FEATURE_VIDEO_LINK = "https://www.youtube.com/watch?v=7_22cAffMmE"
 GIT_LINK = "https://github.com/mchlnix/SMB3-Foundry"
