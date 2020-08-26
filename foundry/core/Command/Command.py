@@ -1,16 +1,15 @@
 
 
 from dataclasses import dataclass
-
-from ..Action.Action import Action
+from typing import Callable
 
 
 @dataclass
 class Command:
     """A group of actions that allow for doing and undoing the operation"""
     name: str
-    do_action: Action
-    undo_action: Action
+    do_action: Callable
+    undo_action: Callable
 
     def __call__(self, *args, **kwargs) -> None:
         """Calls the observer as if we wrote self.observer(*args, **kwargs)"""
