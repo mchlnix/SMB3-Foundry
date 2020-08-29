@@ -19,9 +19,9 @@ class EventCommander:
             commands: CommandGroup = None
     ) -> None:
         self.name: str = name
-        self.action: Action = action if action is not None else Action("mouse", Observable())
+        self.action: Action = action if action is not None else Action("event", Observable())
         self.commands: CommandGroup = commands if commands is not None else CommandGroup("")
-        self.commander: Commander = commander if commander is not None else Commander("mouse")
+        self.commander: Commander = commander if commander is not None else Commander("event")
 
     def __call__(self, *args, **kwargs) -> None:
         """Accepts a mouse event and calls the corresponding commands"""
