@@ -13,6 +13,9 @@ class Commander:
         self.stack = commands if commands is not None else deque(maxlen=max_length)
         self.undo_stack = deque(maxlen=max_length)
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.name}, {self.stack}, {self.undo_stack})"
+
     def push_command(self, command: Command) -> None:
         """Push a command and clear the undo stack"""
         command.do()
