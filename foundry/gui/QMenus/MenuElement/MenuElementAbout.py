@@ -1,4 +1,4 @@
-from foundry.gui.AboutWindow import AboutDialog
+from foundry.gui.QDialog.AboutWindow import AboutDialog
 from foundry.gui.QMenus.MenuElement.AbstractMenuElementUpdater import AbstractMenuElementUpdater
 
 

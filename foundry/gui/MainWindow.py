@@ -37,7 +37,7 @@ from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.LevelDrawer import _level_drawer_container
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.AboutWindow import AboutDialog
+from foundry.gui.QDialog.AboutWindow import AboutDialog
 from foundry.gui.BlockViewer import BlockViewer
 from foundry.gui.ContextMenu import CMAction, ContextMenu
 from foundry.gui.EnemySizeBar import EnemySizeBar
