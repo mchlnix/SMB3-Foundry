@@ -136,8 +136,8 @@ def load_objects(directory) -> List[LevelObjectDefinition]:
     ]
 
     return [
-        LevelObjectDefinition(operation, animation, hitbox) for (operation, animation, hitbox) in
-        zip(operations, hitboxes, animations)
+        LevelObjectDefinition(operation=operation, animations=animation, hitbox=hitbox) for
+        (operation, animation, hitbox) in zip(operations, hitboxes, animations)
     ]
 
 
