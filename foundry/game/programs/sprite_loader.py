@@ -5,7 +5,7 @@ from yaml import CLoader as Loader
 from typing import Tuple, List
 
 from foundry import data_dir
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from smb3parse.asm6_converter import convert_str_to_int_white_space as to_int
 from foundry.game.gfx.objects.objects.LevelObjectDefinition import LevelObjectDefinition, Animation, Hitbox, \
     SpriteGraphic, ObjectOperation
