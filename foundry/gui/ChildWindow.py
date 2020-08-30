@@ -2,13 +2,13 @@ from PySide2.QtGui import Qt, QKeyEvent
 from PySide2.QtWidgets import QMainWindow
 
 
-class CustomChildWindow(QMainWindow):
+class ChildWindow(QMainWindow):
     """
     A customized Mainwindow replacement, allowing to set a central widget.
     """
 
     def __init__(self, parent, title="Title"):
-        super(CustomChildWindow, self).__init__(parent)
+        super(ChildWindow, self).__init__(parent)
 
         self.setWindowTitle(title)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)

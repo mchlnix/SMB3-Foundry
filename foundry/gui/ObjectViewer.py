@@ -9,7 +9,7 @@ from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from foundry.gui.CustomChildWindow import CustomChildWindow
+from foundry.gui.ChildWindow import ChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
 
@@ -24,7 +24,7 @@ MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
 
 
-class ObjectViewer(CustomChildWindow):
+class ObjectViewer(ChildWindow):
     def __init__(self, parent):
         super(ObjectViewer, self).__init__(parent, title="Object Viewer")
 
