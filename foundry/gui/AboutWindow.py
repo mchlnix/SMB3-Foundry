@@ -4,11 +4,11 @@ from PySide2.QtWidgets import QBoxLayout, QFrame, QLabel
 from foundry import data_dir, get_current_version_name
 from foundry.core.util import LINK_HUKKA, LINK_SMB3WORKSHOP, LINK_SOUTHBIRD, LINK_DISASM, LINK_BLUEFINCH, LINK_JOE_SMO, \
     LINK_PIJOKRA, LINK_MICHAEL, LINK_SKYYANNICK
-from foundry.gui.QDialog import CustomDialog
+from foundry.gui.QDialog import Dialog
 from foundry.gui.QLabel.LinkLabel import LinkLabel
 
 
-class AboutDialog(CustomDialog):
+class AboutDialog(Dialog):
     def __init__(self, parent):
         super(AboutDialog, self).__init__(parent, title="About SMB3Foundry")
 

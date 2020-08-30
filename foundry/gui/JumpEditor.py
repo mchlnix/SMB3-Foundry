@@ -4,7 +4,7 @@ from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QComboBox, QDialogButtonBox, QFormLayout, QGroupBox, QVBoxLayout, QWidget
 
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.gui.QDialog import CustomDialog
+from foundry.gui.QDialog import Dialog
 from foundry.gui.Spinner import Spinner
 
 JUMP_ACTIONS = [
@@ -49,7 +49,7 @@ MAX_SCREEN_INDEX = 0x0F
 MAX_HORIZ_POSITION = 0xFF
 
 
-class JumpEditor(CustomDialog):
+class JumpEditor(Dialog):
     def __init__(self, parent: Optional[QWidget], jump: Jump):
         super(JumpEditor, self).__init__(parent, "Jump Editor")
 

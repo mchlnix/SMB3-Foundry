@@ -13,7 +13,7 @@ from PySide2.QtWidgets import (
 )
 
 from foundry import icon, icon_dir
-from foundry.gui.QDialog import CustomDialog
+from foundry.gui.QDialog import Dialog
 from foundry.core.Settings.util import get_setting, set_setting, load_settings, save_settings
 from foundry.core.util import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, DRACULA_STYLE_SET, RETRO_STYLE_SET
 
@@ -25,7 +25,7 @@ def get_gui_style():
         return qdarkstyle.load_stylesheet()
 
 
-class SettingsDialog(CustomDialog):
+class SettingsDialog(Dialog):
     def __init__(self, parent=None, sender=None):
         super(SettingsDialog, self).__init__(parent, "Settings")
         self.sender = sender
