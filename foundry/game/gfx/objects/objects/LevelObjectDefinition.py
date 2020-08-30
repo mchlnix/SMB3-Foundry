@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from foundry.game.Size import Size
+from foundry.core.geometry.Size.Size import Size
 from foundry.game.Rect import Rect
 
 
