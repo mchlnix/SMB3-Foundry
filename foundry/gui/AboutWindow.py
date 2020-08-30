@@ -2,21 +2,11 @@ from PySide2.QtGui import QPixmap
 from PySide2.QtWidgets import QBoxLayout, QFrame, QLabel
 
 from foundry import data_dir, get_current_version_name
+from foundry.core.util import LINK_HUKKA, LINK_SMB3WORKSHOP, LINK_SOUTHBIRD, LINK_DISASM, LINK_BLUEFINCH, LINK_JOE_SMO, \
+    LINK_PIJOKRA, LINK_MICHAEL, LINK_SKYYANNICK
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.QLabel.LinkLabel import LinkLabel
 
-LINK_SMB3_FOUNDRY = "https://github.com/mchlnix/SMB3-Foundry"
-LINK_SMB3_PRIME = "https://smb3p.kafuka.org/index.php"
-LINK_SMB3_WIKI = "https://www.smb3prime.org/wiki/Main_Page"
-LINK_HUKKA = "http://hukka.ncn.fi/index.php?about"
-LINK_SMB3WORKSHOP = "https://www.romhacking.net/utilities/298/"
-LINK_SOUTHBIRD = "https://github.com/captainsouthbird"
-LINK_DISASM = "https://github.com/captainsouthbird/smb3"
-LINK_BLUEFINCH = "https://www.twitch.tv/bluefinch3000"
-LINK_JOE_SMO = "https://github.com/TheJoeSmo"
-LINK_PIJOKRA = "https://github.com/PiJoKra"
-LINK_MICHAEL = "https://github.com/mchlnix"
-LINK_SKYYANNICK = "https://www.youtube.com/channel/UCnI_HjFGbyRmfOBWzzxK6LA"
 
 class AboutDialog(CustomDialog):
     def __init__(self, parent):
