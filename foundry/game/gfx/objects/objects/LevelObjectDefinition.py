@@ -42,6 +42,7 @@ class Animation:
     size: Size
     palette: int
     graphics: List[SpriteGraphic]
+    name: str = ""
 
 
 @dataclass
