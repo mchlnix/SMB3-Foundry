@@ -1,8 +1,9 @@
-from PySide2.QtGui import QPixmap, Qt
+from PySide2.QtGui import QPixmap
 from PySide2.QtWidgets import QBoxLayout, QFrame, QLabel
 
 from foundry import data_dir, get_current_version_name
 from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.QLabel.LinkLabel import LinkLabel
 
 LINK_SMB3_FOUNDRY = "https://github.com/mchlnix/SMB3-Foundry"
 LINK_SMB3_PRIME = "https://smb3p.kafuka.org/index.php"
@@ -53,16 +54,6 @@ class AboutDialog(CustomDialog):
         text_layout.addWidget(LinkLabel(self, f'  • And most importantly you!'))
 
         main_layout.addLayout(text_layout)
-
-
-class LinkLabel(QLabel):
-    def __init__(self, parent, text):
-        super(LinkLabel, self).__init__(parent)
-
-        self.setText(text)
-        self.setTextFormat(Qt.RichText)
-        self.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        self.setOpenExternalLinks(True)
 
 
 # taken from https://stackoverflow.com/a/41068447/4252230
