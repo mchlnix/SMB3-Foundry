@@ -9,7 +9,7 @@ from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from foundry.gui.ChildWindow import ChildWindow
+from foundry.gui.QMainWindow.ChildWindow import ChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
 

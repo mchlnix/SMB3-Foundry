@@ -12,7 +12,7 @@ from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import bg_color_for_object_set, load_palette
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.drawable.Tile import Tile
-from foundry.gui.ChildWindow import ChildWindow
+from foundry.gui.QMainWindow.ChildWindow import ChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.core.Settings.util import get_setting
 
