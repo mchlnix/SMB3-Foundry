@@ -19,27 +19,12 @@ from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.core.geometry.Size.Size import Size
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.core.geometry.Position.Position import Position
+from foundry.game.gfx.drawable.get_byte_bits import get_byte_bits
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 
 BACKGROUND_COLOR_INDEX = 0
 palette_controller = PaletteController()
-
-
-@lru_cache
-def get_byte_bits(b: int, reverse: bool = False, false_value: int = 0, true_value: int = 1) -> List[int]:
-    """
-    Converts a byte to a row 1 bit per pixel row of image data
-    :param b: The byte to be converted
-    :param reverse: To start from the left or right respectively
-    :param false_value: The value of the bit if False
-    :param true_value: The value of the bit if True
-    :return: A list representation of a bit
-    """
-    if reverse:
-        return [true_value if b & (0x80 >> i) else false_value for i in range(8)]
-    else:
-        return [true_value if b & (0b1 << i) else false_value for i in range(8)]
 
 
 def get_tile_row(byte_1: int, byte_2: int) -> map:
