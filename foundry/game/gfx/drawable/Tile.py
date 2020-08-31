@@ -19,7 +19,10 @@ from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.core.geometry.Size.Size import Size
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.core.geometry.Position.Position import Position
-from foundry.game.gfx.drawable.get_byte_bits import get_byte_bits
+import pyximport
+pyximport.install(inplace=True)
+from foundry.game.gfx.drawable.get_byte_bits_cython import get_byte_bits
+
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 
