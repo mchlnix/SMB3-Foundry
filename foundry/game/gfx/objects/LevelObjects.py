@@ -278,7 +278,7 @@ class LevelObjectDiagnalDownLeft60(DownLeftDiagnal, LevelObjectDiagnal60):
     def _render(self) -> None:
         size, pos, blocks_to_draw = self.render_slope()
         blocks_to_draw = size.flip_rows(blocks_to_draw)
-        pos = pos - Position(-self.HORZ_OFFSET, size.height - self.VERTICAL_OFFSET)
+        pos = pos - Position(size.width + self.HORZ_OFFSET, 0)
         self._confirm_render(size, pos, blocks_to_draw)
 
 
