@@ -190,7 +190,7 @@ class LevelDrawer:
 
                 if self.request_render_level_blocks or force:
                     palette_set = load_palette(level.object_set_number, level.header.object_palette_index)
-                    tsa_data = ROM.get_tsa_data(level.object_set_number)
+                    tsa_data = ROM().get_tsa_data(level.object_set_number)
                     pattern_table = PatternTableHandler.from_tileset(level.header.graphic_set_index)
 
                     blocks = {}

@@ -9,7 +9,6 @@ _ROM: "ROM" = None
 
 WORLD_COUNT = 9  # includes warp zone
 
-TSA_OS_LIST = 0x3C3F9
 TSA_TABLE_SIZE = 0x400
 TSA_TABLE_INTERVAL = TSA_TABLE_SIZE + 0x1C00
 
@@ -103,6 +102,11 @@ class ROM(Rom):
         return self.get_byte(5) * 0x4000 + 0x10
 
     @property
+    def tsa_tileset_offset(self) -> int:
+        """Provides the offset to the tsa data"""
+        return self.chr_offset - (0x3D000 - 0x3C3F9)
+
+    @property
     def position(self) -> int:
         """The current index in ROM"""
         return self._position
@@ -132,17 +136,16 @@ class ROM(Rom):
             additional_data_start += len(ROM.MARKER_VALUE)
             self.additional_data = data[additional_data_start:].decode("utf-8")
 
-    @staticmethod
-    def tsa_offset(object_set: int) -> int:
+    def tsa_offset(self, object_set: int) -> int:
         rom = ROM()
 
-        tsa_index = rom.int(TSA_OS_LIST + object_set)
+        tsa_index = rom.int(self.tsa_tileset_offset + object_set)
 
         if object_set == 0:
             # todo why is the tsa index in the wrong (seemingly) false?
             tsa_index += 1
 
-        tsa_index = rom.int(TSA_OS_LIST + object_set)
+        tsa_index = rom.int(self.tsa_tileset_offset + object_set)
 
         if object_set == 0:
             # todo why is the tsa index in the wrong (seemingly) false?
@@ -150,11 +153,10 @@ class ROM(Rom):
 
         return TSA_BASE_OS + tsa_index * TSA_TABLE_INTERVAL
 
-    @staticmethod
-    def get_tsa_data(object_set: int) -> bytearray:
+    def get_tsa_data(self, object_set: int) -> bytearray:
         rom = ROM()
 
-        tsa_start = ROM.tsa_offset(object_set)
+        tsa_start = ROM.tsa_offset(self, object_set)
 
         return rom.read(tsa_start, TSA_TABLE_SIZE)
 

@@ -27,7 +27,7 @@ class WorldMap(LevelLike):
         self.palette_group = load_palette(WORLD_MAP_OBJECT_SET, 0)
 
         self.object_set = WORLD_MAP_OBJECT_SET
-        self.tsa_data = ROM.get_tsa_data(self.object_set)
+        self.tsa_data = ROM().get_tsa_data(self.object_set)
 
         self.world = 0
         self.level_number = 0

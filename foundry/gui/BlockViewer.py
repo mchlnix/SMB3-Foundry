@@ -55,7 +55,7 @@ class BlockViewer(ChildWindow):
 
     def save(self):
         tsa = self.sprite_bank.tsa
-        ROM().bulk_write(tsa, ROM.tsa_offset(self.object_set))
+        ROM().bulk_write(tsa, ROM().tsa_offset(self.object_set))
         self.force_update_level_view()
 
     def pattern_selected(self, selected):
@@ -132,7 +132,7 @@ class BlockSelector(QWidget):
 
         self.block = 0
         self.selected = 0
-        self.tsa_data = ROM.get_tsa_data(self.object_set)
+        self.tsa_data = ROM().get_tsa_data(self.object_set)
 
         self._size = QSize(Block.WIDTH * self.zoom, Block.HEIGHT * self.zoom)
 
@@ -144,7 +144,7 @@ class BlockSelector(QWidget):
 
     def update_obj_set(self, set):
         self.object_set = set
-        self.tsa_data = ROM.get_tsa_data(self.object_set)
+        self.tsa_data = ROM().get_tsa_data(self.object_set)
         self.update()
 
     def block_selected(self, block):
@@ -295,7 +295,7 @@ class BlockBankViewer(QWidget):
         self.block_bank = parent
         self.setMouseTracking(True)
         self._object_set = object_set
-        self.tsa_data = ROM.get_tsa_data(self.object_set)
+        self.tsa_data = ROM().get_tsa_data(self.object_set)
         self.sprites = 256
         self.zoom_step = 256
         self.sprites_horiz = 16
@@ -316,7 +316,7 @@ class BlockBankViewer(QWidget):
     @object_set.setter
     def object_set(self, set: int):
         self._object_set = set
-        self.tsa_data = ROM.get_tsa_data(self.object_set)
+        self.tsa_data = ROM().get_tsa_data(self.object_set)
         self.update()
 
     @property

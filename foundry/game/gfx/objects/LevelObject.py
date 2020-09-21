@@ -235,7 +235,7 @@ class LevelObject(ObjectLike, BlockGenerator):
 
     @property
     def tsa_data(self) -> bytearray:
-        return ROM.get_tsa_data(self.object_set.index)
+        return ROM().get_tsa_data(self.object_set.index)
 
     @property
     def bmp(self) -> BitMapPicture:
