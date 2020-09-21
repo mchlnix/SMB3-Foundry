@@ -8,3 +8,6 @@ pandas~=1.0.5
 methodtools>=0.4.2
 qimage2ndarray>=1.8.3
 notifyr>=1.1
+pytest>=6.0.1
+setuptools>=49.2.0
+Cython>=0.29.21
