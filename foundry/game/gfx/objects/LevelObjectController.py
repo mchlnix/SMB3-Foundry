@@ -11,7 +11,8 @@ from foundry.game.ObjectDefinitions import (
     HORIZONTAL_WITH_SIDE, VERTICAL_WITH_TOP, VERTICAL_WITH_ALL_SIDES, HORIZTONAL_WITH_ALL_SIDES,
     VERTICAL_WITH_TOP_AND_BOTTOM, DIAG_DOWN_LEFT_60, DIAG_DOWN_RIGHT_60, HORIZONTAL_WITH_BOTTOM, DIAG_UP_LEFT,
     DIAG_UP_RIGHT_30, VERTICAL_WITH_DOUBLE_TOP, VERTICAL_WITH_BOTTOM, HORIZONTAL_FIVE_BYTE, HORIZONTAL_BACKGROUND_FILL,
-    DIAG_UP_Left_30, HORIZ_TO_GROUND_PLAINS, BUSH_PREFAB, HORIZ_FLOATING_PLATFORM, FORTRESS_PILLARS
+    DIAG_UP_Left_30, HORIZ_TO_GROUND_PLAINS, BUSH_PREFAB, HORIZ_FLOATING_PLATFORM, FORTRESS_PILLARS,
+    DIAG_UP_RIGHT_SLOPE
 )
 
 from foundry.game.Tileset import Tileset
@@ -30,7 +31,7 @@ from foundry.game.gfx.objects.LevelObjects import (
     LevelObjectDiagnalUpRight30, LevelObjectVerticalWithDoubleTop, LevelObjectVerticalWithBottom,
     LevelObjectHorizontal5Byte, LevelObjectFillBackgroundHorizontalLevel, LevelObjectDiagnalUpLeft30,
     LevelObjectPlainsPlatformToGround, LevelObjectBushPrefab, LevelObjectPlainsPlatformFloating,
-    LevelObjectFortressPillars
+    LevelObjectFortressPillars, LevelObjectDiagnalUpRightSlope45
 )
 
 from foundry.core.geometry.Size.Size import Size
@@ -471,7 +472,8 @@ class LevelObjectController(ObjectLike):
         HORIZ_TO_GROUND_PLAINS: LevelObjectPlainsPlatformToGround,
         BUSH_PREFAB: LevelObjectBushPrefab,
         HORIZ_FLOATING_PLATFORM: LevelObjectPlainsPlatformFloating,
-        FORTRESS_PILLARS: LevelObjectFortressPillars
+        FORTRESS_PILLARS: LevelObjectFortressPillars,
+        DIAG_UP_RIGHT_SLOPE: LevelObjectDiagnalUpRightSlope45
     }
 
     def _level_object(self):

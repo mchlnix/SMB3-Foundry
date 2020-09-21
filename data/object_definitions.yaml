@@ -10047,7 +10047,7 @@
     - 161
     bmp:
       ending: 1
-      obj_generator: Diagonal Right-Up
+      obj_generator: Diagonal Right-Up Slope
       offset_x: 0
       offset_y: 0
       size:
@@ -56037,7 +56037,7 @@
     - 161
     bmp:
       ending: 1
-      obj_generator: Diagonal Right-Up
+      obj_generator: Diagonal Right-Up Slope
       offset_x: 0
       offset_y: 0
       size:

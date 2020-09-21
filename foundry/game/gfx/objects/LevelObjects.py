@@ -351,6 +351,23 @@ class LevelObjectDiagnalUpRight45(LevelObjectDiagnal45):
         self._confirm_render(size, pos, blocks_to_draw)
 
 
+class LevelObjectDiagnalUpRightSlope45(LevelObjectDiagnal45):
+    @property
+    def slope(self) -> int:
+        return self.get_block(1)
+
+    @property
+    def body(self) -> int:
+        return self.get_block(0)
+
+    def _render(self) -> None:
+        size, pos, blocks_to_draw = self.render_slope()
+        blocks_to_draw = size.flip_rows(blocks_to_draw)
+        blocks_to_draw.reverse()
+
+        self._confirm_render(size, pos, blocks_to_draw)
+
+
 class LevelObjectDiagnalUpLeft45(LevelObjectDiagnal45):
     @property
     def slope(self) -> int:
