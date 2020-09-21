@@ -120,13 +120,13 @@ class LevelDrawer:
                     """Fills the entire background and sets the top to a different block"""
                     fill_background()
                     sky_top = numpy.full(width, 0x86, dtype="ubyte")
-                    level_blocks[0, :] = sky_top
+                    level_blocks[:, 0] = sky_top
 
                 def fill_desert_background():
                     """Fills the entire background and sets the bottom to the desert ground"""
                     fill_background()
                     ground = numpy.full(width, 0x56, dtype="ubyte")
-                    level_blocks[-1, :] = ground
+                    level_blocks[:, -1] = ground
 
                 def fill_fortress_background():
                     """Fills the entire background and sets the bottom floor for the fortress"""
@@ -134,11 +134,11 @@ class LevelDrawer:
                     ground = numpy.empty((width), dtype="ubyte")
                     ground[::2] = 0x14
                     ground[1::2] = 0x15
-                    level_blocks[-2, :] = ground
+                    level_blocks[:, -2] = ground
                     ground = numpy.empty((width), dtype="ubyte")
                     ground[::2] = 0x16
                     ground[1::2] = 0x17
-                    level_blocks[-1, :] = ground
+                    level_blocks[:, -1] = ground
 
                 background_routine_by_objectset = {
                     0: fill_background,
