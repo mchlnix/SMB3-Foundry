@@ -344,8 +344,7 @@ class LevelObjectDiagnalUpRight45(LevelObjectDiagnal45):
 
     def _render(self) -> None:
         size, pos, blocks_to_draw = self.render_slope()
-        if len(self.blocks) == 1:
-            pos.y -= size.height - 1
+        pos.y -= size.height - 1
         blocks_to_draw = size.flip_rows(blocks_to_draw)
         blocks_to_draw.reverse()
 

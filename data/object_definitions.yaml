@@ -15869,6 +15869,7 @@
       start: 144
   25:
     block_design:
+    - -1
     - 202
     bmp:
       ending: 0
@@ -15888,6 +15889,7 @@
       start: 160
   26:
     block_design:
+    - -1
     - 203
     bmp:
       ending: 0
@@ -15928,13 +15930,14 @@
     block_design:
     - 204
     - 205
+    - -1
     bmp:
       ending: 0
       obj_generator: Diagonal Right-Down 60 Degrees
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 3
     description: 60 Degree Platform Wire - Down/Right
@@ -15949,13 +15952,14 @@
     block_design:
     - 206
     - 207
+    - -1
     bmp:
       ending: 0
       obj_generator: Diagonal Left-Down 60 Degrees
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 3
     description: 60 Degree Platform Wire - Down/Left
@@ -22550,6 +22554,7 @@
       start: 128
   117:
     block_design:
+    - -1
     - 11
     bmp:
       ending: 0
@@ -22569,6 +22574,7 @@
       start: 144
   118:
     block_design:
+    - -1
     - 12
     bmp:
       ending: 0
@@ -22590,6 +22596,7 @@
     block_design:
     - 13
     - 14
+    - -1
     bmp:
       ending: 0
       obj_generator: Diagonal Right-Down 60 Degrees
@@ -22611,6 +22618,7 @@
     block_design:
     - 15
     - 16
+    - -1
     bmp:
       ending: 0
       obj_generator: Diagonal Left-Down 60 Degrees
@@ -51246,6 +51254,7 @@
       start: 144
   25:
     block_design:
+    - -1
     - 202
     bmp:
       ending: 0
@@ -51265,6 +51274,7 @@
       start: 160
   26:
     block_design:
+    - -1
     - 203
     bmp:
       ending: 0
@@ -51315,13 +51325,14 @@
     block_design:
     - 204
     - 205
+    - -1
     bmp:
       ending: 0
       obj_generator: Diagonal Right-Down 60 Degrees
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 3
     description: 60 Degree Platform Wire - Down/Right
@@ -51336,13 +51347,14 @@
     block_design:
     - 206
     - 207
+    - -1
     bmp:
       ending: 0
       obj_generator: Diagonal Left-Down 60 Degrees
       offset_x: 0
       offset_y: 0
       size:
-        height: 2
+        height: 1
         width: 1
     bytes: 3
     description: 60 Degree Platform Wire - Down/Left
