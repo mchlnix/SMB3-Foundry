@@ -104,7 +104,7 @@ class ROM(Rom):
     @property
     def tsa_tileset_offset(self) -> int:
         """Provides the offset to the tsa data"""
-        return self.chr_offset - (0x3D000 - 0x3C3F9)
+        return self.chr_offset - (0x40010 - 0x3C3F9)
 
     @property
     def position(self) -> int:
