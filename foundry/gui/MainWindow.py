@@ -396,7 +396,7 @@ class MainWindow(QMainWindow):
         if self.level_view is None:
             return False
 
-        recommended_file = f"{os.path.expanduser('~')}/{ROM.name} - {self.level_view.level_ref.name}.png"
+        recommended_file = f"{os.path.expanduser('~')}/{ROM().name} - {self.level_view.level_ref.name}.png"
 
         pathname, _ = QFileDialog.getSaveFileName(
             self, caption="Save Screenshot", dir=recommended_file, filter=IMG_FILE_FILTER
