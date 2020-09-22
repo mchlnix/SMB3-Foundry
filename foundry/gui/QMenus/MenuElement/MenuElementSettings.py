@@ -1,5 +1,5 @@
 from foundry.gui.QMenus.MenuElement.AbstractMenuElement import AbstractMenuElement
-from foundry.gui.SettingsDialog import show_settings
+from foundry.gui.SettingsDialog import SettingsDialog
 
 
 class MenuElementSettings(AbstractMenuElement):
@@ -11,4 +11,4 @@ class MenuElementSettings(AbstractMenuElement):
 
     def action(self):
         """Shows the settings"""
-        show_settings(self.parent)
+        SettingsDialog(self.parent, self.parent).exec_()
