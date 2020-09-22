@@ -22,12 +22,10 @@ class ActionSaveToFirstLevel(Action):
     def _save_to_first_level(self, path_to_rom: str):
         """Does the action of saving to the first level"""
         result = _put_current_level_to_level_1_1(self.parent, self.level_ref, path_to_rom)
-        print(result)
         return result
 
 
 def _put_current_level_to_level_1_1(parent: QWidget, level_ref: LevelRef, path_to_rom: str) -> bool:
-    print("outside")
     with open(path_to_rom, "rb") as smb3_rom:
         data = smb3_rom.read()
 
