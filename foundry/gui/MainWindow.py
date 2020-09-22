@@ -69,6 +69,7 @@ from foundry.game.File import load_from_file
 from foundry.gui.QMenus.Menu.MenuFile import FileMenu
 from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
 from foundry.gui.QMenus.MenuAction.MenuActionSettings import MenuActionSettings
+from foundry.core.Action.ActionSaveToFirstLevel import ActionSaveToFirstLevel
 
 
 class MainWindow(QMainWindow):
@@ -238,6 +239,8 @@ class MainWindow(QMainWindow):
         self.redo_action.setEnabled(False)
 
         menu_toolbar.addSeparator()
+
+        self.save_to_first_level_action = ActionSaveToFirstLevel("save_to_first_level", self, self.level_ref)
         play_action = menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
         play_action.triggered.connect(self.on_play)
         play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
@@ -326,7 +329,7 @@ class MainWindow(QMainWindow):
 
         ROM().save_to(path_to_temp_rom)
 
-        if not self._put_current_level_to_level_1_1(path_to_temp_rom):
+        if not self.save_to_first_level_action(path_to_temp_rom):
             return
 
         arg = str(get_setting("instaplay_arguments", ""))
@@ -353,48 +356,6 @@ class MainWindow(QMainWindow):
             subprocess.run([emulator, *arguments])
         except Exception as e:
             QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
-
-    def _put_current_level_to_level_1_1(self, path_to_rom) -> bool:
-        with open(path_to_rom, "rb") as smb3_rom:
-            data = smb3_rom.read()
-
-        rom = SMB3Rom(bytearray(data))
-
-        # load world-1 data
-        world_1 = SMB3World.from_world_number(rom, 1)
-
-        # find position of "level 1" tile in world map
-        for position in world_1.gen_positions():
-            if position.tile() == TILE_LEVEL_1:
-                break
-        else:
-            QMessageBox.critical(
-                self, "Couldn't place level", "Could not find a level 1 tile in World 1 to put your level at."
-            )
-            return False
-
-        if not self.level_ref.level.attached_to_rom:
-            QMessageBox.critical(
-                self,
-                "Couldn't place level",
-                "The Level is not part of the rom yet (M3L?). Try saving it into the ROM first.",
-            )
-            return False
-
-        # write level and enemy data of current level
-        (layout_address, layout_bytes), (enemy_address, enemy_bytes) = self.level_ref.level.to_bytes()
-        rom.write(layout_address, layout_bytes)
-        rom.write(enemy_address, enemy_bytes)
-
-        # replace level information with that of current level
-        object_set_number = self.level_ref.object_set_number
-
-        world_1.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
-
-        # save rom
-        rom.save_to(path_to_rom)
-
-        return True
 
     def on_screenshot(self, _) -> bool:
         if self.level_view is None:
