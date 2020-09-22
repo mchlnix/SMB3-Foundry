@@ -48,7 +48,8 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
-from foundry.gui.SettingsDialog import SettingsDialog, get_gui_style
+from foundry.gui.SettingsDialog import SettingsDialog
+from foundry.core.util.get_gui_style import get_gui_style
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.core.Settings.util import get_setting, set_setting, save_settings
 from foundry.gui.QMenus.Menu.Menu import Menu

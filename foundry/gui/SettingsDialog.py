@@ -1,5 +1,4 @@
 import qdarkstyle
-from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import (
     QButtonGroup,
     QFileDialog,
@@ -12,17 +11,12 @@ from PySide2.QtWidgets import (
     QVBoxLayout,
 )
 
-from foundry import icon, icon_dir
+from foundry import icon
 from foundry.gui.QDialog import Dialog
 from foundry.core.Settings.util import get_setting, set_setting, load_settings, save_settings
 from foundry.core.util import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, DRACULA_STYLE_SET, RETRO_STYLE_SET
 
 load_settings()
-
-
-def get_gui_style():
-    if get_setting("gui_style", RETRO_STYLE_SET) == DRACULA_STYLE_SET:
-        return qdarkstyle.load_stylesheet()
 
 
 class SettingsDialog(Dialog):
