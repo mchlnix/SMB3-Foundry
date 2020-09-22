@@ -123,7 +123,6 @@ class SettingsDialog(Dialog):
             set_setting("gui_style", DRACULA_STYLE_SET)
 
         if get_setting("gui_style", RETRO_STYLE_SET) == DRACULA_STYLE_SET:
-            self.setStyleSheet(qdarkstyle.load_stylesheet())
             self.sender.setStyleSheet(qdarkstyle.load_stylesheet())
         else:
             self.setStyleSheet("")
