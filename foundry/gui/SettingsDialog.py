@@ -149,7 +149,3 @@ class SettingsDialog(Dialog):
         save_settings()
 
         super(SettingsDialog, self).on_exit()
-
-
-def show_settings(sender):
-    SettingsDialog(None, sender).exec_()

@@ -48,7 +48,7 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
-from foundry.gui.SettingsDialog import show_settings, get_gui_style
+from foundry.gui.SettingsDialog import SettingsDialog, get_gui_style
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.core.Settings.util import get_setting, set_setting, save_settings
 from foundry.gui.QMenus.Menu.Menu import Menu
@@ -219,7 +219,9 @@ class MainWindow(QMainWindow):
         menu_toolbar.setOrientation(Qt.Horizontal)
         menu_toolbar.setIconSize(QSize(20, 20))
 
-        menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(lambda: show_settings(self))
+        menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(
+            lambda: SettingsDialog(self, self).exec_()
+        )
         menu_toolbar.addSeparator()
         menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.file_menu.open_rom_action.action)
         menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.file_menu.save_rom_action.action)
