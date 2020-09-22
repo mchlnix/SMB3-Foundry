@@ -1,8 +1,4 @@
 import os
-import pathlib
-import shlex
-import subprocess
-import tempfile
 from typing import Tuple, Union
 
 from PySide2.QtCore import QSize
@@ -67,6 +63,7 @@ from foundry.gui.QMenus.Menu.MenuFile import FileMenu
 from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
 from foundry.gui.QMenus.MenuAction.MenuActionSettings import MenuActionSettings
 from foundry.core.Action.ActionSaveToFirstLevel import ActionSaveToFirstLevel
+from foundry.core.Action.ActionOpenEmulator import ActionOpenEmulator
 
 
 class MainWindow(QMainWindow):
@@ -237,9 +234,10 @@ class MainWindow(QMainWindow):
 
         menu_toolbar.addSeparator()
 
-        self.save_to_first_level_action = ActionSaveToFirstLevel("save_to_first_level", self, self.level_ref)
+        self.save_to_first_level_action = ActionSaveToFirstLevel("save_to_first_level_action", self, self.level_ref)
+        self.open_emu_action = ActionOpenEmulator("open_emu_action", self, self.save_to_first_level_action)
         play_action = menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
-        play_action.triggered.connect(self.on_play)
+        play_action.triggered.connect(lambda: self.open_emu_action())
         play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
         menu_toolbar.addSeparator()
         menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
@@ -313,46 +311,6 @@ class MainWindow(QMainWindow):
         world, level = world_and_level_for_level_address(level_address)
 
         self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
-
-    def on_play(self):
-        """
-        Copies the ROM, including the current level, to a temporary directory, saves the current level as level 1-1 and
-        opens the rom in an emulator.
-        """
-        temp_dir = pathlib.Path(tempfile.gettempdir()) / "smb3foundry"
-        temp_dir.mkdir(parents=True, exist_ok=True)
-
-        path_to_temp_rom = temp_dir / "instaplay.rom"
-
-        ROM().save_to(path_to_temp_rom)
-
-        if not self.save_to_first_level_action(path_to_temp_rom):
-            return
-
-        arg = str(get_setting("instaplay_arguments", ""))
-        if not arg:
-            arguments = str(path_to_temp_rom)
-        else:
-            arguments = str(get_setting("instaplay_arguments", "")).replace("%f", str(path_to_temp_rom))
-        arguments = shlex.split(arguments, posix=False)
-
-        emu_path = pathlib.Path(str(get_setting("instaplay_emulator", "")))
-
-        if emu_path.is_absolute():
-            if emu_path.exists():
-                emulator = str(emu_path)
-            else:
-                QMessageBox.critical(
-                    self, "Emulator not found", f"Check it under File > Settings.\nFile {emu_path} not found."
-                )
-                return
-        else:
-            emulator = get_setting("instaplay_emulator", "")
-
-        try:
-            subprocess.run([emulator, *arguments])
-        except Exception as e:
-            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
 
     def on_screenshot(self, _) -> bool:
         if self.level_view is None:
