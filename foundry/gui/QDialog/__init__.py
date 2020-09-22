@@ -6,6 +6,8 @@ Dialog: The extended dialog of QDialog
 from PySide2.QtGui import Qt, QKeyEvent
 from PySide2.QtWidgets import QDialog
 
+from foundry.core.Settings.util import _main_container
+from foundry.core.util.get_gui_style import get_gui_style
 
 from foundry.gui.QCore.util import DefaultSizePartial
 
@@ -17,6 +19,9 @@ class Dialog(QDialog, DefaultSizePartial):
         DefaultSizePartial.__init__(self)
         self.setWindowTitle(title)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.setStyleSheet(get_gui_style())
+        # Basically updates the dialog whenever the setting changes, very magical
+        _main_container.observe_setting("gui_style", lambda *_: self.setStyleSheet(get_gui_style()))
 
     def keyPressEvent(self, event: QKeyEvent):
         """The action when a key is pressed"""
