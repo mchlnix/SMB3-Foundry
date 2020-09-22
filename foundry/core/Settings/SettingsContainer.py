@@ -123,7 +123,7 @@ class SettingsContainer:
                 raise KeyError(f"{name} is not a setting")
             self._create_setting(name)
 
-        self.settings_states[name]().observer.attach_observer(lambda value: receiver(value))
+        self.settings[name]().observer.attach_observer(lambda value: receiver(value))
 
     def _create_setting(self, name: str) -> None:
         _logger.debug(f"{self} initializing setting with {name}")
