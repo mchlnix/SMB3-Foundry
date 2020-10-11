@@ -4,7 +4,8 @@ from typing import Optional
 
 from PySide2.QtCore import QSize
 from PySide2.QtGui import QPaintEvent, QPainter
-from PySide2.QtWidgets import QWidget
+from PySide2.QtWidgets import QWidget, QGridLayout
+from PySide2.QtGui import Qt
 
 from foundry.core.geometry.Position.Position import Position
 from foundry.core.geometry.Size.Size import Size
@@ -15,6 +16,9 @@ from foundry.game.File import ROM, TSA_TABLE_SIZE, TSA_TABLE_INTERVAL
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import PaletteSet
 from foundry.game.gfx.drawable.Block import Block
+
+from foundry.gui.Custom.Block.Block import BlockWidget
+from foundry.gui.QCore import MARGIN_TIGHT
 
 
 class TileSquareAssemblyViewer(QWidget):
@@ -28,27 +32,28 @@ class TileSquareAssemblyViewer(QWidget):
             ) -> None:
         super().__init__(parent)
         self.parent = parent
-        self.can_update = False
+        self.blocks = []
         self.pattern_table = ptn_tbl
         self.palette_set = pal_set
         self.size = Size(1, 1)
         self.tsa_offset = tsa_offset
-        self._tsa_data = None
-        self.can_update = True
-        self.update()
 
-    def synthetic_update(self):
-        """Updates the widget safely and quickly"""
-        if self.can_update:
-            self.update()
+        self._set_up_layout()
 
-    @property
-    def tsa_data(self) -> bytearray:
-        """Find the tsa data from a given offset"""
-        if not self._tsa_data:
-            return ROM().bulk_read(TSA_TABLE_SIZE, (self.tsa_offset * TSA_TABLE_INTERVAL) + 0x10)
-        else:
-            return self._tsa_data
+    def _set_up_layout(self) -> None:
+        """Returns the widgets layout"""
+        grid_layout = QGridLayout()
+        grid_layout.setSpacing(MARGIN_TIGHT)
+        grid_layout.setDefaultPositioning(0x10, Qt.Horizontal)
+        for idx in range(0x100):
+            sprite = BlockWidget(
+                self, f"block_{idx}", self.size, idx, self.pattern_table, self.palette_set, self.tsa_offset,
+                self.transparency
+            )
+            self.blocks.append(sprite)
+            grid_layout.addWidget(sprite)
+
+        self.setLayout(grid_layout)
 
     @property
     def tsa_offset(self) -> int:
@@ -58,7 +63,8 @@ class TileSquareAssemblyViewer(QWidget):
     @tsa_offset.setter
     def tsa_offset(self, offset: int) -> None:
         self._tsa_offset = offset
-        self.synthetic_update()
+        for block in self.blocks:
+            block.tsa_offset = offset
 
     @property
     def pattern_table(self) -> PatternTableHandler:
@@ -68,7 +74,8 @@ class TileSquareAssemblyViewer(QWidget):
     @pattern_table.setter
     def pattern_table(self, pattern_table: PatternTableHandler) -> None:
         self._pattern_table = pattern_table
-        self.synthetic_update()
+        for block in self.blocks:
+            block.pattern_table = pattern_table
 
     @property
     def size(self) -> Size:
@@ -78,7 +85,8 @@ class TileSquareAssemblyViewer(QWidget):
     @size.setter
     def size(self, size: Size) -> None:
         self._size = size
-        self.synthetic_update()
+        for block in self.blocks:
+            block.size = size
 
     @property
     def palette_set(self) -> PaletteSet:
@@ -88,32 +96,11 @@ class TileSquareAssemblyViewer(QWidget):
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
         self._palette_set = palette_set
-        self.synthetic_update()
+        for block in self.blocks:
+            block.palette_set = palette_set
 
     @property
     def transparency(self) -> bool:
         """Determines if the blocks will be transparent"""
         return get_setting("block_transparency", True)
 
-    def sizeHint(self):
-        """The ideal size of the widget"""
-        return QSize(Block.image_length * self.size.width, Block.image_height * self.size.height)
-
-    def paintEvent(self, event: QPaintEvent) -> None:
-        """Paints the widget"""
-        painter = QPainter(self)
-
-        for i in range(0x100):
-            block = Block.from_rom(i, self.palette_set, self.pattern_table, self.tsa_data)
-
-            x = (i % 0x10) * Block.image_length * self.size.width
-            y = (i // 0x10) * Block.image_height * self.size.height
-
-            block.draw(
-                painter,
-                Position(x, y),
-                Size(Block.image_length * self.size.width, Block.image_length * self.size.width),
-                transparent=self.transparency
-            )
-
-        super().paintEvent(event)
