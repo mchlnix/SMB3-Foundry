@@ -2,20 +2,14 @@
 
 from typing import Optional
 
-from PySide2.QtCore import QSize
-from PySide2.QtGui import QPaintEvent, QPainter
 from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtGui import Qt
 
-from foundry.core.geometry.Position.Position import Position
 from foundry.core.geometry.Size.Size import Size
 from foundry.core.Settings.util import get_setting
 
-from foundry.game.File import ROM, TSA_TABLE_SIZE, TSA_TABLE_INTERVAL
-
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import PaletteSet
-from foundry.game.gfx.drawable.Block import Block
 
 from foundry.gui.Custom.Block.Block import BlockWidget
 from foundry.gui.QCore import MARGIN_TIGHT
