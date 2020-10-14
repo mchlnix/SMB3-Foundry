@@ -7,6 +7,8 @@ from PySide2.QtGui import Qt
 
 from foundry import icon
 
+from foundry.core.geometry.Size.Size import Size
+
 from foundry.gui.QMenus.Menu.MenuFileLight import FileMenuLight
 from foundry.gui.QMainWindow.ChildWindow import ChildWindow
 from foundry.gui.QToolbar import Toolbar
@@ -14,6 +16,8 @@ from foundry.gui.Custom.Palette import PaletteSetEditor
 from foundry.gui.Custom.Palette.Selector import PaletteSelector
 from foundry.gui.QSpinner.HexSpinner import HexSpinner
 from foundry.gui.QWidget.Panel import Panel
+from foundry.gui.Custom.Block.BlockEditor import BlockEditor
+from foundry.gui.Custom.Block.Block import BlockWidget
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import load_palette
@@ -52,6 +56,14 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         ptn_tbl = PatternTableHandler.from_tileset(1)
         palette = load_palette(1, 0)
         tsa_offset = 15
+
+        self.block_editor_toolbox = Toolbar.default_toolbox(
+            self, "block_editor_toolbar", BlockEditor(
+                self, BlockWidget(
+                    self, "Block", Size(3, 3), 0, ptn_tbl, palette, tsa_offset
+                )
+            ), Qt.RightToolBarArea
+        )
 
         self.tsa_viewer = TileSquareAssemblyViewer(self, ptn_tbl, palette, tsa_offset)
         self.setCentralWidget(self.tsa_viewer)
