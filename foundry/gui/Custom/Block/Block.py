@@ -1,6 +1,6 @@
 """
-This module includes the SpriteGraphicWidget
-SpriteGraphicWidget: A widget that handles a SpriteGraphic
+This module includes the BlockWidget
+BlockWidget: A widget that handles a Block in terms of Qt space
 """
 
 
@@ -25,7 +25,7 @@ from foundry.core.geometry.Size.Size import Size
 
 
 class BlockWidget(Widget, AbstractActionObject):
-    """A class for keeping track of a SpriteGraphic"""
+    """A class for keeping track of a Block"""
     refresh_event_action: Action  # Used internally for redrawing the widget
     block_update_action: Action  # Updates whenever something that defines the block changes
     size_update_action: Action  # Updates when the size updates
