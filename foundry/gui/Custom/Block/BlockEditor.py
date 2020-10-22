@@ -1,28 +1,23 @@
 
 
 from typing import Optional, List
-from dataclasses import dataclass
 from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtGui import Qt
 
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
+from foundry.game.gfx.Palette import PaletteSet
 
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
-
-from foundry.game.gfx.PatternTableHandler import PatternTableHandler
-
 from foundry.core.Action.Action import Action
-from foundry.gui.QCore.Tracker import AbstractActionObject
-
-from foundry.gui.Custom.Block.Block import BlockWidget
-from foundry.gui.QSpinner import Spinner
-from foundry.gui.QSpinner.HexSpinner import HexSpinner
-from foundry.gui.QWidget import Widget
-from foundry.gui.QWidget.Panel import Panel
-
-from foundry.core.geometry.Position.Position import Position
 from foundry.core.geometry.Size.Size import Size
 
-from foundry.game.gfx.Palette import PaletteSet
+from foundry.gui.QCore.Tracker import AbstractActionObject
+from foundry.gui.Custom.Block.Block import BlockWidget
+from foundry.gui.QSpinner.HexSpinner import HexSpinner
+from foundry.gui.QWidget import Widget
+
+
+
 
 
 class BlockEditor(Widget, AbstractActionObject):
