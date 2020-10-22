@@ -43,10 +43,19 @@ class AbstractBlock:
     def size(self) -> Size:
         """The size of the block in units of 16 pixels"""
 
+    @size.setter
+    @abstractmethod
+    def size(self, size: Size) -> None:
+        """"""
+
     @property
     @abstractmethod
     def index(self) -> int:
         """The index of the block"""
+
+    @index.setter
+    def index(self, index: int) -> None:
+        """"""
 
     @property
     @abstractmethod
@@ -58,15 +67,30 @@ class AbstractBlock:
     def pattern_table(self) -> PatternTableHandler:
         """The pattern table for the tiles"""
 
+    @pattern_table.setter
+    @abstractmethod
+    def pattern_table(self, pattern_table: PatternTableHandler) -> None:
+        """"""
+
     @property
     @abstractmethod
     def palette_set(self) -> PaletteSet:
         """The palette currently used by the tsa"""
 
+    @palette_set.setter
+    @abstractmethod
+    def palette_set(self, palette_set: PaletteSet) -> None:
+        """"""
+
     @property
     @abstractmethod
     def transparency(self) -> bool:
         """Determines if the blocks will be transparent"""
+
+    @transparency.setter
+    @abstractmethod
+    def transparency(self, transparency: bool) -> None:
+        """"""
 
     @property
     def block(self) -> Block:
