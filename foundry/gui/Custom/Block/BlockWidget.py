@@ -23,6 +23,8 @@ from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.core.geometry.Position.Position import Position
 from foundry.core.geometry.Size.Size import Size
 
+from .AbstractBlock import AbstractBlock
+
 
 class BlockWidget(Widget, AbstractActionObject):
     """A class for keeping track of a Block"""

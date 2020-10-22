@@ -1,5 +1,5 @@
 """
-This module includes the BlockAbstract
+This module includes the AbstractBlock
 BlockWidget: An abstract representation of what a block is.  Unlike gfx/Block this is meant to retain state.
 """
 
@@ -16,7 +16,7 @@ from foundry.core.geometry.Position.Position import Position
 from foundry.core.geometry.Size.Size import Size
 
 
-class BlockAbstract:
+class AbstractBlock:
     """The abstract representation of a block"""
     def __init__(
             self,
