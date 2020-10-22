@@ -12,7 +12,7 @@ from foundry.core.Action.Action import Action
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 
 from foundry.gui.QCore.Tracker import PartialTrackingObject
-from foundry.gui.Custom.Block.Block import BlockWidget
+from foundry.gui.Custom.Block.BlockWidget import BlockWidget
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import PaletteSet
