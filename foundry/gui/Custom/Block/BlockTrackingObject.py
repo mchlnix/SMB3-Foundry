@@ -14,25 +14,19 @@ from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QCore.Tracker import PartialTrackingObject
 from foundry.gui.Custom.Block.BlockWidget import BlockWidget
 
-from foundry.game.gfx.PatternTableHandler import PatternTableHandler
-from foundry.game.gfx.Palette import PaletteSet
-from foundry.core.geometry.Size.Size import Size
+from .AbstractBlock import AbstractBlock
 
 
 class BlockTrackingObject(PartialTrackingObject, BlockWidget):
     """A Block that acts like a button"""
+
     def __init__(
             self,
             parent: Optional[QWidget],
             name: str,
-            size: Optional[Size],
-            index: int,
-            ptn_tbl: PatternTableHandler,
-            pal_set: PaletteSet,
-            tsa_offset: int,
-            transparency: bool = True
+            block: AbstractBlock
     ) -> None:
-        BlockWidget.__init__(self, parent, name, size, index, ptn_tbl, pal_set, tsa_offset, transparency)
+        BlockWidget.__init__(self, parent, name, block)
         PartialTrackingObject.__init__(self)
 
     def get_actions(self) -> List[Action]:
