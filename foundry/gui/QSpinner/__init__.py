@@ -14,6 +14,9 @@ from foundry.core.Action.AbstractActionObject import AbstractActionObject
 
 class Spinner(QSpinBox, AbstractActionObject, DefaultSizePartial):
     """A generic spinner with extended functionality"""
+    value_changed_action: Action  # Updates when the value inside the spinner changes
+    text_changed_action: Action  # Updates when the text inside the spinner changes
+
     def __init__(self, parent: Optional[QWidget], minimum=0, maximum=0xFFFFFF):
         QSpinBox.__init__(self, parent)
         AbstractActionObject.__init__(self)
