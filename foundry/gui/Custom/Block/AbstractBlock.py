@@ -100,6 +100,6 @@ class AbstractBlock:
     def draw(self, painter: QPainter, position: Position, size: Optional[Size] = None,
              transparency: Optional[bool] = None):
         """Draws the block to a given point"""
-        size = size if size is not None else self.size
+        size = size if size is not None else self.size * 16
         transparency = transparency if transparency is not None else self.transparency
         self.block.draw(painter, position, size, transparency)
