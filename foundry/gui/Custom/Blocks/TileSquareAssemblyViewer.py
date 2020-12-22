@@ -65,7 +65,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
-        for block in self.block:
+        for block in self.blocks:
             block.refresh_event_action.observer.attach_observer(lambda *_: self.refresh_event_action())
 
     def get_actions(self) -> List[Action]:
