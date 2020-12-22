@@ -46,7 +46,6 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         self.tsa_data = tsa_data
 
         self._set_up_layout()
-        self._initialize_internal_observers()
 
     @classmethod
     def from_tsa(
@@ -73,11 +72,6 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
             grid_layout.addWidget(sprite)
 
         self.setLayout(grid_layout)
-
-    def _initialize_internal_observers(self) -> None:
-        """Initializes internal observers for special events"""
-        for block in self.blocks:
-            block.refresh_event_action.observer.attach_observer(lambda *_: self.refresh_event_action())
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
