@@ -102,4 +102,4 @@ class AbstractBlock:
         """Draws the block to a given point"""
         size = size if size is not None else self.size * 16
         transparency = transparency if transparency is not None else self.transparency
-        self.block.draw(painter, position, size, transparency)
+        self.block.draw(painter, position, size, transparent=transparency)
