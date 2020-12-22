@@ -68,7 +68,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
             ), Qt.RightToolBarArea
         )
 
-        self.tsa_viewer = TileSquareAssemblyViewer(self, ptn_tbl, palette, tsa_offset)
+        self.tsa_viewer = TileSquareAssemblyViewer.from_tsa(self, ptn_tbl, palette, tsa_offset)
         self.setCentralWidget(self.tsa_viewer)
 
         self.showMaximized()

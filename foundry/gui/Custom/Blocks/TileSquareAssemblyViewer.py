@@ -24,7 +24,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
     """A widget that views the TSA"""
     refresh_event_action: Action  # Used internally for redrawing the widget
     size_update_action: Action  # Updates when the size updates
-    tsa_offset_update_action: Action  # Updates when the tsa offset updates
+    tsa_data_update_action: Action  # Updates when the tsa offset updates
     palette_set_update_action: Action  # Updates when the palette set updates
     pattern_table_update_action: Action  # Update when the pattern table updates
 
@@ -34,7 +34,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
             parent: Optional[QWidget],
             ptn_tbl: PatternTableHandler,
             pal_set: PaletteSet,
-            tsa_offset: int
+            tsa_data: bytearray
             ) -> None:
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
@@ -43,10 +43,23 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         self.pattern_table = ptn_tbl
         self.palette_set = pal_set
         self.size = Size(1, 1)
-        self.tsa_offset = tsa_offset
+        self.tsa_data = tsa_data
 
         self._set_up_layout()
         self._initialize_internal_observers()
+
+    @classmethod
+    def from_tsa(
+            cls,
+            parent: Optional[QWidget],
+            ptn_tbl: PatternTableHandler,
+            pal_set: PaletteSet,
+            tsa_offset: int
+    ):
+        """Generates a TSA viewer from a given offset"""
+        from foundry.game.File import ROM, TSA_TABLE_SIZE, TSA_TABLE_INTERVAL
+        tsa_data = ROM().bulk_read(TSA_TABLE_SIZE, (tsa_offset * TSA_TABLE_INTERVAL) + 0x10)
+        return cls(parent, ptn_tbl, pal_set, tsa_data)
 
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
@@ -55,8 +68,8 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         grid_layout.setDefaultPositioning(0x10, Qt.Horizontal)
         for idx in range(0x100):
             sprite = BlockTrackingObject(
-                self, f"block_{idx}", Block.from_tsa(
-                    self.size, idx, self.pattern_table, self.palette_set, self.tsa_offset, self.transparency)
+                self, f"block_{idx}", Block(
+                    self.size, idx, self.pattern_table, self.palette_set, self.tsa_data, self.transparency)
             )
             self.blocks.append(sprite)
             grid_layout.addWidget(sprite)
@@ -73,22 +86,20 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         return [
             Action("refresh_event", ObservableDecorator(lambda *_: self.update())),
             Action("size_update", ObservableDecorator(lambda size: size)),
-            Action("tsa_offset_update", ObservableDecorator(lambda tsa_offset: tsa_offset)),
+            Action("tsa_data_update", ObservableDecorator(lambda tsa_offset: tsa_offset)),
             Action("palette_set_update", ObservableDecorator(lambda palette_set: palette_set)),
             Action("pattern_table_update", ObservableDecorator(lambda pattern_table: pattern_table)),
         ]
 
     @property
-    def tsa_offset(self) -> int:
-        """The offset in banks to the current tsa"""
-        return self._tsa_offset
+    def tsa_data(self) -> bytearray:
+        """Find the tsa data from a given offset"""
+        return self._tsa_data
 
-    @tsa_offset.setter
-    def tsa_offset(self, offset: int) -> None:
-        self._tsa_offset = offset
-        for block in self.blocks:
-            block.tsa_offset = offset
-        self.tsa_offset_update_action(self._tsa_offset)
+    @tsa_data.setter
+    def tsa_data(self, tsa_data: bytearray) -> None:
+        self._tsa_data = tsa_data
+        self.tsa_data_update_action(self._pattern_table)
 
     @property
     def pattern_table(self) -> PatternTableHandler:
