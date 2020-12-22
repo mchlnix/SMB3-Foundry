@@ -1,22 +1,26 @@
 
 
-from typing import Optional
+from typing import Optional, List
 
 from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtGui import Qt
 
 from foundry.core.geometry.Size.Size import Size
 from foundry.core.Settings.util import get_setting
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
+from foundry.core.Action.Action import Action
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import PaletteSet
 from foundry.gui.Custom.Block.Block import Block
 
+from foundry.gui.QCore.Tracker import AbstractActionObject
 from foundry.gui.Custom.Block.BlockTrackingObject import BlockTrackingObject
 from foundry.gui.QCore import MARGIN_TIGHT
+from foundry.gui.QWidget import Widget
 
 
-class TileSquareAssemblyViewer(QWidget):
+class TileSquareAssemblyViewer(Widget, AbstractActionObject):
     """Views the tile in a given tsa"""
     def __init__(
             self,
@@ -25,7 +29,8 @@ class TileSquareAssemblyViewer(QWidget):
             pal_set: PaletteSet,
             tsa_offset: int
             ) -> None:
-        super().__init__(parent)
+        Widget.__init__(self, parent)
+        AbstractActionObject.__init__(self)
         self.parent = parent
         self.blocks = []
         self.pattern_table = ptn_tbl
@@ -49,6 +54,14 @@ class TileSquareAssemblyViewer(QWidget):
             grid_layout.addWidget(sprite)
 
         self.setLayout(grid_layout)
+
+    def get_actions(self) -> List[Action]:
+        """Gets the actions for the object"""
+        return [
+            Action("refresh_event", ObservableDecorator(lambda *_: self.update())),
+            Action("size_update", ObservableDecorator(lambda size: size)),
+            Action("values_changed", ObservableDecorator(lambda palette_set: palette_set)),
+        ]
 
     @property
     def tsa_offset(self) -> int:
