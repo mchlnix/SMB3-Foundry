@@ -12,12 +12,9 @@ from foundry.core.Action.Action import Action
 from foundry.core.geometry.Size.Size import Size
 
 from foundry.gui.QCore.Tracker import AbstractActionObject
-from foundry.gui.Custom.Block.Block import BlockWidget
+from foundry.gui.Custom.Block.BlockWidget import BlockWidget
 from foundry.gui.QSpinner.HexSpinner import HexSpinner
 from foundry.gui.QWidget import Widget
-
-
-
 
 
 class BlockEditor(Widget, AbstractActionObject):
