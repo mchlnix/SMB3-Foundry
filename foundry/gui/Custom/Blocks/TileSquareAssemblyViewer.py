@@ -10,8 +10,9 @@ from foundry.core.Settings.util import get_setting
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import PaletteSet
+from foundry.gui.Custom.Block.Block import Block
 
-from foundry.gui.Custom.Block.Block import BlockWidget
+from foundry.gui.Custom.Block.BlockTrackingObject import BlockTrackingObject
 from foundry.gui.QCore import MARGIN_TIGHT
 
 
@@ -40,9 +41,9 @@ class TileSquareAssemblyViewer(QWidget):
         grid_layout.setSpacing(MARGIN_TIGHT)
         grid_layout.setDefaultPositioning(0x10, Qt.Horizontal)
         for idx in range(0x100):
-            sprite = BlockWidget(
-                self, f"block_{idx}", self.size, idx, self.pattern_table, self.palette_set, self.tsa_offset,
-                self.transparency
+            sprite = BlockTrackingObject(
+                self, f"block_{idx}", Block.from_tsa(
+                    self.size, idx, self.pattern_table, self.palette_set, self.tsa_offset, self.transparency)
             )
             self.blocks.append(sprite)
             grid_layout.addWidget(sprite)
