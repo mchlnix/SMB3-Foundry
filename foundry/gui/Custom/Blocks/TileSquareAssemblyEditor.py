@@ -18,6 +18,7 @@ from foundry.gui.QSpinner.HexSpinner import HexSpinner
 from foundry.gui.QWidget.Panel import Panel
 from foundry.gui.Custom.Block.BlockEditor import BlockEditor
 from foundry.gui.Custom.Block.BlockWidget import BlockWidget
+from foundry.gui.Custom.Block.Block import Block
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import load_palette
@@ -60,7 +61,9 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         self.block_editor_toolbox = Toolbar.default_toolbox(
             self, "block_editor_toolbar", BlockEditor(
                 self, BlockWidget(
-                    self, "Block", Size(3, 3), 0, ptn_tbl, palette, tsa_offset
+                    self, "Block", Block.from_tsa(
+                        Size(3, 3), 0, ptn_tbl, palette, tsa_offset
+                    )
                 )
             ), Qt.RightToolBarArea
         )
