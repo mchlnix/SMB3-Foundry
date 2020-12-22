@@ -57,9 +57,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
             tsa_offset: int
     ):
         """Generates a TSA viewer from a given offset"""
-        from foundry.game.File import ROM, TSA_TABLE_SIZE, TSA_TABLE_INTERVAL
-        tsa_data = ROM().bulk_read(TSA_TABLE_SIZE, (tsa_offset * TSA_TABLE_INTERVAL) + 0x10)
-        return cls(parent, ptn_tbl, pal_set, tsa_data)
+        return cls(parent, ptn_tbl, pal_set, cls.tsa_data_from_tsa_offset(tsa_offset))
 
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
@@ -90,6 +88,12 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
             Action("palette_set_update", ObservableDecorator(lambda palette_set: palette_set)),
             Action("pattern_table_update", ObservableDecorator(lambda pattern_table: pattern_table)),
         ]
+
+    @staticmethod
+    def tsa_data_from_tsa_offset(tsa_offset: int) -> bytearray:
+        """Returns the tsa data from a given offset"""
+        from foundry.game.File import ROM, TSA_TABLE_SIZE, TSA_TABLE_INTERVAL
+        return ROM().bulk_read(TSA_TABLE_SIZE, (tsa_offset * TSA_TABLE_INTERVAL) + 0x10)
 
     @property
     def tsa_data(self) -> bytearray:
