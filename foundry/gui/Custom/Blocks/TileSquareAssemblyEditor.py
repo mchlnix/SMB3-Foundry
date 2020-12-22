@@ -37,8 +37,10 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         self.file_menu = FileMenuLight(self)
         self.menuBar().addMenu(self.file_menu)
 
+        self.tileset_spinner = HexSpinner(self, maximum=0xFF)
+        self.tileset_spinner.setValue(15)
         self.tileset_toolbar = Toolbar.default_toolbox(
-            self, "tileset_toolbar", Panel(self, "Tileset", HexSpinner(self, 0, 0xFF)), Qt.RightToolBarArea
+            self, "tileset_toolbar", Panel(self, "Tileset", self.tileset_spinner), Qt.RightToolBarArea
         )
 
         self.tsa_offset = Toolbar.default_toolbox(
@@ -70,6 +72,13 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
 
         self.tsa_viewer = TileSquareAssemblyViewer.from_tsa(self, ptn_tbl, palette, tsa_offset)
         self.setCentralWidget(self.tsa_viewer)
+
+        self.tileset_spinner.value_changed_action.observer.attach_observer(
+            lambda offset: print(f"This is the offset {offset}")
+        )
+        self.tileset_spinner.value_changed_action.observer.attach_observer(
+            lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(offset))
+        )
 
         self.showMaximized()
 
