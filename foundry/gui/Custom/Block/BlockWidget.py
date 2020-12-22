@@ -63,6 +63,11 @@ class BlockWidget(Widget, AbstractActionObject):
         """Find the tsa data from a given offset"""
         return self.block.tsa_data
 
+    @tsa_data.setter
+    def tsa_data(self, tsa_data: bytearray) -> None:
+        self.block.tsa_data = tsa_data
+        self.refresh_event_action()
+
     @property
     def pattern_table(self) -> PatternTableHandler:
         """The pattern table for the tiles"""

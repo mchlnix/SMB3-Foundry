@@ -62,6 +62,11 @@ class AbstractBlock:
     def tsa_data(self) -> bytearray:
         """Find the tsa data from a given offset"""
 
+    @tsa_data.setter
+    @abstractmethod
+    def tsa_data(self, tsa_data: bytearray) -> None:
+        """"""
+
     @property
     @abstractmethod
     def pattern_table(self) -> PatternTableHandler:
