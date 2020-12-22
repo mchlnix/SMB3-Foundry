@@ -97,7 +97,10 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
     @tsa_data.setter
     def tsa_data(self, tsa_data: bytearray) -> None:
         self._tsa_data = tsa_data
-        self.tsa_data_update_action(self._pattern_table)
+        for block in self.blocks:
+            block.tsa_data = self._tsa_data
+        self.tsa_data_update_action(self.tsa_data)
+        self.refresh_event_action()
 
     @property
     def pattern_table(self) -> PatternTableHandler:
@@ -110,6 +113,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         for block in self.blocks:
             block.pattern_table = pattern_table
         self.pattern_table_update_action(self._pattern_table)
+        self.refresh_event_action()
 
     @property
     def size(self) -> Size:
@@ -122,6 +126,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         for block in self.blocks:
             block.size = size
         self.size_update_action(self._size)
+        self.refresh_event_action()
 
     @property
     def palette_set(self) -> PaletteSet:
@@ -134,6 +139,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         for block in self.blocks:
             block.palette_set = palette_set
         self.palette_set_update_action(self._palette_set)
+        self.refresh_event_action()
 
     @property
     def transparency(self) -> bool:
