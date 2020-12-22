@@ -74,9 +74,6 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         self.setCentralWidget(self.tsa_viewer)
 
         self.tileset_spinner.value_changed_action.observer.attach_observer(
-            lambda offset: print(f"This is the offset {offset}")
-        )
-        self.tileset_spinner.value_changed_action.observer.attach_observer(
             lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(offset))
         )
 
