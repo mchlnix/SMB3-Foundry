@@ -51,6 +51,9 @@ class Palette:
     color_2: Color
     color_3: Color
 
+    def __str__(self) -> str:
+        return f"({self[0]}),({self[1]}),({self[2]}),({self[3]})"
+
     def __getitem__(self, item: int) -> Color:
         if item == 0:
             return self.color_0
