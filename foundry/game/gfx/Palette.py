@@ -6,6 +6,8 @@ from yaml import CLoader
 
 from PySide2.QtGui import QColor
 
+from smb3parse.asm6_converter import to_hex
+
 from foundry import root_dir
 from foundry.game.File import ROM
 from foundry.core.util import ROM_HEADER_OFFSET
@@ -42,6 +44,15 @@ class Color(NamedTuple):
     def __str__(self) -> str:
         return f"{self.red}, {self.green}, {self.blue}"
 
+    @property
+    def nes_index(self) -> Optional[int]:
+        """Returns the estimated index of the color in terms of the NES palette"""
+        return PaletteController().get_index_from_color(self)
+
+    @property
+    def nes_str(self) -> str:
+        """Returns the color as a NES string"""
+        return to_hex(self.nes_index)
 
 @dataclass
 class Palette:
