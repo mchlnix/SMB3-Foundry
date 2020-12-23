@@ -26,6 +26,13 @@ class PartialTrackingObject:
     Note: must implement setMouseTracking
     This is mainly meant to extend QWidgets and not cause inheritance issues
     """
+
+    pressed_action: Action  # Sends a signal whenever pressed
+    released_action: Action  # Sends a signal whenever released
+    single_clicked_action: Action  # Sends a signal whenever only a single click is detected
+    double_clicked_action: Action  # Sends a signal whenever double clicked
+    mouse_moved_action: Action  # Sends a signal whenever the mouse is moved
+
     def __init__(self):
         self.last = None
         self.setMouseTracking(True)
