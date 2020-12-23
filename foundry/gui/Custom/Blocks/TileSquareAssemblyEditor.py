@@ -106,6 +106,16 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         self._push_palette_set()
 
     @property
+    def palette(self) -> Palette:
+        """The palette used by the editor"""
+        return self.palette_set[self.palette_index]
+
+    @palette.setter
+    def palette(self, palette: Palette) -> None:
+        self._palette_set[self.palette_index] = palette
+        self._push_palette_set()
+
+    @property
     def palette_index(self) -> int:
         """The index of the currently active palette"""
         return self._palette_index
