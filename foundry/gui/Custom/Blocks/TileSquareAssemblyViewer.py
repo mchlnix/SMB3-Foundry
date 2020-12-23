@@ -60,18 +60,20 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         return cls(parent, ptn_tbl, pal_set, cls.tsa_data_from_tsa_offset(tsa_offset))
 
     def _set_up_layout(self) -> None:
-        """Returns the widgets layout"""
+        def closure(i):
+            """Keep the idx in scope"""
+            return lambda *_: self.single_clicked_action(i)
+
         grid_layout = QGridLayout()
         grid_layout.setSpacing(MARGIN_TIGHT)
         grid_layout.setDefaultPositioning(0x10, Qt.Horizontal)
+
         for idx in range(0x100):
             sprite = BlockTrackingObject(
                 self, f"block_{idx}", Block(
                     self.size, idx, self.pattern_table, self.palette_set, self.tsa_data, self.transparency)
             )
-            sprite.single_clicked_action.observer.attach_observer(
-                lambda *_: self.single_clicked_action(idx)
-            )
+            sprite.single_clicked_action.observer.attach_observer(closure(idx))
             self.blocks.append(sprite)
             grid_layout.addWidget(sprite)
 
