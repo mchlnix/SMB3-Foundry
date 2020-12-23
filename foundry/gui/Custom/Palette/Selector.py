@@ -18,6 +18,10 @@ from foundry.core.Action.AbstractActionObject import AbstractActionObject
 
 class PaletteSelector(Widget, AbstractActionObject):
     """A widget to help edit a single palette"""
+
+    palette_set_changed_action: Action  # Updated whenever the palette_set is changed
+    palette_changed_action: Action  # Updated whenever the palette is changed
+
     def __init__(
             self, parent: Optional[QWidget], index: int, palette: Optional[PaletteSet] = DEFAULT_PALETTE_SET
     ) -> None:
