@@ -10,6 +10,7 @@ from foundry import icon
 from foundry.core.geometry.Size.Size import Size
 
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
+from foundry.game.gfx.Palette import PaletteSet, Palette
 from foundry.gui.QMenus.Menu.MenuFileLight import FileMenuLight
 from foundry.gui.QMainWindow.ChildWindow import ChildWindow
 from foundry.gui.QToolbar import Toolbar
