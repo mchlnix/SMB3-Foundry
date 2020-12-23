@@ -136,11 +136,11 @@ class BlockEditor(Widget, AbstractActionObject):
 
     def _update_changed_values(self):
         """Returns the changed values from the spinners"""
-        self.values_changed_action.observer([spinner.value() for spinner in self.spinners])
+        return self.values_changed_action.observer([spinner.value() for spinner in self.spinners])
 
     def _update_text_values(self):
         """Returns the changed text from the spinners"""
-        self.text_changed_action.observer([spinner.text() for spinner in self.spinners])
+        return self.text_changed_action.observer([spinner.text() for spinner in self.spinners])
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
