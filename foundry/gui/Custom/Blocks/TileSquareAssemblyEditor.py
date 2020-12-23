@@ -87,6 +87,14 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
 
         self.showMaximized()
 
+    def _push_palette_set(self) -> None:
+        """Pushes the palette set to the gui"""
+        self.color_picker._palette_set = self.palette_set  # Note: Push directly to avoid recursion issues
+        self.color_picker._push_palette_set()
+        self.palette_selector._palette_set = self.palette_set
+        self.palette_selector._update_palette()
+        self.tsa_viewer.palette_set = self.palette_set
+
     @property
     def palette_set(self) -> PaletteSet:
         """The palette set used by the editor"""
@@ -94,10 +102,8 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
 
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
-        if palette_set != self.palette_set:
-            self.palette_set = palette_set
-            self.color_picker.palette = self.palette_set
-            self.palette_selector.palette = self.palette_set
+        self._palette_set = palette_set
+        self._push_palette_set()
 
     @property
     def palette_index(self) -> int:
