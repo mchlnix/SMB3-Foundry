@@ -64,14 +64,11 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
             self, "color_picker_toolbar", self.color_picker, Qt.RightToolBarArea
         )
 
+        self.block_editor = BlockEditor(self, BlockWidget(
+                self, "Block", Block.from_tsa(Size(3, 3), 0, self.pattern_table, self.palette_set, self.offset)
+        ))
         self.block_editor_toolbox = Toolbar.default_toolbox(
-            self, "block_editor_toolbar", BlockEditor(
-                self, BlockWidget(
-                    self, "Block", Block.from_tsa(
-                        Size(3, 3), 0, self.pattern_table, self.palette_set, self.offset
-                    )
-                )
-            ), Qt.RightToolBarArea
+            self, "block_editor_toolbar", self.block_editor, Qt.RightToolBarArea
         )
 
         self.tsa_viewer = TileSquareAssemblyViewer.from_tsa(self, self.pattern_table, self.palette_set, self.offset)
