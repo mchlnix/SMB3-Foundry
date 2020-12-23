@@ -150,7 +150,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
     @property
     def offset(self) -> int:
         """The offset to the bank for the tsa"""
-        return self._offste
+        return self._offset
 
     @offset.setter
     def offset(self, offset: int) -> None:
