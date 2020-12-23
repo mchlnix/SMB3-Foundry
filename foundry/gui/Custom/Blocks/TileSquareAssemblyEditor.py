@@ -44,8 +44,9 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
             self, "tileset_toolbar", Panel(self, "Tileset", self.tileset_spinner), Qt.RightToolBarArea
         )
 
+        self._offset = 15
         self.offset_spinner = HexSpinner(self, maximum=0xFF)
-        self.offset_spinner.setValue(15)
+        self.offset_spinner.setValue(self.offset)
         self.tsa_offset = Toolbar.default_toolbox(
             self, "offset", Panel(self, "Offset", self.offset_spinner), Qt.RightToolBarArea
         )
