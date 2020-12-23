@@ -37,6 +37,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         self.file_menu = FileMenuLight(self)
         self.menuBar().addMenu(self.file_menu)
 
+        self._tileset = 1
         self.tileset_spinner = HexSpinner(self, maximum=0xFF)
         self.tileset_spinner.setValue(1)
         self.tileset_toolbar = Toolbar.default_toolbox(
@@ -127,3 +128,12 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         if index != self.palette_index:
             self.palette_index = index
             self.palette_selector.index = self.palette_index
+
+    @property
+    def tileset(self) -> int:
+        """The tileset of the current tsa"""
+        return self._tileset
+
+    @tileset.setter
+    def tileset(self, tileset: int) -> None:
+        self._tileset = tileset
