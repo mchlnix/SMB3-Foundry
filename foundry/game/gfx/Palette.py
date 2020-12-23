@@ -87,6 +87,9 @@ class PaletteSet:
     palette_2: Palette
     palette_3: Palette
 
+    def __str__(self) -> str:
+        return f"({self[0]}),({self[1]}),({self[2]}),({self[3]})"
+
     def __getitem__(self, item: int) -> Palette:
         if item == 0:
             return self.palette_0
