@@ -27,6 +27,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
     tsa_data_update_action: Action  # Updates when the tsa offset updates
     palette_set_update_action: Action  # Updates when the palette set updates
     pattern_table_update_action: Action  # Update when the pattern table updates
+    single_clicked_action: Action  # Sends a signal of a block that was just clicked
 
     """Views the tile in a given tsa"""
     def __init__(
@@ -68,6 +69,9 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
                 self, f"block_{idx}", Block(
                     self.size, idx, self.pattern_table, self.palette_set, self.tsa_data, self.transparency)
             )
+            sprite.single_clicked_action.observer.attach_observer(
+                lambda *_: self.single_clicked_action(idx)
+            )
             self.blocks.append(sprite)
             grid_layout.addWidget(sprite)
 
@@ -81,6 +85,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
             Action("tsa_data_update", ObservableDecorator(lambda tsa_offset: tsa_offset)),
             Action("palette_set_update", ObservableDecorator(lambda palette_set: palette_set)),
             Action("pattern_table_update", ObservableDecorator(lambda pattern_table: pattern_table)),
+            Action("single_clicked", ObservableDecorator(lambda block: block))
         ]
 
     @staticmethod
