@@ -106,7 +106,6 @@ class BlockEditor(Widget, AbstractActionObject):
 
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
-        self.spinners = []
         grid = QGridLayout()
         grid.setContentsMargins(0, 0, 0, 0)
 
@@ -124,6 +123,7 @@ class BlockEditor(Widget, AbstractActionObject):
         bottom_right_spinner = HexSpinner(self, maximum=0xFF)
         grid.addWidget(bottom_right_spinner, 1, 2)
 
+        self.spinners = [top_left_spinner, bottom_left_spinner, top_right_spinner, bottom_right_spinner]
         self.setLayout(grid)
 
     def _initialize_internal_observers(self) -> None:
