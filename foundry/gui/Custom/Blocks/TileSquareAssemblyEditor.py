@@ -84,6 +84,10 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
             lambda p: setattr(self, "palette", p)
         )
 
+        self.tileset_spinner.value_changed_action.observer.attach_observer(
+            lambda tileset: setattr(self.tsa_viewer, "pattern_table", PatternTableHandler.from_tileset(tileset))
+        )
+
         self.offset_spinner.value_changed_action.observer.attach_observer(
             lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(offset))
         )
