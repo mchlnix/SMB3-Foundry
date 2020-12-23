@@ -44,6 +44,10 @@ class BlockEditor(Widget, AbstractActionObject):
     @index.setter
     def index(self, index: int) -> None:
         self.block.index = index
+    @property
+    def tsa_data(self) -> bytearray:
+        """"The pattern table of the block"""
+        return self.block.tsa_data
 
     @property
     def size(self) -> Size:
