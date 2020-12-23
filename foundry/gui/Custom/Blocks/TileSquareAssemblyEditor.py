@@ -51,7 +51,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         self._palette_set = DEFAULT_PALETTE_SET
         self._palette_index = 0
         self.color_picker = PaletteSetEditor(self, self.palette_set)
-        self.palette_selector = PaletteSelector(self, self.palette_set[self.palette_index])
+        self.palette_selector = PaletteSelector(self, self.palette_index, self.palette_set)
         self.palette_selector_toolbar = Toolbar.default_toolbox(
             self, "palette_selector_toolbar", Panel(self, "Palette", self.palette_selector), Qt.RightToolBarArea
         )
