@@ -33,6 +33,8 @@ class BlockEditor(Widget, AbstractActionObject):
         self._set_up_layout()
         self._initialize_internal_observers()
 
+        self.index = self.block.index  # Update the spinners
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.spinners})"
 
