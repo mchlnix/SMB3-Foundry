@@ -87,6 +87,8 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
             lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(offset))
         )
 
+        self.tsa_viewer.single_clicked_action.observer.attach_observer(lambda i: setattr(self.block_editor, "block", i))
+
         self.showMaximized()
 
     def _push_palette_set(self) -> None:
