@@ -9,6 +9,7 @@ from foundry import icon
 
 from foundry.core.geometry.Size.Size import Size
 
+from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.gui.QMenus.Menu.MenuFileLight import FileMenuLight
 from foundry.gui.QMainWindow.ChildWindow import ChildWindow
 from foundry.gui.QToolbar import Toolbar
@@ -47,8 +48,10 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
             self, "offset", Panel(self, "Offset", HexSpinner(self, 0, 0xFF)), Qt.RightToolBarArea
         )
 
-        self.color_picker = PaletteSetEditor(self)
-        self.palette_selector = PaletteSelector(self, 0)
+        self.palette_set = DEFAULT_PALETTE_SET
+        self.palette_index = 0
+        self.color_picker = PaletteSetEditor(self, self.palette_set)
+        self.palette_selector = PaletteSelector(self, self.palette_set[self.palette_index])
         self.palette_selector_toolbar = Toolbar.default_toolbox(
             self, "palette_selector_toolbar", Panel(self, "Palette", self.palette_selector), Qt.RightToolBarArea
         )
