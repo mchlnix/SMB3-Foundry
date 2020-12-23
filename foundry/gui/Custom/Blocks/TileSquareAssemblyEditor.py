@@ -48,8 +48,8 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
             self, "offset", Panel(self, "Offset", HexSpinner(self, 0, 0xFF)), Qt.RightToolBarArea
         )
 
-        self.palette_set = DEFAULT_PALETTE_SET
-        self.palette_index = 0
+        self._palette_set = DEFAULT_PALETTE_SET
+        self._palette_index = 0
         self.color_picker = PaletteSetEditor(self, self.palette_set)
         self.palette_selector = PaletteSelector(self, self.palette_set[self.palette_index])
         self.palette_selector_toolbar = Toolbar.default_toolbox(
@@ -83,4 +83,25 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
 
         self.showMaximized()
 
+    @property
+    def palette_set(self) -> PaletteSet:
+        """The palette set used by the editor"""
+        return self._palette_set
 
+    @palette_set.setter
+    def palette_set(self, palette_set: PaletteSet) -> None:
+        if palette_set != self.palette_set:
+            self.palette_set = palette_set
+            self.color_picker.palette = self.palette_set
+            self.palette_selector.palette = self.palette_set
+
+    @property
+    def palette_index(self) -> int:
+        """The index of the currently active palette"""
+        return self._palette_index
+
+    @palette_index.setter
+    def palette_index(self, index: int) -> None:
+        if index != self.palette_index:
+            self.palette_index = index
+            self.palette_selector.index = self.palette_index
