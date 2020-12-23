@@ -39,7 +39,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
 
         self._tileset = 1
         self.tileset_spinner = HexSpinner(self, maximum=0xFF)
-        self.tileset_spinner.setValue(1)
+        self.tileset_spinner.setValue(self.tileset)
         self.tileset_toolbar = Toolbar.default_toolbox(
             self, "tileset_toolbar", Panel(self, "Tileset", self.tileset_spinner), Qt.RightToolBarArea
         )
