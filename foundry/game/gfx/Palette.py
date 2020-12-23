@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union, NamedTuple
+from typing import List, Tuple, Union, NamedTuple, Optional
 from collections import namedtuple
 from dataclasses import dataclass
 import yaml
@@ -161,6 +161,13 @@ class PaletteController:
         """Converts the color to a qcolor"""
         return QColor(self.colors[color_idx][0], self.colors[color_idx][1], self.colors[color_idx][2])
 
+    def get_index_from_color(self, color: Color) -> Optional[int]:
+        """Provides an approximate index for a given color into the NES palette"""
+        for i, c in enumerate(self.colors):
+            if c == color:
+                return i
+        return None
+                
 
 def load_palette(object_set: int, palette_group: int) -> PaletteSet:
     """
