@@ -49,6 +49,16 @@ class BlockWidget(Widget, AbstractActionObject):
                f"{self.palette_set}, {self.tsa_offset})"
 
     @property
+    def index(self) -> int:
+        """The index the block is located in for the tsa"""
+        return self.block.index
+
+    @index.setter
+    def index(self, index: int) -> None:
+        self.block.index = index
+        self.refresh_event_action()
+
+    @property
     def size(self) -> Size:
         """The size of the block in units of 16 pixels"""
         return self.block.size
