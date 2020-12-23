@@ -19,6 +19,7 @@ _palette_controller = PaletteController()
 
 class PaletteSetEditor(Widget, AbstractActionObject):
     """A widget to help with editing a palette set"""
+    palette_set_changed_action: Action  # Updated whenever the palette_set is changed
 
     def __init__(self, parent: Optional[QWidget], palette: Optional[PaletteSet] = DEFAULT_PALETTE_SET) -> None:
         from foundry.gui.Custom.Palette.NESPaletteSelector import ColorPickerButton
