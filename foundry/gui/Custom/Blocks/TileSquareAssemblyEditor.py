@@ -77,8 +77,8 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         self.setCentralWidget(self.tsa_viewer)
 
         self.color_picker.palette_set_changed_action.observer.attach_observer(lambda p: setattr(self, "palette_set", p))
-        self.color_picker.palette_set_changed_action.observer.attach_observer(
-            lambda p: setattr(self.tsa_viewer, "palette_set", p)
+        self.palette_selector.palette_changed_action.observer.attach_observer(
+            lambda p: setattr(self, "palette", p)
         )
 
         self.tileset_spinner.value_changed_action.observer.attach_observer(
