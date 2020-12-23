@@ -106,6 +106,11 @@ class PaletteSet:
     def __str__(self) -> str:
         return f"({self[0]}),({self[1]}),({self[2]}),({self[3]})"
 
+    @property
+    def nes_str(self) -> str:
+        """Defines the palette set as a NES palette set string"""
+        return f"({self[0].nes_str}),({self[1].nes_str}),({self[2].nes_str}),({self[3].nes_str})"
+
     def __getitem__(self, item: int) -> Palette:
         if item == 0:
             return self.palette_0
