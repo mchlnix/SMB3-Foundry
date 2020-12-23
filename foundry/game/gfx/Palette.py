@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, NamedTuple
 from collections import namedtuple
 from dataclasses import dataclass
 import yaml
@@ -33,7 +33,14 @@ PALETTE_DATA_SIZE = (
 palette_file = root_dir.joinpath("data", "palette.yaml")
 
 
-Color = namedtuple("Color", "red green blue")
+class Color(NamedTuple):
+    """Defines a color"""
+    red: int
+    green: int
+    blue: int
+
+    def __str__(self) -> str:
+        return f"{self.red}, {self.green}, {self.blue}"
 
 
 @dataclass
