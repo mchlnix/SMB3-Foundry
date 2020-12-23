@@ -37,7 +37,8 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         self.file_menu = FileMenuLight(self)
         self.menuBar().addMenu(self.file_menu)
 
-        self._tileset = 1
+        self.tsa_viewer = None
+        self.tileset = 1
         self.tileset_spinner = HexSpinner(self, maximum=0xFF)
         self.tileset_spinner.setValue(self.tileset)
         self.tileset_toolbar = Toolbar.default_toolbox(
@@ -86,7 +87,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         )
 
         self.tileset_spinner.value_changed_action.observer.attach_observer(
-            lambda tileset: setattr(self.tsa_viewer, "pattern_table", PatternTableHandler.from_tileset(tileset))
+            lambda tileset: setattr(self, "tileset", tileset)
         )
 
         self.offset_spinner.value_changed_action.observer.attach_observer(
@@ -142,6 +143,9 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
     @tileset.setter
     def tileset(self, tileset: int) -> None:
         self._tileset = tileset
+        self._pattern_table = PatternTableHandler.from_tileset(tileset)
+        if self.tsa_viewer is not None:
+            self.tsa_viewer.pattern_table = self.pattern_table
 
     @property
     def offset(self) -> int:
@@ -151,3 +155,8 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
     @offset.setter
     def offset(self, offset: int) -> None:
         self._offset = offset
+
+    @property
+    def pattern_table(self) -> PatternTableHandler:
+        """The pattern table of the tsa"""
+        return self._pattern_table
