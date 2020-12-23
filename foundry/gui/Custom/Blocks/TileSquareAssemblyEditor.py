@@ -47,13 +47,14 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
             self, "offset", Panel(self, "Offset", HexSpinner(self, 0, 0xFF)), Qt.RightToolBarArea
         )
 
-        palette_selector = Panel(self, "Palette", PaletteSelector(self, 0))
+        self.color_picker = PaletteSetEditor(self)
+        self.palette_selector = PaletteSelector(self, 0)
         self.palette_selector_toolbar = Toolbar.default_toolbox(
-            self, "palette_selector_toolbar", palette_selector, Qt.RightToolBarArea
+            self, "palette_selector_toolbar", Panel(self, "Palette", self.palette_selector), Qt.RightToolBarArea
         )
 
         self.color_picker_toolbox = Toolbar.default_toolbox(
-            self, "color_picker_toolbar", PaletteSetEditor(self), Qt.RightToolBarArea
+            self, "color_picker_toolbar", self.color_picker, Qt.RightToolBarArea
         )
 
         ptn_tbl = PatternTableHandler.from_tileset(1)
