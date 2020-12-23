@@ -29,6 +29,7 @@ class BlockEditor(Widget, AbstractActionObject):
         AbstractActionObject.__init__(self)
 
         self.block = block
+
         self._set_up_layout()
         self._initialize_internal_observers()
 
