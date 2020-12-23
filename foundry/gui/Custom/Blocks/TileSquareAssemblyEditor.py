@@ -1,8 +1,6 @@
 
 
-from typing import Optional
 
-from PySide2.QtWidgets import QBoxLayout
 from PySide2.QtGui import Qt
 
 from foundry import icon
