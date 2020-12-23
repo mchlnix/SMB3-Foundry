@@ -36,6 +36,15 @@ class BlockEditor(Widget, AbstractActionObject):
         return f"{self.__class__.__name__}({self.parent}, {self.spinners})"
 
     @property
+    def index(self) -> int:
+        """The index the block is in for the tsa"""
+        return self.block.index
+
+    @index.setter
+    def index(self, index: int) -> None:
+        self.block.index = index
+
+    @property
     def size(self) -> Size:
         """The size of the block in units of 16 pixels"""
         return self.block.size
