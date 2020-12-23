@@ -163,11 +163,11 @@ class PaletteController:
 
     def get_index_from_color(self, color: Color) -> Optional[int]:
         """Provides an approximate index for a given color into the NES palette"""
-        for i, c in enumerate(self.colors):
+        for i, c in enumerate(self.colors.values()):
             if c == color:
                 return i
         return None
-                
+
 
 def load_palette(object_set: int, palette_group: int) -> PaletteSet:
     """
