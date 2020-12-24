@@ -28,6 +28,10 @@ class Spinner(QSpinBox, AbstractActionObject, DefaultSizePartial):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action.from_signal("value_changed", self.valueChanged),
-            Action.from_signal("text_changed", self.textChanged),
+            Action.from_signal(
+                "value_changed", self.valueChanged, observer_name=f"{self.__class__.__name__} Value Updated"
+            ),
+            Action.from_signal(
+                "text_changed", self.textChanged, observer_name=f"{self.__class__.__name__} Text Updated"
+            ),
         ]
