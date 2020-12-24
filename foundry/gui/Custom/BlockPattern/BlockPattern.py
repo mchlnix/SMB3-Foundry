@@ -2,6 +2,8 @@
 
 from dataclasses import dataclass
 
+from smb3parse.asm6_converter import to_hex
+
 
 @dataclass
 class BlockPattern:
@@ -15,7 +17,10 @@ class BlockPattern:
     @classmethod
     def from_tsa_data(cls, index: int, tsa_data: bytearray):
         """Forms a block pattern from tsa data"""
-        return cls(*[tsa_data[(idx * 0xFF) + index] for idx in range(4)])
+        return cls(*[tsa_data[(idx * 256) + index] for idx in range(4)])
+
+    def __str__(self) -> str:
+        return f"{to_hex(self[0])}, {to_hex(self[1])}, {to_hex(self[2])}, {to_hex(self[3])}"
 
     def __getitem__(self, item: int) -> int:
         if item == 0:
