@@ -82,12 +82,14 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("refresh_event", ObservableDecorator(lambda *_: self.update())),
-            Action("size_update", ObservableDecorator(lambda size: size)),
-            Action("tsa_data_update", ObservableDecorator(lambda tsa_offset: tsa_offset)),
-            Action("palette_set_update", ObservableDecorator(lambda palette_set: palette_set)),
-            Action("pattern_table_update", ObservableDecorator(lambda pattern_table: pattern_table)),
-            Action("single_clicked", ObservableDecorator(lambda block: block))
+            Action("refresh_event", ObservableDecorator(lambda *_: self.update(), "Refreshed")),
+            Action("size_update", ObservableDecorator(lambda size: size, "Size Updated")),
+            Action("tsa_data_update", ObservableDecorator(lambda tsa_offset: tsa_offset, "TSA Updated")),
+            Action("palette_set_update", ObservableDecorator(lambda palette_set: palette_set, "Palette Set Updated")),
+            Action("pattern_table_update", ObservableDecorator(
+                lambda pattern_table: pattern_table, "Pattern Table Updated"
+            )),
+            Action("single_clicked", ObservableDecorator(lambda button: button, "Single Clicked")),
         ]
 
     @staticmethod
