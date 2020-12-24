@@ -14,7 +14,7 @@ from .AbstractObservable import AbstractObservable
 
 _logger = logging.getLogger(__name__)
 _logger.setLevel(logging.WARNING)
-_formatter = logging.Formatter('%(asctime)s | %(name)s |  %(levelname)s: %(message)s')
+_formatter = logging.Formatter('%(levelname)s: %(message)s | %(asctime)s | %(name)s')
 _handler = logging.FileHandler(f"{log_dir}/observable.log")
 _handler.setFormatter(_formatter)
 _logger.addHandler(_handler)
