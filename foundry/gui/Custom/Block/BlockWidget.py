@@ -110,9 +110,10 @@ class BlockWidget(Widget, AbstractActionObject):
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
+        name = self.__class__.__name__
         return [
-            Action("refresh_event", ObservableDecorator(lambda *_: self.update())),
-            Action("size_update", ObservableDecorator(lambda size: size))
+            Action("refresh_event", ObservableDecorator(lambda *_: self.update(), f"{name} Refreshed")),
+            Action("size_update", ObservableDecorator(lambda size: size, f"{name} Size Updated"))
         ]
 
     def _initialize_internal_observers(self) -> None:
