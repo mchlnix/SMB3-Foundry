@@ -27,7 +27,14 @@ class Observable(AbstractObservable):
     def notify_observers(self, result: Any) -> None:
         """Update all the observers"""
         if len(self.observers) > 0:  # Ignore observers that do nothing
-            logger.debug(f"{str(self)} notified {[obs.__name__ for obs in self.observers.values()]} result {result}")
+            try:
+                logger.debug(
+                    f"{str(self)} notified {[obs.__observer_name for obs in self.observers.values()]} result {result}"
+                )
+            except AttributeError:
+                logger.debug(
+                    f"{str(self)} notified {[obs.__name__ for obs in self.observers.values()]} result {result}"
+                )
         keys_to_remove = []
         for key, observer in self.observers.items():
             try:
@@ -42,13 +49,14 @@ class Observable(AbstractObservable):
             #  remove any observer that no longer exists
             self.delete_observable(key)
 
-    def attach_observer(self, observer: Callable, identifier: Optional[Hashable] = None) -> None:
+    def attach_observer(self, observer: Callable, identifier: Hashable = None, name: str = None) -> None:
         """Attach an observer"""
         while identifier is None:
             temp_id = random.randint(10000, 10000000)
             if temp_id not in self.observers:
                 identifier = temp_id
-
+        if name is not None:
+            observer.__observer_name = name  # Tag the event for debugging
         self.observers.update({identifier: observer})
 
     def delete_observable(self, identifier: Hashable) -> None:
