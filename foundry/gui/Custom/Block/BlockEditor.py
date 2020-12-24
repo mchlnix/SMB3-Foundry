@@ -164,12 +164,13 @@ class BlockEditor(Widget, AbstractActionObject):
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
+        name = self.__class__.__name__
         return [
-            Action("refresh_event", ObservableDecorator(lambda *_: self.update())),
-            Action("size_update", ObservableDecorator(lambda size: size)),
-            Action("values_changed", ObservableDecorator(lambda palette_set: palette_set)),
-            Action("text_changed", ObservableDecorator(lambda palette_set: palette_set)),
-            Action("block_changed", ObservableDecorator(lambda tsa_data: tsa_data))
+            Action("refresh_event", ObservableDecorator(lambda *_: self.update(), f"{name} Refreshed")),
+            Action("size_update", ObservableDecorator(lambda size: size, f"{name} Size Updated")),
+            Action("values_changed", ObservableDecorator(lambda palette_set: palette_set, f"{name} Value Updated")),
+            Action("text_changed", ObservableDecorator(lambda palette_set: palette_set, f"{name} Text Updated")),
+            Action("block_changed", ObservableDecorator(lambda tsa_data: tsa_data, f"{name} Block Updated"))
         ]
 
 
