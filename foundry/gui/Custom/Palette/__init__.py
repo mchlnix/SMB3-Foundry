@@ -178,7 +178,10 @@ class ColorPicker(Widget, AbstractActionObject):
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
+        name = self.__class__.__name__
         return [
-            Action("color_selected", ObservableDecorator(lambda color: color)),
-            Action("color_index_selected", ObservableDecorator(lambda color_idx: color_idx))
+            Action("color_selected", ObservableDecorator(lambda color: color, f"{name} Color Selected")),
+            Action("color_index_selected", ObservableDecorator(
+                lambda color_idx: color_idx, f"{name} Color Index Selected"
+            ))
         ]
