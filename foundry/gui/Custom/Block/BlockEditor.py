@@ -144,8 +144,9 @@ class BlockEditor(Widget, AbstractActionObject):
             """Updates the block pattern"""
             def update_block_pattern(value):
                 """The inner function"""
-                self.block_pattern[idx] = value
-                self._push_block_update()
+                if value != self.block_pattern[idx]:
+                    self.block_pattern[idx] = value
+                    self._push_block_update()
             return update_block_pattern
 
         for idx, spinner in enumerate(self.spinners):
@@ -156,8 +157,9 @@ class BlockEditor(Widget, AbstractActionObject):
     def _push_block_update(self) -> None:
         """Pushes an update to the block"""
         for idx, spinner in enumerate(self.spinners):
-            self.tsa_data[(idx * 0xFF) + self.index] = self.block_pattern[idx]
-            spinner.setValue(self.block_pattern[idx])
+            self.tsa_data[(idx * 256) + self.index] = self.block_pattern[idx]
+            if spinner.value() != self.block_pattern[idx]:
+                spinner.setValue(self.block_pattern[idx])
         self.refresh_event_action()
 
     def get_actions(self) -> List[Action]:
