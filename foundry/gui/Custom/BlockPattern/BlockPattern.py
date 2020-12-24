@@ -26,9 +26,9 @@ class BlockPattern:
         if item == 0:
             return self.top_left
         elif item == 1:
-            return self.bottom_left
-        elif item == 2:
             return self.top_right
+        elif item == 2:
+            return self.bottom_left
         elif item == 3:
             return self.bottom_right
         else:
@@ -38,9 +38,9 @@ class BlockPattern:
         if key == 0:
             self.top_left = value
         elif key == 1:
-            self.bottom_left = value
-        elif key == 2:
             self.top_right = value
+        elif key == 2:
+            self.bottom_left = value
         elif key == 3:
             self.bottom_right = value
         else:
