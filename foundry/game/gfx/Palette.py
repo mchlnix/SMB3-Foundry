@@ -1,5 +1,4 @@
 from typing import List, Tuple, Union, NamedTuple, Optional
-from collections import namedtuple
 from dataclasses import dataclass
 import yaml
 from yaml import CLoader
