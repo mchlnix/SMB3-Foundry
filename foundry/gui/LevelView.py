@@ -123,21 +123,35 @@ class LevelView(AbstractActionWidget):
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
+        name = self.__class__.__name__
         return [
-            Action("on_click", ObservableDecorator(lambda event: event)),
-            Action("on_left_click", ObservableDecorator(lambda event: self.on_left_mouse_button_down(event))),
-            Action("on_right_click", ObservableDecorator(lambda event: self.on_right_mouse_button_down(event))),
+            Action("on_click", ObservableDecorator(lambda event: event, f"{name} Clicked")),
+            Action("on_left_click", ObservableDecorator(
+                lambda event: self.on_left_mouse_button_down(event), f"{name} Left Clicked")),
+            Action("on_right_click", ObservableDecorator(
+                lambda event: self.on_right_mouse_button_down(event), f"{name} Right Clicked"
+            )),
 
-            Action("on_mouse_move", ObservableDecorator(lambda event: event)),
-            Action("on_mouse_move_drag", ObservableDecorator(lambda event: event)),
-            Action("on_mouse_horizontal_resize", ObservableDecorator(lambda event: event)),
-            Action("on_mouse_vertical_resize", ObservableDecorator(lambda event: event)),
-            Action("on_mouse_diagonal_resize", ObservableDecorator(lambda event: event)),
-            Action("on_move_selection_box", ObservableDecorator(lambda event: event))
+            Action("on_mouse_move", ObservableDecorator(lambda event: event, f"{name} Mouse Moved")),
+            Action("on_mouse_move_drag", ObservableDecorator(lambda event: event, f"{name} Mouse Dragged")),
+            Action("on_mouse_horizontal_resize", ObservableDecorator(
+                lambda event: event, f"{name} Mouse Horizontally Resized"
+            )),
+            Action("on_mouse_vertical_resize", ObservableDecorator(
+                lambda event: event, f"{name} Mouse Vertically Resized"
+            )),
+            Action("on_mouse_diagonal_resize", ObservableDecorator(
+                lambda event: event, f"{name} Mouse Diagonally Resized"
+            )),
+            Action("on_move_selection_box", ObservableDecorator(
+                lambda event: event, f"{name} Selection Box Moved"
+            ))
         ]
 
     def initialize_actions(self):
         """Setups up any prefab actions"""
+        c_name = self.__class__.__name__
+
         def log_event(name: str):
             """A decorator for logging events"""
             def log_event_wrapper(event: QMouseEvent) -> None:
@@ -145,7 +159,7 @@ class LevelView(AbstractActionWidget):
                 _logger.info(f"{name} updated with event {event}")
             return log_event_wrapper
         for action in self._actions.values():
-            action.observer.attach_observer(log_event(action.name))
+            action.observer.attach_observer(log_event(action.name), name=f"{c_name} View Logger")
 
         def determine_if_click(type_of_click, func: Callable):
             """A decorator for determining if it is a specific click"""
@@ -156,9 +170,9 @@ class LevelView(AbstractActionWidget):
             return determine_if_click_wrapper
 
         on_left_click = determine_if_click(Qt.LeftButton, self.on_left_click_action)
-        self.on_click_action.observer.attach_observer(lambda event: on_left_click(event))
+        self.on_click_action.observer.attach_observer(lambda event: on_left_click(event), name=f"{c_name} Left Click")
         on_right_click = determine_if_click(Qt.RightButton, self.on_right_click_action)
-        self.on_click_action.observer.attach_observer(lambda event: on_right_click(event))
+        self.on_click_action.observer.attach_observer(lambda event: on_right_click(event), name=f"{c_name} Right Click")
 
         def determine_move_type(move_type, func: Callable):
             """A decorator for determining if a specific type of movement"""
@@ -169,32 +183,51 @@ class LevelView(AbstractActionWidget):
             return determine_move_type_wrapper
 
         on_drag = determine_move_type(MODE_DRAG, self.on_mouse_move_drag_action)
-        self.on_mouse_move_action.observer.attach_observer(lambda event: on_drag(event))
+        self.on_mouse_move_action.observer.attach_observer(lambda event: on_drag(event), name=f"{c_name} On Drag")
         on_horizontal_resize = determine_move_type(MODE_RESIZE_HORIZ, self.on_mouse_horizontal_resize_action)
-        self.on_mouse_move_action.observer.attach_observer(lambda event: on_horizontal_resize(event))
+        self.on_mouse_move_action.observer.attach_observer(
+            lambda event: on_horizontal_resize(event), name=f"{c_name} Determine if Horizontal Resize"
+        )
         on_vertical_resize = determine_move_type(MODE_RESIZE_VERT, self.on_mouse_vertical_resize_action)
-        self.on_mouse_move_action.observer.attach_observer(lambda event: on_vertical_resize(event))
+        self.on_mouse_move_action.observer.attach_observer(
+            lambda event: on_vertical_resize(event), name=f"{c_name} Determine if Vertical Resize"
+        )
         on_diagonal_resize = determine_move_type(MODE_RESIZE_DIAG, self.on_mouse_diagonal_resize_action)
-        self.on_mouse_move_action.observer.attach_observer(lambda event: on_diagonal_resize(event))
+        self.on_mouse_move_action.observer.attach_observer(
+            lambda event: on_diagonal_resize(event), name=f"{c_name} Determine if Diagonal Resize"
+        )
 
-        self.on_mouse_move_drag_action.observer.attach_observer(lambda *_: self.setCursor(Qt.ClosedHandCursor))
-        self.on_mouse_move_drag_action.observer.attach_observer(lambda event: self.dragging(event))
+        self.on_mouse_move_drag_action.observer.attach_observer(
+            lambda *_: self.setCursor(Qt.ClosedHandCursor), name=f"{c_name} Set Cursor to Closed Hand"
+        )
+        self.on_mouse_move_drag_action.observer.attach_observer(
+            lambda event: self.dragging(event), name=f"{c_name} Dragging"
+        )
 
         def resize(event: QMouseEvent):
             previously_selected_objects = self.level_ref.selected_objects
             self.resizing(event)
             self.level_ref.selected_objects = previously_selected_objects
 
-        self.on_mouse_horizontal_resize_action.observer.attach_observer(lambda event: resize(event))
-        self.on_mouse_vertical_resize_action.observer.attach_observer(lambda event: resize(event))
-        self.on_mouse_diagonal_resize_action.observer.attach_observer(lambda event: resize(event))
+        self.on_mouse_horizontal_resize_action.observer.attach_observer(
+            lambda event: resize(event), name=f"{c_name} Resize Horizontally"
+        )
+        self.on_mouse_vertical_resize_action.observer.attach_observer(
+            lambda event: resize(event), name=f"{c_name} Resize Vertically"
+        )
+        self.on_mouse_diagonal_resize_action.observer.attach_observer(
+            lambda event: resize(event), name=f"{c_name} Resize Diagonally"
+        )
 
         def select_box(event: QMouseEvent):
             if self.selection_square.active:
                 self.on_move_selection_box_action(event)
 
-        self.on_mouse_move_action.observer.attach_observer(lambda event: select_box(event))
-        self.on_move_selection_box_action.observer.attach_observer(lambda event: self.set_selection_end(event.pos()))
+        self.on_mouse_move_action.observer.attach_observer(
+            lambda event: select_box(event), name=f"{c_name} Move Selection Box"
+        )
+        self.on_move_selection_box_action.observer.attach_observer(
+            lambda event: self.set_selection_end(event.pos()), name=f"{c_name} Resize Selection Box")
 
     def mousePressEvent(self, event: QMouseEvent):
         """The built in action for handling when a click takes place"""
