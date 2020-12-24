@@ -66,8 +66,8 @@ class PaletteSetEditor(Widget, AbstractActionObject):
             palette._palette = self.palette[idx]
             palette._push_palette_to_buttons()
 
-    def _set_palette_set_color(self, pal_idx: int, color: Color) -> None:
-        self.palette[pal_idx] = color
+    def _set_palette_set_color(self, pal_idx: int, palette: Palette) -> None:
+        self.palette[pal_idx] = palette
         self.palette_set_changed_action.observer(self.palette)
 
     def get_actions(self) -> List[Action]:
