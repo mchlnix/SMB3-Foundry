@@ -36,7 +36,6 @@ class Observable(AbstractObservable):
 
     def notify_observers(self, result: Any) -> None:
         """Update all the observers"""
-        _logger.debug(f"{self} notified {self.observers.values()} result {result}")
         _logger.debug(f"{str(self)} notified {self.observers.values()} result {result}")
         keys_to_remove = []
         for key, observer in self.observers.items():
@@ -60,7 +59,7 @@ class Observable(AbstractObservable):
             if temp_id not in self.observers:
                 identifier = temp_id
 
-        _logger.debug(f"{self} attached {observer} with key {identifier} to {self.observers}")
+        _logger.debug(f"{str(self)} attached {observer} with key {identifier} to {self.observers}")
         self.observers.update({identifier: observer})
 
     def delete_observable(self, identifier: Hashable) -> None:
