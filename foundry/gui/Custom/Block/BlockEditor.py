@@ -15,6 +15,7 @@ from foundry.gui.QCore.Tracker import AbstractActionObject
 from foundry.gui.Custom.Block.BlockWidget import BlockWidget
 from foundry.gui.QSpinner.HexSpinner import HexSpinner
 from foundry.gui.QWidget import Widget
+from foundry.gui.Custom.BlockPattern.BlockPattern import BlockPattern
 
 
 class BlockEditor(Widget, AbstractActionObject):
@@ -29,6 +30,7 @@ class BlockEditor(Widget, AbstractActionObject):
         AbstractActionObject.__init__(self)
 
         self.block = block
+        self._block_pattern = BlockPattern.from_tsa_data(self.block.index, self.block.tsa_data)
 
         self._set_up_layout()
         self._initialize_internal_observers()
@@ -37,6 +39,17 @@ class BlockEditor(Widget, AbstractActionObject):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.spinners})"
+
+    @property
+    def block_pattern(self) -> BlockPattern:
+        """The pattern of the current block"""
+        return self._block_pattern
+
+    @block_pattern.setter
+    def block_pattern(self, pattern: BlockPattern) -> None:
+        self._block_pattern = pattern
+        for idx, spinner in enumerate(self.spinners):
+            spinner.setValue(self.block_pattern[idx])
 
     @property
     def index(self) -> int:
