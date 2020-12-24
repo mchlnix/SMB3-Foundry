@@ -74,6 +74,10 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         self.tsa_viewer = TileSquareAssemblyViewer.from_tsa(self, self.pattern_table, self.palette_set, self.offset)
         self.setCentralWidget(self.tsa_viewer)
 
+        self.block_editor.block_changed_action.observer.attach_observer(
+            lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data)
+        )
+
         self.color_picker.palette_set_changed_action.observer.attach_observer(lambda p: setattr(self, "palette_set", p))
         self.palette_selector.palette_changed_action.observer.attach_observer(
             lambda p: setattr(self, "palette", p)
