@@ -49,8 +49,8 @@ class BlockEditor(Widget, AbstractActionObject):
     @block_pattern.setter
     def block_pattern(self, pattern: BlockPattern) -> None:
         self._block_pattern = pattern
-        for idx, spinner in enumerate(self.spinners):
-            spinner.setValue(self.block_pattern[idx])
+        self._push_block_update()
+        self.block_changed_action(self.tsa_data)
 
     @property
     def index(self) -> int:
@@ -140,21 +140,25 @@ class BlockEditor(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
-        for spinner in self.spinners:
-            spinner.value_changed_action.observer.attach_observer(lambda *_: self._update_changed_values())
-            spinner.text_changed_action.observer.attach_observer(lambda *_: self._update_text_values())
+        def update_block_pattern_closure(idx):
+            """Updates the block pattern"""
+            def update_block_pattern(value):
+                """The inner function"""
+                self.block_pattern[idx] = value
+                self._push_block_update()
+            return update_block_pattern
+
+        for idx, spinner in enumerate(self.spinners):
+            spinner.value_changed_action.observer.attach_observer(update_block_pattern_closure(idx))
         self.block.refresh_event_action.observer.attach_observer(lambda *_: self.refresh_event_action())
         self.block.size_update_action.observer.attach_observer(lambda size: self.size_update_action(size))
 
-    def _update_changed_values(self):
-        """Returns the changed values from the spinners"""
+    def _push_block_update(self) -> None:
+        """Pushes an update to the block"""
         for idx, spinner in enumerate(self.spinners):
-            self.tsa_data[(idx * 0xFF) + self.index] = spinner.value()
-        return self.values_changed_action.observer([spinner.value() for spinner in self.spinners])
-
-    def _update_text_values(self):
-        """Returns the changed text from the spinners"""
-        return self.text_changed_action.observer([spinner.text() for spinner in self.spinners])
+            self.tsa_data[(idx * 0xFF) + self.index] = self.block_pattern[idx]
+            spinner.setValue(self.block_pattern[idx])
+        self.refresh_event_action()
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
