@@ -33,11 +33,15 @@ class PaletteSetEditor(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
+        def set_palette_closure(index: int):
+            """Sets a palette from a given index"""
+            return lambda pal: self._set_palette_set_color(index, pal)
+
         self.background_button.color_change_action.observer.attach_observer(
             lambda *_: setattr(self.palette, "background_color", self.background_button.color)
         )
         for idx, palette in enumerate(self.palette_editors):
-            palette.palette_changed_action.observer.attach_observer(lambda pal, i=idx: self._set_palette_set_color(i, pal))
+            palette.palette_changed_action.observer.attach_observer(set_palette_closure(idx))
 
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
