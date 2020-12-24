@@ -26,7 +26,8 @@ class Observable(AbstractObservable):
 
     def notify_observers(self, result: Any) -> None:
         """Update all the observers"""
-        logger.debug(f"{str(self)} notified {[obs.__name__ for obs in self.observers.values()]} result {result}")
+        if len(self.observers) > 0:  # Ignore observers that do nothing
+            logger.debug(f"{str(self)} notified {[obs.__name__ for obs in self.observers.values()]} result {result}")
         keys_to_remove = []
         for key, observer in self.observers.items():
             try:
