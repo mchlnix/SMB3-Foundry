@@ -73,7 +73,7 @@ class PaletteSetEditor(Widget, AbstractActionObject):
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("palette_set_changed", ObservableDecorator(lambda palette_set: palette_set)),
+            Action("palette_set_changed", ObservableDecorator(lambda palette_set: palette_set, "Palette Set Updated")),
         ]
 
 
