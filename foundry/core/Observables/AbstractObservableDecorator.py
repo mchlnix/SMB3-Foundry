@@ -19,8 +19,8 @@ class AbstractObservableDecorator(AbstractObservable, ABC):
     """
     function: Callable
 
-    def __init__(self, function: Callable):
-        super(AbstractObservableDecorator, self).__init__()
+    def __init__(self, function: Callable, name: str = None):
+        super(AbstractObservableDecorator, self).__init__(name)
         self.function = function
 
     def __call__(self, *args, **kwargs) -> None:
