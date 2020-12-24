@@ -24,6 +24,7 @@ class BlockEditor(Widget, AbstractActionObject):
     size_update_action: Action  # Updates when the size updates
     values_changed_action: Action  # When the spinners change values
     text_changed_action: Action  # When the spinners change text
+    block_changed_action: Action  # When the block changes the tsa
 
     def __init__(self, parent: Optional[QWidget], block: BlockWidget) -> None:
         Widget.__init__(self, parent)
@@ -162,6 +163,7 @@ class BlockEditor(Widget, AbstractActionObject):
             Action("size_update", ObservableDecorator(lambda size: size)),
             Action("values_changed", ObservableDecorator(lambda palette_set: palette_set)),
             Action("text_changed", ObservableDecorator(lambda palette_set: palette_set)),
+            Action("block_changed", ObservableDecorator(lambda tsa_data: tsa_data))
         ]
 
 
