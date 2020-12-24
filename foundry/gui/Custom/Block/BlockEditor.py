@@ -54,6 +54,10 @@ class BlockEditor(Widget, AbstractActionObject):
         """"The pattern table of the block"""
         return self.block.tsa_data
 
+    @tsa_data.setter
+    def tsa_data(self, tsa_data: bytearray) -> None:
+        self.block.tsa_data = tsa_data
+
     @property
     def size(self) -> Size:
         """The size of the block in units of 16 pixels"""
@@ -62,11 +66,6 @@ class BlockEditor(Widget, AbstractActionObject):
     @size.setter
     def size(self, size: Size) -> None:
         self.block.size = size
-
-    @property
-    def tsa_data(self) -> bytearray:
-        """Find the tsa data from a given offset"""
-        return self.block.tsa_data
 
     @property
     def tsa_offset(self) -> int:
