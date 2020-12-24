@@ -40,11 +40,11 @@ class PartialTrackingObject:
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
         return [
-            Action("pressed", ObservableDecorator(lambda button: button)),
-            Action("released", ObservableDecorator(lambda button: button)),
-            Action("single_clicked", ObservableDecorator(lambda button: button)),
-            Action("double_clicked", ObservableDecorator(lambda button: button)),
-            Action("mouse_moved", ObservableDecorator(lambda pos: pos))
+            Action("pressed", ObservableDecorator(lambda button: button, "Pressed")),
+            Action("released", ObservableDecorator(lambda button: button, "Released")),
+            Action("single_clicked", ObservableDecorator(lambda button: button, "Single Clicked")),
+            Action("double_clicked", ObservableDecorator(lambda button: button, "Double Clicked")),
+            Action("mouse_moved", ObservableDecorator(lambda pos: pos, "Mouse Moved"))
         ]
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
