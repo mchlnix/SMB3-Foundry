@@ -23,7 +23,6 @@ class Observable(AbstractObservable):
 
     def __init__(self, name: str = None):
         super(Observable, self).__init__(name)
-        logger.debug(f"{self} was created")
 
     def notify_observers(self, result: Any) -> None:
         """Update all the observers"""
@@ -33,7 +32,6 @@ class Observable(AbstractObservable):
             try:
                 observer(result)
             except NameError:
-                logger.debug(f"Removed deleted observer with identification {key}")
                 keys_to_remove.append(key)  # the observer no longer exists
             except TypeError as err:
                 logger.error(f"{err}: {observer.__name__}{str(signature(observer))} received {result}")
@@ -50,13 +48,11 @@ class Observable(AbstractObservable):
             if temp_id not in self.observers:
                 identifier = temp_id
 
-        logger.debug(f"{str(self)} attached {observer} with key {identifier} to {self.observers}")
         self.observers.update({identifier: observer})
 
     def delete_observable(self, identifier: Hashable) -> None:
         """Removes an observer"""
         try:
             del self.observers[identifier]
-            logger.debug(f"{identifier} was deleted from {self.observers}")
         except KeyError:
             logger.warning(f"Failed to delete {identifier} from {self.observers}")
