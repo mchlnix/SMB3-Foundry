@@ -59,8 +59,7 @@ class BlockEditor(Widget, AbstractActionObject):
     @index.setter
     def index(self, index: int) -> None:
         self.block.index = index
-        for idx, spinner in enumerate(self.spinners):
-            spinner.setValue(self.tsa_data[(idx * 0x100) + self.index])
+        self.block_pattern = BlockPattern.from_tsa_data(self.block.index, self.block.tsa_data)
 
     @property
     def tsa_data(self) -> bytearray:
