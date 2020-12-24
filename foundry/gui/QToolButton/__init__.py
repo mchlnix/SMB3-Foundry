@@ -31,11 +31,12 @@ class ColoredToolButton(QToolButton, AbstractActionObject, DefaultSizePartial):
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
+        name = self.__class__.__name__
         return [
-            Action.from_signal("clicked", self.clicked, False),
-            Action.from_signal("pressed", self.pressed, False),
-            Action.from_signal("released", self.released, False),
-            Action("color_change", ObservableDecorator(lambda color: color))
+            Action.from_signal("clicked", self.clicked, False, f"{name} Clicked"),
+            Action.from_signal("pressed", self.pressed, False, f"{name} Pressed"),
+            Action.from_signal("released", self.released, False, f"{name} Released"),
+            Action("color_change", ObservableDecorator(lambda color: color, f"{name} Color Updated"))
         ]
 
     @property
