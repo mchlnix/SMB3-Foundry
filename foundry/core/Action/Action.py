@@ -30,11 +30,11 @@ class Action:
         return f"{self.name}_action"
 
     @classmethod
-    def from_signal(cls, name: str, signal: Signal, pass_result: bool = True) -> "Action":
+    def from_signal(cls, name: str, signal: Signal, pass_result: bool = True, observer_name: str = None) -> "Action":
         """Makes an action from a signal"""
         if pass_result:
-            observer = ObservableDecorator(lambda result: result)
+            observer = ObservableDecorator(lambda result: result, observer_name)
         else:
-            observer = ObservableDecorator(lambda *_: True)
+            observer = ObservableDecorator(lambda *_: True, observer_name)
         signal.connect(observer)
         return Action(name, observer)
