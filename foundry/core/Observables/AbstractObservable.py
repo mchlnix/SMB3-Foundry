@@ -24,6 +24,10 @@ class AbstractObservable:
     def __call__(self, result: Any):
         self.notify_observers(result)
 
+    def __str__(self) -> str:
+        """The name that shows up in debugging"""
+        return self.name
+
     @abstractmethod
     def notify_observers(self, result: Any) -> None:
         """Update all the observers"""
