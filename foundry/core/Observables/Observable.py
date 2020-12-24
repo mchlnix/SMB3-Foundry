@@ -30,13 +30,12 @@ class Observable(AbstractObservable):
     """
     observers: Dict
 
-    def __init__(self):
-        super(Observable, self).__init__()
         _logger.debug(f"{self} was created")
 
     def notify_observers(self, result: Any) -> None:
         """Update all the observers"""
         _logger.debug(f"{self} notified {self.observers.values()} result {result}")
+        _logger.debug(f"{str(self)} notified {self.observers.values()} result {result}")
         keys_to_remove = []
         for key, observer in self.observers.items():
             try:

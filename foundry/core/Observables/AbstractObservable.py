@@ -17,7 +17,8 @@ class AbstractObservable:
     """
     observers: Dict
 
-    def __init__(self) -> None:
+    def __init__(self, name: str = None) -> None:
+        self.name = self.__class__.__name__ if name is None else name
         self.observers = {}
 
     def __call__(self, result: Any):
