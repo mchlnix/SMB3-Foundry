@@ -147,6 +147,8 @@ class BlockEditor(Widget, AbstractActionObject):
 
     def _update_changed_values(self):
         """Returns the changed values from the spinners"""
+        for idx, spinner in enumerate(self.spinners):
+            self.tsa_data[(idx * 0xFF) + self.index] = spinner.value()
         return self.values_changed_action.observer([spinner.value() for spinner in self.spinners])
 
     def _update_text_values(self):
