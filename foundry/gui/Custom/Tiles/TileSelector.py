@@ -23,6 +23,12 @@ from foundry.game.gfx.Palette import Palette
 
 class TileSelector(Widget, AbstractActionObject):
     """A class for selecting a Tile"""
+    refresh_event_action: Action  # Used internally for redrawing the widget
+    size_update_action: Action  # Updates when the size updates
+    palette_update_action: Action  # Updates when the palette updates
+    pattern_table_update_action: Action  # Update when the pattern table updates
+    single_clicked_action: Action  # Sends a signal of a block that was just clicked
+
     def __init__(
             self,
             parent: Optional[QWidget],
