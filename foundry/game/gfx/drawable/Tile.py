@@ -7,13 +7,14 @@ qimage_mask: Masks out a color and returns a alpha mask
 Tile: The class for loading any NES graphic
 """
 
-from typing import List
+from typing import List, Union
 from operator import add
 from functools import cached_property
 from functools import lru_cache as lru_cache
 from PySide2.QtGui import QImage, QPainter, Qt, QColor, QPixmap
 import numpy as np
 
+from foundry.game.gfx.Palette import PaletteSet, Palette
 from foundry.game.gfx.Palette import PaletteController
 from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.core.geometry.Size.Size import Size
@@ -98,7 +99,8 @@ class Tile:
 
     @classmethod
     def from_rom(
-            cls, object_index: int, palette_group: List[List[int]], palette_index: int, graphics_page: PatternTableHandler
+            cls, object_index: int, palette_group: Union[PaletteSet, List[List[int]]], palette_index: int,
+            graphics_page: PatternTableHandler
     ):
         """
         Makes a Tile directly from the ROM
@@ -112,7 +114,7 @@ class Tile:
 
     @classmethod
     def from_rom_and_palette(
-            cls, object_index: int, palette: List[int], graphics_page: PatternTableHandler):
+            cls, object_index: int, palette: Union[Palette, List[int]], graphics_page: PatternTableHandler):
         """
         Makes a Tile directly from the ROM
         :param object_index: The index into the graphics page (0 - 0xFF)
