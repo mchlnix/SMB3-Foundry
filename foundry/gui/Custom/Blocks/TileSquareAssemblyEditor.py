@@ -75,24 +75,28 @@ class DialogTileSquareAssemblyEditor(ChildWindow):
         self.tsa_viewer = TileSquareAssemblyViewer.from_tsa(self, self.pattern_table, self.palette_set, self.offset)
         self.setCentralWidget(self.tsa_viewer)
 
+        name = self.__class__.__name__
         self.block_editor.block_changed_action.observer.attach_observer(
-            lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data)
+            lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data), name=f"{name} Update TSA"
         )
 
         self.color_picker.palette_set_changed_action.observer.attach_observer(lambda p: setattr(self, "palette_set", p))
         self.palette_selector.palette_changed_action.observer.attach_observer(
-            lambda p: setattr(self, "palette", p)
+            lambda p: setattr(self, "palette", p), name=f"{name} Update Palette"
         )
 
         self.tileset_spinner.value_changed_action.observer.attach_observer(
-            lambda tileset: setattr(self, "tileset", tileset)
+            lambda tileset: setattr(self, "tileset", tileset), name=f"{name} Update Tileset"
         )
 
         self.offset_spinner.value_changed_action.observer.attach_observer(
-            lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(offset))
+            lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(offset)),
+            name=f"{name} Update TSA Data"
         )
 
-        self.tsa_viewer.single_clicked_action.observer.attach_observer(lambda i: setattr(self.block_editor, "index", i))
+        self.tsa_viewer.single_clicked_action.observer.attach_observer(
+            lambda i: setattr(self.block_editor, "index", i), name=f"{name} Update Index"
+        )
 
         self.showMaximized()
 
