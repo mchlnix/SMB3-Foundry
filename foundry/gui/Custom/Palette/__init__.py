@@ -156,11 +156,26 @@ class ColorPicker(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
-        for idx, button in enumerate(self.buttons):
+        def update_color_closure(btn: ColoredToolButton):
+            """A closure for a updating a color of a given button"""
+            def get_button_color(*_):
+                """Update the color of a given button"""
+                self.color_selected_action.observer(btn.color)
+            return get_button_color
+
+        def update_button_clicked_closure(idx: int):
+            """Returns a function to get the index of a button"""
+            def update_button_clicked(*_):
+                """Returns the index of a button"""
+                self.color_index_selected_action(idx)
+            return update_button_clicked
+
+        for index, button in enumerate(self.buttons):
             button.clicked_action.observer.attach_observer(
-                lambda *_, btn=button: self.color_selected_action.observer(getattr(btn, "color")))
+                update_color_closure(button), name="Get Button Color"
+            )
             button.clicked_action.observer.attach_observer(
-                lambda *_, i=idx: self.color_index_selected_action.observer(i)
+                update_button_clicked_closure(index), name="Get Button Index"
             )
 
     def _set_up_layout(self) -> None:
