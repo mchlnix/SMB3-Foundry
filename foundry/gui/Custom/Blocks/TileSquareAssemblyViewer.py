@@ -69,13 +69,16 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         grid_layout.setDefaultPositioning(0x10, Qt.Horizontal)
 
         for idx in range(0x100):
-            sprite = BlockTrackingObject(
+            block = BlockTrackingObject(
                 self, f"block_{idx}", Block(
                     self.size, idx, self.pattern_table, self.palette_set, self.tsa_data, self.transparency)
             )
-            sprite.single_clicked_action.observer.attach_observer(closure(idx))
-            self.blocks.append(sprite)
-            grid_layout.addWidget(sprite)
+            name, b_name = self.__class__.__name__, block.__class__.__name__
+            block.single_clicked_action.observer.attach_observer(
+                closure(idx), name=f"{b_name} Notified {name} it was Clicked"
+            )
+            self.blocks.append(block)
+            grid_layout.addWidget(block)
 
         self.setLayout(grid_layout)
 
