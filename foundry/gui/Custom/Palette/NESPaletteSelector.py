@@ -93,4 +93,6 @@ class ColorPickerPopup(Dialog):
         )
 
         if action is not None:
-            self.color_picker.color_index_selected_action.observer.attach_observer(lambda value: action(value))
+            self.color_picker.color_index_selected_action.observer.attach_observer(
+                lambda value: action(value), name=f"{name} Returned Color to Action"
+            )
