@@ -62,8 +62,9 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
 
     @index.setter
     def index(self, index: int) -> None:
-        self.block.index = index
-        self.index_update_action(self.index)
+        if self.block.index != index:
+            self.block.index = index
+            self.index_update_action(self.index)
 
     @property
     def size(self) -> Size:
@@ -72,8 +73,9 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
 
     @size.setter
     def size(self, size: Size) -> None:
-        self.block.size = size
-        self.size_update_action(self.size)
+        if self.size != size:
+            self.block.size = size
+            self.size_update_action(self.size)
 
     @property
     def tsa_data(self) -> bytearray:
@@ -82,8 +84,9 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
 
     @tsa_data.setter
     def tsa_data(self, tsa_data: bytearray) -> None:
-        self.block.tsa_data = tsa_data
-        self.tsa_data_update_action(self.tsa_data)
+        if self.tsa_data != tsa_data:
+            self.block.tsa_data = tsa_data
+            self.tsa_data_update_action(self.tsa_data)
 
     @property
     def pattern_table(self) -> PatternTableHandler:
@@ -92,8 +95,9 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
 
     @pattern_table.setter
     def pattern_table(self, pattern_table: PatternTableHandler) -> None:
-        self.block.pattern_table = pattern_table
-        self.pattern_table_update_action(self.pattern_table)
+        if self.pattern_table != pattern_table:
+            self.block.pattern_table = pattern_table
+            self.pattern_table_update_action(self.pattern_table)
 
     @property
     def palette_set(self) -> PaletteSet:
@@ -102,8 +106,9 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
 
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
-        self.block.palette_set = palette_set
-        self.palette_set_update_action(self.palette_set)
+        if self.palette_set != palette_set:
+            self.block.palette_set = palette_set
+            self.palette_set_update_action(self.palette_set)
 
     @property
     def transparency(self) -> bool:
