@@ -43,7 +43,7 @@ class PaletteSetEditor(Widget, AbstractActionObject):
             return set_palette
 
         self.background_button.color_change_action.observer.attach_observer(
-            lambda *_: setattr(self.palette, "background_color", self.background_button.color)
+            lambda color: self._set_background_color(color), name=f"{name} Set Background Color"
         )
         for idx, palette in enumerate(self.palette_editors):
             palette.palette_changed_action.observer.attach_observer(
@@ -75,6 +75,10 @@ class PaletteSetEditor(Widget, AbstractActionObject):
 
     def _set_palette_set_color(self, pal_idx: int, palette: Palette) -> None:
         self.palette[pal_idx] = palette
+        self.palette_set_changed_action.observer(self.palette)
+
+    def _set_background_color(self, color: Color):
+        self.palette.background_color = color
         self.palette_set_changed_action.observer(self.palette)
 
     def get_actions(self) -> List[Action]:
