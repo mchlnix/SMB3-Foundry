@@ -13,7 +13,7 @@ from foundry.core.geometry.Size.Size import Size
 from .TileSelector import TileSelector
 
 
-class ColorPickerPopup(Dialog):
+class TileSelectorPopup(Dialog):
     """Allows you to pick a custom color and returns the value"""
 
     def __init__(
