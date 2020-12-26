@@ -31,7 +31,9 @@ class ColorPickerButton(ColoredToolButton):
 
     def _initialize_internal_observers(self):
         """Initializes internal observers for special events"""
-        self.clicked_action.observer.attach_observer(self.call_pop_up)
+        c_name = self.__class__.__name__
+        self.clicked_action.observer.attach_observer(
+            lambda *_: self.call_pop_up(), name=f"{c_name} Create Color Picker Pop Up")
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
