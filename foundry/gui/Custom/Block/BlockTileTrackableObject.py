@@ -136,27 +136,27 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
         grid = QGridLayout()
         grid.setContentsMargins(0, 0, 0, 0)
 
-        top_left_spinner = TilePickerTrackableObject(self, "Upper Left Tile", Tile(
+        tl_tile = TilePickerTrackableObject(self, "Upper Left Tile", Tile(
             self.size, self.tsa_data[self.index], self.pattern_table, self.palette_set[self.index]
         ))
-        grid.addWidget(top_left_spinner, 0, 0)
+        grid.addWidget(tl_tile, 0, 0)
 
-        top_right_spinner = TilePickerTrackableObject(self, "Upper Right Tile", Tile(
+        tr_tile = TilePickerTrackableObject(self, "Upper Right Tile", Tile(
             self.size, self.tsa_data[self.index + 0x200], self.pattern_table, self.palette_set[self.index]
         ))
-        grid.addWidget(top_right_spinner, 0, 1)
+        grid.addWidget(tr_tile, 0, 1)
 
-        bottom_left_spinner = TilePickerTrackableObject(self, "Bottom Left Tile", Tile(
+        bl_tile = TilePickerTrackableObject(self, "Bottom Left Tile", Tile(
             self.size, self.tsa_data[self.index + 0x100], self.pattern_table, self.palette_set[self.index]
         ))
-        grid.addWidget(bottom_left_spinner, 1, 0)
+        grid.addWidget(bl_tile, 1, 0)
 
-        bottom_right_spinner = TilePickerTrackableObject(self, "Bottom Right Tile", Tile(
+        br_tile = TilePickerTrackableObject(self, "Bottom Right Tile", Tile(
             self.size, self.tsa_data[self.index + 0x300], self.pattern_table, self.palette_set[self.index]
         ))
-        grid.addWidget(bottom_right_spinner, 1, 1)
+        grid.addWidget(br_tile, 1, 1)
 
-        self.tiles = [top_left_spinner, bottom_left_spinner, top_right_spinner, bottom_right_spinner]
+        self.tiles = [tl_tile, bl_tile, tr_tile, br_tile]
         self.setLayout(grid)
 
     def _initialize_internal_observers(self) -> None:
