@@ -214,7 +214,7 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
 
     def sizeHint(self):
         """The ideal size of the widget"""
-        return QSize(MetaTile.image_length * self.size.width, MetaTile.image_height * self.size.height)
+        return QSize(MetaTile.image_length * self.size.width * 2, MetaTile.image_height * self.size.height * 2)
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Paints the widget"""
