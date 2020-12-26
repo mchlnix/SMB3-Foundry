@@ -17,7 +17,7 @@ from foundry.gui.Custom.Tile.TileWidget import TileWidget
 from .AbstractTile import AbstractTile
 
 
-class TileTrackingObject(PartialTrackingObject, TileWidget):
+class TileTrackableObject(PartialTrackingObject, TileWidget):
     """A Tile that acts like a button"""
 
     def __init__(
