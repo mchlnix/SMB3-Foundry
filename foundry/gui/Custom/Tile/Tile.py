@@ -15,7 +15,7 @@ class Tile(AbstractTile):
 
     @property
     def size(self) -> Size:
-        """The size of the block in units of 16 pixels"""
+        """The size of the tile in units of 8 pixels"""
         return self._size
 
     @size.setter
@@ -24,7 +24,7 @@ class Tile(AbstractTile):
 
     @property
     def index(self) -> int:
-        """The index of the block"""
+        """The index of the tile"""
         return self._index
 
     @index.setter
@@ -46,12 +46,12 @@ class Tile(AbstractTile):
         return self._palette
 
     @palette.setter
-    def palette_set(self, palette: Palette) -> None:
+    def palette(self, palette: Palette) -> None:
         self._palette = palette
 
     @property
     def transparency(self) -> bool:
-        """Determines if the blocks will be transparent"""
+        """Determines if the tile will be transparent"""
         return self._transparency
 
     @transparency.setter
