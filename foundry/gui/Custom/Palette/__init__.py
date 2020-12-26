@@ -26,7 +26,7 @@ class PaletteSetEditor(Widget, AbstractActionObject):
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
         self.parent = parent
-        self.palette = palette
+        self.palette_set = palette
 
         self._set_up_layout()
         self._initialize_internal_observers()
@@ -58,10 +58,10 @@ class PaletteSetEditor(Widget, AbstractActionObject):
         hbox = QHBoxLayout()
         hbox.setContentsMargins(0, 0, 0, 0)
 
-        self.background_button = ColorPickerButton.as_tiny(self, self.palette.background_color)
+        self.background_button = ColorPickerButton.as_tiny(self, self.palette_set.background_color)
         hbox.addWidget(self.background_button)
         for idx in range(4):
-            editor = PaletteEditor(self, self.palette[idx])
+            editor = PaletteEditor(self, self.palette_set[idx])
             self.palette_editors.append(editor)
             hbox.addWidget(editor)
 
@@ -70,16 +70,16 @@ class PaletteSetEditor(Widget, AbstractActionObject):
     def _push_palette_set(self) -> None:
         """Forces an update to the entire palette set"""
         for idx, palette in enumerate(self.palette_editors):
-            palette._palette = self.palette[idx]
+            palette._palette = self.palette_set[idx]
             palette._push_palette_to_buttons()
 
     def _set_palette_set_color(self, pal_idx: int, palette: Palette) -> None:
-        self.palette[pal_idx] = palette
-        self.palette_set_changed_action.observer(self.palette)
+        self.palette_set[pal_idx] = palette
+        self.palette_set_changed_action.observer(self.palette_set)
 
     def _set_background_color(self, color: Color):
-        self.palette.background_color = color
-        self.palette_set_changed_action.observer(self.palette)
+        self.palette_set.background_color = color
+        self.palette_set_changed_action.observer(self.palette_set)
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
