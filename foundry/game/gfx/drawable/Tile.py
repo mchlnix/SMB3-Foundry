@@ -108,8 +108,19 @@ class Tile:
         :param graphics_page: The page (upper) index into the graphics
         :return: Tile
         """
+        return cls.from_rom_and_palette(object_index, palette_group[palette_index], graphics_page)
+
+    @classmethod
+    def from_rom_and_palette(
+            cls, object_index: int, palette: List[int], graphics_page: PatternTableHandler):
+        """
+        Makes a Tile directly from the ROM
+        :param object_index: The index into the graphics page (0 - 0xFF)
+        :param palette: The palette of colors used for the Tile
+        :param graphics_page: The page (upper) index into the graphics
+        :return: Tile
+        """
         start = object_index * 0x10
-        palette = palette_group[palette_index]
         return cls.from_palette_and_pixels(
             graphics_page.data[start: start + 0x08], graphics_page.data[start + 0x08: start + 0x10], palette
         )
