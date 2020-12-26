@@ -133,6 +133,9 @@ class BlockEditor(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
+        name = self.__class__.__name__
+        block_name = self.block.__class__.__name__
+
         def update_block_pattern_closure(idx):
             """Updates the block pattern"""
             def update_block_pattern(value):
@@ -146,6 +149,23 @@ class BlockEditor(Widget, AbstractActionObject):
             spinner.value_changed_action.observer.attach_observer(update_block_pattern_closure(idx))
         self.block.refresh_event_action.observer.attach_observer(lambda *_: self.refresh_event_action())
         self.block.size_update_action.observer.attach_observer(lambda size: self.size_update_action(size))
+
+        self.block.palette_set_update_action.observer.attach_observer(
+            lambda palette_set: setattr(self, "palette_set", palette_set),
+            name=f"{block_name} Push Palette Set to {name}"
+        )
+        self.block.pattern_table_update_action.observer.attach_observer(
+            lambda pattern_table: setattr(self, "pattern_table", pattern_table),
+            name=f"{block_name} Push Pattern Table to {name}"
+        )
+        self.block.tsa_data_update_action.observer.attach_observer(
+            lambda tsa_data: setattr(self, "tsa_data", tsa_data),
+            name=f"{block_name} Push TSA Data to {name}"
+        )
+        self.block.index_update_action.observer.attach_observer(
+            lambda index: setattr(self, "index", index),
+            name=f"{block_name} Push Index to {name}"
+        )
 
     def _push_block_update(self) -> None:
         """Pushes an update to the block"""
