@@ -61,7 +61,7 @@ class TileWidget(Widget, AbstractActionObject):
     @property
     def size(self) -> Size:
         """The size of the tile in units of 8 pixels"""
-        return self.block.size
+        return self.tile.size
 
     @size.setter
     def size(self, size: Size) -> None:
