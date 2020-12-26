@@ -147,7 +147,9 @@ class BlockEditor(Widget, AbstractActionObject):
             return update_block_pattern
 
         for idx, spinner in enumerate(self.spinners):
-            spinner.value_changed_action.observer.attach_observer(update_block_pattern_closure(idx))
+            spinner.value_changed_action.observer.attach_observer(
+                update_block_pattern_closure(idx), name=f"{name} Update Block Pattern"
+            )
         self.block.refresh_event_action.observer.attach_observer(
             lambda *_: self.refresh_event_action(), name=f"{name} Refreshed"
         )
