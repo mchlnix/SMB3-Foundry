@@ -110,7 +110,7 @@ class PaletteEditor(Widget, AbstractActionObject):
         hbox.setContentsMargins(0, 0, 0, 0)
         hbox.setSpacing(0)
         for idx in range(3):
-            button = ColorPickerButton.as_tiny(self, self.palette[idx])
+            button = ColorPickerButton.as_tiny(self, self.palette[idx + 1])
             self.buttons.append(button)
             hbox.addWidget(button)
         self.setLayout(hbox)
@@ -126,7 +126,7 @@ class PaletteEditor(Widget, AbstractActionObject):
 
         for idx, button in enumerate(self.buttons):
             button.color_change_action.observer.attach_observer(
-                set_palette_color_closure(idx), name="Set Palette Color"
+                set_palette_color_closure(idx + 1), name="Set Palette Color"
             )
 
     def _set_palette_color(self, idx: int, color: Color) -> None:
@@ -136,7 +136,7 @@ class PaletteEditor(Widget, AbstractActionObject):
     def _push_palette_to_buttons(self) -> None:
         """Pushes the palette onto the palette buttons"""
         for idx, button in enumerate(self.buttons):
-            button._set_color(self.palette[idx])  # pushes the color to the button without updating the palette
+            button._set_color(self.palette[idx + 1])  # pushes the color to the button without updating the palette
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
