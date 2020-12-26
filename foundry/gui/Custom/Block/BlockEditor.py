@@ -12,7 +12,7 @@ from foundry.core.Action.Action import Action
 from foundry.core.geometry.Size.Size import Size
 
 from foundry.gui.QCore.Tracker import AbstractActionObject
-from foundry.gui.Custom.Block.BlockWidget import BlockWidget
+from foundry.gui.Custom.Block.BlockTileTrackableObject import BlockTileTrackableObject
 from foundry.gui.Custom.Block.AbstractBlock import AbstractBlock
 from foundry.gui.QSpinner.HexSpinner import HexSpinner
 from foundry.gui.QWidget import Widget
@@ -128,7 +128,7 @@ class BlockEditor(Widget, AbstractActionObject):
         top_right_spinner = HexSpinner(self, maximum=0xFF)
         grid.addWidget(top_right_spinner, 0, 2)
 
-        self.block = BlockWidget(self, "Block", self.block)
+        self.block = BlockTileTrackableObject(self, "Block", self.block)
         grid.addWidget(self.block, 0, 1, 0, 1, Qt.AlignCenter)
 
         bottom_left_spinner = HexSpinner(self, maximum=0xFF)
