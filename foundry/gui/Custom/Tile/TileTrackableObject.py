@@ -31,12 +31,13 @@ class TileTrackableObject(PartialTrackingObject, TileWidget):
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
+        name = self.__class__.__name__
         return [
-            Action("refresh_event", ObservableDecorator(lambda *_: self.update(), "Refreshed")),
-            Action("size_update", ObservableDecorator(lambda size: size, "Size Updated")),
-            Action("pressed", ObservableDecorator(lambda button: button, "Pressed")),
-            Action("released", ObservableDecorator(lambda button: button, "Released")),
-            Action("single_clicked", ObservableDecorator(lambda button: button, "Single Clicked")),
-            Action("double_clicked", ObservableDecorator(lambda button: button, "Double Clicked")),
-            Action("mouse_moved", ObservableDecorator(lambda pos: pos, "Mouse Moved"))
+            Action("refresh_event", ObservableDecorator(lambda *_: self.update(), f"{name} Refreshed")),
+            Action("size_update", ObservableDecorator(lambda size: size, f"{name} Size Updated")),
+            Action("pressed", ObservableDecorator(lambda button: button, f"{name} Pressed")),
+            Action("released", ObservableDecorator(lambda button: button, f"{name} Released")),
+            Action("single_clicked", ObservableDecorator(lambda button: button, f"{name} Single Clicked")),
+            Action("double_clicked", ObservableDecorator(lambda button: button, f"{name} Double Clicked")),
+            Action("mouse_moved", ObservableDecorator(lambda pos: pos, f"{name} Mouse Moved"))
         ]
