@@ -1,6 +1,6 @@
 """
-This module includes the AbstractBlock
-BlockWidget: An abstract representation of what a block is.  Unlike gfx/Block this is meant to retain state.
+This module includes Tile
+Tile: An concrete implementation of a Tile that retains state
 """
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
