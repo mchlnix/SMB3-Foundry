@@ -174,6 +174,19 @@ class BlockEditor(Widget, AbstractActionObject):
             name=f"{block_name} Push Index to {name}"
         )
 
+        self.block_changed_action.observer.attach_observer(
+            lambda *_: self._push_meta_block_to_gui(),
+            name=f"{name} Push Meta Block Data to {block_name}"
+        )
+
+    def _push_meta_block_to_gui(self) -> None:
+        """Pushes the meta block to the gui"""
+        self.block.index = self.meta_block.index
+        self.block.palette = self.meta_block.palette_set
+        self.block.pattern_table = self.meta_block.pattern_table
+        self.block.tsa_data = self.meta_block.tsa_data
+        self.block.size = self.meta_block.size
+
     def _push_block_update(self) -> None:
         """Pushes an update to the block"""
         for idx, spinner in enumerate(self.spinners):
