@@ -56,7 +56,10 @@ class Observable(AbstractObservable):
             if temp_id not in self.observers:
                 identifier = temp_id
         if name is not None:
-            observer.__observer_name = name  # Tag the event for debugging
+            try:
+                observer.__observer_name = name  # Tag the event for debugging
+            except AttributeError as e:
+                logger.warning(f"{e}: {self.name} failed to name {observer} the name {name}")
         self.observers.update({identifier: observer})
 
     def delete_observable(self, identifier: Hashable) -> None:
