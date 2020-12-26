@@ -1,6 +1,6 @@
 """
-This module includes the AbstractBlock
-BlockWidget: An abstract representation of what a block is.  Unlike gfx/Block this is meant to retain state.
+This module includes the AbstractTile.
+AbstractTile is meant to make a implementation of the drawable Tile that retains state.
 """
 
 
