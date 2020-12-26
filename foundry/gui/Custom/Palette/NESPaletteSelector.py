@@ -87,7 +87,10 @@ class ColorPickerPopup(Dialog):
 
     def _initialize_internal_observers(self, action) -> None:
         """Initializes internal observers for special events"""
-        self.color_picker.color_index_selected_action.observer.attach_observer(lambda *_: self.accept())  # closes the dialog
+        name = self.__class__.__name__
+        self.color_picker.color_index_selected_action.observer.attach_observer(
+            lambda *_: self.accept(), name=f"{name} Closed"
+        )
 
         if action is not None:
             self.color_picker.color_index_selected_action.observer.attach_observer(lambda value: action(value))
