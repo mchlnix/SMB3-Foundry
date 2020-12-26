@@ -32,6 +32,7 @@ class BlockEditor(Widget, AbstractActionObject):
         AbstractActionObject.__init__(self)
 
         self.meta_block = block
+        print(self.meta_block)
         self._block_pattern = BlockPattern.from_tsa_data(self.meta_block.index, self.meta_block.tsa_data)
 
         self._set_up_layout()
@@ -147,8 +148,12 @@ class BlockEditor(Widget, AbstractActionObject):
 
         for idx, spinner in enumerate(self.spinners):
             spinner.value_changed_action.observer.attach_observer(update_block_pattern_closure(idx))
-        self.block.refresh_event_action.observer.attach_observer(lambda *_: self.refresh_event_action())
-        self.block.size_update_action.observer.attach_observer(lambda size: self.size_update_action(size))
+        self.block.refresh_event_action.observer.attach_observer(
+            lambda *_: self.refresh_event_action(), name=f"{name} Refreshed"
+        )
+        self.block.size_update_action.observer.attach_observer(
+            lambda size: self.size_update_action(size), name=f"{name} Size Updated"
+        )
 
         self.block.palette_set_update_action.observer.attach_observer(
             lambda palette_set: setattr(self, "palette_set", palette_set),
