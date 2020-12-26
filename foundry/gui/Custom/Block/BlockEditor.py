@@ -31,13 +31,13 @@ class BlockEditor(Widget, AbstractActionObject):
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
 
-        self.block = block
-        self._block_pattern = BlockPattern.from_tsa_data(self.block.index, self.block.tsa_data)
+        self.meta_block = block
+        self._block_pattern = BlockPattern.from_tsa_data(self.meta_block.index, self.meta_block.tsa_data)
 
         self._set_up_layout()
         self._initialize_internal_observers()
 
-        self.index = self.block.index  # Update the spinners
+        self.index = self.meta_block.index  # Update the spinners
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.spinners})"
@@ -60,44 +60,35 @@ class BlockEditor(Widget, AbstractActionObject):
 
     @index.setter
     def index(self, index: int) -> None:
-        self.block.index = index
+        self.meta_block.index = index
         self.block_pattern = BlockPattern.from_tsa_data(self.block.index, self.block.tsa_data)
 
     @property
     def tsa_data(self) -> bytearray:
         """"The pattern table of the block"""
-        return self.block.tsa_data
+        return self.meta_block.tsa_data
 
     @tsa_data.setter
     def tsa_data(self, tsa_data: bytearray) -> None:
-        self.block.tsa_data = tsa_data
+        self.meta_block.tsa_data = tsa_data
 
     @property
     def size(self) -> Size:
         """The size of the block in units of 16 pixels"""
-        return self.block.size
+        return self.meta_block.size
 
     @size.setter
     def size(self, size: Size) -> None:
-        self.block.size = size
-
-    @property
-    def tsa_offset(self) -> int:
-        """The offset in banks to the current tsa"""
-        return self.block.tsa_offset
-
-    @tsa_offset.setter
-    def tsa_offset(self, offset: int) -> None:
-        self.block.tsa_offset = offset
+        self.meta_block.size = size
 
     @property
     def pattern_table(self) -> PatternTableHandler:
         """The pattern table for the tiles"""
-        return self.block.pattern_table
+        return self.meta_block.pattern_table
 
     @pattern_table.setter
     def pattern_table(self, pattern_table: PatternTableHandler) -> None:
-        self.block.pattern_table = pattern_table
+        self.meta_block.pattern_table = pattern_table
 
     @property
     def palette_set(self) -> PaletteSet:
@@ -106,16 +97,16 @@ class BlockEditor(Widget, AbstractActionObject):
 
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
-        self.block.palette_set = palette_set
+        self.meta_block.palette_set = palette_set
 
     @property
     def transparency(self) -> bool:
         """Determines if the blocks will be transparent"""
-        return self.block.transparency
+        return self.meta_block.transparency
 
     @transparency.setter
     def transparency(self, transparency: bool) -> None:
-        self.block.transparency = transparency
+        self.meta_block.transparency = transparency
 
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
@@ -128,7 +119,7 @@ class BlockEditor(Widget, AbstractActionObject):
         top_right_spinner = HexSpinner(self, maximum=0xFF)
         grid.addWidget(top_right_spinner, 0, 2)
 
-        self.block = BlockTileTrackableObject(self, "Block", self.block)
+        self.block = BlockTileTrackableObject(self, "Block", self.meta_block)
         grid.addWidget(self.block, 0, 1, 0, 1, Qt.AlignCenter)
 
         bottom_left_spinner = HexSpinner(self, maximum=0xFF)
