@@ -106,9 +106,16 @@ class PaletteEditor(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
+        def set_palette_color_closure(index):
+            """Returns a function that sets a palette color by index"""
+            def set_palette_color(color: Color):
+                """Sets a palette color by index"""
+                self._set_palette_color(index, color)
+            return set_palette_color
+
         for idx, button in enumerate(self.buttons):
             button.color_change_action.observer.attach_observer(
-                lambda color, i=idx: self._set_palette_color(i, color)
+                set_palette_color_closure(idx), name="Set Palette Color"
             )
 
     def _set_palette_color(self, idx: int, color: Color) -> None:
