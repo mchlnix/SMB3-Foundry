@@ -5,14 +5,30 @@ from PySide2.QtWidgets import QVBoxLayout
 
 from foundry.gui.QDialog import Dialog
 
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
+from foundry.game.gfx.Palette import Palette
+
+from foundry.core.geometry.Size.Size import Size
+
 from .TileSelector import TileSelector
 
 
 class ColorPickerPopup(Dialog):
     """Allows you to pick a custom color and returns the value"""
 
-    def __init__(self, parent, title="Select a Tile", action: Optional[Callable] = None) -> None:
+    def __init__(
+            self,
+            parent,
+            pattern_table: PatternTableHandler,
+            palette: Palette,
+            title="Select a Tile",
+            action: Optional[Callable] = None,
+            size: Size = None
+    ) -> None:
         Dialog.__init__(self, parent, title)
+        self.size = size
+        self.pattern_table = pattern_table
+        self.palette = palette
 
         self._set_up_layout()
         self._initialize_internal_observers(action)
@@ -20,7 +36,7 @@ class ColorPickerPopup(Dialog):
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
         layout = QVBoxLayout(self)
-        self.tile_picker = TileSelector(self)
+        self.tile_picker = TileSelector(self, self.size, self.pattern_table, self.palette)
         layout.addWidget(self.tile_picker)
         self.setLayout(layout)
 
