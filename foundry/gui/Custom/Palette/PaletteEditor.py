@@ -49,7 +49,6 @@ class PaletteEditor(Widget, AbstractActionObject):
             def set_palette_color(color: Color):
                 """Sets a palette color by index"""
                 self.palette[index + 1] = color
-                self.buttons[index].color = color
                 self.palette_changed_action.observer(copy(self.palette))
             return set_palette_color
 
