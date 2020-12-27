@@ -61,9 +61,6 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         """Pushes the palette set to the gui"""
         self.color_picker._palette_set = self.palette_set  # Note: Push directly to avoid recursion issues
         self.color_picker._push_palette_set()
-        self.palette_selector._palette_set = self.palette_set
-        self.palette_selector._update_palette()
-
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
@@ -81,6 +78,9 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self.palette_set_update_action.observer.attach_observer(
             lambda palette_set: setattr(self.tsa_viewer, "palette_set", palette_set),
             name=f"{name} Update Palette Set"
+        )
+        self.palette_set_update_action.observer.attach_observer(
+            lambda palette_set: setattr(self.palette_selector, "palette_set", palette_set)
         )
 
         self.block_editor.block_changed_action.observer.attach_observer(
