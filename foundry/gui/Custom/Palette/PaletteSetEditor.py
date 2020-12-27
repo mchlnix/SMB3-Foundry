@@ -53,6 +53,10 @@ class PaletteSetEditor(Widget, AbstractActionObject):
         self.background_button.color_change_action.observer.attach_observer(
             lambda color: set_background_color(color), name=f"{name} Set Background Color"
         )
+        self.palette_set_changed_action.observer.attach_observer(
+            lambda palette_set: setattr(self.background_button, "color", palette_set.background_color)
+        )
+
         for index, palette in enumerate(self.palette_editors):
             palette.palette_changed_action.observer.attach_observer(
                 set_palette_closure(index), name=f"{name} Set Palette"
@@ -60,10 +64,6 @@ class PaletteSetEditor(Widget, AbstractActionObject):
             self.palette_set_changed_action.observer.attach_observer(
                 set_palettes_palette_closure(index), name=f"{name} Set Palette"
             )
-
-        self.palette_set_changed_action.observer.attach_observer(
-            lambda palette_set: setattr(self.background_button, "color", palette_set.background_color)
-        )
 
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
