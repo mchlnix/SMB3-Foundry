@@ -111,27 +111,20 @@ class BlockEditor(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
-        name = self.__class__.__name__
-
-        def update_block_pattern_closure(idx):
+        def update_block_pattern_closure(index):
             """Updates the block pattern"""
-            def update_block_pattern(value):
+            def update_block_pattern(new_pattern):
                 """The inner function"""
-                if value != self.block_pattern[idx]:
-                    self.block_pattern[idx] = value
+                old_pattern = self.tsa_data[self.index + (index * 0x100)]
+                if new_pattern != old_pattern:
+                    self.tsa_data[self.index + (index * 0x100)] = new_pattern
                     self._push_block_update()
             return update_block_pattern
 
         for idx, spinner in enumerate(self.spinners):
             spinner.value_changed_action.observer.attach_observer(
-                update_block_pattern_closure(idx), name=f"{name} Update Block Pattern"
+                update_block_pattern_closure(idx), name=f"{self.__class__.__name__} Update Block Pattern"
             )
-        self.block.refresh_event_action.observer.attach_observer(
-            lambda *_: self.refresh_event_action(), name=f"{name} Refreshed"
-        )
-        self.block.size_update_action.observer.attach_observer(
-            lambda size: self.size_update_action(size), name=f"{name} Size Updated"
-        )
 
     def _push_block_update(self) -> None:
         """Pushes an update to the block"""
