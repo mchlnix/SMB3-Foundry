@@ -21,12 +21,13 @@ from foundry.gui.Custom.Block.BlockWidget import BlockWidget
 from foundry.gui.Custom.Block.Block import Block
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
+from foundry.gui.QCore.Tracker import AbstractActionObject
 from foundry.game.gfx.Palette import load_palette
 
 from .TileSquareAssemblyViewer import TileSquareAssemblyViewer
 
 
-class DialogTileSquareAssemblyEditor(ChildWindow):
+class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     """The viewer of the TSA editor"""
 
     def __init__(self, parent):
