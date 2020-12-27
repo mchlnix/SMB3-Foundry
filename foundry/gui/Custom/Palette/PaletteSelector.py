@@ -64,7 +64,7 @@ class PaletteSelector(Widget, AbstractActionObject):
         )
 
         self.palette_set_changed_action.observer.attach_observer(
-            lambda palette_set: setattr(self.palette_editor, "palette", self.palette),
+            lambda *_: setattr(self.palette_editor, "palette", self.palette),
             name=f"{name} Set Palette"
         )
         self.index_changed_action.observer.attach_observer(
