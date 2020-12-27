@@ -1,10 +1,12 @@
 
 
-
+from typing import List
 from PySide2.QtGui import Qt
 
 from foundry import icon
 
+from foundry.core.Observables.ObservableDecorator import ObservableDecorator
+from foundry.core.Action.Action import Action
 from foundry.core.geometry.Size.Size import Size
 
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
@@ -106,6 +108,19 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self.palette_selector._palette_set = self.palette_set
         self.palette_selector._update_palette()
         self.tsa_viewer.palette_set = self.palette_set
+
+    def get_actions(self) -> List[Action]:
+        """Gets the actions for the object"""
+        return [
+            Action("refresh_event", ObservableDecorator(lambda *_: self.update(), "Refreshed")),
+            Action("size_update", ObservableDecorator(lambda size: size, "Size Updated")),
+            Action("tsa_data_update", ObservableDecorator(lambda tsa_offset: tsa_offset, "TSA Updated")),
+            Action("palette_set_update", ObservableDecorator(lambda palette_set: palette_set, "Palette Set Updated")),
+            Action("pattern_table_update", ObservableDecorator(
+                lambda pattern_table: pattern_table, "Pattern Table Updated"
+            )),
+            Action("single_clicked", ObservableDecorator(lambda button: button, "Single Clicked")),
+        ]
 
     @property
     def palette_set(self) -> PaletteSet:
