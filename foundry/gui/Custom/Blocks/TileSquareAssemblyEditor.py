@@ -63,7 +63,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self.color_picker._push_palette_set()
         self.palette_selector._palette_set = self.palette_set
         self.palette_selector._update_palette()
-        self.tsa_viewer.palette_set = self.palette_set
+
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
@@ -76,6 +76,11 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self.tileset_update_action.observer.attach_observer(
             lambda *_: setattr(self.block_editor, "pattern_table", self.pattern_table),
             name=f'{name} Update Tileset'
+        )
+
+        self.palette_set_update_action.observer.attach_observer(
+            lambda palette_set: setattr(self.tsa_viewer, "palette_set", palette_set),
+            name=f"{name} Update Palette Set"
         )
 
         self.block_editor.block_changed_action.observer.attach_observer(
