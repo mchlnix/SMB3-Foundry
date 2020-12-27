@@ -71,17 +71,20 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         )
 
         self.tileset_combo_box.index_changed_action.observer.attach_observer(
-            lambda tileset: setattr(self, "tileset", tileset), name=f"{name} Update Tileset"
+            lambda tileset: setattr(self, "tileset", tileset),
+            name=f"{name} Update Tileset"
         )
         self.tileset_combo_box.index_changed_action.observer.attach_observer(
             lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(self.offset)),
             name=f"{name} Update TSA Data"
         )
         self.block_editor.block_changed_action.observer.attach_observer(
-            lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data), name=f"{name} Update TSA"
+            lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data),
+            name=f"{name} Update TSA"
         )
         self.tsa_viewer.single_clicked_action.observer.attach_observer(
-            lambda i: setattr(self.block_editor, "index", i), name=f"{name} Update Index"
+            lambda i: setattr(self.block_editor, "index", i),
+            name=f"{name} Update Index"
         )
 
         self.palette_set_update_action.observer.attach_observer(
@@ -98,10 +101,12 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         )
 
         self.color_picker.palette_set_changed_action.observer.attach_observer(
-            lambda p: setattr(self, "palette_set", p)
+            lambda p: setattr(self, "palette_set", p),
+            name=f"{name} Update Palette Set"
         )
         self.palette_selector.palette_changed_action.observer.attach_observer(
-            lambda p: setattr(self, "palette", p), name=f"{name} Update Palette"
+            lambda p: setattr(self, "palette", p),
+            name=f"{name} Update Palette"
         )
 
     def _set_up_layout(self) -> None:
