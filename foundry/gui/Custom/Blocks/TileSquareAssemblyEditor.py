@@ -159,11 +159,16 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
+        name = self.__class__.__name__
         return [
-            Action("tsa_data_update", ObservableDecorator(lambda tsa_offset: tsa_offset, "TSA Updated")),
-            Action("palette_set_update", ObservableDecorator(lambda palette_set: palette_set, "Palette Set Updated")),
+            Action("tsa_data_update", ObservableDecorator(
+                lambda tsa_offset: tsa_offset, f"{name} TSA Updated"
+            )),
+            Action("palette_set_update", ObservableDecorator(
+                lambda palette_set: palette_set, f"{name} Palette Set Updated"
+            )),
             Action("tileset_update", ObservableDecorator(
-                lambda pattern_table: pattern_table, "Tileset Updated"
+                lambda pattern_table: pattern_table, f"{name} Tileset Updated"
             )),
         ]
 
