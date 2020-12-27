@@ -2,6 +2,7 @@
 
 import yaml
 from yaml import CLoader as Loader
+from copy import copy
 from typing import List
 from PySide2.QtGui import Qt
 
@@ -175,24 +176,24 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     @property
     def palette_set(self) -> PaletteSet:
         """The palette set used by the editor"""
-        return self._palette_set
+        return copy(self._palette_set)
 
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
         if self.palette_set != palette_set:
-            self._palette_set = palette_set
-            self.palette_set_update_action(palette_set)
+            self._palette_set = copy(palette_set)
+            self.palette_set_update_action(copy(palette_set))
 
     @property
     def palette(self) -> Palette:
         """The palette used by the editor"""
-        return self.palette_set[self.palette_index]
+        return copy(self.palette_set[self.palette_index])
 
     @palette.setter
     def palette(self, palette: Palette) -> None:
         if self.palette_set[self.palette_index] != palette:
-            self._palette_set[self.palette_index] = palette
-            self.palette_set_update_action(self.palette_set)
+            self._palette_set[self.palette_index] = copy(palette)
+            self.palette_set_update_action(copy(self.palette_set))
 
     @property
     def palette_index(self) -> int:
