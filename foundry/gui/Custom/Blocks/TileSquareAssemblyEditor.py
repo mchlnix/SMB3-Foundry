@@ -57,9 +57,6 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
         self.showMaximized()
 
-    def _push_palette_set(self) -> None:
-        """Pushes the palette set to the gui"""
-
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
         name = self.__class__.__name__
@@ -175,7 +172,6 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     def palette_set(self, palette_set: PaletteSet) -> None:
         if self.palette_set != palette_set:
             self._palette_set = palette_set
-            self._push_palette_set()
             self.palette_set_update_action(palette_set)
 
     @property
@@ -187,7 +183,6 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     def palette(self, palette: Palette) -> None:
         if self.palette_set[self.palette_index] != palette:
             self._palette_set[self.palette_index] = palette
-            self._push_palette_set()
             self.palette_set_update_action(self.palette_set)
 
     @property
