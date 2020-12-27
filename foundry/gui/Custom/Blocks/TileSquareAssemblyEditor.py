@@ -68,6 +68,11 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
         name = self.__class__.__name__
+
+        self.tileset_update_action.observer.attach_observer(
+            lambda *_: setattr(self.tsa_viewer, "pattern_table", self.pattern_table)
+        )
+
         self.block_editor.block_changed_action.observer.attach_observer(
             lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data), name=f"{name} Update TSA"
         )
@@ -193,8 +198,6 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         if self.tileset != tileset:
             self._tileset = tileset
             self._pattern_table = PatternTableHandler.from_tileset(tileset)
-            if self.tsa_viewer is not None:
-                self.tsa_viewer.pattern_table = self.pattern_table
             self.tileset_update_action((self.tileset, self.offset, self.pattern_table))
 
     @property
