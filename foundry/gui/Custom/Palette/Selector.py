@@ -79,9 +79,10 @@ class PaletteSelector(Widget, AbstractActionObject):
 
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
-        self._palette_set = palette_set
-        self._update_palette()
-        self.palette_set_changed_action.observer(palette_set)
+        if palette_set != self.palette_set:
+            self._palette_set = palette_set
+            self._update_palette()
+            self.palette_set_changed_action.observer(palette_set)
 
     @property
     def palette(self) -> Palette:
@@ -90,9 +91,10 @@ class PaletteSelector(Widget, AbstractActionObject):
 
     @palette.setter
     def palette(self, palette: Palette) -> None:
-        self.palette_set[self.index] = palette
-        self._update_palette()
-        self.palette_changed_action.observer(palette)
+        if palette != self.palette:
+            self.palette_set[self.index] = palette
+            self._update_palette()
+            self.palette_changed_action.observer(palette)
 
     def _update_palette(self):
         self.palette_editor._set_palette(self.palette)  # update the palette without providing an update
@@ -104,5 +106,6 @@ class PaletteSelector(Widget, AbstractActionObject):
 
     @index.setter
     def index(self, index: int) -> None:
-        self._index = index
-        self._update_palette()
+        if index != self.index:
+            self._index = index
+            self._update_palette()
