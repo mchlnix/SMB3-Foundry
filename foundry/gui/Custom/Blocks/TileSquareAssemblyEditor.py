@@ -1,9 +1,11 @@
 
 
+import yaml
+from yaml import CLoader as Loader
 from typing import List
 from PySide2.QtGui import Qt
 
-from foundry import icon
+from foundry import icon, data_dir
 
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.core.Action.Action import Action
@@ -26,6 +28,9 @@ from foundry.gui.QCore.Tracker import AbstractActionObject
 
 from .TileSquareAssemblyViewer import TileSquareAssemblyViewer
 
+with open(data_dir.joinpath("tileset_info.yaml")) as f:
+    tilesets = yaml.load(f, Loader=Loader)
+    
 
 class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     """The viewer of the TSA editor"""
