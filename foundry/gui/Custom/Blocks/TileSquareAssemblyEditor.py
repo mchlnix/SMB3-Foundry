@@ -32,6 +32,11 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
     def __init__(self, parent):
         super(DialogTileSquareAssemblyEditor, self).__init__(parent, title="Tile Square Assembly Editor")
+        self.setWindowIcon(icon("tanooki.ico"))
+
+        # Add a default file menu
+        self.file_menu = FileMenuLight(self)
+        self.menuBar().addMenu(self.file_menu)
 
         self.tsa_viewer = None
         self.tileset = 1
@@ -78,12 +83,6 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         )
 
     def _set_up_layout(self) -> None:
-        self.setWindowIcon(icon("tanooki.ico"))
-
-        # Add a default file menu
-        self.file_menu = FileMenuLight(self)
-        self.menuBar().addMenu(self.file_menu)
-
         self.tileset_spinner = HexSpinner(self, maximum=0xFF)
         self.tileset_spinner.setValue(self.tileset)
         self.tileset_toolbar = Toolbar.default_toolbox(
