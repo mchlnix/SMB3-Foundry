@@ -21,6 +21,7 @@ from foundry.gui.Custom.Palette.Selector import PaletteSelector
 from foundry.gui.QSpinner.HexSpinner import HexSpinner
 from foundry.gui.QWidget.Panel import Panel
 from foundry.gui.Custom.Block.BlockEditor import BlockEditor
+from foundry.gui.QComboBox import ComboBox, ComboBoxOption
 from foundry.gui.Custom.Block.Block import Block
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
@@ -30,11 +31,6 @@ from .TileSquareAssemblyViewer import TileSquareAssemblyViewer
 
 with open(data_dir.joinpath("tileset_info.yaml")) as f:
     tilesets = yaml.load(f, Loader=Loader)
-tileset_name_to_index = {}
-tileset_index_to_name = {}
-for idx, tileset in enumerate(tilesets):
-    tileset_index_to_name.update({tileset["name"]: idx})
-    tileset_index_to_name.update({idx: tileset["name"]})
 
 
 class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
@@ -44,7 +40,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         super(DialogTileSquareAssemblyEditor, self).__init__(parent, title="Tile Square Assembly Editor")
 
         self.tsa_viewer = None
-        self.tileset = 1
+        self.tileset = 0
         self._offset = 15
         self._palette_set = DEFAULT_PALETTE_SET
         self._palette_index = 0
@@ -74,7 +70,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
             lambda p: setattr(self, "palette", p), name=f"{name} Update Palette"
         )
 
-        self.tileset_spinner.value_changed_action.observer.attach_observer(
+        self.tileset_combo_box.index_changed_action.observer.attach_observer(
             lambda tileset: setattr(self, "tileset", tileset), name=f"{name} Update Tileset"
         )
 
@@ -94,10 +90,25 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self.file_menu = FileMenuLight(self)
         self.menuBar().addMenu(self.file_menu)
 
-        self.tileset_spinner = HexSpinner(self, maximum=0xFF)
-        self.tileset_spinner.setValue(self.tileset)
+        def push_tileset_closure(index: int):
+            """Closure for pushing the tileset"""
+            def push_tileset(*_):
+                """Pushes the tileset"""
+                return index
+            return push_tileset
+
+        tileset_options: List[ComboBoxOption] = []
+        self.combo_box_actions = []
+        for idx, tileset in enumerate(tilesets.values()):
+            tileset_option = ObservableDecorator(
+                push_tileset_closure(idx), name=f"{self.__class__.__name__} Push Tileset {idx}"
+            )
+            tileset_options.append(ComboBoxOption(tileset["name"], Action("name", tileset_option)))
+            self.combo_box_actions.append(tileset_option)
+
+        self.tileset_combo_box = ComboBox(self, tileset_options)
         self.tileset_toolbar = Toolbar.default_toolbox(
-            self, "tileset_toolbar", Panel(self, "Tileset", self.tileset_spinner), Qt.RightToolBarArea
+            self, "tileset_toolbar", Panel(self, "Tileset", self.tileset_combo_box), Qt.RightToolBarArea
         )
 
         self.offset_spinner = HexSpinner(self, maximum=0xFF)
