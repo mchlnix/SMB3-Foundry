@@ -97,22 +97,16 @@ class BlockEditor(Widget, AbstractActionObject):
         grid = QGridLayout()
         grid.setContentsMargins(0, 0, 0, 0)
 
-        top_left_spinner = HexSpinner(self, maximum=0xFF)
-        grid.addWidget(top_left_spinner, 0, 0)
-
-        top_right_spinner = HexSpinner(self, maximum=0xFF)
-        grid.addWidget(top_right_spinner, 0, 2)
-
         self.block = BlockTileTrackableObject(self, "Block", block)
+
+        self.spinners = []
+        for idx in range(4):
+            spinner = HexSpinner(self, maximum=0xFF)
+            x, y = idx & 1, idx // 2 * 2
+            grid.addWidget(spinner, x, y)
+            self.spinners.append(spinner)
         grid.addWidget(self.block, 0, 1, 0, 1, Qt.AlignCenter)
 
-        bottom_left_spinner = HexSpinner(self, maximum=0xFF)
-        grid.addWidget(bottom_left_spinner, 1, 0)
-
-        bottom_right_spinner = HexSpinner(self, maximum=0xFF)
-        grid.addWidget(bottom_right_spinner, 1, 2)
-
-        self.spinners = [top_left_spinner, bottom_left_spinner, top_right_spinner, bottom_right_spinner]
         self.setLayout(grid)
 
     def _initialize_internal_observers(self) -> None:
