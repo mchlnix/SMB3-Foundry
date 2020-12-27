@@ -63,12 +63,6 @@ class PaletteSetEditor(Widget, AbstractActionObject):
 
         self.setLayout(hbox)
 
-    def _push_palette_set(self) -> None:
-        """Forces an update to the entire palette set"""
-        for idx, palette in enumerate(self.palette_editors):
-            palette._palette = self.palette_set[idx]
-            palette._push_palette_to_buttons()
-
     def _set_background_color(self, color: Color):
         self.palette_set.background_color = color
         self.palette_set_changed_action.observer(copy(self.palette_set))
