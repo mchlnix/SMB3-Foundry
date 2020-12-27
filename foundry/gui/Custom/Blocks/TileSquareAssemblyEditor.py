@@ -32,7 +32,6 @@ from .TileSquareAssemblyViewer import TileSquareAssemblyViewer
 with open(data_dir.joinpath("tileset_info.yaml")) as f:
     tilesets = yaml.load(f, Loader=Loader)
 
-tileset_options: List[ComboBoxOption] = []
 tileset_offsets = [tileset["C000"] for tileset in tilesets.values()]
 tileset_offsets[0] = 12  # correct incorrect world offset
 
