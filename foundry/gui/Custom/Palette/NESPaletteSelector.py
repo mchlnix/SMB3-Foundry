@@ -76,10 +76,11 @@ class ColorPickerButton(ColoredToolButton):
 
     @color_index.setter
     def color_index(self, color_index: int) -> None:
-        self._color_index = color_index
-        self.color = _palette_controller.colors[color_index]
+        if self.color_index != color_index:
+            self._color_index = color_index
+            self.color = _palette_controller.colors[color_index]
 
-        self.color_index_change_action.observer(color_index)
+            self.color_index_change_action.observer(color_index)
 
 
 class ColorPickerPopup(Dialog):
