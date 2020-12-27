@@ -6,7 +6,7 @@ from typing import List, Optional, Callable, Union
 from PySide2.QtWidgets import QVBoxLayout, QWidget
 
 from foundry.gui.QDialog import Dialog
-from foundry.gui.Custom.Palette import ColorPicker
+from foundry.gui.Custom.Palette.ColorPicker import ColorPicker
 from foundry.gui.QToolButton import ColoredToolButton
 from foundry.game.gfx.Palette import Color, PaletteController
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
