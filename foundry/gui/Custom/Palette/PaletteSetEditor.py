@@ -89,5 +89,5 @@ class PaletteSetEditor(Widget, AbstractActionObject):
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
         if palette_set != self.palette_set:
-            self.palette_set = copy(palette_set)
+            self._palette_set = copy(palette_set)
             self.palette_set_changed_action.observer(copy(self.palette_set))
