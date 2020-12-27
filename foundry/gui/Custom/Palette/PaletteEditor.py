@@ -3,6 +3,7 @@ from typing import Optional, List
 
 from PySide2.QtWidgets import QWidget, QHBoxLayout
 
+from foundry.gui.Custom.Palette.NESPaletteSelector import ColorPickerButton
 from foundry.core.Action.AbstractActionObject import AbstractActionObject
 from foundry.core.Action.Action import Action
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
@@ -29,7 +30,6 @@ class PaletteEditor(Widget, AbstractActionObject):
 
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
-        from foundry.gui.Custom.Palette.NESPaletteSelector import ColorPickerButton
         self.buttons = []
         hbox = QHBoxLayout()
         hbox.setContentsMargins(0, 0, 0, 0)
@@ -42,6 +42,8 @@ class PaletteEditor(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
+        name = self.__class__.__name__
+
         def set_palette_color_closure(index):
             """Returns a function that sets a palette color by index"""
             def set_palette_color(color: Color):
@@ -51,9 +53,19 @@ class PaletteEditor(Widget, AbstractActionObject):
                 self.palette_changed_action.observer(copy(self.palette))
             return set_palette_color
 
+        def set_button_color_closure(btn: ColorPickerButton, index: int):
+            """A closure for setting a button's color"""
+            def set_button_colors(*_):
+                """Sets a button's colors"""
+                btn.color = self.palette[index + 1]
+            return set_button_colors
+
         for idx, button in enumerate(self.buttons):
+            self.palette_changed_action.observer.attach_observer(
+                set_button_color_closure(button, idx), name=f"{name} Set Button Colors"
+            )
             button.color_change_action.observer.attach_observer(
-                set_palette_color_closure(idx), name="Set Palette Color"
+                set_palette_color_closure(idx), name=f"{name} Set Palette Color"
             )
 
     def _push_palette_to_buttons(self) -> None:
