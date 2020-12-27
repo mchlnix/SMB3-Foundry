@@ -38,6 +38,13 @@ class PaletteSetEditor(Widget, AbstractActionObject):
                 self.palette_set = old_pal
             return set_palette
 
+        def set_palettes_palette_closure(idx: int):
+            """Sets the palette's palette whenever the palette set changes"""
+            def set_palettes_palette(pal: PaletteSet):
+                """Set the palette's palette"""
+                self.palette_editors[idx].palette = pal[idx]
+            return set_palettes_palette
+
         def set_background_color(color: Color):
             """Sets a background color for a palette set"""
             self.palette_set.background_color = color
@@ -49,6 +56,9 @@ class PaletteSetEditor(Widget, AbstractActionObject):
         for index, palette in enumerate(self.palette_editors):
             palette.palette_changed_action.observer.attach_observer(
                 set_palette_closure(index), name=f"{name} Set Palette"
+            )
+            self.palette_set_changed_action.observer.attach_observer(
+                set_palettes_palette_closure(index), name=f"{name} Set Palette"
             )
 
         self.palette_set_changed_action.observer.attach_observer(
