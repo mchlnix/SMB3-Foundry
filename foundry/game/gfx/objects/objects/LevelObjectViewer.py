@@ -22,7 +22,7 @@ from foundry.gui.QMenus.Menu.MenuFileLight import FileMenuLight
 from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
 from foundry.game.gfx.objects.objects.LevelObjectBase import LevelObject
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
-from foundry.gui.Custom.Palette.Selector import PaletteSelector
+from foundry.gui.Custom.Palette.PaletteSelector import PaletteSelector
 from foundry.gui.Custom.Palette.PaletteSetEditor import PaletteSetEditor
 from foundry.gui.QCheckBox.SpriteFlipCheckbox import SpriteFlipCheckbox
 from foundry.gui.Custom.Sprite.SpriteGraphic import SpriteGraphicWidget

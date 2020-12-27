@@ -18,7 +18,7 @@ from foundry.gui.QMenus.Menu.MenuFileLight import FileMenuLight
 from foundry.gui.QMainWindow.ChildWindow import ChildWindow
 from foundry.gui.QToolbar import Toolbar
 from ..Palette.PaletteSetEditor import PaletteSetEditor
-from foundry.gui.Custom.Palette.Selector import PaletteSelector
+from foundry.gui.Custom.Palette.PaletteSelector import PaletteSelector
 from foundry.gui.QWidget.Panel import Panel
 from foundry.gui.Custom.Block.BlockEditor import BlockEditor
 from foundry.gui.QComboBox import ComboBox, ComboBoxOption
