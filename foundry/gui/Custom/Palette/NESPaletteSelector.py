@@ -57,6 +57,18 @@ class ColorPickerButton(ColoredToolButton):
         self.color_index = value
 
     @property
+    def color(self) -> Color:
+        """Returns the current color of the button"""
+        return self._color
+
+    @color.setter
+    def color(self, color: Color) -> None:
+        try:
+            self.color_index = PaletteController().get_index_from_color(color)
+        except AttributeError as e:
+            print(f"Unable to convert Color {color}: {e}")
+
+    @property
     def color_index(self) -> int:
         """Returns the current color index of the button"""
         return self._color_index
