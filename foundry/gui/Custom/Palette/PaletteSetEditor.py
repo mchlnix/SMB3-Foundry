@@ -6,7 +6,7 @@ from PySide2.QtWidgets import QWidget, QHBoxLayout
 from foundry.core.Action.AbstractActionObject import AbstractActionObject
 from foundry.core.Action.Action import Action
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
-from foundry.game.gfx.Palette import PaletteSet, Palette, Color
+from foundry.game.gfx.Palette import PaletteController, PaletteSet, Palette, Color
 from foundry.gui.Custom.Palette.PaletteEditor import PaletteEditor
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.gui.QWidget import Widget
@@ -50,6 +50,10 @@ class PaletteSetEditor(Widget, AbstractActionObject):
             palette.palette_changed_action.observer.attach_observer(
                 set_palette_closure(index), name=f"{name} Set Palette"
             )
+
+        self.palette_set_changed_action.observer.attach_observer(
+            lambda palette_set: setattr(self.background_button, "color", palette_set.background_color)
+        )
 
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
