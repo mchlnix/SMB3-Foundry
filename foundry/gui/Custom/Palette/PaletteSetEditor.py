@@ -33,7 +33,9 @@ class PaletteSetEditor(Widget, AbstractActionObject):
             """Returns a function that returns that sets a palette by palette index"""
             def set_palette(pal: Palette):
                 """Sets a palette set by index"""
-                return self._set_palette_set_color(idx, pal)
+                old_pal = copy(self.palette_set)
+                old_pal[idx] = copy(pal)
+                self.palette_set = old_pal
             return set_palette
 
         self.background_button.color_change_action.observer.attach_observer(
@@ -66,10 +68,6 @@ class PaletteSetEditor(Widget, AbstractActionObject):
         for idx, palette in enumerate(self.palette_editors):
             palette._palette = self.palette_set[idx]
             palette._push_palette_to_buttons()
-
-    def _set_palette_set_color(self, pal_idx: int, palette: Palette) -> None:
-        self.palette_set[pal_idx] = copy(palette)
-        self.palette_set_changed_action.observer(copy(self.palette_set))
 
     def _set_background_color(self, color: Color):
         self.palette_set.background_color = color
