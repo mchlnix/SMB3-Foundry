@@ -61,6 +61,7 @@ class ColorPickerButton(ColoredToolButton):
     def color(self, color: Color) -> None:
         if color != self.color:
             self._color = color
+            self._set_color(color)
             try:
                 self.color_index = _palette_controller.get_index_from_color(color)
             except AttributeError as e:
