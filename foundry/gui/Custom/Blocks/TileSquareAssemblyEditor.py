@@ -43,7 +43,8 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     tileset_update_action: Action  # Update when the tileset updates
 
     def __init__(self, parent):
-        super(DialogTileSquareAssemblyEditor, self).__init__(parent, title="Tile Square Assembly Editor")
+        ChildWindow.__init__(self, parent, title="Tile Square Assembly Editor")
+        AbstractActionObject.__init__(self)
 
         self.tsa_viewer = None
         self._tileset = 0
