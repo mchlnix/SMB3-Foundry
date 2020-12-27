@@ -42,7 +42,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
     tsa_data_update_action: Action  # Updates when the tsa offset updates
     palette_set_update_action: Action  # Updates when the palette set updates
-    pattern_table_update_action: Action  # Update when the pattern table updates
+    tileset_update_action: Action  # Update when the tileset updates
 
     def __init__(self, parent):
         super(DialogTileSquareAssemblyEditor, self).__init__(parent, title="Tile Square Assembly Editor")
@@ -144,8 +144,8 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         return [
             Action("tsa_data_update", ObservableDecorator(lambda tsa_offset: tsa_offset, "TSA Updated")),
             Action("palette_set_update", ObservableDecorator(lambda palette_set: palette_set, "Palette Set Updated")),
-            Action("pattern_table_update", ObservableDecorator(
-                lambda pattern_table: pattern_table, "Pattern Table Updated"
+            Action("tileset_update", ObservableDecorator(
+                lambda pattern_table: pattern_table, "Tileset Updated"
             )),
         ]
 
