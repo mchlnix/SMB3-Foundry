@@ -80,3 +80,14 @@ class PaletteSetEditor(Widget, AbstractActionObject):
         return [
             Action("palette_set_changed", ObservableDecorator(lambda palette_set: palette_set, "Palette Set Updated")),
         ]
+
+    @property
+    def palette_set(self) -> PaletteSet:
+        """The PaletteSet used"""
+        return copy(self._palette_set)
+        
+    @palette_set.setter
+    def palette_set(self, palette_set: PaletteSet) -> None:
+        if palette_set != self.palette_set:
+            self.palette_set = copy(palette_set)
+            self.palette_set_changed_action.observer(copy(self.palette_set))
