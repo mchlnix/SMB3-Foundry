@@ -190,6 +190,13 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
                 self.tsa_data_update_action(self.tsa_data)
             return update_tsa_data
 
+        def push_current_palette_closure(index: int):
+            """A closure for pushing the palette"""
+            def push_current_palette(*_):
+                """Pushes the current palette"""
+                self.tiles[index].palette = self.palette_set[self.index // 0x40]
+            return push_current_palette
+
         for idx, tile in enumerate(self.tiles):
             self.size_update_action.observer.attach_observer(
                 push_value_to_tile_closure(idx, "size"), name=f"{name} Push Size to Tile {idx}"
@@ -205,6 +212,9 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
             )
             self.index_update_action.observer.attach_observer(
                 push_pattern_to_tile_closure(idx), name=f"{name} Push Index to Tiles"
+            )
+            self.index_update_action.observer.attach_observer(
+                push_current_palette_closure(idx), name=f"{name} Push Corrected Palette"
             )
 
             tile.tile_changed_action.observer.attach_observer(
