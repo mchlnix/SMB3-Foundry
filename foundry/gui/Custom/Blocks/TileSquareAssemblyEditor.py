@@ -40,6 +40,13 @@ tileset_offsets[0] = 12  # correct incorrect world offset
 class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     """The viewer of the TSA editor"""
 
+    refresh_event_action: Action  # Used internally for redrawing the widget
+    size_update_action: Action  # Updates when the size updates
+    tsa_data_update_action: Action  # Updates when the tsa offset updates
+    palette_set_update_action: Action  # Updates when the palette set updates
+    pattern_table_update_action: Action  # Update when the pattern table updates
+    single_clicked_action: Action  # Sends a signal of a block that was just clicked
+
     def __init__(self, parent):
         super(DialogTileSquareAssemblyEditor, self).__init__(parent, title="Tile Square Assembly Editor")
 
