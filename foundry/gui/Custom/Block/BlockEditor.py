@@ -144,6 +144,18 @@ class BlockEditor(Widget, AbstractActionObject):
                 update_spinner_closure(idx), name=f"{name} Update Spinner {idx}"
             )
 
+        block_events = [
+            self.block.palette_set_update_action,
+            self.block.pattern_table_update_action,
+            self.block.tsa_data_update_action,
+            self.block.index_update_action
+        ]
+        for event in block_events:
+            event.observer.attach_observer(
+                lambda *_: self.block_changed_action(self.tsa_data),
+                name=f"{name} Push Update Upstream"
+            )
+
     def _push_block_update(self) -> None:
         """Pushes an update to the block"""
         for idx, spinner in enumerate(self.spinners):
