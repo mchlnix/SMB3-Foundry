@@ -48,7 +48,8 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         super(DialogTileSquareAssemblyEditor, self).__init__(parent, title="Tile Square Assembly Editor")
 
         self.tsa_viewer = None
-        self.tileset = 0
+        self._tileset = 0
+        self._pattern_table = PatternTableHandler.from_tileset(self.tileset)
         self._palette_set = DEFAULT_PALETTE_SET
         self._palette_index = 0
 
@@ -155,8 +156,9 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
-        self._palette_set = palette_set
-        self._push_palette_set()
+        if self.palette_set != palette_set:
+            self._palette_set = palette_set
+            self._push_palette_set()
 
     @property
     def palette(self) -> Palette:
@@ -165,8 +167,9 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
     @palette.setter
     def palette(self, palette: Palette) -> None:
-        self._palette_set[self.palette_index] = palette
-        self._push_palette_set()
+        if self.palette_set[self.palette_index] != palette:
+            self._palette_set[self.palette_index] = palette
+            self._push_palette_set()
 
     @property
     def palette_index(self) -> int:
@@ -186,10 +189,11 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
     @tileset.setter
     def tileset(self, tileset: int) -> None:
-        self._tileset = tileset
-        self._pattern_table = PatternTableHandler.from_tileset(tileset)
-        if self.tsa_viewer is not None:
-            self.tsa_viewer.pattern_table = self.pattern_table
+        if self.tileset != tileset:
+            self._tileset = tileset
+            self._pattern_table = PatternTableHandler.from_tileset(tileset)
+            if self.tsa_viewer is not None:
+                self.tsa_viewer.pattern_table = self.pattern_table
 
     @property
     def offset(self) -> int:
