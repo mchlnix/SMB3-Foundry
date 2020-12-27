@@ -54,11 +54,17 @@ class PaletteSelector(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
+        name = self.__class__.__name__
         self.palette_editor.palette_changed_action.observer.attach_observer(
             lambda palette: setattr(self, "palette", palette)
         )
         self.spinner.value_changed_action.observer.attach_observer(
             lambda index: setattr(self, "index", index)
+        )
+
+        self.palette_set_changed_action.observer.attach_observer(
+            lambda palette_set: setattr(self.palette_editor, "palette", self.palette),
+            name=f"{name} Set Palette"
         )
 
     def get_actions(self) -> List[Action]:
@@ -82,7 +88,6 @@ class PaletteSelector(Widget, AbstractActionObject):
     def palette_set(self, palette_set: PaletteSet) -> None:
         if palette_set != self.palette_set:
             self._palette_set = copy(palette_set)
-            self.palette_editor.palette = self.palette
             self.palette_set_changed_action.observer(copy(palette_set))
 
     @property
@@ -94,7 +99,6 @@ class PaletteSelector(Widget, AbstractActionObject):
     def palette(self, palette: Palette) -> None:
         if palette != self.palette:
             self.palette_set[self.index] = copy(palette)
-            self.palette_editor.palette = self.palette
             self.palette_changed_action.observer(copy(palette))
 
     @property
