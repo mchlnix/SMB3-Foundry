@@ -196,6 +196,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
             self._pattern_table = PatternTableHandler.from_tileset(tileset)
             if self.tsa_viewer is not None:
                 self.tsa_viewer.pattern_table = self.pattern_table
+            self.tileset_update_action((self.tileset, self.offset, self.pattern_table))
 
     @property
     def offset(self) -> int:
