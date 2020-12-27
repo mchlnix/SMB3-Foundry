@@ -17,12 +17,10 @@ from foundry.gui.Custom.Palette.Selector import PaletteSelector
 from foundry.gui.QSpinner.HexSpinner import HexSpinner
 from foundry.gui.QWidget.Panel import Panel
 from foundry.gui.Custom.Block.BlockEditor import BlockEditor
-from foundry.gui.Custom.Block.BlockWidget import BlockWidget
 from foundry.gui.Custom.Block.Block import Block
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.gui.QCore.Tracker import AbstractActionObject
-from foundry.game.gfx.Palette import load_palette
 
 from .TileSquareAssemblyViewer import TileSquareAssemblyViewer
 
