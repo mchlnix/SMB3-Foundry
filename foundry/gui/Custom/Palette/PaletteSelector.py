@@ -22,6 +22,7 @@ class PaletteSelector(Widget, AbstractActionObject):
 
     palette_set_changed_action: Action  # Updated whenever the palette_set is changed
     palette_changed_action: Action  # Updated whenever the palette is changed
+    index_changed_action: Action  # Updated whenever the index is changed
 
     def __init__(
             self, parent: Optional[QWidget], index: int, palette: Optional[PaletteSet] = DEFAULT_PALETTE_SET
@@ -77,6 +78,9 @@ class PaletteSelector(Widget, AbstractActionObject):
             Action("palette_changed", ObservableDecorator(
                 lambda palette: palette, f"{name} Palette Updated"
             )),
+            Action("index_changed", ObservableDecorator(
+                lambda index: index, f"{name} Index Updated"
+            ))
         ]
 
     @property
@@ -111,3 +115,4 @@ class PaletteSelector(Widget, AbstractActionObject):
         if index != self.index:
             self._index = index
             self.palette_editor.palette = self.palette
+            self.index_changed_action(self.index)
