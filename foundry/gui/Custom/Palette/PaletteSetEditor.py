@@ -38,8 +38,13 @@ class PaletteSetEditor(Widget, AbstractActionObject):
                 self.palette_set = old_pal
             return set_palette
 
+        def set_background_color(color: Color):
+            """Sets a background color for a palette set"""
+            self.palette_set.background_color = color
+            self.palette_set_changed_action.observer(copy(self.palette_set))
+
         self.background_button.color_change_action.observer.attach_observer(
-            lambda color: self._set_background_color(color), name=f"{name} Set Background Color"
+            lambda color: set_background_color(color), name=f"{name} Set Background Color"
         )
         for index, palette in enumerate(self.palette_editors):
             palette.palette_changed_action.observer.attach_observer(
@@ -62,10 +67,6 @@ class PaletteSetEditor(Widget, AbstractActionObject):
             hbox.addWidget(editor)
 
         self.setLayout(hbox)
-
-    def _set_background_color(self, color: Color):
-        self.palette_set.background_color = color
-        self.palette_set_changed_action.observer(copy(self.palette_set))
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
