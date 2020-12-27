@@ -7,7 +7,7 @@ from foundry.core.Action.AbstractActionObject import AbstractActionObject
 from foundry.core.Action.Action import Action
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.game.gfx.Palette import PaletteSet, Palette, Color
-from foundry.gui.Custom.Palette import PaletteEditor
+from foundry.gui.Custom.Palette.PaletteEditor import PaletteEditor
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.gui.QWidget import Widget
 

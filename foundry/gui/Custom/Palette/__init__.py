@@ -1,14 +1,10 @@
-
-
-from copy import copy
 from typing import Optional, List
-from PySide2.QtWidgets import QGridLayout, QWidget, QHBoxLayout
+from PySide2.QtWidgets import QGridLayout, QWidget
 from PySide2.QtGui import Qt
 
 from foundry.gui.QCore import MARGIN_TIGHT
-from foundry.gui.QCore.palette import DEFAULT_PALETTE
 from foundry.gui.QToolButton import ColoredToolButton
-from foundry.game.gfx.Palette import PaletteController, Palette, Color
+from foundry.game.gfx.Palette import PaletteController
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.gui.QWidget import Widget
 from foundry.core.Action.Action import Action
@@ -16,78 +12,6 @@ from foundry.core.Action.AbstractActionObject import AbstractActionObject
 
 
 _palette_controller = PaletteController()
-
-
-class PaletteEditor(Widget, AbstractActionObject):
-    """A widget to help edit a single palette"""
-    def __init__(self, parent: Optional[QWidget], palette: Optional[Palette] = DEFAULT_PALETTE) -> None:
-        Widget.__init__(self, parent)
-        AbstractActionObject.__init__(self)
-        self.parent = parent
-        self._palette = copy(palette)
-
-        self._set_up_layout()
-        self._initialize_internal_observers()
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.parent}, {self.palette})"
-
-    def _set_up_layout(self) -> None:
-        """Returns the widgets layout"""
-        from foundry.gui.Custom.Palette.NESPaletteSelector import ColorPickerButton
-        self.buttons = []
-        hbox = QHBoxLayout()
-        hbox.setContentsMargins(0, 0, 0, 0)
-        hbox.setSpacing(0)
-        for idx in range(3):
-            button = ColorPickerButton.as_tiny(self, self.palette[idx + 1])
-            self.buttons.append(button)
-            hbox.addWidget(button)
-        self.setLayout(hbox)
-
-    def _initialize_internal_observers(self) -> None:
-        """Initializes internal observers for special events"""
-        def set_palette_color_closure(index):
-            """Returns a function that sets a palette color by index"""
-            def set_palette_color(color: Color):
-                """Sets a palette color by index"""
-                self._set_palette_color(index, color)
-            return set_palette_color
-
-        for idx, button in enumerate(self.buttons):
-            button.color_change_action.observer.attach_observer(
-                set_palette_color_closure(idx + 1), name="Set Palette Color"
-            )
-
-    def _set_palette_color(self, idx: int, color: Color) -> None:
-        self.palette[idx] = color
-        self.palette_changed_action.observer(copy(self.palette))
-
-    def _push_palette_to_buttons(self) -> None:
-        """Pushes the palette onto the palette buttons"""
-        for idx, button in enumerate(self.buttons):
-            button._set_color(self.palette[idx + 1])  # pushes the color to the button without updating the palette
-
-    def get_actions(self) -> List[Action]:
-        """Gets the actions for the object"""
-        return [
-            Action("palette_changed", ObservableDecorator(lambda palette: palette, "Palette Updated")),
-        ]
-
-    @property
-    def palette(self) -> Palette:
-        """The palette we are controlling"""
-        return self._palette
-
-    @palette.setter
-    def palette(self, palette: Palette) -> None:
-        self._set_palette(copy(palette))
-        self.palette_changed_action(copy(palette))
-
-    def _set_palette(self, palette: Palette) -> None:
-        """Sets the palette without making an update"""
-        self._palette = palette
-        self._push_palette_to_buttons()
 
 
 class ColorPicker(Widget, AbstractActionObject):

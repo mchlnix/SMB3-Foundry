@@ -7,7 +7,7 @@ from typing import Optional, List
 from PySide2.QtWidgets import QWidget, QHBoxLayout
 from PySide2.QtGui import Qt
 
-from . import PaletteEditor
+from .PaletteEditor import PaletteEditor
 from foundry.gui.QSpinner import Spinner
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.game.gfx.Palette import PaletteSet, Palette
