@@ -59,7 +59,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
-        name = self.__class__.__name__
+        name = "TSAE"
 
         self.tileset_update_action.observer.attach_observer(
             lambda *_: setattr(self.tsa_viewer, "pattern_table", self.pattern_table),
@@ -89,15 +89,15 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
         self.palette_set_update_action.observer.attach_observer(
             lambda palette_set: setattr(self.tsa_viewer, "palette_set", palette_set),
-            name=f"{name} Update Palette Set"
+            name=f"{name} Update TSA Viewer's Palette Set"
         )
         self.palette_set_update_action.observer.attach_observer(
             lambda palette_set: setattr(self.palette_selector, "palette_set", palette_set),
-            name=f"{name} Update Palette Set"
+            name=f"{name} Update Selector's Palette"
         )
         self.palette_set_update_action.observer.attach_observer(
             lambda palette_set: setattr(self.color_picker, "palette_set", palette_set),
-            name=f"{name} Update Palette Set"
+            name=f"{name} Update PaletteSet's Palette Set"
         )
 
         self.color_picker.palette_set_changed_action.observer.attach_observer(
@@ -159,7 +159,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
-        name = self.__class__.__name__
+        name = "TSAE"
         return [
             Action("tsa_data_update", ObservableDecorator(
                 lambda tsa_offset: tsa_offset, f"{name} TSA Updated"
