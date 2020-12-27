@@ -20,7 +20,7 @@ class PaletteSetEditor(Widget, AbstractActionObject):
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
         self.parent = parent
-        self.palette_set = copy(palette)
+        self._palette_set = copy(palette)
 
         self._set_up_layout()
         self._initialize_internal_observers()
@@ -85,7 +85,7 @@ class PaletteSetEditor(Widget, AbstractActionObject):
     def palette_set(self) -> PaletteSet:
         """The PaletteSet used"""
         return copy(self._palette_set)
-        
+
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
         if palette_set != self.palette_set:
