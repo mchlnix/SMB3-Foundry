@@ -73,10 +73,5 @@ class PaletteEditor(Widget, AbstractActionObject):
     @palette.setter
     def palette(self, palette: Palette) -> None:
         if palette != self.palette:
-            self._set_palette(copy(palette))
+            self._palette = palette
             self.palette_changed_action(copy(palette))
-
-    def _set_palette(self, palette: Palette) -> None:
-        """Sets the palette without making an update"""
-        self._palette = palette
-        self._push_palette_to_buttons()
