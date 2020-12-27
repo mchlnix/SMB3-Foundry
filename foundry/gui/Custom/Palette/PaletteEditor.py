@@ -44,13 +44,14 @@ class PaletteEditor(Widget, AbstractActionObject):
             """Returns a function that sets a palette color by index"""
             def set_palette_color(color: Color):
                 """Sets a palette color by index"""
-                self.palette[index] = color
+                self.palette[index + 1] = color
+                self.buttons[index].color = color
                 self.palette_changed_action.observer(copy(self.palette))
             return set_palette_color
 
         for idx, button in enumerate(self.buttons):
             button.color_change_action.observer.attach_observer(
-                set_palette_color_closure(idx + 1), name="Set Palette Color"
+                set_palette_color_closure(idx), name="Set Palette Color"
             )
 
     def _push_palette_to_buttons(self) -> None:
