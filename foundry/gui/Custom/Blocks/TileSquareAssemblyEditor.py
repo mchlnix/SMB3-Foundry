@@ -40,41 +40,11 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
         self.tsa_viewer = None
         self.tileset = 1
-        self.tileset_spinner = HexSpinner(self, maximum=0xFF)
-        self.tileset_spinner.setValue(self.tileset)
-        self.tileset_toolbar = Toolbar.default_toolbox(
-            self, "tileset_toolbar", Panel(self, "Tileset", self.tileset_spinner), Qt.RightToolBarArea
-        )
-
         self._offset = 15
-        self.offset_spinner = HexSpinner(self, maximum=0xFF)
-        self.offset_spinner.setValue(self.offset)
-        self.tsa_offset = Toolbar.default_toolbox(
-            self, "offset", Panel(self, "Offset", self.offset_spinner), Qt.RightToolBarArea
-        )
-
         self._palette_set = DEFAULT_PALETTE_SET
         self._palette_index = 0
-        self.color_picker = PaletteSetEditor(self, self.palette_set)
-        self.palette_selector = PaletteSelector(self, self.palette_index, self.palette_set)
-        self.palette_selector_toolbar = Toolbar.default_toolbox(
-            self, "palette_selector_toolbar", Panel(self, "Palette", self.palette_selector), Qt.RightToolBarArea
-        )
 
-        self.color_picker_toolbox = Toolbar.default_toolbox(
-            self, "color_picker_toolbar", self.color_picker, Qt.RightToolBarArea
-        )
-
-        self.block_editor = BlockEditor(
-            self,
-            Block.from_tsa(Size(3, 3), 0, self.pattern_table, self.palette_set, self.offset)
-        )
-        self.block_editor_toolbox = Toolbar.default_toolbox(
-            self, "block_editor_toolbar", self.block_editor, Qt.RightToolBarArea
-        )
-
-        self.tsa_viewer = TileSquareAssemblyViewer.from_tsa(self, self.pattern_table, self.palette_set, self.offset)
-        self.setCentralWidget(self.tsa_viewer)
+        self._set_up_layout()
 
         name = self.__class__.__name__
         self.block_editor.block_changed_action.observer.attach_observer(
@@ -108,6 +78,39 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self.palette_selector._palette_set = self.palette_set
         self.palette_selector._update_palette()
         self.tsa_viewer.palette_set = self.palette_set
+
+    def _set_up_layout(self) -> None:
+        self.tileset_spinner = HexSpinner(self, maximum=0xFF)
+        self.tileset_spinner.setValue(self.tileset)
+        self.tileset_toolbar = Toolbar.default_toolbox(
+            self, "tileset_toolbar", Panel(self, "Tileset", self.tileset_spinner), Qt.RightToolBarArea
+        )
+
+        self.offset_spinner = HexSpinner(self, maximum=0xFF)
+        self.offset_spinner.setValue(self.offset)
+        self.tsa_offset = Toolbar.default_toolbox(
+            self, "offset", Panel(self, "Offset", self.offset_spinner), Qt.RightToolBarArea
+        )
+
+        self.palette_selector = PaletteSelector(self, self.palette_index, self.palette_set)
+        self.palette_selector_toolbar = Toolbar.default_toolbox(
+            self, "palette_selector_toolbar", Panel(self, "Palette", self.palette_selector), Qt.RightToolBarArea
+        )
+
+        self.color_picker = PaletteSetEditor(self, self.palette_set)
+        self.color_picker_toolbox = Toolbar.default_toolbox(
+            self, "color_picker_toolbar", self.color_picker, Qt.RightToolBarArea
+        )
+
+        self.block_editor = BlockEditor(
+            self, Block.from_tsa(Size(3, 3), 0, self.pattern_table, self.palette_set, self.offset)
+        )
+        self.block_editor_toolbox = Toolbar.default_toolbox(
+            self, "block_editor_toolbar", self.block_editor, Qt.RightToolBarArea
+        )
+
+        self.tsa_viewer = TileSquareAssemblyViewer.from_tsa(self, self.pattern_table, self.palette_set, self.offset)
+        self.setCentralWidget(self.tsa_viewer)
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
