@@ -32,6 +32,10 @@ from .TileSquareAssemblyViewer import TileSquareAssemblyViewer
 with open(data_dir.joinpath("tileset_info.yaml")) as f:
     tilesets = yaml.load(f, Loader=Loader)
 
+tileset_options: List[ComboBoxOption] = []
+tileset_offsets = [tileset["C000"] for tileset in tilesets.values()]
+tileset_offsets[0] = 12  # correct incorrect world offset
+
 
 class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     """The viewer of the TSA editor"""
@@ -41,7 +45,6 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
         self.tsa_viewer = None
         self.tileset = 0
-        self._offset = 15
         self._palette_set = DEFAULT_PALETTE_SET
         self._palette_index = 0
 
@@ -74,8 +77,8 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
             lambda tileset: setattr(self, "tileset", tileset), name=f"{name} Update Tileset"
         )
 
-        self.offset_spinner.value_changed_action.observer.attach_observer(
-            lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(offset)),
+        self.tileset_combo_box.index_changed_action.observer.attach_observer(
+            lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(self.offset)),
             name=f"{name} Update TSA Data"
         )
 
@@ -109,12 +112,6 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self.tileset_combo_box = ComboBox(self, tileset_options)
         self.tileset_toolbar = Toolbar.default_toolbox(
             self, "tileset_toolbar", Panel(self, "Tileset", self.tileset_combo_box), Qt.RightToolBarArea
-        )
-
-        self.offset_spinner = HexSpinner(self, maximum=0xFF)
-        self.offset_spinner.setValue(self.offset)
-        self.tsa_offset = Toolbar.default_toolbox(
-            self, "offset", Panel(self, "Offset", self.offset_spinner), Qt.RightToolBarArea
         )
 
         self.palette_selector = PaletteSelector(self, self.palette_index, self.palette_set)
@@ -196,11 +193,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     @property
     def offset(self) -> int:
         """The offset to the bank for the tsa"""
-        return self._offset
-
-    @offset.setter
-    def offset(self, offset: int) -> None:
-        self._offset = offset
+        return tileset_offsets[self.tileset]
 
     @property
     def pattern_table(self) -> PatternTableHandler:
