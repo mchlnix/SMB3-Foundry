@@ -67,6 +67,10 @@ class PaletteSelector(Widget, AbstractActionObject):
             lambda palette_set: setattr(self.palette_editor, "palette", self.palette),
             name=f"{name} Set Palette"
         )
+        self.index_changed_action.observer.attach_observer(
+            lambda *_: setattr(self.palette_editor, "palette", self.palette),
+            name=f"{name} Set Palette"
+        )
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
@@ -114,5 +118,4 @@ class PaletteSelector(Widget, AbstractActionObject):
     def index(self, index: int) -> None:
         if index != self.index:
             self._index = index
-            self.palette_editor.palette = self.palette
             self.index_changed_action(self.index)
