@@ -208,13 +208,3 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
             tile.tile_changed_action.observer.attach_observer(
                 update_tsa_data_closure(idx), name=f"{tile.__class__.__name__} Push Index to {name}"
             )
-
-    def sizeHint(self):
-        """The ideal size of the widget"""
-        return QSize(MetaTile.image_length * self.size.width * 2, MetaTile.image_height * self.size.height * 2)
-
-    def paintEvent(self, event: QPaintEvent) -> None:
-        """Paints the widget"""
-        painter = QPainter(self)
-        self.block.draw(painter, Position(0, 0))
-        super().paintEvent(event)
