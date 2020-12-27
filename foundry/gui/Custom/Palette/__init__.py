@@ -1,5 +1,6 @@
 
 
+from copy import copy
 from typing import Optional, List
 from PySide2.QtWidgets import QGridLayout, QWidget, QHBoxLayout
 from PySide2.QtGui import Qt
@@ -26,7 +27,7 @@ class PaletteSetEditor(Widget, AbstractActionObject):
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
         self.parent = parent
-        self.palette_set = palette
+        self.palette_set = copy(palette)
 
         self._set_up_layout()
         self._initialize_internal_observers()
@@ -74,12 +75,12 @@ class PaletteSetEditor(Widget, AbstractActionObject):
             palette._push_palette_to_buttons()
 
     def _set_palette_set_color(self, pal_idx: int, palette: Palette) -> None:
-        self.palette_set[pal_idx] = palette
-        self.palette_set_changed_action.observer(self.palette_set)
+        self.palette_set[pal_idx] = copy(palette)
+        self.palette_set_changed_action.observer(copy(self.palette_set))
 
     def _set_background_color(self, color: Color):
         self.palette_set.background_color = color
-        self.palette_set_changed_action.observer(self.palette_set)
+        self.palette_set_changed_action.observer(copy(self.palette_set))
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
@@ -94,7 +95,7 @@ class PaletteEditor(Widget, AbstractActionObject):
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
         self.parent = parent
-        self._palette = palette
+        self._palette = copy(palette)
 
         self._set_up_layout()
         self._initialize_internal_observers()
@@ -131,7 +132,7 @@ class PaletteEditor(Widget, AbstractActionObject):
 
     def _set_palette_color(self, idx: int, color: Color) -> None:
         self.palette[idx] = color
-        self.palette_changed_action.observer(self.palette)
+        self.palette_changed_action.observer(copy(self.palette))
 
     def _push_palette_to_buttons(self) -> None:
         """Pushes the palette onto the palette buttons"""
@@ -151,8 +152,8 @@ class PaletteEditor(Widget, AbstractActionObject):
 
     @palette.setter
     def palette(self, palette: Palette) -> None:
-        self._set_palette(palette)
-        self.palette_changed_action(palette)
+        self._set_palette(copy(palette))
+        self.palette_changed_action(copy(palette))
 
     def _set_palette(self, palette: Palette) -> None:
         """Sets the palette without making an update"""
