@@ -45,7 +45,20 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self._palette_index = 0
 
         self._set_up_layout()
+        self._initialize_internal_observers()
 
+        self.showMaximized()
+
+    def _push_palette_set(self) -> None:
+        """Pushes the palette set to the gui"""
+        self.color_picker._palette_set = self.palette_set  # Note: Push directly to avoid recursion issues
+        self.color_picker._push_palette_set()
+        self.palette_selector._palette_set = self.palette_set
+        self.palette_selector._update_palette()
+        self.tsa_viewer.palette_set = self.palette_set
+
+    def _initialize_internal_observers(self) -> None:
+        """Initializes internal observers for special events"""
         name = self.__class__.__name__
         self.block_editor.block_changed_action.observer.attach_observer(
             lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data), name=f"{name} Update TSA"
@@ -68,16 +81,6 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self.tsa_viewer.single_clicked_action.observer.attach_observer(
             lambda i: setattr(self.block_editor, "index", i), name=f"{name} Update Index"
         )
-
-        self.showMaximized()
-
-    def _push_palette_set(self) -> None:
-        """Pushes the palette set to the gui"""
-        self.color_picker._palette_set = self.palette_set  # Note: Push directly to avoid recursion issues
-        self.color_picker._push_palette_set()
-        self.palette_selector._palette_set = self.palette_set
-        self.palette_selector._update_palette()
-        self.tsa_viewer.palette_set = self.palette_set
 
     def _set_up_layout(self) -> None:
         self.tileset_spinner = HexSpinner(self, maximum=0xFF)
