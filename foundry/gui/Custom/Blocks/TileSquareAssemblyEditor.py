@@ -72,6 +72,9 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self.tileset_update_action.observer.attach_observer(
             lambda *_: setattr(self.tsa_viewer, "pattern_table", self.pattern_table)
         )
+        self.tileset_update_action.observer.attach_observer(
+            lambda *_: setattr(self.block_editor, "pattern_table", self.pattern_table)
+        )
 
         self.block_editor.block_changed_action.observer.attach_observer(
             lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data), name=f"{name} Update TSA"
