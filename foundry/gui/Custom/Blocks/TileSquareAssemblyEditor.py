@@ -105,6 +105,10 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
             lambda p: setattr(self, "palette_set", p),
             name=f"{name} Update Palette Set"
         )
+        self.palette_selector.palette_set_changed_action.observer.attach_observer(
+            lambda p: setattr(self, "palette_set", p),
+            name=f"{name} Update Palette Set"
+        )
         self.palette_selector.palette_changed_action.observer.attach_observer(
             lambda p: setattr(self, "palette", p),
             name=f"{name} Update Palette"
