@@ -21,6 +21,7 @@ class ColoredToolButton(QToolButton, AbstractActionObject, DefaultSizePartial):
         DefaultSizePartial.__init__(self)
         AbstractActionObject.__init__(self)
         self._color = color
+        self._set_color(color)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.color})"
