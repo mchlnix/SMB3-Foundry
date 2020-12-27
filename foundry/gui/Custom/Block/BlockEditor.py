@@ -111,6 +111,8 @@ class BlockEditor(Widget, AbstractActionObject):
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
+        name = {self.__class__.__name__}
+
         def update_block_pattern_closure(index):
             """Updates the block pattern"""
             def update_block_pattern(new_pattern):
@@ -123,15 +125,30 @@ class BlockEditor(Widget, AbstractActionObject):
 
         for idx, spinner in enumerate(self.spinners):
             spinner.value_changed_action.observer.attach_observer(
-                update_block_pattern_closure(idx), name=f"{self.__class__.__name__} Update Block Pattern"
+                update_block_pattern_closure(idx), name=f"{name} Update Block Pattern"
+            )
+
+        def update_spinner_closure(index):
+            """Updates the spinner of the new tile"""
+            def update_spinner(*_):
+                """Updates the spinner"""
+                if self.spinners[index].value() != (new_pattern := (self.tsa_data[self.index + (index * 0x100)])):
+                    self.spinners[index].setValue(new_pattern)
+            return update_spinner
+
+        for idx, spinner in enumerate(self.spinners):
+            self.block.tsa_data_update_action.observer.attach_observer(
+                update_spinner_closure(idx), name=f"{name} Update Spinner {idx}"
+            )
+            self.block.index_update_action.observer.attach_observer(
+                update_spinner_closure(idx), name=f"{name} Update Spinner {idx}"
             )
 
     def _push_block_update(self) -> None:
         """Pushes an update to the block"""
         for idx, spinner in enumerate(self.spinners):
-            self.tsa_data[(idx * 256) + self.index] = self.block_pattern[idx]
-            if spinner.value() != self.block_pattern[idx]:
-                spinner.setValue(self.block_pattern[idx])
+            if value := (spinner.value()) != self.tsa_data[(idx * 256) + self.index]:
+                self.tsa_data[(idx * 256) + self.index] = value
         self.refresh_event_action()
 
     def get_actions(self) -> List[Action]:
