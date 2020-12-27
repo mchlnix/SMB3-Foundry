@@ -140,6 +140,8 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
         """Returns the widgets layout"""
         grid = QGridLayout()
         grid.setContentsMargins(0, 0, 0, 0)
+        grid.setHorizontalSpacing(0)
+        grid.setVerticalSpacing(0)
 
         self.tiles = []
         for idx in range(4):
