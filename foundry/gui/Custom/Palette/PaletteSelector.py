@@ -57,10 +57,12 @@ class PaletteSelector(Widget, AbstractActionObject):
         """Initializes internal observers for special events"""
         name = self.__class__.__name__
         self.palette_editor.palette_changed_action.observer.attach_observer(
-            lambda palette: setattr(self, "palette", palette)
+            lambda palette: setattr(self, "palette", palette),
+            name=f"{name} Set Palette"
         )
         self.spinner.value_changed_action.observer.attach_observer(
-            lambda index: setattr(self, "index", index)
+            lambda index: setattr(self, "index", index),
+            name=f"{name} Set Index"
         )
 
         self.palette_set_changed_action.observer.attach_observer(
