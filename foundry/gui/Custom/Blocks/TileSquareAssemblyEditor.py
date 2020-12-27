@@ -75,7 +75,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         )
         self.tileset_update_action.observer.attach_observer(
             lambda *_: setattr(self.block_editor, "pattern_table", self.pattern_table),
-            name=f'{name} Update Tileset'
+            name=f"{name} Update Tileset"
         )
 
         self.palette_set_update_action.observer.attach_observer(
