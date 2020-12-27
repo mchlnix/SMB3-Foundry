@@ -93,6 +93,6 @@ class AbstractTile:
     def draw(self, painter: QPainter, position: Position, size: Optional[Size] = None,
              transparency: Optional[bool] = None):
         """Draws the tile to a given point"""
-        size = size if size is not None else self.size * 16
+        size = size if size is not None else self.size * 8
         transparency = transparency if transparency is not None else self.transparency
         self.tile.draw(painter, position, size, transparent=transparency)
