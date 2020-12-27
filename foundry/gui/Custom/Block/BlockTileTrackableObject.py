@@ -141,27 +141,18 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
         grid = QGridLayout()
         grid.setContentsMargins(0, 0, 0, 0)
 
-        tl_tile = TilePickerTrackableObject(self, "Upper Left Tile", Tile(
-            self.size, self.tsa_data[self.index], self.pattern_table, self.palette_set[self.index]
-        ))
-        grid.addWidget(tl_tile, 0, 0)
+        self.tiles = []
+        for idx in range(4):
+            tile = TilePickerTrackableObject(self, "Tile", Tile(
+                self.size,
+                self.tsa_data[(idx * 0x100) + self.index],
+                self.pattern_table,
+                self.palette_set[self.index // 0x40]
+            ))
+            x, y = idx & 1, idx // 2
+            grid.addWidget(tile, x, y)
+            self.tiles.append(tile)
 
-        tr_tile = TilePickerTrackableObject(self, "Upper Right Tile", Tile(
-            self.size, self.tsa_data[self.index + 0x200], self.pattern_table, self.palette_set[self.index]
-        ))
-        grid.addWidget(tr_tile, 0, 1)
-
-        bl_tile = TilePickerTrackableObject(self, "Bottom Left Tile", Tile(
-            self.size, self.tsa_data[self.index + 0x100], self.pattern_table, self.palette_set[self.index]
-        ))
-        grid.addWidget(bl_tile, 1, 0)
-
-        br_tile = TilePickerTrackableObject(self, "Bottom Right Tile", Tile(
-            self.size, self.tsa_data[self.index + 0x300], self.pattern_table, self.palette_set[self.index]
-        ))
-        grid.addWidget(br_tile, 1, 1)
-
-        self.tiles = [tl_tile, bl_tile, tr_tile, br_tile]
         self.setLayout(grid)
 
     def _initialize_internal_observers(self) -> None:
