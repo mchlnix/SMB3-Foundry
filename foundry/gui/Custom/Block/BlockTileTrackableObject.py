@@ -158,23 +158,27 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
         name = self.__class__.__name__
-        self.size_update_action.observer.attach_observer(self.refresh_event_action, name=f"{name} Refresh Widget")
-        self.size_update_action.observer.attach_observer(
-            lambda size: self._push_tile_sizes(size), name=f"{name} Push Size to Tiles"
-        )
-        self.palette_set_update_action.observer.attach_observer(
-            lambda palette_set: self._push_tile_palette(palette_set), name=f"{name} Push Palette to Tiles"
-        )
-        self.pattern_table_update_action.observer.attach_observer(
-            lambda pattern_table: self.push_tile_pattern_table(pattern_table),
-            name=f"{name} Push Pattern Table to Tiles"
-        )
-        self.tsa_data_update_action.observer.attach_observer(
-            lambda tsa_data: self._push_tile_index_update(), name=f"{name} Push Index to Tiles"
-        )
-        self.index_update_action.observer.attach_observer(
-            lambda index: self._push_tile_index_update(), name=f"{name} Push Index to Tiles"
-        )
+
+        def push_value_to_tile_closure(index: int, var_name: str):
+            """Pushes a value to a tile closure"""
+            def push_value_to_tile(value):
+                """Pushes a value to a tile"""
+                setattr(self.tiles[index], var_name, value)
+            return push_value_to_tile
+
+        def push_palette_to_tile_closure(index: int):
+            """Pushes a palette to a tile closure"""
+            def push_palette_to_tile(palette_set: PaletteSet):
+                """Pushes a palette to a tile"""
+                self.tiles[index].palette = palette_set[self.index // 0x40]
+            return push_palette_to_tile
+
+        def push_pattern_to_tile_closure(index: int):
+            """Pushes a pattern to a tile closure"""
+            def push_pattern_to_tile(*_):
+                """Pushes a pattern to a tile"""
+                self.tiles[index].index = self.tsa_data[self.index + (index * 0x100)]
+            return push_pattern_to_tile
 
         def update_tsa_data_closure(tile_index: int):
             """Returns the tsa from a change from a given tile_index"""
@@ -183,30 +187,27 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
                 self.tsa_data[self.index + (tile_index * 0x100)] = index
                 self.tsa_data_update_action(self.tsa_data)
             return update_tsa_data
+
         for idx, tile in enumerate(self.tiles):
+            self.size_update_action.observer.attach_observer(
+                push_value_to_tile_closure(idx, "size"), name=f"{name} Push Size to Tile {idx}"
+            )
+            self.palette_set_update_action.observer.attach_observer(
+                push_palette_to_tile_closure(idx), name=f"{name} Push Palette to Tiles"
+            )
+            self.pattern_table_update_action.observer.attach_observer(
+                push_value_to_tile_closure(idx, "pattern_table"), name=f"{name} Push Pattern Table to Tiles"
+            )
+            self.tsa_data_update_action.observer.attach_observer(
+                push_pattern_to_tile_closure(idx), name=f"{name} Push Index to Tiles"
+            )
+            self.index_update_action.observer.attach_observer(
+                push_pattern_to_tile_closure(idx), name=f"{name} Push Index to Tiles"
+            )
+
             tile.tile_changed_action.observer.attach_observer(
                 update_tsa_data_closure(idx), name=f"{tile.__class__.__name__} Push Index to {name}"
             )
-
-    def _push_tile_sizes(self, size) -> None:
-        """Updates the sizes of the tiles"""
-        for tile in self.tiles:
-            tile.size = size
-
-    def _push_tile_palette(self, palette_set: PaletteSet) -> None:
-        """Updates the palette of the tiles"""
-        for tile in self.tiles:
-            tile.palette = palette_set[self.index // 0x40]
-
-    def push_tile_pattern_table(self, pattern_table: PatternTableHandler) -> None:
-        """Updates the pattern table of the tiles"""
-        for tile in self.tiles:
-            tile.pattern_table = pattern_table
-
-    def _push_tile_index_update(self) -> None:
-        """Pushes the tile data to the tiles"""
-        for idx, tile in enumerate(self.tiles):
-            tile.index = self.tsa_data[self.index + (idx * 0x100)]
 
     def sizeHint(self):
         """The ideal size of the widget"""
