@@ -70,10 +70,12 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         name = self.__class__.__name__
 
         self.tileset_update_action.observer.attach_observer(
-            lambda *_: setattr(self.tsa_viewer, "pattern_table", self.pattern_table)
+            lambda *_: setattr(self.tsa_viewer, "pattern_table", self.pattern_table),
+            name=f"{name} Update Tileset"
         )
         self.tileset_update_action.observer.attach_observer(
-            lambda *_: setattr(self.block_editor, "pattern_table", self.pattern_table)
+            lambda *_: setattr(self.block_editor, "pattern_table", self.pattern_table),
+            name=f'{name} Update Tileset'
         )
 
         self.block_editor.block_changed_action.observer.attach_observer(
