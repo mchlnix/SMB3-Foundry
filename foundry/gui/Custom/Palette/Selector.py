@@ -2,6 +2,7 @@
 PaletteSelector
 """
 
+from copy import copy
 from typing import Optional, List
 from PySide2.QtWidgets import QWidget, QHBoxLayout
 from PySide2.QtGui import Qt
@@ -28,7 +29,7 @@ class PaletteSelector(Widget, AbstractActionObject):
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
         self.parent = parent
-        self._palette_set = palette
+        self._palette_set = copy(palette)
         self._index = index
 
         self._set_up_layout()
@@ -80,9 +81,9 @@ class PaletteSelector(Widget, AbstractActionObject):
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
         if palette_set != self.palette_set:
-            self._palette_set = palette_set
+            self._palette_set = copy(palette_set)
             self._update_palette()
-            self.palette_set_changed_action.observer(palette_set)
+            self.palette_set_changed_action.observer(copy(palette_set))
 
     @property
     def palette(self) -> Palette:
@@ -92,9 +93,9 @@ class PaletteSelector(Widget, AbstractActionObject):
     @palette.setter
     def palette(self, palette: Palette) -> None:
         if palette != self.palette:
-            self.palette_set[self.index] = palette
+            self.palette_set[self.index] = copy(palette)
             self._update_palette()
-            self.palette_changed_action.observer(palette)
+            self.palette_changed_action.observer(copy(palette))
 
     def _update_palette(self):
         self.palette_editor._set_palette(self.palette)  # update the palette without providing an update
