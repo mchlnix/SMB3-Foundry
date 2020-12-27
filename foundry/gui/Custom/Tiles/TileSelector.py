@@ -57,7 +57,7 @@ class TileSelector(Widget, AbstractActionObject):
         grid_layout = QGridLayout()
         grid_layout.setSpacing(MARGIN_TIGHT)
         grid_layout.setDefaultPositioning(0x10, Qt.Horizontal)
-        for idx in range(1, 0x100):
+        for idx in range(0, 0xFF):
             tiles = TileTrackableObject(
                 self, f"Tile {idx}", Tile(self.size, idx, self.pattern_table, self.palette, self.transparency)
             )
