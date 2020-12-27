@@ -30,7 +30,12 @@ from .TileSquareAssemblyViewer import TileSquareAssemblyViewer
 
 with open(data_dir.joinpath("tileset_info.yaml")) as f:
     tilesets = yaml.load(f, Loader=Loader)
-    
+tileset_name_to_index = {}
+tileset_index_to_name = {}
+for idx, tileset in enumerate(tilesets):
+    tileset_index_to_name.update({tileset["name"]: idx})
+    tileset_index_to_name.update({idx: tileset["name"]})
+
 
 class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     """The viewer of the TSA editor"""
