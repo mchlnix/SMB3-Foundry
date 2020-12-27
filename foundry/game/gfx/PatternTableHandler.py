@@ -14,7 +14,7 @@ N_SPADE = 17
 VS_2P = 18
 
 graphic_set2chr_index = {
-    0: 0x00,  # not used
+    0: 0x14,  # World
     1: 0x08,  # Plains
     2: 0x10,  # Fortress
     3: 0x1C,  # Hills / Underground
@@ -40,7 +40,7 @@ graphic_set2chr_index = {
 }
 
 common_set2chr_index = {
-    0: 0x00,  # not used
+    0: 0x16,  # World
     1: 0x60,  # Plains
     2: 0x60,  # Fortress
     3: 0x60,  # Hills / Underground
