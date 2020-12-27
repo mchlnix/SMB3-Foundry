@@ -1,5 +1,6 @@
 
 
+from copy import copy
 from typing import Optional, List
 
 from PySide2.QtWidgets import QWidget, QGridLayout
@@ -41,8 +42,8 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         AbstractActionObject.__init__(self)
         self.parent = parent
         self.blocks = []
-        self.pattern_table = ptn_tbl
-        self.palette_set = pal_set
+        self.pattern_table = copy(ptn_tbl)
+        self.palette_set = copy(pal_set)
         self.size = Size(1, 1)
         self.tsa_data = tsa_data
 
@@ -117,14 +118,14 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
     @property
     def pattern_table(self) -> PatternTableHandler:
         """The pattern table for the tiles"""
-        return self._pattern_table
+        return copy(self._pattern_table)
 
     @pattern_table.setter
     def pattern_table(self, pattern_table: PatternTableHandler) -> None:
-        self._pattern_table = pattern_table
+        self._pattern_table = copy(pattern_table)
         for block in self.blocks:
-            block.pattern_table = pattern_table
-        self.pattern_table_update_action(self._pattern_table)
+            block.pattern_table = copy(pattern_table)
+        self.pattern_table_update_action(copy(self._pattern_table))
         self.refresh_event_action()
 
     @property
@@ -143,14 +144,14 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
     @property
     def palette_set(self) -> PaletteSet:
         """The palette currently used by the tsa"""
-        return self._palette_set
+        return copy(self._palette_set)
 
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
-        self._palette_set = palette_set
+        self._palette_set = copy(palette_set)
         for block in self.blocks:
-            block.palette_set = palette_set
-        self.palette_set_update_action(self._palette_set)
+            block.palette_set = copy(palette_set)
+        self.palette_set_update_action(copy(self._palette_set))
         self.refresh_event_action()
 
     @property
