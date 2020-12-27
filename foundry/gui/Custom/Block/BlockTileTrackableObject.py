@@ -5,9 +5,7 @@ BlockWidget: A widget that handles a Block in terms of Qt space
 
 
 from typing import Optional, List
-from PySide2.QtCore import QSize
 from PySide2.QtWidgets import QWidget, QGridLayout
-from PySide2.QtGui import QPaintEvent, QPainter
 
 from foundry.core.Action.Action import Action
 from foundry.core.Action.AbstractActionObject import AbstractActionObject
@@ -16,10 +14,8 @@ from foundry.gui.QWidget import Widget
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import PaletteSet
-from foundry.game.gfx.drawable.Tile import Tile as MetaTile
 
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
-from foundry.core.geometry.Position.Position import Position
 from foundry.core.geometry.Size.Size import Size
 
 from .AbstractBlock import AbstractBlock
