@@ -13,6 +13,8 @@ from foundry.gui.QWidget import Widget
 
 class PaletteEditor(Widget, AbstractActionObject):
     """A widget to help edit a single palette"""
+    palette_changed_action: Action  # Updates whenever the palette changes
+
     def __init__(self, parent: Optional[QWidget], palette: Optional[Palette] = DEFAULT_PALETTE) -> None:
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
