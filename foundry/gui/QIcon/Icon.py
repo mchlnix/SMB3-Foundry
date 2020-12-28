@@ -12,16 +12,17 @@ class Icon(QIcon):
 
     @dispatch(QIconEngine)
     def __init__(self, engine: QIconEngine):
-        super(Icon, self).__init__(engine)
+        QIcon.__init__(self, engine)
 
     @dispatch(QPixmap)
     def __init__(self, pixmap: QPixmap):
-        super(Icon, self).__init__(pixmap)
+        QIcon.__init__(self, pixmap)
 
     @dispatch(QIcon)
     def __init__(self, icon: QIcon):
-        super(Icon, self).__init__(icon)
+        QIcon.__init__(self, icon)
 
     @dispatch(str)
     def __init__(self, filename: str):
-        super(Icon, self).__init__(filename)
+        QIcon.__init__(self, filename)
+
