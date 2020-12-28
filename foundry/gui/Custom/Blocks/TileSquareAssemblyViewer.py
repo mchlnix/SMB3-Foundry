@@ -111,6 +111,15 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         return ROM().bulk_read(TSA_TABLE_SIZE, (tsa_offset * TSA_TABLE_INTERVAL) + 0x10)
 
     @property
+    def zoom(self) -> int:
+        """The size of blocks"""
+        return self.size.width
+    
+    @zoom.setter
+    def zoom(self, zoom: int) -> None:
+        self.size = Size(zoom, zoom)
+
+    @property
     def tsa_data(self) -> bytearray:
         """Find the tsa data from a given offset"""
         return self._tsa_data
