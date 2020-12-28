@@ -73,6 +73,11 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         """Initializes internal observers for special events"""
         name = "TSAE"
 
+        self.zoom_update_action.observer.attach_observer(
+            lambda zoom: setattr(self.tsa_viewer, "zoom", zoom),
+            name=f"{name} Update Zoom"
+        )
+
         self.tileset_update_action.observer.attach_observer(
             lambda *_: setattr(self.tsa_viewer, "pattern_table", self.pattern_table),
             name=f"{name} Update Tileset"
