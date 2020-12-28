@@ -33,7 +33,7 @@ class Observable(AbstractObservable):
                 )
             except AttributeError:
                 logger.debug(
-                    f"{str(self)} notified {[obs.__name__ for obs in self.observers.values()]} result {result}"
+                    f"{str(self)} notified {[obs.__class__.__name__ for obs in self.observers.values()]} result {result}"
                 )
         keys_to_remove = []
         for key, observer in self.observers.items():
