@@ -24,6 +24,12 @@ class PaletteEditor(Widget, AbstractActionObject):
 
         self._set_up_layout()
         self._initialize_internal_observers()
+        self.setWhatsThis(
+            "<b>Palette Editor</b>"
+            "<br/>"
+            "Edits a group of 3 colors"
+            "<br/>"
+        )
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.palette})"
@@ -36,6 +42,12 @@ class PaletteEditor(Widget, AbstractActionObject):
         hbox.setSpacing(0)
         for idx in range(3):
             button = ColorPickerButton.as_tiny(self, self.palette[idx + 1])
+            button.setWhatsThis(
+                "<b>Color Editor</b>"
+                "<br/>"
+                "Click me to edit this color"
+                "<br/>"
+            )
             self.buttons.append(button)
             hbox.addWidget(button)
         self.setLayout(hbox)
