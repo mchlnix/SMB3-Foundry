@@ -67,7 +67,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
             "An editor for the 256 16x16 pixel blocks in a given tileset."
             "<br/>"
         )
-        self.showMaximized()
+        self.showNormal()
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
