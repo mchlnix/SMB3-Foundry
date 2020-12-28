@@ -58,14 +58,14 @@ class BlockWidget(Widget, AbstractActionObject):
         self.refresh_event_action()
 
     @property
-    def size(self) -> Size:
+    def block_size(self) -> Size:
         """The size of the block in units of 16 pixels"""
         return self.block.size
 
-    @size.setter
-    def size(self, size: Size) -> None:
+    @block_size.setter
+    def block_size(self, size: Size) -> None:
         self.block.size = size
-        self.size_update_action(self._size)
+        self.size_update_action(self.block_size)
 
     @property
     def tsa_data(self) -> bytearray:
@@ -121,7 +121,7 @@ class BlockWidget(Widget, AbstractActionObject):
 
     def sizeHint(self):
         """The ideal size of the widget"""
-        return QSize(MetaBlock.image_length * self.size.width, MetaBlock.image_height * self.size.height)
+        return QSize(MetaBlock.image_length * self.block_size.width, MetaBlock.image_height * self.block_size.height)
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Paints the widget"""
