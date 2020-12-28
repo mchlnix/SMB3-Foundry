@@ -22,7 +22,6 @@ from PySide2.QtWidgets import (
 from foundry import (
     get_current_version_name,
     get_latest_version_name,
-    icon,
     open_url,
     releases_link,
 )
@@ -65,13 +64,14 @@ from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
 from foundry.gui.QMenus.MenuAction.MenuActionSettings import MenuActionSettings
 from foundry.core.Action.ActionSaveToFirstLevel import ActionSaveToFirstLevel
 from foundry.core.Action.ActionOpenEmulator import ActionOpenEmulator
+from foundry.gui.QIcon.Icon import Icon
 
 
 class MainWindow(QMainWindow):
     def __init__(self, path_to_rom=""):
         super(MainWindow, self).__init__()
 
-        self.setWindowIcon(icon("tanooki.ico"))
+        self.setWindowIcon(Icon.as_custom("icon"))
         self.setStyleSheet(get_gui_style())
 
         self.file_menu = FileMenu(self)
@@ -220,18 +220,18 @@ class MainWindow(QMainWindow):
         menu_toolbar.setOrientation(Qt.Horizontal)
         menu_toolbar.setIconSize(QSize(20, 20))
 
-        menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(
+        menu_toolbar.addAction(Icon.as_custom("settings"), "Editor Settings").triggered.connect(
             lambda: SettingsDialog(self, self).exec_()
         )
         menu_toolbar.addSeparator()
-        menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.file_menu.open_rom_action.action)
-        menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.file_menu.save_rom_action.action)
+        menu_toolbar.addAction(Icon.as_custom("open file"), "Open ROM").triggered.connect(self.file_menu.open_rom_action.action)
+        menu_toolbar.addAction(Icon.as_custom("save file"), "Save Level").triggered.connect(self.file_menu.save_rom_action.action)
         menu_toolbar.addSeparator()
 
-        self.undo_action = menu_toolbar.addAction(icon("rotate-ccw.svg"), "Undo Action")
+        self.undo_action = menu_toolbar.addAction(Icon.as_custom("undo"), "Undo Action")
         self.undo_action.triggered.connect(self.level_ref.undo)
         self.undo_action.setEnabled(False)
-        self.redo_action = menu_toolbar.addAction(icon("rotate-cw.svg"), "Redo Action")
+        self.redo_action = menu_toolbar.addAction(Icon.as_custom("redo"), "Redo Action")
         self.redo_action.triggered.connect(self.level_ref.redo)
         self.redo_action.setEnabled(False)
 
@@ -239,14 +239,14 @@ class MainWindow(QMainWindow):
 
         self.save_to_first_level_action = ActionSaveToFirstLevel("save_to_first_level_action", self, self.level_ref)
         self.open_emu_action = ActionOpenEmulator("open_emu_action", self, self.save_to_first_level_action)
-        play_action = menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
+        play_action = menu_toolbar.addAction(Icon.as_custom("play"), "Play Level")
         play_action.triggered.connect(lambda: self.open_emu_action())
         play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
         menu_toolbar.addSeparator()
-        menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
-        menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In").triggered.connect(self.level_view.zoom_in)
+        menu_toolbar.addAction(Icon.as_custom("zoom out"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
+        menu_toolbar.addAction(Icon.as_custom("zoom in"), "Zoom In").triggered.connect(self.level_view.zoom_in)
         menu_toolbar.addSeparator()
-        header_action = menu_toolbar.addAction(icon("tool.svg"), "Edit Level Header")
+        header_action = menu_toolbar.addAction(Icon.as_custom("tool"), "Edit Level Header")
         header_action.triggered.connect(self.on_header_editor)
         header_action.setWhatsThis(
             "<b>Header Editor</b><br/>"
@@ -254,7 +254,7 @@ class MainWindow(QMainWindow):
             "the timer, or where and how Mario enters the level.<br/>"
         )
 
-        self.jump_destination_action = menu_toolbar.addAction(icon("arrow-right-circle.svg"), "Go to Jump Destination")
+        self.jump_destination_action = menu_toolbar.addAction(Icon.as_custom("pointer editor"), "Go to Jump Destination")
         self.jump_destination_action.triggered.connect(self._go_to_jump_destination)
         self.jump_destination_action.setWhatsThis(
             "Opens the level, that can be reached from this one, e.g. by entering a pipe."
@@ -264,7 +264,7 @@ class MainWindow(QMainWindow):
 
         whats_this_action = QWhatsThis.createAction()
         whats_this_action.setWhatsThis("Click on parts of the editor, to receive help information.")
-        whats_this_action.setIcon(icon("help-circle.svg"))
+        whats_this_action.setIcon(Icon.as_custom("help"))
         whats_this_action.setText("Starts 'What's this?' mode")
         menu_toolbar.addAction(whats_this_action)
 
@@ -420,7 +420,7 @@ class MainWindow(QMainWindow):
         if current_version != latest_version:
             latest_release_url = f"{releases_link}/tag/{latest_version}"
 
-            go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest release")
+            go_to_github_button = QPushButton(Icon.as_custom("link"), "Go to latest release")
             go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
 
             info_box = QMessageBox(
