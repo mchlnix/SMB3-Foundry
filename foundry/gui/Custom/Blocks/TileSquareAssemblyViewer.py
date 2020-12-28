@@ -48,6 +48,12 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         self.tsa_data = tsa_data
 
         self._set_up_layout()
+        self.setWhatsThis(
+            "<b>Tile Square Assembly Viewer</b>"
+            "<br/>"
+            "Click on a 16x16 pixel block to edit it."
+            "<br/>"
+        )
 
     @classmethod
     def from_tsa(
