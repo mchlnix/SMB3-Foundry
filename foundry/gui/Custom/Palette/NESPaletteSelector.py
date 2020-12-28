@@ -28,6 +28,10 @@ class ColorPickerButton(ColoredToolButton):
         self._color_index = color_index
 
         self._initialize_internal_observers()
+        self.setWhatsThis(
+            "<b>Color Picker</b><br/>"
+            "Click me to change my color<br/>"
+        )
 
     def _initialize_internal_observers(self):
         """Initializes internal observers for special events"""
@@ -90,6 +94,12 @@ class ColorPickerPopup(Dialog):
 
         self._set_up_layout()
         self._initialize_internal_observers(action)
+        self.setWhatsThis(
+            "<b>Color Picker Popup</b>"
+            "<br/>"
+            "Click the desired color"
+            "<br/>"
+        )
 
     def _set_up_layout(self) -> None:
         """Returns the widgets layout"""
