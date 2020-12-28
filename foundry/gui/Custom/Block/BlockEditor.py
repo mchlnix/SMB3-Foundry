@@ -109,6 +109,7 @@ class BlockEditor(Widget, AbstractActionObject):
         self.spinners = []
         for idx in range(4):
             spinner = HexSpinner(self, maximum=0xFF)
+            spinner.setValue(self.tsa_data[self.index + (idx * 0x100)])
             spinner.setWhatsThis(
                 "<b>Block Editor</b>"
                 "<br/>"
