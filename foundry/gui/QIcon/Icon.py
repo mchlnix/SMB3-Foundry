@@ -1,7 +1,14 @@
 
 
+import yaml
+from yaml import CLoader as Loader
 from multipledispatch import dispatch
 from PySide2.QtGui import QIcon, QIconEngine, QPixmap
+
+from foundry import data_dir
+
+with open(data_dir.joinpath("icons.yaml")) as f:
+    _CUSTOM_ICONS = yaml.load(f, Loader=Loader)
 
 
 class Icon(QIcon):
@@ -30,3 +37,8 @@ class Icon(QIcon):
     def from_filename(cls, filename: str):
         """A more pythonic way to call the init function that is using multiple dispatch"""
         return cls(filename)
+
+    @classmethod
+    def as_custom(cls, name: str):
+        """Generates a predefined icon"""
+        return cls(_CUSTOM_ICONS[name]["file"])
