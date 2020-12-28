@@ -36,7 +36,8 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
             parent: Optional[QWidget],
             ptn_tbl: PatternTableHandler,
             pal_set: PaletteSet,
-            tsa_data: bytearray
+            tsa_data: bytearray,
+            size: Optional[Size] = None
             ) -> None:
         Widget.__init__(self, parent)
         AbstractActionObject.__init__(self)
@@ -44,7 +45,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         self.blocks = []
         self.pattern_table = copy(ptn_tbl)
         self.palette_set = copy(pal_set)
-        self.size = Size(1, 1)
+        self.size = Size(1, 1) if size is None else size
         self.tsa_data = tsa_data
 
         self._set_up_layout()
@@ -61,10 +62,11 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
             parent: Optional[QWidget],
             ptn_tbl: PatternTableHandler,
             pal_set: PaletteSet,
-            tsa_offset: int
+            tsa_offset: int,
+            size: Optional[Size] = None
     ):
         """Generates a TSA viewer from a given offset"""
-        return cls(parent, ptn_tbl, pal_set, cls.tsa_data_from_tsa_offset(tsa_offset))
+        return cls(parent, ptn_tbl, pal_set, cls.tsa_data_from_tsa_offset(tsa_offset), size)
 
     def _set_up_layout(self) -> None:
         def closure(i):
