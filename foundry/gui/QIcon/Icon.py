@@ -26,3 +26,7 @@ class Icon(QIcon):
     def __init__(self, filename: str):
         QIcon.__init__(self, filename)
 
+    @classmethod
+    def from_filename(cls, filename: str):
+        """A more pythonic way to call the init function that is using multiple dispatch"""
+        return cls(filename)
