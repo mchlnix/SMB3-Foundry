@@ -92,7 +92,7 @@ class PaletteSelector(Widget, AbstractActionObject):
     @property
     def palette_set(self) -> PaletteSet:
         """The palette set we are controlling"""
-        return self._palette_set
+        return copy(self._palette_set)
 
     @palette_set.setter
     def palette_set(self, palette_set: PaletteSet) -> None:
@@ -103,7 +103,7 @@ class PaletteSelector(Widget, AbstractActionObject):
     @property
     def palette(self) -> Palette:
         """The palette set currently selected"""
-        return self.palette_set[self.index]
+        return copy(self.palette_set[self.index])
 
     @palette.setter
     def palette(self, palette: Palette) -> None:
