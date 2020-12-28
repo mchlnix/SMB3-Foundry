@@ -42,7 +42,7 @@ class PaletteSetEditor(Widget, AbstractActionObject):
             """Sets the palette's palette whenever the palette set changes"""
             def set_palettes_palette(pal: PaletteSet):
                 """Set the palette's palette"""
-                self.palette_editors[idx].palette = pal[idx]
+                self.palette_editors[idx].palette = copy(pal[idx])
             return set_palettes_palette
 
         def set_background_color(color: Color):
