@@ -10,18 +10,18 @@ class Icon(QIcon):
     Such Pixmaps are used by Widgets to show an icon representing a particular action.
     """
 
-    @dispatch(object, QIconEngine)
+    @dispatch(QIconEngine)
     def __init__(self, engine: QIconEngine):
         super(Icon, self).__init__(engine)
 
-    @dispatch(object, QPixmap)
+    @dispatch(QPixmap)
     def __init__(self, pixmap: QPixmap):
         super(Icon, self).__init__(pixmap)
 
-    @dispatch(object, QIcon)
+    @dispatch(QIcon)
     def __init__(self, icon: QIcon):
         super(Icon, self).__init__(icon)
 
-    @dispatch(object, str)
+    @dispatch(str)
     def __init__(self, filename: str):
         super(Icon, self).__init__(filename)
