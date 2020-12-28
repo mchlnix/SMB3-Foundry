@@ -227,7 +227,9 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
             self, "block_editor_toolbar", self.block_editor, Qt.RightToolBarArea
         )
 
-        self.tsa_viewer = TileSquareAssemblyViewer.from_tsa(self, self.pattern_table, self.palette_set, self.offset)
+        self.tsa_viewer = TileSquareAssemblyViewer.from_tsa(
+            self, self.pattern_table, self.palette_set, self.offset, Size(self.zoom, self.zoom)
+        )
         self.setCentralWidget(self.tsa_viewer)
 
     def get_actions(self) -> List[Action]:
