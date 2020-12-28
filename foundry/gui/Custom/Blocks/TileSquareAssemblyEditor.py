@@ -45,7 +45,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     tsa_data_update_action: Action  # Updates when the tsa offset updates
     palette_set_update_action: Action  # Updates when the palette set updates
     tileset_update_action: Action  # Update when the tileset updates
-    change_zoom_action: Action  # Updates when the zoom changes
+    zoom_update_action: Action  # Updates when the zoom changes
 
     def __init__(self, parent):
         ChildWindow.__init__(self, parent, title="Tile Square Assembly Editor")
