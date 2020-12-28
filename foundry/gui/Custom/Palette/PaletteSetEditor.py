@@ -24,6 +24,12 @@ class PaletteSetEditor(Widget, AbstractActionObject):
 
         self._set_up_layout()
         self._initialize_internal_observers()
+        self.setWhatsThis(
+            "<b>Palette Set Editor</b>"
+            "<br/>"
+            "Edits a group of 4 palettes and a background color"
+            "<br/>"
+        )
 
     def _initialize_internal_observers(self) -> None:
         """Initializes internal observers for special events"""
@@ -74,6 +80,12 @@ class PaletteSetEditor(Widget, AbstractActionObject):
         hbox.setContentsMargins(0, 0, 0, 0)
 
         self.background_button = ColorPickerButton.as_tiny(self, self.palette_set.background_color)
+        self.background_button.setWhatsThis(
+            "<b>Background Color Editor</b>"
+            "<br/>"
+            "Click me to edit the background color"
+            "<br/>"
+        )
         hbox.addWidget(self.background_button)
         for idx in range(4):
             editor = PaletteEditor(self, self.palette_set[idx])
