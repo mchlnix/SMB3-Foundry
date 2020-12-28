@@ -46,6 +46,12 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
 
         self._set_up_layout()
         self._initialize_internal_observers()
+        self.setWhatsThis(
+            "<b>Block Viewer</b>"
+            "<br/>"
+            "Left click on a tile to change it"
+            "<br/>"
+        )
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.name}, {self.index}, {self.pattern_table}, " \
