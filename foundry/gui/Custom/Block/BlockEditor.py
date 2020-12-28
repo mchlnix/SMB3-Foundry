@@ -34,6 +34,12 @@ class BlockEditor(Widget, AbstractActionObject):
         self._initialize_internal_observers()
 
         self.index = block.index  # Update the spinners
+        self.setWhatsThis(
+            "<b>Block Editor</b>"
+            "<br/>"
+            "An editor for changing the 8x8 pixel tiles that composes a 16x16 block"
+            "<br/>"
+        )
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.spinners})"
@@ -99,9 +105,16 @@ class BlockEditor(Widget, AbstractActionObject):
 
         self.block = BlockTileTrackableObject(self, "Block", block)
 
+        spinner_sides = ["top left", "bottom left", "top right", "bottom right"]
         self.spinners = []
         for idx in range(4):
             spinner = HexSpinner(self, maximum=0xFF)
+            spinner.setWhatsThis(
+                "<b>Block Editor</b>"
+                "<br/>"
+                f"Edit this spinner to change the {spinner_sides[idx]} tile."
+                "<br/>"
+            )
             x, y = idx & 1, idx // 2 * 2
             grid.addWidget(spinner, x, y)
             self.spinners.append(spinner)
