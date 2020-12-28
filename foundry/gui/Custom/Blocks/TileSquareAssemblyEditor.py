@@ -79,6 +79,10 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
             lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(self.offset)),
             name=f"{name} Update TSA Data"
         )
+        self.tileset_combo_box.index_changed_action.observer.attach_observer(
+            lambda offset: setattr(self.block_editor, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(self.offset)),
+            name=f"{name} Update TSA Data"
+        )
         self.block_editor.block_changed_action.observer.attach_observer(
             lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data),
             name=f"{name} Update TSA"
