@@ -4,7 +4,9 @@ import urllib.error
 from pathlib import Path
 
 from PySide2.QtCore import QUrl
-from PySide2.QtGui import QDesktopServices, QIcon
+from PySide2.QtGui import QDesktopServices
+
+from foundry.gui.QIcon.Icon import Icon
 
 root_dir = Path(__file__).parent.parent
 
@@ -57,8 +59,8 @@ def icon(icon_name: str):
     data_path = data_dir / icon_name
 
     if icon_path.exists():
-        return QIcon(str(icon_path))
+        return Icon.from_filename(str(icon_path))
     elif data_path.exists():
-        return QIcon(str(data_path))
+        return Icon.from_filename(str(data_path))
     else:
         raise FileNotFoundError(icon_path)
