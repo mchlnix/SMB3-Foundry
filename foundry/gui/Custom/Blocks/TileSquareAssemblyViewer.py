@@ -119,7 +119,7 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
     def zoom(self, zoom: int) -> None:
         self.size = Size(zoom, zoom)
         for block in self.blocks:
-            block.size = self.size
+            block.block_size = self.size
 
     @property
     def tsa_data(self) -> bytearray:
