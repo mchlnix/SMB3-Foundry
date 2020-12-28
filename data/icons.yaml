@@ -8,3 +8,19 @@ zoom in:
   file: zoom-out.svg
 zoom out:
   file: zoom-in.svg
+icon:
+  file: tanooki.ico
+open file:
+  file: folder.svg
+save file:
+  file: save.svg
+settings:
+  file: settings.svg
+tool:
+  file: tool.svg
+pointer editor:
+  file: arrow-right-circle.svg
+help:
+  file: help-circle.svg
+link:
+  file: external-link.svg
