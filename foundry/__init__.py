@@ -6,8 +6,6 @@ from pathlib import Path
 from PySide2.QtCore import QUrl
 from PySide2.QtGui import QDesktopServices
 
-from foundry.gui.QIcon.Icon import Icon
-
 root_dir = Path(__file__).parent.parent
 
 data_dir = root_dir.joinpath("data")
@@ -55,6 +53,7 @@ def get_latest_version_name(timeout: int = 10) -> str:
 
 
 def icon(icon_name: str):
+    from foundry.gui.QIcon.Icon import Icon
     icon_path = icon_dir / icon_name
     data_path = data_dir / icon_name
 
