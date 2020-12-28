@@ -52,6 +52,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         AbstractActionObject.__init__(self)
 
         self.tsa_viewer = None
+        self._zoom = 1
         self._tileset = 0
         self._pattern_table = PatternTableHandler.from_tileset(self.tileset)
         self._palette_set = DEFAULT_PALETTE_SET
@@ -246,6 +247,17 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
                 lambda zoom: zoom, f"{name} Zoom Updated"
             )),
         ]
+
+    @property
+    def zoom(self) -> int:
+        """The size of the blocks displayed"""
+        return self._zoom
+
+    @zoom.setter
+    def zoom(self, zoom: int) -> None:
+        if zoom != self.zoom:
+            self._zoom = zoom
+            self.zoom_update_action(zoom)
 
     @property
     def palette_set(self) -> PaletteSet:
