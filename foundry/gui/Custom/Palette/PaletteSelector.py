@@ -35,6 +35,12 @@ class PaletteSelector(Widget, AbstractActionObject):
 
         self._set_up_layout()
         self._initialize_internal_observers()
+        self.setWhatsThis(
+            "<b>Palette Editor</b>"
+            "<br/>"
+            "Edits a palette of 3 colors from 1 of 4 palettes"
+            "<br/>"
+        )
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.parent}, {self.checkboxes})"
@@ -49,6 +55,12 @@ class PaletteSelector(Widget, AbstractActionObject):
         hbox.addWidget(self.palette_editor)
 
         self.spinner = Spinner(self, maximum=3)
+        self.spinner.setWhatsThis(
+            "<b>Palette Spinner</b>"
+            "<br/>"
+            "Change me to change the palette displayed"
+            "<br/>"
+        )
         hbox.addWidget(self.spinner)
 
         self.setLayout(hbox)
