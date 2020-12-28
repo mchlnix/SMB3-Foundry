@@ -5,6 +5,8 @@ from yaml import CLoader as Loader
 from copy import copy
 from typing import List
 from PySide2.QtGui import Qt
+from PySide2.QtWidgets import QWhatsThis
+from PySide2.QtCore import QSize
 
 from foundry import icon, data_dir
 
@@ -23,6 +25,7 @@ from foundry.gui.QWidget.Panel import Panel
 from foundry.gui.Custom.Block.BlockEditor import BlockEditor
 from foundry.gui.QComboBox import ComboBox, ComboBoxOption
 from foundry.gui.Custom.Block.Block import Block
+from foundry.gui.QIcon.Icon import Icon
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.gui.QCore.Tracker import AbstractActionObject
@@ -125,9 +128,58 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     def _set_up_layout(self) -> None:
         self.setWindowIcon(icon("tanooki.ico"))
 
-        # Add a default file menu
-        self.file_menu = FileMenuLight(self)
-        self.menuBar().addMenu(self.file_menu)
+        menu_toolbar = Toolbar("Menu Toolbar", self)
+        menu_toolbar.setOrientation(Qt.Horizontal)
+        menu_toolbar.setIconSize(QSize(20, 20))
+
+        self.save_file_action = menu_toolbar.addAction(Icon.as_custom("save file"), "Save TSA")
+        self.save_file_action.setWhatsThis(
+            "<b>Save TSA</b><br/>"
+            "Saves the TSA to the ROM currently loaded<br/>"
+        )
+        menu_toolbar.addSeparator()
+
+        self.undo_action = menu_toolbar.addAction(Icon.as_custom("undo"), "Undo Action")
+        self.undo_action.triggered.connect(lambda *_: True)
+        self.undo_action.setEnabled(False)
+        self.undo_action.setWhatsThis(
+            "<b>Undo Action</b><br/>"
+            "Undo the previous action to the TSA<br/>"
+        )
+        self.redo_action = menu_toolbar.addAction(Icon.as_custom("redo"), "Redo Action")
+        self.redo_action.triggered.connect(lambda *_: True)
+        self.redo_action.setEnabled(False)
+        self.redo_action.setWhatsThis(
+            "<b>Redo Action</b><br/>"
+            "Redo the previous undo to the TSA<br/>"
+        )
+
+        menu_toolbar.addSeparator()
+        self.zoom_out_action = menu_toolbar.addAction(Icon.as_custom("zoom out"), "Zoom Out")
+        self.zoom_out_action.triggered.connect(lambda *_: True)
+        self.zoom_out_action.setWhatsThis(
+            "<b>Zoom Out</b><br/>"
+            "Retracts the size of the Tile Square Assembly Editor<br/>"
+        )
+        self.zoom_in_action = menu_toolbar.addAction(Icon.as_custom("zoom in"), "Zoom In")
+        self.zoom_in_action.triggered.connect(lambda *_: True)
+        self.zoom_in_action.setWhatsThis(
+            "<b>Zoom In</b><br/>"
+            "Expands the size of the Tile Square Assembly Editor<br/>"
+        )
+
+        menu_toolbar.addSeparator()
+
+        whats_this_action = QWhatsThis.createAction()
+        whats_this_action.setWhatsThis(
+            "<b>What is This</b><br/>"
+            "Provides an expanded tooltip of what a widget does whenever clicked on<br/>"
+        )
+        whats_this_action.setIcon(Icon.as_custom("help"))
+        whats_this_action.setText("Starts 'What's this?' mode")
+        menu_toolbar.addAction(whats_this_action)
+
+        self.addToolBar(Qt.TopToolBarArea, menu_toolbar)
 
         def push_tileset_closure(index: int):
             """Closure for pushing the tileset"""
