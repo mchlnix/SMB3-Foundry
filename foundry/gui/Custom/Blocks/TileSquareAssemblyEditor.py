@@ -5,7 +5,7 @@ from yaml import CLoader as Loader
 from copy import copy
 from typing import List
 from PySide2.QtGui import Qt
-from PySide2.QtWidgets import QWhatsThis
+from PySide2.QtWidgets import QWhatsThis, QSizePolicy
 from PySide2.QtCore import QSize
 
 from foundry import icon, data_dir
@@ -140,6 +140,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
 
     def _set_up_layout(self) -> None:
         self.setWindowIcon(icon("tanooki.ico"))
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
 
         menu_toolbar = Toolbar("Menu Toolbar", self)
         menu_toolbar.setOrientation(Qt.Horizontal)
