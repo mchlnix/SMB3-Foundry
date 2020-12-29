@@ -15,10 +15,10 @@ from PySide2.QtWidgets import (
     QWidget,
 )
 
-from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
+from foundry.game.gfx.PatternTableHandler import GRAPHIC_SET_NAMES
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.QDialog import Dialog
 from foundry.gui.LevelSelector import LevelSelector, OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
 from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
@@ -73,7 +73,7 @@ SCROLL_DIRECTIONS = [
 SPINNER_MAX_VALUE = 0x0F_FF_FF
 
 
-class HeaderEditor(CustomDialog):
+class HeaderEditor(Dialog):
     header_change: SignalInstance = Signal()
 
     def __init__(self, parent: Optional[QWindow], level_ref: LevelRef):

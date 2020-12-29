@@ -1,0 +1,76 @@
+0:
+  name: World
+  A000: 10
+  C000: 11
+1:
+  name: Plains
+  A000: 14
+  C000: 15
+2:
+  name: Fortress
+  A000: 14
+  C000: 21
+3:
+  name: Hilly
+  A000: 14
+  C000: 16
+4:
+  name: Sky
+  A000: 14
+  C000: 17
+5:
+  name: Pirhana Infestation
+  A000: 14
+  C000: 19
+6:
+  name: Water
+  A000: 14
+  C000: 18
+7:
+  name: Toad House
+  A000: 14
+  C000: 18
+8:
+  name: Pipe Maze
+  A000: 14
+  C000: 18
+9:
+  name: Desert
+  A000: 14
+  C000: 20
+10:
+  name: Airship
+  A000: 14
+  C000: 23
+11:
+  name: Giant
+  A000: 14
+  C000: 19
+12:
+  name: Ice
+  A000: 14
+  C000: 17
+13:
+  name: Clouds
+  A000: 14
+  C000: 19
+14:
+  name: Underground
+  A000: 14
+  C000: 13
+15:
+  name: Bonus Game Intro
+  A000: 22
+  C000: 22
+16:
+  name: Spade Game
+  A000: 22
+  C000: 22
+17:
+  name: N Spade
+  A000: 22
+  C000: 22
+18:
+  name: Versus
+  A000: 14
+  C000: 14

@@ -1,0 +1,180 @@
+0x00: ObjInit_DoNothing         # Object 
+0x01: ObjInit_Obj01             # Object 
+0x02: ObjInit_Obj02             # Object 
+0x03: ObjInit_DoNothing         # Object 
+0x04: ObjInit_Obj04             # Object 
+0x05: ObjInit_Obj05             # Object 
+0x06: ObjInit_BounceDU          # Object  - OBJ_BOUNCEDOWNUP
+0x07: ObjInit_WarpHide          # Object  - OBJ_WARPHIDE
+0x08: ObjInit_PDoor             # Object  - OBJ_PSWITCHDOOR
+0x09: ObjInit_Anchor            # Object  - OBJ_AIRSHIPANCHOR
+0x0A: ObjInit_Obj0A             # Object 
+0x0B: ObjInit_PUpMush           # Object  - OBJ_POWERUP_1UP
+0x0C: ObjInit_StarOrSuit        # Object  - OBJ_POWERUP_STARMAN
+0x0D: ObjInit_PUpMush           # Object  - OBJ_POWERUP_MUSHROOM
+0x0E: ObjInit_Koopaling         # Object  - OBJ_BOSS_KOOPALING
+0x0F: ObjInit_DoNothing         # Object 
+0x10: ObjInit_DoNothing         # Object 
+0x11: ObjInit_DoNothing         # Object 
+0x12: ObjInit_DoNothing         # Object 
+0x13: ObjInit_DoNothing         # Object 
+0x14: ObjInit_DoNothing         # Object 
+0x15: ObjInit_DoNothing         # Object 
+0x16: ObjInit_DoNothing         # Object 
+0x17: ObjInit_SpinyCheep        # Object  - OBJ_SPINYCHEEP
+0x18: ObjInit_Bowser            # Object  - OBJ_BOSS_BOWSER
+0x19: ObjInit_FireFlower        # Object  - OBJ_POWERUP_FIREFLOWER
+0x1A: ObjInit_DoNothing         # Object 
+0x1B: ObjInit_BounceLR          # Object  - OBJ_BOUNCELEFTRIGHT
+0x1C: ObjInit_Obj1C             # Object 
+0x1D: ObjInit_DoNothing         # Object 
+0x1E: ObjInit_SuperLeaf         # Object  - OBJ_POWERUP_SUPERLEAF
+0x1F: ObjInit_Vine              # Object  - OBJ_GROWINGVINE
+0x20: ObjInit_DoNothing         # Object 
+0x21: ObjInit_DoNothing         # Object  - OBJ_POWERUP_MUSHCARD
+0x22: ObjInit_DoNothing         # Object  - OBJ_POWERUP_FIRECARD
+0x23: ObjInit_DoNothing         # Object  - OBJ_POWERUP_STARCARD
+0x24: ObjInit_CloudPlatFast     # Object  - OBJ_CLOUDPLATFORM_FAST
+0x25: ObjInit_PipewayCtlr       # Object  - OBJ_PIPEWAYCONTROLLER
+0x26: ObjInit_WoodenPlat        # Object  - OBJ_WOODENPLAT_RIDER
+0x27: ObjInit_WoodenPlat        # Object  - OBJ_OSCILLATING_H
+0x28: ObjInit_WoodenPlat        # Object  - OBJ_OSCILLATING_V
+0x29: ObjInit_TowardsPlayer     # Object  - OBJ_SPIKE
+0x2A: ObjInit_Patooie           # Object  - OBJ_PATOOIE
+0x2B: ObjInit_DoNothing         # Object  - OBJ_GOOMBAINSHOE
+0x2C: ObjInit_CloudPlatform     # Object  - OBJ_CLOUDPLATFORM
+0x2D: ObjInit_ChasingFish       # Object  - OBJ_BIGBERTHA
+0x2E: ObjInit_InvisibleLift     # Object  - OBJ_INVISIBLELIFT
+0x2F: ObjInit_DoNothing         # Object  - OBJ_BOO
+0x30: ObjInit_HotFootShy        # Object  - OBJ_HOTFOOT_SHY
+0x31: ObjInit_Stretch           # Object  - OBJ_BOOSTRETCH
+0x32: ObjInit_StretchFlip       # Object  - OBJ_BOOSTRETCH_FLIP
+0x33: ObjInit_DoNothing         # Object  - OBJ_NIPPER
+0x34: ObjInit_Toad              # Object  - OBJ_TOAD
+0x35: ObjInit_DoNothing         # Object  - OBJ_TOADHOUSEITEM
+0x36: ObjInit_WoodenPlatform    # Object  - OBJ_WOODENPLATFORM
+0x37: ObjInit_OscillatingShort  # Object  - OBJ_OSCILLATING_HS
+0x38: ObjInit_OscillatingShort  # Object  - OBJ_OSCILLATING_VS
+0x39: ObjInit_NipperHopping     # Object  - OBJ_NIPPERHOPPING
+0x3A: ObjInit_FallingPlatform   # Object  - OBJ_FALLINGPLATFORM
+0x3B: ObjInit_ChasingFish       # Object  - OBJ_CHARGINGCHEEPCHEEP
+0x3C: ObjInit_WoodenFallingPlat # Object  - OBJ_WOODENPLATFORMFALL
+0x3D: ObjInit_DoNothing         # Object  - OBJ_NIPPERFIREBREATHER
+0x3E: ObjInit_FloatWoodenPlat   # Object  - OBJ_WOODENPLATFORMFLOAT
+0x3F: ObjInit_TowardsPlayer     # Object  - OBJ_DRYBONES
+0x40: ObjInit_BusterBeatle      # Object  - OBJ_BUSTERBEATLE
+0x41: ObjInit_DoNothing         # Object  - OBJ_ENDLEVELCARD
+0x42: ObjInit_CheepCheepP2P     # Object  - OBJ_CHEEPCHEEPPOOL2POOL
+0x43: ObjInit_CheepCheepP2P2    # Object  - OBJ_CHEEPCHEEPPOOL2POOL2
+0x44: ObjInit_FallingPlatform   # Object  - OBJ_WOODENPLATUNSTABLE
+0x45: ObjInit_HotFoot           # Object  - OBJ_HOTFOOT
+0x46: ObjInit_PiranhaSpikeBall  # Object  - OBJ_PIRANHASPIKEBALL
+0x47: ObjInit_DoNothing         # Object  - OBJ_GIANTBLOCKCTL
+0x48: ObjInit_TinyCheepCheep    # Object  - OBJ_TINYCHEEPCHEEP
+0x49: ObjInit_FloatingBGCloud   # Object  - OBJ_FLOATINGBGCLOUD
+0x4A: ObjInit_BoomBoomQBall     # Object  - OBJ_BOOMBOOMQBALL
+0x4B: ObjInit_BoomBoom          # Object  - OBJ_BOOMBOOMJUMP
+0x4C: ObjInit_BoomBoom          # Object  - OBJ_BOOMBOOMFLY
+0x4D: ObjInit_DoNothing         # Object 
+0x4E: ObjInit_DoNothing         # Object 
+0x4F: ObjInit_DoNothing         # Object  - OBJ_CHAINCHOMPFREE
+0x50: ObjInit_BobOmbExplode     # Object  - OBJ_BOBOMBEXPLODE
+0x51: ObjInit_RotoDiscDualCCW   # Object  - OBJ_ROTODISCDUAL
+0x52: ObjInit_TreasureBox       # Object  - OBJ_TREASUREBOX
+0x53: ObjInit_PodobooCeiling    # Object  - OBJ_PODOBOOCEILING
+0x54: ObjInit_DonutLift         # Object  - OBJ_DONUTLIFTSHAKEFALL
+0x55: ObjInit_BobOmb            # Object  - OBJ_BOBOMB
+0x56: ObjInit_PiranhaSidewaysL  # Object  - OBJ_PIRANHASIDEWAYSLEFT
+0x57: ObjInit_PiranhaSidewaysR  # Object  - OBJ_PIRANHASIDEWAYSRIGHT
+0x58: ObjInit_FireChomp         # Object  - OBJ_FIRECHOMP
+0x59: ObjInit_FireSnake         # Object  - OBJ_FIRESNAKE
+0x5A: ObjInit_RotoDiscDualCW    # Object  - OBJ_ROTODISCCLOCKWISE
+0x5B: ObjInit_RotoDiscDualCCW   # Object  - OBJ_ROTODISCCCLOCKWISE
+0x5C: ObjInit_DoNothing         # Object  - OBJ_ICEBLOCK
+0x5D: ObjInit_Tornado           # Object  - OBJ_TORNADO
+0x5E: ObjInit_RotoDiscDualCW    # Object  - OBJ_ROTODISCDUALOPPOSE
+0x5F: ObjInit_RotoDiscDualCW    # Object  - OBJ_ROTODISCDUALOPPOSE2
+0x60: ObjInit_RotoDiscDualCW    # Object  - OBJ_ROTODISCDUALCCLOCK
+0x61: ObjInit_BlooperWithKids   # Object  - OBJ_BLOOPERWITHKIDS
+0x62: ObjInit_Blooper           # Object  - OBJ_BLOOPER
+0x63: ObjInit_BigBerthaBirther  # Object  - OBJ_BIGBERTHABIRTHER
+0x64: ObjInit_CheepCheepHopper  # Object  - OBJ_CHEEPCHEEPHOPPER
+0x65: ObjInit_WaterCurrent      # Object  - OBJ_WATERCURRENTUPWARD
+0x66: ObjInit_WaterCurrent      # Object  - OBJ_WATERCURRENTDOWNARD
+0x67: ObjInit_LavaLotus         # Object  - OBJ_LAVALOTUS
+0x68: ObjInit_Twirling          # Object  - OBJ_TWIRLINGBUZZY
+0x69: ObjInit_Twirling          # Object  - OBJ_TWIRLINGSPINY
+0x6A: ObjInit_BlooperWithKids   # Object  - OBJ_BLOOPERCHILDSHOOT
+0x6B: ObjInit_PileDriver        # Object  - OBJ_PILEDRIVER
+0x6C: ObjInit_GroundTroop       # Object  - OBJ_GREENTROOPA
+0x6D: ObjInit_GroundTroop       # Object  - OBJ_REDTROOPA
+0x6E: ObjInit_GroundTroop       # Object  - OBJ_PARATROOPAGREENHOP
+0x6F: ObjInit_GroundTroop       # Object  - OBJ_FLYINGREDPARATROOPA
+0x70: ObjInit_GroundTroop       # Object  - OBJ_BUZZYBEATLE
+0x71: ObjInit_GroundTroop       # Object  - OBJ_SPINY
+0x72: ObjInit_GroundTroop       # Object  - OBJ_GOOMBA
+0x73: ObjInit_GroundTroop       # Object  - OBJ_PARAGOOMBA
+0x74: ObjInit_GroundTroop       # Object  - OBJ_PARAGOOMBAWITHMICROS
+0x75: ObjInit_BossAttack        # Object  - OBJ_BOSSATTACK
+0x76: ObjInit_Set3DoNothing     # Object  - OBJ_JUMPINGCHEEPCHEEP
+0x77: ObjInit_SpikeCheep        # Object  - OBJ_GREENCHEEP
+0x78: ObjInit_Set3DoNothing     # Object  - OBJ_BULLETBILL
+0x79: ObjInit_Set3DoNothing     # Object  - OBJ_BULLETBILLHOMING
+0x7A: ObjInit_GiantTroop        # Object  - OBJ_BIGGREENTROOPA
+0x7B: ObjInit_GiantTroop        # Object  - OBJ_BIGREDTROOPA
+0x7C: ObjInit_GiantTroop        # Object  - OBJ_BIGGOOMBA
+0x7D: ObjInit_GiantGreenPiranha # Object  - OBJ_BIGGREENPIRANHA
+0x7E: ObjInit_GiantTroop        # Object  - OBJ_BIGGREENHOPPER
+0x7F: ObjInit_GiantRedPiranha   # Object  - OBJ_BIGREDPIRANHA
+0x80: ObjInit_Set3DoNothing     # Object  - OBJ_FLYINGGREENPARATROOPA
+0x81: ObjInit_HammerBro         # Object  - OBJ_HAMMERBRO
+0x82: ObjInit_BoomerangBro      # Object  - OBJ_BOOMERANGBRO
+0x83: ObjInit_Lakitu            # Object  - OBJ_LAKITU
+0x84: ObjInit_Set3DoNothing     # Object  - OBJ_SPINYEGG
+0x85: ObjInit_Set3DoNothing     # Object  - OBJ_SPINYEGGDUD
+0x86: ObjInit_HeavyBro          # Object  - OBJ_HEAVYBRO
+0x87: ObjInit_FireBro           # Object  - OBJ_FIREBRO
+0x88: ObjInit_OrangeCheep       # Object  - OBJ_ORANGECHEEP
+0x89: ObjInit_ChainChomp        # Object  - OBJ_CHAINCHOMP
+0x8A: ObjInit_Thwomp            # Object  - OBJ_THWOMP
+0x8B: ObjInit_ThwompLRSlide     # Object  - OBJ_THWOMPLEFTSLIDE
+0x8C: ObjInit_ThwompLRSlide     # Object  - OBJ_THWOMPRIGHTSLIDE
+0x8D: ObjInit_ThwompUDSlide     # Object  - OBJ_THWOMPUPDOWN
+0x8E: ObjInit_ThwompUDSlide     # Object  - OBJ_THWOMPDIAGONALUL
+0x8F: ObjInit_ThwompUDSlide     # Object  - OBJ_THWOMPDIAGONALDL
+0x90: ObjInit_RotatePlatform    # Object  - OBJ_TILTINGPLATFORM
+0x91: ObjInit_RotatePlatform    # Object  - OBJ_TWIRLINGPLATCWNS
+0x92: ObjInit_RotatePlatform    # Object  - OBJ_TWIRLINGPLATCW
+0x93: ObjInit_RotatePlatformPer # Object  - OBJ_TWIRLINGPERIODIC
+0x94: ObjInit_BigQBlock         # Object  - OBJ_BIGQBLOCK_3UP
+0x95: ObjInit_BigQBlock         # Object  - OBJ_BIGQBLOCK_MUSHROOM
+0x96: ObjInit_BigQBlock         # Object  - OBJ_BIGQBLOCK_FIREFLOWER
+0x97: ObjInit_BigQBlock         # Object  - OBJ_BIGQBLOCK_SUPERLEAF
+0x98: ObjInit_BigQBlock         # Object  - OBJ_BIGQBLOCK_TANOOKI
+0x99: ObjInit_BigQBlock         # Object  - OBJ_BIGQBLOCK_FROG
+0x9A: ObjInit_BigQBlock         # Object  - OBJ_BIGQBLOCK_HAMMER
+0x9B: ObjInit_DoNothing         # Object 
+0x9C: ObjInit_DoNothing         # Object 
+0x9D: ObjInit_FireJetUpward     # Object  - OBJ_FIREJET_UPWARD
+0x9E: ObjInit_Podoboo           # Object  - OBJ_PODOBOO
+0x9F: ObjInit_ParaBeetle        # Object  - OBJ_PARABEETLE
+0xA0: ObjInit_GreenPiranha      # Object  - OBJ_GREENPIRANHA
+0xA1: ObjInit_GreenPiranhaFlip  # Object  - OBJ_GREENPIRANHA_FLIPPED
+0xA2: ObjInit_RedPiranha        # Object  - OBJ_REDPIRANHA
+0xA3: ObjInit_RedPiranhaFlip    # Object  - OBJ_REDPIRANHA_FLIPPED
+0xA4: ObjInit_GreenPiranha      # Object  - OBJ_GREENPIRANHA_FIRE
+0xA5: ObjInit_GreenPiranhaFlip  # Object  - OBJ_GREENPIRANHA_FIREC
+0xA6: ObjInit_RedPiranha        # Object  - OBJ_VENUSFIRETRAP
+0xA7: ObjInit_RedPiranhaFlip    # Object  - OBJ_VENUSFIRETRAP_CEIL
+0xA8: ObjInit_DoNothing         # Object  - OBJ_ARROWONE
+0xA9: ObjInit_DoNothing         # Object  - OBJ_ARROWANY
+0xAA: ObjInit_AirshipProp       # Object  - OBJ_AIRSHIPPROP
+0xAB: ObjInit_FireJetRight      # Object  (doesn't really work, and the "normal" routine is even weirder)
+0xAC: ObjInit_FireJetLeft       # Object  - OBJ_FIREJET_LEFT
+0xAD: ObjInit_RockyWrench       # Object  - OBJ_ROCKYWRENCH
+0xAE: ObjInit_BoltLift          # Object  - OBJ_BOLTLIFT
+0xAF: ObjInit_Sun               # Object  - OBJ_ENEMYSUN
+0xB0: ObjInit_BigCannonBall     # Object  - OBJ_BIGCANNONBALL
+0xB1: ObjInit_FireJetRight      # Object  - OBJ_FIREJET_RIGHT
+0xB2: ObjInit_FireJetUpsideDown # Object  - OBJ_FIREJET_UPSIDEDOWN
+0xB3: ObjInit_ObjB3             # Object 

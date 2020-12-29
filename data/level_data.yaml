@@ -1,0 +1,14 @@
+level_info:
+  banks:
+    bank: 12
+    offset: $0400
+  generators:
+    bank: 60
+    offset: 0
+  objects:
+    bank: 60
+    offset: $0400
+  tileset:
+    bank: 60
+    offset: $0800
+level_bank_offset: 32

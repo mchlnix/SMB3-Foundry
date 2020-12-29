@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 from PySide2.QtWidgets import QApplication, QMessageBox
 
 # change into the tmp directory pyinstaller uses for the data
-from foundry.gui.settings import load_settings, save_settings
+from foundry.core.Settings.util import load_settings, save_settings
 
 if hasattr(sys, "_MEIPASS"):
     logger.info(f"Changing current dir to {getattr(sys, '_MEIPASS')}")

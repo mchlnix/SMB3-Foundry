@@ -2,9 +2,9 @@ from PySide2.QtCore import QRect, QSize
 from PySide2.QtGui import QColor, QImage, QPainter, Qt
 
 from foundry.game.ObjectDefinitions import enemy_handle_x, enemy_handle_x2, enemy_handle_y
-from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.Palette import NESPalette, PaletteGroup
-from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.Tileset import Tileset
+from foundry.game.gfx.Palette import bg_color_for_palette
+from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.drawable import apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
@@ -22,17 +22,28 @@ class EnemyObject(ObjectLike):
         self.length = 0
 
         self.obj_index = data[0]
-        self.x_position = data[1] - enemy_handle_x2[self.obj_index]
-        self.y_position = data[2]
+
+        self.x_position = 0
+        self.y_position = 0
+
+        try:
+            self.x_position = data[1] - int(enemy_handle_x[self.obj_index])
+        except IndexError:
+            print(self, "found no x position in data", data, "with obj idx of", self.obj_index)
+
+        try:
+            self.y_position = data[2]
+        except IndexError:
+            print(self, "found no y position in data", data, "with obj idx of", self.obj_index)
 
         self.domain = 0
 
-        self.graphics_set = GraphicsSet(ENEMY_ITEM_GRAPHICS_SET)
+        self.graphics_set = PatternTableHandler.from_tileset(ENEMY_ITEM_GRAPHICS_SET)
         self.palette_group = palette_group
 
-        self.object_set = ObjectSet(ENEMY_ITEM_OBJECT_SET)
+        self.object_set = Tileset(ENEMY_ITEM_OBJECT_SET)
 
-        self.bg_color = NESPalette[palette_group[0][0]]
+        self.bg_color = bg_color_for_palette(palette_group)
 
         self.png_data = png_data
 
@@ -65,10 +76,10 @@ class EnemyObject(ObjectLike):
         block_ids = obj_def.object_design
 
         for block_id in block_ids:
-            x = (block_id % 64) * Block.WIDTH
-            y = (block_id // 64) * Block.WIDTH
+            x = (block_id % 64) * Block.image_length
+            y = (block_id // 64) * Block.image_length
 
-            self.blocks.append(self.png_data.copy(QRect(x, y, Block.WIDTH, Block.HEIGHT)))
+            self.blocks.append(self.png_data.copy(QRect(x, y, Block.image_length, Block.image_length)))
 
     def render(self):
         # nothing to re-render since enemies are just copied over
@@ -94,7 +105,7 @@ class EnemyObject(ObjectLike):
             if self.selected:
                 apply_selection_overlay(block, mask)
 
-            if block_length != Block.SIDE_LENGTH:
+            if block_length != Block.image_length:
                 block = block.scaled(block_length, block_length)
 
             painter.drawImage(x * block_length, y * block_length, block)
@@ -150,16 +161,16 @@ class EnemyObject(ObjectLike):
         self._setup()
 
     def to_bytes(self):
-        return bytearray([self.obj_index, self.x_position + int(enemy_handle_x2[self.obj_index]), self.y_position])
+        return bytearray([self.obj_index, self.x_position + int(enemy_handle_x[self.obj_index]), self.y_position])
 
     def as_image(self) -> QImage:
-        image = QImage(QSize(self.width * Block.SIDE_LENGTH, self.height * Block.SIDE_LENGTH), QImage.Format_RGBA8888,)
+        image = QImage(QSize(self.width * Block.image_length, self.height * Block.image_length), QImage.Format_RGBA8888,)
 
         image.fill(QColor(0, 0, 0, 0))
 
         painter = QPainter(image)
 
-        self.draw(painter, Block.SIDE_LENGTH, True)
+        self.draw(painter, Block.image_length, True)
 
         return image
 

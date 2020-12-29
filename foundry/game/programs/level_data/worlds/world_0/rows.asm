@@ -1,0 +1,22 @@
+world_rows_0:
+	.byte 2
+	.byte 2
+	.byte 2
+	.byte 2
+	.byte 2
+	.byte 4
+	.byte 4
+	.byte 4
+	.byte 4
+	.byte 4
+	.byte 6
+	.byte 6
+	.byte 6
+	.byte 8
+	.byte 8
+	.byte 8
+	.byte 8
+	.byte 8
+	.byte 10
+	.byte 10
+	.byte 10

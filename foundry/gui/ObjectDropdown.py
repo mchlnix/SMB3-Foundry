@@ -7,7 +7,8 @@ from PySide2.QtWidgets import QApplication, QComboBox, QCompleter, QWidget
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon_object
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
+from foundry.game.gfx.objects.LevelObject import get_minimal_icon_object
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE, MIN_DOMAIN
@@ -110,8 +111,8 @@ class ObjectDropdown(QComboBox):
 
             self._add_item(enemy_item)
 
-    def _add_item(self, level_object: Union[LevelObject, EnemyObject]):
-        if not isinstance(level_object, (LevelObject, EnemyObject)):
+    def _add_item(self, level_object: Union[LevelObjectController, EnemyObject]):
+        if not isinstance(level_object, (LevelObjectController, EnemyObject)):
             return
 
         if level_object.description in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
@@ -123,6 +124,6 @@ class ObjectDropdown(QComboBox):
 
     @staticmethod
     def _resize_bitmap(source_image: QImage) -> QImage:
-        image = source_image.scaled(Block.SIDE_LENGTH, Block.SIDE_LENGTH)
+        image = source_image.scaled(Block.image_length, Block.image_length)
 
         return image

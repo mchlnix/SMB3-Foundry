@@ -1,9 +1,5 @@
 import logging
 import os
-import pathlib
-import shlex
-import subprocess
-import tempfile
 from typing import Tuple, Union
 
 from PySide2.QtCore import QSize
@@ -25,20 +21,17 @@ from PySide2.QtWidgets import (
 )
 
 from foundry import (
-    discord_link,
-    feature_video_link,
     get_current_version_name,
     get_latest_version_name,
-    github_link,
-    icon,
     open_url,
     releases_link,
 )
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.LevelDrawer import _level_drawer_container
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.AutoScrollEditor import AutoScrollEditor
@@ -56,117 +49,65 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
-from foundry.gui.PaletteViewer import PaletteViewer
-from foundry.gui.SettingsDialog import POWERUPS, show_settings
+from foundry.gui.SettingsDialog import SettingsDialog
+from foundry.core.util.get_gui_style import get_gui_style
 from foundry.gui.SpinnerPanel import SpinnerPanel
-from foundry.gui.WarningList import WarningList
-from foundry.gui.settings import SETTINGS, save_settings
-from smb3parse.constants import TILE_LEVEL_1, Title_PrepForWorldMap, Title_DebugMenu
-from smb3parse.levels.world_map import WorldMap as SMB3World
-from smb3parse.util.rom import Rom as SMB3Rom
-
-ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
-M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
-IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
-
-ID_RELOAD_LEVEL = 303
-
-ID_GRID_LINES = 501
-ID_TRANSPARENCY = 508
-ID_JUMPS = 509
-ID_MARIO = 510
-ID_RESIZE_TYPE = 511
-ID_JUMP_OBJECTS = 512
-ID_ITEM_BLOCKS = 513
-ID_INVISIBLE_ITEMS = 514
-ID_AUTOSCROLL = 515
-
-CHECKABLE_MENU_ITEMS = [
-    ID_TRANSPARENCY,
-    ID_GRID_LINES,
-    ID_JUMPS,
-    ID_MARIO,
-    ID_RESIZE_TYPE,
-    ID_JUMP_OBJECTS,
-    ID_ITEM_BLOCKS,
-    ID_INVISIBLE_ITEMS,
-    ID_AUTOSCROLL,
-]
-
-ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
-
-# mouse modes
-
-MODE_FREE = 0
-MODE_DRAG = 1
-MODE_RESIZE = 2
+from foundry.core.Settings.util import get_setting, set_setting, save_settings
+from foundry.gui.QMenus.Menu.Menu import Menu
+from foundry.core.Action.ActionSelectFileToOpen import ActionSelectFileToOpen
+from foundry.core.Action.ActionSafe import ActionSafe
+from foundry.core.util import ROM_FILE_FILTER, IMG_FILE_FILTER, ID_GRID_LINES, ID_TRANSPARENCY, ID_JUMPS, ID_MARIO, \
+    ID_RESIZE_TYPE, ID_JUMP_OBJECTS, ID_ITEM_BLOCKS, ID_INVISIBLE_ITEMS, ID_BACKGROUND_ENABLED, \
+    ID_VISUAL_OBJECT_TOOLBAR, ID_OBJECT_ATTRIBUTE_TOOLBAR, ID_COMPACT_TOOLBAR, ID_BYTES_COUNTER_TOOLBAR, \
+    ID_OBJECT_LIST_TOOLBAR, CHECKABLE_MENU_ITEMS, ID_PROP
+from foundry.game.File import load_from_file
+from foundry.gui.QMenus.Menu.MenuFile import FileMenu
+from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
+from foundry.gui.QMenus.MenuAction.MenuActionSettings import MenuActionSettings
+from foundry.core.Action.ActionSaveToFirstLevel import ActionSaveToFirstLevel
+from foundry.core.Action.ActionOpenEmulator import ActionOpenEmulator
+from foundry.gui.Custom.Blocks.TileSquareAssemblyEditor import DialogTileSquareAssemblyEditor
+from foundry.gui.QIcon.Icon import Icon
+from foundry.game.gfx.Palette import load_palette
 
 
 class MainWindow(QMainWindow):
     def __init__(self, path_to_rom=""):
         super(MainWindow, self).__init__()
 
-        self.setWindowIcon(icon("foundry.ico"))
+        self.setWindowIcon(Icon.as_custom("icon"))
+        self.setStyleSheet(get_gui_style())
 
-        file_menu = QMenu("File")
-
-        open_rom_action = file_menu.addAction("&Open ROM")
-        open_rom_action.triggered.connect(self.on_open_rom)
-        self.open_m3l_action = file_menu.addAction("&Open M3L")
-        self.open_m3l_action.triggered.connect(self.on_open_m3l)
-
-        file_menu.addSeparator()
-
-        self.save_rom_action = file_menu.addAction("&Save ROM")
-        self.save_rom_action.triggered.connect(self.on_save_rom)
-        self.save_rom_as_action = file_menu.addAction("&Save ROM as ...")
-        self.save_rom_as_action.triggered.connect(self.on_save_rom_as)
-        """
-        file_menu.AppendSeparator()
-        """
-        self.save_m3l_action = file_menu.addAction("&Save M3L")
-        self.save_m3l_action.triggered.connect(self.on_save_m3l)
-        """
-        file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", "")
-        file_menu.AppendSeparator()
-        file_menu.Append(ID_APPLY_IPS_PATCH, "&Apply IPS Patch", "")
-        file_menu.AppendSeparator()
-        file_menu.Append(ID_ROM_PRESET, "&ROM Preset", "")
-        """
-        file_menu.addSeparator()
-        settings_action = file_menu.addAction("&Settings")
-        settings_action.triggered.connect(show_settings)
-        file_menu.addSeparator()
-        exit_action = file_menu.addAction("&Exit")
-        exit_action.triggered.connect(lambda _: self.close())
-
-        self.menuBar().addMenu(file_menu)
-
-        """
-        edit_menu = wx.Menu()
-
-        edit_menu.Append(ID_EDIT_LEVEL, "&Edit Level", "")
-        edit_menu.Append(ID_EDIT_OBJ_DEFS, "&Edit Object Definitions", "")
-        edit_menu.Append(ID_EDIT_PALETTE, "&Edit Palette", "")
-        edit_menu.Append(ID_EDIT_GRAPHICS, "&Edit Graphics", "")
-        edit_menu.Append(ID_EDIT_MISC, "&Edit Miscellaneous", "")
-        edit_menu.AppendSeparator()
-        edit_menu.Append(ID_FREE_FORM_MODE, "&Free form Mode", "")
-        edit_menu.Append(ID_LIMIT_SIZE, "&Limit Size", "")
-        """
+        self.file_menu = FileMenu(self)
+        self.file_menu.open_rom_action._action.attach_warning(self.safe_to_change)
+        self.file_menu.open_rom_action._action.attach_observer(load_from_file)
+        self.file_menu.open_rom_action._action.attach_observer(self.open_level_selector)
+        self.file_menu.open_m3l_action._action.attach_warning(self.safe_to_change)
+        self.file_menu.open_m3l_action._action.attach_observer(self.open_m3l)
+        self.file_menu.save_rom_action._action.attach_warning(self.safe_to_change)
+        self.file_menu.save_rom_action._action.attach_requirement(lambda: self.can_save_rom(False))
+        self.file_menu.save_rom_action._action.attach_observer(self.save_rom)
+        self.file_menu.save_rom_as_action._action.attach_warning(self.safe_to_change)
+        self.file_menu.save_rom_as_action._action.attach_requirement(lambda: self.can_save_rom(True))
+        self.file_menu.save_rom_as_action._action.attach_observer(self.save_rom)
+        self.file_menu.save_m3l_action._action.attach_observer(self.save_m3l)
+        self.file_menu.save_asm6_action._action.attach_observer(self.save_asm6)
+        self.menuBar().addMenu(self.file_menu)
 
         self.level_menu = QMenu("Level")
 
         self.select_level_action = self.level_menu.addAction("&Select Level")
         self.select_level_action.triggered.connect(self.open_level_selector)
 
-        self.reload_action = self.level_menu.addAction("&Reload Level")
+        self.reload_action = level_menu.addAction("&Reload Level")
         self.reload_action.triggered.connect(self.reload_level)
         self.level_menu.addSeparator()
         self.edit_header_action = self.level_menu.addAction("&Edit Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
         self.edit_autoscroll = self.level_menu.addAction("Edit Autoscrolling")
         self.edit_autoscroll.triggered.connect(self.on_edit_autoscroll)
+        self.edit_tsa_action = level_menu.addAction("&Edit TSA")
+        self.edit_tsa_action.triggered.connect(lambda *_: self.display_tsa_editor())
 
         self.menuBar().addMenu(self.level_menu)
 
@@ -182,103 +123,42 @@ class MainWindow(QMainWindow):
 
         self.menuBar().addMenu(self.object_menu)
 
-        self.view_menu = QMenu("View")
-        self.view_menu.triggered.connect(self.on_menu)
+        view_menu = Menu(parent=self, title="View")
+        view_menu.triggered.connect(self.on_menu)
 
-        action = self.view_menu.addAction("Mario")
-        action.setProperty(ID_PROP, ID_MARIO)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_mario"])
-
-        action = self.view_menu.addAction("&Jumps on objects")
-        action.setProperty(ID_PROP, ID_JUMP_OBJECTS)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_jump_on_objects"])
-
-        action = self.view_menu.addAction("Items in blocks")
-        action.setProperty(ID_PROP, ID_ITEM_BLOCKS)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_items_in_blocks"])
-
-        action = self.view_menu.addAction("Invisible items")
-        action.setProperty(ID_PROP, ID_INVISIBLE_ITEMS)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_invisible_items"])
-
-        action = self.view_menu.addAction("Autoscroll Path")
-        action.setProperty(ID_PROP, ID_AUTOSCROLL)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_autoscroll"])
-
-        self.view_menu.addSeparator()
-
-        action = self.view_menu.addAction("Jump Zones")
-        action.setProperty(ID_PROP, ID_JUMPS)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_jumps"])
-
-        action = self.view_menu.addAction("&Grid lines")
-        action.setProperty(ID_PROP, ID_GRID_LINES)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_grid"])
-
-        action = self.view_menu.addAction("Resize Type")
-        action.setProperty(ID_PROP, ID_RESIZE_TYPE)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_expansion"])
-
-        self.view_menu.addSeparator()
-
-        action = self.view_menu.addAction("&Block Transparency")
-        action.setProperty(ID_PROP, ID_TRANSPARENCY)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["block_transparency"])
-
-        self.view_menu.addSeparator()
-        self.view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
-        """
-        self.view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
-        self.view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
-        self.view_menu.AppendSeparator()
-        self.view_menu.Append(ID_ZOOM, "&Zoom", "")
-        self.view_menu.AppendSeparator()
-        self.view_menu.Append(ID_USE_ROM_GRAPHICS, "&Use ROM Graphics", "")
-        self.view_menu.Append(ID_PALETTE, "&Palette", "")
-        self.view_menu.AppendSeparator()
-        self.view_menu.Append(ID_MORE, "&More", "")
-        """
+        MenuActionSettings(view_menu, "draw_mario", "Mario", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "draw_jump_on_objects", "Warps", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "draw_items_in_blocks", "Items in Blocks", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "draw_invisible_items", "Invisible items", container=_level_drawer_container)
+        view_menu.addSeparator()
+        MenuActionSettings(view_menu, "draw_jumps", "Jump Zones", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "draw_grid", "Grid Lines", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "draw_expansion", "Reisze Type", container=_level_drawer_container)
+        view_menu.addSeparator()
+        MenuActionSettings(view_menu, "block_transparency", "Block Transparency", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "background_enabled", "Background", container=_level_drawer_container)
+        view_menu.addSeparator()
+        view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
 
         self.menuBar().addMenu(self.view_menu)
 
-        help_menu = QMenu("Help")
-        """
-        help_menu.Append(ID_ENEMY_COMPATIBILITY, "&Enemy Compatibility", "")
-        help_menu.Append(ID_TROUBLESHOOTING, "&Troubleshooting", "")
-        help_menu.AppendSeparator()
-        help_menu.Append(ID_PROGRAM_WEBSITE, "&Program Website", "")
-        help_menu.Append(ID_MAKE_A_DONATION, "&Make a Donation", "")
-        help_menu.AppendSeparator()
-        """
-        update_action = help_menu.addAction("Check for updates")
-        update_action.triggered.connect(self.on_check_for_update)
+        tool_menu = Menu(parent=self, title="Tools")
+        tool_menu.triggered.connect(self.on_menu)
 
-        help_menu.addSeparator()
+        tool_menu.addSection("Object Selectors")
 
-        video_action = help_menu.addAction("Feature Video on YouTube")
-        video_action.triggered.connect(lambda: open_url(feature_video_link))
+        MenuActionSettings(tool_menu, "visual_object_toolbar", "Visual Object Selector")
+        MenuActionSettings(tool_menu, "compact_object_toolbar", "Compact Object Selector")
+        MenuActionSettings(tool_menu, "object_attribute_toolbar", "Object Attribute Toolbar")
 
-        github_action = help_menu.addAction("Github Repository")
-        github_action.triggered.connect(lambda: open_url(github_link))
+        tool_menu.addSeparator()
 
-        discord_action = help_menu.addAction("SMB3 Rom Hacking Discord")
-        discord_action.triggered.connect(lambda: open_url(discord_link))
+        MenuActionSettings(tool_menu, "bytes_counter_toolbar", "Byte Counter")
+        MenuActionSettings(tool_menu, "object_list_toolbar", "Object List")
 
-        help_menu.addSeparator()
+        self.menuBar().addMenu(tool_menu)
 
-        about_action = help_menu.addAction("&About")
-        about_action.triggered.connect(self.on_about)
-
-        self.menuBar().addMenu(help_menu)
+        self.menuBar().addMenu(HelpMenu(self))
 
         self.block_viewer = None
         self.object_viewer = None
@@ -324,61 +204,60 @@ class MainWindow(QMainWindow):
 
         splitter.setChildrenCollapsible(False)
 
-        level_toolbar = QToolBar("Level Info Toolbar", self)
-        level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        level_toolbar.setOrientation(Qt.Horizontal)
-        level_toolbar.setFloatable(False)
-
-        level_toolbar.addWidget(self.spinner_panel)
-        level_toolbar.addWidget(self.object_dropdown)
-        level_toolbar.addWidget(self.level_size_bar)
-        level_toolbar.addWidget(self.enemy_size_bar)
-        level_toolbar.addWidget(splitter)
-
-        level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
-
-        self.addToolBar(Qt.RightToolBarArea, level_toolbar)
-
         self.object_toolbar = ObjectToolBar(self)
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
-        object_toolbar = QToolBar("Object Toolbar", self)
-        object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        object_toolbar.setFloatable(False)
+        self.visual_object_toolbar = self.add_toolbox("Object Toolbar", self.object_toolbar, 1)
+        if get_setting("visual_object_toolbar", True) != 0:
+            self.visual_object_toolbar.toggleViewAction().trigger()
 
-        object_toolbar.addWidget(self.object_toolbar)
-        object_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        self.compact_object_toolbar = self.add_toolbox("Object Dropdown Toolbar", self.object_dropdown, 2)
+        if get_setting("compact_object_toolbar", True) != 0:
+            self.compact_object_toolbar.toggleViewAction().trigger()
 
-        self.addToolBar(Qt.LeftToolBarArea, object_toolbar)
+        self.object_attribute_toolbar = self.add_toolbox("Level Spinner Toolbar", self.spinner_panel, 2)
+        if get_setting("object_attribute_toolbar", True) != 0:
+            self.object_attribute_toolbar.toggleViewAction().trigger()
+
+        self.bytes_counter_toolbar = self.add_toolbox("Size Toolbar", [self.level_size_bar, self.enemy_size_bar], 2)
+        if get_setting("bytes_counter_toolbar", True) != 0:
+            self.bytes_counter_toolbar.toggleViewAction().trigger()
+
+        self.object_list_toolbar = self.add_toolbox("Level Info", splitter, 2)
+        if get_setting("object_list_toolbar", True) != 0:
+            self.object_list_toolbar.toggleViewAction().trigger()
 
         self.menu_toolbar = QToolBar("Menu Toolbar", self)
         self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
-        self.menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(show_settings)
-        self.menu_toolbar.addSeparator()
-        self.menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
-        self.menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
-        self.menu_toolbar.addSeparator()
+        menu_toolbar.addAction(Icon.as_custom("settings"), "Editor Settings").triggered.connect(
+            lambda: SettingsDialog(self, self).exec_()
+        )
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(Icon.as_custom("open file"), "Open ROM").triggered.connect(self.file_menu.open_rom_action.action)
+        menu_toolbar.addAction(Icon.as_custom("save file"), "Save Level").triggered.connect(self.file_menu.save_rom_action.action)
+        menu_toolbar.addSeparator()
 
-        self.undo_action = self.menu_toolbar.addAction(icon("rotate-ccw.svg"), "Undo Action")
+        self.undo_action = menu_toolbar.addAction(Icon.as_custom("undo"), "Undo Action")
         self.undo_action.triggered.connect(self.level_ref.undo)
         self.undo_action.setEnabled(False)
-        self.redo_action = self.menu_toolbar.addAction(icon("rotate-cw.svg"), "Redo Action")
+        self.redo_action = menu_toolbar.addAction(Icon.as_custom("redo"), "Redo Action")
         self.redo_action.triggered.connect(self.level_ref.redo)
         self.redo_action.setEnabled(False)
 
-        self.menu_toolbar.addSeparator()
-        play_action = self.menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
-        play_action.triggered.connect(self.on_play)
+        menu_toolbar.addSeparator()
+
+        self.save_to_first_level_action = ActionSaveToFirstLevel("save_to_first_level_action", self, self.level_ref)
+        self.open_emu_action = ActionOpenEmulator("open_emu_action", self, self.save_to_first_level_action)
+        play_action = menu_toolbar.addAction(Icon.as_custom("play"), "Play Level")
+        play_action.triggered.connect(lambda: self.open_emu_action())
         play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
-        self.menu_toolbar.addSeparator()
-        self.menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
-        self.menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In").triggered.connect(self.level_view.zoom_in)
-        self.menu_toolbar.addSeparator()
-        header_action = self.menu_toolbar.addAction(icon("tool.svg"), "Edit Level Header")
+        menu_toolbar.addSeparator()
+        menu_toolbar.addAction(Icon.as_custom("zoom out"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
+        menu_toolbar.addAction(Icon.as_custom("zoom in"), "Zoom In").triggered.connect(self.level_view.zoom_in)
+        menu_toolbar.addSeparator()
+        header_action = menu_toolbar.addAction(Icon.as_custom("tool"), "Edit Level Header")
         header_action.triggered.connect(self.on_header_editor)
         header_action.setWhatsThis(
             "<b>Header Editor</b><br/>"
@@ -386,9 +265,7 @@ class MainWindow(QMainWindow):
             "the timer, or where and how Mario enters the level.<br/>"
         )
 
-        self.jump_destination_action = self.menu_toolbar.addAction(
-            icon("arrow-right-circle.svg"), "Go to Jump Destination"
-        )
+        self.jump_destination_action = menu_toolbar.addAction(Icon.as_custom("pointer editor"), "Go to Jump Destination")
         self.jump_destination_action.triggered.connect(self._go_to_jump_destination)
         self.jump_destination_action.setWhatsThis(
             "Opens the level, that can be reached from this one, e.g. by entering a pipe."
@@ -398,7 +275,7 @@ class MainWindow(QMainWindow):
 
         whats_this_action = QWhatsThis.createAction()
         whats_this_action.setWhatsThis("Click on parts of the editor, to receive help information.")
-        whats_this_action.setIcon(icon("help-circle.svg"))
+        whats_this_action.setIcon(Icon.as_custom("help"))
         whats_this_action.setText("Starts 'What's this?' mode")
         self.menu_toolbar.addAction(whats_this_action)
 
@@ -432,9 +309,24 @@ class MainWindow(QMainWindow):
 
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
 
-        self.on_open_rom(path_to_rom)
+        self.select_rom_action = ActionSelectFileToOpen("open_rom", ActionSafe, "Select ROM", ROM_FILE_FILTER)
+        self.select_rom_action.attach_observer(load_from_file)
+        self.select_rom_action.attach_observer(self.open_level_selector)
+
+        if not self.select_rom_action.observable.observable():
+            self.deleteLater()
 
         self.showMaximized()
+
+    def display_tsa_editor(self):
+        """Displays the tsa editor"""
+        level_header = self.level_ref.level.header
+        pal = load_palette(self.level_ref.level.object_set_number, level_header.object_palette_index)
+        DialogTileSquareAssemblyEditor(
+            self,
+            self.level_ref.object_set_number,
+            pal
+        )
 
     def _on_level_data_changed(self):
         self.undo_action.setEnabled(self.level_ref.undo_stack.undo_available)
@@ -454,144 +346,11 @@ class MainWindow(QMainWindow):
 
         self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
 
-    def on_play(self):
-        """
-        Copies the ROM, including the current level, to a temporary directory, saves the current level as level 1-1 and
-        opens the rom in an emulator.
-        """
-        temp_dir = pathlib.Path(tempfile.gettempdir()) / "smb3foundry"
-        temp_dir.mkdir(parents=True, exist_ok=True)
-
-        path_to_temp_rom = temp_dir / "instaplay.rom"
-
-        ROM().save_to(path_to_temp_rom)
-
-        if not self._put_current_level_to_level_1_1(path_to_temp_rom):
-            return
-
-        if not self._set_default_powerup(path_to_temp_rom):
-            return
-
-        arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
-        arguments = shlex.split(arguments, posix=False)
-
-        emu_path = pathlib.Path(SETTINGS["instaplay_emulator"])
-
-        if emu_path.is_absolute():
-            if emu_path.exists():
-                emulator = str(emu_path)
-            else:
-                QMessageBox.critical(
-                    self, "Emulator not found", f"Check it under File > Settings.\nFile {emu_path} not found."
-                )
-                return
-        else:
-            emulator = SETTINGS["instaplay_emulator"]
-
-        try:
-            subprocess.run([emulator, *arguments])
-        except Exception as e:
-            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
-
-    def _open_rom(self, path_to_rom):
-        with open(path_to_rom, "rb") as smb3_rom:
-            data = smb3_rom.read()
-
-        rom = SMB3Rom(bytearray(data))
-        return rom
-
-    def _put_current_level_to_level_1_1(self, path_to_rom) -> bool:
-        rom = self._open_rom(path_to_rom)
-
-        # load world-1 data
-        world_1 = SMB3World.from_world_number(rom, 1)
-
-        # find position of "level 1" tile in world map
-        for position in world_1.gen_positions():
-            if position.tile() == TILE_LEVEL_1:
-                break
-        else:
-            QMessageBox.critical(
-                self, "Couldn't place level", "Could not find a level 1 tile in World 1 to put your level at."
-            )
-            return False
-
-        if not self.level_ref.level.attached_to_rom:
-            QMessageBox.critical(
-                self,
-                "Couldn't place level",
-                "The Level is not part of the rom yet (M3L?). Try saving it into the ROM first.",
-            )
-            return False
-
-        # write level and enemy data of current level
-        (layout_address, layout_bytes), (enemy_address, enemy_bytes) = self.level_ref.level.to_bytes()
-        rom.write(layout_address, layout_bytes)
-        rom.write(enemy_address, enemy_bytes)
-
-        # replace level information with that of current level
-        object_set_number = self.level_ref.object_set_number
-
-        world_1.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
-
-        # save rom
-        rom.save_to(path_to_rom)
-
-        return True
-
-    def _set_default_powerup(self, path_to_rom) -> bool:
-        rom = self._open_rom(path_to_rom)
-
-        *_, powerup, hasPWing = POWERUPS[SETTINGS["default_powerup"]]
-
-        rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))
-
-        nop = 0xEA
-        rts = 0x60
-        lda = 0xA9
-        staAbsolute = 0x8D
-
-        # If a P-wing powerup is selected, another variable needs to be set with the P-wing value
-        # This piece of code overwrites a part of Title_DebugMenu
-        if hasPWing:
-            Map_Power_DispHigh = 0x03
-            Map_Power_DispLow = 0xF3
-
-            # We need to start one byte before Title_DebugMenu to remove the RTS of Title_PrepForWorldMap
-            # The assembly code below reads as follows:
-            # LDA 0x08
-            # STA $03F3
-            # RTS
-            rom.write(
-                Title_DebugMenu - 0x1,
-                bytes(
-                    [
-                        lda,
-                        0x8,
-                        staAbsolute,
-                        Map_Power_DispLow,
-                        Map_Power_DispHigh,
-                        # The RTS to get out of the now extended Title_PrepForWorldMap
-                        rts,
-                    ]
-                ),
-            )
-
-            # Remove code that resets the powerup value by replacing it with no-operations
-            # Otherwise this code would copy the value of the normal powerup here
-            # (So if the powerup would be Raccoon Mario, Map_Power_Disp would also be
-            # set as Raccoon Mario instead of P-wing
-            Map_Power_DispResetLocation = 0x3C5A2
-            rom.write(Map_Power_DispResetLocation, bytes([nop, nop, nop]))
-
-        rom.save_to(path_to_rom)
-        return True
-
     def on_screenshot(self, _) -> bool:
         if self.level_view is None:
             return False
 
-        recommended_file = f"{os.path.expanduser('~')}/{ROM.name} - {self.level_view.level_ref.name}.png"
+        recommended_file = f"{os.path.expanduser('~')}/{ROM().name} - {self.level_view.level_ref.name}.png"
 
         pathname, _ = QFileDialog.getSaveFileName(
             self, caption="Save Screenshot", dir=recommended_file, filter=IMG_FILE_FILTER
@@ -606,102 +365,23 @@ class MainWindow(QMainWindow):
         return True
 
     def update_title(self):
-        if self.level_view.level_ref is not None and ROM is not None:
-            title = f"{self.level_view.level_ref.name} - {ROM.name}"
+        if self.level_view.level_ref is not None and ROM() is not None:
+            title = f"{self.level_view.level_ref.name} - {ROM().name}"
         else:
             title = "SMB3Foundry"
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self, path_to_rom="") -> bool:
-        if not self.safe_to_change():
-            return False
-
-        if not path_to_rom:
-            # otherwise ask the user what new file to open
-            path_to_rom, _ = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
-
-            if not path_to_rom:
-                self._enable_disable_gui_elements()
-                return False
-
-        # Proceed loading the file chosen by the user
-        try:
-            ROM.load_from_file(path_to_rom)
-
-            return self.open_level_selector(None)
-
-        except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
-            return False
-        finally:
-            self._enable_disable_gui_elements()
-
-    def on_open_m3l(self, _) -> bool:
-        if not self.safe_to_change():
-            return False
-
-        # otherwise ask the user what new file to open
-        pathname, _ = QFileDialog.getOpenFileName(self, caption="Open M3L file", filter=M3L_FILE_FILTER)
-
-        if not pathname:
-            return False
-
-        # Proceed loading the file chosen by the user
-        try:
-            with open(pathname, "rb") as m3l_file:
-
-                self.level_view.from_m3l(bytearray(m3l_file.read()))
-        except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{pathname}'.")
-
-            return False
-
-        self.level_view.level_ref.name = os.path.basename(pathname)
-
-        self.update_gui_for_level()
-
-        return True
-
-    def safe_to_change(self) -> bool:
-        if not self.level_ref:
-            return True
-
-        if self.level_ref.level.changed:
-            answer = QMessageBox.question(
-                self,
-                "Please confirm",
-                "Current content has not been saved! Proceed?",
-                QMessageBox.No | QMessageBox.Yes,
-                QMessageBox.No,
-            )
-
-            return answer == QMessageBox.Yes
+    def safe_to_change(self, *_) -> Tuple[bool, str, str]:
+        """Determines if a file is save to change"""
+        if not self.level_ref or not self.level_ref.level.changed:
+            return True, '', ''
         else:
-            return True
+            return False, "Please confirm", "Current content has not been saved! Proceed?"
 
-    def on_save_rom(self, _):
-        self.save_rom(False)
-
-    def on_save_rom_as(self, _):
-        self.save_rom(True)
-
-    def save_rom(self, is_save_as):
-        safe_to_save, reason, additional_info = self.level_view.level_safe_to_save()
-
-        if not safe_to_save:
-            answer = QMessageBox.warning(
-                self,
-                reason,
-                f"{additional_info}\n\nDo you want to proceed?",
-                QMessageBox.No | QMessageBox.Yes,
-                QMessageBox.No,
-            )
-
-            if answer == QMessageBox.No:
-                return
-
-        if not self.level_ref.attached_to_rom:
+    def can_save_rom(self, is_save_as):
+        """Determines if we can save the rom"""
+        if not self.level_view.level_ref.attached_to_rom:
             QMessageBox.information(
                 self,
                 "Importing M3L into ROM",
@@ -722,49 +402,40 @@ class MainWindow(QMainWindow):
                     # if we save to another rom, don't consider the level
                     # attached (to the current rom)
                     self.level_view.level_ref.attached_to_rom = False
+                    return False
             else:
-                return
+                return True
+        return True
 
-        if is_save_as:
-            pathname, _ = QFileDialog.getSaveFileName(self, caption="Save ROM as", filter=ROM_FILE_FILTER)
-            if not pathname:
-                return  # the user changed their mind
-        else:
-            pathname = ROM.path
+    def safe_to_save(self):
+        """Determines if it is safe to save"""
+        return self.level_view.level_safe_to_save()
 
-        level = self.level_ref.level
+    def save_rom(self, path_to_rom: str) -> None:
+        """Saves the ROM"""
+        level = self.level_view.level_ref
 
         for offset, data in level.to_bytes():
             ROM().bulk_write(data, offset)
 
-        try:
-            ROM().save_to_file(pathname)
-        except IOError as exp:
-            QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
+        ROM().save_to_file(path_to_rom)
 
-        self.update_title()
+    def open_m3l(self, path: str) -> None:
+        """Opens a M3L"""
+        with open(path, "rb") as m3l_file:
+            self.level_view.from_m3l(bytearray(m3l_file.read()))
 
-        if not is_save_as:
-            level.changed = False
-
-    def on_save_m3l(self, _):
-        suggested_file = self.level_view.level_ref.name
-
-        if not suggested_file.endswith(".m3l"):
-            suggested_file += ".m3l"
-
-        pathname, _ = QFileDialog.getSaveFileName(self, caption="Save M3L as", filter=M3L_FILE_FILTER)
-
-        if not pathname:
-            return
-
+    def save_m3l(self, path_to_rom: str) -> None:
+        """Saves a M3L"""
         level = self.level_view.level_ref
+        with open(path_to_rom, "wb") as m3l_file:
+            m3l_file.write(level.to_m3l())
 
-        try:
-            with open(pathname, "wb") as m3l_file:
-                m3l_file.write(level.to_m3l())
-        except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
+    def save_asm6(self, path_to_rom: str) -> None:
+        """Saves a ASM6 file"""
+        level = self.level_view.level_ref
+        with open(path_to_rom, "w+") as asm6_file:
+            asm6_file.write(level.to_asm6())
 
     def on_check_for_update(self):
         self.setCursor(Qt.WaitCursor)
@@ -780,7 +451,7 @@ class MainWindow(QMainWindow):
         if current_version != latest_version:
             latest_release_url = f"{releases_link}/tag/{latest_version}"
 
-            go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest release")
+            go_to_github_button = QPushButton(Icon.as_custom("link"), "Go to latest release")
             go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
 
             info_box = QMessageBox(
@@ -844,7 +515,7 @@ class MainWindow(QMainWindow):
 
         self.update_level(level_name, object_data, enemy_data, object_set)
 
-    def _on_placeable_object_selected(self, level_object: Union[LevelObject, EnemyObject]):
+    def _on_placeable_object_selected(self, level_object: Union[LevelObjectController, EnemyObject]):
         if self.sender() is self.object_toolbar:
             self.object_dropdown.select_object(level_object)
         else:
@@ -895,6 +566,8 @@ class MainWindow(QMainWindow):
             self.level_view.draw_grid = checked
         elif item_id == ID_TRANSPARENCY:
             self.level_view.transparency = checked
+        elif item_id == ID_BACKGROUND_ENABLED:
+            self.level_view.background_enabled = checked
         elif item_id == ID_JUMPS:
             self.level_view.draw_jumps = checked
         elif item_id == ID_MARIO:
@@ -907,18 +580,21 @@ class MainWindow(QMainWindow):
             self.level_view.draw_items_in_blocks = checked
         elif item_id == ID_INVISIBLE_ITEMS:
             self.level_view.draw_invisible_items = checked
-        elif item_id == ID_AUTOSCROLL:
-            self.level_view.draw_autoscroll = checked
-
-        SETTINGS["draw_mario"] = self.level_view.draw_mario
-        SETTINGS["draw_jumps"] = self.level_view.draw_jumps
-        SETTINGS["draw_grid"] = self.level_view.draw_grid
-        SETTINGS["draw_expansion"] = self.level_view.draw_expansions
-        SETTINGS["draw_jump_on_objects"] = self.level_view.draw_jumps_on_objects
-        SETTINGS["draw_items_in_blocks"] = self.level_view.draw_items_in_blocks
-        SETTINGS["draw_invisible_items"] = self.level_view.draw_invisible_items
-        SETTINGS["draw_autoscroll"] = self.level_view.draw_autoscroll
-        SETTINGS["block_transparency"] = self.level_view.transparency
+        elif item_id == ID_VISUAL_OBJECT_TOOLBAR:
+            self.visual_object_toolbar.toggleViewAction().trigger()
+            set_setting("visual_object_toolbar", not get_setting("visual_object_toolbar", True))
+        elif item_id == ID_OBJECT_ATTRIBUTE_TOOLBAR:
+            self.object_attribute_toolbar.toggleViewAction().trigger()
+            set_setting("object_attribute_toolbar", not get_setting("object_attribute_toolbar", True))
+        elif item_id == ID_COMPACT_TOOLBAR:
+            self.compact_object_toolbar.toggleViewAction().trigger()
+            set_setting("compact_object_toolbar", not get_setting("compact_object_toolbar", True))
+        elif item_id == ID_BYTES_COUNTER_TOOLBAR:
+            self.bytes_counter_toolbar.toggleViewAction().trigger()
+            set_setting("bytes_counter_toolbar", not get_setting("bytes_counter_toolbar", True))
+        elif item_id == ID_OBJECT_LIST_TOOLBAR:
+            self.object_list_toolbar.toggleViewAction().trigger()
+            set_setting("object_list_toolbar", not get_setting("object_list_toolbar", True))
 
         save_settings()
 
@@ -934,15 +610,20 @@ class MainWindow(QMainWindow):
 
         obj_type = self.spinner_panel.get_type()
 
-        if isinstance(selected_object, LevelObject):
+        if isinstance(selected_object, LevelObjectController):
             domain = self.spinner_panel.get_domain()
 
-            if selected_object.is_4byte:
+            if selected_object.bytes == 4:
                 length = self.spinner_panel.get_length()
             else:
                 length = None
+            if selected_object.bytes >= 5:
+                length = self.spinner_panel.get_length()
+                overflow = [self.spinner_panel.get_index()]
+            else:
+                overflow = None
 
-            self.level_view.replace_object(selected_object, domain, obj_type, length)
+            self.level_view.replace_object(selected_object, domain, obj_type, length, overflow=overflow)
         else:
             self.level_view.replace_enemy(selected_object, obj_type)
 
@@ -953,7 +634,7 @@ class MainWindow(QMainWindow):
 
         self.object_list.SetItems(self.level_view.get_object_names())
 
-    def open_level_selector(self, _):
+    def open_level_selector(self, *_):
         if not self.safe_to_change():
             return
 
@@ -994,7 +675,7 @@ class MainWindow(QMainWindow):
             if len(self.level_view.get_selected_objects()) == 1:
                 selected_object = self.level_view.get_selected_objects()[0]
 
-                if isinstance(selected_object, LevelObject):
+                if isinstance(selected_object, LevelObjectController):
                     self.object_viewer.set_object(
                         selected_object.domain, selected_object.obj_index, selected_object.length
                     )
@@ -1015,20 +696,13 @@ class MainWindow(QMainWindow):
             self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
         except IndexError:
             QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
-
-            return
-
-        self.update_gui_for_level()
-
-    def update_gui_for_level(self):
-        self._enable_disable_gui_elements()
+        self.set_up_gui_for_level()
 
         self.update_title()
         self.jump_list.update()
 
         is_a_world_map = isinstance(self.level_ref.level, WorldMap)
 
-        self.save_m3l_action.setEnabled(not is_a_world_map)
         self.edit_header_action.setEnabled(not is_a_world_map)
 
         if is_a_world_map:
@@ -1126,7 +800,7 @@ class MainWindow(QMainWindow):
 
         self.object_toolbar.add_recent_object(level_object)
 
-        if isinstance(level_object, LevelObject):
+        if isinstance(level_object, LevelObjectController):
             self.level_view.create_object_at(*pos, level_object.domain, level_object.obj_index)
         elif isinstance(level_object, EnemyObject):
             self.level_view.add_enemy(level_object.obj_index, *pos, -1)
@@ -1143,3 +817,26 @@ class MainWindow(QMainWindow):
             return
 
         super(MainWindow, self).closeEvent(event)
+
+    def force_update_level_view(self):
+        self.level_view.paintEvent(0, True)
+
+    def add_toolbox(self, name, widget, side):
+        toolbar = QToolBar(name, self)
+        toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        toolbar.setOrientation(Qt.Horizontal)
+        toolbar.setFloatable(True)
+        toolbar.toggleViewAction().setChecked(True)
+        toolbar.toggleViewAction().trigger()
+        if isinstance(widget, list):
+            for wig in widget:
+                toolbar.addWidget(wig)
+        else:
+            toolbar.addWidget(widget)
+        toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        if side == 1:
+            self.addToolBar(Qt.LeftToolBarArea, toolbar)
+        else:
+            self.addToolBar(Qt.RightToolBarArea, toolbar)
+        return toolbar

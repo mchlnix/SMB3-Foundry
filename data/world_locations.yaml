@@ -1,0 +1,290 @@
+0:
+  name: World 1
+  offset: $19010
+  location: $W1_Map_Layout
+  offsets: $W1_InitIndex
+  rows: $W1_ByRowType
+  columns: $W1_ByScrCol
+  object_sets: $W1_ObjSets
+  level_layouts: $W1_LevelLayout
+1:
+  name: World 2
+  offset: $19010
+  location: $W2_Map_Layout
+  offsets: $W2_InitIndex
+  rows: $W2_ByRowType
+  columns: $W2_ByScrCol
+  object_sets: $W2_ObjSets
+  level_layouts: $W2_LevelLayout
+2:
+  name: World 3
+  offset: $19010
+  location: $W3_Map_Layout
+  offsets: $W3_InitIndex
+  rows: $W3_ByRowType
+  columns: $W3_ByScrCol
+  object_sets: $W3_ObjSets
+  level_layouts: $W3_LevelLayout
+3:
+  name: World 4
+  location: $W4_Map_Layout
+  offset: $19010
+  offsets: $W4_InitIndex
+  rows: $W4_ByRowType
+  columns: $W4_ByScrCol
+  object_sets: $W4_ObjSets
+  level_layouts: $W4_LevelLayout
+4:
+  name: World 5
+  location: $W5_Map_Layout
+  offset: $19010
+  offsets: $W5_InitIndex
+  rows: $W5_ByRowType
+  columns: $W5_ByScrCol
+  object_sets: $W5_ObjSets
+  level_layouts: $W5_LevelLayout
+5:
+  name: World 6
+  offset: $19010
+  location: $W6_Map_Layout
+  offsets: $W6_InitIndex
+  rows: $W6_ByRowType
+  columns: $W6_ByScrCol
+  object_sets: $W6_ObjSets
+  level_layouts: $W6_LevelLayout
+6:
+  name: World 7
+  offset: $19010
+  location: $W7_Map_Layout
+  offsets: $W7_InitIndex
+  rows: $W7_ByRowType
+  columns: $W7_ByScrCol
+  object_sets: $W7_ObjSets
+  level_layouts: $W7_LevelLayout
+7:
+  name: World 8
+  offset: $19010
+  location: $W8_Map_Layout
+  offsets: $W8_InitIndex
+  rows: $W8_ByRowType
+  columns: $W8_ByScrCol
+  object_sets: $W8_ObjSets
+  level_layouts: $W8_LevelLayout
+8:
+  name: World 9
+  offset: $19010
+  location: $W9_Map_Layout
+  offsets: $W9_InitIndex
+  rows: $W9_ByRowType
+  columns: $W9_ByScrCol
+  object_sets: $W9_ObjSets
+  level_layouts: $W9_LevelLayout
+custom:
+  toad_houses:
+    0:
+      name: Toad House
+      generators: $TOADL
+      objects: $TOADO
+      object_set: 7
+    1:
+      name: Toad House Special
+      generators: $TOAD_SpecL
+      objects: $TOAD_SpecO
+      object_set: 7
+    2:
+      name: White Toad House
+      generators: $TOAD_SpecL
+      objects: $TOADO
+      object_set: 7
+  vs:
+    0:
+      name: Fountain
+      generators: $Vs_BattlefieldFountain
+      objects: $D2C3
+      object_set: 18
+    1:
+      name: Ladders
+      generators: $Vs_BattlefieldLadders
+      objects: $D2C3
+      object_set: 18
+    2:
+      name: Regular
+      generators: $Vs_BattlefieldTypical
+      objects: $D2C3
+      object_set: 18
+  airships:
+    0:
+      name: Airship 1
+      generators: $W1AirshipL
+      objects: $W1AirshipO
+      object_set: 10
+    1:
+      name: Airship 2
+      generators: $W2AirshipL
+      objects: $W2AirshipO
+      object_set: 10
+    2:
+      name: Airship 3
+      generators: $W3AirshipL
+      objects: $W3AirshipO
+      object_set: 10
+    3:
+      name: Airship 4
+      generators: $W4AirshipL
+      objects: $W4AirshipO
+      object_set: 10
+    4:
+      name: Airship 5
+      generators: $W5AirshipL
+      objects: $W5AirshipO
+      object_set: 10
+    5:
+      name: Airship 6
+      generators: $W6AirshipL
+      objects: $W6AirshipO
+      object_set: 10
+    6:
+      name: Airship 7
+      generators: $W7AirshipL
+      objects: $W7AirshipO
+      object_set: 10
+    7:
+      name: Airship 8
+      generators: $W8AirshipL
+      objects: $W8AirshipO
+      object_set: 10
+  king_rooms:
+    0:
+      name: King Room 1
+      generators: $KNG1L
+      objects: $KINGO
+      object_set: $02
+    1:
+      name: King Room 2
+      generators: $KNG2L
+      objects: $KINGO
+      object_set: $02
+    2:
+      name: King Room 3
+      generators: $KNG3L
+      objects: $KINGO
+      object_set: $02
+    3:
+      name: King Room 4
+      generators: $KNG4L
+      objects: $KINGO
+      object_set: $02
+    4:
+      name: King Room 5
+      generators: $KNG5L
+      objects: $KINGO
+      object_set: $02
+    5:
+      name: King Room 6
+      generators: $KNG6L
+      objects: $KINGO
+      object_set: $02
+    6:
+      name: King Room 7
+      generators: $KNG7L
+      objects: $KINGO
+      object_set: $02
+    8:
+      name: King Room 8
+      generators: $KNG1L
+      objects: $KINGO
+      object_set: $02
+  coin_ship:
+    0:
+      name: Coin Ship
+      generators: $CoinShipL
+      objects: $CoinShipO
+      object_set: 10
+  bonus_game:
+    0:
+      name: Bonus Game
+      generators: $BonusLayout_Typical
+      objects: $Empty_ObjLayout
+      object_set: 15
+  bonus_levels:
+    0:
+      name: Bonus Level 1
+      generators: $BigQBlock1L
+      objects: $BigQBlock1O
+      object_set: 14
+    1:
+      name: Bonus Level 2
+      generators: $BigQBlock2L
+      objects: $BigQBlock2O
+      object_set: 14
+    2:
+      name: Bonus Level 3
+      generators: $BigQBlock3L
+      objects: $BigQBlock3O
+      object_set: 14
+    3:
+      name: Bonus Level 4
+      generators: $BigQBlock4L
+      objects: $BigQBlock4O
+      object_set: 14
+    4:
+      name: Bonus Level 5
+      generators: $BigQBlock5L
+      objects: $BigQBlock5O
+      object_set: 14
+    5:
+      name: Bonus Level 6
+      generators: $BigQBlock6L
+      objects: $BigQBlock6O
+      object_set: 14
+    6:
+      name: Bonus Level 7
+      generators: $BigQBlock7L
+      objects: $BigQBlock7O
+      object_set: 14
+    7:
+      name: Bonus Level 8
+      generators: $BigQBlock8L
+      objects: $BigQBlock8O
+      object_set: 14
+  ending_levels:
+    0:
+      name: End Level 1
+      generators: $W503_EndL
+      objects: $W503_EndO
+      object_set: 1
+    1:
+      name: End Level 2
+      generators: $W503_EndL
+      objects: $W503_EndO
+      object_set: 1
+    2:
+      name: End Level 3
+      generators: $W503_EndL
+      objects: $W503_EndO
+      object_set: 1
+    3:
+      name: End Level 4
+      generators: $GenericW4L
+      objects: $W503_EndO
+      object_set: 1
+    4:
+      name: Bonus Level 5
+      generators: $W503_EndL
+      objects: $W503_EndO
+      object_set: 1
+    5:
+      name: End Level 6
+      generators: $W503_EndL
+      objects: $W503_EndO
+      object_set: 1
+    6:
+      name: End Level 7
+      generators: $W503_EndL
+      objects: $W503_EndO
+      object_set: 1
+    7:
+      name: End Level 8
+      generators: $W503_EndL
+      objects: $W503_EndO
+      object_set: 1

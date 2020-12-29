@@ -1,3 +1,4 @@
+import qdarkstyle
 from PySide2.QtWidgets import (
     QButtonGroup,
     QCheckBox,
@@ -12,7 +13,6 @@ from PySide2.QtWidgets import (
     QComboBox,
 )
 
-from PySide2.QtGui import QIcon, QImage, QColor, Qt, QPixmap
 from PySide2.QtCore import QRect
 from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
 
@@ -29,12 +29,6 @@ from smb3parse.constants import (
     POWERUP_HAMMER,
 )
 
-load_settings()
-
-POWERUPS_NAME = 0
-POWERUPS_X = 1
-POWERUPS_Y = 2
-POWERUPS_VALUE = 3
 POWERUPS_PWING = 4
 POWERUPS = [
     ("Small Mario", 32, 53, 0, False),
@@ -53,9 +47,10 @@ png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
 
 
-class SettingsDialog(CustomDialog):
-    def __init__(self, parent=None):
+class SettingsDialog(Dialog):
+    def __init__(self, parent=None, sender=None):
         super(SettingsDialog, self).__init__(parent, "Settings")
+        self.sender = sender
 
         mouse_box = QGroupBox("Mouse", self)
         mouse_box.setLayout(QVBoxLayout())
@@ -77,8 +72,8 @@ class SettingsDialog(CustomDialog):
         self.lmb_radio = QRadioButton("Left Mouse Button")
         rmb_radio = QRadioButton("Right Mouse Button")
 
-        self.lmb_radio.setChecked(SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK)
-        rmb_radio.setChecked(SETTINGS["resize_mode"] == RESIZE_RIGHT_CLICK)
+        self.lmb_radio.setChecked(get_setting("resize_mode", RESIZE_LEFT_CLICK) == RESIZE_LEFT_CLICK)
+        rmb_radio.setChecked(get_setting("resize_mode", RESIZE_LEFT_CLICK) == RESIZE_RIGHT_CLICK)
 
         self.lmb_radio.toggled.connect(self._update_settings)
 
@@ -96,9 +91,30 @@ class SettingsDialog(CustomDialog):
 
         # emulator command
 
+        gui_style_box = QGroupBox("GUI", self)
+        gui_style = QHBoxLayout(gui_style_box)
+
+        self.retro_style_radio = QRadioButton("Retro")
+        dracula_style_radio = QRadioButton("Dracula")
+
+        self.retro_style_radio.setChecked(get_setting("gui_style", RETRO_STYLE_SET) == RETRO_STYLE_SET)
+        dracula_style_radio.setChecked(get_setting("gui_style", RETRO_STYLE_SET) == DRACULA_STYLE_SET)
+
+        self.retro_style_radio.toggled.connect(self._update_settings)
+
+        radio_style_group = QButtonGroup()
+        radio_style_group.addButton(self.retro_style_radio)
+        radio_style_group.addButton(dracula_style_radio)
+
+        gui_style.addWidget(QLabel("Style:"))
+        gui_style.addWidget(self.retro_style_radio)
+        gui_style.addWidget(dracula_style_radio)
+
+        # ----------------------------------
+
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText("Path to emulator")
-        self.emulator_command_input.setText(SETTINGS["instaplay_emulator"])
+        self.emulator_command_input.setText(get_setting("instaplay_emulator", ""))
 
         self.emulator_command_input.textChanged.connect(self._update_settings)
 
@@ -107,7 +123,7 @@ class SettingsDialog(CustomDialog):
 
         self.command_arguments_input = QLineEdit(self)
         self.command_arguments_input.setPlaceholderText("%f")
-        self.command_arguments_input.setText(SETTINGS["instaplay_arguments"])
+        self.command_arguments_input.setText(get_setting("instaplay_arguments", ""))
 
         self.command_arguments_input.textEdited.connect(self._update_settings)
 
@@ -148,21 +164,33 @@ class SettingsDialog(CustomDialog):
 
         layout = QVBoxLayout(self)
         layout.addWidget(mouse_box)
+        layout.addWidget(gui_style_box)
         layout.addWidget(command_box)
 
         self.update()
 
     def update(self):
-        self.command_label.setText(f" > {SETTINGS['instaplay_emulator']} {SETTINGS['instaplay_arguments']}")
+        self.command_label.setText(f" > {get_setting('instaplay_emulator', '')} {get_setting('instaplay_arguments', '')}")
 
     def _update_settings(self, _):
-        SETTINGS["instaplay_emulator"] = self.emulator_command_input.text()
-        SETTINGS["instaplay_arguments"] = self.command_arguments_input.text()
+        set_setting("instaplay_emulator", self.emulator_command_input.text())
+        set_setting("instaplay_arguments", self.command_arguments_input.text())
 
         if self.lmb_radio.isChecked():
-            SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
+            set_setting("resize_mode", RESIZE_LEFT_CLICK)
         else:
-            SETTINGS["resize_mode"] = RESIZE_RIGHT_CLICK
+            set_setting("resize_mode", RESIZE_RIGHT_CLICK)
+
+        if self.retro_style_radio.isChecked():
+            set_setting("gui_style", RETRO_STYLE_SET)
+        else:
+            set_setting("gui_style", DRACULA_STYLE_SET)
+
+        if get_setting("gui_style", RETRO_STYLE_SET) == DRACULA_STYLE_SET:
+            self.sender.setStyleSheet(qdarkstyle.load_stylesheet())
+        else:
+            self.setStyleSheet("")
+            self.sender.setStyleSheet("")
 
         SETTINGS["object_scroll_enabled"] = self._scroll_check_box.isChecked()
 
@@ -193,7 +221,3 @@ class SettingsDialog(CustomDialog):
         save_settings()
 
         super(SettingsDialog, self).on_exit()
-
-
-def show_settings():
-    SettingsDialog().exec_()

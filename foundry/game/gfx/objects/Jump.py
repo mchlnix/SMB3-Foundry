@@ -1,10 +1,12 @@
 from PySide2.QtCore import QRect
-
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
+from smb3parse.asm6_converter import to_hex
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 
+GROUND = 27
+SCREEN_HEIGHT = 15
+SCREEN_WIDTH = 16
 
-class Jump(ObjectLike):
+class Jump:
     POINTER_DOMAIN = 0b111
 
     SIZE = 3  # bytes
@@ -26,6 +28,14 @@ class Jump(ObjectLike):
         self.exit_action = data[1] & 0x0F
         # for some reason those are flipped, meaning 5678, 1234
         self.exit_horizontal = ((data[2] & 0xF) << 4) + (data[2] >> 4)
+
+    def to_asm6(self):
+        s = f"\t; Pointer on screen {to_hex(self.screen_index)}\n" \
+            f"\t.byte {to_hex(self.POINTER_DOMAIN << 5)} | {to_hex(self.screen_index)}, " \
+            f"{to_hex(self.exit_vertical << 4)} | {to_hex(self.exit_action)}, " \
+            f"{self.data[2]}" \
+            f"; Domain | Screen, Y Exit | Action, X Exit\n"
+        return s
 
     def to_bytes(self):
         return self.data
@@ -60,6 +70,9 @@ class Jump(ObjectLike):
 
     def render(self):
         pass
+
+    def __repr__(self):
+        return f"Jump({self.data})"
 
     def draw(self, dc, zoom, transparent):
         pass

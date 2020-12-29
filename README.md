@@ -52,18 +52,19 @@ Alternatively you can try the methods below.
 
 ### Windows
 
-1. You need to have at least Python3.6 installed. To do that, go to
-https://www.python.org/downloads. Make sure to tick the box "Add Python to
+1. You need to have at least [Python 3.8](https://www.python.org/downloads/). Make sure to tick the box "Add Python to
 Path"!
-2. You need to install the Qt for Python GUI framework. To do that, open a command
-prompt (search cmd in Windows) and type in `pip install PySide2`. This should work automatically.
-3. Click on smb3-foundry.py and the level editor should open up, asking you to
-select the ROM you want to load. Preferably the US version of SMB3 or a Hack
-based on it.
+
+2. Many packages are required in order to properly run the editor.  Open a `command prompt` and type 
+`pip install -r /path/to/requirements.txt` and press `enter`.  This should install all the required packages.
+
+3 . Run `path/smb3-foundry.py`. Select a `ROM` of `Super Mario Bros. 3` and you are set!
 
 ### Linux
 
-1. The `python3` package should already be installed on your system. If not then do it using your distributions package manager.
-2. Install `python3-pip` using the package manager as well.
-3. Install the GUI framework, using `pip3 install PySide2`.
-4. You can start the level editor using `python3 smb3-foundry.py` using the terminal.
+1. Install `python3-pip` using the `package manager`.
+
+2. Install the GUI framework, using `pip3 install -r path/to/requirements.txt`.
+
+3. You can start the level editor using `python3 path/smb3-foundry.py` using the terminal.  Select a `ROM` of 
+`Super Mario Bros. 3` and you are set!

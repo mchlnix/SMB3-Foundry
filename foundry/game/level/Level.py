@@ -2,18 +2,22 @@ from typing import List, Optional, Tuple, Union, overload
 
 from PySide2.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
+from foundry.game.Data import Mario3Level
 from foundry.game.File import ROM
-from foundry.game.ObjectSet import ObjectSet
+from foundry.game.Tileset import Tileset
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from foundry.gui.UndoStack import UndoStack
 from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset
 from smb3parse.levels.level_header import LevelHeader
+from foundry.game.Rect import Rect
+from smb3parse.asm6_converter import to_hex
+
 
 LEVEL_POINTER_OFFSET = Level_TilesetIdx_ByTileset
 
@@ -48,23 +52,26 @@ class Level(LevelLike):
 
     HEADER_LENGTH = 9  # bytes
 
-    def __init__(self, level_name: str, layout_address: int, enemy_data_offset: int, object_set_number: int):
+    def __init__(self, level_name: str, layout_address: int, enemy_data_offset: int, object_set_number: int, qt=True):
         super(Level, self).__init__(object_set_number, layout_address)
 
-        self._signal_emitter = LevelSignaller()
+        self.qt = qt
+        if qt:
+            self._signal_emitter = LevelSignaller()
 
         self.attached_to_rom = True
 
-        self.object_set = ObjectSet(object_set_number)
+        self.object_set = Tileset(self.object_set_number)
 
-        self.undo_stack = UndoStack()
+        if qt:
+            self.undo_stack = UndoStack()
 
         self.name = level_name
 
         self.header_offset = layout_address
         self.enemy_offset = enemy_data_offset
 
-        self.objects: List[LevelObject] = []
+        self.objects: List[LevelObjectController] = []
         self.jumps: List[Jump] = []
         self.enemies: List[EnemyObject] = []
 
@@ -75,22 +82,33 @@ class Level(LevelLike):
 
         self.object_offset = self.header_offset + Level.HEADER_LENGTH
 
-        object_data = ROM.rom_data[self.object_offset :]
-        enemy_data = ROM.rom_data[self.enemy_offset :]
+        object_data = ROM().rom_data[self.object_offset :]
+        enemy_data = ROM().rom_data[self.enemy_offset :]
 
         self._load_level_data(object_data, enemy_data)
 
         self.changed = False
 
     def _load_level_data(self, object_data: bytearray, enemy_data: bytearray, new_level: bool = True):
+        self.object_factory = LevelObjectFactory(
+            object_set=self.object_set_number,
+            graphic_set=self.header.graphic_set_index,
+            palette_group_index=self.header.object_palette_index,
+            objects_ref=[],
+            vertical_level=bool(self.header.is_vertical),
+            render=self.qt
+        )
+        self.enemy_item_factory = EnemyItemFactory(self.object_set_number, self.header.enemy_palette_index)
+
         self._load_objects(object_data)
         self._load_enemies(enemy_data)
 
         if new_level:
             self._update_level_size()
 
-            self.undo_stack.clear(self.to_bytes())
-            self._signal_emitter.data_changed.emit()
+            if self.qt:
+                self.undo_stack.clear(self.to_bytes())
+                self._signal_emitter.data_changed.emit()
 
     @property
     def width(self):
@@ -102,11 +120,15 @@ class Level(LevelLike):
 
     @property
     def data_changed(self):
-        return self._signal_emitter.data_changed
+        if self.qt:
+            return self._signal_emitter.data_changed
+        return False
 
     @property
     def jumps_changed(self):
-        return self._signal_emitter.jumps_changed
+        if self.qt:
+            return self._signal_emitter.jumps_changed
+        return False
 
     def reload(self):
         (_, header_and_object_data), (_, enemy_data) = self.to_bytes()
@@ -150,7 +172,10 @@ class Level(LevelLike):
 
         self.size = self.header.width, self.header.height
 
-        self.data_changed.emit()
+        self.changed = True
+
+        if self.qt:
+            self.data_changed.emit()
 
     def _load_enemies(self, data: bytearray):
         self.enemies.clear()
@@ -183,7 +208,7 @@ class Level(LevelLike):
             domain = (obj_data[0] & 0b1110_0000) >> 5
 
             obj_id = obj_data[2]
-            has_length_byte = self.object_set.get_object_byte_length(domain, obj_id) == 4
+            has_length_byte = self.object_set.get_generator_byte_length(domain, obj_id) == 4
 
             if has_length_byte:
                 fourth_byte, data = data[0], data[1:]
@@ -191,7 +216,7 @@ class Level(LevelLike):
 
             level_object = self.object_factory.from_data(obj_data, len(self.objects))
 
-            if isinstance(level_object, LevelObject):
+            if isinstance(level_object, LevelObjectController):
                 self.objects.append(level_object)
             elif isinstance(level_object, Jump):
                 self.jumps.append(level_object)
@@ -210,7 +235,7 @@ class Level(LevelLike):
     def get_rect(self, block_length: int = 1):
         width, height = self.size
 
-        return QRect(QPoint(0, 0), QSize(width, height) * block_length)
+        return Rect(QPoint(0, 0), QSize(width, height) * block_length)
 
     def attach_to_rom(self, header_offset: int, enemy_item_offset: int):
         self.header_offset = header_offset
@@ -475,29 +500,29 @@ class Level(LevelLike):
     def too_many_enemies_or_items(self):
         return self.current_enemies_size() > self.enemy_size_on_disk
 
-    def get_all_objects(self) -> List[Union[LevelObject, EnemyObject]]:
+    def get_all_objects(self) -> List[Union[LevelObjectController, EnemyObject]]:
         return self.objects + self.enemies
 
     def get_object_names(self):
         return [obj.description for obj in self.get_all_objects()]
 
-    def object_at(self, x: int, y: int) -> Optional[Union[EnemyObject, LevelObject]]:
+    def object_at(self, x: int, y: int) -> Optional[Union[EnemyObject, LevelObjectController]]:
         for obj in reversed(self.get_all_objects()):
             if (x, y) in obj:
                 return obj
         else:
             return None
 
-    def bring_to_foreground(self, objects: List[Union[LevelObject, EnemyObject]]):
+    def bring_to_foreground(self, objects: List[Union[LevelObjectController, EnemyObject]]):
         for obj in objects:
             intersecting_objects = self.get_intersecting_objects(obj)
 
-            object_currently_in_the_foreground: Union[LevelObject, EnemyObject] = intersecting_objects[-1]
+            object_currently_in_the_foreground: Union[LevelObjectController, EnemyObject] = intersecting_objects[-1]
 
             if obj is object_currently_in_the_foreground:
                 continue
 
-            if isinstance(obj, LevelObject):
+            if isinstance(obj, LevelObjectController):
                 objects = self.objects
             elif isinstance(obj, EnemyObject):
                 objects = self.enemies
@@ -508,16 +533,16 @@ class Level(LevelLike):
 
             objects.insert(index, obj)
 
-    def bring_to_background(self, level_objects: List[Union[LevelObject, EnemyObject]]):
+    def bring_to_background(self, level_objects: List[Union[LevelObjectController, EnemyObject]]):
         for obj in level_objects:
             intersecting_objects = self.get_intersecting_objects(obj)
 
-            object_currently_in_the_background: Union[LevelObject, EnemyObject] = intersecting_objects[0]
+            object_currently_in_the_background: Union[LevelObjectController, EnemyObject] = intersecting_objects[0]
 
             if obj is object_currently_in_the_background:
                 continue
 
-            if isinstance(obj, LevelObject):
+            if isinstance(obj, LevelObjectController):
                 objects = self.objects
             elif isinstance(obj, EnemyObject):
                 objects = self.enemies
@@ -531,7 +556,7 @@ class Level(LevelLike):
             objects.insert(index, obj)
 
     @overload
-    def get_intersecting_objects(self, obj: LevelObject) -> List[LevelObject]:
+    def get_intersecting_objects(self, obj: LevelObjectController) -> List[LevelObjectController]:
         ...
 
     @overload
@@ -539,8 +564,8 @@ class Level(LevelLike):
         ...
 
     def get_intersecting_objects(
-        self, obj: Union[LevelObject, EnemyObject]
-    ) -> Union[List[LevelObject], List[EnemyObject]]:
+        self, obj: Union[LevelObjectController, EnemyObject]
+    ) -> Union[List[LevelObjectController], List[EnemyObject]]:
         """
         Returns all objects of the same type, that overlap the rectangle of the given object, including itself. The
         objects are in the order, that they appear in, in memory, meaning back to front.
@@ -548,7 +573,7 @@ class Level(LevelLike):
         :param obj: The object to check overlaps for.
         :return:
         """
-        if isinstance(obj, LevelObject):
+        if isinstance(obj, LevelObjectController):
             objects_to_check = self.objects
         elif isinstance(obj, EnemyObject):
             objects_to_check = self.enemies
@@ -566,11 +591,11 @@ class Level(LevelLike):
     def draw(self, *_):
         pass
 
-    def paste_object_at(self, x: int, y: int, obj: Union[EnemyObject, LevelObject]) -> Union[EnemyObject, LevelObject]:
+    def paste_object_at(self, x: int, y: int, obj: Union[EnemyObject, LevelObjectController]) -> Union[EnemyObject, LevelObjectController]:
         if isinstance(obj, EnemyObject):
             return self.add_enemy(obj.obj_index, x, y)
 
-        elif isinstance(obj, LevelObject):
+        elif isinstance(obj, LevelObjectController):
             if obj.is_4byte:
                 length: Optional[int] = obj.data[3]
             else:
@@ -586,12 +611,12 @@ class Level(LevelLike):
         self.add_enemy(0x72, x, y, len(self.enemies))
 
     def add_object(
-        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int = -1
-    ) -> LevelObject:
-        if index == -1:
+        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int = -1, overflow: int = None
+    ) -> LevelObjectController:
+        if index == -1 or index is None:
             index = len(self.objects)
 
-        obj = self.object_factory.from_properties(domain, object_index, x, y, length, index)
+        obj = self.object_factory.from_properties(domain, object_index, x, y, length, index, overflow=overflow)
         self.objects.insert(index, obj)
 
         return obj
@@ -618,8 +643,8 @@ class Level(LevelLike):
 
         self.data_changed.emit()
 
-    def index_of(self, obj: Union[EnemyObject, LevelObject]) -> int:
-        if isinstance(obj, LevelObject):
+    def index_of(self, obj: Union[EnemyObject, LevelObjectController]) -> int:
+        if isinstance(obj, LevelObjectController):
             return self.objects.index(obj)
         elif isinstance(obj, EnemyObject):
             return len(self.objects) + self.enemies.index(obj)
@@ -632,14 +657,49 @@ class Level(LevelLike):
         else:
             return self.enemies[index % len(self.objects)]
 
-    def remove_object(self, obj: Union[EnemyObject, LevelObject]):
+    def remove_object(self, obj: Union[EnemyObject, LevelObjectController]):
         if obj is None:
             return
 
-        if isinstance(obj, LevelObject):
+        if isinstance(obj, LevelObjectController):
             self.objects.remove(obj)
         elif isinstance(obj, EnemyObject):
             self.enemies.remove(obj)
+
+        self.changed = True
+
+    def to_asm6(self) -> str:
+        s = f"; {self.name}\n; Object Set {self.object_set_number}\n" \
+            f"{self.name}_generators:\n" \
+            f"{self.asm6_level_header(f'{self.name}')}\n{self.asm6_level_objects()}\n" \
+            f"{self.name}_objects:\n{self.asm6_level_enemies()}"
+        return s
+
+    @property
+    def next_level(self):
+        return self.header.next_level
+
+    @next_level.setter
+    def next_level(self, level):
+        self.header.next_level = level
+
+    def asm6_level_header(self, name):
+        return self.header.to_asm6(name)
+
+    def asm6_level_objects(self):
+        s = ""
+        for obj in self.objects + self.jumps:
+            s = f"{s}{obj.to_asm6()}"
+        s = f"{s}\t.byte $FF"
+        return s
+
+    def asm6_level_enemies(self):
+        s = ""
+        for obj in self.enemies:
+            b = obj.to_bytes()
+            s = f"{s}\t.byte {to_hex(b[0])}, {to_hex(b[1])}, {to_hex(b[2])}; {obj.description}\n"
+        s = f"{s}\t.byte $FF"
+        return s
 
     def to_m3l(self) -> bytearray:
         world_number = level_number = 1
@@ -669,7 +729,7 @@ class Level(LevelLike):
 
     def from_m3l(self, m3l_bytes: bytearray):
         world_number, level_number, self.object_set_number = m3l_bytes[:3]
-        self.object_set = ObjectSet(self.object_set_number)
+        self.object_set = Tileset(self.object_set_number)
 
         self.header_offset = self.enemy_offset = 0
 
@@ -725,13 +785,19 @@ class Level(LevelLike):
 
         return (self.header_offset, data), (self.enemy_offset, enemies)
 
-    def from_bytes(self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray], new_level=True):
+    def to_bytes_joined(self) -> list:
+        """Combines bytes of both generators and objects into one"""
+        gens, objs = self.to_bytes()
+        data = list(gens[1] + objs[1])
+        return data
+
+    def from_bytes(self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray], new_level=True, qt=False):
 
         self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data
 
-        self.header_bytes = object_bytes[0 : Level.HEADER_LENGTH]
-        objects = object_bytes[Level.HEADER_LENGTH :]
+        self.header_bytes = object_bytes[0: Level.HEADER_LENGTH]
+        objects = object_bytes[Level.HEADER_LENGTH:]
 
         self._parse_header()
         self._load_level_data(objects, enemies, new_level)

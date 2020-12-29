@@ -1,4 +1,4 @@
-from smb3parse.levels import WORLD_COUNT
+from foundry.core.util import WORLD_COUNT
 from smb3parse.levels.world_map import WorldMap
 from smb3parse.constants import TILE_CASTLE_BOTTOM
 

@@ -14,7 +14,7 @@ def level_view(main_window, qtbot):
 
 
 @pytest.mark.parametrize(
-    "coordinates, obj_index, domain, object_set_number",
+    "coordinates, obj_index, domain, index",
     [
         ((0, 0), 0x03, 0x00, PLAINS_OBJECT_SET),  # background symbols
         ((361, 283), 0xE2, 0x00, PLAINS_OBJECT_SET),  # background cloud

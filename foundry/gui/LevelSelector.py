@@ -20,7 +20,7 @@ from foundry.game.level.Level import Level
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldMapView import WorldMapView
-from smb3parse.levels import WORLD_COUNT
+from foundry.core.util import WORLD_COUNT
 
 WORLD_ITEMS = [
     "World Maps",
@@ -246,8 +246,8 @@ class WorldMapLevelSelect(QScrollArea):
     def mouseMoveEvent(self, event: QMouseEvent):
         x, y = self.world_view.mapFromParent(event.pos()).toTuple()
 
-        x //= Block.WIDTH * 2
-        y //= Block.HEIGHT * 2
+        x //= Block.image_length * 2
+        y //= Block.image_length * 2
 
         try:
             level_info = self.world.level_at_position(x, y)
@@ -280,8 +280,8 @@ class WorldMapLevelSelect(QScrollArea):
     def mouseReleaseEvent(self, event: QMouseEvent):
         x, y = self.world_view.mapFromParent(event.pos()).toTuple()
 
-        x //= Block.WIDTH * 2
-        y //= Block.HEIGHT * 2
+        x //= Block.image_length * 2
+        y //= Block.image_length * 2
 
         try:
             level_info = self.world.level_at_position(x, y)

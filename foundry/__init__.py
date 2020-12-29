@@ -4,11 +4,13 @@ import urllib.error
 from pathlib import Path
 
 from PySide2.QtCore import QUrl
-from PySide2.QtGui import QDesktopServices, QIcon
+from PySide2.QtGui import QDesktopServices
 
 root_dir = Path(__file__).parent.parent
 
 data_dir = root_dir.joinpath("data")
+
+log_dir = data_dir.joinpath("logs")
 
 icon_dir = data_dir.joinpath("icons")
 
@@ -52,12 +54,13 @@ def get_latest_version_name(timeout: int = 10) -> str:
 
 
 def icon(icon_name: str):
+    from foundry.gui.QIcon.Icon import Icon
     icon_path = icon_dir / icon_name
     data_path = data_dir / icon_name
 
     if icon_path.exists():
-        return QIcon(str(icon_path))
+        return Icon.from_filename(str(icon_path))
     elif data_path.exists():
-        return QIcon(str(data_path))
+        return Icon.from_filename(str(data_path))
     else:
         raise FileNotFoundError(icon_path)

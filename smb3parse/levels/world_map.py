@@ -23,31 +23,15 @@ from smb3parse.constants import (
     TILE_STAR_2,
 )
 from smb3parse.levels import (
-    BASE_OFFSET,
-    COMPLETABLE_LIST_END_MARKER,
-    COMPLETABLE_TILES_LIST,
-    ENEMY_BASE_OFFSET,
-    FIRST_VALID_ROW,
-    LAYOUT_LIST_OFFSET,
-    LEVELS_IN_WORLD_LIST_OFFSET,
-    LEVEL_ENEMY_LIST_OFFSET,
-    LEVEL_X_POS_LISTS,
-    LEVEL_Y_POS_LISTS,
     LevelBase,
-    OFFSET_BY_OBJECT_SET_A000,
-    OFFSET_SIZE,
-    SPECIAL_ENTERABLE_TILES_LIST,
-    SPECIAL_ENTERABLE_TILE_AMOUNT,
-    STRUCTURE_DATA_OFFSETS,
-    TILE_ATTRIBUTES_TS0_OFFSET,
-    VALID_COLUMNS,
-    VALID_ROWS,
-    WORLD_COUNT,
-    WORLD_MAP_BASE_OFFSET,
-    WORLD_MAP_HEIGHT,
-    WORLD_MAP_SCREEN_SIZE,
-    WORLD_MAP_SCREEN_WIDTH,
 )
+from foundry.core.util import ROM_HEADER_OFFSET, PAGE_A_BY_TILESET, WORLD_COUNT, WORLD_MAP_HEIGHT, SCREEN_WIDTH, \
+    WORLD_DATA_OFFSET, WORLD_BLOCK_ATTRIBUTES_OFFSET, WORLD_SCREEN_LEVEL_POINTER_POINTER, \
+    WORLD_LEVEL_Y_POSITIONS_POINTER, WORLD_LEVEL_X_POSITIONS_POINTER, WORLD_LEVEL_OBJECT_POINTER_POINTER, \
+    WORLD_LEVEL_GENERATOR_POINTER_POINTER, WORLD_VALID_LEVEL_Y_POSITIONS, WORLD_VALID_LEVEL_X_POSITIONS, \
+    WORLD_COMPLETABLE_BLOCKS, WORLD_COMPLETABLE_BLOCKS_END, WORLD_SPECIAL_ENTERABLE_BLOCKS, \
+    WORLD_SPECIAL_ENTERABLE_BLOCKS_COUNT, WORLD_MAP_SCREEN_SIZE, WORD_BYTE_SIZE, OBJECT_BASE_OFFSET, \
+    WORLD_LAYOUT_LIST_OFFSET, WORLD_MIN_Y_POSITION
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
 from smb3parse.levels.level import Level
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
@@ -77,7 +61,7 @@ TILE_NAMES.update(
 
 
 def list_world_map_addresses(rom: Rom) -> List[int]:
-    offsets = rom.read(LAYOUT_LIST_OFFSET, WORLD_COUNT * OFFSET_SIZE)
+    offsets = rom.read(WORLD_LAYOUT_LIST_OFFSET, WORLD_COUNT * WORD_BYTE_SIZE)
 
     addresses = []
 
@@ -86,7 +70,7 @@ def list_world_map_addresses(rom: Rom) -> List[int]:
 
         world_map_offset = (offsets[index + 1] << 8) + offsets[index]
 
-        addresses.append(WORLD_MAP_BASE_OFFSET + world_map_offset)
+        addresses.append(WORLD_DATA_OFFSET + world_map_offset)
 
     return addresses
 
@@ -109,7 +93,7 @@ class WorldMap(LevelBase):
         width           The width of the world map in blocks across all scenes.
         height          The height of the world map, always 9 blocks.
 
-        object_set      An ObjectSet object for the world map object set.
+        object_set      An Tileset object for the world map object set.
         screen_count    How many screens this world map spans.
     """
 
@@ -142,7 +126,7 @@ class WorldMap(LevelBase):
             )
 
         self.screen_count = len(self.layout_bytes) // WORLD_MAP_SCREEN_SIZE
-        self.width = int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
+        self.width = int(self.screen_count * SCREEN_WIDTH)
 
         self._parse_structure_data_block(rom)
 
@@ -155,19 +139,19 @@ class WorldMap(LevelBase):
         return self.level_count_s1 + self.level_count_s2 + self.level_count_s3 + self.level_count_s4
 
     def _parse_structure_data_block(self, rom: Rom):
-        structure_block_offset = rom.little_endian(STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.world_index)
+        structure_block_offset = rom.little_endian(WORLD_SCREEN_LEVEL_POINTER_POINTER + WORD_BYTE_SIZE * self.world_index)
 
-        self.structure_block_start = WORLD_MAP_BASE_OFFSET + structure_block_offset
+        self.structure_block_start = WORLD_DATA_OFFSET + structure_block_offset
 
         # the indexes into the y_pos list, where the levels for the n-th screen start
         y_pos_start_by_screen = rom.read(self.structure_block_start, 4)
 
-        level_y_pos_list_start = WORLD_MAP_BASE_OFFSET + rom.little_endian(
-            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
+        level_y_pos_list_start = WORLD_DATA_OFFSET + rom.little_endian(
+            WORLD_LEVEL_Y_POSITIONS_POINTER + WORD_BYTE_SIZE * self.world_index
         )
 
-        level_x_pos_list_start = WORLD_MAP_BASE_OFFSET + rom.little_endian(
-            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
+        level_x_pos_list_start = WORLD_DATA_OFFSET + rom.little_endian(
+            WORLD_LEVEL_X_POSITIONS_POINTER + WORD_BYTE_SIZE * self.world_index
         )
 
         level_y_pos_list_end = level_x_pos_list_start - level_y_pos_list_start
@@ -224,12 +208,12 @@ class WorldMap(LevelBase):
         correct_row_value = self._rom.int(row_address)
         object_set_number = correct_row_value & 0x0F
 
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
+        object_set_offset = (self._rom.int(PAGE_A_BY_TILESET + object_set_number) * 2 - 10) * 0x1000
 
         absolute_level_address = 0x0010 + object_set_offset + level_offset
 
         # get enemy address
-        enemy_address = ENEMY_BASE_OFFSET + self._rom.little_endian(enemy_offset_address)
+        enemy_address = OBJECT_BASE_OFFSET + self._rom.little_endian(enemy_offset_address)
 
         return object_set_number, absolute_level_address, enemy_address
 
@@ -247,18 +231,18 @@ class WorldMap(LevelBase):
             screen, row, column
         )
 
-        row_value = ((row + FIRST_VALID_ROW) << 4) + object_set_number
+        row_value = ((row + WORLD_MIN_Y_POSITION) << 4) + object_set_number
         self._rom.write(row_address, bytes([row_value]))
 
         column_value = ((screen - 1) << 4) + column
         self._rom.write(column_address, bytes([column_value]))
 
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
-        level_offset = level_address - object_set_offset - BASE_OFFSET
+        object_set_offset = (self._rom.int(PAGE_A_BY_TILESET + object_set_number) * 2 - 10) * 0x1000
+        level_offset = level_address - object_set_offset - ROM_HEADER_OFFSET
 
         self._rom.write_little_endian(level_offset_address, level_offset)
 
-        enemy_offset = enemy_address - BASE_OFFSET
+        enemy_offset = enemy_address - ROM_HEADER_OFFSET
 
         self._rom.write_little_endian(enemy_offset_address, enemy_offset)
 
@@ -272,12 +256,12 @@ class WorldMap(LevelBase):
         :return: The memory addresses of the row, column and level offset position.
         """
 
-        level_y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
-            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
+        level_y_pos_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(
+            WORLD_LEVEL_Y_POSITIONS_POINTER + WORD_BYTE_SIZE * self.world_index
         )
 
-        level_x_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
-            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
+        level_x_pos_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(
+            WORLD_LEVEL_X_POSITIONS_POINTER + WORD_BYTE_SIZE * self.world_index
         )
 
         row_amount = col_amount = level_x_pos_list_start - level_y_pos_list_start
@@ -291,7 +275,7 @@ class WorldMap(LevelBase):
             value = self._rom.int(level_y_pos_list_start + row_index)
 
             # adjust the value, so that we ignore the black border tiles around the map
-            row = (value >> 4) - FIRST_VALID_ROW
+            row = (value >> 4) - WORLD_MIN_Y_POSITION
 
             if row == player_row:
                 break
@@ -312,15 +296,15 @@ class WorldMap(LevelBase):
         col_position = level_x_pos_list_start + col_index
 
         # get level offset
-        level_list_offset_position = LEVELS_IN_WORLD_LIST_OFFSET + self.world_index * OFFSET_SIZE
-        level_list_address = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(level_list_offset_position)
+        level_list_offset_position = WORLD_LEVEL_GENERATOR_POINTER_POINTER + self.world_index * WORD_BYTE_SIZE
+        level_list_address = WORLD_DATA_OFFSET + self._rom.little_endian(level_list_offset_position)
 
-        level_offset_position = level_list_address + OFFSET_SIZE * col_index
+        level_offset_position = level_list_address + WORD_BYTE_SIZE * col_index
 
-        enemy_list_start_offset = LEVEL_ENEMY_LIST_OFFSET + self.world_index * OFFSET_SIZE
-        enemy_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(enemy_list_start_offset)
+        enemy_list_start_offset = WORLD_LEVEL_OBJECT_POINTER_POINTER + self.world_index * WORD_BYTE_SIZE
+        enemy_list_start = WORLD_DATA_OFFSET + self._rom.little_endian(enemy_list_start_offset)
 
-        enemy_offset_position = enemy_list_start + col_index * OFFSET_SIZE
+        enemy_offset_position = enemy_list_start + col_index * WORD_BYTE_SIZE
 
         return row_position, col_position, level_offset_position, enemy_offset_position
 
@@ -345,12 +329,12 @@ class WorldMap(LevelBase):
         :param column:
         :return:
         """
-        if row + FIRST_VALID_ROW not in VALID_ROWS:
+        if row + WORLD_MIN_Y_POSITION not in WORLD_VALID_LEVEL_Y_POSITIONS:
             raise ValueError(
-                f"Given row {row} is outside the valid range for world maps. First valid row is " f"{FIRST_VALID_ROW}."
+                f"Given row {row} is outside the valid range for world maps. First valid row is " f"{WORLD_MIN_Y_POSITION}."
             )
 
-        if column not in VALID_COLUMNS:
+        if column not in WORLD_VALID_LEVEL_X_POSITIONS:
             raise ValueError(
                 f"Given column {column} is outside the valid range for world maps. Remember the black " f"border."
             )
@@ -358,7 +342,7 @@ class WorldMap(LevelBase):
         if screen - 1 not in range(self.screen_count):
             raise ValueError(f"World {self.number} has {self.screen_count} screens. " f"Given number {screen} invalid.")
 
-        return self.layout_bytes[(screen - 1) * WORLD_MAP_SCREEN_SIZE + row * WORLD_MAP_SCREEN_WIDTH + column]
+        return self.layout_bytes[(screen - 1) * WORLD_MAP_SCREEN_SIZE + row * SCREEN_WIDTH + column]
 
     def is_enterable(self, tile_index: int) -> bool:
         """
@@ -384,7 +368,7 @@ class WorldMap(LevelBase):
         """
         for screen in range(1, self.screen_count + 1):
             for row in range(WORLD_MAP_HEIGHT):
-                for column in range(WORLD_MAP_SCREEN_WIDTH):
+                for column in range(SCREEN_WIDTH):
                     yield WorldMapPosition(self, screen, row, column)
 
     def gen_levels(self):
@@ -414,14 +398,14 @@ class WorldMap(LevelBase):
 
 
 def _get_normal_enterable_tiles(rom: Rom) -> bytearray:
-    return rom.read(TILE_ATTRIBUTES_TS0_OFFSET, 4)
+    return rom.read(WORLD_BLOCK_ATTRIBUTES_OFFSET, 4)
 
 
 def _get_special_enterable_tiles(rom: Rom) -> bytearray:
-    return rom.read(SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
+    return rom.read(WORLD_SPECIAL_ENTERABLE_BLOCKS, WORLD_SPECIAL_ENTERABLE_BLOCKS_COUNT)
 
 
 def _get_completable_tiles(rom: Rom) -> bytearray:
-    completable_tile_amount = rom.find(COMPLETABLE_LIST_END_MARKER, COMPLETABLE_TILES_LIST) - COMPLETABLE_TILES_LIST
+    completable_tile_amount = rom.find(WORLD_COMPLETABLE_BLOCKS_END, WORLD_COMPLETABLE_BLOCKS) - WORLD_COMPLETABLE_BLOCKS
 
-    return rom.read(COMPLETABLE_TILES_LIST, completable_tile_amount)
+    return rom.read(WORLD_COMPLETABLE_BLOCKS, completable_tile_amount)

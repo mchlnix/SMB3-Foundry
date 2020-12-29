@@ -4,7 +4,7 @@ from PySide2.QtCore import Qt, Signal, SignalInstance
 from PySide2.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.gui.ObjectToolBox import ObjectIcon
 from foundry.gui.TabbedToolBox import TabbedToolBox
@@ -56,11 +56,11 @@ class ObjectToolBar(QWidget):
 
         self.object_selected.emit(object_icon.object)
 
-    def select_object(self, level_object: Union[LevelObject, EnemyObject]):
+    def select_object(self, level_object: Union[LevelObjectController, EnemyObject]):
         self.tool_box.select_object(level_object)
 
         self.current_object_icon.set_object(level_object)
         self.current_object_name.setText(level_object.description)
 
-    def add_recent_object(self, level_object: Union[EnemyObject, LevelObject]):
+    def add_recent_object(self, level_object: Union[EnemyObject, LevelObjectController]):
         self.tool_box.add_recent_object(level_object)

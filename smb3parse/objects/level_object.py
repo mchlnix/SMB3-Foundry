@@ -1,4 +1,4 @@
-from smb3parse.levels import DEFAULT_HORIZONTAL_HEIGHT
+from foundry.core.util import LEVEL_BASE_HEIGHT
 from smb3parse.objects import InLevelObject
 
 
@@ -12,9 +12,9 @@ class LevelObject(InLevelObject):
         self.domain = data[0] >> 5
         self.y = data[0] & 0b0001_1111
 
-        if self.y > DEFAULT_HORIZONTAL_HEIGHT:
+        if self.y > LEVEL_BASE_HEIGHT:
             raise ValueError(
-                f"Data designating y value cannot be higher than {DEFAULT_HORIZONTAL_HEIGHT}, was {self.y}."
+                f"Data designating y value cannot be higher than {LEVEL_BASE_HEIGHT}, was {self.y}."
             )
 
         self.id = data[1]

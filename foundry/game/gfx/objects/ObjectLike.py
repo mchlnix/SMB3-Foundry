@@ -1,6 +1,10 @@
 import abc
+from dataclasses import dataclass
 
 from PySide2.QtCore import QRect
+from foundry.core.geometry.Size.Size import Size
+from foundry.core.geometry.Position.Position import Position
+from foundry.game.Rect import Rect
 
 EXPANDS_NOT = 0b00
 EXPANDS_HORIZ = 0b01
@@ -8,14 +12,12 @@ EXPANDS_VERT = 0b10
 EXPANDS_BOTH = EXPANDS_HORIZ | EXPANDS_VERT
 
 
+@dataclass
 class ObjectLike(abc.ABC):
-    obj_index: int
-    domain: int
-    description: str
-
-    rect: QRect
-
-    is_4byte: bool
+    obj_index: int = 0
+    domain: int = 0
+    description: str = ""
+    rect: QRect = QRect()
 
     @abc.abstractmethod
     def render(self):
@@ -30,11 +32,11 @@ class ObjectLike(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def set_position(self, x, y):
+    def set_position(self, pos):
         pass
 
     @abc.abstractmethod
-    def move_by(self, dx, dy):
+    def move_by(self, pos):
         pass
 
     @abc.abstractmethod
@@ -50,18 +52,8 @@ class ObjectLike(abc.ABC):
         pass
 
     def get_rect(self, block_length=1) -> QRect:
-        if block_length != 1:
-            x, y = self.rect.topLeft().toTuple()
-            w, h = self.rect.size().toTuple()
-
-            x *= block_length
-            w *= block_length
-            y *= block_length
-            h *= block_length
-
-            return QRect(x, y, w, h)
-        else:
-            return self.rect
+        """Scales the rect to the correct dimensions"""
+        return Rect.scale_from(Rect.from_qrect(self.rect), block_length)
 
     @abc.abstractmethod
     def change_type(self, new_type):
@@ -80,3 +72,9 @@ class ObjectLike(abc.ABC):
 
     def primary_expansion(self):
         return EXPANDS_NOT
+
+    @staticmethod
+    def in_bounds(pos):
+        pos.x = max(pos.x, 0)
+        pos.y = max(pos.y, 0)
+        return pos

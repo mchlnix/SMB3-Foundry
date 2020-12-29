@@ -4,12 +4,12 @@ from PySide2.QtCore import QPoint, QSize
 from PySide2.QtGui import QPaintEvent, QPainter
 from PySide2.QtWidgets import QComboBox, QHBoxLayout, QLayout, QStatusBar, QToolBar, QVBoxLayout, QWidget
 
-from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
+from foundry.game.gfx.PatternTableHandler import GRAPHIC_SET_NAMES
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObjectController import LevelObjectController
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from foundry.gui.CustomChildWindow import CustomChildWindow
+from foundry.gui.QMainWindow.ChildWindow import ChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
 from foundry.gui.util import clear_layout
@@ -25,7 +25,7 @@ MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
 
 
-class ObjectViewer(CustomChildWindow):
+class ObjectViewer(ChildWindow):
     def __init__(self, parent):
         super(ObjectViewer, self).__init__(parent, title="Object Viewer")
 
@@ -81,11 +81,8 @@ class ObjectViewer(CustomChildWindow):
 
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
-        return
-
-    def set_object_and_graphic_set(self, object_set: int, graphics_set: int):
-        self.object_set_dropdown.setCurrentIndex(object_set - 1)
-        self.graphic_set_dropdown.setCurrentIndex(graphics_set)
+    def on_object_set(self):
+        self.object_set = self.object_set_dropdown.currentIndex() + 1
 
         self.drawing_area.change_object_set(object_set)
         self.drawing_area.change_graphic_set(graphics_set)
@@ -167,10 +164,10 @@ class ObjectDrawArea(QWidget):
             QSize(self.current_object.rendered_width * Block.WIDTH, self.current_object.rendered_height * Block.HEIGHT)
         )
 
-    def update_object(self, object_data: Union[bytearray, LevelObject, Jump] = None):
+    def update_object(self, object_data: Union[bytearray, LevelObjectController, Jump] = None):
         if object_data is None:
             object_data = self.current_object.data
-        elif isinstance(object_data, (LevelObject, Jump)):
+        elif isinstance(object_data, (LevelObjectController, Jump)):
             object_data = object_data.data
 
         self.current_object = self.object_factory.from_data(object_data, 0)
@@ -194,7 +191,7 @@ class ObjectDrawArea(QWidget):
 
 
 class BlockArray(QWidget):
-    def __init__(self, parent, level_object: LevelObject):
+    def __init__(self, parent, level_object: "LevelObject"):
         super(BlockArray, self).__init__(parent)
 
         self.setLayout(QHBoxLayout())
@@ -207,7 +204,7 @@ class BlockArray(QWidget):
 
         self.update_object(level_object)
 
-    def update_object(self, level_object: LevelObject):
+    def update_object(self, level_object: "LevelObject"):
         self.level_object = level_object
 
         clear_layout(self.layout())
