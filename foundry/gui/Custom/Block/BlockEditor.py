@@ -134,8 +134,9 @@ class BlockEditor(Widget, AbstractActionObject):
                 """The inner function"""
                 old_pattern = self.tsa_data[self.index + (index * 0x100)]
                 if new_pattern != old_pattern:
-                    self.tsa_data[self.index + (index * 0x100)] = new_pattern
-                    self._push_block_update()
+                    old_tsa_data = copy(self.tsa_data)
+                    old_tsa_data[self.index + (index * 0x100)] = new_pattern
+                    self.tsa_data = copy(old_tsa_data)
             return update_block_pattern
 
         for idx, spinner in enumerate(self.spinners):
