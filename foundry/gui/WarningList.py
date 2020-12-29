@@ -98,7 +98,7 @@ class WarningList(QWidget):
                 other_clan, other_group = self._enemy_dict[other_enemy.name]
 
                 if clan == other_clan and group != other_group:
-                    self.warnings.append(f"{enemy} incompatible with {other_enemy}")
+                    self.warnings.append(f"{enemy} incompatible with {other_enemy}, when on same screen")
 
         self.update()
         self.warnings_updated.emit(bool(self.warnings))
