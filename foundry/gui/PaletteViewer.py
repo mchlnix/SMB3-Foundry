@@ -6,16 +6,16 @@ from PySide2.QtWidgets import QFrame, QGridLayout, QGroupBox, QHBoxLayout, QLabe
 
 from foundry.game.gfx.Palette import (
     COLORS_PER_PALETTE,
-    NESPalette,
+    PaletteController,
     PALETTES_PER_PALETTES_GROUP,
     PALETTE_GROUPS_PER_OBJECT_SET,
     load_palette_group,
 )
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.QDialog import Dialog
 
 
-class PaletteViewer(CustomDialog):
+class PaletteViewer(Dialog):
     palettes_per_row = 4
 
     def __init__(self, parent, level_ref: LevelRef):
@@ -52,7 +52,7 @@ class PaletteWidget(QWidget):
         layout = QHBoxLayout(self)
 
         for color_index in range(COLORS_PER_PALETTE):
-            color = QColor(*NESPalette[palette[palette_number][color_index]])
+            color = PaletteController().colors[palette[palette_number][color_index]]
 
             layout.addWidget(ColorSquare(color))
 
