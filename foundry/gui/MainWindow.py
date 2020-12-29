@@ -27,7 +27,7 @@ from PySide2.QtWidgets import (
 )
 
 from foundry import (
-    discord_link,
+    auto_save_rom_path, discord_link,
     enemy_compat_link, feature_video_link,
     get_current_version_name,
     get_latest_version_name,
@@ -462,6 +462,8 @@ class MainWindow(QMainWindow):
 
         self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
 
+        self._save_current_changes_to_file(auto_save_rom_path, set_new_path=False)
+
     def _go_to_jump_destination(self):
         if not self.safe_to_change():
             return
@@ -759,20 +761,21 @@ class MainWindow(QMainWindow):
         else:
             pathname = ROM.path
 
-        level = self.level_ref.level
-
-        for offset, data in level.to_bytes():
-            ROM().bulk_write(data, offset)
-
-        try:
-            ROM().save_to_file(pathname)
-        except IOError as exp:
-            QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
+        self._save_current_changes_to_file(pathname, set_new_path=True)
 
         self.update_title()
 
         if not is_save_as:
-            level.changed = False
+            self.level_ref.changed = False
+
+    def _save_current_changes_to_file(self, pathname: str, set_new_path):
+        for offset, data in self.level_ref.to_bytes():
+            ROM().bulk_write(data, offset)
+
+        try:
+            ROM().save_to_file(pathname, set_new_path)
+        except IOError as exp:
+            QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
 
     def on_save_m3l(self, _):
         suggested_file = self.level_view.level_ref.name
@@ -1168,5 +1171,7 @@ class MainWindow(QMainWindow):
             event.ignore()
 
             return
+
+        auto_save_rom_path.unlink(missing_ok=True)
 
         super(MainWindow, self).closeEvent(event)

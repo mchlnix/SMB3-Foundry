@@ -8,6 +8,12 @@ from PySide2.QtGui import QDesktopServices, QIcon
 
 root_dir = Path(__file__).parent.parent
 
+home_dir = Path.home() / ".smb3foundry"
+home_dir.mkdir(parents=True, exist_ok=True)
+
+default_settings_path = home_dir / "settings"
+auto_save_rom_path = home_dir / "auto_save.nes"
+
 data_dir = root_dir.joinpath("data")
 doc_dir = root_dir.joinpath("doc")
 icon_dir = data_dir.joinpath("icons")

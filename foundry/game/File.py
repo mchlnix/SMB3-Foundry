@@ -74,7 +74,7 @@ class ROM(Rom):
             ROM.additional_data = data[additional_data_start:].decode("utf-8")
 
     @staticmethod
-    def save_to_file(path: str):
+    def save_to_file(path: str, set_new_path=True):
         with open(path, "wb") as f:
             f.write(bytearray(ROM.rom_data))
 
@@ -83,8 +83,9 @@ class ROM(Rom):
                 f.write(ROM.MARKER_VALUE)
                 f.write(ROM.additional_data.encode("utf-8"))
 
-        ROM.path = path
-        ROM.name = basename(path)
+        if set_new_path:
+            ROM.path = path
+            ROM.name = basename(path)
 
     @staticmethod
     def set_additional_data(additional_data):
