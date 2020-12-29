@@ -99,14 +99,14 @@ class MainWindow(QMainWindow):
         self.select_level_action = self.level_menu.addAction("&Select Level")
         self.select_level_action.triggered.connect(self.open_level_selector)
 
-        self.reload_action = level_menu.addAction("&Reload Level")
+        self.reload_action = self.level_menu.addAction("&Reload Level")
         self.reload_action.triggered.connect(self.reload_level)
         self.level_menu.addSeparator()
         self.edit_header_action = self.level_menu.addAction("&Edit Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
         self.edit_autoscroll = self.level_menu.addAction("Edit Autoscrolling")
         self.edit_autoscroll.triggered.connect(self.on_edit_autoscroll)
-        self.edit_tsa_action = level_menu.addAction("&Edit TSA")
+        self.edit_tsa_action = self.level_menu.addAction("&Edit TSA")
         self.edit_tsa_action.triggered.connect(lambda *_: self.display_tsa_editor())
 
         self.menuBar().addMenu(self.level_menu)
@@ -231,33 +231,33 @@ class MainWindow(QMainWindow):
         self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
-        menu_toolbar.addAction(Icon.as_custom("settings"), "Editor Settings").triggered.connect(
+        self.menu_toolbar.addAction(Icon.as_custom("settings"), "Editor Settings").triggered.connect(
             lambda: SettingsDialog(self, self).exec_()
         )
-        menu_toolbar.addSeparator()
-        menu_toolbar.addAction(Icon.as_custom("open file"), "Open ROM").triggered.connect(self.file_menu.open_rom_action.action)
-        menu_toolbar.addAction(Icon.as_custom("save file"), "Save Level").triggered.connect(self.file_menu.save_rom_action.action)
-        menu_toolbar.addSeparator()
+        self.menu_toolbar.addSeparator()
+        self.menu_toolbar.addAction(Icon.as_custom("open file"), "Open ROM").triggered.connect(self.file_menu.open_rom_action.action)
+        self.menu_toolbar.addAction(Icon.as_custom("save file"), "Save Level").triggered.connect(self.file_menu.save_rom_action.action)
+        self.menu_toolbar.addSeparator()
 
-        self.undo_action = menu_toolbar.addAction(Icon.as_custom("undo"), "Undo Action")
+        self.undo_action = self.menu_toolbar.addAction(Icon.as_custom("undo"), "Undo Action")
         self.undo_action.triggered.connect(self.level_ref.undo)
         self.undo_action.setEnabled(False)
-        self.redo_action = menu_toolbar.addAction(Icon.as_custom("redo"), "Redo Action")
+        self.redo_action = self.menu_toolbar.addAction(Icon.as_custom("redo"), "Redo Action")
         self.redo_action.triggered.connect(self.level_ref.redo)
         self.redo_action.setEnabled(False)
 
-        menu_toolbar.addSeparator()
+        self.menu_toolbar.addSeparator()
 
         self.save_to_first_level_action = ActionSaveToFirstLevel("save_to_first_level_action", self, self.level_ref)
         self.open_emu_action = ActionOpenEmulator("open_emu_action", self, self.save_to_first_level_action)
-        play_action = menu_toolbar.addAction(Icon.as_custom("play"), "Play Level")
+        play_action = self.menu_toolbar.addAction(Icon.as_custom("play"), "Play Level")
         play_action.triggered.connect(lambda: self.open_emu_action())
         play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
-        menu_toolbar.addSeparator()
-        menu_toolbar.addAction(Icon.as_custom("zoom out"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
-        menu_toolbar.addAction(Icon.as_custom("zoom in"), "Zoom In").triggered.connect(self.level_view.zoom_in)
-        menu_toolbar.addSeparator()
-        header_action = menu_toolbar.addAction(Icon.as_custom("tool"), "Edit Level Header")
+        self.menu_toolbar.addSeparator()
+        self.menu_toolbar.addAction(Icon.as_custom("zoom out"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
+        self.menu_toolbar.addAction(Icon.as_custom("zoom in"), "Zoom In").triggered.connect(self.level_view.zoom_in)
+        self.menu_toolbar.addSeparator()
+        header_action = self.menu_toolbar.addAction(Icon.as_custom("tool"), "Edit Level Header")
         header_action.triggered.connect(self.on_header_editor)
         header_action.setWhatsThis(
             "<b>Header Editor</b><br/>"
@@ -265,7 +265,7 @@ class MainWindow(QMainWindow):
             "the timer, or where and how Mario enters the level.<br/>"
         )
 
-        self.jump_destination_action = menu_toolbar.addAction(Icon.as_custom("pointer editor"), "Go to Jump Destination")
+        self.jump_destination_action = self.menu_toolbar.addAction(Icon.as_custom("pointer editor"), "Go to Jump Destination")
         self.jump_destination_action.triggered.connect(self._go_to_jump_destination)
         self.jump_destination_action.setWhatsThis(
             "Opens the level, that can be reached from this one, e.g. by entering a pipe."
