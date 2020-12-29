@@ -49,7 +49,13 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
     tileset_update_action: Action  # Update when the tileset updates
     zoom_update_action: Action  # Updates when the zoom changes
 
-    def __init__(self, parent):
+    def __init__(
+            self,
+            parent,
+            tileset: int = 0,
+            palette_set: PaletteSet = DEFAULT_PALETTE_SET,
+            zoom: int = 1
+    ):
         ChildWindow.__init__(self, parent, title="Tile Square Assembly Editor")
         AbstractActionObject.__init__(self)
 
@@ -59,10 +65,10 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self.redo_states = deque([])
 
         self.tsa_viewer = None
-        self._zoom = 1
-        self._tileset = 0
+        self._zoom = zoom
+        self._tileset = tileset
         self._pattern_table = PatternTableHandler.from_tileset(self.tileset)
-        self._palette_set = DEFAULT_PALETTE_SET
+        self._palette_set = copy(palette_set)
         self._palette_index = 0
 
         self._set_up_layout()
