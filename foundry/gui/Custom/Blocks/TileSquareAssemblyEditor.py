@@ -245,6 +245,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
             self.combo_box_actions.append(tileset_option)
 
         self.tileset_combo_box = ComboBox(self, tileset_options)
+        self.tileset_combo_box.setCurrentIndex(self.tileset)
         self.tileset_toolbar = Toolbar.default_toolbox(
             self, "tileset_toolbar", Panel(self, "Tileset", self.tileset_combo_box), Qt.RightToolBarArea
         )
