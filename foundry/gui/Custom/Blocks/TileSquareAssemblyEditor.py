@@ -1,6 +1,7 @@
 
 
 import yaml
+from collections import deque
 from yaml import CLoader as Loader
 from copy import copy
 from typing import List
@@ -51,6 +52,11 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         ChildWindow.__init__(self, parent, title="Tile Square Assembly Editor")
         AbstractActionObject.__init__(self)
 
+        self.current_state = None
+        self.last_state = None
+        self.undo_states = deque([])
+        self.redo_states = deque([])
+
         self.tsa_viewer = None
         self._zoom = 1
         self._tileset = 0
@@ -59,6 +65,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         self._palette_index = 0
 
         self._set_up_layout()
+        self.reset_states()
         self._initialize_internal_observers()
 
         self.setWhatsThis(
@@ -86,6 +93,10 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
             lambda *_: setattr(self.block_editor, "pattern_table", self.pattern_table),
             name=f"{name} Update Tileset"
         )
+        self.tileset_update_action.observer.attach_observer(
+            lambda *_: self.reset_states(),
+            name=f"{name} Reset States"
+        )
 
         self.tileset_combo_box.index_changed_action.observer.attach_observer(
             lambda tileset: setattr(self, "tileset", tileset),
@@ -95,17 +106,31 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
             lambda offset: setattr(self.tsa_viewer, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(self.offset)),
             name=f"{name} Update TSA Data"
         )
+
         self.tileset_combo_box.index_changed_action.observer.attach_observer(
             lambda offset: setattr(self.block_editor, "tsa_data", self.tsa_viewer.tsa_data_from_tsa_offset(self.offset)),
             name=f"{name} Update TSA Data"
         )
-        self.block_editor.block_changed_action.observer.attach_observer(
-            lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data),
-            name=f"{name} Update TSA"
-        )
         self.tsa_viewer.single_clicked_action.observer.attach_observer(
             lambda i: setattr(self.block_editor, "index", i),
             name=f"{name} Update Index"
+        )
+
+        self.block_editor.block_changed_action.observer.attach_observer(
+            lambda tsa_data: self.tsa_data_update_action(tsa_data),
+            name=f"{name} Update TSA"
+        )
+        self.tsa_data_update_action.observer.attach_observer(
+            lambda tsa_data: self.push_tsa_data(tsa_data),
+            name=f"{name} Push TSA Data state"
+        )
+        self.tsa_data_update_action.observer.attach_observer(
+            lambda tsa_data: setattr(self.tsa_viewer, "tsa_data", tsa_data),
+            name=f"{name} Update TSA"
+        )
+        self.tsa_data_update_action.observer.attach_observer(
+            lambda tsa_data: setattr(self.block_editor, "tsa_data", tsa_data),
+            name=f"{name} Update TSA"
         )
 
         self.palette_set_update_action.observer.attach_observer(
@@ -154,14 +179,14 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         menu_toolbar.addSeparator()
 
         self.undo_action = menu_toolbar.addAction(Icon.as_custom("undo"), "Undo Action")
-        self.undo_action.triggered.connect(lambda *_: True)
+        self.undo_action.triggered.connect(lambda *_: self.undo())
         self.undo_action.setEnabled(False)
         self.undo_action.setWhatsThis(
             "<b>Undo Action</b><br/>"
             "Undo the previous action to the TSA<br/>"
         )
         self.redo_action = menu_toolbar.addAction(Icon.as_custom("redo"), "Redo Action")
-        self.redo_action.triggered.connect(lambda *_: True)
+        self.redo_action.triggered.connect(lambda *_: self.redo())
         self.redo_action.setEnabled(False)
         self.redo_action.setWhatsThis(
             "<b>Redo Action</b><br/>"
@@ -255,6 +280,46 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
                 lambda zoom: zoom, f"{name} Zoom Updated"
             )),
         ]
+
+    def undo(self):
+        """Undo to the last stack state"""
+        tsa_data = self.undo_states.pop()
+        self.last_state, self.current_state = self.current_state, copy(tsa_data)
+        self.redo_states.append(copy(self.last_state))
+        self.tsa_data_update_action(copy(self.current_state))
+
+        self.undo_action.setEnabled(True if self.undo_states else False)
+        self.redo_action.setEnabled(True if self.redo_states else False)
+
+    def redo(self):
+        """Redo to the previous state"""
+        tsa_data = self.redo_states.pop()
+        self.last_state, self.current_state = self.current_state, copy(tsa_data)
+        self.undo_states.append(copy(self.last_state))
+        self.tsa_data_update_action(copy(self.current_state))
+
+        self.undo_action.setEnabled(True if self.undo_states else False)
+        self.redo_action.setEnabled(True if self.redo_states else False)
+
+    def reset_states(self) -> None:
+        """Resets the states"""
+        self.current_state = self.block_editor.tsa_data
+        self.last_state = None
+
+        self.undo_states = deque([])
+        self.redo_states = deque([])
+        self.undo_action.setEnabled(False)
+        self.redo_action.setEnabled(False)
+
+    def push_tsa_data(self, tsa_data: bytearray):
+        """Pushes a state to be undone"""
+        if self.current_state != tsa_data:
+            self.last_state, self.current_state = self.current_state, copy(tsa_data)
+
+            self.undo_states.append(copy(self.last_state))
+            self.redo_states = deque([])
+            self.undo_action.setEnabled(True if self.undo_states else False)
+            self.redo_action.setEnabled(True if self.redo_states else False)
 
     @property
     def zoom(self) -> int:
