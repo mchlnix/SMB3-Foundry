@@ -32,6 +32,8 @@ PALETTE_DATA_SIZE = (
 
 palette_file = root_dir.joinpath("data", "Default.pal")
 
+
+class Color(NamedTuple):
     """Defines a color"""
     red: int
     green: int
