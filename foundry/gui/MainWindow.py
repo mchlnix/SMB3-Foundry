@@ -6,8 +6,8 @@ import subprocess
 import tempfile
 from typing import Tuple, Union
 
-from PySide2.QtCore import QSize, QUrl
-from PySide2.QtGui import QCloseEvent, QDesktopServices, QKeySequence, QMouseEvent, Qt
+from PySide2.QtCore import QSize
+from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
 from PySide2.QtWidgets import (
     QAction,
     QDialog,
@@ -28,7 +28,7 @@ from PySide2.QtWidgets import (
 
 from foundry import (
     discord_link,
-    doc_dir, feature_video_link,
+    enemy_compat_link, feature_video_link,
     get_current_version_name,
     get_latest_version_name,
     github_link,
@@ -278,9 +278,7 @@ class MainWindow(QMainWindow):
         help_menu.addSeparator()
 
         enemy_compat_action = help_menu.addAction("Enemy Compatibility")
-        enemy_compat_action.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl.fromLocalFile(str(doc_dir.joinpath("SMB3 enemy compatibility.html"))))
-        )
+        enemy_compat_action.triggered.connect(lambda: open_url(enemy_compat_link))
 
         about_action = help_menu.addAction("&About")
         about_action.triggered.connect(self.on_about)
