@@ -1,5 +1,6 @@
 
 
+from copy import copy
 from typing import Optional, List
 from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtGui import Qt
@@ -56,11 +57,11 @@ class BlockEditor(Widget, AbstractActionObject):
     @property
     def tsa_data(self) -> bytearray:
         """"The pattern table of the block"""
-        return self.block.tsa_data
+        return copy(self.block.tsa_data)
 
     @tsa_data.setter
     def tsa_data(self, tsa_data: bytearray) -> None:
-        self.block.tsa_data = tsa_data
+        self.block.tsa_data = copy(tsa_data)
 
     @property
     def size(self) -> Size:
@@ -166,16 +167,9 @@ class BlockEditor(Widget, AbstractActionObject):
         ]
         for event in block_events:
             event.observer.attach_observer(
-                lambda *_: self.block_changed_action(self.tsa_data),
+                lambda *_: self.block_changed_action(copy(self.tsa_data)),
                 name=f"{name} Push Update Upstream"
             )
-
-    def _push_block_update(self) -> None:
-        """Pushes an update to the block"""
-        for idx, spinner in enumerate(self.spinners):
-            if value := (spinner.value()) != self.tsa_data[(idx * 256) + self.index]:
-                self.tsa_data[(idx * 256) + self.index] = value
-        self.refresh_event_action()
 
     def get_actions(self) -> List[Action]:
         """Gets the actions for the object"""
