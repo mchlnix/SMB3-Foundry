@@ -64,7 +64,9 @@ from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
 from foundry.gui.QMenus.MenuAction.MenuActionSettings import MenuActionSettings
 from foundry.core.Action.ActionSaveToFirstLevel import ActionSaveToFirstLevel
 from foundry.core.Action.ActionOpenEmulator import ActionOpenEmulator
+from foundry.gui.Custom.Blocks.TileSquareAssemblyEditor import DialogTileSquareAssemblyEditor
 from foundry.gui.QIcon.Icon import Icon
+from foundry.game.gfx.Palette import load_palette
 
 
 class MainWindow(QMainWindow):
@@ -100,6 +102,8 @@ class MainWindow(QMainWindow):
         level_menu.addSeparator()
         self.edit_header_action = level_menu.addAction("&Edit Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
+        self.edit_tsa_action = level_menu.addAction("&Edit TSA")
+        self.edit_tsa_action.triggered.connect(lambda *_: self.display_tsa_editor())
 
         self.menuBar().addMenu(level_menu)
 
@@ -296,6 +300,16 @@ class MainWindow(QMainWindow):
             self.deleteLater()
 
         self.showMaximized()
+
+    def display_tsa_editor(self):
+        """Displays the tsa editor"""
+        level_header = self.level_ref.level.header
+        pal = load_palette(self.level_ref.level.object_set_number, level_header.object_palette_index)
+        DialogTileSquareAssemblyEditor(
+            self,
+            self.level_ref.object_set_number,
+            pal
+        )
 
     def _on_level_data_changed(self):
         self.undo_action.setEnabled(self.level_ref.undo_stack.undo_available)
