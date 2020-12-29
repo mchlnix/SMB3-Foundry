@@ -4,9 +4,7 @@ from PySide2.QtCore import QRect, Qt, Signal, SignalInstance
 from PySide2.QtGui import QCursor, QFocusEvent
 from PySide2.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import GROUND
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.HeaderEditor import SCROLL_DIRECTIONS
 from foundry.gui.util import clear_layout
@@ -55,10 +53,6 @@ class WarningList(QWidget):
         for obj in level.objects:
             if obj.object_info == (PLAINS_OBJECT_SET, 0, 0x06):
                 continue
-
-            if obj.orientation in [GeneratorType.HORIZ_TO_GROUND, GeneratorType.PYRAMID_TO_GROUND]:
-                if obj.y_position + obj.rendered_height == GROUND:
-                    self.warnings.append(f"{obj} extends until the level bottom. This can crash the game.")
 
         # autoscroll objects
         for item in level.enemies:
