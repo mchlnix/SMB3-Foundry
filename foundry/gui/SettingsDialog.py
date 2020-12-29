@@ -13,12 +13,12 @@ from PySide2.QtWidgets import (
     QComboBox,
 )
 
+from PySide2.QtGui import QIcon, QImage, QColor, Qt, QPixmap
 from PySide2.QtCore import QRect
 from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
 
 from foundry import icon, data_dir
 from foundry.gui.QDialog import Dialog
-from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings
 from foundry.gui.HorizontalLine import HorizontalLine
 from smb3parse.constants import (
     POWERUP_MUSHROOM,
@@ -28,6 +28,9 @@ from smb3parse.constants import (
     POWERUP_FROG,
     POWERUP_HAMMER,
 )
+from foundry.core.Settings.util import get_setting, set_setting, load_settings, save_settings
+from foundry.core.util import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, DRACULA_STYLE_SET, RETRO_STYLE_SET
+
 
 POWERUPS_PWING = 4
 POWERUPS = [
@@ -60,7 +63,7 @@ class SettingsDialog(Dialog):
         label = QLabel("Scroll objects with mouse wheel:")
         label.setToolTip("Select an object and scroll up and down to change its type.")
         self._scroll_check_box = QCheckBox("Enabled")
-        self._scroll_check_box.setChecked(SETTINGS["object_scroll_enabled"])
+        self._scroll_check_box.setChecked(get_setting("object_scroll_enabled", True))
         self._scroll_check_box.toggled.connect(self._update_settings)
 
         scroll_layout.addWidget(label)
@@ -156,7 +159,7 @@ class SettingsDialog(Dialog):
 
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
 
-        self.powerup_combo_box.setCurrentIndex(SETTINGS["default_powerup"])
+        self.powerup_combo_box.setCurrentIndex(get_setting("default_powerup", 1))
 
         command_layout.addWidget(self.powerup_combo_box)
 
@@ -192,9 +195,8 @@ class SettingsDialog(Dialog):
             self.setStyleSheet("")
             self.sender.setStyleSheet("")
 
-        SETTINGS["object_scroll_enabled"] = self._scroll_check_box.isChecked()
-
-        SETTINGS["default_powerup"] = self.powerup_combo_box.currentIndex()
+        set_setting("object_scroll_enabled", self._scroll_check_box.isChecked())
+        set_setting("default_powerup", self.powerup_combo_box.currentIndex())
 
         self.update()
 
