@@ -30,7 +30,7 @@ PALETTE_DATA_SIZE = (
     * COLORS_PER_PALETTE
 )
 
-palette_file = root_dir.joinpath("data", "Default.pal")
+palette_file = root_dir.joinpath("data", "palette.yaml")
 
 
 class Color(NamedTuple):
