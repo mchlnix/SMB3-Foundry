@@ -4,7 +4,7 @@ from PySide2.QtWidgets import QCheckBox, QLabel, QVBoxLayout
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.QDialog import Dialog
 from foundry.gui.Spinner import Spinner
 from smb3parse.constants import OBJ_AUTOSCROLL
 
@@ -19,7 +19,7 @@ AUTOSCROLL_LABELS = {
 }
 
 
-class AutoScrollEditor(CustomDialog):
+class AutoScrollEditor(Dialog):
     def __init__(self, parent, level_ref: LevelRef):
         super(AutoScrollEditor, self).__init__(parent, title="Autoscroll Editor")
         self.level_ref = level_ref
