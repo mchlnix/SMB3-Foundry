@@ -17,7 +17,7 @@ from PySide2.QtCore import QRect
 from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
 
 from foundry import icon, data_dir
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.QDialog import Dialog
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings
 from foundry.gui.HorizontalLine import HorizontalLine
 from smb3parse.constants import (
