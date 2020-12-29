@@ -3,7 +3,7 @@ This module includes the BlockWidget
 BlockWidget: A widget that handles a Block in terms of Qt space
 """
 
-
+from copy import copy
 from typing import Optional, List
 from PySide2.QtWidgets import QWidget, QGridLayout
 
@@ -82,13 +82,13 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
     @property
     def tsa_data(self) -> bytearray:
         """Find the tsa data from a given offset"""
-        return self.block.tsa_data
+        return copy(self.block.tsa_data)
 
     @tsa_data.setter
     def tsa_data(self, tsa_data: bytearray) -> None:
-        if self.tsa_data != tsa_data:
-            self.block.tsa_data = tsa_data
-            self.tsa_data_update_action(self.tsa_data)
+        if tsa_data != self.tsa_data:
+            self.block.tsa_data = copy(tsa_data)
+            self.tsa_data_update_action(copy(self.tsa_data))
 
     @property
     def pattern_table(self) -> PatternTableHandler:
@@ -188,8 +188,9 @@ class BlockTileTrackableObject(Widget, AbstractActionObject):
             """Returns the tsa from a change from a given tile_index"""
             def update_tsa_data(index: int):
                 """Updates the tsa data from by setting it to a new index"""
-                self.tsa_data[self.index + (tile_index * 0x100)] = index
-                self.tsa_data_update_action(self.tsa_data)
+                tsa_data = copy(self.tsa_data)
+                tsa_data[self.index + (tile_index * 0x100)] = index
+                self.tsa_data = tsa_data
             return update_tsa_data
 
         def push_current_palette_closure(index: int):
