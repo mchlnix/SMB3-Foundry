@@ -15,6 +15,7 @@ from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.core.Action.Action import Action
 from foundry.core.geometry.Size.Size import Size
 
+from foundry.game.File import ROM
 from foundry.gui.QCore.palette import DEFAULT_PALETTE_SET
 from foundry.game.gfx.Palette import PaletteSet, Palette
 from foundry.gui.QMenus.Menu.MenuFileLight import FileMenuLight
@@ -172,6 +173,7 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         menu_toolbar.setIconSize(QSize(20, 20))
 
         self.save_file_action = menu_toolbar.addAction(Icon.as_custom("save file"), "Save TSA")
+        self.save_file_action.triggered.connect(lambda *_: self.save())
         self.save_file_action.setWhatsThis(
             "<b>Save TSA</b><br/>"
             "Saves the TSA to the ROM currently loaded<br/>"
@@ -280,6 +282,11 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
                 lambda zoom: zoom, f"{name} Zoom Updated"
             )),
         ]
+
+    def save(self) -> None:
+        """Saves to the current rom"""
+        ROM().bulk_write(self.current_state, (self.offset * 0x2000) + 0x10)
+        ROM().save_to_file(ROM().path)
 
     def undo(self):
         """Undo to the last stack state"""
