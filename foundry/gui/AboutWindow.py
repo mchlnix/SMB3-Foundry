@@ -55,6 +55,12 @@ class AboutDialog(CustomDialog):
                 f'<a href="{LINK_SKY}">SKJyannick</a> for testing and sanity checking',
             )
         )
+        text_layout.addWidget(
+            QLabel(
+                "Spinzig for compiling the enemy incompatibilities.",
+                self
+            )
+        )
 
         main_layout.addLayout(text_layout)
 

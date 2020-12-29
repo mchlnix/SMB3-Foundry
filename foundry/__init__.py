@@ -9,7 +9,7 @@ from PySide2.QtGui import QDesktopServices, QIcon
 root_dir = Path(__file__).parent.parent
 
 data_dir = root_dir.joinpath("data")
-
+doc_dir = root_dir.joinpath("doc")
 icon_dir = data_dir.joinpath("icons")
 
 releases_link = "https://github.com/mchlnix/SMB3-Foundry/releases"

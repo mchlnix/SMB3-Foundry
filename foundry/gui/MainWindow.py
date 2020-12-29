@@ -6,8 +6,8 @@ import subprocess
 import tempfile
 from typing import Tuple, Union
 
-from PySide2.QtCore import QSize
-from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
+from PySide2.QtCore import QSize, QUrl
+from PySide2.QtGui import QCloseEvent, QDesktopServices, QKeySequence, QMouseEvent, Qt
 from PySide2.QtWidgets import (
     QAction,
     QDialog,
@@ -28,7 +28,7 @@ from PySide2.QtWidgets import (
 
 from foundry import (
     discord_link,
-    feature_video_link,
+    doc_dir, feature_video_link,
     get_current_version_name,
     get_latest_version_name,
     github_link,
@@ -63,7 +63,7 @@ from foundry.gui.SettingsDialog import POWERUPS, show_settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.settings import SETTINGS, save_settings
-from smb3parse.constants import TILE_LEVEL_1, Title_PrepForWorldMap, Title_DebugMenu
+from smb3parse.constants import TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
 
@@ -276,6 +276,11 @@ class MainWindow(QMainWindow):
         discord_action.triggered.connect(lambda: open_url(discord_link))
 
         help_menu.addSeparator()
+
+        enemy_compat_action = help_menu.addAction("Enemy Compatibility")
+        enemy_compat_action.triggered.connect(
+            lambda: QDesktopServices.openUrl(QUrl.fromLocalFile(str(doc_dir.joinpath("SMB3 enemy compatibility.html"))))
+        )
 
         about_action = help_menu.addAction("&About")
         about_action.triggered.connect(self.on_about)
