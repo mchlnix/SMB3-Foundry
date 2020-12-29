@@ -40,6 +40,11 @@ class ObjectDropdown(QComboBox):
             "an object, you can place it by clicking the middle mouse button anywhere in the level."
         )
 
+    def setFocus(self):
+        super(ObjectDropdown, self).setFocus()
+
+        self.lineEdit().selectAll()
+
     def set_object_set(self, object_set_index: int, graphic_set_index: int) -> None:
         factory = LevelObjectFactory(
             object_set_index, graphic_set_index, 0, [], vertical_level=False, size_minimal=True
