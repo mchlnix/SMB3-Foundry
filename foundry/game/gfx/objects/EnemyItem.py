@@ -163,5 +163,8 @@ class EnemyObject(ObjectLike):
 
         return image
 
+    def __str__(self):
+        return f"{self.description} at {self.x_position}, {self.y_position}"
+
     def __repr__(self):
-        return f"EnemyObject {self.description} at {self.x_position}, {self.y_position}"
+        return f"EnemyObject: {self}"
