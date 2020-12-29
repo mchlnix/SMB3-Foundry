@@ -25,6 +25,7 @@ from foundry import (
     get_latest_version_name,
     open_url,
     releases_link,
+    icon
 )
 from foundry.game.File import ROM
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -69,6 +70,8 @@ from foundry.core.Action.ActionOpenEmulator import ActionOpenEmulator
 from foundry.gui.Custom.Blocks.TileSquareAssemblyEditor import DialogTileSquareAssemblyEditor
 from foundry.gui.QIcon.Icon import Icon
 from foundry.game.gfx.Palette import load_palette
+from foundry.gui.WarningList import WarningList
+from foundry.gui.PaletteViewer import PaletteViewer
 
 
 class MainWindow(QMainWindow):
