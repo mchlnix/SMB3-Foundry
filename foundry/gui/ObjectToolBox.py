@@ -68,7 +68,7 @@ class ObjectIcon(QWidget):
             self.object = get_minimal_icon_object(level_object)
 
             self.image = self.object.as_image()
-            self.setToolTip(self.object.description)
+            self.setToolTip(self.object.name)
         else:
             self.image = QImage()
             self.setToolTip("")
@@ -154,7 +154,7 @@ class ObjectToolBox(QWidget):
                 domain=domain, object_index=obj_index, x=0, y=0, length=None, index=0
             )
 
-            if not isinstance(level_object, LevelObject) or level_object.description in ["MSG_NOTHING", "MSG_CRASH"]:
+            if not isinstance(level_object, LevelObject) or level_object.name in ["MSG_NOTHING", "MSG_CRASH"]:
                 continue
 
             self.add_object(level_object)
@@ -165,7 +165,7 @@ class ObjectToolBox(QWidget):
         for obj_index in range(MAX_ENEMY_ITEM_ID + 1):
             enemy_item = factory.from_properties(obj_index, x=0, y=0)
 
-            if enemy_item.description in ["MSG_NOTHING", "MSG_CRASH"]:
+            if enemy_item.name in ["MSG_NOTHING", "MSG_CRASH"]:
                 continue
 
             self.add_object(enemy_item)

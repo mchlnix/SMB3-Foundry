@@ -17,7 +17,7 @@ class Jump(ObjectLike):
 
         self.blocks = []
         self.is_4byte = False
-        self.description = "Jump object"
+        self.name = "Jump object"
 
         assert self.is_jump(data)
 

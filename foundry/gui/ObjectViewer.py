@@ -64,7 +64,7 @@ class ObjectViewer(CustomChildWindow):
         self.drawing_area = ObjectDrawArea(self, 1)
 
         self.status_bar = QStatusBar(parent=self)
-        self.status_bar.showMessage(self.drawing_area.current_object.description)
+        self.status_bar.showMessage(self.drawing_area.current_object.name)
 
         self.setStatusBar(self.status_bar)
 
@@ -91,7 +91,7 @@ class ObjectViewer(CustomChildWindow):
         self.drawing_area.change_graphic_set(graphics_set)
 
         self.block_list.update_object(self.drawing_area.current_object)
-        self.status_bar.showMessage(self.drawing_area.current_object.description)
+        self.status_bar.showMessage(self.drawing_area.current_object.name)
 
     def on_object_set(self):
         object_set = self.object_set_dropdown.currentIndex() + 1
@@ -128,7 +128,7 @@ class ObjectViewer(CustomChildWindow):
 
         self.drawing_area.update()
 
-        self.status_bar.showMessage(self.drawing_area.current_object.description)
+        self.status_bar.showMessage(self.drawing_area.current_object.name)
 
     def on_spin(self, _):
         domain = self.spin_domain.value()

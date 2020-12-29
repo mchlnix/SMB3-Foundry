@@ -156,7 +156,7 @@ class LevelObject(ObjectLike):
         self.height = object_data.bmp_height
         self.orientation = GeneratorType(object_data.orientation)
         self.ending = EndType(object_data.ending)
-        self.description = object_data.description
+        self.name = object_data.description
 
         self.blocks = [int(block) for block in object_data.rom_object_design]
 
@@ -350,7 +350,7 @@ class LevelObject(ObjectLike):
                 right = fill_block
             else:
                 # todo other two ends not used with diagonals?
-                warn(f"{self.description} was not rendered.", RuntimeWarning)
+                warn(f"{self.name} was not rendered.", RuntimeWarning)
                 self.rendered_blocks = []
                 return
 
@@ -671,10 +671,10 @@ class LevelObject(ObjectLike):
                     blocks_to_draw.extend(bottom_row)
         else:
             if not self.orientation == GeneratorType.SINGLE_BLOCK_OBJECT:
-                warn(f"Didn't render {self.description}", RuntimeWarning)
+                warn(f"Didn't render {self.name}", RuntimeWarning)
                 # breakpoint()
 
-            if self.description.lower() == "black boss room background":
+            if self.name.lower() == "black boss room background":
                 new_width = SCREEN_WIDTH
                 new_height = SCREEN_HEIGHT
 
@@ -696,7 +696,7 @@ class LevelObject(ObjectLike):
 
         if new_width and not self.rendered_height == len(self.rendered_blocks) / new_width:
             warn(
-                f"Not enough Blocks for calculated height: {self.description}. "
+                f"Not enough Blocks for calculated height: {self.name}. "
                 f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}",
                 RuntimeWarning,
             )
@@ -704,7 +704,7 @@ class LevelObject(ObjectLike):
             self.rendered_height = len(self.rendered_blocks) / new_width
         elif new_width == 0:
             warn(
-                f"Calculated Width is 0, setting to 1: {self.description}. "
+                f"Calculated Width is 0, setting to 1: {self.name}. "
                 f"Blocks to draw: {len(self.rendered_blocks)}. Rendered height: {self.rendered_height}",
                 RuntimeWarning,
             )
@@ -989,7 +989,7 @@ class LevelObject(ObjectLike):
         return data
 
     def __repr__(self) -> str:
-        return f"LevelObject {self.description} at {self.x_position}, {self.y_position}"
+        return f"LevelObject {self.name} at {self.x_position}, {self.y_position}"
 
     def __eq__(self, other):
         if not isinstance(other, LevelObject):

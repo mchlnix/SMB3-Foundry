@@ -62,7 +62,7 @@ class ObjectDropdown(QComboBox):
 
         :param level_object: The type of object, that was selected to be placeable in the level.
         """
-        index_of_object = self.findText(level_object.description)
+        index_of_object = self.findText(level_object.name)
 
         if index_of_object == -1:
             raise LookupError(f"Couldn't find {level_object} in object dropdown.")
@@ -114,12 +114,12 @@ class ObjectDropdown(QComboBox):
         if not isinstance(level_object, (LevelObject, EnemyObject)):
             return
 
-        if level_object.description in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
+        if level_object.name in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
             return
 
         icon = QIcon(QPixmap(self._resize_bitmap(level_object.as_image())))
 
-        self.addItem(icon, level_object.description, level_object)
+        self.addItem(icon, level_object.name, level_object)
 
     @staticmethod
     def _resize_bitmap(source_image: QImage) -> QImage:
