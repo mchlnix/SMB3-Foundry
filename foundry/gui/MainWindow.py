@@ -1,3 +1,5 @@
+import base64
+import json
 import logging
 import os
 import pathlib
@@ -27,7 +29,7 @@ from PySide2.QtWidgets import (
 )
 
 from foundry import (
-    auto_save_rom_path, discord_link,
+    auto_save_level_data_path, auto_save_rom_path, discord_link,
     enemy_compat_link, feature_video_link,
     get_current_version_name,
     get_latest_version_name,
@@ -462,7 +464,56 @@ class MainWindow(QMainWindow):
 
         self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
 
+        self._save_auto_save()
+
+    def _save_auto_save(self):
         self._save_current_changes_to_file(auto_save_rom_path, set_new_path=False)
+
+        undo_index, data = self.level_ref.level.undo_stack.export_data()
+
+        (level_offset, _), (enemy_offset, _) = self.level_ref.level.to_bytes()
+
+        object_set_number = self.level_ref.level.object_set_number
+
+        base64_data = []
+
+        for (object_offset, object_data), (enemy_offset_, enemy_data) in data:
+            base64_data.append(
+                (
+                    object_offset, base64.b64encode(object_data).decode("ascii"),
+                    enemy_offset_, base64.b64encode(enemy_data).decode("ascii")
+                )
+            )
+
+        with open(auto_save_level_data_path, "w") as level_data_file:
+            level_data_file.write(
+                json.dumps(
+                    [object_set_number, level_offset, enemy_offset, (undo_index, base64_data)]
+                )
+            )
+
+    def _load_auto_save(self):
+        # rom already loaded
+        with open(auto_save_level_data_path, "r") as level_data_file:
+            json_data = level_data_file.read()
+
+            object_set_number, level_offset, enemy_offset, (undo_index, base64_data) = json.loads(json_data)
+
+        self.update_level("recovered level", level_offset, enemy_offset, object_set_number)
+
+        byte_data = []
+        for undo_data in base64_data:
+            level_offset, object_data, enemy_offset, enemy_data = undo_data
+
+            object_data = bytearray(base64.b64decode(object_data))
+            enemy_data = bytearray(base64.b64decode(enemy_data))
+
+            byte_data.append(((level_offset, object_data), (enemy_offset, enemy_data)))
+
+        self.level_ref.level.undo_stack.import_data(undo_index, byte_data)
+        self.level_ref.level.changed = bool(base64_data)
+
+        self._on_level_data_changed()
 
     def _go_to_jump_destination(self):
         if not self.safe_to_change():
@@ -658,7 +709,10 @@ class MainWindow(QMainWindow):
         try:
             ROM.load_from_file(path_to_rom)
 
-            return self.open_level_selector(None)
+            if path_to_rom == auto_save_rom_path:
+                self._load_auto_save()
+            else:
+                return self.open_level_selector(None)
 
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
@@ -1181,5 +1235,6 @@ class MainWindow(QMainWindow):
             return
 
         auto_save_rom_path.unlink(missing_ok=True)
+        auto_save_level_data_path.unlink(missing_ok=True)
 
         super(MainWindow, self).closeEvent(event)

@@ -1,19 +1,11 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
-from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QWidget
 
 from foundry.game.level import LevelByteData
 
 
 class UndoStack(QWidget):
-    undo_stack_cleared: SignalInstance = Signal()
-    undo_stack_saved: SignalInstance = Signal()
-    undo_complete: SignalInstance = Signal()
-
-    # bool - redos left
-    redo_complete: SignalInstance = Signal(bool)
-
     def __init__(self):
         super(UndoStack, self).__init__()
 
@@ -24,16 +16,12 @@ class UndoStack(QWidget):
         self.undo_stack = [new_initial_state]
         self.undo_index = 0
 
-        self.undo_stack_cleared.emit()
-
     def save_level_state(self, data: LevelByteData):
         self.undo_index += 1
 
         self.undo_stack = self.undo_stack[: self.undo_index]
 
         self.undo_stack.append(data)
-
-        self.undo_stack_saved.emit()
 
     def undo(self) -> Optional[LevelByteData]:
         if not self.undo_stack:
@@ -42,8 +30,6 @@ class UndoStack(QWidget):
         self.undo_index -= 1
 
         data = self.undo_stack[self.undo_index]
-
-        self.undo_complete.emit()
 
         return data
 
@@ -55,8 +41,6 @@ class UndoStack(QWidget):
 
         data = self.undo_stack[self.undo_index]
 
-        self.redo_complete.emit(self.undo_index + 1 < len(self.undo_stack))
-
         return data
 
     @property
@@ -66,6 +50,13 @@ class UndoStack(QWidget):
     @property
     def redo_available(self):
         return self.undo_index < len(self.undo_stack) - 1
+
+    def import_data(self, stack_index: int, stack_bytes: List[LevelByteData]) -> None:
+        self.undo_index = stack_index
+        self.undo_stack = stack_bytes
+
+    def export_data(self) -> Tuple[int, List[LevelByteData]]:
+        return self.undo_index, self.undo_stack
 
     def __len__(self):
         return len(self.undo_stack)
