@@ -867,6 +867,7 @@ class MainWindow(QMainWindow):
             latest_version = get_latest_version_name()
         except ValueError as ve:
             QMessageBox.critical(self, "Error while checking for updates", f"Error: {ve}")
+            self.setCursor(Qt.ArrowCursor)
             return
 
         if current_version != latest_version:
