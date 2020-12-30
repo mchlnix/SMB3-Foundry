@@ -31,6 +31,10 @@ def main(path_to_rom):
         if result == QMessageBox.AcceptRole:
             path_to_rom = auto_save_rom_path
 
+            QMessageBox.information(
+                None, "Auto Save recovered", "Don't forget to save the loaded ROM under a new name!"
+            )
+
     MainWindow(path_to_rom)
     app.exec_()
 

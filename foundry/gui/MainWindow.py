@@ -761,6 +761,14 @@ class MainWindow(QMainWindow):
         else:
             pathname = ROM.path
 
+        if str(pathname) == str(auto_save_rom_path):
+            QMessageBox.critical(
+                self,
+                "Cannot save to auto save ROM",
+                "You can't save to the auto save ROM, as it will be deleted, when exiting the editor. Please choose "
+                "another location, or your changes will be lost."
+            )
+
         self._save_current_changes_to_file(pathname, set_new_path=True)
 
         self.update_title()
