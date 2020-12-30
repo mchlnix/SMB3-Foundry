@@ -701,6 +701,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
         self.set_up_gui_for_level()
 
+    def set_up_gui_for_level(self):
         self.update_title()
         self.jump_list.update()
 
