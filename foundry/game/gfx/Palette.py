@@ -214,7 +214,7 @@ def load_palette(object_set: int, palette_group: int) -> PaletteSet:
 def bg_color_for_object_set(tile_set: int, palette_group_index: int) -> QColor:
     palette = load_palette(tile_set, palette_group_index)
 
-    return QColor(*bg_color_for_palette(palette_group))
+    return QColor(*bg_color_for_palette(palette))
 
 
 def bg_color_for_palette(palette_set: PaletteSet):
