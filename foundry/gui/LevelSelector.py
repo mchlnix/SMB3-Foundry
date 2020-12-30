@@ -97,6 +97,8 @@ class LevelSelector(QDialog):
 
         self.button_ok = QPushButton("Ok", self)
         self.button_ok.clicked.connect(self.on_ok)
+        self.button_ok.setFocus()
+
         self.button_cancel = QPushButton("Cancel", self)
         self.button_cancel.clicked.connect(self.close)
 
