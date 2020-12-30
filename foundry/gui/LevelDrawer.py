@@ -261,7 +261,7 @@ class LevelDrawer:
         if _level_drawer_container.safe_get_setting("draw_grid", False):
             self._draw_grid(painter, level)
 
-        if self.draw_autoscroll:
+        if _level_drawer_container.safe_get_setting("draw_auto_scroll", True):
             self._draw_auto_scroll(painter, level)
 
     def _draw_background(self, painter: QPainter, level: Level):
