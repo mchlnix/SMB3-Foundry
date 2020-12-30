@@ -113,7 +113,7 @@ class MainWindow(QMainWindow):
 
         self.edit_header_action = self.level_menu.addAction("&Edit Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
-        self.edit_autoscroll = self.level_menu.addAction("Edit Autoscrolling")
+        self.edit_autoscroll = self.level_menu.addAction("&Edit Autoscrolling")
         self.edit_autoscroll.triggered.connect(self.on_edit_autoscroll)
         self.edit_tsa_action = self.level_menu.addAction("&Edit TSA")
         self.edit_tsa_action.triggered.connect(lambda *_: self.display_tsa_editor())
