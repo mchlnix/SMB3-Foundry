@@ -11,8 +11,6 @@ from foundry import root_dir
 from foundry.game.File import ROM
 from foundry.core.util import ROM_HEADER_OFFSET
 
-MAP_PALETTE_ADDRESS = PalSet_Maps
-
 PALETTE_BASE_ADDRESS = ROM_HEADER_OFFSET + 0x2C000
 PALETTE_OFFSET_LIST = ROM_HEADER_OFFSET + 0x377D2
 PALETTE_OFFSET_SIZE = 2  # bytes
