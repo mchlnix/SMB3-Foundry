@@ -42,8 +42,8 @@ class Observable(AbstractObservable):
             except NameError:
                 keys_to_remove.append(key)  # the observer no longer exists
             except TypeError as err:
-                logger.error(f"{err}: {observer.__name__}{str(signature(observer))} received {result}")
-                raise TypeError(f"{observer.__name__}{str(signature(observer))} received {result}")
+                logger.error(f"{err}: {observer.__class__.__name__}{str(signature(observer))} received {result}")
+                raise TypeError(f"{observer.__class__.__name__}{str(signature(observer))} received {result}")
 
         for key in keys_to_remove:
             #  remove any observer that no longer exists
