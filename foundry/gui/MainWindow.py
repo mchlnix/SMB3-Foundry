@@ -104,6 +104,13 @@ class MainWindow(QMainWindow):
         self.reload_action = self.level_menu.addAction("&Reload Level")
         self.reload_action.triggered.connect(self.reload_level)
         self.level_menu.addSeparator()
+
+        self.view_gens = self.level_menu.addAction("&View Generators")
+        self.view_gens.triggered.connect(self.on_object_viewer)
+        self.view_palettes = self.level_menu.addAction("&View Palettes")
+        self.view_palettes.triggered.connect(self.on_palette_viewer)
+        self.level_menu.addSeparator()
+
         self.edit_header_action = self.level_menu.addAction("&Edit Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
         self.edit_autoscroll = self.level_menu.addAction("$Edit Autoscrolling")
@@ -112,16 +119,6 @@ class MainWindow(QMainWindow):
         self.edit_tsa_action.triggered.connect(lambda *_: self.display_tsa_editor())
 
         self.menuBar().addMenu(self.level_menu)
-
-        self.object_menu = QMenu("Objects")
-
-        view_objects_action = self.object_menu.addAction("&View Objects")
-        view_objects_action.triggered.connect(self.on_object_viewer)
-        self.object_menu.addSeparator()
-        view_palettes_action = self.object_menu.addAction("View Object Palettes")
-        view_palettes_action.triggered.connect(self.on_palette_viewer)
-
-        self.menuBar().addMenu(self.object_menu)
 
         view_menu = Menu(parent=self, title="View")
         view_menu.triggered.connect(self.on_menu)
