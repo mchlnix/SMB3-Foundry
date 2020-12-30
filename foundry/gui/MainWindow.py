@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
         view_menu.addSeparator()
         view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
 
-        self.menuBar().addMenu(self.view_menu)
+        self.menuBar().addMenu(view_menu)
 
         tool_menu = Menu(parent=self, title="Tools")
         tool_menu.triggered.connect(self.on_menu)
