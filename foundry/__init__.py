@@ -2,6 +2,7 @@ import json
 import urllib.request
 import urllib.error
 from pathlib import Path
+from typing import Union
 
 from PySide2.QtCore import QUrl
 from PySide2.QtGui import QDesktopServices, QIcon
@@ -29,10 +30,10 @@ github_link = "https://github.com/mchlnix/SMB3-Foundry"
 github_issue_link = "https://github.com/mchlnix/SMB3-Foundry/issues"
 discord_link = "https://discord.gg/pm87gm7"
 
-enemy_compat_link = str(doc_dir.joinpath("SMB3 enemy compatibility.html"))
+enemy_compat_link = QUrl.fromLocalFile(str(doc_dir.joinpath("SMB3 enemy compatibility.html")))
 
 
-def open_url(url: str):
+def open_url(url: Union[str, QUrl]):
     QDesktopServices.openUrl(QUrl(url))
 
 
