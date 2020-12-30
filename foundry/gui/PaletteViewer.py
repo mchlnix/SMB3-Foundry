@@ -10,6 +10,7 @@ from foundry.game.gfx.Palette import (
     PALETTES_PER_PALETTES_GROUP,
     PALETTE_GROUPS_PER_OBJECT_SET,
     load_palette,
+    Color
 )
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.QDialog import Dialog
@@ -52,9 +53,9 @@ class PaletteWidget(QWidget):
         layout = QHBoxLayout(self)
 
         for color_index in range(COLORS_PER_PALETTE):
-            color = PaletteController().colors[palette[palette_number][color_index]]
+            color: Color = PaletteController().colors[palette[palette_number][color_index]]
 
-            layout.addWidget(ColorSquare(color))
+            layout.addWidget(ColorSquare(QColor(color[0], color[1], color[2])))
 
         for index in range(3, 0, -1):
             layout.insertStretch(index, 1)
