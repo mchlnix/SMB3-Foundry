@@ -200,7 +200,7 @@ def load_palette(object_set: int, palette_group: int) -> PaletteSet:
     palette_offset = rom.little_endian(palette_offset_position)
 
     palette_address = PALETTE_BASE_ADDRESS + palette_offset
-    palette_address += palette_group_index * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
+    palette_address += palette_group * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
 
     palettes = []
 
