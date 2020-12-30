@@ -207,20 +207,15 @@ class BlockArray(QWidget):
 
         self.update_object(level_object)
 
-    def update_object(self, level_object: "LevelObject"):
-        self.level_object = level_object
+    def update_object(self, object_data: Union[bytearray, LevelObjectController, Jump] = None):
+        if object_data is None:
+            object_data = self.current_object.data
+        elif isinstance(object_data, (LevelObjectController, Jump)):
+            object_data = object_data.data
 
-        clear_layout(self.layout())
+        self.current_object = self.object_factory.from_data(object_data, 0)
 
-        for block_index in self.level_object.blocks:
-            block = get_block(
-                block_index,
-                self.level_object.palette_group,
-                self.level_object.graphics_set,
-                self.level_object.tsa_data,
-            )
-            self.layout().addWidget(BlockArea(block))
-
+        self.resize(QSize())
         self.update()
 
 
