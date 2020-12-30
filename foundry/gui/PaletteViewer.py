@@ -1,9 +1,14 @@
+
+
 from typing import List
+import yaml
+from yaml import CLoader as Loader
 
 from PySide2.QtCore import QSize
 from PySide2.QtGui import QColor, QPixmap
 from PySide2.QtWidgets import QFrame, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
+from foundry import data_dir
 from foundry.game.gfx.Palette import (
     COLORS_PER_PALETTE,
     PaletteController,
@@ -16,11 +21,17 @@ from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.QDialog import Dialog
 
 
+with open(data_dir.joinpath("tileset_info.yaml")) as f:
+    tilesets = yaml.load(f, Loader=Loader)
+
+tileset_names = [tileset["name"] for tileset in tilesets.values()]
+
+
 class PaletteViewer(Dialog):
     palettes_per_row = 4
 
     def __init__(self, parent, level_ref: LevelRef):
-        title = f"Palette Groups for Object Set {level_ref.level.object_set_number}"
+        title = f"{tileset_names[level_ref.level.object_set_number]} Palettes"
 
         super(PaletteViewer, self).__init__(parent, title=title)
 
@@ -30,7 +41,7 @@ class PaletteViewer(Dialog):
 
         for palette_group in range(PALETTE_GROUPS_PER_OBJECT_SET):
             group_box = QGroupBox()
-            group_box.setTitle(f"Palette Group {palette_group}")
+            group_box.setTitle(f"Palette {palette_group}")
 
             group_box_layout = QVBoxLayout(group_box)
             group_box_layout.setSpacing(0)
