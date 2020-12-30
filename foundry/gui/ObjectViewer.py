@@ -81,6 +81,16 @@ class ObjectViewer(ChildWindow):
 
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
+    def set_object_and_graphic_set(self, object_set: int, graphics_set: int):
+        self.object_set_dropdown.setCurrentIndex(object_set - 1)
+        self.graphic_set_dropdown.setCurrentIndex(graphics_set)
+
+        self.drawing_area.change_object_set(object_set)
+        self.drawing_area.change_graphic_set(graphics_set)
+
+        self.block_list.update_object(self.drawing_area.current_object)
+        self.status_bar.showMessage(self.drawing_area.current_object.description)
+
     def on_object_set(self):
         object_set = self.object_set_dropdown.currentIndex() + 1
         graphics_set = object_set
