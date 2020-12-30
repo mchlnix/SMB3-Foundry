@@ -13,6 +13,8 @@ from foundry.gui.QMainWindow.ChildWindow import ChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
 from foundry.gui.util import clear_layout
+from foundry.core.geometry.Position.Position import Position
+from foundry.core.geometry.Size.Size import Size
 
 ID_SPIN_DOMAIN = 1
 ID_SPIN_TYPE = 2
@@ -242,4 +244,4 @@ class BlockArea(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
 
-        self.block.draw(painter, 0, 0, Block.image_length)
+        self.block.draw(painter, Position(0, 0), Size(Block.image_length, Block.image_height))
