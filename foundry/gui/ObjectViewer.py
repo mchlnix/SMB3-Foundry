@@ -198,15 +198,22 @@ class BlockArray(QWidget):
 
         self.update_object(level_object)
 
-    def update_object(self, object_data: Union[bytearray, LevelObjectController, Jump] = None):
-        if object_data is None:
-            object_data = self.current_object.to_bytes()
-        elif isinstance(object_data, (LevelObjectController, Jump)):
-            object_data = object_data.to_bytes()
+    def update_object(self, level_object: LevelObjectController):
+        self.level_object = level_object
 
-        self.current_object = self.object_factory.from_data(object_data, 0)
+        while self.layout().count():
+            item = self.layout().takeAt(0)
+            item.widget().deleteLater()
 
-        self.resize(QSize())
+        for block_index in self.level_object.blocks:
+            block = get_block(
+                block_index,
+                self.level_object.palette_group,
+                self.level_object.pattern_table,
+                self.level_object.tsa_data,
+            )
+            self.layout().addWidget(BlockArea(block))
+
         self.update()
 
 
