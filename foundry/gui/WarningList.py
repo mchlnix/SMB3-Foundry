@@ -49,11 +49,6 @@ class WarningList(QWidget):
             if not level.get_rect().contains(obj.get_rect()):
                 self.warnings.append(f"{obj} is outside of level bounds.")
 
-        # level objects to ground hitting the level edge
-        for obj in level.objects:
-            if obj.object_info == (PLAINS_OBJECT_SET, 0, 0x06):
-                continue
-
         # autoscroll objects
         for item in level.enemies:
             if item.obj_index == OBJ_AUTOSCROLL:
