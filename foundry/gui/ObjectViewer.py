@@ -132,7 +132,7 @@ class ObjectDrawArea(QWidget):
 
         self.object_factory = LevelObjectFactory(object_set, graphic_set, palette_index, [], False, size_minimal=True)
 
-        self.current_object = self.object_factory.from_data(bytearray([0x0, 0x0, 0x0]), 0)
+        self.current_object: LevelObjectController = self.object_factory.from_data(bytearray([0x0, 0x0, 0x0]), 0)
 
         self.update_object()
 
@@ -160,9 +160,9 @@ class ObjectDrawArea(QWidget):
 
     def update_object(self, object_data: Union[bytearray, LevelObjectController, Jump] = None):
         if object_data is None:
-            object_data = self.current_object.data
+            object_data = self.current_object.to_bytes()
         elif isinstance(object_data, (LevelObjectController, Jump)):
-            object_data = object_data.data
+            object_data = object_data.to_bytes()
 
         self.current_object = self.object_factory.from_data(object_data, 0)
 
@@ -200,9 +200,9 @@ class BlockArray(QWidget):
 
     def update_object(self, object_data: Union[bytearray, LevelObjectController, Jump] = None):
         if object_data is None:
-            object_data = self.current_object.data
+            object_data = self.current_object.to_bytes()
         elif isinstance(object_data, (LevelObjectController, Jump)):
-            object_data = object_data.data
+            object_data = object_data.to_bytes()
 
         self.current_object = self.object_factory.from_data(object_data, 0)
 
