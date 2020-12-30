@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         self.file_menu.save_asm6_action._action.attach_observer(self.save_asm6)
         self.menuBar().addMenu(self.file_menu)
 
-        self.level_menu = QMenu("Level")
+        self.level_menu = Menu(self, "Level")
 
         self.select_level_action = self.level_menu.addAction("&Select Level")
         self.select_level_action.triggered.connect(self.open_level_selector)
