@@ -12,7 +12,6 @@ from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.gui.QMainWindow.ChildWindow import ChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
-from foundry.gui.util import clear_layout
 from foundry.core.geometry.Position.Position import Position
 from foundry.core.geometry.Size.Size import Size
 
