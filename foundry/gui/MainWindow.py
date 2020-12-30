@@ -36,7 +36,6 @@ from foundry.gui.LevelDrawer import _level_drawer_container
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.QDialog.AboutWindow import AboutDialog
 from foundry.gui.AutoScrollEditor import AutoScrollEditor
-from foundry.gui.BlockViewer import BlockViewer
 from foundry.gui.ContextMenu import CMAction, ContextMenu
 from foundry.gui.EnemySizeBar import EnemySizeBar
 from foundry.gui.HeaderEditor import HeaderEditor
@@ -116,8 +115,6 @@ class MainWindow(QMainWindow):
 
         self.object_menu = QMenu("Objects")
 
-        view_blocks_action = self.object_menu.addAction("&View Blocks")
-        view_blocks_action.triggered.connect(self.on_block_viewer)
         view_objects_action = self.object_menu.addAction("&View Objects")
         view_objects_action.triggered.connect(self.on_object_viewer)
         self.object_menu.addSeparator()
@@ -655,15 +652,6 @@ class MainWindow(QMainWindow):
 
         return level_was_selected
 
-    def on_block_viewer(self, _):
-        if self.block_viewer is None:
-            self.block_viewer = BlockViewer(parent=self)
-
-        if self.level_ref.level is not None:
-            self.block_viewer.object_set = self.level_ref.object_set.number
-            self.block_viewer.palette_group = self.level_ref.object_palette_index
-
-        self.block_viewer.show()
 
     def on_object_viewer(self, _):
         if self.object_viewer is None:
