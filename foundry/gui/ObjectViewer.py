@@ -161,7 +161,10 @@ class ObjectDrawArea(QWidget):
             return
 
         self.setMinimumSize(
-            QSize(self.current_object.rendered_width * Block.WIDTH, self.current_object.rendered_height * Block.HEIGHT)
+            QSize(
+                self.current_object.rendered_width * Block.image_length,
+                self.current_object.rendered_height * Block.image_height
+            )
         )
 
     def update_object(self, object_data: Union[bytearray, LevelObjectController, Jump] = None):
@@ -183,11 +186,11 @@ class ObjectDrawArea(QWidget):
 
         painter.translate(
             QPoint(
-                -Block.WIDTH * self.current_object.rendered_base_x, -Block.HEIGHT * self.current_object.rendered_base_y
+                -Block.image_length * self.current_object.rendered_base_x, -Block.image_length * self.current_object.rendered_base_y
             )
         )
 
-        self.current_object.draw(painter, Block.WIDTH, transparent=True)
+        self.current_object.draw(painter, Block.image_length, transparent=True)
 
 
 class BlockArray(QWidget):
@@ -231,9 +234,9 @@ class BlockArea(QWidget):
         self.setToolTip(hex(self.block.index))
 
     def sizeHint(self):
-        return QSize(Block.WIDTH, Block.HEIGHT)
+        return QSize(Block.image_length, Block.image_height)
 
     def paintEvent(self, event):
         painter = QPainter(self)
 
-        self.block.draw(painter, 0, 0, Block.WIDTH)
+        self.block.draw(painter, 0, 0, Block.image_length)
