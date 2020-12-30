@@ -1,7 +1,6 @@
 from os.path import basename
 from typing import List, Optional
 
-from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset
 from smb3parse.util.rom import Rom
 
 
@@ -12,6 +11,8 @@ WORLD_COUNT = 9  # includes warp zone
 
 TSA_TABLE_SIZE = 0x400
 TSA_TABLE_INTERVAL = TSA_TABLE_SIZE + 0x1C00
+
+TSA_BASE_OS = 0x00010
 
 
 def to_word(byte_1: int, byte_2: int):
