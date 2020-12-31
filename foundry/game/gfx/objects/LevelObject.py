@@ -324,27 +324,26 @@ class LevelObject(ObjectLike, BlockGenerator):
         """Determines what the primary expansion is"""
 
     def resize_x(self, x: int) -> None:
-        if self.expands & EXPANDS_HORIZ == 0:
+        if not x or self.expands & EXPANDS_HORIZ == 0:
             return
 
         if self.primary_expansion == EXPANDS_HORIZ and self.is_4byte:
-            length = x - self.pos.x
+            length = x
             length = max(0, length)
             length = min(length, 0xFF)
             self.size.width = length
 
         elif self.primary_expansion == EXPANDS_HORIZ:
-            length = x - self.pos.x
 
+            length = x
             length = max(0, length)
             length = min(length, 0x0F)
 
-            index = (self.obj_index // 0x10) * 0x10
+            self.index = (self.index & 0xF0) + length
+            self.size.width = length
 
-            self.index = index + length
-            self.size.width = self.index
         else:
-            length = x - self.pos.x
+            length = x
             length = max(0, length)
             length = min(length, 0xFF)
 
@@ -393,11 +392,13 @@ class LevelObject(ObjectLike, BlockGenerator):
             self.size.height = self.size.width
 
     def resize_by(self, dx: int, dy: int) -> None:
+
         if dx:
-            self.resize_x(self.pos.x + dx)
+            self.resize_x(dx)
 
         if dy:
             self.resize_y(self.pos.y + dy)
+
 
     def increment_type(self) -> None:
         self.change_type(True)
