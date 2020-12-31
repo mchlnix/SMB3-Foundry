@@ -39,6 +39,11 @@ class Icon(QIcon):
         return cls(filename)
 
     @classmethod
+    def from_pixmap(cls, pixmap: QPixmap):
+        """A more pythonic way to call the init function that is using multiple dispatch"""
+        return cls(pixmap)
+
+    @classmethod
     def as_custom(cls, name: str):
         """Generates a predefined icon"""
         return cls(str(icon_dir.joinpath(_CUSTOM_ICONS[name]["file"])))
