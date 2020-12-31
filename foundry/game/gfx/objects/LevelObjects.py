@@ -644,6 +644,7 @@ class LevelObjectVertical(LevelObjectBlockGetter):
     def expands(self) -> int:
         return EXPANDS_VERT
 
+    @property
     def primary_expansion(self) -> int:
         if self.is_4byte:
             return EXPANDS_BOTH
