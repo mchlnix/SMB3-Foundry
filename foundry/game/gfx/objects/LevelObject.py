@@ -359,7 +359,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             return
 
         if self.primary_expansion == EXPANDS_VERT:
-            length = y - self.pos.y
+            length = y
 
             length = max(0, length)
             length = min(length, 0x0F)
@@ -369,7 +369,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             self.index = index + length
             self.size.width = self.index
         else:
-            length = y - self.pos.y
+            length = y
             length = max(0, length)
             length = min(length, 0xFF)
 
@@ -397,7 +397,7 @@ class LevelObject(ObjectLike, BlockGenerator):
             self.resize_x(dx)
 
         if dy:
-            self.resize_y(self.pos.y + dy)
+            self.resize_y(dy)
 
 
     def increment_type(self) -> None:
