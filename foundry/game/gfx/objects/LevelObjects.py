@@ -875,7 +875,10 @@ class LevelObjectPlainsPlatformToGround(LevelObjectInteractable):
         offset_idx = self.bmp.size.width * self.bmp.size.height
         idx = self.bmp.size.index_position(pos % self.bmp.size) + \
             size.get_relational_position(pos // self.bmp.size) * offset_idx
-        return self.main_blocks[idx]
+        try:
+            return self.main_blocks[idx]
+        except IndexError:
+            return self.main_blocks[0]
 
     CORNER_SHADOWS = {
         0x80: 0xC0, 0x90: 0x9D, 0x9F: 0x9D
@@ -899,7 +902,10 @@ class LevelObjectPlainsPlatformToGround(LevelObjectInteractable):
             offset_idx = self.bmp.size.width * self.bmp.size.height
             idx = self.bmp.size.index_position(pos % self.bmp.size) + \
                 reg_size.get_relational_position(pos // self.bmp.size) * offset_idx
-            return self.main_blocks[idx]
+            try:
+                return self.main_blocks[idx]
+            except IndexError:
+                return self.main_blocks[0]
 
     def _find_size(self, level_blocks: List[int], pos: Position) -> Size:
         """Finds how big tall the platform will be"""
