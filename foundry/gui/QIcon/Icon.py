@@ -3,9 +3,14 @@
 import yaml
 from yaml import CLoader as Loader
 from multipledispatch import dispatch
-from PySide2.QtGui import QIcon, QIconEngine, QPixmap
+from PySide2.QtGui import QIcon, QIconEngine, QPixmap, QImage, QColor, Qt
 
 from foundry import icon_dir, data_dir
+from foundry.core.geometry.Position.Position import Position
+from foundry.core.geometry.Size.Size import Size
+from foundry.game.Rect import Rect
+from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
+from foundry.core.util.safe_eval import safe_eval
 
 with open(data_dir.joinpath("icons.yaml")) as f:
     _CUSTOM_ICONS = yaml.load(f, Loader=Loader)
