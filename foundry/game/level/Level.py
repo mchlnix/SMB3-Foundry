@@ -264,7 +264,7 @@ class Level(LevelLike):
         if value == self.header.jump_level_address:
             return
 
-        value -= LEVEL_POINTER_OFFSET + self.header.jump_object_set.level_offset
+        value -= self.header.jump_object_set.level_offset
 
         self.header_bytes[0] = 0x00FF & value
         self.header_bytes[1] = value >> 8
