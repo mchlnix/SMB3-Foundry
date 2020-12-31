@@ -66,7 +66,12 @@ class Icon(QIcon):
     @classmethod
     def as_custom(cls, name: str):
         """Generates a predefined icon"""
-        return cls(str(icon_dir.joinpath(_CUSTOM_ICONS[name]["file"])))
+        action = _CUSTOM_ICONS[name]["type"]
+        if action == "normal":
+            return cls.from_filename(str(icon_dir.joinpath(_CUSTOM_ICONS[name]["file"])))
+        elif action == "graphics_sheet":
+            return cls.from_sprite_sheet(name)
+
     @classmethod
     def from_sprite_sheet(cls, name: str):
         """Generates an icon from a region from gfx.png"""
