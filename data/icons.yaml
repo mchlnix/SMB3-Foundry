@@ -42,38 +42,62 @@ small_mario:
   offset:
     x: 32 * 16
     y: 53 * 16
+  size:
+    width: 16
+    height: 16
 super_mario:
   type: graphics_sheet
   offset:
     x: 6 * 16
     y: 48 * 16
+  size:
+    width: 16
+    height: 16
 raccoon_mario:
   type: graphics_sheet
   offset:
     x: 57 * 16
     y: 53 * 16
+  size:
+    width: 16
+    height: 16
 fire_mario:
   type: graphics_sheet
   offset:
     x: 16 * 16
     y: 53 * 16
+  size:
+    width: 16
+    height: 16
 tanooki_mario:
   type: graphics_sheet
   offset:
     x: 54 * 16
     y: 53 * 16
+  size:
+    width: 16
+    height: 16
 frog_mario:
   type: graphics_sheet
   offset:
     x: 56 * 16
     y: 53 * 16
+  size:
+    width: 16
+    height: 16
 hammer_mario:
   type: graphics_sheet
   offset:
     x: 58 * 16
     y: 53 * 16
+  size:
+    width: 16
+    height: 16
 pwing_mario:
   type: graphics_sheet
   offset:
     x: 55 * 16
     y: 53 * 16
+  size:
+    width: 16
+    height: 16
