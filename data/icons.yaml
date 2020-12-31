@@ -39,33 +39,41 @@ link:
   file: external-link.svg
 small_mario:
   type: graphics_sheet
-  x_offset: 32 * 16
-  y_offset: 53 * 16
+  offset:
+    x: 32 * 16
+    y: 53 * 16
 super_mario:
   type: graphics_sheet
-  x_offset: 6 * 16
-  y_offset: 48 * 16
+  offset:
+    x: 6 * 16
+    y: 48 * 16
 raccoon_mario:
   type: graphics_sheet
-  x_offset: 57 * 16
-  y_offset: 53 * 16
+  offset:
+    x: 57 * 16
+    y: 53 * 16
 fire_mario:
   type: graphics_sheet
-  x_offset: 16 * 16
-  y_offset: 53 * 16
+  offset:
+    x: 16 * 16
+    y: 53 * 16
 tanooki_mario:
   type: graphics_sheet
-  x_offset: 54 * 16
-  y_offset: 53 * 16
+  offset:
+    x: 54 * 16
+    y: 53 * 16
 frog_mario:
   type: graphics_sheet
-  x_offset: 56 * 16
-  y_offset: 53 * 16
+  offset:
+    x: 56 * 16
+    y: 53 * 16
 hammer_mario:
   type: graphics_sheet
-  x_offset: 58 * 16
-  y_offset: 53 * 16
+  offset:
+    x: 58 * 16
+    y: 53 * 16
 pwing_mario:
   type: graphics_sheet
-  x_offset: 55 * 16
-  y_offset: 53 * 16
+  offset:
+    x: 55 * 16
+    y: 53 * 16
