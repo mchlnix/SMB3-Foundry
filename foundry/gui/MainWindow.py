@@ -424,7 +424,7 @@ class MainWindow(QMainWindow):
         self.menu_toolbar.addAction(whats_this_action)
 
         self.menu_toolbar.addSeparator()
-        self.warning_list = WarningList(self, self.level_ref)
+        self.warning_list = WarningList(self, self.level_ref, self.level_view, self.object_list)
 
         warning_action = self.menu_toolbar.addAction(icon("alert-triangle.svg"), "Warning Panel")
         warning_action.setWhatsThis("Shows a list of warnings.")
