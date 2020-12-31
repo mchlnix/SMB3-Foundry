@@ -37,3 +37,35 @@ help:
 link:
   type: normal
   file: external-link.svg
+small_mario:
+  type: graphics_sheet
+  x_offset: 32
+  y_offset: 53
+super_mario:
+  type: graphics_sheet
+  x_offset: 6
+  y_offset: 48
+raccoon_mario:
+  type: graphics_sheet
+  x_offset: 57
+  y_offset: 53
+fire_mario:
+  type: graphics_sheet
+  x_offset: 16
+  y_offset: 53
+tanooki_mario:
+  type: graphics_sheet
+  x_offset: 54
+  y_offset: 53
+frog_mario:
+  type: graphics_sheet
+  x_offset: 56
+  y_offset: 53
+hammer_mario:
+  type: graphics_sheet
+  x_offset: 58
+  y_offset: 53
+pwing_mario:
+  type: graphics_sheet
+  x_offset: 55
+  y_offset: 53
