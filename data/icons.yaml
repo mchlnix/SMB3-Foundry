@@ -1,26 +1,39 @@
 undo:
+  type: normal
   file: rotate-ccw.svg
 redo:
+  type: normal
   file: rotate-cw.svg
 play:
+  type: normal
   file: play-circle.svg
 zoom in:
+  type: normal
   file: zoom-out.svg
 zoom out:
+  type: normal
   file: zoom-in.svg
 icon:
+  type: normal
   file: tanooki.ico
 open file:
+  type: normal
   file: folder.svg
 save file:
+  type: normal
   file: save.svg
 settings:
+  type: normal
   file: settings.svg
 tool:
+  type: normal
   file: tool.svg
 pointer editor:
+  type: normal
   file: arrow-right-circle.svg
 help:
+  type: normal
   file: help-circle.svg
 link:
+  type: normal
   file: external-link.svg
