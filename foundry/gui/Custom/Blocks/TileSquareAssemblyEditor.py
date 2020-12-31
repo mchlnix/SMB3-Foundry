@@ -202,13 +202,13 @@ class DialogTileSquareAssemblyEditor(ChildWindow, AbstractActionObject):
         )
 
         menu_toolbar.addSeparator()
-        self.zoom_out_action = menu_toolbar.addAction(Icon.as_custom("zoom out"), "Zoom Out")
+        self.zoom_out_action = menu_toolbar.addAction(Icon.as_custom("zoom in"), "Zoom Out")
         self.zoom_out_action.triggered.connect(lambda *_: setattr(self, "zoom", min(10, self.zoom + 1)))
         self.zoom_out_action.setWhatsThis(
             "<b>Zoom Out</b><br/>"
             "Retracts the size of the Tile Square Assembly Editor<br/>"
         )
-        self.zoom_in_action = menu_toolbar.addAction(Icon.as_custom("zoom in"), "Zoom In")
+        self.zoom_in_action = menu_toolbar.addAction(Icon.as_custom("zoom out"), "Zoom In")
         self.zoom_in_action.triggered.connect(lambda *_: setattr(self, "zoom", max(1, self.zoom - 1)))
         self.zoom_in_action.setWhatsThis(
             "<b>Zoom In</b><br/>"
