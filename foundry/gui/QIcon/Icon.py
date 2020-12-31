@@ -10,6 +10,9 @@ from foundry import icon_dir, data_dir
 with open(data_dir.joinpath("icons.yaml")) as f:
     _CUSTOM_ICONS = yaml.load(f, Loader=Loader)
 
+sprite_sheet = QImage(str(data_dir / "gfx.png"))
+sprite_sheet.convertTo(QImage.Format_RGB888)
+
 
 class Icon(QIcon):
     """
@@ -59,3 +62,22 @@ class Icon(QIcon):
     def as_custom(cls, name: str):
         """Generates a predefined icon"""
         return cls(str(icon_dir.joinpath(_CUSTOM_ICONS[name]["file"])))
+    @classmethod
+    def from_sprite_sheet(cls, name: str):
+        """Generates an icon from a region from gfx.png"""
+        icon_info = _CUSTOM_ICONS[name]
+        try:
+            x, y = safe_eval(str(icon_info["offset"]["x"])), safe_eval(str(icon_info["offset"]["y"]))
+            pos = Position(x, y)
+        except ValueError:
+            print(f"Invalid offset parameters: {icon_info['offset']}")
+            raise ValueError
+        try:
+            width, height = safe_eval(str(icon_info["size"]["width"])), safe_eval(str((icon_info["size"]["height"])))
+            size = Size(width, height)
+        except ValueError:
+            print(f"Invalid offset parameters: {icon_info['size']}")
+            raise ValueError
+
+        image = sprite_sheet.copy(Rect(pos.x, pos.y, size.width, size.height))
+        return cls.from_image_and_mask_color(image, QColor(*MASK_COLOR).rgb())
