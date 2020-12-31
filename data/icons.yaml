@@ -9,10 +9,10 @@ play:
   file: play-circle.svg
 zoom in:
   type: normal
-  file: zoom-out.svg
+  file: zoom-in.svg
 zoom out:
   type: normal
-  file: zoom-in.svg
+  file: zoom-out.svg
 icon:
   type: normal
   file: tanooki.ico
