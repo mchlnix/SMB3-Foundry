@@ -13,6 +13,9 @@ from foundry.core.Settings.util import get_setting
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.core.Action.Action import Action
 
+from smb3parse.constants import Title_DebugMenu, Title_PrepForWorldMap
+from foundry.gui.SettingsDialog import PowerUp, POWERUPS
+
 
 class ActionOpenEmulator(Action):
     """Saves the rom to the first level"""
@@ -42,6 +45,8 @@ def _on_play(parent: QWidget, action: Action):
 
     if not action(path_to_temp_rom):
         return False
+    if not _set_default_powerup(path_to_temp_rom):
+        return False
 
     arg = str(get_setting("instaplay_arguments", ""))
     if not arg:
@@ -68,4 +73,59 @@ def _on_play(parent: QWidget, action: Action):
     except Exception as e:
         QMessageBox.critical(parent, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
 
+    return True
+
+
+def _set_default_powerup(path_to_rom) -> bool:
+    from smb3parse.util.rom import Rom as SMB3Rom
+    with open(path_to_rom, "rb") as smb3_rom:
+        data = smb3_rom.read()
+
+    rom = SMB3Rom(bytearray(data))
+
+    powerup: PowerUp = POWERUPS[get_setting("default_powerup", 0)]
+    index: int = powerup.index
+    pwing: bool = powerup.pwing_enable
+
+    rom.write(Title_PrepForWorldMap + 0x1, bytes([index]))
+
+    nop = 0xEA
+    rts = 0x60
+    lda = 0xA9
+    staAbsolute = 0x8D
+
+    # If a P-wing powerup is selected, another variable needs to be set with the P-wing value
+    # This piece of code overwrites a part of Title_DebugMenu
+    if pwing:
+        Map_Power_DispHigh = 0x03
+        Map_Power_DispLow = 0xF3
+
+        # We need to start one byte before Title_DebugMenu to remove the RTS of Title_PrepForWorldMap
+        # The assembly code below reads as follows:
+        # LDA 0x08
+        # STA $03F3
+        # RTS
+        rom.write(
+            Title_DebugMenu - 0x1,
+            bytes(
+                [
+                    lda,
+                    0x8,
+                    staAbsolute,
+                    Map_Power_DispLow,
+                    Map_Power_DispHigh,
+                    # The RTS to get out of the now extended Title_PrepForWorldMap
+                    rts,
+                ]
+            ),
+        )
+
+        # Remove code that resets the powerup value by replacing it with no-operations
+        # Otherwise this code would copy the value of the normal powerup here
+        # (So if the powerup would be Raccoon Mario, Map_Power_Disp would also be
+        # set as Raccoon Mario instead of P-wing
+        Map_Power_DispResetLocation = 0x3C5A2
+        rom.write(Map_Power_DispResetLocation, bytes([nop, nop, nop]))
+
+    rom.save_to(path_to_rom)
     return True
