@@ -689,6 +689,7 @@ class LevelObjectHorizontal(LevelObjectBlockGetter):
     def expands(self) -> int:
         return EXPANDS_HORIZ
 
+    @property
     def primary_expansion(self) -> int:
         if self.is_4byte:
             return EXPANDS_BOTH
@@ -1093,9 +1094,11 @@ class SingleBlock(LevelObject):
 
 
 class LevelObjectFillBackgroundHorizontalLevel(LevelObject):
+    @property
     def expands(self) -> int:
         return EXPANDS_NOT
 
+    @property
     def primary_expansion(self) -> int:
         return EXPANDS_NOT
 
