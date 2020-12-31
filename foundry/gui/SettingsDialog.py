@@ -1,4 +1,5 @@
 import qdarkstyle
+from collections import namedtuple
 from PySide2.QtWidgets import (
     QButtonGroup,
     QCheckBox,
@@ -30,20 +31,21 @@ from smb3parse.constants import (
 )
 from foundry.core.Settings.util import get_setting, set_setting, load_settings, save_settings
 from foundry.core.util import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, DRACULA_STYLE_SET, RETRO_STYLE_SET
+from foundry.gui.QIcon.Icon import Icon
 
+PowerUp = namedtuple('PowerUp', ['name', 'icon_name', 'index', 'pwing_enable'])
 
 POWERUPS_PWING = 4
 POWERUPS = [
-    ("Small Mario", 32, 53, 0, False),
-    ("Big Mario", 6, 48, POWERUP_MUSHROOM, False),
-    ("Raccoon Mario", 57, 53, POWERUP_RACCOON, False),
-    ("Fire Mario", 16, 53, POWERUP_FIREFLOWER, False),
-    ("Tanooki Mario", 54, 53, POWERUP_TANOOKI, False),
-    ("Frog Mario", 56, 53, POWERUP_FROG, False),
-    ("Hammer Mario", 58, 53, POWERUP_HAMMER, False),
-    # Even though P-Wing can *technically* be combined, it only really works with Raccoon and Tanooki suit
-    ("Raccoon Mario with P-Wing", 55, 53, POWERUP_RACCOON, True),
-    ("Tanooki Mario with P-Wing", 55, 53, POWERUP_TANOOKI, True),
+    PowerUp("Small Mario", "small_mario", 0, False),
+    PowerUp("Super Mario", "super_mario", POWERUP_MUSHROOM, False),
+    PowerUp("Raccoon Mario", "raccoon_mario", POWERUP_RACCOON, False),
+    PowerUp("Fire Mario", "fire_mario", POWERUP_FIREFLOWER, False),
+    PowerUp("Tanooki Mario", "tanooki_mario", POWERUP_TANOOKI, False),
+    PowerUp("Frog Mario", "frog_mario", POWERUP_FROG, False),
+    PowerUp("Hammer Mario", "hammer_mario", POWERUP_HAMMER, False),
+    PowerUp("Raccoon Mario with P-Wing", "pwing_mario", POWERUP_RACCOON, True),
+    PowerUp("Tanooki Mario with P-Wing", "pwing_mario", POWERUP_TANOOKI, True)
 ]
 
 png = QImage(str(data_dir / "gfx.png"))
@@ -152,10 +154,8 @@ class SettingsDialog(Dialog):
         command_layout.addWidget(QLabel("Power up of Mario when playing level:"))
         self.powerup_combo_box = QComboBox()
 
-        for name, x, y, value, p_wing in POWERUPS:
-            powerup_icon = self._load_from_png(x, y)
-
-            self.powerup_combo_box.addItem(powerup_icon, name)
+        for powerup in POWERUPS:
+            self.powerup_combo_box.addItem(Icon.as_custom(powerup.icon_name), powerup.name)
 
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
 
