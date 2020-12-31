@@ -49,6 +49,13 @@ class Icon(QIcon):
         return cls.from_pixmap(QPixmap.fromImage(image))
 
     @classmethod
+    def from_image_and_mask_color(cls, image: QImage, mask_color: QColor):
+        """Masks out a given color and generates the icon from the QImage"""
+        mask = image.createMaskFromColor(mask_color, Qt.MaskOutColor)
+        image.setAlphaChannel(mask)
+        return cls.from_image(image)
+
+    @classmethod
     def as_custom(cls, name: str):
         """Generates a predefined icon"""
         return cls(str(icon_dir.joinpath(_CUSTOM_ICONS[name]["file"])))
