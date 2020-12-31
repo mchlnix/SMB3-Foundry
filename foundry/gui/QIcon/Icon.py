@@ -44,6 +44,11 @@ class Icon(QIcon):
         return cls(pixmap)
 
     @classmethod
+    def from_image(cls, image: QImage):
+        """Generates an icon from a QImage"""
+        return cls.from_pixmap(QPixmap.fromImage(image))
+
+    @classmethod
     def as_custom(cls, name: str):
         """Generates a predefined icon"""
         return cls(str(icon_dir.joinpath(_CUSTOM_ICONS[name]["file"])))
