@@ -360,14 +360,11 @@ class LevelObject(ObjectLike, BlockGenerator):
 
         if self.primary_expansion == EXPANDS_VERT:
             length = y
-
             length = max(0, length)
             length = min(length, 0x0F)
 
-            index = (self.index // 0x10) * 0x10
-
-            self.index = index + length
-            self.size.width = self.index
+            self.index = (self.index & 0xF0) + length
+            self.size.width = length
         else:
             length = y
             length = max(0, length)
