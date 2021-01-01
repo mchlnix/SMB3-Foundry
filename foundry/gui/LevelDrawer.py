@@ -272,17 +272,11 @@ class LevelDrawer:
                 # center() is one pixel off for some reason
                 pos = rect.topLeft() + QPoint(*(rect.size() / 2).toTuple())
 
-                trigger_position = level_object.get_position()
-
                 if "left" in name:
                     image = LEFT_ARROW
 
                     pos.setX(rect.right())
                     pos.setY(pos.y() - self.block_length / 2)
-
-                    # leftward pipes trigger on the column to the left of the opening
-                    x, y = level_object.get_rect().bottomRight().toTuple()
-                    trigger_position = (x - 1, y)
 
                 elif "right" in name:
                     image = RIGHT_ARROW
@@ -291,22 +285,12 @@ class LevelDrawer:
 
                 elif "down" in name:
                     image = DOWN_ARROW
-
                     pos.setX(pos.x() - self.block_length / 2)
                     pos.setY(rect.top() - self.block_length)
                 else:
-                    # upwards pipe
                     image = UP_ARROW
-
                     pos.setX(pos.x() - self.block_length / 2)
                     pos.setY(rect.bottom())
-
-                    # upwards pipes trigger on the second to last row
-                    x, y = level_object.get_rect().bottomLeft().toTuple()
-                    trigger_position = (x, y - 1)
-
-                if not self._object_in_jump_area(level, trigger_position):
-                    image = NO_JUMP
 
             elif "door" == name or "door (can go" in name or "invisible door" in name:
                 fill_object = False
