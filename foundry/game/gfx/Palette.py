@@ -138,7 +138,8 @@ class PaletteSet:
 
     @background_color.setter
     def background_color(self, color: Color) -> None:
-        self.palette_0.color_0 = color
+        for idx in range(4):
+            self[idx].color_0 = color
 
 
 _NES_PAL_CONTROLLER = None
