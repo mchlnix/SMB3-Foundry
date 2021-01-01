@@ -11,27 +11,32 @@ class MenuAction(QAction):
     def __init__(self, parent: Menu, value: bool, name: str = "", add_action: bool = True) -> None:
         super().__init__(parent)
         self.action = ObservableDecorator(self.action)
+        self._menu_value = value
         self.parent = parent
         self.name = name
         self.setCheckable(True)
         self.setChecked(value)
+        self.setText(name)
+        self.triggered.connect(lambda: setattr(self, "menu_value", not self.menu_value))
         if add_action:
-            self.parent.add_action(self.name, lambda: setattr(self, "value", not self.isChecked()))
+            self.parent.addAction(self)
 
     def add_observer(self, observer: Callable) -> None:
         """Adds an observer"""
         self.action.attach_observer(observer)
 
     @property
-    def value(self) -> bool:
+    def menu_value(self) -> bool:
         """Sets the value of the object"""
-        return self.isChecked()
+        return self._menu_value
 
-    @value.setter
-    def value(self, value: bool) -> None:
-        self.action(value)
+    @menu_value.setter
+    def menu_value(self, value: bool) -> None:
+        if value != self.menu_value:
+            self._menu_value = value
+            self.action(value)
 
     def action(self, value: bool) -> bool:
         """The action of the object"""
         self.setChecked(value)
-        return self.value
+        return value
