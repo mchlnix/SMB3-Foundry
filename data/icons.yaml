@@ -195,7 +195,7 @@ hidden_coin:
   size:
     width: 16
     height: 16
-hiden_one_up:
+hidden_one_up:
   type: graphics_sheet
   offset:
     x: 27 * 16
