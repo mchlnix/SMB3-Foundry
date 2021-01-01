@@ -10,6 +10,7 @@ from foundry.core.geometry.Size.Size import Size
 from foundry.core.Settings.util import get_setting
 from foundry.core.Observables.ObservableDecorator import ObservableDecorator
 from foundry.core.Action.Action import Action
+from foundry.gui.LevelDrawer import _level_drawer_container
 
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
 from foundry.game.gfx.Palette import PaletteSet
@@ -48,6 +49,8 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
         self.size = Size(1, 1) if size is None else size
         self.tsa_data = tsa_data
 
+        _level_drawer_container.observe_setting("block_transparency", lambda *_: self._push_transparency())
+
         self._set_up_layout()
         self.setWhatsThis(
             "<b>Tile Square Assembly Viewer</b>"
@@ -67,6 +70,11 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
     ):
         """Generates a TSA viewer from a given offset"""
         return cls(parent, ptn_tbl, pal_set, cls.tsa_data_from_tsa_offset(tsa_offset), size)
+
+    def _push_transparency(self) -> None:
+        """Updates the transparency of blocks"""
+        for block in self.blocks:
+            block.transparency = self.transparency
 
     def _set_up_layout(self) -> None:
         def closure(i):
@@ -176,5 +184,5 @@ class TileSquareAssemblyViewer(Widget, AbstractActionObject):
     @property
     def transparency(self) -> bool:
         """Determines if the blocks will be transparent"""
-        return get_setting("block_transparency", True)
+        return _level_drawer_container.safe_get_setting("block_transparency", True)
 
