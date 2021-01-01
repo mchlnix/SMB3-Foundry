@@ -203,7 +203,8 @@ def load_palette(object_set: int, palette_group: int) -> PaletteSet:
     palettes = []
 
     for _ in range(PALETTES_PER_PALETTES_GROUP):
-        palettes.append(Palette(*rom.read(palette_address, COLORS_PER_PALETTE)))
+        colors = [PaletteController().colors[byte] for byte in rom.read(palette_address, COLORS_PER_PALETTE)]
+        palettes.append(Palette(*colors))
         palette_address += COLORS_PER_PALETTE
 
     return load_palette_group(palettes)
@@ -221,4 +222,4 @@ def bg_color_for_palette(palette_set: PaletteSet):
     :param palette_set: PaletteSet
     :return: A tuple representing the color data
     """
-    return PaletteController().colors[palette_set[0][0]]
+    return palette_set[0][0]
