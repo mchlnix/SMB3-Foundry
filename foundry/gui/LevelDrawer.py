@@ -299,12 +299,6 @@ class LevelDrawer:
 
                 pos.setY(rect.top() - self.block_length)
 
-                x, y = level_object.get_position()
-
-                # jumps seemingly trigger on the bottom block
-                if not self._object_in_jump_area(level, (x, y + 1)):
-                    image = NO_JUMP
-
             # "?" - blocks, note blocks, wooden blocks and bricks
             elif "'?' with" in name or "brick with" in name or "bricks with" in name or "block with" in name:
                 if not _level_drawer_container.safe_get_setting("draw_items_in_blocks", True):
