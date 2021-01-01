@@ -64,7 +64,10 @@ class PaletteWidget(QWidget):
         layout = QHBoxLayout(self)
 
         for color_index in range(COLORS_PER_PALETTE):
-            color: Color = PaletteController().colors[palette[palette_number][color_index]]
+            try:
+                color: Color = PaletteController().colors[palette[palette_number][color_index]]
+            except KeyError:
+                color: Color = palette[palette_number][color_index]
 
             layout.addWidget(ColorSquare(QColor(color[0], color[1], color[2])))
 
