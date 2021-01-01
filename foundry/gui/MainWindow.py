@@ -71,6 +71,7 @@ from foundry.gui.QIcon.Icon import Icon
 from foundry.game.gfx.Palette import load_palette
 from foundry.gui.WarningList import WarningList
 from foundry.gui.PaletteViewer import PaletteViewer
+from foundry.core.Settings.util import _main_container
 
 
 class MainWindow(QMainWindow):
@@ -204,24 +205,34 @@ class MainWindow(QMainWindow):
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
         self.visual_object_toolbar = self.add_toolbox("Object Toolbar", self.object_toolbar, 1)
-        if get_setting("visual_object_toolbar", True) != 0:
-            self.visual_object_toolbar.toggleViewAction().trigger()
+        self.visual_object_toolbar.setVisible(get_setting("visual_object_toolbar", True))
+        _main_container.observe_setting(
+            "visual_object_toolbar", lambda value: self.visual_object_toolbar.setVisible(value)
+        )
 
         self.compact_object_toolbar = self.add_toolbox("Object Dropdown Toolbar", self.object_dropdown, 2)
-        if get_setting("compact_object_toolbar", True) != 0:
-            self.compact_object_toolbar.toggleViewAction().trigger()
+        self.compact_object_toolbar.setVisible(get_setting("compact_object_toolbar", True))
+        _main_container.observe_setting(
+            "compact_object_toolbar", lambda value: self.compact_object_toolbar.setVisible(value)
+        )
 
         self.object_attribute_toolbar = self.add_toolbox("Level Spinner Toolbar", self.spinner_panel, 2)
-        if get_setting("object_attribute_toolbar", True) != 0:
-            self.object_attribute_toolbar.toggleViewAction().trigger()
+        self.object_attribute_toolbar.setVisible(get_setting("object_attribute_toolbar", True))
+        _main_container.observe_setting(
+            "object_attribute_toolbar", lambda value: self.object_attribute_toolbar.setVisible(value)
+        )
 
         self.bytes_counter_toolbar = self.add_toolbox("Size Toolbar", [self.level_size_bar, self.enemy_size_bar], 2)
-        if get_setting("bytes_counter_toolbar", True) != 0:
-            self.bytes_counter_toolbar.toggleViewAction().trigger()
+        self.bytes_counter_toolbar.setVisible(get_setting("bytes_counter_toolbar", True))
+        _main_container.observe_setting(
+            "bytes_counter_toolbar", lambda value: self.bytes_counter_toolbar.setVisible(value)
+        )
 
         self.object_list_toolbar = self.add_toolbox("Level Info", splitter, 2)
-        if get_setting("object_list_toolbar", True) != 0:
-            self.object_list_toolbar.toggleViewAction().trigger()
+        self.object_list_toolbar.setVisible(get_setting("object_list_toolbar", True))
+        _main_container.observe_setting(
+            "object_list_toolbar", lambda value: self.object_list_toolbar.setVisible(value)
+        )
 
         self.menu_toolbar = QToolBar("Menu Toolbar", self)
         self.menu_toolbar.setOrientation(Qt.Horizontal)
