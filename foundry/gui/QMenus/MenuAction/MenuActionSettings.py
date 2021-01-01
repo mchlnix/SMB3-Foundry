@@ -18,11 +18,12 @@ class MenuActionSettings(MenuAction):
             add_action: bool = True,
             container: Optional[SettingsContainer] = None
     ) -> None:
-        if container is None:
-            super(MenuActionSettings, self).__init__(parent, get_setting(setting, True), name, add_action)
-        else:
-            super(MenuActionSettings, self).__init__(parent, container.safe_get_setting(setting, True), name, add_action)
-        if container is None:
-            self.add_observer(lambda value: set_setting(setting, value))
-        else:
-            self.add_observer(lambda value: container.set_setting(setting, value))
+        self.setting_name = setting
+        self.container = _main_container if container is None else container
+        super(MenuActionSettings, self).__init__(parent, self.setting, name, add_action)
+        self.add_observer(lambda value: container.set_setting(setting, value))
+
+    @property
+    def setting(self) -> bool:
+        """The value of the setting"""
+        return self.container.safe_get_setting(self.setting_name, True)
