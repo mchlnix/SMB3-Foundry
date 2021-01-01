@@ -120,12 +120,12 @@ class ObjectDropdown(QComboBox):
         if not isinstance(level_object, (LevelObjectController, EnemyObject)):
             return
 
-        if level_object.name in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
+        if level_object.description in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
             return
 
         icon = QIcon(QPixmap(self._resize_bitmap(level_object.as_image())))
 
-        self.addItem(icon, level_object.name, level_object)
+        self.addItem(icon, level_object.description, level_object)
 
     @staticmethod
     def _resize_bitmap(source_image: QImage) -> QImage:
