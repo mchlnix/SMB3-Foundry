@@ -249,7 +249,7 @@ class LevelDrawer:
         painter.save()
 
         for level_object in level.get_all_objects():
-            name = level_object.name.lower()
+            name = level_object.description.lower()
 
             # only handle this specific enemy item for now
             if isinstance(level_object, EnemyObject) and "invisible door" not in name:
