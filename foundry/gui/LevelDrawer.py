@@ -249,7 +249,7 @@ class LevelDrawer:
         painter.save()
 
         for level_object in level.get_all_objects():
-            name = level_object.description.lower()
+            name = level_object.name.lower()
 
             # only handle this specific enemy item for now
             if isinstance(level_object, EnemyObject) and "invisible door" not in name:
@@ -295,7 +295,11 @@ class LevelDrawer:
             elif "door" == name or "door (can go" in name or "invisible door" in name:
                 fill_object = False
 
-                image = DOWN_ARROW
+                if "note" in name:
+                    image = UP_ARROW
+                else:
+                    # door
+                    image = DOWN_ARROW
 
                 pos.setY(rect.top() - self.block_length)
 

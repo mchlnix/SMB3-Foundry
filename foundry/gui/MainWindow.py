@@ -1,3 +1,5 @@
+import base64
+import json
 import logging
 import os
 from typing import Tuple, Union
@@ -8,6 +10,7 @@ from PySide2.QtWidgets import (
     QAction,
     QDialog,
     QFileDialog,
+    QHBoxLayout,
     QMainWindow,
     QMenu,
     QMessageBox,
@@ -18,9 +21,12 @@ from PySide2.QtWidgets import (
     QSplitter,
     QToolBar,
     QWhatsThis,
+    QWidget,
 )
 
 from foundry import (
+    auto_save_level_data_path, auto_save_rom_path, discord_link,
+    enemy_compat_link, feature_video_link,
     get_current_version_name,
     get_latest_version_name,
     open_url,
@@ -192,12 +198,26 @@ class MainWindow(QMainWindow):
         self.jump_list.edit_jump.connect(self.on_jump_edit)
         self.jump_list.remove_jump.connect(self.on_jump_removed)
 
+        jump_buttons = QWidget()
+        jump_buttons.setLayout(QHBoxLayout())
+        jump_buttons.layout().setContentsMargins(0, 0, 0, 0)
+
+        add_jump_button = QPushButton("Add Jump")
+        add_jump_button.clicked.connect(self.on_jump_added)
+
+        set_jump_destination_button = QPushButton("Set Jump Destination")
+        set_jump_destination_button.clicked.connect(self._show_jump_dest)
+
+        jump_buttons.layout().addWidget(add_jump_button)
+        jump_buttons.layout().addWidget(set_jump_destination_button)
+
         splitter = QSplitter(self)
         splitter.setOrientation(Qt.Vertical)
 
         splitter.addWidget(self.object_list)
         splitter.setStretchFactor(0, 1)
         splitter.addWidget(self.jump_list)
+        splitter.addWidget(jump_buttons)
 
         splitter.setChildrenCollapsible(False)
 
@@ -315,6 +335,7 @@ class MainWindow(QMainWindow):
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self, self.level_view.zoom_out)
 
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_L), self, self.object_dropdown.setFocus)
 
         self.select_rom_action = ActionSelectFileToOpen("open_rom", ActionSafe, "Select ROM", ROM_FILE_FILTER)
         self.select_rom_action.attach_observer(load_from_file)
@@ -335,11 +356,68 @@ class MainWindow(QMainWindow):
             pal
         )
 
+    def _show_jump_dest(self):
+        header_editor = HeaderEditor(self, self.level_ref)
+        header_editor.tab_widget.setCurrentIndex(3)
+
+        header_editor.exec_()
+
     def _on_level_data_changed(self):
         self.undo_action.setEnabled(self.level_ref.undo_stack.undo_available)
         self.redo_action.setEnabled(self.level_ref.undo_stack.redo_available)
 
         self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
+
+        self._save_auto_save()
+
+    def _save_auto_save(self):
+        self._save_current_changes_to_file(auto_save_rom_path, set_new_path=False)
+
+        undo_index, data = self.level_ref.level.undo_stack.export_data()
+
+        (level_offset, _), (enemy_offset, _) = self.level_ref.level.to_bytes()
+
+        object_set_number = self.level_ref.level.object_set_number
+
+        base64_data = []
+
+        for (object_offset, object_data), (enemy_offset_, enemy_data) in data:
+            base64_data.append(
+                (
+                    object_offset, base64.b64encode(object_data).decode("ascii"),
+                    enemy_offset_, base64.b64encode(enemy_data).decode("ascii")
+                )
+            )
+
+        with open(auto_save_level_data_path, "w") as level_data_file:
+            level_data_file.write(
+                json.dumps(
+                    [object_set_number, level_offset, enemy_offset, (undo_index, base64_data)]
+                )
+            )
+
+    def _load_auto_save(self):
+        # rom already loaded
+        with open(auto_save_level_data_path, "r") as level_data_file:
+            json_data = level_data_file.read()
+
+            object_set_number, level_offset, enemy_offset, (undo_index, base64_data) = json.loads(json_data)
+
+        self.update_level("recovered level", level_offset, enemy_offset, object_set_number)
+
+        byte_data = []
+        for undo_data in base64_data:
+            level_offset, object_data, enemy_offset, enemy_data = undo_data
+
+            object_data = bytearray(base64.b64decode(object_data))
+            enemy_data = bytearray(base64.b64decode(enemy_data))
+
+            byte_data.append(((level_offset, object_data), (enemy_offset, enemy_data)))
+
+        self.level_ref.level.undo_stack.import_data(undo_index, byte_data)
+        self.level_ref.level.changed = bool(base64_data)
+
+        self._on_level_data_changed()
 
     def _go_to_jump_destination(self):
         if not self.safe_to_change():
@@ -427,6 +505,15 @@ class MainWindow(QMainWindow):
 
         ROM().save_to_file(path_to_rom)
 
+    def _save_current_changes_to_file(self, pathname: str, set_new_path):
+        for offset, data in self.level_ref.to_bytes():
+            ROM().bulk_write(data, offset)
+
+        try:
+            ROM().save_to_file(pathname, set_new_path)
+        except IOError as exp:
+            QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
+
     def open_m3l(self, path: str) -> None:
         """Opens a M3L"""
         with open(path, "rb") as m3l_file:
@@ -453,6 +540,7 @@ class MainWindow(QMainWindow):
             latest_version = get_latest_version_name()
         except ValueError as ve:
             QMessageBox.critical(self, "Error while checking for updates", f"Error: {ve}")
+            self.setCursor(Qt.ArrowCursor)
             return
 
         if current_version != latest_version:
@@ -814,6 +902,9 @@ class MainWindow(QMainWindow):
             event.ignore()
 
             return
+
+        auto_save_rom_path.unlink(missing_ok=True)
+        auto_save_level_data_path.unlink(missing_ok=True)
 
         super(MainWindow, self).closeEvent(event)
 

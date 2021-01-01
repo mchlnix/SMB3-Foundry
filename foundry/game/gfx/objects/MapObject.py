@@ -146,8 +146,6 @@ class MapObject(ObjectLike):
         else:
             self.name = str(hex(self.block.index))
 
-        self.description = self.name
-
         self.selected = False
 
     def set_position(self, x, y):

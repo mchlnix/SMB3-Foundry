@@ -97,6 +97,8 @@ class LevelSelector(QDialog):
 
         self.button_ok = QPushButton("Ok", self)
         self.button_ok.clicked.connect(self.on_ok)
+        self.button_ok.setFocus()
+
         self.button_cancel = QPushButton("Cancel", self)
         self.button_cancel.clicked.connect(self.close)
 
@@ -112,7 +114,7 @@ class LevelSelector(QDialog):
         self.source_selector = QTabWidget()
         self.source_selector.addTab(stock_level_widget, "Stock Levels")
 
-        for world_number in range(WORLD_COUNT):
+        for world_number in range(WORLD_COUNT - 1):
             world_number += 1
 
             world_map_select = WorldMapLevelSelect(world_number)
@@ -217,6 +219,9 @@ class LevelSelector(QDialog):
         self.on_ok()
 
     def on_ok(self, _=None):
+        if self.world_list.currentRow() == OVERWORLD_MAPS_INDEX:
+            return
+
         self.object_set = self.object_set_dropdown.currentIndex()
         self.object_data_offset = self.object_data_spinner.value()
         # skip the first byte, because it seems useless

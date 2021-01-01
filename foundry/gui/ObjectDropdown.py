@@ -41,6 +41,11 @@ class ObjectDropdown(QComboBox):
             "an object, you can place it by clicking the middle mouse button anywhere in the level."
         )
 
+    def setFocus(self):
+        super(ObjectDropdown, self).setFocus()
+
+        self.lineEdit().selectAll()
+
     def set_object_set(self, object_set_index: int, graphic_set_index: int) -> None:
         factory = LevelObjectFactory(
             object_set_index, graphic_set_index, 0, [], vertical_level=False, size_minimal=True
@@ -63,7 +68,7 @@ class ObjectDropdown(QComboBox):
 
         :param level_object: The type of object, that was selected to be placeable in the level.
         """
-        index_of_object = self.findText(level_object.description)
+        index_of_object = self.findText(level_object.name)
 
         if index_of_object == -1:
             raise LookupError(f"Couldn't find {level_object} in object dropdown.")
@@ -115,12 +120,12 @@ class ObjectDropdown(QComboBox):
         if not isinstance(level_object, (LevelObjectController, EnemyObject)):
             return
 
-        if level_object.description in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
+        if level_object.name in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
             return
 
         icon = QIcon(QPixmap(self._resize_bitmap(level_object.as_image())))
 
-        self.addItem(icon, level_object.description, level_object)
+        self.addItem(icon, level_object.name, level_object)
 
     @staticmethod
     def _resize_bitmap(source_image: QImage) -> QImage:

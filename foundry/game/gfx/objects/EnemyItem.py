@@ -56,7 +56,7 @@ class EnemyObject(ObjectLike):
     def _setup(self):
         obj_def = self.object_set.get_definition_of(self.obj_index)
 
-        self.description = obj_def.description
+        self.name = obj_def.description
 
         self.width = obj_def.bmp_width
         self.height = obj_def.bmp_height
@@ -106,7 +106,7 @@ class EnemyObject(ObjectLike):
             painter.drawImage(x * block_length, y * block_length, block)
 
     def get_status_info(self):
-        return [("Name", self.description), ("X", self.x_position), ("Y", self.y_position)]
+        return [("Name", self.name), ("X", self.x_position), ("Y", self.y_position)]
 
     def __contains__(self, item):
         x, y = item
@@ -170,6 +170,9 @@ class EnemyObject(ObjectLike):
         self.draw(painter, Block.image_length, True)
 
         return image
+
+    def __str__(self):
+        return f"{self.name} at {self.x_position}, {self.y_position}"
 
     def __repr__(self):
         return f"EnemyObject {self.description} at {self.x_position}, {self.y_position}"

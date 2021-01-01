@@ -1,5 +1,6 @@
 import json
-import pathlib
+
+from foundry import default_settings_path
 
 RESIZE_LEFT_CLICK = "LMB"
 RESIZE_RIGHT_CLICK = "RMB"
@@ -21,11 +22,6 @@ SETTINGS["draw_invisible_items"] = True
 SETTINGS["draw_autoscroll"] = False
 SETTINGS["block_transparency"] = True
 SETTINGS["object_scroll_enabled"] = False
-
-default_settings_dir = pathlib.Path.home() / ".smb3foundry"
-default_settings_dir.mkdir(parents=True, exist_ok=True)
-
-default_settings_path = default_settings_dir / "settings"
 
 
 def load_settings():

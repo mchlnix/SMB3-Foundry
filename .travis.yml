@@ -1,10 +1,10 @@
 matrix:
   include:
-    - name: "Ubuntu Bionic"
+    - name: "Ubuntu Focal"
       os: linux
-      dist: bionic
+      dist: focal
       language: python
-      python: "3.6"
+      python: "3.8"
       virtualenv:
         system_site_packages: true
       before_install:
@@ -32,9 +32,9 @@ matrix:
 
     - name: "Codestyle and flake8"
       os: linux
-      dist: bionic
+      dist: focal
       language: python
-      python: "3.6"
+      python: "3.8"
       virtualenv:
         system_site_packages: true
       before_install:
@@ -92,10 +92,10 @@ matrix:
       os: windows
       language: shell # python is not supported yet
       env:
-        - PY36PATH=/c/Python36:/c/Python36/Scripts
-        - PATH=$PY36PATH:$PATH
+        - PY38PATH=/c/Python38:/c/Python38/Scripts
+        - PATH=$PY38PATH:$PATH
       before_install:
-        - choco install python --version=3.6.7
+        - choco install python --version=3.8.6
         - python .ci-tag-check.py
         - python -m pip install --upgrade pip
         - python -m pip install -r requirements.txt

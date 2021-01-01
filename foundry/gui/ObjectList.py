@@ -71,7 +71,7 @@ class ObjectList(QListWidget):
     def update_content(self):
         level_objects = self.level_ref.get_all_objects()
 
-        labels = [obj.description for obj in level_objects]
+        labels = [obj.name for obj in level_objects]
 
         self.blockSignals(True)
 

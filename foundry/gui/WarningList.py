@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from PySide2.QtCore import QRect, Qt, Signal, SignalInstance
@@ -24,6 +25,9 @@ class WarningList(QWidget):
         self.setLayout(QVBoxLayout())
         self.setWindowFlag(Qt.Popup)
         self.layout().setContentsMargins(5, 5, 5, 5)
+
+        self._enemy_dict = {}
+        self._build_enemy_clan_dict()
 
         self.warnings: List[str] = []
 
@@ -66,13 +70,38 @@ class WarningList(QWidget):
 
         # no items, that would crash the game
         for obj in level.objects:
-            if obj.description == "MSG_CRASH":
+            if obj.name == "MSG_CRASH":
                 self.warnings.append(
                     f"Object at {obj.get_position()} will likely cause the game to crash, when loading or on screen."
                 )
 
+        # incompatible enemies
+        enemies_in_level = [enemy for enemy in level.enemies if enemy.name in self._enemy_dict]
+
+        for enemy in enemies_in_level.copy():
+            enemies_in_level.pop(0)
+
+            clan, group = self._enemy_dict[enemy.name]
+
+            for other_enemy in enemies_in_level:
+                other_clan, other_group = self._enemy_dict[other_enemy.name]
+
+                if clan == other_clan and group != other_group:
+                    self.warnings.append(f"{enemy} incompatible with {other_enemy}, when on same screen")
+
         self.update()
         self.warnings_updated.emit(bool(self.warnings))
+
+    def _build_enemy_clan_dict(self):
+        with open("data/enemy_data.json", "r") as enemy_data_file:
+            enemy_data = json.loads(enemy_data_file.read())
+
+            self._enemy_dict.clear()
+
+            for clan, groups in enemy_data.items():
+                for group, enemy_list in groups.items():
+                    for enemy in enemy_list:
+                        self._enemy_dict[enemy] = (clan, group)
 
     def update(self):
         self.hide()

@@ -30,7 +30,7 @@ class WorldMap(LevelLike):
         self.tsa_data = ROM().get_tsa_data(self.object_set)
 
         self.world = 0
-        self.level_number = 0
+        self.level_number = world_index
 
         self.objects = []
 

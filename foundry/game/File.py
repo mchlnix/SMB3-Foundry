@@ -161,7 +161,7 @@ class ROM(Rom):
         return rom.read(tsa_start, TSA_TABLE_SIZE)
 
     @staticmethod
-    def save_to_file(path: str):
+    def save_to_file(path: str, set_new_path=True):
         with open(path, "wb") as f:
             f.write(bytearray(_ROM.rom_data))
 
@@ -170,8 +170,9 @@ class ROM(Rom):
                 f.write(_ROM.MARKER_VALUE)
                 f.write(_ROM.additional_data.encode("utf-8"))
 
-        _ROM.path = path
-        _ROM.name = basename(path)
+        if set_new_path:
+            ROM.path = path
+            ROM.name = basename(path)
 
     @staticmethod
     def set_additional_data(additional_data):

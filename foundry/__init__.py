@@ -2,16 +2,28 @@ import json
 import urllib.request
 import urllib.error
 from pathlib import Path
+from typing import Union
 
 from PySide2.QtCore import QUrl
 from PySide2.QtGui import QDesktopServices
 
 root_dir = Path(__file__).parent.parent
 
-data_dir = root_dir.joinpath("data")
+home_dir = Path.home() / ".smb3foundry"
+home_dir.mkdir(parents=True, exist_ok=True)
+
+default_settings_path = home_dir / "settings"
+
+auto_save_path = home_dir / "auto_save"
+auto_save_path.mkdir(parents=True, exist_ok=True)
 
 log_dir = data_dir.joinpath("logs")
 
+auto_save_rom_path = auto_save_path / "auto_save.nes"
+auto_save_level_data_path = auto_save_path / "level_data.json"
+
+data_dir = root_dir.joinpath("data")
+doc_dir = root_dir.joinpath("doc")
 icon_dir = data_dir.joinpath("icons")
 
 releases_link = "https://github.com/mchlnix/SMB3-Foundry/releases"
@@ -20,8 +32,10 @@ github_link = "https://github.com/mchlnix/SMB3-Foundry"
 github_issue_link = "https://github.com/mchlnix/SMB3-Foundry/issues"
 discord_link = "https://discord.gg/pm87gm7"
 
+enemy_compat_link = QUrl.fromLocalFile(str(doc_dir.joinpath("SMB3 enemy compatibility.html")))
 
-def open_url(url: str):
+
+def open_url(url: Union[str, QUrl]):
     QDesktopServices.openUrl(QUrl(url))
 
 

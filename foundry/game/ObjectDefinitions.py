@@ -84,7 +84,7 @@ def get_definition_of(tileset: int, type: int) -> "ObjectDefinition":
     except KeyError:
         print(f"The object does is undefined at {tileset}, {type}")
         raise KeyError
-
+    
 
 def get_generator_from_domain_and_index(tileset: int, domain: int, index: int) -> "ObjectDefinition":
     """

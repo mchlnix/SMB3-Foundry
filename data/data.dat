@@ -2999,7 +2999,7 @@
 0,0x14,0x14,1,1,<146>,9,0,0,MSG_NOTHING
 0,0x15,0x15,1,1,<146>,9,0,0,MSG_NOTHING
 0,0x16,0x16,1,1,<146>,9,0,0,MSG_NOTHING
-0,0x17,0x17,1,1,<9>,9,0,0,Spiny Cheep-Cheep
+0,0x17,0x17,1,1,<9>,9,0,0,Spiky Cheep-Cheep
 0,0x18,0x18,2,3,<32,33,48,49,64,65>,9,0,0,Bowser
 0,0x19,0x19,1,1,<19>,9,0,0,Stray Flower
 0,0x1A,0x1A,1,1,<148>,9,0,0,Weird
@@ -3023,7 +3023,7 @@
 0,0x2C,0x2C,3,1,<38,39,40>,9,0,0,Leftward-moving cloud platform (slow)
 0,0x2D,0x2D,2,2,<52,53,68,69>,9,0,0,Boss Bass (surface)
 0,0x2E,0x2E,2,1,<54,54>,9,0,0,Upward-moving Circle Block platform
-0,0x2F,0x2F,1,1,<41>,9,0,0,Boo Buddy
+0,0x2F,0x2F,1,1,<41>,9,0,0,Boo Diddley
 0,0x30,0x30,1,1,<88>,9,0,0,Hot Foot
 0,0x31,0x31,1,1,<45>,9,0,0,Top Stretch
 0,0x32,0x32,1,1,<46>,9,0,0,Bottom Stretch
@@ -3048,7 +3048,7 @@
 0,0x45,0x45,1,1,<88>,9,0,0,Smart Hot Foot
 0,0x46,0x46,2,2,<279,280,281,282>,9,0,0,Pipe Ptooie
 0,0x47,0x47,1,1,<146>,9,0,0,MSG_NOTHING
-0,0x48,0x48,1,1,<91>,9,0,0,Baby Cheep Cheep
+0,0x48,0x48,1,1,<91>,9,0,0,Baby Cheep-Cheep
 0,0x49,0x49,2,1,<92,93>,9,0,0,Background Cloud
 0,0x4A,0x4A,1,1,<94>,9,0,0,Magic Ball
 0,0x4B,0x4B,2,2,<97,98,113,114>,9,0,0,Boom Boom
@@ -3073,8 +3073,8 @@
 0,0x5E,0x5E,1,1,<116>,9,0,0,Double Rotodisc (rotates both ways;; starting at sides)
 0,0x5F,0x5F,1,1,<116>,9,0,0,Double Rotodisc (rotates both ways;; starting at top)
 0,0x60,0x60,1,1,<116>,9,0,0,Double Rotodisc (rotates clockwise)
-0,0x61,0x61,1,2,<123,139>,9,0,0,Bloober (with babies)|0 -1 0
-0,0x62,0x62,1,1,<124>,9,0,0,Bloober
+0,0x61,0x61,1,2,<123,139>,9,0,0,Blooper (with babies)|0 -1 0
+0,0x62,0x62,1,1,<124>,9,0,0,Blooper
 0,0x63,0x63,2,2,<52,53,68,69>,9,0,0,Big Bertha (underwater)
 0,0x64,0x64,1,1,<72>,9,0,0,Surface Cheep-Cheep (jumps out of water)
 0,0x65,0x65,1,1,<129>,9,0,0,Upward Current
@@ -3082,7 +3082,7 @@
 0,0x67,0x67,2,2,<133,134,149,150>,9,0,0,Lava Lotus
 0,0x68,0x68,1,1,<131>,9,0,0,Upside-down Buzzy Beetle
 0,0x69,0x69,1,1,<132>,9,0,0,Upside-down Spiny
-0,0x6A,0x6A,1,1,<135>,9,0,0,Bloober Nanny
+0,0x6A,0x6A,1,1,<135>,9,0,0,Blooper Nanny
 0,0x6B,0x6B,1,1,<136>,9,0,0,Pile Driver Micro-Goomba
 0,0x6C,0x6C,1,2,<137,153>,9,0,0,Green Koopa Troopa|0 -1 0
 0,0x6D,0x6D,1,2,<138,154>,9,0,0,Red Koopa Troopa|0 -1 0
@@ -3157,13 +3157,13 @@
 0,0xB2,0xB2,1,3,<101,117,100>,9,0,0,Downward Rocket Engine
 0,0xB3,0xB3,1,1,<148>,9,0,0,Weird flashing enemy
 0,0xB4,0xB4,1,1,<164>,9,0,0,Infinite flying Cheep-Cheeps
-0,0xB5,0xB5,1,1,<26>,9,0,0,Infinite Spiny Cheep-Cheeps
+0,0xB5,0xB5,1,1,<26>,9,0,0,Infinite Spiky Cheep-Cheeps
 0,0xB6,0xB6,1,1,<61>,9,0,0,Lakitu boundary
 0,0xB7,0xB7,1,1,<73>,9,0,0,Infinite Para-Beetles
 0,0xB8,0xB8,2,1,<92,93>,9,0,0,Moving Background Clouds
 0,0xB9,0xB9,3,1,<55,127,57>,9,0,0,Infinite leftward-moving falling platforms
 0,0xBA,0xBA,1,1,<146>,9,0,0,Exit on get treasure chest
-0,0xBB,0xBB,1,1,<146>,9,0,0,Stops infinite flying or spiny Cheep-Cheeps
+0,0xBB,0xBB,1,1,<146>,9,0,0,Stops infinite flying or spiky Cheep-Cheeps
 0,0xBC,0xBC,1,1,<166>,9,0,0,Bullet Bills
 0,0xBD,0xBD,1,1,<167>,9,0,0,Missile Bills
 0,0xBE,0xBE,1,1,<18>,9,0,0,Rocky Wrench

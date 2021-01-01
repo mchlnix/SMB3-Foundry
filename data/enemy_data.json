@@ -1,0 +1,125 @@
+{
+  "clan 1": {
+    "group 1": [
+      "Dry Bones",
+      "Invisible door (appears when you hit a P-switch)"
+    ],
+    "group 2": [
+      "Leftward Rocket Engine",
+      "Rightward Rocket Engine",
+      "Upward Rocket Engine",
+      "Downward Rocket Engine"
+    ],
+    "group 3": [
+      "Green Koopa Troopa", "Red Koopa Troopa",
+      "Green Koopa Paratroopa (bounces)", "Red Koopa Paratroopa", "Green Koopa Paratroopa (doesn't bounce)",
+      "3 Green Koopa Paratroopas",
+      "Goomba", "Para-Goomba", "Para-Goomba with Micro-Goombas", "Pile Driver Micro-Goomba",
+      "Infinite Goombas (leftward)", "Infinite Goombas (rightward)",
+      "Bullet Bills", "Still Bullet Bill", "Stray Missile Bill", "Missile Bills",
+      "Green Venus Fire Trap (upward)", "Green Venus Fire Trap (downward)",
+      "Red Venus Fire Trap (upward)", "Red Venus Fire Trap (downward)",
+      "Leftward Piranha Plant", "Rightward Piranha Plant",
+      "Green Piranha Plant (upward)", "Green Piranha Plant (downward)",
+      "Red Piranha Plant (upward)", "Red Piranha Plant (downward)",
+      "Surface Cheep-Cheep (swims along surface)", "Jumping Cheep-Cheep (3 jumps, up and right)",
+      "Jumping Cheep-Cheep (2 jumps, down and right)", "Surface Cheep-Cheep (jumps out of water)",
+      "Falling Cheep-Cheep", "Cheep-Cheep", "Yellow Cheep-Cheep",
+      "Infinite flying Cheep-Cheeps", "3 Yellow Cheep-Cheeps",
+      "Spinning Platform (step-activated)", "Spinning Platform (constant)",
+      "Spinning Platform (periodical clockwise)", "Spinning Platform (periodical counterclockwise)"
+    ],
+    "group 4": [
+      "Lava Lotus"
+    ],
+    "group 5": [
+      "Boom Boom", "Flying Boom Boom"
+    ]
+  },
+  "clan 2": {
+    "group 1": [
+      "Boomerang Brother",
+      "Hammer Brother",
+      "Fire Brother",
+      "Sledge Brother"
+    ],
+    "group 2": [
+      "Falling Platform (falls when stepped on)",
+      "Infinite leftward-moving falling platforms",
+      "Wired platform (follows platform wires)",
+      "Fire Snake",
+      "Fire Chomp",
+      "Para-Beetle",
+      "Infinite Para-Beetles"
+    ],
+    "group 3": [
+      "Stray Podoboo",
+      "Podoboo (comes out of lava)",
+      "Single Rotodisc (rotates clockwise)",
+      "Double Rotodisc (rotates clockwise)",
+      "Single Rotodisc (rotates counterclockwise)",
+      "Double Rotodisc (rotates counterclockwise)",
+      "Double Rotodisc (rotates both ways, starting at sides)",
+      "Double Rotodisc (rotates both ways, starting at top)",
+      "Thwomp (normal)",
+      "Thwomp (moves left)",
+      "Thwomp (moves right)",
+      "Thwomp (moves up)",
+      "Thwomp (moves diagonally up and left)",
+      "Thwomp (moves diagonally down and left)",
+      "Boo Diddley",
+      "Top Stretch",
+      "Bottom Stretch",
+      "Auto-moving multi-directional platform",
+      "Auto-moving upward directional platform"
+    ],
+    "group 4": [
+      "Buzzy Beetle",
+      "Upside-down Buzzy Beetle",
+      "Spiny",
+      "Lakitu",
+      "Bob-Omb",
+      "Infinite Bob-Ombs (leftward) (use with bullet shooters)",
+      "Infinite Bob-Ombs (rightward) (use with bullet shooters)",
+      "Kuribo's Goomba"
+    ],
+    "group 5": [
+      "Cross-shaped bullet shots",
+      "Infinite Goombas (leftward)",
+      "Infinite Goombas (rightward)",
+      "Bullet Shots (leftward)",
+      "Big Bullet Shots (leftward)",
+      "Bullet Shots (up/left)",
+      "Bullet Shots (up/right)",
+      "Bullet Shots (down/left)",
+      "Bullet Shots (down/right)",
+      "Bullet Shots (up/left)",
+      "Bullet Shots (up/right)",
+      "Bullet Shots (down/left)",
+      "Bullet Shots (down/right)",
+      "Bullet Shots (rightward)",
+      "Big Bullet Shots (rightward)",
+      "Bob-Omb (about to blow up)",
+      "Brown Rocky Wrench",
+      "Rocky Wrench",
+      "Background Cloud",
+      "Moving Background Clouds",
+      "Propeller"
+    ],
+    "group 6": [
+      "World x Boss (where x = world)",
+      "The Angry Sun"
+    ],
+    "group 7": [
+      "Spike",
+      "Chain Chomp", "Buster Beetle",
+      "Ptooie", "Walking Ptooie (spits fireballs)", "Pipe Ptooie",
+      "Nipper Plant", "Walking Nipper Plant"
+    ],
+    "group 8": [
+      "Blooper", "Blooper (with babies)", "Blooper Nanny",
+      "Big Bertha (underwater)", "Boss Bass (surface)",
+      "Baby Cheep-Cheep", "Spiky Cheep-Cheep","Infinite Spiky Cheep-Cheeps"
+    ]
+  }
+}
