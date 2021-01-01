@@ -207,6 +207,10 @@ def load_palette(object_set: int, palette_group: int) -> PaletteSet:
         palettes.append(Palette(*colors))
         palette_address += COLORS_PER_PALETTE
 
+    bg_color = palettes[0][0]
+    for palette in palettes:
+        palette[0] = bg_color
+
     return load_palette_group(palettes)
 
 
