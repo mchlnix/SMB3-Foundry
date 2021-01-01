@@ -337,12 +337,16 @@ class MainWindow(QMainWindow):
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_L), self, self.object_dropdown.setFocus)
 
-        self.select_rom_action = ActionSelectFileToOpen("open_rom", ActionSafe, "Select ROM", ROM_FILE_FILTER)
-        self.select_rom_action.attach_observer(load_from_file)
-        self.select_rom_action.attach_observer(self.open_level_selector)
+        if path_to_rom:
+            load_from_file(path_to_rom)
+            self.open_level_selector()
+        else:
+            self.select_rom_action = ActionSelectFileToOpen("open_rom", ActionSafe, "Select ROM", ROM_FILE_FILTER)
+            self.select_rom_action.attach_observer(load_from_file)
+            self.select_rom_action.attach_observer(self.open_level_selector)
 
-        if not self.select_rom_action.observable.observable():
-            self.deleteLater()
+            if not self.select_rom_action.observable.observable():
+                self.deleteLater()
 
         self.showMaximized()
 
