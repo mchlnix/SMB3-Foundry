@@ -37,6 +37,12 @@ help:
 link:
   type: normal
   file: external-link.svg
+check:
+  type: normal
+  file: check.svg
+circle:
+  type: normal
+  file: circle.svg
 small_mario:
   type: graphics_sheet
   offset:
