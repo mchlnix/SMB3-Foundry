@@ -25,9 +25,9 @@ class Image(QImage):
     """
 
     @classmethod
-    def from_filename(cls, filename: str, format):
+    def from_filename(cls, filename):
         """A more pythonic way to call the init function that is using multiple dispatch"""
-        return cls(filename, format)
+        return cls(filename)
 
     @classmethod
     def from_image(cls, image: QImage):
@@ -46,7 +46,7 @@ class Image(QImage):
         """Generates a predefined icon"""
         action = _CUSTOM_ICONS[name]["type"]
         if action == "normal":
-            return cls.from_filename(str(icon_dir.joinpath(_CUSTOM_ICONS[name]["file"])), QImage.Format_RGB888)
+            return cls.from_filename(str(icon_dir.joinpath(_CUSTOM_ICONS[name]["file"])))
         elif action == "graphics_sheet":
             return cls.from_sprite_sheet(name)
 
