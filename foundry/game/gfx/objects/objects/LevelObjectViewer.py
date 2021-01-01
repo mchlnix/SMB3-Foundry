@@ -16,7 +16,7 @@ from foundry import (
 from PySide2.QtGui import Qt
 
 from foundry.core.util.get_gui_style import get_gui_style
-from foundry.decorators.SaveSettings import handle_settings
+from foundry.core.util.SaveSettings import handle_settings
 from foundry.gui.QMenus.MenuElement.MenuElementOpenROM import MenuElementOpenROM
 from foundry.gui.QMenus.Menu.MenuFileLight import FileMenuLight
 from foundry.gui.QMenus.Menu.MenuHelp import HelpMenu
