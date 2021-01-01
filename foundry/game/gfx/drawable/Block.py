@@ -5,7 +5,9 @@ import numpy as np
 
 from foundry.game.File import ROM
 from foundry.game.gfx.PatternTableHandler import PatternTableHandler
-from foundry.game.gfx.drawable.Tile import Tile
+from foundry.game.gfx.drawable.Tile import Tile, get_color
+from foundry.game.gfx.drawable import MASK_COLOR
+from PySide2.QtGui import QColor
 from foundry.game.gfx.Palette import PaletteSet
 
 TSA_BANK_0 = 0 * 256
@@ -29,8 +31,8 @@ class Block(Tile):
     image_length = 0x10
     image_height = image_length
 
-    def __init__(self, pixels: bytes, index: int = 0) -> None:
-        super().__init__(pixels=pixels)
+    def __init__(self, pixels: bytes, index: int = 0, mask_color: QColor = QColor(*MASK_COLOR).rgb()) -> None:
+        super().__init__(pixels=pixels, mask_color=mask_color)
         self.index = index
 
     @classmethod
@@ -44,9 +46,10 @@ class Block(Tile):
     ):
         """Returns a block directly from rom"""
         palette_index = (block_index & 0b1100_0000) >> 6
+        mask_color = QColor(*get_color(0, palette_group[palette_index])).rgb()
         image = np.empty((Block.image_length, Block.image_length * 3), dtype="ubyte")
         for idx in range(4):
             tile = Tile.from_rom(tsa_data[TSA_BANKS[idx] + block_index], palette_group, palette_index, graphics_page)
             x_off, y_off = (idx % 2) * 3 * Tile.image_length, (idx // 2) * Tile.image_length
             image[y_off:y_off + Tile.image_length, x_off:x_off + 3 * Tile.image_length] = tile.numpy_image
-        return cls(bytes(image.flatten().tolist()), block_index)
+        return cls(bytes(image.flatten().tolist()), block_index, mask_color)

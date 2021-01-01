@@ -48,23 +48,20 @@ def get_color(b: int, palette):
     :param palette: The NES palette to look up
     :return: The correct NES color
     """
-    # add alpha values
-    if b == BACKGROUND_COLOR_INDEX:
-        return MASK_COLOR
-    else:
-        try:
-            return palette_controller.colors[palette[b]]
-        except KeyError:
-            return palette[b]  # the palette has the correct color already
+    try:
+        return palette_controller.colors[palette[b]]
+    except KeyError:
+        return palette[b]  # the palette has the correct color already
 
 
-def qimage_mask(image: QImage) -> QImage:
+def qimage_mask(image: QImage, mask_color: QColor = QColor(*MASK_COLOR).rgb()) -> QImage:
     """
     Makes a mask from a given image
     :param image: The QImage to be masked
+    :param mask_color: The color to be masked
     :return: A QImage of the given alpha mask
     """
-    return image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+    return image.createMaskFromColor(mask_color, Qt.MaskOutColor)
 
 
 class Tile:
@@ -76,8 +73,9 @@ class Tile:
     image_length = 8
     image_height = image_length
 
-    def __init__(self, pixels: bytes) -> None:
+    def __init__(self, pixels: bytes, mask_color: QColor = QColor(*MASK_COLOR).rgb()) -> None:
         self.pixels = pixels
+        self.mask_color = mask_color
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.pixels})"
@@ -95,7 +93,7 @@ class Tile:
         for (byte_1, byte_2) in zip(plane_1, plane_2):
             for pixel in get_tile_row(byte_1, byte_2):
                 pixels.extend(get_color(pixel, palette))
-        return cls(bytes(pixels))
+        return cls(bytes(pixels), QColor(*get_color(0, palette)).rgb())
 
     @classmethod
     def from_rom(
@@ -159,7 +157,7 @@ class Tile:
         :return: An RGBA QImage
         """
         image = self.qimage
-        image.setAlphaChannel(qimage_mask(image=image))
+        image.setAlphaChannel(qimage_mask(image=image, mask_color=self.mask_color))
         return image
 
     @cached_property
