@@ -132,8 +132,7 @@ class MainWindow(QMainWindow):
         MenuActionSettings(view_menu, "draw_grid", "Grid Lines", container=_level_drawer_container)
         MenuActionSettings(view_menu, "draw_expansion", "Resize Type", container=_level_drawer_container)
         view_menu.addSeparator()
-        MenuActionSettings(view_menu, "block_transparency", "Block Transparency", container=_level_drawer_container)
-        MenuActionSettings(view_menu, "background_enabled", "Background", container=_level_drawer_container)
+        MenuActionSettings(view_menu, "block_transparency", "Transparency", container=_level_drawer_container)
         view_menu.addSeparator()
         view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
 
