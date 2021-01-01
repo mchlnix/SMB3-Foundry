@@ -21,49 +21,33 @@ from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
 from smb3parse.constants import OBJ_AUTOSCROLL
 from foundry.game.Rect import Rect
 from foundry.game.Tileset import Tileset
-
-png = QImage(str(data_dir / "gfx.png"))
-png.convertTo(QImage.Format_RGB888)
+from foundry.gui.QImage.Image import Image
 
 _level_drawer_container = SettingsContainer.from_json_file("level_drawer", force=True)
 _main_container.set_setting_container("level_drawer", _level_drawer_container)
 
+FIRE_FLOWER = Image.as_custom("fire_flower")
+LEAF = Image.as_custom("leaf")
+NORMAL_STAR = Image.as_custom("star")
+CONTINUOUS_STAR = Image.as_custom("hidden_star")
+MULTI_COIN = Image.as_custom("multi_coin")
+ONE_UP = Image.as_custom("one_up")
+COIN = Image.as_custom("coin")
+VINE = Image.as_custom("vine")
+P_SWITCH = Image.as_custom("pswitch")
+SILVER_COIN = Image.as_custom("silver_coin")
+INVISIBLE_COIN = Image.as_custom("hidden_coin")
+INVISIBLE_1_UP = Image.as_custom("hidden_one_up")
 
-png = QImage(str(data_dir / "gfx.png"))
-png.convertTo(QImage.Format_RGB888)
+NO_JUMP = Image.as_custom("warp_disabled")
+UP_ARROW = Image.as_custom("up_arrow")
+DOWN_ARROW = Image.as_custom("down_arrow")
+LEFT_ARROW = Image.as_custom("left_arrow")
+RIGHT_ARROW = Image.as_custom("right_arrow")
 
+ITEM_ARROW = Image.as_custom("item_arrow")
 
-def _load_from_png(x: int, y: int):
-    image = png.copy(QRect(x * 16, y * 16, 16, 16))
-    mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
-    image.setAlphaChannel(mask)
-
-    return image
-
-
-FIRE_FLOWER = _load_from_png(16, 53)
-LEAF = _load_from_png(17, 53)
-NORMAL_STAR = _load_from_png(18, 53)
-CONTINUOUS_STAR = _load_from_png(19, 53)
-MULTI_COIN = _load_from_png(20, 53)
-ONE_UP = _load_from_png(21, 53)
-COIN = _load_from_png(22, 53)
-VINE = _load_from_png(23, 53)
-P_SWITCH = _load_from_png(24, 53)
-SILVER_COIN = _load_from_png(25, 53)
-INVISIBLE_COIN = _load_from_png(26, 53)
-INVISIBLE_1_UP = _load_from_png(27, 53)
-
-NO_JUMP = _load_from_png(32, 53)
-UP_ARROW = _load_from_png(33, 53)
-DOWN_ARROW = _load_from_png(34, 53)
-LEFT_ARROW = _load_from_png(35, 53)
-RIGHT_ARROW = _load_from_png(36, 53)
-
-ITEM_ARROW = _load_from_png(53, 53)
-
-EMPTY_IMAGE = _load_from_png(0, 53)
-
+EMPTY_IMAGE = Image.as_custom("empty_image")
 
 SPECIAL_BACKGROUND_OBJECTS = [
     "blue background",
