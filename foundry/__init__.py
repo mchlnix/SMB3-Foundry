@@ -17,6 +17,7 @@ default_settings_path = home_dir / "settings"
 auto_save_path = home_dir / "auto_save"
 auto_save_path.mkdir(parents=True, exist_ok=True)
 
+data_dir = root_dir.joinpath("data")
 log_dir = data_dir.joinpath("logs")
 
 auto_save_rom_path = auto_save_path / "auto_save.nes"
