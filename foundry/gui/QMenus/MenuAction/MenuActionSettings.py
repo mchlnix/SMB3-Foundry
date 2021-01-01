@@ -21,7 +21,7 @@ class MenuActionSettings(MenuAction):
         self.setting_name = setting
         self.container = _main_container if container is None else container
         super(MenuActionSettings, self).__init__(parent, self.setting, name, add_action)
-        self.add_observer(lambda value: container.set_setting(setting, value))
+        self.add_observer(lambda value: self.container.set_setting(self.setting_name, value))
 
     @property
     def setting(self) -> bool:
