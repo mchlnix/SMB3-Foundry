@@ -483,11 +483,7 @@ class LevelView(AbstractActionWidget):
 
         if level_pos_change.x or level_pos_change.y:
             for obj in selected_objects:
-                if isinstance(obj, LevelObjectController):
-                    obj.set_position(level_pos)
-                else:
-                    obj.move_by(level_pos_change.x, level_pos_change.y)
-
+                obj.move_by(level_pos_change.x, level_pos_change.y)
                 self.level_ref.changed = True
 
             self.last_mouse_position = level_pos.x, level_pos.y
