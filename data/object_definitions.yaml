@@ -6970,14 +6970,14 @@
     - 0
     bmp:
       ending: 0
-      obj_generator: Horizontal 5 Byte Object
+      obj_generator: Single
       offset_x: 0
       offset_y: 0
       size:
         height: 1
         width: 1
-    bytes: 4
-    description: 5 Byte Object
+    bytes: 3
+    description: MSG_CRASH
     domain: 3
     object_design:
     - 145
