@@ -17,15 +17,15 @@ class SmartSettingContainer(SettingsContainer):
         import json
         try:
             with open(f"{base_dir}/{name}", "r") as settings_file:
-                return cls(name, f"{base_dir}/{name}", json.loads(settings_file.read()))
+                return cls(name, base_dir, json.loads(settings_file.read()))
         except json.JSONDecodeError:
             if force:
-                return cls(name, f"{base_dir}/{name}", {})
+                return cls(name, base_dir, {})
             else:
                 raise json.JSONDecodeError
         except FileNotFoundError:
             if force:
-                return cls(name, f"{base_dir}/{name}", {})
+                return cls(name, base_dir, {})
             else:
                 raise FileNotFoundError
 
