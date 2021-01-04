@@ -6,7 +6,7 @@ from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
 from foundry.core.util.add_selection_graphic_to_image import add_selection_graphic_to_image
 from foundry.core.Settings.util import _main_container
-from foundry.core.Settings.SettingsContainer import SettingsContainer
+from foundry.core.Settings.SmartSettingContainer import SmartSettingContainer
 from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import load_palette
@@ -23,7 +23,7 @@ from foundry.game.Rect import Rect
 from foundry.game.Tileset import Tileset
 from foundry.gui.QImage.Image import Image
 
-_level_drawer_container = SettingsContainer.from_json_file("level_drawer", force=True)
+_level_drawer_container = SmartSettingContainer.from_json_file("level_drawer", force=True)
 _main_container.set_setting_container("level_drawer", _level_drawer_container)
 
 FIRE_FLOWER = Image.as_custom("fire_flower")
