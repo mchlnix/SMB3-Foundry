@@ -6970,7 +6970,7 @@
     - 0
     bmp:
       ending: 0
-      obj_generator: Single
+      obj_generator: Single Block
       offset_x: 0
       offset_y: 0
       size:
