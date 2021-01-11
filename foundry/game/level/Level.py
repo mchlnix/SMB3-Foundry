@@ -668,6 +668,8 @@ class Level(LevelLike):
         return m3l_bytes
 
     def from_m3l(self, m3l_bytes: bytearray):
+        self.attached_to_rom = False
+
         world_number, level_number, self.object_set_number = m3l_bytes[:3]
         self.object_set = ObjectSet(self.object_set_number)
 
@@ -695,8 +697,6 @@ class Level(LevelLike):
             enemy_bytes = enemy_bytes[1:]
 
         self._load_level_data(object_bytes, enemy_bytes)
-
-        self.attached_to_rom = False
 
     def to_bytes(self) -> LevelByteData:
         data = bytearray()

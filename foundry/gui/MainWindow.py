@@ -467,7 +467,9 @@ class MainWindow(QMainWindow):
         self._save_auto_save()
 
     def _save_auto_save(self):
-        self._save_current_changes_to_file(auto_save_rom_path, set_new_path=False)
+        if self.level_ref.level.attached_to_rom:
+            # don't write m3l data into the ROM!
+            self._save_current_changes_to_file(auto_save_rom_path, set_new_path=False)
 
         undo_index, data = self.level_ref.level.undo_stack.export_data()
 
@@ -499,8 +501,22 @@ class MainWindow(QMainWindow):
 
             object_set_number, level_offset, enemy_offset, (undo_index, base64_data) = json.loads(json_data)
 
-        self.update_level("recovered level", level_offset, enemy_offset, object_set_number)
+        # load level from ROM, or from m3l file
+        if level_offset == enemy_offset == 0:
+            # if not auto_save_m3l_path.exists():
+            QMessageBox.critical(
+                self,
+                "Failed loading auto save",
+                "Could not recover m3l file, that was edited, when the editor crashed."
+            )
+            return
 
+            # with open(auto_save_m3l_path, "rb") as m3l_file:
+            #     self.load_m3l(bytearray(m3l_file.read()), auto_save_m3l_path)
+        else:
+            self.update_level("recovered level", level_offset, enemy_offset, object_set_number)
+
+        # restore undo/redo stack
         byte_data = []
         for undo_data in base64_data:
             level_offset, object_data, enemy_offset, enemy_data = undo_data
