@@ -97,7 +97,7 @@ CHECKABLE_MENU_ITEMS = [
     ID_AUTOSCROLL,
 ]
 
-ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
+ID_PROP = "ID"
 
 # mouse modes
 
