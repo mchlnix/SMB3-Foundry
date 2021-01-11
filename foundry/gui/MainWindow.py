@@ -464,13 +464,13 @@ class MainWindow(QMainWindow):
 
         self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
 
-        self._save_auto_save()
+        self._save_auto_data()
 
-    def _save_auto_save(self):
-        if self.level_ref.level.attached_to_rom:
-            # don't write m3l data into the ROM!
-            self._save_current_changes_to_file(auto_save_rom_path, set_new_path=False)
+    @staticmethod
+    def _save_auto_rom():
+        ROM().save_to_file(auto_save_rom_path, set_new_path=False)
 
+    def _save_auto_data(self):
         undo_index, data = self.level_ref.level.undo_stack.export_data()
 
         (level_offset, _), (enemy_offset, _) = self.level_ref.level.to_bytes()
@@ -526,10 +526,8 @@ class MainWindow(QMainWindow):
 
             byte_data.append(((level_offset, object_data), (enemy_offset, enemy_data)))
 
-        self.level_ref.level.undo_stack.import_data(undo_index, byte_data)
-        self.level_ref.level.changed = bool(base64_data)
-
-        self._on_level_data_changed()
+        self.level_ref.changed = bool(base64_data)
+        self.level_ref.import_undo_stack_data(undo_index, byte_data)
 
     def _go_to_jump_destination(self):
         if not self.safe_to_change():
@@ -728,6 +726,7 @@ class MainWindow(QMainWindow):
             if path_to_rom == auto_save_rom_path:
                 self._load_auto_save()
             else:
+                self._save_auto_rom()
                 return self.open_level_selector(None)
 
         except IOError as exp:
@@ -852,6 +851,8 @@ class MainWindow(QMainWindow):
 
         try:
             ROM().save_to_file(pathname, set_new_path)
+
+            self._save_auto_rom()
         except IOError as exp:
             QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
 
