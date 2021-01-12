@@ -1,3 +1,5 @@
+import qdarkstyle
+
 from PySide2.QtWidgets import (
     QButtonGroup,
     QCheckBox,
@@ -18,7 +20,14 @@ from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
 
 from foundry import icon, data_dir
 from foundry.gui.CustomDialog import CustomDialog
-from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS, load_settings, save_settings
+from foundry.gui.settings import (
+    RESIZE_LEFT_CLICK,
+    RESIZE_RIGHT_CLICK,
+    SETTINGS,
+    load_settings,
+    save_settings,
+    GUI_STYLE,
+)
 from foundry.gui.HorizontalLine import HorizontalLine
 from smb3parse.constants import (
     POWERUP_MUSHROOM,
@@ -56,6 +65,7 @@ png.convertTo(QImage.Format_RGB888)
 class SettingsDialog(CustomDialog):
     def __init__(self, parent=None):
         super(SettingsDialog, self).__init__(parent, "Settings")
+        self.sender = parent
 
         mouse_box = QGroupBox("Mouse", self)
         mouse_box.setLayout(QVBoxLayout())
@@ -94,6 +104,26 @@ class SettingsDialog(CustomDialog):
         mouse_box.layout().addLayout(scroll_layout)
         mouse_box.layout().addLayout(resize_layout)
 
+        # -----------------------------------------------
+        # GUI theme section
+
+        gui_style_box = QGroupBox("GUI", self)
+        gui_style = QHBoxLayout(gui_style_box)
+        self.retro_style_radio = QRadioButton("Retro")
+        dracula_style_radio = QRadioButton("Dracula")
+
+        # TODO: There has to be a better way of doing this rather than
+        # getting the full stylesheet string. Perhaps breaking the GUI_STYLE
+        # dict into "name" and "stylesheet" keys?
+        self.retro_style_radio.setChecked(SETTINGS["gui_style"] == GUI_STYLE["RETRO"]())
+        dracula_style_radio.setChecked(SETTINGS["gui_style"] == GUI_STYLE["DRACULA"]())
+        self.retro_style_radio.toggled.connect(self._update_settings)
+
+        gui_style.addWidget(QLabel("Style:"))
+        gui_style.addWidget(self.retro_style_radio)
+        gui_style.addWidget(dracula_style_radio)
+
+        # -----------------------------------------------
         # emulator command
 
         self.emulator_command_input = QLineEdit(self)
@@ -148,6 +178,7 @@ class SettingsDialog(CustomDialog):
 
         layout = QVBoxLayout(self)
         layout.addWidget(mouse_box)
+        layout.addWidget(gui_style_box)
         layout.addWidget(command_box)
 
         self.update()
@@ -163,6 +194,12 @@ class SettingsDialog(CustomDialog):
             SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
         else:
             SETTINGS["resize_mode"] = RESIZE_RIGHT_CLICK
+
+        # TODO: Loop through the radio buttons or find the one that's checked
+        # and use it's description as a key into GUI_STYLE.
+        # This would allow us to have any number of themes/styles.
+        SETTINGS["gui_style"] = GUI_STYLE["RETRO"]() if self.retro_style_radio.isChecked() else GUI_STYLE["DRACULA"]()
+        self.sender.setStyleSheet(SETTINGS["gui_style"])
 
         SETTINGS["object_scroll_enabled"] = self._scroll_check_box.isChecked()
 
@@ -195,5 +232,5 @@ class SettingsDialog(CustomDialog):
         super(SettingsDialog, self).on_exit()
 
 
-def show_settings():
-    SettingsDialog().exec_()
+def show_settings(parent):
+    SettingsDialog(parent).exec_()
