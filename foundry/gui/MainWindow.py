@@ -111,8 +111,9 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.setWindowIcon(icon("foundry.ico"))
+        self.setStyleSheet(SETTINGS["gui_style"])
 
-        file_menu = QMenu("File")
+        file_menu = QMenu("File", self)
 
         open_rom_action = file_menu.addAction("&Open ROM")
         open_rom_action.triggered.connect(self.on_open_rom)
@@ -139,7 +140,7 @@ class MainWindow(QMainWindow):
         """
         file_menu.addSeparator()
         settings_action = file_menu.addAction("&Settings")
-        settings_action.triggered.connect(show_settings)
+        settings_action.triggered.connect(lambda: show_settings(self))
         file_menu.addSeparator()
         exit_action = file_menu.addAction("&Exit")
         exit_action.triggered.connect(lambda _: self.close())
@@ -159,7 +160,7 @@ class MainWindow(QMainWindow):
         edit_menu.Append(ID_LIMIT_SIZE, "&Limit Size", "")
         """
 
-        self.level_menu = QMenu("Level")
+        self.level_menu = QMenu("Level", self)
 
         self.select_level_action = self.level_menu.addAction("&Select Level")
         self.select_level_action.triggered.connect(self.open_level_selector)
@@ -174,7 +175,7 @@ class MainWindow(QMainWindow):
 
         self.menuBar().addMenu(self.level_menu)
 
-        self.object_menu = QMenu("Objects")
+        self.object_menu = QMenu("Objects", self)
 
         view_blocks_action = self.object_menu.addAction("&View Blocks")
         view_blocks_action.triggered.connect(self.on_block_viewer)
@@ -186,7 +187,7 @@ class MainWindow(QMainWindow):
 
         self.menuBar().addMenu(self.object_menu)
 
-        self.view_menu = QMenu("View")
+        self.view_menu = QMenu("View", self)
         self.view_menu.triggered.connect(self.on_menu)
 
         action = self.view_menu.addAction("Mario")
@@ -254,7 +255,7 @@ class MainWindow(QMainWindow):
 
         self.menuBar().addMenu(self.view_menu)
 
-        help_menu = QMenu("Help")
+        help_menu = QMenu("Help", self)
         """
         help_menu.Append(ID_ENEMY_COMPATIBILITY, "&Enemy Compatibility", "")
         help_menu.Append(ID_TROUBLESHOOTING, "&Troubleshooting", "")
@@ -378,7 +379,7 @@ class MainWindow(QMainWindow):
         self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
-        self.menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(show_settings)
+        self.menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(lambda: show_settings(self))
         self.menu_toolbar.addSeparator()
         self.menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
         self.menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
