@@ -1,3 +1,4 @@
+from ctypes import Structure, sizeof, addressof, memmove, c_char, c_ubyte
 from os.path import basename
 from typing import List, Optional
 
@@ -16,10 +17,38 @@ TSA_TABLE_SIZE = 0x400
 TSA_TABLE_INTERVAL = TSA_TABLE_SIZE + 0x1C00
 
 
+class _INESHdr(Structure):
+    _fields_ = [
+        ("magic", c_char * 4),
+        ("prg_units", c_ubyte),
+        ("chr_units", c_ubyte),
+        ("flags6", c_char),
+        ("unused_flags", c_char * 4),
+        ("unused_pad", c_char * 5)
+    ]
+    PRG_UNIT_SIZE = 0x4000
+    CHR_UNIT_SIZE = 0x2000
+
+    def __init__(self, data):
+        self.raw_data = data[0:sizeof(self)]
+        memmove(addressof(self), data, sizeof(self))
+
+    @property
+    def prg_size(self):
+        return self.prg_units * _INESHdr.PRG_UNIT_SIZE
+
+    @property
+    def chr_size(self):
+        return self.chr_units * _INESHdr.CHR_UNIT_SIZE
+
+
 class ROM(Rom):
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
 
+    VANILLA_PRG_SIZE = 0x40000
+
     rom_data = bytearray()
+    header = None
 
     additional_data = ""
 
@@ -40,15 +69,36 @@ class ROM(Rom):
         self.position = 0
 
     @staticmethod
+    def prg_normalize(offset: int) -> int:
+        """ Takes a vanilla ROM PRG offset and returns a
+        new offset that is correct for the current ROM's
+        PRG size
+        """
+        # Only prg030 and prg031 are modified in an expanded ROM,
+        # so offsets to other banks should stay the same.
+        if offset < (BASE_OFFSET + (30 * 0x2000)):
+            return offset
+        # Otherwise, we need to normalize this bank 30 or 31
+        # offset to the last two banks based on PRG size
+        return ROM.header.prg_size - (ROM.VANILLA_PRG_SIZE - offset)
+
+    @staticmethod
     def get_tsa_data(object_set: int) -> bytes:
         rom = ROM()
 
-        tsa_index = rom.int(TSA_OS_LIST + object_set)
+        # TSA_OS_LIST offset value assumes vanilla ROM size, so normalize it
+        tsa_index = rom.int(ROM.prg_normalize(TSA_OS_LIST) + object_set)
 
         if object_set == 0:
-            # todo why is the tsa index in the wrong (seemingly) false?
-            tsa_index += 1
+            # Note that for the World Map, PAGE_A000 is set to bank 11, but
+            # the actual drawing of the map and the map tiles are defined
+            # in bank 12. prg030.asm handles swapping hard-coded to bank 12
+            # and drawing the initial map via Map_Reload_with_Completions.
+            # Therefore, the PAGE_A000_ByTileset doesn't have the TSA data for
+            # the map tiles.
+            tsa_index = 12
 
+        # INES header size + (bank with tsa data * sizeof(bank))
         tsa_start = BASE_OFFSET + tsa_index * TSA_TABLE_INTERVAL
 
         return bytes(rom.read(tsa_start, TSA_TABLE_SIZE))
@@ -58,6 +108,7 @@ class ROM(Rom):
         with open(path, "rb") as rom:
             data = bytearray(rom.read())
 
+        ROM.header = _INESHdr(bytes(data))
         ROM.path = path
         ROM.name = basename(path)
 

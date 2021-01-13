@@ -53,8 +53,10 @@ class GraphicsSet:
 
     def __init__(self, graphic_set_number):
         if not self.GRAPHIC_SET_BG_PAGE_1:
-            self.GRAPHIC_SET_BG_PAGE_1 = ROM().bulk_read(BG_PAGE_COUNT, Level_BG_Pages1)
-            self.GRAPHIC_SET_BG_PAGE_2 = ROM().bulk_read(BG_PAGE_COUNT, Level_BG_Pages2)
+            # Level_BG_Pages1 and 2 are offsets into bank 30, so they need
+            # to be normalized based on the current ROM's PRG size
+            self.GRAPHIC_SET_BG_PAGE_1 = ROM().bulk_read(BG_PAGE_COUNT, ROM.prg_normalize(Level_BG_Pages1))
+            self.GRAPHIC_SET_BG_PAGE_2 = ROM().bulk_read(BG_PAGE_COUNT, ROM.prg_normalize(Level_BG_Pages2))
 
         self.data = bytearray()
         self.number = graphic_set_number
@@ -88,7 +90,8 @@ class GraphicsSet:
             self._read_in_chr_rom_segment(segment)
 
     def _read_in_chr_rom_segment(self, index):
-        offset = CHR_ROM_OFFSET + index * CHR_ROM_SEGMENT_SIZE
+        # CHR_ROM_OFFSET assumes a vanilla ROM PRG size, so normalize it
+        offset = ROM.prg_normalize(CHR_ROM_OFFSET) + index * CHR_ROM_SEGMENT_SIZE
         chr_rom_data = ROM().bulk_read(2 * CHR_ROM_SEGMENT_SIZE, offset)
 
         self.data.extend(chr_rom_data)
