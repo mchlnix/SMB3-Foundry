@@ -1,9 +1,15 @@
 import json
+import qdarkstyle
 
 from foundry import default_settings_path
 
 RESIZE_LEFT_CLICK = "LMB"
 RESIZE_RIGHT_CLICK = "RMB"
+
+GUI_STYLE = {
+    "RETRO": lambda: "",
+    "DRACULA": qdarkstyle.load_stylesheet,
+}
 
 SETTINGS = dict()
 SETTINGS["instaplay_emulator"] = "fceux"
@@ -11,6 +17,7 @@ SETTINGS["instaplay_arguments"] = "%f"
 SETTINGS["default_powerup"] = 0
 
 SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
+SETTINGS["gui_style"] = ""  # initially blank, since we can't call load_stylesheet until the app is started
 
 SETTINGS["draw_mario"] = True
 SETTINGS["draw_jumps"] = False

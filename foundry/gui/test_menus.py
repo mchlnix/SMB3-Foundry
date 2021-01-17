@@ -2,6 +2,8 @@ from pathlib import Path
 
 from PySide2.QtWidgets import QFileDialog
 
+from foundry.game.File import ROM
+
 test_data_dir = Path(__file__).parent.joinpath("test_data")
 test_m3l_path = test_data_dir.joinpath("test.m3l")
 
@@ -37,6 +39,8 @@ def test_level_reload_action(main_window):
 def test_load_m3l(main_window, qtbot):
     QFileDialog.getOpenFileName = _mocked_open_file_name
     # GIVEN the load from m3l action, th<t is visible from the menu
+    rom_data_before_load = ROM.rom_data.copy()
+
     open_m3l_action = main_window.open_m3l_action
 
     assert _action_is_in_menu_bar(main_window, open_m3l_action)
@@ -51,4 +55,8 @@ def test_load_m3l(main_window, qtbot):
     m3l_data[0] = 1
     m3l_data[1] = 1
 
+    assert not main_window.level_ref.level.attached_to_rom
     assert main_window.level_ref.level.to_m3l() == m3l_data
+
+    # also the current rom was not overwritten with any data
+    assert ROM.rom_data == rom_data_before_load

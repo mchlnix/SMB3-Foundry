@@ -15,8 +15,9 @@ if not current_tag:
     print("No tag set. Proceed.")
     quit(0)
 
-current_version = Path("VERSION").read_text().strip()
+current_release_version = Path("VERSION").read_text().strip()
+nightly_version = "nightly"
 
-if current_version != current_tag:
-    print(f"VERSION: '{current_version}', TAG: '{current_tag}'")
+if current_tag not in [current_release_version, nightly_version]:
+    print(f"VERSION: '{current_release_version}', TAG: '{current_tag}'")
     quit(1)

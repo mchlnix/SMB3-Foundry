@@ -535,15 +535,15 @@ class LevelView(QWidget):
         self.update()
 
     def select_all(self):
-        self._select_objects(self.level_ref.get_all_objects())
+        self.select_objects(self.level_ref.get_all_objects())
 
     def _select_object(self, obj=None):
         if obj is not None:
-            self._select_objects([obj])
+            self.select_objects([obj])
         else:
-            self._select_objects([])
+            self.select_objects([])
 
-    def _select_objects(self, objects):
+    def select_objects(self, objects):
         self._set_selected_objects(objects)
 
         self.update()
@@ -560,6 +560,15 @@ class LevelView(QWidget):
     def remove_selected_objects(self):
         for obj in self.level_ref.selected_objects:
             self.level_ref.remove_object(obj)
+
+    def scroll_to_objects(self, objects: List[LevelObject]):
+        if not objects:
+            return
+
+        min_x = min([obj.x_position for obj in objects]) * self.block_length
+        min_y = min([obj.y_position for obj in objects]) * self.block_length
+
+        self.parent().parent().ensureVisible(min_x, min_y)
 
     def level_safe_to_save(self) -> Tuple[bool, str, str]:
         is_safe = True
@@ -634,9 +643,6 @@ class LevelView(QWidget):
 
     def add_jump(self):
         self.level_ref.add_jump()
-
-    def from_m3l(self, data: bytearray):
-        self.level_ref.from_m3l(data)
 
     def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
         level_x, level_y = self._to_level_point(x, y)
@@ -725,7 +731,7 @@ class LevelView(QWidget):
             except ValueError:
                 warn("Tried pasting outside of level.", RuntimeWarning)
 
-        self._select_objects(pasted_objects)
+        self.select_objects(pasted_objects)
 
     def get_object_names(self):
         return self.level_ref.get_object_names()

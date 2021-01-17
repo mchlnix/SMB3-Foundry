@@ -29,7 +29,7 @@ from PySide2.QtWidgets import (
 )
 
 from foundry import (
-    auto_save_level_data_path, auto_save_rom_path, discord_link,
+    auto_save_level_data_path, auto_save_m3l_path, auto_save_rom_path, discord_link,
     enemy_compat_link, feature_video_link,
     get_current_version_name,
     get_latest_version_name,
@@ -61,7 +61,7 @@ from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.PaletteViewer import PaletteViewer
-from foundry.gui.SettingsDialog import POWERUPS, show_settings
+from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.settings import SETTINGS, save_settings
@@ -97,7 +97,7 @@ CHECKABLE_MENU_ITEMS = [
     ID_AUTOSCROLL,
 ]
 
-ID_PROP: bytes = "ID"  # the stubs for setProperty are wrong so keep the warning to this line
+ID_PROP = "ID"
 
 # mouse modes
 
@@ -111,6 +111,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.setWindowIcon(icon("foundry.ico"))
+        self.setStyleSheet(SETTINGS["gui_style"])
 
         file_menu = QMenu("File")
 
@@ -139,7 +140,7 @@ class MainWindow(QMainWindow):
         """
         file_menu.addSeparator()
         settings_action = file_menu.addAction("&Settings")
-        settings_action.triggered.connect(show_settings)
+        settings_action.triggered.connect(self._on_show_settings)
         file_menu.addSeparator()
         exit_action = file_menu.addAction("&Exit")
         exit_action.triggered.connect(lambda _: self.close())
@@ -378,7 +379,7 @@ class MainWindow(QMainWindow):
         self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
-        self.menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(show_settings)
+        self.menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(self._on_show_settings)
         self.menu_toolbar.addSeparator()
         self.menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
         self.menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
@@ -424,7 +425,7 @@ class MainWindow(QMainWindow):
         self.menu_toolbar.addAction(whats_this_action)
 
         self.menu_toolbar.addSeparator()
-        self.warning_list = WarningList(self, self.level_ref)
+        self.warning_list = WarningList(self, self.level_ref, self.level_view, self.object_list)
 
         warning_action = self.menu_toolbar.addAction(icon("alert-triangle.svg"), "Warning Panel")
         warning_action.setWhatsThis("Shows a list of warnings.")
@@ -464,11 +465,16 @@ class MainWindow(QMainWindow):
 
         self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
 
-        self._save_auto_save()
+        self._save_auto_data()
 
-    def _save_auto_save(self):
-        self._save_current_changes_to_file(auto_save_rom_path, set_new_path=False)
+    def _on_show_settings(self):
+        SettingsDialog(self).exec_()
 
+    @staticmethod
+    def _save_auto_rom():
+        ROM().save_to_file(auto_save_rom_path, set_new_path=False)
+
+    def _save_auto_data(self):
         undo_index, data = self.level_ref.level.undo_stack.export_data()
 
         (level_offset, _), (enemy_offset, _) = self.level_ref.level.to_bytes()
@@ -499,8 +505,21 @@ class MainWindow(QMainWindow):
 
             object_set_number, level_offset, enemy_offset, (undo_index, base64_data) = json.loads(json_data)
 
-        self.update_level("recovered level", level_offset, enemy_offset, object_set_number)
+        # load level from ROM, or from m3l file
+        if level_offset == enemy_offset == 0:
+            if not auto_save_m3l_path.exists():
+                QMessageBox.critical(
+                    self,
+                    "Failed loading auto save",
+                    "Could not recover m3l file, that was edited, when the editor crashed."
+                )
 
+            with open(auto_save_m3l_path, "rb") as m3l_file:
+                self.load_m3l(bytearray(m3l_file.read()), auto_save_m3l_path)
+        else:
+            self.update_level("recovered level", level_offset, enemy_offset, object_set_number)
+
+        # restore undo/redo stack
         byte_data = []
         for undo_data in base64_data:
             level_offset, object_data, enemy_offset, enemy_data = undo_data
@@ -510,10 +529,8 @@ class MainWindow(QMainWindow):
 
             byte_data.append(((level_offset, object_data), (enemy_offset, enemy_data)))
 
-        self.level_ref.level.undo_stack.import_data(undo_index, byte_data)
-        self.level_ref.level.changed = bool(base64_data)
-
-        self._on_level_data_changed()
+        self.level_ref.changed = bool(base64_data)
+        self.level_ref.import_undo_stack_data(undo_index, byte_data)
 
     def _go_to_jump_destination(self):
         if not self.safe_to_change():
@@ -712,6 +729,7 @@ class MainWindow(QMainWindow):
             if path_to_rom == auto_save_rom_path:
                 self._load_auto_save()
             else:
+                self._save_auto_rom()
                 return self.open_level_selector(None)
 
         except IOError as exp:
@@ -734,17 +752,23 @@ class MainWindow(QMainWindow):
         try:
             with open(pathname, "rb") as m3l_file:
 
-                self.level_view.from_m3l(bytearray(m3l_file.read()))
+                m3l_data = bytearray(m3l_file.read())
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{pathname}'.")
 
             return False
 
+        self.load_m3l(m3l_data, pathname)
+        self.save_m3l(auto_save_m3l_path, self.level_ref.level.to_m3l())
+
+        return True
+
+    def load_m3l(self, m3l_data: bytearray, pathname: str):
+        self.level_ref.level.from_m3l(m3l_data)
+
         self.level_view.level_ref.name = os.path.basename(pathname)
 
         self.update_gui_for_level()
-
-        return True
 
     def safe_to_change(self) -> bool:
         if not self.level_ref:
@@ -788,7 +812,8 @@ class MainWindow(QMainWindow):
             QMessageBox.information(
                 self,
                 "Importing M3L into ROM",
-                "Please select the positions in the ROM you want the level objects and enemies/items to be stored.",
+                "You are currently editing a level stored in an m3l file outside of the ROM. Please select the "
+                "positions in the ROM you want the level objects and enemies/items to be stored.",
                 QMessageBox.Ok,
             )
 
@@ -805,6 +830,9 @@ class MainWindow(QMainWindow):
                     # if we save to another rom, don't consider the level
                     # attached (to the current rom)
                     self.level_view.level_ref.attached_to_rom = False
+                else:
+                    # the m3l is saved to the current ROM, we can get rid of the auto save
+                    auto_save_m3l_path.unlink(missing_ok=True)
             else:
                 return
 
@@ -836,6 +864,8 @@ class MainWindow(QMainWindow):
 
         try:
             ROM().save_to_file(pathname, set_new_path)
+
+            self._save_auto_rom()
         except IOError as exp:
             QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
 
@@ -845,16 +875,21 @@ class MainWindow(QMainWindow):
         if not suggested_file.endswith(".m3l"):
             suggested_file += ".m3l"
 
-        pathname, _ = QFileDialog.getSaveFileName(self, caption="Save M3L as", filter=M3L_FILE_FILTER)
+        pathname, _ = QFileDialog.getSaveFileName(
+            self, caption="Save M3L as", dir=suggested_file, filter=M3L_FILE_FILTER
+        )
 
         if not pathname:
             return
 
-        level = self.level_view.level_ref
+        m3l_bytes = self.level_view.level_ref.level.to_m3l()
 
+        self.save_m3l(pathname, m3l_bytes)
+
+    def save_m3l(self, pathname: str, m3l_bytes: bytearray):
         try:
             with open(pathname, "wb") as m3l_file:
-                m3l_file.write(level.to_m3l())
+                m3l_file.write(m3l_bytes)
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
 
@@ -1141,6 +1176,7 @@ class MainWindow(QMainWindow):
         self.level_view.update()
 
     def _enable_disable_gui_elements(self):
+        # actions and widgets, that depend on whether the ROM is loaded
         rom_elements = [
             # entries in file menu
             self.open_m3l_action,
@@ -1150,6 +1186,7 @@ class MainWindow(QMainWindow):
             self.select_level_action,
         ]
 
+        # actions and widgets, that depend on whether a level is loaded or not
         level_elements = [
             # entry in file menu
             self.save_m3l_action,
@@ -1176,7 +1213,7 @@ class MainWindow(QMainWindow):
             gui_element.setEnabled(ROM.is_loaded())
 
         for gui_element in level_elements:
-            gui_element.setEnabled(ROM.is_loaded() and self.level_ref.level is not None)
+            gui_element.setEnabled(ROM.is_loaded() and self.level_ref.fully_loaded)
 
     def on_jump_edit(self):
         index = self.jump_list.currentIndex().row()
@@ -1236,6 +1273,7 @@ class MainWindow(QMainWindow):
             return
 
         auto_save_rom_path.unlink(missing_ok=True)
+        auto_save_m3l_path.unlink(missing_ok=True)
         auto_save_level_data_path.unlink(missing_ok=True)
 
         super(MainWindow, self).closeEvent(event)

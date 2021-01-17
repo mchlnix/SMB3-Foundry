@@ -18,6 +18,7 @@ auto_save_path = home_dir / "auto_save"
 auto_save_path.mkdir(parents=True, exist_ok=True)
 
 auto_save_rom_path = auto_save_path / "auto_save.nes"
+auto_save_m3l_path = auto_save_path / "auto_save.m3l"
 auto_save_level_data_path = auto_save_path / "level_data.json"
 
 data_dir = root_dir.joinpath("data")
