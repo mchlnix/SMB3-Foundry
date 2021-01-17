@@ -644,9 +644,6 @@ class LevelView(QWidget):
     def add_jump(self):
         self.level_ref.add_jump()
 
-    def from_m3l(self, data: bytearray):
-        self.level_ref.from_m3l(data)
-
     def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
         level_x, level_y = self._to_level_point(x, y)
 

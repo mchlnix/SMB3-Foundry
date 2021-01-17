@@ -29,7 +29,7 @@ from PySide2.QtWidgets import (
 )
 
 from foundry import (
-    auto_save_level_data_path, auto_save_rom_path, discord_link,
+    auto_save_level_data_path, auto_save_m3l_path, auto_save_rom_path, discord_link,
     enemy_compat_link, feature_video_link,
     get_current_version_name,
     get_latest_version_name,
@@ -503,16 +503,15 @@ class MainWindow(QMainWindow):
 
         # load level from ROM, or from m3l file
         if level_offset == enemy_offset == 0:
-            # if not auto_save_m3l_path.exists():
-            QMessageBox.critical(
-                self,
-                "Failed loading auto save",
-                "Could not recover m3l file, that was edited, when the editor crashed."
-            )
-            return
+            if not auto_save_m3l_path.exists():
+                QMessageBox.critical(
+                    self,
+                    "Failed loading auto save",
+                    "Could not recover m3l file, that was edited, when the editor crashed."
+                )
 
-            # with open(auto_save_m3l_path, "rb") as m3l_file:
-            #     self.load_m3l(bytearray(m3l_file.read()), auto_save_m3l_path)
+            with open(auto_save_m3l_path, "rb") as m3l_file:
+                self.load_m3l(bytearray(m3l_file.read()), auto_save_m3l_path)
         else:
             self.update_level("recovered level", level_offset, enemy_offset, object_set_number)
 
@@ -749,17 +748,23 @@ class MainWindow(QMainWindow):
         try:
             with open(pathname, "rb") as m3l_file:
 
-                self.level_view.from_m3l(bytearray(m3l_file.read()))
+                m3l_data = bytearray(m3l_file.read())
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{pathname}'.")
 
             return False
 
+        self.load_m3l(m3l_data, pathname)
+        self.save_m3l(auto_save_m3l_path, self.level_ref.level.to_m3l())
+
+        return True
+
+    def load_m3l(self, m3l_data: bytearray, pathname: str):
+        self.level_ref.level.from_m3l(m3l_data)
+
         self.level_view.level_ref.name = os.path.basename(pathname)
 
         self.update_gui_for_level()
-
-        return True
 
     def safe_to_change(self) -> bool:
         if not self.level_ref:
@@ -803,7 +808,8 @@ class MainWindow(QMainWindow):
             QMessageBox.information(
                 self,
                 "Importing M3L into ROM",
-                "Please select the positions in the ROM you want the level objects and enemies/items to be stored.",
+                "You are currently editing a level stored in an m3l file outside of the ROM. Please select the "
+                "positions in the ROM you want the level objects and enemies/items to be stored.",
                 QMessageBox.Ok,
             )
 
@@ -820,6 +826,9 @@ class MainWindow(QMainWindow):
                     # if we save to another rom, don't consider the level
                     # attached (to the current rom)
                     self.level_view.level_ref.attached_to_rom = False
+                else:
+                    # the m3l is saved to the current ROM, we can get rid of the auto save
+                    auto_save_m3l_path.unlink(missing_ok=True)
             else:
                 return
 
@@ -862,16 +871,21 @@ class MainWindow(QMainWindow):
         if not suggested_file.endswith(".m3l"):
             suggested_file += ".m3l"
 
-        pathname, _ = QFileDialog.getSaveFileName(self, caption="Save M3L as", filter=M3L_FILE_FILTER)
+        pathname, _ = QFileDialog.getSaveFileName(
+            self, caption="Save M3L as", dir=suggested_file, filter=M3L_FILE_FILTER
+        )
 
         if not pathname:
             return
 
-        level = self.level_view.level_ref
+        m3l_bytes = self.level_view.level_ref.level.to_m3l()
 
+        self.save_m3l(pathname, m3l_bytes)
+
+    def save_m3l(self, pathname: str, m3l_bytes: bytearray):
         try:
             with open(pathname, "wb") as m3l_file:
-                m3l_file.write(level.to_m3l())
+                m3l_file.write(m3l_bytes)
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
 
@@ -1158,6 +1172,7 @@ class MainWindow(QMainWindow):
         self.level_view.update()
 
     def _enable_disable_gui_elements(self):
+        # actions and widgets, that depend on whether the ROM is loaded
         rom_elements = [
             # entries in file menu
             self.open_m3l_action,
@@ -1167,6 +1182,7 @@ class MainWindow(QMainWindow):
             self.select_level_action,
         ]
 
+        # actions and widgets, that depend on whether a level is loaded or not
         level_elements = [
             # entry in file menu
             self.save_m3l_action,
@@ -1193,7 +1209,7 @@ class MainWindow(QMainWindow):
             gui_element.setEnabled(ROM.is_loaded())
 
         for gui_element in level_elements:
-            gui_element.setEnabled(ROM.is_loaded() and self.level_ref.level is not None)
+            gui_element.setEnabled(ROM.is_loaded() and self.level_ref.fully_loaded)
 
     def on_jump_edit(self):
         index = self.jump_list.currentIndex().row()
@@ -1253,6 +1269,7 @@ class MainWindow(QMainWindow):
             return
 
         auto_save_rom_path.unlink(missing_ok=True)
+        auto_save_m3l_path.unlink(missing_ok=True)
         auto_save_level_data_path.unlink(missing_ok=True)
 
         super(MainWindow, self).closeEvent(event)
