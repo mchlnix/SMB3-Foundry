@@ -8,7 +8,7 @@ RESIZE_RIGHT_CLICK = "RMB"
 
 GUI_STYLE = {
     "RETRO": lambda: "",
-    "DRACULA": lambda: qdarkstyle.load_stylesheet(),
+    "DRACULA": qdarkstyle.load_stylesheet,
 }
 
 SETTINGS = dict()
@@ -17,7 +17,7 @@ SETTINGS["instaplay_arguments"] = "%f"
 SETTINGS["default_powerup"] = 0
 
 SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
-SETTINGS["gui_style"] = "" # initially blank, since we can't call load_stylesheet until the app is started
+SETTINGS["gui_style"] = ""  # initially blank, since we can't call load_stylesheet until the app is started
 
 SETTINGS["draw_mario"] = True
 SETTINGS["draw_jumps"] = False
