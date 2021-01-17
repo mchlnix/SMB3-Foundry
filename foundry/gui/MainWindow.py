@@ -61,7 +61,7 @@ from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.PaletteViewer import PaletteViewer
-from foundry.gui.SettingsDialog import POWERUPS, show_settings
+from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.settings import SETTINGS, save_settings
@@ -111,6 +111,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.setWindowIcon(icon("foundry.ico"))
+        self.setStyleSheet(SETTINGS["gui_style"])
 
         file_menu = QMenu("File")
 
@@ -139,7 +140,7 @@ class MainWindow(QMainWindow):
         """
         file_menu.addSeparator()
         settings_action = file_menu.addAction("&Settings")
-        settings_action.triggered.connect(show_settings)
+        settings_action.triggered.connect(self._on_show_settings)
         file_menu.addSeparator()
         exit_action = file_menu.addAction("&Exit")
         exit_action.triggered.connect(lambda _: self.close())
@@ -378,7 +379,7 @@ class MainWindow(QMainWindow):
         self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
-        self.menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(show_settings)
+        self.menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(self._on_show_settings)
         self.menu_toolbar.addSeparator()
         self.menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
         self.menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
@@ -465,6 +466,9 @@ class MainWindow(QMainWindow):
         self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
 
         self._save_auto_data()
+
+    def _on_show_settings(self):
+        SettingsDialog(self).exec_()
 
     @staticmethod
     def _save_auto_rom():
