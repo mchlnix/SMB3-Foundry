@@ -41,7 +41,7 @@ matrix:
         - python3 .ci-tag-check.py
         - python3 -m pip install --upgrade pip
         - python3 -m pip install flake8 black
-        - black -l 120 --check
+        - black -l 120 --check foundry smb3parse
         - flake8 foundry smb3parse
         - npm install -g markdown-pdf
         - wget https://github.com/sindresorhus/github-markdown-css/blob/gh-pages/github-markdown.css
