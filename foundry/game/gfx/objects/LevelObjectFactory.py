@@ -61,7 +61,13 @@ class LevelObjectFactory:
         )
 
     def from_properties(
-        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int,
+        self,
+        domain: int,
+        object_index: int,
+        x: int,
+        y: int,
+        length: Optional[int],
+        index: int,
     ):
         if self.vertical_level:
             offset = y // SCREEN_HEIGHT

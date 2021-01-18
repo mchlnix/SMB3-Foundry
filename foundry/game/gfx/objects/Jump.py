@@ -95,7 +95,10 @@ class Jump(ObjectLike):
             )
         else:
             return QRect(
-                block_length * SCREEN_WIDTH * self.screen_index, 0, block_length * SCREEN_WIDTH, block_length * GROUND,
+                block_length * SCREEN_WIDTH * self.screen_index,
+                0,
+                block_length * SCREEN_WIDTH,
+                block_length * GROUND,
             )
 
     def __contains__(self, point):

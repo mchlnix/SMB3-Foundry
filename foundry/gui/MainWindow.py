@@ -29,8 +29,12 @@ from PySide2.QtWidgets import (
 )
 
 from foundry import (
-    auto_save_level_data_path, auto_save_m3l_path, auto_save_rom_path, discord_link,
-    enemy_compat_link, feature_video_link,
+    auto_save_level_data_path,
+    auto_save_m3l_path,
+    auto_save_rom_path,
+    discord_link,
+    enemy_compat_link,
+    feature_video_link,
     get_current_version_name,
     get_latest_version_name,
     github_link,
@@ -486,16 +490,16 @@ class MainWindow(QMainWindow):
         for (object_offset, object_data), (enemy_offset_, enemy_data) in data:
             base64_data.append(
                 (
-                    object_offset, base64.b64encode(object_data).decode("ascii"),
-                    enemy_offset_, base64.b64encode(enemy_data).decode("ascii")
+                    object_offset,
+                    base64.b64encode(object_data).decode("ascii"),
+                    enemy_offset_,
+                    base64.b64encode(enemy_data).decode("ascii"),
                 )
             )
 
         with open(auto_save_level_data_path, "w") as level_data_file:
             level_data_file.write(
-                json.dumps(
-                    [object_set_number, level_offset, enemy_offset, (undo_index, base64_data)]
-                )
+                json.dumps([object_set_number, level_offset, enemy_offset, (undo_index, base64_data)])
             )
 
     def _load_auto_save(self):
@@ -511,7 +515,7 @@ class MainWindow(QMainWindow):
                 QMessageBox.critical(
                     self,
                     "Failed loading auto save",
-                    "Could not recover m3l file, that was edited, when the editor crashed."
+                    "Could not recover m3l file, that was edited, when the editor crashed.",
                 )
 
             with open(auto_save_m3l_path, "rb") as m3l_file:
@@ -848,7 +852,7 @@ class MainWindow(QMainWindow):
                 self,
                 "Cannot save to auto save ROM",
                 "You can't save to the auto save ROM, as it will be deleted, when exiting the editor. Please choose "
-                "another location, or your changes will be lost."
+                "another location, or your changes will be lost.",
             )
 
         self._save_current_changes_to_file(pathname, set_new_path=True)

@@ -77,8 +77,11 @@ class WarningList(QWidget):
 
                 if level.header.scroll_type_index != 0:
                     self.warnings.append(
-                        (f"Level has auto scrolling enabled, but the scrolling type in the level header is not "
-                         f"'{SCROLL_DIRECTIONS[0]}. This might not work as expected.", [])
+                        (
+                            f"Level has auto scrolling enabled, but the scrolling type in the level header is not "
+                            f"'{SCROLL_DIRECTIONS[0]}. This might not work as expected.",
+                            [],
+                        )
                     )
 
         autoscroll_items = [item for item in level.enemies if item.obj_index == OBJ_AUTOSCROLL]
@@ -93,7 +96,7 @@ class WarningList(QWidget):
                     (
                         f"Object at {obj.get_position()} will likely cause the game to crash, when loading or on "
                         f"screen.",
-                        [obj]
+                        [obj],
                     )
                 )
 

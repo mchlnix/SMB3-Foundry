@@ -36,7 +36,12 @@ class Block:
     _block_cache = {}
 
     def __init__(
-        self, block_index: int, palette_group: PaletteGroup, graphics_set: GraphicsSet, tsa_data: bytes, mirrored=False,
+        self,
+        block_index: int,
+        palette_group: PaletteGroup,
+        graphics_set: GraphicsSet,
+        tsa_data: bytes,
+        mirrored: bool = False,
     ):
         self.index = block_index
 

@@ -49,7 +49,7 @@ class Level(LevelLike):
     HEADER_LENGTH = 9  # bytes
 
     def __init__(
-            self, level_name: str = "", layout_address: int = 0, enemy_data_offset: int = 0, object_set_number: int = 1
+        self, level_name: str = "", layout_address: int = 0, enemy_data_offset: int = 0, object_set_number: int = 1
     ):
         super(Level, self).__init__(object_set_number, layout_address)
 

@@ -153,7 +153,10 @@ class EnemyObject(ObjectLike):
         return bytearray([self.obj_index, self.x_position + int(enemy_handle_x2[self.obj_index]), self.y_position])
 
     def as_image(self) -> QImage:
-        image = QImage(QSize(self.width * Block.SIDE_LENGTH, self.height * Block.SIDE_LENGTH), QImage.Format_RGBA8888,)
+        image = QImage(
+            QSize(self.width * Block.SIDE_LENGTH, self.height * Block.SIDE_LENGTH),
+            QImage.Format_RGBA8888,
+        )
 
         image.fill(QColor(0, 0, 0, 0))
 
