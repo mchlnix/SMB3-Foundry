@@ -50,8 +50,19 @@ jobs:
   publish:
     needs: build
     name: "Publish"
-    runs-on: ubuntu-latest  # this doesn't matter as it's only downloading and uploading
+    runs-on: ubuntu-latest  # this doesn't matter as it's only codestyle and artifact collection
     steps:
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Coding Style Check
+        run: |
+          python3 .ci-tag-check.py
+          python3 -m pip install --upgrade pip
+          python3 -m pip install flake8 black
+          python3 -m black -l 120 --check foundry/ smb3parse/
+          python3 -m flake8 foundry/ smb3parse/
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
