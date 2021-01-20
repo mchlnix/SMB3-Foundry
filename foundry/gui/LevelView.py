@@ -4,7 +4,7 @@ from warnings import warn
 
 from PySide2.QtCore import QMimeData, QPoint, QSize
 from PySide2.QtGui import QDragEnterEvent, QDragMoveEvent, QMouseEvent, QPaintEvent, QPainter, QWheelEvent, Qt
-from PySide2.QtWidgets import QSizePolicy, QWidget
+from PySide2.QtWidgets import QSizePolicy, QToolTip, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -200,6 +200,16 @@ class LevelView(QWidget):
 
         elif SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK:
             self._set_cursor_for_position(event)
+
+        x, y = event.pos().toTuple()
+
+        object_under_cursor = self.object_at(x, y)
+
+        if SETTINGS["object_tooltip_enabled"] and object_under_cursor is not None:
+            self.setToolTip(str(object_under_cursor))
+        else:
+            self.setToolTip("")
+            QToolTip.hideText()
 
         return super(LevelView, self).mouseMoveEvent(event)
 
@@ -645,6 +655,15 @@ class LevelView(QWidget):
         self.level_ref.add_jump()
 
     def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
+        """
+        Returns an enemy or level object at the position. The x and y is relative to the View (for example, when you
+        receive a mouse event) and will be converted into level coordinates internally.
+
+        :param int x: X position on the View, where the object is queried at.
+        :param int y: Y position on the View, where the object is queried at.
+
+        :return: An enemy/level object, or None, if none is at the position.
+        """
         level_x, level_y = self._to_level_point(x, y)
 
         return self.level_ref.level.object_at(level_x, level_y)

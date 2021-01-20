@@ -14,6 +14,8 @@ from PySide2.QtWidgets import (
 
 from PySide2.QtGui import QIcon, QImage, QColor, Qt, QPixmap
 from PySide2.QtCore import QRect
+
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
 
 from foundry import icon, data_dir
@@ -67,19 +69,29 @@ class SettingsDialog(CustomDialog):
         mouse_box = QGroupBox("Mouse", self)
         mouse_box.setLayout(QVBoxLayout())
 
-        scroll_layout = QHBoxLayout()
-
         label = QLabel("Scroll objects with mouse wheel:")
         label.setToolTip("Select an object and scroll up and down to change its type.")
         self._scroll_check_box = QCheckBox("Enabled")
         self._scroll_check_box.setChecked(SETTINGS["object_scroll_enabled"])
         self._scroll_check_box.toggled.connect(self._update_settings)
 
+        scroll_layout = QHBoxLayout()
         scroll_layout.addWidget(label)
         scroll_layout.addStretch(1)
         scroll_layout.addWidget(self._scroll_check_box)
 
-        resize_layout = QHBoxLayout()
+        label = QLabel("Show object names on hover:")
+        label.setToolTip(
+            "When hovering your cursor over an object in a level, its name and position is shown in a tooltip."
+        )
+        self._tooltip_check_box = QCheckBox("Enabled")
+        self._tooltip_check_box.setChecked(SETTINGS["object_tooltip_enabled"])
+        self._tooltip_check_box.toggled.connect(self._update_settings)
+
+        tooltip_layout = QHBoxLayout()
+        tooltip_layout.addWidget(label)
+        tooltip_layout.addStretch(1)
+        tooltip_layout.addWidget(self._tooltip_check_box)
 
         self.lmb_radio = QRadioButton("Left Mouse Button")
         rmb_radio = QRadioButton("Right Mouse Button")
@@ -93,12 +105,14 @@ class SettingsDialog(CustomDialog):
         radio_group.addButton(self.lmb_radio)
         radio_group.addButton(rmb_radio)
 
+        resize_layout = QHBoxLayout()
         resize_layout.addWidget(QLabel("Object resize mode:"))
         resize_layout.addStretch(1)
         resize_layout.addWidget(self.lmb_radio)
         resize_layout.addWidget(rmb_radio)
 
         mouse_box.layout().addLayout(scroll_layout)
+        mouse_box.layout().addLayout(tooltip_layout)
         mouse_box.layout().addLayout(resize_layout)
 
         # -----------------------------------------------
@@ -203,6 +217,7 @@ class SettingsDialog(CustomDialog):
                     break
 
         SETTINGS["object_scroll_enabled"] = self._scroll_check_box.isChecked()
+        SETTINGS["object_tooltip_enabled"] = self._tooltip_check_box.isChecked()
 
         SETTINGS["default_powerup"] = self.powerup_combo_box.currentIndex()
 
@@ -218,14 +233,14 @@ class SettingsDialog(CustomDialog):
 
     @staticmethod
     def _load_from_png(x: int, y: int) -> QIcon:
-        image = png.copy(QRect(x * 16, y * 16, 16, 16))
+        image = png.copy(QRect(x * Block.SIDE_LENGTH, y * Block.SIDE_LENGTH, Block.SIDE_LENGTH, Block.SIDE_LENGTH))
         mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
         image.setAlphaChannel(mask)
 
         pixmap = QPixmap.fromImage(image)
-        icon = QIcon(pixmap)
+        icon_from_png = QIcon(pixmap)
 
-        return icon
+        return icon_from_png
 
     def on_exit(self):
         save_settings()

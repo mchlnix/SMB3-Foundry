@@ -29,6 +29,7 @@ SETTINGS["draw_invisible_items"] = True
 SETTINGS["draw_autoscroll"] = False
 SETTINGS["block_transparency"] = True
 SETTINGS["object_scroll_enabled"] = False
+SETTINGS["object_tooltip_enabled"] = True
 
 
 def load_settings():
