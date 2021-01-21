@@ -540,7 +540,8 @@ class LevelObject(ObjectLike):
 
             downwards_extending_vine = 1, 0, 0x06
             wooden_sky_pole = 4, 0, 0x04
-            if self.object_info == downwards_extending_vine or self.object_info == wooden_sky_pole:
+            
+            if self.object_info in [downwards_extending_vine, wooden_sky_pole]:
                 new_width -= 1
 
             if self.orientation == GeneratorType.HORIZ_TO_GROUND:
