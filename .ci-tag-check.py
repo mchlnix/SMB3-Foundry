@@ -9,7 +9,7 @@ which in turn only happens on tagged commits.
 import os
 from pathlib import Path
 
-current_tag = os.environ["TRAVIS_TAG"].strip()
+current_tag = os.environ["TAG_NAME"].strip()
 
 if not current_tag:
     print("No tag set. Proceed.")
