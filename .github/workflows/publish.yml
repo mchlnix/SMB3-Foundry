@@ -5,8 +5,8 @@ on:
     tags: [ '*' ]
 
 jobs:
-  build:
-    name: "Build"
+  build_editor:
+    name: Build ${{ matrix.config.prefix }}
     runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
@@ -44,11 +44,35 @@ jobs:
           name: ${{ matrix.config.prefix }}-smb3-foundry${{ matrix.config.suffix }}
           path: dist/${{ matrix.config.prefix }}-smb3-foundry${{ matrix.config.suffix }}
 
+  build_manual:
+    name: Build Manual
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Setup node/npm
+        uses: actions/setup-node@v2
+
+      - name: Get Dependencies
+        run: |
+          npm install markdown-pdf
+          wget https://github.com/sindresorhus/github-markdown-css/blob/gh-pages/github-markdown.css
+
+      - name: Build PDF
+        run: node_modules/.bin/markdown-pdf --css-path github-markdwon.css MANUAL.md
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: MANUAL.pdf
+          path: MANUAL.pdf
+
   # We're forced to create a separate publish job since the create-release
   # action fails if it is run twice on the same tag. But we have multiple
   # build systems (Windows, Linux, OSX) and only want one release.
   publish:
-    needs: build
+    needs: [build_editor, build_manual]
     name: "Publish"
     runs-on: ubuntu-latest  # this doesn't matter as it's only codestyle and artifact collection
     steps:
@@ -116,3 +140,13 @@ jobs:
           asset_path: "artifacts/win64-smb3-foundry.exe/win64-smb3-foundry.exe"
           asset_name: "win64-smb3-foundry.exe"
           asset_content_type: application/octet-stream
+
+      - name: Upload SMB3 Foundry Manual
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/MANUAL.pdf/MANUAL.pdf"
+          asset_name: "MANUAL.pdf"
+          asset_content_type: application/pdf
