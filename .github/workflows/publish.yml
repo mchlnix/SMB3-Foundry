@@ -1,11 +1,28 @@
 name: Publish SMB3 Foundry
 
-on:
-  push:
-    tags: [ '*' ]
+on: [push, pull_request]
 
 jobs:
+  code_style:
+    name: Check_Codestyle
+
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+
+    - name: Coding Style Check
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install flake8 black
+        python3 -m black -l 120 --check foundry/ smb3parse/
+        python3 -m flake8 foundry/ smb3parse/
+
+
   build_editor:
+    needs: code_style
+    if: startsWith(github.ref, 'refs/tags/')
+
     name: Build ${{ matrix.config.prefix }}
     runs-on: ${{ matrix.config.os }}
     strategy:
@@ -45,6 +62,9 @@ jobs:
           path: dist/${{ matrix.config.prefix }}-smb3-foundry${{ matrix.config.suffix }}
 
   build_manual:
+    needs: code_style
+    if: startsWith(github.ref, 'refs/tags/')
+
     name: Build Manual
     runs-on: ubuntu-20.04
     steps:
@@ -83,13 +103,8 @@ jobs:
         id: tag_name
         run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
 
-      - name: Coding Style Check
-        run: |
-          python3 .ci-tag-check.py
-          python3 -m pip install --upgrade pip
-          python3 -m pip install flake8 black
-          python3 -m black -l 120 --check foundry/ smb3parse/
-          python3 -m flake8 foundry/ smb3parse/
+      - name: Check for correct tag
+        run: python3 .ci-tag-check.py
         env:
           TAG_NAME: ${{ steps.tag_name.outputs.SOURCE_TAG }}
 
