@@ -8,7 +8,10 @@ from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
 from foundry.game.gfx.Palette import bg_color_for_palette_group
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon_object
+from foundry.game.gfx.objects.LevelObj.ObjectLikeLevelObjectRendererAdapter import (
+    ObjectLikeLevelObjectRendererAdapter as LevelObject,
+)
+from foundry.game.gfx.objects.LevelObj.get_minimal_icon_object import get_minimal_icon_object
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 from smb3parse.objects.enemy_item import EnemyItem
