@@ -3,8 +3,10 @@ from typing import Optional
 from PySide2.QtCore import Signal, SignalInstance
 from PySide2.QtWidgets import QFormLayout, QSizePolicy, QWidget
 
-from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects.LevelObj.ObjectLikeLevelObjectRendererAdapter import (
+    ObjectLikeLevelObjectRendererAdapter as LevelObject,
+)
+from foundry.game.gfx.objects.ObjectLike import ObjectLike, EXPANDS_VERT
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
 
@@ -83,7 +85,10 @@ class SpinnerPanel(QWidget):
         self.enable_domain(isinstance(obj, LevelObject), obj.domain)
 
         if isinstance(obj, LevelObject) and obj.is_4byte:
-            self.set_length(obj.length)
+            if obj.primary_expansion() == EXPANDS_VERT:
+                self.set_length(obj.level_object_renderer.width)
+            else:
+                self.set_length(obj.level_object_renderer.height)
         else:
             self.enable_length(False)
 

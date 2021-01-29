@@ -1,4 +1,6 @@
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObj.ObjectLikeLevelObjectRendererAdapter import (
+    ObjectLikeLevelObjectRendererAdapter as LevelObject,
+)
 
 
 def test_domain_spinner(main_window):
