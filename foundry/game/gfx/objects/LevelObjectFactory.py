@@ -1,7 +1,8 @@
 from typing import Optional, List
 
 from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObj.LevelObject import SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObj.ObjectLikeLevelObjectRendererAdapter import ObjectLikeLevelObjectRendererAdapter
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 
@@ -19,7 +20,7 @@ class LevelObjectFactory:
         object_set: int,
         graphic_set: int,
         palette_group_index: int,
-        objects_ref: List[LevelObject],
+        objects_ref: List[ObjectLikeLevelObjectRendererAdapter],
         vertical_level: bool,
         size_minimal: bool = False,
     ):
@@ -49,7 +50,7 @@ class LevelObjectFactory:
         assert self.graphics_set is not None
 
         # todo get rid of index by fixing ground map
-        return LevelObject(
+        return ObjectLikeLevelObjectRendererAdapter.as_legacy(
             data,
             self.object_set,
             self.palette_group,
@@ -69,6 +70,7 @@ class LevelObjectFactory:
         length: Optional[int],
         index: int,
     ):
+        x, y = x + 1, y + 1
         if self.vertical_level:
             offset = y // SCREEN_HEIGHT
             y %= SCREEN_HEIGHT
@@ -77,8 +79,8 @@ class LevelObjectFactory:
 
         data = bytearray(3)
 
-        data[0] = domain << 5 | y
-        data[1] = x
+        data[0] = domain << 5 | abs(y)
+        data[1] = abs(x)
         data[2] = object_index
 
         if length is not None:
