@@ -3,7 +3,8 @@ from PySide2.QtGui import QBrush, QPainter, QPen, QPolygonF, Qt
 
 from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObj.LevelObject import SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObj.render import GROUND
 from foundry.game.level.Level import Level
 from smb3parse.constants import (
     AScroll_HorizontalInitMove,
