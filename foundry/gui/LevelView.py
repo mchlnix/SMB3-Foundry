@@ -8,7 +8,9 @@ from PySide2.QtWidgets import QApplication, QSizePolicy, QToolTip, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObj.ObjectLikeLevelObjectRendererAdapter import (
+    ObjectLikeLevelObjectRendererAdapter as LevelObject,
+)
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
