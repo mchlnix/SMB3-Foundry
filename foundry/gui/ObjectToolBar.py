@@ -4,7 +4,9 @@ from PySide2.QtCore import Qt, Signal, SignalInstance
 from PySide2.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObj.ObjectLikeLevelObjectRendererAdapter import (
+    ObjectLikeLevelObjectRendererAdapter as LevelObject,
+)
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.gui.ObjectToolBox import ObjectIcon
 from foundry.gui.TabbedToolBox import TabbedToolBox
