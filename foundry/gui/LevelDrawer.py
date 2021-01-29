@@ -9,9 +9,10 @@ from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, bg_color_for_object_set, load_palette_group
 from foundry.game.gfx.drawable import apply_selection_overlay
-from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObj.LevelObject import SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObj.render import GROUND
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
@@ -202,11 +203,18 @@ class LevelDrawer:
 
                 blocks_to_draw = [level_object.blocks[0]] * width * height
 
+                # todo: Make less brittle method to render special background objects
+                block = get_block(
+                    level_object.blocks[0],
+                    level_object.level_object_renderer.palette_group,
+                    level_object.level_object_renderer.graphics_set,
+                    level_object.level_object_renderer.block_group_renderer.tsa_data,
+                )
                 for index, block_index in enumerate(blocks_to_draw):
                     x = level_object.x_position + index % width
                     y = level_object.y_position + index // width
 
-                    level_object._draw_block(painter, block_index, x, y, self.block_length, False)
+                    block.draw(painter, x, y, self.block_length, False)
             else:
                 level_object.draw(painter, self.block_length, self.transparency)
 
