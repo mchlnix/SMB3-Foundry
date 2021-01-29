@@ -5,7 +5,9 @@ from PySide2.QtCore import QPoint
 from PySide2.QtWidgets import QMenu
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObj.ObjectLikeLevelObjectRendererAdapter import (
+    ObjectLikeLevelObjectRendererAdapter as LevelObject,
+)
 from foundry.game.level.LevelRef import LevelRef
 
 

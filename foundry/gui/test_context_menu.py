@@ -1,7 +1,9 @@
 from PySide2.QtCore import QPoint
 from PySide2.QtGui import Qt
 
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObj.ObjectLikeLevelObjectRendererAdapter import (
+    ObjectLikeLevelObjectRendererAdapter as LevelObject,
+)
 from foundry.gui.ContextMenu import ContextMenu
 
 
@@ -26,8 +28,10 @@ def test_correct_menu_position(main_window, monkeypatch, qtbot):
     main_window.scroll_panel.horizontalScrollBar().setValue(500)
 
     click_pos = QPoint(200, 200)
-    point_in_level_view = level_view.mapFromGlobal(click_pos)
-    qtbot.mouseClick(level_view, Qt.RightButton, pos=point_in_level_view)
+    # make position positive so the level factory doesn't freak out
+    qt_point_in_level_view = level_view.mapFromGlobal(click_pos)
+    point_in_level_view = (abs(i) for i in qt_point_in_level_view.toTuple())
+    qtbot.mouseClick(level_view, Qt.RightButton, pos=qt_point_in_level_view)
 
     context_menu.triggered.emit(context_menu.add_object_action)
 
@@ -37,6 +41,4 @@ def test_correct_menu_position(main_window, monkeypatch, qtbot):
     added_object: LevelObject = main_window.level_ref.objects[-1]
 
     assert menu_popup_position == click_pos, "ContextMenu not opened on Cursor"
-    assert added_object.get_position() == level_view._to_level_point(
-        *point_in_level_view.toTuple()
-    ), "Object not added at cursor"
+    assert added_object.get_position() == level_view._to_level_point(*point_in_level_view), "Object not added at cursor"
