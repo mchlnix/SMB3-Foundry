@@ -1,6 +1,7 @@
 from PySide2.QtCore import QRect
 
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObj.LevelObject import SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObj.render import GROUND
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 
 
