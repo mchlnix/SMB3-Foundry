@@ -1,4 +1,4 @@
-name: Publish SMB3 Foundry
+name: Publish
 
 on: [push, pull_request]
 
