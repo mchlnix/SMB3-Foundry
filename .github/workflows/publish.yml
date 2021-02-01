@@ -10,6 +10,17 @@ jobs:
     steps:
     - name: Check out
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set environment tag name
+      id: tag_name
+      run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+
+    - name: Check git info
+      run: |
+        git tag -n | grep "^nightly" | tr -s " " | cut -d" " -f2-
+        git tag --format="%(body)" --points-at nightly
 
     - name: Coding Style Check
       run: |
@@ -99,6 +110,8 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set environment tag name
         id: tag_name
@@ -116,7 +129,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: $(git tag -n | grep "^${{ steps.tag_name.outputs.SOURCE_TAG }}" | tr -s " " | cut -d" " -f2)
+          body: $(git tag --format="%(body)" --points-at ${{ github.ref }})
           draft: false
           prerelease: true
 
