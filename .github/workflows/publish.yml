@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   code_style:
-    name: Check_Codestyle
+    name: Check Code Style
 
     runs-on: ubuntu-20.04
     steps:
