@@ -28,9 +28,10 @@ jobs:
     strategy:
       matrix:
         config:
-        - {os: ubuntu-20.04, exe: 'smb3-foundry', prefix: 'linux', suffix: '', python-version: '3.8'}
-        - {os: windows-2019, exe: 'smb3-foundry.exe', prefix: 'win64', suffix: '.exe', python-version: '3.8'}
-        - {os: macos-latest, exe: 'smb3-foundry', prefix: 'osx', suffix: '', python-version: '3.8'}
+        - {os: ubuntu-20.04, exe: 'smb3-foundry', prefix: 'linux', suffix: '', architecture: 'x64'}
+        - {os: windows-2019, exe: 'smb3-foundry.exe', prefix: 'win64', suffix: '.exe', architecture: 'x64'}
+        - {os: windows-2019, exe: 'smb3-foundry.exe', prefix: 'win32', suffix: '.exe', architecture: 'x86'}
+        - {os: macos-latest, exe: 'smb3-foundry', prefix: 'osx', suffix: '', architecture: 'x64'}
 
     steps:
       - name: Check out
@@ -39,7 +40,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.config.python-version }}
+          architecture: ${{ matrix.config.architecture }}
 
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
@@ -146,7 +147,7 @@ jobs:
           asset_name: "osx-smb3-foundry"
           asset_content_type: application/octet-stream
 
-      - name: Upload SMB3 Foundry Windows
+      - name: Upload SMB3 Foundry Windows x64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -154,6 +155,16 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "artifacts/win64-smb3-foundry.exe/win64-smb3-foundry.exe"
           asset_name: "win64-smb3-foundry.exe"
+          asset_content_type: application/octet-stream
+
+      - name: Upload SMB3 Foundry Windows x32
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/win32-smb3-foundry.exe/win32-smb3-foundry.exe"
+          asset_name: "win32-smb3-foundry.exe"
           asset_content_type: application/octet-stream
 
       - name: Upload SMB3 Foundry Manual
