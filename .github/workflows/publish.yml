@@ -99,10 +99,19 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set environment tag name
         id: tag_name
         run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+
+      - name: Set release information
+        id: release_info
+        run: |
+          echo ::set-output name=RELEASE_NAME::"$(git tag --format="%(body)" --points-at ${{ steps.tag_name.outputs.SOURCE_TAG }} | head -n 1)"
+          git tag --format="%(body)" --points-at ${{ steps.tag_name.outputs.SOURCE_TAG }}
+          echo ::set-output name=RELEASE_BODY::"$(git tag --format="%(body)" --points-at ${{ steps.tag_name.outputs.SOURCE_TAG }} | head -n +3)"
 
       - name: Check for correct tag
         run: python3 .ci-tag-check.py
@@ -116,7 +125,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: ${{ steps.release_info.outputs.RELEASE_NAME }}
+          body: ${{ steps.release_info.outputs.RELEASE_BODY }}
           draft: false
           prerelease: true
 
