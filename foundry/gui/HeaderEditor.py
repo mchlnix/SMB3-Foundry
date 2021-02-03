@@ -90,7 +90,6 @@ class HeaderEditor(CustomDialog):
         main_layout.addWidget(self.tab_widget)
 
         # level settings
-
         self.length_dropdown = QComboBox()
         self.length_dropdown.addItems(STR_LEVEL_LENGTHS)
         self.length_dropdown.activated.connect(self.on_combo)

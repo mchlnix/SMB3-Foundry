@@ -1,10 +1,11 @@
 from itertools import product
-from typing import List
+from typing import Callable
 
 from PySide2.QtCore import QSize, Signal, SignalInstance
 from PySide2.QtGui import QColor, QMouseEvent, QPixmap, Qt
 from PySide2.QtWidgets import (
     QAbstractButton,
+    QDialog,
     QDialogButtonBox,
     QGridLayout,
     QGroupBox,
@@ -20,7 +21,9 @@ from foundry.game.gfx.Palette import (
     NESPalette,
     PALETTES_PER_PALETTES_GROUP,
     PALETTE_GROUPS_PER_OBJECT_SET,
+    PaletteGroup,
     load_palette_group,
+    save_palette_group,
 )
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
@@ -58,28 +61,59 @@ class PaletteViewer(CustomDialog):
 
 
 class PaletteWidget(QWidget):
-    def __init__(self, palette: List[bytearray], palette_number: int):
+    # index in palette, color index in NES palette
+    color_changed: SignalInstance = Signal(int, int)
+
+    def __init__(self, palette_group: PaletteGroup, palette_number: int):
         super(PaletteWidget, self).__init__()
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(1, 2, 0, 2)
 
-        for color_index in range(COLORS_PER_PALETTE):
-            color = QColor(*NESPalette[palette[palette_number][color_index]])
+        self._palette_group = palette_group
+        self._palette_number = palette_number
 
-            square = ColorSquare(color)
+        self.clickable = False
+
+        self._color_squares = []
+
+        for color_index in range(COLORS_PER_PALETTE):
+            square = ColorSquare()
             square.clicked.connect(self._open_color_table)
+
+            self._color_squares.append(square)
 
             layout.addWidget(square)
 
+        self._update_colors()
+
     def _open_color_table(self):
-        pass
+        if not self.clickable:
+            return
+
+        color_table = ColorTable()
+        return_code = color_table.exec_()
+
+        if return_code == QDialog.Accepted:
+            index_in_palette = self.layout().indexOf(self.sender())
+            color_in_nes_palette = color_table.selected_color_index
+
+            self.color_changed.emit(index_in_palette, color_in_nes_palette)
+
+            self._palette_group.update()
+            self._update_colors()
+
+    def _update_colors(self):
+        for color_index, color_square in zip(self._palette_group[self._palette_number], self._color_squares):
+            color = QColor(*NESPalette[color_index])
+
+            color_square.set_color(color)
 
 
 class ColorSquare(QLabel):
     clicked: SignalInstance = Signal()
 
-    def __init__(self, color: QColor, square_length=16):
+    def __init__(self, color: QColor = QColor(Qt.white), square_length=16):
         super(ColorSquare, self).__init__()
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -96,6 +130,10 @@ class ColorSquare(QLabel):
         self.setPixmap(color_square)
 
         self.select(False)
+
+    def set_color(self, color: QColor):
+        self._set_color(color)
+        self.update()
 
     def select(self, selected):
         if selected:
@@ -115,7 +153,7 @@ class ColorSquare(QLabel):
         return super(ColorSquare, self).mouseReleaseEvent(event)
 
 
-class ColorTable(QWidget):
+class ColorTable(QDialog):
     table_rows = 4
     table_columns = 16
 
@@ -127,6 +165,8 @@ class ColorTable(QWidget):
         self.setWindowTitle("NES Color Table")
 
         self._currently_selected_square: ColorSquare = ColorSquare(QColor(Qt.white))
+        self.selected_color_index = 0
+        """Index into the NES Palette, that was selected."""
 
         self.square_length = 24
 
@@ -165,9 +205,10 @@ class ColorTable(QWidget):
         if button is self.buttons.button(QDialogButtonBox.Ok):  # ok button
             color_index = self.color_table_layout.indexOf(self._currently_selected_square)
 
-            self.ok_clicked.emit(color_index)
-
-        self.close()
+            self.selected_color_index = color_index
+            self.accept()
+        else:
+            self.reject()
 
 
 class SidePalette(QWidget):
@@ -194,7 +235,26 @@ class SidePalette(QWidget):
         clear_layout(self.layout())
 
         palette_group_index = self.level_ref.object_palette_index
-        palette = load_palette_group(self.level_ref.object_set_number, palette_group_index)
+        palette_group = load_palette_group(self.level_ref.object_set_number, palette_group_index)
 
         for palette_no in range(PALETTES_PER_PALETTES_GROUP):
-            self.layout().addWidget(PaletteWidget(palette, palette_no))
+            widget = PaletteWidget(palette_group, palette_no)
+            widget.color_changed.connect(self.color_changer(palette_group, palette_no))
+            widget.clickable = True
+
+            self.layout().addWidget(widget)
+
+    def color_changer(self, palette_group: PaletteGroup, palette_no: int) -> Callable:
+        def actual_changer(index_in_palette, index_in_nes_color_table):
+            # colors at index 0 are shared among all palettes of a palette group
+            if index_in_palette == 0:
+                for palette in palette_group.palettes:
+                    palette[0] = index_in_nes_color_table
+            else:
+                palette_group[palette_no][index_in_palette] = index_in_nes_color_table
+
+            save_palette_group(palette_group)
+
+            self.level_ref.reload()
+
+        return actual_changer
