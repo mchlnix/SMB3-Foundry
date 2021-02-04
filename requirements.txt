@@ -1,2 +1,3 @@
 PySide2>=5.15.0
 QDarkStyle~=2.8.1
+attrs>=20.3.0
