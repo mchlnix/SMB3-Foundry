@@ -855,7 +855,14 @@ class MainWindow(QMainWindow):
                 return
 
         if is_save_as:
-            pathname, _ = QFileDialog.getSaveFileName(self, caption="Save ROM as", filter=ROM_FILE_FILTER)
+            suggested_file = ROM.name
+
+            if not suggested_file.endswith(".nes"):
+                suggested_file += ".nes"
+
+            pathname, _ = QFileDialog.getSaveFileName(
+                self, caption="Save ROM as", dir=suggested_file, filter=ROM_FILE_FILTER
+            )
             if not pathname:
                 return  # the user changed their mind
         else:
