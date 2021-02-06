@@ -9,7 +9,7 @@ from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.HeaderEditor import SCROLL_DIRECTIONS
+from foundry.gui.HeaderEditor import CAMERA_MOVEMENTS
 from foundry.gui.LevelView import LevelView
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.util import clear_layout
@@ -79,7 +79,7 @@ class WarningList(QWidget):
                     self.warnings.append(
                         (
                             f"Level has auto scrolling enabled, but the scrolling type in the level header is not "
-                            f"'{SCROLL_DIRECTIONS[0]}. This might not work as expected.",
+                            f"'{CAMERA_MOVEMENTS[0]}. This might not work as expected.",
                             [],
                         )
                     )

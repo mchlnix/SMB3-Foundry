@@ -62,7 +62,7 @@ MUSIC_ITEMS = [
 
 TIMES = ["300", "400", "200", "Unlimited"]
 
-SCROLL_DIRECTIONS = [
+CAMERA_MOVEMENTS = [
     "Locked, unless climbing/flying",
     "Free vertical scrolling",
     "Locked 'by start coordinates'?",
@@ -102,9 +102,9 @@ class HeaderEditor(CustomDialog):
         self.time_dropdown.addItems(TIMES)
         self.time_dropdown.activated.connect(self.on_combo)
 
-        self.v_scroll_direction_dropdown = QComboBox()
-        self.v_scroll_direction_dropdown.addItems(SCROLL_DIRECTIONS)
-        self.v_scroll_direction_dropdown.activated.connect(self.on_combo)
+        self.camera_movement_dropdown = QComboBox()
+        self.camera_movement_dropdown.addItems(CAMERA_MOVEMENTS)
+        self.camera_movement_dropdown.activated.connect(self.on_combo)
 
         self.level_is_vertical_cb = QCheckBox("Level is Vertical")
         self.level_is_vertical_cb.clicked.connect(self.on_check_box)
@@ -123,10 +123,10 @@ class HeaderEditor(CustomDialog):
         form = QFormLayout()
         form.setFormAlignment(Qt.AlignCenter)
 
-        form.addRow("Level length: ", self.length_dropdown)
+        form.addRow("Level Length: ", self.length_dropdown)
         form.addRow("Music: ", self.music_dropdown)
         form.addRow("Time: ", self.time_dropdown)
-        form.addRow("Scroll direction: ", self.v_scroll_direction_dropdown)
+        form.addRow("Vertical Camera Movement: ", self.camera_movement_dropdown)
 
         form.addWidget(check_box_widget)
 
@@ -226,7 +226,7 @@ class HeaderEditor(CustomDialog):
         self.length_dropdown.setCurrentIndex(length_index)
         self.music_dropdown.setCurrentIndex(self.level.music_index)
         self.time_dropdown.setCurrentIndex(self.level.time_index)
-        self.v_scroll_direction_dropdown.setCurrentIndex(self.level.scroll_type)
+        self.camera_movement_dropdown.setCurrentIndex(self.level.scroll_type)
         self.level_is_vertical_cb.setChecked(self.level.is_vertical)
         self.pipe_ends_level_cb.setChecked(self.level.pipe_ends_level)
 
@@ -307,8 +307,8 @@ class HeaderEditor(CustomDialog):
             new_time = self.time_dropdown.currentIndex()
             self.level.time_index = new_time
 
-        elif dropdown == self.v_scroll_direction_dropdown:
-            new_scroll = self.v_scroll_direction_dropdown.currentIndex()
+        elif dropdown == self.camera_movement_dropdown:
+            new_scroll = self.camera_movement_dropdown.currentIndex()
             self.level.scroll_type = new_scroll
 
         elif dropdown == self.x_position_dropdown:
