@@ -38,7 +38,7 @@ class TabbedToolBox(QTabWidget):
 
         self.addTab(self._recent_toolbox, "Recent")
         self.addTab(self._object_scroll_area, "Objects")
-        self.addTab(self._enemies_scroll_area, "Enemies")
+        self.addTab(self._enemies_scroll_area, "Enemies / Items")
 
         self.show_level_object_tab()
 
