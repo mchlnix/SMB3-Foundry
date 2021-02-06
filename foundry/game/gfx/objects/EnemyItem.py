@@ -72,13 +72,24 @@ class EnemyObject(ObjectLike):
         # nothing to re-render since enemies are just copied over
         pass
 
-    def draw(self, painter: QPainter, block_length, _):
+    def draw(self, painter: QPainter, block_length: int, _, use_offsets=True):
+        """
+        :param painter:
+        :param block_length:
+        :param _: ignored for enemies
+        :param bool use_offsets: Whether to use the additional offsets. Necessary when drawing in level, but not when
+            rendering in the object toolbar, or in the object dropdown.
+        """
         for i, image in enumerate(self.blocks):
             x = self.x_position + (i % self.width)
             y = self.y_position + (i // self.width)
 
-            x_offset = enemy_handle_x[self.obj_index]
-            y_offset = enemy_handle_y[self.obj_index]
+            if use_offsets:
+                x_offset = enemy_handle_x[self.obj_index]
+                y_offset = enemy_handle_y[self.obj_index]
+            else:
+                x_offset = enemy_handle_x2[self.obj_index]
+                y_offset = 0
 
             x += x_offset
             y += y_offset
@@ -160,7 +171,7 @@ class EnemyObject(ObjectLike):
 
         painter = QPainter(image)
 
-        self.draw(painter, Block.SIDE_LENGTH, True)
+        self.draw(painter, Block.SIDE_LENGTH, True, use_offsets=False)
 
         return image
 
