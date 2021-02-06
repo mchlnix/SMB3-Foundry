@@ -371,7 +371,7 @@ class LevelView(QWidget):
         for obj in selected_objects:
             obj.resize_by(dx, dy)
 
-            self.level_ref.changed = True
+            self.level_ref.level.changed = True
 
         self.update()
 
@@ -453,7 +453,7 @@ class LevelView(QWidget):
         for obj in selected_objects:
             obj.move_by(dx, dy)
 
-            self.level_ref.changed = True
+            self.level_ref.level.changed = True
 
         self.update()
 

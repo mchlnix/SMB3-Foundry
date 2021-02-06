@@ -397,7 +397,8 @@ class MainWindow(QMainWindow):
         self.menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(self._on_show_settings)
         self.menu_toolbar.addSeparator()
         self.menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
-        self.menu_toolbar.addAction(icon("save.svg"), "Save Level").triggered.connect(self.on_save_rom)
+        self.menu_toolbar_save_action = self.menu_toolbar.addAction(icon("save.svg"), "Save Level")
+        self.menu_toolbar_save_action.triggered.connect(self.on_save_rom)
         self.menu_toolbar.addSeparator()
 
         self.undo_action = self.menu_toolbar.addAction(icon("rotate-ccw.svg"), "Undo Action")
@@ -480,6 +481,8 @@ class MainWindow(QMainWindow):
 
         self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
 
+        self.menu_toolbar_save_action.setEnabled(self.level_ref.level.changed)
+
         self._save_auto_data()
 
     def _on_show_settings(self):
@@ -544,7 +547,7 @@ class MainWindow(QMainWindow):
 
             byte_data.append(((level_offset, object_data), (enemy_offset, enemy_data)))
 
-        self.level_ref.changed = bool(base64_data)
+        self.level_ref.level.changed = bool(base64_data)
         self.level_ref.import_undo_stack_data(undo_index, byte_data)
 
     def _go_to_jump_destination(self):
@@ -866,12 +869,15 @@ class MainWindow(QMainWindow):
                 "another location, or your changes will be lost.",
             )
 
+            return
+
         self._save_current_changes_to_file(pathname, set_new_path=True)
 
         self.update_title()
 
         if not is_save_as:
-            self.level_ref.changed = False
+            self.level_ref.level.changed = False
+            self.level_ref.data_changed.emit()
 
     def _save_current_changes_to_file(self, pathname: str, set_new_path):
         for offset, data in self.level_ref.to_bytes():
