@@ -503,7 +503,9 @@ class MainWindow(QMainWindow):
 
         self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
 
-        self.menu_toolbar_save_action.setEnabled(self.level_ref.level.changed)
+        self.menu_toolbar_save_action.setEnabled(
+            self.level_ref.level.changed or not self.level_ref.level.attached_to_rom
+        )
 
         self._save_auto_data()
 

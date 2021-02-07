@@ -31,7 +31,6 @@ class Tile:
         self.cached_tiles = dict()
 
         self.palette = palette_group[palette_index]
-        # self.palette = DEFAULT_PALETTE
 
         self.data = bytearray()
         self.pixels = bytearray()
