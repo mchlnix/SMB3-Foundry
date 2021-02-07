@@ -864,6 +864,17 @@ class MainWindow(QMainWindow):
             answer = level_selector.exec_()
 
             if answer == QMessageBox.Accepted:
+                if level_selector.object_set != self.level_ref.level.object_set.number:
+                    QMessageBox.critical(
+                        self,
+                        "Couldn't save M3L file into ROM.",
+                        "You selected a level, that has a different object set "
+                        f"({OBJECT_SET_NAMES[level_selector.object_set]}), than the level you are trying to save "
+                        f"into the ROM ({OBJECT_SET_NAMES[self.level_ref.level.object_set.number]}). This is currently "
+                        "not supported. Please find a level, that has the same object set.",
+                    )
+                    return
+
                 self.level_view.level_ref.attach_to_rom(
                     level_selector.object_data_offset, level_selector.enemy_data_offset
                 )
