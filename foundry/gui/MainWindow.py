@@ -44,6 +44,7 @@ from foundry import (
     releases_link,
 )
 from foundry.game.File import ROM
+from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.Level import Level, world_and_level_for_level_address
@@ -62,6 +63,7 @@ from foundry.gui.LevelSizeBar import LevelSizeBar
 from foundry.gui.LevelView import LevelView, undoable
 from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
+from foundry.gui.ObjectSetSelector import ObjectSetSelector
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
 from foundry.gui.ObjectViewer import ObjectViewer
@@ -172,6 +174,9 @@ class MainWindow(QMainWindow):
 
         self.reload_action = self.level_menu.addAction("&Reload Level")
         self.reload_action.triggered.connect(self.reload_level)
+        self.level_menu.addSeparator()
+        self.new_level_action = self.level_menu.addAction("New Empty Level")
+        self.new_level_action.triggered.connect(self._on_new_level)
         self.level_menu.addSeparator()
         self.edit_header_action = self.level_menu.addAction("&Edit Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
@@ -474,6 +479,23 @@ class MainWindow(QMainWindow):
         self.on_open_rom(path_to_rom)
 
         self.showMaximized()
+
+    def _on_new_level(self):
+        if not self.safe_to_change():
+            return
+
+        object_set = ObjectSetSelector.get_object_set(self)
+
+        if object_set == -1:
+            # was cancelled
+            return
+
+        self.level_ref.level = Level(f"New {OBJECT_SET_NAMES[object_set]} Level", object_set_number=object_set)
+
+        minimal_level_header = bytearray([0, 0, 0, 0, 0, 0, 0x81, object_set, 0])
+        self.level_ref.level.from_bytes(object_data=(0, minimal_level_header), enemy_data=(0, bytearray()))
+
+        self.update_gui_for_level()
 
     def _on_level_data_changed(self):
         self.undo_action.setEnabled(self.level_ref.undo_stack.undo_available)
@@ -1233,6 +1255,7 @@ class MainWindow(QMainWindow):
 
         level_elements.extend(self.level_menu.actions())
         level_elements.remove(self.select_level_action)
+        level_elements.remove(self.new_level_action)
 
         level_elements.extend(self.object_menu.actions())
         level_elements.extend(self.view_menu.actions())

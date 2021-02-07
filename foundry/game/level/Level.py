@@ -160,7 +160,7 @@ class Level(LevelLike):
     def current_enemies_size(self):
         return len(self.enemies) * ENEMY_SIZE
 
-    def _parse_header(self):
+    def _parse_header(self, should_emit=True):
         self.header = LevelHeader(self.header_bytes, self.object_set_number)
 
         self.object_factory = LevelObjectFactory(
@@ -174,7 +174,8 @@ class Level(LevelLike):
 
         self.size = self.header.width, self.header.height
 
-        self.data_changed.emit()
+        if should_emit:
+            self.data_changed.emit()
 
     def _load_enemies(self, data: bytearray):
         self.enemies.clear()
@@ -761,5 +762,5 @@ class Level(LevelLike):
         self.header_bytes = object_bytes[0 : Level.HEADER_LENGTH]
         objects = object_bytes[Level.HEADER_LENGTH :]
 
-        self._parse_header()
+        self._parse_header(should_emit=False)
         self._load_level_data(objects, enemies, new_level)
