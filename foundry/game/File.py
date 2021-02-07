@@ -40,7 +40,7 @@ class ROM(Rom):
         self.position = 0
 
     @staticmethod
-    def get_tsa_data(object_set: int) -> bytearray:
+    def get_tsa_data(object_set: int) -> bytes:
         rom = ROM()
 
         tsa_index = rom.int(TSA_OS_LIST + object_set)
@@ -51,7 +51,7 @@ class ROM(Rom):
 
         tsa_start = BASE_OFFSET + tsa_index * TSA_TABLE_INTERVAL
 
-        return rom.read(tsa_start, TSA_TABLE_SIZE)
+        return bytes(rom.read(tsa_start, TSA_TABLE_SIZE))
 
     @staticmethod
     def load_from_file(path: str):

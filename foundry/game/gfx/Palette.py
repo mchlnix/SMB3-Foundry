@@ -31,7 +31,7 @@ PALETTE_DATA_SIZE = (
 )
 
 
-@dataclass
+@dataclass(eq=False)
 class PaletteGroup:
     object_set: int
     index: int
@@ -40,8 +40,6 @@ class PaletteGroup:
     def update(self):
         new_palette_group = load_palette_group(self.object_set, self.index)
 
-        self.object_set = new_palette_group.object_set
-        self.index = new_palette_group.index
         self.palettes = new_palette_group.palettes
 
     def __getitem__(self, item):
@@ -49,6 +47,15 @@ class PaletteGroup:
 
     def __setitem__(self, key, value):
         self.palettes[key] = value
+
+    def __eq__(self, other):
+        if not isinstance(other, PaletteGroup):
+            raise TypeError(f"Cannot compare PaletteGroup with {type(other)}.")
+
+        return self.object_set == other.object_set and self.index == other.index
+
+    def __hash__(self):
+        return hash((self.object_set, self.index))
 
 
 palette_file = root_dir.joinpath("data", "Default.pal")

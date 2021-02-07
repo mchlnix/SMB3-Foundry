@@ -7,6 +7,11 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 
 
+ENEMY_ITEM_SPRITE_SHEET = QImage(str(data_dir.joinpath("gfx.png")))
+
+ENEMY_ITEM_SPRITE_SHEET.convertTo(QImage.Format_RGB888)
+
+
 class EnemyItemFactory:
     object_set: int
     graphic_set: int
@@ -14,15 +19,13 @@ class EnemyItemFactory:
     definitions: list = []
 
     def __init__(self, object_set: int, palette_index: int):
-        png = QImage(str(data_dir.joinpath("gfx.png")))
-
-        png.convertTo(QImage.Format_RGB888)
-
         rows_per_object_set = 256 // 64
 
         y_offset = 12 * rows_per_object_set * Block.HEIGHT
 
-        self.png_data = png.copy(QRect(0, y_offset, png.width(), png.height() - y_offset))
+        self.png_data = ENEMY_ITEM_SPRITE_SHEET.copy(
+            QRect(0, y_offset, ENEMY_ITEM_SPRITE_SHEET.width(), ENEMY_ITEM_SPRITE_SHEET.height() - y_offset)
+        )
 
         self.palette_group = load_palette_group(object_set, palette_index)
 
