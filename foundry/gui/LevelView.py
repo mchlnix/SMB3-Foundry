@@ -4,7 +4,7 @@ from warnings import warn
 
 from PySide2.QtCore import QMimeData, QPoint, QSize
 from PySide2.QtGui import QDragEnterEvent, QDragMoveEvent, QMouseEvent, QPaintEvent, QPainter, QWheelEvent, Qt
-from PySide2.QtWidgets import QSizePolicy, QToolTip, QWidget
+from PySide2.QtWidgets import QApplication, QSizePolicy, QToolTip, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -37,6 +37,10 @@ def undoable(func):
         self.level_ref.save_level_state()
 
     return wrapped
+
+
+def ctrl_is_pressed():
+    return bool(QApplication.queryKeyboardModifiers() & Qt.ControlModifier)
 
 
 class LevelView(QWidget):
@@ -504,6 +508,10 @@ class LevelView(QWidget):
             if nothing_selected or clicked_object not in selected_objects:
                 self._select_object(clicked_object)
 
+            elif clicked_object in selected_objects:
+                selected_objects.remove(clicked_object)
+                self.select_objects(selected_objects, replace_selection=True)
+
         return not clicked_on_background
 
     def _set_zoom(self, zoom):
@@ -553,16 +561,31 @@ class LevelView(QWidget):
         else:
             self.select_objects([])
 
-    def select_objects(self, objects):
-        self._set_selected_objects(objects)
+    def select_objects(self, objects: List[Union[LevelObject, EnemyObject]], replace_selection: bool = False):
+        """
+        Selects the given objects. Depending on if Ctrl is pressed, the current selection is reserved.
+
+        :param objects: Level objects and enemies/items to select.
+        :param replace_selection: Whether to ignore the current selected objects and only select the given objects.
+        """
+        self._set_selected_objects(objects, replace_selection)
 
         self.update()
 
-    def _set_selected_objects(self, objects):
+    def _set_selected_objects(self, objects, replace_selection=False):
         if self.level_ref.selected_objects == objects:
             return
 
-        self.level_ref.selected_objects = objects
+        if ctrl_is_pressed() and not replace_selection:
+            selected_items = self.level_ref.selected_objects.copy()
+
+            for level_object in objects:
+                if level_object not in selected_items:
+                    selected_items.append(level_object)
+        else:
+            selected_items = objects
+
+        self.level_ref.selected_objects = selected_items
 
     def get_selected_objects(self) -> List[Union[LevelObject, EnemyObject]]:
         return self.level_ref.selected_objects
