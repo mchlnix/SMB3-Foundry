@@ -23,7 +23,6 @@ from foundry.game.gfx.Palette import (
     PALETTE_GROUPS_PER_OBJECT_SET,
     PaletteGroup,
     load_palette_group,
-    save_palette_group,
 )
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
@@ -100,7 +99,6 @@ class PaletteWidget(QWidget):
 
             self.color_changed.emit(index_in_palette, color_in_nes_palette)
 
-            self._palette_group.update()
             self._update_colors()
 
     def _update_colors(self):
@@ -246,6 +244,9 @@ class SidePalette(QWidget):
 
     def color_changer(self, palette_group: PaletteGroup, palette_no: int) -> Callable:
         def actual_changer(index_in_palette, index_in_nes_color_table):
+            if palette_group[palette_no][index_in_palette] == index_in_nes_color_table:
+                return
+
             # colors at index 0 are shared among all palettes of a palette group
             if index_in_palette == 0:
                 for palette in palette_group.palettes:
@@ -253,7 +254,7 @@ class SidePalette(QWidget):
             else:
                 palette_group[palette_no][index_in_palette] = index_in_nes_color_table
 
-            save_palette_group(palette_group)
+            PaletteGroup.changed = True
 
             self.level_ref.reload()
 

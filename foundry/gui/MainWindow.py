@@ -45,6 +45,7 @@ from foundry import (
 )
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
+from foundry.game.gfx.Palette import PaletteGroup, restore_all_palettes, save_all_palette_groups
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.Level import Level, world_and_level_for_level_address
@@ -504,7 +505,7 @@ class MainWindow(QMainWindow):
         self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
 
         self.menu_toolbar_save_action.setEnabled(
-            self.level_ref.level.changed or not self.level_ref.level.attached_to_rom
+            self.level_ref.level.changed or not self.level_ref.level.attached_to_rom or PaletteGroup.changed
         )
 
         self._save_auto_data()
@@ -806,6 +807,9 @@ class MainWindow(QMainWindow):
         return True
 
     def load_m3l(self, m3l_data: bytearray, pathname: str):
+        if not self._ask_for_palette_save():
+            return
+
         self.level_ref.level.from_m3l(m3l_data)
 
         self.level_view.level_ref.name = os.path.basename(pathname)
@@ -825,15 +829,48 @@ class MainWindow(QMainWindow):
                 QMessageBox.No,
             )
 
-            return answer == QMessageBox.Yes
-        else:
-            return True
+            if answer == QMessageBox.No:
+                return False
+
+        return self._ask_for_palette_save()
 
     def on_save_rom(self, _):
         self.save_rom(False)
 
     def on_save_rom_as(self, _):
         self.save_rom(True)
+
+    def _ask_for_palette_save(self) -> bool:
+        """
+        If Object Palettes have been changed, this function opens a dialog box, asking the user, if they want to save
+        the changes, dismiss them, or cancel whatever they have been doing (probably saving/selecting another level).
+
+        Saving or restoring Object Palettes is done inside the function if necessary.
+
+        :return: False, if Cancel was chosen. True, if Palettes were restored or saved to ROM.
+        """
+        if not PaletteGroup.changed:
+            return True
+
+        answer = QMessageBox.question(
+            self,
+            "Please confirm",
+            "You changed some object palettes. This is a change, that potentially affects other levels in this ROM. Do "
+            "you want to save these changes?",
+            QMessageBox.Cancel | QMessageBox.RestoreDefaults | QMessageBox.Yes,
+            QMessageBox.Cancel,
+        )
+
+        if answer == QMessageBox.Cancel:
+            return False
+
+        if answer == QMessageBox.Yes:
+            save_all_palette_groups()
+        elif answer == QMessageBox.RestoreDefaults:
+            restore_all_palettes()
+            self.level_ref.level.reload()
+
+        return True
 
     def save_rom(self, is_save_as):
         safe_to_save, reason, additional_info = self.level_view.level_safe_to_save()
@@ -875,6 +912,9 @@ class MainWindow(QMainWindow):
                     )
                     return
 
+                if not self._ask_for_palette_save():
+                    return
+
                 self.level_view.level_ref.attach_to_rom(
                     level_selector.object_data_offset, level_selector.enemy_data_offset
                 )
@@ -887,6 +927,10 @@ class MainWindow(QMainWindow):
                     # the m3l is saved to the current ROM, we can get rid of the auto save
                     auto_save_m3l_path.unlink(missing_ok=True)
             else:
+                return
+
+        else:
+            if not self._ask_for_palette_save():
                 return
 
         if is_save_as:

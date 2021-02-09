@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List, Tuple
 
 from PySide2.QtGui import QColor
 from attr import dataclass
@@ -37,8 +37,10 @@ class PaletteGroup:
     index: int
     palettes: List[bytearray]
 
-    def update(self):
-        new_palette_group = load_palette_group(self.object_set, self.index)
+    changed = False
+
+    def restore(self):
+        new_palette_group = load_palette_group(self.object_set, self.index, use_cache=False)
 
         self.palettes = new_palette_group.palettes
 
@@ -57,39 +59,39 @@ class PaletteGroup:
     def __hash__(self):
         return hash((self.object_set, self.index))
 
+    def save(self):
+        rom = ROM()
 
-palette_file = root_dir.joinpath("data", "Default.pal")
+        palette_offset_position = PALETTE_OFFSET_LIST + (self.object_set * PALETTE_OFFSET_SIZE)
+        palette_offset = rom.little_endian(palette_offset_position)
 
-with open(palette_file, "rb") as f:
-    color_data = f.read()
+        palette_address = PALETTE_BASE_ADDRESS + palette_offset
+        palette_address += self.index * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
 
-offset = 0x18  # first color position
+        palettes = []
 
-NESPalette = []
-COLOR_COUNT = 64
-BYTES_IN_COLOR = 3 + 1  # bytes + separator
+        for palette in self.palettes:
+            palettes.append(rom.write(palette_address, palette))
 
-for i in range(COLOR_COUNT):
-    NESPalette.append([color_data[offset], color_data[offset + 1], color_data[offset + 2]])
-
-    offset += BYTES_IN_COLOR
-
-
-_palette_group_cache = {}
+            palette_address += COLORS_PER_PALETTE
 
 
-def load_palette_group(object_set: int, palette_group_index: int) -> PaletteGroup:
+_palette_group_cache: Dict[Tuple[int, int], PaletteGroup] = {}
+
+
+def load_palette_group(object_set: int, palette_group_index: int, use_cache=True) -> PaletteGroup:
     """
     Basically does, what the Setup_PalData routine does.
 
     :param object_set: Level_Tileset in the disassembly.
     :param palette_group_index: Palette_By_Tileset. Defined in the level header.
+    :param use_cache: Whether to use a cached version, or read from ROM.
 
     :return: A list of 4 groups of 4 colors.
     """
     key = (object_set, palette_group_index)
 
-    if key not in _palette_group_cache:
+    if key not in _palette_group_cache or not use_cache:
         rom = ROM()
 
         palette_offset_position = PALETTE_OFFSET_LIST + (object_set * PALETTE_OFFSET_SIZE)
@@ -110,21 +112,35 @@ def load_palette_group(object_set: int, palette_group_index: int) -> PaletteGrou
     return _palette_group_cache[key]
 
 
-def save_palette_group(palette_group: PaletteGroup):
-    rom = ROM()
+def save_all_palette_groups():
+    for palette_group in _palette_group_cache.values():
+        palette_group.save()
 
-    palette_offset_position = PALETTE_OFFSET_LIST + (palette_group.object_set * PALETTE_OFFSET_SIZE)
-    palette_offset = rom.little_endian(palette_offset_position)
+    PaletteGroup.changed = False
 
-    palette_address = PALETTE_BASE_ADDRESS + palette_offset
-    palette_address += palette_group.index * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
 
-    palettes = []
+def restore_all_palettes():
+    for palette_group in _palette_group_cache.values():
+        palette_group.restore()
 
-    for palette in palette_group.palettes:
-        palettes.append(rom.write(palette_address, palette))
+    PaletteGroup.changed = False
 
-        palette_address += COLORS_PER_PALETTE
+
+palette_file = root_dir.joinpath("data", "Default.pal")
+
+with open(palette_file, "rb") as f:
+    color_data = f.read()
+
+offset = 0x18  # first color position
+
+NESPalette = []
+COLOR_COUNT = 64
+BYTES_IN_COLOR = 3 + 1  # bytes + separator
+
+for i in range(COLOR_COUNT):
+    NESPalette.append([color_data[offset], color_data[offset + 1], color_data[offset + 2]])
+
+    offset += BYTES_IN_COLOR
 
 
 def bg_color_for_object_set(object_set_number: int, palette_group_index: int) -> QColor:
