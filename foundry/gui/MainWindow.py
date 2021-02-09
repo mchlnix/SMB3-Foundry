@@ -504,9 +504,10 @@ class MainWindow(QMainWindow):
 
         self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
 
-        self.menu_toolbar_save_action.setEnabled(
-            self.level_ref.level.changed or not self.level_ref.level.attached_to_rom or PaletteGroup.changed
-        )
+        level_has_changed = self.level_ref.level.changed and not self.level_ref.level.undo_stack.is_empty
+        level_is_m3l = not self.level_ref.level.attached_to_rom
+
+        self.menu_toolbar_save_action.setEnabled(level_has_changed or level_is_m3l or PaletteGroup.changed)
 
         self._save_auto_data()
 
