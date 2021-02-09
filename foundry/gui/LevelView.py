@@ -88,8 +88,11 @@ class LevelView(QWidget):
 
         self.resizing_happened = False
 
-        # dragged in from the object toolbar
         self.currently_dragged_object: Optional[Union[LevelObject, EnemyObject]] = None
+        """dragged in from the object toolbar, if any"""
+
+        self._object_was_selected_on_last_click = False
+        """whether an object was selected with the current click; will be cleared, on release of the mouse button"""
 
         self.setWhatsThis(
             "<b>Level View</b><br/>"
@@ -412,11 +415,19 @@ class LevelView(QWidget):
         self.setCursor(Qt.ArrowCursor)
 
     def _on_left_mouse_button_down(self, event: QMouseEvent):
+        # 1 if clicking on background: deselect everything, start selection square
+        # 2 if clicking on background and ctrl: start selection_square
+        # 3 if clicking on selected object: deselect everything and select only this object
+        # 4 if clicking on selected object and ctrl: do nothing, deselect this object on release
+        # 5 if clicking on unselected object: deselect everything and select only this object
+        # 6 if clicking on unselected object and ctrl: select this object
+
         if self._select_objects_on_click(event):
             x, y = event.pos().toTuple()
 
             obj = self.object_at(x, y)
 
+            # enable all drag functionality
             if obj is not None:
                 edge = self._cursor_on_edge_of_object(obj, event.pos())
 
@@ -462,11 +473,11 @@ class LevelView(QWidget):
         self.update()
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
+        x, y = event.pos().toTuple()
+
+        obj = self.object_at(x, y)
+
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            x, y = event.pos().toTuple()
-
-            obj = self.object_at(x, y)
-
             if obj is not None:
                 drag_end_point = obj.x_position, obj.y_position
 
@@ -474,10 +485,23 @@ class LevelView(QWidget):
                     self._stop_drag()
                 else:
                     self.dragging_happened = False
-        else:
+        elif self.selection_square.active:
             self._stop_selection_square()
 
+        elif obj and obj.selected and not self._object_was_selected_on_last_click:
+            # handle selected object on release to allow dragging
+
+            if ctrl_is_pressed():
+                # take selected object under cursor out of current selection
+                selected_objects = self.get_selected_objects().copy()
+                selected_objects.remove(obj)
+                self.select_objects(selected_objects, replace_selection=True)
+            else:
+                # replace selection with only selected object
+                self.select_objects([obj], replace_selection=True)
+
         self.mouse_mode = MODE_FREE
+        self._object_was_selected_on_last_click = False
         self.setCursor(Qt.ArrowCursor)
 
     def _stop_drag(self):
@@ -505,12 +529,10 @@ class LevelView(QWidget):
 
             nothing_selected = not selected_objects
 
+            # selected objects are handled on click release
             if nothing_selected or clicked_object not in selected_objects:
                 self._select_object(clicked_object)
-
-            elif clicked_object in selected_objects:
-                selected_objects.remove(clicked_object)
-                self.select_objects(selected_objects, replace_selection=True)
+                self._object_was_selected_on_last_click = True
 
         return not clicked_on_background
 
