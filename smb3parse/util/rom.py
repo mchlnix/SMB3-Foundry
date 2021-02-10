@@ -2,6 +2,7 @@ from ctypes import Structure, c_char, c_ubyte
 from smb3parse.util import little_endian
 from smb3parse.constants import BASE_OFFSET
 
+
 class INESHeader(Structure):
     _fields_ = [
         ("magic", c_char * 4),
@@ -9,7 +10,7 @@ class INESHeader(Structure):
         ("chr_units", c_ubyte),
         ("flags6", c_char),
         ("unused_flags", c_char * 4),
-        ("unused_pad", c_char * 5)
+        ("unused_pad", c_char * 5),
     ]
     PRG_UNIT_SIZE = 0x4000
     CHR_UNIT_SIZE = 0x2000
@@ -31,7 +32,7 @@ class Rom:
         self._header = header
 
     def prg_normalize(self, offset: int) -> int:
-        """ Takes a vanilla ROM PRG offset and returns a
+        """Takes a vanilla ROM PRG offset and returns a
         new offset that is correct for the current ROM's
         PRG size
 
@@ -43,7 +44,7 @@ class Rom:
         # so offsets to other banks should stay the same.
         # Offsets to CHR region (offsets > vanilla prg size)
         # also need to be corrected.
-        if (offset < (BASE_OFFSET + (30 * 0x2000))):
+        if offset < (BASE_OFFSET + (30 * 0x2000)):
             return offset
         # Otherwise, we need to normalize this bank 30 or 31 or CHR
         # offset to the correct bank based on PRG size

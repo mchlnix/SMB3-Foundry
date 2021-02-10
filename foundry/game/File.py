@@ -106,7 +106,10 @@ class ROM(Rom):
         position = self.prg_normalize(position)
         if position < len(ROM.rom_data):
             return ROM.rom_data[position]
-        raise IndexError("Attempted to read from offset 0x{:X} when ROM is only of size 0x{:X}".format(position, len(ROM.rom_data)))
+        raise IndexError(
+            "Attempted to read from offset 0x{:X} "
+            "when ROM is only of size 0x{:X}".format(position, len(ROM.rom_data))
+        )
 
     def bulk_read(self, count: int, position: int) -> bytearray:
         position = self.prg_normalize(position)

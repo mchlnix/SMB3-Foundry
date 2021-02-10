@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from smb3parse.levels.world_map import WorldMap
-from smb3parse.util.rom import Rom
+from smb3parse.util.rom import Rom, INESHeader
 
 root_dir = Path(__file__).parent.parent.parent
 
@@ -25,7 +25,8 @@ def rom():
         )
 
     with open(test_rom_path, "rb") as rom_file:
-        yield Rom(bytearray(rom_file.read()))
+        data = bytearray(rom_file.read())
+        yield Rom(data, INESHeader.from_buffer_copy(data))
 
 
 @pytest.fixture
