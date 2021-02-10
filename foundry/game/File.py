@@ -2,7 +2,7 @@ from ctypes import Structure, sizeof, addressof, memmove, c_char, c_ubyte
 from os.path import basename
 from typing import List, Optional
 
-from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset
+from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, Map_TSA_Index
 from smb3parse.util.rom import Rom
 
 WORLD_COUNT = 9  # includes warp zone
@@ -96,7 +96,7 @@ class ROM(Rom):
             # and drawing the initial map via Map_Reload_with_Completions.
             # Therefore, the PAGE_A000_ByTileset doesn't have the TSA data for
             # the map tiles.
-            tsa_index = 12
+            tsa_index = Map_TSA_Index
 
         # INES header size + (bank with tsa data * sizeof(bank))
         tsa_start = BASE_OFFSET + tsa_index * TSA_TABLE_INTERVAL

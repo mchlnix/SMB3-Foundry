@@ -2120,6 +2120,7 @@ Map_SpriteRAM_Offset = 0x1753F
 Map_StateNothing = 0x14D49
 Map_Tile_ColorSets = 0x1842D
 Map_Tile_Layouts = 0x185A8
+Map_TSA_Index = 12
 Map_Unused7EEA_Vals = 0x16018
 Map_W8D_XOffTable = 0x153B1
 Map_W8D_YOffTable = 0x153B5
