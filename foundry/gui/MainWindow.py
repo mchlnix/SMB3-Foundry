@@ -179,7 +179,7 @@ class MainWindow(QMainWindow):
         self.new_level_action = self.level_menu.addAction("New Empty Level")
         self.new_level_action.triggered.connect(self._on_new_level)
         self.level_menu.addSeparator()
-        self.edit_header_action = self.level_menu.addAction("&Edit Header")
+        self.edit_header_action = self.level_menu.addAction("&Edit Level Header")
         self.edit_header_action.triggered.connect(self.on_header_editor)
         self.edit_autoscroll = self.level_menu.addAction("Edit Autoscrolling")
         self.edit_autoscroll.triggered.connect(self.on_edit_autoscroll)
