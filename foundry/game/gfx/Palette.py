@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from PySide2.QtGui import QColor
 from attr import dataclass
@@ -59,8 +59,9 @@ class PaletteGroup:
     def __hash__(self):
         return hash((self.object_set, self.index))
 
-    def save(self):
-        rom = ROM()
+    def save(self, rom: Optional[ROM] = None):
+        if rom is None:
+            rom = ROM()
 
         palette_offset_position = PALETTE_OFFSET_LIST + (self.object_set * PALETTE_OFFSET_SIZE)
         palette_offset = rom.little_endian(palette_offset_position)
@@ -112,11 +113,12 @@ def load_palette_group(object_set: int, palette_group_index: int, use_cache=True
     return _palette_group_cache[key]
 
 
-def save_all_palette_groups():
+def save_all_palette_groups(rom: Optional[ROM] = None):
     for palette_group in _palette_group_cache.values():
-        palette_group.save()
+        palette_group.save(rom)
 
-    PaletteGroup.changed = False
+    if rom is None:
+        PaletteGroup.changed = False
 
 
 def restore_all_palettes():

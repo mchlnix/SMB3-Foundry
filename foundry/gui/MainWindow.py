@@ -600,11 +600,17 @@ class MainWindow(QMainWindow):
 
         ROM().save_to(path_to_temp_rom)
 
-        if not self._put_current_level_to_level_1_1(path_to_temp_rom):
+        temp_rom = self._open_rom(path_to_temp_rom)
+
+        if not self._put_current_level_to_level_1_1(temp_rom):
             return
 
-        if not self._set_default_powerup(path_to_temp_rom):
+        if not self._set_default_powerup(temp_rom):
             return
+
+        save_all_palette_groups(temp_rom)
+
+        temp_rom.save_to(path_to_temp_rom)
 
         arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
         arguments = shlex.split(arguments, posix=False)
@@ -641,9 +647,7 @@ class MainWindow(QMainWindow):
 
         header_editor.exec_()
 
-    def _put_current_level_to_level_1_1(self, path_to_rom) -> bool:
-        rom = self._open_rom(path_to_rom)
-
+    def _put_current_level_to_level_1_1(self, rom: SMB3Rom) -> bool:
         # load world-1 data
         world_1 = SMB3World.from_world_number(rom, 1)
 
@@ -675,14 +679,9 @@ class MainWindow(QMainWindow):
 
         world_1.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
 
-        # save rom
-        rom.save_to(path_to_rom)
-
         return True
 
-    def _set_default_powerup(self, path_to_rom) -> bool:
-        rom = self._open_rom(path_to_rom)
-
+    def _set_default_powerup(self, rom: SMB3Rom) -> bool:
         *_, powerup, hasPWing = POWERUPS[SETTINGS["default_powerup"]]
 
         rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))
@@ -725,7 +724,6 @@ class MainWindow(QMainWindow):
             Map_Power_DispResetLocation = 0x3C5A2
             rom.write(Map_Power_DispResetLocation, bytes([nop, nop, nop]))
 
-        rom.save_to(path_to_rom)
         return True
 
     def on_screenshot(self, _) -> bool:
