@@ -2,7 +2,7 @@ from itertools import product
 from typing import Optional, Union
 
 from PySide2.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
-from PySide2.QtGui import QColor, QDrag, QImage, QMouseEvent, QPaintEvent, QPainter
+from PySide2.QtGui import QDrag, QImage, QMouseEvent, QPaintEvent, QPainter
 from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.Palette import bg_color_for_palette_group
@@ -93,7 +93,7 @@ class ObjectIcon(QWidget):
             painter = QPainter(self)
 
             if self.draw_background_color:
-                painter.fillRect(event.rect(), QColor(*bg_color_for_palette_group(self.object.palette_group)))
+                painter.fillRect(event.rect(), bg_color_for_palette_group(self.object.palette_group))
 
             scaled_image = self.image.scaled(self.size(), aspectMode=Qt.KeepAspectRatio)
 

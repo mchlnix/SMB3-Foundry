@@ -51,9 +51,9 @@ class Block:
         palette_index = (block_index & 0b1100_0000) >> 6
 
         if graphics_set.number == CLOUDY_GRAPHICS_SET:
-            self.bg_color = QColor(*NESPalette[palette_group[palette_index][2]])
+            self.bg_color = NESPalette[palette_group[palette_index][2]]
         else:
-            self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
+            self.bg_color = NESPalette[palette_group[palette_index][0]]
 
         # can't hash list, so turn it into a string instead
         self._block_id = (block_index, str(palette_group), graphics_set.number)

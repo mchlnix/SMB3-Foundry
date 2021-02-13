@@ -140,7 +140,7 @@ COLOR_COUNT = 64
 BYTES_IN_COLOR = 3 + 1  # bytes + separator
 
 for i in range(COLOR_COUNT):
-    NESPalette.append([color_data[offset], color_data[offset + 1], color_data[offset + 2]])
+    NESPalette.append(QColor(color_data[offset], color_data[offset + 1], color_data[offset + 2]))
 
     offset += BYTES_IN_COLOR
 
@@ -148,8 +148,8 @@ for i in range(COLOR_COUNT):
 def bg_color_for_object_set(object_set_number: int, palette_group_index: int) -> QColor:
     palette_group = load_palette_group(object_set_number, palette_group_index)
 
-    return QColor(*bg_color_for_palette_group(palette_group))
+    return bg_color_for_palette_group(palette_group)
 
 
-def bg_color_for_palette_group(palette_group: PaletteGroup):
+def bg_color_for_palette_group(palette_group: PaletteGroup) -> QColor:
     return NESPalette[palette_group[0][0]]

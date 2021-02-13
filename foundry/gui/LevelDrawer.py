@@ -143,9 +143,7 @@ class LevelDrawer:
         painter.save()
 
         if level.object_set_number == CLOUDY_OBJECT_SET:
-            bg_color = QColor(
-                *NESPalette[load_palette_group(level.object_set_number, level.header.object_palette_index)[3][2]]
-            )
+            bg_color = NESPalette[load_palette_group(level.object_set_number, level.header.object_palette_index)[3][2]]
         else:
             bg_color = bg_color_for_object_set(level.object_set_number, level.header.object_palette_index)
 

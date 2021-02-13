@@ -103,7 +103,7 @@ class PaletteWidget(QWidget):
 
     def _update_colors(self):
         for color_index, color_square in zip(self._palette_group[self._palette_number], self._color_squares):
-            color = QColor(*NESPalette[color_index])
+            color = NESPalette[color_index]
 
             color_square.set_color(color)
 
@@ -172,7 +172,7 @@ class ColorTable(QDialog):
         self.color_table_layout.setSpacing(0)
 
         for row, column in product(range(self.table_rows), range(self.table_columns)):
-            color = QColor(*NESPalette[row * self.table_columns + column])
+            color = NESPalette[row * self.table_columns + column]
 
             square = ColorSquare(color, self.square_length)
             square.setLineWidth(0)
