@@ -3,6 +3,8 @@ from typing import Union
 
 BASE_OFFSET = 0x10  # the size of the rom header identifying the rom
 
+WORLD_MAP_TSA_INDEX = 12
+
 TILE_LEVEL_1 = 0x03
 TILE_LEVEL_2 = 0x04
 TILE_LEVEL_3 = 0x05

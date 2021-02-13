@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from smb3parse.levels.world_map import WorldMap
-from smb3parse.util.rom import Rom
+from smb3parse.util.rom import Rom, INESHeader
 
 root_dir = Path(__file__).parent.parent.parent
 
@@ -17,15 +17,25 @@ def cd_to_repo_root():
     chdir(root_dir)
 
 
-@pytest.fixture()
-def rom():
+@pytest.fixture
+def rom() -> Rom:
     if not test_rom_path.exists():
         raise ValueError(
             f"To run the test suite, place a US SMB3 Rom named '{test_rom_path}' in the root of the repository."
         )
 
     with open(test_rom_path, "rb") as rom_file:
-        yield Rom(bytearray(rom_file.read()))
+        data = bytearray(rom_file.read())
+        yield Rom(data, INESHeader.from_buffer_copy(data))
+
+
+@pytest.fixture
+def extended_rom(rom) -> Rom:
+    data = bytearray(rom._data)
+
+    # change amount of PRGs to simulate expanded rom
+    data[4] += 1
+    yield Rom(data, INESHeader.from_buffer_copy(data))
 
 
 @pytest.fixture
