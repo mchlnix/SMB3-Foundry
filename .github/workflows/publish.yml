@@ -18,6 +18,48 @@ jobs:
         python3 -m black -l 120 --check foundry/ smb3parse/
         python3 -m flake8 foundry/ smb3parse/
 
+  set_nightly_tag:
+    name: Set nightly tag on dev
+    if: startsWith(github.ref, 'refs/heads/dev')
+
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+
+
+    - name: Show all tags
+      run: git tag
+
+    - name: Set commit info
+      run: |
+        git config user.name "Automated Release"
+        git config user.email "automated@release.com"
+
+    - name: Remove old nightly tag
+      run: git tag --delete nightly || true
+
+    - name: Set new nightly tag
+      run: 'git tag --annotate nightly -m "Nightly
+
+
+      CAUTION: Nightlies are untested alpha releases. Most users should use ''$(git describe --tags --exclude=nightly --abbrev=0)''!
+
+
+      $(git log --format=''%an: %s (%h)'' origin/master..HEAD | grep -v ''Merge pull request'')"'
+
+    - name: Show created tag
+      run: |
+        git show nightly
+
+    - name: Remove remote tag
+      run: git push --delete origin nightly || true
+
+    - name: Push tag to remote
+      run: git push --tags
 
   build_editor:
     needs: code_style
