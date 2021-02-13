@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from smb3parse.constants import BASE_OFFSET
 from smb3parse.levels.world_map import WorldMap
 from smb3parse.util.rom import Rom, INESHeader
 
@@ -30,12 +31,21 @@ def rom() -> Rom:
 
 
 @pytest.fixture
-def extended_rom(rom) -> Rom:
+def expanded_rom(rom) -> Rom:
     data = bytearray(rom._data)
 
+    insertion_point_for_additional_data = BASE_OFFSET + 15 * INESHeader.PRG_UNIT_SIZE
+
+    ines_header_data = data[: INESHeader.LENGTH]
+    data_before_insertion_point = data[INESHeader.LENGTH : insertion_point_for_additional_data]
+    data_after_insertion_point = data[insertion_point_for_additional_data:]
+
+    ines_header_data[4] += 1
+    additional_data = bytearray(1 * INESHeader.PRG_UNIT_SIZE)
+
     # change amount of PRGs to simulate expanded rom
-    data[4] += 1
-    yield Rom(data, INESHeader.from_buffer_copy(data))
+    expanded_data = ines_header_data + data_before_insertion_point + additional_data + data_after_insertion_point
+    yield Rom(expanded_data, INESHeader.from_buffer_copy(expanded_data))
 
 
 @pytest.fixture

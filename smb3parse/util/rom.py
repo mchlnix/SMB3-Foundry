@@ -14,6 +14,7 @@ class INESHeader(Structure):
     ]
     PRG_UNIT_SIZE = 0x4000
     CHR_UNIT_SIZE = 0x2000
+    LENGTH = 0x10
 
     @property
     def prg_size(self):

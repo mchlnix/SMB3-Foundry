@@ -1,7 +1,8 @@
 from pathlib import Path
 from typing import Union
 
-BASE_OFFSET = 0x10  # the size of the rom header identifying the rom
+BASE_OFFSET = 0x10
+"""the size of the INES header identifying the rom"""
 
 WORLD_MAP_TSA_INDEX = 12
 

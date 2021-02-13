@@ -43,8 +43,19 @@ def test_header(rom):
     assert rom._header.chr_size == 0x20000
 
 
-def test_header_extended(rom, extended_rom):
+def test_header_expanded(rom, expanded_rom):
     assert rom.prg_normalize(0x30010) == 0x30010
     assert rom.prg_normalize(0x40010) == 0x40010
-    assert extended_rom.prg_normalize(0x30010) == 0x30010
-    assert extended_rom.prg_normalize(0x40010) == 0x40010 + INESHeader.PRG_UNIT_SIZE
+    assert expanded_rom.prg_normalize(0x30010) == 0x30010
+    assert expanded_rom.prg_normalize(0x40010) == 0x40010 + INESHeader.PRG_UNIT_SIZE
+
+
+def test_expanded_rom_reads_same_as_normal(rom, expanded_rom):
+    assert len(rom._data) < len(expanded_rom._data)
+
+    for offset in range(0, rom._header.prg_size + rom._header.chr_size, INESHeader.PRG_UNIT_SIZE // 4):
+        if offset == 0:
+            # skip the INES Header, since it will be different in an expanded rom
+            continue
+
+        assert rom.read(offset, 0x10) == expanded_rom.read(offset, 0x10)
