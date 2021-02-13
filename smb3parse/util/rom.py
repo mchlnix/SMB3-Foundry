@@ -1,4 +1,6 @@
 from ctypes import Structure, c_char, c_ubyte
+from typing import Optional
+
 from smb3parse.util import little_endian
 from smb3parse.constants import BASE_OFFSET
 
@@ -28,8 +30,12 @@ class INESHeader(Structure):
 class Rom:
     VANILLA_PRG_SIZE = 0x40000
 
-    def __init__(self, rom_data: bytearray, header: INESHeader):
+    def __init__(self, rom_data: bytearray, header: Optional[INESHeader] = None):
         self._data = rom_data
+
+        if header is None:
+            header = INESHeader.from_buffer_copy(bytes(rom_data))
+
         self._header = header
 
     def prg_normalize(self, offset: int) -> int:
