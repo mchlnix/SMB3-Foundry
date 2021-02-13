@@ -1018,15 +1018,25 @@ class MainWindow(QMainWindow):
             go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
 
             info_box = QMessageBox(
-                QMessageBox.Information, "New release available", f"New Version {latest_version} is available."
+                QMessageBox.Information, "New release available", f"New Version '{latest_version}' is available."
+            )
+        else:
+            nightly_release_url = f"{releases_link}/tag/nightly"
+
+            go_to_github_button = QPushButton(icon("external-link.svg"), "Check for nightly release")
+            go_to_github_button.clicked.connect(lambda: open_url(nightly_release_url))
+
+            info_box = QMessageBox(
+                QMessageBox.Information,
+                "No newer release",
+                f"Stable version '{current_version}' is up to date. But there might be a newer 'nightly' version "
+                f"available.",
             )
 
-            info_box.addButton(QMessageBox.Cancel)
-            info_box.addButton(go_to_github_button, QMessageBox.AcceptRole)
+        info_box.addButton(QMessageBox.Cancel)
+        info_box.addButton(go_to_github_button, QMessageBox.AcceptRole)
 
-            info_box.exec_()
-        else:
-            QMessageBox.information(self, "No newer release", f"Version {current_version} is up to date.")
+        info_box.exec_()
 
         self.setCursor(Qt.ArrowCursor)
 
