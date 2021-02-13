@@ -40,15 +40,16 @@ class Rom:
         call this multiple times giving it resulting offsets
         from previous calls to it.
         """
-        # Only prg030 and prg031 are modified in an expanded ROM,
-        # so offsets to other banks should stay the same.
-        # Offsets to CHR region (offsets > vanilla prg size)
-        # also need to be corrected.
+        # data in expanded Roms is inserted between PRG29 and PRG30
+        # (0-indexed); so any offset, that goes beyond PRG29 needs
+        # to be adjusted by adding however much data was inserted
         if offset < (BASE_OFFSET + (30 * 0x2000)):
             return offset
-        # Otherwise, we need to normalize this bank 30 or 31 or CHR
+
+        # we need to normalize this bank 30 or 31 or CHR
         # offset to the correct bank based on PRG size
-        return self._header.prg_size - (Rom.VANILLA_PRG_SIZE - offset)
+        no_bytes_added_to_rom = self._header.prg_size - Rom.VANILLA_PRG_SIZE
+        return offset + no_bytes_added_to_rom
 
     def little_endian(self, offset: int) -> int:
         offset = self.prg_normalize(offset)

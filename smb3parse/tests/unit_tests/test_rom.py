@@ -31,3 +31,20 @@ def test_int():
 
     for offset, number in enumerate(numbers):
         assert rom.int(offset) == number
+
+
+def test_header(rom):
+    assert rom._header.magic == b"NES\x1A"
+    assert rom._header.prg_units == 0x10
+    assert rom._header.chr_units == 0x10
+    assert rom._header.flags6 == b"\x40"
+
+    assert rom._header.prg_size == 0x40000
+    assert rom._header.chr_size == 0x20000
+
+
+def test_header_extended(rom, extended_rom):
+    assert rom.prg_normalize(0x30010) == 0x30010
+    assert rom.prg_normalize(0x40010) == 0x40010
+    assert extended_rom.prg_normalize(0x30010) == 0x30010
+    assert extended_rom.prg_normalize(0x40010) == 0x40010 + INESHeader.PRG_UNIT_SIZE

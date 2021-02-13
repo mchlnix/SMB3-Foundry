@@ -1,7 +1,7 @@
 from os.path import basename
 from typing import List, Optional
 
-from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, Map_TSA_Index
+from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
 from smb3parse.util.rom import Rom, INESHeader
 
 WORLD_COUNT = 9  # includes warp zone
@@ -52,7 +52,7 @@ class ROM(Rom):
             # and drawing the initial map via Map_Reload_with_Completions.
             # Therefore, the PAGE_A000_ByTileset doesn't have the TSA data for
             # the map tiles.
-            tsa_index = Map_TSA_Index
+            tsa_index = WORLD_MAP_TSA_INDEX
 
         # INES header size + (bank with tsa data * sizeof(bank))
         tsa_start = BASE_OFFSET + tsa_index * TSA_TABLE_INTERVAL
@@ -104,11 +104,12 @@ class ROM(Rom):
 
     def get_byte(self, position: int) -> int:
         position = self.prg_normalize(position)
+
         if position < len(ROM.rom_data):
             return ROM.rom_data[position]
+
         raise IndexError(
-            "Attempted to read from offset 0x{:X} "
-            "when ROM is only of size 0x{:X}".format(position, len(ROM.rom_data))
+            f"Attempted to read from offset 0x{position:X} when ROM is only of size 0x{len(ROM.rom_data):X}"
         )
 
     def bulk_read(self, count: int, position: int) -> bytearray:
