@@ -130,18 +130,9 @@ class MainWindow(QMainWindow):
         self.save_rom_action.triggered.connect(self.on_save_rom)
         self.save_rom_as_action = file_menu.addAction("&Save ROM as ...")
         self.save_rom_as_action.triggered.connect(self.on_save_rom_as)
-        """
-        file_menu.AppendSeparator()
-        """
         self.save_m3l_action = file_menu.addAction("&Save M3L")
         self.save_m3l_action.triggered.connect(self.on_save_m3l)
-        """
-        file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", "")
-        file_menu.AppendSeparator()
-        file_menu.Append(ID_APPLY_IPS_PATCH, "&Apply IPS Patch", "")
-        file_menu.AppendSeparator()
-        file_menu.Append(ID_ROM_PRESET, "&ROM Preset", "")
-        """
+
         file_menu.addSeparator()
         settings_action = file_menu.addAction("&Settings")
         settings_action.triggered.connect(self._on_show_settings)
@@ -150,19 +141,6 @@ class MainWindow(QMainWindow):
         exit_action.triggered.connect(lambda _: self.close())
 
         self.menuBar().addMenu(file_menu)
-
-        """
-        edit_menu = wx.Menu()
-
-        edit_menu.Append(ID_EDIT_LEVEL, "&Edit Level", "")
-        edit_menu.Append(ID_EDIT_OBJ_DEFS, "&Edit Object Definitions", "")
-        edit_menu.Append(ID_EDIT_PALETTE, "&Edit Palette", "")
-        edit_menu.Append(ID_EDIT_GRAPHICS, "&Edit Graphics", "")
-        edit_menu.Append(ID_EDIT_MISC, "&Edit Miscellaneous", "")
-        edit_menu.AppendSeparator()
-        edit_menu.Append(ID_FREE_FORM_MODE, "&Free form Mode", "")
-        edit_menu.Append(ID_LIMIT_SIZE, "&Limit Size", "")
-        """
 
         self.level_menu = QMenu("Level")
 
@@ -245,29 +223,10 @@ class MainWindow(QMainWindow):
 
         self.view_menu.addSeparator()
         self.view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
-        """
-        self.view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
-        self.view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
-        self.view_menu.AppendSeparator()
-        self.view_menu.Append(ID_ZOOM, "&Zoom", "")
-        self.view_menu.AppendSeparator()
-        self.view_menu.Append(ID_USE_ROM_GRAPHICS, "&Use ROM Graphics", "")
-        self.view_menu.Append(ID_PALETTE, "&Palette", "")
-        self.view_menu.AppendSeparator()
-        self.view_menu.Append(ID_MORE, "&More", "")
-        """
 
         self.menuBar().addMenu(self.view_menu)
 
         help_menu = QMenu("Help")
-        """
-        help_menu.Append(ID_ENEMY_COMPATIBILITY, "&Enemy Compatibility", "")
-        help_menu.Append(ID_TROUBLESHOOTING, "&Troubleshooting", "")
-        help_menu.AppendSeparator()
-        help_menu.Append(ID_PROGRAM_WEBSITE, "&Program Website", "")
-        help_menu.Append(ID_MAKE_A_DONATION, "&Make a Donation", "")
-        help_menu.AppendSeparator()
-        """
         update_action = help_menu.addAction("Check for updates")
         update_action.triggered.connect(self.on_check_for_update)
 
