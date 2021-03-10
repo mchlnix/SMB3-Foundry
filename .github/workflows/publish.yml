@@ -1,0 +1,230 @@
+name: Publish
+
+on: [push, pull_request]
+
+jobs:
+  code_style:
+    name: Check Code Style
+
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+
+    - name: Coding Style Check
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install flake8 black
+        python3 -m black -l 120 --check foundry/ smb3parse/
+        python3 -m flake8 foundry/ smb3parse/
+
+  set_nightly_tag:
+    name: Set nightly tag on dev
+    if: startsWith(github.ref, 'refs/heads/dev')
+
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+
+
+    - name: Show all tags
+      run: git tag
+
+    - name: Set commit info
+      run: |
+        git config user.name "Automated Release"
+        git config user.email "automated@release.com"
+
+    - name: Remove old nightly tag
+      run: git tag --delete nightly || true
+
+    - name: Set new nightly tag
+      run: 'git tag --annotate nightly -m "Nightly
+
+
+      CAUTION: Nightlies are untested alpha releases. Most users should use ''$(git describe --tags --exclude=nightly --abbrev=0)''!
+
+
+      $(git log --format=''%an: %s (%h)'' origin/master..HEAD | grep -v ''Merge pull request'')"'
+
+    - name: Show created tag
+      run: |
+        git show nightly
+
+    - name: Remove remote tag
+      run: git push --delete origin nightly || true
+
+    - name: Push tag to remote
+      run: git push --tags
+
+  build_editor:
+    needs: code_style
+    if: startsWith(github.ref, 'refs/tags/')
+
+    name: Build ${{ matrix.config.prefix }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+        - {os: ubuntu-20.04, exe: 'smb3-foundry', prefix: 'linux', suffix: '', architecture: 'x64'}
+        - {os: windows-2019, exe: 'smb3-foundry.exe', prefix: 'win64', suffix: '.exe', architecture: 'x64'}
+        - {os: windows-2019, exe: 'smb3-foundry.exe', prefix: 'win32', suffix: '.exe', architecture: 'x86'}
+        - {os: macos-latest, exe: 'smb3-foundry', prefix: 'osx', suffix: '', architecture: 'x64'}
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          architecture: ${{ matrix.config.architecture }}
+
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+
+      - name: Get Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
+
+      - name: Build Executable
+        run: |
+          pyinstaller smb3-foundry.spec
+          mv dist/${{ matrix.config.exe }} dist/${{ matrix.config.prefix }}-smb3-foundry${{ matrix.config.suffix }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.config.prefix }}-smb3-foundry${{ matrix.config.suffix }}
+          path: dist/${{ matrix.config.prefix }}-smb3-foundry${{ matrix.config.suffix }}
+
+  build_manual:
+    needs: code_style
+    if: startsWith(github.ref, 'refs/tags/')
+
+    name: Build Manual
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Setup node/npm
+        uses: actions/setup-node@v2
+
+      - name: Get Dependencies
+        run: |
+          npm install markdown-pdf
+          wget https://github.com/sindresorhus/github-markdown-css/blob/gh-pages/github-markdown.css
+
+      - name: Build PDF
+        run: node_modules/.bin/markdown-pdf --css-path github-markdwon.css MANUAL.md
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: MANUAL.pdf
+          path: MANUAL.pdf
+
+  # We're forced to create a separate publish job since the create-release
+  # action fails if it is run twice on the same tag. But we have multiple
+  # build systems (Windows, Linux, OSX) and only want one release.
+  publish:
+    needs: [build_editor, build_manual]
+    name: "Publish"
+    runs-on: ubuntu-latest  # this doesn't matter as it's only codestyle and artifact collection
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set environment tag name
+        id: tag_name
+        run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+
+      - name: Set release information
+        id: release_info
+        run: |
+          echo ::set-output name=RELEASE_NAME::"$(git tag --format="%(body)" --points-at ${{ steps.tag_name.outputs.SOURCE_TAG }} | head -n 1)"
+          git tag --format="%(body)" --points-at ${{ steps.tag_name.outputs.SOURCE_TAG }}
+          echo ::set-output name=RELEASE_BODY::"$(git tag --format="%(body)" --points-at ${{ steps.tag_name.outputs.SOURCE_TAG }} | head -n +3)"
+
+      - name: Check for correct tag
+        run: python3 .ci-tag-check.py
+        env:
+          TAG_NAME: ${{ steps.tag_name.outputs.SOURCE_TAG }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ steps.release_info.outputs.RELEASE_NAME }}
+          body: ${{ steps.release_info.outputs.RELEASE_BODY }}
+          draft: false
+          prerelease: true
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: ./artifacts/
+
+      # upload-release-asset doesn't accept a directory or an array
+      # of files, so we must individually upload each one
+      - name: Upload SMB3 Foundry Linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/linux-smb3-foundry/linux-smb3-foundry"
+          asset_name: "linux-smb3-foundry"
+          asset_content_type: application/octet-stream
+
+      - name: Upload SMB3 Foundry OSX
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/osx-smb3-foundry/osx-smb3-foundry"
+          asset_name: "osx-smb3-foundry"
+          asset_content_type: application/octet-stream
+
+      - name: Upload SMB3 Foundry Windows x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/win64-smb3-foundry.exe/win64-smb3-foundry.exe"
+          asset_name: "win64-smb3-foundry.exe"
+          asset_content_type: application/octet-stream
+
+      - name: Upload SMB3 Foundry Windows x32
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/win32-smb3-foundry.exe/win32-smb3-foundry.exe"
+          asset_name: "win32-smb3-foundry.exe"
+          asset_content_type: application/octet-stream
+
+      - name: Upload SMB3 Foundry Manual
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/MANUAL.pdf/MANUAL.pdf"
+          asset_name: "MANUAL.pdf"
+          asset_content_type: application/pdf

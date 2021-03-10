@@ -18,6 +18,7 @@ auto_save_path = home_dir / "auto_save"
 auto_save_path.mkdir(parents=True, exist_ok=True)
 
 auto_save_rom_path = auto_save_path / "auto_save.nes"
+auto_save_m3l_path = auto_save_path / "auto_save.m3l"
 auto_save_level_data_path = auto_save_path / "level_data.json"
 
 data_dir = root_dir.joinpath("data")
@@ -60,8 +61,17 @@ def get_latest_version_name(timeout: int = 10) -> str:
     data = request.read()
 
     try:
-        return json.loads(data)[0]["tag_name"].strip()
-    except (KeyError, IndexError, json.JSONDecodeError):
+        json_data = json.loads(data)
+
+        for release_info in json_data:
+            version_name = release_info["tag_name"].strip()
+
+            if version_name != "nightly":
+                return version_name
+        else:
+            raise LookupError("Couldn't find a non-nightly release.")
+
+    except (KeyError, IndexError, LookupError, json.JSONDecodeError):
         raise ValueError("Parsing the received information failed.")
 
 

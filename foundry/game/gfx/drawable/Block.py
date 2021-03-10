@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from PySide2.QtCore import QPoint
 from PySide2.QtGui import QColor, QImage, QPainter, Qt
 
@@ -14,7 +16,8 @@ TSA_BANK_2 = 2 * 256
 TSA_BANK_3 = 3 * 256
 
 
-def get_block(block_index, palette_group, graphics_set, tsa_data):
+@lru_cache(2 ** 10)
+def get_block(block_index: int, palette_group: PaletteGroup, graphics_set: GraphicsSet, tsa_data: bytes):
     if block_index > 0xFF:
         rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
         block = Block(rom_block_index, palette_group, graphics_set, tsa_data)
@@ -36,16 +39,21 @@ class Block:
     _block_cache = {}
 
     def __init__(
-        self, block_index: int, palette_group: PaletteGroup, graphics_set: GraphicsSet, tsa_data: bytes, mirrored=False,
+        self,
+        block_index: int,
+        palette_group: PaletteGroup,
+        graphics_set: GraphicsSet,
+        tsa_data: bytes,
+        mirrored: bool = False,
     ):
         self.index = block_index
 
         palette_index = (block_index & 0b1100_0000) >> 6
 
         if graphics_set.number == CLOUDY_GRAPHICS_SET:
-            self.bg_color = QColor(*NESPalette[palette_group[palette_index][2]])
+            self.bg_color = NESPalette[palette_group[palette_index][2]]
         else:
-            self.bg_color = QColor(*NESPalette[palette_group[palette_index][0]])
+            self.bg_color = NESPalette[palette_group[palette_index][0]]
 
         # can't hash list, so turn it into a string instead
         self._block_id = (block_index, str(palette_group), graphics_set.number)

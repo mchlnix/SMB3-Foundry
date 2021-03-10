@@ -1,9 +1,17 @@
 import json
+from functools import partial
+
+import qdarkstyle
 
 from foundry import default_settings_path
 
 RESIZE_LEFT_CLICK = "LMB"
 RESIZE_RIGHT_CLICK = "RMB"
+
+GUI_STYLE = {
+    "RETRO": lambda: "",
+    "DRACULA": partial(qdarkstyle.load_stylesheet, pyside=True),
+}
 
 SETTINGS = dict()
 SETTINGS["instaplay_emulator"] = "fceux"
@@ -11,6 +19,7 @@ SETTINGS["instaplay_arguments"] = "%f"
 SETTINGS["default_powerup"] = 0
 
 SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
+SETTINGS["gui_style"] = ""  # initially blank, since we can't call load_stylesheet until the app is started
 
 SETTINGS["draw_mario"] = True
 SETTINGS["draw_jumps"] = False
@@ -22,6 +31,7 @@ SETTINGS["draw_invisible_items"] = True
 SETTINGS["draw_autoscroll"] = False
 SETTINGS["block_transparency"] = True
 SETTINGS["object_scroll_enabled"] = False
+SETTINGS["object_tooltip_enabled"] = True
 
 
 def load_settings():

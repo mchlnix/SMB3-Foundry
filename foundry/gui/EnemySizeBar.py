@@ -32,4 +32,7 @@ class EnemySizeBar(LevelSizeBar):
 
     @property
     def original_value(self):
-        return self.level.enemy_size_on_disk
+        if not self.level.level.attached_to_rom and self.level.enemy_size_on_disk == 0:
+            return float("INF")
+        else:
+            return self.level.enemy_size_on_disk

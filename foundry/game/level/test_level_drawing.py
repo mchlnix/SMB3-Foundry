@@ -16,6 +16,9 @@ from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 reference_image_dir = Path(__file__).parent.joinpath("test_refs")
 reference_image_dir.mkdir(parents=True, exist_ok=True)
 
+m3l_dir = Path(__file__).parent.joinpath("test_m3ls")
+m3l_dir.mkdir(parents=True, exist_ok=True)
+
 
 def _test_level_against_reference(level_view: LevelView, qtbot):
     qtbot.addWidget(level_view)
@@ -95,3 +98,26 @@ def test_draw_jumps(jump_test_name, level, qtbot):
         view.draw_grid = False
 
         compare_images(jump_test_name, str(Path(__file__).parent / f"{jump_test_name}.png"), view.grab())
+
+
+def _get_all_m3l_files(with_ending=True):
+    for path in m3l_dir.iterdir():
+        if path.match("*.m3l"):
+            if with_ending:
+                yield path
+            else:
+                yield path.stem
+
+
+@pytest.mark.parametrize("m3l_file_name", _get_all_m3l_files(), ids=_get_all_m3l_files(False))
+def test_draw_m3ls(m3l_file_name, level, qtbot):
+    with open(m3l_file_name, "rb") as m3l_file:
+        level.from_m3l(bytearray(m3l_file.read()))
+
+        ref = LevelRef()
+        ref._internal_level = level
+
+        view = LevelView(None, ref, ContextMenu(ref))
+        view.draw_grid = False
+
+        compare_images(m3l_file_name.stem, str(reference_image_dir / f"{m3l_file_name.stem}.png"), view.grab())

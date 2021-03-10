@@ -5,7 +5,7 @@ from warnings import warn
 from PySide2.QtCore import QMimeData, QPoint, QSize, QObject, QEvent
 from PySide2.QtGui import \
     QDragEnterEvent, QDragMoveEvent, QMouseEvent, QPaintEvent, QPainter, QWheelEvent, Qt, QKeySequence, QKeyEvent
-from PySide2.QtWidgets import QSizePolicy, QWidget, QShortcut
+from PySide2.QtWidgets import QApplication, QSizePolicy, QToolTip, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -38,6 +38,10 @@ def undoable(func):
         self.level_ref.save_level_state()
 
     return wrapped
+
+
+def ctrl_is_pressed():
+    return bool(QApplication.queryKeyboardModifiers() & Qt.ControlModifier)
 
 
 class LevelView(QWidget):
@@ -85,8 +89,11 @@ class LevelView(QWidget):
 
         self.resizing_happened = False
 
-        # dragged in from the object toolbar
         self.currently_dragged_object: Optional[Union[LevelObject, EnemyObject]] = None
+        """dragged in from the object toolbar, if any"""
+
+        self._object_was_selected_on_last_click = False
+        """whether an object was selected with the current click; will be cleared, on release of the mouse button"""
 
         QShortcut(QKeySequence(Qt.ALT + Qt.Key_Right), self, lambda *_: self._move_selected(1, 0))
         QShortcut(QKeySequence(Qt.ALT + Qt.Key_Left), self, lambda *_: self._move_selected(-1, 0))
@@ -210,6 +217,16 @@ class LevelView(QWidget):
 
         elif SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK:
             self._set_cursor_for_position(event)
+
+        x, y = event.pos().toTuple()
+
+        object_under_cursor = self.object_at(x, y)
+
+        if SETTINGS["object_tooltip_enabled"] and object_under_cursor is not None:
+            self.setToolTip(str(object_under_cursor))
+        else:
+            self.setToolTip("")
+            QToolTip.hideText()
 
         return super(LevelView, self).mouseMoveEvent(event)
 
@@ -371,7 +388,7 @@ class LevelView(QWidget):
         for obj in selected_objects:
             obj.resize_by(dx, dy)
 
-            self.level_ref.changed = True
+            self.level_ref.level.changed = True
 
         self.update()
 
@@ -408,11 +425,19 @@ class LevelView(QWidget):
         self.setCursor(Qt.ArrowCursor)
 
     def _on_left_mouse_button_down(self, event: QMouseEvent):
+        # 1 if clicking on background: deselect everything, start selection square
+        # 2 if clicking on background and ctrl: start selection_square
+        # 3 if clicking on selected object: deselect everything and select only this object
+        # 4 if clicking on selected object and ctrl: do nothing, deselect this object on release
+        # 5 if clicking on unselected object: deselect everything and select only this object
+        # 6 if clicking on unselected object and ctrl: select this object
+
         if self._select_objects_on_click(event):
             x, y = event.pos().toTuple()
 
             obj = self.object_at(x, y)
 
+            # enable all drag functionality
             if obj is not None:
                 edge = self._cursor_on_edge_of_object(obj, event.pos())
 
@@ -464,16 +489,16 @@ class LevelView(QWidget):
         for obj in selected_objects:
             obj.move_by(dx, dy)
 
-            self.level_ref.changed = True
+            self.level_ref.level.changed = True
 
         self.update()
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
+        x, y = event.pos().toTuple()
+
+        obj = self.object_at(x, y)
+
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            x, y = event.pos().toTuple()
-
-            obj = self.object_at(x, y)
-
             if obj is not None:
                 drag_end_point = obj.x_position, obj.y_position
 
@@ -481,10 +506,23 @@ class LevelView(QWidget):
                     self._stop_drag()
                 else:
                     self.dragging_happened = False
-        else:
+        elif self.selection_square.active:
             self._stop_selection_square()
 
+        elif obj and obj.selected and not self._object_was_selected_on_last_click:
+            # handle selected object on release to allow dragging
+
+            if ctrl_is_pressed():
+                # take selected object under cursor out of current selection
+                selected_objects = self.get_selected_objects().copy()
+                selected_objects.remove(obj)
+                self.select_objects(selected_objects, replace_selection=True)
+            else:
+                # replace selection with only selected object
+                self.select_objects([obj], replace_selection=True)
+
         self.mouse_mode = MODE_FREE
+        self._object_was_selected_on_last_click = False
         self.setCursor(Qt.ArrowCursor)
 
     def _stop_drag(self):
@@ -512,8 +550,10 @@ class LevelView(QWidget):
 
             nothing_selected = not selected_objects
 
+            # selected objects are handled on click release
             if nothing_selected or clicked_object not in selected_objects:
                 self._select_object(clicked_object)
+                self._object_was_selected_on_last_click = True
 
         return not clicked_on_background
 
@@ -564,16 +604,31 @@ class LevelView(QWidget):
         else:
             self.select_objects([])
 
-    def select_objects(self, objects):
-        self._set_selected_objects(objects)
+    def select_objects(self, objects: List[Union[LevelObject, EnemyObject]], replace_selection: bool = False):
+        """
+        Selects the given objects. Depending on if Ctrl is pressed, the current selection is reserved.
+
+        :param objects: Level objects and enemies/items to select.
+        :param replace_selection: Whether to ignore the current selected objects and only select the given objects.
+        """
+        self._set_selected_objects(objects, replace_selection)
 
         self.update()
 
-    def _set_selected_objects(self, objects):
+    def _set_selected_objects(self, objects, replace_selection=False):
         if self.level_ref.selected_objects == objects:
             return
 
-        self.level_ref.selected_objects = objects
+        if ctrl_is_pressed() and not replace_selection:
+            selected_items = self.level_ref.selected_objects.copy()
+
+            for level_object in objects:
+                if level_object not in selected_items:
+                    selected_items.append(level_object)
+        else:
+            selected_items = objects
+
+        self.level_ref.selected_objects = selected_items
 
     def get_selected_objects(self) -> List[Union[LevelObject, EnemyObject]]:
         return self.level_ref.selected_objects
@@ -665,10 +720,16 @@ class LevelView(QWidget):
     def add_jump(self):
         self.level_ref.add_jump()
 
-    def from_m3l(self, data: bytearray):
-        self.level_ref.from_m3l(data)
-
     def object_at(self, x: int, y: int) -> Optional[Union[LevelObject, EnemyObject]]:
+        """
+        Returns an enemy or level object at the position. The x and y is relative to the View (for example, when you
+        receive a mouse event) and will be converted into level coordinates internally.
+
+        :param int x: X position on the View, where the object is queried at.
+        :param int y: Y position on the View, where the object is queried at.
+
+        :return: An enemy/level object, or None, if none is at the position.
+        """
         level_x, level_y = self._to_level_point(x, y)
 
         return self.level_ref.level.object_at(level_x, level_y)

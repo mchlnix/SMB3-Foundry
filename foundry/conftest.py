@@ -9,6 +9,10 @@ from foundry.game.File import ROM
 from foundry.game.level.Level import Level
 from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
+test_rom_path = root_dir / "SMB3.nes"
+
+assert test_rom_path.exists(), f"The test suite needs a SMB3(U) Rom at '{test_rom_path}' to run."
+
 level_1_1_object_address = 0x1FB92
 level_1_1_enemy_address = 0xC537 + 1
 
@@ -23,9 +27,7 @@ def level(rom, qtbot):
 
 @pytest.fixture(scope="module", autouse=True)
 def rom():
-    rom_path = root_dir.joinpath("SMB3.nes")
-
-    rom = ROM(rom_path)
+    rom = ROM(test_rom_path)
 
     yield rom
 

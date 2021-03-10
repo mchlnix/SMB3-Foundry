@@ -3137,9 +3137,9 @@
 0,0x9E,0x9E,1,1,<103>,9,0,0,Podoboo (comes out of lava)
 0,0x9F,0x9F,1,1,<221>,9,0,0,Para-Beetle
 0,0xA0,0xA0,2,2,<267,268,2,3>,9,0,0,Green Piranha Plant (upward)
-0,0xA1,0xA1,2,2,<62,63,271,272>,9,0,0,Green Piranha Plant (downward)|0 -1 0
+0,0xA1,0xA1,2,2,<62,63,273,274>,9,0,0,Green Piranha Plant (downward)|0 -1 0
 0,0xA2,0xA2,2,2,<269,270,2,3>,9,0,0,Red Piranha Plant (upward)
-0,0xA3,0xA3,2,2,<62,63,273,274>,9,0,0,Red Piranha Plant (downward)|0 -1 0
+0,0xA3,0xA3,2,2,<62,63,271,272>,9,0,0,Red Piranha Plant (downward)|0 -1 0
 0,0xA4,0xA4,2,2,<263,264,2,3>,9,0,0,Green Venus Fire Trap (upward)
 0,0xA5,0xA5,2,2,<62,63,275,276>,9,0,0,Green Venus Fire Trap (downward)|0 -1 0
 0,0xA6,0xA6,2,2,<265,266,2,3>,9,0,0,Red Venus Fire Trap (upward)

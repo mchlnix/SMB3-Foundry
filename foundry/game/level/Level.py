@@ -48,12 +48,15 @@ class Level(LevelLike):
 
     HEADER_LENGTH = 9  # bytes
 
-    def __init__(self, level_name: str, layout_address: int, enemy_data_offset: int, object_set_number: int):
+    def __init__(
+        self, level_name: str = "", layout_address: int = 0, enemy_data_offset: int = 0, object_set_number: int = 1
+    ):
         super(Level, self).__init__(object_set_number, layout_address)
 
         self._signal_emitter = LevelSignaller()
 
-        self.attached_to_rom = True
+        self.changed = False
+        """Whether the current level was modified since it was loaded/last saved."""
 
         self.object_set = ObjectSet(object_set_number)
 
@@ -62,25 +65,27 @@ class Level(LevelLike):
         self.name = level_name
 
         self.header_offset = layout_address
+        self.object_offset = self.header_offset + Level.HEADER_LENGTH
         self.enemy_offset = enemy_data_offset
 
         self.objects: List[LevelObject] = []
+        self.header_bytes: bytearray = bytearray()
         self.jumps: List[Jump] = []
         self.enemies: List[EnemyObject] = []
+
+        if self.layout_address == self.enemy_offset == 0:
+            # probably loaded to become an m3l
+            return
 
         rom = ROM()
 
         self.header_bytes = rom.bulk_read(Level.HEADER_LENGTH, self.header_offset)
         self._parse_header()
 
-        self.object_offset = self.header_offset + Level.HEADER_LENGTH
-
         object_data = ROM.rom_data[self.object_offset :]
         enemy_data = ROM.rom_data[self.enemy_offset :]
 
         self._load_level_data(object_data, enemy_data)
-
-        self.changed = False
 
     def _load_level_data(self, object_data: bytearray, enemy_data: bytearray, new_level: bool = True):
         self._load_objects(object_data)
@@ -90,7 +95,26 @@ class Level(LevelLike):
             self._update_level_size()
 
             self.undo_stack.clear(self.to_bytes())
-            self._signal_emitter.data_changed.emit()
+            self.data_changed.emit()
+
+    @property
+    def fully_loaded(self):
+        """Whether this object represents a fully loaded Level, meaning it was either loaded from a ROM or from an m3l
+        file. If this is false, it is probably just a place holder to use either from_bytes or from_m3l later."""
+        # objects, enemies and jumps could be empty, but there are always 9 header bytes, when a level is loaded
+        return bool(self.header_bytes)
+
+    @property
+    def attached_to_rom(self):
+        """Whether the current level has a place in the ROM yet. If not this level is likely a m3l file."""
+        return not (self.header_offset == self.enemy_offset == 0)
+
+    @attached_to_rom.setter
+    def attached_to_rom(self, should_be_attached):
+        if not should_be_attached:
+            self.header_offset = self.enemy_offset = 0
+        else:
+            raise ValueError("You cannot manually attach a ROM, use attach_to_rom() instead.")
 
     @property
     def width(self):
@@ -136,7 +160,7 @@ class Level(LevelLike):
     def current_enemies_size(self):
         return len(self.enemies) * ENEMY_SIZE
 
-    def _parse_header(self):
+    def _parse_header(self, should_emit=True):
         self.header = LevelHeader(self.header_bytes, self.object_set_number)
 
         self.object_factory = LevelObjectFactory(
@@ -150,7 +174,8 @@ class Level(LevelLike):
 
         self.size = self.header.width, self.header.height
 
-        self.data_changed.emit()
+        if should_emit:
+            self.data_changed.emit()
 
     def _load_enemies(self, data: bytearray):
         self.enemies.clear()
@@ -213,11 +238,12 @@ class Level(LevelLike):
         return QRect(QPoint(0, 0), QSize(width, height) * block_length)
 
     def attach_to_rom(self, header_offset: int, enemy_item_offset: int):
+        if 0x0 in [header_offset, enemy_item_offset]:
+            raise ValueError("You cannot save level or enemy data to the beginning of the ROM (address 0x0).")
+
         self.header_offset = header_offset
         self.object_offset = self.header_offset + Level.HEADER_LENGTH
         self.enemy_offset = enemy_item_offset
-
-        self.attached_to_rom = True
 
     def was_saved(self):
         self._update_level_size()
@@ -668,15 +694,16 @@ class Level(LevelLike):
         return m3l_bytes
 
     def from_m3l(self, m3l_bytes: bytearray):
-        self.attached_to_rom = False
-
         world_number, level_number, self.object_set_number = m3l_bytes[:3]
         self.object_set = ObjectSet(self.object_set_number)
 
         self.header_offset = self.enemy_offset = 0
 
+        # block signals, so it will only be emitted, once we are fully set up
+        self._signal_emitter.blockSignals(True)
+
         # update the level_object_factory
-        self._load_level_data(bytearray(), bytearray())
+        self._load_level_data(bytearray(), bytearray(), new_level=False)
 
         m3l_bytes = m3l_bytes[3:]
 
@@ -695,6 +722,8 @@ class Level(LevelLike):
         if len(enemy_bytes) % 3 - len(b"\xFF") == 1:
             # compatibility with workshop
             enemy_bytes = enemy_bytes[1:]
+
+        self._signal_emitter.blockSignals(False)
 
         self._load_level_data(object_bytes, enemy_bytes)
 
@@ -733,5 +762,5 @@ class Level(LevelLike):
         self.header_bytes = object_bytes[0 : Level.HEADER_LENGTH]
         objects = object_bytes[Level.HEADER_LENGTH :]
 
-        self._parse_header()
+        self._parse_header(should_emit=False)
         self._load_level_data(objects, enemies, new_level)

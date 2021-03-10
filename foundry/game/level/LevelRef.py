@@ -11,13 +11,10 @@ class LevelRef(QObject):
 
     def __init__(self):
         super(LevelRef, self).__init__()
-        self._internal_level: Optional[Level] = None
+        self._internal_level: Optional[Level] = Level()
 
     def load_level(self, level_name: str, object_data_offset: int, enemy_data_offset: int, object_set_number: int):
-        self._internal_level = Level(level_name, object_data_offset, enemy_data_offset, object_set_number)
-
-        self._internal_level.data_changed.connect(self.data_changed.emit)
-        self._internal_level.jumps_changed.connect(self.jumps_changed.emit)
+        self.level = Level(level_name, object_data_offset, enemy_data_offset, object_set_number)
 
         # actively emit, because we weren't connected yet, when the level sent it out
         self.data_changed.emit()
@@ -25,6 +22,13 @@ class LevelRef(QObject):
     @property
     def level(self):
         return self._internal_level
+
+    @level.setter
+    def level(self, level):
+        self._internal_level = level
+
+        self._internal_level.data_changed.connect(self.data_changed.emit)
+        self._internal_level.jumps_changed.connect(self.jumps_changed.emit)
 
     @property
     def selected_objects(self):
@@ -77,4 +81,4 @@ class LevelRef(QObject):
         self.data_changed.emit()
 
     def __bool__(self):
-        return self._internal_level is not None
+        return self._internal_level.fully_loaded

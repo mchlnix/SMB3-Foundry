@@ -122,6 +122,10 @@ class LevelSelector(QDialog):
 
             self.source_selector.addTab(world_map_select, f"World {world_number}")
 
+        # show world 1 by default
+        if self.source_selector.count() > 1:
+            self.source_selector.setCurrentIndex(1)
+
         data_layout = QGridLayout()
 
         data_layout.addWidget(self.enemy_data_label, 0, 0)
@@ -198,7 +202,6 @@ class LevelSelector(QDialog):
 
         self.enemy_data_spinner.setEnabled(not level_is_overworld)
 
-        # if self.world_list.currentRow() >= WORLD_1_INDEX:
         object_set_index = Level.offsets[level_array_offset].real_obj_set
         self.button_ok.setDisabled(level_is_overworld)
 

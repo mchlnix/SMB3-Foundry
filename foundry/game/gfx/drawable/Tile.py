@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from PySide2.QtGui import QImage
 
 from foundry.game.gfx.GraphicsSet import GraphicsSet
@@ -10,6 +12,7 @@ PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 
 BACKGROUND_COLOR_INDEX = 0
 
 
+@lru_cache(2 ** 10)
 class Tile:
     SIDE_LENGTH = 8  # pixel
     WIDTH = SIDE_LENGTH
@@ -31,7 +34,6 @@ class Tile:
         self.cached_tiles = dict()
 
         self.palette = palette_group[palette_index]
-        # self.palette = DEFAULT_PALETTE
 
         self.data = bytearray()
         self.pixels = bytearray()
@@ -67,7 +69,7 @@ class Tile:
             if color_index == self.background_color_index:
                 self.pixels.extend(MASK_COLOR)
             else:
-                self.pixels.extend(NESPalette[color])
+                self.pixels.extend(NESPalette[color].toTuple()[:3])
 
         assert len(self.pixels) == 3 * Tile.PIXEL_COUNT
 

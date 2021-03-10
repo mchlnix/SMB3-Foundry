@@ -50,7 +50,7 @@ def _test_check_box(check_box: QCheckBox, level: Level, level_attr: str, expecte
         ("length_dropdown", "length", +SCREEN_WIDTH),
         ("music_dropdown", "music_index", +1),
         ("time_dropdown", "time_index", +1),
-        ("v_scroll_direction_dropdown", "scroll_type", +1),
+        ("camera_movement_dropdown", "scroll_type", +1),
         ("x_position_dropdown", "start_x_index", +1),
         ("action_dropdown", "start_action", +1),
         ("graphic_set_dropdown", "graphic_set", +1),

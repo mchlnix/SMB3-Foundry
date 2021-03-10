@@ -44,6 +44,10 @@ class UndoStack(QWidget):
         return data
 
     @property
+    def is_empty(self):
+        return len(self) == 0
+
+    @property
     def undo_available(self):
         return self.undo_index > 0
 
