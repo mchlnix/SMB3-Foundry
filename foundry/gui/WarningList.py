@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 from PySide2.QtCore import QEvent, QRect, Qt, Signal, SignalInstance
 from PySide2.QtGui import QCursor, QFocusEvent
-from PySide2.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PySide2.QtWidgets import QLabel, QVBoxLayout, QWidget, QScrollArea
 
 from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -15,6 +15,28 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.util import clear_layout
 from smb3parse.constants import OBJ_AUTOSCROLL
 from smb3parse.objects.object_set import PLAINS_OBJECT_SET
+
+
+class ScrollWarningList(QScrollArea):
+    warnings_updated: SignalInstance = Signal(bool)
+
+    def __init__(self, parent, level_ref: LevelRef, level_view_ref: LevelView, object_list_ref: ObjectList):
+        super().__init__(parent)
+        self.setFixedHeight(200)
+
+        self.setWindowFlag(Qt.Popup)
+
+        self.warning_list = WarningList(parent, level_ref, level_view_ref, object_list_ref)
+        self.setWidget(self.warning_list)
+        self.setWidgetResizable(True)
+
+    def show(self):
+        self.setGeometry(QRect(QCursor.pos(), self.sizeHint()))
+        super().show()
+
+    def focusOutEvent(self, event: QFocusEvent):
+        self.hide()
+        super().focusOutEvent(event)
 
 
 class WarningList(QWidget):
@@ -30,7 +52,6 @@ class WarningList(QWidget):
         self.object_list = object_list_ref
 
         self.setLayout(QVBoxLayout())
-        self.setWindowFlag(Qt.Popup)
         self.layout().setContentsMargins(5, 5, 5, 5)
 
         self._enemy_dict = {}
@@ -131,8 +152,6 @@ class WarningList(QWidget):
                         self._enemy_dict[enemy] = (clan, group)
 
     def update(self):
-        self.hide()
-
         clear_layout(self.layout())
 
         for warning in self.warnings:
@@ -145,14 +164,6 @@ class WarningList(QWidget):
 
         super(WarningList, self).update()
 
-    def show(self):
-        pos = QCursor.pos()
-        pos.setY(pos.y() + 10)
-
-        self.setGeometry(QRect(pos, self.layout().sizeHint()))
-
-        super(WarningList, self).show()
-
     def _focus_objects(self):
         objects = self.sender().related_objects
 
@@ -164,11 +175,6 @@ class WarningList(QWidget):
             self.object_list.update_content()
 
             self.level_ref.blockSignals(False)
-
-    def focusOutEvent(self, event: QFocusEvent):
-        self.hide()
-
-        super(WarningList, self).focusOutEvent(event)
 
 
 class WarningLabel(QLabel):

@@ -67,7 +67,7 @@ from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.PaletteViewer import PaletteViewer
 from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
-from foundry.gui.WarningList import WarningList
+from foundry.gui.WarningList import ScrollWarningList
 from foundry.gui.settings import SETTINGS, save_settings
 from smb3parse.constants import TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
@@ -429,14 +429,15 @@ class MainWindow(QMainWindow):
         self.menu_toolbar.addAction(whats_this_action)
 
         self.menu_toolbar.addSeparator()
-        self.warning_list = WarningList(self, self.level_ref, self.level_view, self.object_list)
+        self.warning_list = ScrollWarningList(self, self.level_ref, self.level_view, self.object_list)
+        self.warning_list.hide()
 
         warning_action = self.menu_toolbar.addAction(icon("alert-triangle.svg"), "Warning Panel")
         warning_action.setWhatsThis("Shows a list of warnings.")
         warning_action.triggered.connect(self.warning_list.show)
         warning_action.setDisabled(True)
 
-        self.warning_list.warnings_updated.connect(warning_action.setEnabled)
+        self.warning_list.warning_list.warnings_updated.connect(warning_action.setEnabled)
 
         self.addToolBar(Qt.TopToolBarArea, self.menu_toolbar)
 
