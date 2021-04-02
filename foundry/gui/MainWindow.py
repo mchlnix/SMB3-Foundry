@@ -21,9 +21,7 @@ from PySide2.QtWidgets import (
     QPushButton,
     QScrollArea,
     QShortcut,
-    QSizePolicy,
     QSplitter,
-    QToolBar,
     QVBoxLayout,
     QWhatsThis,
     QWidget,
@@ -76,6 +74,7 @@ from foundry.gui.settings import SETTINGS, save_settings
 from smb3parse.constants import TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
+from foundry.gui.MovableToolbar import MovableToolbar as QToolBar
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
@@ -369,10 +368,6 @@ class MainWindow(QMainWindow):
         splitter.setChildrenCollapsible(False)
 
         level_toolbar = QToolBar("Level Info Toolbar", self)
-        level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        level_toolbar.setOrientation(Qt.Horizontal)
-        level_toolbar.setFloatable(False)
 
         level_toolbar.addWidget(self.spinner_panel)
         level_toolbar.addWidget(self.object_dropdown)
@@ -387,9 +382,6 @@ class MainWindow(QMainWindow):
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
         object_toolbar = QToolBar("Object Toolbar", self)
-        object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        object_toolbar.setFloatable(False)
 
         object_toolbar.addWidget(self.object_toolbar)
         object_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
@@ -397,7 +389,6 @@ class MainWindow(QMainWindow):
         self.addToolBar(Qt.LeftToolBarArea, object_toolbar)
 
         self.menu_toolbar = QToolBar("Menu Toolbar", self)
-        self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
         self.menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(self._on_show_settings)
