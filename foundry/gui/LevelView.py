@@ -2,13 +2,24 @@ from bisect import bisect_right
 from typing import List, Optional, Tuple, Union
 from warnings import warn
 
+from PySide2.QtWidgets import QApplication, QToolTip, QSizePolicy, QWidget, QShortcut
 from PySide2.QtCore import QMimeData, QPoint, QSize
-from PySide2.QtGui import QDragEnterEvent, QDragMoveEvent, QMouseEvent, QPaintEvent, QPainter, QWheelEvent, Qt
-from PySide2.QtWidgets import QApplication, QSizePolicy, QToolTip, QWidget
+from PySide2.QtGui import (
+    QDragEnterEvent,
+    QDragMoveEvent,
+    QMouseEvent,
+    QPaintEvent,
+    QPainter,
+    QWheelEvent,
+    Qt,
+    QKeySequence,
+)
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObj.ObjectLikeLevelObjectRendererAdapter import (
+    ObjectLikeLevelObjectRendererAdapter as LevelObject,
+)
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
@@ -93,6 +104,15 @@ class LevelView(QWidget):
 
         self._object_was_selected_on_last_click = False
         """whether an object was selected with the current click; will be cleared, on release of the mouse button"""
+
+        QShortcut(QKeySequence(Qt.ALT + Qt.Key_Right), self, lambda *_: self._move_selected(1, 0))
+        QShortcut(QKeySequence(Qt.ALT + Qt.Key_Left), self, lambda *_: self._move_selected(-1, 0))
+        QShortcut(QKeySequence(Qt.ALT + Qt.Key_Up), self, lambda *_: self._move_selected(0, -1))
+        QShortcut(QKeySequence(Qt.ALT + Qt.Key_Down), self, lambda *_: self._move_selected(0, 1))
+        QShortcut(QKeySequence(Qt.ALT + Qt.SHIFT + Qt.Key_Right), self, lambda *_: self._move_selected(16, 0))
+        QShortcut(QKeySequence(Qt.ALT + Qt.SHIFT + Qt.Key_Left), self, lambda *_: self._move_selected(-16, 0))
+        QShortcut(QKeySequence(Qt.ALT + Qt.SHIFT + Qt.Key_Up), self, lambda *_: self._move_selected(0, -16))
+        QShortcut(QKeySequence(Qt.ALT + Qt.SHIFT + Qt.Key_Down), self, lambda *_: self._move_selected(0, 16))
 
         self.setWhatsThis(
             "<b>Level View</b><br/>"
@@ -450,6 +470,17 @@ class LevelView(QWidget):
             mode |= MODE_RESIZE_VERT
 
         return mode
+
+    def _move_selected(self, dx: int, dy: int) -> None:
+        """
+        Moves the selected objects by a given amount
+        :param dx: The amount to move the x
+        :param dy: The amount to move the y
+        """
+        for obj in self.get_selected_objects():
+            obj.move_by(dx, dy)
+            self.level_ref.changed = True
+        self.update()
 
     def _dragging(self, event: QMouseEvent):
         self.dragging_happened = True
