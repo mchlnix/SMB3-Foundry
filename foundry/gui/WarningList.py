@@ -7,7 +7,9 @@ from PySide2.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject
+from foundry.game.gfx.objects.LevelObj.ObjectLikeLevelObjectRendererAdapter import (
+    ObjectLikeLevelObjectRendererAdapter as LevelObject,
+)
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.HeaderEditor import CAMERA_MOVEMENTS
 from foundry.gui.LevelView import LevelView
@@ -66,7 +68,7 @@ class WarningList(QWidget):
                 continue
 
             if obj.orientation in [GeneratorType.HORIZ_TO_GROUND, GeneratorType.PYRAMID_TO_GROUND]:
-                if obj.y_position + obj.rendered_height == GROUND:
+                if obj.y_position + obj.rendered_height == 27:
                     self.warnings.append((f"{obj} extends until the level bottom. This can crash the game.", [obj]))
 
         # autoscroll objects
