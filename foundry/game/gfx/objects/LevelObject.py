@@ -1,8 +1,8 @@
 from typing import List, Optional, Tuple, Union
 from warnings import warn
 
-from PySide2.QtCore import QRect, QSize
-from PySide2.QtGui import QImage, QPainter
+from PySide6.QtCore import QRect, QSize
+from PySide6.QtGui import QImage, QPainter
 
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import EndType, GeneratorType

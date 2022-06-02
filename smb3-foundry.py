@@ -4,7 +4,7 @@ import os
 import sys
 import traceback
 
-from PySide2.QtWidgets import QApplication, QMessageBox
+from PySide6.QtWidgets import QApplication, QMessageBox
 
 from foundry import auto_save_rom_path, github_issue_link
 from foundry.gui.AutoSaveDialog import AutoSaveDialog
@@ -17,7 +17,7 @@ if hasattr(sys, "_MEIPASS"):
     logger.info(f"Changing current dir to {getattr(sys, '_MEIPASS')}")
     os.chdir(getattr(sys, "_MEIPASS"))
 
-from foundry.gui.MainWindow import MainWindow
+from foundry.gui.MainWindow import MainWindow  # noqa
 
 
 def main(path_to_rom):
@@ -26,7 +26,7 @@ def main(path_to_rom):
     app = QApplication()
 
     if auto_save_rom_path.exists():
-        result = AutoSaveDialog().exec_()
+        result = AutoSaveDialog().exec()
 
         if result == QMessageBox.AcceptRole:
             path_to_rom = auto_save_rom_path
@@ -36,7 +36,7 @@ def main(path_to_rom):
             )
 
     MainWindow(path_to_rom)
-    app.exec_()
+    app.exec()
 
     save_settings()
 
@@ -56,5 +56,5 @@ if __name__ == "__main__":
             f"An unexpected error occurred! Please contact the developers at {github_issue_link} "
             f"with the error below:\n\n{str(e)}\n\n{traceback.format_exc()}"
         )
-        box.exec_()
+        box.exec()
         raise

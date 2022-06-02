@@ -1,9 +1,9 @@
 import json
 from typing import List, Tuple
 
-from PySide2.QtCore import QEvent, QRect, Qt, Signal, SignalInstance
-from PySide2.QtGui import QCursor, QFocusEvent
-from PySide2.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PySide6.QtCore import QEvent, QRect, Qt, Signal, SignalInstance
+from PySide6.QtGui import QCursor, QFocusEvent
+from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.game.gfx.objects.EnemyItem import EnemyObject

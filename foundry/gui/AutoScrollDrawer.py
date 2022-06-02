@@ -1,5 +1,5 @@
-from PySide2.QtCore import QPoint, QPointF, QRectF, QSizeF
-from PySide2.QtGui import QBrush, QPainter, QPen, QPolygonF, Qt
+from PySide6.QtCore import QPoint, QPointF, QRectF, QSizeF
+from PySide6.QtGui import QBrush, QPainter, QPen, QPolygonF, Qt
 
 from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import Block

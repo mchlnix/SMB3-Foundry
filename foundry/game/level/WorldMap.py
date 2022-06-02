@@ -1,4 +1,4 @@
-from PySide2.QtCore import QPoint, QSize
+from PySide6.QtCore import QPoint, QSize
 
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import load_palette_group

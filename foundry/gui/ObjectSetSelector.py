@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QComboBox, QDialog, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
+from PySide6.QtWidgets import QComboBox, QDialog, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 
@@ -43,7 +43,7 @@ class ObjectSetSelector(QDialog):
     def get_object_set(parent):
         dialog = ObjectSetSelector(parent)
 
-        if dialog.exec_() == QDialog.Accepted:
+        if dialog.exec() == QDialog.Accepted:
             return dialog.result
         else:
             return -1

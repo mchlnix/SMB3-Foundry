@@ -1,5 +1,5 @@
-from PySide2.QtCore import QPoint
-from PySide2.QtGui import Qt
+from PySide6.QtCore import QPoint
+from PySide6.QtGui import Qt
 
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.gui.ContextMenu import ContextMenu

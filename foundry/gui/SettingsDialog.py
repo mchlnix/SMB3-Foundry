@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import (
+from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
     QFileDialog,
@@ -12,8 +12,8 @@ from PySide2.QtWidgets import (
     QComboBox,
 )
 
-from PySide2.QtGui import QIcon, QImage, QColor, Qt, QPixmap
-from PySide2.QtCore import QRect
+from PySide6.QtGui import QIcon, QImage, QColor, Qt, QPixmap
+from PySide6.QtCore import QRect
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import MASK_COLOR

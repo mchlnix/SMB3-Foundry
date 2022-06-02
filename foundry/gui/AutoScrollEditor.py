@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from PySide2.QtWidgets import QCheckBox, QLabel, QVBoxLayout
+from PySide6.QtWidgets import QCheckBox, QLabel, QVBoxLayout
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.level.LevelRef import LevelRef

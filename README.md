@@ -56,7 +56,7 @@ Alternatively you can try the methods below.
 https://www.python.org/downloads. Make sure to tick the box "Add Python to
 Path"!
 2. You need to install the Qt for Python GUI framework. To do that, open a command
-prompt (search cmd in Windows) and type in `pip install PySide2`. This should work automatically.
+prompt (search cmd in Windows) and type in `pip install PySide6`. This should work automatically.
 3. Click on smb3-foundry.py and the level editor should open up, asking you to
 select the ROM you want to load. Preferably the US version of SMB3 or a Hack
 based on it.
@@ -65,5 +65,5 @@ based on it.
 
 1. The `python3` package should already be installed on your system. If not then do it using your distributions package manager.
 2. Install `python3-pip` using the package manager as well.
-3. Install the GUI framework, using `pip3 install PySide2`.
+3. Install the GUI framework, using `pip3 install PySide6`.
 4. You can start the level editor using `python3 smb3-foundry.py` using the terminal.

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from PySide2.QtWidgets import QComboBox, QDialogButtonBox, QFormLayout, QGroupBox, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QComboBox, QDialogButtonBox, QFormLayout, QGroupBox, QVBoxLayout, QWidget
 
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.gui.CustomDialog import CustomDialog
@@ -103,7 +103,7 @@ class JumpEditor(CustomDialog):
     def edit_jump(parent: Optional[QWidget], jump: Jump):
         jump_editor = JumpEditor(parent, jump)
 
-        jump_editor.exec_()
+        jump_editor.exec()
 
         return jump_editor.jump
 

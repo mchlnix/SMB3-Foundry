@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import pytest
-from PySide2.QtCore import QPoint, QRect, QSize
+from PySide6.QtCore import QPoint, QRect, QSize
 
 from foundry import data_dir
 from foundry.conftest import compare_images

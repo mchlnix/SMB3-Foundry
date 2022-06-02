@@ -1,6 +1,6 @@
 import abc
 
-from PySide2.QtCore import QRect
+from PySide6.QtCore import QRect
 
 EXPANDS_NOT = 0b00
 EXPANDS_HORIZ = 0b01

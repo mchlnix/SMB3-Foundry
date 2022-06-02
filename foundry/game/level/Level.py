@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple, Union, overload
 
-from PySide2.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
+from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import ObjectSet

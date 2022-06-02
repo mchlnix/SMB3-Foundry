@@ -1,8 +1,8 @@
 from itertools import product
 from typing import Tuple
 
-from PySide2.QtCore import QPoint, QRect
-from PySide2.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
+from PySide6.QtCore import QPoint, QRect
+from PySide6.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
 from foundry import data_dir
 from foundry.game.File import ROM
@@ -104,8 +104,8 @@ class LevelDrawer:
 
         self.block_length = Block.WIDTH
 
-        self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), width=1)
-        self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), width=1)
+        self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), 1)
+        self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 1)
 
     def draw(self, painter: QPainter, level: Level):
         self._draw_background(painter, level)
@@ -213,7 +213,7 @@ class LevelDrawer:
             if level_object.selected:
                 painter.save()
 
-                painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
+                painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
                 painter.drawRect(level_object.get_rect(self.block_length))
 
                 painter.restore()

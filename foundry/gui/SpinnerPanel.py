@@ -1,7 +1,7 @@
 from typing import Optional
 
-from PySide2.QtCore import Signal, SignalInstance
-from PySide2.QtWidgets import QFormLayout, QSizePolicy, QWidget
+from PySide6.QtCore import Signal, SignalInstance
+from PySide6.QtWidgets import QFormLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.ObjectLike import ObjectLike

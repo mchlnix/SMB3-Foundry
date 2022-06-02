@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from PySide2.QtGui import QPixmap
+from PySide6.QtGui import QPixmap
 
 from approval_tests.gui import ApprovalDialog
 from foundry import root_dir

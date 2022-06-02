@@ -160,7 +160,7 @@ object_set_to_definition = {
 }
 
 
-@lru_cache(2 ** 4)
+@lru_cache(2**4)
 def load_object_definitions(object_set):
     global object_metadata
 

@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from PySide2.QtGui import QImage
+from PySide6.QtGui import QImage
 
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, PaletteGroup
@@ -12,7 +12,7 @@ PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 
 BACKGROUND_COLOR_INDEX = 0
 
 
-@lru_cache(2 ** 10)
+@lru_cache(2**10)
 class Tile:
     SIDE_LENGTH = 8  # pixel
     WIDTH = SIDE_LENGTH

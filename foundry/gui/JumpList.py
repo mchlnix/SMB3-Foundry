@@ -1,6 +1,6 @@
-from PySide2.QtCore import Signal, SignalInstance
-from PySide2.QtGui import QContextMenuEvent
-from PySide2.QtWidgets import QListWidget, QWidget, QMenu
+from PySide6.QtCore import Signal, SignalInstance
+from PySide6.QtGui import QContextMenuEvent
+from PySide6.QtWidgets import QListWidget, QWidget, QMenu
 
 from foundry.game.level.LevelRef import LevelRef
 
@@ -59,4 +59,4 @@ class JumpList(QListWidget):
             remove_action = menu.addAction("Remove Jump")
             remove_action.triggered.connect(self.remove_jump.emit)
 
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())

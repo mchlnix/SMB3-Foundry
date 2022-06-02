@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QSpinBox
+from PySide6.QtWidgets import QSpinBox
 
 SPINNER_MAX_VALUE = 0xFF_FF_FF  # arbitrary; 16,7 MB
 

@@ -1,6 +1,6 @@
-from PySide2.QtCore import QMargins, QSize, Signal, SignalInstance
-from PySide2.QtGui import QCloseEvent, QKeyEvent, QMouseEvent, Qt
-from PySide2.QtWidgets import (
+from PySide6.QtCore import QMargins, QSize, Signal, SignalInstance
+from PySide6.QtGui import QCloseEvent, QKeyEvent, QMouseEvent, Qt
+from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
     QGridLayout,

@@ -8,10 +8,9 @@ import subprocess
 import tempfile
 from typing import Tuple, Union
 
-from PySide2.QtCore import QSize
-from PySide2.QtGui import QCloseEvent, QKeySequence, QMouseEvent, Qt
-from PySide2.QtWidgets import (
-    QAction,
+from PySide6.QtCore import QSize
+from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut, Qt
+from PySide6.QtWidgets import (
     QDialog,
     QFileDialog,
     QHBoxLayout,
@@ -20,7 +19,6 @@ from PySide2.QtWidgets import (
     QMessageBox,
     QPushButton,
     QScrollArea,
-    QShortcut,
     QSizePolicy,
     QSplitter,
     QToolBar,
@@ -512,7 +510,7 @@ class MainWindow(QMainWindow):
         self._save_auto_data()
 
     def _on_show_settings(self):
-        SettingsDialog(self).exec_()
+        SettingsDialog(self).exec()
 
     @staticmethod
     def _save_auto_rom():
@@ -645,7 +643,7 @@ class MainWindow(QMainWindow):
         header_editor = HeaderEditor(self, self.level_ref)
         header_editor.tab_widget.setCurrentIndex(3)
 
-        header_editor.exec_()
+        header_editor.exec()
 
     def _put_current_level_to_level_1_1(self, rom: SMB3Rom) -> bool:
         # load world-1 data
@@ -897,7 +895,7 @@ class MainWindow(QMainWindow):
 
             level_selector = LevelSelector(self)
 
-            answer = level_selector.exec_()
+            answer = level_selector.exec()
 
             if answer == QMessageBox.Accepted:
                 if level_selector.object_set != self.level_ref.level.object_set.number:
@@ -1036,7 +1034,7 @@ class MainWindow(QMainWindow):
         info_box.addButton(QMessageBox.Cancel)
         info_box.addButton(go_to_github_button, QMessageBox.AcceptRole)
 
-        info_box.exec_()
+        info_box.exec()
 
         self.setCursor(Qt.ArrowCursor)
 
@@ -1049,7 +1047,7 @@ class MainWindow(QMainWindow):
 
             # if setting a checkbox, keep the menu open
             menu_of_action: QMenu = self.sender()
-            menu_of_action.exec_()
+            menu_of_action.exec()
 
         elif item_id in self.context_menu.get_all_menu_item_ids():
             x, y = self.context_menu.get_position()
@@ -1203,7 +1201,7 @@ class MainWindow(QMainWindow):
 
         level_selector = LevelSelector(self)
 
-        level_was_selected = level_selector.exec_() == QDialog.Accepted
+        level_was_selected = level_selector.exec() == QDialog.Accepted
 
         if level_was_selected:
             self.update_level(
@@ -1246,13 +1244,13 @@ class MainWindow(QMainWindow):
         self.object_viewer.show()
 
     def on_palette_viewer(self, _):
-        PaletteViewer(self, self.level_ref).exec_()
+        PaletteViewer(self, self.level_ref).exec()
 
     def on_edit_autoscroll(self, _):
-        AutoScrollEditor(self, self.level_ref).exec_()
+        AutoScrollEditor(self, self.level_ref).exec()
 
     def on_header_editor(self, _):
-        HeaderEditor(self, self.level_ref).exec_()
+        HeaderEditor(self, self.level_ref).exec()
 
     def update_level(self, level_name: str, object_data_offset: int, enemy_data_offset: int, object_set: int):
         try:

@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple
 
-from PySide2.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget
 
 from foundry.game.level import LevelByteData
 

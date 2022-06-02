@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Tuple
 
-from PySide2.QtGui import QColor
+from PySide6.QtGui import QColor
 from attr import dataclass
 
 from foundry import root_dir

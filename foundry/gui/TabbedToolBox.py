@@ -1,7 +1,7 @@
 from typing import Union
 
-from PySide2.QtCore import Signal, SignalInstance
-from PySide2.QtWidgets import QScrollArea, QTabWidget
+from PySide6.QtCore import Signal, SignalInstance
+from PySide6.QtWidgets import QScrollArea, QTabWidget
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject

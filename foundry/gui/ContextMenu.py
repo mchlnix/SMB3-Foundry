@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import List, Tuple, Union
 
-from PySide2.QtCore import QPoint
-from PySide2.QtWidgets import QMenu
+from PySide6.QtCore import QPoint
+from PySide6.QtWidgets import QMenu
 
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject

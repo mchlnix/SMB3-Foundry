@@ -4,8 +4,8 @@ import urllib.error
 from pathlib import Path
 from typing import Union
 
-from PySide2.QtCore import QUrl
-from PySide2.QtGui import QDesktopServices, QIcon
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QDesktopServices, QIcon
 
 root_dir = Path(__file__).parent.parent
 

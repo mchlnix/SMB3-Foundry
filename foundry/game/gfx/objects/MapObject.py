@@ -1,4 +1,4 @@
-from PySide2.QtCore import QRect
+from PySide6.QtCore import QRect
 
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 

@@ -1,8 +1,8 @@
 from typing import Optional
 
-from PySide2.QtCore import Signal, SignalInstance
-from PySide2.QtGui import QWindow, Qt
-from PySide2.QtWidgets import (
+from PySide6.QtCore import Signal, SignalInstance
+from PySide6.QtGui import QWindow, Qt
+from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDialog,
@@ -23,7 +23,7 @@ from foundry.gui.LevelSelector import LevelSelector, OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
 from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
 
-LEVEL_LENGTHS = [0x10 * (i + 1) for i in range(0, 2 ** 4)]
+LEVEL_LENGTHS = [0x10 * (i + 1) for i in range(0, 2**4)]
 STR_LEVEL_LENGTHS = [f"{length - 1:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS]
 
 STR_X_POSITIONS = [f"{position >> 4}. Block ({position:0=#4X})".replace("X", "x") for position in MARIO_X_POSITIONS]
@@ -246,7 +246,7 @@ class HeaderEditor(CustomDialog):
 
     def _set_jump_destination(self):
         level_selector = LevelSelector(self)
-        level_was_selected = level_selector.exec_() == QDialog.Accepted
+        level_was_selected = level_selector.exec() == QDialog.Accepted
 
         if not level_was_selected:
             return
@@ -268,7 +268,9 @@ class HeaderEditor(CustomDialog):
 
         spinner = self.sender()
 
-        self.level.data_changed.connect(self.header_change.emit)
+        function_to_connect = self.header_change.emit
+
+        self.level.data_changed.connect(function_to_connect)
 
         if spinner == self.object_palette_spinner:
             new_index = self.object_palette_spinner.value()
@@ -286,14 +288,16 @@ class HeaderEditor(CustomDialog):
             new_offset = self.enemy_pointer_spinner.value()
             self.level.next_area_enemies = new_offset
 
-        self.level.data_changed.disconnect(self.header_change.emit)
+        self.level.data_changed.disconnect(function_to_connect)
 
         self.update()
 
     def on_combo(self, _):
         dropdown = self.sender()
 
-        self.level.data_changed.connect(self.header_change.emit)
+        function_to_connect = self.header_change.emit
+
+        self.level.data_changed.connect(function_to_connect)
 
         if dropdown == self.length_dropdown:
             new_length = LEVEL_LENGTHS[self.length_dropdown.currentIndex()]
@@ -331,20 +335,22 @@ class HeaderEditor(CustomDialog):
             new_object_set = self.next_area_object_set_dropdown.currentIndex()
             self.level.next_area_object_set = new_object_set
 
-        self.level.data_changed.disconnect(self.header_change.emit)
+        self.level.data_changed.disconnect(function_to_connect)
 
         self.update()
 
     def on_check_box(self, _):
         checkbox = self.sender()
 
-        self.level.data_changed.connect(self.header_change.emit)
+        function_to_connect = self.header_change.emit
+
+        self.level.data_changed.connect(function_to_connect)
 
         if checkbox == self.pipe_ends_level_cb:
             self.level.pipe_ends_level = self.pipe_ends_level_cb.isChecked()
         elif checkbox == self.level_is_vertical_cb:
             self.level.is_vertical = self.level_is_vertical_cb.isChecked()
 
-        self.level.data_changed.disconnect(self.header_change.emit)
+        self.level.data_changed.disconnect(function_to_connect)
 
         self.update()

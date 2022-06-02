@@ -1,5 +1,5 @@
 import pytest
-from PySide2.QtWidgets import QWidget, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.gui.ObjectToolBox import ObjectIcon, ObjectToolBox

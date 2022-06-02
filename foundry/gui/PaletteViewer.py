@@ -1,9 +1,9 @@
 from itertools import product
 from typing import Callable
 
-from PySide2.QtCore import QSize, Signal, SignalInstance
-from PySide2.QtGui import QColor, QMouseEvent, QPixmap, Qt
-from PySide2.QtWidgets import (
+from PySide6.QtCore import QSize, Signal, SignalInstance
+from PySide6.QtGui import QColor, QMouseEvent, QPixmap, Qt
+from PySide6.QtWidgets import (
     QAbstractButton,
     QDialog,
     QDialogButtonBox,
@@ -91,7 +91,7 @@ class PaletteWidget(QWidget):
             return
 
         color_table = ColorTable()
-        return_code = color_table.exec_()
+        return_code = color_table.exec()
 
         if return_code == QDialog.Accepted:
             index_in_palette = self.layout().indexOf(self.sender())

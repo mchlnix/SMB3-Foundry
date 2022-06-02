@@ -1,6 +1,6 @@
 from typing import Optional
 
-from PySide2.QtCore import QObject, Signal, SignalInstance
+from PySide6.QtCore import QObject, Signal, SignalInstance
 
 from foundry.game.level.Level import Level
 

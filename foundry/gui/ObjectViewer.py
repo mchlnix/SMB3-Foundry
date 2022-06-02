@@ -1,8 +1,8 @@
 from typing import Union
 
-from PySide2.QtCore import QPoint, QSize
-from PySide2.QtGui import QPaintEvent, QPainter
-from PySide2.QtWidgets import QComboBox, QHBoxLayout, QLayout, QStatusBar, QToolBar, QVBoxLayout, QWidget
+from PySide6.QtCore import QPoint, QSize
+from PySide6.QtGui import QPaintEvent, QPainter
+from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLayout, QStatusBar, QToolBar, QVBoxLayout, QWidget
 
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.gfx.drawable.Block import Block, get_block

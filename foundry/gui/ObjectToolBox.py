@@ -1,9 +1,9 @@
 from itertools import product
 from typing import Optional, Union
 
-from PySide2.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
-from PySide2.QtGui import QDrag, QImage, QMouseEvent, QPaintEvent, QPainter
-from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
+from PySide6.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
+from PySide6.QtGui import QDrag, QImage, QMouseEvent, QPaintEvent, QPainter
+from PySide6.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.Palette import bg_color_for_palette_group
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -60,7 +60,7 @@ class ObjectIcon(QWidget):
 
         drag.setMimeData(mime_data)
 
-        if drag.exec_() == Qt.MoveAction:
+        if drag.exec() == Qt.MoveAction:
             self.object_placed.emit()
 
     def set_object(self, level_object: Union[LevelObject, EnemyObject]):

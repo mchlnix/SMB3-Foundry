@@ -1,7 +1,7 @@
 from typing import Union
 
-from PySide2.QtGui import QGuiApplication, QPixmap, Qt
-from PySide2.QtWidgets import (
+from PySide6.QtGui import QGuiApplication, QPixmap, Qt
+from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
     QHBoxLayout,
@@ -104,6 +104,6 @@ class ApprovalDialog(QDialog):
 
         dialog = ApprovalDialog(test_name, reference_image, generated_image)
 
-        dialog.exec_()
+        dialog.exec()
 
         return dialog.result()

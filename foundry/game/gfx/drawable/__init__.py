@@ -1,5 +1,5 @@
-from PySide2.QtCore import QPoint
-from PySide2.QtGui import QColor, QPainter
+from PySide6.QtCore import QPoint
+from PySide6.QtGui import QColor, QPainter
 
 bit_reverse = [
     0x00,

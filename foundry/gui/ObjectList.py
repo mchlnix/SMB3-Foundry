@@ -1,5 +1,5 @@
-from PySide2.QtGui import QMouseEvent, QWindow, Qt
-from PySide2.QtWidgets import QListWidget, QSizePolicy
+from PySide6.QtGui import QMouseEvent, QWindow, Qt
+from PySide6.QtWidgets import QListWidget, QSizePolicy
 
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import ContextMenu
@@ -9,7 +9,7 @@ class ObjectList(QListWidget):
     def __init__(self, parent: QWindow, level_ref: LevelRef, context_menu: ContextMenu):
         super(ObjectList, self).__init__(parent=parent)
 
-        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.setSelectionMode(self.ExtendedSelection)
 

@@ -1,5 +1,5 @@
-from PySide2.QtCore import QRect
-from PySide2.QtGui import QImage
+from PySide6.QtCore import QRect
+from PySide6.QtGui import QImage
 
 from foundry import data_dir
 from foundry.game.gfx.Palette import load_palette_group

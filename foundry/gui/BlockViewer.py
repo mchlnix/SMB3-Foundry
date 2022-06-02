@@ -1,8 +1,8 @@
 from math import ceil
 
-from PySide2.QtCore import QPoint, QRect, QSize
-from PySide2.QtGui import QBrush, QMouseEvent, QPaintEvent, QPainter, QResizeEvent
-from PySide2.QtWidgets import QComboBox, QLabel, QLayout, QStatusBar, QToolBar, QWidget
+from PySide6.QtCore import QPoint, QRect, QSize
+from PySide6.QtGui import QBrush, QMouseEvent, QPaintEvent, QPainter, QResizeEvent
+from PySide6.QtWidgets import QComboBox, QLabel, QLayout, QStatusBar, QToolBar, QWidget
 
 from foundry import icon
 from foundry.game.File import ROM

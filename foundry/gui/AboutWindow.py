@@ -1,5 +1,5 @@
-from PySide2.QtGui import QPixmap, Qt
-from PySide2.QtWidgets import QBoxLayout, QLabel
+from PySide6.QtGui import QPixmap, Qt
+from PySide6.QtWidgets import QBoxLayout, QLabel
 
 from foundry import data_dir, get_current_version_name
 from foundry.gui.CustomDialog import CustomDialog

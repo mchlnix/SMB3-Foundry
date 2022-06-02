@@ -1,8 +1,8 @@
 from typing import Optional
 
-from PySide2.QtCore import QSize
-from PySide2.QtGui import QPaintEvent, QPainter
-from PySide2.QtWidgets import QWidget
+from PySide6.QtCore import QSize
+from PySide6.QtGui import QPaintEvent, QPainter
+from PySide6.QtWidgets import QWidget
 
 from foundry.game.level.WorldMap import WorldMap
 

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PySide2.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QFileDialog
 
 from foundry.game.File import ROM
 
