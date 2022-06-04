@@ -33,6 +33,13 @@ SETTINGS["block_transparency"] = True
 SETTINGS["object_scroll_enabled"] = False
 SETTINGS["object_tooltip_enabled"] = True
 
+SETTINGS["draw_level_pointers"] = True
+SETTINGS["draw_overworld_sprites"] = True
+SETTINGS["draw_starting_position"] = True
+SETTINGS["draw_airship_points"] = True
+SETTINGS["draw_pipes"] = True
+SETTINGS["draw_locks"] = True
+
 
 def load_settings():
     if not default_settings_path.exists():

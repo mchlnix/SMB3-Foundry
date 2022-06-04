@@ -14,7 +14,6 @@ from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import ContextMenu
-from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.MainView import (
     HIGHEST_ZOOM_LEVEL,
     LOWEST_ZOOM_LEVEL,
@@ -29,24 +28,28 @@ from foundry.gui.MainView import (
     undoable,
 )
 from foundry.gui.SelectionSquare import SelectionSquare
+from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 
-class LevelView(MainView):
+class WorldView(MainView):
     def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: ContextMenu):
-        super(LevelView, self).__init__(parent, level, context_menu)
+        super(WorldView, self).__init__(parent, level, context_menu)
 
-        self.drawer = LevelDrawer()
+        self.drawer = WorldDrawer()
 
-        self.draw_grid = SETTINGS["draw_grid"]
-        self.draw_jumps = SETTINGS["draw_jumps"]
-        self.draw_expansions = SETTINGS["draw_expansion"]
-        self.draw_mario = SETTINGS["draw_mario"]
-        self.transparency = SETTINGS["block_transparency"]
-        self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
-        self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
-        self.draw_invisible_items = SETTINGS["draw_invisible_items"]
-        self.draw_autoscroll = SETTINGS["draw_autoscroll"]
+        self.draw_level_pointers = SETTINGS["draw_level_pointers"]
+        """Whether to highlight the spaces, which can be used to point to levels."""
+        self.draw_sprites = SETTINGS["draw_overworld_sprites"]
+        """Whether to draw overworld sprites, like hammer bros and the 'help' speech bubble."""
+        self.draw_start = SETTINGS["draw_starting_position"]
+        """Whether to highlight the space, that the player starts on, when first coming into the world."""
+        self.draw_airship_points = SETTINGS["draw_airship_points"]
+        """Whether to show the points and airship can retreat to."""
+        self.draw_pipes = SETTINGS["draw_pipes"]
+        """Whether to draw positions marked as pipe entrances."""
+        self.draw_locks = SETTINGS["draw_locks"]
+        """Whether to highlight positions marked as having locks."""
 
         self.changed = False
 
@@ -80,76 +83,52 @@ class LevelView(MainView):
         )
 
     @property
-    def transparency(self):
-        return self.drawer.transparency
+    def draw_level_pointers(self):
+        return self.drawer.draw_level_pointers
 
-    @transparency.setter
-    def transparency(self, value):
-        self.drawer.transparency = value
-
-    @property
-    def draw_grid(self):
-        return self.drawer.draw_grid
-
-    @draw_grid.setter
-    def draw_grid(self, value):
-        self.drawer.draw_grid = value
+    @draw_level_pointers.setter
+    def draw_level_pointers(self, value):
+        self.drawer.draw_level_pointers = value
 
     @property
-    def draw_jumps(self):
-        return self.drawer.draw_jumps
+    def draw_sprites(self):
+        return self.drawer.draw_sprites
 
-    @draw_jumps.setter
-    def draw_jumps(self, value):
-        self.drawer.draw_jumps = value
-
-    @property
-    def draw_mario(self):
-        return self.drawer.draw_mario
-
-    @draw_mario.setter
-    def draw_mario(self, value):
-        self.drawer.draw_mario = value
+    @draw_sprites.setter
+    def draw_sprites(self, value):
+        self.drawer.draw_sprites = value
 
     @property
-    def draw_expansions(self):
-        return self.drawer.draw_expansions
+    def draw_start(self):
+        return self.drawer.draw_start
 
-    @draw_expansions.setter
-    def draw_expansions(self, value):
-        self.drawer.draw_expansions = value
-
-    @property
-    def draw_jumps_on_objects(self):
-        return self.drawer.draw_jumps_on_objects
-
-    @draw_jumps_on_objects.setter
-    def draw_jumps_on_objects(self, value):
-        self.drawer.draw_jumps_on_objects = value
+    @draw_start.setter
+    def draw_start(self, value):
+        self.drawer.draw_start = value
 
     @property
-    def draw_items_in_blocks(self):
-        return self.drawer.draw_items_in_blocks
+    def draw_airship_points(self):
+        return self.drawer.draw_airship_points
 
-    @draw_items_in_blocks.setter
-    def draw_items_in_blocks(self, value):
-        self.drawer.draw_items_in_blocks = value
-
-    @property
-    def draw_invisible_items(self):
-        return self.drawer.draw_invisible_items
-
-    @draw_invisible_items.setter
-    def draw_invisible_items(self, value):
-        self.drawer.draw_invisible_items = value
+    @draw_airship_points.setter
+    def draw_airship_points(self, value):
+        self.drawer.draw_airship_points = value
 
     @property
-    def draw_autoscroll(self):
-        return self.drawer.draw_autoscroll
+    def draw_pipes(self):
+        return self.drawer.draw_pipes
 
-    @draw_autoscroll.setter
-    def draw_autoscroll(self, value):
-        self.drawer.draw_autoscroll = value
+    @draw_pipes.setter
+    def draw_pipes(self, value):
+        self.drawer.draw_pipes = value
+
+    @property
+    def draw_locks(self):
+        return self.drawer.draw_locks
+
+    @draw_locks.setter
+    def draw_locks(self, value):
+        self.drawer.draw_locks = value
 
     def mousePressEvent(self, event: QMouseEvent):
         pressed_button = event.button()
@@ -159,7 +138,7 @@ class LevelView(MainView):
         elif pressed_button == Qt.RightButton:
             self._on_right_mouse_button_down(event)
         else:
-            return super(LevelView, self).mousePressEvent(event)
+            return super(WorldView, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG:
@@ -189,7 +168,7 @@ class LevelView(MainView):
             self.setToolTip("")
             QToolTip.hideText()
 
-        return super(LevelView, self).mouseMoveEvent(event)
+        return super(WorldView, self).mouseMoveEvent(event)
 
     def _set_cursor_for_position(self, event: QMouseEvent):
         level_object = self.object_at(*event.pos().toTuple())
@@ -244,7 +223,7 @@ class LevelView(MainView):
         elif released_button == Qt.RightButton:
             self._on_right_mouse_button_up(event)
         else:
-            super(LevelView, self).mouseReleaseEvent(event)
+            super(WorldView, self).mouseReleaseEvent(event)
 
     def wheelEvent(self, event: QWheelEvent):
         if SETTINGS["object_scroll_enabled"]:
@@ -267,7 +246,7 @@ class LevelView(MainView):
 
             return True
         else:
-            super(LevelView, self).wheelEvent(event)
+            super(WorldView, self).wheelEvent(event)
             return False
 
     @undoable
@@ -710,4 +689,4 @@ class LevelView(MainView):
         self.selection_square.draw(painter)
 
         if self.currently_dragged_object is not None:
-            self.currently_dragged_object.draw(painter, self.block_length, self.transparency)
+            self.currently_dragged_object.draw(painter, self.block_length, self.draw_level_pointers)
