@@ -3,6 +3,9 @@ from typing import Optional
 from PySide6.QtCore import QObject, Signal, SignalInstance
 
 from foundry.game.level.Level import Level
+from foundry.game.level.WorldMap import WorldMap
+from smb3parse.levels import HEADER_LENGTH
+from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
 class LevelRef(QObject):
@@ -14,7 +17,10 @@ class LevelRef(QObject):
         self._internal_level: Optional[Level] = Level()
 
     def load_level(self, level_name: str, object_data_offset: int, enemy_data_offset: int, object_set_number: int):
-        self.level = Level(level_name, object_data_offset, enemy_data_offset, object_set_number)
+        if object_set_number == WORLD_MAP_OBJECT_SET:
+            self.level = WorldMap(object_data_offset + HEADER_LENGTH)
+        else:
+            self.level = Level(level_name, object_data_offset, enemy_data_offset, object_set_number)
 
         # actively emit, because we weren't connected yet, when the level sent it out
         self.data_changed.emit()
