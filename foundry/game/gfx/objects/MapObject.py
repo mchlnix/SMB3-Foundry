@@ -192,8 +192,19 @@ class MapObject(ObjectLike):
     def change_type(self, new_type):
         pass
 
-    def get_rect(self):
-        return self.rect
+    def get_rect(self, block_length=1) -> QRect:
+        if block_length != 1:
+            x, y = self.rect.topLeft().toTuple()
+            w, h = self.rect.size().toTuple()
+
+            x *= block_length
+            w *= block_length
+            y *= block_length
+            h *= block_length
+
+            return QRect(x, y, w, h)
+        else:
+            return self.rect
 
     def __contains__(self, point):
         pass
