@@ -10,6 +10,8 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.LevelView import LevelView
+from foundry.gui.MainView import MainView
+from foundry.gui.WorldView import WorldView
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -20,15 +22,15 @@ m3l_dir = Path(__file__).parent.joinpath("test_m3ls")
 m3l_dir.mkdir(parents=True, exist_ok=True)
 
 
-def _test_level_against_reference(level_view: LevelView, qtbot):
-    qtbot.addWidget(level_view)
+def _test_level_against_reference(main_view: MainView, qtbot):
+    qtbot.addWidget(main_view)
 
-    image_name = f"{level_view.level_ref.level.name}.png"
+    image_name = f"{main_view.level_ref.level.name}.png"
     ref_image_path = str(reference_image_dir.joinpath(image_name))
 
-    level_view.repaint()
+    main_view.repaint()
 
-    compare_images(image_name, ref_image_path, level_view.grab())
+    compare_images(image_name, ref_image_path, main_view.grab())
 
 
 def current_test_name():
@@ -36,7 +38,9 @@ def current_test_name():
 
 
 level_data = []
-test_name = []
+world_data = []
+level_test_name = []
+world_test_name = []
 
 with open(data_dir / "levels.dat", "r") as level_data_file:
     for line in level_data_file.readlines():
@@ -52,16 +56,37 @@ with open(data_dir / "levels.dat", "r") as level_data_file:
         object_set_number = int(object_set_number, 16)
 
         if object_set_number == WORLD_MAP_OBJECT_SET:
+            world_data.append((level_name, level_address, enemy_address, object_set_number))
+            world_test_name.append(f"Overworld {world_no} - {level_name}")
             continue
 
         level_data.append((level_name, level_address, enemy_address, object_set_number, False))
         level_data.append((level_name, level_address, enemy_address, object_set_number, True))
 
-        test_name.append(f"Level {world_no}-{level_no} - {level_name}, no transparency")
-        test_name.append(f"Level {world_no}-{level_no} - {level_name}")
+        level_test_name.append(f"Level {world_no}-{level_no} - {level_name}, no transparency")
+        level_test_name.append(f"Level {world_no}-{level_no} - {level_name}")
 
 
-@pytest.mark.parametrize("level_info", level_data, ids=test_name)
+@pytest.mark.parametrize("world_info", world_data, ids=world_test_name)
+def test_world(world_info, qtbot):
+    level_ref = LevelRef()
+    level_ref.load_level(*world_info)
+
+    Block._block_cache.clear()
+
+    # monkeypatch level names, since the level name data is broken atm
+    level_ref.level.name = current_test_name()
+
+    world_view = WorldView(None, level_ref, ContextMenu(level_ref))
+
+    rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16)
+
+    world_view.setGeometry(rect)
+
+    _test_level_against_reference(world_view, qtbot)
+
+
+@pytest.mark.parametrize("level_info", level_data, ids=level_test_name)
 def test_level(level_info, qtbot):
     *level_info, transparent = level_info
     level_ref = LevelRef()
