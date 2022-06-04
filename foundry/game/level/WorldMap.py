@@ -1,4 +1,4 @@
-from PySide6.QtCore import QPoint, QSize
+from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import load_palette_group
@@ -17,13 +17,19 @@ from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 OVERWORLD_GRAPHIC_SET = 0
 
 
+class WorldSignaller(QObject):
+    data_changed: SignalInstance = Signal()
+    jumps_changed: SignalInstance = Signal()
+
+
 class WorldMap(LevelLike):
-    def __init__(self, world_index):
-        self._internal_world_map = _WorldMap.from_world_number(ROM(), world_index)
+    def __init__(self, layout_address):
+        self._internal_world_map = _WorldMap(layout_address, ROM())
 
         super(WorldMap, self).__init__(0, self._internal_world_map.layout_address)
 
-        self.name = f"World {world_index} - Overworld"
+        self.name = f"World @ {layout_address} - Overworld"
+        self._signal_emitter = WorldSignaller()
 
         self.graphics_set = GraphicsSet(OVERWORLD_GRAPHIC_SET)
         self.palette_group = load_palette_group(WORLD_MAP_OBJECT_SET, 0)
@@ -32,7 +38,6 @@ class WorldMap(LevelLike):
         self.tsa_data = ROM.get_tsa_data(self.object_set)
 
         self.world = 0
-        self.level_number = world_index
 
         self.objects = []
 
@@ -73,6 +78,14 @@ class WorldMap(LevelLike):
     @staticmethod
     def _array_index(obj):
         return obj.y_position * WORLD_MAP_SCREEN_WIDTH + obj.x_position
+
+    @property
+    def data_changed(self):
+        return self._signal_emitter.data_changed
+
+    @property
+    def jumps_changed(self):
+        return self._signal_emitter.jumps_changed
 
     def get_object_names(self):
         return [obj.name for obj in self.objects]
@@ -133,3 +146,9 @@ class WorldMap(LevelLike):
         x %= WORLD_MAP_SCREEN_WIDTH
 
         return self._internal_world_map.level_name_for_position(screen, y, x)
+
+    # TODO check if better in parent class
+    def get_rect(self, block_length: int = 1):
+        width, height = self.size
+
+        return QRect(QPoint(0, 0), QSize(width, height) * block_length)
