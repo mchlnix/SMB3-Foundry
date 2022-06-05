@@ -78,8 +78,9 @@ def test_world(world_info, qtbot):
     level_ref.level.name = current_test_name()
 
     world_view = WorldView(None, level_ref, ContextMenu(level_ref))
+    world_view.zoom_in()
 
-    rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16)
+    rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16 * 2)
 
     world_view.setGeometry(rect)
 

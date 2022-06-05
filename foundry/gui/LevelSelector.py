@@ -242,7 +242,7 @@ class WorldMapLevelSelect(QScrollArea):
     def __init__(self, world_number: int):
         super(WorldMapLevelSelect, self).__init__()
 
-        self.world = WorldMap(world_number)
+        self.world = WorldMap.from_world_number(world_number)
 
         self.world_view = WorldMapView(self, self.world)
         self.world_view.setMouseTracking(True)

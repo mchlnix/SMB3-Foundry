@@ -11,6 +11,25 @@ from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
 from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_WIDTH
 from foundry.game.level.Level import Level
 from foundry.game.level.WorldMap import WorldMap
+from smb3parse.constants import (
+    MAPOBJ_AIRSHIP,
+    MAPOBJ_BATTLESHIP,
+    MAPOBJ_BOOMERANGBRO,
+    MAPOBJ_CANOE,
+    MAPOBJ_COINSHIP,
+    MAPOBJ_EMPTY,
+    MAPOBJ_FIREBRO,
+    MAPOBJ_HAMMERBRO,
+    MAPOBJ_HEAVYBRO,
+    MAPOBJ_HELP,
+    MAPOBJ_NSPADE,
+    MAPOBJ_TANK,
+    MAPOBJ_UNK08,
+    MAPOBJ_UNK0C,
+    MAPOBJ_W7PLANT,
+    MAPOBJ_W8AIRSHIP,
+    MAPOBJ_WHITETOADHOUSE,
+)
 from smb3parse.levels import LEVEL_MAX_LENGTH
 
 png = QImage(str(data_dir / "gfx.png"))
@@ -59,6 +78,25 @@ ITEM_ARROW = _load_from_png(53, 53)
 
 EMPTY_IMAGE = _load_from_png(0, 53)
 
+MAP_OBJ_SPRITES = {
+    MAPOBJ_EMPTY: EMPTY_IMAGE,
+    MAPOBJ_HELP: _load_from_png(43, 2),
+    MAPOBJ_AIRSHIP: _load_from_png(44, 2),
+    MAPOBJ_HAMMERBRO: _load_from_png(45, 2),
+    MAPOBJ_BOOMERANGBRO: _load_from_png(46, 2),
+    MAPOBJ_HEAVYBRO: _load_from_png(47, 2),
+    MAPOBJ_FIREBRO: _load_from_png(48, 2),
+    MAPOBJ_W7PLANT: _load_from_png(49, 2),
+    MAPOBJ_UNK08: _load_from_png(50, 2),
+    MAPOBJ_NSPADE: _load_from_png(51, 2),
+    MAPOBJ_WHITETOADHOUSE: _load_from_png(52, 2),
+    MAPOBJ_COINSHIP: _load_from_png(53, 2),
+    MAPOBJ_UNK0C: _load_from_png(54, 2),
+    MAPOBJ_BATTLESHIP: _load_from_png(55, 2),
+    MAPOBJ_TANK: _load_from_png(56, 2),
+    MAPOBJ_W8AIRSHIP: _load_from_png(57, 2),
+    MAPOBJ_CANOE: _load_from_png(58, 2),
+}
 
 SPECIAL_BACKGROUND_OBJECTS = [
     "blue background",
@@ -101,14 +139,16 @@ class WorldDrawer:
     def draw(self, painter: QPainter, world: WorldMap):
         self._draw_background(painter, world)
 
-        self._draw_objects(painter, world)
+        self._draw_tiles(painter, world)
 
         if self.draw_level_pointers:
             # TODO: Fix and understand rules on where pointers can be
             # self._draw_level_pointers(painter, world)
             pass
 
-        self.draw_sprites = True
+        if self.draw_sprites:
+            self._draw_sprites(painter, world)
+
         self.draw_start = True
         self.draw_airship_points = True
         self.draw_pipes = True
@@ -125,29 +165,29 @@ class WorldDrawer:
 
         painter.restore()
 
-    def _draw_objects(self, painter: QPainter, world: WorldMap):
-        for level_object in world.get_all_objects():
-            level_object.render()
+    def _draw_tiles(self, painter: QPainter, world: WorldMap):
+        for tile in world.get_all_objects():
+            tile.render()
 
-            if level_object.name.lower() in SPECIAL_BACKGROUND_OBJECTS:
+            if tile.name.lower() in SPECIAL_BACKGROUND_OBJECTS:
                 width = LEVEL_MAX_LENGTH
-                height = GROUND - level_object.y_position
+                height = GROUND - tile.y_position
 
-                blocks_to_draw = [level_object.blocks[0]] * width * height
+                blocks_to_draw = [tile.blocks[0]] * width * height
 
                 for index, block_index in enumerate(blocks_to_draw):
-                    x = level_object.x_position + index % width
-                    y = level_object.y_position + index // width
+                    x = tile.x_position + index % width
+                    y = tile.y_position + index // width
 
-                    level_object._draw_block(painter, block_index, x, y, self.block_length, False)
+                    tile._draw_block(painter, block_index, x, y, self.block_length, False)
             else:
-                level_object.draw(painter, self.block_length, False)
+                tile.draw(painter, self.block_length, False)
 
-            if level_object.selected:
+            if tile.selected:
                 painter.save()
 
                 painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
-                painter.drawRect(level_object.get_rect(self.block_length))
+                painter.drawRect(tile.get_rect(self.block_length))
 
                 painter.restore()
 
@@ -163,6 +203,21 @@ class WorldDrawer:
 
             painter.setPen(QPen(QColor(0xFF, 0x00, 0x00, 0x80), 2))
             painter.drawRect(x, y, self.block_length, self.block_length)
+
+        painter.restore()
+
+    def _draw_sprites(self, painter: QPainter, world: WorldMap):
+        painter.save()
+
+        for tile_on_map in world._internal_world_map.gen_positions():
+            if not (sprite_id := tile_on_map.sprite()):
+                continue
+
+            x = ((tile_on_map.screen - 1) * SCREEN_WIDTH + tile_on_map.column) * self.block_length
+            y = tile_on_map.row * self.block_length
+
+            painter.setPen(QPen(QColor(0x00, 0x00, 0xFF, 0x80), 4))
+            painter.drawImage(QPoint(x, y), MAP_OBJ_SPRITES[sprite_id].scaled(self.block_length, self.block_length))
 
         painter.restore()
 

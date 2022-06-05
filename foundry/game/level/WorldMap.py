@@ -11,6 +11,7 @@ from smb3parse.levels.world_map import (
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
     WorldMap as _WorldMap,
+    list_world_map_addresses,
 )
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -44,6 +45,13 @@ class WorldMap(LevelLike):
         self._load_objects()
 
         self._calc_size()
+
+    @staticmethod
+    def from_world_number(world_index: int):
+        if not 1 <= world_index <= 9:
+            raise ValueError(f"World Number of '{world_index} not allowed. Keep it between 1 and 9.")
+
+        return WorldMap(list_world_map_addresses(ROM())[world_index - 1])
 
     def _load_objects(self):
         self.objects.clear()
@@ -152,3 +160,7 @@ class WorldMap(LevelLike):
         width, height = self.size
 
         return QRect(QPoint(0, 0), QSize(width, height) * block_length)
+
+    @property
+    def fully_loaded(self):
+        return True

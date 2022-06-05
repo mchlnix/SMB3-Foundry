@@ -3,6 +3,7 @@ from typing import Generator, List
 from warnings import warn
 
 from smb3parse.constants import (
+    MAPOBJ_EMPTY,
     TILE_BOWSER_CASTLE,
     TILE_CASTLE_BOTTOM,
     TILE_DUNGEON_1,
@@ -74,6 +75,11 @@ TILE_NAMES.update(
         TILE_STAR_2: "Star",
     }
 )
+
+MAP_SPRITE_Y_POS_LIST = BASE_OFFSET + 0x16010
+MAP_SPRITE_X_POS_SCREEN_LIST = MAP_SPRITE_Y_POS_LIST + 8 * OFFSET_SIZE
+MAP_SPRITE_X_POS_LIST = MAP_SPRITE_X_POS_SCREEN_LIST + 8 * OFFSET_SIZE
+MAP_SPRITE_IDS_LIST = MAP_SPRITE_X_POS_LIST + 8 * OFFSET_SIZE
 
 
 def list_world_map_addresses(rom: Rom) -> List[int]:
@@ -334,6 +340,52 @@ class WorldMap(LevelBase):
             return f"Level {self.number}-{tile - TILE_LEVEL_1 + 1}"
 
         return f"Level {self.number}-{TILE_NAMES[tile]}"
+
+    def sprite_at(self, screen: int, row: int, column: int) -> int:
+        """
+        Returns the ID of the overworld sprite at the given location in this world. Or 0 if there is None.
+
+        :param screen:
+        :param row:
+        :param column:
+        """
+        y_pos_offset_for_world = self._rom.little_endian(MAP_SPRITE_Y_POS_LIST + self.world_index * OFFSET_SIZE)
+        y_pos_address_for_world = BASE_OFFSET + 0xC000 + y_pos_offset_for_world
+
+        x_pos_screen_offset_for_world = self._rom.little_endian(
+            MAP_SPRITE_X_POS_SCREEN_LIST + self.world_index * OFFSET_SIZE
+        )
+        x_pos_screen_address_for_world = BASE_OFFSET + 0xC000 + x_pos_screen_offset_for_world
+
+        x_pos_offset_for_world = self._rom.little_endian(MAP_SPRITE_X_POS_LIST + self.world_index * OFFSET_SIZE)
+        x_pos_address_for_world = BASE_OFFSET + 0xC000 + x_pos_offset_for_world
+
+        ids_offset_for_world = self._rom.little_endian(MAP_SPRITE_IDS_LIST + self.world_index * OFFSET_SIZE)
+        ids_address_for_world = BASE_OFFSET + 0xC000 + ids_offset_for_world
+
+        y_pos_for_world = [(self._rom.int(y_pos_address_for_world + index) >> 4) for index in range(9)]
+
+        x_pos_screen_for_world = [self._rom.int(x_pos_screen_address_for_world + index) for index in range(9)]
+        x_pos_for_world = [self._rom.int(x_pos_address_for_world + index) >> 4 for index in range(9)]
+
+        ids_for_world = [self._rom.int(ids_address_for_world + index) for index in range(9)]
+
+        for index, y_pos in enumerate(y_pos_for_world):
+            if y_pos != row + 2:
+                continue
+
+            if x_pos_screen_for_world[index] != screen - 1:
+                continue
+
+            x_pos = x_pos_for_world[index]
+
+            if x_pos == y_pos == 0:
+                continue
+
+            if x_pos == column:
+                return ids_for_world[index]
+
+        return MAPOBJ_EMPTY
 
     def tile_at(self, screen: int, row: int, column: int) -> int:
         """

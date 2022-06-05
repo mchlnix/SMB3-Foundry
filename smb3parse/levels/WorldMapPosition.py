@@ -1,9 +1,13 @@
+import typing
 from typing import Tuple
+
+if typing.TYPE_CHECKING:
+    from world_map import WorldMap
 
 
 class WorldMapPosition:
     def __init__(self, world, screen: int, row: int, column: int):
-        self.world = world
+        self.world: "WorldMap" = world
         self.screen = screen
         self.row = row
         self.column = column
@@ -20,6 +24,12 @@ class WorldMapPosition:
         """Whether a tile could be placed here to enter a level."""
         # TODO this is not always correct. Might depend on where you come into the level?
         return self.row in [0, 2, 4, 6, 8] and self.column in [2, 4, 6, 8, 10, 12, 14]
+
+    def sprite(self):
+        return self.world.sprite_at(self.screen, self.row, self.column)
+
+    def has_sprite(self):
+        return bool(self.sprite())
 
     def tile(self):
         return self.world.tile_at(self.screen, self.row, self.column)
