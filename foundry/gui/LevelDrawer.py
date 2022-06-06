@@ -8,9 +8,9 @@ from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, bg_color_for_object_set, load_palette_group
-from foundry.game.gfx.drawable import apply_selection_overlay
+from foundry.game.gfx.drawable import load_from_png, make_image_selected
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.EnemyItem import EnemyObject, MASK_COLOR
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
@@ -19,51 +19,29 @@ from smb3parse.constants import OBJ_AUTOSCROLL
 from smb3parse.levels import LEVEL_MAX_LENGTH
 from smb3parse.objects.object_set import CLOUDY_OBJECT_SET, DESERT_OBJECT_SET, DUNGEON_OBJECT_SET, ICE_OBJECT_SET
 
-png = QImage(str(data_dir / "gfx.png"))
-png.convertTo(QImage.Format_RGB888)
 
+FIRE_FLOWER = load_from_png(16, 53)
+LEAF = load_from_png(17, 53)
+NORMAL_STAR = load_from_png(18, 53)
+CONTINUOUS_STAR = load_from_png(19, 53)
+MULTI_COIN = load_from_png(20, 53)
+ONE_UP = load_from_png(21, 53)
+COIN = load_from_png(22, 53)
+VINE = load_from_png(23, 53)
+P_SWITCH = load_from_png(24, 53)
+SILVER_COIN = load_from_png(25, 53)
+INVISIBLE_COIN = load_from_png(26, 53)
+INVISIBLE_1_UP = load_from_png(27, 53)
 
-def _make_image_selected(image: QImage) -> QImage:
-    alpha_mask = image.createAlphaMask()
-    alpha_mask.invertPixels()
+NO_JUMP = load_from_png(32, 53)
+UP_ARROW = load_from_png(33, 53)
+DOWN_ARROW = load_from_png(34, 53)
+LEFT_ARROW = load_from_png(35, 53)
+RIGHT_ARROW = load_from_png(36, 53)
 
-    selected_image = QImage(image)
+ITEM_ARROW = load_from_png(53, 53)
 
-    apply_selection_overlay(selected_image, alpha_mask)
-
-    return selected_image
-
-
-def _load_from_png(x: int, y: int):
-    image = png.copy(QRect(x * 16, y * 16, 16, 16))
-    mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
-    image.setAlphaChannel(mask)
-
-    return image
-
-
-FIRE_FLOWER = _load_from_png(16, 53)
-LEAF = _load_from_png(17, 53)
-NORMAL_STAR = _load_from_png(18, 53)
-CONTINUOUS_STAR = _load_from_png(19, 53)
-MULTI_COIN = _load_from_png(20, 53)
-ONE_UP = _load_from_png(21, 53)
-COIN = _load_from_png(22, 53)
-VINE = _load_from_png(23, 53)
-P_SWITCH = _load_from_png(24, 53)
-SILVER_COIN = _load_from_png(25, 53)
-INVISIBLE_COIN = _load_from_png(26, 53)
-INVISIBLE_1_UP = _load_from_png(27, 53)
-
-NO_JUMP = _load_from_png(32, 53)
-UP_ARROW = _load_from_png(33, 53)
-DOWN_ARROW = _load_from_png(34, 53)
-LEFT_ARROW = _load_from_png(35, 53)
-RIGHT_ARROW = _load_from_png(36, 53)
-
-ITEM_ARROW = _load_from_png(53, 53)
-
-EMPTY_IMAGE = _load_from_png(0, 53)
+EMPTY_IMAGE = load_from_png(0, 53)
 
 
 SPECIAL_BACKGROUND_OBJECTS = [
@@ -359,7 +337,7 @@ class LevelDrawer:
                     painter.drawImage(adapted_pos, image)
 
                     if level_object.selected:
-                        painter.drawImage(adapted_pos, _make_image_selected(image))
+                        painter.drawImage(adapted_pos, make_image_selected(image))
 
             else:
                 image = image.scaled(self.block_length, self.block_length)
