@@ -1,4 +1,4 @@
-from PySide6.QtCore import QPoint, QRect
+from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QImage, QPainter, QPen, Qt
 
 from foundry import data_dir
@@ -149,7 +149,9 @@ class WorldDrawer:
         if self.draw_sprites:
             self._draw_sprites(painter, world)
 
-        self.draw_start = True
+        if self.draw_start:
+            self._draw_start_position(painter, world)
+
         self.draw_airship_points = True
         self.draw_pipes = True
         self.draw_locks = True
@@ -218,6 +220,20 @@ class WorldDrawer:
 
             painter.setPen(QPen(QColor(0x00, 0x00, 0xFF, 0x80), 4))
             painter.drawImage(QPoint(x, y), MAP_OBJ_SPRITES[sprite_id].scaled(self.block_length, self.block_length))
+
+        painter.restore()
+
+    def _draw_start_position(self, painter: QPainter, world: WorldMap):
+        painter.save()
+
+        world, screen, y, x = world._internal_world_map.start_pos.tuple()
+
+        x *= self.block_length
+        y *= self.block_length
+
+        painter.fillRect(
+            QRect(QPoint(x, y), QSize(self.block_length, self.block_length)), QColor(0x00, 0xFF, 0x00, 0x80)
+        )
 
         painter.restore()
 

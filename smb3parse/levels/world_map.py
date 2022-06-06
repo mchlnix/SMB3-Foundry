@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Generator, List
+from typing import Generator, List, Optional
 from warnings import warn
 
 from smb3parse.constants import (
@@ -80,6 +80,8 @@ MAP_SPRITE_Y_POS_LIST = BASE_OFFSET + 0x16010
 MAP_SPRITE_X_POS_SCREEN_LIST = MAP_SPRITE_Y_POS_LIST + 8 * OFFSET_SIZE
 MAP_SPRITE_X_POS_LIST = MAP_SPRITE_X_POS_SCREEN_LIST + 8 * OFFSET_SIZE
 MAP_SPRITE_IDS_LIST = MAP_SPRITE_X_POS_LIST + 8 * OFFSET_SIZE
+
+Y_START_POS_LIST = BASE_OFFSET + 0x3C38A
 
 
 def list_world_map_addresses(rom: Rom) -> List[int]:
@@ -429,6 +431,22 @@ class WorldMap(LevelBase):
             or tile_index in self._completable_tiles
             or tile_index in self._special_enterable_tiles
         )
+
+    @property
+    def start_pos(self) -> Optional[WorldMapPosition]:
+        if self.world_index == 8:
+            # warp world
+            return None
+
+        # x coordinate is always the same
+        x = 0x20 >> 4
+
+        y_positions_of_world = [self._rom.int(Y_START_POS_LIST + index) >> 4 for index in range(8)]
+
+        y = y_positions_of_world[self.world_index] - 2
+
+        # always on screen 1
+        return WorldMapPosition(self, 1, y, x)
 
     def gen_positions(self) -> Generator["WorldMapPosition", None, None]:
         """
