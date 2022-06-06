@@ -4,7 +4,7 @@ from warnings import warn
 
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter, QWheelEvent, Qt
-from PySide6.QtWidgets import QToolTip, QWidget
+from PySide6.QtWidgets import QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
@@ -33,7 +33,7 @@ from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 
 class WorldView(MainView):
-    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: ContextMenu):
+    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[ContextMenu]):
         super(WorldView, self).__init__(parent, level, context_menu)
 
         self.drawer = WorldDrawer()
@@ -131,6 +131,9 @@ class WorldView(MainView):
         self.drawer.draw_locks = value
 
     def mousePressEvent(self, event: QMouseEvent):
+        if self.read_only:
+            return super(WorldView, self).mousePressEvent(event)
+
         pressed_button = event.button()
 
         if pressed_button == Qt.LeftButton:
@@ -141,6 +144,9 @@ class WorldView(MainView):
             return super(WorldView, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
+        if self.read_only:
+            return super(WorldView, self).mouseMoveEvent(event)
+
         if self.mouse_mode == MODE_DRAG:
             self.setCursor(Qt.ClosedHandCursor)
             self._dragging(event)
@@ -157,16 +163,6 @@ class WorldView(MainView):
 
         elif SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK:
             self._set_cursor_for_position(event)
-
-        x, y = event.pos().toTuple()
-
-        object_under_cursor = self.object_at(x, y)
-
-        if SETTINGS["object_tooltip_enabled"] and object_under_cursor is not None:
-            self.setToolTip(str(object_under_cursor))
-        else:
-            self.setToolTip("")
-            QToolTip.hideText()
 
         return super(WorldView, self).mouseMoveEvent(event)
 
@@ -216,6 +212,9 @@ class WorldView(MainView):
         return edges
 
     def mouseReleaseEvent(self, event: QMouseEvent):
+        if self.read_only:
+            return super(WorldView, self).mouseReleaseEvent(event)
+
         released_button = event.button()
 
         if released_button == Qt.LeftButton:
@@ -223,9 +222,12 @@ class WorldView(MainView):
         elif released_button == Qt.RightButton:
             self._on_right_mouse_button_up(event)
         else:
-            super(WorldView, self).mouseReleaseEvent(event)
+            return super(WorldView, self).mouseReleaseEvent(event)
 
     def wheelEvent(self, event: QWheelEvent):
+        if self.read_only:
+            return super(WorldView, self).wheelEvent(event)
+
         if SETTINGS["object_scroll_enabled"]:
             x, y = event.position().toTuple()
 
@@ -327,7 +329,7 @@ class WorldView(MainView):
 
             if self.resize_mouse_start_x != resize_end_x:
                 self._stop_resize(event)
-        else:
+        elif self.context_menu is not None:
             if self.get_selected_objects():
                 menu = self.context_menu.as_object_menu()
             else:

@@ -145,6 +145,7 @@ class MapObject(ObjectLike):
             self.name = str(hex(self.block.index))
 
         self.selected = False
+        self.is_single_block = True
 
     def set_position(self, x, y):
         x = int(x)

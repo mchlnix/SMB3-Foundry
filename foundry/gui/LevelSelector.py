@@ -17,10 +17,12 @@ from PySide6.QtWidgets import (
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.Level import Level
+from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.Spinner import Spinner
-from foundry.gui.WorldMapView import WorldMapView
+from foundry.gui.WorldView import WorldView
 from smb3parse.levels import WORLD_COUNT
+from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 WORLD_ITEMS = [
     "World Maps",
@@ -244,8 +246,13 @@ class WorldMapLevelSelect(QScrollArea):
 
         self.world = WorldMap.from_world_number(world_number)
 
-        self.world_view = WorldMapView(self, self.world)
+        level_ref = LevelRef()
+        level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+
+        self.world_view = WorldView(self, level_ref, None)
         self.world_view.setMouseTracking(True)
+        self.world_view.read_only = True
+        self.world_view.zoom_in()
 
         self.setWidget(self.world_view)
 

@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Union
 
 from PySide6.QtCore import QMimeData, QSize
-from PySide6.QtGui import QDragEnterEvent, QDragMoveEvent, QMouseEvent, Qt
+from PySide6.QtGui import QContextMenuEvent, QDragEnterEvent, QDragMoveEvent, QMouseEvent, Qt
 from PySide6.QtWidgets import QApplication, QSizePolicy, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
@@ -36,7 +36,7 @@ def undoable(func):
 
 
 class MainView(QWidget):
-    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: ContextMenu):
+    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[ContextMenu]):
         super(MainView, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -50,6 +50,8 @@ class MainView(QWidget):
 
         self.zoom = 1
         self.block_length = Block.SIDE_LENGTH * self.zoom
+
+        self.read_only = False
 
         self._object_was_selected_on_last_click = False
         """whether an object was selected with the current click; will be cleared, on release of the mouse button"""
@@ -157,6 +159,12 @@ class MainView(QWidget):
             return
 
         return self.grab()
+
+    def contextMenuEvent(self, event: QContextMenuEvent):
+        if self.read_only:
+            return False
+        else:
+            return super(MainView, self).contextMenuEvent(event)
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasFormat("application/level-object"):

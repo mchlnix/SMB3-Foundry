@@ -49,7 +49,7 @@ with open(data_dir / "levels.dat", "r") as level_data_file:
         world_no = int(world_no)
         level_no = int(level_no)
 
-        level_address = int(level_address, 16) - HEADER_LENGTH
+        level_address = int(level_address, 16)
 
         enemy_address = int(enemy_address, 16)
 
@@ -60,8 +60,8 @@ with open(data_dir / "levels.dat", "r") as level_data_file:
             world_test_name.append(f"Overworld {world_no} - {level_name}")
             continue
 
-        level_data.append((level_name, level_address, enemy_address, object_set_number, False))
-        level_data.append((level_name, level_address, enemy_address, object_set_number, True))
+        level_data.append((level_name, level_address - HEADER_LENGTH, enemy_address, object_set_number, False))
+        level_data.append((level_name, level_address - HEADER_LENGTH, enemy_address, object_set_number, True))
 
         level_test_name.append(f"Level {world_no}-{level_no} - {level_name}, no transparency")
         level_test_name.append(f"Level {world_no}-{level_no} - {level_name}")
