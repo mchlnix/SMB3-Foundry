@@ -143,8 +143,7 @@ class WorldDrawer:
 
         if self.draw_level_pointers:
             # TODO: Fix and understand rules on where pointers can be
-            # self._draw_level_pointers(painter, world)
-            pass
+            self._draw_level_pointers(painter, world)
 
         if self.draw_sprites:
             self._draw_sprites(painter, world)
@@ -197,13 +196,13 @@ class WorldDrawer:
         painter.save()
 
         for tile_on_map in world._internal_world_map.gen_positions():
-            if not tile_on_map.could_have_a_level():
+            if tile_on_map.level_info is None:
                 continue
 
             x = ((tile_on_map.screen - 1) * SCREEN_WIDTH + tile_on_map.column) * self.block_length
             y = tile_on_map.row * self.block_length
 
-            painter.setPen(QPen(QColor(0xFF, 0x00, 0x00, 0x80), 2))
+            painter.setPen(QPen(QColor(0xFF, 0x00, 0x00, 0x80), 4))
             painter.drawRect(x, y, self.block_length, self.block_length)
 
         painter.restore()
@@ -226,7 +225,12 @@ class WorldDrawer:
     def _draw_start_position(self, painter: QPainter, world: WorldMap):
         painter.save()
 
-        world, screen, y, x = world._internal_world_map.start_pos.tuple()
+        start_pos = world._internal_world_map.start_pos
+
+        if start_pos is None:
+            return
+
+        world, screen, y, x = start_pos.tuple()
 
         x *= self.block_length
         y *= self.block_length

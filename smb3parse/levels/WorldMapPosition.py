@@ -20,11 +20,6 @@ class WorldMapPosition:
         """Whether the position and tile supports entering a level."""
         return self.world.is_enterable(self.tile())
 
-    def could_have_a_level(self):
-        """Whether a tile could be placed here to enter a level."""
-        # TODO this is not always correct. Might depend on where you come into the level?
-        return self.row in [0, 2, 4, 6, 8] and self.column in [2, 4, 6, 8, 10, 12, 14]
-
     def sprite(self):
         return self.world.sprite_at(self.screen, self.row, self.column)
 

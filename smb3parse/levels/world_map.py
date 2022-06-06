@@ -90,7 +90,7 @@ def list_world_map_addresses(rom: Rom) -> List[int]:
     addresses = []
 
     for world in range(WORLD_COUNT):
-        index = world * 2
+        index = world * OFFSET_SIZE
 
         world_map_offset = (offsets[index + 1] << 8) + offsets[index]
 
@@ -187,9 +187,8 @@ class WorldMap(LevelBase):
 
     def level_for_position(self, screen: int, player_row: int, player_column: int):
         """
-        The rom takes the position of the current player, so the world, the screen and the x and y coordinates, and
-        operates on them. First it is checked, whether or not the player is located on a tile, that is able to be
-        entered.
+        The rom takes the position of the current player, the world, the screen and the x and y coordinates, and
+        operates on them. First it is checked, whether the player is located on a tile, that is able to enterable.
 
         If that is the case, the x and y coordinates are used to look up the object set and address of the level. The
         object set is necessary to find the right base offset for the level address and to correctly parse its object
@@ -215,9 +214,6 @@ class WorldMap(LevelBase):
             warn("Spade and mushroom house currently not supported, when getting a level address.")
             return None
 
-        if not self.is_enterable(tile):
-            return None
-
         level_indexes = self.level_indexes(screen, player_row, player_column)
 
         if level_indexes is None:
@@ -227,12 +223,15 @@ class WorldMap(LevelBase):
 
         level_offset = self._rom.little_endian(level_offset_address)
 
-        assert 0xA000 <= level_offset < 0xC000, level_offset  # suppose that level layouts are only in this range?
+        if not 0xA000 <= level_offset < 0xC000:
+            # suppose that level layouts are only in this range?
+            warn(f"Level in {self}@{screen=}, {player_row=}, {player_column=} has offset {level_offset}")
+            return None
 
         correct_row_value = self._rom.int(row_address)
         object_set_number = correct_row_value & 0x0F
 
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
+        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * OFFSET_SIZE - 10) * 0x1000
 
         absolute_level_address = 0x0010 + object_set_offset + level_offset
 
@@ -261,7 +260,7 @@ class WorldMap(LevelBase):
         column_value = ((screen - 1) << 4) + column
         self._rom.write(column_address, bytes([column_value]))
 
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * 2 - 10) * 0x1000
+        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * OFFSET_SIZE - 10) * 0x1000
         level_offset = level_address - object_set_offset - BASE_OFFSET
 
         self._rom.write_little_endian(level_offset_address, level_offset)
@@ -288,26 +287,26 @@ class WorldMap(LevelBase):
             LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
         )
 
-        row_amount = col_amount = level_x_pos_list_start - level_y_pos_list_start
+        row_start_index = [0, self.level_count_s1, self.level_count_s2, self.level_count_s3][screen - 1]
 
-        row_start_index = sum(
-            [self.level_count_s1, self.level_count_s2, self.level_count_s3, self.level_count_s4][0 : screen - 1]
-        )
+        row_amount = [self.level_count_s1, self.level_count_s2, self.level_count_s3, self.level_count_s4][screen - 1]
+
+        possible_indices = []
 
         # find the row position
-        for row_index in range(row_start_index, row_amount):
+        for row_index in range(row_start_index, row_start_index + row_amount):
             value = self._rom.int(level_y_pos_list_start + row_index)
 
             # adjust the value, so that we ignore the black border tiles around the map
             row = (value >> 4) - FIRST_VALID_ROW
 
             if row == player_row:
-                break
-        else:
-            # no level on row of player
+                possible_indices.append(row_index)
+
+        if not possible_indices:
             return None
 
-        for col_index in range(row_index, col_amount):
+        for col_index in possible_indices:
             column = self._rom.int(level_x_pos_list_start + col_index) & 0x0F
 
             if column == player_column:
@@ -373,7 +372,7 @@ class WorldMap(LevelBase):
         ids_for_world = [self._rom.int(ids_address_for_world + index) for index in range(9)]
 
         for index, y_pos in enumerate(y_pos_for_world):
-            if y_pos != row + 2:
+            if y_pos - FIRST_VALID_ROW != row:
                 continue
 
             if x_pos_screen_for_world[index] != screen - 1:
@@ -443,7 +442,7 @@ class WorldMap(LevelBase):
 
         y_positions_of_world = [self._rom.int(Y_START_POS_LIST + index) >> 4 for index in range(8)]
 
-        y = y_positions_of_world[self.world_index] - 2
+        y = y_positions_of_world[self.world_index] - FIRST_VALID_ROW
 
         # always on screen 1
         return WorldMapPosition(self, 1, y, x)

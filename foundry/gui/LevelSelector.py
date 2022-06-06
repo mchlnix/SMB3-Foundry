@@ -252,6 +252,7 @@ class WorldMapLevelSelect(QScrollArea):
 
         self.world_view = WorldView(self, level_ref, None)
         self.world_view.setMouseTracking(True)
+        self.world_view.draw_start = False
         self.world_view.read_only = True
         self.world_view.zoom_in()
 
