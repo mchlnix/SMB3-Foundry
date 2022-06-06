@@ -1,4 +1,4 @@
-from PySide6.QtCore import QMargins, QSize, Signal, SignalInstance
+from PySide6.QtCore import QBuffer, QIODevice, QMargins, QSize, Signal, SignalInstance
 from PySide6.QtGui import QCloseEvent, QKeyEvent, QMouseEvent, Qt
 from PySide6.QtWidgets import (
     QComboBox,
@@ -19,6 +19,7 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.LevelView import LevelView
 from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
 from smb3parse.levels import WORLD_COUNT
@@ -281,16 +282,35 @@ class WorldMapLevelSelect(QScrollArea):
                 object_set_name = OBJECT_SET_ITEMS[object_set].split(" ", 1)[1]
                 layout_address, enemy_address = map(hex, level_info[1:])
 
+                image_data = self._get_level_thumbnail(*level_info)
+
                 self.setToolTip(
                     f"<b>{level_name}</b><br/>"
-                    f"<u>Type:</u> {object_set_name}<br/>"
-                    f"<u>Objects:</u> {layout_address}<br/>"
-                    f"<u>Enemies:</u> {enemy_address}"
+                    f"<u>Type:</u> {object_set_name} "
+                    f"<u>Objects:</u> {layout_address} "
+                    f"<u>Enemies:</u> {enemy_address}<br/>"
+                    f"<img src='data:image/png;base64,{image_data}'>"
                 )
         except ValueError:
             pass
 
         return super(WorldMapLevelSelect, self).mouseMoveEvent(event)
+
+    def _get_level_thumbnail(self, object_set, layout_address, enemy_address):
+        level_ref = LevelRef()
+        level_ref.load_level("", layout_address, enemy_address, object_set)
+        level_view = LevelView(self, level_ref, None)
+        level_view.read_only = True
+        level_view.zoom_out()
+        level_view.zoom_out()
+        level_pixmap = level_view.grab(level_view.rect())
+
+        buffer = QBuffer()
+        buffer.open(QIODevice.WriteOnly)
+        level_pixmap.save(buffer, "PNG", quality=100)
+        image_data = bytes(buffer.data().toBase64()).decode()
+
+        return image_data
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         x, y = self.world_view.mapFromParent(event.pos()).toTuple()

@@ -33,7 +33,7 @@ from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 
 class LevelView(MainView):
-    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: ContextMenu):
+    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[ContextMenu]):
         super(LevelView, self).__init__(parent, level, context_menu)
 
         self.drawer = LevelDrawer()
@@ -348,7 +348,7 @@ class LevelView(MainView):
 
             if self.resize_mouse_start_x != resize_end_x:
                 self._stop_resize(event)
-        else:
+        elif self.context_menu is not None:
             if self.get_selected_objects():
                 menu = self.context_menu.as_object_menu()
             else:
