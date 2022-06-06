@@ -269,10 +269,10 @@ class WorldMap(LevelBase):
 
         self._rom.write_little_endian(enemy_offset_address, enemy_offset)
 
-    def level_indexes(self, screen, player_row, player_column):
+    def level_indexes(self, player_screen, player_row, player_column):
         """
 
-        :param int screen: On which screen the level is positioned.
+        :param int player_screen: On which screen the level is positioned, 1, 2, 3 or 4.
         :param int player_row: In which row the level is positioned.
         :param int player_column: In which column the level is positioned.
 
@@ -287,49 +287,48 @@ class WorldMap(LevelBase):
             LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
         )
 
-        row_start_index = [0, self.level_count_s1, self.level_count_s2, self.level_count_s3][screen - 1]
+        level_amount = level_x_pos_list_start - level_y_pos_list_start
 
-        row_amount = [self.level_count_s1, self.level_count_s2, self.level_count_s3, self.level_count_s4][screen - 1]
+        # go through the row and column pairs for all levels in this world
+        for coord_index in range(level_amount):
+            # get row value first
+            row_address = level_y_pos_list_start + coord_index
+            row_value = self._rom.int(row_address)
 
-        possible_indices = []
+            # adjust the value, and ignore the black border tiles around the map
+            row = (row_value >> 4) - FIRST_VALID_ROW
 
-        # find the row position
-        for row_index in range(row_start_index, row_start_index + row_amount):
-            value = self._rom.int(level_y_pos_list_start + row_index)
+            if row != player_row:
+                continue
 
-            # adjust the value, so that we ignore the black border tiles around the map
-            row = (value >> 4) - FIRST_VALID_ROW
+            # if it matches, get the corresponding column value next
+            column_address = level_x_pos_list_start + coord_index
+            col_value = self._rom.int(column_address)
 
-            if row == player_row:
-                possible_indices.append(row_index)
+            # left 4 bits are the 0-indexed screen number, the right bits are the column
+            screen = (col_value >> 4) + 1
+            column = col_value & 0x0F
 
-        if not possible_indices:
-            return None
-
-        for col_index in possible_indices:
-            column = self._rom.int(level_x_pos_list_start + col_index) & 0x0F
-
-            if column == player_column:
+            if column == player_column and screen == player_screen:
+                # found our match
                 break
         else:
-            # no column for row
+            # no level at given coordinates
             return None
-
-        row_position = level_y_pos_list_start + col_index
-        col_position = level_x_pos_list_start + col_index
 
         # get level offset
         level_list_offset_position = LEVELS_IN_WORLD_LIST_OFFSET + self.world_index * OFFSET_SIZE
         level_list_address = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(level_list_offset_position)
 
-        level_offset_position = level_list_address + OFFSET_SIZE * col_index
+        level_offset_position = level_list_address + OFFSET_SIZE * coord_index
 
         enemy_list_start_offset = LEVEL_ENEMY_LIST_OFFSET + self.world_index * OFFSET_SIZE
         enemy_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(enemy_list_start_offset)
 
-        enemy_offset_position = enemy_list_start + col_index * OFFSET_SIZE
+        enemy_offset_position = enemy_list_start + coord_index * OFFSET_SIZE
 
-        return row_position, col_position, level_offset_position, enemy_offset_position
+        # return the addresses of the row and column value, so we can overwrite them, if necessary
+        return row_address, column_address, level_offset_position, enemy_offset_position
 
     def level_name_for_position(self, screen: int, player_row: int, player_column: int) -> str:
         tile = self.tile_at(screen, player_row, player_column)
