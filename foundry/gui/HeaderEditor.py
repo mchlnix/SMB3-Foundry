@@ -1,7 +1,7 @@
 from typing import Optional
 
 from PySide6.QtCore import Signal, SignalInstance
-from PySide6.QtGui import QWindow, Qt
+from PySide6.QtGui import Qt
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -76,7 +76,7 @@ SPINNER_MAX_VALUE = 0x0F_FF_FF
 class HeaderEditor(CustomDialog):
     header_change: SignalInstance = Signal()
 
-    def __init__(self, parent: Optional[QWindow], level_ref: LevelRef):
+    def __init__(self, parent: Optional[QWidget], level_ref: LevelRef):
         super(HeaderEditor, self).__init__(parent, "Level Header Editor")
 
         self.level: Level = level_ref.level

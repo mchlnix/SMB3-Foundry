@@ -7,6 +7,7 @@ from foundry import root_dir
 from foundry.game.File import ROM
 from smb3parse.constants import PalSet_Maps, Palette_By_Tileset
 from smb3parse.levels import BASE_OFFSET
+from smb3parse.util.rom import Rom
 
 MAP_PALETTE_ADDRESS = PalSet_Maps
 
@@ -104,7 +105,7 @@ def load_palette_group(object_set: int, palette_group_index: int, use_cache=True
         palettes = []
 
         for _ in range(PALETTES_PER_PALETTES_GROUP):
-            palettes.append(rom.read(palette_address, COLORS_PER_PALETTE))
+            palettes.append(bytearray(rom.read(palette_address, COLORS_PER_PALETTE)))
 
             palette_address += COLORS_PER_PALETTE
 
@@ -113,7 +114,7 @@ def load_palette_group(object_set: int, palette_group_index: int, use_cache=True
     return _palette_group_cache[key]
 
 
-def save_all_palette_groups(rom: Optional[ROM] = None):
+def save_all_palette_groups(rom: Optional[Rom] = None):
     for palette_group in _palette_group_cache.values():
         palette_group.save(rom)
 

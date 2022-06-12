@@ -1190,11 +1190,6 @@ class MainWindow(QMainWindow):
 
         self.level_ref.data_changed.emit()
 
-    def fill_object_list(self):
-        self.object_list.Clear()
-
-        self.object_list.SetItems(self.level_view.get_object_names())
-
     def open_level_selector(self, _):
         if not self.safe_to_change():
             return
@@ -1276,11 +1271,11 @@ class MainWindow(QMainWindow):
         self.edit_header_action.setEnabled(not is_a_world_map)
 
         if is_a_world_map:
-            self.object_dropdown.Clear()
+            self.object_dropdown.clear()
             self.object_dropdown.setEnabled(False)
 
             self.jump_list.setEnabled(False)
-            self.jump_list.Clear()
+            self.jump_list.clear()
         else:
             self.object_dropdown.setEnabled(True)
             self.object_dropdown.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
@@ -1356,9 +1351,6 @@ class MainWindow(QMainWindow):
         if isinstance(self.level_ref.level, Level):
             self.level_view.level_ref.jumps[index] = jump
             self.jump_list.item(index).setText(str(jump))
-
-    def on_jump_list_change(self, event):
-        self.jump_list.set_jumps(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.MiddleButton:

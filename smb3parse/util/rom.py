@@ -1,4 +1,5 @@
 from ctypes import Structure, c_char, c_ubyte
+from os import PathLike
 from typing import Optional
 
 from smb3parse.util import little_endian
@@ -85,6 +86,6 @@ class Rom:
 
         return read_bytes[0]
 
-    def save_to(self, path: str):
+    def save_to(self, path: PathLike):
         with open(path, "wb") as file:
             file.write(self._data)

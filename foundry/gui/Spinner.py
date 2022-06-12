@@ -7,6 +7,7 @@ class Spinner(QSpinBox):
     def __init__(self, parent, maximum=SPINNER_MAX_VALUE, base=16):
         super(Spinner, self).__init__(parent)
 
+        self.valueChanged = None
         self.setRange(0, maximum)
         self.setDisplayIntegerBase(base)
 
