@@ -11,7 +11,6 @@ from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
-from foundry.gui.UndoStack import UndoStack
 from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset
 from smb3parse.levels.level_header import LevelHeader
 
@@ -59,8 +58,6 @@ class Level(LevelLike):
         """Whether the current level was modified since it was loaded/last saved."""
 
         self.object_set = ObjectSet(object_set_number)
-
-        self.undo_stack = UndoStack()
 
         self.name = level_name
 
