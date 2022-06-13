@@ -1,9 +1,9 @@
 from PySide6.QtCore import QPoint, QRect, QSize
-from PySide6.QtGui import QColor, QPainter, QPen
+from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
 from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.LevelObject import SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObject import SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.level.WorldMap import WorldMap
 from smb3parse.constants import (
     MAPOBJ_AIRSHIP,
@@ -65,6 +65,8 @@ class WorldDrawer:
     def draw(self, painter: QPainter, world: WorldMap):
         self._draw_background(painter, world)
 
+        self._draw_grid(painter, world)
+
         self._draw_tiles(painter, world)
 
         if self.draw_level_pointers:
@@ -84,9 +86,30 @@ class WorldDrawer:
     def _draw_background(self, painter: QPainter, world: WorldMap):
         painter.save()
 
-        bg_color = QColor(0xFF, 0, 0xFF, 0xFF)
+        bg_color = Qt.black
 
         painter.fillRect(world.get_rect(self.block_length), bg_color)
+
+        painter.restore()
+
+    def _draw_grid(self, painter: QPainter, world: WorldMap):
+        painter.save()
+
+        painter.setPen(QPen(Qt.gray, 1))
+
+        # rows
+        map_length = SCREEN_WIDTH * self.block_length * world._internal_world_map.screen_count
+
+        for y in range(SCREEN_HEIGHT):
+            y *= self.block_length
+
+            painter.drawLine(QPoint(0, y), QPoint(map_length, y))
+
+        # columns
+        for x in range(SCREEN_WIDTH * world._internal_world_map.screen_count):
+            x *= self.block_length
+
+            painter.drawLine(QPoint(x, 0), QPoint(x, SCREEN_HEIGHT * self.block_length))
 
         painter.restore()
 
