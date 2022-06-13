@@ -25,6 +25,37 @@ class MainWindow(QMainWindow):
         self.world_view.zoom_in()
         self.world_view.zoom_in()
 
+        self._setup_file_menu()
+        self._setup_edit_menu()
+        self._setup_view_menu()
+
+        self.menuBar().addMenu(self.file_menu)
+        self.menuBar().addMenu(self.edit_menu)
+        self.menuBar().addMenu(self.view_menu)
+
+        self.setCentralWidget(self.world_view)
+
+        self.show()
+
+    def _setup_file_menu(self):
+        self.file_menu = QMenu("File")
+        self.file_menu.triggered.connect(self.on_file_menu)
+
+        self.open_rom_action = self.file_menu.addAction("Open ROM...")
+        self.save_rom_action = self.file_menu.addAction("Save ROM")
+        self.save_as_rom_action = self.file_menu.addAction("Save ROM As...")
+        self.file_menu.addSeparator()
+        self.quit_rom_action = self.file_menu.addAction("Quit")
+
+    def _setup_edit_menu(self):
+        self.edit_menu = QMenu("Edit")
+        self.edit_menu.triggered.connect(self.on_edit_menu)
+
+        self.delete_tiles_action = self.edit_menu.addAction("Delete All Tiles")
+        self.delete_level_pointers_action = self.edit_menu.addAction("Delete All Level Pointers")
+        self.delete_sprites_action = self.edit_menu.addAction("Delete All Sprites")
+
+    def _setup_view_menu(self):
         self.view_menu = QMenu("View")
         self.view_menu.triggered.connect(self.on_view_menu)
 
@@ -40,12 +71,6 @@ class MainWindow(QMainWindow):
         self.starting_point_action.setCheckable(True)
         self.starting_point_action.setChecked(self.world_view.draw_start)
 
-        self.menuBar().addMenu(self.view_menu)
-
-        self.setCentralWidget(self.world_view)
-
-        self.show()
-
     def on_open_rom(self, path_to_rom="") -> bool:
         if not path_to_rom:
             # otherwise ask the user what new file to open
@@ -60,6 +85,56 @@ class MainWindow(QMainWindow):
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
             return False
+
+    def on_save_rom(self, is_save_as=False):
+        if is_save_as:
+            suggested_file = ROM.name
+
+            if not suggested_file.endswith(".nes"):
+                suggested_file += ".nes"
+
+            pathname, _ = QFileDialog.getSaveFileName(
+                self, caption="Save ROM as", dir=suggested_file, filter=ROM_FILE_FILTER
+            )
+            if not pathname:
+                return  # the user changed their mind
+        else:
+            pathname = ROM.path
+
+        self._save_current_changes_to_file(pathname, set_new_path=True)
+
+        if not is_save_as:
+            self.level_ref.level.changed = False
+            self.level_ref.data_changed.emit()
+
+    def _save_current_changes_to_file(self, pathname: str, set_new_path):
+        raise NotImplementedError
+
+        for offset, data in self.level_ref.to_bytes():
+            ROM().bulk_write(data, offset)
+
+        try:
+            ROM().save_to_file(pathname, set_new_path)
+        except IOError as exp:
+            QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
+
+    def on_file_menu(self, action: QAction):
+        if action is self.open_rom_action:
+            self.on_open_rom()
+        elif action is self.save_rom_action:
+            self.save_rom_action()
+        elif action is self.save_as_rom_action:
+            self.on_save_rom(True)
+        elif action is self.quit_rom_action:
+            self.close()
+
+        self.world_view.update()
+
+    def on_edit_menu(self, action: QAction):
+        if action is self.delete_tiles_action:
+            self.level_ref.level.remove_all_tiles()
+
+        self.world_view.update()
 
     def on_view_menu(self, action: QAction):
         if action is self.level_pointer_action:

@@ -54,7 +54,7 @@ class WorldMap(LevelLike):
         return WorldMap(list_world_map_addresses(ROM())[world_index - 1])
 
     def _load_objects(self):
-        self.objects.clear()
+        self.remove_all_tiles()
 
         for index, world_position in enumerate(self._internal_world_map.gen_positions()):
             screen_offset = (index // WORLD_MAP_SCREEN_SIZE) * WORLD_MAP_SCREEN_WIDTH
@@ -140,6 +140,9 @@ class WorldMap(LevelLike):
 
     def remove_object(self, obj):
         self.objects.remove(obj)
+
+    def remove_all_tiles(self):
+        self.objects.clear()
 
     def level_at_position(self, x: int, y: int):
         screen = x // WORLD_MAP_SCREEN_WIDTH + 1
