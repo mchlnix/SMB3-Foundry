@@ -8,12 +8,11 @@ from PySide6.QtWidgets import QWidget
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.MainView import (
     HIGHEST_ZOOM_LEVEL,
     LOWEST_ZOOM_LEVEL,
@@ -30,10 +29,14 @@ from foundry.gui.MainView import (
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
+from scribe.gui.world_view_context_menu import WorldContextMenu
+from smb3parse.levels.WorldMapPosition import WorldMapPosition
 
 
 class WorldView(MainView):
-    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[ContextMenu]):
+    context_menu: WorldContextMenu
+
+    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[WorldContextMenu]):
         super(WorldView, self).__init__(parent, level, context_menu)
 
         self.drawer = WorldDrawer()
@@ -334,16 +337,17 @@ class WorldView(MainView):
             if self.resize_mouse_start_x != resize_end_x:
                 self._stop_resize(event)
         elif self.context_menu is not None:
-            if self.get_selected_objects():
-                menu = self.context_menu.as_object_menu()
-            else:
-                menu = self.context_menu.as_background_menu()
+            x, y = event.pos().toTuple()
 
-            self.context_menu.set_position(event.pos())
+            screen = x // SCREEN_WIDTH + 1
+
+            column, row = self._to_level_point(x, y)
+
+            map_pos = WorldMapPosition(self.world._internal_world_map, screen, column, row)
 
             menu_pos = self.mapToGlobal(event.pos())
 
-            menu.popup(menu_pos)
+            self.context_menu.setup_menu(map_pos).popup(menu_pos)
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE

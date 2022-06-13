@@ -31,10 +31,14 @@ MAX_ORIGIN = 0xFF, 0xFF
 
 
 class ContextMenu(QMenu):
+    pass
+
+
+class LevelContextMenu(ContextMenu):
     triggered: SignalInstance
 
     def __init__(self, level_ref: LevelRef):
-        super(ContextMenu, self).__init__()
+        super(LevelContextMenu, self).__init__()
 
         self.level_ref = level_ref
 

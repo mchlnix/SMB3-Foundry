@@ -12,7 +12,7 @@ def _action_is_in_menu_bar(main_window, action):
     menu_actions = main_window.menuBar().actions()
 
     # return if the reload action is present in the menu bar
-    return any(action in menu_action.menu().actions() for menu_action in menu_actions)
+    return any(action in menu_action.view_menu().actions() for menu_action in menu_actions)
 
 
 def _mocked_open_file_name(*_, **__):
