@@ -5,6 +5,7 @@ from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.MainWindow import ROM_FILE_FILTER
 from foundry.gui.WorldView import WorldView
+from scribe.gui.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels.world_map import WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
@@ -34,6 +35,9 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(self.view_menu)
 
         self.setCentralWidget(self.world_view)
+
+        self.tool_window = ToolWindow(self)
+        self.tool_window.show()
 
         self.show()
 
