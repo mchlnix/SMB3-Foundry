@@ -2,7 +2,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import Qt
 
 from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.gui.ContextMenu import ContextMenu
+from foundry.gui.ContextMenu import LevelContextMenu
 
 
 def test_correct_menu_position(main_window, monkeypatch, qtbot):
@@ -13,7 +13,7 @@ def test_correct_menu_position(main_window, monkeypatch, qtbot):
         nonlocal menu_popup_position
         menu_popup_position = pos
 
-    monkeypatch.setattr(ContextMenu, "popup", popup_mock)
+    monkeypatch.setattr(LevelContextMenu, "popup", popup_mock)
 
     # GIVEN a main window and its context menu
     context_menu = main_window.context_menu
@@ -36,7 +36,7 @@ def test_correct_menu_position(main_window, monkeypatch, qtbot):
     # THEN the context menu is opened next to the cursor
     added_object: LevelObject = main_window.level_ref.objects[-1]
 
-    assert menu_popup_position == click_pos, "ContextMenu not opened on Cursor"
+    assert menu_popup_position == click_pos, "LevelContextMenu not opened on Cursor"
     assert added_object.get_position() == level_view._to_level_point(
         *point_in_level_view.toTuple()
     ), "Object not added at cursor"

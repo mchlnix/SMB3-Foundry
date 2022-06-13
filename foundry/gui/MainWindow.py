@@ -52,7 +52,7 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.AutoScrollEditor import AutoScrollEditor
 from foundry.gui.BlockViewer import BlockViewer
-from foundry.gui.ContextMenu import CMAction, ContextMenu
+from foundry.gui.ContextMenu import CMAction, LevelContextMenu
 from foundry.gui.EnemySizeBar import EnemySizeBar
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.JumpEditor import JumpEditor
@@ -303,7 +303,7 @@ class MainWindow(QMainWindow):
         self.level_ref = LevelRef()
         self.level_ref.data_changed.connect(self._on_level_data_changed)
 
-        self.context_menu = ContextMenu(self.level_ref)
+        self.context_menu = LevelContextMenu(self.level_ref)
         self.context_menu.triggered.connect(self.on_menu)
 
         self.level_view = LevelView(self, self.level_ref, self.context_menu)

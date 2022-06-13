@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QFileDialog
 
 from foundry.game.File import ROM
 
-test_data_dir = Path(__file__).parent.joinpath("test_data")
+test_data_dir = Path(__file__).parent.parent.joinpath("test_data")
 test_m3l_path = test_data_dir.joinpath("test.m3l")
 
 
@@ -12,7 +12,7 @@ def _action_is_in_menu_bar(main_window, action):
     menu_actions = main_window.menuBar().actions()
 
     # return if the reload action is present in the menu bar
-    return any(action in menu_action.view_menu().actions() for menu_action in menu_actions)
+    return any(action in menu_action.menu().actions() for menu_action in menu_actions)
 
 
 def _mocked_open_file_name(*_, **__):

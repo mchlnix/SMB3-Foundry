@@ -8,7 +8,7 @@ from foundry import data_dir
 from foundry.conftest import compare_images
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.ContextMenu import ContextMenu
+from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.LevelView import LevelView
 from foundry.gui.MainView import MainView
 from foundry.gui.WorldView import WorldView
@@ -77,7 +77,7 @@ def test_world(world_info, qtbot):
     # monkeypatch level names, since the level name data is broken atm
     level_ref.level.name = current_test_name()
 
-    world_view = WorldView(None, level_ref, ContextMenu(level_ref))
+    world_view = WorldView(None, level_ref, LevelContextMenu(level_ref))
     world_view.zoom_in()
 
     rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16 * 2)
@@ -98,7 +98,7 @@ def test_level(level_info, qtbot):
     # monkeypatch level names, since the level name data is broken atm
     level_ref.level.name = current_test_name()
 
-    level_view = LevelView(None, level_ref, ContextMenu(level_ref))
+    level_view = LevelView(None, level_ref, LevelContextMenu(level_ref))
     level_view.transparency = transparent
     level_view.draw_jumps = False
     level_view.draw_grid = False
@@ -119,7 +119,7 @@ def test_draw_jumps(jump_test_name, level, qtbot):
         ref = LevelRef()
         ref._internal_level = level
 
-        view = LevelView(None, ref, ContextMenu(ref))
+        view = LevelView(None, ref, LevelContextMenu(ref))
         view.draw_jumps = True
         view.draw_grid = False
 
@@ -143,7 +143,7 @@ def test_draw_m3ls(m3l_file_name, level, qtbot):
         ref = LevelRef()
         ref._internal_level = level
 
-        view = LevelView(None, ref, ContextMenu(ref))
+        view = LevelView(None, ref, LevelContextMenu(ref))
         view.draw_grid = False
 
         compare_images(m3l_file_name.stem, str(reference_image_dir / f"{m3l_file_name.stem}.png"), view.grab())

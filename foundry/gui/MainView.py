@@ -8,7 +8,7 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.ContextMenu import ContextMenu
+from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
@@ -36,7 +36,7 @@ def undoable(func):
 
 
 class MainView(QWidget):
-    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[ContextMenu]):
+    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[LevelContextMenu]):
         super(MainView, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)

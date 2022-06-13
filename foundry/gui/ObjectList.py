@@ -2,11 +2,11 @@ from PySide6.QtGui import QMouseEvent, Qt
 from PySide6.QtWidgets import QListWidget, QSizePolicy, QWidget
 
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.ContextMenu import ContextMenu
+from foundry.gui.ContextMenu import LevelContextMenu
 
 
 class ObjectList(QListWidget):
-    def __init__(self, parent: QWidget, level_ref: LevelRef, context_menu: ContextMenu):
+    def __init__(self, parent: QWidget, level_ref: LevelRef, context_menu: LevelContextMenu):
         super(ObjectList, self).__init__(parent=parent)
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)

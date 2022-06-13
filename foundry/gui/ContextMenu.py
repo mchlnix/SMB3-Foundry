@@ -104,13 +104,13 @@ class LevelContextMenu(ContextMenu):
     def get_all_menu_item_ids(self):
         return [action.property("ID") for action in self.actions()]
 
-    def as_object_menu(self) -> "ContextMenu":
+    def as_object_menu(self) -> "LevelContextMenu":
         return self._setup_items(CMMode.OBJ)
 
-    def as_background_menu(self) -> "ContextMenu":
+    def as_background_menu(self) -> "LevelContextMenu":
         return self._setup_items(CMMode.BG)
 
-    def as_list_menu(self) -> "ContextMenu":
+    def as_list_menu(self) -> "LevelContextMenu":
         return self._setup_items(CMMode.LIST)
 
     def _setup_items(self, mode: CMMode):

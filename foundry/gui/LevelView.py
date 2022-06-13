@@ -13,7 +13,7 @@ from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXP
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.ContextMenu import ContextMenu
+from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.MainView import (
     HIGHEST_ZOOM_LEVEL,
@@ -33,7 +33,7 @@ from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 
 class LevelView(MainView):
-    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[ContextMenu]):
+    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[LevelContextMenu]):
         super(LevelView, self).__init__(parent, level, context_menu)
 
         self.drawer = LevelDrawer()
