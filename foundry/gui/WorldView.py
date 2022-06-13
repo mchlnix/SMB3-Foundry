@@ -130,6 +130,10 @@ class WorldView(MainView):
     def draw_locks(self, value):
         self.drawer.draw_locks = value
 
+    @property
+    def world(self) -> WorldMap:
+        return self.level_ref.level
+
     def mousePressEvent(self, event: QMouseEvent):
         if self.read_only:
             return super(WorldView, self).mousePressEvent(event)
@@ -406,6 +410,9 @@ class WorldView(MainView):
 
         for obj in selected_objects:
             obj.move_by(dx, dy)
+
+            self.world.objects.remove(obj)
+            self.world.objects.append(obj)
 
             self.level_ref.level.changed = True
 
