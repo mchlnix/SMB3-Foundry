@@ -1,7 +1,8 @@
 from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QLabel, QMainWindow, QTabWidget
+from PySide6.QtWidgets import QMainWindow, QTabWidget
 
 from scribe.gui.tool_window.block_picker import BlockPicker
+from scribe.gui.tool_window.level_pointer_list import LevelPointerList
 from scribe.gui.tool_window.sprite_list import SpriteList
 
 
@@ -18,10 +19,11 @@ class ToolWindow(QMainWindow):
         self.tabbed_widget = QTabWidget()
 
         self.tile_picker = BlockPicker()
+        self.level_pointer_list = LevelPointerList(self.level_ref)
         self.sprite_list = SpriteList(self.level_ref)
 
         self.tabbed_widget.addTab(self.tile_picker, "Tiles")
-        self.tabbed_widget.addTab(QLabel(), "Level Pointers")
+        self.tabbed_widget.addTab(self.level_pointer_list, "Level Pointers")
         self.tabbed_widget.addTab(self.sprite_list, "Sprites")
 
         self.setCentralWidget(self.tabbed_widget)
