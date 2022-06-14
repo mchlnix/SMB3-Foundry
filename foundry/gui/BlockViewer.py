@@ -1,6 +1,6 @@
 from math import ceil
 
-from PySide6.QtCore import QPoint, QRect, QSize
+from PySide6.QtCore import QPoint, QRect, QSize, Signal, SignalInstance
 from PySide6.QtGui import QBrush, QMouseEvent, QPaintEvent, QPainter, QResizeEvent
 from PySide6.QtWidgets import QComboBox, QLabel, QLayout, QStatusBar, QToolBar, QWidget
 
@@ -55,6 +55,7 @@ class BlockViewer(CustomChildWindow):
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
         self.setStatusBar(QStatusBar(self))
+        self.sprite_bank.status_message_changed.connect(self.statusBar().showMessage)
 
         return
 
@@ -102,6 +103,9 @@ class BlockViewer(CustomChildWindow):
 
 
 class BlockBank(QWidget):
+    status_message_changed: SignalInstance = Signal(str)
+    clicked: SignalInstance = Signal(int)
+
     def __init__(self, parent, object_set=0, palette_group=0, zoom=2):
         super(BlockBank, self).__init__(parent)
         self.setMouseTracking(True)
@@ -148,7 +152,19 @@ class BlockBank(QWidget):
 
         status_message = f"Row: {row}, Column: {column}, Index: {dec_index} / {hex_index}"
 
-        self.parent().statusBar().showMessage(status_message)
+        self.status_message_changed.emit(status_message)
+
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        x, y = event.pos().toTuple()
+
+        block_length = Block.WIDTH * self.zoom
+
+        column = x // block_length
+        row = y // block_length
+
+        dec_index = row * self.sprites_horiz + column
+
+        self.clicked.emit(dec_index)
 
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
