@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(self.world_view)
 
-        self.tool_window = ToolWindow(self)
+        self.tool_window = ToolWindow(self, self.level_ref)
 
         self.show()
         self.tool_window.show()

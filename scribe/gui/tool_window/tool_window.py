@@ -2,23 +2,27 @@ from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QLabel, QMainWindow, QTabWidget
 
 from scribe.gui.tool_window.block_picker import BlockPicker
+from scribe.gui.tool_window.sprite_list import SpriteList
 
 
 class ToolWindow(QMainWindow):
-    def __init__(self, parent):
+    def __init__(self, parent, level_ref):
         super(ToolWindow, self).__init__(parent)
 
         self.setWindowFlag(Qt.Tool, True)
         self.setWindowFlag(Qt.WindowCloseButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
 
+        self.level_ref = level_ref
+
         self.tabbed_widget = QTabWidget()
 
         self.tile_picker = BlockPicker()
+        self.sprite_list = SpriteList(self.level_ref)
 
         self.tabbed_widget.addTab(self.tile_picker, "Tiles")
         self.tabbed_widget.addTab(QLabel(), "Level Pointers")
-        self.tabbed_widget.addTab(QLabel(), "Sprites")
+        self.tabbed_widget.addTab(self.sprite_list, "Sprites")
 
         self.setCentralWidget(self.tabbed_widget)
 

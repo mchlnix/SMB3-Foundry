@@ -51,6 +51,65 @@ MAPOBJ_TANK = 0x0E
 MAPOBJ_W8AIRSHIP = 0x0F
 MAPOBJ_CANOE = 0x10
 
+MAPOBJ_NAMES = {
+    MAPOBJ_EMPTY: "Empty",
+    MAPOBJ_HELP: "'HELP!' Speech Bubble",
+    MAPOBJ_AIRSHIP: "Airship",
+    MAPOBJ_HAMMERBRO: "Hammer Bro",
+    MAPOBJ_BOOMERANGBRO: "Bummerang Bro",
+    MAPOBJ_HEAVYBRO: "Heavy Bro",
+    MAPOBJ_FIREBRO: "Fire Bro",
+    MAPOBJ_W7PLANT: "World 7 Plant",
+    MAPOBJ_UNK08: "Unknown",
+    MAPOBJ_NSPADE: "N-Spade Card",
+    MAPOBJ_WHITETOADHOUSE: "White Toad House",
+    MAPOBJ_COINSHIP: "Coinship",
+    MAPOBJ_UNK0C: "Unknown 2",
+    MAPOBJ_BATTLESHIP: "Battleship",
+    MAPOBJ_TANK: "Tank",
+    MAPOBJ_W8AIRSHIP: "World 8 Airship",
+    MAPOBJ_CANOE: "Canoe",
+}
+
+# 1 - Super, 2 - Fire, 3 - Leaf, 4 - Frog, 5 - Tanooki, 6 - Hammer, 7 - Judgems, 8 - Pwing, 9 - Star
+# A - Anchor, B - Hammer, C - Warp Whistle, D - Music Box
+
+MAPITEM_NOITEM = 0x00
+MAPITEM_MUSHROOM = 0x01
+MAPITEM_FIREFLOWER = 0x02
+MAPITEM_LEAF = 0x03
+MAPITEM_FROG = 0x04
+MAPITEM_TANOOKI = 0x05
+MAPITEM_HAMMERSUIT = 0x06
+MAPITEM_JUDGEMS = 0x07
+MAPITEM_PWING = 0x08
+MAPITEM_STAR = 0x09
+MAPITEM_ANCHOR = 0x0A
+MAPITEM_HAMMER = 0x0B
+MAPITEM_WHISTLE = 0x0C
+MAPITEM_MUSICBOX = 0x0D
+MAPITEM_UNKNOWN1 = 0x0E
+MAPITEM_UNKNOWN2 = 0x0F
+
+MAPITEM_NAMES = {
+    MAPITEM_NOITEM: "No Item",
+    MAPITEM_MUSHROOM: "Mushroom",
+    MAPITEM_FIREFLOWER: "Fire Flower",
+    MAPITEM_LEAF: "Leaf",
+    MAPITEM_FROG: "Frog Suit",
+    MAPITEM_TANOOKI: "Tanooki Suit",
+    MAPITEM_HAMMERSUIT: "Hammer Suit",
+    MAPITEM_JUDGEMS: "Boot?",
+    MAPITEM_PWING: "P-Wing",
+    MAPITEM_STAR: "Star",
+    MAPITEM_ANCHOR: "Anchor",
+    MAPITEM_HAMMER: "Hammer",
+    MAPITEM_WHISTLE: "Warp Whistle",
+    MAPITEM_MUSICBOX: "Music Box",
+    MAPITEM_UNKNOWN1: "Unknown 1",
+    MAPITEM_UNKNOWN2: "Unknown 2",
+}
+
 OBJ_AUTOSCROLL = 0xD3
 
 POWERUP_MUSHROOM = 0x01
