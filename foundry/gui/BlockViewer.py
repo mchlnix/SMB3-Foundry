@@ -1,7 +1,7 @@
 from math import ceil
 
 from PySide6.QtCore import QPoint, QRect, QSize, Signal, SignalInstance
-from PySide6.QtGui import QBrush, QMouseEvent, QPaintEvent, QPainter, QResizeEvent
+from PySide6.QtGui import QBrush, QMouseEvent, QPaintEvent, QPainter, QPen, QResizeEvent, Qt
 from PySide6.QtWidgets import QComboBox, QLabel, QLayout, QStatusBar, QToolBar, QWidget
 
 from foundry import icon
@@ -190,4 +190,16 @@ class BlockBank(QWidget):
 
             block.draw(painter, x, y, block_length)
 
-        return
+        painter.setPen(QPen(Qt.gray, 1))
+
+        # rows
+        for y in range(16):
+            y *= block_length
+
+            painter.drawLine(QPoint(0, y), QPoint(16 * block_length, y))
+
+        # columns
+        for x in range(16):
+            x *= block_length
+
+            painter.drawLine(QPoint(x, 0), QPoint(x, 16 * block_length))
