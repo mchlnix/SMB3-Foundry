@@ -3,7 +3,7 @@ from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 from foundry.game.File import ROM
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.MapObject import MapObject
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.levels.world_map import (
@@ -62,7 +62,7 @@ class WorldMap(LevelLike):
             x = screen_offset + (index % WORLD_MAP_SCREEN_WIDTH)
             y = (index // WORLD_MAP_SCREEN_WIDTH) % WORLD_MAP_HEIGHT
 
-            block = Block(world_position.tile(), self.palette_group, self.graphics_set, self.tsa_data)
+            block = get_block(world_position.tile(), self.palette_group, self.graphics_set, self.tsa_data)
 
             self.objects.append(MapObject(block, x, y))
 

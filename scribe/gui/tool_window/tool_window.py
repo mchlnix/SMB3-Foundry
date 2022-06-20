@@ -1,3 +1,4 @@
+from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QMainWindow, QTabWidget
 
@@ -7,6 +8,9 @@ from scribe.gui.tool_window.sprite_list import SpriteList
 
 
 class ToolWindow(QMainWindow):
+    tile_selected: SignalInstance = Signal(int)
+    """Is fired, when a tile has been selected through the tile picker. int-argument is the tile id."""
+
     def __init__(self, parent, level_ref):
         super(ToolWindow, self).__init__(parent)
 
@@ -19,6 +23,7 @@ class ToolWindow(QMainWindow):
         self.tabbed_widget = QTabWidget()
 
         self.tile_picker = BlockPicker()
+        self.tile_picker.tile_selected.connect(self.tile_selected.emit)
         self.level_pointer_list = LevelPointerList(self.level_ref)
         self.sprite_list = SpriteList(self.level_ref)
 

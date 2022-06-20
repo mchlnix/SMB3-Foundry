@@ -2,11 +2,11 @@ from bisect import bisect_right
 from typing import List, Optional, Tuple, Union
 from warnings import warn
 
-from PySide6.QtCore import QPoint
-from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter, QWheelEvent, Qt
+from PySide6.QtCore import QPoint, QSize
+from PySide6.QtGui import QCursor, QMouseEvent, QPaintEvent, QPainter, QPixmap, QWheelEvent, Qt
 from PySide6.QtWidgets import QWidget
 
-from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
@@ -18,6 +18,7 @@ from foundry.gui.MainView import (
     LOWEST_ZOOM_LEVEL,
     MODE_DRAG,
     MODE_FREE,
+    MODE_PLACE_TILE,
     MODE_RESIZE_DIAG,
     MODE_RESIZE_HORIZ,
     MODE_RESIZE_VERT,
@@ -55,6 +56,7 @@ class WorldView(MainView):
         """Whether to highlight positions marked as having locks."""
 
         self.changed = False
+        self._tile_to_put: Optional[Block] = None
 
         self.selection_square = SelectionSquare()
 
@@ -137,6 +139,20 @@ class WorldView(MainView):
     def world(self) -> WorldMap:
         return self.level_ref.level
 
+    def on_put_tile(self, tile_id: int):
+        self.mouse_mode = MODE_PLACE_TILE
+        self._tile_to_put = get_worldmap_tile(tile_id)
+
+        open_hand_px = QPixmap(QSize(Block.SIDE_LENGTH * self.zoom, Block.SIDE_LENGTH * self.zoom))
+
+        painter = QPainter(open_hand_px)
+        self._tile_to_put.draw(painter, 0, 0, Block.SIDE_LENGTH * self.zoom)
+        painter.end()
+
+        open_hand_cursor = QCursor(open_hand_px)
+
+        self.setCursor(open_hand_cursor)
+
     def mousePressEvent(self, event: QMouseEvent):
         if self.read_only:
             return super(WorldView, self).mousePressEvent(event)
@@ -196,7 +212,7 @@ class WorldView(MainView):
 
                 return
 
-        if self.mouse_mode not in RESIZE_MODES:
+        if self.mouse_mode not in RESIZE_MODES + [MODE_PLACE_TILE]:
             self.setCursor(Qt.ArrowCursor)
 
     def _cursor_on_edge_of_object(
@@ -272,7 +288,7 @@ class WorldView(MainView):
         obj_under_cursor.selected = True
 
     def _on_right_mouse_button_down(self, event: QMouseEvent):
-        if self.mouse_mode == MODE_DRAG:
+        if self.mouse_mode in [MODE_DRAG, MODE_PLACE_TILE]:
             return
 
         x, y = event.pos().toTuple()
@@ -329,7 +345,9 @@ class WorldView(MainView):
         self.update()
 
     def _on_right_mouse_button_up(self, event):
-        if self.resizing_happened:
+        if self.mouse_mode == MODE_PLACE_TILE:
+            pass
+        elif self.resizing_happened:
             x, y = event.pos().toTuple()
 
             resize_end_x, _ = self._to_level_point(x, y)
@@ -368,11 +386,14 @@ class WorldView(MainView):
         # 4 if clicking on selected object and ctrl: do nothing, deselect this object on release
         # 5 if clicking on unselected object: deselect everything and select only this object
         # 6 if clicking on unselected object and ctrl: select this object
+        x, y = event.pos().toTuple()
+        obj = self.object_at(x, y)
 
-        if self._select_objects_on_click(event):
-            x, y = event.pos().toTuple()
+        if self.mouse_mode == MODE_PLACE_TILE:
+            obj.change_type(self._tile_to_put.index)
+            self.update()
 
-            obj = self.object_at(x, y)
+        elif self._select_objects_on_click(event):
 
             # enable all drag functionality
             if obj is not None:
@@ -427,7 +448,9 @@ class WorldView(MainView):
 
         obj = self.object_at(x, y)
 
-        if self.mouse_mode == MODE_DRAG and self.dragging_happened:
+        if self.mouse_mode == MODE_PLACE_TILE:
+            return
+        elif self.mouse_mode == MODE_DRAG and self.dragging_happened:
             if obj is not None:
                 drag_end_point = obj.x_position, obj.y_position
 

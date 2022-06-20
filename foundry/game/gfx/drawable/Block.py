@@ -5,10 +5,10 @@ from PySide6.QtGui import QColor, QImage, QPainter, Qt
 
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import NESPalette, PaletteGroup
+from foundry.game.gfx.Palette import NESPalette, PaletteGroup, load_palette_group
 from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Tile import Tile
-from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET
+from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET, WORLD_MAP_OBJECT_SET
 
 TSA_BANK_0 = 0 * 256
 TSA_BANK_1 = 1 * 256
@@ -25,6 +25,12 @@ def get_block(block_index: int, palette_group: PaletteGroup, graphics_set: Graph
         block = Block(block_index, palette_group, graphics_set, tsa_data)
 
     return block
+
+
+def get_worldmap_tile(block_index: int):
+    return get_block(
+        block_index, load_palette_group(WORLD_MAP_OBJECT_SET, 0), GraphicsSet(0), ROM.get_tsa_data(WORLD_MAP_OBJECT_SET)
+    )
 
 
 class Block:

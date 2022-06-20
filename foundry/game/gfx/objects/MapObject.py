@@ -1,5 +1,6 @@
 from PySide6.QtCore import QRect
 
+from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 
 map_object_names = {
@@ -191,7 +192,12 @@ class MapObject(ObjectLike):
         return self.rect.contains(x, y)
 
     def change_type(self, new_type):
-        pass
+        self.block = get_worldmap_tile(new_type)
+
+        if self.block.index in map_object_names:
+            self.name = map_object_names[self.block.index]
+        else:
+            self.name = str(hex(self.block.index))
 
     def get_rect(self, block_length=1) -> QRect:
         if block_length != 1:
@@ -209,3 +215,6 @@ class MapObject(ObjectLike):
 
     def __contains__(self, point):
         pass
+
+    def __repr__(self):
+        return f"MapObject #{hex(self.obj_index)}: '{self.name}' at {self.x_position}, {self.y_position}"

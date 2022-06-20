@@ -2,12 +2,8 @@ from PySide6.QtCore import QSize, Signal, SignalInstance
 from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter, Qt
 from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QVBoxLayout, QWidget
 
-from foundry.game.File import ROM
-from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import load_palette_group
-from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.gui.BlockViewer import BlockBank
-from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
 class BlockIcon(QWidget):
@@ -20,12 +16,7 @@ class BlockIcon(QWidget):
 
         self.block_id = block_id
 
-        self.block = Block(
-            block_id,
-            load_palette_group(WORLD_MAP_OBJECT_SET, 0),
-            GraphicsSet(0),
-            ROM.get_tsa_data(WORLD_MAP_OBJECT_SET),
-        )
+        self.block = get_worldmap_tile(block_id)
 
         self.zoom_level = zoom_level
 
@@ -33,12 +24,7 @@ class BlockIcon(QWidget):
         old_block_id = self.block_id
         self.block_id = block_id
 
-        self.block = Block(
-            block_id,
-            load_palette_group(WORLD_MAP_OBJECT_SET, 0),
-            GraphicsSet(0),
-            ROM.get_tsa_data(WORLD_MAP_OBJECT_SET),
-        )
+        self.block = get_worldmap_tile(block_id)
 
         self.update()
 
@@ -68,6 +54,8 @@ class BlockList(QWidget):
         self.setLayout(QHBoxLayout())
 
         self.current_block = BlockIcon(0, zoom_level=4)
+        self.current_block.clicked.connect(self.set_current_block)
+
         self.recent_blocks = [BlockIcon(255) for _ in range(9)]
 
         self.layout().addWidget(self.current_block)
@@ -78,26 +66,26 @@ class BlockList(QWidget):
             self.layout().addWidget(block_icon)
 
     def set_current_block(self, new_block_id):
-        if self.current_block.block_id == new_block_id:
-            return
+        if self.current_block.block_id != new_block_id:
+            last_block_id = self.current_block.block_id
 
-        last_block_id = self.current_block.block_id
+            self.current_block.set_block_id(new_block_id)
 
-        self.current_block.set_block_id(new_block_id)
+            for block_icon in self.recent_blocks:
+                if block_icon.block_id == last_block_id:
+                    break
 
-        for block_icon in self.recent_blocks:
-            if block_icon.block_id == last_block_id:
-                break
+                last_block_id = block_icon.set_block_id(last_block_id)
 
-            last_block_id = block_icon.set_block_id(last_block_id)
-
-            if last_block_id == new_block_id:
-                break
+                if last_block_id == new_block_id:
+                    break
 
         self.block_was_picked.emit(new_block_id)
 
 
 class BlockPicker(QWidget):
+    tile_selected: SignalInstance = Signal(int)
+
     def __init__(self):
         super(BlockPicker, self).__init__()
 
@@ -107,6 +95,7 @@ class BlockPicker(QWidget):
         self.block_list = BlockList()
 
         self.block_bank.clicked.connect(self.block_list.set_current_block)
+        self.block_list.block_was_picked.connect(self.tile_selected.emit)
 
         self.layout().addWidget(self.block_bank)
         self.layout().addWidget(self.block_list)

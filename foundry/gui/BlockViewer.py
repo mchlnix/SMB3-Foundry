@@ -8,7 +8,7 @@ from foundry import icon
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET, bg_color_for_object_set, load_palette_group
-from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
@@ -183,7 +183,7 @@ class BlockBank(QWidget):
         block_length = Block.WIDTH * self.zoom
 
         for i in range(self.sprites):
-            block = Block(i, palette, graphics_set, tsa_data)
+            block = get_block(i, palette, graphics_set, tsa_data)
 
             x = (i % horizontal) * block_length
             y = (i // horizontal) * block_length

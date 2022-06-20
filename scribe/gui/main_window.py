@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.world_view)
 
         self.tool_window = ToolWindow(self, self.level_ref)
+        self.tool_window.tile_selected.connect(self.world_view.on_put_tile)
 
         self.show()
         self.tool_window.show()
