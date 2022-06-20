@@ -9,7 +9,6 @@ from PySide6.QtWidgets import QWidget
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_WIDTH
-from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
@@ -19,17 +18,13 @@ from foundry.gui.MainView import (
     MODE_DRAG,
     MODE_FREE,
     MODE_PLACE_TILE,
-    MODE_RESIZE_DIAG,
-    MODE_RESIZE_HORIZ,
-    MODE_RESIZE_VERT,
     MainView,
-    RESIZE_MODES,
     ctrl_is_pressed,
     undoable,
 )
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.WorldDrawer import WorldDrawer
-from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
+from foundry.gui.settings import SETTINGS
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
 
@@ -68,11 +63,7 @@ class WorldView(MainView):
 
         self.dragging_happened = True
 
-        self.resize_mouse_start_x = 0
-        self.resize_obj_start_point = 0, 0
-
-        self.resizing_happened = False
-
+        # TODO: update
         self.setWhatsThis(
             "<b>Level View</b><br/>"
             "This renders the level as it would appear in game plus additional information, that can be "
@@ -174,65 +165,10 @@ class WorldView(MainView):
             self.setCursor(Qt.ClosedHandCursor)
             self._dragging(event)
 
-        elif self.mouse_mode in RESIZE_MODES:
-            previously_selected_objects = self.level_ref.selected_objects
-
-            self._resizing(event)
-
-            self.level_ref.selected_objects = previously_selected_objects
-
         elif self.selection_square.active:
             self._set_selection_end(event.pos())
 
-        elif SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK:
-            self._set_cursor_for_position(event)
-
         return super(WorldView, self).mouseMoveEvent(event)
-
-    def _set_cursor_for_position(self, event: QMouseEvent):
-        level_object = self.object_at(*event.pos().toTuple())
-
-        if level_object is not None:
-            is_resizable = not level_object.is_single_block
-
-            edges = self._cursor_on_edge_of_object(level_object, event.pos())
-
-            if is_resizable and edges:
-                if edges == Qt.RightEdge and level_object.expands() & EXPANDS_HORIZ:
-                    cursor = Qt.SizeHorCursor
-                elif edges == Qt.BottomEdge and level_object.expands() & EXPANDS_VERT:
-                    cursor = Qt.SizeVerCursor
-                elif (level_object.expands() & EXPANDS_BOTH) == EXPANDS_BOTH:
-                    cursor = Qt.SizeFDiagCursor
-                else:
-                    return
-
-                if self.mouse_mode not in RESIZE_MODES:
-                    self.setCursor(cursor)
-
-                return
-
-        if self.mouse_mode not in RESIZE_MODES + [MODE_PLACE_TILE]:
-            self.setCursor(Qt.ArrowCursor)
-
-    def _cursor_on_edge_of_object(
-        self, level_object: Union[LevelObject, EnemyObject], pos: QPoint, edge_width: int = 4
-    ):
-        right = (level_object.get_rect().left() + level_object.get_rect().width()) * self.block_length
-        bottom = (level_object.get_rect().top() + level_object.get_rect().height()) * self.block_length
-
-        on_right_edge = pos.x() in range(right - edge_width, right)
-        on_bottom_edge = pos.y() in range(bottom - edge_width, bottom)
-
-        edges = 0
-
-        if on_right_edge:
-            edges |= Qt.RightEdge
-
-        if on_bottom_edge:
-            edges |= Qt.BottomEdge
-
-        return edges
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if self.read_only:
@@ -296,64 +232,11 @@ class WorldView(MainView):
 
         self.last_mouse_position = level_x, level_y
 
-        if self._select_objects_on_click(event) and SETTINGS["resize_mode"] == RESIZE_RIGHT_CLICK:
-            self._try_start_resize(MODE_RESIZE_DIAG, event)
-
-    def _try_start_resize(self, resize_mode: int, event: QMouseEvent):
-        if resize_mode not in RESIZE_MODES:
-            return
-
-        x, y = event.pos().toTuple()
-        level_x, level_y = self._to_level_point(x, y)
-
-        self.mouse_mode = resize_mode
-
-        self.resize_mouse_start_x = level_x
-
-        obj = self.object_at(x, y)
-
-        if obj is not None:
-            self.resize_obj_start_point = obj.x_position, obj.y_position
-
-    def _resizing(self, event: QMouseEvent):
-        self.resizing_happened = True
-
-        if isinstance(self.level_ref.level, WorldMap):
-            return
-
-        x, y = event.pos().toTuple()
-
-        level_x, level_y = self._to_level_point(x, y)
-
-        dx = dy = 0
-
-        if self.mouse_mode & MODE_RESIZE_HORIZ:
-            dx = level_x - self.resize_obj_start_point[0]
-
-        if self.mouse_mode & MODE_RESIZE_VERT:
-            dy = level_y - self.resize_obj_start_point[1]
-
-        self.last_mouse_position = level_x, level_y
-
-        selected_objects = self.get_selected_objects()
-
-        for obj in selected_objects:
-            obj.resize_by(dx, dy)
-
-            self.level_ref.level.changed = True
-
-        self.update()
+        self._select_objects_on_click(event)
 
     def _on_right_mouse_button_up(self, event):
         if self.mouse_mode == MODE_PLACE_TILE:
             pass
-        elif self.resizing_happened:
-            x, y = event.pos().toTuple()
-
-            resize_end_x, _ = self._to_level_point(x, y)
-
-            if self.resize_mouse_start_x != resize_end_x:
-                self._stop_resize(event)
         elif self.context_menu is not None:
             x, y = event.pos().toTuple()
 
@@ -367,15 +250,6 @@ class WorldView(MainView):
 
             self.context_menu.setup_menu(map_pos).popup(menu_pos)
 
-        self.resizing_happened = False
-        self.mouse_mode = MODE_FREE
-        self.setCursor(Qt.ArrowCursor)
-
-    def _stop_resize(self, _):
-        if self.resizing_happened:
-            self.level_ref.save_level_state()
-
-        self.resizing_happened = False
         self.mouse_mode = MODE_FREE
         self.setCursor(Qt.ArrowCursor)
 
@@ -392,32 +266,10 @@ class WorldView(MainView):
         if self.mouse_mode == MODE_PLACE_TILE:
             obj.change_type(self._tile_to_put.index)
             self.update()
-
-        elif self._select_objects_on_click(event):
-
-            # enable all drag functionality
-            if obj is not None:
-                edge = self._cursor_on_edge_of_object(obj, event.pos())
-
-                if SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK and edge:
-
-                    self._try_start_resize(self._resize_mode_from_edge(edge), event)
-                else:
-                    self.drag_start_point = obj.x_position, obj.y_position
+        elif self._select_objects_on_click(event) and obj is not None:
+            self.drag_start_point = obj.x_position, obj.y_position
         else:
             self._start_selection_square(event.pos())
-
-    @staticmethod
-    def _resize_mode_from_edge(edge: int):
-        mode = 0
-
-        if edge & Qt.RightEdge:
-            mode |= MODE_RESIZE_HORIZ
-
-        if edge & Qt.BottomEdge:
-            mode |= MODE_RESIZE_VERT
-
-        return mode
 
     def _dragging(self, event: QMouseEvent):
         self.dragging_happened = True
