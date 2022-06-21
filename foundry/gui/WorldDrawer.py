@@ -130,6 +130,8 @@ class WorldDrawer:
     def _draw_level_pointers(self, painter: QPainter, world: WorldMap):
         painter.save()
 
+        level_pointer_index = 0
+
         for tile_on_map in world._internal_world_map.gen_positions():
             if tile_on_map.level_info is None:
                 continue
@@ -137,8 +139,14 @@ class WorldDrawer:
             x = ((tile_on_map.screen - 1) * SCREEN_WIDTH + tile_on_map.column) * self.block_length
             y = tile_on_map.row * self.block_length
 
+            if level_pointer_index in world.selected_level_pointers:
+                painter.fillRect(QRect(x, y, self.block_length, self.block_length), QColor(0x00, 0xFF, 0x00, 0x80))
+
             painter.setPen(QPen(QColor(0xFF, 0x00, 0x00, 0x80), 4))
+
             painter.drawRect(x, y, self.block_length, self.block_length)
+
+            level_pointer_index += 1
 
         painter.restore()
 
@@ -171,7 +179,7 @@ class WorldDrawer:
         y *= self.block_length
 
         painter.fillRect(
-            QRect(QPoint(x, y), QSize(self.block_length, self.block_length)), QColor(0x00, 0xFF, 0x00, 0x80)
+            QRect(QPoint(x, y), QSize(self.block_length, self.block_length)), QColor(0x00, 0x00, 0xFF, 0x80)
         )
 
         painter.restore()

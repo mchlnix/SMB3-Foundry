@@ -42,6 +42,8 @@ class WorldMap(LevelLike):
 
         self.objects = []
 
+        self.selected_level_pointers = []
+
         self._load_objects()
 
         self._calc_size()
@@ -78,6 +80,10 @@ class WorldMap(LevelLike):
         self.objects.append(obj)
 
         self.objects.sort(key=self._array_index)
+
+    def select_level_pointers(self, indexes: list[int]):
+        self.selected_level_pointers = indexes
+        self.data_changed.emit()
 
     @property
     def q_size(self):

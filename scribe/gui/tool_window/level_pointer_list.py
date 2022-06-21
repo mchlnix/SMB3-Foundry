@@ -12,6 +12,10 @@ class LevelPointerList(QTableWidget):
         self.level_ref = level_ref
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
+        self.itemSelectionChanged.connect(lambda: self.level_ref.select_level_pointers(self.selected_rows))
+
+        self.setSelectionBehavior(self.SelectRows)
+
         self.setColumnCount(4)
         self.setRowCount(len(list(self.world._internal_world_map.gen_levels())))
 
@@ -41,3 +45,7 @@ class LevelPointerList(QTableWidget):
     @property
     def world(self) -> WorldMap:
         return self.level_ref.level
+
+    @property
+    def selected_rows(self):
+        return [index.row() for index in self.selectedIndexes()]

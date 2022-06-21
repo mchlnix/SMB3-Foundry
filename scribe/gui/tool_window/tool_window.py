@@ -31,6 +31,10 @@ class ToolWindow(QMainWindow):
         self.tabbed_widget.addTab(self.level_pointer_list, "Level Pointers")
         self.tabbed_widget.addTab(self.sprite_list, "Sprites")
 
+        # clear selection if you change the tab
+        self.tabbed_widget.currentChanged.connect(lambda _: self.level_pointer_list.clearSelection())
+        self.tabbed_widget.currentChanged.connect(lambda _: self.sprite_list.clearSelection())
+
         self.setCentralWidget(self.tabbed_widget)
 
     def set_zoom(self, zoom_level=2):
