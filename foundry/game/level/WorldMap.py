@@ -1,3 +1,5 @@
+from typing import Optional
+
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
@@ -173,3 +175,9 @@ class WorldMap(LevelLike):
     @property
     def fully_loaded(self):
         return True
+
+    def save_to_rom(self, rom: Optional[ROM] = None):
+        if rom is None:
+            rom = ROM()
+
+        rom.bulk_write(bytearray(map_object.to_bytes() for map_object in self.objects), self.layout_address)

@@ -7,7 +7,7 @@ from foundry.gui.MainWindow import ROM_FILE_FILTER
 from foundry.gui.WorldView import WorldView
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse.levels.world_map import WorldMap
+from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
@@ -15,12 +15,10 @@ class MainWindow(QMainWindow):
     def __init__(self, path_to_rom: str):
         super(MainWindow, self).__init__()
 
-        self.on_open_rom(path_to_rom)
-
-        self.world = WorldMap.from_world_number(ROM(), 1)
-
         self.level_ref = LevelRef()
-        self.level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+        self.world = None
+
+        self.on_open_rom(path_to_rom)
 
         self.world_view = WorldView(self, self.level_ref, WorldContextMenu(self.level_ref))
         self.world_view.zoom_in()
@@ -91,6 +89,13 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
             return False
 
+        self.load_level()
+
+    def load_level(self):
+        self.world = SMB3WorldMap.from_world_number(ROM(), 1)
+
+        self.level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+
     def on_save_rom(self, is_save_as=False):
         if is_save_as:
             suggested_file = ROM.name
@@ -113,10 +118,7 @@ class MainWindow(QMainWindow):
             self.level_ref.data_changed.emit()
 
     def _save_current_changes_to_file(self, pathname: str, set_new_path):
-        raise NotImplementedError
-
-        for offset, data in self.level_ref.to_bytes():
-            ROM().bulk_write(data, offset)
+        self.level_ref.save_to_rom()
 
         try:
             ROM().save_to_file(pathname, set_new_path)
