@@ -1,5 +1,5 @@
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QFileDialog, QMainWindow, QMenu, QMessageBox
+from PySide6.QtWidgets import QFileDialog, QMainWindow, QMenu, QMessageBox, QScrollArea
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
@@ -24,6 +24,9 @@ class MainWindow(QMainWindow):
         self.world_view.zoom_in()
         self.world_view.zoom_in()
 
+        scroll_area = QScrollArea()
+        scroll_area.setWidget(self.world_view)
+
         self._setup_file_menu()
         self._setup_edit_menu()
         self._setup_view_menu()
@@ -32,7 +35,7 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(self.edit_menu)
         self.menuBar().addMenu(self.view_menu)
 
-        self.setCentralWidget(self.world_view)
+        self.setCentralWidget(scroll_area)
 
         self.tool_window = ToolWindow(self, self.level_ref)
         self.tool_window.tile_selected.connect(self.world_view.on_put_tile)
