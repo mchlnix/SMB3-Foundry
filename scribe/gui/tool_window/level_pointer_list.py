@@ -1,26 +1,26 @@
-from PySide6.QtWidgets import QHeaderView, QSizePolicy, QTableWidget, QTableWidgetItem
+from PySide6.QtWidgets import QTableWidgetItem
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.level.LevelRef import LevelRef
-from foundry.game.level.WorldMap import WorldMap
+from scribe.gui.tool_window.table_widget import TableWidget
 
 
-class LevelPointerList(QTableWidget):
+class LevelPointerList(TableWidget):
     def __init__(self, level_ref: LevelRef):
-        super(LevelPointerList, self).__init__()
+        super(LevelPointerList, self).__init__(level_ref)
 
-        self.level_ref = level_ref
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.level_ref.level_changed.connect(self.update_content)
 
         self.itemSelectionChanged.connect(lambda: self.level_ref.select_level_pointers(self.selected_rows))
 
-        self.setSelectionBehavior(self.SelectRows)
+        self.set_headers(["Object Set", "Level Offset", "Enemy/Item Offset", "Map Position"])
 
-        self.setColumnCount(4)
+        self.update_content()
+
+    def update_content(self):
+        self.clear()
+
         self.setRowCount(len(list(self.world._internal_world_map.gen_levels())))
-
-        self.setHorizontalHeaderLabels(["Object Set", "Level Offset", "Enemy/Item Offset", "Map Position"])
-        self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         last_item_row = 0
 
@@ -41,11 +41,3 @@ class LevelPointerList(QTableWidget):
             self.setItem(last_item_row, 3, pos)
 
             last_item_row += 1
-
-    @property
-    def world(self) -> WorldMap:
-        return self.level_ref.level
-
-    @property
-    def selected_rows(self):
-        return [index.row() for index in self.selectedIndexes()]

@@ -45,6 +45,7 @@ class WorldMap(LevelLike):
         self.objects = []
 
         self.selected_level_pointers = []
+        self.selected_sprites = []
 
         self._load_objects()
 
@@ -85,6 +86,10 @@ class WorldMap(LevelLike):
 
     def select_level_pointers(self, indexes: list[int]):
         self.selected_level_pointers = indexes
+        self.data_changed.emit()
+
+    def select_sprites(self, indexes: list[int]):
+        self.selected_sprites = indexes
         self.data_changed.emit()
 
     @property

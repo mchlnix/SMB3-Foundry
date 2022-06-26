@@ -8,6 +8,7 @@ from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
 class LevelRef(QObject):
+    level_changed: SignalInstance = Signal()
     data_changed: SignalInstance = Signal()
     jumps_changed: SignalInstance = Signal()
 
@@ -22,6 +23,7 @@ class LevelRef(QObject):
             self.level = Level(level_name, object_data_offset, enemy_data_offset, object_set_number)
 
         # actively emit, because we weren't connected yet, when the level sent it out
+        self.level_changed.emit()
         self.data_changed.emit()
 
     @property
