@@ -1,5 +1,5 @@
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QActionGroup
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMenu, QMessageBox, QScrollArea
 
 from foundry.game.File import ROM
@@ -8,6 +8,7 @@ from foundry.gui.MainWindow import ROM_FILE_FILTER
 from foundry.gui.WorldView import WorldView
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
+from smb3parse.levels import WORLD_COUNT
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -31,10 +32,12 @@ class MainWindow(QMainWindow):
         self._setup_file_menu()
         self._setup_edit_menu()
         self._setup_view_menu()
+        self._setup_level_menu()
 
         self.menuBar().addMenu(self.file_menu)
         self.menuBar().addMenu(self.edit_menu)
         self.menuBar().addMenu(self.view_menu)
+        self.menuBar().addMenu(self.level_menu)
 
         self.setCentralWidget(self.scroll_area)
 
@@ -78,6 +81,20 @@ class MainWindow(QMainWindow):
         self.starting_point_action.setCheckable(True)
         self.starting_point_action.setChecked(self.world_view.draw_start)
 
+    def _setup_level_menu(self):
+        self.level_menu = QMenu("Change Level")
+        self.level_menu.triggered.connect(self.on_level_menu)
+
+        level_menu_action_group = QActionGroup(self)
+
+        for level_index in range(WORLD_COUNT):
+            action = self.level_menu.addAction(f"World {level_index + 1}")
+            action.setCheckable(True)
+
+            level_menu_action_group.addAction(action)
+
+        self.level_menu.actions()[0].trigger()
+
     def on_open_rom(self, path_to_rom="") -> bool:
         if not path_to_rom:
             # otherwise ask the user what new file to open
@@ -93,10 +110,8 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
             return False
 
-        self.load_level()
-
-    def load_level(self):
-        self.world = SMB3WorldMap.from_world_number(ROM(), 1)
+    def load_level(self, world_number: int):
+        self.world = SMB3WorldMap.from_world_number(ROM(), world_number)
 
         self.level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
 
@@ -132,6 +147,7 @@ class MainWindow(QMainWindow):
     def on_file_menu(self, action: QAction):
         if action is self.open_rom_action:
             self.on_open_rom()
+            self.load_level(1)
         elif action is self.save_rom_action:
             self.save_rom_action()
         elif action is self.save_as_rom_action:
@@ -156,6 +172,12 @@ class MainWindow(QMainWindow):
             self.world_view.draw_start = action.isChecked()
 
         self.world_view.update()
+
+    def on_level_menu(self, action: QAction):
+        self.load_level(self.level_menu.actions().index(action) + 1)
+
+        if not self.isMaximized():
+            self.resize(self.sizeHint())
 
     def sizeHint(self) -> QSize:
         inner_width, inner_height = self.world_view.sizeHint().toTuple()
