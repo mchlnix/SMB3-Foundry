@@ -1,5 +1,6 @@
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QFileDialog, QMainWindow, QMenu, QMessageBox, QScrollArea
+from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMenu, QMessageBox, QScrollArea
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
@@ -24,8 +25,8 @@ class MainWindow(QMainWindow):
         self.world_view.zoom_in()
         self.world_view.zoom_in()
 
-        scroll_area = QScrollArea()
-        scroll_area.setWidget(self.world_view)
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidget(self.world_view)
 
         self._setup_file_menu()
         self._setup_edit_menu()
@@ -35,7 +36,7 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(self.edit_menu)
         self.menuBar().addMenu(self.view_menu)
 
-        self.setCentralWidget(scroll_area)
+        self.setCentralWidget(self.scroll_area)
 
         self.tool_window = ToolWindow(self, self.level_ref)
         self.tool_window.tile_selected.connect(self.world_view.on_put_tile)
@@ -155,3 +156,15 @@ class MainWindow(QMainWindow):
             self.world_view.draw_start = action.isChecked()
 
         self.world_view.update()
+
+    def sizeHint(self) -> QSize:
+        inner_width, inner_height = self.world_view.sizeHint().toTuple()
+
+        height = inner_height + self.scroll_area.horizontalScrollBar().height() + 2 * self.scroll_area.frameWidth()
+        height += self.menuBar().height()
+
+        width = inner_width + 2 * self.scroll_area.frameWidth()
+
+        size_hint = QSize(min(width, QApplication.primaryScreen().size().width()), height)
+
+        return size_hint
