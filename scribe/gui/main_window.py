@@ -149,7 +149,7 @@ class MainWindow(QMainWindow):
             self.on_open_rom()
             self.load_level(1)
         elif action is self.save_rom_action:
-            self.save_rom_action()
+            self.on_save_rom(False)
         elif action is self.save_as_rom_action:
             self.on_save_rom(True)
         elif action is self.quit_rom_action:
