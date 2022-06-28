@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QComboBox, QStyledItemDelegate, QTableWidgetItem, 
 from foundry.game.level.LevelRef import LevelRef
 from scribe.gui.tool_window.table_widget import TableWidget
 from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES
+from smb3parse.levels import FIRST_VALID_ROW
 
 
 class SpriteList(TableWidget):
@@ -29,6 +30,9 @@ class SpriteList(TableWidget):
 
         widget: QComboBox = self.cellWidget(row, column)
         data = widget.currentText()
+
+        if sprite.y < FIRST_VALID_ROW:
+            sprite.y = FIRST_VALID_ROW
 
         if column == 0:
             sprite.type = list(MAPOBJ_NAMES.values()).index(data)
