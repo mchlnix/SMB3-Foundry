@@ -25,9 +25,9 @@ class SpriteList(TableWidget):
         last_item_row = 0
 
         for position in self.world._internal_world_map.gen_sprites():
-            sprite_type = QTableWidgetItem(MAPOBJ_NAMES[position.sprite()])
-            item_type = QTableWidgetItem(MAPITEM_NAMES[position.item()])
-            pos = QTableWidgetItem(f"Screen {position.screen}: x={position.column}, y={position.row}")
+            sprite_type = QTableWidgetItem(MAPOBJ_NAMES[position.type])
+            item_type = QTableWidgetItem(MAPITEM_NAMES[position.item])
+            pos = QTableWidgetItem(f"Screen {position.screen}: x={position.x}, y={position.y}")
 
             self.setItem(last_item_row, 0, sprite_type)
             self.setItem(last_item_row, 1, item_type)

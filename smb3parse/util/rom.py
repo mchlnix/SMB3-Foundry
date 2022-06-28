@@ -1,6 +1,6 @@
 from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
-from typing import Optional
+from typing import Optional, Union
 
 from smb3parse.util import little_endian
 from smb3parse.constants import BASE_OFFSET
@@ -74,7 +74,10 @@ class Rom:
         offset = self.prg_normalize(offset)
         return self._data[offset : offset + length]
 
-    def write(self, offset: int, data: bytes):
+    def write(self, offset: int, data: Union[bytes, int]):
+        if isinstance(data, int):
+            data = bytes([data])
+
         offset = self.prg_normalize(offset)
         self._data[offset : offset + len(data)] = data
 

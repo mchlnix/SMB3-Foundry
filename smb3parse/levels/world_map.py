@@ -5,6 +5,8 @@ from warnings import warn
 from smb3parse.constants import (
     MAPITEM_NOITEM,
     MAPOBJ_EMPTY,
+    Map_Y_Starts,
+    SPRITE_COUNT,
     TILE_BOWSER_CASTLE,
     TILE_CASTLE_BOTTOM,
     TILE_DUNGEON_1,
@@ -51,6 +53,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
+from smb3parse.levels.data_points import SpriteData
 from smb3parse.levels.level import Level
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
@@ -77,13 +80,7 @@ TILE_NAMES.update(
     }
 )
 
-MAP_SPRITE_Y_POS_LIST = BASE_OFFSET + 0x16010
-MAP_SPRITE_X_POS_SCREEN_LIST = MAP_SPRITE_Y_POS_LIST + 8 * OFFSET_SIZE
-MAP_SPRITE_X_POS_LIST = MAP_SPRITE_X_POS_SCREEN_LIST + 8 * OFFSET_SIZE
-MAP_SPRITE_IDS_LIST = MAP_SPRITE_X_POS_LIST + 8 * OFFSET_SIZE
-MAP_SPRITE_ITEMS_LIST = MAP_SPRITE_IDS_LIST + 8 * OFFSET_SIZE
-
-Y_START_POS_LIST = BASE_OFFSET + 0x3C38A
+Y_START_POS_LIST = Map_Y_Starts
 
 
 def list_world_map_addresses(rom: Rom) -> List[int]:
@@ -343,6 +340,10 @@ class WorldMap(LevelBase):
 
         return f"Level {self.number}-{TILE_NAMES[tile]}"
 
+    def gen_sprites(self):
+        for index in range(SPRITE_COUNT):
+            yield SpriteData(self._rom, self, index)
+
     def sprite_at(self, screen: int, row: int, column: int) -> tuple[int, int]:
         """
         Returns the ID of the overworld sprite at the given location in this world. Or 0 if there is None.
@@ -351,47 +352,11 @@ class WorldMap(LevelBase):
         :param row:
         :param column:
         """
-        y_pos_offset_for_world = self._rom.little_endian(MAP_SPRITE_Y_POS_LIST + self.world_index * OFFSET_SIZE)
-        y_pos_address_for_world = BASE_OFFSET + 0xC000 + y_pos_offset_for_world
-
-        x_pos_screen_offset_for_world = self._rom.little_endian(
-            MAP_SPRITE_X_POS_SCREEN_LIST + self.world_index * OFFSET_SIZE
-        )
-        x_pos_screen_address_for_world = BASE_OFFSET + 0xC000 + x_pos_screen_offset_for_world
-
-        x_pos_offset_for_world = self._rom.little_endian(MAP_SPRITE_X_POS_LIST + self.world_index * OFFSET_SIZE)
-        x_pos_address_for_world = BASE_OFFSET + 0xC000 + x_pos_offset_for_world
-
-        ids_offset_for_world = self._rom.little_endian(MAP_SPRITE_IDS_LIST + self.world_index * OFFSET_SIZE)
-        ids_address_for_world = BASE_OFFSET + 0xC000 + ids_offset_for_world
-
-        item_offset_for_world = self._rom.little_endian(MAP_SPRITE_ITEMS_LIST + self.world_index * OFFSET_SIZE)
-        item_address_for_world = BASE_OFFSET + 0xC000 + item_offset_for_world
-
-        y_pos_for_world = [(self._rom.int(y_pos_address_for_world + index) >> 4) for index in range(9)]
-
-        x_pos_screen_for_world = [self._rom.int(x_pos_screen_address_for_world + index) for index in range(9)]
-        x_pos_for_world = [self._rom.int(x_pos_address_for_world + index) >> 4 for index in range(9)]
-
-        ids_for_world = [self._rom.int(ids_address_for_world + index) for index in range(9)]
-        items_for_world = [self._rom.int(item_address_for_world + index) for index in range(9)]
-
-        for index, y_pos in enumerate(y_pos_for_world):
-            if y_pos - FIRST_VALID_ROW != row:
-                continue
-
-            if x_pos_screen_for_world[index] != screen - 1:
-                continue
-
-            x_pos = x_pos_for_world[index]
-
-            if x_pos == y_pos == 0:
-                continue
-
-            if x_pos == column:
-                return ids_for_world[index], items_for_world[index]
-
-        return MAPOBJ_EMPTY, MAPITEM_NOITEM
+        for sprite_data in self.gen_sprites():
+            if sprite_data.is_at(screen, row, column):
+                return sprite_data.type, sprite_data.item
+        else:
+            return MAPOBJ_EMPTY, MAPITEM_NOITEM
 
     def tile_at(self, screen: int, row: int, column: int) -> int:
         """
@@ -474,13 +439,6 @@ class WorldMap(LevelBase):
             else:
                 yield Level(self._rom, *level_info_tuple)
 
-    def gen_sprites(self):
-        for position in self.gen_positions():
-            if not position.has_sprite():
-                continue
-
-            yield position
-
     @staticmethod
     def from_world_number(rom: Rom, world_number: int) -> "WorldMap":
         if not world_number - 1 in range(WORLD_COUNT):
@@ -494,15 +452,15 @@ class WorldMap(LevelBase):
         return f"World {self.number}"
 
 
-def _get_normal_enterable_tiles(rom: Rom) -> bytearray:
+def _get_normal_enterable_tiles(rom: Rom) -> bytes:
     return rom.read(TILE_ATTRIBUTES_TS0_OFFSET, 4)
 
 
-def _get_special_enterable_tiles(rom: Rom) -> bytearray:
+def _get_special_enterable_tiles(rom: Rom) -> bytes:
     return rom.read(SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
 
 
-def _get_completable_tiles(rom: Rom) -> bytearray:
+def _get_completable_tiles(rom: Rom) -> bytes:
     completable_tile_amount = rom.find(COMPLETABLE_LIST_END_MARKER, COMPLETABLE_TILES_LIST) - COMPLETABLE_TILES_LIST
 
     return rom.read(COMPLETABLE_TILES_LIST, completable_tile_amount)
