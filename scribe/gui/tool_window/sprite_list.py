@@ -1,4 +1,6 @@
-from PySide6.QtWidgets import QTableWidgetItem
+from PySide6.QtCore import QModelIndex
+from PySide6.QtGui import Qt
+from PySide6.QtWidgets import QComboBox, QStyledItemDelegate, QTableWidgetItem, QWidget
 
 from foundry.game.level.LevelRef import LevelRef
 from scribe.gui.tool_window.table_widget import TableWidget
@@ -12,25 +14,71 @@ class SpriteList(TableWidget):
         self.level_ref.level_changed.connect(self.update_content)
 
         self.itemSelectionChanged.connect(lambda: self.level_ref.select_sprites(self.selected_rows))
+        self.cellChanged.connect(self._save_sprite)
 
         self.set_headers(["Sprite Type", "Item Type", "Map Position"])
 
+        self.setItemDelegateForColumn(0, DropdownDelegate(self, MAPOBJ_NAMES.values()))
+        self.setItemDelegateForColumn(1, DropdownDelegate(self, MAPITEM_NAMES.values()))
+
         self.update_content()
+
+    def _save_sprite(self, row: int, column: int):
+        sprite = list(self.world.internal_world_map.gen_sprites())[row]
+
+        widget: QComboBox = self.cellWidget(row, column)
+        data = widget.currentText()
+
+        if column == 0:
+            sprite.type = list(MAPOBJ_NAMES.values()).index(data)
+        elif column == 1:
+            sprite.item = list(MAPITEM_NAMES.values()).index(data)
+        else:
+            return
+
+        sprite.write_back()
+
+        self.world.data_changed.emit()
 
     def update_content(self):
         self.clear()
 
-        self.setRowCount(len(list(self.world._internal_world_map.gen_sprites())))
+        self.setRowCount(len(list(self.world.internal_world_map.gen_sprites())))
 
-        last_item_row = 0
+        self.blockSignals(True)
 
-        for position in self.world._internal_world_map.gen_sprites():
+        for index, position in enumerate(self.world.internal_world_map.gen_sprites()):
             sprite_type = QTableWidgetItem(MAPOBJ_NAMES[position.type])
             item_type = QTableWidgetItem(MAPITEM_NAMES[position.item])
             pos = QTableWidgetItem(f"Screen {position.screen}: x={position.x}, y={position.y}")
+            pos.setFlags(pos.flags() ^ Qt.ItemIsEditable)
 
-            self.setItem(last_item_row, 0, sprite_type)
-            self.setItem(last_item_row, 1, item_type)
-            self.setItem(last_item_row, 2, pos)
+            self.setItem(index, 0, sprite_type)
+            self.setItem(index, 1, item_type)
+            self.setItem(index, 2, pos)
 
-            last_item_row += 1
+        self.blockSignals(False)
+
+
+class DropdownDelegate(QStyledItemDelegate):
+    def __init__(self, parent, items: list[str]):
+        super(DropdownDelegate, self).__init__(parent)
+
+        self._items = items
+
+    def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
+        combobox = QComboBox(parent)
+        combobox.currentTextChanged.connect(lambda _: combobox.clearFocus())
+
+        for index, name in enumerate(self._items):
+            combobox.addItem(name, index)
+
+        return combobox
+
+    def setEditorData(self, editor: QComboBox, index: QModelIndex):
+        editor.setCurrentText(index.data())
+
+        editor.showPopup()
+
+    def setModelData(self, editor: QComboBox, model, index: QModelIndex):
+        super(DropdownDelegate, self).setModelData(editor, model, index)

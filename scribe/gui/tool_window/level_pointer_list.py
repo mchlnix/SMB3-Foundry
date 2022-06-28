@@ -20,11 +20,11 @@ class LevelPointerList(TableWidget):
     def update_content(self):
         self.clear()
 
-        self.setRowCount(len(list(self.world._internal_world_map.gen_levels())))
+        self.setRowCount(len(list(self.world.internal_world_map.gen_levels())))
 
         last_item_row = 0
 
-        for position in self.world._internal_world_map.gen_positions():
+        for position in self.world.internal_world_map.gen_positions():
             if position.level_info is None:
                 continue
 

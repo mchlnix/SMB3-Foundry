@@ -244,7 +244,7 @@ class WorldView(MainView):
 
             column, row = self._to_level_point(x, y)
 
-            map_pos = WorldMapPosition(self.world._internal_world_map, screen, column, row)
+            map_pos = WorldMapPosition(self.world.internal_world_map, screen, column, row)
 
             menu_pos = self.mapToGlobal(event.pos())
 

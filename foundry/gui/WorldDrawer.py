@@ -24,6 +24,7 @@ from smb3parse.constants import (
     MAPOBJ_W8AIRSHIP,
     MAPOBJ_WHITETOADHOUSE,
 )
+from smb3parse.levels import FIRST_VALID_ROW
 
 EMPTY_IMAGE = load_from_png(0, 53)
 
@@ -98,7 +99,7 @@ class WorldDrawer:
         painter.setPen(QPen(Qt.gray, 1))
 
         # rows
-        map_length = SCREEN_WIDTH * self.block_length * world._internal_world_map.screen_count
+        map_length = SCREEN_WIDTH * self.block_length * world.internal_world_map.screen_count
 
         for y in range(SCREEN_HEIGHT):
             y *= self.block_length
@@ -106,7 +107,7 @@ class WorldDrawer:
             painter.drawLine(QPoint(0, y), QPoint(map_length, y))
 
         # columns
-        for x in range(SCREEN_WIDTH * world._internal_world_map.screen_count):
+        for x in range(SCREEN_WIDTH * world.internal_world_map.screen_count):
             x *= self.block_length
 
             painter.drawLine(QPoint(x, 0), QPoint(x, SCREEN_HEIGHT * self.block_length))
@@ -132,7 +133,7 @@ class WorldDrawer:
 
         level_pointer_index = 0
 
-        for tile_on_map in world._internal_world_map.gen_positions():
+        for tile_on_map in world.internal_world_map.gen_positions():
             if tile_on_map.level_info is None:
                 continue
 
@@ -153,29 +154,22 @@ class WorldDrawer:
     def _draw_sprites(self, painter: QPainter, world: WorldMap):
         painter.save()
 
-        sprite_index = 0
-
-        for tile_on_map in world._internal_world_map.gen_positions():
-            if not (sprite_id := tile_on_map.sprite()):
-                continue
-
-            x = ((tile_on_map.screen - 1) * SCREEN_WIDTH + tile_on_map.column) * self.block_length
-            y = tile_on_map.row * self.block_length
+        for sprite in world.internal_world_map.gen_sprites():
+            x = (sprite.screen * SCREEN_WIDTH + sprite.x) * self.block_length
+            y = (sprite.y - FIRST_VALID_ROW) * self.block_length
 
             painter.setPen(QPen(QColor(0x00, 0x00, 0xFF, 0x80), 4))
-            painter.drawImage(QPoint(x, y), MAP_OBJ_SPRITES[sprite_id].scaled(self.block_length, self.block_length))
+            painter.drawImage(QPoint(x, y), MAP_OBJ_SPRITES[sprite.type].scaled(self.block_length, self.block_length))
 
-            if sprite_index in world.selected_sprites:
+            if sprite.index in world.selected_sprites:
                 painter.fillRect(QRect(x, y, self.block_length, self.block_length), QColor(0x00, 0xFF, 0x00, 0x80))
-
-            sprite_index += 1
 
         painter.restore()
 
     def _draw_start_position(self, painter: QPainter, world: WorldMap):
         painter.save()
 
-        start_pos = world._internal_world_map.start_pos
+        start_pos = world.internal_world_map.start_pos
 
         if start_pos is None:
             return

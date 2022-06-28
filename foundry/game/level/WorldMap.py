@@ -27,9 +27,9 @@ class WorldSignaller(QObject):
 
 class WorldMap(LevelLike):
     def __init__(self, layout_address):
-        self._internal_world_map = _WorldMap(layout_address, ROM())
+        self.internal_world_map = _WorldMap(layout_address, ROM())
 
-        super(WorldMap, self).__init__(0, self._internal_world_map.layout_address)
+        super(WorldMap, self).__init__(0, self.internal_world_map.layout_address)
 
         self.name = f"World @ {layout_address} - Overworld"
         self._signal_emitter = WorldSignaller()
@@ -61,7 +61,7 @@ class WorldMap(LevelLike):
     def _load_objects(self):
         self.remove_all_tiles()
 
-        for index, world_position in enumerate(self._internal_world_map.gen_positions()):
+        for index, world_position in enumerate(self.internal_world_map.gen_positions()):
             screen_offset = (index // WORLD_MAP_SCREEN_SIZE) * WORLD_MAP_SCREEN_WIDTH
 
             x = screen_offset + (index % WORLD_MAP_SCREEN_WIDTH)
@@ -162,14 +162,14 @@ class WorldMap(LevelLike):
 
         x %= WORLD_MAP_SCREEN_WIDTH
 
-        return self._internal_world_map.level_for_position(screen, y, x)
+        return self.internal_world_map.level_for_position(screen, y, x)
 
     def level_name_at_position(self, x: int, y: int) -> str:
         screen = x // WORLD_MAP_SCREEN_WIDTH + 1
 
         x %= WORLD_MAP_SCREEN_WIDTH
 
-        return self._internal_world_map.level_name_for_position(screen, y, x)
+        return self.internal_world_map.level_name_for_position(screen, y, x)
 
     # TODO check if better in parent class
     def get_rect(self, block_length: int = 1):
