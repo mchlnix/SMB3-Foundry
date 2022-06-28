@@ -176,6 +176,13 @@ class WorldMap(LevelLike):
 
         return self.internal_world_map.level_name_for_position(screen, y, x)
 
+    def sprite_at_position(self, x, y):
+        screen = x // WORLD_MAP_SCREEN_WIDTH + 1
+
+        x %= WORLD_MAP_SCREEN_WIDTH
+
+        return self.internal_world_map.sprite_at(screen, y, x)
+
     # TODO check if better in parent class
     def get_rect(self, block_length: int = 1):
         width, height = self.size

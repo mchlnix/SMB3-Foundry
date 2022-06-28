@@ -26,7 +26,9 @@ from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
 from scribe.gui.world_view_context_menu import WorldContextMenu
+from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
+from smb3parse.levels.data_points import SpriteData
 
 
 class WorldView(MainView):
@@ -60,6 +62,7 @@ class WorldView(MainView):
         self.last_mouse_position = 0, 0
 
         self.drag_start_point = 0, 0
+        self.selected_sprite: Optional[SpriteData] = None
 
         self.dragging_happened = True
 
@@ -261,11 +264,17 @@ class WorldView(MainView):
         # 5 if clicking on unselected object: deselect everything and select only this object
         # 6 if clicking on unselected object and ctrl: select this object
         x, y = event.pos().toTuple()
+
+        sprite = self.world.sprite_at_position(x // self.block_length, y // self.block_length)
         obj = self.object_at(x, y)
 
         if self.mouse_mode == MODE_PLACE_TILE:
             obj.change_type(self._tile_to_put.index)
             self.update()
+        elif sprite is not None:
+            self.drag_start_point = sprite.x, sprite.y
+            self.selected_sprite = sprite
+            self.mouse_mode = MODE_DRAG
         elif self._select_objects_on_click(event) and obj is not None:
             self.drag_start_point = obj.x_position, obj.y_position
         else:
@@ -283,16 +292,28 @@ class WorldView(MainView):
 
         self.last_mouse_position = level_x, level_y
 
-        selected_objects = self.get_selected_objects()
+        if self.selected_sprite is not None:
+            screen = level_x // SCREEN_WIDTH
+            column = level_x % SCREEN_WIDTH
+            row = FIRST_VALID_ROW + level_y
 
-        for obj in selected_objects:
-            obj.move_by(dx, dy)
+            self.selected_sprite.set_pos(screen, row, column)
 
-            self.world.objects.remove(obj)
-            self.world.objects.append(obj)
+            self.selected_sprite.write_back()
 
             self.level_ref.level.changed = True
+        else:
+            selected_objects = self.get_selected_objects()
 
+            for obj in selected_objects:
+                obj.move_by(dx, dy)
+
+                self.world.objects.remove(obj)
+                self.world.objects.append(obj)
+
+                self.level_ref.level.changed = True
+
+        self.level_ref.data_changed.emit()
         self.update()
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
@@ -303,6 +324,13 @@ class WorldView(MainView):
         if self.mouse_mode == MODE_PLACE_TILE:
             return
         elif self.mouse_mode == MODE_DRAG and self.dragging_happened:
+            if self.selected_sprite is not None:
+                drag_end_point = self.selected_sprite.x, self.selected_sprite.y
+
+                if self.drag_start_point != drag_end_point:
+                    self._stop_drag()
+                else:
+                    self.dragging_happened = False
             if obj is not None:
                 drag_end_point = obj.x_position, obj.y_position
 

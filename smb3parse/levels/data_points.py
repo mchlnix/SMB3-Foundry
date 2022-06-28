@@ -98,3 +98,8 @@ class SpriteData(DataPoint):
 
     def is_at(self, screen, row, column):
         return self.screen == screen - 1 and self.x == column and self.y - FIRST_VALID_ROW == row
+
+    def set_pos(self, screen, row, column):
+        self.screen = screen
+        self.x = column
+        self.y = row

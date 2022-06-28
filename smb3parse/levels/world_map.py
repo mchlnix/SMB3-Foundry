@@ -3,8 +3,6 @@ from typing import Generator, List, Optional
 from warnings import warn
 
 from smb3parse.constants import (
-    MAPITEM_NOITEM,
-    MAPOBJ_EMPTY,
     Map_Y_Starts,
     SPRITE_COUNT,
     TILE_BOWSER_CASTLE,
@@ -344,7 +342,7 @@ class WorldMap(LevelBase):
         for index in range(SPRITE_COUNT):
             yield SpriteData(self._rom, self, index)
 
-    def sprite_at(self, screen: int, row: int, column: int) -> tuple[int, int]:
+    def sprite_at(self, screen: int, row: int, column: int) -> Optional[SpriteData]:
         """
         Returns the ID of the overworld sprite at the given location in this world. Or 0 if there is None.
 
@@ -354,9 +352,9 @@ class WorldMap(LevelBase):
         """
         for sprite_data in self.gen_sprites():
             if sprite_data.is_at(screen, row, column):
-                return sprite_data.type, sprite_data.item
+                return sprite_data
         else:
-            return MAPOBJ_EMPTY, MAPITEM_NOITEM
+            return None
 
     def tile_at(self, screen: int, row: int, column: int) -> int:
         """
