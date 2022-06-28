@@ -46,6 +46,7 @@ class MainView(QWidget):
 
         self.level_ref: LevelRef = level
         self.level_ref.data_changed.connect(self.update)
+        self.level_ref.needs_redraw.connect(self.update)
 
         self.context_menu = context_menu
 

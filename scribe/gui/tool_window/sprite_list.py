@@ -12,6 +12,7 @@ class SpriteList(TableWidget):
         super(SpriteList, self).__init__(level_ref)
 
         self.level_ref.level_changed.connect(self.update_content)
+        self.level_ref.data_changed.connect(self.update_content)
 
         self.itemSelectionChanged.connect(lambda: self.level_ref.select_sprites(self.selected_rows))
         self.cellChanged.connect(self._save_sprite)

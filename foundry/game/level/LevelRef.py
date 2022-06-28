@@ -8,6 +8,7 @@ from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
 class LevelRef(QObject):
+    needs_redraw: SignalInstance = Signal()
     level_changed: SignalInstance = Signal()
     data_changed: SignalInstance = Signal()
     jumps_changed: SignalInstance = Signal()
@@ -34,6 +35,7 @@ class LevelRef(QObject):
     def level(self, level):
         self._internal_level = level
 
+        self._internal_level.needs_redraw.connect(self.needs_redraw.emit)
         self._internal_level.data_changed.connect(self.data_changed.emit)
         self._internal_level.jumps_changed.connect(self.jumps_changed.emit)
 

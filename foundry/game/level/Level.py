@@ -33,6 +33,7 @@ def world_and_level_for_level_address(level_address: int):
 
 
 class LevelSignaller(QObject):
+    needs_redraw: SignalInstance = Signal()
     data_changed: SignalInstance = Signal()
     jumps_changed: SignalInstance = Signal()
 
@@ -120,6 +121,10 @@ class Level(LevelLike):
     @property
     def height(self):
         return self.size[1]
+
+    @property
+    def needs_redraw(self):
+        return self._signal_emitter.needs_redraw
 
     @property
     def data_changed(self):

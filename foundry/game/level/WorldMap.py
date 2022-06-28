@@ -21,6 +21,7 @@ OVERWORLD_GRAPHIC_SET = 0
 
 
 class WorldSignaller(QObject):
+    needs_redraw: SignalInstance = Signal()
     data_changed: SignalInstance = Signal()
     jumps_changed: SignalInstance = Signal()
 
@@ -86,11 +87,11 @@ class WorldMap(LevelLike):
 
     def select_level_pointers(self, indexes: list[int]):
         self.selected_level_pointers = indexes
-        self.data_changed.emit()
+        self._signal_emitter.needs_redraw.emit()
 
     def select_sprites(self, indexes: list[int]):
         self.selected_sprites = indexes
-        self.data_changed.emit()
+        self._signal_emitter.needs_redraw.emit()
 
     @property
     def q_size(self):
@@ -99,6 +100,10 @@ class WorldMap(LevelLike):
     @staticmethod
     def _array_index(obj):
         return obj.y_position * WORLD_MAP_SCREEN_WIDTH + obj.x_position
+
+    @property
+    def needs_redraw(self):
+        return self._signal_emitter.needs_redraw
 
     @property
     def data_changed(self):
