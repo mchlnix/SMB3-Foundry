@@ -76,21 +76,25 @@ class Sprite(ObjectLike):
         return ""
 
     def set_position(self, x, y):
-        self.data.x = x
+        self.data.screen = x // SCREEN_WIDTH
+        self.data.x = x % SCREEN_WIDTH
         self.data.y = y
 
     def move_by(self, dx, dy):
-        self.data.x += dx
-        self.data.y += dy
+        x, y = self.get_position()
+        new_x = x + dx
+        new_y = y + dy
 
-    def get_position(self):
-        return self.data.x, self.data.y
+        self.set_position(new_x, new_y)
+
+    def get_position(self) -> tuple[int, int]:
+        return self.data.screen * SCREEN_WIDTH + self.data.x, self.data.y
 
     def resize_by(self, dx, dy):
         pass
 
     def point_in(self, x, y):
-        return self.data.x == x and self.data.y == y
+        return x, y == self.get_position()
 
     def change_type(self, new_type):
         self.data.type = new_type

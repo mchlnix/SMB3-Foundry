@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QWidget
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_WIDTH
+from foundry.game.gfx.objects.level_pointer import LevelPointer
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
@@ -63,6 +64,7 @@ class WorldView(MainView):
 
         self.drag_start_point = 0, 0
         self.selected_sprite: Optional[Sprite] = None
+        self.selected_level_pointer: Optional[LevelPointer] = None
 
         self.dragging_happened = True
 
@@ -265,18 +267,27 @@ class WorldView(MainView):
         # 6 if clicking on unselected object and ctrl: select this object
         x, y = event.pos().toTuple()
 
+        level_pointer = self.world.level_at_position(x // self.block_length, y // self.block_length)
         sprite = self.world.sprite_at_position(x // self.block_length, y // self.block_length)
         obj = self.object_at(x, y)
 
         if self.mouse_mode == MODE_PLACE_TILE:
             obj.change_type(self._tile_to_put.index)
             self.update()
-        elif sprite is not None:
-            self.drag_start_point = sprite.data.x, sprite.data.y
+
+        elif sprite is not None and self.draw_sprites:
+            self.drag_start_point = x, y
             self.selected_sprite = sprite
             self.mouse_mode = MODE_DRAG
+
+        elif level_pointer is not None and self.draw_level_pointers:
+            self.drag_start_point = x, y
+            self.selected_level_pointer = level_pointer
+            self.mouse_mode = MODE_DRAG
+
         elif self._select_objects_on_click(event) and obj is not None:
             self.drag_start_point = obj.x_position, obj.y_position
+
         else:
             self._start_selection_square(event.pos())
 
@@ -298,6 +309,14 @@ class WorldView(MainView):
             row = FIRST_VALID_ROW + level_y
 
             self.selected_sprite.data.set_pos(screen, row, column)
+
+            self.level_ref.level.changed = True
+        elif self.selected_level_pointer is not None:
+            screen = level_x // SCREEN_WIDTH
+            column = level_x % SCREEN_WIDTH
+            row = FIRST_VALID_ROW + level_y
+
+            self.selected_level_pointer.data.set_pos(screen, row, column)
 
             self.level_ref.level.changed = True
         else:
@@ -323,19 +342,25 @@ class WorldView(MainView):
             return
         elif self.mouse_mode == MODE_DRAG and self.dragging_happened:
             if self.selected_sprite is not None:
-                drag_end_point = self.selected_sprite.data.x, self.selected_sprite.data.y
+                drag_end_point = self.selected_sprite.get_position()
 
                 if self.drag_start_point != drag_end_point:
                     self._stop_drag()
-                else:
-                    self.dragging_happened = False
+
+            if self.selected_level_pointer is not None:
+                drag_end_point = self.selected_level_pointer.get_position()
+
+                if self.drag_start_point != drag_end_point:
+                    self._stop_drag()
+
             if obj is not None:
                 drag_end_point = obj.x_position, obj.y_position
 
                 if self.drag_start_point != drag_end_point:
                     self._stop_drag()
-                else:
-                    self.dragging_happened = False
+
+            self.dragging_happened = False
+
         elif self.selection_square.active:
             self._stop_selection_square()
 
@@ -356,6 +381,9 @@ class WorldView(MainView):
         self.setCursor(Qt.ArrowCursor)
 
     def _stop_drag(self):
+        self.selected_sprite = None
+        self.selected_level_pointer = None
+
         if self.dragging_happened:
             self.level_ref.save_level_state()
 

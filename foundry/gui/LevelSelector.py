@@ -283,17 +283,17 @@ class WorldMapLevelSelect(QScrollArea):
 
                 level_name = self.world.level_name_at_position(x, y)
 
-                object_set_name = OBJECT_SET_ITEMS[level_pointer.object_set].split(" ", 1)[1]
+                object_set_name = OBJECT_SET_ITEMS[level_pointer.data.object_set].split(" ", 1)[1]
 
                 image_data = self._get_level_thumbnail(
-                    level_pointer.object_set, level_pointer.level_address, level_pointer.enemy_address
+                    level_pointer.data.object_set, level_pointer.data.level_address, level_pointer.data.enemy_address
                 )
 
                 self.setToolTip(
                     f"<b>{level_name}</b><br/>"
                     f"<u>Type:</u> {object_set_name} "
-                    f"<u>Objects:</u> {level_pointer.level_address} "
-                    f"<u>Enemies:</u> {level_pointer.enemy_address}<br/>"
+                    f"<u>Objects:</u> {level_pointer.data.level_address} "
+                    f"<u>Enemies:</u> {level_pointer.data.enemy_address}<br/>"
                     f"<img src='data:image/png;base64,{image_data}'>"
                 )
         except ValueError:
@@ -338,9 +338,9 @@ class WorldMapLevelSelect(QScrollArea):
             # todo change to emitting the level pointer
             self.level_selected.emit(
                 self.world.level_name_at_position(x, y),
-                level_pointer.object_set,
-                level_pointer.level_address,
-                level_pointer.enemy_address,
+                level_pointer.data.object_set,
+                level_pointer.data.level_address,
+                level_pointer.data.enemy_address,
             )
         except ValueError:
             pass

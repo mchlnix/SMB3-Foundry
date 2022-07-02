@@ -6,11 +6,11 @@ from foundry.game.File import ROM
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.game.gfx.objects.LevelObject import SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.MapObject import MapObject
 from foundry.game.gfx.objects.level_pointer import LevelPointer
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelLike import LevelLike
-from smb3parse.levels.data_points import LevelPointerData
 from smb3parse.levels.world_map import (
     WORLD_MAP_HEIGHT,
     WORLD_MAP_SCREEN_SIZE,
@@ -179,12 +179,16 @@ class WorldMap(LevelLike):
         self.internal_world_map.clear_sprites()
         self.data_changed.emit()
 
-    def level_at_position(self, x: int, y: int) -> Optional[LevelPointerData]:
+    def level_at_position(self, x: int, y: int) -> Optional[LevelPointer]:
         screen = x // WORLD_MAP_SCREEN_WIDTH + 1
 
         x %= WORLD_MAP_SCREEN_WIDTH
 
-        return self.internal_world_map.level_for_position(screen, y, x)
+        for level_pointer in self.level_pointers:
+            if level_pointer.data.is_at(screen, y, x):
+                return level_pointer
+        else:
+            return None
 
     def level_name_at_position(self, x: int, y: int) -> str:
         screen = x // WORLD_MAP_SCREEN_WIDTH + 1
@@ -233,5 +237,13 @@ class WorldMap(LevelLike):
             sprite.data.write_back()
 
         # level pointers
-        for level_pointer in self.level_pointers:
+        for level_pointer in sorted(self.level_pointers, key=_lp_sort_key):
             level_pointer.data.write_back()
+
+
+def _lp_sort_key(level_pointer: LevelPointer):
+    value = level_pointer.data.x
+    value += level_pointer.data.y * SCREEN_WIDTH
+    value += level_pointer.data.screen * SCREEN_WIDTH * SCREEN_HEIGHT
+
+    return value
