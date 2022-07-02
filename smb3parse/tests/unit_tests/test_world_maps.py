@@ -78,21 +78,30 @@ def test_list_all_world_maps_width(rom):
     ],
 )
 def test_get_level_at_position(world_1, row, column, object_set, level_address, enemy_address):
-    level_tile = world_1.level_for_position(1, row, column)
+    level_pointer = world_1.level_for_position(1, row, column)
 
-    assert level_tile == (object_set, level_address, enemy_address)
+    assert level_pointer.object_set == object_set
+    assert level_pointer.level_address == level_address
+    assert level_pointer.enemy_address == enemy_address
 
 
 def test_get_level_on_screen_2(rom):
-    level_2_4 = (0x9, 0x29C88, 0xD26F)
+    object_set, level_address, enemy_address = (0x9, 0x29C88, 0xD26F)  # level 2-4
 
     world_2 = WorldMap.from_world_number(rom, 2)
+    level_pointer = world_2.level_for_position(2, 0, 2)
 
-    assert world_2.level_for_position(2, 0, 2) == level_2_4
+    assert level_pointer.object_set == object_set
+    assert level_pointer.level_address == level_address
+    assert level_pointer.enemy_address == enemy_address
 
 
 def test_get_level_on_screen_4(world_8):
-    assert world_8.level_for_position(4, 5, 12) == (0x2, 0x2BC3D, 0xD5DD)
+    level_pointer = world_8.level_for_position(4, 5, 12)
+
+    assert level_pointer.object_set == 0x2
+    assert level_pointer.level_address == 0x2BC3D
+    assert level_pointer.enemy_address == 0xD5DD
 
 
 def test_tile_not_enterable(world_1):

@@ -8,6 +8,7 @@ from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.MapObject import MapObject
 from foundry.game.level.LevelLike import LevelLike
+from smb3parse.levels.data_points import LevelPointerData
 from smb3parse.levels.world_map import (
     WORLD_MAP_HEIGHT,
     WORLD_MAP_SCREEN_SIZE,
@@ -166,7 +167,7 @@ class WorldMap(LevelLike):
         self.internal_world_map.clear_sprites()
         self.data_changed.emit()
 
-    def level_at_position(self, x: int, y: int):
+    def level_at_position(self, x: int, y: int) -> Optional[LevelPointerData]:
         screen = x // WORLD_MAP_SCREEN_WIDTH + 1
 
         x %= WORLD_MAP_SCREEN_WIDTH
@@ -186,6 +187,13 @@ class WorldMap(LevelLike):
         x %= WORLD_MAP_SCREEN_WIDTH
 
         return self.internal_world_map.sprite_at(screen, y, x)
+
+    def tile_at(self, x, y):
+        screen = x // WORLD_MAP_SCREEN_WIDTH + 1
+
+        x %= WORLD_MAP_SCREEN_WIDTH
+
+        return self.internal_world_map.tile_at(screen, y, x)
 
     # TODO check if better in parent class
     def get_rect(self, block_length: int = 1):

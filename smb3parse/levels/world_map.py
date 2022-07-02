@@ -49,7 +49,6 @@ from smb3parse.levels import (
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
 from smb3parse.levels.data_points import LevelPointerData, SpriteData
-from smb3parse.levels.level import Level
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
 
@@ -179,7 +178,7 @@ class WorldMap(LevelBase):
         self.level_count_s3 = y_pos_start_by_screen[3] - y_pos_start_by_screen[2]
         self.level_count_s4 = level_y_pos_list_end - y_pos_start_by_screen[3]
 
-    def level_for_position(self, screen: int, player_row: int, player_column: int):
+    def level_for_position(self, screen: int, player_row: int, player_column: int) -> Optional[LevelPointerData]:
         """
         The rom takes the position of the current player, the world, the screen and the x and y coordinates, and
         operates on them. First it is checked, whether the player is located on a tile, that can be entered.
@@ -201,25 +200,16 @@ class WorldMap(LevelBase):
         :return: A tuple of the object set number, the absolute level address, pointing to the objects and the enemy
         address. Or None, if there is no level at the map position.
         """
-
-        tile = self.tile_at(screen, player_row, player_column)
-
-        if tile in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
-            warn("Spade and mushroom house currently not supported, when getting a level address.")
-            return None
-
-        level_pointer = self.level_at(screen, player_row, player_column)
-
-        if level_pointer is None:
+        if (level_pointer := self.level_at(screen, player_row, player_column)) is None:
             return None
 
         if not 0xA000 <= level_pointer.level_offset < 0xC000:
             # suppose that level layouts are only in this range?
             warn(f"Level in {self}@{screen=}, {player_row=}, {player_column=} has offset {level_pointer.level_offset}")
-            return None
 
-        return level_pointer.object_set, level_pointer.level_address, level_pointer.enemy_address
+        return level_pointer
 
+    # todo use level pointer data.write_back, instead of this function?
     def replace_level_at_position(self, level_info, position: "WorldMapPosition"):
         level_address, enemy_address, object_set_number = level_info
 
@@ -393,19 +383,6 @@ class WorldMap(LevelBase):
             for row in range(WORLD_MAP_HEIGHT):
                 for column in range(WORLD_MAP_SCREEN_WIDTH):
                     yield WorldMapPosition(self, screen, row, column)
-
-    def gen_levels(self):
-        """
-        Returns a generator, which yields all levels accessible from this world map.
-        """
-        for position in self.gen_positions():
-            level_info_tuple = self.level_for_position(position.screen, position.row, position.column)
-
-            if level_info_tuple is None:
-                continue
-
-            else:
-                yield Level(self._rom, *level_info_tuple)
 
     @staticmethod
     def from_world_number(rom: Rom, world_number: int) -> "WorldMap":

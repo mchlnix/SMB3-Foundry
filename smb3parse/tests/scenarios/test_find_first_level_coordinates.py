@@ -19,11 +19,9 @@ def test_find_first_level_coordinates(rom: Rom):
         pytest.fail("Didn't find Level 1 in this world.")
         return
 
-    assert coordinate.level_info is not None
+    assert (lp := coordinate.level_pointer) is not None
 
-    object_set, level_address, enemy_address = coordinate.level_info
-
-    world_1.replace_level_at_position((level_address, enemy_address, object_set), coordinate)
+    world_1.replace_level_at_position((lp.level_address, lp.enemy_address, lp.object_set), coordinate)
 
     for i in range(0, len(original_rom_data), 0x10):
         original_data = list(map(hex, original_rom_data[i : i + 0x10]))

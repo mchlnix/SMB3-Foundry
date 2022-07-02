@@ -133,12 +133,9 @@ class WorldDrawer:
 
         level_pointer_index = 0
 
-        for tile_on_map in world.internal_world_map.gen_positions():
-            if tile_on_map.level_info is None:
-                continue
-
-            x = ((tile_on_map.screen - 1) * SCREEN_WIDTH + tile_on_map.column) * self.block_length
-            y = tile_on_map.row * self.block_length
+        for lp in world.internal_world_map.gen_level_pointers():
+            x = (lp.screen * SCREEN_WIDTH + lp.column) * self.block_length
+            y = (lp.row - FIRST_VALID_ROW) * self.block_length
 
             if level_pointer_index in world.selected_level_pointers:
                 painter.fillRect(QRect(x, y, self.block_length, self.block_length), QColor(0x00, 0xFF, 0x00, 0x80))

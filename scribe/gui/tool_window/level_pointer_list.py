@@ -33,20 +33,15 @@ class LevelPointerList(TableWidget):
     def update_content(self):
         self.clear()
 
-        self.setRowCount(len(list(self.world.internal_world_map.gen_levels())))
+        self.setRowCount(self.world.internal_world_map.level_count)
 
         last_item_row = 0
 
-        for position in self.world.internal_world_map.gen_positions():
-            if position.level_info is None:
-                continue
-
-            object_set_number, level_address, enemy_address = position.level_info
-
-            object_set_name = QTableWidgetItem(OBJECT_SET_NAMES[object_set_number])
-            hex_level_address = QTableWidgetItem(hex(level_address))
-            hex_enemy_address = QTableWidgetItem(hex(enemy_address))
-            pos = QTableWidgetItem(f"Screen {position.screen}: x={position.column}, y={position.row}")
+        for level_pointer in self.world.internal_world_map.gen_level_pointers():
+            object_set_name = QTableWidgetItem(OBJECT_SET_NAMES[level_pointer.object_set])
+            hex_level_address = QTableWidgetItem(hex(level_pointer.level_address))
+            hex_enemy_address = QTableWidgetItem(hex(level_pointer.enemy_address))
+            pos = QTableWidgetItem(f"Screen {level_pointer.screen}: x={level_pointer.x}, y={level_pointer.y}")
 
             self.setItem(last_item_row, 0, object_set_name)
             self.setItem(last_item_row, 1, hex_level_address)

@@ -1,5 +1,6 @@
 import typing
-from typing import Tuple
+
+from smb3parse.levels.data_points import LevelPointerData
 
 if typing.TYPE_CHECKING:
     from world_map import WorldMap
@@ -13,7 +14,7 @@ class WorldMapPosition:
         self.column = column
 
     @property
-    def level_info(self) -> Tuple[int, int, int]:
+    def level_pointer(self) -> LevelPointerData:
         return self.world.level_for_position(self.screen, self.row, self.column)
 
     def can_have_level(self):

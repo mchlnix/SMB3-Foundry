@@ -39,14 +39,12 @@ class Level(LevelBase):
 
     @staticmethod
     def from_world_map(rom: Rom, world_map_position: WorldMapPosition) -> Optional["Level"]:
-        level_info = world_map_position.level_info
+        lp = world_map_position.level_pointer
 
-        if level_info is None:
+        if lp is None:
             return None
 
-        object_set_number, layout_address, enemy_address = level_info
-
-        level = Level(rom, object_set_number, layout_address, enemy_address)
+        level = Level(rom, lp.object_set, lp.level_address, lp.enemy_address)
 
         level.set_world_map_position(world_map_position)
 

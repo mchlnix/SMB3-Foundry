@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QLabel,
     QListWidget,
+    QMessageBox,
     QPushButton,
     QScrollArea,
     QScrollBar,
@@ -22,6 +23,7 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.LevelView import LevelView
 from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
+from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -267,29 +269,31 @@ class WorldMapLevelSelect(QScrollArea):
         y //= Block.HEIGHT * 2
 
         try:
-            level_info = self.world.level_at_position(x, y)
+            level_pointer = self.world.level_at_position(x, y)
 
-            if level_info is None:
+            if level_pointer is None:
                 self.setCursor(Qt.ArrowCursor)
 
                 self.setToolTip("")
                 QToolTip.hideText()
+            elif self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
+                pass
             else:
                 self.setCursor(Qt.PointingHandCursor)
 
                 level_name = self.world.level_name_at_position(x, y)
 
-                object_set = level_info[0]
-                object_set_name = OBJECT_SET_ITEMS[object_set].split(" ", 1)[1]
-                layout_address, enemy_address = map(hex, level_info[1:])
+                object_set_name = OBJECT_SET_ITEMS[level_pointer.object_set].split(" ", 1)[1]
 
-                image_data = self._get_level_thumbnail(*level_info)
+                image_data = self._get_level_thumbnail(
+                    level_pointer.object_set, level_pointer.level_address, level_pointer.enemy_address
+                )
 
                 self.setToolTip(
                     f"<b>{level_name}</b><br/>"
                     f"<u>Type:</u> {object_set_name} "
-                    f"<u>Objects:</u> {layout_address} "
-                    f"<u>Enemies:</u> {enemy_address}<br/>"
+                    f"<u>Objects:</u> {level_pointer.level_address} "
+                    f"<u>Enemies:</u> {level_pointer.enemy_address}<br/>"
                     f"<img src='data:image/png;base64,{image_data}'>"
                 )
         except ValueError:
@@ -320,12 +324,26 @@ class WorldMapLevelSelect(QScrollArea):
         y //= Block.HEIGHT * 2
 
         try:
-            level_info = self.world.level_at_position(x, y)
-        except ValueError:
-            level_info = None
+            level_pointer = self.world.level_at_position(x, y)
 
-        if level_info is not None:
-            self.level_selected.emit(self.world.level_name_at_position(x, y), *level_info)
+            if level_pointer is None:
+                return
+
+            if self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
+                QMessageBox.warning(
+                    self, "No can do", "Spade and mushroom house currently not supported, when getting a level address."
+                )
+                return
+
+            # todo change to emitting the level pointer
+            self.level_selected.emit(
+                self.world.level_name_at_position(x, y),
+                level_pointer.object_set,
+                level_pointer.level_address,
+                level_pointer.enemy_address,
+            )
+        except ValueError:
+            pass
 
     def sizeHint(self) -> QSize:
         orig_size = super(WorldMapLevelSelect, self).sizeHint()
