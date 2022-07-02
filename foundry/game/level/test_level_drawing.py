@@ -123,6 +123,8 @@ def test_draw_jumps(jump_test_name, level, qtbot):
         view.draw_jumps = True
         view.draw_grid = False
 
+        view.resize(view.sizeHint())
+
         compare_images(jump_test_name, str(Path(__file__).parent / f"{jump_test_name}.png"), view.grab())
 
 

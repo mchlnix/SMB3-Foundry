@@ -2,7 +2,7 @@ from bisect import bisect_right
 from typing import List, Optional, Tuple, Union
 from warnings import warn
 
-from PySide6.QtCore import QPoint
+from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter, QWheelEvent, Qt
 from PySide6.QtWidgets import QToolTip, QWidget
 
@@ -150,6 +150,17 @@ class LevelView(MainView):
     @draw_autoscroll.setter
     def draw_autoscroll(self, value):
         self.drawer.draw_autoscroll = value
+
+    def sizeHint(self) -> QSize:
+        if self.level_ref.level is None:
+            return super(LevelView, self).sizeHint()
+
+        w, h = self.level_ref.level.size
+
+        w *= self.block_length * self.zoom
+        h *= self.block_length * self.zoom
+
+        return QSize(w, h)
 
     def mousePressEvent(self, event: QMouseEvent):
         pressed_button = event.button()

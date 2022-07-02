@@ -73,6 +73,10 @@ class Level(LevelLike):
 
         if self.layout_address == self.enemy_offset == 0:
             # probably loaded to become an m3l
+            self.size = (0, 0)
+            self.header = bytearray(9)
+            self.object_factory = None
+            self.enemy_factory = None
             return
 
         rom = ROM()
