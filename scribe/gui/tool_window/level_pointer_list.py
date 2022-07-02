@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QTableWidgetItem
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.level.LevelRef import LevelRef
-from scribe.gui.tool_window.table_widget import TableWidget
+from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, SpinBoxDelegate, TableWidget
 
 
 class LevelPointerList(TableWidget):
@@ -14,6 +14,19 @@ class LevelPointerList(TableWidget):
         self.itemSelectionChanged.connect(lambda: self.level_ref.select_level_pointers(self.selected_rows))
 
         self.set_headers(["Object Set", "Level Offset", "Enemy/Item Offset", "Map Position"])
+
+        self.setItemDelegateForColumn(0, DropdownDelegate(self, OBJECT_SET_NAMES))
+        self.setItemDelegateForColumn(1, SpinBoxDelegate(self))
+        self.setItemDelegateForColumn(2, SpinBoxDelegate(self))
+        self.setItemDelegateForColumn(
+            3,
+            DialogDelegate(
+                self,
+                "No can do",
+                "You can move level pointers by dragging them around in the WorldView. "
+                "Make sure they are shown in the View Menu.",
+            ),
+        )
 
         self.update_content()
 
