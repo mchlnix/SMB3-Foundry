@@ -187,7 +187,7 @@ class LevelPointerData(_PositionMixin, DataPoint):
 
 
 class SpriteData(_PositionMixin, DataPoint):
-    def __init__(self, rom, world_map: "WorldMap", index: int):
+    def __init__(self, world_map: "WorldMap", index: int):
         self.world = world_map
         self.index = index
 
@@ -206,7 +206,7 @@ class SpriteData(_PositionMixin, DataPoint):
         self._item_address = 0x0
         self.item = MAPITEM_NOITEM
 
-        super(SpriteData, self).__init__(rom)
+        super(SpriteData, self).__init__(world_map.rom)
 
     def calculate_addresses(self):
         y_pos_offset_for_world = self._rom.little_endian(MAP_SPRITE_Y_POS_LIST + self.world.world_index * OFFSET_SIZE)

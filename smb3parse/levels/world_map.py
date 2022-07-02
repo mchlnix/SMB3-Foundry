@@ -25,7 +25,6 @@ from smb3parse.constants import (
     TILE_STAR_2,
 )
 from smb3parse.levels import (
-    BASE_OFFSET,
     COMPLETABLE_LIST_END_MARKER,
     COMPLETABLE_TILES_LIST,
     FIRST_VALID_ROW,
@@ -33,7 +32,6 @@ from smb3parse.levels import (
     LEVEL_X_POS_LISTS,
     LEVEL_Y_POS_LISTS,
     LevelBase,
-    OFFSET_BY_OBJECT_SET_A000,
     OFFSET_SIZE,
     SPECIAL_ENTERABLE_TILES_LIST,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
@@ -209,35 +207,19 @@ class WorldMap(LevelBase):
 
         return level_pointer
 
-    # todo use level pointer data.write_back, instead of this function?
     def replace_level_at_position(self, level_info, position: "WorldMapPosition"):
         level_address, enemy_address, object_set_number = level_info
 
-        existing_level = self.level_for_position(position.screen, position.row, position.column)
+        level_pointer = self.level_for_position(position.screen, position.row, position.column)
 
-        if existing_level is None:
+        if level_pointer is None:
             raise LookupError("No existing level at position.")
 
-        _, screen, row, column = position.tuple()
+        level_pointer.object_set = object_set_number
+        level_pointer.level_address = level_address
+        level_pointer.enemy_address = enemy_address
 
-        row_address, column_address, level_offset_address, enemy_offset_address = self.level_indexes(
-            screen, row, column
-        )
-
-        row_value = ((row + FIRST_VALID_ROW) << 4) + object_set_number
-        self.rom.write(row_address, bytes([row_value]))
-
-        column_value = ((screen - 1) << 4) + column
-        self.rom.write(column_address, bytes([column_value]))
-
-        object_set_offset = (self.rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * OFFSET_SIZE - 10) * 0x1000
-        level_offset = level_address - object_set_offset - BASE_OFFSET
-
-        self.rom.write_little_endian(level_offset_address, level_offset)
-
-        enemy_offset = enemy_address - BASE_OFFSET
-
-        self.rom.write_little_endian(enemy_offset_address, enemy_offset)
+        level_pointer.write_back()
 
     def level_indexes(self, player_screen, player_row, player_column):
         """
@@ -272,7 +254,7 @@ class WorldMap(LevelBase):
 
     def gen_sprites(self) -> Generator[SpriteData, None, None]:
         for index in range(SPRITE_COUNT):
-            yield SpriteData(self.rom, self, index)
+            yield SpriteData(self, index)
 
     def clear_sprites(self):
         for sprite in self.gen_sprites():
