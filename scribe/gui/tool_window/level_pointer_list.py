@@ -1,8 +1,12 @@
-from PySide6.QtWidgets import QTableWidgetItem
+import typing
+
+from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.Spinner import Spinner
 from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, SpinBoxDelegate, TableWidget
+from smb3parse.levels import FIRST_VALID_ROW
 
 
 class LevelPointerList(TableWidget):
@@ -10,8 +14,10 @@ class LevelPointerList(TableWidget):
         super(LevelPointerList, self).__init__(level_ref)
 
         self.level_ref.level_changed.connect(self.update_content)
+        self.level_ref.data_changed.connect(self.update_content)
 
         self.itemSelectionChanged.connect(lambda: self.level_ref.select_level_pointers(self.selected_rows))
+        self.cellChanged.connect(self._save_level_pointer)
 
         self.set_headers(["Object Set", "Level Offset", "Enemy/Item Offset", "Map Position"])
 
@@ -29,6 +35,37 @@ class LevelPointerList(TableWidget):
         )
 
         self.update_content()
+
+    def _save_level_pointer(self, row: int, column: int):
+        if column == 3 or self.cellWidget(row, column) is None:
+            return
+
+        level_pointer = list(self.world.internal_world_map.gen_level_pointers())[row]
+
+        if column == 0:
+            widget = typing.cast(QComboBox, self.cellWidget(row, column))
+            data = widget.currentText()
+        elif column in [1, 2]:
+            widget = typing.cast(Spinner, self.cellWidget(row, column))
+            data = widget.value()
+        else:
+            return
+
+        if level_pointer.y < FIRST_VALID_ROW:
+            level_pointer.y = FIRST_VALID_ROW
+
+        if column == 0:
+            level_pointer.object_set = OBJECT_SET_NAMES.index(data)
+        elif column == 1:
+            level_pointer.level_address = data
+        elif column == 2:
+            level_pointer.enemy_address = data
+        else:
+            return
+
+        level_pointer.write_back()
+
+        self.world.data_changed.emit()
 
     def update_content(self):
         self.clear()

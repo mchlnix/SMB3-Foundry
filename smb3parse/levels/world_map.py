@@ -117,11 +117,11 @@ class WorldMap(LevelBase):
     def __init__(self, layout_address: int, rom: Rom):
         super(WorldMap, self).__init__(WORLD_MAP_OBJECT_SET, layout_address)
 
-        self._rom = rom
+        self.rom = rom
 
-        self._minimal_enterable_tiles = _get_normal_enterable_tiles(self._rom)
-        self._special_enterable_tiles = _get_special_enterable_tiles(self._rom)
-        self._completable_tiles = _get_completable_tiles(self._rom)
+        self._minimal_enterable_tiles = _get_normal_enterable_tiles(self.rom)
+        self._special_enterable_tiles = _get_special_enterable_tiles(self.rom)
+        self._completable_tiles = _get_completable_tiles(self.rom)
 
         memory_addresses = list_world_map_addresses(rom)
 
@@ -225,19 +225,19 @@ class WorldMap(LevelBase):
         )
 
         row_value = ((row + FIRST_VALID_ROW) << 4) + object_set_number
-        self._rom.write(row_address, bytes([row_value]))
+        self.rom.write(row_address, bytes([row_value]))
 
         column_value = ((screen - 1) << 4) + column
-        self._rom.write(column_address, bytes([column_value]))
+        self.rom.write(column_address, bytes([column_value]))
 
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * OFFSET_SIZE - 10) * 0x1000
+        object_set_offset = (self.rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * OFFSET_SIZE - 10) * 0x1000
         level_offset = level_address - object_set_offset - BASE_OFFSET
 
-        self._rom.write_little_endian(level_offset_address, level_offset)
+        self.rom.write_little_endian(level_offset_address, level_offset)
 
         enemy_offset = enemy_address - BASE_OFFSET
 
-        self._rom.write_little_endian(enemy_offset_address, enemy_offset)
+        self.rom.write_little_endian(enemy_offset_address, enemy_offset)
 
     def level_indexes(self, player_screen, player_row, player_column):
         """
@@ -272,7 +272,7 @@ class WorldMap(LevelBase):
 
     def gen_sprites(self) -> Generator[SpriteData, None, None]:
         for index in range(SPRITE_COUNT):
-            yield SpriteData(self._rom, self, index)
+            yield SpriteData(self.rom, self, index)
 
     def clear_sprites(self):
         for sprite in self.gen_sprites():
@@ -295,7 +295,7 @@ class WorldMap(LevelBase):
 
     def gen_level_pointers(self) -> Generator[LevelPointerData, None, None]:
         for index in range(self.level_count):
-            yield LevelPointerData(self._rom, self, index)
+            yield LevelPointerData(self, index)
 
     def clear_level_pointers(self):
         for level_pointer in self.gen_level_pointers():
@@ -368,7 +368,7 @@ class WorldMap(LevelBase):
         # x coordinate is always the same
         x = 0x20 >> 4
 
-        y_positions_of_world = [self._rom.int(Y_START_POS_LIST + index) >> 4 for index in range(8)]
+        y_positions_of_world = [self.rom.int(Y_START_POS_LIST + index) >> 4 for index in range(8)]
 
         y = y_positions_of_world[self.world_index] - FIRST_VALID_ROW
 

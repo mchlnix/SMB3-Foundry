@@ -95,7 +95,7 @@ class _IndexedMixin:
 
 
 class LevelPointerData(_PositionMixin, DataPoint):
-    def __init__(self, rom, world_map: "WorldMap", index: int):
+    def __init__(self, world_map: "WorldMap", index: int):
         self.world = world_map
         self.index = index
 
@@ -108,7 +108,7 @@ class LevelPointerData(_PositionMixin, DataPoint):
         self.enemy_offset_address = 0x0
         self.enemy_offset = 0
 
-        super(LevelPointerData, self).__init__(rom)
+        super(LevelPointerData, self).__init__(self.world.rom)
 
     def calculate_addresses(self):
         level_y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
@@ -139,9 +139,19 @@ class LevelPointerData(_PositionMixin, DataPoint):
 
         return BASE_OFFSET + object_set_offset + self.level_offset
 
+    @level_address.setter
+    def level_address(self, value):
+        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + self.object_set) * OFFSET_SIZE - 10) * 0x1000
+
+        self.level_offset = (value - BASE_OFFSET - object_set_offset) & 0xFFFF
+
     @property
     def enemy_address(self):
         return BASE_OFFSET + self.enemy_offset
+
+    @enemy_address.setter
+    def enemy_address(self, value):
+        self.enemy_offset = value - BASE_OFFSET
 
     def read_values(self):
         screen_and_x = self._rom.int(self.screen_address)
@@ -166,14 +176,14 @@ class LevelPointerData(_PositionMixin, DataPoint):
         self.enemy_offset = 0x0
 
     def write_back(self):
-        screen_and_x = (self.screen - 1) << 4 + self.x
+        screen_and_x = (self.screen << 4) + self.x
         self._rom.write(self.screen_address, screen_and_x)
 
-        object_set_and_y = (self.y - 1) << 4 + self.object_set
+        object_set_and_y = (self.y << 4) + self.object_set
         self._rom.write(self.y_address, object_set_and_y)
 
-        self._rom.write(self.level_offset_address, self.level_offset)
-        self._rom.write(self.enemy_offset_address, self.enemy_offset)
+        self._rom.write_little_endian(self.level_offset_address, self.level_offset)
+        self._rom.write_little_endian(self.enemy_offset_address, self.enemy_offset)
 
 
 class SpriteData(_PositionMixin, DataPoint):
