@@ -7,6 +7,7 @@ from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.MapObject import MapObject
+from foundry.game.gfx.objects.level_pointer import LevelPointer
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.levels.data_points import LevelPointerData
@@ -74,12 +75,17 @@ class WorldMap(LevelLike):
 
             self.objects.append(MapObject(block, x, y))
 
+        assert len(self.objects) % WORLD_MAP_HEIGHT == 0
+
         self.sprites: list[Sprite] = []
 
         for sprite_data in self.internal_world_map.gen_sprites():
             self.sprites.append(Sprite(sprite_data))
 
-        assert len(self.objects) % WORLD_MAP_HEIGHT == 0
+        self.level_pointers: list[LevelPointer] = []
+
+        for level_pointer_data in self.internal_world_map.gen_level_pointers():
+            self.level_pointers.append(LevelPointer(level_pointer_data))
 
     def _calc_size(self):
         self.width = len(self.objects) // WORLD_MAP_HEIGHT
@@ -156,7 +162,7 @@ class WorldMap(LevelLike):
         offset, obj_bytes = data
 
         self.layout_address = offset
-        self._load_objects(obj_bytes)
+        self._load_objects()
 
         self._calc_size()
 
@@ -225,3 +231,7 @@ class WorldMap(LevelLike):
         # sprites
         for sprite in self.sprites:
             sprite.data.write_back()
+
+        # level pointers
+        for level_pointer in self.level_pointers:
+            level_pointer.data.write_back()

@@ -40,7 +40,7 @@ class LevelPointerList(TableWidget):
         if column == 3 or self.cellWidget(row, column) is None:
             return
 
-        level_pointer = list(self.world.internal_world_map.gen_level_pointers())[row]
+        level_pointer = self.world.level_pointers[row]
 
         if column == 0:
             widget = typing.cast(QComboBox, self.cellWidget(row, column))
@@ -51,19 +51,17 @@ class LevelPointerList(TableWidget):
         else:
             return
 
-        if level_pointer.y < FIRST_VALID_ROW:
-            level_pointer.y = FIRST_VALID_ROW
+        if level_pointer.data.y < FIRST_VALID_ROW:
+            level_pointer.data.y = FIRST_VALID_ROW
 
         if column == 0:
-            level_pointer.object_set = OBJECT_SET_NAMES.index(data)
+            level_pointer.data.object_set = OBJECT_SET_NAMES.index(data)
         elif column == 1:
-            level_pointer.level_address = data
+            level_pointer.data.level_address = data
         elif column == 2:
-            level_pointer.enemy_address = data
+            level_pointer.data.enemy_address = data
         else:
             return
-
-        level_pointer.write_back()
 
         self.world.data_changed.emit()
 
@@ -74,11 +72,11 @@ class LevelPointerList(TableWidget):
 
         last_item_row = 0
 
-        for level_pointer in self.world.internal_world_map.gen_level_pointers():
-            object_set_name = QTableWidgetItem(OBJECT_SET_NAMES[level_pointer.object_set])
-            hex_level_address = QTableWidgetItem(hex(level_pointer.level_address))
-            hex_enemy_address = QTableWidgetItem(hex(level_pointer.enemy_address))
-            pos = QTableWidgetItem(f"Screen {level_pointer.screen}: x={level_pointer.x}, y={level_pointer.y}")
+        for lp in self.world.level_pointers:
+            object_set_name = QTableWidgetItem(OBJECT_SET_NAMES[lp.data.object_set])
+            hex_level_address = QTableWidgetItem(hex(lp.data.level_address))
+            hex_enemy_address = QTableWidgetItem(hex(lp.data.enemy_address))
+            pos = QTableWidgetItem(f"Screen {lp.data.screen}: x={lp.data.x}, y={lp.data.y}")
 
             self.setItem(last_item_row, 0, object_set_name)
             self.setItem(last_item_row, 1, hex_level_address)

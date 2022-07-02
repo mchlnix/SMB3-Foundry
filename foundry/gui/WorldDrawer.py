@@ -4,7 +4,6 @@ from PySide6.QtGui import QColor, QPainter, QPen, Qt
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.LevelObject import SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.level.WorldMap import WorldMap
-from smb3parse.levels import FIRST_VALID_ROW
 
 
 class WorldDrawer:
@@ -89,20 +88,10 @@ class WorldDrawer:
     def _draw_level_pointers(self, painter: QPainter, world: WorldMap):
         painter.save()
 
-        level_pointer_index = 0
+        for index, level_pointer in enumerate(world.level_pointers):
+            selected = index in world.selected_level_pointers
 
-        for lp in world.internal_world_map.gen_level_pointers():
-            x = (lp.screen * SCREEN_WIDTH + lp.column) * self.block_length
-            y = (lp.row - FIRST_VALID_ROW) * self.block_length
-
-            if level_pointer_index in world.selected_level_pointers:
-                painter.fillRect(QRect(x, y, self.block_length, self.block_length), QColor(0x00, 0xFF, 0x00, 0x80))
-
-            painter.setPen(QPen(QColor(0xFF, 0x00, 0x00, 0x80), 4))
-
-            painter.drawRect(x, y, self.block_length, self.block_length)
-
-            level_pointer_index += 1
+            level_pointer.draw(painter, self.block_length, False, selected)
 
         painter.restore()
 
