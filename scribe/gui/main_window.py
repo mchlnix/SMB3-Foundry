@@ -160,6 +160,8 @@ class MainWindow(QMainWindow):
     def on_edit_menu(self, action: QAction):
         if action is self.delete_tiles_action:
             self.level_ref.level.remove_all_tiles()
+        elif action is self.delete_sprites_action:
+            self.level_ref.level.remove_all_sprites()
 
         self.world_view.update()
 

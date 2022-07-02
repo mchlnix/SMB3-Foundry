@@ -338,9 +338,15 @@ class WorldMap(LevelBase):
 
         return f"Level {self.number}-{TILE_NAMES[tile]}"
 
-    def gen_sprites(self):
+    def gen_sprites(self) -> Generator[SpriteData, None, None]:
         for index in range(SPRITE_COUNT):
             yield SpriteData(self._rom, self, index)
+
+    def clear_sprites(self):
+        for index in range(SPRITE_COUNT):
+            sprite = SpriteData(self._rom, self, index)
+            sprite.clear()
+            sprite.write_back()
 
     def sprite_at(self, screen: int, row: int, column: int) -> Optional[SpriteData]:
         """
@@ -377,7 +383,7 @@ class WorldMap(LevelBase):
             )
 
         if screen - 1 not in range(self.screen_count):
-            raise ValueError(f"World {self.number} has {self.screen_count} screens. " f"Given number {screen} invalid.")
+            raise ValueError(f"World {self.number} has {self.screen_count} screens. Given number {screen} invalid.")
 
         return self.layout_bytes[(screen - 1) * WORLD_MAP_SCREEN_SIZE + row * WORLD_MAP_SCREEN_WIDTH + column]
 

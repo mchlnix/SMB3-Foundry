@@ -55,10 +55,10 @@ class SpriteList(TableWidget):
 
         self.blockSignals(True)
 
-        for index, position in enumerate(self.world.internal_world_map.gen_sprites()):
-            sprite_type = QTableWidgetItem(MAPOBJ_NAMES[position.type])
-            item_type = QTableWidgetItem(MAPITEM_NAMES[position.item])
-            pos = QTableWidgetItem(f"Screen {position.screen}: x={position.x}, y={position.y}")
+        for index, sprite in enumerate(self.world.internal_world_map.gen_sprites()):
+            sprite_type = QTableWidgetItem(MAPOBJ_NAMES[sprite.type])
+            item_type = QTableWidgetItem(MAPITEM_NAMES[sprite.item])
+            pos = QTableWidgetItem(f"Screen {sprite.screen}: x={sprite.x}, y={sprite.y}")
 
             self.setItem(index, 0, sprite_type)
             self.setItem(index, 1, item_type)

@@ -89,6 +89,13 @@ class SpriteData(DataPoint):
 
         self.calculate_addresses()
 
+    def clear(self):
+        self.screen = 0
+        self.x = 0
+        self.y = FIRST_VALID_ROW
+        self.type = MAPOBJ_EMPTY
+        self.item = MAPITEM_NOITEM
+
     def write_back(self):
         self._rom.write(self._x_pos_screen_address, self.screen)
         self._rom.write(self._x_pos_address, (self.x << 4) & 0xF0)

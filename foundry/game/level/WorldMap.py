@@ -162,6 +162,10 @@ class WorldMap(LevelLike):
     def remove_all_tiles(self):
         self.objects.clear()
 
+    def remove_all_sprites(self):
+        self.internal_world_map.clear_sprites()
+        self.data_changed.emit()
+
     def level_at_position(self, x: int, y: int):
         screen = x // WORLD_MAP_SCREEN_WIDTH + 1
 

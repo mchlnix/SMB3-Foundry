@@ -21,10 +21,7 @@ class WorldMapPosition:
         return self.world.is_enterable(self.tile())
 
     def sprite(self):
-        return self.world.sprite_at(self.screen, self.row, self.column).type
-
-    def item(self):
-        return self.world.sprite_at(self.screen, self.row, self.column).item
+        return self.world.sprite_at(self.screen, self.row, self.column)
 
     def has_sprite(self):
         return bool(self.sprite())
