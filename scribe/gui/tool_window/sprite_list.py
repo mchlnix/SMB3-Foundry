@@ -38,22 +38,20 @@ class SpriteList(TableWidget):
         if column == 2:
             return
 
-        sprite = list(self.world.internal_world_map.gen_sprites())[row]
+        sprite = self.world.sprites[row]
 
         widget = typing.cast(QComboBox, self.cellWidget(row, column))
         data = widget.currentText()
 
-        if sprite.y < FIRST_VALID_ROW:
-            sprite.y = FIRST_VALID_ROW
+        if sprite.data.y < FIRST_VALID_ROW:
+            sprite.data.y = FIRST_VALID_ROW
 
         if column == 0:
-            sprite.type = list(MAPOBJ_NAMES.values()).index(data)
+            sprite.data.type = list(MAPOBJ_NAMES.values()).index(data)
         elif column == 1:
-            sprite.item = list(MAPITEM_NAMES.values()).index(data)
+            sprite.data.item = list(MAPITEM_NAMES.values()).index(data)
         else:
             return
-
-        sprite.write_back()
 
         self.world.data_changed.emit()
 
@@ -64,10 +62,10 @@ class SpriteList(TableWidget):
 
         self.blockSignals(True)
 
-        for index, sprite in enumerate(self.world.internal_world_map.gen_sprites()):
-            sprite_type = QTableWidgetItem(MAPOBJ_NAMES[sprite.type])
-            item_type = QTableWidgetItem(MAPITEM_NAMES[sprite.item])
-            pos = QTableWidgetItem(f"Screen {sprite.screen}: x={sprite.x}, y={sprite.y}")
+        for index, sprite in enumerate(self.world.sprites):
+            sprite_type = QTableWidgetItem(MAPOBJ_NAMES[sprite.data.type])
+            item_type = QTableWidgetItem(MAPITEM_NAMES[sprite.data.item])
+            pos = QTableWidgetItem(f"Screen {sprite.data.screen}: x={sprite.data.x}, y={sprite.data.y}")
 
             self.setItem(index, 0, sprite_type)
             self.setItem(index, 1, item_type)

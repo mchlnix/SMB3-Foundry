@@ -1,52 +1,10 @@
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
-from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.LevelObject import SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.level.WorldMap import WorldMap
-from smb3parse.constants import (
-    MAPOBJ_AIRSHIP,
-    MAPOBJ_BATTLESHIP,
-    MAPOBJ_BOOMERANGBRO,
-    MAPOBJ_CANOE,
-    MAPOBJ_COINSHIP,
-    MAPOBJ_EMPTY,
-    MAPOBJ_FIREBRO,
-    MAPOBJ_HAMMERBRO,
-    MAPOBJ_HEAVYBRO,
-    MAPOBJ_HELP,
-    MAPOBJ_NSPADE,
-    MAPOBJ_TANK,
-    MAPOBJ_UNK08,
-    MAPOBJ_UNK0C,
-    MAPOBJ_W7PLANT,
-    MAPOBJ_W8AIRSHIP,
-    MAPOBJ_WHITETOADHOUSE,
-)
 from smb3parse.levels import FIRST_VALID_ROW
-
-EMPTY_IMAGE = load_from_png(0, 53)
-
-MAP_OBJ_SPRITES = {
-    MAPOBJ_EMPTY: EMPTY_IMAGE,
-    MAPOBJ_HELP: load_from_png(43, 2),
-    MAPOBJ_AIRSHIP: load_from_png(44, 2),
-    MAPOBJ_HAMMERBRO: load_from_png(45, 2),
-    MAPOBJ_BOOMERANGBRO: load_from_png(46, 2),
-    MAPOBJ_HEAVYBRO: load_from_png(47, 2),
-    MAPOBJ_FIREBRO: load_from_png(48, 2),
-    MAPOBJ_W7PLANT: load_from_png(49, 2),
-    MAPOBJ_UNK08: load_from_png(50, 2),
-    MAPOBJ_NSPADE: load_from_png(51, 2),
-    MAPOBJ_WHITETOADHOUSE: load_from_png(52, 2),
-    MAPOBJ_COINSHIP: load_from_png(53, 2),
-    MAPOBJ_UNK0C: load_from_png(54, 2),
-    MAPOBJ_BATTLESHIP: load_from_png(55, 2),
-    MAPOBJ_TANK: load_from_png(56, 2),
-    MAPOBJ_W8AIRSHIP: load_from_png(57, 2),
-    MAPOBJ_CANOE: load_from_png(58, 2),
-}
 
 
 class WorldDrawer:
@@ -151,15 +109,10 @@ class WorldDrawer:
     def _draw_sprites(self, painter: QPainter, world: WorldMap):
         painter.save()
 
-        for sprite in world.internal_world_map.gen_sprites():
-            x = (sprite.screen * SCREEN_WIDTH + sprite.x) * self.block_length
-            y = (sprite.y - FIRST_VALID_ROW) * self.block_length
+        for sprite in world.sprites:
+            selected = sprite.data.index in world.selected_sprites
 
-            painter.setPen(QPen(QColor(0x00, 0x00, 0xFF, 0x80), 4))
-            painter.drawImage(QPoint(x, y), MAP_OBJ_SPRITES[sprite.type].scaled(self.block_length, self.block_length))
-
-            if sprite.index in world.selected_sprites:
-                painter.fillRect(QRect(x, y, self.block_length, self.block_length), QColor(0x00, 0xFF, 0x00, 0x80))
+            sprite.draw(painter, self.block_length, False, selected)
 
         painter.restore()
 

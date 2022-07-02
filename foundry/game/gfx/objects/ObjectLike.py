@@ -1,6 +1,7 @@
 import abc
 
 from PySide6.QtCore import QRect
+from PySide6.QtGui import QPainter
 
 EXPANDS_NOT = 0b00
 EXPANDS_HORIZ = 0b01
@@ -22,7 +23,7 @@ class ObjectLike(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def draw(self, dc, zoom, transparent):
+    def draw(self, painter: QPainter, block_length, transparent):
         pass
 
     @abc.abstractmethod
@@ -38,7 +39,7 @@ class ObjectLike(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_position(self):
+    def get_position(self) -> tuple[int, int]:
         pass
 
     @abc.abstractmethod

@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QWidget
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_WIDTH
+from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
@@ -28,7 +29,6 @@ from foundry.gui.settings import SETTINGS
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.levels.data_points import SpriteData
 
 
 class WorldView(MainView):
@@ -62,7 +62,7 @@ class WorldView(MainView):
         self.last_mouse_position = 0, 0
 
         self.drag_start_point = 0, 0
-        self.selected_sprite: Optional[SpriteData] = None
+        self.selected_sprite: Optional[Sprite] = None
 
         self.dragging_happened = True
 
@@ -272,7 +272,7 @@ class WorldView(MainView):
             obj.change_type(self._tile_to_put.index)
             self.update()
         elif sprite is not None:
-            self.drag_start_point = sprite.x, sprite.y
+            self.drag_start_point = sprite.data.x, sprite.data.y
             self.selected_sprite = sprite
             self.mouse_mode = MODE_DRAG
         elif self._select_objects_on_click(event) and obj is not None:
@@ -297,9 +297,7 @@ class WorldView(MainView):
             column = level_x % SCREEN_WIDTH
             row = FIRST_VALID_ROW + level_y
 
-            self.selected_sprite.set_pos(screen, row, column)
-
-            self.selected_sprite.write_back()
+            self.selected_sprite.data.set_pos(screen, row, column)
 
             self.level_ref.level.changed = True
         else:
@@ -325,7 +323,7 @@ class WorldView(MainView):
             return
         elif self.mouse_mode == MODE_DRAG and self.dragging_happened:
             if self.selected_sprite is not None:
-                drag_end_point = self.selected_sprite.x, self.selected_sprite.y
+                drag_end_point = self.selected_sprite.data.x, self.selected_sprite.data.y
 
                 if self.drag_start_point != drag_end_point:
                     self._stop_drag()

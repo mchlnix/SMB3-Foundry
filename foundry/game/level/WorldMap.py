@@ -7,6 +7,7 @@ from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.MapObject import MapObject
+from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.levels.data_points import LevelPointerData
 from smb3parse.levels.world_map import (
@@ -72,6 +73,11 @@ class WorldMap(LevelLike):
             block = get_block(world_position.tile(), self.palette_group, self.graphics_set, self.tsa_data)
 
             self.objects.append(MapObject(block, x, y))
+
+        self.sprites: list[Sprite] = []
+
+        for sprite_data in self.internal_world_map.gen_sprites():
+            self.sprites.append(Sprite(sprite_data))
 
         assert len(self.objects) % WORLD_MAP_HEIGHT == 0
 
@@ -181,12 +187,16 @@ class WorldMap(LevelLike):
 
         return self.internal_world_map.level_name_for_position(screen, y, x)
 
-    def sprite_at_position(self, x, y):
+    def sprite_at_position(self, x, y) -> Optional[Sprite]:
         screen = x // WORLD_MAP_SCREEN_WIDTH + 1
 
         x %= WORLD_MAP_SCREEN_WIDTH
 
-        return self.internal_world_map.sprite_at(screen, y, x)
+        for sprite in self.sprites:
+            if sprite.data.is_at(screen, y, x):
+                return sprite
+        else:
+            return None
 
     def tile_at(self, x, y):
         screen = x // WORLD_MAP_SCREEN_WIDTH + 1
@@ -209,4 +219,9 @@ class WorldMap(LevelLike):
         if rom is None:
             rom = ROM()
 
+        # tiles
         rom.bulk_write(bytearray(map_object.to_bytes() for map_object in self.objects), self.layout_address)
+
+        # sprites
+        for sprite in self.sprites:
+            sprite.data.write_back()
