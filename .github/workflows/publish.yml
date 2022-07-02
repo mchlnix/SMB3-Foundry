@@ -9,14 +9,14 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Check out
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Coding Style Check
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install flake8 black
-        python3 -m black -l 120 --check foundry/ smb3parse/
-        python3 -m flake8 foundry/ smb3parse/
+        python3 -m black -l 120 --check foundry/ smb3parse/ scribe/
+        python3 -m flake8 foundry/ smb3parse/ scribe/
 
   set_nightly_tag:
     name: Set nightly tag on dev
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Check out
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
@@ -65,24 +65,27 @@ jobs:
     needs: code_style
     if: startsWith(github.ref, 'refs/tags/')
 
-    name: Build ${{ matrix.config.prefix }}
-    runs-on: ${{ matrix.config.os }}
+    name: Build ${{ matrix.editor.name }}-${{ matrix.cfg.prefix }}
+    runs-on: ${{ matrix.cfg.os }}
     strategy:
       matrix:
-        config:
-        - {os: ubuntu-20.04, exe: 'smb3-foundry', prefix: 'linux', suffix: '', architecture: 'x64'}
-        - {os: windows-2019, exe: 'smb3-foundry.exe', prefix: 'win64', suffix: '.exe', architecture: 'x64'}
-        - {os: windows-2019, exe: 'smb3-foundry.exe', prefix: 'win32', suffix: '.exe', architecture: 'x86'}
-        - {os: macos-latest, exe: 'smb3-foundry', prefix: 'osx', suffix: '', architecture: 'x64'}
+        cfg:
+          - {os: ubuntu-20.04, prefix: 'linux', suffix: '', architecture: 'x64'}
+          - {os: windows-2019, prefix: 'win64', suffix: '.exe', architecture: 'x64'}
+          - {os: windows-2019, prefix: 'win32', suffix: '.exe', architecture: 'x86'}
+          - {os: macos-latest, prefix: 'osx', suffix: '', architecture: 'x64'}
+        editor:
+          - {name: 'smb3-foundry'}
+          - {name: 'smb3-scribe'}
 
     steps:
       - name: Check out
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          architecture: ${{ matrix.config.architecture }}
+          architecture: ${{ matrix.cfg.architecture }}
 
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
@@ -95,14 +98,14 @@ jobs:
 
       - name: Build Executable
         run: |
-          pyinstaller smb3-foundry.spec
-          mv dist/${{ matrix.config.exe }} dist/${{ matrix.config.prefix }}-smb3-foundry${{ matrix.config.suffix }}
+          pyinstaller ${{ matrix.editor.name }}.spec
+          mv dist/${{ matrix.editor.name }}${{ matrix.cfg.suffix }} dist/${{ matrix.cfg.prefix }}-${{ matrix.editor.name }}${{ matrix.cfg.suffix }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.config.prefix }}-smb3-foundry${{ matrix.config.suffix }}
-          path: dist/${{ matrix.config.prefix }}-smb3-foundry${{ matrix.config.suffix }}
+          name: ${{ matrix.cfg.prefix }}-${{ matrix.editor.name }}${{ matrix.cfg.suffix }}
+          path: dist/${{ matrix.cfg.prefix }}-${{ matrix.editor.name }}${{ matrix.cfg.suffix }}
 
   build_manual:
     needs: code_style
@@ -112,7 +115,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup node/npm
         uses: actions/setup-node@v2
@@ -140,7 +143,7 @@ jobs:
     runs-on: ubuntu-latest  # this doesn't matter as it's only codestyle and artifact collection
     steps:
       - name: Check out
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -217,6 +220,46 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "artifacts/win32-smb3-foundry.exe/win32-smb3-foundry.exe"
           asset_name: "win32-smb3-foundry.exe"
+          asset_content_type: application/octet-stream
+
+      - name: Upload SMB3 Scribe Linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/linux-smb3-scribe/linux-smb3-scribe"
+          asset_name: "linux-smb3-scribe"
+          asset_content_type: application/octet-stream
+
+      - name: Upload SMB3 Scribe OSX
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/osx-smb3-scribe/osx-smb3-scribe"
+          asset_name: "osx-smb3-scribe"
+          asset_content_type: application/octet-stream
+
+      - name: Upload SMB3 Scribe Windows x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/win64-smb3-scribe.exe/win64-smb3-scribe.exe"
+          asset_name: "win64-smb3-scribe.exe"
+          asset_content_type: application/octet-stream
+
+      - name: Upload SMB3 Scribe Windows x32
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/win32-smb3-scribe.exe/win32-smb3-scribe.exe"
+          asset_name: "win32-smb3-scribe.exe"
           asset_content_type: application/octet-stream
 
       - name: Upload SMB3 Foundry Manual
