@@ -28,11 +28,8 @@ from smb3parse.levels import (
     BASE_OFFSET,
     COMPLETABLE_LIST_END_MARKER,
     COMPLETABLE_TILES_LIST,
-    ENEMY_BASE_OFFSET,
     FIRST_VALID_ROW,
     LAYOUT_LIST_OFFSET,
-    LEVELS_IN_WORLD_LIST_OFFSET,
-    LEVEL_ENEMY_LIST_OFFSET,
     LEVEL_X_POS_LISTS,
     LEVEL_Y_POS_LISTS,
     LevelBase,
@@ -51,7 +48,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.levels.data_points import SpriteData
+from smb3parse.levels.data_points import LevelPointerData, SpriteData
 from smb3parse.levels.level import Level
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
@@ -185,7 +182,7 @@ class WorldMap(LevelBase):
     def level_for_position(self, screen: int, player_row: int, player_column: int):
         """
         The rom takes the position of the current player, the world, the screen and the x and y coordinates, and
-        operates on them. First it is checked, whether the player is located on a tile, that is able to enterable.
+        operates on them. First it is checked, whether the player is located on a tile, that can be entered.
 
         If that is the case, the x and y coordinates are used to look up the object set and address of the level. The
         object set is necessary to find the right base offset for the level address and to correctly parse its object
@@ -211,31 +208,17 @@ class WorldMap(LevelBase):
             warn("Spade and mushroom house currently not supported, when getting a level address.")
             return None
 
-        level_indexes = self.level_indexes(screen, player_row, player_column)
+        level_pointer = self.level_at(screen, player_row, player_column)
 
-        if level_indexes is None:
+        if level_pointer is None:
             return None
 
-        row_address, column_address, level_offset_address, enemy_offset_address = level_indexes
-
-        level_offset = self._rom.little_endian(level_offset_address)
-
-        if not 0xA000 <= level_offset < 0xC000:
+        if not 0xA000 <= level_pointer.level_offset < 0xC000:
             # suppose that level layouts are only in this range?
-            warn(f"Level in {self}@{screen=}, {player_row=}, {player_column=} has offset {level_offset}")
+            warn(f"Level in {self}@{screen=}, {player_row=}, {player_column=} has offset {level_pointer.level_offset}")
             return None
 
-        correct_row_value = self._rom.int(row_address)
-        object_set_number = correct_row_value & 0x0F
-
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + object_set_number) * OFFSET_SIZE - 10) * 0x1000
-
-        absolute_level_address = 0x0010 + object_set_offset + level_offset
-
-        # get enemy address
-        enemy_address = ENEMY_BASE_OFFSET + self._rom.little_endian(enemy_offset_address)
-
-        return object_set_number, absolute_level_address, enemy_address
+        return level_pointer.object_set, level_pointer.level_address, level_pointer.enemy_address
 
     def replace_level_at_position(self, level_info, position: "WorldMapPosition"):
         level_address, enemy_address, object_set_number = level_info
@@ -275,57 +258,16 @@ class WorldMap(LevelBase):
 
         :return: The memory addresses of the row, column and level offset position.
         """
-
-        level_y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
-            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
-        )
-
-        level_x_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
-            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
-        )
-
-        level_amount = level_x_pos_list_start - level_y_pos_list_start
-
-        # go through the row and column pairs for all levels in this world
-        for coord_index in range(level_amount):
-            # get row value first
-            row_address = level_y_pos_list_start + coord_index
-            row_value = self._rom.int(row_address)
-
-            # adjust the value, and ignore the black border tiles around the map
-            row = (row_value >> 4) - FIRST_VALID_ROW
-
-            if row != player_row:
-                continue
-
-            # if it matches, get the corresponding column value next
-            column_address = level_x_pos_list_start + coord_index
-            col_value = self._rom.int(column_address)
-
-            # left 4 bits are the 0-indexed screen number, the right bits are the column
-            screen = (col_value >> 4) + 1
-            column = col_value & 0x0F
-
-            if column == player_column and screen == player_screen:
-                # found our match
-                break
-        else:
-            # no level at given coordinates
+        if (level_pointer := self.level_at(player_screen, player_row, player_column)) is None:
             return None
 
-        # get level offset
-        level_list_offset_position = LEVELS_IN_WORLD_LIST_OFFSET + self.world_index * OFFSET_SIZE
-        level_list_address = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(level_list_offset_position)
-
-        level_offset_position = level_list_address + OFFSET_SIZE * coord_index
-
-        enemy_list_start_offset = LEVEL_ENEMY_LIST_OFFSET + self.world_index * OFFSET_SIZE
-        enemy_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(enemy_list_start_offset)
-
-        enemy_offset_position = enemy_list_start + coord_index * OFFSET_SIZE
-
         # return the addresses of the row and column value, so we can overwrite them, if necessary
-        return row_address, column_address, level_offset_position, enemy_offset_position
+        return (
+            level_pointer.y_address,
+            level_pointer.x_address,
+            level_pointer.level_offset_address,
+            level_pointer.enemy_offset_address,
+        )
 
     def level_name_for_position(self, screen: int, player_row: int, player_column: int) -> str:
         tile = self.tile_at(screen, player_row, player_column)
@@ -343,8 +285,7 @@ class WorldMap(LevelBase):
             yield SpriteData(self._rom, self, index)
 
     def clear_sprites(self):
-        for index in range(SPRITE_COUNT):
-            sprite = SpriteData(self._rom, self, index)
+        for sprite in self.gen_sprites():
             sprite.clear()
             sprite.write_back()
 
@@ -359,6 +300,29 @@ class WorldMap(LevelBase):
         for sprite_data in self.gen_sprites():
             if sprite_data.is_at(screen, row, column):
                 return sprite_data
+        else:
+            return None
+
+    def gen_level_pointers(self) -> Generator[LevelPointerData, None, None]:
+        for index in range(self.level_count):
+            yield LevelPointerData(self._rom, self, index)
+
+    def clear_level_pointers(self):
+        for level_pointer in self.gen_level_pointers():
+            level_pointer.clear()
+            level_pointer.write_back()
+
+    def level_at(self, screen: int, row: int, column: int) -> Optional[LevelPointerData]:
+        """
+        Returns the ID of the overworld sprite at the given location in this world. Or 0 if there is None.
+
+        :param screen:
+        :param row:
+        :param column:
+        """
+        for level_pointer in self.gen_level_pointers():
+            if level_pointer.is_at(screen, row, column):
+                return level_pointer
         else:
             return None
 

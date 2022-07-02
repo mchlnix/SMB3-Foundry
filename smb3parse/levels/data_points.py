@@ -2,7 +2,16 @@ from builtins import NotImplementedError
 from typing import TYPE_CHECKING
 
 from smb3parse.constants import BASE_OFFSET, MAPITEM_NOITEM, MAPOBJ_EMPTY, Map_List_Object_Ys
-from smb3parse.levels import FIRST_VALID_ROW, OFFSET_SIZE
+from smb3parse.levels import (
+    FIRST_VALID_ROW,
+    LEVELS_IN_WORLD_LIST_OFFSET,
+    LEVEL_ENEMY_LIST_OFFSET,
+    LEVEL_X_POS_LISTS,
+    LEVEL_Y_POS_LISTS,
+    OFFSET_BY_OBJECT_SET_A000,
+    OFFSET_SIZE,
+    WORLD_MAP_BASE_OFFSET,
+)
 
 if TYPE_CHECKING:
     from smb3parse.util.rom import Rom
@@ -33,13 +42,147 @@ class DataPoint:
         raise NotImplementedError
 
 
-class SpriteData(DataPoint):
+class _PositionMixin:
+    screen: int
+    x: int
+    y: int
+
+    def __init__(self, *args, **kwargs):
+        self.screen_address = 0x0
+        self.screen = 0
+
+        self.x_address = 0x0
+        self.x = 0
+
+        self.y_address = 0x0
+        self.y = 0
+
+        super(_PositionMixin, self).__init__(*args, **kwargs)
+
+    def is_at(self, screen, row, column):
+        return self.screen == screen - 1 and self.column == column and self.row == row + FIRST_VALID_ROW
+
+    def set_pos(self, screen, row, column):
+        self.screen = screen
+        self.column = column
+        self.row = row
+
+    @property
+    def row(self):
+        return self.y
+
+    @row.setter
+    def row(self, value):
+        self.y = value
+
+    @property
+    def column(self):
+        return self.x
+
+    @column.setter
+    def column(self, value):
+        self.x = value
+
+
+class _IndexedMixin:
+    index: int
+    calculate_addresses: callable
+
+    def change_index(self, index: int):
+        self.index = index
+
+        self.calculate_addresses()
+
+
+class LevelPointerData(_PositionMixin, DataPoint):
+    def __init__(self, rom, world_map: "WorldMap", index: int):
+        self.world = world_map
+        self.index = index
+
+        self.object_set_address = 0x0
+        self.object_set = 0
+
+        self.level_offset_address = 0x0
+        self.level_offset = 0
+
+        self.enemy_offset_address = 0x0
+        self.enemy_offset = 0
+
+        super(LevelPointerData, self).__init__(rom)
+
+    def calculate_addresses(self):
+        level_y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
+            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world.world_index
+        )
+
+        level_x_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
+            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world.world_index
+        )
+
+        self.x_address = self.screen_address = level_x_pos_list_start + self.index
+        self.y_address = self.object_set_address = level_y_pos_list_start + self.index
+
+        # get level offset
+        level_list_offset_position = LEVELS_IN_WORLD_LIST_OFFSET + self.world.world_index * OFFSET_SIZE
+        level_list_address = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(level_list_offset_position)
+
+        self.level_offset_address = level_list_address + OFFSET_SIZE * self.index
+
+        enemy_list_start_offset = LEVEL_ENEMY_LIST_OFFSET + self.world.world_index * OFFSET_SIZE
+        enemy_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(enemy_list_start_offset)
+
+        self.enemy_offset_address = enemy_list_start + OFFSET_SIZE * self.index
+
+    @property
+    def level_address(self):
+        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + self.object_set) * OFFSET_SIZE - 10) * 0x1000
+
+        return BASE_OFFSET + object_set_offset + self.level_offset
+
+    @property
+    def enemy_address(self):
+        return BASE_OFFSET + self.enemy_offset
+
+    def read_values(self):
+        screen_and_x = self._rom.int(self.screen_address)
+
+        self.screen = screen_and_x >> 4
+        self.x = screen_and_x & 0x0F
+
+        object_set_and_y = self._rom.int(self.y_address)
+        self.y = object_set_and_y >> 4
+        self.object_set = object_set_and_y & 0x0F
+
+        self.level_offset = self._rom.little_endian(self.level_offset_address)
+        self.enemy_offset = self._rom.little_endian(self.enemy_offset_address)
+
+    def clear(self):
+        self.screen = 0
+        self.x = 0
+        self.object_set = 0
+        self.y = FIRST_VALID_ROW
+
+        self.level_offset = 0x0
+        self.enemy_offset = 0x0
+
+    def write_back(self):
+        screen_and_x = (self.screen - 1) << 4 + self.x
+        self._rom.write(self.screen_address, screen_and_x)
+
+        object_set_and_y = (self.y - 1) << 4 + self.object_set
+        self._rom.write(self.y_address, object_set_and_y)
+
+        self._rom.write(self.level_offset_address, self.level_offset)
+        self._rom.write(self.enemy_offset_address, self.enemy_offset)
+
+
+class SpriteData(_PositionMixin, DataPoint):
     def __init__(self, rom, world_map: "WorldMap", index: int):
         self.world = world_map
         self.index = index
 
         self._x_pos_screen_address = 0x0
-        self.screen = 1
+        self.screen = 0
 
         self._x_pos_address = 0x0
         self.x = 0
@@ -84,11 +227,6 @@ class SpriteData(DataPoint):
         self.type = self._rom.int(self._type_address)
         self.item = self._rom.int(self._item_address)
 
-    def change_index(self, index: int):
-        self.index = index
-
-        self.calculate_addresses()
-
     def clear(self):
         self.screen = 0
         self.x = 0
@@ -102,11 +240,3 @@ class SpriteData(DataPoint):
         self._rom.write(self._y_pos_address, (self.y << 4) & 0xF0)
         self._rom.write(self._type_address, self.type)
         self._rom.write(self._item_address, self.item)
-
-    def is_at(self, screen, row, column):
-        return self.screen == screen - 1 and self.x == column and self.y - FIRST_VALID_ROW == row
-
-    def set_pos(self, screen, row, column):
-        self.screen = screen
-        self.x = column
-        self.y = row
