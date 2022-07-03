@@ -23,6 +23,7 @@ class TableWidget(QTableWidget):
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.setSelectionBehavior(self.SelectRows)
+        self.setSelectionMode(self.SingleSelection)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
     def set_headers(self, headers: list[str]):
