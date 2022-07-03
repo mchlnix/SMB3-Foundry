@@ -12,6 +12,7 @@ from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset
+from smb3parse.levels import WORLD_MAP_LAYOUT_DELIMITER
 from smb3parse.levels.level_header import LevelHeader
 
 LEVEL_POINTER_OFFSET = Level_TilesetIdx_ByTileset
@@ -74,7 +75,8 @@ class Level(LevelLike):
         if self.layout_address == self.enemy_offset == 0:
             # probably loaded to become an m3l
             self.size = (0, 0)
-            self.header = bytearray(9)
+            self.header_bytes = bytearray(9)
+            self.header = LevelHeader(self.header_bytes, self.object_set.number)
             self.object_factory = None
             self.enemy_factory = None
             return
@@ -256,7 +258,9 @@ class Level(LevelLike):
 
     @property
     def objects_end(self):
-        return self.header_offset + Level.HEADER_LENGTH + self.current_object_size() + len(b"\xFF")  # the delimiter
+        return (
+            self.header_offset + Level.HEADER_LENGTH + self.current_object_size() + len(WORLD_MAP_LAYOUT_DELIMITER)
+        )  # the delimiter
 
     @property
     def enemies_end(self):
@@ -720,12 +724,12 @@ class Level(LevelLike):
 
         # figure out how many bytes are the objects
         self._load_objects(m3l_bytes)
-        object_size = self.current_object_size() + len(b"\xFF")  # delimiter
+        object_size = self.current_object_size() + len(WORLD_MAP_LAYOUT_DELIMITER)  # delimiter
 
         object_bytes = m3l_bytes[:object_size]
         enemy_bytes = m3l_bytes[object_size:]
 
-        if len(enemy_bytes) % 3 - len(b"\xFF") == 1:
+        if len(enemy_bytes) % 3 - len(WORLD_MAP_LAYOUT_DELIMITER) == 1:
             # compatibility with workshop
             enemy_bytes = enemy_bytes[1:]
 

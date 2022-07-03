@@ -129,17 +129,17 @@ def test_castle_is_enterable(world_1):
 
 
 def test_level_count_world_1(world_1):
-    assert world_1.level_count_s1 == 0x15
-    assert world_1.level_count_s2 == 0x00
-    assert world_1.level_count_s3 == 0x00
-    assert world_1.level_count_s4 == 0x00
+    assert world_1.data.level_count_screen_1 == 0x15
+    assert world_1.data.level_count_screen_2 == 0x00
+    assert world_1.data.level_count_screen_3 == 0x00
+    assert world_1.data.level_count_screen_4 == 0x00
 
 
 def test_level_count_world_8(world_8):
-    assert world_8.level_count_s1 == 0x08
-    assert world_8.level_count_s2 == 0x0A
-    assert world_8.level_count_s3 == 0x11
-    assert world_8.level_count_s4 == 0x06
+    assert world_8.data.level_count_screen_1 == 0x08
+    assert world_8.data.level_count_screen_2 == 0x0A
+    assert world_8.data.level_count_screen_3 == 0x11
+    assert world_8.data.level_count_screen_4 == 0x06
 
 
 def test_get_tile(world_1):

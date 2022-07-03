@@ -133,6 +133,8 @@ LEVEL_LENGTH_INTERVAL = 0x10
 DEFAULT_HORIZONTAL_HEIGHT = 27
 DEFAULT_VERTICAL_WIDTH = 16
 
+WORLD_MAP_LAYOUT_DELIMITER = b"\xFF"
+
 
 def is_valid_level_length(level_length: int) -> bool:
     return level_length in range(LEVEL_MIN_LENGTH, LEVEL_MAX_LENGTH + 1, LEVEL_LENGTH_INTERVAL)

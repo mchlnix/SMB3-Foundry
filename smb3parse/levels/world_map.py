@@ -29,13 +29,10 @@ from smb3parse.levels import (
     COMPLETABLE_TILES_LIST,
     FIRST_VALID_ROW,
     LAYOUT_LIST_OFFSET,
-    LEVEL_X_POS_LISTS,
-    LEVEL_Y_POS_LISTS,
     LevelBase,
     OFFSET_SIZE,
     SPECIAL_ENTERABLE_TILES_LIST,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
-    STRUCTURE_DATA_OFFSETS,
     TILE_ATTRIBUTES_TS0_OFFSET,
     VALID_COLUMNS,
     VALID_ROWS,
@@ -46,7 +43,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.levels.data_points import LevelPointerData, SpriteData
+from smb3parse.levels.data_points import LevelPointerData, SpriteData, WorldMapData
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
 
@@ -76,16 +73,10 @@ Y_START_POS_LIST = Map_Y_Starts
 
 
 def list_world_map_addresses(rom: Rom) -> List[int]:
-    offsets = rom.read(LAYOUT_LIST_OFFSET, WORLD_COUNT * OFFSET_SIZE)
-
     addresses = []
 
     for world in range(WORLD_COUNT):
-        index = world * OFFSET_SIZE
-
-        world_map_offset = (offsets[index + 1] << 8) + offsets[index]
-
-        addresses.append(WORLD_MAP_BASE_OFFSET + world_map_offset)
+        addresses.append(WORLD_MAP_BASE_OFFSET + rom.little_endian(LAYOUT_LIST_OFFSET + OFFSET_SIZE * world))
 
     return addresses
 
@@ -128,11 +119,9 @@ class WorldMap(LevelBase):
         except ValueError:
             raise ValueError(f"World map was not found at given memory address {hex(layout_address)}.")
 
+        self.data = WorldMapData(self.rom, self.world_index)
+
         self.height = WORLD_MAP_HEIGHT
-
-        layout_end_index = rom.find(b"\xFF", layout_address)
-
-        self.layout_bytes = rom.read(layout_address, layout_end_index - layout_address)
 
         if len(self.layout_bytes) % WORLD_MAP_SCREEN_SIZE != 0:
             raise ValueError(
@@ -143,7 +132,13 @@ class WorldMap(LevelBase):
         self.screen_count = len(self.layout_bytes) // WORLD_MAP_SCREEN_SIZE
         self.width = int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
 
-        self._parse_structure_data_block(rom)
+    @property
+    def layout_bytes(self):
+        return self.data.tile_data
+
+    @layout_bytes.setter
+    def layout_bytes(self, value):
+        self.data.tile_data = value
 
     @property
     def world_index(self):
@@ -151,30 +146,7 @@ class WorldMap(LevelBase):
 
     @property
     def level_count(self):
-        return self.level_count_s1 + self.level_count_s2 + self.level_count_s3 + self.level_count_s4
-
-    def _parse_structure_data_block(self, rom: Rom):
-        structure_block_offset = rom.little_endian(STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.world_index)
-
-        self.structure_block_start = WORLD_MAP_BASE_OFFSET + structure_block_offset
-
-        # the indexes into the y_pos list, where the levels for the n-th screen start
-        y_pos_start_by_screen = rom.read(self.structure_block_start, 4)
-
-        level_y_pos_list_start = WORLD_MAP_BASE_OFFSET + rom.little_endian(
-            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.world_index
-        )
-
-        level_x_pos_list_start = WORLD_MAP_BASE_OFFSET + rom.little_endian(
-            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.world_index
-        )
-
-        level_y_pos_list_end = level_x_pos_list_start - level_y_pos_list_start
-
-        self.level_count_s1 = y_pos_start_by_screen[1] - y_pos_start_by_screen[0]
-        self.level_count_s2 = y_pos_start_by_screen[2] - y_pos_start_by_screen[1]
-        self.level_count_s3 = y_pos_start_by_screen[3] - y_pos_start_by_screen[2]
-        self.level_count_s4 = level_y_pos_list_end - y_pos_start_by_screen[3]
+        return self.data.level_count
 
     def level_for_position(self, screen: int, player_row: int, player_column: int) -> Optional[LevelPointerData]:
         """
@@ -254,7 +226,7 @@ class WorldMap(LevelBase):
 
     def gen_sprites(self) -> Generator[SpriteData, None, None]:
         for index in range(SPRITE_COUNT):
-            yield SpriteData(self, index)
+            yield SpriteData(self.data, index)
 
     def clear_sprites(self):
         for sprite in self.gen_sprites():
@@ -277,7 +249,7 @@ class WorldMap(LevelBase):
 
     def gen_level_pointers(self) -> Generator[LevelPointerData, None, None]:
         for index in range(self.level_count):
-            yield LevelPointerData(self, index)
+            yield LevelPointerData(self.data, index)
 
     def clear_level_pointers(self):
         for level_pointer in self.gen_level_pointers():
@@ -365,6 +337,9 @@ class WorldMap(LevelBase):
             for row in range(WORLD_MAP_HEIGHT):
                 for column in range(WORLD_MAP_SCREEN_WIDTH):
                     yield WorldMapPosition(self, screen, row, column)
+
+    def save_to_rom(self):
+        pass
 
     @staticmethod
     def from_world_number(rom: Rom, world_number: int) -> "WorldMap":

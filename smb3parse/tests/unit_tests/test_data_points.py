@@ -11,7 +11,7 @@ def test_read_values(world_1):
 
 
 def test_sprite_write_back(world_1):
-    original_sprite = SpriteData(world_1, 0)
+    original_sprite = SpriteData(world_1.data, 0)
 
     original_sprite.screen += 1
     original_sprite.x += 1
@@ -21,7 +21,7 @@ def test_sprite_write_back(world_1):
 
     original_sprite.write_back()
 
-    updated_sprite = SpriteData(world_1, 0)
+    updated_sprite = SpriteData(world_1.data, 0)
 
     assert updated_sprite.screen == original_sprite.screen
     assert updated_sprite.x == original_sprite.x
@@ -31,7 +31,7 @@ def test_sprite_write_back(world_1):
 
 
 def test_level_pointer_write_back(world_1):
-    original_level_pointer = LevelPointerData(world_1, 5)
+    original_level_pointer = LevelPointerData(world_1.data, 5)
 
     original_level_pointer.screen += 1
     original_level_pointer.x += 1
@@ -42,7 +42,7 @@ def test_level_pointer_write_back(world_1):
 
     original_level_pointer.write_back()
 
-    updated_level_pointer = LevelPointerData(world_1, 5)
+    updated_level_pointer = LevelPointerData(world_1.data, 5)
 
     assert updated_level_pointer.screen == original_level_pointer.screen
     assert updated_level_pointer.x == original_level_pointer.x
@@ -53,8 +53,8 @@ def test_level_pointer_write_back(world_1):
 
 
 def test_level_pointer_addresses_to_offset(world_1):
-    level_pointer = LevelPointerData(world_1, 5)
-    other_level_pointer = LevelPointerData(world_1, 5)
+    level_pointer = LevelPointerData(world_1.data, 5)
+    other_level_pointer = LevelPointerData(world_1.data, 5)
 
     level_pointer.level_address = level_pointer.level_address
     level_pointer.enemy_address = level_pointer.enemy_address

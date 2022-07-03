@@ -56,7 +56,7 @@ class BlockList(QWidget):
         self.current_block = BlockIcon(0, zoom_level=4)
         self.current_block.clicked.connect(self.set_current_block)
 
-        self.recent_blocks = [BlockIcon(255) for _ in range(9)]
+        self.recent_blocks = [BlockIcon(0xFE) for _ in range(9)]
 
         self.layout().addWidget(self.current_block)
         self.layout().addSpacing(10)

@@ -1,13 +1,13 @@
 from math import ceil
 
 from PySide6.QtCore import QPoint, QRect, QSize, Signal, SignalInstance
-from PySide6.QtGui import QBrush, QMouseEvent, QPaintEvent, QPainter, QPen, QResizeEvent, Qt
+from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter, QPen, QResizeEvent, Qt
 from PySide6.QtWidgets import QComboBox, QLabel, QLayout, QStatusBar, QToolBar, QWidget
 
 from foundry import icon
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET, bg_color_for_object_set, load_palette_group
+from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET, load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
@@ -110,7 +110,7 @@ class BlockBank(QWidget):
         super(BlockBank, self).__init__(parent)
         self.setMouseTracking(True)
 
-        self.sprites = 256
+        self.sprites = 255  # 0xFF is the delimiter
         self.zoom_step = 256
         self.sprites_horiz = 16
         self.sprites_vert = ceil(self.sprites / self.sprites_horiz)
@@ -164,13 +164,11 @@ class BlockBank(QWidget):
 
         dec_index = row * self.sprites_horiz + column
 
-        self.clicked.emit(dec_index)
+        if dec_index < 0xFF:
+            self.clicked.emit(dec_index)
 
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
-
-        bg_color = bg_color_for_object_set(self.object_set, 0)
-        painter.setBrush(QBrush(bg_color))
 
         painter.drawRect(QRect(QPoint(0, 0), self.size()))
 
