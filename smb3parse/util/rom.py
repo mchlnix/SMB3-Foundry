@@ -74,6 +74,11 @@ class Rom:
         offset = self.prg_normalize(offset)
         return self._data[offset : offset + length]
 
+    def read_until(self, offset, delimiter):
+        end = self.find(delimiter, offset)
+
+        return self.read(offset, end - offset)
+
     def write(self, offset: int, data: Union[bytes, int]):
         if isinstance(data, int):
             data = bytes([data])
