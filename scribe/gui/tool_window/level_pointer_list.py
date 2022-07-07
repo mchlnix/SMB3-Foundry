@@ -70,17 +70,13 @@ class LevelPointerList(TableWidget):
 
         self.setRowCount(self.world.internal_world_map.level_count)
 
-        last_item_row = 0
-
-        for lp in self.world.level_pointers:
+        for row, lp in enumerate(self.world.level_pointers):
             object_set_name = QTableWidgetItem(OBJECT_SET_NAMES[lp.data.object_set])
             hex_level_address = QTableWidgetItem(hex(lp.data.level_address))
             hex_enemy_address = QTableWidgetItem(hex(lp.data.enemy_address))
             pos = QTableWidgetItem(f"Screen {lp.data.screen}: x={lp.data.x}, y={lp.data.y}")
 
-            self.setItem(last_item_row, 0, object_set_name)
-            self.setItem(last_item_row, 1, hex_level_address)
-            self.setItem(last_item_row, 2, hex_enemy_address)
-            self.setItem(last_item_row, 3, pos)
-
-            last_item_row += 1
+            self.setItem(row, 0, object_set_name)
+            self.setItem(row, 1, hex_level_address)
+            self.setItem(row, 2, hex_enemy_address)
+            self.setItem(row, 3, pos)

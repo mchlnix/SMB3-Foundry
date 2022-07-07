@@ -166,7 +166,15 @@ class WorldView(MainView):
         if self.read_only:
             return super(WorldView, self).mouseMoveEvent(event)
 
-        if self.mouse_mode == MODE_DRAG:
+        if self.mouse_mode == MODE_PLACE_TILE and event.buttons() & Qt.LeftButton:
+            x, y = self._to_level_point(*event.pos().toTuple())
+
+            tile = self.world.object_at(x, y)
+
+            if tile != self._tile_to_put:
+                tile.change_type(self._tile_to_put.index)
+                self.update()
+        elif self.mouse_mode == MODE_DRAG:
             self.setCursor(Qt.ClosedHandCursor)
             self._dragging(event)
 
