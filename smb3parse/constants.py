@@ -101,15 +101,15 @@ MAPITEM_NAMES = {
     MAPITEM_FROG: "Frog Suit",
     MAPITEM_TANOOKI: "Tanooki Suit",
     MAPITEM_HAMMERSUIT: "Hammer Suit",
-    MAPITEM_JUDGEMS: "Boot?",
+    MAPITEM_JUDGEMS: "Cloud",
     MAPITEM_PWING: "P-Wing",
     MAPITEM_STAR: "Star",
     MAPITEM_ANCHOR: "Anchor",
     MAPITEM_HAMMER: "Hammer",
     MAPITEM_WHISTLE: "Warp Whistle",
     MAPITEM_MUSICBOX: "Music Box",
-    MAPITEM_UNKNOWN1: "Unknown 1",
-    MAPITEM_UNKNOWN2: "Unknown 2",
+    MAPITEM_UNKNOWN1: "Broken 1",
+    MAPITEM_UNKNOWN2: "Broken 2",
 }
 
 OBJ_AUTOSCROLL = 0xD3
