@@ -25,6 +25,7 @@ OVERWORLD_GRAPHIC_SET = 0
 class WorldSignaller(QObject):
     needs_redraw: SignalInstance = Signal()
     data_changed: SignalInstance = Signal()
+    dimensions_changed: SignalInstance = Signal()
     jumps_changed: SignalInstance = Signal()
 
 
@@ -43,6 +44,8 @@ class WorldMap(LevelLike):
         self.object_set = WORLD_MAP_OBJECT_SET
         self.tsa_data = ROM.get_tsa_data(self.object_set)
 
+        self.size = 0, 0
+
         self.world = 0
 
         self.objects: list[MapObject] = []
@@ -51,6 +54,8 @@ class WorldMap(LevelLike):
         self.selected_sprites = []
 
         self._load_objects()
+        self._load_sprites()
+        self._load_level_pointers()
 
         self._calc_size()
 
@@ -62,35 +67,44 @@ class WorldMap(LevelLike):
         return WorldMap(list_world_map_addresses(ROM())[world_index - 1])
 
     def _load_objects(self):
-        self.remove_all_tiles()
+        self.objects.clear()
 
-        for index, world_position in enumerate(self.internal_world_map.gen_positions()):
+        for index, tile in enumerate(self.internal_world_map.data.tile_data):
             screen_offset = (index // WORLD_MAP_SCREEN_SIZE) * WORLD_MAP_SCREEN_WIDTH
 
             x = screen_offset + (index % WORLD_MAP_SCREEN_WIDTH)
             y = (index // WORLD_MAP_SCREEN_WIDTH) % WORLD_MAP_HEIGHT
 
-            block = get_block(world_position.tile(), self.palette_group, self.graphics_set, self.tsa_data)
+            block = get_block(tile, self.palette_group, self.graphics_set, self.tsa_data)
 
             self.objects.append(MapObject(block, x, y))
 
         assert len(self.objects) % WORLD_MAP_HEIGHT == 0
 
+        self._calc_size()
+
+    def _load_sprites(self):
         self.sprites: list[Sprite] = []
 
         for sprite_data in self.internal_world_map.gen_sprites():
             self.sprites.append(Sprite(sprite_data))
 
+    def _load_level_pointers(self):
         self.level_pointers: list[LevelPointer] = []
 
         for level_pointer_data in self.internal_world_map.level_pointers:
             self.level_pointers.append(LevelPointer(level_pointer_data))
 
     def _calc_size(self):
+        old_size = self.size
+
         self.width = len(self.objects) // WORLD_MAP_HEIGHT
         self.height = WORLD_MAP_HEIGHT
 
         self.size = self.width, self.height
+
+        if self.size != old_size:
+            self.dimensions_changed.emit()
 
     def add_object(self, obj, _):
         self.objects.append(obj)
@@ -116,6 +130,10 @@ class WorldMap(LevelLike):
     @property
     def needs_redraw(self):
         return self._signal_emitter.needs_redraw
+
+    @property
+    def dimensions_changed(self):
+        return self._signal_emitter.dimensions_changed
 
     @property
     def data_changed(self):
@@ -168,8 +186,13 @@ class WorldMap(LevelLike):
     def get_object(self, index):
         return self.objects[index]
 
+    # TODO: not remove, clear the tile data
     def remove_object(self, obj):
         self.objects.remove(obj)
+
+    def reread_tiles(self):
+        self._load_objects()
+        self.data_changed.emit()
 
     def remove_all_tiles(self):
         for obj in self.objects:
@@ -230,16 +253,11 @@ class WorldMap(LevelLike):
         return True
 
     def save_to_rom(self, rom: Optional[ROM] = None):
-        if rom is None:
-            rom = ROM()
+        self.internal_world_map.data.tile_data = bytearray([obj.block.index for obj in sorted(self.objects)])
 
-        # tiles
-        rom.bulk_write(bytearray(map_object.to_bytes() for map_object in self.objects), self.layout_address)
+        self.internal_world_map.data.write_back()
 
         # sprites
         for sprite in self.sprites:
+            sprite.data.calculate_addresses()
             sprite.data.write_back()
-
-        # level pointers
-        for level_pointer in sorted(self.level_pointers):
-            level_pointer.data.write_back()

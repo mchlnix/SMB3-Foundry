@@ -170,6 +170,8 @@ class WorldView(MainView):
             x, y = self._to_level_point(*event.pos().toTuple())
 
             tile = self.world.object_at(x, y)
+            if tile is None:
+                return
 
             if tile != self._tile_to_put:
                 tile.change_type(self._tile_to_put.index)

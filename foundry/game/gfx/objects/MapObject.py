@@ -2,6 +2,7 @@ from PySide6.QtCore import QRect
 
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from smb3parse.levels import WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
 
 map_object_names = {
     0x00: "Mario Clear (Blue)",
@@ -215,6 +216,21 @@ class MapObject(ObjectLike):
 
     def __contains__(self, point):
         pass
+
+    def __lt__(self, other):
+        screen = self.x_position // WORLD_MAP_SCREEN_WIDTH
+        x = self.x_position % WORLD_MAP_SCREEN_WIDTH
+        y = self.y_position
+
+        result = screen * WORLD_MAP_SCREEN_SIZE + y * WORLD_MAP_SCREEN_WIDTH + x
+
+        screen = other.x_position // WORLD_MAP_SCREEN_WIDTH
+        x = other.x_position % WORLD_MAP_SCREEN_WIDTH
+        y = other.y_position
+
+        other_result = screen * WORLD_MAP_SCREEN_SIZE + y * WORLD_MAP_SCREEN_WIDTH + x
+
+        return result < other_result
 
     def __repr__(self):
         return f"MapObject #{hex(self.obj_index)}: '{self.name}' at {self.x_position}, {self.y_position}"

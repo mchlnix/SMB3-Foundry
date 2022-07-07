@@ -6,6 +6,7 @@ from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.MainWindow import ROM_FILE_FILTER
 from foundry.gui.WorldView import WorldView
+from scribe.gui.edit_world_info import EditWorldInfo
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import WORLD_COUNT
@@ -18,7 +19,6 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.level_ref = LevelRef()
-        self.world = None
 
         self.on_open_rom(path_to_rom)
 
@@ -64,6 +64,10 @@ class MainWindow(QMainWindow):
         self.delete_tiles_action = self.edit_menu.addAction("Delete All Tiles")
         self.delete_level_pointers_action = self.edit_menu.addAction("Delete All Level Pointers")
         self.delete_sprites_action = self.edit_menu.addAction("Delete All Sprites")
+
+        self.edit_menu.addSeparator()
+
+        self.edit_world_info = self.edit_menu.addAction("Edit World Info")
 
     def _setup_view_menu(self):
         self.view_menu = QMenu("View")
@@ -111,9 +115,10 @@ class MainWindow(QMainWindow):
             return False
 
     def load_level(self, world_number: int):
-        self.world = SMB3WorldMap.from_world_number(ROM(), world_number)
+        world = SMB3WorldMap.from_world_number(ROM(), world_number)
 
-        self.level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+        self.level_ref.load_level("World", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+        self.level_ref.level.dimensions_changed.connect(self._resize_for_level)
 
     def on_save_rom(self, is_save_as=False):
         if is_save_as:
@@ -164,6 +169,8 @@ class MainWindow(QMainWindow):
             self.level_ref.level.remove_all_sprites()
         elif action is self.delete_level_pointers_action:
             self.level_ref.level.remove_all_level_pointers()
+        elif action is self.edit_world_info:
+            EditWorldInfo(self, self.level_ref.level).exec()
 
         self.world_view.update()
 
@@ -179,7 +186,9 @@ class MainWindow(QMainWindow):
 
     def on_level_menu(self, action: QAction):
         self.load_level(self.level_menu.actions().index(action) + 1)
+        self._resize_for_level()
 
+    def _resize_for_level(self):
         if not self.isMaximized():
             self.resize(self.sizeHint())
 

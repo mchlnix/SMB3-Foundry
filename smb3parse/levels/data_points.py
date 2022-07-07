@@ -1,7 +1,7 @@
 from builtins import NotImplementedError
 from collections import defaultdict
 
-from smb3parse.constants import BASE_OFFSET, MAPITEM_NOITEM, MAPOBJ_EMPTY, Map_List_Object_Ys
+from smb3parse.constants import BASE_OFFSET, MAPITEM_NOITEM, MAPOBJ_EMPTY, Map_List_Object_Ys, Map_Y_Starts
 from smb3parse.levels import (
     FIRST_VALID_ROW,
     LAYOUT_LIST_OFFSET,
@@ -96,7 +96,7 @@ class _IndexedMixin:
         self.calculate_addresses()
 
 
-class WorldMapData(DataPoint):
+class WorldMapData(_IndexedMixin, DataPoint):
     def __init__(self, rom: Rom, world_index: int):
         self.index = world_index
 
@@ -115,8 +115,13 @@ class WorldMapData(DataPoint):
         self.x_pos_list_start = 0x0
         self.x_pos_list_start_address = 0x0
 
-        self.level_offset_list_address = 0x0
-        self.enemy_offset_list_address = 0x0
+        self.map_start_y = 0
+        self.map_start_y_address = 0x0
+
+        self.enemy_offset_list_offset = 0
+        self.enemy_offset_list_offset_address = 0x0
+        self.level_offset_list_offset = 0
+        self.level_offset_list_offset_address = 0x0
 
         self.level_pointers: list[LevelPointerData] = []
 
@@ -137,6 +142,23 @@ class WorldMapData(DataPoint):
     @layout_address.setter
     def layout_address(self, value):
         self.tile_data_offset = value - WORLD_MAP_BASE_OFFSET
+
+    @property
+    def screen_count(self):
+        return len(self.tile_data) // WORLD_MAP_SCREEN_SIZE
+
+    @screen_count.setter
+    def screen_count(self, new_screen_count):
+        diff = new_screen_count - self.screen_count
+
+        if new_screen_count > self.screen_count:
+            new_tile_data = bytes(b"\xFE" * diff * WORLD_MAP_SCREEN_SIZE)
+            self.tile_data.extend(new_tile_data)
+
+        elif new_screen_count < self.screen_count:
+            self.tile_data = self.tile_data[: new_screen_count * WORLD_MAP_SCREEN_SIZE]
+
+        assert len(self.tile_data) == self.screen_count * WORLD_MAP_SCREEN_SIZE
 
     @property
     def level_count(self):
@@ -190,6 +212,8 @@ class WorldMapData(DataPoint):
 
         self.x_pos_list_start += diff
 
+        self.level_offset_list_offset = self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+
     def calculate_addresses(self):
         self.tile_data_offset_address = LAYOUT_LIST_OFFSET + OFFSET_SIZE * self.index
         self.structure_data_offset_address = STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.index
@@ -197,10 +221,11 @@ class WorldMapData(DataPoint):
         self.y_pos_list_start_address = LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index
         self.x_pos_list_start_address = LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index
 
-        self.level_offset_list_address = LEVELS_IN_WORLD_LIST_OFFSET + self.index * OFFSET_SIZE
-        self.enemy_offset_list_address = LEVEL_ENEMY_LIST_OFFSET + self.index * OFFSET_SIZE
+        self.enemy_offset_list_offset_address = LEVEL_ENEMY_LIST_OFFSET + self.index * OFFSET_SIZE
+        self.level_offset_list_offset_address = LEVELS_IN_WORLD_LIST_OFFSET + self.index * OFFSET_SIZE
 
-    # TODO should worlds be able to change their index? need to recalculate a bunch of stuff
+        self.map_start_y_address = Map_Y_Starts + self.index
+
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
         self.tile_data = self._rom.read_until(self.layout_address, WORLD_MAP_LAYOUT_DELIMITER)
@@ -209,14 +234,17 @@ class WorldMapData(DataPoint):
 
         self.pos_offsets_for_screen = self._rom.read(self.structure_block_address, MAX_SCREEN_COUNT)
 
-        self.y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
-            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index
-        )
-        self.x_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
-            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index
-        )
+        self.y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(self.y_pos_list_start_address)
+        self.x_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(self.x_pos_list_start_address)
 
         self.level_pointers = [LevelPointerData(self, index) for index in range(self.level_count)]
+
+        self.enemy_offset_list_offset = self._rom.little_endian(self.enemy_offset_list_offset_address)
+        self.level_offset_list_offset = self._rom.little_endian(self.level_offset_list_offset_address)
+
+        assert self.level_offset_list_offset == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+
+        self.map_start_y = self._rom.int(self.map_start_y_address)
 
     def write_back(self):
         # tile_data_offset
@@ -251,12 +279,19 @@ class WorldMapData(DataPoint):
 
         # x_pos_list_start
         self._rom.write_little_endian(
-            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index, self.x_pos_list_start - WORLD_MAP_BASE_OFFSET
+            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index, self.x_pos_list_start - WORLD_MAP_BASE_OFFSET
+        )
+
+        self._rom.write_little_endian(self.enemy_offset_list_offset_address, self.enemy_offset_list_offset)
+        self._rom.write_little_endian(
+            self.level_offset_list_offset_address, self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
         )
 
         for index, level_pointer in enumerate(self.level_pointers):
             level_pointer.change_index(index)
             level_pointer.write_back()
+
+        self._rom.write(self.map_start_y_address, self.map_start_y)
 
 
 class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
@@ -281,12 +316,12 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
 
         self.level_offset_address = (
             WORLD_MAP_BASE_OFFSET
-            + self._rom.little_endian(self.world.level_offset_list_address)
+            + self._rom.little_endian(self.world.level_offset_list_offset_address)
             + OFFSET_SIZE * self.index
         )
         self.enemy_offset_address = (
             WORLD_MAP_BASE_OFFSET
-            + self._rom.little_endian(self.world.enemy_offset_list_address)
+            + self._rom.little_endian(self.world.enemy_offset_list_offset_address)
             + OFFSET_SIZE * self.index
         )
 

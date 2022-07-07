@@ -96,9 +96,69 @@ def test_sort_level_pointers(world_1):
     assert original_level_pointers == list(sorted(changed_level_pointers))
 
 
+def _compare_worlds(world_1, world_2):
+    for attr_name in dir(world_1):
+        if attr_name.startswith("_"):
+            continue
+        if callable(getattr(world_1, attr_name)):
+            continue
+
+        if attr_name == "level_pointers":
+            assert len(world_1.level_pointers) == len(world_2.level_pointers)
+            continue
+
+        assert getattr(world_1, attr_name) == getattr(world_2, attr_name), attr_name
+
+
+def test_change_index_of_world_1(rom):
+    old_data = rom._data.copy()
+
+    orig_world_1 = WorldMapData(rom, 0)
+    orig_world_2 = WorldMapData(rom, 1)
+    world_1 = WorldMapData(rom, 0)
+    world_2 = WorldMapData(rom, 1)
+
+    world_1.write_back()
+    world_2.write_back()
+
+    world_1.change_index(1)
+    world_2.change_index(0)
+
+    world_2.write_back()
+    world_1.write_back()
+
+    world_1.change_index(0)
+    world_2.change_index(1)
+
+    world_1.write_back()
+    world_2.write_back()
+
+    _compare_worlds(orig_world_1, world_1)
+    _compare_worlds(orig_world_2, world_2)
+
+    assert old_data == rom._data
+
+
+def test_change_index_of_world_2(rom):
+    orig_world_1 = WorldMapData(rom, 1)
+    changed_world_1 = WorldMapData(rom, 1)
+
+    changed_world_1.change_index(2)
+    changed_world_1.change_index(1)
+
+    _compare_worlds(orig_world_1, changed_world_1)
+
+
 def test_write_back_world_map(rom):
+    old_data = rom._data.copy()
+
+    WorldMapData(rom, 0).write_back()
+
+    assert old_data == rom._data
+
     # get a world map data object
     orig_world_1 = WorldMapData(rom, 0)
+    assert orig_world_1.screen_count == 1
 
     # change a level pointer, by setting it to a different screen
     original_level_index = 4
