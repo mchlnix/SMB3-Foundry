@@ -1,5 +1,5 @@
 from smb3parse.levels import FIRST_VALID_ROW
-from smb3parse.levels.data_points import LevelPointerData, SpriteData
+from smb3parse.levels.data_points import LevelPointerData, SpriteData, WorldMapData
 
 
 def test_read_values(world_1):
@@ -65,3 +65,56 @@ def test_level_pointer_addresses_to_offset(world_1):
     assert other_level_pointer.enemy_address == level_pointer.enemy_address
     assert other_level_pointer.level_offset == level_pointer.level_offset
     assert other_level_pointer.enemy_offset == level_pointer.enemy_offset
+
+
+def test_chance_level_count(world_8):
+    assert world_8.data.level_count_screen_1 == 8
+    assert world_8.data.level_count_screen_2 == 10
+    assert world_8.data.level_count_screen_3 == 17
+    assert world_8.data.level_count_screen_4 == 6
+
+    old_x_pos_list_start = world_8.data.x_pos_list_start
+
+    world_8.data.level_count_screen_1 += 2
+
+    assert world_8.data.level_count_screen_1 == 8 + 2
+    assert world_8.data.level_count_screen_2 == 10
+    assert world_8.data.level_count_screen_3 == 17
+    assert world_8.data.level_count_screen_4 == 6
+
+    assert world_8.data.x_pos_list_start == old_x_pos_list_start + 2
+
+
+def test_sort_level_pointers(world_1):
+    original_level_pointers = world_1.level_pointers
+    changed_level_pointers = original_level_pointers.copy()
+
+    changed_level_pointers[2], changed_level_pointers[-2] = changed_level_pointers[-2], changed_level_pointers[2]
+
+    assert original_level_pointers != changed_level_pointers
+
+    assert original_level_pointers == list(sorted(changed_level_pointers))
+
+
+def test_write_back_world_map(rom):
+    # get a world map data object
+    orig_world_1 = WorldMapData(rom, 0)
+
+    # change a level pointer, by setting it to a different screen
+    original_level_index = 4
+    a_level_pointer = orig_world_1.level_pointers[original_level_index]
+
+    original_level_count_screen_1 = orig_world_1.level_count_screen_1
+    original_level_count_screen_2 = orig_world_1.level_count_screen_2
+
+    assert a_level_pointer.index == original_level_index
+    assert a_level_pointer.screen == 0
+    a_level_pointer.screen = 1
+
+    orig_world_1.write_back()
+
+    new_world_1 = WorldMapData(rom, 0)
+
+    assert a_level_pointer.index != original_level_index
+    assert orig_world_1.level_count_screen_1 == original_level_count_screen_1 - 1 == new_world_1.level_count_screen_1
+    assert orig_world_1.level_count_screen_2 == original_level_count_screen_2 + 1 == new_world_1.level_count_screen_2

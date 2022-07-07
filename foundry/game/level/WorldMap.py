@@ -6,7 +6,6 @@ from foundry.game.File import ROM
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.drawable.Block import Block, get_block
-from foundry.game.gfx.objects.LevelObject import SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.MapObject import MapObject
 from foundry.game.gfx.objects.level_pointer import LevelPointer
 from foundry.game.gfx.objects.sprite import Sprite
@@ -84,7 +83,7 @@ class WorldMap(LevelLike):
 
         self.level_pointers: list[LevelPointer] = []
 
-        for level_pointer_data in self.internal_world_map.gen_level_pointers():
+        for level_pointer_data in self.internal_world_map.level_pointers:
             self.level_pointers.append(LevelPointer(level_pointer_data))
 
     def _calc_size(self):
@@ -237,13 +236,5 @@ class WorldMap(LevelLike):
             sprite.data.write_back()
 
         # level pointers
-        for level_pointer in sorted(self.level_pointers, key=_lp_sort_key):
+        for level_pointer in sorted(self.level_pointers):
             level_pointer.data.write_back()
-
-
-def _lp_sort_key(level_pointer: LevelPointer):
-    value = level_pointer.data.x
-    value += level_pointer.data.y * SCREEN_WIDTH
-    value += level_pointer.data.screen * SCREEN_WIDTH * SCREEN_HEIGHT
-
-    return value

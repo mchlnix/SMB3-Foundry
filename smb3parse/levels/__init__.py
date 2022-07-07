@@ -88,12 +88,19 @@ WORLD_COUNT = 9  # includes warp zone
 WORLD_MAP_HEIGHT = 9  # blocks
 WORLD_MAP_SCREEN_WIDTH = 16  # blocks
 
+MAX_SCREEN_COUNT = 4
+
 FIRST_VALID_ROW = 2
 """
 Tiles in rows before this one are part of the border and not valid overworld tiles.
 """
 
-VALID_ROWS = range(FIRST_VALID_ROW, FIRST_VALID_ROW + WORLD_MAP_HEIGHT)
+LAST_VALID_ROW = FIRST_VALID_ROW + WORLD_MAP_HEIGHT - 1
+"""
+Position of last visible row of the overworld.
+"""
+
+VALID_ROWS = range(FIRST_VALID_ROW, LAST_VALID_ROW + 1)
 """
 A range of row values, where Mario could possibly stand.
 """

@@ -70,7 +70,7 @@ class Rom:
 
         self.write(offset, bytes([left_byte, right_byte]))
 
-    def read(self, offset: int, length: int) -> bytes:
+    def read(self, offset: int, length: int) -> bytearray:
         offset = self.prg_normalize(offset)
         return self._data[offset : offset + length]
 

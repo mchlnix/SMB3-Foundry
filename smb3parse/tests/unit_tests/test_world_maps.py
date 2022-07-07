@@ -1,6 +1,6 @@
 import pytest
 
-from smb3parse.levels import WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
+from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
 from smb3parse.levels.world_map import (
     WorldMap,
     _get_special_enterable_tiles,
@@ -80,6 +80,8 @@ def test_list_all_world_maps_width(rom):
 def test_get_level_at_position(world_1, row, column, object_set, level_address, enemy_address):
     level_pointer = world_1.level_for_position(1, row, column)
 
+    assert level_pointer.x == column
+    assert level_pointer.y == row + FIRST_VALID_ROW
     assert level_pointer.object_set == object_set
     assert level_pointer.level_address == level_address
     assert level_pointer.enemy_address == enemy_address

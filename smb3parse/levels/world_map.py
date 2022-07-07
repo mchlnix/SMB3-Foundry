@@ -247,12 +247,12 @@ class WorldMap(LevelBase):
         else:
             return None
 
-    def gen_level_pointers(self) -> Generator[LevelPointerData, None, None]:
-        for index in range(self.level_count):
-            yield LevelPointerData(self.data, index)
+    @property
+    def level_pointers(self):
+        return self.data.level_pointers
 
     def clear_level_pointers(self):
-        for level_pointer in self.gen_level_pointers():
+        for level_pointer in self.level_pointers:
             level_pointer.clear()
             level_pointer.write_back()
 
@@ -264,7 +264,7 @@ class WorldMap(LevelBase):
         :param row:
         :param column:
         """
-        for level_pointer in self.gen_level_pointers():
+        for level_pointer in self.level_pointers:
             if level_pointer.is_at(screen, row, column):
                 return level_pointer
         else:
