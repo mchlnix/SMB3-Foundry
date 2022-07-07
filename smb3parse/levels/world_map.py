@@ -252,6 +252,7 @@ class WorldMap(LevelBase):
         return self.data.level_pointers
 
     def clear_level_pointers(self):
+        # todo doesn't remove them from the world list, though. need to change amount on screen as well
         for level_pointer in self.level_pointers:
             level_pointer.clear()
             level_pointer.write_back()

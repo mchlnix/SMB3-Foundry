@@ -162,6 +162,8 @@ class MainWindow(QMainWindow):
             self.level_ref.level.remove_all_tiles()
         elif action is self.delete_sprites_action:
             self.level_ref.level.remove_all_sprites()
+        elif action is self.delete_level_pointers_action:
+            self.level_ref.level.remove_all_level_pointers()
 
         self.world_view.update()
 

@@ -178,6 +178,10 @@ class WorldMap(LevelLike):
         self.internal_world_map.clear_sprites()
         self.data_changed.emit()
 
+    def remove_all_level_pointers(self):
+        self.internal_world_map.clear_level_pointers()
+        self.data_changed.emit()
+
     def level_at_position(self, x: int, y: int) -> Optional[LevelPointer]:
         screen = x // WORLD_MAP_SCREEN_WIDTH + 1
 
