@@ -45,7 +45,7 @@ class WorldMap(LevelLike):
 
         self.world = 0
 
-        self.objects = []
+        self.objects: list[MapObject] = []
 
         self.selected_level_pointers = []
         self.selected_sprites = []
@@ -172,7 +172,8 @@ class WorldMap(LevelLike):
         self.objects.remove(obj)
 
     def remove_all_tiles(self):
-        self.objects.clear()
+        for obj in self.objects:
+            obj.change_type(0xFE)
 
     def remove_all_sprites(self):
         self.internal_world_map.clear_sprites()
