@@ -265,6 +265,12 @@ class LevelPointerData(_PositionMixin, DataPoint):
         self._rom.write_little_endian(self.level_offset_address, self.level_offset)
         self._rom.write_little_endian(self.enemy_offset_address, self.enemy_offset)
 
+    def __lt__(self, other):
+        self_result = self.screen * WORLD_MAP_SCREEN_SIZE + self.y * WORLD_MAP_SCREEN_WIDTH + self.x
+        other_result = other.screen * WORLD_MAP_SCREEN_SIZE + other.y * WORLD_MAP_SCREEN_WIDTH + other.x
+
+        return self_result < other_result
+
 
 class SpriteData(_PositionMixin, DataPoint):
     def __init__(self, world_map_data: "WorldMapData", index: int):

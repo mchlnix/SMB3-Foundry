@@ -57,3 +57,9 @@ class LevelPointer(ObjectLike):
 
     def to_bytes(self):
         pass
+
+    def __lt__(self, other):
+        if isinstance(other, LevelPointer):
+            other = other.data
+
+        return self.data < other
