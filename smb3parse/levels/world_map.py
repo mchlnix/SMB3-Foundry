@@ -129,8 +129,13 @@ class WorldMap(LevelBase):
                 f"Should be divisible by {WORLD_MAP_SCREEN_SIZE}."
             )
 
-        self.screen_count = len(self.layout_bytes) // WORLD_MAP_SCREEN_SIZE
-        self.width = int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
+    @property
+    def screen_count(self):
+        return len(self.layout_bytes) // WORLD_MAP_SCREEN_SIZE
+
+    @property
+    def width(self):
+        return int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
 
     @property
     def layout_bytes(self):

@@ -141,13 +141,21 @@ class MapObject(ObjectLike):
 
         self.rect = QRect(self.x_position, self.y_position, 1, 1)
 
-        if self.block.index in map_object_names:
-            self.name = map_object_names[self.block.index]
+        if self.type in map_object_names:
+            self.name = map_object_names[self.type]
         else:
-            self.name = str(hex(self.block.index))
+            self.name = str(hex(self.type))
 
         self.selected = False
         self.is_single_block = True
+
+    @property
+    def type(self):
+        return self.block.index
+
+    @type.setter
+    def type(self, value):
+        self.block.index = value
 
     def set_position(self, x, y):
         x = int(x)
@@ -178,7 +186,7 @@ class MapObject(ObjectLike):
         return ("x", self.x_position), ("y", self.y_position), ("Block Type", self.name)
 
     def to_bytes(self):
-        return self.block.index
+        return self.type
 
     def move_by(self, dx, dy):
         self.set_position(self.x_position + dx, self.y_position + dy)
@@ -195,10 +203,10 @@ class MapObject(ObjectLike):
     def change_type(self, new_type):
         self.block = get_worldmap_tile(new_type)
 
-        if self.block.index in map_object_names:
-            self.name = map_object_names[self.block.index]
+        if self.type in map_object_names:
+            self.name = map_object_names[self.type]
         else:
-            self.name = str(hex(self.block.index))
+            self.name = str(hex(self.type))
 
     def get_rect(self, block_length=1) -> QRect:
         if block_length != 1:

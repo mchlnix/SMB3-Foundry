@@ -28,6 +28,10 @@ def ctrl_is_pressed():
     return bool(QApplication.queryKeyboardModifiers() & Qt.ControlModifier)
 
 
+def shift_is_pressed():
+    return bool(QApplication.queryKeyboardModifiers() & Qt.ShiftModifier)
+
+
 def undoable(func):
     def wrapped(self, *args):
         func(self, *args)

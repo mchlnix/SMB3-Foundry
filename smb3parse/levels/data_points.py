@@ -53,10 +53,6 @@ class DataPoint:
 
 
 class _PositionMixin:
-    screen: int
-    x: int
-    y: int
-
     def __init__(self, *args, **kwargs):
         self.screen_address = 0x0
         self.screen = 0

@@ -192,7 +192,7 @@ class WorldMap(LevelLike):
 
     def _write_tile_data(self):
         world_data = self.internal_world_map.data
-        old_tile_data = bytearray([obj.block.index for obj in sorted(self.objects)])
+        old_tile_data = bytearray([obj.type for obj in sorted(self.objects)])
 
         if len(world_data.tile_data) < len(old_tile_data):
             world_data.tile_data = old_tile_data[: len(world_data.tile_data)]

@@ -22,13 +22,14 @@ from foundry.gui.MainView import (
     MODE_PLACE_TILE,
     MainView,
     ctrl_is_pressed,
+    shift_is_pressed,
     undoable,
 )
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse.levels import FIRST_VALID_ROW
+from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
 
 
@@ -268,6 +269,29 @@ class WorldView(MainView):
         self.mouse_mode = MODE_FREE
         self.setCursor(Qt.ArrowCursor)
 
+    def _fill_tile(self, tile_to_fill_in: int, x, y):
+        if self._tile_to_put is None:
+            return
+
+        if tile_to_fill_in == self._tile_to_put.index:
+            return
+
+        if x < 0 or x >= self.world.internal_world_map.width:
+            return
+
+        if y < 0 or y >= WORLD_MAP_HEIGHT:
+            return
+
+        if (tile := self.world.object_at(x, y)) is not None and tile.type == tile_to_fill_in:
+            tile.change_type(self._tile_to_put.index)
+        else:
+            return
+
+        self._fill_tile(tile_to_fill_in, x + 1, y)
+        self._fill_tile(tile_to_fill_in, x - 1, y)
+        self._fill_tile(tile_to_fill_in, x, y + 1)
+        self._fill_tile(tile_to_fill_in, x, y - 1)
+
     def _on_left_mouse_button_down(self, event: QMouseEvent):
         # 1 if clicking on background: deselect everything, start selection square
         # 2 if clicking on background and ctrl: start selection_square
@@ -282,7 +306,12 @@ class WorldView(MainView):
         obj = self.object_at(x, y)
 
         if self.mouse_mode == MODE_PLACE_TILE:
-            obj.change_type(self._tile_to_put.index)
+            if shift_is_pressed():
+                x, y = self._to_level_point(x, y)
+                self._fill_tile(obj.type, x, y)
+            else:
+                obj.change_type(self._tile_to_put.index)
+
             self.update()
 
         elif sprite is not None and self.draw_sprites:
