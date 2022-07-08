@@ -190,8 +190,20 @@ class WorldMap(LevelLike):
     def remove_object(self, obj):
         self.objects.remove(obj)
 
+    def _write_tile_data(self):
+        world_data = self.internal_world_map.data
+        old_tile_data = bytearray([obj.block.index for obj in sorted(self.objects)])
+
+        if len(world_data.tile_data) < len(old_tile_data):
+            world_data.tile_data = old_tile_data[: len(world_data.tile_data)]
+        else:
+            world_data.tile_data[: len(old_tile_data)] = old_tile_data
+
     def reread_tiles(self):
+        self._write_tile_data()
+
         self._load_objects()
+
         self.data_changed.emit()
 
     def remove_all_tiles(self):
@@ -253,7 +265,7 @@ class WorldMap(LevelLike):
         return True
 
     def save_to_rom(self, rom: Optional[ROM] = None):
-        self.internal_world_map.data.tile_data = bytearray([obj.block.index for obj in sorted(self.objects)])
+        self._write_tile_data()
 
         self.internal_world_map.data.write_back()
 
