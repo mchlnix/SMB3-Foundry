@@ -1,7 +1,14 @@
 from builtins import NotImplementedError
 from collections import defaultdict
 
-from smb3parse.constants import BASE_OFFSET, MAPITEM_NOITEM, MAPOBJ_EMPTY, Map_List_Object_Ys, Map_Y_Starts
+from smb3parse.constants import (
+    BASE_OFFSET,
+    MAPITEM_NOITEM,
+    MAPOBJ_EMPTY,
+    Map_List_Object_Ys,
+    Map_Y_Starts,
+    World_Map_Max_PanR,
+)
 from smb3parse.levels import (
     FIRST_VALID_ROW,
     LAYOUT_LIST_OFFSET,
@@ -17,6 +24,7 @@ from smb3parse.levels import (
     WORLD_MAP_LAYOUT_DELIMITER,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
+    WORLD_MAP_WARP_WORLD_INDEX,
 )
 from smb3parse.util.rom import Rom
 
@@ -118,6 +126,9 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.map_start_y = 0
         self.map_start_y_address = 0x0
 
+        self.map_scroll = 0
+        self.map_scroll_address = 0x0
+
         self.enemy_offset_list_offset = 0
         self.enemy_offset_list_offset_address = 0x0
         self.level_offset_list_offset = 0
@@ -158,6 +169,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         elif new_screen_count < self.screen_count:
             self.tile_data = self.tile_data[: new_screen_count * WORLD_MAP_SCREEN_SIZE]
 
+        self.map_scroll = self.screen_count << 4
         assert len(self.tile_data) == self.screen_count * WORLD_MAP_SCREEN_SIZE
 
     @property
@@ -225,6 +237,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.level_offset_list_offset_address = LEVELS_IN_WORLD_LIST_OFFSET + self.index * OFFSET_SIZE
 
         self.map_start_y_address = Map_Y_Starts + self.index
+        self.map_scroll_address = World_Map_Max_PanR + self.index
 
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
@@ -242,9 +255,11 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.enemy_offset_list_offset = self._rom.little_endian(self.enemy_offset_list_offset_address)
         self.level_offset_list_offset = self._rom.little_endian(self.level_offset_list_offset_address)
 
-        assert self.level_offset_list_offset == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+        if self.index != WORLD_MAP_WARP_WORLD_INDEX:
+            assert self.level_offset_list_offset == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
 
         self.map_start_y = self._rom.int(self.map_start_y_address)
+        self.map_scroll = self._rom.int(self.map_scroll_address)
 
     def write_back(self):
         # tile_data_offset
@@ -292,6 +307,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
             level_pointer.write_back()
 
         self._rom.write(self.map_start_y_address, self.map_start_y)
+        self._rom.write(self.map_scroll_address, self.map_scroll)
 
 
 class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
