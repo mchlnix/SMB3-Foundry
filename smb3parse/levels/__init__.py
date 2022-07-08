@@ -129,6 +129,9 @@ SPECIAL_ENTERABLE_TILE_AMOUNT = 11  # the rom mistakenly uses 0x1A
 
 WORLD_MAP_SCREEN_SIZE = WORLD_MAP_HEIGHT * WORLD_MAP_SCREEN_WIDTH  # bytes
 
+WORLD_MAP_WARP_WORLD_INDEX = 8
+"""The 0-based index of the warp world."""
+
 # in bytes
 HEADER_LENGTH = 9
 

@@ -24,6 +24,7 @@ from smb3parse.levels import (
     WORLD_MAP_LAYOUT_DELIMITER,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
+    WORLD_MAP_WARP_WORLD_INDEX,
 )
 from smb3parse.util.rom import Rom
 
@@ -254,10 +255,11 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.enemy_offset_list_offset = self._rom.little_endian(self.enemy_offset_list_offset_address)
         self.level_offset_list_offset = self._rom.little_endian(self.level_offset_list_offset_address)
 
-        assert self.level_offset_list_offset == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+        if self.index != WORLD_MAP_WARP_WORLD_INDEX:
+            assert self.level_offset_list_offset == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
 
         self.map_start_y = self._rom.int(self.map_start_y_address)
-        self.map_scroll = self._rom.int(self.map_scroll)
+        self.map_scroll = self._rom.int(self.map_scroll_address)
 
     def write_back(self):
         # tile_data_offset

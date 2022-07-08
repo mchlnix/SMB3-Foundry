@@ -1,5 +1,6 @@
 from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.levels.data_points import LevelPointerData, SpriteData, WorldMapData
+from smb3parse.util import compare_bytearrays
 
 
 def test_read_values(world_1):
@@ -136,7 +137,7 @@ def test_change_index_of_world_1(rom):
     _compare_worlds(orig_world_1, world_1)
     _compare_worlds(orig_world_2, world_2)
 
-    assert old_data == rom._data
+    compare_bytearrays(old_data, rom._data)
 
 
 def test_change_index_of_world_2(rom):
