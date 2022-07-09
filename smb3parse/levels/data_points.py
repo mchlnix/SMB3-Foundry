@@ -7,6 +7,9 @@ from smb3parse.constants import (
     BASE_OFFSET,
     MAPITEM_NOITEM,
     MAPOBJ_EMPTY,
+    Map_Airship_Dest_XSets,
+    Map_Airship_Dest_YSets,
+    Map_Airship_Travel_BaseIdx,
     Map_List_Object_Ys,
     Map_Y_Starts,
     World_Map_Max_PanR,
@@ -35,6 +38,9 @@ MAP_SPRITE_X_POS_SCREEN_LIST = MAP_SPRITE_Y_POS_LIST + 8 * OFFSET_SIZE
 MAP_SPRITE_X_POS_LIST = MAP_SPRITE_X_POS_SCREEN_LIST + 8 * OFFSET_SIZE
 MAP_SPRITE_TYPES_LIST = MAP_SPRITE_X_POS_LIST + 8 * OFFSET_SIZE
 MAP_SPRITE_ITEMS_LIST = MAP_SPRITE_TYPES_LIST + 8 * OFFSET_SIZE
+
+AIRSHIP_TRAVEL_SET_COUNT = 3  # offsets of 2 bytes each
+AIRSHIP_TRAVEL_SET_SIZE = 6  # bytes
 
 
 @dataclass
@@ -228,18 +234,30 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.structure_data_offset = 0x0
         self.structure_data_offset_address = 0x0
 
+        # starting point on world map
+        self.map_start_y = 0
+        self.map_start_y_address = 0x0
+
+        # if/how the world map scrolls, through multiple screens
+        self.map_scroll = 0
+        self.map_scroll_address = 0x0
+
+        # air ship travel data
+        self.airship_travel_base_index = 0
+        self.airship_travel_base_index_address = 0x0
+
+        self.airship_travel_x_set_address = 0x0
+        self.airship_travel_y_set_address = 0x0
+
+        self.airship_travel_sets: tuple[list[Position], list[Position], list[Position]] = ([], [], [])
+
+        # level pointer data
         self.pos_offsets_for_screen = bytearray(MAX_SCREEN_COUNT)
 
         self.y_pos_list_start = 0x0
         self.y_pos_list_start_address = 0x0
         self.x_pos_list_start = 0x0
         self.x_pos_list_start_address = 0x0
-
-        self.map_start_y = 0
-        self.map_start_y_address = 0x0
-
-        self.map_scroll = 0
-        self.map_scroll_address = 0x0
 
         self.enemy_offset_list_offset = 0
         self.enemy_offset_list_offset_address = 0x0
@@ -351,6 +369,12 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.map_start_y_address = Map_Y_Starts + self.index
         self.map_scroll_address = World_Map_Max_PanR + self.index
 
+        # unused, because the value is always 0x03 * world_index
+        self.airship_travel_base_index_address = Map_Airship_Travel_BaseIdx + self.index
+
+        self.airship_travel_x_set_address = Map_Airship_Dest_XSets + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
+        self.airship_travel_y_set_address = Map_Airship_Dest_YSets + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
+
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
         self.tile_data = self._rom.read_until(self.layout_address, WORLD_MAP_LAYOUT_DELIMITER)
@@ -372,6 +396,24 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self.map_start_y = self._rom.int(self.map_start_y_address)
         self.map_scroll = self._rom.int(self.map_scroll_address)
+
+        self.airship_travel_base_index = self._rom.int(self.airship_travel_base_index_address)
+
+        for i in range(AIRSHIP_TRAVEL_SET_COUNT):
+            self.airship_travel_sets[i].clear()
+
+            for index in range(AIRSHIP_TRAVEL_SET_SIZE):
+                offset_x = self._rom.little_endian(
+                    self.airship_travel_x_set_address + (self.index * AIRSHIP_TRAVEL_SET_COUNT + i) * OFFSET_SIZE
+                )
+                offset_y = self._rom.little_endian(
+                    self.airship_travel_y_set_address + (self.index * AIRSHIP_TRAVEL_SET_COUNT + i) * OFFSET_SIZE
+                )
+
+                x, screen = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_x + index)
+                y, _ = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_y + index)
+
+                self.airship_travel_sets[i].append(Position(x, y, screen))
 
     def write_back(self):
         # tile_data_offset
@@ -420,6 +462,22 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self._rom.write(self.map_start_y_address, self.map_start_y)
         self._rom.write(self.map_scroll_address, self.map_scroll)
+
+        self._rom.write(self.airship_travel_base_index_address, self.airship_travel_base_index)
+
+        for i in range(AIRSHIP_TRAVEL_SET_COUNT):
+            for index in range(AIRSHIP_TRAVEL_SET_SIZE):
+                offset_x = self._rom.little_endian(
+                    self.airship_travel_x_set_address + (self.index * AIRSHIP_TRAVEL_SET_COUNT + i) * OFFSET_SIZE
+                )
+                offset_y = self._rom.little_endian(
+                    self.airship_travel_y_set_address + (self.index * AIRSHIP_TRAVEL_SET_COUNT + i) * OFFSET_SIZE
+                )
+
+                pos: Position = self.airship_travel_sets[i][index]
+
+                self._rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_x + index, pos.x, pos.screen)
+                self._rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_y + index, pos.y, 0)
 
 
 class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
@@ -474,14 +532,9 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
         self.enemy_offset = value - BASE_OFFSET
 
     def read_values(self):
-        screen_and_x = self._rom.int(self.screen_address)
+        self.screen, self.x = self._rom.nibbles(self.screen_address)
 
-        self.screen = screen_and_x >> 4
-        self.x = screen_and_x & 0x0F
-
-        object_set_and_y = self._rom.int(self.y_address)
-        self.y = object_set_and_y >> 4
-        self.object_set = object_set_and_y & 0x0F
+        self.y, self.object_set = self._rom.nibbles(self.y_address)
 
         self.level_offset = self._rom.little_endian(self.level_offset_address)
         self.enemy_offset = self._rom.little_endian(self.enemy_offset_address)
@@ -496,11 +549,8 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
         self.enemy_offset = 0x0
 
     def write_back(self):
-        screen_and_x = (self.screen << 4) + self.x
-        self._rom.write(self.screen_address, screen_and_x)
-
-        object_set_and_y = (self.y << 4) + self.object_set
-        self._rom.write(self.y_address, object_set_and_y)
+        self._rom.write_nibbles(self.screen_address, self.screen, self.x)
+        self._rom.write_nibbles(self.y_address, self.y, self.object_set)
 
         self._rom.write_little_endian(self.level_offset_address, self.level_offset)
         self._rom.write_little_endian(self.enemy_offset_address, self.enemy_offset)
@@ -558,8 +608,8 @@ class SpriteData(_PositionMixin, DataPoint):
 
     def read_values(self):
         self.screen = self._rom.int(self._x_pos_screen_address)
-        self.x = self._rom.int(self._x_pos_address) >> 4
-        self.y = self._rom.int(self._y_pos_address) >> 4
+        self.x, _ = self._rom.nibbles(self._x_pos_address)
+        self.y, _ = self._rom.nibbles(self._y_pos_address)
         self.type = self._rom.int(self._type_address)
         self.item = self._rom.int(self._item_address)
 
@@ -572,7 +622,7 @@ class SpriteData(_PositionMixin, DataPoint):
 
     def write_back(self):
         self._rom.write(self._x_pos_screen_address, self.screen)
-        self._rom.write(self._x_pos_address, (self.x << 4) & 0xF0)
-        self._rom.write(self._y_pos_address, (self.y << 4) & 0xF0)
+        self._rom.write_nibbles(self._x_pos_address, self.x, 0)
+        self._rom.write_nibbles(self._y_pos_address, self.y, 0)
         self._rom.write(self._type_address, self.type)
         self._rom.write(self._item_address, self.item)

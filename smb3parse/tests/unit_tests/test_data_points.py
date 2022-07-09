@@ -1,4 +1,4 @@
-from smb3parse.levels.data_points import LevelPointerData, SpriteData, WorldMapData
+from smb3parse.levels.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.util import compare_bytearrays
 
 
@@ -147,6 +147,11 @@ def test_change_index_of_world_2(rom):
     changed_world_1.change_index(1)
 
     _compare_worlds(orig_world_1, changed_world_1)
+
+
+def test_reading_airship_travel_sets(world_1):
+    set_0 = [(0x6, 0xA, 0), (0x6, 0x2, 0), (0xC, 0x2, 0), (0x6, 0xA, 0), (0x6, 0x2, 0), (0xC, 0x2, 0)]
+    assert world_1.data.airship_travel_sets[0] == [Position(x, y, screen) for x, y, screen in set_0]
 
 
 def test_write_back_world_map(rom):
