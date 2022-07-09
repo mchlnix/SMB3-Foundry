@@ -1,4 +1,3 @@
-from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.levels.data_points import LevelPointerData, SpriteData, WorldMapData
 from smb3parse.util import compare_bytearrays
 
@@ -6,9 +5,9 @@ from smb3parse.util import compare_bytearrays
 def test_read_values(world_1):
     sprites = list(world_1.gen_sprites())
 
-    assert sprites[0].is_at(1, 7 - FIRST_VALID_ROW, 13)
-    assert sprites[1].is_at(1, 8 - FIRST_VALID_ROW, 12)
-    assert sprites[2].is_at(1, 8 - FIRST_VALID_ROW, 10)
+    assert sprites[0].is_at(0, 7, 13)
+    assert sprites[1].is_at(0, 8, 12)
+    assert sprites[2].is_at(0, 8, 10)
 
 
 def test_sprite_write_back(world_1):

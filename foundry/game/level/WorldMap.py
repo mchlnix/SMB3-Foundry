@@ -3,17 +3,16 @@ from typing import Optional
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
-from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.MapObject import MapObject
 from foundry.game.gfx.objects.level_pointer import LevelPointer
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelLike import LevelLike
+from smb3parse.levels.data_points import Position
 from smb3parse.levels.world_map import (
     WORLD_MAP_HEIGHT,
-    WORLD_MAP_SCREEN_SIZE,
-    WORLD_MAP_SCREEN_WIDTH,
     WorldMap as _WorldMap,
     list_world_map_addresses,
 )
@@ -70,14 +69,11 @@ class WorldMap(LevelLike):
         self.objects.clear()
 
         for index, tile in enumerate(self.internal_world_map.data.tile_data):
-            screen_offset = (index // WORLD_MAP_SCREEN_SIZE) * WORLD_MAP_SCREEN_WIDTH
-
-            x = screen_offset + (index % WORLD_MAP_SCREEN_WIDTH)
-            y = (index // WORLD_MAP_SCREEN_WIDTH) % WORLD_MAP_HEIGHT
+            pos = Position.from_tile_data_index(index)
 
             block = get_block(tile, self.palette_group, self.graphics_set, self.tsa_data)
 
-            self.objects.append(MapObject(block, x, y))
+            self.objects.append(MapObject(block, pos))
 
         assert len(self.objects) % WORLD_MAP_HEIGHT == 0
 
@@ -123,10 +119,6 @@ class WorldMap(LevelLike):
     def q_size(self):
         return QSize(*self.size) * Block.SIDE_LENGTH
 
-    @staticmethod
-    def _array_index(obj):
-        return obj.y_position * WORLD_MAP_SCREEN_WIDTH + obj.x_position
-
     @property
     def needs_redraw(self):
         return self._signal_emitter.needs_redraw
@@ -169,7 +161,7 @@ class WorldMap(LevelLike):
         return_array = bytearray(len(self.objects))
 
         for obj in self.objects:
-            index = self._array_index(obj)
+            index = obj.pos.tile_data_index
 
             return_array[index] = obj.to_bytes()
 
@@ -219,40 +211,32 @@ class WorldMap(LevelLike):
         self.data_changed.emit()
 
     def level_at_position(self, x: int, y: int) -> Optional[LevelPointer]:
-        screen = x // WORLD_MAP_SCREEN_WIDTH + 1
-
-        x %= WORLD_MAP_SCREEN_WIDTH
+        pos = Position.from_xy(x, y)
 
         for level_pointer in self.level_pointers:
-            if level_pointer.data.is_at(screen, y, x):
+            if level_pointer.data.is_at(pos):
                 return level_pointer
         else:
             return None
 
     def level_name_at_position(self, x: int, y: int) -> str:
-        screen = x // WORLD_MAP_SCREEN_WIDTH + 1
+        pos = Position.from_xy(x, y)
 
-        x %= WORLD_MAP_SCREEN_WIDTH
-
-        return self.internal_world_map.level_name_for_position(screen, y, x)
+        return self.internal_world_map.level_name_for_position(pos)
 
     def sprite_at_position(self, x, y) -> Optional[Sprite]:
-        screen = x // WORLD_MAP_SCREEN_WIDTH + 1
-
-        x %= WORLD_MAP_SCREEN_WIDTH
+        pos = Position.from_xy(x, y)
 
         for sprite in self.sprites:
-            if sprite.data.is_at(screen, y, x):
+            if sprite.data.is_at(pos):
                 return sprite
         else:
             return None
 
     def tile_at(self, x, y):
-        screen = x // WORLD_MAP_SCREEN_WIDTH + 1
+        pos = Position.from_xy(x, y)
 
-        x %= WORLD_MAP_SCREEN_WIDTH
-
-        return self.internal_world_map.tile_at(screen, y, x)
+        return self.internal_world_map.tile_at(pos)
 
     # TODO check if better in parent class
     def get_rect(self, block_length: int = 1):

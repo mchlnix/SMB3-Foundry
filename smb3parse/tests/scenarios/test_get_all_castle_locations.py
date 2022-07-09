@@ -5,13 +5,13 @@ from smb3parse.constants import TILE_CASTLE_BOTTOM
 
 def test_get_castle_map_positions(rom):
     stock_castle_locations = [
-        (1, 1, 6, 12),
-        (2, 2, 4, 2),
-        (3, 3, 6, 9),
-        (4, 1, 4, 8),
-        (5, 2, 8, 2),
-        (6, 3, 4, 12),
-        (7, 2, 7, 8),
+        (1, 0, 8, 12),
+        (2, 1, 6, 2),
+        (3, 2, 8, 9),
+        (4, 0, 6, 8),
+        (5, 1, 10, 2),
+        (6, 2, 6, 12),
+        (7, 1, 9, 8),
     ]
 
     found_castle_locations = []

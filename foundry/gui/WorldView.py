@@ -31,6 +31,7 @@ from foundry.gui.settings import SETTINGS
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
+from smb3parse.levels.data_points import Position
 
 
 class WorldView(MainView):
@@ -292,6 +293,11 @@ class WorldView(MainView):
         self._fill_tile(tile_to_fill_in, x, y + 1)
         self._fill_tile(tile_to_fill_in, x, y - 1)
 
+    def _to_level_point(self, screen_x: int, screen_y: int) -> Tuple[int, int]:
+        x, y = super(WorldView, self)._to_level_point(screen_x, screen_y)
+
+        return x, y + FIRST_VALID_ROW
+
     def _on_left_mouse_button_down(self, event: QMouseEvent):
         # 1 if clicking on background: deselect everything, start selection square
         # 2 if clicking on background and ctrl: start selection_square
@@ -301,8 +307,10 @@ class WorldView(MainView):
         # 6 if clicking on unselected object and ctrl: select this object
         x, y = event.pos().toTuple()
 
-        level_pointer = self.world.level_at_position(x // self.block_length, y // self.block_length)
-        sprite = self.world.sprite_at_position(x // self.block_length, y // self.block_length)
+        level_x, level_y = self._to_level_point(x, y)
+
+        level_pointer = self.world.level_at_position(level_x, level_y)
+        sprite = self.world.sprite_at_position(level_x, level_y)
         obj = self.object_at(x, y)
 
         if self.mouse_mode == MODE_PLACE_TILE:
@@ -336,6 +344,7 @@ class WorldView(MainView):
         x, y = event.pos().toTuple()
 
         level_x, level_y = self._to_level_point(x, y)
+        pos = Position.from_xy(level_x, level_y)
 
         dx = level_x - self.last_mouse_position[0]
         dy = level_y - self.last_mouse_position[1]
@@ -343,21 +352,13 @@ class WorldView(MainView):
         self.last_mouse_position = level_x, level_y
 
         if self.selected_sprite is not None:
-            screen = level_x // SCREEN_WIDTH
-            column = level_x % SCREEN_WIDTH
-            row = FIRST_VALID_ROW + level_y
-
-            self.selected_sprite.data.set_pos(screen, row, column)
-
+            self.selected_sprite.data.set_pos(pos)
             self.level_ref.level.changed = True
+
         elif self.selected_level_pointer is not None:
-            screen = level_x // SCREEN_WIDTH
-            column = level_x % SCREEN_WIDTH
-            row = FIRST_VALID_ROW + level_y
-
-            self.selected_level_pointer.data.set_pos(screen, row, column)
-
+            self.selected_level_pointer.data.set_pos(pos)
             self.level_ref.level.changed = True
+
         else:
             selected_objects = self.get_selected_objects()
 

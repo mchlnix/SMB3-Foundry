@@ -24,7 +24,7 @@ from foundry.gui.LevelView import LevelView
 from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
-from smb3parse.levels import WORLD_COUNT
+from smb3parse.levels import FIRST_VALID_ROW, WORLD_COUNT
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 WORLD_ITEMS = [
@@ -265,8 +265,12 @@ class WorldMapLevelSelect(QScrollArea):
     def mouseMoveEvent(self, event: QMouseEvent):
         x, y = self.world_view.mapFromParent(event.pos()).toTuple()
 
-        x //= Block.WIDTH * 2
-        y //= Block.HEIGHT * 2
+        x //= Block.WIDTH * self.world_view.zoom
+        y //= Block.HEIGHT * self.world_view.zoom
+
+        y += FIRST_VALID_ROW
+
+        print(y)
 
         try:
             level_pointer = self.world.level_at_position(x, y)
@@ -320,8 +324,10 @@ class WorldMapLevelSelect(QScrollArea):
     def mouseReleaseEvent(self, event: QMouseEvent):
         x, y = self.world_view.mapFromParent(event.pos()).toTuple()
 
-        x //= Block.WIDTH * 2
-        y //= Block.HEIGHT * 2
+        x //= Block.WIDTH * self.world_view.zoom
+        y //= Block.HEIGHT * self.world_view.zoom
+
+        y += FIRST_VALID_ROW
 
         try:
             level_pointer = self.world.level_at_position(x, y)

@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
-from foundry.game.gfx.Palette import load_palette_group
+from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 
 
@@ -12,7 +12,7 @@ class LevelObjectFactory:
     palette_group_index: int
 
     graphics_set: Optional[GraphicsSet] = None
-    palette_group: list = []
+    palette_group: PaletteGroup = []
 
     def __init__(
         self,
