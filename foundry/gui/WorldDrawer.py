@@ -1,9 +1,28 @@
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
+from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.WorldMap import WorldMap
-from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
+from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH, WORLD_MAP_WARP_WORLD_INDEX
+from smb3parse.levels.data_points import AIRSHIP_TRAVEL_SET_COUNT, AIRSHIP_TRAVEL_SET_SIZE
+
+
+AIRSHIP_TRAVEL_POINT_1 = load_from_png(59, 2)
+AIRSHIP_TRAVEL_POINT_2 = load_from_png(60, 2)
+AIRSHIP_TRAVEL_POINT_3 = load_from_png(61, 2)
+AIRSHIP_TRAVEL_POINT_4 = load_from_png(62, 2)
+AIRSHIP_TRAVEL_POINT_5 = load_from_png(59, 3)
+AIRSHIP_TRAVEL_POINT_6 = load_from_png(60, 3)
+
+AIRSHIP_TRAVEL_POINTS = [
+    AIRSHIP_TRAVEL_POINT_1,
+    AIRSHIP_TRAVEL_POINT_2,
+    AIRSHIP_TRAVEL_POINT_3,
+    AIRSHIP_TRAVEL_POINT_4,
+    AIRSHIP_TRAVEL_POINT_5,
+    AIRSHIP_TRAVEL_POINT_6,
+]
 
 
 class WorldDrawer:
@@ -11,7 +30,7 @@ class WorldDrawer:
         self.draw_level_pointers = True
         self.draw_sprites = True
         self.draw_start = True
-        self.draw_airship_points = True
+        self.draw_airship_points = 0
         self.draw_pipes = True
         self.draw_locks = True
 
@@ -39,7 +58,9 @@ class WorldDrawer:
         if self.draw_start:
             self._draw_start_position(painter, world)
 
-        self.draw_airship_points = True
+        if self.draw_airship_points:
+            self._draw_airship_travel_points(painter, world)
+
         self.draw_pipes = True
         self.draw_locks = True
 
@@ -101,3 +122,25 @@ class WorldDrawer:
         painter.fillRect(
             QRect(QPoint(x, y), QSize(self.block_length, self.block_length)), QColor(0x00, 0x00, 0xFF, 0x80)
         )
+
+    def _draw_airship_travel_points(self, painter: QPainter, world: WorldMap):
+        world_data = world.internal_world_map.data
+
+        if world_data.index == WORLD_MAP_WARP_WORLD_INDEX:
+            return
+
+        for i in range(AIRSHIP_TRAVEL_SET_COUNT):
+            if self.draw_airship_points & 2**i != 2**i:
+                continue
+
+            for index in range(AIRSHIP_TRAVEL_SET_SIZE):
+                pos = world_data.airship_travel_sets[i][index]
+
+                x, y = pos.xy
+
+                x *= self.block_length
+                y *= self.block_length
+
+                painter.drawImage(
+                    QPoint(x, y), AIRSHIP_TRAVEL_POINTS[index].scaled(self.block_length, self.block_length)
+                )
