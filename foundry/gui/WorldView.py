@@ -282,7 +282,7 @@ class WorldView(MainView):
         if x < 0 or x >= self.world.internal_world_map.width:
             return
 
-        if y < 0 or y >= WORLD_MAP_HEIGHT:
+        if y < FIRST_VALID_ROW or y >= FIRST_VALID_ROW + WORLD_MAP_HEIGHT:
             return
 
         if (tile := self.world.object_at(x, y)) is not None and tile.type == tile_to_fill_in:
