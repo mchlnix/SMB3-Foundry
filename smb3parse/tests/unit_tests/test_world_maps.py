@@ -1,6 +1,7 @@
 import pytest
 
-from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
+from smb3parse.levels import WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
+from smb3parse.levels.data_points import Position
 from smb3parse.levels.world_map import (
     WorldMap,
     _get_special_enterable_tiles,
@@ -70,18 +71,18 @@ def test_list_all_world_maps_width(rom):
 @pytest.mark.parametrize(
     "row, column, object_set, level_address, enemy_address",
     [
-        (0, 4, 0x1, 0x1FB92, 0xC537),
-        (0, 8, 0x3, 0x20F3A, 0xC6BA),
-        (0, 10, 0x1, 0x1EE19, 0xC2FE),
-        (2, 10, 0x4, 0x23511, 0xCC43),
-        (8, 4, 0xE, 0x1AA51, 0xC93B),
+        (2, 4, 0x1, 0x1FB92, 0xC537),
+        (2, 8, 0x3, 0x20F3A, 0xC6BA),
+        (2, 10, 0x1, 0x1EE19, 0xC2FE),
+        (4, 10, 0x4, 0x23511, 0xCC43),
+        (10, 4, 0xE, 0x1AA51, 0xC93B),
     ],
 )
 def test_get_level_at_position(world_1, row, column, object_set, level_address, enemy_address):
-    level_pointer = world_1.level_for_position(1, row, column)
+    level_pointer = world_1.level_for_position(Position(column, row, 0))
 
     assert level_pointer.x == column
-    assert level_pointer.y == row + FIRST_VALID_ROW
+    assert level_pointer.y == row
     assert level_pointer.object_set == object_set
     assert level_pointer.level_address == level_address
     assert level_pointer.enemy_address == enemy_address
@@ -91,7 +92,7 @@ def test_get_level_on_screen_2(rom):
     object_set, level_address, enemy_address = (0x9, 0x29C88, 0xD26F)  # level 2-4
 
     world_2 = WorldMap.from_world_number(rom, 2)
-    level_pointer = world_2.level_for_position(2, 0, 2)
+    level_pointer = world_2.level_for_position(Position(2, 2, 1))
 
     assert level_pointer.object_set == object_set
     assert level_pointer.level_address == level_address
@@ -99,7 +100,7 @@ def test_get_level_on_screen_2(rom):
 
 
 def test_get_level_on_screen_4(world_8):
-    level_pointer = world_8.level_for_position(4, 5, 12)
+    level_pointer = world_8.level_for_position(Position(12, 7, 3))
 
     assert level_pointer.object_set == 0x2
     assert level_pointer.level_address == 0x2BC3D
@@ -107,25 +108,25 @@ def test_get_level_on_screen_4(world_8):
 
 
 def test_tile_not_enterable(world_1):
-    tile_at_0_0 = world_1.tile_at(1, 0, 0)
+    tile_at_0_0 = world_1.tile_at(Position(0, 2, 0))
 
     assert not world_1.is_enterable(tile_at_0_0)
 
 
 def test_tile_is_enterable(world_1):
-    level_1_1 = world_1.tile_at(1, 0, 4)
+    level_1_1 = world_1.tile_at(Position(4, 2, 0))
 
     assert world_1.is_enterable(level_1_1)
 
 
 def test_spade_bonus_is_enterable(world_1):
-    spade_bonus_level = world_1.tile_at(1, 4, 8)
+    spade_bonus_level = world_1.tile_at(Position(8, 6, 0))
 
     assert world_1.is_enterable(spade_bonus_level)
 
 
 def test_castle_is_enterable(world_1):
-    castle_level = world_1.tile_at(1, 6, 12)
+    castle_level = world_1.tile_at(Position(12, 8, 0))
 
     assert world_1.is_enterable(castle_level)
 
@@ -147,10 +148,10 @@ def test_level_count_world_8(world_8):
 def test_get_tile(world_1):
     level_1_tile, level_2_tile, level_3_tile, level_4_tile = range(0x03, 0x03 + 4)
 
-    assert world_1.tile_at(1, 0, 4) == level_1_tile
-    assert world_1.tile_at(1, 0, 8) == level_2_tile
-    assert world_1.tile_at(1, 0, 10) == level_3_tile
-    assert world_1.tile_at(1, 2, 10) == level_4_tile
+    assert world_1.tile_at(Position(4, 2, 0)) == level_1_tile
+    assert world_1.tile_at(Position(8, 2, 0)) == level_2_tile
+    assert world_1.tile_at(Position(10, 2, 0)) == level_3_tile
+    assert world_1.tile_at(Position(10, 4, 0)) == level_4_tile
 
 
 def test_get_tile_second_screen(rom):
@@ -158,13 +159,13 @@ def test_get_tile_second_screen(rom):
 
     world_2 = WorldMap.from_world_number(rom, 2)
 
-    assert world_2.tile_at(2, 0, 2) == tile_level_4
+    assert world_2.tile_at(Position(2, 2, 1)) == tile_level_4
 
 
 def test_get_tile_fourth_screen(world_8):
     bowser_castle = TILE_BOWSER_CASTLE
 
-    assert world_8.tile_at(4, 5, 12) == bowser_castle
+    assert world_8.tile_at(Position(12, 7, 3)) == bowser_castle
 
 
 def test_special_enterable_tiles(rom):

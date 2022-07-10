@@ -10,6 +10,7 @@ from scribe.gui.edit_world_info import EditWorldInfo
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import WORLD_COUNT
+from smb3parse.levels.data_points import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -84,6 +85,13 @@ class MainWindow(QMainWindow):
         self.starting_point_action = self.view_menu.addAction("Show Starting Point")
         self.starting_point_action.setCheckable(True)
         self.starting_point_action.setChecked(self.world_view.draw_start)
+
+        self.view_menu.addSection("Show Airship Travel Points")
+        self.airship_travel_actions = []
+        for i in range(AIRSHIP_TRAVEL_SET_COUNT):
+            self.airship_travel_actions.append(self.view_menu.addAction(f"Airship Travel Path {i+1}"))
+            self.airship_travel_actions[-1].setCheckable(True)
+            self.airship_travel_actions[-1].setChecked(self.world_view.draw_airship_points & 2**i == 2**i)
 
     def _setup_level_menu(self):
         self.level_menu = QMenu("Change Level")
@@ -181,6 +189,14 @@ class MainWindow(QMainWindow):
             self.world_view.draw_sprites = action.isChecked()
         elif action is self.starting_point_action:
             self.world_view.draw_start = action.isChecked()
+        elif action in self.airship_travel_actions:
+            value = 0
+
+            for index, action in enumerate(self.airship_travel_actions):
+                if action.isChecked():
+                    value += 2**index
+
+            self.world_view.draw_airship_points = value
 
         self.world_view.update()
 

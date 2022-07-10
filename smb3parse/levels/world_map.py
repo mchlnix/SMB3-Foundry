@@ -43,7 +43,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.levels.data_points import LevelPointerData, SpriteData, WorldMapData
+from smb3parse.levels.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
 
@@ -129,8 +129,13 @@ class WorldMap(LevelBase):
                 f"Should be divisible by {WORLD_MAP_SCREEN_SIZE}."
             )
 
-        self.screen_count = len(self.layout_bytes) // WORLD_MAP_SCREEN_SIZE
-        self.width = int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
+    @property
+    def screen_count(self):
+        return len(self.layout_bytes) // WORLD_MAP_SCREEN_SIZE
+
+    @property
+    def width(self):
+        return int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
 
     @property
     def layout_bytes(self):
@@ -148,7 +153,7 @@ class WorldMap(LevelBase):
     def level_count(self):
         return self.data.level_count
 
-    def level_for_position(self, screen: int, player_row: int, player_column: int) -> Optional[LevelPointerData]:
+    def level_for_position(self, pos: Position) -> Optional[LevelPointerData]:
         """
         The rom takes the position of the current player, the world, the screen and the x and y coordinates, and
         operates on them. First it is checked, whether the player is located on a tile, that can be entered.
@@ -163,26 +168,22 @@ class WorldMap(LevelBase):
         That means, that all levels should be able to be collected, by iterating over all possible tiles and following
         the same procedure as the rom.
 
-        :param screen:
-        :param player_row:
-        :param player_column:
-
         :return: A tuple of the object set number, the absolute level address, pointing to the objects and the enemy
         address. Or None, if there is no level at the map position.
         """
-        if (level_pointer := self.level_at(screen, player_row, player_column)) is None:
+        if (level_pointer := self.level_at(pos)) is None:
             return None
 
         if not 0xA000 <= level_pointer.level_offset < 0xC000:
             # suppose that level layouts are only in this range?
-            warn(f"Level in {self}@{screen=}, {player_row=}, {player_column=} has offset {level_pointer.level_offset}")
+            warn(f"Level in {self}@{pos.screen=}, {pos.row=}, {pos.column=} has offset {level_pointer.level_offset}")
 
         return level_pointer
 
     def replace_level_at_position(self, level_info, position: "WorldMapPosition"):
         level_address, enemy_address, object_set_number = level_info
 
-        level_pointer = self.level_for_position(position.screen, position.row, position.column)
+        level_pointer = self.level_for_position(position)
 
         if level_pointer is None:
             raise LookupError("No existing level at position.")
@@ -193,28 +194,8 @@ class WorldMap(LevelBase):
 
         level_pointer.write_back()
 
-    def level_indexes(self, player_screen, player_row, player_column):
-        """
-
-        :param int player_screen: On which screen the level is positioned, 1, 2, 3 or 4.
-        :param int player_row: In which row the level is positioned.
-        :param int player_column: In which column the level is positioned.
-
-        :return: The memory addresses of the row, column and level offset position.
-        """
-        if (level_pointer := self.level_at(player_screen, player_row, player_column)) is None:
-            return None
-
-        # return the addresses of the row and column value, so we can overwrite them, if necessary
-        return (
-            level_pointer.y_address,
-            level_pointer.x_address,
-            level_pointer.level_offset_address,
-            level_pointer.enemy_offset_address,
-        )
-
-    def level_name_for_position(self, screen: int, player_row: int, player_column: int) -> str:
-        tile = self.tile_at(screen, player_row, player_column)
+    def level_name_for_position(self, pos: Position) -> str:
+        tile = self.tile_at(pos)
 
         if not self.is_enterable(tile):
             return ""
@@ -233,16 +214,12 @@ class WorldMap(LevelBase):
             sprite.clear()
             sprite.write_back()
 
-    def sprite_at(self, screen: int, row: int, column: int) -> Optional[SpriteData]:
+    def sprite_at(self, pos: Position) -> Optional[SpriteData]:
         """
         Returns the ID of the overworld sprite at the given location in this world. Or 0 if there is None.
-
-        :param screen:
-        :param row:
-        :param column:
         """
         for sprite_data in self.gen_sprites():
-            if sprite_data.is_at(screen, row, column):
+            if sprite_data.is_at(pos):
                 return sprite_data
         else:
             return None
@@ -257,44 +234,37 @@ class WorldMap(LevelBase):
             level_pointer.clear()
             level_pointer.write_back()
 
-    def level_at(self, screen: int, row: int, column: int) -> Optional[LevelPointerData]:
+    def level_at(self, pos: Position) -> Optional[LevelPointerData]:
         """
         Returns the ID of the overworld sprite at the given location in this world. Or 0 if there is None.
-
-        :param screen:
-        :param row:
-        :param column:
         """
         for level_pointer in self.level_pointers:
-            if level_pointer.is_at(screen, row, column):
+            if level_pointer.is_at(pos):
                 return level_pointer
         else:
             return None
 
-    def tile_at(self, screen: int, row: int, column: int) -> int:
+    def tile_at(self, pos: Position) -> int:
         """
         Returns the tile value at the given coordinates. We define (0, 0) to be the topmost, leftmost tile, under the
         black border, so we'll adjust them accordingly, when bound checking.
 
-        :param screen:
-        :param row:
-        :param column:
         :return:
         """
-        if row + FIRST_VALID_ROW not in VALID_ROWS:
+        if pos.row not in VALID_ROWS:
             raise ValueError(
-                f"Given row {row} is outside the valid range for world maps. First valid row is " f"{FIRST_VALID_ROW}."
+                f"Given row {pos.row} is outside the valid range for world maps. Allowed are: {VALID_ROWS}."
             )
 
-        if column not in VALID_COLUMNS:
+        if pos.column not in VALID_COLUMNS:
             raise ValueError(
-                f"Given column {column} is outside the valid range for world maps. Remember the black " f"border."
+                f"Given column {pos.column} is outside the valid range for world maps. Allowed are {VALID_COLUMNS}"
             )
 
-        if screen - 1 not in range(self.screen_count):
-            raise ValueError(f"World {self.number} has {self.screen_count} screens. Given number {screen} invalid.")
+        if pos.screen not in range(self.screen_count):
+            raise ValueError(f"World {self.number} has {self.screen_count} screens. Given number {pos.screen} invalid.")
 
-        return self.layout_bytes[(screen - 1) * WORLD_MAP_SCREEN_SIZE + row * WORLD_MAP_SCREEN_WIDTH + column]
+        return self.layout_bytes[pos.tile_data_index]
 
     def is_enterable(self, tile_index: int) -> bool:
         """
@@ -325,7 +295,7 @@ class WorldMap(LevelBase):
 
         y_positions_of_world = [self.rom.int(Y_START_POS_LIST + index) >> 4 for index in range(8)]
 
-        y = y_positions_of_world[self.world_index] - FIRST_VALID_ROW
+        y = y_positions_of_world[self.world_index]
 
         # always on screen 1
         return WorldMapPosition(self, 1, y, x)
@@ -334,10 +304,10 @@ class WorldMap(LevelBase):
         """
         Returns a generator, which yield WorldMapPosition objects, one screen at a time, one row at a time.
         """
-        for screen in range(1, self.screen_count + 1):
+        for screen in range(self.screen_count):
             for row in range(WORLD_MAP_HEIGHT):
                 for column in range(WORLD_MAP_SCREEN_WIDTH):
-                    yield WorldMapPosition(self, screen, row, column)
+                    yield WorldMapPosition(self, screen, row + FIRST_VALID_ROW, column)
 
     def save_to_rom(self):
         pass

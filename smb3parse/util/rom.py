@@ -94,6 +94,22 @@ class Rom:
 
         return read_bytes[0]
 
+    def nibbles(self, offset: int) -> tuple[int, int]:
+        byte = self.int(offset)
+
+        high_nibble = byte >> 4
+        low_nibble = byte & 0x0F
+
+        return high_nibble, low_nibble
+
+    def write_nibbles(self, offset: int, high_nibble: int, low_nibble: int):
+        if any(nibble > 0x0F for nibble in [high_nibble, low_nibble]):
+            raise ValueError(f"{high_nibble=} or {low_nibble=} was larger than 0x0F.")
+
+        byte = (high_nibble << 4) + low_nibble
+
+        self.write(offset, byte)
+
     def save_to(self, path: PathLike):
         with open(path, "wb") as file:
             file.write(self._data)

@@ -12,6 +12,7 @@ from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.LevelView import LevelView
 from foundry.gui.MainView import MainView
 from foundry.gui.WorldView import WorldView
+from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -77,7 +78,7 @@ def test_world(world_info, qtbot):
     # monkeypatch level names, since the level name data is broken atm
     level_ref.level.name = current_test_name()
 
-    world_view = WorldView(None, level_ref, LevelContextMenu(level_ref))
+    world_view = WorldView(None, level_ref, WorldContextMenu(level_ref))
     world_view.zoom_in()
 
     rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16 * 2)

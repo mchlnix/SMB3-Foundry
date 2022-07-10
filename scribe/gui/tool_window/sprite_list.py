@@ -58,7 +58,7 @@ class SpriteList(TableWidget):
     def update_content(self):
         self.clear()
 
-        self.setRowCount(len(list(self.world.internal_world_map.gen_sprites())))
+        self.setRowCount(len(self.world.sprites))
 
         self.blockSignals(True)
 

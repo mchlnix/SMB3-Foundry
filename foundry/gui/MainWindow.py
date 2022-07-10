@@ -679,7 +679,8 @@ class MainWindow(QMainWindow):
 
         return True
 
-    def _set_default_powerup(self, rom: SMB3Rom) -> bool:
+    @staticmethod
+    def _set_default_powerup(rom: SMB3Rom) -> bool:
         *_, powerup, hasPWing = POWERUPS[SETTINGS["default_powerup"]]
 
         rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))

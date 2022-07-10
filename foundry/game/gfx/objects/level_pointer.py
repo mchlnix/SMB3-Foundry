@@ -1,9 +1,8 @@
-from PySide6.QtCore import QRect
+from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter, QPen
 
 from foundry.game.gfx.objects.LevelObject import SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
-from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.levels.data_points import LevelPointerData
 
 
@@ -15,15 +14,16 @@ class LevelPointer(ObjectLike):
         pass
 
     def draw(self, painter: QPainter, block_length, transparent, selected=False):
-        x = (self.data.screen * SCREEN_WIDTH + self.data.column) * block_length
-        y = (self.data.row - FIRST_VALID_ROW) * block_length
+        pos = QPoint(*self.data.pos.xy) * block_length
+
+        rect = QRect(pos, QSize(block_length, block_length))
 
         if selected:
-            painter.fillRect(QRect(x, y, block_length, block_length), QColor(0x00, 0xFF, 0x00, 0x80))
+            painter.fillRect(rect, QColor(0x00, 0xFF, 0x00, 0x80))
 
         painter.setPen(QPen(QColor(0xFF, 0x00, 0x00, 0x80), 4))
 
-        painter.drawRect(x, y, block_length, block_length)
+        painter.drawRect(rect)
 
     def get_status_info(self):
         pass
