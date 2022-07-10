@@ -32,7 +32,7 @@ from foundry.gui.settings import SETTINGS
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.levels.data_points import Position
+from smb3parse.data_points import Position
 
 
 class WorldView(MainView):

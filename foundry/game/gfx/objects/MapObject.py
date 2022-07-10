@@ -3,7 +3,7 @@ from PySide6.QtCore import QRect
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from smb3parse.levels import WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
-from smb3parse.levels.data_points import Position
+from smb3parse.data_points import Position
 
 map_object_names = {
     0x00: "Mario Clear (Blue)",

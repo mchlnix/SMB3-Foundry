@@ -11,7 +11,7 @@ from foundry.game.gfx.objects.airship_point import AirshipTravelPoint
 from foundry.game.gfx.objects.level_pointer import LevelPointer
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelLike import LevelLike
-from smb3parse.levels.data_points import Position
+from smb3parse.data_points import Position
 from smb3parse.levels.world_map import (
     WORLD_MAP_HEIGHT,
     WorldMap as _WorldMap,

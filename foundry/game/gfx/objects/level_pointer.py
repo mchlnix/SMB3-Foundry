@@ -3,7 +3,7 @@ from PySide6.QtGui import QColor, QPainter, QPen
 
 from foundry.game.gfx.objects.LevelObject import SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
-from smb3parse.levels.data_points import LevelPointerData
+from smb3parse.data_points import LevelPointerData
 
 
 class LevelPointer(ObjectLike):

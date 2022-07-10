@@ -3,8 +3,8 @@ from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.WorldMap import WorldMap
+from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH, WORLD_MAP_WARP_WORLD_INDEX
-from smb3parse.levels.data_points import AIRSHIP_TRAVEL_SET_COUNT
 
 
 class WorldDrawer:

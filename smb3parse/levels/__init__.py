@@ -17,7 +17,6 @@ from smb3parse.constants import (
 )
 from smb3parse.objects.object_set import ObjectSet
 
-OFFSET_SIZE = 2  # byte
 
 ENEMY_BASE_OFFSET = BASE_OFFSET  # + 1
 """

@@ -4,6 +4,7 @@ from warnings import warn
 
 from smb3parse.constants import (
     Map_Y_Starts,
+    OFFSET_SIZE,
     SPRITE_COUNT,
     TILE_BOWSER_CASTLE,
     TILE_CASTLE_BOTTOM,
@@ -30,7 +31,6 @@ from smb3parse.levels import (
     FIRST_VALID_ROW,
     LAYOUT_LIST_OFFSET,
     LevelBase,
-    OFFSET_SIZE,
     SPECIAL_ENTERABLE_TILES_LIST,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
     TILE_ATTRIBUTES_TS0_OFFSET,
@@ -43,7 +43,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.levels.data_points import LevelPointerData, Position, SpriteData, WorldMapData
+from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
 

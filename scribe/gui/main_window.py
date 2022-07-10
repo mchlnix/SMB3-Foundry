@@ -9,8 +9,8 @@ from foundry.gui.WorldView import WorldView
 from scribe.gui.edit_world_info import EditWorldInfo
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
+from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels import WORLD_COUNT
-from smb3parse.levels.data_points import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -174,6 +174,7 @@ class MainWindow(QMainWindow):
         if action is self.delete_tiles_action:
             self.level_ref.level.remove_all_tiles()
         elif action is self.delete_sprites_action:
+            # TODO reload sprites, after clearing
             self.level_ref.level.remove_all_sprites()
         elif action is self.delete_level_pointers_action:
             self.level_ref.level.remove_all_level_pointers()

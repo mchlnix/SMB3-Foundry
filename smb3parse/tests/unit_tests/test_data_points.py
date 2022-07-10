@@ -1,4 +1,4 @@
-from smb3parse.levels.data_points import LevelPointerData, Position, SpriteData, WorldMapData
+from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.util import compare_bytearrays
 
 

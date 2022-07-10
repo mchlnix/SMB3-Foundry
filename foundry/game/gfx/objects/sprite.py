@@ -22,7 +22,7 @@ from smb3parse.constants import (
     MAPOBJ_W8AIRSHIP,
     MAPOBJ_WHITETOADHOUSE,
 )
-from smb3parse.levels.data_points import Position, SpriteData
+from smb3parse.data_points import Position, SpriteData
 
 EMPTY_IMAGE = load_from_png(0, 53)
 
