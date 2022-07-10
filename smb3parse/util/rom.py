@@ -102,7 +102,7 @@ class Rom:
 
         return high_nibble, low_nibble
 
-    def write_nibbles(self, offset: int, high_nibble: int, low_nibble: int):
+    def write_nibbles(self, offset: int, high_nibble: int, low_nibble: int = 0):
         if any(nibble > 0x0F for nibble in [high_nibble, low_nibble]):
             raise ValueError(f"{high_nibble=} or {low_nibble=} was larger than 0x0F.")
 

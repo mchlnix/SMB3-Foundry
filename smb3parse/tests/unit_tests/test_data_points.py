@@ -154,6 +154,14 @@ def test_reading_airship_travel_sets(world_1):
     assert world_1.data.airship_travel_sets[0] == [Position(x, y, screen) for x, y, screen in set_0]
 
 
+def test_reading_locks(world_1):
+    assert world_1.data.fortress_fx_count == 4
+    assert world_1.data.fortress_fx[0].pos == Position(4, 5, 0)
+    assert world_1.data.fortress_fx[0].replacement_tile == 0x46
+
+    assert world_1.data.fortress_fx_indexes == [0, 0, 0, 0]
+
+
 def test_write_back_world_map(rom):
     old_data = rom._data.copy()
 

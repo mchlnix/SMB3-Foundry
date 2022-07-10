@@ -78,7 +78,7 @@ class SpriteData(_PositionMixin, DataPoint):
 
     def write_back(self):
         self._rom.write(self._x_pos_screen_address, self.screen)
-        self._rom.write_nibbles(self._x_pos_address, self.x, 0)
-        self._rom.write_nibbles(self._y_pos_address, self.y, 0)
+        self._rom.write_nibbles(self._x_pos_address, self.x)
+        self._rom.write_nibbles(self._y_pos_address, self.y)
         self._rom.write(self._type_address, self.type)
         self._rom.write(self._item_address, self.item)

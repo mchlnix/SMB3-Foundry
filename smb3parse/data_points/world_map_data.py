@@ -4,6 +4,8 @@ from smb3parse.constants import (
     AIRSHIP_TRAVEL_SET_COUNT,
     AIRSHIP_TRAVEL_SET_SIZE,
     BASE_OFFSET,
+    FortressFXBase_ByWorld,
+    FortressFX_W1,
     Map_Airship_Dest_XSets,
     Map_Airship_Dest_YSets,
     Map_Airship_Travel_BaseIdx,
@@ -11,6 +13,7 @@ from smb3parse.constants import (
     OFFSET_SIZE,
     World_Map_Max_PanR,
 )
+from smb3parse.data_points import FortressFXData
 from smb3parse.data_points.level_pointer_data import LevelPointerData
 from smb3parse.data_points.util import DataPoint, Position, _IndexedMixin
 from smb3parse.levels import (
@@ -58,6 +61,16 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self.airship_travel_sets: tuple[list[Position], list[Position], list[Position]] = ([], [], [])
 
+        # lock and bridge data
+        self.fortress_fx_base_index = 0
+        self.fortress_fx_base_index_address = 0x0
+
+        self.fortress_fx_indexes: list[int] = []
+        self.fortress_fx_indexes_address = 0x0
+
+        self.fortress_fx_count = 0
+        self.fortress_fx: list[FortressFXData] = []
+
         # level pointer data
         self.pos_offsets_for_screen = bytearray(MAX_SCREEN_COUNT)
 
@@ -93,6 +106,11 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self.airship_travel_x_set_address = Map_Airship_Dest_XSets + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
         self.airship_travel_y_set_address = Map_Airship_Dest_YSets + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
+
+        self.fortress_fx_base_index_address = FortressFXBase_ByWorld + self.index
+        self.fortress_fx_base_index = self._rom.int(self.fortress_fx_base_index_address)
+
+        self.fortress_fx_indexes_address = FortressFX_W1 + self.fortress_fx_base_index
 
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
@@ -133,6 +151,18 @@ class WorldMapData(_IndexedMixin, DataPoint):
                 y, _ = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_y + index)
 
                 self.airship_travel_sets[i].append(Position(x, y, screen))
+
+        self.fortress_fx_base_index = self._rom.int(self.fortress_fx_base_index_address)
+        self.fortress_fx_count = self._rom.int(self.fortress_fx_base_index_address + 1) - self.fortress_fx_base_index
+
+        self.fortress_fx.clear()
+        self.fortress_fx_indexes.clear()
+
+        for offset in range(self.fortress_fx_count):
+            index = self._rom.int(self.fortress_fx_indexes_address + offset)
+
+            self.fortress_fx.append(FortressFXData(self._rom, index))
+            self.fortress_fx_indexes.append(index)
 
     def write_back(self):
         # tile_data_offset
@@ -196,7 +226,14 @@ class WorldMapData(_IndexedMixin, DataPoint):
                 pos: Position = self.airship_travel_sets[i][index]
 
                 self._rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_x + index, pos.x, pos.screen)
-                self._rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_y + index, pos.y, 0)
+                self._rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_y + index, pos.y)
+
+        self._rom.write(self.fortress_fx_base_index_address, self.fortress_fx_base_index)
+
+        for offset, fortress_fx_data in enumerate(self.fortress_fx):
+            self._rom.write(self.fortress_fx_indexes_address + offset, fortress_fx_data.index)
+
+            fortress_fx_data.write_back()
 
     @property
     def structure_block_address(self):

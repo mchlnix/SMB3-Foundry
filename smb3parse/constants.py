@@ -115,6 +115,8 @@ MAPITEM_NAMES = {
 AIRSHIP_TRAVEL_SET_COUNT = 3  # offsets of 2 bytes each
 AIRSHIP_TRAVEL_SET_SIZE = 6  # bytes
 
+FORTRESS_FX_COUNT = 17  # entries/bytes
+
 OFFSET_SIZE = 2  # byte
 
 OBJ_AUTOSCROLL = 0xD3
