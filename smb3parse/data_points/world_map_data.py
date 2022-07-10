@@ -136,17 +136,18 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self.airship_travel_base_index = self._rom.int(self.airship_travel_base_index_address)
 
-        for i in range(AIRSHIP_TRAVEL_SET_COUNT):
-            self.airship_travel_sets[i].clear()
+        for set_number in range(AIRSHIP_TRAVEL_SET_COUNT):
+            self.airship_travel_sets[set_number].clear()
+
+            offset_x = self._rom.little_endian(self.airship_travel_x_set_address + set_number * OFFSET_SIZE)
+            offset_y = self._rom.little_endian(self.airship_travel_y_set_address + set_number * OFFSET_SIZE)
 
             for index in range(AIRSHIP_TRAVEL_SET_SIZE):
-                offset_x = self._rom.little_endian(self.airship_travel_x_set_address + i * OFFSET_SIZE)
-                offset_y = self._rom.little_endian(self.airship_travel_y_set_address + i * OFFSET_SIZE)
 
                 x, screen = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_x + index)
                 y, _ = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_y + index)
 
-                self.airship_travel_sets[i].append(Position(x, y, screen))
+                self.airship_travel_sets[set_number].append(Position(x, y, screen))
 
         self.fortress_fx_base_index = self._rom.int(self.fortress_fx_base_index_address)
         self.fortress_fx_count = self._rom.int(self.fortress_fx_base_index_address + 1) - self.fortress_fx_base_index
@@ -210,16 +211,12 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self._rom.write(self.airship_travel_base_index_address, self.airship_travel_base_index)
 
-        for i in range(AIRSHIP_TRAVEL_SET_COUNT):
-            for index in range(AIRSHIP_TRAVEL_SET_SIZE):
-                offset_x = self._rom.little_endian(
-                    self.airship_travel_x_set_address + (self.index * AIRSHIP_TRAVEL_SET_COUNT + i) * OFFSET_SIZE
-                )
-                offset_y = self._rom.little_endian(
-                    self.airship_travel_y_set_address + (self.index * AIRSHIP_TRAVEL_SET_COUNT + i) * OFFSET_SIZE
-                )
+        for set_number in range(AIRSHIP_TRAVEL_SET_COUNT):
+            offset_x = self._rom.little_endian(self.airship_travel_x_set_address + set_number * OFFSET_SIZE)
+            offset_y = self._rom.little_endian(self.airship_travel_y_set_address + set_number * OFFSET_SIZE)
 
-                pos: Position = self.airship_travel_sets[i][index]
+            for index in range(AIRSHIP_TRAVEL_SET_SIZE):
+                pos: Position = self.airship_travel_sets[set_number][index]
 
                 self._rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_x + index, pos.x, pos.screen)
                 self._rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_y + index, pos.y)

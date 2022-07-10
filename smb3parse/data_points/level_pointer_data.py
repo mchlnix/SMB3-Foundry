@@ -92,6 +92,33 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
         self._rom.write_little_endian(self.level_offset_address, self.level_offset)
         self._rom.write_little_endian(self.enemy_offset_address, self.enemy_offset)
 
+    def __eq__(self, other: "LevelPointerData"):
+        if self.pos != other.pos:
+            return False
+
+        if self.level_offset != other.level_offset:
+            return False
+
+        if self.enemy_offset != other.enemy_offset:
+            return False
+
+        if self.object_set != other.object_set:
+            return False
+
+        if self.screen_address != other.screen_address:
+            return False
+
+        if self.y_address != other.y_address:
+            return False
+
+        if self.level_offset_address != other.level_offset_address:
+            return False
+
+        if self.enemy_offset_address != other.enemy_offset_address:
+            return False
+
+        return True
+
     def __lt__(self, other):
         self_result = self.screen * WORLD_MAP_SCREEN_SIZE + self.y * WORLD_MAP_SCREEN_WIDTH + self.x
         other_result = other.screen * WORLD_MAP_SCREEN_SIZE + other.y * WORLD_MAP_SCREEN_WIDTH + other.x

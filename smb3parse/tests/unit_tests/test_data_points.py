@@ -100,11 +100,8 @@ def _compare_worlds(world_1, world_2):
     for attr_name in dir(world_1):
         if attr_name.startswith("_"):
             continue
-        if callable(getattr(world_1, attr_name)):
-            continue
 
-        if attr_name == "level_pointers":
-            assert len(world_1.level_pointers) == len(world_2.level_pointers)
+        if callable(getattr(world_1, attr_name)):
             continue
 
         assert getattr(world_1, attr_name) == getattr(world_2, attr_name), attr_name
