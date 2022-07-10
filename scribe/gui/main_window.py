@@ -86,12 +86,19 @@ class MainWindow(QMainWindow):
         self.starting_point_action.setCheckable(True)
         self.starting_point_action.setChecked(self.world_view.draw_start)
 
-        self.view_menu.addSection("Show Airship Travel Points")
+        self.view_menu.addSeparator()
+
         self.airship_travel_actions = []
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
             self.airship_travel_actions.append(self.view_menu.addAction(f"Airship Travel Path {i+1}"))
             self.airship_travel_actions[-1].setCheckable(True)
             self.airship_travel_actions[-1].setChecked(self.world_view.draw_airship_points & 2**i == 2**i)
+
+        self.view_menu.addSeparator()
+
+        self.lock_bridge_action = self.view_menu.addAction("Show Lock and Bridge Events")
+        self.lock_bridge_action.setCheckable(True)
+        self.lock_bridge_action.setChecked(self.world_view.draw_locks)
 
     def _setup_level_menu(self):
         self.level_menu = QMenu("Change Level")
@@ -198,6 +205,8 @@ class MainWindow(QMainWindow):
                     value += 2**index
 
             self.world_view.draw_airship_points = value
+        elif action is self.lock_bridge_action:
+            self.world_view.draw_locks = action.isChecked()
 
         self.world_view.update()
 

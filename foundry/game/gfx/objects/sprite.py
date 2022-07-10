@@ -1,5 +1,5 @@
 from PySide6.QtCore import QPoint, QRect, QSize
-from PySide6.QtGui import QColor, QPen
+from PySide6.QtGui import QColor
 
 from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
@@ -61,7 +61,6 @@ class Sprite(ObjectLike):
 
         rect = QRect(pos, QSize(block_length, block_length))
 
-        painter.setPen(QPen(QColor(0x00, 0x00, 0xFF, 0x80), 4))
         painter.drawImage(rect.topLeft(), MAP_OBJ_SPRITES[self.data.type].scaled(block_length, block_length))
 
         if selected:

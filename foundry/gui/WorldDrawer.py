@@ -43,7 +43,9 @@ class WorldDrawer:
             self._draw_airship_travel_points(painter, world)
 
         self.draw_pipes = True
-        self.draw_locks = True
+
+        if self.draw_locks:
+            self._draw_locks_and_bridges(painter, world)
 
     def _draw_background(self, painter: QPainter, world: WorldMap):
         bg_color = Qt.black
@@ -54,7 +56,7 @@ class WorldDrawer:
         painter.setPen(QPen(Qt.gray, 1))
 
         # rows
-        map_length = WORLD_MAP_SCREEN_WIDTH * self.block_length * world.internal_world_map.screen_count
+        map_length = WORLD_MAP_SCREEN_WIDTH * self.block_length * world.data.screen_count
 
         for y in range(WORLD_MAP_HEIGHT):
             y *= self.block_length
@@ -62,7 +64,7 @@ class WorldDrawer:
             painter.drawLine(QPoint(0, y), QPoint(map_length, y))
 
         # columns
-        for x in range(WORLD_MAP_SCREEN_WIDTH * world.internal_world_map.screen_count):
+        for x in range(WORLD_MAP_SCREEN_WIDTH * world.data.screen_count):
             x *= self.block_length
 
             painter.drawLine(QPoint(x, 0), QPoint(x, WORLD_MAP_SCREEN_WIDTH * self.block_length))
@@ -105,9 +107,7 @@ class WorldDrawer:
         )
 
     def _draw_airship_travel_points(self, painter: QPainter, world: WorldMap):
-        world_data = world.internal_world_map.data
-
-        if world_data.index == WORLD_MAP_WARP_WORLD_INDEX:
+        if world.data.index == WORLD_MAP_WARP_WORLD_INDEX:
             return
 
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
@@ -116,3 +116,10 @@ class WorldDrawer:
 
             for airship_point in world.airship_travel_sets[i]:
                 airship_point.draw(painter, self.block_length, False)
+
+    def _draw_locks_and_bridges(self, painter: QPainter, world: WorldMap):
+        if world.data.index == WORLD_MAP_WARP_WORLD_INDEX:
+            return
+
+        for lock_object in world.locks_and_bridges:
+            lock_object.draw(painter, self.block_length, False)

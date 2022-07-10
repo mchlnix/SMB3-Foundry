@@ -9,6 +9,7 @@ from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.MapObject import MapObject
 from foundry.game.gfx.objects.airship_point import AirshipTravelPoint
 from foundry.game.gfx.objects.level_pointer import LevelPointer
+from foundry.game.gfx.objects.locks import Lock
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.data_points import Position
@@ -57,6 +58,7 @@ class WorldMap(LevelLike):
         self._load_sprites()
         self._load_level_pointers()
         self._load_airship_points()
+        self._load_locks_and_bridges()
 
         self._calc_size()
 
@@ -104,6 +106,12 @@ class WorldMap(LevelLike):
             self.airship_travel_sets.append(
                 [AirshipTravelPoint(pos, index) for index, pos in enumerate(airship_travel_set)]
             )
+
+    def _load_locks_and_bridges(self):
+        self.locks_and_bridges: list[Lock] = []
+
+        for fortress_fx in self.data.fortress_fx:
+            self.locks_and_bridges.append(Lock(fortress_fx))
 
     def _calc_size(self):
         old_size = self.size
