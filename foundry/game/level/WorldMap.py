@@ -7,6 +7,7 @@ from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.MapObject import MapObject
+from foundry.game.gfx.objects.airship_point import AirshipTravelPoint
 from foundry.game.gfx.objects.level_pointer import LevelPointer
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelLike import LevelLike
@@ -55,8 +56,13 @@ class WorldMap(LevelLike):
         self._load_objects()
         self._load_sprites()
         self._load_level_pointers()
+        self._load_airship_points()
 
         self._calc_size()
+
+    @property
+    def data(self):
+        return self.internal_world_map.data
 
     @staticmethod
     def from_world_number(world_index: int):
@@ -68,7 +74,7 @@ class WorldMap(LevelLike):
     def _load_objects(self):
         self.objects.clear()
 
-        for index, tile in enumerate(self.internal_world_map.data.tile_data):
+        for index, tile in enumerate(self.data.tile_data):
             pos = Position.from_tile_data_index(index)
 
             block = get_block(tile, self.palette_group, self.graphics_set, self.tsa_data)
@@ -90,6 +96,14 @@ class WorldMap(LevelLike):
 
         for level_pointer_data in self.internal_world_map.level_pointers:
             self.level_pointers.append(LevelPointer(level_pointer_data))
+
+    def _load_airship_points(self):
+        self.airship_travel_sets: list[list[AirshipTravelPoint]] = []
+
+        for airship_travel_set in self.data.airship_travel_sets:
+            self.airship_travel_sets.append(
+                [AirshipTravelPoint(pos, index) for index, pos in enumerate(airship_travel_set)]
+            )
 
     def _calc_size(self):
         old_size = self.size
@@ -183,7 +197,7 @@ class WorldMap(LevelLike):
         self.objects.remove(obj)
 
     def _write_tile_data(self):
-        world_data = self.internal_world_map.data
+        world_data = self.data
         old_tile_data = bytearray([obj.type for obj in sorted(self.objects)])
 
         if len(world_data.tile_data) < len(old_tile_data):
@@ -231,7 +245,20 @@ class WorldMap(LevelLike):
             if sprite.data.is_at(pos):
                 return sprite
         else:
-            return None
+            return
+
+    def airship_point_at(self, x, y, airship_travel_set_visibility=0):
+        pos = Position.from_xy(x, y)
+
+        for index, airship_travel_set in reversed(list(enumerate(self.airship_travel_sets))):
+            if airship_travel_set_visibility & 2**index != 2**index:
+                continue
+
+            for airship_point in reversed(airship_travel_set):
+                if airship_point.pos == pos:
+                    return airship_point
+
+        return None
 
     def tile_at(self, x, y):
         pos = Position.from_xy(x, y)
@@ -251,7 +278,7 @@ class WorldMap(LevelLike):
     def save_to_rom(self, rom: Optional[ROM] = None):
         self._write_tile_data()
 
-        self.internal_world_map.data.write_back()
+        self.data.write_back()
 
         # sprites
         for sprite in self.sprites:

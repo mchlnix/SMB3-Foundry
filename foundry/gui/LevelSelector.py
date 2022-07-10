@@ -270,8 +270,6 @@ class WorldMapLevelSelect(QScrollArea):
 
         y += FIRST_VALID_ROW
 
-        print(y)
-
         try:
             level_pointer = self.world.level_at_position(x, y)
 

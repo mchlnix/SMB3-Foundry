@@ -1,28 +1,10 @@
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
-from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.WorldMap import WorldMap
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH, WORLD_MAP_WARP_WORLD_INDEX
-from smb3parse.levels.data_points import AIRSHIP_TRAVEL_SET_COUNT, AIRSHIP_TRAVEL_SET_SIZE
-
-
-AIRSHIP_TRAVEL_POINT_1 = load_from_png(59, 2)
-AIRSHIP_TRAVEL_POINT_2 = load_from_png(60, 2)
-AIRSHIP_TRAVEL_POINT_3 = load_from_png(61, 2)
-AIRSHIP_TRAVEL_POINT_4 = load_from_png(62, 2)
-AIRSHIP_TRAVEL_POINT_5 = load_from_png(59, 3)
-AIRSHIP_TRAVEL_POINT_6 = load_from_png(60, 3)
-
-AIRSHIP_TRAVEL_POINTS = [
-    AIRSHIP_TRAVEL_POINT_1,
-    AIRSHIP_TRAVEL_POINT_2,
-    AIRSHIP_TRAVEL_POINT_3,
-    AIRSHIP_TRAVEL_POINT_4,
-    AIRSHIP_TRAVEL_POINT_5,
-    AIRSHIP_TRAVEL_POINT_6,
-]
+from smb3parse.levels.data_points import AIRSHIP_TRAVEL_SET_COUNT
 
 
 class WorldDrawer:
@@ -49,7 +31,6 @@ class WorldDrawer:
         self._draw_tiles(painter, world)
 
         if self.draw_level_pointers:
-            # TODO: Fix and understand rules on where pointers can be
             self._draw_level_pointers(painter, world)
 
         if self.draw_sprites:
@@ -133,14 +114,5 @@ class WorldDrawer:
             if self.draw_airship_points & 2**i != 2**i:
                 continue
 
-            for index in range(AIRSHIP_TRAVEL_SET_SIZE):
-                pos = world_data.airship_travel_sets[i][index]
-
-                x, y = pos.xy
-
-                x *= self.block_length
-                y *= self.block_length
-
-                painter.drawImage(
-                    QPoint(x, y), AIRSHIP_TRAVEL_POINTS[index].scaled(self.block_length, self.block_length)
-                )
+            for airship_point in world.airship_travel_sets[i]:
+                airship_point.draw(painter, self.block_length, False)

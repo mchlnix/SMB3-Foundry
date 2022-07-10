@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):
         self.view_menu.addSection("Show Airship Travel Points")
         self.airship_travel_actions = []
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
-            self.airship_travel_actions.append(self.view_menu.addAction("Show Airship Travel Points"))
+            self.airship_travel_actions.append(self.view_menu.addAction(f"Airship Travel Path {i+1}"))
             self.airship_travel_actions[-1].setCheckable(True)
             self.airship_travel_actions[-1].setChecked(self.world_view.draw_airship_points & 2**i == 2**i)
 

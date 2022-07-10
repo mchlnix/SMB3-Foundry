@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QWidget
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_WIDTH
+from foundry.game.gfx.objects.airship_point import AirshipTravelPoint
 from foundry.game.gfx.objects.level_pointer import LevelPointer
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.Level import Level
@@ -67,6 +68,7 @@ class WorldView(MainView):
         self.drag_start_point = 0, 0
         self.selected_sprite: Optional[Sprite] = None
         self.selected_level_pointer: Optional[LevelPointer] = None
+        self.selected_airship_point: Optional[AirshipTravelPoint] = None
 
         self.dragging_happened = True
 
@@ -309,9 +311,21 @@ class WorldView(MainView):
 
         level_x, level_y = self._to_level_point(x, y)
 
-        level_pointer = self.world.level_at_position(level_x, level_y)
-        sprite = self.world.sprite_at_position(level_x, level_y)
+        level_pointer = None
+        sprite = None
+        airship_point = None
+
+        if self.draw_level_pointers:
+            level_pointer = self.world.level_at_position(level_x, level_y)
+        if self.draw_sprites:
+            sprite = self.world.sprite_at_position(level_x, level_y)
+        if self.draw_airship_points:
+            airship_point = self.world.airship_point_at(level_x, level_y, self.draw_airship_points)
+
         obj = self.object_at(x, y)
+
+        if level_pointer or sprite or airship_point:
+            self._select_object(None)
 
         if self.mouse_mode == MODE_PLACE_TILE:
             if shift_is_pressed():
@@ -322,12 +336,17 @@ class WorldView(MainView):
 
             self.update()
 
-        elif sprite is not None and self.draw_sprites:
+        elif airship_point is not None:
+            self.drag_start_point = x, y
+            self.selected_airship_point = airship_point
+            self.mouse_mode = MODE_DRAG
+
+        elif sprite is not None:
             self.drag_start_point = x, y
             self.selected_sprite = sprite
             self.mouse_mode = MODE_DRAG
 
-        elif level_pointer is not None and self.draw_level_pointers:
+        elif level_pointer is not None:
             self.drag_start_point = x, y
             self.selected_level_pointer = level_pointer
             self.mouse_mode = MODE_DRAG
@@ -350,6 +369,10 @@ class WorldView(MainView):
         dy = level_y - self.last_mouse_position[1]
 
         self.last_mouse_position = level_x, level_y
+
+        if self.selected_airship_point is not None:
+            self.selected_airship_point.set_position(level_x, level_y)
+            self.level_ref.level.changed = True
 
         if self.selected_sprite is not None:
             self.selected_sprite.data.set_pos(pos)
@@ -381,6 +404,12 @@ class WorldView(MainView):
         if self.mouse_mode == MODE_PLACE_TILE:
             return
         elif self.mouse_mode == MODE_DRAG and self.dragging_happened:
+            if self.selected_airship_point is not None:
+                drag_end_point = self.selected_airship_point.get_position()
+
+                if self.drag_start_point != drag_end_point:
+                    self._stop_drag()
+
             if self.selected_sprite is not None:
                 drag_end_point = self.selected_sprite.get_position()
 
@@ -423,6 +452,7 @@ class WorldView(MainView):
     def _stop_drag(self):
         self.selected_sprite = None
         self.selected_level_pointer = None
+        self.selected_airship_point = None
 
         if self.dragging_happened:
             self.level_ref.save_level_state()
