@@ -1,5 +1,6 @@
 import typing
 
+from PySide6.QtGui import QDropEvent
 from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
 from foundry.game.level.LevelRef import LevelRef
@@ -31,6 +32,14 @@ class SpriteList(TableWidget):
                 "Make sure they are shown in the View Menu.",
             ),
         )
+
+        self.update_content()
+
+    def dropEvent(self, event: QDropEvent) -> None:
+        source_index = self.selectedIndexes()[0].row()
+        target_index = self.indexAt(event.pos()).row()
+
+        self.world.move_sprites(source_index, target_index)
 
         self.update_content()
 

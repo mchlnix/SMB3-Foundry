@@ -133,9 +133,29 @@ class WorldMap(LevelLike):
         self.selected_level_pointers = indexes
         self._signal_emitter.needs_redraw.emit()
 
+    def move_level_pointers(self, source_index: int, target_index: int):
+        if source_index == target_index:
+            return
+
+        moved_level_pointer = self.level_pointers.pop(source_index)
+        self.level_pointers.insert(target_index, moved_level_pointer)
+
+        for index, level_pointer in enumerate(self.level_pointers):
+            level_pointer.data.change_index(index)
+
     def select_sprites(self, indexes: list[int]):
         self.selected_sprites = indexes
         self._signal_emitter.needs_redraw.emit()
+
+    def move_sprites(self, source_index: int, target_index: int):
+        if source_index == target_index:
+            return
+
+        moved_sprite = self.sprites.pop(source_index)
+        self.sprites.insert(target_index, moved_sprite)
+
+        for index, sprite in enumerate(self.sprites):
+            sprite.data.change_index(index)
 
     @property
     def q_size(self):

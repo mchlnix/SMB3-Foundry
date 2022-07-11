@@ -5,7 +5,7 @@ from smb3parse.constants import (
     Map_List_Object_Ys,
     OFFSET_SIZE,
 )
-from smb3parse.data_points.util import DataPoint, _PositionMixin
+from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
 from smb3parse.data_points.world_map_data import WorldMapData
 from smb3parse.levels import (
     FIRST_VALID_ROW,
@@ -18,7 +18,7 @@ MAP_SPRITE_TYPES_LIST = MAP_SPRITE_X_POS_LIST + 8 * OFFSET_SIZE
 MAP_SPRITE_ITEMS_LIST = MAP_SPRITE_TYPES_LIST + 8 * OFFSET_SIZE
 
 
-class SpriteData(_PositionMixin, DataPoint):
+class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
     def __init__(self, world_map_data: WorldMapData, index: int):
         self.world = world_map_data
         self.index = index

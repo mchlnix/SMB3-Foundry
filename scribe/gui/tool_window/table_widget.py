@@ -18,6 +18,8 @@ class TableWidget(QTableWidget):
     def __init__(self, level_ref: LevelRef):
         super(TableWidget, self).__init__()
 
+        self.setDragDropMode(self.InternalMove)
+
         self.level_ref = level_ref
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
