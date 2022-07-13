@@ -13,6 +13,7 @@ from foundry.game.gfx.objects.locks import Lock
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.data_points import Position
+from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID
 from smb3parse.levels.world_map import (
     WORLD_MAP_HEIGHT,
     WorldMap as _WorldMap,
@@ -157,6 +158,16 @@ class WorldMap(LevelLike):
         for index, sprite in enumerate(self.sprites):
             sprite.data.change_index(index)
 
+    def move_tile(self, source_index: int, target_index: int, obj_index: int):
+        if source_index == target_index:
+            return
+
+        source_obj = self.objects[source_index]
+        target_obj = self.objects[target_index]
+
+        target_obj.change_type(obj_index)
+        source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
+
     @property
     def q_size(self):
         return QSize(*self.size) * Block.SIDE_LENGTH
@@ -176,9 +187,6 @@ class WorldMap(LevelLike):
     @property
     def jumps_changed(self):
         return self._signal_emitter.jumps_changed
-
-    def get_object_names(self):
-        return [obj.name for obj in self.objects]
 
     def draw(self, dc, zoom, transparency=None, show_expansion=None):
         for obj in self.objects:
@@ -252,7 +260,7 @@ class WorldMap(LevelLike):
         self.internal_world_map.clear_level_pointers()
         self.data_changed.emit()
 
-    def level_at_position(self, x: int, y: int) -> Optional[LevelPointer]:
+    def level_pointer_at(self, x: int, y: int) -> Optional[LevelPointer]:
         pos = Position.from_xy(x, y)
 
         for level_pointer in self.level_pointers:
@@ -266,7 +274,7 @@ class WorldMap(LevelLike):
 
         return self.internal_world_map.level_name_for_position(pos)
 
-    def sprite_at_position(self, x, y) -> Optional[Sprite]:
+    def sprite_at(self, x, y) -> Optional[Sprite]:
         pos = Position.from_xy(x, y)
 
         for sprite in self.sprites:
@@ -292,6 +300,12 @@ class WorldMap(LevelLike):
         pos = Position.from_xy(x, y)
 
         return self.internal_world_map.tile_at(pos)
+
+    def locks_at(self, x, y):
+        return None
+
+    def pipe_at(self, x, y):
+        return None
 
     # TODO check if better in parent class
     def get_rect(self, block_length: int = 1):

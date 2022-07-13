@@ -14,6 +14,10 @@ class ObjectLike(abc.ABC):
     domain: int
     name: str
 
+    # TODO too ambiguous to be part of an API?
+    type: int
+    selected: bool
+
     rect: QRect
 
     is_4byte: bool

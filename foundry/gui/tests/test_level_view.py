@@ -108,6 +108,6 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
     assert level_view.wheelEvent(event)
 
     # THEN the type of the object should have changed
-    new_type = level_view.object_at(*coordinates).type
+    new_type = level_view.object_at(x, y).type
 
     assert new_type == original_type + type_change, (original_type, new_type)

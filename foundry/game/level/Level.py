@@ -514,9 +514,6 @@ class Level(LevelLike):
     def get_all_objects(self) -> List[Union[LevelObject, EnemyObject]]:
         return self.objects + self.enemies
 
-    def get_object_names(self):
-        return [obj.name for obj in self.get_all_objects()]
-
     def object_at(self, x: int, y: int) -> Optional[Union[EnemyObject, LevelObject]]:
         for obj in reversed(self.get_all_objects()):
             if (x, y) in obj:

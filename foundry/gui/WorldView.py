@@ -1,38 +1,29 @@
-from bisect import bisect_right
-from typing import List, Optional, Tuple, Union
-from warnings import warn
+from typing import List, Optional, Tuple
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QCursor, QMouseEvent, QPaintEvent, QPainter, QPixmap, QWheelEvent, Qt
+from PySide6.QtGui import QCursor, QMouseEvent, QPainter, QPixmap, Qt
 from PySide6.QtWidgets import QWidget
 
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_WIDTH
-from foundry.game.gfx.objects.airship_point import AirshipTravelPoint
-from foundry.game.gfx.objects.level_pointer import LevelPointer
-from foundry.game.gfx.objects.sprite import Sprite
-from foundry.game.level.Level import Level
+from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.MapObject import MapObject
+from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.MainView import (
-    HIGHEST_ZOOM_LEVEL,
-    LOWEST_ZOOM_LEVEL,
     MODE_DRAG,
     MODE_FREE,
     MODE_PLACE_TILE,
+    MODE_SELECTION_SQUARE,
     MainView,
     ctrl_is_pressed,
     shift_is_pressed,
-    undoable,
 )
-from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT
-from smb3parse.levels.WorldMapPosition import WorldMapPosition
 from smb3parse.data_points import Position
+from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT
 
 
 class WorldView(MainView):
@@ -59,16 +50,14 @@ class WorldView(MainView):
         self.changed = False
         self._tile_to_put: Optional[Block] = None
 
-        self.selection_square = SelectionSquare()
+        self.selection_square.set_offset(0, FIRST_VALID_ROW)
 
         self.mouse_mode = MODE_FREE
 
         self.last_mouse_position = 0, 0
 
         self.drag_start_point = 0, 0
-        self.selected_sprite: Optional[Sprite] = None
-        self.selected_level_pointer: Optional[LevelPointer] = None
-        self.selected_airship_point: Optional[AirshipTravelPoint] = None
+        self.selected_object: Optional[ObjectLike] = None
 
         self.dragging_happened = True
 
@@ -139,49 +128,49 @@ class WorldView(MainView):
     def world(self) -> WorldMap:
         return self.level_ref.level
 
+    def set_mouse_mode(self, new_mode: int, event: Optional[QMouseEvent]):
+        if new_mode == MODE_PLACE_TILE:
+            tile_pixmap = QPixmap(QSize(self.block_length, self.block_length))
+
+            painter = QPainter(tile_pixmap)
+            self._tile_to_put.draw(painter, 0, 0, self.block_length)
+            painter.end()
+
+            self.setCursor(QCursor(tile_pixmap))
+
+        elif new_mode == MODE_SELECTION_SQUARE:
+            self.selection_square.start(event.pos())
+
+        elif new_mode == MODE_DRAG:
+            self.drag_start_point = self._to_level_point(event.pos())
+            self.setCursor(Qt.ClosedHandCursor)
+
+        elif new_mode == MODE_FREE:
+            self._tile_to_put = None
+            self.selected_object = None
+
+            self._object_was_selected_on_last_click = False
+            self.setCursor(Qt.ArrowCursor)
+
+        self.mouse_mode = new_mode
+
     def on_put_tile(self, tile_id: int):
-        self.mouse_mode = MODE_PLACE_TILE
         self._tile_to_put = get_worldmap_tile(tile_id)
-
-        open_hand_px = QPixmap(QSize(Block.SIDE_LENGTH * self.zoom, Block.SIDE_LENGTH * self.zoom))
-
-        painter = QPainter(open_hand_px)
-        self._tile_to_put.draw(painter, 0, 0, Block.SIDE_LENGTH * self.zoom)
-        painter.end()
-
-        open_hand_cursor = QCursor(open_hand_px)
-
-        self.setCursor(open_hand_cursor)
-
-    def mousePressEvent(self, event: QMouseEvent):
-        if self.read_only:
-            return super(WorldView, self).mousePressEvent(event)
-
-        pressed_button = event.button()
-
-        if pressed_button == Qt.LeftButton:
-            self._on_left_mouse_button_down(event)
-        elif pressed_button == Qt.RightButton:
-            self._on_right_mouse_button_down(event)
-        else:
-            return super(WorldView, self).mousePressEvent(event)
+        self.set_mouse_mode(MODE_PLACE_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if self.read_only:
             return super(WorldView, self).mouseMoveEvent(event)
 
         if self.mouse_mode == MODE_PLACE_TILE and event.buttons() & Qt.LeftButton:
-            x, y = self._to_level_point(*event.pos().toTuple())
+            x, y = self._to_level_point(event.pos())
 
             tile = self.world.object_at(x, y)
-            if tile is None:
-                return
 
             if tile != self._tile_to_put:
                 tile.change_type(self._tile_to_put.index)
                 self.update()
         elif self.mouse_mode == MODE_DRAG:
-            self.setCursor(Qt.ClosedHandCursor)
             self._dragging(event)
 
         elif self.selection_square.active:
@@ -189,88 +178,11 @@ class WorldView(MainView):
 
         return super(WorldView, self).mouseMoveEvent(event)
 
-    def mouseReleaseEvent(self, event: QMouseEvent):
-        if self.read_only:
-            return super(WorldView, self).mouseReleaseEvent(event)
-
-        released_button = event.button()
-
-        if released_button == Qt.LeftButton:
-            self._on_left_mouse_button_up(event)
-        elif released_button == Qt.RightButton:
-            self._on_right_mouse_button_up(event)
-        else:
-            return super(WorldView, self).mouseReleaseEvent(event)
-
-    def wheelEvent(self, event: QWheelEvent):
-        if self.read_only:
-            return super(WorldView, self).wheelEvent(event)
-
-        if SETTINGS["object_scroll_enabled"]:
-            x, y = event.position().toTuple()
-
-            obj_under_cursor = self.object_at(x, y)
-
-            if obj_under_cursor is None:
-                return False
-
-            if isinstance(self.level_ref.level, WorldMap):
-                return False
-
-            # scrolling through the level could unintentionally change objects, if the cursor would wander onto them.
-            # this is annoying (to me) so only change already selected objects
-            if obj_under_cursor not in self.level_ref.selected_objects:
-                return False
-
-            self._change_object_on_mouse_wheel(event.position(), event.angleDelta().y())
-
-            return True
-        else:
-            super(WorldView, self).wheelEvent(event)
-            return False
-
-    @undoable
-    def _change_object_on_mouse_wheel(self, cursor_position: QPoint, y_delta: int):
-        x, y = cursor_position.toTuple()
-
-        obj_under_cursor = self.object_at(x, y)
-
-        if y_delta > 0:
-            obj_under_cursor.increment_type()
-        else:
-            obj_under_cursor.decrement_type()
-
-        obj_under_cursor.selected = True
-
     def _on_right_mouse_button_down(self, event: QMouseEvent):
-        if self.mouse_mode in [MODE_DRAG, MODE_PLACE_TILE]:
-            return
-
-        x, y = event.pos().toTuple()
-        level_x, level_y = self._to_level_point(x, y)
-
-        self.last_mouse_position = level_x, level_y
-
-        self._select_objects_on_click(event)
+        pass
 
     def _on_right_mouse_button_up(self, event):
-        if self.mouse_mode == MODE_PLACE_TILE:
-            pass
-        elif self.context_menu is not None:
-            x, y = event.pos().toTuple()
-
-            screen = x // SCREEN_WIDTH + 1
-
-            column, row = self._to_level_point(x, y)
-
-            map_pos = WorldMapPosition(self.world.internal_world_map, screen, column, row)
-
-            menu_pos = self.mapToGlobal(event.pos())
-
-            self.context_menu.setup_menu(map_pos).popup(menu_pos)
-
-        self.mouse_mode = MODE_FREE
-        self.setCursor(Qt.ArrowCursor)
+        self.set_mouse_mode(MODE_FREE, event)
 
     def _fill_tile(self, tile_to_fill_in: int, x, y):
         if self._tile_to_put is None:
@@ -295,93 +207,83 @@ class WorldView(MainView):
         self._fill_tile(tile_to_fill_in, x, y + 1)
         self._fill_tile(tile_to_fill_in, x, y - 1)
 
-    def _to_level_point(self, screen_x: int, screen_y: int) -> Tuple[int, int]:
-        x, y = super(WorldView, self)._to_level_point(screen_x, screen_y)
+    def _to_level_point(self, *args) -> Tuple[int, int]:
+        x, y = super(WorldView, self)._to_level_point(*args)
 
         return x, y + FIRST_VALID_ROW
 
+    def _visible_object_at(self, point: QPoint) -> ObjectLike:
+        level_x, level_y = self._to_level_point(point)
+
+        obj = None
+
+        if self.draw_pipes:
+            obj = self.world.pipe_at(level_x, level_y)
+
+        if not obj and self.draw_locks:
+            obj = self.world.locks_at(level_x, level_y)
+
+        if not obj and self.draw_airship_points:
+            obj = self.world.airship_point_at(level_x, level_y, self.draw_airship_points)
+
+        if not obj and self.draw_sprites:
+            obj = self.world.sprite_at(level_x, level_y)
+
+        if not obj and self.draw_level_pointers:
+            obj = self.world.level_pointer_at(level_x, level_y)
+
+        if not obj:
+            obj = self.world.objects[Position.from_xy(level_x, level_y).tile_data_index]
+
+        assert obj is not None
+
+        return obj
+
     def _on_left_mouse_button_down(self, event: QMouseEvent):
-        # 1 if clicking on background: deselect everything, start selection square
-        # 2 if clicking on background and ctrl: start selection_square
-        # 3 if clicking on selected object: deselect everything and select only this object
-        # 4 if clicking on selected object and ctrl: do nothing, deselect this object on release
-        # 5 if clicking on unselected object: deselect everything and select only this object
-        # 6 if clicking on unselected object and ctrl: select this object
-        x, y = event.pos().toTuple()
+        x, y = self._to_level_point(event.pos())
 
-        level_x, level_y = self._to_level_point(x, y)
-
-        level_pointer = None
-        sprite = None
-        airship_point = None
-
-        if self.draw_level_pointers:
-            level_pointer = self.world.level_at_position(level_x, level_y)
-        if self.draw_sprites:
-            sprite = self.world.sprite_at_position(level_x, level_y)
-        if self.draw_airship_points:
-            airship_point = self.world.airship_point_at(level_x, level_y, self.draw_airship_points)
-
-        obj = self.object_at(x, y)
-
-        if level_pointer or sprite or airship_point:
-            self._select_object(None)
+        if not self.level_ref.point_in(x, y):
+            return
 
         if self.mouse_mode == MODE_PLACE_TILE:
+            tile = self.world.object_at(x, y)
+
+            assert tile is not None
+
             if shift_is_pressed():
-                x, y = self._to_level_point(x, y)
-                self._fill_tile(obj.type, x, y)
+                self._fill_tile(tile.type, x, y)
             else:
-                obj.change_type(self._tile_to_put.index)
+                tile.change_type(self._tile_to_put.index)
 
             self.update()
 
-        elif airship_point is not None:
-            self.drag_start_point = x, y
-            self.selected_airship_point = airship_point
-            self.mouse_mode = MODE_DRAG
+            return
 
-        elif sprite is not None:
-            self.drag_start_point = x, y
-            self.selected_sprite = sprite
-            self.mouse_mode = MODE_DRAG
+        if not shift_is_pressed():
+            self._select_object(None)
 
-        elif level_pointer is not None:
-            self.drag_start_point = x, y
-            self.selected_level_pointer = level_pointer
-            self.mouse_mode = MODE_DRAG
+        if ctrl_is_pressed():
+            self.set_mouse_mode(MODE_SELECTION_SQUARE, event)
+            return
 
-        elif self._select_objects_on_click(event) and obj is not None:
-            self.drag_start_point = obj.x_position, obj.y_position
+        obj = self._visible_object_at(event.pos())
 
-        else:
-            self._start_selection_square(event.pos())
+        self.selected_object = obj
+        obj.selected = True
+        self.set_mouse_mode(MODE_DRAG, event)
 
     def _dragging(self, event: QMouseEvent):
         self.dragging_happened = True
 
-        x, y = event.pos().toTuple()
-
-        level_x, level_y = self._to_level_point(x, y)
-        pos = Position.from_xy(level_x, level_y)
-
+        level_x, level_y = self._to_level_point(event.pos())
         dx = level_x - self.last_mouse_position[0]
         dy = level_y - self.last_mouse_position[1]
 
         self.last_mouse_position = level_x, level_y
 
-        if self.selected_airship_point is not None:
-            self.selected_airship_point.set_position(level_x, level_y)
+        if self.selected_object is not None:
+            self.selected_object.set_position(level_x, level_y)
             self.level_ref.level.changed = True
-
-        if self.selected_sprite is not None:
-            self.selected_sprite.data.set_pos(pos)
-            self.level_ref.level.changed = True
-
-        elif self.selected_level_pointer is not None:
-            self.selected_level_pointer.data.set_pos(pos)
-            self.level_ref.level.changed = True
-
         else:
             selected_objects = self.get_selected_objects()
 
@@ -397,27 +299,27 @@ class WorldView(MainView):
         self.update()
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
-        x, y = event.pos().toTuple()
-
-        obj = self.object_at(x, y)
-
         if self.mouse_mode == MODE_PLACE_TILE:
             return
-        elif self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            if self.selected_airship_point is not None:
-                drag_end_point = self.selected_airship_point.get_position()
 
-                if self.drag_start_point != drag_end_point:
-                    self._stop_drag()
+        obj = self.object_at(event.pos())
 
-            if self.selected_sprite is not None:
-                drag_end_point = self.selected_sprite.get_position()
+        if self.mouse_mode == MODE_DRAG and self.dragging_happened:
+            if self.selected_object is not None:
+                drag_end_point = self.selected_object.get_position()
 
-                if self.drag_start_point != drag_end_point:
-                    self._stop_drag()
+                if isinstance(self.selected_object, MapObject):
+                    start_pos = Position.from_xy(*self.drag_start_point)
+                    end_pos = Position.from_xy(*drag_end_point)
 
-            if self.selected_level_pointer is not None:
-                drag_end_point = self.selected_level_pointer.get_position()
+                    # we don't actually move the map position in the end, just change the type at both positions
+                    self.selected_object.set_position(*self.drag_start_point)
+
+                    # only actually "move" if we end up inside the map
+                    if self.level_ref.point_in(*end_pos.xy):
+                        self.world.move_tile(
+                            start_pos.tile_data_index, end_pos.tile_data_index, self.selected_object.type
+                        )
 
                 if self.drag_start_point != drag_end_point:
                     self._stop_drag()
@@ -445,57 +347,16 @@ class WorldView(MainView):
                 # replace selection with only selected object
                 self.select_objects([obj], replace_selection=True)
 
-        self.mouse_mode = MODE_FREE
-        self._object_was_selected_on_last_click = False
-        self.setCursor(Qt.ArrowCursor)
+        self.set_mouse_mode(MODE_FREE, event)
 
     def _stop_drag(self):
-        self.selected_sprite = None
-        self.selected_level_pointer = None
-        self.selected_airship_point = None
-
         if self.dragging_happened:
             self.level_ref.save_level_state()
 
         self.dragging_happened = False
 
-    def _set_zoom(self, zoom):
-        if not (LOWEST_ZOOM_LEVEL <= zoom <= HIGHEST_ZOOM_LEVEL):
-            return
-
-        self.zoom = zoom
-        self.block_length = int(Block.SIDE_LENGTH * self.zoom)
-
-        self.update()
-
-    def zoom_out(self):
-        self._set_zoom(self.zoom / 2)
-
-    def zoom_in(self):
-        self._set_zoom(self.zoom * 2)
-
-    def _start_selection_square(self, position):
-        self.selection_square.start(position)
-
-    def _set_selection_end(self, position):
-        if not self.selection_square.is_active():
-            return
-
-        self.selection_square.set_current_end(position)
-
-        sel_rect = self.selection_square.get_adjusted_rect(self.block_length, self.block_length)
-
-        touched_objects = [obj for obj in self.level_ref.get_all_objects() if sel_rect.intersects(obj.get_rect())]
-
-        if touched_objects != self.level_ref.selected_objects:
-            self._set_selected_objects(touched_objects)
-
-        self.update()
-
-    def _stop_selection_square(self):
-        self.selection_square.stop()
-
-        self.update()
+    def _set_selection_end(self, position, always_replace_selection=False):
+        return super(WorldView, self)._set_selection_end(position, True)
 
     def select_all(self):
         self.select_objects(self.level_ref.get_all_objects())
@@ -514,191 +375,7 @@ class WorldView(MainView):
         self.parent().parent().ensureVisible(min_x, min_y)
 
     def level_safe_to_save(self) -> Tuple[bool, str, str]:
-        is_safe = True
-        reason = ""
-        additional_info = ""
-
-        if self.level_ref.too_many_level_objects():
-            level = self._cuts_into_other_objects()
-
-            is_safe = False
-            reason = "Too many level objects."
-
-            if level:
-                additional_info = f"Would overwrite data of '{level}'."
-            else:
-                additional_info = (
-                    "It wouldn't overwrite another level, " "but it might still overwrite other important data."
-                )
-
-        elif self.level_ref.too_many_enemies_or_items():
-            level = self._cuts_into_other_enemies()
-
-            is_safe = False
-            reason = "Too many enemies or items."
-
-            if level:
-                additional_info = f"Would probably overwrite enemy/item data of '{level}'."
-            else:
-                additional_info = (
-                    "It wouldn't overwrite enemy/item data of another level, "
-                    "but it might still overwrite other important data."
-                )
-
-        return is_safe, reason, additional_info
-
-    def _cuts_into_other_enemies(self) -> str:
-        if self.level_ref is None:
-            raise ValueError("Level is None")
-
-        enemies_end = self.level_ref.enemies_end
-
-        levels_by_enemy_offset = sorted(Level.offsets, key=lambda level: level.enemy_offset)
-
-        level_index = bisect_right([level.enemy_offset for level in levels_by_enemy_offset], enemies_end) - 1
-
-        found_level = levels_by_enemy_offset[level_index]
-
-        if found_level.enemy_offset == self.level_ref.enemy_offset:
-            return ""
-        else:
-            return f"World {found_level.game_world} - {found_level.name}"
-
-    def _cuts_into_other_objects(self) -> str:
-        if self.level_ref is None:
-            raise ValueError("Level is None")
-
-        end_of_level_objects = self.level_ref.objects_end
-
-        level_index = (
-            bisect_right(
-                [level.rom_level_offset - Level.HEADER_LENGTH for level in Level.sorted_offsets], end_of_level_objects
-            )
-            - 1
-        )
-
-        found_level = Level.sorted_offsets[level_index]
-
-        if found_level.rom_level_offset == self.level_ref.object_offset:
-            return ""
-        else:
-            return f"World {found_level.game_world} - {found_level.name}"
-
-    def add_jump(self):
-        self.level_ref.add_jump()
+        return True, "", ""
 
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)
-
-    def create_object_at(self, x: int, y: int, domain: int = 0, object_index: int = 0):
-        level_x, level_y = self._to_level_point(x, y)
-
-        self.level_ref.create_object_at(level_x, level_y, domain, object_index)
-
-        self.update()
-
-    def create_enemy_at(self, x: int, y: int):
-        level_x, level_y = self._to_level_point(x, y)
-
-        self.level_ref.create_enemy_at(level_x, level_y)
-
-    def add_object(self, domain: int, obj_index: int, x: int, y: int, length: int, index: int = -1):
-        level_x, level_y = self._to_level_point(x, y)
-
-        self.level_ref.add_object(domain, obj_index, level_x, level_y, length, index)
-
-    def add_enemy(self, enemy_index: int, x: int, y: int, index: int):
-        level_x, level_y = self._to_level_point(x, y)
-
-        self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
-
-    def replace_object(self, obj: LevelObject, domain: int, obj_index: int, length: int):
-        self.remove_object(obj)
-
-        x, y = obj.get_position()
-
-        new_obj = self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level)
-        new_obj.selected = obj.selected
-
-    def replace_enemy(self, old_enemy: EnemyObject, enemy_index: int):
-        index_in_level = self.level_ref.index_of(old_enemy)
-
-        self.remove_object(old_enemy)
-
-        x, y = old_enemy.get_position()
-
-        new_enemy = self.level_ref.add_enemy(enemy_index, x, y, index_in_level)
-
-        new_enemy.selected = old_enemy.selected
-
-    def remove_object(self, obj):
-        self.level_ref.remove_object(obj)
-
-    def remove_jump(self, index: int):
-        del self.level_ref.jumps[index]
-
-        self.update()
-
-    def paste_objects_at(
-        self,
-        paste_data: Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]],
-        x: Optional[int] = None,
-        y: Optional[int] = None,
-    ):
-        if x is None or y is None:
-            level_x, level_y = self.last_mouse_position
-        else:
-            level_x, level_y = self._to_level_point(x, y)
-
-        objects, origin = paste_data
-
-        ori_x, ori_y = origin
-
-        pasted_objects = []
-
-        for obj in objects:
-            obj_x, obj_y = obj.get_position()
-
-            offset_x, offset_y = obj_x - ori_x, obj_y - ori_y
-
-            try:
-                pasted_objects.append(self.level_ref.paste_object_at(level_x + offset_x, level_y + offset_y, obj))
-            except ValueError:
-                warn("Tried pasting outside of level.", RuntimeWarning)
-
-        self.select_objects(pasted_objects)
-
-    def get_object_names(self):
-        return self.level_ref.get_object_names()
-
-    @undoable
-    def dropEvent(self, event):
-        x, y = self._to_level_point(*event.pos().toTuple())
-
-        level_object = self._object_from_mime_data(event.mimeData())
-
-        if isinstance(level_object, LevelObject):
-            self.level_ref.level.add_object(level_object.domain, level_object.obj_index, x, y, None)
-        else:
-            self.level_ref.level.add_enemy(level_object.obj_index, x, y)
-
-        event.accept()
-
-        self.currently_dragged_object = None
-
-        self.level_ref.data_changed.emit()
-
-    def paintEvent(self, event: QPaintEvent):
-        painter = QPainter(self)
-
-        if self.level_ref is None:
-            return
-
-        self.drawer.block_length = self.block_length
-
-        self.drawer.draw(painter, self.level_ref.level)
-
-        self.selection_square.draw(painter)
-
-        if self.currently_dragged_object is not None:
-            self.currently_dragged_object.draw(painter, self.block_length, self.draw_level_pointers)

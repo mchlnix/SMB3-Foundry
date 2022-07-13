@@ -87,6 +87,8 @@ WORLD_COUNT = 9  # includes warp zone
 WORLD_MAP_HEIGHT = 9  # blocks
 WORLD_MAP_SCREEN_WIDTH = 16  # blocks
 
+WORLD_MAP_BLANK_TILE_ID = 0xFE
+
 MAX_SCREEN_COUNT = 4
 
 FIRST_VALID_ROW = 2
@@ -158,3 +160,6 @@ class LevelBase(ABC):
 
         self.object_set_number = object_set_number
         self.object_set = ObjectSet(self.object_set_number)
+
+    def point_in(self, x, y):
+        return x < self.width and y < self.height

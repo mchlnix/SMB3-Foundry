@@ -3,6 +3,7 @@ from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.util import partition
 from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH, WORLD_MAP_WARP_WORLD_INDEX
 
@@ -22,9 +23,11 @@ class WorldDrawer:
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 1)
 
     def draw(self, painter: QPainter, world: WorldMap):
-        painter.translate(0, -FIRST_VALID_ROW * self.block_length)
+        painter.save()
 
         self._draw_background(painter, world)
+
+        painter.translate(0, -FIRST_VALID_ROW * self.block_length)
 
         self._draw_grid(painter, world)
 
@@ -46,6 +49,8 @@ class WorldDrawer:
 
         if self.draw_locks:
             self._draw_locks_and_bridges(painter, world)
+
+        painter.restore()
 
     def _draw_background(self, painter: QPainter, world: WorldMap):
         bg_color = Qt.black
@@ -70,14 +75,16 @@ class WorldDrawer:
             painter.drawLine(QPoint(x, 0), QPoint(x, WORLD_MAP_SCREEN_WIDTH * self.block_length))
 
     def _draw_tiles(self, painter: QPainter, world: WorldMap):
-        for tile in world.get_all_objects():
-            tile.render()
+        not_selected, selected = partition(lambda tile_: tile_.selected, world.get_all_objects())
 
+        for tile in not_selected:
             tile.draw(painter, self.block_length, False)
 
-            if tile.selected:
-                painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
-                painter.drawRect(tile.get_rect(self.block_length))
+        for tile in selected:
+            tile.draw(painter, self.block_length, False)
+
+            painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
+            painter.drawRect(tile.get_rect(self.block_length))
 
     def _draw_level_pointers(self, painter: QPainter, world: WorldMap):
         for index, level_pointer in enumerate(world.level_pointers):

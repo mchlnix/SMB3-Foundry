@@ -25,6 +25,7 @@ from smb3parse.levels import (
     MAX_SCREEN_COUNT,
     STRUCTURE_DATA_OFFSETS,
     WORLD_MAP_BASE_OFFSET,
+    WORLD_MAP_BLANK_TILE_ID,
     WORLD_MAP_LAYOUT_DELIMITER,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_WARP_WORLD_INDEX,
@@ -253,7 +254,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         diff = new_screen_count - self.screen_count
 
         if new_screen_count > self.screen_count:
-            new_tile_data = bytes(b"\xFE" * diff * WORLD_MAP_SCREEN_SIZE)
+            new_tile_data = WORLD_MAP_BLANK_TILE_ID.to_bytes(1, byteorder="big") * diff * WORLD_MAP_SCREEN_SIZE
             self.tile_data.extend(new_tile_data)
 
         elif new_screen_count < self.screen_count:

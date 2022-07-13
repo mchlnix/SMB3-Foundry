@@ -23,10 +23,6 @@ class LevelLike(LevelBase, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_object_names(self):
-        pass
-
-    @abc.abstractmethod
     def get_all_objects(self):
         pass
 
