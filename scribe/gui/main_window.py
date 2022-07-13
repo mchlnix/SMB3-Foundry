@@ -74,6 +74,12 @@ class MainWindow(QMainWindow):
         self.view_menu = QMenu("View")
         self.view_menu.triggered.connect(self.on_view_menu)
 
+        self.grid_action = self.view_menu.addAction("Show Grid")
+        self.grid_action.setCheckable(True)
+        self.grid_action.setChecked(self.world_view.draw_grid)
+
+        self.view_menu.addSeparator()
+
         self.level_pointer_action = self.view_menu.addAction("Show Level Pointers")
         self.level_pointer_action.setCheckable(True)
         self.level_pointer_action.setChecked(self.world_view.draw_level_pointers)
@@ -191,7 +197,9 @@ class MainWindow(QMainWindow):
         self.world_view.update()
 
     def on_view_menu(self, action: QAction):
-        if action is self.level_pointer_action:
+        if action is self.grid_action:
+            self.world_view.draw_grid = action.isChecked()
+        elif action is self.level_pointer_action:
             self.world_view.draw_level_pointers = action.isChecked()
         elif action is self.sprite_action:
             self.world_view.draw_sprites = action.isChecked()

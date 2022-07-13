@@ -81,6 +81,7 @@ def test_world(world_info, qtbot):
     world_view = WorldView(None, level_ref, WorldContextMenu(level_ref))
     world_view.zoom_in()
 
+    world_view.draw_grid = True
     world_view.draw_sprites = True
     world_view.draw_level_pointers = True
     world_view.draw_airship_points = True

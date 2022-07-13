@@ -76,6 +76,14 @@ class WorldView(MainView):
         )
 
     @property
+    def draw_grid(self):
+        return self.drawer.draw_grid
+
+    @draw_grid.setter
+    def draw_grid(self, value):
+        self.drawer.draw_grid = value
+
+    @property
     def draw_level_pointers(self):
         return self.drawer.draw_level_pointers
 

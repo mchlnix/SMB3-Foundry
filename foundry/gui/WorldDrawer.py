@@ -10,6 +10,7 @@ from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN
 
 class WorldDrawer:
     def __init__(self):
+        self.draw_grid = False
         self.draw_level_pointers = True
         self.draw_sprites = True
         self.draw_start = True
@@ -31,6 +32,9 @@ class WorldDrawer:
 
         self._draw_tiles(painter, world)
 
+        if self.draw_grid:
+            self._draw_grid(painter, world)
+
         if self.draw_level_pointers:
             self._draw_level_pointers(painter, world)
 
@@ -50,12 +54,6 @@ class WorldDrawer:
 
         painter.restore()
 
-        painter.save()
-
-        self._draw_grid(painter, world)
-
-        painter.restore()
-
     def _draw_background(self, painter: QPainter, world: WorldMap):
         bg_color = Qt.black
 
@@ -68,6 +66,7 @@ class WorldDrawer:
         map_length = WORLD_MAP_SCREEN_WIDTH * self.block_length * world.data.screen_count
 
         for y in range(WORLD_MAP_HEIGHT):
+            y += FIRST_VALID_ROW
             y *= self.block_length
 
             painter.drawLine(QPoint(0, y), QPoint(map_length, y))
@@ -76,7 +75,7 @@ class WorldDrawer:
         for x in range(WORLD_MAP_SCREEN_WIDTH * world.data.screen_count):
             x *= self.block_length
 
-            painter.drawLine(QPoint(x, 0), QPoint(x, WORLD_MAP_SCREEN_WIDTH * self.block_length))
+            painter.drawLine(QPoint(x, 0), QPoint(x, (WORLD_MAP_HEIGHT + FIRST_VALID_ROW) * self.block_length))
 
     def _draw_tiles(self, painter: QPainter, world: WorldMap):
         not_selected, selected = partition(lambda tile_: tile_.selected, world.get_all_objects())
