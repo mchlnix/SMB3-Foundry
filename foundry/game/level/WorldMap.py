@@ -13,7 +13,7 @@ from foundry.game.gfx.objects.locks import Lock
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.data_points import Position
-from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID
+from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID
 from smb3parse.levels.world_map import (
     WORLD_MAP_HEIGHT,
     WorldMap as _WorldMap,
@@ -163,10 +163,11 @@ class WorldMap(LevelLike):
             return
 
         source_obj = self.objects[source_index]
-        target_obj = self.objects[target_index]
-
-        target_obj.change_type(obj_index)
         source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
+
+        if target_index < len(self.objects):
+            target_obj = self.objects[target_index]
+            target_obj.change_type(obj_index)
 
     @property
     def q_size(self):
@@ -312,6 +313,10 @@ class WorldMap(LevelLike):
         width, height = self.size
 
         return QRect(QPoint(0, 0), QSize(width, height) * block_length)
+
+    def point_in(self, x, y):
+        y -= FIRST_VALID_ROW
+        return super(WorldMap, self).point_in(x, y)
 
     @property
     def fully_loaded(self):

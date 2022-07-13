@@ -258,4 +258,4 @@ class MapObject(ObjectLike):
         return result < other_result
 
     def __repr__(self):
-        return f"MapObject #{hex(self.obj_index)}: '{self.name}' at {self.x_position}, {self.y_position}"
+        return f"MapObject #{hex(self.type)}: '{self.name}' at {self.x_position}, {self.y_position}"

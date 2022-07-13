@@ -29,8 +29,6 @@ class WorldDrawer:
 
         painter.translate(0, -FIRST_VALID_ROW * self.block_length)
 
-        self._draw_grid(painter, world)
-
         self._draw_tiles(painter, world)
 
         if self.draw_level_pointers:
@@ -49,6 +47,12 @@ class WorldDrawer:
 
         if self.draw_locks:
             self._draw_locks_and_bridges(painter, world)
+
+        painter.restore()
+
+        painter.save()
+
+        self._draw_grid(painter, world)
 
         painter.restore()
 

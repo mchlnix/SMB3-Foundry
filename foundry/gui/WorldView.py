@@ -16,7 +16,6 @@ from foundry.gui.MainView import (
     MODE_PLACE_TILE,
     MODE_SELECTION_SQUARE,
     MainView,
-    ctrl_is_pressed,
     shift_is_pressed,
 )
 from foundry.gui.WorldDrawer import WorldDrawer
@@ -29,7 +28,7 @@ from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT
 class WorldView(MainView):
     context_menu: WorldContextMenu
 
-    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[WorldContextMenu]):
+    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[WorldContextMenu] = None):
         super(WorldView, self).__init__(parent, level, context_menu)
 
         self.drawer = WorldDrawer()
@@ -143,6 +142,7 @@ class WorldView(MainView):
 
         elif new_mode == MODE_DRAG:
             self.drag_start_point = self._to_level_point(event.pos())
+            self.last_mouse_position = self.drag_start_point
             self.setCursor(Qt.ClosedHandCursor)
 
         elif new_mode == MODE_FREE:
@@ -259,17 +259,21 @@ class WorldView(MainView):
 
             return
 
-        if not shift_is_pressed():
-            self._select_object(None)
-
-        if ctrl_is_pressed():
+        if event.modifiers() & Qt.ControlModifier:
             self.set_mouse_mode(MODE_SELECTION_SQUARE, event)
             return
 
         obj = self._visible_object_at(event.pos())
 
-        self.selected_object = obj
-        obj.selected = True
+        if not obj.selected and not shift_is_pressed():
+            self._select_object(None)
+
+        if obj and obj.selected:
+            pass
+        else:
+            self.selected_object = obj
+            obj.selected = True
+
         self.set_mouse_mode(MODE_DRAG, event)
 
     def _dragging(self, event: QMouseEvent):
@@ -281,19 +285,9 @@ class WorldView(MainView):
 
         self.last_mouse_position = level_x, level_y
 
-        if self.selected_object is not None:
-            self.selected_object.set_position(level_x, level_y)
+        for selected_obj in self.get_selected_objects():
+            selected_obj.move_by(dx, dy)
             self.level_ref.level.changed = True
-        else:
-            selected_objects = self.get_selected_objects()
-
-            for obj in selected_objects:
-                obj.move_by(dx, dy)
-
-                self.world.objects.remove(obj)
-                self.world.objects.append(obj)
-
-                self.level_ref.level.changed = True
 
         self.level_ref.data_changed.emit()
         self.update()
@@ -305,30 +299,28 @@ class WorldView(MainView):
         obj = self.object_at(event.pos())
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            if self.selected_object is not None:
-                drag_end_point = self.selected_object.get_position()
+            drag_end_point = self._to_level_point(event.pos())
+            start_x, start_y = self.drag_start_point
+            end_x, end_y = drag_end_point
 
-                if isinstance(self.selected_object, MapObject):
-                    start_pos = Position.from_xy(*self.drag_start_point)
-                    end_pos = Position.from_xy(*drag_end_point)
+            dx = end_x - start_x
+            dy = end_y - start_y
+
+            for selected_obj in reversed(self.get_selected_objects()):
+                if isinstance(selected_obj, MapObject):
+                    end_pos = Position.from_xy(*selected_obj.get_position())
+                    selected_obj.move_by(-dx, -dy)
+
+                    start_pos = Position.from_xy(*selected_obj.get_position())
 
                     # we don't actually move the map position in the end, just change the type at both positions
-                    self.selected_object.set_position(*self.drag_start_point)
 
-                    # only actually "move" if we end up inside the map
-                    if self.level_ref.point_in(*end_pos.xy):
-                        self.world.move_tile(
-                            start_pos.tile_data_index, end_pos.tile_data_index, self.selected_object.type
-                        )
+                    # if we are moving only one tile, then move it back, if more, reset them
+                    if len(self.get_selected_objects()) > 1 or self.level_ref.point_in(*end_pos.xy):
+                        self.world.move_tile(start_pos.tile_data_index, end_pos.tile_data_index, selected_obj.type)
 
-                if self.drag_start_point != drag_end_point:
-                    self._stop_drag()
-
-            if obj is not None:
-                drag_end_point = obj.x_position, obj.y_position
-
-                if self.drag_start_point != drag_end_point:
-                    self._stop_drag()
+            if self.drag_start_point != drag_end_point:
+                self._stop_drag()
 
             self.dragging_happened = False
 
@@ -338,7 +330,7 @@ class WorldView(MainView):
         elif obj and obj.selected and not self._object_was_selected_on_last_click:
             # handle selected object on release to allow dragging
 
-            if ctrl_is_pressed():
+            if event.modifiers() & Qt.ControlModifier:
                 # take selected object under cursor out of current selection
                 selected_objects = self.get_selected_objects().copy()
                 selected_objects.remove(obj)
