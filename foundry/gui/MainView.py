@@ -196,6 +196,9 @@ class MainView(QWidget):
     def get_selected_objects(self) -> List[ObjectLike]:
         return self.level_ref.selected_objects
 
+    def select_all(self):
+        self.select_objects(self.level_ref.get_all_objects())
+
     @overload
     def _to_level_point(self, q_point: QPoint) -> Tuple[int, int]:
         ...

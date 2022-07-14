@@ -439,9 +439,6 @@ class LevelView(MainView):
 
         self.dragging_happened = False
 
-    def select_all(self):
-        self.select_objects(self.level_ref.get_all_objects())
-
     def remove_selected_objects(self):
         for obj in self.level_ref.selected_objects:
             self.level_ref.remove_object(obj)
