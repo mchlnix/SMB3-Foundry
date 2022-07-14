@@ -1,5 +1,6 @@
 from os import chdir
 from pathlib import Path
+from typing import Generator
 
 import pytest
 
@@ -19,7 +20,7 @@ def cd_to_repo_root():
 
 
 @pytest.fixture
-def rom() -> Rom:
+def rom() -> Generator[Rom, None, None]:
     if not test_rom_path.exists():
         raise ValueError(
             f"To run the test suite, place a US SMB3 Rom named '{test_rom_path}' in the root of the repository."
@@ -31,7 +32,7 @@ def rom() -> Rom:
 
 
 @pytest.fixture
-def expanded_rom(rom) -> Rom:
+def expanded_rom(rom) -> Generator[Rom, None, None]:
     data = bytearray(rom._data)
 
     insertion_point_for_additional_data = BASE_OFFSET + 15 * INESHeader.PRG_UNIT_SIZE
