@@ -3,6 +3,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QMouseEvent, Qt
 
 from foundry.game.level.LevelRef import LevelRef
+import foundry.gui.MainView
 from foundry.gui.WorldView import WorldView
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1
 from smb3parse.data_points import WorldMapData
@@ -60,13 +61,26 @@ def test_moving_tiles_in_scene(worldview):
     assert TILE_MUSHROOM_HOUSE_1 == worldview._visible_object_at(end_point).type
 
 
-def test_selecting_all_objects_via_selection_square(worldview):
+def test_selecting_all_objects_via_selection_square(worldview, qtbot):
+    foundry.gui.MainView.ctrl_is_pressed = lambda: True
+
     start_point = QPoint(0, 0)
     end_point = QPoint(*worldview.world.size) * worldview.block_length
 
     assert not worldview.get_selected_objects()
-    drag_from_to(worldview, start_point, end_point, Qt.ControlModifier)
+    click_event = QMouseEvent(
+        QMouseEvent.MouseButtonPress, start_point, Qt.LeftButton, Qt.LeftButton, Qt.ControlModifier
+    )
+    worldview.mousePressEvent(click_event)
+
+    # move the mouse, while holding down
+    move_event = QMouseEvent(QMouseEvent.MouseMove, end_point, Qt.NoButton, Qt.NoButton, Qt.ControlModifier)
+    worldview.mouseMoveEvent(move_event)
     assert len(worldview.get_selected_objects()) == len(worldview.world.get_all_objects())
+
+    move_event = QMouseEvent(QMouseEvent.MouseMove, start_point, Qt.NoButton, Qt.NoButton, Qt.ControlModifier)
+    worldview.mouseMoveEvent(move_event)
+    assert len(worldview.get_selected_objects()) == 1
 
 
 def test_moving_all_objects_partly_off_screen(worldview):

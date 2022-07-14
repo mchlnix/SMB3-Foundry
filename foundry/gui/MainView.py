@@ -317,7 +317,7 @@ class MainView(QWidget):
         touched_objects = [obj for obj in self.level_ref.get_all_objects() if sel_rect.intersects(obj.get_rect())]
 
         if touched_objects != self.level_ref.selected_objects:
-            self._set_selected_objects(touched_objects, replace_selection=False)
+            self._set_selected_objects(touched_objects, always_replace_selection)
 
         self.update()
 
