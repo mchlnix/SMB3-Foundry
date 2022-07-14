@@ -95,10 +95,8 @@ class LevelContextMenu(ContextMenu):
     def set_position(self, position: QPoint):
         self.last_opened_at = position
 
-    def get_position(self) -> Tuple[int, int]:
-        x, y = self.last_opened_at.toTuple()
-
-        return x, y
+    def get_position(self) -> QPoint:
+        return self.last_opened_at
 
     def get_all_menu_item_ids(self):
         return [action.property("ID") for action in self.actions()]

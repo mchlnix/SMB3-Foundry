@@ -529,25 +529,26 @@ class LevelView(MainView):
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)
 
-    def create_object_at(self, x: int, y: int, domain: int = 0, object_index: int = 0):
-        level_x, level_y = self._to_level_point(x, y)
+    def create_object_at(self, q_point: QPoint, domain: int = 0, object_index: int = 0):
+        level_x, level_y = self._to_level_point(q_point)
 
         self.level_ref.create_object_at(level_x, level_y, domain, object_index)
 
         self.update()
 
-    def create_enemy_at(self, x: int, y: int):
-        level_x, level_y = self._to_level_point(x, y)
+    # TODO this isn't used anywhere?
+    def create_enemy_at(self, q_point: QPoint):
+        level_x, level_y = self._to_level_point(q_point)
 
         self.level_ref.create_enemy_at(level_x, level_y)
 
-    def add_object(self, domain: int, obj_index: int, x: int, y: int, length: int, index: int = -1):
-        level_x, level_y = self._to_level_point(x, y)
+    def add_object(self, domain: int, obj_index: int, q_point: QPoint, length: int, index: int = -1):
+        level_x, level_y = self._to_level_point(q_point)
 
         self.level_ref.add_object(domain, obj_index, level_x, level_y, length, index)
 
-    def add_enemy(self, enemy_index: int, x: int, y: int, index: int):
-        level_x, level_y = self._to_level_point(x, y)
+    def add_enemy(self, enemy_index: int, q_point: QPoint, index: int):
+        level_x, level_y = self._to_level_point(q_point)
 
         self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
 

@@ -26,7 +26,7 @@ def level_view(main_window, qtbot):
 def test_object_at(level_view: LevelView, qtbot, coordinates, obj_index, domain, object_set_number):
     screen_coordinates = coordinates  # in pixels
 
-    level_object = level_view.object_at(*screen_coordinates)
+    level_object = level_view.object_at(QPoint(*screen_coordinates))
 
     assert isinstance(level_object, (LevelObject, EnemyObject))
 
@@ -80,8 +80,10 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
     # GIVEN a level view and a cursor position over an object
     x, y = coordinates
 
+    pos = QPoint(x, y)
+
     level_view = main_window.level_view
-    object_under_cursor = level_view.object_at(x, y)
+    object_under_cursor = level_view.object_at(pos)
     original_type = object_under_cursor.type
 
     SETTINGS["object_scroll_enabled"] = True
@@ -95,11 +97,11 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
 
     main_window.hide()
 
-    qtbot.mouseClick(level_view, Qt.LeftButton, pos=QPoint(x, y))
+    qtbot.mouseClick(level_view, Qt.LeftButton, pos=pos)
     assert object_under_cursor.selected
 
     event = QWheelEvent(
-        QPoint(x, y),
+        pos,
         QPoint(-1, -1),
         QPoint(0, wheel_delta),
         QPoint(0, wheel_delta),
@@ -112,6 +114,6 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
     assert level_view.wheelEvent(event)
 
     # THEN the type of the object should have changed
-    new_type = level_view.object_at(x, y).type
+    new_type = level_view.object_at(pos).type
 
     assert new_type == original_type + type_change, (original_type, new_type)

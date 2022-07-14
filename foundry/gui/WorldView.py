@@ -221,8 +221,8 @@ class WorldView(MainView):
         self._fill_tile(tile_to_fill_in, x, y + 1)
         self._fill_tile(tile_to_fill_in, x, y - 1)
 
-    def _to_level_point(self, *args) -> Tuple[int, int]:
-        x, y = super(WorldView, self)._to_level_point(*args)
+    def _to_level_point(self, q_point) -> Tuple[int, int]:
+        x, y = super(WorldView, self)._to_level_point(q_point)
 
         return x, y + FIRST_VALID_ROW
 

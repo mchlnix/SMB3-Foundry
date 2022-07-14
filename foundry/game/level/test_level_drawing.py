@@ -45,16 +45,11 @@ world_test_name = []
 
 with open(data_dir / "levels.dat", "r") as level_data_file:
     for line in level_data_file.readlines():
-        world_no, level_no, level_address, enemy_address, object_set_number, level_name = line.strip().split(",")
+        parts = line.strip().split(",")
 
-        world_no = int(world_no)
-        level_no = int(level_no)
-
-        level_address = int(level_address, 16)
-
-        enemy_address = int(enemy_address, 16)
-
-        object_set_number = int(object_set_number, 16)
+        world_no, level_no = map(int, parts[:2])
+        level_address, enemy_address, object_set_number = [int(number, 16) for number in parts[2:-1]]
+        level_name = parts[-1]
 
         if object_set_number == WORLD_MAP_OBJECT_SET:
             world_data.append((level_name, level_address, enemy_address, object_set_number))

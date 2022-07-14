@@ -575,9 +575,7 @@ class Level(LevelLike):
     def get_intersecting_objects(self, obj: EnemyObject) -> List[EnemyObject]:
         ...
 
-    def get_intersecting_objects(
-        self, obj: Union[LevelObject, EnemyObject]
-    ) -> Union[List[LevelObject], List[EnemyObject]]:
+    def get_intersecting_objects(self, obj):
         """
         Returns all objects of the same type, that overlap the rectangle of the given object, including itself. The
         objects are in the order, that they appear in, in memory, meaning back to front.

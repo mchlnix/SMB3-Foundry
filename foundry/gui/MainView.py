@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union, overload
+from typing import List, Optional, Tuple, Union
 from warnings import warn
 
 from PySide6.QtCore import QMimeData, QPoint, QSize
@@ -30,11 +30,11 @@ RESIZE_MODES = [MODE_RESIZE_HORIZ, MODE_RESIZE_VERT, MODE_RESIZE_DIAG]
 
 
 def ctrl_is_pressed():
-    return bool(QApplication.queryKeyboardModifiers() & Qt.ControlModifier)
+    return bool(QApplication.keyboardModifiers() & Qt.ControlModifier)
 
 
 def shift_is_pressed():
-    return bool(QApplication.queryKeyboardModifiers() & Qt.ShiftModifier)
+    return bool(QApplication.keyboardModifiers() & Qt.ShiftModifier)
 
 
 def undoable(func):
@@ -58,6 +58,7 @@ class MainView(QWidget):
         self.level_ref.needs_redraw.connect(self.update)
 
         self.context_menu = context_menu
+        self.last_mouse_position = 0, 0
 
         self.zoom = 1
         self.block_length = Block.SIDE_LENGTH * self.zoom
@@ -199,45 +200,22 @@ class MainView(QWidget):
     def select_all(self):
         self.select_objects(self.level_ref.get_all_objects())
 
-    @overload
     def _to_level_point(self, q_point: QPoint) -> Tuple[int, int]:
-        ...
-
-    @overload
-    def _to_level_point(self, screen_x: int, screen_y: int) -> Tuple[int, int]:
-        ...
-
-    def _to_level_point(self, *args):
-        if len(args) == 2:
-            screen_x, screen_y = args
-        else:
-            assert isinstance(args[0], QPoint), f"{args} needs to be a QPoint or two integers"
-            screen_x, screen_y = args[0].toTuple()
+        screen_x, screen_y = q_point.toTuple()
 
         level_x = screen_x // self.block_length
         level_y = screen_y // self.block_length
 
         return level_x, level_y
 
-    @overload
     def object_at(self, q_point: QPoint) -> Optional[ObjectLike]:
-        ...
-
-    @overload
-    def object_at(self, x: int, y: int) -> Optional[ObjectLike]:
-        ...
-
-    def object_at(self, *args):
         """
         Returns an enemy or level object at the position. The x and y is relative to the View (for example, when you
         receive a mouse event) and will be converted into level coordinates internally.
 
-        :param int x: X position on the View, where the object is queried at.
-        :param int y: Y position on the View, where the object is queried at.
-
         :return: An enemy/level object, or None, if none is at the position.
         """
-        level_x, level_y = self._to_level_point(*args)
+        level_x, level_y = self._to_level_point(q_point)
 
         return self.level_ref.level.object_at(level_x, level_y)
 
@@ -286,16 +264,11 @@ class MainView(QWidget):
 
             return self.level_ref.level.enemy_item_factory.from_properties(enemy_id, 0, 0)
 
-    def paste_objects_at(
-        self,
-        paste_data: Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]],
-        x: Optional[int] = None,
-        y: Optional[int] = None,
-    ):
-        if x is None or y is None:
+    def paste_objects_at(self, paste_data: Tuple[List[ObjectLike], Tuple[int, int]], q_point: Optional[QPoint]):
+        if q_point is None:
             level_x, level_y = self.last_mouse_position
         else:
-            level_x, level_y = self._to_level_point(x, y)
+            level_x, level_y = self._to_level_point(q_point)
 
         objects, origin = paste_data
 
