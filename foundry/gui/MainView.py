@@ -61,7 +61,6 @@ class MainView(QWidget):
 
         self.zoom = 1
         self.block_length = Block.SIDE_LENGTH * self.zoom
-        self.transparency = False
         self.selection_square = SelectionSquare()
 
         self.read_only = False
@@ -71,7 +70,9 @@ class MainView(QWidget):
 
         # dragged in from the object toolbar
         self.currently_dragged_object: Optional[Union[LevelObject, EnemyObject]] = None
+
         self.drawer: Union[LevelDrawer, WorldDrawer] = LevelDrawer()
+        self.transparency = False
 
     @property
     def transparency(self):

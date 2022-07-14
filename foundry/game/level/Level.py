@@ -698,7 +698,7 @@ class Level(LevelLike):
             m3l_bytes.extend(obj.to_bytes())
 
         for jump in self.jumps:
-            m3l_bytes.extend(obj.to_bytes())
+            m3l_bytes.extend(jump.to_bytes())
 
         # only write 0xFF, even though the stock ROM would use 0xFF00 or 0xFF01
         # this is done to keep compatibility to older editors
