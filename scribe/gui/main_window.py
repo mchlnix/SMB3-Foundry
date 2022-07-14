@@ -135,6 +135,8 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
             return False
 
+        return True
+
     def load_level(self, world_number: int):
         world = SMB3WorldMap.from_world_number(ROM(), world_number)
 

@@ -11,7 +11,6 @@ from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon_object
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
-from smb3parse.objects.enemy_item import EnemyItem
 
 
 class ObjectIcon(QWidget):
@@ -21,7 +20,7 @@ class ObjectIcon(QWidget):
     clicked: SignalInstance = Signal()
     object_placed: SignalInstance = Signal()
 
-    def __init__(self, level_object: Optional[LevelObject] = None):
+    def __init__(self, level_object: Optional[Union[LevelObject, EnemyObject]] = None):
         super(ObjectIcon, self).__init__()
 
         size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -30,7 +29,7 @@ class ObjectIcon(QWidget):
 
         self.zoom = 1
 
-        self.object = None
+        self.object: Optional[Union[LevelObject, EnemyObject]] = None
         self.image = QImage()
 
         self.set_object(level_object)
@@ -63,15 +62,18 @@ class ObjectIcon(QWidget):
         if drag.exec() == Qt.MoveAction:
             self.object_placed.emit()
 
-    def set_object(self, level_object: Union[LevelObject, EnemyObject]):
+    def set_object(self, level_object: Optional[Union[LevelObject, EnemyObject]]):
         if level_object is not None:
             self.object = get_minimal_icon_object(level_object)
 
-            self.image = self.object.as_image()
-            self.setToolTip(self.object.name)
-        else:
-            self.image = QImage()
-            self.setToolTip("")
+            if self.object:
+                self.image = self.object.as_image()
+                self.setToolTip(self.object.name)
+
+                return
+
+        self.image = QImage()
+        self.setToolTip("")
 
         self.update()
 
@@ -128,7 +130,7 @@ class ObjectToolBox(QWidget):
 
         self._layout.setAlignment(Qt.AlignHCenter)
 
-    def add_object(self, level_object: Union[EnemyItem, LevelObject], index: int = -1):
+    def add_object(self, level_object: Union[LevelObject, EnemyObject], index: int = -1):
         icon = ObjectIcon(level_object)
 
         icon.clicked.connect(self._on_icon_clicked)

@@ -48,8 +48,8 @@ GRAPHIC_SET_NAMES = [
 
 
 class GraphicsSet:
-    GRAPHIC_SET_BG_PAGE_1 = []
-    GRAPHIC_SET_BG_PAGE_2 = []
+    GRAPHIC_SET_BG_PAGE_1 = bytearray()
+    GRAPHIC_SET_BG_PAGE_2 = bytearray()
 
     def __init__(self, graphic_set_number):
         if not self.GRAPHIC_SET_BG_PAGE_1:

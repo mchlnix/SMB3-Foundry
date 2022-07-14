@@ -139,6 +139,7 @@ class MapObject(ObjectLike):
         self.pos = pos
 
         self.block = block
+        self.type = self.block.index
 
         self.rect = QRect(self.x_position, self.y_position, 1, 1)
 
@@ -165,14 +166,6 @@ class MapObject(ObjectLike):
     @y_position.setter
     def y_position(self, value):
         self.pos.y = value
-
-    @property
-    def type(self):
-        return self.block.index
-
-    @type.setter
-    def type(self, value):
-        self.block.index = value
 
     def set_position(self, x, y):
         x = int(x)
@@ -219,6 +212,8 @@ class MapObject(ObjectLike):
 
     def change_type(self, new_type):
         self.block = get_worldmap_tile(new_type)
+
+        self.type = self.block.index
 
         if self.type in map_object_names:
             self.name = map_object_names[self.type]

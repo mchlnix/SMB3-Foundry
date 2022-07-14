@@ -92,7 +92,10 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
         self._rom.write_little_endian(self.level_offset_address, self.level_offset)
         self._rom.write_little_endian(self.enemy_offset_address, self.enemy_offset)
 
-    def __eq__(self, other: "LevelPointerData"):
+    def __eq__(self, other):
+        if not isinstance(other, LevelPointerData):
+            return NotImplemented
+
         if self.pos != other.pos:
             return False
 

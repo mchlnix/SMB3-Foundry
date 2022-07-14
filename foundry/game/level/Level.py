@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union, overload
+from typing import List, Optional, Sequence, Tuple, Union, overload
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
@@ -9,6 +9,7 @@ from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
 from foundry.game.gfx.objects.Jump import Jump
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset
@@ -204,6 +205,9 @@ class Level(LevelLike):
             enemy_data, data = data[0:ENEMY_SIZE], data[ENEMY_SIZE:]
 
     def _load_objects(self, data: bytearray):
+        if self.object_factory is None:
+            return
+
         self.objects.clear()
         self.jumps.clear()
 
@@ -216,7 +220,7 @@ class Level(LevelLike):
             domain = (obj_data[0] & 0b1110_0000) >> 5
 
             obj_id = obj_data[2]
-            has_length_byte = self.object_set.get_object_byte_length(domain, obj_id) == 4
+            has_length_byte = self.object_set.object_length(domain, obj_id) == 4
 
             if has_length_byte:
                 fourth_byte, data = data[0], data[1:]
@@ -521,7 +525,7 @@ class Level(LevelLike):
         else:
             return None
 
-    def bring_to_foreground(self, objects: List[Union[LevelObject, EnemyObject]]):
+    def bring_to_foreground(self, objects: Sequence[Union[LevelObject, EnemyObject]]):
         for obj in objects:
             intersecting_objects = self.get_intersecting_objects(obj)
 
@@ -599,7 +603,7 @@ class Level(LevelLike):
     def draw(self, *_):
         pass
 
-    def paste_object_at(self, x: int, y: int, obj: Union[EnemyObject, LevelObject]) -> Union[EnemyObject, LevelObject]:
+    def paste_object_at(self, x: int, y: int, obj: ObjectLike) -> Optional[ObjectLike]:
         if isinstance(obj, EnemyObject):
             return self.add_enemy(obj.obj_index, x, y)
 
@@ -611,6 +615,8 @@ class Level(LevelLike):
 
             return self.add_object(obj.domain, obj.obj_index, x, y, length)
 
+        return None
+
     def create_object_at(self, x: int, y: int, domain: int = 0, object_index: int = 0):
         self.add_object(domain, object_index, x, y, None, len(self.objects))
 
@@ -620,14 +626,17 @@ class Level(LevelLike):
 
     def add_object(
         self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int = -1
-    ) -> LevelObject:
+    ) -> Optional[ObjectLike]:
         if index == -1:
             index = len(self.objects)
 
-        obj = self.object_factory.from_properties(domain, object_index, x, y, length, index)
-        self.objects.insert(index, obj)
+        if self.object_factory:
+            obj = self.object_factory.from_properties(domain, object_index, x, y, length, index)
+            self.objects.insert(index, obj)
 
-        return obj
+            return obj
+
+        return None
 
     def add_enemy(self, object_index: int, x: int, y: int, index: int = -1) -> EnemyObject:
         if index == -1:
@@ -685,7 +694,10 @@ class Level(LevelLike):
 
         m3l_bytes.extend(self.header_bytes)
 
-        for obj in self.objects + self.jumps:
+        for obj in self.objects:
+            m3l_bytes.extend(obj.to_bytes())
+
+        for jump in self.jumps:
             m3l_bytes.extend(obj.to_bytes())
 
         # only write 0xFF, even though the stock ROM would use 0xFF00 or 0xFF01

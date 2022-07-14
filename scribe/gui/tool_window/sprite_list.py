@@ -21,8 +21,8 @@ class SpriteList(TableWidget):
 
         self.set_headers(["Sprite Type", "Item Type", "Map Position"])
 
-        self.setItemDelegateForColumn(0, DropdownDelegate(self, MAPOBJ_NAMES.values()))
-        self.setItemDelegateForColumn(1, DropdownDelegate(self, MAPITEM_NAMES.values()))
+        self.setItemDelegateForColumn(0, DropdownDelegate(self, list(MAPOBJ_NAMES.values())))
+        self.setItemDelegateForColumn(1, DropdownDelegate(self, list(MAPITEM_NAMES.values())))
         self.setItemDelegateForColumn(
             2,
             DialogDelegate(

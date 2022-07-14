@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor
 
@@ -79,7 +81,7 @@ class Sprite(ObjectLike):
 
         self.set_position(new_x, new_y)
 
-    def get_position(self) -> tuple[int, int]:
+    def get_position(self) -> Tuple[int, int]:
         return self.data.pos.xy
 
     def resize_by(self, dx, dy):

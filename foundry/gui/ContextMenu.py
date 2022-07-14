@@ -1,11 +1,10 @@
 from enum import Enum
-from typing import List, Tuple, Union
+from typing import List, Tuple, cast
 
 from PySide6.QtCore import QPoint, SignalInstance
 from PySide6.QtWidgets import QMenu
 
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 
 
@@ -25,7 +24,7 @@ class CMMode(Enum):
     LIST = 3
 
 
-ID_PROP: bytes = "ID"
+ID_PROP: bytes = cast(bytes, "ID")
 
 MAX_ORIGIN = 0xFF, 0xFF
 
@@ -42,7 +41,7 @@ class LevelContextMenu(ContextMenu):
 
         self.level_ref = level_ref
 
-        self.copied_objects = None
+        self.copied_objects: List[ObjectLike] = []
         self.copied_objects_origin = 0, 0
         self.last_opened_at = QPoint(0, 0)
 
@@ -71,7 +70,7 @@ class LevelContextMenu(ContextMenu):
         self.add_object_action = self.addAction("Add Object")
         self.add_object_action.setProperty(ID_PROP, CMAction.ADD_OBJECT)
 
-    def set_copied_objects(self, objects: List[Union[LevelObject, EnemyObject]]):
+    def set_copied_objects(self, objects: List[ObjectLike]):
         if not objects:
             return
 
@@ -90,7 +89,7 @@ class LevelContextMenu(ContextMenu):
 
         self.copied_objects_origin = min_x, min_y
 
-    def get_copied_objects(self) -> Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]]:
+    def get_copied_objects(self) -> Tuple[List[ObjectLike], Tuple[int, int]]:
         return self.copied_objects, self.copied_objects_origin
 
     def set_position(self, position: QPoint):

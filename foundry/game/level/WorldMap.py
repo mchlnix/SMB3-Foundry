@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
@@ -50,7 +50,7 @@ class WorldMap(LevelLike):
 
         self.world = 0
 
-        self.objects: list[MapObject] = []
+        self.objects: List[MapObject] = []
 
         self.selected_level_pointers = []
         self.selected_sprites = []
@@ -89,19 +89,19 @@ class WorldMap(LevelLike):
         self._calc_size()
 
     def _load_sprites(self):
-        self.sprites: list[Sprite] = []
+        self.sprites: List[Sprite] = []
 
         for sprite_data in self.internal_world_map.gen_sprites():
             self.sprites.append(Sprite(sprite_data))
 
     def _load_level_pointers(self):
-        self.level_pointers: list[LevelPointer] = []
+        self.level_pointers: List[LevelPointer] = []
 
         for level_pointer_data in self.internal_world_map.level_pointers:
             self.level_pointers.append(LevelPointer(level_pointer_data))
 
     def _load_airship_points(self):
-        self.airship_travel_sets: list[list[AirshipTravelPoint]] = []
+        self.airship_travel_sets: List[List[AirshipTravelPoint]] = []
 
         for airship_travel_set in self.data.airship_travel_sets:
             self.airship_travel_sets.append(
@@ -109,7 +109,7 @@ class WorldMap(LevelLike):
             )
 
     def _load_locks_and_bridges(self):
-        self.locks_and_bridges: list[Lock] = []
+        self.locks_and_bridges: List[Lock] = []
 
         for fortress_fx in self.data.fortress_fx:
             self.locks_and_bridges.append(Lock(fortress_fx))
@@ -130,7 +130,7 @@ class WorldMap(LevelLike):
 
         self.objects.sort(key=self._array_index)
 
-    def select_level_pointers(self, indexes: list[int]):
+    def select_level_pointers(self, indexes: List[int]):
         self.selected_level_pointers = indexes
         self._signal_emitter.needs_redraw.emit()
 
@@ -144,7 +144,7 @@ class WorldMap(LevelLike):
         for index, level_pointer in enumerate(self.level_pointers):
             level_pointer.data.change_index(index)
 
-    def select_sprites(self, indexes: list[int]):
+    def select_sprites(self, indexes: List[int]):
         self.selected_sprites = indexes
         self._signal_emitter.needs_redraw.emit()
 
@@ -282,7 +282,7 @@ class WorldMap(LevelLike):
             if sprite.data.is_at(pos):
                 return sprite
         else:
-            return
+            return None
 
     def airship_point_at(self, x, y, airship_travel_set_visibility=0):
         pos = Position.from_xy(x, y)

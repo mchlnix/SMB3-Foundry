@@ -52,9 +52,10 @@ class ObjectToolBar(QWidget):
         self.tool_box.set_object_set(object_set_index, graphic_set_index)
 
     def _on_object_icon_selected(self, object_icon: ObjectIcon):
-        self.select_object(object_icon.object)
+        if object_icon.object is not None:
+            self.select_object(object_icon.object)
 
-        self.object_selected.emit(object_icon.object)
+            self.object_selected.emit(object_icon.object)
 
     def select_object(self, level_object: Union[LevelObject, EnemyObject]):
         self.tool_box.select_object(level_object)

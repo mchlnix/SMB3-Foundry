@@ -1,4 +1,5 @@
 import abc
+from typing import Tuple
 
 from PySide6.QtCore import QRect
 from PySide6.QtGui import QPainter
@@ -10,7 +11,7 @@ EXPANDS_BOTH = EXPANDS_HORIZ | EXPANDS_VERT
 
 
 class ObjectLike(abc.ABC):
-    obj_index: int
+    _obj_index: int
     domain: int
     name: str
 
@@ -21,6 +22,14 @@ class ObjectLike(abc.ABC):
     rect: QRect
 
     is_4byte: bool
+
+    @property
+    def obj_index(self):
+        return self._obj_index
+
+    @obj_index.setter
+    def obj_index(self, value):
+        self._obj_index = value
 
     @abc.abstractmethod
     def render(self):
@@ -43,7 +52,7 @@ class ObjectLike(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_position(self) -> tuple[int, int]:
+    def get_position(self) -> Tuple[int, int]:
         pass
 
     @abc.abstractmethod

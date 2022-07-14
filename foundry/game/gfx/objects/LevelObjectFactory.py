@@ -12,7 +12,7 @@ class LevelObjectFactory:
     palette_group_index: int
 
     graphics_set: Optional[GraphicsSet] = None
-    palette_group: PaletteGroup = []
+    palette_group: PaletteGroup
 
     def __init__(
         self,

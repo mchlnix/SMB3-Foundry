@@ -6,6 +6,7 @@ import pathlib
 import shlex
 import subprocess
 import tempfile
+from os import PathLike
 from typing import Tuple, Union
 
 from PySide6.QtCore import QSize
@@ -681,6 +682,8 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def _set_default_powerup(rom: SMB3Rom) -> bool:
+        assert isinstance(SETTINGS["default_powerup"], int)
+
         *_, powerup, hasPWing = POWERUPS[SETTINGS["default_powerup"]]
 
         rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))
@@ -778,6 +781,8 @@ class MainWindow(QMainWindow):
             return False
         finally:
             self._enable_disable_gui_elements()
+
+        return True
 
     def on_open_m3l(self, _) -> bool:
         if not self.safe_to_change():
@@ -991,7 +996,7 @@ class MainWindow(QMainWindow):
 
         self.save_m3l(pathname, m3l_bytes)
 
-    def save_m3l(self, pathname: str, m3l_bytes: bytearray):
+    def save_m3l(self, pathname: PathLike, m3l_bytes: bytearray):
         try:
             with open(pathname, "wb") as m3l_file:
                 m3l_file.write(m3l_bytes)

@@ -1,5 +1,6 @@
 import json
 from functools import partial
+from typing import Dict, Union
 
 import qdarkstyle
 
@@ -13,7 +14,7 @@ GUI_STYLE = {
     "DRACULA": partial(qdarkstyle.load_stylesheet, pyside=True),
 }
 
-SETTINGS = dict()
+SETTINGS: Dict[str, Union[str, int, bool]] = dict()
 SETTINGS["instaplay_emulator"] = "fceux"
 SETTINGS["instaplay_arguments"] = "%f"
 SETTINGS["default_powerup"] = 0

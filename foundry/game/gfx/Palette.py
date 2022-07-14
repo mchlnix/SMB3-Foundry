@@ -60,7 +60,7 @@ class PaletteGroup:
     def __hash__(self):
         return hash((self.object_set, self.index))
 
-    def save(self, rom: Optional[ROM] = None):
+    def save(self, rom: Optional[Rom] = None):
         if rom is None:
             rom = ROM()
 

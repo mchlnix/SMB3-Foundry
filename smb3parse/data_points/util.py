@@ -1,6 +1,6 @@
 from builtins import NotImplementedError
 from dataclasses import dataclass
-from typing import overload
+from typing import Callable, overload
 
 from smb3parse.levels import (
     FIRST_VALID_ROW,
@@ -181,7 +181,7 @@ class _PositionMixin:
 
 class _IndexedMixin:
     index: int
-    calculate_addresses: callable
+    calculate_addresses: Callable
 
     def change_index(self, index: int):
         self.index = index

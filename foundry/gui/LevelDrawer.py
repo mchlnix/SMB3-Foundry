@@ -11,7 +11,7 @@ from foundry.game.gfx.Palette import NESPalette, bg_color_for_object_set, load_p
 from foundry.game.gfx.drawable import load_from_png, make_image_selected
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
+from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
@@ -175,6 +175,8 @@ class LevelDrawer:
             level_object.render()
 
             if level_object.name.lower() in SPECIAL_BACKGROUND_OBJECTS:
+                assert isinstance(level_object, LevelObject)
+
                 width = LEVEL_MAX_LENGTH
                 height = GROUND - level_object.y_position
 

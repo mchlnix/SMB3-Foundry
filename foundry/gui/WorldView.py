@@ -22,7 +22,7 @@ from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.data_points import Position
-from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT
+from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_HEIGHT
 
 
 class WorldView(MainView):
@@ -47,7 +47,7 @@ class WorldView(MainView):
         """Whether to highlight positions marked as having locks."""
 
         self.changed = False
-        self._tile_to_put: Optional[Block] = None
+        self._tile_to_put: Block = get_worldmap_tile(WORLD_MAP_BLANK_TILE_ID)
 
         self.selection_square.set_offset(0, FIRST_VALID_ROW)
 
@@ -146,15 +146,21 @@ class WorldView(MainView):
             self.setCursor(QCursor(tile_pixmap))
 
         elif new_mode == MODE_SELECTION_SQUARE:
+            if event is None:
+                return
+
             self.selection_square.start(event.pos())
 
         elif new_mode == MODE_DRAG:
+            if event is None:
+                return
+
             self.drag_start_point = self._to_level_point(event.pos())
             self.last_mouse_position = self.drag_start_point
             self.setCursor(Qt.ClosedHandCursor)
 
         elif new_mode == MODE_FREE:
-            self._tile_to_put = None
+            self._tile_to_put = get_worldmap_tile(WORLD_MAP_BLANK_TILE_ID)
             self.selected_object = None
 
             self._object_was_selected_on_last_click = False

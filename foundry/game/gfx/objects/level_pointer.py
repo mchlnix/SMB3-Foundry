@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter, QPen
 
@@ -40,7 +42,7 @@ class LevelPointer(ObjectLike):
 
         self.set_position(new_x, new_y)
 
-    def get_position(self) -> tuple[int, int]:
+    def get_position(self) -> Tuple[int, int]:
         return self.data.screen * SCREEN_WIDTH + self.data.x, self.data.y
 
     def resize_by(self, dx, dy):

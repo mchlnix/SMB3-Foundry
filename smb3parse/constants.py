@@ -140,12 +140,12 @@ def update_global_offsets(path_to_global_list: Union[str, Path]):
 
     with open(path_to_global_list, "r") as label_file:
         for line in label_file.readlines():
-            label_name, global_address = line.split(":")
+            label_name, hex_address = line.split(":")
 
             if label_name.startswith("PRG0") or label_name.startswith("_"):
                 continue
 
-            global_address = int(global_address, 16)
+            global_address = int(hex_address, 16)
 
             globals()[label_name] = BASE_OFFSET + global_address
 

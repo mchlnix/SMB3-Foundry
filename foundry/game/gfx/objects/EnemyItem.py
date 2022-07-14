@@ -50,8 +50,8 @@ class EnemyObject(ObjectLike):
 
         self.name = obj_def.description
 
-        self.width = obj_def.bmp_width
-        self.height = obj_def.bmp_height
+        self.width = self.rendered_width = obj_def.bmp_width
+        self.height = self.rendered_height = obj_def.bmp_height
 
         self._render(obj_def)
 

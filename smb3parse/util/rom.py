@@ -1,6 +1,6 @@
 from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 from smb3parse.util import little_endian
 from smb3parse.constants import BASE_OFFSET
@@ -89,12 +89,7 @@ class Rom:
     def find(self, byte: bytes, offset: int = 0) -> int:
         return self._data.find(byte, offset)
 
-    def int(self, offset: int) -> int:
-        read_bytes = self.read(offset, 1)
-
-        return read_bytes[0]
-
-    def nibbles(self, offset: int) -> tuple[int, int]:
+    def nibbles(self, offset: int) -> Tuple[int, int]:
         byte = self.int(offset)
 
         high_nibble = byte >> 4
@@ -113,3 +108,8 @@ class Rom:
     def save_to(self, path: PathLike):
         with open(path, "wb") as file:
             file.write(self._data)
+
+    def int(self, offset: int) -> int:
+        read_bytes = self.read(offset, 1)
+
+        return read_bytes[0]

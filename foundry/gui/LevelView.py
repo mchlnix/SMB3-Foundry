@@ -73,14 +73,6 @@ class LevelView(MainView):
         )
 
     @property
-    def transparency(self):
-        return self.drawer.transparency
-
-    @transparency.setter
-    def transparency(self, value):
-        self.drawer.transparency = value
-
-    @property
     def draw_grid(self):
         return self.drawer.draw_grid
 
@@ -186,7 +178,7 @@ class LevelView(MainView):
     def _set_cursor_for_position(self, event: QMouseEvent):
         level_object = self.object_at(event.pos())
 
-        if level_object is not None:
+        if isinstance(level_object, (EnemyObject, LevelObject)):
             is_resizable = not level_object.is_single_block
 
             edges = self._cursor_on_edge_of_object(level_object, event.pos())

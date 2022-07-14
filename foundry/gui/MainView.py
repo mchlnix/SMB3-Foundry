@@ -13,6 +13,7 @@ from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.SelectionSquare import SelectionSquare
+from foundry.gui.WorldDrawer import WorldDrawer
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
@@ -70,7 +71,15 @@ class MainView(QWidget):
 
         # dragged in from the object toolbar
         self.currently_dragged_object: Optional[Union[LevelObject, EnemyObject]] = None
-        self.drawer = LevelDrawer()
+        self.drawer: Union[LevelDrawer, WorldDrawer] = LevelDrawer()
+
+    @property
+    def transparency(self):
+        return self.drawer.transparency
+
+    @transparency.setter
+    def transparency(self, value):
+        self.drawer.transparency = value
 
     def sizeHint(self) -> QSize:
         if not self.level_ref:
@@ -183,7 +192,7 @@ class MainView(QWidget):
 
         self.level_ref.selected_objects = selected_items
 
-    def get_selected_objects(self) -> List[Union[LevelObject, EnemyObject]]:
+    def get_selected_objects(self) -> List[ObjectLike]:
         return self.level_ref.selected_objects
 
     @overload
@@ -194,7 +203,7 @@ class MainView(QWidget):
     def _to_level_point(self, screen_x: int, screen_y: int) -> Tuple[int, int]:
         ...
 
-    def _to_level_point(self, *args) -> Tuple[int, int]:
+    def _to_level_point(self, *args):
         if len(args) == 2:
             screen_x, screen_y = args
         else:
@@ -214,7 +223,7 @@ class MainView(QWidget):
     def object_at(self, x: int, y: int) -> Optional[ObjectLike]:
         ...
 
-    def object_at(self, *args) -> Optional[ObjectLike]:
+    def object_at(self, *args):
         """
         Returns an enemy or level object at the position. The x and y is relative to the View (for example, when you
         receive a mouse event) and will be converted into level coordinates internally.
