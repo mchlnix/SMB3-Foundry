@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QCursor, QMouseEvent, QPainter, QPixmap, Qt
+from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, Qt
 from PySide6.QtWidgets import QWidget
 
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
@@ -73,6 +73,8 @@ class WorldView(MainView):
             ""
             "If all else fails, click the play button up top to see your level in game in seconds."
         )
+
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.select_all)
 
     @property
     def draw_grid(self):
@@ -362,9 +364,6 @@ class WorldView(MainView):
 
     def _set_selection_end(self, position, always_replace_selection=False):
         return super(WorldView, self)._set_selection_end(position, True)
-
-    def select_all(self):
-        self.select_objects(self.level_ref.get_all_objects())
 
     def remove_selected_objects(self):
         for obj in self.level_ref.selected_objects:

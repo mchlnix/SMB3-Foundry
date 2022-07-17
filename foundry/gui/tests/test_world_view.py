@@ -2,8 +2,8 @@ import pytest
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QMouseEvent, Qt
 
-from foundry.game.level.LevelRef import LevelRef
 import foundry
+from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.WorldView import WorldView
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1
 from smb3parse.data_points import WorldMapData
