@@ -106,6 +106,12 @@ class MainWindow(QMainWindow):
         self.lock_bridge_action.setCheckable(True)
         self.lock_bridge_action.setChecked(self.world_view.draw_locks)
 
+        self.view_menu.addSeparator()
+
+        self.show_all_action = self.view_menu.addAction("Show All")
+        self.show_all_action.setCheckable(True)
+        self.show_all_action.setChecked(False)
+
     def _setup_level_menu(self):
         self.level_menu = QMenu("Change Level")
         self.level_menu.triggered.connect(self.on_level_menu)
@@ -217,6 +223,11 @@ class MainWindow(QMainWindow):
             self.world_view.draw_airship_points = value
         elif action is self.lock_bridge_action:
             self.world_view.draw_locks = action.isChecked()
+
+        elif action is self.show_all_action:
+            for view_action in self.view_menu.actions():
+                if view_action.isCheckable() and not view_action.isChecked():
+                    view_action.trigger()
 
         self.world_view.update()
 
