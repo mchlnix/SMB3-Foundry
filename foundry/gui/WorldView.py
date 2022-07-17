@@ -4,6 +4,7 @@ from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QCursor, QMouseEvent, QPainter, QPixmap, Qt
 from PySide6.QtWidgets import QWidget
 
+from foundry import shift_is_pressed
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.MapObject import MapObject
@@ -16,7 +17,6 @@ from foundry.gui.MainView import (
     MODE_PLACE_TILE,
     MODE_SELECTION_SQUARE,
     MainView,
-    shift_is_pressed,
 )
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS

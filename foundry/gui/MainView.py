@@ -3,8 +3,9 @@ from warnings import warn
 
 from PySide6.QtCore import QMimeData, QPoint, QSize
 from PySide6.QtGui import QContextMenuEvent, QDragEnterEvent, QDragMoveEvent, QMouseEvent, QPaintEvent, QPainter, Qt
-from PySide6.QtWidgets import QApplication, QSizePolicy, QWidget
+from PySide6.QtWidgets import QSizePolicy, QWidget
 
+from foundry import ctrl_is_pressed
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
@@ -27,14 +28,6 @@ MODE_PLACE_TILE = 8
 MODE_SELECTION_SQUARE = 16
 MODE_RESIZE_DIAG = MODE_RESIZE_HORIZ | MODE_RESIZE_VERT
 RESIZE_MODES = [MODE_RESIZE_HORIZ, MODE_RESIZE_VERT, MODE_RESIZE_DIAG]
-
-
-def ctrl_is_pressed():
-    return bool(QApplication.keyboardModifiers() & Qt.ControlModifier)
-
-
-def shift_is_pressed():
-    return bool(QApplication.keyboardModifiers() & Qt.ShiftModifier)
 
 
 def undoable(func):

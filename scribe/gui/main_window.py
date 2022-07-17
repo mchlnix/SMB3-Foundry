@@ -2,9 +2,9 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QAction, QActionGroup
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMenu, QMessageBox, QScrollArea
 
+from foundry import ROM_FILE_FILTER
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.MainWindow import ROM_FILE_FILTER
 from foundry.gui.WorldView import WorldView
 from scribe.gui.edit_world_info import EditWorldInfo
 from scribe.gui.tool_window.tool_window import ToolWindow

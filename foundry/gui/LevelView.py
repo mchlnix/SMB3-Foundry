@@ -5,6 +5,7 @@ from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QMouseEvent, QWheelEvent, Qt
 from PySide6.QtWidgets import QToolTip, QWidget
 
+from foundry import ctrl_is_pressed
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
@@ -21,7 +22,6 @@ from foundry.gui.MainView import (
     MODE_RESIZE_VERT,
     MainView,
     RESIZE_MODES,
-    ctrl_is_pressed,
     undoable,
 )
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS

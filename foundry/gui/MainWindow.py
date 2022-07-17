@@ -29,6 +29,9 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import (
+    IMG_FILE_FILTER,
+    M3L_FILE_FILTER,
+    ROM_FILE_FILTER,
     auto_save_level_data_path,
     auto_save_m3l_path,
     auto_save_rom_path,
@@ -75,10 +78,6 @@ from foundry.gui.settings import SETTINGS, save_settings
 from smb3parse.constants import TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
-
-ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
-M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
-IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 ID_RELOAD_LEVEL = 303
 
