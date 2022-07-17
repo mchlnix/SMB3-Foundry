@@ -1,11 +1,12 @@
 import json
-import urllib.request
 import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Union
 
 from PySide6.QtCore import QUrl
-from PySide6.QtGui import QDesktopServices, QIcon
+from PySide6.QtGui import QDesktopServices, QIcon, Qt
+from PySide6.QtWidgets import QApplication
 
 root_dir = Path(__file__).parent.parent
 
@@ -32,6 +33,18 @@ github_issue_link = "https://github.com/mchlnix/SMB3-Foundry/issues"
 discord_link = "https://discord.gg/pm87gm7"
 
 enemy_compat_link = QUrl.fromLocalFile(str(doc_dir.joinpath("SMB3 enemy compatibility.html")))
+
+ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
+M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
+IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
+
+
+def ctrl_is_pressed():
+    return bool(QApplication.keyboardModifiers() & Qt.ControlModifier)
+
+
+def shift_is_pressed():
+    return bool(QApplication.keyboardModifiers() & Qt.ShiftModifier)
 
 
 def open_url(url: Union[str, QUrl]):

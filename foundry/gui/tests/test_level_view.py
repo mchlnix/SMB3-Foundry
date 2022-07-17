@@ -2,6 +2,8 @@ import pytest
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QWheelEvent, Qt
 
+from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.LevelView import LevelView
 from foundry.gui.settings import SETTINGS
@@ -24,7 +26,9 @@ def level_view(main_window, qtbot):
 def test_object_at(level_view: LevelView, qtbot, coordinates, obj_index, domain, object_set_number):
     screen_coordinates = coordinates  # in pixels
 
-    level_object = level_view.object_at(*screen_coordinates)
+    level_object = level_view.object_at(QPoint(*screen_coordinates))
+
+    assert isinstance(level_object, (LevelObject, EnemyObject))
 
     assert level_object
     assert level_object.obj_index == obj_index
@@ -76,8 +80,10 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
     # GIVEN a level view and a cursor position over an object
     x, y = coordinates
 
+    pos = QPoint(x, y)
+
     level_view = main_window.level_view
-    object_under_cursor = level_view.object_at(x, y)
+    object_under_cursor = level_view.object_at(pos)
     original_type = object_under_cursor.type
 
     SETTINGS["object_scroll_enabled"] = True
@@ -86,16 +92,13 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
     main_window.scroll_panel.horizontalScrollBar().setMaximum(level_view.width())
     main_window.scroll_panel.horizontalScrollBar().setValue(scroll_amount)
 
-    main_window.show()
-    qtbot.wait_for_window_shown(main_window)
-
     main_window.hide()
 
-    qtbot.mouseClick(level_view, Qt.LeftButton, pos=QPoint(x, y))
+    qtbot.mouseClick(level_view, Qt.LeftButton, pos=pos)
     assert object_under_cursor.selected
 
     event = QWheelEvent(
-        QPoint(x, y),
+        pos,
         QPoint(-1, -1),
         QPoint(0, wheel_delta),
         QPoint(0, wheel_delta),
@@ -108,6 +111,6 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
     assert level_view.wheelEvent(event)
 
     # THEN the type of the object should have changed
-    new_type = level_view.object_at(*coordinates).type
+    new_type = level_view.object_at(pos).type
 
     assert new_type == original_type + type_change, (original_type, new_type)

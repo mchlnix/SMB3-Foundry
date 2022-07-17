@@ -3,7 +3,7 @@ from PySide6.QtCore import QRect
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
 from smb3parse.levels import WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
-from smb3parse.levels.data_points import Position
+from smb3parse.data_points import Position
 
 map_object_names = {
     0x00: "Mario Clear (Blue)",
@@ -139,6 +139,7 @@ class MapObject(ObjectLike):
         self.pos = pos
 
         self.block = block
+        self.type = self.block.index
 
         self.rect = QRect(self.x_position, self.y_position, 1, 1)
 
@@ -165,14 +166,6 @@ class MapObject(ObjectLike):
     @y_position.setter
     def y_position(self, value):
         self.pos.y = value
-
-    @property
-    def type(self):
-        return self.block.index
-
-    @type.setter
-    def type(self, value):
-        self.block.index = value
 
     def set_position(self, x, y):
         x = int(x)
@@ -220,6 +213,8 @@ class MapObject(ObjectLike):
     def change_type(self, new_type):
         self.block = get_worldmap_tile(new_type)
 
+        self.type = self.block.index
+
         if self.type in map_object_names:
             self.name = map_object_names[self.type]
         else:
@@ -258,4 +253,4 @@ class MapObject(ObjectLike):
         return result < other_result
 
     def __repr__(self):
-        return f"MapObject #{hex(self.obj_index)}: '{self.name}' at {self.x_position}, {self.y_position}"
+        return f"MapObject #{hex(self.type)}: '{self.name}' at {self.x_position}, {self.y_position}"

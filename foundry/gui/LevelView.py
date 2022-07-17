@@ -1,12 +1,11 @@
 from bisect import bisect_right
 from typing import List, Optional, Tuple, Union
-from warnings import warn
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter, QWheelEvent, Qt
+from PySide6.QtGui import QMouseEvent, QWheelEvent, Qt
 from PySide6.QtWidgets import QToolTip, QWidget
 
-from foundry.game.gfx.drawable.Block import Block
+from foundry import ctrl_is_pressed
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
@@ -16,8 +15,6 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.MainView import (
-    HIGHEST_ZOOM_LEVEL,
-    LOWEST_ZOOM_LEVEL,
     MODE_DRAG,
     MODE_FREE,
     MODE_RESIZE_DIAG,
@@ -25,18 +22,16 @@ from foundry.gui.MainView import (
     MODE_RESIZE_VERT,
     MainView,
     RESIZE_MODES,
-    ctrl_is_pressed,
     undoable,
 )
-from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 
 class LevelView(MainView):
     def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[LevelContextMenu]):
-        super(LevelView, self).__init__(parent, level, context_menu)
-
         self.drawer = LevelDrawer()
+
+        super(LevelView, self).__init__(parent, level, context_menu)
 
         self.draw_grid = SETTINGS["draw_grid"]
         self.draw_jumps = SETTINGS["draw_jumps"]
@@ -49,8 +44,6 @@ class LevelView(MainView):
         self.draw_autoscroll = SETTINGS["draw_autoscroll"]
 
         self.changed = False
-
-        self.selection_square = SelectionSquare()
 
         self.mouse_mode = MODE_FREE
 
@@ -78,14 +71,6 @@ class LevelView(MainView):
             ""
             "If all else fails, click the play button up top to see your level in game in seconds."
         )
-
-    @property
-    def transparency(self):
-        return self.drawer.transparency
-
-    @transparency.setter
-    def transparency(self, value):
-        self.drawer.transparency = value
 
     @property
     def draw_grid(self):
@@ -162,16 +147,6 @@ class LevelView(MainView):
 
         return QSize(w, h)
 
-    def mousePressEvent(self, event: QMouseEvent):
-        pressed_button = event.button()
-
-        if pressed_button == Qt.LeftButton:
-            self._on_left_mouse_button_down(event)
-        elif pressed_button == Qt.RightButton:
-            self._on_right_mouse_button_down(event)
-        else:
-            return super(LevelView, self).mousePressEvent(event)
-
     def mouseMoveEvent(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG:
             self.setCursor(Qt.ClosedHandCursor)
@@ -190,9 +165,7 @@ class LevelView(MainView):
         elif SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK:
             self._set_cursor_for_position(event)
 
-        x, y = event.pos().toTuple()
-
-        object_under_cursor = self.object_at(x, y)
+        object_under_cursor = self.object_at(event.pos())
 
         if SETTINGS["object_tooltip_enabled"] and object_under_cursor is not None:
             self.setToolTip(str(object_under_cursor))
@@ -203,9 +176,9 @@ class LevelView(MainView):
         return super(LevelView, self).mouseMoveEvent(event)
 
     def _set_cursor_for_position(self, event: QMouseEvent):
-        level_object = self.object_at(*event.pos().toTuple())
+        level_object = self.object_at(event.pos())
 
-        if level_object is not None:
+        if isinstance(level_object, (EnemyObject, LevelObject)):
             is_resizable = not level_object.is_single_block
 
             edges = self._cursor_on_edge_of_object(level_object, event.pos())
@@ -247,21 +220,10 @@ class LevelView(MainView):
 
         return edges
 
-    def mouseReleaseEvent(self, event: QMouseEvent):
-        released_button = event.button()
-
-        if released_button == Qt.LeftButton:
-            self._on_left_mouse_button_up(event)
-        elif released_button == Qt.RightButton:
-            self._on_right_mouse_button_up(event)
-        else:
-            super(LevelView, self).mouseReleaseEvent(event)
-
     def wheelEvent(self, event: QWheelEvent):
         if SETTINGS["object_scroll_enabled"]:
-            x, y = event.position().toTuple()
-
-            obj_under_cursor = self.object_at(x, y)
+            pos = event.position().toPoint()
+            obj_under_cursor = self.object_at(pos)
 
             if obj_under_cursor is None:
                 return False
@@ -274,7 +236,7 @@ class LevelView(MainView):
             if obj_under_cursor not in self.level_ref.selected_objects:
                 return False
 
-            self._change_object_on_mouse_wheel(event.position(), event.angleDelta().y())
+            self._change_object_on_mouse_wheel(pos, event.angleDelta().y())
 
             return True
         else:
@@ -283,9 +245,10 @@ class LevelView(MainView):
 
     @undoable
     def _change_object_on_mouse_wheel(self, cursor_position: QPoint, y_delta: int):
-        x, y = cursor_position.toTuple()
+        obj_under_cursor = self.object_at(cursor_position)
 
-        obj_under_cursor = self.object_at(x, y)
+        if not isinstance(obj_under_cursor, (LevelObject, EnemyObject)):
+            return
 
         if y_delta > 0:
             obj_under_cursor.increment_type()
@@ -298,8 +261,7 @@ class LevelView(MainView):
         if self.mouse_mode == MODE_DRAG:
             return
 
-        x, y = event.pos().toTuple()
-        level_x, level_y = self._to_level_point(x, y)
+        level_x, level_y = self._to_level_point(event.pos())
 
         self.last_mouse_position = level_x, level_y
 
@@ -310,14 +272,16 @@ class LevelView(MainView):
         if resize_mode not in RESIZE_MODES:
             return
 
-        x, y = event.pos().toTuple()
-        level_x, level_y = self._to_level_point(x, y)
+        level_x, level_y = self._to_level_point(event.pos())
 
         self.mouse_mode = resize_mode
 
         self.resize_mouse_start_x = level_x
 
-        obj = self.object_at(x, y)
+        obj = self.object_at(event.pos())
+
+        if not isinstance(obj, (LevelObject, EnemyObject)):
+            return
 
         if obj is not None:
             self.resize_obj_start_point = obj.x_position, obj.y_position
@@ -328,9 +292,7 @@ class LevelView(MainView):
         if isinstance(self.level_ref.level, WorldMap):
             return
 
-        x, y = event.pos().toTuple()
-
-        level_x, level_y = self._to_level_point(x, y)
+        level_x, level_y = self._to_level_point(event.pos())
 
         dx = dy = 0
 
@@ -353,9 +315,7 @@ class LevelView(MainView):
 
     def _on_right_mouse_button_up(self, event):
         if self.resizing_happened:
-            x, y = event.pos().toTuple()
-
-            resize_end_x, _ = self._to_level_point(x, y)
+            resize_end_x, _ = self._to_level_point(event.pos())
 
             if self.resize_mouse_start_x != resize_end_x:
                 self._stop_resize(event)
@@ -392,9 +352,10 @@ class LevelView(MainView):
         # 6 if clicking on unselected object and ctrl: select this object
 
         if self._select_objects_on_click(event):
-            x, y = event.pos().toTuple()
+            obj = self.object_at(event.pos())
 
-            obj = self.object_at(x, y)
+            if not isinstance(obj, (LevelObject, EnemyObject)):
+                return
 
             # enable all drag functionality
             if obj is not None:
@@ -423,9 +384,7 @@ class LevelView(MainView):
     def _dragging(self, event: QMouseEvent):
         self.dragging_happened = True
 
-        x, y = event.pos().toTuple()
-
-        level_x, level_y = self._to_level_point(x, y)
+        level_x, level_y = self._to_level_point(event.pos())
 
         dx = level_x - self.last_mouse_position[0]
         dy = level_y - self.last_mouse_position[1]
@@ -442,11 +401,12 @@ class LevelView(MainView):
         self.update()
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
-        x, y = event.pos().toTuple()
-
-        obj = self.object_at(x, y)
+        obj = self.object_at(event.pos())
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
+            if not isinstance(obj, (LevelObject, EnemyObject)):
+                return
+
             if obj is not None:
                 drag_end_point = obj.x_position, obj.y_position
 
@@ -478,47 +438,6 @@ class LevelView(MainView):
             self.level_ref.save_level_state()
 
         self.dragging_happened = False
-
-    def _set_zoom(self, zoom):
-        if not (LOWEST_ZOOM_LEVEL <= zoom <= HIGHEST_ZOOM_LEVEL):
-            return
-
-        self.zoom = zoom
-        self.block_length = int(Block.SIDE_LENGTH * self.zoom)
-
-        self.update()
-
-    def zoom_out(self):
-        self._set_zoom(self.zoom / 2)
-
-    def zoom_in(self):
-        self._set_zoom(self.zoom * 2)
-
-    def _start_selection_square(self, position):
-        self.selection_square.start(position)
-
-    def _set_selection_end(self, position):
-        if not self.selection_square.is_active():
-            return
-
-        self.selection_square.set_current_end(position)
-
-        sel_rect = self.selection_square.get_adjusted_rect(self.block_length, self.block_length)
-
-        touched_objects = [obj for obj in self.level_ref.get_all_objects() if sel_rect.intersects(obj.get_rect())]
-
-        if touched_objects != self.level_ref.selected_objects:
-            self._set_selected_objects(touched_objects)
-
-        self.update()
-
-    def _stop_selection_square(self):
-        self.selection_square.stop()
-
-        self.update()
-
-    def select_all(self):
-        self.select_objects(self.level_ref.get_all_objects())
 
     def remove_selected_objects(self):
         for obj in self.level_ref.selected_objects:
@@ -610,25 +529,26 @@ class LevelView(MainView):
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)
 
-    def create_object_at(self, x: int, y: int, domain: int = 0, object_index: int = 0):
-        level_x, level_y = self._to_level_point(x, y)
+    def create_object_at(self, q_point: QPoint, domain: int = 0, object_index: int = 0):
+        level_x, level_y = self._to_level_point(q_point)
 
         self.level_ref.create_object_at(level_x, level_y, domain, object_index)
 
         self.update()
 
-    def create_enemy_at(self, x: int, y: int):
-        level_x, level_y = self._to_level_point(x, y)
+    # TODO this isn't used anywhere?
+    def create_enemy_at(self, q_point: QPoint):
+        level_x, level_y = self._to_level_point(q_point)
 
         self.level_ref.create_enemy_at(level_x, level_y)
 
-    def add_object(self, domain: int, obj_index: int, x: int, y: int, length: int, index: int = -1):
-        level_x, level_y = self._to_level_point(x, y)
+    def add_object(self, domain: int, obj_index: int, q_point: QPoint, length: int, index: int = -1):
+        level_x, level_y = self._to_level_point(q_point)
 
         self.level_ref.add_object(domain, obj_index, level_x, level_y, length, index)
 
-    def add_enemy(self, enemy_index: int, x: int, y: int, index: int):
-        level_x, level_y = self._to_level_point(x, y)
+    def add_enemy(self, enemy_index: int, q_point: QPoint, index: int):
+        level_x, level_y = self._to_level_point(q_point)
 
         self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
 
@@ -659,41 +579,9 @@ class LevelView(MainView):
 
         self.update()
 
-    def paste_objects_at(
-        self,
-        paste_data: Tuple[List[Union[LevelObject, EnemyObject]], Tuple[int, int]],
-        x: Optional[int] = None,
-        y: Optional[int] = None,
-    ):
-        if x is None or y is None:
-            level_x, level_y = self.last_mouse_position
-        else:
-            level_x, level_y = self._to_level_point(x, y)
-
-        objects, origin = paste_data
-
-        ori_x, ori_y = origin
-
-        pasted_objects = []
-
-        for obj in objects:
-            obj_x, obj_y = obj.get_position()
-
-            offset_x, offset_y = obj_x - ori_x, obj_y - ori_y
-
-            try:
-                pasted_objects.append(self.level_ref.paste_object_at(level_x + offset_x, level_y + offset_y, obj))
-            except ValueError:
-                warn("Tried pasting outside of level.", RuntimeWarning)
-
-        self.select_objects(pasted_objects)
-
-    def get_object_names(self):
-        return self.level_ref.get_object_names()
-
     @undoable
     def dropEvent(self, event):
-        x, y = self._to_level_point(*event.pos().toTuple())
+        x, y = self._to_level_point(event.pos())
 
         level_object = self._object_from_mime_data(event.mimeData())
 
@@ -707,18 +595,3 @@ class LevelView(MainView):
         self.currently_dragged_object = None
 
         self.level_ref.data_changed.emit()
-
-    def paintEvent(self, event: QPaintEvent):
-        painter = QPainter(self)
-
-        if self.level_ref is None:
-            return
-
-        self.drawer.block_length = self.block_length
-
-        self.drawer.draw(painter, self.level_ref.level)
-
-        self.selection_square.draw(painter)
-
-        if self.currently_dragged_object is not None:
-            self.currently_dragged_object.draw(painter, self.block_length, self.transparency)

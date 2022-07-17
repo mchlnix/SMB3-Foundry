@@ -47,7 +47,7 @@ class AutoScrollDrawer:
         self.screen_polygon = QPolygonF()
 
     def draw(self, painter: QPainter, block_length: int):
-        self.pixel_length = block_length / Block.WIDTH
+        self.pixel_length = block_length // Block.WIDTH
 
         self.scroll_brush = QBrush(Qt.blue)
         self.scroll_pen = QPen(self.scroll_brush, 2 * self.pixel_length)

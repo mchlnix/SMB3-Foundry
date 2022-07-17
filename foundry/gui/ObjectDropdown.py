@@ -91,9 +91,8 @@ class ObjectDropdown(QComboBox):
                     domain, static_object_id, x=0, y=0, length=1, index=0
                 )
 
-                level_object = get_minimal_icon_object(level_object)
-
-                self._add_item(level_object)
+                if (level_object := get_minimal_icon_object(level_object)) is not None:
+                    self._add_item(level_object)
 
             for expanding_object_id in range(0x10, MAX_ID_VALUE, 0x10):
                 level_object = self._object_factory.from_properties(

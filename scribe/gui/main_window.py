@@ -2,15 +2,15 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QAction, QActionGroup
 from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMenu, QMessageBox, QScrollArea
 
+from foundry import ROM_FILE_FILTER
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.MainWindow import ROM_FILE_FILTER
 from foundry.gui.WorldView import WorldView
 from scribe.gui.edit_world_info import EditWorldInfo
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
+from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels import WORLD_COUNT
-from smb3parse.levels.data_points import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -74,6 +74,12 @@ class MainWindow(QMainWindow):
         self.view_menu = QMenu("View")
         self.view_menu.triggered.connect(self.on_view_menu)
 
+        self.grid_action = self.view_menu.addAction("Show Grid")
+        self.grid_action.setCheckable(True)
+        self.grid_action.setChecked(self.world_view.draw_grid)
+
+        self.view_menu.addSeparator()
+
         self.level_pointer_action = self.view_menu.addAction("Show Level Pointers")
         self.level_pointer_action.setCheckable(True)
         self.level_pointer_action.setChecked(self.world_view.draw_level_pointers)
@@ -86,12 +92,25 @@ class MainWindow(QMainWindow):
         self.starting_point_action.setCheckable(True)
         self.starting_point_action.setChecked(self.world_view.draw_start)
 
-        self.view_menu.addSection("Show Airship Travel Points")
+        self.view_menu.addSeparator()
+
         self.airship_travel_actions = []
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
             self.airship_travel_actions.append(self.view_menu.addAction(f"Airship Travel Path {i+1}"))
             self.airship_travel_actions[-1].setCheckable(True)
             self.airship_travel_actions[-1].setChecked(self.world_view.draw_airship_points & 2**i == 2**i)
+
+        self.view_menu.addSeparator()
+
+        self.lock_bridge_action = self.view_menu.addAction("Show Lock and Bridge Events")
+        self.lock_bridge_action.setCheckable(True)
+        self.lock_bridge_action.setChecked(self.world_view.draw_locks)
+
+        self.view_menu.addSeparator()
+
+        self.show_all_action = self.view_menu.addAction("Show All")
+        self.show_all_action.setCheckable(True)
+        self.show_all_action.setChecked(False)
 
     def _setup_level_menu(self):
         self.level_menu = QMenu("Change Level")
@@ -121,6 +140,8 @@ class MainWindow(QMainWindow):
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
             return False
+
+        return True
 
     def load_level(self, world_number: int):
         world = SMB3WorldMap.from_world_number(ROM(), world_number)
@@ -174,6 +195,7 @@ class MainWindow(QMainWindow):
         if action is self.delete_tiles_action:
             self.level_ref.level.remove_all_tiles()
         elif action is self.delete_sprites_action:
+            # TODO reload sprites, after clearing
             self.level_ref.level.remove_all_sprites()
         elif action is self.delete_level_pointers_action:
             self.level_ref.level.remove_all_level_pointers()
@@ -183,7 +205,9 @@ class MainWindow(QMainWindow):
         self.world_view.update()
 
     def on_view_menu(self, action: QAction):
-        if action is self.level_pointer_action:
+        if action is self.grid_action:
+            self.world_view.draw_grid = action.isChecked()
+        elif action is self.level_pointer_action:
             self.world_view.draw_level_pointers = action.isChecked()
         elif action is self.sprite_action:
             self.world_view.draw_sprites = action.isChecked()
@@ -197,6 +221,13 @@ class MainWindow(QMainWindow):
                     value += 2**index
 
             self.world_view.draw_airship_points = value
+        elif action is self.lock_bridge_action:
+            self.world_view.draw_locks = action.isChecked()
+
+        elif action is self.show_all_action:
+            for view_action in self.view_menu.actions():
+                if view_action.isCheckable() and not view_action.isChecked():
+                    view_action.trigger()
 
         self.world_view.update()
 

@@ -1,5 +1,6 @@
 import json
 from functools import partial
+from typing import Dict, Union
 
 import qdarkstyle
 
@@ -13,7 +14,7 @@ GUI_STYLE = {
     "DRACULA": partial(qdarkstyle.load_stylesheet, pyside=True),
 }
 
-SETTINGS = dict()
+SETTINGS: Dict[str, Union[str, int, bool]] = dict()
 SETTINGS["instaplay_emulator"] = "fceux"
 SETTINGS["instaplay_arguments"] = "%f"
 SETTINGS["default_powerup"] = 0
@@ -33,12 +34,12 @@ SETTINGS["block_transparency"] = True
 SETTINGS["object_scroll_enabled"] = False
 SETTINGS["object_tooltip_enabled"] = True
 
-SETTINGS["draw_level_pointers"] = True
+SETTINGS["draw_level_pointers"] = False
 SETTINGS["draw_overworld_sprites"] = True
-SETTINGS["draw_starting_position"] = True
+SETTINGS["draw_starting_position"] = False
 SETTINGS["draw_airship_points"] = 0
-SETTINGS["draw_pipes"] = True
-SETTINGS["draw_locks"] = True
+SETTINGS["draw_pipes"] = False
+SETTINGS["draw_locks"] = False
 
 
 def load_settings():

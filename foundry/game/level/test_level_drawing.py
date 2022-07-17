@@ -45,16 +45,11 @@ world_test_name = []
 
 with open(data_dir / "levels.dat", "r") as level_data_file:
     for line in level_data_file.readlines():
-        world_no, level_no, level_address, enemy_address, object_set_number, level_name = line.strip().split(",")
+        parts = line.strip().split(",")
 
-        world_no = int(world_no)
-        level_no = int(level_no)
-
-        level_address = int(level_address, 16)
-
-        enemy_address = int(enemy_address, 16)
-
-        object_set_number = int(object_set_number, 16)
+        world_no, level_no = map(int, parts[:2])
+        level_address, enemy_address, object_set_number = [int(number, 16) for number in parts[2:-1]]
+        level_name = parts[-1]
 
         if object_set_number == WORLD_MAP_OBJECT_SET:
             world_data.append((level_name, level_address, enemy_address, object_set_number))
@@ -80,6 +75,14 @@ def test_world(world_info, qtbot):
 
     world_view = WorldView(None, level_ref, WorldContextMenu(level_ref))
     world_view.zoom_in()
+
+    world_view.draw_grid = True
+    world_view.draw_sprites = True
+    world_view.draw_level_pointers = True
+    world_view.draw_airship_points = True
+    world_view.draw_start = True
+    world_view.draw_locks = True
+    world_view.draw_pipes = True
 
     rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16 * 2)
 

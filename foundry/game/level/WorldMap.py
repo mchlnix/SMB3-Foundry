@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
@@ -9,9 +9,11 @@ from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects.MapObject import MapObject
 from foundry.game.gfx.objects.airship_point import AirshipTravelPoint
 from foundry.game.gfx.objects.level_pointer import LevelPointer
+from foundry.game.gfx.objects.locks import Lock
 from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelLike import LevelLike
-from smb3parse.levels.data_points import Position
+from smb3parse.data_points import Position
+from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID
 from smb3parse.levels.world_map import (
     WORLD_MAP_HEIGHT,
     WorldMap as _WorldMap,
@@ -48,7 +50,7 @@ class WorldMap(LevelLike):
 
         self.world = 0
 
-        self.objects: list[MapObject] = []
+        self.objects: List[MapObject] = []
 
         self.selected_level_pointers = []
         self.selected_sprites = []
@@ -57,6 +59,7 @@ class WorldMap(LevelLike):
         self._load_sprites()
         self._load_level_pointers()
         self._load_airship_points()
+        self._load_locks_and_bridges()
 
         self._calc_size()
 
@@ -86,24 +89,30 @@ class WorldMap(LevelLike):
         self._calc_size()
 
     def _load_sprites(self):
-        self.sprites: list[Sprite] = []
+        self.sprites: List[Sprite] = []
 
         for sprite_data in self.internal_world_map.gen_sprites():
             self.sprites.append(Sprite(sprite_data))
 
     def _load_level_pointers(self):
-        self.level_pointers: list[LevelPointer] = []
+        self.level_pointers: List[LevelPointer] = []
 
         for level_pointer_data in self.internal_world_map.level_pointers:
             self.level_pointers.append(LevelPointer(level_pointer_data))
 
     def _load_airship_points(self):
-        self.airship_travel_sets: list[list[AirshipTravelPoint]] = []
+        self.airship_travel_sets: List[List[AirshipTravelPoint]] = []
 
         for airship_travel_set in self.data.airship_travel_sets:
             self.airship_travel_sets.append(
                 [AirshipTravelPoint(pos, index) for index, pos in enumerate(airship_travel_set)]
             )
+
+    def _load_locks_and_bridges(self):
+        self.locks_and_bridges: List[Lock] = []
+
+        for fortress_fx in self.data.fortress_fx:
+            self.locks_and_bridges.append(Lock(fortress_fx))
 
     def _calc_size(self):
         old_size = self.size
@@ -121,13 +130,44 @@ class WorldMap(LevelLike):
 
         self.objects.sort(key=self._array_index)
 
-    def select_level_pointers(self, indexes: list[int]):
+    def select_level_pointers(self, indexes: List[int]):
         self.selected_level_pointers = indexes
         self._signal_emitter.needs_redraw.emit()
 
-    def select_sprites(self, indexes: list[int]):
+    def move_level_pointers(self, source_index: int, target_index: int):
+        if source_index == target_index:
+            return
+
+        moved_level_pointer = self.level_pointers.pop(source_index)
+        self.level_pointers.insert(target_index, moved_level_pointer)
+
+        for index, level_pointer in enumerate(self.level_pointers):
+            level_pointer.data.change_index(index)
+
+    def select_sprites(self, indexes: List[int]):
         self.selected_sprites = indexes
         self._signal_emitter.needs_redraw.emit()
+
+    def move_sprites(self, source_index: int, target_index: int):
+        if source_index == target_index:
+            return
+
+        moved_sprite = self.sprites.pop(source_index)
+        self.sprites.insert(target_index, moved_sprite)
+
+        for index, sprite in enumerate(self.sprites):
+            sprite.data.change_index(index)
+
+    def move_tile(self, source_index: int, target_index: int, obj_index: int):
+        if source_index == target_index:
+            return
+
+        source_obj = self.objects[source_index]
+        source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
+
+        if target_index < len(self.objects):
+            target_obj = self.objects[target_index]
+            target_obj.change_type(obj_index)
 
     @property
     def q_size(self):
@@ -148,9 +188,6 @@ class WorldMap(LevelLike):
     @property
     def jumps_changed(self):
         return self._signal_emitter.jumps_changed
-
-    def get_object_names(self):
-        return [obj.name for obj in self.objects]
 
     def draw(self, dc, zoom, transparency=None, show_expansion=None):
         for obj in self.objects:
@@ -224,7 +261,7 @@ class WorldMap(LevelLike):
         self.internal_world_map.clear_level_pointers()
         self.data_changed.emit()
 
-    def level_at_position(self, x: int, y: int) -> Optional[LevelPointer]:
+    def level_pointer_at(self, x: int, y: int) -> Optional[LevelPointer]:
         pos = Position.from_xy(x, y)
 
         for level_pointer in self.level_pointers:
@@ -238,14 +275,14 @@ class WorldMap(LevelLike):
 
         return self.internal_world_map.level_name_for_position(pos)
 
-    def sprite_at_position(self, x, y) -> Optional[Sprite]:
+    def sprite_at(self, x, y) -> Optional[Sprite]:
         pos = Position.from_xy(x, y)
 
         for sprite in self.sprites:
             if sprite.data.is_at(pos):
                 return sprite
         else:
-            return
+            return None
 
     def airship_point_at(self, x, y, airship_travel_set_visibility=0):
         pos = Position.from_xy(x, y)
@@ -265,11 +302,21 @@ class WorldMap(LevelLike):
 
         return self.internal_world_map.tile_at(pos)
 
+    def locks_at(self, x, y):
+        return None
+
+    def pipe_at(self, x, y):
+        return None
+
     # TODO check if better in parent class
     def get_rect(self, block_length: int = 1):
         width, height = self.size
 
         return QRect(QPoint(0, 0), QSize(width, height) * block_length)
+
+    def point_in(self, x, y):
+        y -= FIRST_VALID_ROW
+        return super(WorldMap, self).point_in(x, y)
 
     @property
     def fully_loaded(self):

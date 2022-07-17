@@ -1,5 +1,5 @@
 import json
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from PySide6.QtCore import QEvent, QRect, Qt, Signal, SignalInstance
 from PySide6.QtGui import QCursor, QFocusEvent
@@ -33,7 +33,7 @@ class WarningList(QWidget):
         self.setWindowFlag(Qt.Popup)
         self.layout().setContentsMargins(5, 5, 5, 5)
 
-        self._enemy_dict = {}
+        self._enemy_dict: Dict[str, Tuple[str, str]] = {}
         self._build_enemy_clan_dict()
 
         self.warnings: List[Tuple[str, List[LevelObject]]] = []

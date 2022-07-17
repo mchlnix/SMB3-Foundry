@@ -112,6 +112,13 @@ MAPITEM_NAMES = {
     MAPITEM_UNKNOWN2: "Broken 2",
 }
 
+AIRSHIP_TRAVEL_SET_COUNT = 3  # offsets of 2 bytes each
+AIRSHIP_TRAVEL_SET_SIZE = 6  # bytes
+
+FORTRESS_FX_COUNT = 17  # entries/bytes
+
+OFFSET_SIZE = 2  # byte
+
 OBJ_AUTOSCROLL = 0xD3
 
 POWERUP_MUSHROOM = 0x01
@@ -133,12 +140,12 @@ def update_global_offsets(path_to_global_list: Union[str, Path]):
 
     with open(path_to_global_list, "r") as label_file:
         for line in label_file.readlines():
-            label_name, global_address = line.split(":")
+            label_name, hex_address = line.split(":")
 
             if label_name.startswith("PRG0") or label_name.startswith("_"):
                 continue
 
-            global_address = int(global_address, 16)
+            global_address = int(hex_address, 16)
 
             globals()[label_name] = BASE_OFFSET + global_address
 

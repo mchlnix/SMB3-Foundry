@@ -37,6 +37,4 @@ def test_correct_menu_position(main_window, monkeypatch, qtbot):
     added_object: LevelObject = main_window.level_ref.objects[-1]
 
     assert menu_popup_position == click_pos, "LevelContextMenu not opened on Cursor"
-    assert added_object.get_position() == level_view._to_level_point(
-        *point_in_level_view.toTuple()
-    ), "Object not added at cursor"
+    assert added_object.get_position() == level_view._to_level_point(point_in_level_view), "Object not added at cursor"

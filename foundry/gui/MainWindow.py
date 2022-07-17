@@ -6,9 +6,10 @@ import pathlib
 import shlex
 import subprocess
 import tempfile
-from typing import Tuple, Union
+from os import PathLike
+from typing import Optional, Union
 
-from PySide6.QtCore import QSize
+from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut, Qt
 from PySide6.QtWidgets import (
     QDialog,
@@ -28,6 +29,9 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import (
+    IMG_FILE_FILTER,
+    M3L_FILE_FILTER,
+    ROM_FILE_FILTER,
     auto_save_level_data_path,
     auto_save_m3l_path,
     auto_save_rom_path,
@@ -74,10 +78,6 @@ from foundry.gui.settings import SETTINGS, save_settings
 from smb3parse.constants import TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
-
-ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
-M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
-IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 ID_RELOAD_LEVEL = 303
 
@@ -681,6 +681,8 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def _set_default_powerup(rom: SMB3Rom) -> bool:
+        assert isinstance(SETTINGS["default_powerup"], int)
+
         *_, powerup, hasPWing = POWERUPS[SETTINGS["default_powerup"]]
 
         rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))
@@ -778,6 +780,8 @@ class MainWindow(QMainWindow):
             return False
         finally:
             self._enable_disable_gui_elements()
+
+        return True
 
     def on_open_m3l(self, _) -> bool:
         if not self.safe_to_change():
@@ -991,7 +995,7 @@ class MainWindow(QMainWindow):
 
         self.save_m3l(pathname, m3l_bytes)
 
-    def save_m3l(self, pathname: str, m3l_bytes: bytearray):
+    def save_m3l(self, pathname: PathLike, m3l_bytes: bytearray):
         try:
             with open(pathname, "wb") as m3l_file:
                 m3l_file.write(m3l_bytes)
@@ -1051,24 +1055,22 @@ class MainWindow(QMainWindow):
             menu_of_action.exec()
 
         elif item_id in self.context_menu.get_all_menu_item_ids():
-            x, y = self.context_menu.get_position()
-
             if item_id == CMAction.REMOVE:
                 self.remove_selected_objects()
             elif item_id == CMAction.ADD_OBJECT:
                 selected_object = self.object_dropdown.currentIndex()
 
                 if selected_object != -1:
-                    self.place_object_from_dropdown((x, y))
+                    self.place_object_from_dropdown(self.context_menu.get_position())
                 else:
-                    self.create_object_at(x, y)
+                    self.create_object_at(self.context_menu.get_position())
 
             elif item_id == CMAction.CUT:
                 self._cut_objects()
             elif item_id == CMAction.COPY:
                 self._copy_objects()
             elif item_id == CMAction.PASTE:
-                self._paste_objects(x, y)
+                self._paste_objects(self.context_menu.get_position())
             elif item_id == CMAction.FOREGROUND:
                 self.bring_objects_to_foreground()
             elif item_id == CMAction.BACKGROUND:
@@ -1102,12 +1104,12 @@ class MainWindow(QMainWindow):
         self.level_ref.level.bring_to_background(self.level_ref.selected_objects)
 
     @undoable
-    def create_object_at(self, x, y):
-        self.level_view.create_object_at(x, y)
+    def create_object_at(self, q_point: QPoint):
+        self.level_view.create_object_at(q_point)
 
     @undoable
-    def create_enemy_at(self, x, y):
-        self.level_view.create_enemy_at(x, y)
+    def create_enemy_at(self, q_point: QPoint):
+        self.level_view.create_enemy_at(q_point)
 
     def _cut_objects(self):
         self._copy_objects()
@@ -1120,8 +1122,8 @@ class MainWindow(QMainWindow):
             self.context_menu.set_copied_objects(selected_objects)
 
     @undoable
-    def _paste_objects(self, x=None, y=None):
-        self.level_view.paste_objects_at(self.context_menu.get_copied_objects(), x, y)
+    def _paste_objects(self, q_point: Optional[QPoint] = None):
+        self.level_view.paste_objects_at(self.context_menu.get_copied_objects(), q_point)
 
     @undoable
     def remove_selected_objects(self):
@@ -1355,21 +1357,21 @@ class MainWindow(QMainWindow):
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.MiddleButton:
-            pos = self.level_view.mapFromGlobal(self.mapToGlobal(event.pos())).toTuple()
+            pos = self.level_view.mapFromGlobal(self.mapToGlobal(event.pos()))
 
             self.place_object_from_dropdown(pos)
 
     @undoable
-    def place_object_from_dropdown(self, pos: Tuple[int, int]) -> None:
+    def place_object_from_dropdown(self, q_point: QPoint) -> None:
         # the dropdown is synchronized with the toolbar, so it doesn't matter where to take it from
         level_object = self.object_dropdown.currentData(Qt.UserRole)
 
         self.object_toolbar.add_recent_object(level_object)
 
         if isinstance(level_object, LevelObject):
-            self.level_view.create_object_at(*pos, level_object.domain, level_object.obj_index)
+            self.level_view.create_object_at(q_point, level_object.domain, level_object.obj_index)
         elif isinstance(level_object, EnemyObject):
-            self.level_view.add_enemy(level_object.obj_index, *pos, -1)
+            self.level_view.add_enemy(level_object.obj_index, q_point, -1)
 
     def on_about(self, _):
         about = AboutDialog(self)

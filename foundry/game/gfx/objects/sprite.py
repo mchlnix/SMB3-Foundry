@@ -1,5 +1,7 @@
+from typing import Tuple
+
 from PySide6.QtCore import QPoint, QRect, QSize
-from PySide6.QtGui import QColor, QPen
+from PySide6.QtGui import QColor
 
 from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.objects.ObjectLike import ObjectLike
@@ -22,7 +24,7 @@ from smb3parse.constants import (
     MAPOBJ_W8AIRSHIP,
     MAPOBJ_WHITETOADHOUSE,
 )
-from smb3parse.levels.data_points import Position, SpriteData
+from smb3parse.data_points import Position, SpriteData
 
 EMPTY_IMAGE = load_from_png(0, 53)
 
@@ -61,7 +63,6 @@ class Sprite(ObjectLike):
 
         rect = QRect(pos, QSize(block_length, block_length))
 
-        painter.setPen(QPen(QColor(0x00, 0x00, 0xFF, 0x80), 4))
         painter.drawImage(rect.topLeft(), MAP_OBJ_SPRITES[self.data.type].scaled(block_length, block_length))
 
         if selected:
@@ -80,7 +81,7 @@ class Sprite(ObjectLike):
 
         self.set_position(new_x, new_y)
 
-    def get_position(self) -> tuple[int, int]:
+    def get_position(self) -> Tuple[int, int]:
         return self.data.pos.xy
 
     def resize_by(self, dx, dy):

@@ -97,4 +97,5 @@ class TabbedToolBox(QTabWidget):
         self._recent_toolbox.place_at_front(level_object)
 
     def _on_object_dragged(self, object_icon: ObjectIcon):
-        self.add_recent_object(object_icon.object)
+        if object_icon.object:
+            self.add_recent_object(object_icon.object)

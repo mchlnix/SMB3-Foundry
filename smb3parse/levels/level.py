@@ -14,7 +14,7 @@ class Level(LevelBase):
         self.object_set_number = object_set_number
         self.enemy_address = enemy_address
 
-        self.world_map_position = None
+        self.world_map_position: Optional[WorldMapPosition] = None
 
         self._rom = rom
 

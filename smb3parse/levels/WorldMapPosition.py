@@ -1,9 +1,10 @@
 import typing
+from typing import Optional
 
-from smb3parse.levels.data_points import LevelPointerData, Position
+from smb3parse.data_points import LevelPointerData, Position
 
 if typing.TYPE_CHECKING:
-    from world_map import WorldMap
+    from smb3parse.levels.world_map import WorldMap
 
 
 class WorldMapPosition(Position):
@@ -12,7 +13,7 @@ class WorldMapPosition(Position):
         self.world: "WorldMap" = world
 
     @property
-    def level_pointer(self) -> LevelPointerData:
+    def level_pointer(self) -> Optional[LevelPointerData]:
         return self.world.level_for_position(self)
 
     def can_have_level(self):

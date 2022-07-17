@@ -271,7 +271,7 @@ class WorldMapLevelSelect(QScrollArea):
         y += FIRST_VALID_ROW
 
         try:
-            level_pointer = self.world.level_at_position(x, y)
+            level_pointer = self.world.level_pointer_at(x, y)
 
             if level_pointer is None:
                 self.setCursor(Qt.ArrowCursor)
@@ -328,7 +328,7 @@ class WorldMapLevelSelect(QScrollArea):
         y += FIRST_VALID_ROW
 
         try:
-            level_pointer = self.world.level_at_position(x, y)
+            level_pointer = self.world.level_pointer_at(x, y)
 
             if level_pointer is None:
                 return

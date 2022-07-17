@@ -12,6 +12,7 @@ class SelectionSquare:
         self.active = False
         self.should_draw = False
 
+        self.dx, self.dy = 0, 0
         self.rect = QRect(self.start_point, self.end_point)
 
         self.pen = QPen(STROKE_COLOR, 1)
@@ -19,6 +20,9 @@ class SelectionSquare:
 
     def is_active(self):
         return self.active
+
+    def set_offset(self, dx: int, dy: int):
+        self.dx, self.dy = dx, dy
 
     def start(self, point: QPoint):
         self.active = True
@@ -52,7 +56,7 @@ class SelectionSquare:
         y //= vertical_factor
         height //= vertical_factor
 
-        return QRect(x, y, width + 1, height + 1)
+        return QRect(x + self.dx, y + self.dy, width + 1, height + 1)
 
     def draw(self, painter: QPainter):
         if self.should_draw:

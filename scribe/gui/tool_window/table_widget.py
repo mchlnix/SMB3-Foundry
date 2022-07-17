@@ -1,3 +1,5 @@
+from typing import List
+
 from PySide6.QtCore import QAbstractItemModel, QModelIndex
 from PySide6.QtWidgets import (
     QComboBox,
@@ -18,6 +20,8 @@ class TableWidget(QTableWidget):
     def __init__(self, level_ref: LevelRef):
         super(TableWidget, self).__init__()
 
+        self.setDragDropMode(self.InternalMove)
+
         self.level_ref = level_ref
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -26,7 +30,7 @@ class TableWidget(QTableWidget):
         self.setSelectionMode(self.SingleSelection)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
-    def set_headers(self, headers: list[str]):
+    def set_headers(self, headers: List[str]):
         self.setColumnCount(len(headers))
 
         self.setHorizontalHeaderLabels(headers)
@@ -41,7 +45,7 @@ class TableWidget(QTableWidget):
 
 
 class DropdownDelegate(QStyledItemDelegate):
-    def __init__(self, parent, items: list[str]):
+    def __init__(self, parent, items: List[str]):
         super(DropdownDelegate, self).__init__(parent)
 
         self._items = items

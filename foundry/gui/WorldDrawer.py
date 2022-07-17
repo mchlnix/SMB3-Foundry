@@ -3,12 +3,14 @@ from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.util import partition
+from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH, WORLD_MAP_WARP_WORLD_INDEX
-from smb3parse.levels.data_points import AIRSHIP_TRAVEL_SET_COUNT
 
 
 class WorldDrawer:
     def __init__(self):
+        self.draw_grid = False
         self.draw_level_pointers = True
         self.draw_sprites = True
         self.draw_start = True
@@ -22,13 +24,16 @@ class WorldDrawer:
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 1)
 
     def draw(self, painter: QPainter, world: WorldMap):
-        painter.translate(0, -FIRST_VALID_ROW * self.block_length)
+        painter.save()
 
         self._draw_background(painter, world)
 
-        self._draw_grid(painter, world)
+        painter.translate(0, -FIRST_VALID_ROW * self.block_length)
 
         self._draw_tiles(painter, world)
+
+        if self.draw_grid:
+            self._draw_grid(painter, world)
 
         if self.draw_level_pointers:
             self._draw_level_pointers(painter, world)
@@ -43,7 +48,11 @@ class WorldDrawer:
             self._draw_airship_travel_points(painter, world)
 
         self.draw_pipes = True
-        self.draw_locks = True
+
+        if self.draw_locks:
+            self._draw_locks_and_bridges(painter, world)
+
+        painter.restore()
 
     def _draw_background(self, painter: QPainter, world: WorldMap):
         bg_color = Qt.black
@@ -54,28 +63,31 @@ class WorldDrawer:
         painter.setPen(QPen(Qt.gray, 1))
 
         # rows
-        map_length = WORLD_MAP_SCREEN_WIDTH * self.block_length * world.internal_world_map.screen_count
+        map_length = WORLD_MAP_SCREEN_WIDTH * self.block_length * world.data.screen_count
 
         for y in range(WORLD_MAP_HEIGHT):
+            y += FIRST_VALID_ROW
             y *= self.block_length
 
             painter.drawLine(QPoint(0, y), QPoint(map_length, y))
 
         # columns
-        for x in range(WORLD_MAP_SCREEN_WIDTH * world.internal_world_map.screen_count):
+        for x in range(WORLD_MAP_SCREEN_WIDTH * world.data.screen_count):
             x *= self.block_length
 
-            painter.drawLine(QPoint(x, 0), QPoint(x, WORLD_MAP_SCREEN_WIDTH * self.block_length))
+            painter.drawLine(QPoint(x, 0), QPoint(x, (WORLD_MAP_HEIGHT + FIRST_VALID_ROW) * self.block_length))
 
     def _draw_tiles(self, painter: QPainter, world: WorldMap):
-        for tile in world.get_all_objects():
-            tile.render()
+        not_selected, selected = partition(lambda tile_: tile_.selected, world.get_all_objects())
 
+        for tile in not_selected:
             tile.draw(painter, self.block_length, False)
 
-            if tile.selected:
-                painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
-                painter.drawRect(tile.get_rect(self.block_length))
+        for tile in selected:
+            tile.draw(painter, self.block_length, False)
+
+            painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
+            painter.drawRect(tile.get_rect(self.block_length))
 
     def _draw_level_pointers(self, painter: QPainter, world: WorldMap):
         for index, level_pointer in enumerate(world.level_pointers):
@@ -105,9 +117,7 @@ class WorldDrawer:
         )
 
     def _draw_airship_travel_points(self, painter: QPainter, world: WorldMap):
-        world_data = world.internal_world_map.data
-
-        if world_data.index == WORLD_MAP_WARP_WORLD_INDEX:
+        if world.data.index == WORLD_MAP_WARP_WORLD_INDEX:
             return
 
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
@@ -116,3 +126,10 @@ class WorldDrawer:
 
             for airship_point in world.airship_travel_sets[i]:
                 airship_point.draw(painter, self.block_length, False)
+
+    def _draw_locks_and_bridges(self, painter: QPainter, world: WorldMap):
+        if world.data.index == WORLD_MAP_WARP_WORLD_INDEX:
+            return
+
+        for lock_object in world.locks_and_bridges:
+            lock_object.draw(painter, self.block_length, False)

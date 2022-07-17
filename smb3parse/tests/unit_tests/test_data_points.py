@@ -1,4 +1,4 @@
-from smb3parse.levels.data_points import LevelPointerData, Position, SpriteData, WorldMapData
+from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.util import compare_bytearrays
 
 
@@ -100,11 +100,8 @@ def _compare_worlds(world_1, world_2):
     for attr_name in dir(world_1):
         if attr_name.startswith("_"):
             continue
-        if callable(getattr(world_1, attr_name)):
-            continue
 
-        if attr_name == "level_pointers":
-            assert len(world_1.level_pointers) == len(world_2.level_pointers)
+        if callable(getattr(world_1, attr_name)):
             continue
 
         assert getattr(world_1, attr_name) == getattr(world_2, attr_name), attr_name
@@ -152,6 +149,14 @@ def test_change_index_of_world_2(rom):
 def test_reading_airship_travel_sets(world_1):
     set_0 = [(0x6, 0xA, 0), (0x6, 0x2, 0), (0xC, 0x2, 0), (0x6, 0xA, 0), (0x6, 0x2, 0), (0xC, 0x2, 0)]
     assert world_1.data.airship_travel_sets[0] == [Position(x, y, screen) for x, y, screen in set_0]
+
+
+def test_reading_locks(world_1):
+    assert world_1.data.fortress_fx_count == 4
+    assert world_1.data.fortress_fx[0].pos == Position(4, 5, 0)
+    assert world_1.data.fortress_fx[0].replacement_tile_index == 0x46
+
+    assert world_1.data.fortress_fx_indexes == [0, 0, 0, 0]
 
 
 def test_write_back_world_map(rom):

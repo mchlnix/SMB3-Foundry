@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Dict, Tuple
 
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QColor, QImage, QPainter, Qt
@@ -33,6 +34,9 @@ def get_worldmap_tile(block_index: int):
     )
 
 
+BlockId = Tuple[int, str, int]
+
+
 class Block:
     SIDE_LENGTH = 2 * Tile.SIDE_LENGTH
     WIDTH = SIDE_LENGTH
@@ -42,7 +46,7 @@ class Block:
 
     tsa_data = bytes()
 
-    _block_cache = {}
+    _block_cache: Dict[Tuple[BlockId, int, bool, bool], QImage] = {}
 
     def __init__(
         self,
@@ -62,7 +66,7 @@ class Block:
             self.bg_color = NESPalette[palette_group[palette_index][0]]
 
         # can't hash list, so turn it into a string instead
-        self._block_id = (block_index, str(palette_group), graphics_set.number)
+        self._block_id: BlockId = (block_index, str(palette_group), graphics_set.number)
 
         lu = tsa_data[TSA_BANK_0 + block_index]
         ld = tsa_data[TSA_BANK_1 + block_index]
