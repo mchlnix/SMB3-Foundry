@@ -109,8 +109,6 @@ class MainWindow(QMainWindow):
         self.view_menu.addSeparator()
 
         self.show_all_action = self.view_menu.addAction("Show All")
-        self.show_all_action.setCheckable(True)
-        self.show_all_action.setChecked(False)
 
     def _setup_level_menu(self):
         self.level_menu = QMenu("Change Level")
