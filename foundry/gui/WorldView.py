@@ -4,7 +4,6 @@ from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QCursor, QMouseEvent, QPainter, QPixmap, Qt
 from PySide6.QtWidgets import QWidget
 
-from foundry import shift_is_pressed
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.MapObject import MapObject
@@ -264,7 +263,7 @@ class WorldView(MainView):
 
             assert tile is not None
 
-            if shift_is_pressed():
+            if event.modifiers() & Qt.ShiftModifier:
                 self._fill_tile(tile.type, x, y)
             else:
                 tile.change_type(self._tile_to_put.index)
@@ -279,7 +278,7 @@ class WorldView(MainView):
 
         obj = self._visible_object_at(event.pos())
 
-        if not obj.selected and not shift_is_pressed():
+        if not obj.selected and not event.modifiers() & Qt.ShiftModifier:
             self._select_object(None)
 
         if obj and obj.selected:

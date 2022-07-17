@@ -102,3 +102,29 @@ def test_moving_all_objects_partly_off_screen(worldview):
             assert map_object.type != WORLD_MAP_BLANK_TILE_ID, index
         else:
             assert map_object.type == WORLD_MAP_BLANK_TILE_ID, index
+
+
+def test_fill_tiles(worldview):
+    tile_to_replace_with = 0x20
+
+    worldview.on_put_tile(tile_to_replace_with)
+
+    pos = QPoint(0, 0)
+
+    tile_at_0_0 = worldview.object_at(pos)
+
+    assert tile_at_0_0.type != tile_to_replace_with
+
+    worldview.mousePressEvent(
+        QMouseEvent(
+            QMouseEvent.MouseButtonPress,
+            pos,
+            Qt.LeftButton,
+            Qt.LeftButton,
+            Qt.ShiftModifier,
+        )
+    )
+
+    for index, map_object in enumerate(worldview.world.get_all_objects()):
+        if map_object.pos.x % WORLD_MAP_SCREEN_WIDTH == 0:
+            assert map_object.type == tile_to_replace_with, index
