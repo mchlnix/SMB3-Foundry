@@ -142,8 +142,8 @@ class LevelView(MainView):
 
         w, h = self.level_ref.level.size
 
-        w *= self.block_length * self.zoom
-        h *= self.block_length * self.zoom
+        w *= self.block_length
+        h *= self.block_length
 
         return QSize(w, h)
 
