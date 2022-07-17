@@ -92,9 +92,6 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
     main_window.scroll_panel.horizontalScrollBar().setMaximum(level_view.width())
     main_window.scroll_panel.horizontalScrollBar().setValue(scroll_amount)
 
-    main_window.show()
-    qtbot.wait_for_window_shown(main_window)
-
     main_window.hide()
 
     qtbot.mouseClick(level_view, Qt.LeftButton, pos=pos)
