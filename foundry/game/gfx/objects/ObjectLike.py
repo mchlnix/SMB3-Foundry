@@ -23,6 +23,9 @@ class ObjectLike(abc.ABC):
 
     is_4byte: bool
 
+    def __init__(self):
+        self.selected = False
+
     @property
     def obj_index(self):
         return self._obj_index

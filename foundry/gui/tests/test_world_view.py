@@ -3,6 +3,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QMouseEvent, Qt
 
 import foundry
+from foundry.game.gfx.objects.sprite import Sprite
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.WorldView import WorldView
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1
@@ -102,6 +103,18 @@ def test_moving_all_objects_partly_off_screen(worldview):
             assert map_object.type != WORLD_MAP_BLANK_TILE_ID, index
         else:
             assert map_object.type == WORLD_MAP_BLANK_TILE_ID, index
+
+
+def test_move_sprite(worldview):
+    start_pos = QPoint(10, 6) * worldview.block_length
+    end_pos = QPoint(0, 0) * worldview.block_length
+
+    assert isinstance(worldview._visible_object_at(start_pos), Sprite)
+
+    drag_from_to(worldview, start_pos, end_pos)
+
+    assert not isinstance(worldview._visible_object_at(start_pos), Sprite)
+    assert isinstance(worldview._visible_object_at(end_pos), Sprite)
 
 
 def test_fill_tiles(worldview):

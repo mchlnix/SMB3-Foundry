@@ -304,6 +304,10 @@ class WorldView(MainView):
             selected_obj.move_by(dx, dy)
             self.level_ref.level.changed = True
 
+        if not self.get_selected_objects() and self.selected_object:
+            self.selected_object.move_by(dx, dy)
+            self.level_ref.level.changed = True
+
         self.level_ref.data_changed.emit()
         self.update()
 
