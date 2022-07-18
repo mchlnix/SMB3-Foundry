@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Tuple, cast
+from typing import List, Tuple
 
 from PySide6.QtCore import QPoint, SignalInstance
 from PySide6.QtWidgets import QMenu
@@ -24,7 +24,7 @@ class CMMode(Enum):
     LIST = 3
 
 
-ID_PROP: bytes = cast(bytes, "ID")
+ID_PROP = "ID"
 
 MAX_ORIGIN = 0xFF, 0xFF
 

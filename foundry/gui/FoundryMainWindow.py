@@ -6,7 +6,6 @@ import pathlib
 import shlex
 import subprocess
 import tempfile
-from os import PathLike
 from typing import Optional, Union
 
 from PySide6.QtCore import QPoint, QSize
@@ -28,7 +27,6 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import (
-    IMG_FILE_FILTER,
     M3L_FILE_FILTER,
     ROM_FILE_FILTER,
     auto_save_level_data_path,
@@ -44,7 +42,7 @@ from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AutoScrollEditor import AutoScrollEditor
-from foundry.gui.ContextMenu import CMAction, LevelContextMenu
+from foundry.gui.ContextMenu import CMAction, ID_PROP, LevelContextMenu
 from foundry.gui.EnemySizeBar import EnemySizeBar
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.JumpEditor import JumpEditor
@@ -64,42 +62,11 @@ from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
-from foundry.gui.settings import SETTINGS, save_settings
+from foundry.gui.menus.view_menu import ViewMenu
+from foundry.gui.settings import SETTINGS
 from smb3parse.constants import TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
-
-ID_RELOAD_LEVEL = 303
-
-ID_GRID_LINES = 501
-ID_TRANSPARENCY = 508
-ID_JUMPS = 509
-ID_MARIO = 510
-ID_RESIZE_TYPE = 511
-ID_JUMP_OBJECTS = 512
-ID_ITEM_BLOCKS = 513
-ID_INVISIBLE_ITEMS = 514
-ID_AUTOSCROLL = 515
-
-CHECKABLE_MENU_ITEMS = [
-    ID_TRANSPARENCY,
-    ID_GRID_LINES,
-    ID_JUMPS,
-    ID_MARIO,
-    ID_RESIZE_TYPE,
-    ID_JUMP_OBJECTS,
-    ID_ITEM_BLOCKS,
-    ID_INVISIBLE_ITEMS,
-    ID_AUTOSCROLL,
-]
-
-ID_PROP = "ID"
-
-# mouse modes
-
-MODE_FREE = 0
-MODE_DRAG = 1
-MODE_RESIZE = 2
 
 
 class FoundryMainWindow(MainWindow):
@@ -174,73 +141,20 @@ class FoundryMainWindow(MainWindow):
 
         self.menuBar().addMenu(self.level_menu)
 
-        self._object_menu = ObjectMenu(self, self.level_ref)
+        self._object_menu = ObjectMenu(self.level_ref)
         self.menuBar().addMenu(self._object_menu)
-
-        self.view_menu = QMenu("View")
-        self.view_menu.triggered.connect(self.on_menu)
-
-        action = self.view_menu.addAction("Mario")
-        action.setProperty(ID_PROP, ID_MARIO)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_mario"])
-
-        action = self.view_menu.addAction("&Jumps on objects")
-        action.setProperty(ID_PROP, ID_JUMP_OBJECTS)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_jump_on_objects"])
-
-        action = self.view_menu.addAction("Items in blocks")
-        action.setProperty(ID_PROP, ID_ITEM_BLOCKS)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_items_in_blocks"])
-
-        action = self.view_menu.addAction("Invisible items")
-        action.setProperty(ID_PROP, ID_INVISIBLE_ITEMS)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_invisible_items"])
-
-        action = self.view_menu.addAction("Autoscroll Path")
-        action.setProperty(ID_PROP, ID_AUTOSCROLL)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_autoscroll"])
-
-        self.view_menu.addSeparator()
-
-        action = self.view_menu.addAction("Jump Zones")
-        action.setProperty(ID_PROP, ID_JUMPS)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_jumps"])
-
-        action = self.view_menu.addAction("&Grid lines")
-        action.setProperty(ID_PROP, ID_GRID_LINES)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_grid"])
-
-        action = self.view_menu.addAction("Resize Type")
-        action.setProperty(ID_PROP, ID_RESIZE_TYPE)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["draw_expansion"])
-
-        self.view_menu.addSeparator()
-
-        action = self.view_menu.addAction("&Block Transparency")
-        action.setProperty(ID_PROP, ID_TRANSPARENCY)
-        action.setCheckable(True)
-        action.setChecked(SETTINGS["block_transparency"])
-
-        self.view_menu.addSeparator()
-        self.view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
-
-        self.menuBar().addMenu(self.view_menu)
-        self.menuBar().addMenu(HelpMenu(self))
-
-        self.level_ref.data_changed.connect(self._on_level_data_changed)
 
         self.context_menu = LevelContextMenu(self.level_ref)
         self.context_menu.triggered.connect(self.on_menu)
 
         self.level_view = LevelView(self, self.level_ref, self.context_menu)
+
+        self.view_menu = ViewMenu(self.level_view)
+
+        self.menuBar().addMenu(self.view_menu)
+        self.menuBar().addMenu(HelpMenu(self))
+
+        self.level_ref.data_changed.connect(self._on_level_data_changed)
 
         self.scroll_panel = QScrollArea()
         self.scroll_panel.setWidgetResizable(True)
@@ -661,24 +575,6 @@ class FoundryMainWindow(MainWindow):
 
         return True
 
-    def on_screenshot(self, _) -> bool:
-        if self.level_view is None:
-            return False
-
-        recommended_file = f"{os.path.expanduser('~')}/{ROM.name} - {self.level_view.level_ref.name}.png"
-
-        pathname, _ = QFileDialog.getSaveFileName(
-            self, caption="Save Screenshot", dir=recommended_file, filter=IMG_FILE_FILTER
-        )
-
-        if not pathname:
-            return False
-
-        # Proceed loading the file chosen by the user
-        self.level_view.make_screenshot().save(pathname)
-
-        return True
-
     def update_title(self):
         if self.level_view.level_ref is not None and ROM is not None:
             title = f"{self.level_view.level_ref.name} - {ROM.name}"
@@ -908,7 +804,7 @@ class FoundryMainWindow(MainWindow):
 
         self.save_m3l(pathname, m3l_bytes)
 
-    def save_m3l(self, pathname: PathLike, m3l_bytes: bytearray):
+    def save_m3l(self, pathname: os.PathLike, m3l_bytes: bytearray):
         try:
             with open(pathname, "wb") as m3l_file:
                 m3l_file.write(m3l_bytes)
@@ -918,15 +814,7 @@ class FoundryMainWindow(MainWindow):
     def on_menu(self, action: QAction):
         item_id = action.property(ID_PROP)
 
-        if item_id in CHECKABLE_MENU_ITEMS:
-            self.on_menu_item_checked(action)
-            self.level_view.update()
-
-            # if setting a checkbox, keep the menu open
-            menu_of_action: QMenu = self.sender()
-            menu_of_action.exec()
-
-        elif item_id in self.context_menu.get_all_menu_item_ids():
+        if item_id in self.context_menu.get_all_menu_item_ids():
             if item_id == CMAction.REMOVE:
                 self.remove_selected_objects()
             elif item_id == CMAction.ADD_OBJECT:
@@ -1002,42 +890,6 @@ class FoundryMainWindow(MainWindow):
         self.level_view.remove_selected_objects()
         self.level_view.update()
         self.spinner_panel.disable_all()
-
-    def on_menu_item_checked(self, action: QAction):
-        item_id = action.property(ID_PROP)
-
-        checked = action.isChecked()
-
-        if item_id == ID_GRID_LINES:
-            self.level_view.draw_grid = checked
-        elif item_id == ID_TRANSPARENCY:
-            self.level_view.transparency = checked
-        elif item_id == ID_JUMPS:
-            self.level_view.draw_jumps = checked
-        elif item_id == ID_MARIO:
-            self.level_view.draw_mario = checked
-        elif item_id == ID_RESIZE_TYPE:
-            self.level_view.draw_expansions = checked
-        elif item_id == ID_JUMP_OBJECTS:
-            self.level_view.draw_jumps_on_objects = checked
-        elif item_id == ID_ITEM_BLOCKS:
-            self.level_view.draw_items_in_blocks = checked
-        elif item_id == ID_INVISIBLE_ITEMS:
-            self.level_view.draw_invisible_items = checked
-        elif item_id == ID_AUTOSCROLL:
-            self.level_view.draw_autoscroll = checked
-
-        SETTINGS["draw_mario"] = self.level_view.draw_mario
-        SETTINGS["draw_jumps"] = self.level_view.draw_jumps
-        SETTINGS["draw_grid"] = self.level_view.draw_grid
-        SETTINGS["draw_expansion"] = self.level_view.draw_expansions
-        SETTINGS["draw_jump_on_objects"] = self.level_view.draw_jumps_on_objects
-        SETTINGS["draw_items_in_blocks"] = self.level_view.draw_items_in_blocks
-        SETTINGS["draw_invisible_items"] = self.level_view.draw_invisible_items
-        SETTINGS["draw_autoscroll"] = self.level_view.draw_autoscroll
-        SETTINGS["block_transparency"] = self.level_view.transparency
-
-        save_settings()
 
     @undoable
     def on_spin(self, _):
