@@ -1,3 +1,5 @@
+from typing import List
+
 import pytest
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QMouseEvent, Qt
@@ -23,14 +25,23 @@ def worldview(rom, qtbot):
     return worldview
 
 
-def drag_from_to(worldview, start_point: QPoint, end_point: QPoint, modifiers: Qt.KeyboardModifier = Qt.NoModifier):
+def drag_from_to(
+    worldview,
+    start_point: QPoint,
+    end_point: QPoint,
+    points: List[QPoint] = None,
+    modifiers: Qt.KeyboardModifier = Qt.NoModifier,
+):
+    if points is None:
+        points = []
+
     # click left on a tile
     click_event = QMouseEvent(QMouseEvent.MouseButtonPress, start_point, Qt.LeftButton, Qt.LeftButton, modifiers)
     worldview.mousePressEvent(click_event)
 
-    # move the mouse, while holding down
-    move_event = QMouseEvent(QMouseEvent.MouseMove, end_point, Qt.LeftButton, Qt.NoButton, modifiers)
-    worldview.mouseMoveEvent(move_event)
+    for point in points + [end_point]:
+        move_event = QMouseEvent(QMouseEvent.MouseMove, point, Qt.NoButton, Qt.LeftButton, modifiers)
+        worldview.mouseMoveEvent(move_event)
 
     # let go of button, while out of bounds
     release_event = QMouseEvent(QMouseEvent.MouseButtonRelease, end_point, Qt.LeftButton, Qt.NoButton, modifiers)
@@ -115,6 +126,25 @@ def test_move_sprite(worldview):
 
     assert not isinstance(worldview._visible_object_at(start_pos), Sprite)
     assert isinstance(worldview._visible_object_at(end_pos), Sprite)
+
+
+def test_place_tiles_by_dragging(worldview):
+    start_pos = QPoint(0, 0) * worldview.block_length
+    end_pos = QPoint(15, 0) * worldview.block_length
+
+    tile_to_put = 0x20
+
+    worldview.on_put_tile(tile_to_put)
+
+    points = [QPoint(x * worldview.block_length, 0) for x in range(WORLD_MAP_SCREEN_WIDTH)]
+
+    drag_from_to(worldview, start_pos, end_pos, points)
+
+    for tile in worldview.world.objects:
+        assert tile.type == tile_to_put
+
+        if tile.x_position > 0:
+            break
 
 
 def test_fill_tiles(worldview):

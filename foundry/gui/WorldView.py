@@ -195,7 +195,7 @@ class WorldView(MainView):
 
             tile = self.world.object_at(x, y)
 
-            if tile != self._tile_to_put:
+            if tile is not None and tile != self._tile_to_put:
                 tile.change_type(self._tile_to_put.index)
                 self.update()
         elif self.mouse_mode == MODE_DRAG:
