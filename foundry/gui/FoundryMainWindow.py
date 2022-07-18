@@ -34,15 +34,7 @@ from foundry import (
     auto_save_level_data_path,
     auto_save_m3l_path,
     auto_save_rom_path,
-    discord_link,
-    enemy_compat_link,
-    feature_video_link,
-    get_current_version_name,
-    get_latest_version_name,
-    github_link,
     icon,
-    open_url,
-    releases_link,
 )
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
@@ -51,9 +43,7 @@ from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.AboutWindow import AboutDialog
 from foundry.gui.AutoScrollEditor import AutoScrollEditor
-from foundry.gui.BlockViewer import BlockViewer
 from foundry.gui.ContextMenu import CMAction, LevelContextMenu
 from foundry.gui.EnemySizeBar import EnemySizeBar
 from foundry.gui.HeaderEditor import HeaderEditor
@@ -68,11 +58,12 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectSetSelector import ObjectSetSelector
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
-from foundry.gui.ObjectViewer import ObjectViewer
-from foundry.gui.PaletteViewer import PaletteViewer, SidePalette
+from foundry.gui.PaletteViewer import SidePalette
 from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
+from foundry.gui.menus.help_menu import HelpMenu
+from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.settings import SETTINGS, save_settings
 from smb3parse.constants import TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
@@ -183,7 +174,8 @@ class FoundryMainWindow(MainWindow):
 
         self.menuBar().addMenu(self.level_menu)
 
-        self._setup_object_menu()
+        self._object_menu = ObjectMenu(self, self.level_ref)
+        self.menuBar().addMenu(self._object_menu)
 
         self.view_menu = QMenu("View")
         self.view_menu.triggered.connect(self.on_menu)
@@ -239,55 +231,9 @@ class FoundryMainWindow(MainWindow):
 
         self.view_menu.addSeparator()
         self.view_menu.addAction("&Save Screenshot of Level").triggered.connect(self.on_screenshot)
-        """
-        self.view_menu.Append(ID_BACKGROUND_FLOOR, "&Background & Floor", "")
-        self.view_menu.Append(ID_TOOLBAR, "&Toolbar", "")
-        self.view_menu.AppendSeparator()
-        self.view_menu.Append(ID_ZOOM, "&Zoom", "")
-        self.view_menu.AppendSeparator()
-        self.view_menu.Append(ID_USE_ROM_GRAPHICS, "&Use ROM Graphics", "")
-        self.view_menu.Append(ID_PALETTE, "&Palette", "")
-        self.view_menu.AppendSeparator()
-        self.view_menu.Append(ID_MORE, "&More", "")
-        """
 
         self.menuBar().addMenu(self.view_menu)
-
-        help_menu = QMenu("Help")
-        """
-        help_menu.Append(ID_ENEMY_COMPATIBILITY, "&Enemy Compatibility", "")
-        help_menu.Append(ID_TROUBLESHOOTING, "&Troubleshooting", "")
-        help_menu.AppendSeparator()
-        help_menu.Append(ID_PROGRAM_WEBSITE, "&Program Website", "")
-        help_menu.Append(ID_MAKE_A_DONATION, "&Make a Donation", "")
-        help_menu.AppendSeparator()
-        """
-        update_action = help_menu.addAction("Check for updates")
-        update_action.triggered.connect(self.on_check_for_update)
-
-        help_menu.addSeparator()
-
-        video_action = help_menu.addAction("Feature Video on YouTube")
-        video_action.triggered.connect(lambda: open_url(feature_video_link))
-
-        github_action = help_menu.addAction("Github Repository")
-        github_action.triggered.connect(lambda: open_url(github_link))
-
-        discord_action = help_menu.addAction("SMB3 Rom Hacking Discord")
-        discord_action.triggered.connect(lambda: open_url(discord_link))
-
-        help_menu.addSeparator()
-
-        enemy_compat_action = help_menu.addAction("Enemy Compatibility")
-        enemy_compat_action.triggered.connect(lambda: open_url(enemy_compat_link))
-
-        about_action = help_menu.addAction("&About")
-        about_action.triggered.connect(self.on_about)
-
-        self.menuBar().addMenu(help_menu)
-
-        self._block_viewer = None
-        self._object_viewer = None
+        self.menuBar().addMenu(HelpMenu(self))
 
         self.level_ref.data_changed.connect(self._on_level_data_changed)
 
@@ -466,52 +412,6 @@ class FoundryMainWindow(MainWindow):
         self.on_open_rom(path_to_rom)
 
         self.showMaximized()
-
-    def _setup_object_menu(self):
-        self._object_menu = QMenu("Objects")
-        self._object_menu.triggered.connect(self._on_object_menu)
-
-        self._view_blocks_action = self._object_menu.addAction("&View Blocks")
-        self._view_objects_action = self._object_menu.addAction("&View Objects")
-
-        self._object_menu.addSeparator()
-
-        self._view_palettes_action = self._object_menu.addAction("View Object Palettes")
-
-        self.menuBar().addMenu(self._object_menu)
-
-    def _on_object_menu(self, action: QAction):
-        if action is self._view_blocks_action:
-            if self._block_viewer is None:
-                self._block_viewer = BlockViewer(parent=self)
-
-            if self.level_ref.level is not None:
-                self._block_viewer.object_set = self.level_ref.object_set.number
-                self._block_viewer.palette_group = self.level_ref.object_palette_index
-
-            self._block_viewer.show()
-
-        elif action is self._view_objects_action:
-            if self._object_viewer is None:
-                self._object_viewer = ObjectViewer(parent=self)
-
-            if self.level_ref.level is not None:
-                object_set = self.level_ref.object_set.number
-                graphics_set = self.level_ref.graphic_set
-
-                self._object_viewer.set_object_and_graphic_set(object_set, graphics_set)
-
-                if len(self.level_view.get_selected_objects()) == 1:
-                    selected_object = self.level_view.get_selected_objects()[0]
-
-                    if isinstance(selected_object, LevelObject):
-                        self._object_viewer.set_object(
-                            selected_object.domain, selected_object.obj_index, selected_object.length
-                        )
-
-            self._object_viewer.show()
-        elif action is self._view_palettes_action:
-            PaletteViewer(self, self.level_ref).exec()
 
     def _on_new_level(self):
         if not self.safe_to_change():
@@ -1015,47 +915,6 @@ class FoundryMainWindow(MainWindow):
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
 
-    def on_check_for_update(self):
-        self.setCursor(Qt.WaitCursor)
-
-        current_version = get_current_version_name()
-
-        try:
-            latest_version = get_latest_version_name()
-        except ValueError as ve:
-            QMessageBox.critical(self, "Error while checking for updates", f"Error: {ve}")
-            self.setCursor(Qt.ArrowCursor)
-            return
-
-        if current_version != latest_version:
-            latest_release_url = f"{releases_link}/tag/{latest_version}"
-
-            go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest release")
-            go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
-
-            info_box = QMessageBox(
-                QMessageBox.Information, "New release available", f"New Version '{latest_version}' is available."
-            )
-        else:
-            nightly_release_url = f"{releases_link}/tag/nightly"
-
-            go_to_github_button = QPushButton(icon("external-link.svg"), "Check for nightly release")
-            go_to_github_button.clicked.connect(lambda: open_url(nightly_release_url))
-
-            info_box = QMessageBox(
-                QMessageBox.Information,
-                "No newer release",
-                f"Stable version '{current_version}' is up to date. But there might be a newer 'nightly' version "
-                f"available.",
-            )
-
-        info_box.addButton(QMessageBox.Cancel)
-        info_box.addButton(go_to_github_button, QMessageBox.AcceptRole)
-
-        info_box.exec()
-
-        self.setCursor(Qt.ArrowCursor)
-
     def on_menu(self, action: QAction):
         item_id = action.property(ID_PROP)
 
@@ -1352,11 +1211,6 @@ class FoundryMainWindow(MainWindow):
             self.level_view.create_object_at(q_point, level_object.domain, level_object.obj_index)
         elif isinstance(level_object, EnemyObject):
             self.level_view.add_enemy(level_object.obj_index, q_point, -1)
-
-    def on_about(self, _):
-        about = AboutDialog(self)
-
-        about.show()
 
     def closeEvent(self, event: QCloseEvent):
         super(FoundryMainWindow, self).closeEvent(event)
