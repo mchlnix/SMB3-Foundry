@@ -19,7 +19,6 @@ def test_object_icon(domain, obj_index, qtbot):
     widget.layout().addWidget(ObjectIcon(level_object))
     widget.layout().addStretch()
 
-    widget.show()
     widget.adjustSize()
     qtbot.wait_for_window_shown(widget)
 
@@ -28,5 +27,3 @@ def test_object_toolbar(qtbot):
     toolbar = ObjectToolBox(None)
 
     toolbar.update()
-
-    toolbar.show()
