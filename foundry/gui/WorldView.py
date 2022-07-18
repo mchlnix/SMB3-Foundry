@@ -2,8 +2,10 @@ from typing import List, Optional, Tuple
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, Qt
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QToolTip, QWidget
 
+from foundry import get_level_thumbnail
+from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.gfx.objects.LevelObject import LevelObject
 from foundry.game.gfx.objects.MapObject import MapObject
@@ -20,6 +22,7 @@ from foundry.gui.MainView import (
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
 from scribe.gui.world_view_context_menu import WorldContextMenu
+from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_HEIGHT
 
@@ -44,6 +47,8 @@ class WorldView(MainView):
         """Whether to draw positions marked as pipe entrances."""
         self.draw_locks = SETTINGS["draw_locks"]
         """Whether to highlight positions marked as having locks."""
+
+        self.display_level_preview = False
 
         self.changed = False
         self._tile_to_put: Block = get_worldmap_tile(WORLD_MAP_BLANK_TILE_ID)
@@ -174,6 +179,12 @@ class WorldView(MainView):
         self.set_mouse_mode(MODE_PLACE_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
+        if not self.display_level_preview or not self._set_level_thumbnail(event):
+            self.setCursor(Qt.ArrowCursor)
+
+            self.setToolTip("")
+            QToolTip.hideText()
+
         if self.read_only:
             return super(WorldView, self).mouseMoveEvent(event)
 
@@ -192,6 +203,38 @@ class WorldView(MainView):
             self._set_selection_end(event.pos())
 
         return super(WorldView, self).mouseMoveEvent(event)
+
+    def _set_level_thumbnail(self, event: QMouseEvent):
+        x, y = self._to_level_point(event.pos())
+
+        if self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
+            return False
+
+        if (level_pointer := self.world.level_pointer_at(x, y)) is None:
+            return False
+
+        self.setCursor(Qt.PointingHandCursor)
+
+        try:
+            level_name = self.world.level_name_at_position(x, y)
+
+            object_set_name = OBJECT_SET_NAMES[level_pointer.data.object_set]
+
+            image_data = get_level_thumbnail(
+                level_pointer.data.object_set, level_pointer.data.level_address, level_pointer.data.enemy_address
+            )
+
+            self.setToolTip(
+                f"<b>{level_name}</b><br/>"
+                f"<u>Type:</u> {object_set_name} "
+                f"<u>Objects:</u> {level_pointer.data.level_address} "
+                f"<u>Enemies:</u> {level_pointer.data.enemy_address}<br/>"
+                f"<img src='data:image/png;base64,{image_data}'>"
+            )
+
+            return True
+        except ValueError:
+            return False
 
     def _on_right_mouse_button_down(self, event: QMouseEvent):
         pass

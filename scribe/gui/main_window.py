@@ -72,21 +72,25 @@ class ScribeMainWindow(MainWindow):
         self.view_menu = QMenu("View")
         self.view_menu.triggered.connect(self.on_view_menu)
 
-        self.grid_action = self.view_menu.addAction("Show Grid")
+        self.grid_action = self.view_menu.addAction("Grid")
         self.grid_action.setCheckable(True)
         self.grid_action.setChecked(self.world_view.draw_grid)
 
         self.view_menu.addSeparator()
 
-        self.level_pointer_action = self.view_menu.addAction("Show Level Pointers")
+        self.level_pointer_action = self.view_menu.addAction("Level Pointers")
         self.level_pointer_action.setCheckable(True)
         self.level_pointer_action.setChecked(self.world_view.draw_level_pointers)
 
-        self.sprite_action = self.view_menu.addAction("Show Overworld Sprites")
+        self.level_preview_action = self.view_menu.addAction("Tooltip with Level Preview")
+        self.level_preview_action.setCheckable(True)
+        self.level_preview_action.setChecked(self.world_view.display_level_preview)
+
+        self.sprite_action = self.view_menu.addAction("Overworld Sprites")
         self.sprite_action.setCheckable(True)
         self.sprite_action.setChecked(self.world_view.draw_sprites)
 
-        self.starting_point_action = self.view_menu.addAction("Show Starting Point")
+        self.starting_point_action = self.view_menu.addAction("Starting Point")
         self.starting_point_action.setCheckable(True)
         self.starting_point_action.setChecked(self.world_view.draw_start)
 
@@ -100,7 +104,7 @@ class ScribeMainWindow(MainWindow):
 
         self.view_menu.addSeparator()
 
-        self.lock_bridge_action = self.view_menu.addAction("Show Lock and Bridge Events")
+        self.lock_bridge_action = self.view_menu.addAction("Lock and Bridge Events")
         self.lock_bridge_action.setCheckable(True)
         self.lock_bridge_action.setChecked(self.world_view.draw_locks)
 
@@ -204,6 +208,8 @@ class ScribeMainWindow(MainWindow):
             self.world_view.draw_grid = action.isChecked()
         elif action is self.level_pointer_action:
             self.world_view.draw_level_pointers = action.isChecked()
+        elif action is self.level_preview_action:
+            self.world_view.display_level_preview = action.isChecked()
         elif action is self.sprite_action:
             self.world_view.draw_sprites = action.isChecked()
         elif action is self.starting_point_action:

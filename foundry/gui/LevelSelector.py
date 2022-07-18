@@ -1,4 +1,4 @@
-from PySide6.QtCore import QBuffer, QIODevice, QMargins, QSize, Signal, SignalInstance
+from PySide6.QtCore import QMargins, QSize, Signal, SignalInstance
 from PySide6.QtGui import QCloseEvent, QKeyEvent, QMouseEvent, Qt
 from PySide6.QtWidgets import (
     QComboBox,
@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QScrollBar,
     QTabWidget,
-    QToolTip,
     QVBoxLayout,
     QWidget,
 )
@@ -20,7 +19,6 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.LevelView import LevelView
 from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
@@ -253,71 +251,16 @@ class WorldMapLevelSelect(QScrollArea):
         level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
 
         self.world_view = WorldView(self, level_ref, None)
+
         self.world_view.setMouseTracking(True)
         self.world_view.draw_start = False
         self.world_view.read_only = True
+        self.world_view.display_level_preview = True
         self.world_view.zoom_in()
 
         self.setWidget(self.world_view)
 
         self.setMouseTracking(True)
-
-    def mouseMoveEvent(self, event: QMouseEvent):
-        x, y = self.world_view.mapFromParent(event.pos()).toTuple()
-
-        x //= Block.WIDTH * self.world_view.zoom
-        y //= Block.HEIGHT * self.world_view.zoom
-
-        y += FIRST_VALID_ROW
-
-        try:
-            level_pointer = self.world.level_pointer_at(x, y)
-
-            if level_pointer is None:
-                self.setCursor(Qt.ArrowCursor)
-
-                self.setToolTip("")
-                QToolTip.hideText()
-            elif self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
-                pass
-            else:
-                self.setCursor(Qt.PointingHandCursor)
-
-                level_name = self.world.level_name_at_position(x, y)
-
-                object_set_name = OBJECT_SET_ITEMS[level_pointer.data.object_set].split(" ", 1)[1]
-
-                image_data = self._get_level_thumbnail(
-                    level_pointer.data.object_set, level_pointer.data.level_address, level_pointer.data.enemy_address
-                )
-
-                self.setToolTip(
-                    f"<b>{level_name}</b><br/>"
-                    f"<u>Type:</u> {object_set_name} "
-                    f"<u>Objects:</u> {level_pointer.data.level_address} "
-                    f"<u>Enemies:</u> {level_pointer.data.enemy_address}<br/>"
-                    f"<img src='data:image/png;base64,{image_data}'>"
-                )
-        except ValueError:
-            pass
-
-        return super(WorldMapLevelSelect, self).mouseMoveEvent(event)
-
-    def _get_level_thumbnail(self, object_set, layout_address, enemy_address):
-        level_ref = LevelRef()
-        level_ref.load_level("", layout_address, enemy_address, object_set)
-        level_view = LevelView(self, level_ref, None)
-        level_view.read_only = True
-        level_view.zoom_out()
-        level_view.zoom_out()
-        level_pixmap = level_view.grab(level_view.rect())
-
-        buffer = QBuffer()
-        buffer.open(QIODevice.WriteOnly)
-        level_pixmap.save(buffer, "PNG", quality=100)
-        image_data = bytes(buffer.data().toBase64()).decode()
-
-        return image_data
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         x, y = self.world_view.mapFromParent(event.pos()).toTuple()

@@ -2,13 +2,12 @@ from itertools import product
 from typing import Tuple
 
 from PySide6.QtCore import QPoint, QRect
-from PySide6.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
+from PySide6.QtGui import QBrush, QColor, QPainter, QPen, Qt
 
-from foundry import data_dir
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, bg_color_for_object_set, load_palette_group
-from foundry.game.gfx.drawable import load_from_png, make_image_selected
+from foundry.game.gfx.drawable import load_from_png, make_image_selected, mario_actions
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.EnemyItem import EnemyObject
 from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
@@ -379,10 +378,6 @@ class LevelDrawer:
                 painter.restore()
 
     def _draw_mario(self, painter: QPainter, level: Level):
-        mario_actions = QImage(str(data_dir / "mario.png"))
-
-        mario_actions.convertTo(QImage.Format_RGBA8888)
-
         mario_position = QPoint(*level.header.mario_position()) * self.block_length
 
         x_offset = 32 * level.start_action
