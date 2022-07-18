@@ -50,9 +50,6 @@ class AirshipTravelPoint(ObjectLike):
         self.pos.y = y
         self.pos.screen = x // WORLD_MAP_SCREEN_WIDTH
 
-    def move_by(self, dx, dy):
-        pass
-
     def get_position(self) -> Tuple[int, int]:
         return self.pos.xy
 

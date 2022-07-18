@@ -50,9 +50,12 @@ class ObjectLike(abc.ABC):
     def set_position(self, x, y):
         pass
 
-    @abc.abstractmethod
     def move_by(self, dx, dy):
-        pass
+        x, y = self.get_position()
+        new_x = x + dx
+        new_y = y + dy
+
+        self.set_position(new_x, new_y)
 
     @abc.abstractmethod
     def get_position(self) -> Tuple[int, int]:
