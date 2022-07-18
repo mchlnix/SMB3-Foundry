@@ -50,9 +50,6 @@ class WorldMap(LevelLike):
 
         self.objects: List[MapObject] = []
 
-        self.selected_level_pointers = []
-        self.selected_sprites = []
-
         self._load_objects()
         self._load_sprites()
         self._load_level_pointers()
@@ -128,10 +125,6 @@ class WorldMap(LevelLike):
 
         self.objects.sort(key=self._array_index)
 
-    def select_level_pointers(self, indexes: List[int]):
-        self.selected_level_pointers = indexes
-        self._signal_emitter.needs_redraw.emit()
-
     def move_level_pointers(self, source_index: int, target_index: int):
         if source_index == target_index:
             return
@@ -143,10 +136,6 @@ class WorldMap(LevelLike):
             level_pointer.data.change_index(index)
 
         self.changed = True
-
-    def select_sprites(self, indexes: List[int]):
-        self.selected_sprites = indexes
-        self._signal_emitter.needs_redraw.emit()
 
     def move_sprites(self, source_index: int, target_index: int):
         if source_index == target_index:

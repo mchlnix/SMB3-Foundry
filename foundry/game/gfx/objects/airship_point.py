@@ -27,6 +27,7 @@ AIRSHIP_TRAVEL_POINTS = [
 class AirshipTravelPoint(ObjectLike):
     def __init__(self, pos, index):
         super(AirshipTravelPoint, self).__init__()
+
         self.pos = pos
         self.index = index
 

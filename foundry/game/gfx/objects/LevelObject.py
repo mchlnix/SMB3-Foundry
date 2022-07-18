@@ -92,6 +92,8 @@ class LevelObject(ObjectLike):
         index: int,
         size_minimal: bool = False,
     ):
+        super(LevelObject, self).__init__()
+
         self.object_set = ObjectSet(object_set)
 
         self.graphics_set = graphics_set

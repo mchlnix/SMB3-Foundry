@@ -1,6 +1,6 @@
 from typing import List
 
-from PySide6.QtCore import QAbstractItemModel, QModelIndex
+from PySide6.QtCore import QAbstractItemModel, QModelIndex, Signal
 from PySide6.QtWidgets import (
     QComboBox,
     QHeaderView,
@@ -17,6 +17,8 @@ from foundry.gui.Spinner import Spinner
 
 
 class TableWidget(QTableWidget):
+    selection_changed = Signal(int)
+
     def __init__(self, level_ref: LevelRef):
         super(TableWidget, self).__init__()
 
@@ -30,6 +32,8 @@ class TableWidget(QTableWidget):
         self.setSelectionMode(self.SingleSelection)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
+        self.itemSelectionChanged.connect(lambda: self.selection_changed.emit(self.selected_row))
+
     def set_headers(self, headers: List[str]):
         self.setColumnCount(len(headers))
 
@@ -40,8 +44,11 @@ class TableWidget(QTableWidget):
         return self.level_ref.level
 
     @property
-    def selected_rows(self):
-        return [index.row() for index in self.selectedIndexes()]
+    def selected_row(self):
+        if self.selectedIndexes():
+            return self.selectedIndexes()[0].row()
+        else:
+            return -1
 
 
 class DropdownDelegate(QStyledItemDelegate):

@@ -13,6 +13,8 @@ KEY_IMG = load_from_png(63, 2)
 
 class Lock(ObjectLike):
     def __init__(self, fortress_fx_data: FortressFXData):
+        super(Lock, self).__init__()
+
         self.data = fortress_fx_data
 
         self.replacement_tile = get_worldmap_tile(self.data.replacement_tile_index)

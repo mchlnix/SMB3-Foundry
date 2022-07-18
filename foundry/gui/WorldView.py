@@ -167,7 +167,6 @@ class WorldView(MainView):
 
         elif new_mode == MODE_FREE:
             self._tile_to_put = get_worldmap_tile(WORLD_MAP_BLANK_TILE_ID)
-            self.selected_object = None
 
             self._object_was_selected_on_last_click = False
             self.setCursor(Qt.ArrowCursor)
@@ -235,9 +234,6 @@ class WorldView(MainView):
             return True
         except ValueError:
             return False
-
-    def _on_right_mouse_button_down(self, event: QMouseEvent):
-        pass
 
     def _on_right_mouse_button_up(self, event):
         self.set_mouse_mode(MODE_FREE, event)
@@ -329,6 +325,9 @@ class WorldView(MainView):
         if obj and obj.selected:
             pass
         else:
+            if self.selected_object is not None:
+                self.selected_object.selected = False
+
             self.selected_object = obj
             obj.selected = True
 
@@ -411,6 +410,21 @@ class WorldView(MainView):
 
     def _set_selection_end(self, position, always_replace_selection=False):
         return super(WorldView, self)._set_selection_end(position, True)
+
+    def select_object_like(self, obj: ObjectLike):
+        if self.selected_object is not None:
+            self.selected_object.selected = False
+
+        self.selected_object = obj
+        self.selected_object.selected = True
+
+        self.update()
+
+    def select_sprite(self, index: int):
+        self.select_object_like(self.world.sprites[index])
+
+    def select_level_pointer(self, index: int):
+        self.select_object_like(self.world.level_pointers[index])
 
     def remove_selected_objects(self):
         for obj in self.level_ref.selected_objects:

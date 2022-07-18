@@ -10,6 +10,8 @@ from smb3parse.data_points import LevelPointerData
 
 class LevelPointer(ObjectLike):
     def __init__(self, level_pointer_data: LevelPointerData):
+        super(LevelPointer, self).__init__()
+
         self.data = level_pointer_data
 
     def render(self):

@@ -10,6 +10,8 @@ class Jump(ObjectLike):
     SIZE = 3  # bytes
 
     def __init__(self, data):
+        super(Jump, self).__init__()
+
         self.data = data
 
         # domain: 0b1110

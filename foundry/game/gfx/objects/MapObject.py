@@ -136,6 +136,8 @@ map_object_names = {
 # TODO sort out x_position and y_position
 class MapObject(ObjectLike):
     def __init__(self, block, pos: Position):
+        super(MapObject, self).__init__()
+
         self.pos = pos
 
         self.block = block

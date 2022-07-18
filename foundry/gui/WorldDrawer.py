@@ -91,15 +91,11 @@ class WorldDrawer:
 
     def _draw_level_pointers(self, painter: QPainter, world: WorldMap):
         for index, level_pointer in enumerate(world.level_pointers):
-            selected = index in world.selected_level_pointers
-
-            level_pointer.draw(painter, self.block_length, False, selected)
+            level_pointer.draw(painter, self.block_length, False, level_pointer.selected)
 
     def _draw_sprites(self, painter: QPainter, world: WorldMap):
         for sprite in world.sprites:
-            selected = sprite.data.index in world.selected_sprites
-
-            sprite.draw(painter, self.block_length, False, selected)
+            sprite.draw(painter, self.block_length, False, sprite.selected)
 
     def _draw_start_position(self, painter: QPainter, world: WorldMap):
         start_pos = world.internal_world_map.start_pos
