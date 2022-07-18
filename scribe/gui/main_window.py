@@ -1,10 +1,10 @@
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QAction, QActionGroup
-from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMenu, QMessageBox, QScrollArea
+from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QScrollArea
 
 from foundry import ROM_FILE_FILTER
 from foundry.game.File import ROM
-from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.MainWindow import MainWindow
 from foundry.gui.WorldView import WorldView
 from scribe.gui.edit_world_info import EditWorldInfo
 from scribe.gui.tool_window.tool_window import ToolWindow
@@ -15,11 +15,9 @@ from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
-class MainWindow(QMainWindow):
+class ScribeMainWindow(MainWindow):
     def __init__(self, path_to_rom: str):
-        super(MainWindow, self).__init__()
-
-        self.level_ref = LevelRef()
+        super(ScribeMainWindow, self).__init__()
 
         self.on_open_rom(path_to_rom)
 
@@ -30,6 +28,8 @@ class MainWindow(QMainWindow):
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.world_view)
 
+        self.setCentralWidget(self.scroll_area)
+
         self._setup_file_menu()
         self._setup_edit_menu()
         self._setup_view_menu()
@@ -39,8 +39,6 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(self.edit_menu)
         self.menuBar().addMenu(self.view_menu)
         self.menuBar().addMenu(self.level_menu)
-
-        self.setCentralWidget(self.scroll_area)
 
         self.tool_window = ToolWindow(self, self.level_ref)
         self.tool_window.tile_selected.connect(self.world_view.on_put_tile)
@@ -122,6 +120,10 @@ class MainWindow(QMainWindow):
 
             level_menu_action_group.addAction(action)
 
+        self.level_menu.addSeparator()
+
+        self.reload_world_action = self.level_menu.addAction("Reload Current World")
+
         self.level_menu.actions()[0].trigger()
 
     def on_open_rom(self, path_to_rom="") -> bool:
@@ -142,6 +144,9 @@ class MainWindow(QMainWindow):
         return True
 
     def load_level(self, world_number: int):
+        if not self.safe_to_change():
+            return
+
         world = SMB3WorldMap.from_world_number(ROM(), world_number)
 
         self.level_ref.load_level("World", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
@@ -167,14 +172,6 @@ class MainWindow(QMainWindow):
         if not is_save_as:
             self.level_ref.level.changed = False
             self.level_ref.data_changed.emit()
-
-    def _save_current_changes_to_file(self, pathname: str, set_new_path):
-        self.level_ref.save_to_rom()
-
-        try:
-            ROM().save_to_file(pathname, set_new_path)
-        except IOError as exp:
-            QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
 
     def on_file_menu(self, action: QAction):
         if action is self.open_rom_action:
@@ -230,7 +227,11 @@ class MainWindow(QMainWindow):
         self.world_view.update()
 
     def on_level_menu(self, action: QAction):
-        self.load_level(self.level_menu.actions().index(action) + 1)
+        if action is self.reload_world_action:
+            self.load_level(self.level_ref.data.index + 1)
+        else:
+            self.load_level(self.level_menu.actions().index(action) + 1)
+
         self._resize_for_level()
 
     def _resize_for_level(self):

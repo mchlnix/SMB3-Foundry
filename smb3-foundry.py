@@ -21,7 +21,7 @@ if hasattr(sys, "_MEIPASS"):
     logger.info(f"Changing current dir to {getattr(sys, '_MEIPASS')}")
     os.chdir(getattr(sys, "_MEIPASS"))
 
-from foundry.gui.MainWindow import MainWindow  # noqa
+from foundry.gui.FoundryMainWindow import FoundryMainWindow  # noqa
 
 
 def main(path_to_rom):
@@ -39,7 +39,7 @@ def main(path_to_rom):
                 None, "Auto Save recovered", "Don't forget to save the loaded ROM under a new name!"
             )
 
-    MainWindow(path_to_rom)
+    FoundryMainWindow(path_to_rom)
     app.exec()
 
     save_settings()

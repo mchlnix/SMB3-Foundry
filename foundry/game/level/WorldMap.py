@@ -48,8 +48,6 @@ class WorldMap(LevelLike):
 
         self.size = 0, 0
 
-        self.world = 0
-
         self.objects: List[MapObject] = []
 
         self.selected_level_pointers = []
@@ -144,6 +142,8 @@ class WorldMap(LevelLike):
         for index, level_pointer in enumerate(self.level_pointers):
             level_pointer.data.change_index(index)
 
+        self.changed = True
+
     def select_sprites(self, indexes: List[int]):
         self.selected_sprites = indexes
         self._signal_emitter.needs_redraw.emit()
@@ -157,6 +157,8 @@ class WorldMap(LevelLike):
 
         for index, sprite in enumerate(self.sprites):
             sprite.data.change_index(index)
+
+        self.changed = True
 
     def move_tile(self, source_index: int, target_index: int, obj_index: int):
         if source_index == target_index:
@@ -322,7 +324,7 @@ class WorldMap(LevelLike):
     def fully_loaded(self):
         return True
 
-    def save_to_rom(self, rom: Optional[ROM] = None):
+    def save_to_rom(self):
         self._write_tile_data()
 
         self.data.write_back()

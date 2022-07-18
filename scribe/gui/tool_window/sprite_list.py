@@ -62,6 +62,7 @@ class SpriteList(TableWidget):
         else:
             return
 
+        self.world.changed = True
         self.world.data_changed.emit()
 
     def update_content(self):

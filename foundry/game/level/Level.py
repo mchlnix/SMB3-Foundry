@@ -744,6 +744,10 @@ class Level(LevelLike):
 
         self._load_level_data(object_bytes, enemy_bytes)
 
+    def save_to_rom(self):
+        for offset, data in self.to_bytes():
+            ROM().bulk_write(data, offset)
+
     def to_bytes(self) -> LevelByteData:
         data = bytearray()
 
