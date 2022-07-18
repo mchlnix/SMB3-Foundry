@@ -178,7 +178,10 @@ class WorldView(MainView):
         self.set_mouse_mode(MODE_PLACE_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        if not self.display_level_preview or not self._set_level_thumbnail(event):
+        should_display_level = self.mouse_mode == MODE_FREE and self.display_level_preview
+
+        if should_display_level and not self._set_level_thumbnail(event):
+            # clear tooltip if supposed to show one, but no level thumbnail was available (e.g. no level there)
             self.setCursor(Qt.ArrowCursor)
 
             self.setToolTip("")
@@ -204,6 +207,9 @@ class WorldView(MainView):
         return super(WorldView, self).mouseMoveEvent(event)
 
     def _set_level_thumbnail(self, event: QMouseEvent):
+        if self.mouse_mode != MODE_FREE:
+            return False
+
         x, y = self._to_level_point(event.pos())
 
         if self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
@@ -325,11 +331,7 @@ class WorldView(MainView):
         if obj and obj.selected:
             pass
         else:
-            if self.selected_object is not None:
-                self.selected_object.selected = False
-
-            self.selected_object = obj
-            obj.selected = True
+            self.select_object_like(obj)
 
         self.set_mouse_mode(MODE_DRAG, event)
 
