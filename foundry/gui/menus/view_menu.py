@@ -9,7 +9,7 @@ from foundry.gui.settings import SETTINGS, save_settings
 
 
 class ViewMenu(QMenu):
-    def __init__(self, level_view, title="View"):
+    def __init__(self, level_view, title="&View"):
         super(ViewMenu, self).__init__(title)
 
         self.triggered.connect(self._on_trigger)

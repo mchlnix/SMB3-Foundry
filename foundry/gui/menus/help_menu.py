@@ -16,7 +16,7 @@ from foundry.gui.AboutWindow import AboutDialog
 
 
 class HelpMenu(QMenu):
-    def __init__(self, parent, title="Help"):
+    def __init__(self, parent, title="&Help"):
         super(HelpMenu, self).__init__(title)
 
         self._parent = parent

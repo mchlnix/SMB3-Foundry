@@ -11,7 +11,7 @@ from foundry.gui.PaletteViewer import PaletteViewer
 
 
 class ObjectMenu(QMenu):
-    def __init__(self, level_ref: LevelRef, title="Objects"):
+    def __init__(self, level_ref: LevelRef, title="&Objects"):
         super(ObjectMenu, self).__init__(title)
 
         self._level_ref = level_ref

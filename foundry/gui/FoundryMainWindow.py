@@ -76,7 +76,7 @@ class FoundryMainWindow(MainWindow):
         self.setWindowIcon(icon("foundry.ico"))
         self.setStyleSheet(SETTINGS["gui_style"])
 
-        file_menu = QMenu("File")
+        file_menu = QMenu("&File")
 
         open_rom_action = file_menu.addAction("&Open ROM")
         open_rom_action.triggered.connect(self.on_open_rom)
@@ -123,7 +123,7 @@ class FoundryMainWindow(MainWindow):
         edit_menu.Append(ID_LIMIT_SIZE, "&Limit Size", "")
         """
 
-        self.level_menu = QMenu("Level")
+        self.level_menu = QMenu("&Level")
 
         self.select_level_action = self.level_menu.addAction("&Select Level")
         self.select_level_action.triggered.connect(self.open_level_selector)
