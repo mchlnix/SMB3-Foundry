@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, Qt
+from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, QUndoStack, Qt
 from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import get_level_thumbnail
@@ -20,6 +20,7 @@ from foundry.gui.MainView import (
 )
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
+from scribe.gui.commands import MoveTile
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
 from smb3parse.data_points import Position
@@ -135,6 +136,10 @@ class WorldView(MainView):
     @draw_locks.setter
     def draw_locks(self, value):
         self.drawer.draw_locks = value
+
+    @property
+    def undo_stack(self) -> QUndoStack:
+        return self.window().findChild(QUndoStack, "undo_stack")
 
     @property
     def world(self) -> WorldMap:
@@ -362,24 +367,8 @@ class WorldView(MainView):
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
             drag_end_point = self._to_level_point(event.pos())
-            start_x, start_y = self.drag_start_point
-            end_x, end_y = drag_end_point
 
-            dx = end_x - start_x
-            dy = end_y - start_y
-
-            for selected_obj in reversed(self.get_selected_objects()):
-                if isinstance(selected_obj, MapTile):
-                    end_pos = Position.from_xy(*selected_obj.get_position())
-                    selected_obj.move_by(-dx, -dy)
-
-                    start_pos = Position.from_xy(*selected_obj.get_position())
-
-                    # we don't actually move the map position in the end, just change the type at both positions
-
-                    # if we are moving only one tile, then move it back, if more, reset them
-                    if len(self.get_selected_objects()) > 1 or self.level_ref.point_in(*end_pos.xy):
-                        self.world.move_tile(start_pos.tile_data_index, end_pos.tile_data_index, selected_obj.type)
+            self._move_selected_tiles(drag_end_point)
 
             if self.drag_start_point != drag_end_point:
                 self._stop_drag()
@@ -402,6 +391,36 @@ class WorldView(MainView):
                 self.select_objects([obj], replace_selection=True)
 
         self.set_mouse_mode(MODE_FREE, event)
+
+    def _move_selected_tiles(self, drag_end_point: QPoint):
+        start_x, start_y = self.drag_start_point
+        end_x, end_y = drag_end_point
+
+        dx = end_x - start_x
+        dy = end_y - start_y
+
+        self.undo_stack.beginMacro("Move Tiles")
+        old_objects = self.world.objects.copy()
+
+        for selected_obj in reversed(self.get_selected_objects()):
+            if not isinstance(selected_obj, MapTile):
+                continue
+
+            end = selected_obj.pos.copy()
+
+            selected_obj.move_by(-dx, -dy)
+
+            start = selected_obj.pos.copy()
+
+            # we don't actually move the map position in the end, just change the type at both positions
+
+            # if we are moving only one tile, then move it back, if more, reset them
+            if len(self.get_selected_objects()) > 1 or self.world.point_in(*end.xy):
+                cmd = MoveTile(self.world, start, old_objects[start.tile_data_index].type, end)
+
+                self.undo_stack.push(cmd)
+
+        self.undo_stack.endMacro()
 
     def _stop_drag(self):
         if self.dragging_happened:

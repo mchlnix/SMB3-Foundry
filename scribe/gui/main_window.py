@@ -1,5 +1,5 @@
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QAction, QActionGroup
+from PySide6.QtGui import QAction, QActionGroup, QUndoStack
 from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QScrollArea
 
 from foundry import ROM_FILE_FILTER
@@ -27,6 +27,9 @@ class ScribeMainWindow(MainWindow):
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.world_view)
+
+        self.undo_stack = QUndoStack(self)
+        self.undo_stack.setObjectName("undo_stack")
 
         self.setCentralWidget(self.scroll_area)
 
@@ -62,9 +65,14 @@ class ScribeMainWindow(MainWindow):
         self.edit_menu = QMenu("Edit")
         self.edit_menu.triggered.connect(self.on_edit_menu)
 
-        self.delete_tiles_action = self.edit_menu.addAction("Delete All Tiles")
-        self.delete_level_pointers_action = self.edit_menu.addAction("Delete All Level Pointers")
-        self.delete_sprites_action = self.edit_menu.addAction("Delete All Sprites")
+        self.edit_menu.addAction(self.undo_stack.createUndoAction(self.edit_menu))
+        self.edit_menu.addAction(self.undo_stack.createRedoAction(self.edit_menu))
+
+        self.edit_menu.addSeparator()
+
+        self.delete_tiles_action = self.edit_menu.addAction("Delete All &Tiles")
+        self.delete_level_pointers_action = self.edit_menu.addAction("Delete All Level &Pointers")
+        self.delete_sprites_action = self.edit_menu.addAction("Delete All &Sprites")
 
         self.edit_menu.addSeparator()
 

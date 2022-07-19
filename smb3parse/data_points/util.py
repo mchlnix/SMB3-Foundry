@@ -40,6 +40,9 @@ class Position:
     def xy(self):
         return self.screen * WORLD_MAP_SCREEN_WIDTH + self.x, self.y
 
+    def copy(self):
+        return Position.from_xy(*self.xy)
+
     @staticmethod
     def from_xy(x, y):
         """

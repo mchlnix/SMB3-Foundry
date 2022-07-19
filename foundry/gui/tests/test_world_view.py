@@ -6,23 +6,34 @@ from PySide6.QtGui import QMouseEvent, Qt
 
 import foundry
 from foundry.game.gfx.objects import Sprite
-from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.WorldView import WorldView
+from scribe.gui.main_window import ScribeMainWindow
+from scribe.gui.tool_window.tool_window import ToolWindow
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1
-from smb3parse.data_points import WorldMapData
 from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_SCREEN_WIDTH
-from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
 @pytest.fixture
-def worldview(rom, qtbot):
-    world_1 = WorldMapData(rom, 0)
-    level_ref = LevelRef()
-    level_ref.load_level("", world_1.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+def main_window(rom, qtbot):
+    # mock the rom loading, since it is a modal dialog. the rom is loaded in conftest.py
+    ScribeMainWindow.on_open_rom = lambda *_: True
+    ScribeMainWindow.showMaximized = lambda _: None  # don't open automatically
+    ScribeMainWindow.show = lambda _: None  # don't open automatically
+    ScribeMainWindow.safe_to_change = lambda _: True  # don't ask for confirmation on changed level
+    ToolWindow.show = lambda _: None
 
-    worldview = WorldView(None, level_ref)
+    main_window = ScribeMainWindow("")
 
-    return worldview
+    main_window.level_menu.actions()[0].trigger()
+
+    main_window.world_view.zoom_out()
+    main_window.world_view.zoom_out()
+
+    return main_window
+
+
+@pytest.fixture
+def worldview(main_window):
+    return main_window.world_view
 
 
 def drag_from_to(

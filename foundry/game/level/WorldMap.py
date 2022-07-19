@@ -9,7 +9,7 @@ from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects import AirshipTravelPoint, LevelPointer, Lock, MapTile, Sprite
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.data_points import Position
-from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID
+from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.levels.world_map import (
     WORLD_MAP_HEIGHT,
     WorldMap as _WorldMap,
@@ -144,17 +144,6 @@ class WorldMap(LevelLike):
             sprite.data.change_index(index)
 
         self.changed = True
-
-    def move_tile(self, source_index: int, target_index: int, obj_index: int):
-        if source_index == target_index:
-            return
-
-        source_obj = self.objects[source_index]
-        source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
-
-        if target_index < len(self.objects):
-            target_obj = self.objects[target_index]
-            target_obj.change_type(obj_index)
 
     @property
     def q_size(self):
