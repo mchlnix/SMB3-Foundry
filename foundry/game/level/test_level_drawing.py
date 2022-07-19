@@ -104,9 +104,15 @@ def test_level(level_info, qtbot):
 
     level_view = LevelView(None, level_ref, LevelContextMenu(level_ref))
     level_view.transparency = transparent
-    level_view.draw_jumps = False
-    level_view.draw_grid = False
+    level_view.draw_jumps = True
+    level_view.draw_grid = True
     level_view.draw_autoscroll = True
+
+    level_view.draw_expansions = True
+    level_view.draw_mario = True
+    level_view.draw_jumps_on_objects = True
+    level_view.draw_items_in_blocks = True
+    level_view.draw_invisible_items = True
 
     rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16)
 
