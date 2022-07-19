@@ -11,7 +11,6 @@ class MapObject(ObjectLike, ABC):
     def __init__(self):
         super(MapObject, self).__init__()
 
-        self.rect = QRect(0, 0, 1, 1)
         self.name = type(self).__name__
 
     @property
@@ -37,6 +36,10 @@ class MapObject(ObjectLike, ABC):
     @abc.abstractmethod
     def get_position(self):
         pass
+
+    @property
+    def rect(self):
+        return QRect(self.x_position, self.y_position, 1, 1)
 
     def move_by(self, dx, dy):
         self.set_position(self.x_position + dx, self.y_position + dy)

@@ -133,7 +133,6 @@ map_object_names = {
 }
 
 
-# TODO sort out x_position and y_position
 class MapTile(MapObject):
     def __init__(self, block, pos: Position):
         super(MapTile, self).__init__()
