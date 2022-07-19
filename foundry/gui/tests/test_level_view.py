@@ -2,7 +2,7 @@ import pytest
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QWheelEvent, Qt
 
-from foundry.game.gfx.objects import EnemyObject, LevelObject
+from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.LevelView import LevelView
 from foundry.gui.settings import SETTINGS
@@ -27,7 +27,7 @@ def test_object_at(level_view: LevelView, qtbot, coordinates, obj_index, domain,
 
     level_object = level_view.object_at(QPoint(*screen_coordinates))
 
-    assert isinstance(level_object, (LevelObject, EnemyObject))
+    assert isinstance(level_object, (LevelObject, EnemyItem))
 
     assert level_object
     assert level_object.obj_index == obj_index

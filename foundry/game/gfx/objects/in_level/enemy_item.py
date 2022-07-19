@@ -11,9 +11,9 @@ from foundry.game.gfx.objects.object_like import ObjectLike
 from smb3parse.objects.object_set import ENEMY_ITEM_GRAPHICS_SET, ENEMY_ITEM_OBJECT_SET
 
 
-class EnemyObject(ObjectLike):
+class EnemyItem(ObjectLike):
     def __init__(self, data, png_data, palette_group: PaletteGroup):
-        super(EnemyObject, self).__init__()
+        super(EnemyItem, self).__init__()
 
         self.is_4byte = False
         self.is_single_block = True

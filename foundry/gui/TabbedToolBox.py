@@ -3,7 +3,7 @@ from typing import Union
 from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtWidgets import QScrollArea, QTabWidget
 
-from foundry.game.gfx.objects import EnemyObject, LevelObject
+from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.gui.ObjectToolBox import ObjectIcon, ObjectToolBox
 
 
@@ -81,7 +81,7 @@ class TabbedToolBox(QTabWidget):
             pass
         elif isinstance(level_object, LevelObject):
             self.show_level_object_tab()
-        elif isinstance(level_object, EnemyObject):
+        elif isinstance(level_object, EnemyItem):
             self.show_enemy_item_tab()
 
     def set_object_set(self, object_set_index, graphic_set_index=-1):
@@ -92,7 +92,7 @@ class TabbedToolBox(QTabWidget):
         self._enemies_toolbox.clear()
         self._enemies_toolbox.add_from_enemy_set(object_set_index)
 
-    def add_recent_object(self, level_object: Union[EnemyObject, LevelObject]):
+    def add_recent_object(self, level_object: Union[EnemyItem, LevelObject]):
         self._recent_toolbox.place_at_front(level_object)
 
     def _on_object_dragged(self, object_icon: ObjectIcon):

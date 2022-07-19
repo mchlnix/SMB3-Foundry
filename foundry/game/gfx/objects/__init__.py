@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from foundry.game.gfx.objects.in_level.enemy_item import EnemyObject
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.enemy_item_factory import EnemyItemFactory
 from foundry.game.gfx.objects.in_level.jump import Jump
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
@@ -14,17 +14,15 @@ from foundry.game.gfx.objects.world_map.map_tile import MapTile
 from foundry.game.gfx.objects.world_map.sprite import Sprite
 
 
-def get_minimal_icon_object(
-    level_object: Union["LevelObject", EnemyObject]
-) -> Optional[Union["LevelObject", EnemyObject]]:
+def get_minimal_icon_object(level_object: Union["LevelObject", EnemyItem]) -> Optional[Union["LevelObject", EnemyItem]]:
     """
     Returns the object with a length, so that every block is rendered. E. g. clouds with length 0, don't have a face.
     """
 
-    if not isinstance(level_object, (LevelObject, EnemyObject)):
+    if not isinstance(level_object, (LevelObject, EnemyItem)):
         return None
 
-    if isinstance(level_object, EnemyObject):
+    if isinstance(level_object, EnemyItem):
         return level_object
 
     level_object.ground_level = 3
@@ -49,7 +47,7 @@ __all__ = [
     "MapTile",
     "Sprite",
     "MapObject",
-    "EnemyObject",
+    "EnemyItem",
     "EnemyItemFactory",
     "Jump",
     "LevelObject",

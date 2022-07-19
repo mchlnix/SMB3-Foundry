@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from foundry import ctrl_is_pressed
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects import EnemyObject, LevelObject, ObjectLike
+from foundry.game.gfx.objects import EnemyItem, LevelObject, ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer
@@ -61,7 +61,7 @@ class MainView(QWidget):
         """whether an object was selected with the current click; will be cleared, on release of the mouse button"""
 
         # dragged in from the object toolbar
-        self.currently_dragged_object: Optional[Union[LevelObject, EnemyObject]] = None
+        self.currently_dragged_object: Optional[Union[LevelObject, EnemyItem]] = None
 
         self.drawer: Union[LevelDrawer, WorldDrawer] = LevelDrawer()
         self.transparency = False
@@ -242,7 +242,7 @@ class MainView(QWidget):
 
         self.repaint()
 
-    def _object_from_mime_data(self, mime_data: QMimeData) -> Union[LevelObject, EnemyObject]:
+    def _object_from_mime_data(self, mime_data: QMimeData) -> Union[LevelObject, EnemyItem]:
         object_type, *object_bytes = mime_data.data("application/level-object")
 
         if object_type == b"\x00":

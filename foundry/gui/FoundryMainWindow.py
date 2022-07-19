@@ -37,7 +37,7 @@ from foundry import (
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.Palette import PaletteGroup, restore_all_palettes, save_all_palette_groups
-from foundry.game.gfx.objects import EnemyObject, LevelObject
+from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.AutoScrollEditor import AutoScrollEditor
@@ -848,7 +848,7 @@ class FoundryMainWindow(MainWindow):
 
         self.update_level(level_name, object_data, enemy_data, object_set)
 
-    def _on_placeable_object_selected(self, level_object: Union[LevelObject, EnemyObject]):
+    def _on_placeable_object_selected(self, level_object: Union[LevelObject, EnemyItem]):
         if self.sender() is self.object_toolbar:
             self.object_dropdown.select_object(level_object)
         else:
@@ -1060,7 +1060,7 @@ class FoundryMainWindow(MainWindow):
 
         if isinstance(level_object, LevelObject):
             self.level_view.create_object_at(q_point, level_object.domain, level_object.obj_index)
-        elif isinstance(level_object, EnemyObject):
+        elif isinstance(level_object, EnemyItem):
             self.level_view.add_enemy(level_object.obj_index, q_point, -1)
 
     def closeEvent(self, event: QCloseEvent):

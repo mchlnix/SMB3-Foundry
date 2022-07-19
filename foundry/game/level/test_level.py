@@ -1,6 +1,6 @@
 import pytest
 
-from foundry.game.gfx.objects import EnemyObject, Jump, LevelObject
+from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.level.Level import LEVEL_DEFAULT_HEIGHT
 
 
@@ -52,7 +52,7 @@ def test_not_too_big_enemy(level):
 
     # WHEN you remove an enemy
     enemy = level.enemies[0]
-    assert isinstance(enemy, EnemyObject)
+    assert isinstance(enemy, EnemyItem)
 
     level.remove_object(enemy)
 

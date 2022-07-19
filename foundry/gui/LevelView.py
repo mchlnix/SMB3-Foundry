@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import ctrl_is_pressed
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
-from foundry.game.gfx.objects import EnemyObject, LevelObject
+from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
@@ -177,7 +177,7 @@ class LevelView(MainView):
     def _set_cursor_for_position(self, event: QMouseEvent):
         level_object = self.object_at(event.pos())
 
-        if isinstance(level_object, (EnemyObject, LevelObject)):
+        if isinstance(level_object, (EnemyItem, LevelObject)):
             is_resizable = not level_object.is_single_block
 
             edges = self._cursor_on_edge_of_object(level_object, event.pos())
@@ -200,9 +200,7 @@ class LevelView(MainView):
         if self.mouse_mode not in RESIZE_MODES:
             self.setCursor(Qt.ArrowCursor)
 
-    def _cursor_on_edge_of_object(
-        self, level_object: Union[LevelObject, EnemyObject], pos: QPoint, edge_width: int = 4
-    ):
+    def _cursor_on_edge_of_object(self, level_object: Union[LevelObject, EnemyItem], pos: QPoint, edge_width: int = 4):
         right = (level_object.get_rect().left() + level_object.get_rect().width()) * self.block_length
         bottom = (level_object.get_rect().top() + level_object.get_rect().height()) * self.block_length
 
@@ -246,7 +244,7 @@ class LevelView(MainView):
     def _change_object_on_mouse_wheel(self, cursor_position: QPoint, y_delta: int):
         obj_under_cursor = self.object_at(cursor_position)
 
-        if not isinstance(obj_under_cursor, (LevelObject, EnemyObject)):
+        if not isinstance(obj_under_cursor, (LevelObject, EnemyItem)):
             return
 
         if y_delta > 0:
@@ -279,7 +277,7 @@ class LevelView(MainView):
 
         obj = self.object_at(event.pos())
 
-        if not isinstance(obj, (LevelObject, EnemyObject)):
+        if not isinstance(obj, (LevelObject, EnemyItem)):
             return
 
         if obj is not None:
@@ -353,7 +351,7 @@ class LevelView(MainView):
         if self._select_objects_on_click(event):
             obj = self.object_at(event.pos())
 
-            if not isinstance(obj, (LevelObject, EnemyObject)):
+            if not isinstance(obj, (LevelObject, EnemyItem)):
                 return
 
             # enable all drag functionality
@@ -403,7 +401,7 @@ class LevelView(MainView):
         obj = self.object_at(event.pos())
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            if not isinstance(obj, (LevelObject, EnemyObject)):
+            if not isinstance(obj, (LevelObject, EnemyItem)):
                 return
 
             if obj is not None:
@@ -559,7 +557,7 @@ class LevelView(MainView):
         new_obj = self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level)
         new_obj.selected = obj.selected
 
-    def replace_enemy(self, old_enemy: EnemyObject, enemy_index: int):
+    def replace_enemy(self, old_enemy: EnemyItem, enemy_index: int):
         index_in_level = self.level_ref.index_of(old_enemy)
 
         self.remove_object(old_enemy)

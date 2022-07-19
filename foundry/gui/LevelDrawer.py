@@ -11,7 +11,7 @@ from foundry.game.gfx.Palette import NESPalette, bg_color_for_object_set, load_p
 from foundry.game.gfx.drawable import load_from_png, make_image_selected, mario_actions
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects import (
-    EnemyObject,
+    EnemyItem,
     LevelObject,
 )
 from foundry.game.level.Level import Level
@@ -209,7 +209,7 @@ class LevelDrawer:
             name = level_object.name.lower()
 
             # only handle this specific enemy item for now
-            if isinstance(level_object, EnemyObject) and "invisible door" not in name:
+            if isinstance(level_object, EnemyItem) and "invisible door" not in name:
                 continue
 
             pos = level_object.get_rect(self.block_length).topLeft()

@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QComboBox, QCompleter, QWidget
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects import (
     EnemyItemFactory,
-    EnemyObject,
+    EnemyItem,
     LevelObject,
     LevelObjectFactory,
     ObjectLike,
@@ -117,8 +117,8 @@ class ObjectDropdown(QComboBox):
 
             self._add_item(enemy_item)
 
-    def _add_item(self, level_object: Union[LevelObject, EnemyObject]):
-        if not isinstance(level_object, (LevelObject, EnemyObject)):
+    def _add_item(self, level_object: Union[LevelObject, EnemyItem]):
+        if not isinstance(level_object, (LevelObject, EnemyItem)):
             return
 
         if level_object.name in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
