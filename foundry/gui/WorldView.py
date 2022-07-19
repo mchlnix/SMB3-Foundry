@@ -20,7 +20,7 @@ from foundry.gui.MainView import (
 )
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
-from scribe.gui.commands import MoveTile
+from scribe.gui.commands import MoveMapObject, MoveTile
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
 from smb3parse.data_points import Position
@@ -368,7 +368,11 @@ class WorldView(MainView):
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
             drag_end_point = self._to_level_point(event.pos())
 
-            self._move_selected_tiles(drag_end_point)
+            if self.get_selected_objects():
+                self._move_selected_tiles(drag_end_point)
+
+            if self.selected_object and not isinstance(self.selected_object, MapTile):
+                self.undo_stack.push(MoveMapObject(self.world, self.selected_object, self.drag_start_point))
 
             if self.drag_start_point != drag_end_point:
                 self._stop_drag()
@@ -400,6 +404,7 @@ class WorldView(MainView):
         dy = end_y - start_y
 
         self.undo_stack.beginMacro("Move Tiles")
+
         old_objects = self.world.objects.copy()
 
         for selected_obj in reversed(self.get_selected_objects()):

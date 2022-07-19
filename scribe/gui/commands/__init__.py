@@ -28,17 +28,37 @@ class MoveTile(QUndoCommand):
             self.setObsolete(True)
 
     def undo(self):
-        source_obj = self.level.objects[self.start.tile_data_index]
+        source_obj = self.world.objects[self.start.tile_data_index]
         source_obj.change_type(self.tile_after)
 
-        if self.end.tile_data_index < len(self.level.objects):
-            target_obj = self.level.objects[self.end.tile_data_index]
+        if self.end.tile_data_index < len(self.world.objects):
+            target_obj = self.world.objects[self.end.tile_data_index]
             target_obj.change_type(self.tile_before)
 
     def redo(self):
-        source_obj = self.level.objects[self.start.tile_data_index]
+        source_obj = self.world.objects[self.start.tile_data_index]
         source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
 
-        if self.end.tile_data_index < len(self.level.objects):
-            target_obj = self.level.objects[self.end.tile_data_index]
+        if self.end.tile_data_index < len(self.world.objects):
+            target_obj = self.world.objects[self.end.tile_data_index]
             target_obj.change_type(self.tile_after)
+
+
+class MoveMapObject(QUndoCommand):
+    def __init__(self, world: WorldMap, map_object: MapObject, start: Tuple[int, int], parent=None):
+        super(MoveMapObject, self).__init__(parent)
+
+        self.world = world
+
+        self.map_object = map_object
+
+        self.start = start
+        self.end = self.map_object.get_position()
+
+        self.setText(f"Move {self.map_object.name}")
+
+    def undo(self):
+        self.map_object.set_position(*self.start)
+
+    def redo(self):
+        self.map_object.set_position(*self.end)
