@@ -201,7 +201,7 @@ class WorldMap(LevelLike):
         for obj in self.objects:
             index = obj.pos.tile_data_index
 
-            return_array[index] = obj.to_bytes()
+            return_array[index] = obj.type
 
         return self.layout_address, return_array
 

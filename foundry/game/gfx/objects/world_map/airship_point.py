@@ -4,7 +4,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QPainter
 
 from foundry.game.gfx.drawable import load_from_png
-from foundry.game.gfx.objects.object_like import ObjectLike
+from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.levels import WORLD_MAP_SCREEN_WIDTH
 
 AIRSHIP_TRAVEL_POINT_1 = load_from_png(59, 2)
@@ -24,15 +24,12 @@ AIRSHIP_TRAVEL_POINTS = [
 ]
 
 
-class AirshipTravelPoint(ObjectLike):
+class AirshipTravelPoint(MapObject):
     def __init__(self, pos, index):
-        super(AirshipTravelPoint, self).__init__()
+        super(AirshipTravelPoint, self).__init__(pos)
 
         self.pos = pos
         self.index = index
-
-    def render(self):
-        pass
 
     def draw(self, painter: QPainter, block_length, transparent):
         x, y = self.get_position()
@@ -42,9 +39,6 @@ class AirshipTravelPoint(ObjectLike):
 
         painter.drawImage(QPoint(x, y), AIRSHIP_TRAVEL_POINTS[self.index].scaled(block_length, block_length))
 
-    def get_status_info(self):
-        pass
-
     def set_position(self, x, y):
         self.pos.x = x % WORLD_MAP_SCREEN_WIDTH
         self.pos.y = y
@@ -53,17 +47,8 @@ class AirshipTravelPoint(ObjectLike):
     def get_position(self) -> Tuple[int, int]:
         return self.pos.xy
 
-    def resize_by(self, dx, dy):
-        pass
-
     def point_in(self, x, y):
         return x, y == self.pos.xy
 
     def change_type(self, new_type):
-        pass
-
-    def __contains__(self, point):
-        pass
-
-    def to_bytes(self):
         pass

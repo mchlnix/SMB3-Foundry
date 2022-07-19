@@ -4,16 +4,9 @@ from typing import Tuple
 from PySide6.QtCore import QRect
 from PySide6.QtGui import QPainter
 
-from foundry.game import EXPANDS_NOT
-
 
 class ObjectLike(abc.ABC):
-    _obj_index: int
-    domain: int
     name: str
-
-    x_position: int
-    y_position: int
 
     # TODO too ambiguous to be part of an API?
     type: int
@@ -21,34 +14,19 @@ class ObjectLike(abc.ABC):
 
     rect: QRect
 
-    is_4byte: bool
-
     def __init__(self):
+        self.x_position = 0
+        self.y_position = 0
+
         self.selected = False
-
-    @property
-    def obj_index(self):
-        return self._obj_index
-
-    @obj_index.setter
-    def obj_index(self, value):
-        self._obj_index = value
-
-    @abc.abstractmethod
-    def render(self):
-        pass
 
     @abc.abstractmethod
     def draw(self, painter: QPainter, block_length, transparent):
         pass
 
-    @abc.abstractmethod
-    def get_status_info(self):
-        pass
-
-    @abc.abstractmethod
     def set_position(self, x, y):
-        pass
+        self.x_position = x
+        self.y_position = y
 
     def move_by(self, dx, dy):
         x, y = self.get_position()
@@ -57,17 +35,11 @@ class ObjectLike(abc.ABC):
 
         self.set_position(new_x, new_y)
 
-    @abc.abstractmethod
     def get_position(self) -> Tuple[int, int]:
-        pass
+        return self.x_position, self.y_position
 
-    @abc.abstractmethod
-    def resize_by(self, dx, dy):
-        pass
-
-    @abc.abstractmethod
     def point_in(self, x, y):
-        pass
+        return self.rect.contains(x, y)
 
     def get_rect(self, block_length=1) -> QRect:
         if block_length != 1:
@@ -86,17 +58,3 @@ class ObjectLike(abc.ABC):
     @abc.abstractmethod
     def change_type(self, new_type):
         pass
-
-    @abc.abstractmethod
-    def __contains__(self, point):
-        pass
-
-    @abc.abstractmethod
-    def to_bytes(self):
-        pass
-
-    def expands(self):
-        return EXPANDS_NOT
-
-    def primary_expansion(self):
-        return EXPANDS_NOT

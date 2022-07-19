@@ -7,7 +7,8 @@ from PySide6.QtWidgets import QToolTip, QWidget
 from foundry import get_level_thumbnail
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
-from foundry.game.gfx.objects import LevelObject, MapTile, ObjectLike
+from foundry.game.gfx.objects import LevelObject, MapTile
+from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.MainView import (
@@ -58,7 +59,7 @@ class WorldView(MainView):
         self.last_mouse_position = 0, 0
 
         self.drag_start_point = 0, 0
-        self.selected_object: Optional[ObjectLike] = None
+        self.selected_object: Optional[MapObject] = None
 
         self.dragging_happened = True
 
@@ -270,7 +271,7 @@ class WorldView(MainView):
 
         return x, y + FIRST_VALID_ROW
 
-    def _visible_object_at(self, point: QPoint) -> ObjectLike:
+    def _visible_object_at(self, point: QPoint) -> MapObject:
         level_x, level_y = self._to_level_point(point)
 
         obj = None
@@ -411,9 +412,12 @@ class WorldView(MainView):
     def _set_selection_end(self, position, always_replace_selection=False):
         return super(WorldView, self)._set_selection_end(position, True)
 
-    def select_object_like(self, obj: ObjectLike):
+    def select_object_like(self, obj: MapObject):
         if self.selected_object is not None:
             self.selected_object.selected = False
+
+        if obj is None:
+            return
 
         self.selected_object = obj
         self.selected_object.selected = True

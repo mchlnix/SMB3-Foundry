@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 from warnings import warn
 
 from PySide6.QtCore import QRect, QSize
@@ -11,7 +11,7 @@ from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PaletteGroup, bg_color_for_object_set
 from foundry.game.gfx.drawable.Block import Block, get_block
-from foundry.game.gfx.objects.object_like import ObjectLike
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from smb3parse.levels import (
     LEVEL_SCREEN_HEIGHT,
     LEVEL_SCREEN_WIDTH,
@@ -50,7 +50,7 @@ ENDING_OBJECT_OFFSET = 0x1C8F9
 BLANK = -1
 
 
-class LevelObject(ObjectLike):
+class LevelObject(InLevelObject):
     def __init__(
         self,
         data: bytearray,
@@ -74,6 +74,8 @@ class LevelObject(ObjectLike):
 
         self.rendered_base_x = 0
         self.rendered_base_y = 0
+
+        self.is_single_block = False
 
         self.palette_group = palette_group
 
@@ -891,11 +893,6 @@ class LevelObject(ObjectLike):
         self.data[2] = new_type
 
         self._setup()
-
-    def __contains__(self, item: Tuple[int, int]) -> bool:
-        x, y = item
-
-        return self.point_in(x, y)
 
     def point_in(self, x: int, y: int) -> bool:
         return self.rect.contains(x, y)

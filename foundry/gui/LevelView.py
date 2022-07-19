@@ -1,5 +1,5 @@
 from bisect import bisect_right
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, cast
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QMouseEvent, QWheelEvent, Qt
@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QToolTip, QWidget
 from foundry import ctrl_is_pressed
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
@@ -200,14 +201,14 @@ class LevelView(MainView):
         if self.mouse_mode not in RESIZE_MODES:
             self.setCursor(Qt.ArrowCursor)
 
-    def _cursor_on_edge_of_object(self, level_object: Union[LevelObject, EnemyItem], pos: QPoint, edge_width: int = 4):
+    def _cursor_on_edge_of_object(self, level_object: InLevelObject, pos: QPoint, edge_width: int = 4) -> Qt.Edges:
         right = (level_object.get_rect().left() + level_object.get_rect().width()) * self.block_length
         bottom = (level_object.get_rect().top() + level_object.get_rect().height()) * self.block_length
 
         on_right_edge = pos.x() in range(right - edge_width, right)
         on_bottom_edge = pos.y() in range(bottom - edge_width, bottom)
 
-        edges = 0
+        edges = Qt.Edges()
 
         if on_right_edge:
             edges |= Qt.RightEdge
@@ -244,7 +245,7 @@ class LevelView(MainView):
     def _change_object_on_mouse_wheel(self, cursor_position: QPoint, y_delta: int):
         obj_under_cursor = self.object_at(cursor_position)
 
-        if not isinstance(obj_under_cursor, (LevelObject, EnemyItem)):
+        if not isinstance(obj_under_cursor, InLevelObject):
             return
 
         if y_delta > 0:
@@ -277,7 +278,7 @@ class LevelView(MainView):
 
         obj = self.object_at(event.pos())
 
-        if not isinstance(obj, (LevelObject, EnemyItem)):
+        if not isinstance(obj, InLevelObject):
             return
 
         if obj is not None:
@@ -309,6 +310,9 @@ class LevelView(MainView):
             self.level_ref.level.changed = True
 
         self.update()
+
+    def get_selected_objects(self) -> List[InLevelObject]:
+        return cast(List[InLevelObject], super(LevelView, self).get_selected_objects())
 
     def _on_right_mouse_button_up(self, event):
         if self.resizing_happened:
@@ -351,7 +355,7 @@ class LevelView(MainView):
         if self._select_objects_on_click(event):
             obj = self.object_at(event.pos())
 
-            if not isinstance(obj, (LevelObject, EnemyItem)):
+            if not isinstance(obj, InLevelObject):
                 return
 
             # enable all drag functionality
@@ -367,7 +371,7 @@ class LevelView(MainView):
             self._start_selection_square(event.pos())
 
     @staticmethod
-    def _resize_mode_from_edge(edge: int):
+    def _resize_mode_from_edge(edge: Qt.Edges):
         mode = 0
 
         if edge & Qt.RightEdge:
@@ -397,11 +401,14 @@ class LevelView(MainView):
 
         self.update()
 
+    def object_at(self, q_point: QPoint) -> Optional[InLevelObject]:
+        return cast(Optional[InLevelObject], super(LevelView, self).object_at(q_point))
+
     def _on_left_mouse_button_up(self, event: QMouseEvent):
         obj = self.object_at(event.pos())
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            if not isinstance(obj, (LevelObject, EnemyItem)):
+            if not isinstance(obj, InLevelObject):
                 return
 
             if obj is not None:

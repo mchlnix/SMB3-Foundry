@@ -1,10 +1,11 @@
-from typing import List, Optional, Sequence, Tuple, Union, overload
+from typing import List, Optional, Tuple
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.objects import EnemyItemFactory, EnemyItem, Jump, LevelObject, LevelObjectFactory
+from foundry.game.gfx.objects import EnemyItem, EnemyItemFactory, Jump, LevelObject, LevelObjectFactory
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
@@ -511,21 +512,21 @@ class Level(LevelLike):
     def too_many_enemies_or_items(self):
         return self.current_enemies_size() > self.enemy_size_on_disk
 
-    def get_all_objects(self) -> List[Union[LevelObject, EnemyItem]]:
+    def get_all_objects(self) -> List[InLevelObject]:
         return self.objects + self.enemies
 
-    def object_at(self, x: int, y: int) -> Optional[Union[EnemyItem, LevelObject]]:
+    def object_at(self, x: int, y: int) -> Optional[InLevelObject]:
         for obj in reversed(self.get_all_objects()):
-            if (x, y) in obj:
+            if obj.point_in(x, y):
                 return obj
         else:
             return None
 
-    def bring_to_foreground(self, objects: Sequence[Union[LevelObject, EnemyItem]]):
+    def bring_to_foreground(self, objects: List[InLevelObject]):
         for obj in objects:
             intersecting_objects = self.get_intersecting_objects(obj)
 
-            object_currently_in_the_foreground: Union[LevelObject, EnemyItem] = intersecting_objects[-1]
+            object_currently_in_the_foreground: InLevelObject = intersecting_objects[-1]
 
             if obj is object_currently_in_the_foreground:
                 continue
@@ -541,11 +542,11 @@ class Level(LevelLike):
 
             objects.insert(index, obj)
 
-    def bring_to_background(self, level_objects: List[Union[LevelObject, EnemyItem]]):
+    def bring_to_background(self, level_objects: List[InLevelObject]):
         for obj in level_objects:
             intersecting_objects = self.get_intersecting_objects(obj)
 
-            object_currently_in_the_background: Union[LevelObject, EnemyItem] = intersecting_objects[0]
+            object_currently_in_the_background: InLevelObject = intersecting_objects[0]
 
             if obj is object_currently_in_the_background:
                 continue
@@ -563,15 +564,7 @@ class Level(LevelLike):
 
             objects.insert(index, obj)
 
-    @overload
-    def get_intersecting_objects(self, obj: LevelObject) -> List[LevelObject]:
-        ...
-
-    @overload
-    def get_intersecting_objects(self, obj: EnemyItem) -> List[EnemyItem]:
-        ...
-
-    def get_intersecting_objects(self, obj):
+    def get_intersecting_objects(self, obj: InLevelObject) -> List[InLevelObject]:
         """
         Returns all objects of the same type, that overlap the rectangle of the given object, including itself. The
         objects are in the order, that they appear in, in memory, meaning back to front.
@@ -586,7 +579,7 @@ class Level(LevelLike):
         else:
             raise TypeError()
 
-        intersecting_objects = []
+        intersecting_objects: List[InLevelObject] = []
 
         for other_object in objects_to_check:
             if obj.get_rect().intersects(other_object.get_rect()):
@@ -654,7 +647,7 @@ class Level(LevelLike):
 
         self.data_changed.emit()
 
-    def index_of(self, obj: Union[EnemyItem, LevelObject]) -> int:
+    def index_of(self, obj: InLevelObject) -> int:
         if isinstance(obj, LevelObject):
             return self.objects.index(obj)
         elif isinstance(obj, EnemyItem):
@@ -668,7 +661,7 @@ class Level(LevelLike):
         else:
             return self.enemies[index % len(self.objects)]
 
-    def remove_object(self, obj: Union[EnemyItem, LevelObject]):
+    def remove_object(self, obj: InLevelObject):
         if obj is None:
             return
 

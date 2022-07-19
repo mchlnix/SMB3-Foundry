@@ -4,7 +4,7 @@ from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor
 
 from foundry.game.gfx.drawable import load_from_png
-from foundry.game.gfx.objects.object_like import ObjectLike
+from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.constants import (
     MAPOBJ_AIRSHIP,
     MAPOBJ_BATTLESHIP,
@@ -49,14 +49,11 @@ MAP_OBJ_SPRITES = {
 }
 
 
-class Sprite(ObjectLike):
+class Sprite(MapObject):
     def __init__(self, sprite_data: SpriteData):
-        super(Sprite, self).__init__()
+        super(Sprite, self).__init__(sprite_data.pos)
 
         self.data = sprite_data
-
-    def render(self):
-        pass
 
     def draw(self, painter, block_length, transparent, selected=False):
         pos = QPoint(*self.data.pos.xy) * block_length
@@ -67,9 +64,6 @@ class Sprite(ObjectLike):
 
         if selected:
             painter.fillRect(rect, QColor(0x00, 0xFF, 0x00, 0x80))
-
-    def get_status_info(self):
-        return ""
 
     def set_position(self, x, y):
         self.data.pos = Position.from_xy(x, y)
@@ -84,17 +78,8 @@ class Sprite(ObjectLike):
     def get_position(self) -> Tuple[int, int]:
         return self.data.pos.xy
 
-    def resize_by(self, dx, dy):
-        pass
-
     def point_in(self, x, y):
         return x, y == self.get_position()
 
     def change_type(self, new_type):
         self.data.type = new_type
-
-    def __contains__(self, point):
-        pass
-
-    def to_bytes(self):
-        raise NotImplementedError

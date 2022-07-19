@@ -1,7 +1,7 @@
 from PySide6.QtCore import QRect
 
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
-from foundry.game.gfx.objects import MapObject
+from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.data_points import Position
 from smb3parse.levels import WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
 
@@ -151,7 +151,6 @@ class MapTile(MapObject):
             self.name = str(hex(self.type))
 
         self.selected = False
-        self.is_single_block = True
 
     def draw(self, dc, block_length, _=None):
         self.block.draw(
@@ -163,12 +162,6 @@ class MapTile(MapObject):
             transparent=False,
         )
 
-    def get_status_info(self):
-        return ("x", self.x_position), ("y", self.y_position), ("Block Type", self.name)
-
-    def to_bytes(self):
-        return self.type
-
     def change_type(self, new_type):
         self.block = get_worldmap_tile(new_type)
 
@@ -178,9 +171,6 @@ class MapTile(MapObject):
             self.name = map_object_names[self.type]
         else:
             self.name = str(hex(self.type))
-
-    def __contains__(self, point):
-        pass
 
     def __lt__(self, other):
         screen = self.x_position // WORLD_MAP_SCREEN_WIDTH

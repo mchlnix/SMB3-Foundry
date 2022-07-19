@@ -1,5 +1,5 @@
 from itertools import product
-from typing import Optional, Union
+from typing import Optional
 
 from PySide6.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
 from PySide6.QtGui import QDrag, QImage, QMouseEvent, QPaintEvent, QPainter
@@ -8,11 +8,11 @@ from PySide6.QtWidgets import QGridLayout, QSizePolicy, QWidget
 from foundry.game.gfx.Palette import bg_color_for_palette_group
 from foundry.game.gfx.objects import (
     EnemyItemFactory,
-    EnemyItem,
     LevelObject,
     LevelObjectFactory,
     get_minimal_icon_object,
 )
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 
 
@@ -23,7 +23,7 @@ class ObjectIcon(QWidget):
     clicked: SignalInstance = Signal()
     object_placed: SignalInstance = Signal()
 
-    def __init__(self, level_object: Optional[Union[LevelObject, EnemyItem]] = None):
+    def __init__(self, level_object: Optional[InLevelObject] = None):
         super(ObjectIcon, self).__init__()
 
         size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -32,7 +32,7 @@ class ObjectIcon(QWidget):
 
         self.zoom = 1
 
-        self.object: Optional[Union[LevelObject, EnemyItem]] = None
+        self.object: Optional[InLevelObject] = None
         self.image = QImage()
 
         self.set_object(level_object)
@@ -65,7 +65,7 @@ class ObjectIcon(QWidget):
         if drag.exec() == Qt.MoveAction:
             self.object_placed.emit()
 
-    def set_object(self, level_object: Optional[Union[LevelObject, EnemyItem]]):
+    def set_object(self, level_object: Optional[InLevelObject]):
         if level_object is not None:
             self.object = get_minimal_icon_object(level_object)
 
@@ -133,7 +133,7 @@ class ObjectToolBox(QWidget):
 
         self._layout.setAlignment(Qt.AlignHCenter)
 
-    def add_object(self, level_object: Union[LevelObject, EnemyItem], index: int = -1):
+    def add_object(self, level_object: InLevelObject, index: int = -1):
         icon = ObjectIcon(level_object)
 
         icon.clicked.connect(self._on_icon_clicked)

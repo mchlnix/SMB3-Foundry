@@ -7,11 +7,11 @@ from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PaletteGroup
 from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.object_like import ObjectLike
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from smb3parse.objects.object_set import ENEMY_ITEM_GRAPHICS_SET, ENEMY_ITEM_OBJECT_SET
 
 
-class EnemyItem(ObjectLike):
+class EnemyItem(InLevelObject):
     def __init__(self, data, png_data, palette_group: PaletteGroup):
         super(EnemyItem, self).__init__()
 
@@ -108,14 +108,6 @@ class EnemyItem(ObjectLike):
 
     def get_status_info(self):
         return [("Name", self.name), ("X", self.x_position), ("Y", self.y_position)]
-
-    def __contains__(self, item):
-        x, y = item
-
-        return self.point_in(x, y)
-
-    def point_in(self, x, y):
-        return self.rect.contains(x, y)
 
     def set_position(self, x, y):
         # todo also check for the upper bounds

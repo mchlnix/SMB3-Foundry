@@ -1,8 +1,6 @@
-from typing import Union
-
 from PySide6.QtWidgets import QMainWindow, QStatusBar
 
-from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.LevelRef import LevelRef
 
 
@@ -22,7 +20,7 @@ class ObjectStatusBar(QStatusBar):
         if selected_objects:
             self._fill(selected_objects[-1])
 
-    def _fill(self, obj: Union[LevelObject, EnemyItem]):
+    def _fill(self, obj: InLevelObject):
         info = obj.get_status_info()
 
         message_parts = []
