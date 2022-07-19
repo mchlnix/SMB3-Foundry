@@ -42,7 +42,7 @@ class ObjectLike(abc.ABC):
         return self.rect.contains(x, y)
 
     def get_rect(self, block_length=1) -> QRect:
-        x, y = self.get_position()
+        x, y = self.rect.topLeft().toTuple()
         w, h = self.rect.size().toTuple()
 
         x *= block_length

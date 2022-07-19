@@ -129,13 +129,20 @@ def test_draw_jumps(jump_test_name, level, qtbot):
         ref = LevelRef()
         ref._internal_level = level
 
-        view = LevelView(None, ref, LevelContextMenu(ref))
-        view.draw_jumps = True
-        view.draw_grid = False
+        level_view = LevelView(None, ref, LevelContextMenu(ref))
+        level_view.draw_jumps = True
+        level_view.draw_grid = False
+        level_view.draw_autoscroll = True
 
-        view.resize(view.sizeHint())
+        level_view.draw_expansions = True
+        level_view.draw_mario = True
+        level_view.draw_jumps_on_objects = True
+        level_view.draw_items_in_blocks = True
+        level_view.draw_invisible_items = True
 
-        compare_images(jump_test_name, str(Path(__file__).parent / f"{jump_test_name}.png"), view.grab())
+        level_view.resize(level_view.sizeHint())
+
+        compare_images(jump_test_name, str(Path(__file__).parent / f"{jump_test_name}.png"), level_view.grab())
 
 
 def _get_all_m3l_files(with_ending=True):
@@ -155,7 +162,15 @@ def test_draw_m3ls(m3l_file_name, level, qtbot):
         ref = LevelRef()
         ref._internal_level = level
 
-        view = LevelView(None, ref, LevelContextMenu(ref))
-        view.draw_grid = False
+        level_view = LevelView(None, ref, LevelContextMenu(ref))
+        level_view.draw_jumps = True
+        level_view.draw_grid = False
+        level_view.draw_autoscroll = True
 
-        compare_images(m3l_file_name.stem, str(reference_image_dir / f"{m3l_file_name.stem}.png"), view.grab())
+        level_view.draw_expansions = True
+        level_view.draw_mario = True
+        level_view.draw_jumps_on_objects = True
+        level_view.draw_items_in_blocks = True
+        level_view.draw_invisible_items = True
+
+        compare_images(m3l_file_name.stem, str(reference_image_dir / f"{m3l_file_name.stem}.png"), level_view.grab())
