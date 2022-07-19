@@ -3,9 +3,9 @@ from typing import Tuple
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter, QPen
 
-from foundry.game.gfx.objects.LevelObject import SCREEN_WIDTH
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects.object_like import ObjectLike
 from smb3parse.data_points import LevelPointerData
+from smb3parse.levels import WORLD_MAP_SCREEN_WIDTH
 
 
 class LevelPointer(ObjectLike):
@@ -33,8 +33,8 @@ class LevelPointer(ObjectLike):
         pass
 
     def set_position(self, x, y):
-        self.data.screen = x // SCREEN_WIDTH
-        self.data.x = x % SCREEN_WIDTH
+        self.data.screen = x // WORLD_MAP_SCREEN_WIDTH
+        self.data.x = x % WORLD_MAP_SCREEN_WIDTH
         self.data.y = y
 
     def move_by(self, dx, dy):
@@ -45,7 +45,7 @@ class LevelPointer(ObjectLike):
         self.set_position(new_x, new_y)
 
     def get_position(self) -> Tuple[int, int]:
-        return self.data.screen * SCREEN_WIDTH + self.data.x, self.data.y
+        return self.data.screen * WORLD_MAP_SCREEN_WIDTH + self.data.x, self.data.y
 
     def resize_by(self, dx, dy):
         pass

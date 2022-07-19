@@ -4,12 +4,8 @@ from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects import EnemyItemFactory, EnemyObject, Jump, LevelObject, LevelObjectFactory
+from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset

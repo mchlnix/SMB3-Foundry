@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from PySide6.QtWidgets import QCheckBox, QLabel, QVBoxLayout
 
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects import EnemyObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner

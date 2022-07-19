@@ -1,9 +1,8 @@
 from typing import Union
 
-from PySide6.QtWidgets import QStatusBar, QMainWindow
+from PySide6.QtWidgets import QMainWindow, QStatusBar
 
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects import EnemyObject, LevelObject
 from foundry.game.level.LevelRef import LevelRef
 
 

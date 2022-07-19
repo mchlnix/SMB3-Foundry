@@ -1,7 +1,8 @@
 from PySide6.QtCore import QRect
 
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game import GROUND
+from foundry.game.gfx.objects.object_like import ObjectLike
+from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 
 
 class Jump(ObjectLike):
@@ -91,15 +92,15 @@ class Jump(ObjectLike):
         if vertical:
             return QRect(
                 0,
-                block_length * (1 + SCREEN_HEIGHT * self.screen_index),
-                block_length * SCREEN_WIDTH,
-                block_length * SCREEN_HEIGHT,
+                block_length * (1 + LEVEL_SCREEN_HEIGHT * self.screen_index),
+                block_length * LEVEL_SCREEN_WIDTH,
+                block_length * LEVEL_SCREEN_HEIGHT,
             )
         else:
             return QRect(
-                block_length * SCREEN_WIDTH * self.screen_index,
+                block_length * LEVEL_SCREEN_WIDTH * self.screen_index,
                 0,
-                block_length * SCREEN_WIDTH,
+                block_length * LEVEL_SCREEN_WIDTH,
                 block_length * GROUND,
             )
 

@@ -3,7 +3,7 @@ from typing import Optional
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu
 
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects import LevelObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.BlockViewer import BlockViewer
 from foundry.gui.ObjectViewer import ObjectViewer

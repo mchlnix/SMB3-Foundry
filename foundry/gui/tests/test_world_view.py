@@ -5,7 +5,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QMouseEvent, Qt
 
 import foundry
-from foundry.game.gfx.objects.sprite import Sprite
+from foundry.game.gfx.objects import Sprite
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.WorldView import WorldView
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1

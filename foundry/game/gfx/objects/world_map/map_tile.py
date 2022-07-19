@@ -1,9 +1,9 @@
 from PySide6.QtCore import QRect
 
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
-from smb3parse.levels import WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
+from foundry.game.gfx.objects import MapObject
 from smb3parse.data_points import Position
+from smb3parse.levels import WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
 
 map_object_names = {
     0x00: "Mario Clear (Blue)",
@@ -134,9 +134,9 @@ map_object_names = {
 
 
 # TODO sort out x_position and y_position
-class MapObject(ObjectLike):
+class MapTile(MapObject):
     def __init__(self, block, pos: Position):
-        super(MapObject, self).__init__()
+        super(MapTile, self).__init__(pos)
 
         self.pos = pos
 
@@ -152,37 +152,6 @@ class MapObject(ObjectLike):
 
         self.selected = False
         self.is_single_block = True
-
-    @property
-    def x_position(self):
-        return self.pos.xy[0]
-
-    @x_position.setter
-    def x_position(self, value):
-        self.pos = Position.from_xy(value, self.pos.y)
-
-    @property
-    def y_position(self):
-        return self.pos.y
-
-    @y_position.setter
-    def y_position(self, value):
-        self.pos.y = value
-
-    def set_position(self, x, y):
-        x = int(x)
-        y = int(y)
-
-        self.rect = QRect(x, y, 1, 1)
-
-        self.x_position = x
-        self.y_position = y
-
-    def get_position(self):
-        return self.x_position, self.y_position
-
-    def render(self):
-        pass
 
     def draw(self, dc, block_length, _=None):
         self.block.draw(
@@ -200,18 +169,6 @@ class MapObject(ObjectLike):
     def to_bytes(self):
         return self.type
 
-    def move_by(self, dx, dy):
-        self.set_position(self.x_position + dx, self.y_position + dy)
-
-    def resize_to(self, x, y):
-        return
-
-    def resize_by(self, dx, dy):
-        return
-
-    def point_in(self, x, y):
-        return self.rect.contains(x, y)
-
     def change_type(self, new_type):
         self.block = get_worldmap_tile(new_type)
 
@@ -221,20 +178,6 @@ class MapObject(ObjectLike):
             self.name = map_object_names[self.type]
         else:
             self.name = str(hex(self.type))
-
-    def get_rect(self, block_length=1) -> QRect:
-        if block_length != 1:
-            x, y = self.rect.topLeft().toTuple()
-            w, h = self.rect.size().toTuple()
-
-            x *= block_length
-            w *= block_length
-            y *= block_length
-            h *= block_length
-
-            return QRect(x, y, w, h)
-        else:
-            return self.rect
 
     def __contains__(self, point):
         pass
@@ -255,4 +198,4 @@ class MapObject(ObjectLike):
         return result < other_result
 
     def __repr__(self):
-        return f"MapObject #{hex(self.type)}: '{self.name}' at {self.x_position}, {self.y_position}"
+        return f"MapTile #{hex(self.type)}: '{self.name}' at {self.x_position}, {self.y_position}"

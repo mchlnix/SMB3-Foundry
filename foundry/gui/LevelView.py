@@ -6,9 +6,8 @@ from PySide6.QtGui import QMouseEvent, QWheelEvent, Qt
 from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import ctrl_is_pressed
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
+from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
+from foundry.game.gfx.objects import EnemyObject, LevelObject
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap

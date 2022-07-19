@@ -2,7 +2,7 @@ from os.path import basename
 from typing import List, Optional
 
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
-from smb3parse.util.rom import Rom, INESHeader
+from smb3parse.util.rom import INESHeader, Rom
 
 WORLD_COUNT = 9  # includes warp zone
 

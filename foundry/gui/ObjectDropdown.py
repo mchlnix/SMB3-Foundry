@@ -5,11 +5,14 @@ from PySide6.QtGui import QIcon, QImage, QPixmap, QScreen
 from PySide6.QtWidgets import QComboBox, QCompleter, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon_object
-from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects import (
+    EnemyItemFactory,
+    EnemyObject,
+    LevelObject,
+    LevelObjectFactory,
+    ObjectLike,
+    get_minimal_icon_object,
+)
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE, MIN_DOMAIN
 
 

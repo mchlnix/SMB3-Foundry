@@ -4,16 +4,16 @@ from typing import Tuple
 from PySide6.QtCore import QRect
 from PySide6.QtGui import QPainter
 
-EXPANDS_NOT = 0b00
-EXPANDS_HORIZ = 0b01
-EXPANDS_VERT = 0b10
-EXPANDS_BOTH = EXPANDS_HORIZ | EXPANDS_VERT
+from foundry.game import EXPANDS_NOT
 
 
 class ObjectLike(abc.ABC):
     _obj_index: int
     domain: int
     name: str
+
+    x_position: int
+    y_position: int
 
     # TODO too ambiguous to be part of an API?
     type: int

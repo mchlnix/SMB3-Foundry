@@ -5,9 +5,9 @@ from PySide6.QtCore import QEvent, QRect, Qt, Signal, SignalInstance
 from PySide6.QtGui import QCursor, QFocusEvent
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
+from foundry.game import GROUND
 from foundry.game.ObjectDefinitions import GeneratorType
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject
+from foundry.game.gfx.objects import EnemyObject, LevelObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.HeaderEditor import CAMERA_MOVEMENTS
 from foundry.gui.LevelView import LevelView

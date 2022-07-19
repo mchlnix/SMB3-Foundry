@@ -4,7 +4,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QPainter
 
 from foundry.game.gfx.drawable import load_from_png
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects.object_like import ObjectLike
 from smb3parse.levels import WORLD_MAP_SCREEN_WIDTH
 
 AIRSHIP_TRAVEL_POINT_1 = load_from_png(59, 2)

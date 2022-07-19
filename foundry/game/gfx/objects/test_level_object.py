@@ -7,8 +7,7 @@ import pytest
 from foundry import root_dir
 from foundry.conftest import compare_images
 from foundry.game.File import ROM
-from foundry.game.gfx.objects.LevelObject import get_minimal_icon_object
-from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from foundry.game.gfx.objects import LevelObjectFactory, get_minimal_icon_object
 from foundry.gui.ObjectViewer import ObjectDrawArea
 from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
 from smb3parse.objects.object_set import (

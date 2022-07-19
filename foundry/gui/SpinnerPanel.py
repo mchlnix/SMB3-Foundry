@@ -3,8 +3,7 @@ from typing import Optional
 from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtWidgets import QFormLayout, QSizePolicy, QWidget
 
-from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects import LevelObject, ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
 

@@ -25,6 +25,7 @@ from smb3parse.constants import (
     TILE_STAR_1,
     TILE_STAR_2,
 )
+from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.levels import (
     COMPLETABLE_LIST_END_MARKER,
     COMPLETABLE_TILES_LIST,
@@ -43,7 +44,6 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
 

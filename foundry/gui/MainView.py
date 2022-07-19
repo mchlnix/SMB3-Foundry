@@ -7,9 +7,7 @@ from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from foundry import ctrl_is_pressed
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects import EnemyObject, LevelObject, ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer

@@ -6,10 +6,13 @@ from PySide6.QtGui import QDrag, QImage, QMouseEvent, QPaintEvent, QPainter
 from PySide6.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.Palette import bg_color_for_palette_group
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon_object
-from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
+from foundry.game.gfx.objects import (
+    EnemyItemFactory,
+    EnemyObject,
+    LevelObject,
+    LevelObjectFactory,
+    get_minimal_icon_object,
+)
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 
 

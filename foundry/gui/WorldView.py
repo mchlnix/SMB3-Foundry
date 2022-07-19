@@ -7,9 +7,7 @@ from PySide6.QtWidgets import QToolTip, QWidget
 from foundry import get_level_thumbnail
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
-from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.gfx.objects.MapObject import MapObject
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects import LevelObject, MapTile, ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.MainView import (
@@ -370,7 +368,7 @@ class WorldView(MainView):
             dy = end_y - start_y
 
             for selected_obj in reversed(self.get_selected_objects()):
-                if isinstance(selected_obj, MapObject):
+                if isinstance(selected_obj, MapTile):
                     end_pos = Position.from_xy(*selected_obj.get_position())
                     selected_obj.move_by(-dx, -dy)
 

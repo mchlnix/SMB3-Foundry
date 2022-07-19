@@ -6,7 +6,7 @@ import pytest
 
 from smb3parse.constants import BASE_OFFSET
 from smb3parse.levels.world_map import WorldMap
-from smb3parse.util.rom import Rom, INESHeader
+from smb3parse.util.rom import INESHeader, Rom
 
 root_dir = Path(__file__).parent.parent.parent
 

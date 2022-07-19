@@ -4,7 +4,7 @@ from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor
 
 from foundry.game.gfx.drawable import load_from_png
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects.object_like import ObjectLike
 from smb3parse.constants import (
     MAPOBJ_AIRSHIP,
     MAPOBJ_BATTLESHIP,

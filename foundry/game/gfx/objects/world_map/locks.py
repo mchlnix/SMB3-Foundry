@@ -5,7 +5,7 @@ from PySide6.QtGui import QColor, QPainter
 
 from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects.object_like import ObjectLike
 from smb3parse.data_points import FortressFXData, Position
 
 KEY_IMG = load_from_png(63, 2)

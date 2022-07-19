@@ -4,7 +4,7 @@ from typing import List, Tuple
 from PySide6.QtCore import QPoint, SignalInstance
 from PySide6.QtWidgets import QMenu
 
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 
 

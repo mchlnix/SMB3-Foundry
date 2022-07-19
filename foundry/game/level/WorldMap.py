@@ -6,11 +6,7 @@ from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
-from foundry.game.gfx.objects.MapObject import MapObject
-from foundry.game.gfx.objects.airship_point import AirshipTravelPoint
-from foundry.game.gfx.objects.level_pointer import LevelPointer
-from foundry.game.gfx.objects.locks import Lock
-from foundry.game.gfx.objects.sprite import Sprite
+from foundry.game.gfx.objects import AirshipTravelPoint, LevelPointer, Lock, MapTile, Sprite
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID
@@ -48,7 +44,7 @@ class WorldMap(LevelLike):
 
         self.size = 0, 0
 
-        self.objects: List[MapObject] = []
+        self.objects: List[MapTile] = []
 
         self._load_objects()
         self._load_sprites()
@@ -77,7 +73,7 @@ class WorldMap(LevelLike):
 
             block = get_block(tile, self.palette_group, self.graphics_set, self.tsa_data)
 
-            self.objects.append(MapObject(block, pos))
+            self.objects.append(MapTile(block, pos))
 
         assert len(self.objects) % WORLD_MAP_HEIGHT == 0
 

@@ -3,8 +3,7 @@ from typing import Union
 from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtWidgets import QScrollArea, QTabWidget
 
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects import EnemyObject, LevelObject
 from foundry.gui.ObjectToolBox import ObjectIcon, ObjectToolBox
 
 

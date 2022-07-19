@@ -4,20 +4,25 @@ from typing import Tuple
 from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QBrush, QColor, QPainter, QPen, Qt
 
+from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT, GROUND
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, bg_color_for_object_set, load_palette_group
 from foundry.game.gfx.drawable import load_from_png, make_image_selected, mario_actions
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
-from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
+from foundry.game.gfx.objects import (
+    EnemyObject,
+    LevelObject,
+)
 from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
 from smb3parse.constants import OBJ_AUTOSCROLL
-from smb3parse.levels import LEVEL_MAX_LENGTH
+from smb3parse.levels import (
+    LEVEL_MAX_LENGTH,
+    LEVEL_SCREEN_HEIGHT,
+    LEVEL_SCREEN_WIDTH,
+)
 from smb3parse.objects.object_set import CLOUDY_OBJECT_SET, DESERT_OBJECT_SET, DUNGEON_OBJECT_SET, ICE_OBJECT_SET
-
 
 FIRE_FLOWER = load_from_png(16, 53)
 LEAF = load_from_png(17, 53)
@@ -407,10 +412,10 @@ class LevelDrawer:
         painter.setPen(self.screen_pen)
 
         if level.is_vertical:
-            for y in range(0, panel_height, self.block_length * SCREEN_HEIGHT):
+            for y in range(0, panel_height, self.block_length * LEVEL_SCREEN_HEIGHT):
                 painter.drawLine(0, self.block_length + y, panel_width, self.block_length + y)
         else:
-            for x in range(0, panel_width, self.block_length * SCREEN_WIDTH):
+            for x in range(0, panel_width, self.block_length * LEVEL_SCREEN_WIDTH):
                 painter.drawLine(x, 0, x, panel_height)
 
     def _draw_auto_scroll(self, painter: QPainter, level: Level):

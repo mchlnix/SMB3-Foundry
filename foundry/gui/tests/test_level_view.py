@@ -2,8 +2,7 @@ import pytest
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QWheelEvent, Qt
 
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects import EnemyObject, LevelObject
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.LevelView import LevelView
 from foundry.gui.settings import SETTINGS
