@@ -18,6 +18,12 @@ class InLevelObject(ObjectLike, abc.ABC):
 
     rendered_width: int
 
+    def __init__(self):
+        super(InLevelObject, self).__init__()
+
+        self.x_position = 0
+        self.y_position = 0
+
     @property
     def obj_index(self):
         return self._obj_index
@@ -53,9 +59,6 @@ class InLevelObject(ObjectLike, abc.ABC):
     @abc.abstractmethod
     def to_bytes(self):
         pass
-
-    def __init__(self):
-        super(InLevelObject, self).__init__()
 
     def expands(self):
         return EXPANDS_NOT

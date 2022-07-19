@@ -1,4 +1,4 @@
-from PySide6.QtCore import QRect
+from typing import Tuple
 
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects.world_map.map_object import MapObject
@@ -136,21 +136,17 @@ map_object_names = {
 # TODO sort out x_position and y_position
 class MapTile(MapObject):
     def __init__(self, block, pos: Position):
-        super(MapTile, self).__init__(pos)
+        super(MapTile, self).__init__()
 
         self.pos = pos
 
         self.block = block
         self.type = self.block.index
 
-        self.rect = QRect(self.x_position, self.y_position, 1, 1)
-
         if self.type in map_object_names:
             self.name = map_object_names[self.type]
         else:
             self.name = str(hex(self.type))
-
-        self.selected = False
 
     def draw(self, dc, block_length, _=None):
         self.block.draw(
@@ -161,6 +157,12 @@ class MapTile(MapObject):
             selected=self.selected,
             transparent=False,
         )
+
+    def set_position(self, x, y):
+        self.pos = Position.from_xy(x, y)
+
+    def get_position(self) -> Tuple[int, int]:
+        return self.pos.xy
 
     def change_type(self, new_type):
         self.block = get_worldmap_tile(new_type)

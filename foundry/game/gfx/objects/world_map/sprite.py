@@ -16,6 +16,7 @@ from smb3parse.constants import (
     MAPOBJ_HAMMERBRO,
     MAPOBJ_HEAVYBRO,
     MAPOBJ_HELP,
+    MAPOBJ_NAMES,
     MAPOBJ_NSPADE,
     MAPOBJ_TANK,
     MAPOBJ_UNK08,
@@ -51,9 +52,10 @@ MAP_OBJ_SPRITES = {
 
 class Sprite(MapObject):
     def __init__(self, sprite_data: SpriteData):
-        super(Sprite, self).__init__(sprite_data.pos)
+        super(Sprite, self).__init__()
 
         self.data = sprite_data
+        self.name = f"Sprite '{MAPOBJ_NAMES[self.data.type]}'"
 
     def draw(self, painter, block_length, transparent, selected=False):
         pos = QPoint(*self.data.pos.xy) * block_length
@@ -68,18 +70,8 @@ class Sprite(MapObject):
     def set_position(self, x, y):
         self.data.pos = Position.from_xy(x, y)
 
-    def move_by(self, dx, dy):
-        x, y = self.get_position()
-        new_x = x + dx
-        new_y = y + dy
-
-        self.set_position(new_x, new_y)
-
     def get_position(self) -> Tuple[int, int]:
         return self.data.pos.xy
-
-    def point_in(self, x, y):
-        return x, y == self.get_position()
 
     def change_type(self, new_type):
         self.data.type = new_type

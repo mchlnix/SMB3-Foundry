@@ -25,11 +25,14 @@ AIRSHIP_TRAVEL_POINTS = [
 
 
 class AirshipTravelPoint(MapObject):
-    def __init__(self, pos, index):
-        super(AirshipTravelPoint, self).__init__(pos)
+    def __init__(self, pos, set_no, index):
+        super(AirshipTravelPoint, self).__init__()
 
         self.pos = pos
+        self.set_no = set_no
         self.index = index
+
+        self.name = f"Airship Set #{set_no + 1} Point {index + 1}"
 
     def draw(self, painter: QPainter, block_length, transparent):
         x, y = self.get_position()
@@ -46,9 +49,6 @@ class AirshipTravelPoint(MapObject):
 
     def get_position(self) -> Tuple[int, int]:
         return self.pos.xy
-
-    def point_in(self, x, y):
-        return x, y == self.pos.xy
 
     def change_type(self, new_type):
         pass

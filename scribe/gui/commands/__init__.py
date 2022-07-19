@@ -1,23 +1,26 @@
+from typing import Tuple
+
 from PySide6.QtGui import QUndoCommand
 
+from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
 from smb3parse.data_points import Position
 from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID
 
 
 class MoveTile(QUndoCommand):
-    def __init__(self, level: WorldMap, start: Position, tile_after: int, end: Position, parent=None):
+    def __init__(self, world: WorldMap, start: Position, tile_after: int, end: Position, parent=None):
         super(MoveTile, self).__init__(parent)
 
-        self.level = level
+        self.world = world
 
         self.start = start
         self.tile_after = tile_after
 
         self.end = end
 
-        if self.level.point_in(*end.xy):
-            self.tile_before = self.level.objects[self.end.tile_data_index].type
+        if self.world.point_in(*end.xy):
+            self.tile_before = self.world.objects[self.end.tile_data_index].type
         else:
             self.tile_before = WORLD_MAP_BLANK_TILE_ID
 

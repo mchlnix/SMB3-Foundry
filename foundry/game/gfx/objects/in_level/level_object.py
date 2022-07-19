@@ -69,9 +69,6 @@ class LevelObject(InLevelObject):
         self.graphics_set = graphics_set
         self.tsa_data = ROM.get_tsa_data(object_set)
 
-        self.x_position = 0
-        self.y_position = 0
-
         self.rendered_base_x = 0
         self.rendered_base_y = 0
 

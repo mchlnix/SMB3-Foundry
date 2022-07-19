@@ -13,7 +13,7 @@ KEY_IMG = load_from_png(63, 2)
 
 class Lock(MapObject):
     def __init__(self, fortress_fx_data: FortressFXData):
-        super(Lock, self).__init__(fortress_fx_data.pos)
+        super(Lock, self).__init__()
 
         self.data = fortress_fx_data
 
@@ -32,18 +32,8 @@ class Lock(MapObject):
     def set_position(self, x, y):
         self.data.pos = Position.from_xy(x, y)
 
-    def move_by(self, dx, dy):
-        x, y = self.get_position()
-        new_x = x + dx
-        new_y = y + dy
-
-        self.set_position(new_x, new_y)
-
     def get_position(self) -> Tuple[int, int]:
         return self.data.pos.xy
-
-    def point_in(self, x, y):
-        return x, y == self.get_position()
 
     def change_type(self, new_type):
         pass

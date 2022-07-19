@@ -94,9 +94,9 @@ class WorldMap(LevelLike):
     def _load_airship_points(self):
         self.airship_travel_sets: List[List[AirshipTravelPoint]] = []
 
-        for airship_travel_set in self.data.airship_travel_sets:
+        for set_no, airship_travel_set in enumerate(self.data.airship_travel_sets):
             self.airship_travel_sets.append(
-                [AirshipTravelPoint(pos, index) for index, pos in enumerate(airship_travel_set)]
+                [AirshipTravelPoint(pos, set_no, index) for index, pos in enumerate(airship_travel_set)]
             )
 
     def _load_locks_and_bridges(self):
@@ -179,7 +179,7 @@ class WorldMap(LevelLike):
         point = QPoint(x, y)
 
         for obj in reversed(self.objects):
-            if obj.rect.contains(point):
+            if obj.get_rect().contains(point):
                 return obj
 
         return None

@@ -87,6 +87,48 @@ def get_all_world_maps(rom: Rom) -> List["WorldMap"]:
     return [WorldMap(address, rom) for address in world_map_addresses]
 
 
+def level_name(data: LevelPointerData) -> str:
+    if data is None:
+        return ""
+
+    tile = data.world.tile_data[data.pos.tile_data_index]
+
+    if not tile_is_enterable(tile, data._rom):
+        return "Untitled Level"
+
+    if tile in range(TILE_LEVEL_1, TILE_LEVEL_10 + 1):
+        return f"Level {data.world.index + 1}-{tile - TILE_LEVEL_1 + 1}"
+
+    return f"Level {data.world.index + 1}-{TILE_NAMES[tile]}"
+
+
+def _get_normal_enterable_tiles(rom: Rom) -> bytes:
+    return rom.read(TILE_ATTRIBUTES_TS0_OFFSET, 4)
+
+
+def _get_special_enterable_tiles(rom: Rom) -> bytes:
+    return rom.read(SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
+
+
+def _get_completable_tiles(rom: Rom) -> bytearray:
+    completable_tile_amount = (
+        rom.find(COMPLETABLE_LIST_END_MARKER.to_bytes(1, byteorder="big"), COMPLETABLE_TILES_LIST)
+        - COMPLETABLE_TILES_LIST
+    )
+
+    return rom.read(COMPLETABLE_TILES_LIST, completable_tile_amount)
+
+
+def tile_is_enterable(tile_index: int, rom: Rom) -> bool:
+    quadrant_index = tile_index >> 6
+
+    return (
+        tile_index >= _get_normal_enterable_tiles(rom)[quadrant_index]
+        or tile_index in _get_completable_tiles(rom)
+        or tile_index in _get_special_enterable_tiles(rom)
+    )
+
+
 class WorldMap(LevelBase):
     """
     Represents the data associated with a world map/overworld. World maps are always 9 blocks high and 16 blocks wide.
@@ -107,10 +149,6 @@ class WorldMap(LevelBase):
         super(WorldMap, self).__init__(WORLD_MAP_OBJECT_SET, layout_address)
 
         self.rom = rom
-
-        self._minimal_enterable_tiles = _get_normal_enterable_tiles(self.rom)
-        self._special_enterable_tiles = _get_special_enterable_tiles(self.rom)
-        self._completable_tiles = _get_completable_tiles(self.rom)
 
         memory_addresses = list_world_map_addresses(rom)
 
@@ -195,15 +233,7 @@ class WorldMap(LevelBase):
         level_pointer.write_back()
 
     def level_name_for_position(self, pos: Position) -> str:
-        tile = self.tile_at(pos)
-
-        if not self.is_enterable(tile):
-            return ""
-
-        if tile in range(TILE_LEVEL_1, TILE_LEVEL_10 + 1):
-            return f"Level {self.number}-{tile - TILE_LEVEL_1 + 1}"
-
-        return f"Level {self.number}-{TILE_NAMES[tile]}"
+        return level_name(self.level_at(pos))
 
     def gen_sprites(self) -> Generator[SpriteData, None, None]:
         for index in range(SPRITE_COUNT):
@@ -275,14 +305,8 @@ class WorldMap(LevelBase):
 
         :return: Whether the tile is enterable.
         """
-        quadrant_index = tile_index >> 6
-
         # todo allows spade houses, but those break. treat them differently when loading their level
-        return (
-            tile_index >= self._minimal_enterable_tiles[quadrant_index]
-            or tile_index in self._completable_tiles
-            or tile_index in self._special_enterable_tiles
-        )
+        return tile_is_enterable(tile_index)
 
     @property
     def start_pos(self) -> Optional[WorldMapPosition]:
@@ -323,20 +347,3 @@ class WorldMap(LevelBase):
 
     def __repr__(self):
         return f"World {self.number}"
-
-
-def _get_normal_enterable_tiles(rom: Rom) -> bytes:
-    return rom.read(TILE_ATTRIBUTES_TS0_OFFSET, 4)
-
-
-def _get_special_enterable_tiles(rom: Rom) -> bytes:
-    return rom.read(SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
-
-
-def _get_completable_tiles(rom: Rom) -> bytearray:
-    completable_tile_amount = (
-        rom.find(COMPLETABLE_LIST_END_MARKER.to_bytes(1, byteorder="big"), COMPLETABLE_TILES_LIST)
-        - COMPLETABLE_TILES_LIST
-    )
-
-    return rom.read(COMPLETABLE_TILES_LIST, completable_tile_amount)

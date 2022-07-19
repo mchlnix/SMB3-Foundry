@@ -158,9 +158,6 @@ class ScribeMainWindow(MainWindow):
         return True
 
     def load_level(self, world_number: int):
-        if not self.safe_to_change():
-            return
-
         world = SMB3WorldMap.from_world_number(ROM(), world_number)
 
         self.level_ref.load_level("World", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
@@ -243,10 +240,23 @@ class ScribeMainWindow(MainWindow):
         self.world_view.update()
 
     def on_level_menu(self, action: QAction):
+        # get index of world to change to
         if action is self.reload_world_action:
-            self.load_level(self.level_ref.data.index + 1)
+            index = self.level_ref.data.index
         else:
-            self.load_level(self.level_menu.actions().index(action) + 1)
+            index = self.level_menu.actions().index(action)
+
+            if self.level_ref and index == self.level_ref.data.index:
+                # if clicked on the world, that is already active, do nothing
+                return
+
+        # if the user decides against changing worlds, re-check the action of the current world
+        if not self.safe_to_change():
+            self.level_menu.actions()[self.level_ref.data.index].trigger()
+            return
+
+        # if the user is ok with changing, let's go!
+        self.load_level(index + 1)
 
         self._resize_for_level()
 

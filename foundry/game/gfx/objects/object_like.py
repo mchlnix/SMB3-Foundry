@@ -14,10 +14,10 @@ class ObjectLike(abc.ABC):
 
     rect: QRect
 
-    def __init__(self):
-        self.x_position = 0
-        self.y_position = 0
+    x_position: int
+    y_position: int
 
+    def __init__(self):
         self.selected = False
 
     @abc.abstractmethod
@@ -42,18 +42,15 @@ class ObjectLike(abc.ABC):
         return self.rect.contains(x, y)
 
     def get_rect(self, block_length=1) -> QRect:
-        if block_length != 1:
-            x, y = self.rect.topLeft().toTuple()
-            w, h = self.rect.size().toTuple()
+        x, y = self.get_position()
+        w, h = self.rect.size().toTuple()
 
-            x *= block_length
-            w *= block_length
-            y *= block_length
-            h *= block_length
+        x *= block_length
+        w *= block_length
+        y *= block_length
+        h *= block_length
 
-            return QRect(x, y, w, h)
-        else:
-            return self.rect
+        return QRect(x, y, w, h)
 
     @abc.abstractmethod
     def change_type(self, new_type):
