@@ -20,7 +20,7 @@ from foundry.gui.MainView import (
 )
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
-from scribe.gui.commands import MoveMapObject, MoveTile
+from scribe.gui.commands import MoveMapObject, MoveTile, PutTile
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
 from smb3parse.data_points import Position
@@ -262,7 +262,7 @@ class WorldView(MainView):
             return
 
         if (tile := self.world.object_at(x, y)) is not None and tile.type == tile_to_fill_in:
-            tile.change_type(self._tile_to_put.index)
+            self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put.index))
         else:
             return
 
@@ -315,7 +315,9 @@ class WorldView(MainView):
             assert tile is not None
 
             if event.modifiers() & Qt.ShiftModifier:
+                self.undo_stack.beginMacro(f"Fill in '{tile.name}'")
                 self._fill_tile(tile.type, x, y)
+                self.undo_stack.endMacro()
             else:
                 tile.change_type(self._tile_to_put.index)
 

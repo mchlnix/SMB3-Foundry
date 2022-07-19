@@ -28,16 +28,18 @@ class MoveTile(QUndoCommand):
             self.setObsolete(True)
 
     def undo(self):
-        source_obj = self.world.objects[self.start.tile_data_index]
-        source_obj.change_type(self.tile_after)
+        if 0 <= self.start.tile_data_index < len(self.world.objects):
+            source_obj = self.world.objects[self.start.tile_data_index]
+            source_obj.change_type(self.tile_after)
 
-        if self.end.tile_data_index < len(self.world.objects):
+        if 0 <= self.end.tile_data_index < len(self.world.objects):
             target_obj = self.world.objects[self.end.tile_data_index]
             target_obj.change_type(self.tile_before)
 
     def redo(self):
-        source_obj = self.world.objects[self.start.tile_data_index]
-        source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
+        if 0 <= self.start.tile_data_index < len(self.world.objects):
+            source_obj = self.world.objects[self.start.tile_data_index]
+            source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
 
         if self.end.tile_data_index < len(self.world.objects):
             target_obj = self.world.objects[self.end.tile_data_index]
@@ -62,3 +64,12 @@ class MoveMapObject(QUndoCommand):
 
     def redo(self):
         self.map_object.set_position(*self.end)
+
+
+class PutTile(MoveTile):
+    """Implemented by doing an illegal move from outside the Map. Should probably be the other way around."""
+
+    def __init__(self, world: WorldMap, pos: Position, tile_index: int, parent=None):
+        super(PutTile, self).__init__(
+            world, start=Position.from_xy(-1, -1), tile_after=tile_index, end=pos, parent=parent
+        )
