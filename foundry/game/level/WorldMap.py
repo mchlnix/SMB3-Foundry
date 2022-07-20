@@ -116,11 +116,6 @@ class WorldMap(LevelLike):
         if self.size != old_size:
             self.dimensions_changed.emit()
 
-    def add_object(self, obj, _):
-        self.objects.append(obj)
-
-        self.objects.sort(key=self._array_index)
-
     def move_level_pointers(self, source_index: int, target_index: int):
         if source_index == target_index:
             return
