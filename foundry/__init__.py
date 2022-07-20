@@ -4,7 +4,7 @@ import urllib.request
 from pathlib import Path
 from typing import Union
 
-from PySide6.QtCore import QUrl
+from PySide6.QtCore import QBuffer, QIODevice, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon, Qt
 from PySide6.QtWidgets import QApplication
 
@@ -98,3 +98,24 @@ def icon(icon_name: str):
         return QIcon(str(data_path))
     else:
         raise FileNotFoundError(icon_path)
+
+
+def get_level_thumbnail(object_set, layout_address, enemy_address):
+    from foundry.game.level.LevelRef import LevelRef
+    from foundry.gui.LevelView import LevelView
+
+    level_ref = LevelRef()
+    level_ref.load_level("", layout_address, enemy_address, object_set)
+
+    view = LevelView(None, level_ref, None)
+    view.zoom_out()
+    view.zoom_out()
+
+    level_pixmap = view.grab()
+
+    buffer = QBuffer()
+    buffer.open(QIODevice.WriteOnly)
+    level_pixmap.save(buffer, "PNG", quality=100)
+    image_data = bytes(buffer.data().toBase64()).decode()
+
+    return image_data

@@ -1,8 +1,8 @@
 import pytest
 from hypothesis import given, strategies
 
-from smb3parse.objects import MIN_DOMAIN, MAX_DOMAIN, MIN_ID_VALUE, MAX_ID_VALUE
-from smb3parse.objects.object_set import ObjectSet, ENEMY_ITEM_OBJECT_SET, MIN_OBJECT_SET, MAX_OBJECT_SET
+from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE, MIN_DOMAIN, MIN_ID_VALUE
+from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, MAX_OBJECT_SET, MIN_OBJECT_SET, ObjectSet
 
 
 def test_enemy_item_set_value_error():

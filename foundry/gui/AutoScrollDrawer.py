@@ -1,9 +1,9 @@
 from PySide6.QtCore import QPoint, QPointF, QRectF, QSizeF
 from PySide6.QtGui import QBrush, QPainter, QPen, QPolygonF, Qt
 
+from foundry.game import GROUND
 from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_WIDTH
 from foundry.game.level.Level import Level
 from smb3parse.constants import (
     AScroll_HorizontalInitMove,
@@ -14,6 +14,7 @@ from smb3parse.constants import (
     AScroll_MovementRepeat,
     AScroll_VelAccel,
 )
+from smb3parse.levels import LEVEL_SCREEN_WIDTH
 
 HORIZONTAL_SCROLL_0 = 0
 HORIZONTAL_SCROLL_1 = 1
@@ -222,11 +223,15 @@ class AutoScrollDrawer:
         self.screen_polygon = self.screen_polygon.united(QPolygonF.fromList(point_list))
 
     def _rect_for_point(self, pos: QPointF):
-        top_right = pos + QPointF(SCREEN_WIDTH // 2, -_ASCROLL_SCREEN_HEIGHT // 2) * self.pixel_length * Block.WIDTH
-        bottom_right = pos + QPoint(SCREEN_WIDTH // 2, _ASCROLL_SCREEN_HEIGHT // 2) * self.pixel_length * Block.WIDTH
+        top_right = (
+            pos + QPointF(LEVEL_SCREEN_WIDTH // 2, -_ASCROLL_SCREEN_HEIGHT // 2) * self.pixel_length * Block.WIDTH
+        )
+        bottom_right = (
+            pos + QPoint(LEVEL_SCREEN_WIDTH // 2, _ASCROLL_SCREEN_HEIGHT // 2) * self.pixel_length * Block.WIDTH
+        )
 
-        top_left = top_right - QPointF(SCREEN_WIDTH, 0) * self.pixel_length * Block.WIDTH
-        bottom_left = bottom_right - QPointF(SCREEN_WIDTH, 0) * self.pixel_length * Block.WIDTH
+        top_left = top_right - QPointF(LEVEL_SCREEN_WIDTH, 0) * self.pixel_length * Block.WIDTH
+        bottom_left = bottom_right - QPointF(LEVEL_SCREEN_WIDTH, 0) * self.pixel_length * Block.WIDTH
 
         return top_left, top_right, bottom_right, bottom_left
 
@@ -234,6 +239,6 @@ class AutoScrollDrawer:
         # only support horizontal levels for now
         _, mario_y = self.level.header.mario_position()
 
-        scroll_x, scroll_y = SCREEN_WIDTH // 2, min(mario_y + 2, GROUND - _ASCROLL_SCREEN_HEIGHT // 2)
+        scroll_x, scroll_y = LEVEL_SCREEN_WIDTH // 2, min(mario_y + 2, GROUND - _ASCROLL_SCREEN_HEIGHT // 2)
 
         return QPointF(scroll_x, scroll_y) * block_length

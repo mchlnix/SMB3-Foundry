@@ -15,7 +15,7 @@ class LevelRef(QObject):
 
     def __init__(self):
         super(LevelRef, self).__init__()
-        self._internal_level: Optional[Level] = Level()
+        self._internal_level: Optional[Level] = None
 
     def load_level(self, level_name: str, object_data_offset: int, enemy_data_offset: int, object_set_number: int):
         if object_set_number == WORLD_MAP_OBJECT_SET:
@@ -90,4 +90,4 @@ class LevelRef(QObject):
         self.data_changed.emit()
 
     def __bool__(self):
-        return self._internal_level.fully_loaded
+        return self._internal_level is not None and self._internal_level.fully_loaded

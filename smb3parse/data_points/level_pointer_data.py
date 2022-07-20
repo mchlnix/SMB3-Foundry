@@ -79,9 +79,9 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
     def clear(self):
         self.screen = 0
         self.x = 0
-        self.object_set = 0
         self.y = FIRST_VALID_ROW
 
+        self.object_set = 0
         self.level_offset = 0x0
         self.enemy_offset = 0x0
 

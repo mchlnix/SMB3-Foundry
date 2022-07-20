@@ -1,20 +1,19 @@
-from typing import Union
-
 from PySide6.QtCore import Qt, Signal, SignalInstance
 from PySide6.QtGui import QIcon, QImage, QPixmap, QScreen
 from PySide6.QtWidgets import QComboBox, QCompleter, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from foundry.game.gfx.objects.LevelObject import LevelObject, get_minimal_icon_object
-from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects import (
+    EnemyItemFactory,
+    LevelObjectFactory,
+    get_minimal_icon_object,
+)
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE, MIN_DOMAIN
 
 
 class ObjectDropdown(QComboBox):
-    object_selected: SignalInstance = Signal(ObjectLike)
+    object_selected: SignalInstance = Signal(InLevelObject)
 
     def __init__(self, parent: QWidget):
         super(ObjectDropdown, self).__init__(parent)
@@ -60,7 +59,7 @@ class ObjectDropdown(QComboBox):
 
         self.object_selected.emit(level_object)
 
-    def select_object(self, level_object: ObjectLike):
+    def select_object(self, level_object: InLevelObject):
         """
         Called, when the current placeable object was selected from outside and we need to update the selection in the
         dropdown. This is not the selected object inside the level!
@@ -114,8 +113,8 @@ class ObjectDropdown(QComboBox):
 
             self._add_item(enemy_item)
 
-    def _add_item(self, level_object: Union[LevelObject, EnemyObject]):
-        if not isinstance(level_object, (LevelObject, EnemyObject)):
+    def _add_item(self, level_object: InLevelObject):
+        if not isinstance(level_object, InLevelObject):
             return
 
         if level_object.name in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:

@@ -2,7 +2,7 @@ from typing import Optional
 
 from PySide6.QtWidgets import QComboBox, QDialogButtonBox, QFormLayout, QGroupBox, QVBoxLayout, QWidget
 
-from foundry.game.gfx.objects.Jump import Jump
+from foundry.game.gfx.objects import Jump
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
 

@@ -5,7 +5,7 @@ import sys
 
 from PySide6.QtWidgets import QApplication
 
-from scribe.gui.main_window import MainWindow
+from scribe.gui.main_window import ScribeMainWindow
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ if hasattr(sys, "_MEIPASS"):
 def main(path_to_rom):
     app = QApplication()
 
-    window = MainWindow(path_to_rom)  # noqa
+    window = ScribeMainWindow(path_to_rom)  # noqa
     app.exec()
 
 

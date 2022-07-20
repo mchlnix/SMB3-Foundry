@@ -1,6 +1,9 @@
+from PySide6.QtCore import QRect
+from PySide6.QtGui import QColor, QIcon, QImage, QPixmap, Qt
 from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
+    QComboBox,
     QFileDialog,
     QGroupBox,
     QHBoxLayout,
@@ -9,33 +12,28 @@ from PySide6.QtWidgets import (
     QPushButton,
     QRadioButton,
     QVBoxLayout,
-    QComboBox,
 )
 
-from PySide6.QtGui import QIcon, QImage, QColor, Qt, QPixmap
-from PySide6.QtCore import QRect
-
+from foundry import data_dir, icon
+from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.EnemyItem import MASK_COLOR
-
-from foundry import icon, data_dir
 from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.HorizontalLine import HorizontalLine
 from foundry.gui.settings import (
+    GUI_STYLE,
     RESIZE_LEFT_CLICK,
     RESIZE_RIGHT_CLICK,
     SETTINGS,
     load_settings,
     save_settings,
-    GUI_STYLE,
 )
-from foundry.gui.HorizontalLine import HorizontalLine
 from smb3parse.constants import (
-    POWERUP_MUSHROOM,
-    POWERUP_RACCOON,
     POWERUP_FIREFLOWER,
-    POWERUP_TANOOKI,
     POWERUP_FROG,
     POWERUP_HAMMER,
+    POWERUP_MUSHROOM,
+    POWERUP_RACCOON,
+    POWERUP_TANOOKI,
 )
 
 load_settings()

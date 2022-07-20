@@ -2,8 +2,8 @@ from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
 from typing import Optional, Tuple, Union
 
-from smb3parse.util import little_endian
 from smb3parse.constants import BASE_OFFSET
+from smb3parse.util import little_endian
 
 
 class INESHeader(Structure):

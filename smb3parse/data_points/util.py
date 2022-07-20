@@ -40,6 +40,9 @@ class Position:
     def xy(self):
         return self.screen * WORLD_MAP_SCREEN_WIDTH + self.x, self.y
 
+    def copy(self):
+        return Position.from_xy(*self.xy)
+
     @staticmethod
     def from_xy(x, y):
         """
@@ -64,6 +67,19 @@ class Position:
         column = index
 
         return Position(column, row + FIRST_VALID_ROW, screen)
+
+    def __add__(self, other):
+        x, y = self.xy
+        o_x, o_y = other.xy
+
+        return Position.from_xy(x + o_x, y + o_y)
+
+    def __neg__(self):
+        x, y = self.xy
+        return Position.from_xy(-x, -y)
+
+    def __sub__(self, other):
+        return self + -other
 
 
 class DataPoint:

@@ -17,7 +17,6 @@ from smb3parse.constants import (
 )
 from smb3parse.objects.object_set import ObjectSet
 
-
 ENEMY_BASE_OFFSET = BASE_OFFSET  # + 1
 """
 One additional byte, at the beginning of every enemy data, where I don't know what does
@@ -86,6 +85,9 @@ WORLD_COUNT = 9  # includes warp zone
 
 WORLD_MAP_HEIGHT = 9  # blocks
 WORLD_MAP_SCREEN_WIDTH = 16  # blocks
+
+LEVEL_SCREEN_HEIGHT = 15  # blocks
+LEVEL_SCREEN_WIDTH = 16  # blocks
 
 WORLD_MAP_BLANK_TILE_ID = 0xFE
 

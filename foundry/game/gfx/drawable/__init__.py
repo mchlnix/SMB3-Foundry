@@ -268,6 +268,9 @@ SELECTION_OVERLAY_COLOR = QColor(20, 87, 159, 80)
 png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
 
+mario_actions = QImage(str(data_dir / "mario.png"))
+mario_actions.convertTo(QImage.Format_RGBA8888)
+
 
 def make_image_selected(image: QImage) -> QImage:
     alpha_mask = image.createAlphaMask()

@@ -1,30 +1,15 @@
-from collections import defaultdict
-from typing import Dict, Generator, List, Optional
+from typing import Generator, List, Optional
 from warnings import warn
 
 from smb3parse.constants import (
     Map_Y_Starts,
     OFFSET_SIZE,
     SPRITE_COUNT,
-    TILE_BOWSER_CASTLE,
-    TILE_CASTLE_BOTTOM,
-    TILE_DUNGEON_1,
-    TILE_DUNGEON_2,
-    TILE_HAND_TRAP,
     TILE_LEVEL_1,
     TILE_LEVEL_10,
-    TILE_MUSHROOM_HOUSE_1,
-    TILE_MUSHROOM_HOUSE_2,
-    TILE_PIPE,
-    TILE_POND,
-    TILE_PYRAMID,
-    TILE_QUICKSAND,
-    TILE_SPADE_HOUSE,
-    TILE_SPIRAL_TOWER_1,
-    TILE_SPIRAL_TOWER_2,
-    TILE_STAR_1,
-    TILE_STAR_2,
+    TILE_NAMES,
 )
+from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.levels import (
     COMPLETABLE_LIST_END_MARKER,
     COMPLETABLE_TILES_LIST,
@@ -43,31 +28,8 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
-
-TILE_NAMES: Dict[int, str] = defaultdict(lambda: "NO NAME")
-TILE_NAMES.update(
-    {
-        TILE_MUSHROOM_HOUSE_1: "Mushroom House",
-        TILE_MUSHROOM_HOUSE_2: "Mushroom House",
-        TILE_SPIRAL_TOWER_1: "Spiral Tower",
-        TILE_SPIRAL_TOWER_2: "Spiral Tower",
-        TILE_DUNGEON_1: "Dungeon",
-        TILE_DUNGEON_2: "Dungeon",
-        TILE_QUICKSAND: "Quicksand",
-        TILE_PYRAMID: "Pyramid",
-        TILE_PIPE: "Pipe",
-        TILE_POND: "Pond",
-        TILE_CASTLE_BOTTOM: "Peach's Castle",
-        TILE_BOWSER_CASTLE: "Bowser's Lair",
-        TILE_HAND_TRAP: "Hand Trap",
-        TILE_SPADE_HOUSE: "Spade Bonus",
-        TILE_STAR_1: "Star",
-        TILE_STAR_2: "Star",
-    }
-)
 
 Y_START_POS_LIST = Map_Y_Starts
 
@@ -85,6 +47,48 @@ def get_all_world_maps(rom: Rom) -> List["WorldMap"]:
     world_map_addresses = list_world_map_addresses(rom)
 
     return [WorldMap(address, rom) for address in world_map_addresses]
+
+
+def level_name(data: LevelPointerData) -> str:
+    if data is None:
+        return ""
+
+    tile = data.world.tile_data[data.pos.tile_data_index]
+
+    if not tile_is_enterable(tile, data._rom):
+        return "Untitled Level"
+
+    if tile in range(TILE_LEVEL_1, TILE_LEVEL_10 + 1):
+        return f"Level {data.world.index + 1}-{tile - TILE_LEVEL_1 + 1}"
+
+    return f"Level {data.world.index + 1}-{TILE_NAMES[tile]}"
+
+
+def _get_normal_enterable_tiles(rom: Rom) -> bytes:
+    return rom.read(TILE_ATTRIBUTES_TS0_OFFSET, 4)
+
+
+def _get_special_enterable_tiles(rom: Rom) -> bytes:
+    return rom.read(SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
+
+
+def _get_completable_tiles(rom: Rom) -> bytearray:
+    completable_tile_amount = (
+        rom.find(COMPLETABLE_LIST_END_MARKER.to_bytes(1, byteorder="big"), COMPLETABLE_TILES_LIST)
+        - COMPLETABLE_TILES_LIST
+    )
+
+    return rom.read(COMPLETABLE_TILES_LIST, completable_tile_amount)
+
+
+def tile_is_enterable(tile_index: int, rom: Rom) -> bool:
+    quadrant_index = tile_index >> 6
+
+    return (
+        tile_index >= _get_normal_enterable_tiles(rom)[quadrant_index]
+        or tile_index in _get_completable_tiles(rom)
+        or tile_index in _get_special_enterable_tiles(rom)
+    )
 
 
 class WorldMap(LevelBase):
@@ -107,10 +111,6 @@ class WorldMap(LevelBase):
         super(WorldMap, self).__init__(WORLD_MAP_OBJECT_SET, layout_address)
 
         self.rom = rom
-
-        self._minimal_enterable_tiles = _get_normal_enterable_tiles(self.rom)
-        self._special_enterable_tiles = _get_special_enterable_tiles(self.rom)
-        self._completable_tiles = _get_completable_tiles(self.rom)
 
         memory_addresses = list_world_map_addresses(rom)
 
@@ -195,15 +195,7 @@ class WorldMap(LevelBase):
         level_pointer.write_back()
 
     def level_name_for_position(self, pos: Position) -> str:
-        tile = self.tile_at(pos)
-
-        if not self.is_enterable(tile):
-            return ""
-
-        if tile in range(TILE_LEVEL_1, TILE_LEVEL_10 + 1):
-            return f"Level {self.number}-{tile - TILE_LEVEL_1 + 1}"
-
-        return f"Level {self.number}-{TILE_NAMES[tile]}"
+        return level_name(self.level_at(pos))
 
     def gen_sprites(self) -> Generator[SpriteData, None, None]:
         for index in range(SPRITE_COUNT):
@@ -275,14 +267,8 @@ class WorldMap(LevelBase):
 
         :return: Whether the tile is enterable.
         """
-        quadrant_index = tile_index >> 6
-
         # todo allows spade houses, but those break. treat them differently when loading their level
-        return (
-            tile_index >= self._minimal_enterable_tiles[quadrant_index]
-            or tile_index in self._completable_tiles
-            or tile_index in self._special_enterable_tiles
-        )
+        return tile_is_enterable(tile_index, self.rom)
 
     @property
     def start_pos(self) -> Optional[WorldMapPosition]:
@@ -315,7 +301,7 @@ class WorldMap(LevelBase):
     @staticmethod
     def from_world_number(rom: Rom, world_number: int) -> "WorldMap":
         if not world_number - 1 in range(WORLD_COUNT):
-            raise ValueError(f"World number must be between 1 and {WORLD_COUNT}, including.")
+            raise ValueError(f"World number {world_number - 1} must be between 1 and {WORLD_COUNT}, including.")
 
         memory_address = list_world_map_addresses(rom)[world_number - 1]
 
@@ -323,20 +309,3 @@ class WorldMap(LevelBase):
 
     def __repr__(self):
         return f"World {self.number}"
-
-
-def _get_normal_enterable_tiles(rom: Rom) -> bytes:
-    return rom.read(TILE_ATTRIBUTES_TS0_OFFSET, 4)
-
-
-def _get_special_enterable_tiles(rom: Rom) -> bytes:
-    return rom.read(SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
-
-
-def _get_completable_tiles(rom: Rom) -> bytearray:
-    completable_tile_amount = (
-        rom.find(COMPLETABLE_LIST_END_MARKER.to_bytes(1, byteorder="big"), COMPLETABLE_TILES_LIST)
-        - COMPLETABLE_TILES_LIST
-    )
-
-    return rom.read(COMPLETABLE_TILES_LIST, completable_tile_amount)

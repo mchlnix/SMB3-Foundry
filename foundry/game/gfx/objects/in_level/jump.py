@@ -1,15 +1,19 @@
 from PySide6.QtCore import QRect
+from PySide6.QtGui import QImage, QPainter
 
-from foundry.game.gfx.objects.LevelObject import GROUND, SCREEN_HEIGHT, SCREEN_WIDTH
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game import GROUND
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 
 
-class Jump(ObjectLike):
+class Jump(InLevelObject):
     POINTER_DOMAIN = 0b111
 
     SIZE = 3  # bytes
 
     def __init__(self, data):
+        super(Jump, self).__init__()
+
         self.data = data
 
         # domain: 0b1110
@@ -26,6 +30,30 @@ class Jump(ObjectLike):
         self.exit_action = data[1] & 0x0F
         # for some reason those are flipped, meaning 5678, 1234
         self.exit_horizontal = ((data[2] & 0xF) << 4) + (data[2] >> 4)
+
+    def draw(self, painter: QPainter, block_length, transparent):
+        pass
+
+    def change_type(self, new_type):
+        pass
+
+    def render(self):
+        pass
+
+    def get_status_info(self):
+        pass
+
+    def resize_by(self, dx, dy):
+        pass
+
+    def increment_type(self):
+        pass
+
+    def decrement_type(self):
+        pass
+
+    def as_image(self) -> QImage:
+        raise NotImplementedError("Jumps don't have any image to display.")
 
     def to_bytes(self):
         return self.data
@@ -58,48 +86,18 @@ class Jump(ObjectLike):
 
         return Jump(data)
 
-    def render(self):
-        pass
-
-    def draw(self, dc, zoom, transparent):
-        pass
-
-    def get_status_info(self):
-        return []
-
-    def set_position(self, x, y):
-        pass
-
-    def move_by(self, dx, dy):
-        pass
-
-    def get_position(self):
-        return 0, 0
-
-    def resize_by(self, dx, dy):
-        pass
-
-    def point_in(self, x, y):
-        return False
-
-    def change_type(self, new_type):
-        pass
-
     def get_rect(self, block_length=1, vertical=False) -> QRect:
         if vertical:
             return QRect(
                 0,
-                block_length * (1 + SCREEN_HEIGHT * self.screen_index),
-                block_length * SCREEN_WIDTH,
-                block_length * SCREEN_HEIGHT,
+                block_length * (1 + LEVEL_SCREEN_HEIGHT * self.screen_index),
+                block_length * LEVEL_SCREEN_WIDTH,
+                block_length * LEVEL_SCREEN_HEIGHT,
             )
         else:
             return QRect(
-                block_length * SCREEN_WIDTH * self.screen_index,
+                block_length * LEVEL_SCREEN_WIDTH * self.screen_index,
                 0,
-                block_length * SCREEN_WIDTH,
+                block_length * LEVEL_SCREEN_WIDTH,
                 block_length * GROUND,
             )
-
-    def __contains__(self, point):
-        return False

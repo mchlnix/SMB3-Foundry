@@ -4,8 +4,7 @@ from PySide6.QtGui import QImage
 from foundry import data_dir
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-
+from foundry.game.gfx.objects import EnemyItem
 
 ENEMY_ITEM_SPRITE_SHEET = QImage(str(data_dir.joinpath("gfx.png")))
 
@@ -30,7 +29,7 @@ class EnemyItemFactory:
         self.palette_group = load_palette_group(object_set, palette_index)
 
     def from_data(self, data, _):
-        return EnemyObject(data, self.png_data, self.palette_group)
+        return EnemyItem(data, self.png_data, self.palette_group)
 
     def from_properties(self, enemy_item_id: int, x: int, y: int):
         data = bytearray(3)

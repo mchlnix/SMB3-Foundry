@@ -1,9 +1,9 @@
 import pytest
-from PySide6.QtWidgets import QComboBox, QCheckBox
+from PySide6.QtWidgets import QCheckBox, QComboBox
 
-from foundry.game.gfx.objects.LevelObject import SCREEN_WIDTH
 from foundry.game.level.Level import Level
 from foundry.gui.HeaderEditor import HeaderEditor
+from smb3parse.levels import LEVEL_SCREEN_WIDTH
 
 
 @pytest.fixture
@@ -47,7 +47,7 @@ def _test_check_box(check_box: QCheckBox, level: Level, level_attr: str, expecte
 @pytest.mark.parametrize(
     "dropdown, level_attr, expected_change",
     [
-        ("length_dropdown", "length", +SCREEN_WIDTH),
+        ("length_dropdown", "length", +LEVEL_SCREEN_WIDTH),
         ("music_dropdown", "music_index", +1),
         ("time_dropdown", "time_index", +1),
         ("camera_movement_dropdown", "scroll_type", +1),

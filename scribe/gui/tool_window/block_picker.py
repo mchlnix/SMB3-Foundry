@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.gui.BlockViewer import BlockBank
+from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID
 
 
 class BlockIcon(QWidget):
@@ -56,7 +57,7 @@ class BlockList(QWidget):
         self.current_block = BlockIcon(0, zoom_level=4)
         self.current_block.clicked.connect(self.set_current_block)
 
-        self.recent_blocks = [BlockIcon(0xFE) for _ in range(9)]
+        self.recent_blocks = [BlockIcon(WORLD_MAP_BLANK_TILE_ID) for _ in range(9)]
 
         self.layout().addWidget(self.current_block)
         self.layout().addSpacing(10)

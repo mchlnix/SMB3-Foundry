@@ -1,21 +1,22 @@
-from typing import List, Optional, Tuple, Union
+from typing import List
 from warnings import warn
 
 from PySide6.QtCore import QRect, QSize
 from PySide6.QtGui import QImage, QPainter
 
+from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, GROUND, SKY
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PaletteGroup, bg_color_for_object_set
 from foundry.game.gfx.drawable.Block import Block, get_block
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.ObjectLike import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, ObjectLike
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from smb3parse.levels import (
+    LEVEL_SCREEN_HEIGHT,
+    LEVEL_SCREEN_WIDTH,
+)
 from smb3parse.objects.object_set import PLAINS_OBJECT_SET
-
-SKY = 0
-GROUND = 27
 
 ENDING_STR = {
     EndType.UNIFORM: "Uniform",
@@ -48,39 +49,8 @@ ENDING_OBJECT_OFFSET = 0x1C8F9
 # not all objects provide a block index for blank block
 BLANK = -1
 
-SCREEN_HEIGHT = 15
-SCREEN_WIDTH = 16
 
-
-def get_minimal_icon_object(
-    level_object: Union["LevelObject", EnemyObject]
-) -> Optional[Union["LevelObject", EnemyObject]]:
-    """
-    Returns the object with a length, so that every block is rendered. E. g. clouds with length 0, don't have a face.
-    """
-
-    if not isinstance(level_object, (LevelObject, EnemyObject)):
-        return None
-
-    if isinstance(level_object, EnemyObject):
-        return level_object
-
-    level_object.ground_level = 3
-
-    while (
-        any(block not in level_object.rendered_blocks for block in level_object.blocks) and level_object.length < 0x10
-    ):
-        level_object.length += 1
-
-        if level_object.is_4byte:
-            level_object.secondary_length += 1
-
-        level_object.render()
-
-    return level_object
-
-
-class LevelObject(ObjectLike):
+class LevelObject(InLevelObject):
     def __init__(
         self,
         data: bytearray,
@@ -92,16 +62,17 @@ class LevelObject(ObjectLike):
         index: int,
         size_minimal: bool = False,
     ):
+        super(LevelObject, self).__init__()
+
         self.object_set = ObjectSet(object_set)
 
         self.graphics_set = graphics_set
         self.tsa_data = ROM.get_tsa_data(object_set)
 
-        self.x_position = 0
-        self.y_position = 0
-
         self.rendered_base_x = 0
         self.rendered_base_y = 0
+
+        self.is_single_block = False
 
         self.palette_group = palette_group
 
@@ -140,10 +111,10 @@ class LevelObject(ObjectLike):
         self.x_position = self.original_x
 
         if self.vertical_level:
-            offset = (self.x_position // SCREEN_WIDTH) * SCREEN_HEIGHT
+            offset = (self.x_position // LEVEL_SCREEN_WIDTH) * LEVEL_SCREEN_HEIGHT
 
             self.y_position += offset
-            self.x_position %= SCREEN_WIDTH
+            self.x_position %= LEVEL_SCREEN_WIDTH
 
         # describes what object it is
         self._obj_index = 0x00
@@ -681,13 +652,13 @@ class LevelObject(ObjectLike):
                 # breakpoint()
 
             if self.name.lower() == "black boss room background":
-                new_width = SCREEN_WIDTH
-                new_height = SCREEN_HEIGHT
+                new_width = LEVEL_SCREEN_WIDTH
+                new_height = LEVEL_SCREEN_HEIGHT
 
-                base_x = self.x_position // SCREEN_WIDTH * SCREEN_WIDTH
+                base_x = self.x_position // LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_WIDTH
                 base_y = 0
 
-                blocks_to_draw = SCREEN_WIDTH * SCREEN_HEIGHT * [self.blocks[0]]
+                blocks_to_draw = LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_HEIGHT * [self.blocks[0]]
 
         # for not yet implemented objects and single block objects
         if blocks_to_draw:
@@ -920,11 +891,6 @@ class LevelObject(ObjectLike):
 
         self._setup()
 
-    def __contains__(self, item: Tuple[int, int]) -> bool:
-        x, y = item
-
-        return self.point_in(x, y)
-
     def point_in(self, x: int, y: int) -> bool:
         return self.rect.contains(x, y)
 
@@ -968,10 +934,10 @@ class LevelObject(ObjectLike):
             # seems like you can't convert the coordinates 1:1
             # there seems to be ambiguity
 
-            offset = self.y_position // SCREEN_HEIGHT
+            offset = self.y_position // LEVEL_SCREEN_HEIGHT
 
-            x_position = self.x_position + offset * SCREEN_WIDTH
-            y_position = self.y_position % SCREEN_HEIGHT
+            x_position = self.x_position + offset * LEVEL_SCREEN_WIDTH
+            y_position = self.y_position % LEVEL_SCREEN_HEIGHT
         else:
             x_position = self.x_position
             y_position = self.y_position

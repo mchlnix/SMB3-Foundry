@@ -6,14 +6,10 @@ from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
-from foundry.game.gfx.objects.MapObject import MapObject
-from foundry.game.gfx.objects.airship_point import AirshipTravelPoint
-from foundry.game.gfx.objects.level_pointer import LevelPointer
-from foundry.game.gfx.objects.locks import Lock
-from foundry.game.gfx.objects.sprite import Sprite
+from foundry.game.gfx.objects import AirshipTravelPoint, LevelPointer, Lock, MapTile, Sprite
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.data_points import Position
-from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID
+from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.levels.world_map import (
     WORLD_MAP_HEIGHT,
     WorldMap as _WorldMap,
@@ -48,12 +44,7 @@ class WorldMap(LevelLike):
 
         self.size = 0, 0
 
-        self.world = 0
-
-        self.objects: List[MapObject] = []
-
-        self.selected_level_pointers = []
-        self.selected_sprites = []
+        self.objects: List[MapTile] = []
 
         self._load_objects()
         self._load_sprites()
@@ -82,7 +73,7 @@ class WorldMap(LevelLike):
 
             block = get_block(tile, self.palette_group, self.graphics_set, self.tsa_data)
 
-            self.objects.append(MapObject(block, pos))
+            self.objects.append(MapTile(block, pos))
 
         assert len(self.objects) % WORLD_MAP_HEIGHT == 0
 
@@ -103,9 +94,9 @@ class WorldMap(LevelLike):
     def _load_airship_points(self):
         self.airship_travel_sets: List[List[AirshipTravelPoint]] = []
 
-        for airship_travel_set in self.data.airship_travel_sets:
+        for set_no, airship_travel_set in enumerate(self.data.airship_travel_sets):
             self.airship_travel_sets.append(
-                [AirshipTravelPoint(pos, index) for index, pos in enumerate(airship_travel_set)]
+                [AirshipTravelPoint(pos, set_no, index) for index, pos in enumerate(airship_travel_set)]
             )
 
     def _load_locks_and_bridges(self):
@@ -125,15 +116,6 @@ class WorldMap(LevelLike):
         if self.size != old_size:
             self.dimensions_changed.emit()
 
-    def add_object(self, obj, _):
-        self.objects.append(obj)
-
-        self.objects.sort(key=self._array_index)
-
-    def select_level_pointers(self, indexes: List[int]):
-        self.selected_level_pointers = indexes
-        self._signal_emitter.needs_redraw.emit()
-
     def move_level_pointers(self, source_index: int, target_index: int):
         if source_index == target_index:
             return
@@ -144,9 +126,7 @@ class WorldMap(LevelLike):
         for index, level_pointer in enumerate(self.level_pointers):
             level_pointer.data.change_index(index)
 
-    def select_sprites(self, indexes: List[int]):
-        self.selected_sprites = indexes
-        self._signal_emitter.needs_redraw.emit()
+        self.changed = True
 
     def move_sprites(self, source_index: int, target_index: int):
         if source_index == target_index:
@@ -158,16 +138,7 @@ class WorldMap(LevelLike):
         for index, sprite in enumerate(self.sprites):
             sprite.data.change_index(index)
 
-    def move_tile(self, source_index: int, target_index: int, obj_index: int):
-        if source_index == target_index:
-            return
-
-        source_obj = self.objects[source_index]
-        source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
-
-        if target_index < len(self.objects):
-            target_obj = self.objects[target_index]
-            target_obj.change_type(obj_index)
+        self.changed = True
 
     @property
     def q_size(self):
@@ -203,35 +174,10 @@ class WorldMap(LevelLike):
         point = QPoint(x, y)
 
         for obj in reversed(self.objects):
-            if obj.rect.contains(point):
+            if obj.get_rect().contains(point):
                 return obj
 
         return None
-
-    def to_bytes(self):
-        return_array = bytearray(len(self.objects))
-
-        for obj in self.objects:
-            index = obj.pos.tile_data_index
-
-            return_array[index] = obj.to_bytes()
-
-        return self.layout_address, return_array
-
-    def from_bytes(self, data, _=None):
-        offset, obj_bytes = data
-
-        self.layout_address = offset
-        self._load_objects()
-
-        self._calc_size()
-
-    def get_object(self, index):
-        return self.objects[index]
-
-    # TODO: not remove, clear the tile data
-    def remove_object(self, obj):
-        self.objects.remove(obj)
 
     def _write_tile_data(self):
         world_data = self.data
@@ -247,18 +193,6 @@ class WorldMap(LevelLike):
 
         self._load_objects()
 
-        self.data_changed.emit()
-
-    def remove_all_tiles(self):
-        for obj in self.objects:
-            obj.change_type(0xFE)
-
-    def remove_all_sprites(self):
-        self.internal_world_map.clear_sprites()
-        self.data_changed.emit()
-
-    def remove_all_level_pointers(self):
-        self.internal_world_map.clear_level_pointers()
         self.data_changed.emit()
 
     def level_pointer_at(self, x: int, y: int) -> Optional[LevelPointer]:
@@ -322,7 +256,7 @@ class WorldMap(LevelLike):
     def fully_loaded(self):
         return True
 
-    def save_to_rom(self, rom: Optional[ROM] = None):
+    def save_to_rom(self):
         self._write_tile_data()
 
         self.data.write_back()

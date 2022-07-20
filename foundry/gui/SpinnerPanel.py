@@ -3,8 +3,9 @@ from typing import Optional
 from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtWidgets import QFormLayout, QSizePolicy, QWidget
 
-from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects import LevelObject
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
 
@@ -75,7 +76,7 @@ class SpinnerPanel(QWidget):
 
         super(SpinnerPanel, self).update()
 
-    def _populate_spinners(self, obj: ObjectLike):
+    def _populate_spinners(self, obj: InLevelObject):
         self.blockSignals(True)
 
         self.set_type(obj.obj_index)

@@ -1,35 +1,58 @@
+from typing import List
+
 import pytest
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QMouseEvent, Qt
 
 import foundry
-from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.WorldView import WorldView
+from foundry.game.gfx.objects import Sprite
+from scribe.gui.main_window import ScribeMainWindow
+from scribe.gui.tool_window.tool_window import ToolWindow
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1
-from smb3parse.data_points import WorldMapData
 from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_SCREEN_WIDTH
-from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
 @pytest.fixture
-def worldview(rom, qtbot):
-    world_1 = WorldMapData(rom, 0)
-    level_ref = LevelRef()
-    level_ref.load_level("", world_1.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+def main_window(rom, qtbot):
+    # mock the rom loading, since it is a modal dialog. the rom is loaded in conftest.py
+    ScribeMainWindow.on_open_rom = lambda *_: True
+    ScribeMainWindow.showMaximized = lambda _: None  # don't open automatically
+    ScribeMainWindow.show = lambda _: None  # don't open automatically
+    ScribeMainWindow.safe_to_change = lambda _: True  # don't ask for confirmation on changed level
+    ToolWindow.show = lambda _: None
 
-    worldview = WorldView(None, level_ref)
+    main_window = ScribeMainWindow("")
 
-    return worldview
+    main_window.level_menu.actions()[0].trigger()
+
+    main_window.world_view.zoom_out()
+    main_window.world_view.zoom_out()
+
+    return main_window
 
 
-def drag_from_to(worldview, start_point: QPoint, end_point: QPoint, modifiers: Qt.KeyboardModifier = Qt.NoModifier):
+@pytest.fixture
+def worldview(main_window):
+    return main_window.world_view
+
+
+def drag_from_to(
+    worldview,
+    start_point: QPoint,
+    end_point: QPoint,
+    points: List[QPoint] = None,
+    modifiers: Qt.KeyboardModifier = Qt.NoModifier,
+):
+    if points is None:
+        points = []
+
     # click left on a tile
     click_event = QMouseEvent(QMouseEvent.MouseButtonPress, start_point, Qt.LeftButton, Qt.LeftButton, modifiers)
     worldview.mousePressEvent(click_event)
 
-    # move the mouse, while holding down
-    move_event = QMouseEvent(QMouseEvent.MouseMove, end_point, Qt.LeftButton, Qt.NoButton, modifiers)
-    worldview.mouseMoveEvent(move_event)
+    for point in points + [end_point]:
+        move_event = QMouseEvent(QMouseEvent.MouseMove, point, Qt.NoButton, Qt.LeftButton, modifiers)
+        worldview.mouseMoveEvent(move_event)
 
     # let go of button, while out of bounds
     release_event = QMouseEvent(QMouseEvent.MouseButtonRelease, end_point, Qt.LeftButton, Qt.NoButton, modifiers)
@@ -102,6 +125,37 @@ def test_moving_all_objects_partly_off_screen(worldview):
             assert map_object.type != WORLD_MAP_BLANK_TILE_ID, index
         else:
             assert map_object.type == WORLD_MAP_BLANK_TILE_ID, index
+
+
+def test_move_sprite(worldview):
+    start_pos = QPoint(10, 6) * worldview.block_length
+    end_pos = QPoint(0, 0) * worldview.block_length
+
+    assert isinstance(worldview._visible_object_at(start_pos), Sprite)
+
+    drag_from_to(worldview, start_pos, end_pos)
+
+    assert not isinstance(worldview._visible_object_at(start_pos), Sprite)
+    assert isinstance(worldview._visible_object_at(end_pos), Sprite)
+
+
+def test_place_tiles_by_dragging(worldview):
+    start_pos = QPoint(0, 0) * worldview.block_length
+    end_pos = QPoint(15, 0) * worldview.block_length
+
+    tile_to_put = 0x20
+
+    worldview.on_put_tile(tile_to_put)
+
+    points = [QPoint(x * worldview.block_length, 0) for x in range(WORLD_MAP_SCREEN_WIDTH)]
+
+    drag_from_to(worldview, start_pos, end_pos, points)
+
+    for tile in worldview.world.objects:
+        assert tile.type == tile_to_put
+
+        if tile.x_position > 0:
+            break
 
 
 def test_fill_tiles(worldview):

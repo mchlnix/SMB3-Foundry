@@ -1,15 +1,12 @@
-from typing import List, Optional, Sequence, Tuple, Union, overload
+from typing import List, Optional, Tuple
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.EnemyItemFactory import EnemyItemFactory
-from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.gfx.objects.LevelObjectFactory import LevelObjectFactory
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry.game.gfx.objects import EnemyItem, EnemyItemFactory, Jump, LevelObject, LevelObjectFactory
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset
@@ -71,7 +68,7 @@ class Level(LevelLike):
         self.objects: List[LevelObject] = []
         self.header_bytes: bytearray = bytearray()
         self.jumps: List[Jump] = []
-        self.enemies: List[EnemyObject] = []
+        self.enemies: List[EnemyItem] = []
 
         if self.layout_address == self.enemy_offset == 0:
             # probably loaded to become an m3l
@@ -515,28 +512,28 @@ class Level(LevelLike):
     def too_many_enemies_or_items(self):
         return self.current_enemies_size() > self.enemy_size_on_disk
 
-    def get_all_objects(self) -> List[Union[LevelObject, EnemyObject]]:
+    def get_all_objects(self) -> List[InLevelObject]:
         return self.objects + self.enemies
 
-    def object_at(self, x: int, y: int) -> Optional[Union[EnemyObject, LevelObject]]:
+    def object_at(self, x: int, y: int) -> Optional[InLevelObject]:
         for obj in reversed(self.get_all_objects()):
-            if (x, y) in obj:
+            if obj.point_in(x, y):
                 return obj
         else:
             return None
 
-    def bring_to_foreground(self, objects: Sequence[Union[LevelObject, EnemyObject]]):
+    def bring_to_foreground(self, objects: List[InLevelObject]):
         for obj in objects:
             intersecting_objects = self.get_intersecting_objects(obj)
 
-            object_currently_in_the_foreground: Union[LevelObject, EnemyObject] = intersecting_objects[-1]
+            object_currently_in_the_foreground: InLevelObject = intersecting_objects[-1]
 
             if obj is object_currently_in_the_foreground:
                 continue
 
             if isinstance(obj, LevelObject):
                 objects = self.objects
-            elif isinstance(obj, EnemyObject):
+            elif isinstance(obj, EnemyItem):
                 objects = self.enemies
 
             objects.remove(obj)
@@ -545,18 +542,18 @@ class Level(LevelLike):
 
             objects.insert(index, obj)
 
-    def bring_to_background(self, level_objects: List[Union[LevelObject, EnemyObject]]):
+    def bring_to_background(self, level_objects: List[InLevelObject]):
         for obj in level_objects:
             intersecting_objects = self.get_intersecting_objects(obj)
 
-            object_currently_in_the_background: Union[LevelObject, EnemyObject] = intersecting_objects[0]
+            object_currently_in_the_background: InLevelObject = intersecting_objects[0]
 
             if obj is object_currently_in_the_background:
                 continue
 
             if isinstance(obj, LevelObject):
                 objects = self.objects
-            elif isinstance(obj, EnemyObject):
+            elif isinstance(obj, EnemyItem):
                 objects = self.enemies
             else:
                 raise TypeError()
@@ -567,15 +564,7 @@ class Level(LevelLike):
 
             objects.insert(index, obj)
 
-    @overload
-    def get_intersecting_objects(self, obj: LevelObject) -> List[LevelObject]:
-        ...
-
-    @overload
-    def get_intersecting_objects(self, obj: EnemyObject) -> List[EnemyObject]:
-        ...
-
-    def get_intersecting_objects(self, obj):
+    def get_intersecting_objects(self, obj: InLevelObject) -> List[InLevelObject]:
         """
         Returns all objects of the same type, that overlap the rectangle of the given object, including itself. The
         objects are in the order, that they appear in, in memory, meaning back to front.
@@ -585,12 +574,12 @@ class Level(LevelLike):
         """
         if isinstance(obj, LevelObject):
             objects_to_check = self.objects
-        elif isinstance(obj, EnemyObject):
+        elif isinstance(obj, EnemyItem):
             objects_to_check = self.enemies
         else:
             raise TypeError()
 
-        intersecting_objects = []
+        intersecting_objects: List[InLevelObject] = []
 
         for other_object in objects_to_check:
             if obj.get_rect().intersects(other_object.get_rect()):
@@ -602,7 +591,7 @@ class Level(LevelLike):
         pass
 
     def paste_object_at(self, x: int, y: int, obj: ObjectLike) -> Optional[ObjectLike]:
-        if isinstance(obj, EnemyObject):
+        if isinstance(obj, EnemyItem):
             return self.add_enemy(obj.obj_index, x, y)
 
         elif isinstance(obj, LevelObject):
@@ -636,7 +625,7 @@ class Level(LevelLike):
 
         return None
 
-    def add_enemy(self, object_index: int, x: int, y: int, index: int = -1) -> EnemyObject:
+    def add_enemy(self, object_index: int, x: int, y: int, index: int = -1) -> EnemyItem:
         if index == -1:
             index = len(self.enemies)
         else:
@@ -658,10 +647,10 @@ class Level(LevelLike):
 
         self.data_changed.emit()
 
-    def index_of(self, obj: Union[EnemyObject, LevelObject]) -> int:
+    def index_of(self, obj: InLevelObject) -> int:
         if isinstance(obj, LevelObject):
             return self.objects.index(obj)
-        elif isinstance(obj, EnemyObject):
+        elif isinstance(obj, EnemyItem):
             return len(self.objects) + self.enemies.index(obj)
         else:
             raise TypeError("Given Object was not EnemyObject or LevelObject.")
@@ -672,13 +661,13 @@ class Level(LevelLike):
         else:
             return self.enemies[index % len(self.objects)]
 
-    def remove_object(self, obj: Union[EnemyObject, LevelObject]):
+    def remove_object(self, obj: InLevelObject):
         if obj is None:
             return
 
         if isinstance(obj, LevelObject):
             self.objects.remove(obj)
-        elif isinstance(obj, EnemyObject):
+        elif isinstance(obj, EnemyItem):
             self.enemies.remove(obj)
 
     def to_m3l(self) -> bytearray:
@@ -743,6 +732,10 @@ class Level(LevelLike):
         self._signal_emitter.blockSignals(False)
 
         self._load_level_data(object_bytes, enemy_bytes)
+
+    def save_to_rom(self):
+        for offset, data in self.to_bytes():
+            ROM().bulk_write(data, offset)
 
     def to_bytes(self) -> LevelByteData:
         data = bytearray()

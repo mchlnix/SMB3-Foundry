@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from PySide6.QtWidgets import QCheckBox, QLabel, QVBoxLayout
 
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
+from foundry.game.gfx.objects import EnemyItem
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
@@ -96,7 +96,7 @@ class AutoScrollEditor(CustomDialog):
         super(AutoScrollEditor, self).closeEvent(event)
 
 
-def _get_autoscroll(enemy_items: List[EnemyObject]) -> Optional[EnemyObject]:
+def _get_autoscroll(enemy_items: List[EnemyItem]) -> Optional[EnemyItem]:
     for item in enemy_items:
         if item.obj_index == OBJ_AUTOSCROLL:
             return item

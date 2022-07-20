@@ -1,4 +1,4 @@
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects import LevelObject
 
 
 def test_domain_spinner(main_window):

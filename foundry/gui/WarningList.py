@@ -5,9 +5,9 @@ from PySide6.QtCore import QEvent, QRect, Qt, Signal, SignalInstance
 from PySide6.QtGui import QCursor, QFocusEvent
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
+from foundry.game import GROUND
 from foundry.game.ObjectDefinitions import GeneratorType
-from foundry.game.gfx.objects.EnemyItem import EnemyObject
-from foundry.game.gfx.objects.LevelObject import GROUND, LevelObject
+from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.HeaderEditor import CAMERA_MOVEMENTS
 from foundry.gui.LevelView import LevelView
@@ -54,7 +54,7 @@ class WarningList(QWidget):
 
         # level objects and enemies are inside the level
         for obj in level.get_all_objects():
-            if isinstance(obj, EnemyObject) and obj.obj_index == OBJ_AUTOSCROLL:
+            if isinstance(obj, EnemyItem) and obj.obj_index == OBJ_AUTOSCROLL:
                 continue
 
             if not level.get_rect().contains(obj.get_rect()):

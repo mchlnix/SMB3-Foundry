@@ -1,7 +1,7 @@
 import pytest
 
-from smb3parse.levels.world_map import WorldMap
 from smb3parse.constants import TILE_LEVEL_1
+from smb3parse.levels.world_map import WorldMap
 from smb3parse.util.rom import Rom
 
 

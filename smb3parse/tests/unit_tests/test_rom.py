@@ -1,4 +1,4 @@
-from smb3parse.util.rom import Rom, INESHeader
+from smb3parse.util.rom import INESHeader, Rom
 
 
 def test_find():

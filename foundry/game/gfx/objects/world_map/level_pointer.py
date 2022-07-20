@@ -3,16 +3,23 @@ from typing import Tuple
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter, QPen
 
-from foundry.game.gfx.objects.LevelObject import SCREEN_WIDTH
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
-from smb3parse.data_points import LevelPointerData
+from foundry.game.gfx.objects.world_map.map_object import MapObject
+from smb3parse.data_points import LevelPointerData, Position
+from smb3parse.levels.world_map import level_name
 
 
-class LevelPointer(ObjectLike):
+class LevelPointer(MapObject):
     def __init__(self, level_pointer_data: LevelPointerData):
+        super(LevelPointer, self).__init__()
+
         self.data = level_pointer_data
 
-    def render(self):
+    @property
+    def name(self):
+        return f"Level Pointer '{level_name(self.data)}'"
+
+    @name.setter
+    def name(self, value):
         pass
 
     def draw(self, painter: QPainter, block_length, transparent, selected=False):
@@ -27,37 +34,13 @@ class LevelPointer(ObjectLike):
 
         painter.drawRect(rect)
 
-    def get_status_info(self):
-        pass
-
     def set_position(self, x, y):
-        self.data.screen = x // SCREEN_WIDTH
-        self.data.x = x % SCREEN_WIDTH
-        self.data.y = y
-
-    def move_by(self, dx, dy):
-        x, y = self.get_position()
-        new_x = x + dx
-        new_y = y + dy
-
-        self.set_position(new_x, new_y)
+        self.data.pos = Position.from_xy(x, y)
 
     def get_position(self) -> Tuple[int, int]:
-        return self.data.screen * SCREEN_WIDTH + self.data.x, self.data.y
-
-    def resize_by(self, dx, dy):
-        pass
-
-    def point_in(self, x, y):
-        return x, y == self.get_position()
+        return self.data.pos.xy
 
     def change_type(self, new_type):
-        pass
-
-    def __contains__(self, point):
-        pass
-
-    def to_bytes(self):
         pass
 
     def __lt__(self, other):

@@ -1,7 +1,7 @@
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import Qt
 
-from foundry.game.gfx.objects.LevelObject import LevelObject
+from foundry.game.gfx.objects import LevelObject
 from foundry.gui.ContextMenu import LevelContextMenu
 
 
@@ -19,9 +19,6 @@ def test_correct_menu_position(main_window, monkeypatch, qtbot):
     context_menu = main_window.context_menu
     level_view = main_window.level_view
 
-    # show the main window, otherwise the scroll doesn't happen
-    main_window.show()
-
     # WHEN the level is scrolled to the right and a right click happens on the level_view to add an object
     main_window.scroll_panel.horizontalScrollBar().setValue(500)
 
@@ -30,8 +27,6 @@ def test_correct_menu_position(main_window, monkeypatch, qtbot):
     qtbot.mouseClick(level_view, Qt.RightButton, pos=point_in_level_view)
 
     context_menu.triggered.emit(context_menu.add_object_action)
-
-    main_window.hide()
 
     # THEN the context menu is opened next to the cursor
     added_object: LevelObject = main_window.level_ref.objects[-1]

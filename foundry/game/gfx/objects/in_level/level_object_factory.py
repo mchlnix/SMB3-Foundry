@@ -1,9 +1,9 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from foundry.game.gfx.objects.Jump import Jump
-from foundry.game.gfx.objects.LevelObject import LevelObject, SCREEN_HEIGHT, SCREEN_WIDTH
-from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
+from foundry.game.gfx.objects import Jump, LevelObject
+from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 
 
 class LevelObjectFactory:
@@ -70,10 +70,10 @@ class LevelObjectFactory:
         index: int,
     ):
         if self.vertical_level:
-            offset = y // SCREEN_HEIGHT
-            y %= SCREEN_HEIGHT
+            offset = y // LEVEL_SCREEN_HEIGHT
+            y %= LEVEL_SCREEN_HEIGHT
 
-            x += offset * SCREEN_WIDTH
+            x += offset * LEVEL_SCREEN_WIDTH
 
         data = bytearray(3)
 

@@ -1,13 +1,14 @@
 from typing import List, Optional, Tuple
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, Qt
-from PySide6.QtWidgets import QWidget
+from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, QUndoStack, Qt
+from PySide6.QtWidgets import QToolTip, QWidget
 
-from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
-from foundry.game.gfx.objects.LevelObject import LevelObject
-from foundry.game.gfx.objects.MapObject import MapObject
-from foundry.game.gfx.objects.ObjectLike import ObjectLike
+from foundry import get_level_thumbnail
+from foundry.game.ObjectSet import OBJECT_SET_NAMES
+from foundry.game.gfx.drawable.Block import get_worldmap_tile
+from foundry.game.gfx.objects import LevelObject, MapTile
+from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.MainView import (
@@ -19,7 +20,18 @@ from foundry.gui.MainView import (
 )
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
+from scribe.gui.commands import (
+    SetEnemyAddress,
+    SetLevelAddress,
+    SetObjectSet,
+    SetSpriteItem,
+    SetSpriteType,
+    MoveMapObject,
+    MoveTile,
+    PutTile,
+)
 from scribe.gui.world_view_context_menu import WorldContextMenu
+from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_NAMES, TILE_SPADE_HOUSE
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_HEIGHT
 
@@ -45,19 +57,20 @@ class WorldView(MainView):
         self.draw_locks = SETTINGS["draw_locks"]
         """Whether to highlight positions marked as having locks."""
 
-        self.changed = False
-        self._tile_to_put: Block = get_worldmap_tile(WORLD_MAP_BLANK_TILE_ID)
+        self.display_level_preview = False
+
+        self._tile_to_put: int = WORLD_MAP_BLANK_TILE_ID
 
         self.selection_square.set_offset(0, FIRST_VALID_ROW)
 
         self.mouse_mode = MODE_FREE
 
-        self.last_mouse_position = 0, 0
+        self.drag_start_point = Position.from_xy(0, 0)
+        self.last_mouse_position = Position.from_xy(0, 0)
 
-        self.drag_start_point = 0, 0
-        self.selected_object: Optional[ObjectLike] = None
+        self.selected_object: Optional[MapObject] = None
 
-        self.dragging_happened = True
+        self.dragging_happened = False
 
         # TODO: update
         self.setWhatsThis(
@@ -133,6 +146,10 @@ class WorldView(MainView):
         self.drawer.draw_locks = value
 
     @property
+    def undo_stack(self) -> QUndoStack:
+        return self.window().findChild(QUndoStack, "undo_stack")
+
+    @property
     def world(self) -> WorldMap:
         return self.level_ref.level
 
@@ -141,7 +158,7 @@ class WorldView(MainView):
             tile_pixmap = QPixmap(QSize(self.block_length, self.block_length))
 
             painter = QPainter(tile_pixmap)
-            self._tile_to_put.draw(painter, 0, 0, self.block_length)
+            get_worldmap_tile(self._tile_to_put).draw(painter, 0, 0, self.block_length)
             painter.end()
 
             self.setCursor(QCursor(tile_pixmap))
@@ -156,13 +173,12 @@ class WorldView(MainView):
             if event is None:
                 return
 
-            self.drag_start_point = self._to_level_point(event.pos())
+            self.drag_start_point = Position.from_xy(*self._to_level_point(event.pos()))
             self.last_mouse_position = self.drag_start_point
             self.setCursor(Qt.ClosedHandCursor)
 
         elif new_mode == MODE_FREE:
-            self._tile_to_put = get_worldmap_tile(WORLD_MAP_BLANK_TILE_ID)
-            self.selected_object = None
+            self._tile_to_put = WORLD_MAP_BLANK_TILE_ID
 
             self._object_was_selected_on_last_click = False
             self.setCursor(Qt.ArrowCursor)
@@ -170,10 +186,19 @@ class WorldView(MainView):
         self.mouse_mode = new_mode
 
     def on_put_tile(self, tile_id: int):
-        self._tile_to_put = get_worldmap_tile(tile_id)
+        self._tile_to_put = tile_id
         self.set_mouse_mode(MODE_PLACE_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
+        should_display_level = self.mouse_mode == MODE_FREE and self.display_level_preview
+
+        if should_display_level and not self._set_level_thumbnail(event):
+            # clear tooltip if supposed to show one, but no level thumbnail was available (e.g. no level there)
+            self.setCursor(Qt.ArrowCursor)
+
+            self.setToolTip("")
+            QToolTip.hideText()
+
         if self.read_only:
             return super(WorldView, self).mouseMoveEvent(event)
 
@@ -182,8 +207,8 @@ class WorldView(MainView):
 
             tile = self.world.object_at(x, y)
 
-            if tile != self._tile_to_put:
-                tile.change_type(self._tile_to_put.index)
+            if tile is not None and tile.type != self._tile_to_put:
+                self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
                 self.update()
         elif self.mouse_mode == MODE_DRAG:
             self._dragging(event)
@@ -193,17 +218,46 @@ class WorldView(MainView):
 
         return super(WorldView, self).mouseMoveEvent(event)
 
-    def _on_right_mouse_button_down(self, event: QMouseEvent):
-        pass
+    def _set_level_thumbnail(self, event: QMouseEvent):
+        if self.mouse_mode != MODE_FREE:
+            return False
+
+        x, y = self._to_level_point(event.pos())
+
+        if self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
+            return False
+
+        if (level_pointer := self.world.level_pointer_at(x, y)) is None:
+            return False
+
+        self.setCursor(Qt.PointingHandCursor)
+
+        try:
+            level_name = self.world.level_name_at_position(x, y)
+
+            object_set_name = OBJECT_SET_NAMES[level_pointer.data.object_set]
+
+            image_data = get_level_thumbnail(
+                level_pointer.data.object_set, level_pointer.data.level_address, level_pointer.data.enemy_address
+            )
+
+            self.setToolTip(
+                f"<b>{level_name}</b><br/>"
+                f"<u>Type:</u> {object_set_name} "
+                f"<u>Objects:</u> {level_pointer.data.level_address} "
+                f"<u>Enemies:</u> {level_pointer.data.enemy_address}<br/>"
+                f"<img src='data:image/png;base64,{image_data}'>"
+            )
+
+            return True
+        except ValueError:
+            return False
 
     def _on_right_mouse_button_up(self, event):
         self.set_mouse_mode(MODE_FREE, event)
 
     def _fill_tile(self, tile_to_fill_in: int, x, y):
-        if self._tile_to_put is None:
-            return
-
-        if tile_to_fill_in == self._tile_to_put.index:
+        if tile_to_fill_in == self._tile_to_put:
             return
 
         if x < 0 or x >= self.world.internal_world_map.width:
@@ -213,7 +267,7 @@ class WorldView(MainView):
             return
 
         if (tile := self.world.object_at(x, y)) is not None and tile.type == tile_to_fill_in:
-            tile.change_type(self._tile_to_put.index)
+            self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
         else:
             return
 
@@ -227,7 +281,7 @@ class WorldView(MainView):
 
         return x, y + FIRST_VALID_ROW
 
-    def _visible_object_at(self, point: QPoint) -> ObjectLike:
+    def _visible_object_at(self, point: QPoint) -> MapObject:
         level_x, level_y = self._to_level_point(point)
 
         obj = None
@@ -265,10 +319,14 @@ class WorldView(MainView):
 
             assert tile is not None
 
+            tile_to_put_name = TILE_NAMES[self._tile_to_put]
+
             if event.modifiers() & Qt.ShiftModifier:
+                self.undo_stack.beginMacro(f"Fill in '{tile.name}' with '{tile_to_put_name}'")
                 self._fill_tile(tile.type, x, y)
             else:
-                tile.change_type(self._tile_to_put.index)
+                self.undo_stack.beginMacro(f"Place '{tile_to_put_name}'")
+                self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
 
             self.update()
 
@@ -286,56 +344,49 @@ class WorldView(MainView):
         if obj and obj.selected:
             pass
         else:
-            self.selected_object = obj
-            obj.selected = True
+            self.select_object_like(obj)
 
         self.set_mouse_mode(MODE_DRAG, event)
 
     def _dragging(self, event: QMouseEvent):
+        level_pos = Position.from_xy(*self._to_level_point(event.pos()))
+        diff_pos = level_pos - self.last_mouse_position
+
+        dx, dy = diff_pos.xy
+
+        if dx == dy == 0:
+            return
+
         self.dragging_happened = True
 
-        level_x, level_y = self._to_level_point(event.pos())
-        dx = level_x - self.last_mouse_position[0]
-        dy = level_y - self.last_mouse_position[1]
-
-        self.last_mouse_position = level_x, level_y
+        self.last_mouse_position = level_pos
 
         for selected_obj in self.get_selected_objects():
             selected_obj.move_by(dx, dy)
-            self.level_ref.level.changed = True
+
+        if not self.get_selected_objects() and self.selected_object:
+            self.selected_object.move_by(dx, dy)
 
         self.level_ref.data_changed.emit()
         self.update()
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
         if self.mouse_mode == MODE_PLACE_TILE:
+            self.undo_stack.endMacro()
             return
 
         obj = self.object_at(event.pos())
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            drag_end_point = self._to_level_point(event.pos())
-            start_x, start_y = self.drag_start_point
-            end_x, end_y = drag_end_point
+            drag_end_point = Position.from_xy(*self._to_level_point(event.pos()))
 
-            dx = end_x - start_x
-            dy = end_y - start_y
+            if self.get_selected_objects():
+                self._move_selected_tiles(drag_end_point)
 
-            for selected_obj in reversed(self.get_selected_objects()):
-                if isinstance(selected_obj, MapObject):
-                    end_pos = Position.from_xy(*selected_obj.get_position())
-                    selected_obj.move_by(-dx, -dy)
-
-                    start_pos = Position.from_xy(*selected_obj.get_position())
-
-                    # we don't actually move the map position in the end, just change the type at both positions
-
-                    # if we are moving only one tile, then move it back, if more, reset them
-                    if len(self.get_selected_objects()) > 1 or self.level_ref.point_in(*end_pos.xy):
-                        self.world.move_tile(start_pos.tile_data_index, end_pos.tile_data_index, selected_obj.type)
-
-            if self.drag_start_point != drag_end_point:
-                self._stop_drag()
+            if self.selected_object and not isinstance(self.selected_object, MapTile):
+                self.undo_stack.push(
+                    MoveMapObject(self.world, self.selected_object, start=self.drag_start_point, end=drag_end_point)
+                )
 
             self.dragging_happened = False
 
@@ -356,18 +407,91 @@ class WorldView(MainView):
 
         self.set_mouse_mode(MODE_FREE, event)
 
-    def _stop_drag(self):
-        if self.dragging_happened:
-            self.level_ref.save_level_state()
+    def _move_selected_tiles(self, drag_end_point: Position):
+        dx, dy = (drag_end_point - self.drag_start_point).xy
 
-        self.dragging_happened = False
+        if dx == dy == 0:
+            return
+
+        sel_objects = self.get_selected_objects().copy()
+
+        self.select_objects([], replace_selection=True)
+
+        if (no_of_sel_objects := len(sel_objects)) > 1:
+            self.undo_stack.beginMacro(f"Move {no_of_sel_objects} Tiles")
+
+        old_objects = self.world.objects.copy()
+
+        for selected_obj in reversed(sel_objects):
+            if not isinstance(selected_obj, MapTile):
+                continue
+
+            end = selected_obj.pos.copy()
+
+            selected_obj.move_by(-dx, -dy)
+
+            start = selected_obj.pos.copy()
+
+            # we don't actually move the map position in the end, just change the type at both positions
+
+            # if we are moving only one tile, then move it back, if more, reset them
+            if no_of_sel_objects > 1 or self.world.point_in(*end.xy):
+                cmd = MoveTile(self.world, start, old_objects[start.tile_data_index].type, end)
+
+                self.undo_stack.push(cmd)
+
+        if no_of_sel_objects > 1:
+            self.undo_stack.endMacro()
 
     def _set_selection_end(self, position, always_replace_selection=False):
         return super(WorldView, self)._set_selection_end(position, True)
 
-    def remove_selected_objects(self):
-        for obj in self.level_ref.selected_objects:
-            self.level_ref.remove_object(obj)
+    def select_object_like(self, obj: MapObject):
+        if self.selected_object is not None:
+            self.selected_object.selected = False
+
+        if obj is None:
+            return
+
+        self.selected_object = obj
+        self.selected_object.selected = True
+
+        self.update()
+
+    def select_sprite(self, index: int):
+        self.select_object_like(self.world.sprites[index])
+
+    def select_level_pointer(self, index: int):
+        self.select_object_like(self.world.level_pointers[index])
+
+    def clear_tiles(self):
+        self.undo_stack.beginMacro("Clear Tiles")
+
+        for map_tile in self.world.get_all_objects():
+            self.undo_stack.push(PutTile(self.world, map_tile.pos, WORLD_MAP_BLANK_TILE_ID))
+
+        self.undo_stack.endMacro()
+
+    def clear_sprites(self):
+        self.undo_stack.beginMacro("Clear Sprites")
+
+        for sprite in self.world.sprites:
+            self.undo_stack.push(SetSpriteType(sprite.data, 0))
+            self.undo_stack.push(SetSpriteItem(sprite.data, 0))
+            self.undo_stack.push(MoveMapObject(self.world, sprite, Position.from_xy(0, FIRST_VALID_ROW)))
+
+        self.undo_stack.endMacro()
+
+    def clear_level_pointers(self):
+        self.undo_stack.beginMacro("Clear Level Pointers")
+
+        for level_pointer in self.world.level_pointers:
+            self.undo_stack.push(SetLevelAddress(level_pointer.data, 0))
+            self.undo_stack.push(SetEnemyAddress(level_pointer.data, 0))
+            self.undo_stack.push(SetObjectSet(level_pointer.data, 0))
+            self.undo_stack.push(MoveMapObject(self.world, level_pointer, Position.from_xy(0, FIRST_VALID_ROW)))
+
+        self.undo_stack.endMacro()
 
     def scroll_to_objects(self, objects: List[LevelObject]):
         if not objects:
@@ -377,9 +501,3 @@ class WorldView(MainView):
         min_y = min([obj.y_position for obj in objects]) * self.block_length
 
         self.parent().parent().ensureVisible(min_x, min_y)
-
-    def level_safe_to_save(self) -> Tuple[bool, str, str]:
-        return True, "", ""
-
-    def from_m3l(self, data: bytearray):
-        self.level_ref.from_m3l(data)
