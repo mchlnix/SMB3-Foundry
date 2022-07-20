@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import get_level_thumbnail
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
-from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
+from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects import LevelObject, MapTile
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.LevelRef import LevelRef
@@ -22,7 +22,7 @@ from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
 from scribe.gui.commands import MoveMapObject, MoveTile, PutTile
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
+from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_NAMES, TILE_SPADE_HOUSE
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_HEIGHT
 
@@ -51,7 +51,7 @@ class WorldView(MainView):
         self.display_level_preview = False
 
         self.changed = False
-        self._tile_to_put: Block = get_worldmap_tile(WORLD_MAP_BLANK_TILE_ID)
+        self._tile_to_put: int = WORLD_MAP_BLANK_TILE_ID
 
         self.selection_square.set_offset(0, FIRST_VALID_ROW)
 
@@ -150,7 +150,7 @@ class WorldView(MainView):
             tile_pixmap = QPixmap(QSize(self.block_length, self.block_length))
 
             painter = QPainter(tile_pixmap)
-            self._tile_to_put.draw(painter, 0, 0, self.block_length)
+            get_worldmap_tile(self._tile_to_put).draw(painter, 0, 0, self.block_length)
             painter.end()
 
             self.setCursor(QCursor(tile_pixmap))
@@ -170,7 +170,7 @@ class WorldView(MainView):
             self.setCursor(Qt.ClosedHandCursor)
 
         elif new_mode == MODE_FREE:
-            self._tile_to_put = get_worldmap_tile(WORLD_MAP_BLANK_TILE_ID)
+            self._tile_to_put = WORLD_MAP_BLANK_TILE_ID
 
             self._object_was_selected_on_last_click = False
             self.setCursor(Qt.ArrowCursor)
@@ -178,7 +178,7 @@ class WorldView(MainView):
         self.mouse_mode = new_mode
 
     def on_put_tile(self, tile_id: int):
-        self._tile_to_put = get_worldmap_tile(tile_id)
+        self._tile_to_put = tile_id
         self.set_mouse_mode(MODE_PLACE_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
@@ -199,8 +199,8 @@ class WorldView(MainView):
 
             tile = self.world.object_at(x, y)
 
-            if tile is not None and tile != self._tile_to_put:
-                tile.change_type(self._tile_to_put.index)
+            if tile.type != self._tile_to_put:
+                tile.change_type(self._tile_to_put)
                 self.update()
         elif self.mouse_mode == MODE_DRAG:
             self._dragging(event)
@@ -249,10 +249,7 @@ class WorldView(MainView):
         self.set_mouse_mode(MODE_FREE, event)
 
     def _fill_tile(self, tile_to_fill_in: int, x, y):
-        if self._tile_to_put is None:
-            return
-
-        if tile_to_fill_in == self._tile_to_put.index:
+        if tile_to_fill_in == self._tile_to_put:
             return
 
         if x < 0 or x >= self.world.internal_world_map.width:
@@ -262,7 +259,7 @@ class WorldView(MainView):
             return
 
         if (tile := self.world.object_at(x, y)) is not None and tile.type == tile_to_fill_in:
-            self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put.index))
+            self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
         else:
             return
 
@@ -314,12 +311,14 @@ class WorldView(MainView):
 
             assert tile is not None
 
+            tile_to_put_name = TILE_NAMES[self._tile_to_put]
+
             if event.modifiers() & Qt.ShiftModifier:
-                self.undo_stack.beginMacro(f"Fill in '{tile.name}'")
+                self.undo_stack.beginMacro(f"Fill in '{tile.name}' with '{tile_to_put_name}'")
                 self._fill_tile(tile.type, x, y)
                 self.undo_stack.endMacro()
             else:
-                tile.change_type(self._tile_to_put.index)
+                tile.change_type(self._tile_to_put)
 
             self.update()
 
