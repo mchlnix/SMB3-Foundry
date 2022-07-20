@@ -20,7 +20,16 @@ from foundry.gui.MainView import (
 )
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import SETTINGS
-from scribe.gui.commands import MoveMapObject, MoveTile, PutTile
+from scribe.gui.commands import (
+    SetEnemyAddress,
+    SetLevelAddress,
+    SetObjectSet,
+    SetSpriteItem,
+    SetSpriteType,
+    MoveMapObject,
+    MoveTile,
+    PutTile,
+)
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_NAMES, TILE_SPADE_HOUSE
 from smb3parse.data_points import Position
@@ -372,13 +381,15 @@ class WorldView(MainView):
         obj = self.object_at(event.pos())
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            drag_end_point = self._to_level_point(event.pos())
+            drag_end_point = Position.from_xy(*self._to_level_point(event.pos()))
 
             if self.get_selected_objects():
                 self._move_selected_tiles(drag_end_point)
 
             if self.selected_object and not isinstance(self.selected_object, MapTile):
-                self.undo_stack.push(MoveMapObject(self.world, self.selected_object, self.drag_start_point))
+                self.undo_stack.push(
+                    MoveMapObject(self.world, self.selected_object, start=self.drag_start_point, end=drag_end_point)
+                )
 
             self.dragging_happened = False
 
@@ -399,17 +410,14 @@ class WorldView(MainView):
 
         self.set_mouse_mode(MODE_FREE, event)
 
-    def _move_selected_tiles(self, drag_end_point: QPoint):
-        start_x, start_y = self.drag_start_point.xy
-        end_x, end_y = drag_end_point
-
-        dx = end_x - start_x
-        dy = end_y - start_y
+    def _move_selected_tiles(self, drag_end_point: Position):
+        dx, dy = (drag_end_point - self.drag_start_point).xy
 
         if dx == dy == 0:
             return
 
-        self.undo_stack.beginMacro("Move Tiles")
+        if len(self.get_selected_objects()) > 1:
+            self.undo_stack.beginMacro(f"Move {len(self.get_selected_objects())} Tiles")
 
         old_objects = self.world.objects.copy()
 
@@ -431,7 +439,8 @@ class WorldView(MainView):
 
                 self.undo_stack.push(cmd)
 
-        self.undo_stack.endMacro()
+        if len(self.get_selected_objects()) > 1:
+            self.undo_stack.endMacro()
 
     def _set_selection_end(self, position, always_replace_selection=False):
         return super(WorldView, self)._set_selection_end(position, True)
@@ -453,6 +462,35 @@ class WorldView(MainView):
 
     def select_level_pointer(self, index: int):
         self.select_object_like(self.world.level_pointers[index])
+
+    def clear_tiles(self):
+        self.undo_stack.beginMacro("Clear Tiles")
+
+        for map_tile in self.world.get_all_objects():
+            self.undo_stack.push(PutTile(self.world, map_tile.pos, WORLD_MAP_BLANK_TILE_ID))
+
+        self.undo_stack.endMacro()
+
+    def clear_sprites(self):
+        self.undo_stack.beginMacro("Clear Sprites")
+
+        for sprite in self.world.sprites:
+            self.undo_stack.push(SetSpriteType(sprite.data, 0))
+            self.undo_stack.push(SetSpriteItem(sprite.data, 0))
+            self.undo_stack.push(MoveMapObject(self.world, sprite, Position.from_xy(0, FIRST_VALID_ROW)))
+
+        self.undo_stack.endMacro()
+
+    def clear_level_pointers(self):
+        self.undo_stack.beginMacro("Clear Level Pointers")
+
+        for level_pointer in self.world.level_pointers:
+            self.undo_stack.push(SetLevelAddress(level_pointer.data, 0))
+            self.undo_stack.push(SetEnemyAddress(level_pointer.data, 0))
+            self.undo_stack.push(SetObjectSet(level_pointer.data, 0))
+            self.undo_stack.push(MoveMapObject(self.world, level_pointer, Position.from_xy(0, FIRST_VALID_ROW)))
+
+        self.undo_stack.endMacro()
 
     def remove_selected_objects(self):
         for obj in self.level_ref.selected_objects:

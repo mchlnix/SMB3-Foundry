@@ -16,10 +16,18 @@ class MapTile(MapObject):
         self.block = block
         self.type = self.block.index
 
+    @property
+    def name(self):
         if self.type in TILE_NAMES:
-            self.name = TILE_NAMES[self.type]
+            name = TILE_NAMES[self.type]
         else:
-            self.name = str(hex(self.type))
+            name = str(hex(self.type))
+
+        return name
+
+    @name.setter
+    def name(self, value):
+        pass
 
     def draw(self, dc, block_length, _=None):
         self.block.draw(

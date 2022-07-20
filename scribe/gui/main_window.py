@@ -70,9 +70,9 @@ class ScribeMainWindow(MainWindow):
 
         self.edit_menu.addSeparator()
 
-        self.delete_tiles_action = self.edit_menu.addAction("Delete All &Tiles")
-        self.delete_level_pointers_action = self.edit_menu.addAction("Delete All Level &Pointers")
-        self.delete_sprites_action = self.edit_menu.addAction("Delete All &Sprites")
+        self.clear_tiles_action = self.edit_menu.addAction("Clear &Tiles")
+        self.clear_level_pointers_action = self.edit_menu.addAction("Clear All Level &Pointers")
+        self.clear_sprites_action = self.edit_menu.addAction("Clear All &Sprites")
 
         self.edit_menu.addSeparator()
 
@@ -198,13 +198,12 @@ class ScribeMainWindow(MainWindow):
         self.world_view.update()
 
     def on_edit_menu(self, action: QAction):
-        if action is self.delete_tiles_action:
-            self.level_ref.level.remove_all_tiles()
-        elif action is self.delete_sprites_action:
-            # TODO reload sprites, after clearing
-            self.level_ref.level.remove_all_sprites()
-        elif action is self.delete_level_pointers_action:
-            self.level_ref.level.remove_all_level_pointers()
+        if action is self.clear_tiles_action:
+            self.world_view.clear_tiles()
+        elif action is self.clear_sprites_action:
+            self.world_view.clear_sprites()
+        elif action is self.clear_level_pointers_action:
+            self.world_view.clear_level_pointers()
         elif action is self.edit_world_info:
             EditWorldInfo(self, self.level_ref.level).exec()
 

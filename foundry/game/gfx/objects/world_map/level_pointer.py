@@ -14,7 +14,13 @@ class LevelPointer(MapObject):
 
         self.data = level_pointer_data
 
-        self.name = f"Level Pointer '{level_name(level_pointer_data)}'"
+    @property
+    def name(self):
+        return f"Level Pointer '{level_name(self.data)}'"
+
+    @name.setter
+    def name(self, value):
+        pass
 
     def draw(self, painter: QPainter, block_length, transparent, selected=False):
         pos = QPoint(*self.data.pos.xy) * block_length

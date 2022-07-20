@@ -1,6 +1,7 @@
 from typing import List
 
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Signal
+from PySide6.QtGui import QUndoStack
 from PySide6.QtWidgets import (
     QComboBox,
     QHeaderView,
@@ -19,8 +20,8 @@ from foundry.gui.Spinner import Spinner
 class TableWidget(QTableWidget):
     selection_changed = Signal(int)
 
-    def __init__(self, level_ref: LevelRef):
-        super(TableWidget, self).__init__()
+    def __init__(self, parent, level_ref: LevelRef):
+        super(TableWidget, self).__init__(parent)
 
         self.setDragDropMode(self.InternalMove)
 
@@ -34,6 +35,8 @@ class TableWidget(QTableWidget):
 
         self.itemSelectionChanged.connect(lambda: self.selection_changed.emit(self.selected_row))
 
+        self.undo_stack.indexChanged.connect(self.update_content)
+
     def set_headers(self, headers: List[str]):
         self.setColumnCount(len(headers))
 
@@ -44,11 +47,18 @@ class TableWidget(QTableWidget):
         return self.level_ref.level
 
     @property
+    def undo_stack(self) -> QUndoStack:
+        return self.window().parent().findChild(QUndoStack, "undo_stack")
+
+    @property
     def selected_row(self):
         if self.selectedIndexes():
             return self.selectedIndexes()[0].row()
         else:
             return -1
+
+    def update_content(self):
+        pass
 
 
 class DropdownDelegate(QStyledItemDelegate):

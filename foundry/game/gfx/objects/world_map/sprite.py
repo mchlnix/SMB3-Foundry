@@ -55,7 +55,14 @@ class Sprite(MapObject):
         super(Sprite, self).__init__()
 
         self.data = sprite_data
-        self.name = f"Sprite '{MAPOBJ_NAMES[self.data.type]}'"
+
+    @property
+    def name(self):
+        return f"Sprite '{MAPOBJ_NAMES[self.data.type]}'"
+
+    @name.setter
+    def name(self, value):
+        pass
 
     def draw(self, painter, block_length, transparent, selected=False):
         pos = QPoint(*self.data.pos.xy) * block_length

@@ -1,8 +1,10 @@
 from PySide6.QtGui import QUndoCommand
 
+from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
-from smb3parse.data_points import Position
+from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, TILE_NAMES
+from smb3parse.data_points import LevelPointerData, Position, SpriteData
 from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID
 
 
@@ -22,8 +24,7 @@ class MoveTile(QUndoCommand):
         else:
             self.tile_before = WORLD_MAP_BLANK_TILE_ID
 
-        if start == end:
-            self.setObsolete(True)
+        self.setText(f"Move Tile '{TILE_NAMES[tile_after]}'")
 
     def undo(self):
         if 0 <= self.start.tile_data_index < len(self.world.objects):
@@ -45,15 +46,19 @@ class MoveTile(QUndoCommand):
 
 
 class MoveMapObject(QUndoCommand):
-    def __init__(self, world: WorldMap, map_object: MapObject, start: Position, parent=None):
+    def __init__(self, world: WorldMap, map_object: MapObject, end: Position, start: Position = None, parent=None):
         super(MoveMapObject, self).__init__(parent)
 
         self.world = world
 
         self.map_object = map_object
 
-        self.start = start.xy
-        self.end = self.map_object.get_position()
+        if start is None:
+            self.start = map_object.get_position()
+        else:
+            self.start = start.xy
+
+        self.end = end.xy
 
         self.setText(f"Move {self.map_object.name}")
 
@@ -71,3 +76,93 @@ class PutTile(MoveTile):
         super(PutTile, self).__init__(
             world, start=Position.from_xy(-1, -1), tile_after=tile_index, end=pos, parent=parent
         )
+
+
+class SetLevelAddress(QUndoCommand):
+    def __init__(self, data: LevelPointerData, new_address: int, parent=None):
+        super(SetLevelAddress, self).__init__(parent)
+
+        self.data = data
+
+        self.old_address = data.level_address
+        self.new_address = new_address
+
+        self.setText(f"Set LP #{self.data.index + 1} Level Address to {hex(new_address)}")
+
+    def undo(self):
+        self.data.level_address = self.old_address
+
+    def redo(self):
+        self.data.level_address = self.new_address
+
+
+class SetEnemyAddress(QUndoCommand):
+    def __init__(self, data: LevelPointerData, new_address: int, parent=None):
+        super(SetEnemyAddress, self).__init__(parent)
+
+        self.data = data
+
+        self.old_address = data.enemy_address
+        self.new_address = new_address
+
+        self.setText(f"Set LP #{self.data.index + 1} Enemy Address to {hex(new_address)}")
+
+    def undo(self):
+        self.data.enemy_address = self.old_address
+
+    def redo(self):
+        self.data.enemy_address = self.new_address
+
+
+class SetObjectSet(QUndoCommand):
+    def __init__(self, data: LevelPointerData, object_set_number: int, parent=None):
+        super(SetObjectSet, self).__init__(parent)
+
+        self.data = data
+
+        self.old_object_set = data.object_set
+        self.new_object_set = object_set_number
+
+        self.setText(f"Set LP #{self.data.index + 1} Object Set to {OBJECT_SET_NAMES[object_set_number]}")
+
+    def undo(self):
+        self.data.object_set = self.old_object_set
+
+    def redo(self):
+        self.data.object_set = self.new_object_set
+
+
+class SetSpriteType(QUndoCommand):
+    def __init__(self, data: SpriteData, new_type: int, parent=None):
+        super(SetSpriteType, self).__init__(parent)
+
+        self.data = data
+
+        self.old_type = self.data.type
+        self.new_type = new_type
+
+        self.setText(f"Set Sprite #{self.data.index  +1} Type to {MAPOBJ_NAMES[new_type]}")
+
+    def undo(self):
+        self.data.type = self.old_type
+
+    def redo(self):
+        self.data.type = self.new_type
+
+
+class SetSpriteItem(QUndoCommand):
+    def __init__(self, data: SpriteData, new_item: int, parent=None):
+        super(SetSpriteItem, self).__init__(parent)
+
+        self.data = data
+
+        self.old_item = self.data.item
+        self.new_item = new_item
+
+        self.setText(f"Set Sprite #{self.data.index + 1} Item to {MAPITEM_NAMES[new_item]}")
+
+    def undo(self):
+        self.data.item = self.old_item
+
+    def redo(self):
+        self.data.item = self.new_item

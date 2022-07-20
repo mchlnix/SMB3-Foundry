@@ -4,14 +4,15 @@ from PySide6.QtGui import QDropEvent
 from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
 from foundry.game.level.LevelRef import LevelRef
+from scribe.gui.commands import SetSpriteItem, SetSpriteType
 from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, TableWidget
 from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES
 from smb3parse.levels import FIRST_VALID_ROW
 
 
 class SpriteList(TableWidget):
-    def __init__(self, level_ref: LevelRef):
-        super(SpriteList, self).__init__(level_ref)
+    def __init__(self, parent, level_ref: LevelRef):
+        super(SpriteList, self).__init__(parent, level_ref)
 
         self.level_ref.level_changed.connect(self.update_content)
         self.level_ref.data_changed.connect(self.update_content)
@@ -55,13 +56,12 @@ class SpriteList(TableWidget):
             sprite.data.y = FIRST_VALID_ROW
 
         if column == 0:
-            sprite.data.type = list(MAPOBJ_NAMES.values()).index(data)
+            self.undo_stack.push(SetSpriteType(sprite.data, list(MAPOBJ_NAMES.values()).index(data)))
         elif column == 1:
-            sprite.data.item = list(MAPITEM_NAMES.values()).index(data)
+            self.undo_stack.push(SetSpriteItem(sprite.data, list(MAPITEM_NAMES.values()).index(data)))
         else:
             return
 
-        self.world.changed = True
         self.world.data_changed.emit()
 
     def update_content(self):

@@ -6,13 +6,14 @@ from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
+from scribe.gui.commands import SetEnemyAddress, SetLevelAddress, SetObjectSet
 from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, SpinBoxDelegate, TableWidget
 from smb3parse.levels import FIRST_VALID_ROW
 
 
 class LevelPointerList(TableWidget):
-    def __init__(self, level_ref: LevelRef):
-        super(LevelPointerList, self).__init__(level_ref)
+    def __init__(self, parent, level_ref: LevelRef):
+        super(LevelPointerList, self).__init__(parent, level_ref)
 
         self.level_ref.level_changed.connect(self.update_content)
         self.level_ref.data_changed.connect(self.update_content)
@@ -63,15 +64,14 @@ class LevelPointerList(TableWidget):
             level_pointer.data.y = FIRST_VALID_ROW
 
         if column == 0:
-            level_pointer.data.object_set = OBJECT_SET_NAMES.index(data)
+            self.undo_stack.push(SetObjectSet(level_pointer.data, OBJECT_SET_NAMES.index(data)))
         elif column == 1:
-            level_pointer.data.level_address = data
+            self.undo_stack.push(SetLevelAddress(level_pointer.data, data))
         elif column == 2:
-            level_pointer.data.enemy_address = data
+            self.undo_stack.push(SetEnemyAddress(level_pointer.data, data))
         else:
             return
 
-        self.world.changed = True
         self.world.data_changed.emit()
 
     def update_content(self):

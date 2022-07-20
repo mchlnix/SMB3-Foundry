@@ -28,10 +28,10 @@ class ToolWindow(QMainWindow):
         self.tile_picker = BlockPicker()
         self.tile_picker.tile_selected.connect(self.tile_selected.emit)
 
-        self.level_pointer_list = LevelPointerList(self.level_ref)
+        self.level_pointer_list = LevelPointerList(self, self.level_ref)
         self.level_pointer_list.selection_changed.connect(self.level_pointer_selection_changed.emit)
 
-        self.sprite_list = SpriteList(self.level_ref)
+        self.sprite_list = SpriteList(self, self.level_ref)
         self.sprite_list.selection_changed.connect(self.sprite_selection_changed.emit)
 
         self.tabbed_widget.addTab(self.tile_picker, "Tiles")
