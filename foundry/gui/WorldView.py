@@ -59,7 +59,6 @@ class WorldView(MainView):
 
         self.display_level_preview = False
 
-        self.changed = False
         self._tile_to_put: int = WORLD_MAP_BLANK_TILE_ID
 
         self.selection_square.set_offset(0, FIRST_VALID_ROW)
@@ -364,11 +363,9 @@ class WorldView(MainView):
 
         for selected_obj in self.get_selected_objects():
             selected_obj.move_by(dx, dy)
-            self.level_ref.level.changed = True
 
         if not self.get_selected_objects() and self.selected_object:
             self.selected_object.move_by(dx, dy)
-            self.level_ref.level.changed = True
 
         self.level_ref.data_changed.emit()
         self.update()
@@ -416,12 +413,16 @@ class WorldView(MainView):
         if dx == dy == 0:
             return
 
-        if len(self.get_selected_objects()) > 1:
-            self.undo_stack.beginMacro(f"Move {len(self.get_selected_objects())} Tiles")
+        sel_objects = self.get_selected_objects().copy()
+
+        self.select_objects([], replace_selection=True)
+
+        if (no_of_sel_objects := len(sel_objects)) > 1:
+            self.undo_stack.beginMacro(f"Move {no_of_sel_objects} Tiles")
 
         old_objects = self.world.objects.copy()
 
-        for selected_obj in reversed(self.get_selected_objects()):
+        for selected_obj in reversed(sel_objects):
             if not isinstance(selected_obj, MapTile):
                 continue
 
@@ -434,12 +435,12 @@ class WorldView(MainView):
             # we don't actually move the map position in the end, just change the type at both positions
 
             # if we are moving only one tile, then move it back, if more, reset them
-            if len(self.get_selected_objects()) > 1 or self.world.point_in(*end.xy):
+            if no_of_sel_objects > 1 or self.world.point_in(*end.xy):
                 cmd = MoveTile(self.world, start, old_objects[start.tile_data_index].type, end)
 
                 self.undo_stack.push(cmd)
 
-        if len(self.get_selected_objects()) > 1:
+        if no_of_sel_objects > 1:
             self.undo_stack.endMacro()
 
     def _set_selection_end(self, position, always_replace_selection=False):

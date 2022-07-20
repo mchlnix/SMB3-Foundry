@@ -30,19 +30,23 @@ class MoveTile(QUndoCommand):
         if 0 <= self.start.tile_data_index < len(self.world.objects):
             source_obj = self.world.objects[self.start.tile_data_index]
             source_obj.change_type(self.tile_after)
+            source_obj.selected = True
 
         if 0 <= self.end.tile_data_index < len(self.world.objects):
             target_obj = self.world.objects[self.end.tile_data_index]
             target_obj.change_type(self.tile_before)
+            target_obj.selected = False
 
     def redo(self):
         if 0 <= self.start.tile_data_index < len(self.world.objects):
             source_obj = self.world.objects[self.start.tile_data_index]
             source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
+            source_obj.selected = False
 
         if self.end.tile_data_index < len(self.world.objects):
             target_obj = self.world.objects[self.end.tile_data_index]
             target_obj.change_type(self.tile_after)
+            target_obj.selected = True
 
 
 class MoveMapObject(QUndoCommand):
