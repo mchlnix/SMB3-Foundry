@@ -493,10 +493,6 @@ class WorldView(MainView):
 
         self.undo_stack.endMacro()
 
-    def remove_selected_objects(self):
-        for obj in self.level_ref.selected_objects:
-            self.level_ref.remove_object(obj)
-
     def scroll_to_objects(self, objects: List[LevelObject]):
         if not objects:
             return
