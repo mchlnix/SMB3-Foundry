@@ -199,8 +199,8 @@ class WorldView(MainView):
 
             tile = self.world.object_at(x, y)
 
-            if tile.type != self._tile_to_put:
-                tile.change_type(self._tile_to_put)
+            if tile is not None and tile.type != self._tile_to_put:
+                self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
                 self.update()
         elif self.mouse_mode == MODE_DRAG:
             self._dragging(event)
@@ -316,9 +316,9 @@ class WorldView(MainView):
             if event.modifiers() & Qt.ShiftModifier:
                 self.undo_stack.beginMacro(f"Fill in '{tile.name}' with '{tile_to_put_name}'")
                 self._fill_tile(tile.type, x, y)
-                self.undo_stack.endMacro()
             else:
-                tile.change_type(self._tile_to_put)
+                self.undo_stack.beginMacro(f"Place '{tile_to_put_name}'")
+                self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
 
             self.update()
 
@@ -362,6 +362,7 @@ class WorldView(MainView):
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
         if self.mouse_mode == MODE_PLACE_TILE:
+            self.undo_stack.endMacro()
             return
 
         obj = self.object_at(event.pos())
