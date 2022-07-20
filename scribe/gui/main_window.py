@@ -258,6 +258,13 @@ class ScribeMainWindow(MainWindow):
                 if view_action.isCheckable() and not view_action.isChecked():
                     view_action.trigger()
 
+            # close view menu, after everything has been triggered
+            self.view_menu.hide()
+
+        if action.isCheckable():
+            # keep menu open, when checkbox has been clicked
+            self.view_menu.show()
+
         self.world_view.update()
 
     def on_level_menu(self, action: QAction):
