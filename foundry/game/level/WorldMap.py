@@ -126,8 +126,6 @@ class WorldMap(LevelLike):
         for index, level_pointer in enumerate(self.level_pointers):
             level_pointer.data.change_index(index)
 
-        self.changed = True
-
     def move_sprites(self, source_index: int, target_index: int):
         if source_index == target_index:
             return
@@ -137,8 +135,6 @@ class WorldMap(LevelLike):
 
         for index, sprite in enumerate(self.sprites):
             sprite.data.change_index(index)
-
-        self.changed = True
 
     @property
     def q_size(self):

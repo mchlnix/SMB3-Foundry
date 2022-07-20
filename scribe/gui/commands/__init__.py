@@ -213,3 +213,37 @@ class SetWorldIndex(QUndoCommand):
     def redo(self):
         self.world.data.change_index(self.new_index)
         self.world.reread_tiles()
+
+
+class ChangeSpriteIndex(QUndoCommand):
+    def __init__(self, world: WorldMap, old_index: int, new_index: int, parent=None):
+        super(ChangeSpriteIndex, self).__init__(parent)
+        self.world = world
+
+        self.old_index = old_index
+        self.new_index = new_index
+
+        self.setText(f"Change Sprite Index {self.old_index} -> {self.new_index}")
+
+    def undo(self):
+        self.world.move_sprites(self.new_index, self.old_index)
+
+    def redo(self):
+        self.world.move_sprites(self.old_index, self.new_index)
+
+
+class ChangeLevelPointerIndex(QUndoCommand):
+    def __init__(self, world: WorldMap, old_index: int, new_index: int, parent=None):
+        super(ChangeLevelPointerIndex, self).__init__(parent)
+        self.world = world
+
+        self.old_index = old_index
+        self.new_index = new_index
+
+        self.setText(f"Change Level Pointer Index {self.old_index} -> {self.new_index}")
+
+    def undo(self):
+        self.world.move_level_pointers(self.new_index, self.old_index)
+
+    def redo(self):
+        self.world.move_level_pointers(self.old_index, self.new_index)

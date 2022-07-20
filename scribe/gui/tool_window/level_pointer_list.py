@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
-from scribe.gui.commands import SetEnemyAddress, SetLevelAddress, SetObjectSet
+from scribe.gui.commands import ChangeLevelPointerIndex, SetEnemyAddress, SetLevelAddress, SetObjectSet
 from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, SpinBoxDelegate, TableWidget
 from smb3parse.levels import FIRST_VALID_ROW
 
@@ -41,7 +41,7 @@ class LevelPointerList(TableWidget):
         source_index = self.selectedIndexes()[0].row()
         target_index = self.indexAt(event.pos()).row()
 
-        self.world.move_level_pointers(source_index, target_index)
+        self.undo_stack.push(ChangeLevelPointerIndex(self.world, source_index, target_index))
 
         self.update_content()
 
