@@ -184,7 +184,7 @@ class ScribeMainWindow(MainWindow):
         self._save_current_changes_to_file(pathname, set_new_path=True)
 
         if not is_save_as:
-            self.level_ref.level.changed = False
+            self.undo_stack.setClean()
             self.level_ref.data_changed.emit()
 
     def on_file_menu(self, action: QAction):
