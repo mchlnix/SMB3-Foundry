@@ -57,6 +57,9 @@ class ScribeMainWindow(MainWindow):
 
         self.open_rom_action = self.file_menu.addAction("Open ROM...")
         self.save_rom_action = self.file_menu.addAction("Save ROM")
+
+        self.file_menu.aboutToShow.connect(lambda: self.save_rom_action.setEnabled(not self.undo_stack.isClean()))
+
         self.save_as_rom_action = self.file_menu.addAction("Save ROM As...")
         self.file_menu.addSeparator()
         self.quit_rom_action = self.file_menu.addAction("Quit")
