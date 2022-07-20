@@ -74,15 +74,16 @@ def test_world(world_info, qtbot):
     level_ref.level.name = current_test_name()
 
     world_view = WorldView(None, level_ref, WorldContextMenu(level_ref))
-    world_view.zoom_in()
 
-    world_view.draw_grid = True
-    world_view.draw_sprites = True
-    world_view.draw_level_pointers = True
-    world_view.draw_airship_points = True
-    world_view.draw_start = True
-    world_view.draw_locks = True
-    world_view.draw_pipes = True
+    world_view.settings.setValue("world view/show grid", True)
+    world_view.settings.setValue("world view/show level pointers", True)
+    world_view.settings.setValue("world view/show sprites", True)
+    world_view.settings.setValue("world view/show airship paths", 0b111)
+    world_view.settings.setValue("world view/show start position", True)
+    world_view.settings.setValue("world view/show locks", True)
+    world_view.settings.setValue("world view/show pipes", True)
+
+    world_view.zoom_in()
 
     rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16 * 2)
 
