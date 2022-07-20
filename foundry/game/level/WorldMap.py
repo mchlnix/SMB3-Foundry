@@ -184,31 +184,6 @@ class WorldMap(LevelLike):
 
         return None
 
-    def to_bytes(self):
-        return_array = bytearray(len(self.objects))
-
-        for obj in self.objects:
-            index = obj.pos.tile_data_index
-
-            return_array[index] = obj.type
-
-        return self.layout_address, return_array
-
-    def from_bytes(self, data, _=None):
-        offset, obj_bytes = data
-
-        self.layout_address = offset
-        self._load_objects()
-
-        self._calc_size()
-
-    def get_object(self, index):
-        return self.objects[index]
-
-    # TODO: not remove, clear the tile data
-    def remove_object(self, obj):
-        self.objects.remove(obj)
-
     def _write_tile_data(self):
         world_data = self.data
         old_tile_data = bytearray([obj.type for obj in sorted(self.objects)])

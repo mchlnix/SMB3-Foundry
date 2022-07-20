@@ -166,3 +166,28 @@ class SetSpriteItem(QUndoCommand):
 
     def redo(self):
         self.data.item = self.new_item
+
+
+class SetScreenCount(QUndoCommand):
+    def __init__(self, world: WorldMap, screen_count: int, parent=None):
+        super(SetScreenCount, self).__init__(parent)
+
+        self.world = world
+
+        self.old_screen_count = self.world.data.screen_count
+        # FIXME: only works, because self.world.objects is in the same order as tile_data
+        self.old_world_data = [map_tile.type for map_tile in self.world.objects]
+        self.new_screen_count = screen_count
+
+    def undo(self):
+        world_data = self.world.internal_world_map.data
+
+        world_data.screen_count = self.old_screen_count
+        world_data.tile_data = self.old_world_data
+        self.world.reread_tiles()
+
+    def redo(self):
+        world_data = self.world.internal_world_map.data
+
+        world_data.screen_count = self.new_screen_count
+        self.world.reread_tiles()

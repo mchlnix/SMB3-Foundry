@@ -1,8 +1,10 @@
+from PySide6.QtGui import QUndoStack
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
+from scribe.gui.commands import SetScreenCount
 from smb3parse.levels import MAX_SCREEN_COUNT, WORLD_COUNT
 
 
@@ -42,14 +44,15 @@ class EditWorldInfo(CustomDialog):
 
         self.setLayout(layout)
 
-    def _change_screen_count(self, new_amount):
-        world_data = self.world_map.internal_world_map.data
+    @property
+    def undo_stack(self) -> QUndoStack:
+        return self.window().parent().findChild(QUndoStack, "undo_stack")
 
-        if world_data.screen_count == new_amount:
+    def _change_screen_count(self, new_amount):
+        if self.world_map.internal_world_map.screen_count == new_amount:
             return
 
-        world_data.screen_count = new_amount
-        self.world_map.reread_tiles()
+        self.undo_stack.push(SetScreenCount(self.world_map, new_amount))
 
     def _change_index(self, new_index):
         new_index -= 1
