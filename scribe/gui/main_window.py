@@ -258,6 +258,7 @@ class ScribeMainWindow(MainWindow):
             return
 
         # if the user is ok with changing, let's go!
+        self.undo_stack.clear()
         self.load_level(index + 1)
 
         self._resize_for_level()
