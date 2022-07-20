@@ -468,9 +468,3 @@ class WorldView(MainView):
         min_y = min([obj.y_position for obj in objects]) * self.block_length
 
         self.parent().parent().ensureVisible(min_x, min_y)
-
-    def level_safe_to_save(self) -> Tuple[bool, str, str]:
-        return True, "", ""
-
-    def from_m3l(self, data: bytearray):
-        self.level_ref.from_m3l(data)
