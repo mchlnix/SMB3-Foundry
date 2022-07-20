@@ -19,17 +19,17 @@ from foundry.gui.MainView import (
     MainView,
 )
 from foundry.gui.WorldDrawer import WorldDrawer
-from foundry.gui.settings import SETTINGS
 from scribe.gui.commands import (
+    MoveMapObject,
+    MoveTile,
+    PutTile,
     SetEnemyAddress,
     SetLevelAddress,
     SetObjectSet,
     SetSpriteItem,
     SetSpriteType,
-    MoveMapObject,
-    MoveTile,
-    PutTile,
 )
+from scribe.gui.settings import Settings
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_NAMES, TILE_SPADE_HOUSE
 from smb3parse.data_points import Position
@@ -44,20 +44,7 @@ class WorldView(MainView):
 
         self.drawer = WorldDrawer()
 
-        self.draw_level_pointers = SETTINGS["draw_level_pointers"]
-        """Whether to highlight the spaces, which can be used to point to levels."""
-        self.draw_sprites = SETTINGS["draw_overworld_sprites"]
-        """Whether to draw overworld sprites, like hammer bros and the 'help' speech bubble."""
-        self.draw_start = SETTINGS["draw_starting_position"]
-        """Whether to highlight the space, that the player starts on, when first coming into the world."""
-        self.draw_airship_points = SETTINGS["draw_airship_points"]
-        """Whether to show the points and airship can retreat to."""
-        self.draw_pipes = SETTINGS["draw_pipes"]
-        """Whether to draw positions marked as pipe entrances."""
-        self.draw_locks = SETTINGS["draw_locks"]
-        """Whether to highlight positions marked as having locks."""
-
-        self.display_level_preview = False
+        self.settings = Settings()
 
         self._tile_to_put: int = WORLD_MAP_BLANK_TILE_ID
 
@@ -90,60 +77,12 @@ class WorldView(MainView):
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.select_all)
 
     @property
-    def draw_grid(self):
-        return self.drawer.draw_grid
+    def settings(self):
+        return self.drawer.settings
 
-    @draw_grid.setter
-    def draw_grid(self, value):
-        self.drawer.draw_grid = value
-
-    @property
-    def draw_level_pointers(self):
-        return self.drawer.draw_level_pointers
-
-    @draw_level_pointers.setter
-    def draw_level_pointers(self, value):
-        self.drawer.draw_level_pointers = value
-
-    @property
-    def draw_sprites(self):
-        return self.drawer.draw_sprites
-
-    @draw_sprites.setter
-    def draw_sprites(self, value):
-        self.drawer.draw_sprites = value
-
-    @property
-    def draw_start(self):
-        return self.drawer.draw_start
-
-    @draw_start.setter
-    def draw_start(self, value):
-        self.drawer.draw_start = value
-
-    @property
-    def draw_airship_points(self):
-        return self.drawer.draw_airship_points
-
-    @draw_airship_points.setter
-    def draw_airship_points(self, value):
-        self.drawer.draw_airship_points = value
-
-    @property
-    def draw_pipes(self):
-        return self.drawer.draw_pipes
-
-    @draw_pipes.setter
-    def draw_pipes(self, value):
-        self.drawer.draw_pipes = value
-
-    @property
-    def draw_locks(self):
-        return self.drawer.draw_locks
-
-    @draw_locks.setter
-    def draw_locks(self, value):
-        self.drawer.draw_locks = value
+    @settings.setter
+    def settings(self, value):
+        self.drawer.settings = value
 
     @property
     def undo_stack(self) -> QUndoStack:
@@ -190,7 +129,7 @@ class WorldView(MainView):
         self.set_mouse_mode(MODE_PLACE_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        should_display_level = self.mouse_mode == MODE_FREE and self.display_level_preview
+        should_display_level = self.mouse_mode == MODE_FREE and self.settings.value("world view/show level previews")
 
         if should_display_level and not self._set_level_thumbnail(event):
             # clear tooltip if supposed to show one, but no level thumbnail was available (e.g. no level there)
@@ -286,19 +225,21 @@ class WorldView(MainView):
 
         obj = None
 
-        if self.draw_pipes:
+        if self.drawer.settings.value("world view/show pipes"):
             obj = self.world.pipe_at(level_x, level_y)
 
-        if not obj and self.draw_locks:
+        if not obj and self.drawer.settings.value("world view/show locks"):
             obj = self.world.locks_at(level_x, level_y)
 
-        if not obj and self.draw_airship_points:
-            obj = self.world.airship_point_at(level_x, level_y, self.draw_airship_points)
+        if not obj and self.drawer.settings.value("world view/show airship paths"):
+            obj = self.world.airship_point_at(
+                level_x, level_y, self.drawer.settings.value("world view/show airship paths")
+            )
 
-        if not obj and self.draw_sprites:
+        if not obj and self.drawer.settings.value("world view/show sprites"):
             obj = self.world.sprite_at(level_x, level_y)
 
-        if not obj and self.draw_level_pointers:
+        if not obj and self.drawer.settings.value("world view/show level pointers"):
             obj = self.world.level_pointer_at(level_x, level_y)
 
         if not obj:

@@ -7,6 +7,7 @@ from foundry.game.File import ROM
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.WorldView import WorldView
 from scribe.gui.edit_world_info import EditWorldInfo
+from scribe.gui.settings import Settings
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
@@ -24,6 +25,9 @@ class ScribeMainWindow(MainWindow):
         self.world_view = WorldView(self, self.level_ref, WorldContextMenu(self.level_ref))
         self.world_view.zoom_in()
         self.world_view.zoom_in()
+
+        self.settings = Settings("mchlnix", "smb3scribe")
+        self.world_view.drawer.settings = self.settings
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.world_view)
@@ -100,25 +104,25 @@ class ScribeMainWindow(MainWindow):
         self.grid_action = self.view_menu.addAction("&Grid")
         self.grid_action.setShortcut(Qt.CTRL + Qt.Key_G)
         self.grid_action.setCheckable(True)
-        self.grid_action.setChecked(self.world_view.draw_grid)
+        self.grid_action.setChecked(self.settings.value("world view/show grid"))
 
         self.view_menu.addSeparator()
 
         self.level_pointer_action = self.view_menu.addAction("&Level Pointers")
         self.level_pointer_action.setCheckable(True)
-        self.level_pointer_action.setChecked(self.world_view.draw_level_pointers)
+        self.level_pointer_action.setChecked(self.settings.value("world view/show level pointers"))
 
         self.level_preview_action = self.view_menu.addAction("&Tooltip with Level Preview")
         self.level_preview_action.setCheckable(True)
-        self.level_preview_action.setChecked(self.world_view.display_level_preview)
+        self.level_preview_action.setChecked(self.settings.value("world view/show level previews"))
 
         self.sprite_action = self.view_menu.addAction("Overworld &Sprites")
         self.sprite_action.setCheckable(True)
-        self.sprite_action.setChecked(self.world_view.draw_sprites)
+        self.sprite_action.setChecked(self.settings.value("world view/show sprites"))
 
         self.starting_point_action = self.view_menu.addAction("Starting &Point")
         self.starting_point_action.setCheckable(True)
-        self.starting_point_action.setChecked(self.world_view.draw_start)
+        self.starting_point_action.setChecked(self.settings.value("world view/show start position"))
 
         self.view_menu.addSeparator()
 
@@ -126,13 +130,15 @@ class ScribeMainWindow(MainWindow):
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
             self.airship_travel_actions.append(self.view_menu.addAction(f"&Airship Travel Path {i+1}"))
             self.airship_travel_actions[-1].setCheckable(True)
-            self.airship_travel_actions[-1].setChecked(self.world_view.draw_airship_points & 2**i == 2**i)
+            self.airship_travel_actions[-1].setChecked(
+                self.settings.value("world view/show airship paths") & 2**i == 2**i
+            )
 
         self.view_menu.addSeparator()
 
         self.lock_bridge_action = self.view_menu.addAction("Lock and &Bridge Events")
         self.lock_bridge_action.setCheckable(True)
-        self.lock_bridge_action.setChecked(self.world_view.draw_locks)
+        self.lock_bridge_action.setChecked(self.settings.value("world view/show locks"))
 
         self.view_menu.addSeparator()
 
@@ -227,15 +233,15 @@ class ScribeMainWindow(MainWindow):
 
     def on_view_menu(self, action: QAction):
         if action is self.grid_action:
-            self.world_view.draw_grid = action.isChecked()
+            self.settings.setValue("world view/show grid", action.isChecked())
         elif action is self.level_pointer_action:
-            self.world_view.draw_level_pointers = action.isChecked()
+            self.settings.setValue("world view/show level pointers", action.isChecked())
         elif action is self.level_preview_action:
-            self.world_view.display_level_preview = action.isChecked()
+            self.settings.setValue("world view/show level previews", action.isChecked())
         elif action is self.sprite_action:
-            self.world_view.draw_sprites = action.isChecked()
+            self.settings.setValue("world view/show sprites", action.isChecked())
         elif action is self.starting_point_action:
-            self.world_view.draw_start = action.isChecked()
+            self.settings.setValue("world view/show start position", action.isChecked())
         elif action in self.airship_travel_actions:
             value = 0
 
@@ -243,9 +249,9 @@ class ScribeMainWindow(MainWindow):
                 if action.isChecked():
                     value += 2**index
 
-            self.world_view.draw_airship_points = value
+            self.settings.setValue("world view/show airship paths", value)
         elif action is self.lock_bridge_action:
-            self.world_view.draw_locks = action.isChecked()
+            self.settings.setValue("world view/show locks", action.isChecked())
 
         elif action is self.show_all_action:
             for view_action in self.view_menu.actions():
