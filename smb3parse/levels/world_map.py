@@ -1,29 +1,13 @@
-from collections import defaultdict
-from typing import Dict, Generator, List, Optional
+from typing import Generator, List, Optional
 from warnings import warn
 
 from smb3parse.constants import (
     Map_Y_Starts,
     OFFSET_SIZE,
     SPRITE_COUNT,
-    TILE_BOWSER_CASTLE,
-    TILE_CASTLE_BOTTOM,
-    TILE_DUNGEON_1,
-    TILE_DUNGEON_2,
-    TILE_HAND_TRAP,
     TILE_LEVEL_1,
     TILE_LEVEL_10,
-    TILE_MUSHROOM_HOUSE_1,
-    TILE_MUSHROOM_HOUSE_2,
-    TILE_PIPE,
-    TILE_POND,
-    TILE_PYRAMID,
-    TILE_QUICKSAND,
-    TILE_SPADE_HOUSE,
-    TILE_SPIRAL_TOWER_1,
-    TILE_SPIRAL_TOWER_2,
-    TILE_STAR_1,
-    TILE_STAR_2,
+    TILE_NAMES,
 )
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.levels import (
@@ -46,28 +30,6 @@ from smb3parse.levels import (
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
-
-TILE_NAMES: Dict[int, str] = defaultdict(lambda: "NO NAME")
-TILE_NAMES.update(
-    {
-        TILE_MUSHROOM_HOUSE_1: "Mushroom House",
-        TILE_MUSHROOM_HOUSE_2: "Mushroom House",
-        TILE_SPIRAL_TOWER_1: "Spiral Tower",
-        TILE_SPIRAL_TOWER_2: "Spiral Tower",
-        TILE_DUNGEON_1: "Dungeon",
-        TILE_DUNGEON_2: "Dungeon",
-        TILE_QUICKSAND: "Quicksand",
-        TILE_PYRAMID: "Pyramid",
-        TILE_PIPE: "Pipe",
-        TILE_POND: "Pond",
-        TILE_CASTLE_BOTTOM: "Peach's Castle",
-        TILE_BOWSER_CASTLE: "Bowser's Lair",
-        TILE_HAND_TRAP: "Hand Trap",
-        TILE_SPADE_HOUSE: "Spade Bonus",
-        TILE_STAR_1: "Star",
-        TILE_STAR_2: "Star",
-    }
-)
 
 Y_START_POS_LIST = Map_Y_Starts
 
