@@ -1,11 +1,12 @@
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
+from foundry.game.gfx.objects import LevelPointer
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
 from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, TILE_NAMES
 from smb3parse.data_points import LevelPointerData, Position, SpriteData
-from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID
+from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID
 
 
 class MoveTile(QUndoCommand):
@@ -247,3 +248,70 @@ class ChangeLevelPointerIndex(QUndoCommand):
 
     def redo(self):
         self.world.move_level_pointers(self.old_index, self.new_index)
+
+
+class AddLevelPointer(QUndoCommand):
+    def __init__(self, world: WorldMap, parent=None):
+        super(AddLevelPointer, self).__init__(parent)
+
+        self.world = world
+
+        self.setText("Add Level Pointer")
+
+    def undo(self):
+        self.world.data.level_count_screen_1 -= 1
+        self.world.data.level_pointers.pop(0)
+        self.world.level_pointers.pop(0)
+
+    def redo(self):
+        self.world.data.level_count_screen_1 += 1
+
+        new_level_pointer = LevelPointerData(self.world.data, self.world.data.level_count)
+        new_level_pointer.pos = Position(FIRST_VALID_ROW, 0, 0)
+        new_level_pointer.object_set = 1
+        new_level_pointer.level_address = 0x0
+        new_level_pointer.enemy_address = 0x0
+
+        self.world.data.level_pointers.insert(0, new_level_pointer)
+
+        self.world.level_pointers.insert(0, LevelPointer(new_level_pointer))
+
+
+class RemoveLevelPointer(QUndoCommand):
+    def __init__(self, world: WorldMap, index=-1, parent=None):
+        super(RemoveLevelPointer, self).__init__(parent)
+
+        self.world = world
+
+        if index == -1:
+            index = self.world.data.level_count - 1
+
+        self.index = index
+
+        self.removed_level_pointer = self.world.data.level_pointers[index]
+
+        self.setText(f"Remove Level Pointer #{index}")
+
+    def undo(self):
+        # TODO not nice
+        attr_name = f"level_count_screen_{self.removed_level_pointer.screen + 1}"
+
+        lvls_on_screen = getattr(self.world.data, f"level_count_screen_{self.removed_level_pointer.screen + 1}")
+
+        setattr(self.world.data, attr_name, lvls_on_screen + 1)
+
+        self.world.data.level_pointers.insert(self.index, self.removed_level_pointer)
+        self.world.level_pointers.insert(self.index, LevelPointer(self.removed_level_pointer))
+
+    def redo(self):
+        # TODO not nice
+        attr_name = f"level_count_screen_{self.removed_level_pointer.screen + 1}"
+
+        lvls_on_screen = getattr(self.world.data, f"level_count_screen_{self.removed_level_pointer.screen + 1}")
+
+        assert lvls_on_screen > 0
+
+        setattr(self.world.data, attr_name, lvls_on_screen - 1)
+
+        self.world.data.level_pointers.pop(self.index)
+        self.world.level_pointers.pop(self.index)
