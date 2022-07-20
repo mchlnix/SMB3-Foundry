@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
-from scribe.gui.commands import SetScreenCount
+from scribe.gui.commands import SetScreenCount, SetWorldIndex
 from smb3parse.levels import MAX_SCREEN_COUNT, WORLD_COUNT
 
 
@@ -56,10 +56,8 @@ class EditWorldInfo(CustomDialog):
 
     def _change_index(self, new_index):
         new_index -= 1
-        world_data = self.world_map.internal_world_map.data
 
-        if world_data.index == new_index:
+        if self.world_map.data.index == new_index:
             return
 
-        world_data.change_index(new_index)
-        self.world_map.reread_tiles()
+        self.undo_stack.push(SetWorldIndex(self.world_map, new_index))

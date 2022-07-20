@@ -183,15 +183,33 @@ class SetScreenCount(QUndoCommand):
         self.old_world_data = [map_tile.type for map_tile in self.world.objects]
         self.new_screen_count = screen_count
 
-    def undo(self):
-        world_data = self.world.internal_world_map.data
+        self.setText(f"Set World {self.world.internal_world_map.world_index + 1}'s screen count to {screen_count}")
 
-        world_data.screen_count = self.old_screen_count
-        world_data.tile_data = self.old_world_data
+    def undo(self):
+        self.world.data.screen_count = self.old_screen_count
+        self.world.data.tile_data = self.old_world_data
         self.world.reread_tiles()
 
     def redo(self):
-        world_data = self.world.internal_world_map.data
+        self.world.data.screen_count = self.new_screen_count
+        self.world.reread_tiles()
 
-        world_data.screen_count = self.new_screen_count
+
+class SetWorldIndex(QUndoCommand):
+    def __init__(self, world: WorldMap, new_index: int, parent=None):
+        super(SetWorldIndex, self).__init__(parent)
+
+        self.world = world
+
+        self.old_index = world.data.index
+        self.new_index = new_index
+
+        self.setText(f"Set World {self.world.internal_world_map.world_index + 1}'s index to {new_index + 1}")
+
+    def undo(self):
+        self.world.data.change_index(self.old_index)
+        self.world.reread_tiles()
+
+    def redo(self):
+        self.world.data.change_index(self.new_index)
         self.world.reread_tiles()
