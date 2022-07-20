@@ -57,12 +57,12 @@ class WorldView(MainView):
 
         self.mouse_mode = MODE_FREE
 
-        self.last_mouse_position = 0, 0
+        self.drag_start_point = Position.from_xy(0, 0)
+        self.last_mouse_position = Position.from_xy(0, 0)
 
-        self.drag_start_point = 0, 0
         self.selected_object: Optional[MapObject] = None
 
-        self.dragging_happened = True
+        self.dragging_happened = False
 
         # TODO: update
         self.setWhatsThis(
@@ -165,7 +165,7 @@ class WorldView(MainView):
             if event is None:
                 return
 
-            self.drag_start_point = self._to_level_point(event.pos())
+            self.drag_start_point = Position.from_xy(*self._to_level_point(event.pos()))
             self.last_mouse_position = self.drag_start_point
             self.setCursor(Qt.ClosedHandCursor)
 
@@ -341,13 +341,17 @@ class WorldView(MainView):
         self.set_mouse_mode(MODE_DRAG, event)
 
     def _dragging(self, event: QMouseEvent):
+        level_pos = Position.from_xy(*self._to_level_point(event.pos()))
+        diff_pos = level_pos - self.last_mouse_position
+
+        dx, dy = diff_pos.xy
+
+        if dx == dy == 0:
+            return
+
         self.dragging_happened = True
 
-        level_x, level_y = self._to_level_point(event.pos())
-        dx = level_x - self.last_mouse_position[0]
-        dy = level_y - self.last_mouse_position[1]
-
-        self.last_mouse_position = level_x, level_y
+        self.last_mouse_position = level_pos
 
         for selected_obj in self.get_selected_objects():
             selected_obj.move_by(dx, dy)
@@ -376,9 +380,6 @@ class WorldView(MainView):
             if self.selected_object and not isinstance(self.selected_object, MapTile):
                 self.undo_stack.push(MoveMapObject(self.world, self.selected_object, self.drag_start_point))
 
-            if self.drag_start_point != drag_end_point:
-                self._stop_drag()
-
             self.dragging_happened = False
 
         elif self.selection_square.active:
@@ -399,11 +400,14 @@ class WorldView(MainView):
         self.set_mouse_mode(MODE_FREE, event)
 
     def _move_selected_tiles(self, drag_end_point: QPoint):
-        start_x, start_y = self.drag_start_point
+        start_x, start_y = self.drag_start_point.xy
         end_x, end_y = drag_end_point
 
         dx = end_x - start_x
         dy = end_y - start_y
+
+        if dx == dy == 0:
+            return
 
         self.undo_stack.beginMacro("Move Tiles")
 
@@ -428,12 +432,6 @@ class WorldView(MainView):
                 self.undo_stack.push(cmd)
 
         self.undo_stack.endMacro()
-
-    def _stop_drag(self):
-        if self.dragging_happened:
-            self.level_ref.save_level_state()
-
-        self.dragging_happened = False
 
     def _set_selection_end(self, position, always_replace_selection=False):
         return super(WorldView, self)._set_selection_end(position, True)

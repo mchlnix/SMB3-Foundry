@@ -68,6 +68,19 @@ class Position:
 
         return Position(column, row + FIRST_VALID_ROW, screen)
 
+    def __add__(self, other):
+        x, y = self.xy
+        o_x, o_y = other.xy
+
+        return Position.from_xy(x + o_x, y + o_y)
+
+    def __neg__(self):
+        x, y = self.xy
+        return Position.from_xy(-x, -y)
+
+    def __sub__(self, other):
+        return self + -other
+
 
 class DataPoint:
     def __init__(self, rom: Rom):

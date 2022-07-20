@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.gfx.objects.world_map.map_object import MapObject
@@ -47,14 +45,14 @@ class MoveTile(QUndoCommand):
 
 
 class MoveMapObject(QUndoCommand):
-    def __init__(self, world: WorldMap, map_object: MapObject, start: Tuple[int, int], parent=None):
+    def __init__(self, world: WorldMap, map_object: MapObject, start: Position, parent=None):
         super(MoveMapObject, self).__init__(parent)
 
         self.world = world
 
         self.map_object = map_object
 
-        self.start = start
+        self.start = start.xy
         self.end = self.map_object.get_position()
 
         self.setText(f"Move {self.map_object.name}")
