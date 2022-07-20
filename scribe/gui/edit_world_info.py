@@ -1,5 +1,5 @@
 from PySide6.QtGui import QUndoStack
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.CustomDialog import CustomDialog
@@ -17,32 +17,35 @@ class EditWorldInfo(CustomDialog):
         layout = QVBoxLayout()
 
         screen_amount_layout = QHBoxLayout()
-        screen_amount_layout.addWidget(QLabel("# of screens"))
+        screen_amount_layout.addWidget(QLabel("Screen Count"))
         screen_amount_layout.addStretch(1)
 
-        self.screen_spin_box = Spinner(self, maximum=MAX_SCREEN_COUNT, base=10)
-        self.screen_spin_box.setMinimum(1)
-        self.screen_spin_box.setValue(self.world_map.internal_world_map.screen_count)
-        self.screen_spin_box.valueChanged.connect(self._change_screen_count)
+        screen_spin_box = Spinner(self, maximum=MAX_SCREEN_COUNT, base=10)
+        screen_spin_box.setMinimum(1)
+        screen_spin_box.setValue(self.world_map.internal_world_map.screen_count)
+        screen_spin_box.valueChanged.connect(self._change_screen_count)
 
-        screen_amount_layout.addWidget(self.screen_spin_box)
+        screen_amount_layout.addWidget(screen_spin_box)
 
         layout.addLayout(screen_amount_layout)
 
         world_index_layout = QHBoxLayout()
-        world_index_layout.addWidget(QLabel("World Index"))
+        world_index_layout.addWidget(QLabel("World Number"))
         world_index_layout.addStretch(1)
 
-        self.index_spin_box = Spinner(self, maximum=WORLD_COUNT, base=10)
-        self.index_spin_box.setMinimum(1)
-        self.index_spin_box.setValue(self.world_map.internal_world_map.data.index + 1)
-        self.index_spin_box.valueChanged.connect(self._change_index)
+        index_spin_box = Spinner(self, maximum=WORLD_COUNT, base=10)
+        index_spin_box.setMinimum(1)
+        index_spin_box.setValue(self.world_map.internal_world_map.data.index + 1)
+        index_spin_box.valueChanged.connect(self._change_index)
 
-        world_index_layout.addWidget(self.index_spin_box)
-
+        world_index_layout.addWidget(index_spin_box)
         layout.addLayout(world_index_layout)
 
-        self.setLayout(layout)
+        world_data_group = QGroupBox("World data")
+        world_data_group.setLayout(layout)
+
+        self.setLayout(QVBoxLayout())
+        self.layout().addWidget(world_data_group)
 
     @property
     def undo_stack(self) -> QUndoStack:
