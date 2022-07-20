@@ -260,6 +260,9 @@ class ScribeMainWindow(MainWindow):
 
         self._resize_for_level()
 
+    def safe_to_change(self) -> bool:
+        return self.undo_stack.isClean() or self.confirm_changes()
+
     def _resize_for_level(self):
         if not self.isMaximized():
             self.resize(self.sizeHint())
