@@ -94,6 +94,45 @@ class SetNextAreaObjectSet(SetLevelAttribute):
         self.setText(f"Object Set of Next Area to {OBJECT_SET_NAMES[new_object_set]}")
 
 
+class MoveObjects(QUndoCommand):
+    def __init__(
+        self,
+        level: Level,
+        objects: List[InLevelObject],
+        start: Tuple[int, int],
+        end: Tuple[int, int],
+        already_moved=False,
+    ):
+        super(MoveObjects, self).__init__()
+
+        self.level = level
+        self.objects = objects
+
+        self.dx = end[0] - start[0]
+        self.dy = end[1] - start[1]
+
+        self.setText(f"Move {object_names(objects)}")
+
+        if already_moved:
+            self.undo()
+
+    def undo(self):
+        for obj in self.objects:
+            x, y = obj.get_position()
+
+            obj.set_position(x - self.dx, y - self.dy)
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        for obj in self.objects:
+            x, y = obj.get_position()
+
+            obj.set_position(x + self.dx, y + self.dy)
+
+        self.level.data_changed.emit()
+
+
 def objects_to_indexed_objects(level: Level, objects: List[InLevelObject]) -> List[Tuple[int, InLevelObject]]:
     indexes = []
 

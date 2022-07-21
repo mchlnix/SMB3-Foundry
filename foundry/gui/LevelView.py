@@ -23,7 +23,7 @@ from foundry.gui.MainView import (
     MainView,
     RESIZE_MODES,
 )
-from foundry.gui.commands import AddEnemyAt, AddLevelObjectAt, AddObject, RemoveObjects
+from foundry.gui.commands import AddEnemyAt, AddLevelObjectAt, AddObject, MoveObjects, RemoveObjects
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 
@@ -438,7 +438,7 @@ class LevelView(MainView):
                 drag_end_point = obj.x_position, obj.y_position
 
                 if self.drag_start_point != drag_end_point:
-                    self._stop_drag()
+                    self._stop_drag(drag_end_point)
                 else:
                     self.dragging_happened = False
         elif self.selection_square.active:
@@ -460,9 +460,21 @@ class LevelView(MainView):
         self._object_was_selected_on_last_click = False
         self.setCursor(Qt.ArrowCursor)
 
-    def _stop_drag(self):
-        if self.dragging_happened:
-            self.level_ref.save_level_state()
+    def _stop_drag(self, drag_end_point):
+        if not self.dragging_happened:
+            return
+
+        level_x, level_y = drag_end_point
+
+        dx = level_x - self.drag_start_point[0]
+        dy = level_y - self.drag_start_point[1]
+
+        if dx == dy == 0 or not self.get_selected_objects():
+            return
+
+        self.undo_stack.push(
+            MoveObjects(self.level_ref.level, self.get_selected_objects(), self.drag_start_point, drag_end_point, True)
+        )
 
         self.dragging_happened = False
 
