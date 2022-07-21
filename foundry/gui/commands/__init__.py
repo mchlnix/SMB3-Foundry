@@ -211,3 +211,34 @@ class AddEnemyAt(QUndoCommand):
 
         # TODO use level coordinates, possibly by using level directly, instead of level view
         self.setText(f"Add {enemy.name} at {enemy.x_position}, {enemy.y_position}")
+
+
+class PasteObjectAt(QUndoCommand):
+    def __init__(
+        self, level_view: LevelView, paste_data: Tuple[List[InLevelObject], Tuple[int, int]], pos: QPoint = None
+    ):
+        super(PasteObjectAt, self).__init__()
+
+        self.view = level_view
+        self.paste_data = paste_data
+
+        objects, _ = paste_data
+
+        self.object_count = len(list(filter(lambda obj: isinstance(obj, LevelObject), objects)))
+        self.enemy_count = len(objects) - self.object_count
+
+        self.pos = pos
+        self.last_mouse_position = self.view.last_mouse_position
+
+    def undo(self):
+        for _ in range(self.object_count):
+            self.view.level_ref.level.objects.pop()
+
+        for _ in range(self.enemy_count):
+            self.view.level_ref.level.enemies.pop()
+
+    def redo(self):
+        # TODO, replace with the level version, so we don't have to restore the last mouse position?
+        # restore last mouse position, since it is used inside the method as a fallback
+        self.view.last_mouse_position = self.last_mouse_position
+        self.view.paste_objects_at(self.paste_data, self.pos)
