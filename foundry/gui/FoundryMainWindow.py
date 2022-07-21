@@ -9,7 +9,7 @@ import tempfile
 from typing import Optional
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut, Qt
+from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut, QUndoStack, Qt
 from PySide6.QtWidgets import (
     QDialog,
     QFileDialog,
@@ -60,6 +60,7 @@ from foundry.gui.PaletteViewer import SidePalette
 from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
+from foundry.gui.commands import AttachLevelToRom
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
@@ -75,6 +76,9 @@ class FoundryMainWindow(MainWindow):
 
         self.setWindowIcon(icon("foundry.ico"))
         self.setStyleSheet(SETTINGS["gui_style"])
+
+        self.undo_stack = QUndoStack(self)
+        self.undo_stack.setObjectName("undo_stack")
 
         file_menu = QMenu("&File")
 
@@ -124,6 +128,9 @@ class FoundryMainWindow(MainWindow):
         """
 
         self.level_menu = QMenu("&Level")
+
+        self.level_menu.addAction(self.undo_stack.createUndoAction(self))
+        self.level_menu.addAction(self.undo_stack.createRedoAction(self))
 
         self.select_level_action = self.level_menu.addAction("&Select Level")
         self.select_level_action.triggered.connect(self.open_level_selector)
@@ -642,6 +649,9 @@ class FoundryMainWindow(MainWindow):
         if not self._ask_for_palette_save():
             return
 
+        if self.level_ref.level is None:
+            self.level_ref.level = Level()
+
         self.level_ref.level.from_m3l(m3l_data)
 
         self.level_view.level_ref.name = os.path.basename(pathname)
@@ -732,14 +742,15 @@ class FoundryMainWindow(MainWindow):
                 if not self._ask_for_palette_save():
                     return
 
-                self.level_view.level_ref.attach_to_rom(
-                    level_selector.object_data_offset, level_selector.enemy_data_offset
-                )
+                self._attach_to_rom(level_selector.object_data_offset, level_selector.enemy_data_offset)
 
                 if is_save_as:
                     # if we save to another rom, don't consider the level
                     # attached (to the current rom)
-                    self.level_view.level_ref.attached_to_rom = False
+                    attach_cmd = self.undo_stack.command(self.undo_stack.index() - 1)
+                    attach_cmd.setObsolete(True)
+
+                    self.undo_stack.undo()
                 else:
                     # the m3l is saved to the current ROM, we can get rid of the auto save
                     auto_save_m3l_path.unlink(missing_ok=True)
@@ -781,6 +792,12 @@ class FoundryMainWindow(MainWindow):
         if not is_save_as:
             self.level_ref.level.changed = False
             self.level_ref.data_changed.emit()
+
+    def _attach_to_rom(self, object_data_offset: int, enemy_data_offset: int):
+        if 0x0 in [object_data_offset, enemy_data_offset]:
+            raise ValueError("You cannot save level or enemy data to the beginning of the ROM (address 0x0).")
+
+        self.undo_stack.push(AttachLevelToRom(self.level_ref.level, object_data_offset, enemy_data_offset))
 
     def _save_current_changes_to_file(self, pathname: str, set_new_path: bool):
         super(FoundryMainWindow, self)._save_current_changes_to_file(pathname, set_new_path)
@@ -1009,6 +1026,8 @@ class FoundryMainWindow(MainWindow):
         ]
 
         level_elements.extend(self.level_menu.actions())
+        level_elements.remove(self.level_menu.actions()[0])
+        level_elements.remove(self.level_menu.actions()[1])
         level_elements.remove(self.select_level_action)
         level_elements.remove(self.new_level_action)
 

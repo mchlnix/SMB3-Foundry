@@ -111,13 +111,6 @@ class Level(LevelLike):
         """Whether the current level has a place in the ROM yet. If not this level is likely a m3l file."""
         return not (self.header_offset == self.enemy_offset == 0)
 
-    @attached_to_rom.setter
-    def attached_to_rom(self, should_be_attached):
-        if not should_be_attached:
-            self.header_offset = self.enemy_offset = 0
-        else:
-            raise ValueError("You cannot manually attach a ROM, use attach_to_rom() instead.")
-
     @property
     def width(self):
         return self.size[0]
@@ -246,10 +239,7 @@ class Level(LevelLike):
 
         return QRect(QPoint(0, 0), QSize(width, height) * block_length)
 
-    def attach_to_rom(self, header_offset: int, enemy_item_offset: int):
-        if 0x0 in [header_offset, enemy_item_offset]:
-            raise ValueError("You cannot save level or enemy data to the beginning of the ROM (address 0x0).")
-
+    def set_addresses(self, header_offset: int, enemy_item_offset: int):
         self.header_offset = header_offset
         self.object_offset = self.header_offset + Level.HEADER_LENGTH
         self.enemy_offset = enemy_item_offset

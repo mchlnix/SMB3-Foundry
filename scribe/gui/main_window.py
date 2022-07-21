@@ -20,6 +20,9 @@ class ScribeMainWindow(MainWindow):
     def __init__(self, path_to_rom: str):
         super(ScribeMainWindow, self).__init__()
 
+        self.undo_stack = QUndoStack(self)
+        self.undo_stack.setObjectName("undo_stack")
+
         self.on_open_rom(path_to_rom)
 
         self.world_view = WorldView(self, self.level_ref, WorldContextMenu(self.level_ref))
@@ -31,9 +34,6 @@ class ScribeMainWindow(MainWindow):
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.world_view)
-
-        self.undo_stack = QUndoStack(self)
-        self.undo_stack.setObjectName("undo_stack")
 
         self.setCentralWidget(self.scroll_area)
 

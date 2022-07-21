@@ -89,5 +89,9 @@ class LevelRef(QObject):
 
         self.data_changed.emit()
 
+    @property
+    def fully_loaded(self):
+        return bool(self)
+
     def __bool__(self):
         return self._internal_level is not None and self._internal_level.fully_loaded

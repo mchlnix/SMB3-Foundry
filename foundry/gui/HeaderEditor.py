@@ -1,7 +1,7 @@
 from typing import Optional
 
 from PySide6.QtCore import Signal, SignalInstance
-from PySide6.QtGui import Qt
+from PySide6.QtGui import QUndoStack, Qt
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -15,12 +15,19 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
-from foundry.game.level.Level import Level
+from foundry.game.level.Level import LEVEL_POINTER_OFFSET, Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.LevelSelector import LevelSelector, OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
+from foundry.gui.commands import (
+    SetLevelAttribute,
+    SetNextAreaEnemyAddress,
+    SetNextAreaObjectAddress,
+    SetNextAreaObjectSet,
+)
 from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
 
 LEVEL_LENGTHS = [0x10 * (i + 1) for i in range(0, 2**4)]
@@ -60,7 +67,7 @@ MUSIC_ITEMS = [
     "World 7 map",
 ]
 
-TIMES = ["300", "400", "200", "Unlimited"]
+TIMES = ["300s", "400s", "200s", "Unlimited"]
 
 CAMERA_MOVEMENTS = [
     "Locked, unless climbing/flying",
@@ -186,11 +193,13 @@ class HeaderEditor(CustomDialog):
         self.tab_widget.addTab(widget, "Graphics")
 
         # next area settings
-
-        self.level_pointer_spinner = Spinner(self, maximum=SPINNER_MAX_VALUE)
+        self.level_pointer_spinner = Spinner(self)
         self.level_pointer_spinner.valueChanged.connect(self.on_spin)
-        self.enemy_pointer_spinner = Spinner(self, maximum=SPINNER_MAX_VALUE)
+
+        self.enemy_pointer_spinner = Spinner(self)
         self.enemy_pointer_spinner.valueChanged.connect(self.on_spin)
+        self.enemy_pointer_spinner.setMinimum(0)
+        self.enemy_pointer_spinner.setMaximum(0xFFFF)
 
         self.next_area_object_set_dropdown = QComboBox()
         self.next_area_object_set_dropdown.addItems(OBJECT_SET_ITEMS)
@@ -220,6 +229,10 @@ class HeaderEditor(CustomDialog):
 
         self.update()
 
+    @property
+    def undo_stack(self) -> QUndoStack:
+        return self.parent().window().findChild(QUndoStack, "undo_stack")
+
     def update(self):
         length_index = LEVEL_LENGTHS.index(self.level.length)
 
@@ -238,11 +251,18 @@ class HeaderEditor(CustomDialog):
         self.enemy_palette_spinner.setValue(self.level.enemy_palette_index)
         self.graphic_set_dropdown.setCurrentIndex(self.level.graphic_set)
 
+        self.blockSignals(True)
+
         self.level_pointer_spinner.setValue(self.level.next_area_objects)
         self.enemy_pointer_spinner.setValue(self.level.next_area_enemies)
         self.next_area_object_set_dropdown.setCurrentIndex(self.level.next_area_object_set)
 
+        self.blockSignals(False)
+
         self.header_bytes_label.setText(" ".join(f"{number:0=#4X}"[2:] for number in self.level.header_bytes))
+
+    def _set_level_attr(self, name: str, value, display_name="", display_value=""):
+        self.undo_stack.push(SetLevelAttribute(self.level, name, value, display_name, display_value))
 
     def _set_jump_destination(self):
         level_selector = LevelSelector(self)
@@ -251,19 +271,32 @@ class HeaderEditor(CustomDialog):
         if not level_was_selected:
             return
 
+        self.blockSignals(True)
+
         self.next_area_object_set_dropdown.setCurrentIndex(level_selector.object_set)
-        self.level.next_area_object_set = level_selector.object_set
-
         self.level_pointer_spinner.setValue(level_selector.object_data_offset)
-        self.level.next_area_objects = level_selector.object_data_offset
-
         self.enemy_pointer_spinner.setValue(level_selector.enemy_data_offset)
-        self.level.next_area_enemies = level_selector.enemy_data_offset - 1
+
+        self.blockSignals(False)
+
+        level_address = level_selector.object_data_offset
+        enemy_address = level_selector.enemy_data_offset - 1
+        object_set_number = level_selector.object_set
+
+        self.undo_stack.beginMacro(
+            f"Set Next Area to {hex(level_address)}/{hex(enemy_address)}, {OBJECT_SET_NAMES[object_set_number]}"
+        )
+
+        self.undo_stack.push(SetNextAreaObjectSet(self.level, object_set_number))
+        self.undo_stack.push(SetNextAreaObjectAddress(self.level, level_address))
+        self.undo_stack.push(SetNextAreaEnemyAddress(self.level, enemy_address))
+
+        self.undo_stack.endMacro()
 
         self.header_change.emit()
 
-    def on_spin(self, _):
-        if self.level is None:
+    def on_spin(self, new_value):
+        if self.level is None or self.signalsBlocked():
             return
 
         spinner = self.sender()
@@ -273,83 +306,90 @@ class HeaderEditor(CustomDialog):
         self.level.data_changed.connect(function_to_connect)
 
         if spinner == self.object_palette_spinner:
-            new_index = self.object_palette_spinner.value()
-            self.level.object_palette_index = new_index
+            self._set_level_attr("object_palette_index", new_value)
 
         elif spinner == self.enemy_palette_spinner:
-            new_index = self.enemy_palette_spinner.value()
-            self.level.enemy_palette_index = new_index
+            self._set_level_attr("enemy_palette_index", new_value)
 
-        elif spinner == self.level_pointer_spinner:
-            new_offset = self.level_pointer_spinner.value()
-            self.level.next_area_objects = new_offset
+        elif spinner == self.level_pointer_spinner and new_value != self.level.next_area_objects:
+            self.undo_stack.push(SetNextAreaObjectAddress(self.level, new_value))
 
-        elif spinner == self.enemy_pointer_spinner:
-            new_offset = self.enemy_pointer_spinner.value()
-            self.level.next_area_enemies = new_offset
+        elif spinner == self.enemy_pointer_spinner and new_value != self.level.next_area_enemies:
+            self.undo_stack.push(SetNextAreaEnemyAddress(self.level, new_value))
 
         self.level.data_changed.disconnect(function_to_connect)
 
         self.update()
 
-    def on_combo(self, _):
+    def on_combo(self, new_index):
+        if self.level is None or self.signalsBlocked():
+            return
+
         dropdown = self.sender()
+        text = dropdown.currentText()
 
         function_to_connect = self.header_change.emit
 
         self.level.data_changed.connect(function_to_connect)
 
-        if dropdown == self.length_dropdown:
-            new_length = LEVEL_LENGTHS[self.length_dropdown.currentIndex()]
-            self.level.length = new_length
+        # TODO do this via properties and get rid of the ifs?
+        if dropdown == self.length_dropdown and (new_length := LEVEL_LENGTHS[new_index]) != self.level.length:
+            self._set_level_attr("length", new_length, display_value=text)
 
-        elif dropdown == self.music_dropdown:
-            new_music = self.music_dropdown.currentIndex()
-            self.level.music_index = new_music
+        elif dropdown == self.music_dropdown and new_index != self.level.music_index:
+            self._set_level_attr("music_index", new_index, display_value=text)
 
         elif dropdown == self.time_dropdown:
-            new_time = self.time_dropdown.currentIndex()
-            self.level.time_index = new_time
+            self._set_level_attr("time_index", new_index, display_value=text)
 
         elif dropdown == self.camera_movement_dropdown:
-            new_scroll = self.camera_movement_dropdown.currentIndex()
-            self.level.scroll_type = new_scroll
+            self._set_level_attr("scroll_type", new_index, display_name="Camera Movement", display_value=text)
 
         elif dropdown == self.x_position_dropdown:
-            new_x = self.x_position_dropdown.currentIndex()
-            self.level.start_x_index = new_x
+            self._set_level_attr("start_x_index", new_index, display_name="Mario Start X", display_value=text)
 
         elif dropdown == self.y_position_dropdown:
-            new_y = self.y_position_dropdown.currentIndex()
-            self.level.start_y_index = new_y
+            self._set_level_attr("start_y_index", new_index, display_name="Mario Start Y", display_value=text)
 
         elif dropdown == self.action_dropdown:
-            new_action = self.action_dropdown.currentIndex()
-            self.level.start_action = new_action
+            self._set_level_attr("start_action", new_index, display_name="Mario Start Action", display_value=text)
 
         elif dropdown == self.graphic_set_dropdown:
-            new_gfx_set = self.graphic_set_dropdown.currentIndex()
-            self.level.graphic_set = new_gfx_set
+            self._set_level_attr("graphic_set", new_index, display_value=text)
 
-        elif dropdown == self.next_area_object_set_dropdown:
-            new_object_set = self.next_area_object_set_dropdown.currentIndex()
-            self.level.next_area_object_set = new_object_set
+        elif dropdown == self.next_area_object_set_dropdown and new_index != self.level.next_area_object_set:
+            object_set_cmd = SetNextAreaObjectSet(self.level, new_index)
+
+            # in case the level address changes based on the new object set, don't list that command separately
+            self.undo_stack.beginMacro(object_set_cmd.text())
+            self.undo_stack.push(object_set_cmd)
+
+            # update min and max, based on new object set
+            min_level_address = LEVEL_POINTER_OFFSET + self.level.header.jump_object_set.level_offset
+            self.level_pointer_spinner.setMinimum(min_level_address)
+            self.level_pointer_spinner.setMaximum(min_level_address + 0xFFFF)
+
+            self.undo_stack.endMacro()
 
         self.level.data_changed.disconnect(function_to_connect)
 
         self.update()
 
-    def on_check_box(self, _):
+    def on_check_box(self, checked):
+        if self.level is None or self.signalsBlocked():
+            return
+
         checkbox = self.sender()
+        assert checked == checkbox.isChecked()
 
         function_to_connect = self.header_change.emit
 
         self.level.data_changed.connect(function_to_connect)
 
         if checkbox == self.pipe_ends_level_cb:
-            self.level.pipe_ends_level = self.pipe_ends_level_cb.isChecked()
+            self._set_level_attr("pipe_ends_level", checked)
         elif checkbox == self.level_is_vertical_cb:
-            self.level.is_vertical = self.level_is_vertical_cb.isChecked()
+            self._set_level_attr("is_vertical", checked, "Level is Vertical")
 
         self.level.data_changed.disconnect(function_to_connect)
 
