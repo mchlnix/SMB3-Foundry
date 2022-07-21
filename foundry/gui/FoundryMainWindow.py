@@ -66,6 +66,8 @@ from foundry.gui.commands import (
     AddObjectAt,
     PasteObjectsAt,
     RemoveSelected,
+    ReplaceEnemy,
+    ReplaceObject,
     ToBackground,
     ToForeground,
 )
@@ -908,7 +910,6 @@ class FoundryMainWindow(MainWindow):
     def remove_selected_objects(self):
         self.undo_stack.push(RemoveSelected(self.level_ref.level))
 
-    @undoable
     def on_spin(self, _):
         selected_objects = self.level_ref.selected_objects
 
@@ -928,9 +929,9 @@ class FoundryMainWindow(MainWindow):
             else:
                 length = None
 
-            self.level_view.replace_object(selected_object, domain, obj_type, length)
+            self.undo_stack.push(ReplaceObject(self.level_ref.level, selected_object, domain, obj_type, length))
         else:
-            self.level_view.replace_enemy(selected_object, obj_type)
+            self.undo_stack.push(ReplaceEnemy(self.level_ref.level, selected_object, obj_type))
 
         self.level_ref.data_changed.emit()
 

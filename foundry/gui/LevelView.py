@@ -542,29 +542,6 @@ class LevelView(MainView):
 
         self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
 
-    def replace_object(self, obj: LevelObject, domain: int, obj_index: int, length: int):
-        self.remove_object(obj)
-
-        x, y = obj.get_position()
-
-        new_obj = self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level)
-        new_obj.selected = obj.selected
-
-    # @undoable
-    def replace_enemy(self, old_enemy: EnemyItem, enemy_index: int):
-        index_in_level = self.level_ref.index_of(old_enemy)
-
-        self.remove_object(old_enemy)
-
-        x, y = old_enemy.get_position()
-
-        new_enemy = self.level_ref.add_enemy(enemy_index, x, y, index_in_level)
-
-        new_enemy.selected = old_enemy.selected
-
-    def remove_object(self, obj):
-        self.level_ref.remove_object(obj)
-
     def remove_jump(self, index: int):
         del self.level_ref.jumps[index]
 

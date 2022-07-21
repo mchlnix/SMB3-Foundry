@@ -289,3 +289,57 @@ class RemoveSelected(QUndoCommand):
 
     def redo(self):
         self.level.remove_selected_objects()
+
+
+class ReplaceObject(QUndoCommand):
+    def __init__(self, level: Level, to_replace: LevelObject, domain: int, obj_type: int, length: int):
+        super(ReplaceObject, self).__init__()
+
+        self.level = level
+        self.domain = domain
+        self.obj_type = obj_type
+        self.length = length
+
+        self.to_replace = to_replace
+        self.index = self.level.objects.index(self.to_replace)
+
+        self.setText(f"Replacing {self.to_replace.name}")
+
+    def undo(self):
+        self.level.objects[self.index] = self.to_replace
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        self.level.remove_object(self.to_replace)
+
+        x, y = self.to_replace.get_position()
+
+        new_object = self.level.add_object(self.domain, self.obj_type, x, y, self.length, self.index)
+        new_object.selected = self.to_replace.selected
+
+
+class ReplaceEnemy(QUndoCommand):
+    def __init__(self, level: Level, to_replace: EnemyItem, obj_type: int):
+        super(ReplaceEnemy, self).__init__()
+
+        self.level = level
+        self.obj_type = obj_type
+
+        self.to_replace = to_replace
+        self.index = self.level.enemies.index(self.to_replace)
+
+        self.setText(f"Replacing {self.to_replace.name}")
+
+    def undo(self):
+        self.level.enemies[self.index] = self.to_replace
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        self.level.remove_object(self.to_replace)
+
+        x, y = self.to_replace.get_position()
+
+        new_object = self.level.add_enemy(self.obj_type, x, y, self.index)
+        new_object.selected = self.to_replace.selected
