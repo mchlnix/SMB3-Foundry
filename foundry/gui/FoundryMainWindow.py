@@ -64,7 +64,7 @@ from foundry.gui.commands import (
     AddEnemyAt,
     AttachLevelToRom,
     AddObjectAt,
-    PasteObjectAt,
+    PasteObjectsAt,
     RemoveSelected,
     ToBackground,
     ToForeground,
@@ -903,7 +903,7 @@ class FoundryMainWindow(MainWindow):
             self.context_menu.set_copied_objects(selected_objects)
 
     def _paste_objects(self, q_point: Optional[QPoint] = None):
-        self.undo_stack.push(PasteObjectAt(self.level_view, self.context_menu.get_copied_objects(), q_point))
+        self.undo_stack.push(PasteObjectsAt(self.level_view, self.context_menu.get_copied_objects(), q_point))
 
     def remove_selected_objects(self):
         self.undo_stack.push(RemoveSelected(self.level_ref.level))

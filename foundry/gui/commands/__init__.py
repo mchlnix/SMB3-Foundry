@@ -126,6 +126,18 @@ def move_objects(level: Level, indexed_objects: List[Tuple[int, InLevelObject]],
             level.enemies.insert(index, obj)
 
 
+def object_names(objects: List[InLevelObject]) -> str:
+    amount = len(objects)
+
+    if amount == 1:
+        return f"'{objects[0].name}'"
+
+    if objects and all(isinstance(obj, EnemyItem) for obj in objects):
+        return f"{amount} enemies"
+    else:
+        return f"{amount} objects"
+
+
 class ToForeground(QUndoCommand):
     def __init__(self, level: Level, objects: List[InLevelObject]):
         super(ToForeground, self).__init__()
@@ -136,9 +148,7 @@ class ToForeground(QUndoCommand):
         self.indexes_before = objects_to_indexed_objects(level, objects)
 
         if len(objects) == 1:
-            self.setText(f"Bring '{objects[0].name}' to the foreground")
-        else:
-            self.setText(f"Bring {len(objects)} objects to the foreground")
+            self.setText(f"Bring {object_names(objects)} to the foreground")
 
     def undo(self):
         move_objects(self.level, self.indexes_before)
@@ -156,9 +166,7 @@ class ToBackground(ToForeground):
         self.indexes_before.reverse()
 
         if len(self.objects) == 1:
-            self.setText(f"Put '{objects[0].name}' in the background")
-        else:
-            self.setText(f"Put {len(objects)} objects in the background")
+            self.setText(f"Put {object_names(objects)} in the background")
 
     def redo(self):
         self.level.bring_to_background(self.objects)
@@ -227,11 +235,11 @@ class AddEnemyAt(QUndoCommand):
         self.setText(f"Add {enemy.name} at {enemy.x_position}, {enemy.y_position}")
 
 
-class PasteObjectAt(QUndoCommand):
+class PasteObjectsAt(QUndoCommand):
     def __init__(
         self, level_view: LevelView, paste_data: Tuple[List[InLevelObject], Tuple[int, int]], pos: QPoint = None
     ):
-        super(PasteObjectAt, self).__init__()
+        super(PasteObjectsAt, self).__init__()
 
         self.view = level_view
         self.paste_data = paste_data
@@ -243,6 +251,8 @@ class PasteObjectAt(QUndoCommand):
 
         self.pos = pos
         self.last_mouse_position = self.view.last_mouse_position
+
+        self.setText(f"Paste {object_names(objects)}")
 
     def undo(self):
         for _ in range(self.object_count):
@@ -267,6 +277,8 @@ class RemoveSelected(QUndoCommand):
         self.objects = [obj for obj in self.level.objects + self.level.enemies if obj.selected]
 
         self.indexes_before_removal = objects_to_indexed_objects(self.level, self.objects)
+
+        self.setText(f"Remove {object_names(self.objects)}")
 
     def undo(self):
         self.level.clear_selection()
