@@ -60,7 +60,15 @@ from foundry.gui.PaletteViewer import SidePalette
 from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
-from foundry.gui.commands import AddEnemyAt, AttachLevelToRom, AddObjectAt, PasteObjectAt, ToBackground, ToForeground
+from foundry.gui.commands import (
+    AddEnemyAt,
+    AttachLevelToRom,
+    AddObjectAt,
+    PasteObjectAt,
+    RemoveSelected,
+    ToBackground,
+    ToForeground,
+)
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
@@ -897,11 +905,8 @@ class FoundryMainWindow(MainWindow):
     def _paste_objects(self, q_point: Optional[QPoint] = None):
         self.undo_stack.push(PasteObjectAt(self.level_view, self.context_menu.get_copied_objects(), q_point))
 
-    @undoable
     def remove_selected_objects(self):
-        self.level_view.remove_selected_objects()
-        self.level_view.update()
-        self.spinner_panel.disable_all()
+        self.undo_stack.push(RemoveSelected(self.level_ref.level))
 
     @undoable
     def on_spin(self, _):

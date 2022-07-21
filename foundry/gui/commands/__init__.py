@@ -92,6 +92,40 @@ class SetNextAreaObjectSet(SetLevelAttribute):
         self.setText(f"Object Set of Next Area to {OBJECT_SET_NAMES[new_object_set]}")
 
 
+def objects_to_indexed_objects(level: Level, objects: List[InLevelObject]) -> List[Tuple[int, InLevelObject]]:
+    indexes = []
+
+    for obj in objects:
+        if isinstance(obj, LevelObject):
+            index = level.objects.index(obj)
+
+        else:
+            assert isinstance(obj, EnemyItem)
+            index = level.enemies.index(obj)
+
+        indexes.append((index, obj))
+
+    indexes.sort(key=itemgetter(0))
+
+    return indexes
+
+
+def move_objects(level: Level, indexed_objects: List[Tuple[int, InLevelObject]], restore_only=False):
+    for index, obj in indexed_objects:
+        if isinstance(obj, LevelObject):
+            if not restore_only:
+                level.objects.remove(obj)
+
+            level.objects.insert(index, obj)
+
+        else:
+            assert isinstance(obj, EnemyItem)
+            if not restore_only:
+                level.enemies.remove(obj)
+
+            level.enemies.insert(index, obj)
+
+
 class ToForeground(QUndoCommand):
     def __init__(self, level: Level, objects: List[InLevelObject]):
         super(ToForeground, self).__init__()
@@ -99,35 +133,15 @@ class ToForeground(QUndoCommand):
         self.level = level
         self.objects = objects
 
-        self.indexes_before: List[Tuple[int, InLevelObject]] = []
+        self.indexes_before = objects_to_indexed_objects(level, objects)
 
-        for obj in objects:
-            if isinstance(obj, LevelObject):
-                index = self.level.objects.index(obj)
-
-            else:
-                assert isinstance(obj, EnemyItem)
-                index = self.level.enemies.index(obj)
-
-            self.indexes_before.append((index, obj))
-
-        self.indexes_before.sort(key=itemgetter(0))
-
-        if len(self.objects) == 1:
+        if len(objects) == 1:
             self.setText(f"Bring '{objects[0].name}' to the foreground")
         else:
             self.setText(f"Bring {len(objects)} objects to the foreground")
 
     def undo(self):
-        for index, obj in self.indexes_before:
-            if isinstance(obj, LevelObject):
-                self.level.objects.remove(obj)
-                self.level.objects.insert(index, obj)
-
-            else:
-                assert isinstance(obj, EnemyItem)
-                self.level.enemies.remove(obj)
-                self.level.enemies.insert(index, obj)
+        move_objects(self.level, self.indexes_before)
 
         self.level.data_changed.emit()
 
@@ -242,3 +256,24 @@ class PasteObjectAt(QUndoCommand):
         # restore last mouse position, since it is used inside the method as a fallback
         self.view.last_mouse_position = self.last_mouse_position
         self.view.paste_objects_at(self.paste_data, self.pos)
+
+
+# TODO can probably be generalized into RemoveObjects
+class RemoveSelected(QUndoCommand):
+    def __init__(self, level: Level):
+        super(RemoveSelected, self).__init__()
+
+        self.level = level
+        self.objects = [obj for obj in self.level.objects + self.level.enemies if obj.selected]
+
+        self.indexes_before_removal = objects_to_indexed_objects(self.level, self.objects)
+
+    def undo(self):
+        self.level.clear_selection()
+
+        move_objects(self.level, self.indexes_before_removal, restore_only=True)
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        self.level.remove_selected_objects()
