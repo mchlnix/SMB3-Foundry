@@ -598,13 +598,6 @@ class Level(LevelLike):
 
         return None
 
-    def create_object_at(self, x: int, y: int, domain: int = 0, object_index: int = 0):
-        self.add_object(domain, object_index, x, y, None, len(self.objects))
-
-    def create_enemy_at(self, x: int, y: int):
-        # goomba to have something to display
-        self.add_enemy(0x72, x, y, len(self.enemies))
-
     def add_object(
         self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int = -1
     ) -> Optional[ObjectLike]:

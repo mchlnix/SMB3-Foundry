@@ -60,7 +60,7 @@ from foundry.gui.PaletteViewer import SidePalette
 from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
-from foundry.gui.commands import AttachLevelToRom, ToBackground, ToForeground
+from foundry.gui.commands import AddEnemyAt, AttachLevelToRom, AddObjectAt, ToBackground, ToForeground
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
@@ -840,7 +840,7 @@ class FoundryMainWindow(MainWindow):
                 if selected_object != -1:
                     self.place_object_from_dropdown(self.context_menu.get_position())
                 else:
-                    self.create_object_at(self.context_menu.get_position())
+                    self.add_object_at(self.context_menu.get_position())
 
             elif item_id == CMAction.CUT:
                 self._cut_objects()
@@ -878,13 +878,11 @@ class FoundryMainWindow(MainWindow):
     def bring_objects_to_background(self):
         self.undo_stack.push(ToBackground(self.level_ref.level, self.level_ref.selected_objects))
 
-    @undoable
-    def create_object_at(self, q_point: QPoint):
-        self.level_view.create_object_at(q_point)
+    def add_object_at(self, q_point: QPoint, domain=0, obj_type=0):
+        self.undo_stack.push(AddObjectAt(self.level_view, q_point, domain, obj_type))
 
-    @undoable
-    def create_enemy_at(self, q_point: QPoint):
-        self.level_view.create_enemy_at(q_point)
+    def add_enemy_at(self, q_point: QPoint, enemy_type=0x72):
+        self.undo_stack.push(AddEnemyAt(self.level_view, q_point, enemy_type))
 
     def _cut_objects(self):
         self._copy_objects()
@@ -1069,17 +1067,16 @@ class FoundryMainWindow(MainWindow):
 
             self.place_object_from_dropdown(pos)
 
-    @undoable
     def place_object_from_dropdown(self, q_point: QPoint) -> None:
         # the dropdown is synchronized with the toolbar, so it doesn't matter where to take it from
-        level_object = self.object_dropdown.currentData(Qt.UserRole)
+        in_level_object = self.object_dropdown.currentData(Qt.UserRole)
 
-        self.object_toolbar.add_recent_object(level_object)
+        self.object_toolbar.add_recent_object(in_level_object)
 
-        if isinstance(level_object, LevelObject):
-            self.level_view.create_object_at(q_point, level_object.domain, level_object.obj_index)
-        elif isinstance(level_object, EnemyItem):
-            self.level_view.add_enemy(level_object.obj_index, q_point, -1)
+        if isinstance(in_level_object, LevelObject):
+            self.add_object_at(q_point, in_level_object.domain, in_level_object.obj_index)
+        elif isinstance(in_level_object, EnemyItem):
+            self.add_enemy_at(q_point, in_level_object.obj_index)
 
     def closeEvent(self, event: QCloseEvent):
         super(FoundryMainWindow, self).closeEvent(event)

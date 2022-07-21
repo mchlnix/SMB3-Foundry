@@ -1,11 +1,14 @@
 from operator import itemgetter
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
+from PySide6.QtCore import QPoint
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
-from foundry.game.gfx.objects import EnemyItem, InLevelObject, LevelObject
+from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level
+from foundry.gui.LevelView import LevelView
 
 
 class SetLevelAddressData(QUndoCommand):
@@ -145,3 +148,66 @@ class ToBackground(ToForeground):
 
     def redo(self):
         self.level.bring_to_background(self.objects)
+
+
+class AddObjectAt(QUndoCommand):
+    def __init__(
+        self, level_view: LevelView, pos: QPoint, domain=0, obj_type=0, length: Optional[int] = None, index=-1
+    ):
+        super(AddObjectAt, self).__init__()
+
+        self.view = level_view
+        self.level = level_view.level_ref.level
+
+        self.pos = pos
+
+        self.domain = domain
+        self.obj_type = obj_type
+        self.length = length
+
+        self.index = index
+
+    def undo(self):
+        self.level.objects.pop(self.index)
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        self.view.add_object(self.domain, self.obj_type, self.pos, self.length, self.index)
+
+        self.index = len(self.level.objects) - 1
+
+        level_obj = self.level.objects[-1]
+
+        # TODO use level coordinates, possibly by using level directly, instead of level view
+        self.setText(f"Add {level_obj.name} at {level_obj.x_position}, {level_obj.y_position}")
+
+
+class AddEnemyAt(QUndoCommand):
+    def __init__(self, level_view: LevelView, pos: QPoint, enemy_type=0, index=-1):
+        super(AddEnemyAt, self).__init__()
+
+        self.view = level_view
+        self.level = level_view.level_ref.level
+
+        self.pos = pos
+
+        self.enemy_type = enemy_type
+
+        self.index = index
+
+    def undo(self):
+        self.level.enemies.pop(self.index)
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        self.view.add_enemy(self.enemy_type, self.pos, self.index)
+
+        if self.index == -1:
+            self.index = len(self.level.enemies) - 1
+
+        enemy = self.level.enemies[self.index]
+
+        # TODO use level coordinates, possibly by using level directly, instead of level view
+        self.setText(f"Add {enemy.name} at {enemy.x_position}, {enemy.y_position}")
