@@ -60,7 +60,7 @@ from foundry.gui.PaletteViewer import SidePalette
 from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
-from foundry.gui.commands import AttachLevelToRom
+from foundry.gui.commands import AttachLevelToRom, ToBackground, ToForeground
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
@@ -872,13 +872,11 @@ class FoundryMainWindow(MainWindow):
         else:
             self.object_toolbar.select_object(level_object)
 
-    @undoable
     def bring_objects_to_foreground(self):
-        self.level_ref.level.bring_to_foreground(self.level_ref.selected_objects)
+        self.undo_stack.push(ToForeground(self.level_ref.level, self.level_ref.selected_objects))
 
-    @undoable
     def bring_objects_to_background(self):
-        self.level_ref.level.bring_to_background(self.level_ref.selected_objects)
+        self.undo_stack.push(ToBackground(self.level_ref.level, self.level_ref.selected_objects))
 
     @undoable
     def create_object_at(self, q_point: QPoint):

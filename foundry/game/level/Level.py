@@ -522,15 +522,19 @@ class Level(LevelLike):
                 continue
 
             if isinstance(obj, LevelObject):
-                objects = self.objects
+                other_objects = self.objects
             elif isinstance(obj, EnemyItem):
-                objects = self.enemies
+                other_objects = self.enemies
+            else:
+                raise TypeError(f"How did you select an object of type: {type(obj)}")
 
-            objects.remove(obj)
+            other_objects.remove(obj)
 
-            index = objects.index(object_currently_in_the_foreground) + 1
+            index = other_objects.index(object_currently_in_the_foreground) + 1
 
-            objects.insert(index, obj)
+            other_objects.insert(index, obj)
+
+        self.data_changed.emit()
 
     def bring_to_background(self, level_objects: List[InLevelObject]):
         for obj in level_objects:
