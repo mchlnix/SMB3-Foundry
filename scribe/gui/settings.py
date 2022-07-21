@@ -18,10 +18,14 @@ class Settings(QSettings):
         super(Settings, self).__init__(organization, application)
 
         for key, default_value in _settings.items():
-            if self.value(key) is None:
+            if self.value(key) is None or self.is_default:
                 self.setValue(key, default_value)
 
         self.sync()
+
+    @property
+    def is_default(self):
+        return self.organizationName() == "mchlnix" and self.applicationName() == "default"
 
     def value(self, key: str, default_value=None, type_=None):
         if key in _settings and type_ is None:
@@ -37,8 +41,11 @@ class Settings(QSettings):
         else:
             return type_(returned_value)
 
+    def setValue(self, key: str, value):
+        return super(Settings, self).setValue(key, value)
+
     def sync(self):
-        if self.organizationName() == "mchlnix" and self.applicationName() == "default":
+        if self.is_default:
             return
         else:
             return super(Settings, self).sync()
