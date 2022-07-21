@@ -638,15 +638,6 @@ class Level(LevelLike):
         else:
             return self.enemies[index % len(self.objects)]
 
-    def remove_selected_objects(self):
-        for obj in self.get_all_objects():
-            if not obj.selected:
-                continue
-
-            self.remove_object(obj)
-
-        self.data_changed.emit()
-
     def clear_selection(self):
         for obj in self.get_all_objects():
             obj.selected = False

@@ -102,7 +102,7 @@ def objects_to_indexed_objects(level: Level, objects: List[InLevelObject]) -> Li
             index = level.objects.index(obj)
 
         else:
-            assert isinstance(obj, EnemyItem)
+            assert isinstance(obj, EnemyItem), type(obj)
             index = level.enemies.index(obj)
 
         indexes.append((index, obj))
@@ -149,8 +149,7 @@ class ToForeground(QUndoCommand):
 
         self.indexes_before = objects_to_indexed_objects(level, objects)
 
-        if len(objects) == 1:
-            self.setText(f"Bring {object_names(objects)} to the foreground")
+        self.setText(f"Bring {object_names(objects)} to the foreground")
 
     def undo(self):
         move_objects(self.level, self.indexes_before)
@@ -167,8 +166,7 @@ class ToBackground(ToForeground):
 
         self.indexes_before.reverse()
 
-        if len(self.objects) == 1:
-            self.setText(f"Put {object_names(objects)} in the background")
+        self.setText(f"Put {object_names(objects)} in the background")
 
     def redo(self):
         self.level.bring_to_background(self.objects)
@@ -180,6 +178,8 @@ class AddObject(QUndoCommand):
 
         self.level = level
         self.obj = obj
+
+        self.setText(f"Add {obj.name}")
 
         if index == -1:
             if isinstance(obj, LevelObject):
@@ -322,7 +322,13 @@ class RemoveObjects(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        self.level.remove_selected_objects()
+        for obj in self.objects:
+            if isinstance(obj, LevelObject):
+                self.level.objects.remove(obj)
+            else:
+                self.level.enemies.remove(obj)
+
+        self.level.data_changed.emit()
 
 
 # Could maybe be replaced by a macro of remove and add object?
