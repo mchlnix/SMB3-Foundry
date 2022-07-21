@@ -66,6 +66,9 @@ class EnemyItem(InLevelObject):
 
             self.blocks.append(self.png_data.copy(QRect(x, y, Block.WIDTH, Block.HEIGHT)))
 
+    def copy(self):
+        return EnemyItem(self.to_bytes(), self.png_data, self.palette_group)
+
     def render(self):
         # nothing to re-render since enemies are just copied over
         pass

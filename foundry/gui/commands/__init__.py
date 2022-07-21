@@ -1,5 +1,5 @@
 from operator import itemgetter
-from typing import List, Optional, Tuple
+from typing import List, Optional, TYPE_CHECKING, Tuple
 
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QUndoCommand
@@ -8,7 +8,9 @@ from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level
-from foundry.gui.LevelView import LevelView
+
+if TYPE_CHECKING:
+    from foundry.gui.LevelView import LevelView
 
 
 class SetLevelAddressData(QUndoCommand):
@@ -172,11 +174,44 @@ class ToBackground(ToForeground):
         self.level.bring_to_background(self.objects)
 
 
-class AddObjectAt(QUndoCommand):
+class AddObject(QUndoCommand):
+    def __init__(self, level: Level, obj: InLevelObject, index=-1):
+        super(AddObject, self).__init__()
+
+        self.level = level
+        self.obj = obj
+
+        if index == -1:
+            if isinstance(obj, LevelObject):
+                self.index = len(self.level.objects)
+            else:
+                assert isinstance(obj, EnemyItem)
+                self.index = len(self.level.enemies)
+        else:
+            self.index = index
+
+    def undo(self):
+        if isinstance(self.obj, LevelObject):
+            self.level.objects.pop(self.index)
+        else:
+            self.level.enemies.pop(self.index)
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        if isinstance(self.obj, LevelObject):
+            self.level.objects.insert(self.index, self.obj)
+        else:
+            self.level.enemies.insert(self.index, self.obj)
+
+        self.level.data_changed.emit()
+
+
+class AddLevelObjectAt(QUndoCommand):
     def __init__(
-        self, level_view: LevelView, pos: QPoint, domain=0, obj_type=0, length: Optional[int] = None, index=-1
+        self, level_view: "LevelView", pos: QPoint, domain=0, obj_type=0, length: Optional[int] = None, index=-1
     ):
-        super(AddObjectAt, self).__init__()
+        super(AddLevelObjectAt, self).__init__()
 
         self.view = level_view
         self.level = level_view.level_ref.level
@@ -206,7 +241,7 @@ class AddObjectAt(QUndoCommand):
 
 
 class AddEnemyAt(QUndoCommand):
-    def __init__(self, level_view: LevelView, pos: QPoint, enemy_type=0, index=-1):
+    def __init__(self, level_view: "LevelView", pos: QPoint, enemy_type=0, index=-1):
         super(AddEnemyAt, self).__init__()
 
         self.view = level_view
@@ -237,7 +272,7 @@ class AddEnemyAt(QUndoCommand):
 
 class PasteObjectsAt(QUndoCommand):
     def __init__(
-        self, level_view: LevelView, paste_data: Tuple[List[InLevelObject], Tuple[int, int]], pos: QPoint = None
+        self, level_view: "LevelView", paste_data: Tuple[List[InLevelObject], Tuple[int, int]], pos: QPoint = None
     ):
         super(PasteObjectsAt, self).__init__()
 
@@ -268,13 +303,12 @@ class PasteObjectsAt(QUndoCommand):
         self.view.paste_objects_at(self.paste_data, self.pos)
 
 
-# TODO can probably be generalized into RemoveObjects
-class RemoveSelected(QUndoCommand):
-    def __init__(self, level: Level):
-        super(RemoveSelected, self).__init__()
+class RemoveObjects(QUndoCommand):
+    def __init__(self, level: Level, objects: List[InLevelObject]):
+        super(RemoveObjects, self).__init__()
 
         self.level = level
-        self.objects = [obj for obj in self.level.objects + self.level.enemies if obj.selected]
+        self.objects = objects
 
         self.indexes_before_removal = objects_to_indexed_objects(self.level, self.objects)
 
@@ -291,9 +325,10 @@ class RemoveSelected(QUndoCommand):
         self.level.remove_selected_objects()
 
 
-class ReplaceObject(QUndoCommand):
+# Could maybe be replaced by a macro of remove and add object?
+class ReplaceLevelObject(QUndoCommand):
     def __init__(self, level: Level, to_replace: LevelObject, domain: int, obj_type: int, length: int):
-        super(ReplaceObject, self).__init__()
+        super(ReplaceLevelObject, self).__init__()
 
         self.level = level
         self.domain = domain

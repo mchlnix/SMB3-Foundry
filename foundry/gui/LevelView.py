@@ -2,7 +2,7 @@ from bisect import bisect_right
 from typing import List, Optional, Tuple, cast
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QMouseEvent, QWheelEvent, Qt
+from PySide6.QtGui import QMouseEvent, QUndoStack, QWheelEvent, Qt
 from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import ctrl_is_pressed
@@ -24,6 +24,7 @@ from foundry.gui.MainView import (
     RESIZE_MODES,
     undoable,
 )
+from foundry.gui.commands import AddObject, RemoveObjects
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 
@@ -136,6 +137,10 @@ class LevelView(MainView):
     def draw_autoscroll(self, value):
         self.drawer.draw_autoscroll = value
 
+    @property
+    def undo_stack(self) -> QUndoStack:
+        return self.window().findChild(QUndoStack, "undo_stack")
+
     def sizeHint(self) -> QSize:
         if self.level_ref.level is None:
             return super(LevelView, self).sizeHint()
@@ -241,7 +246,6 @@ class LevelView(MainView):
             super(LevelView, self).wheelEvent(event)
             return False
 
-    @undoable
     def _change_object_on_mouse_wheel(self, cursor_position: QPoint, y_delta: int):
         obj_under_cursor = self.object_at(cursor_position)
 
@@ -249,11 +253,31 @@ class LevelView(MainView):
             return
 
         if y_delta > 0:
-            obj_under_cursor.increment_type()
+            macro_name = f"Increment Type of '{obj_under_cursor.name}'"
         else:
-            obj_under_cursor.decrement_type()
+            macro_name = f"Decrement Type of '{obj_under_cursor.name}'"
 
-        obj_under_cursor.selected = True
+        self.undo_stack.beginMacro(macro_name)
+
+        if isinstance(obj_under_cursor, LevelObject):
+            index = self.level_ref.level.objects.index(obj_under_cursor)
+        else:
+            index = self.level_ref.level.enemies.index(obj_under_cursor)
+
+        copied_object = obj_under_cursor.copy()
+
+        self.undo_stack.push(RemoveObjects(self.level_ref.level, [obj_under_cursor]))
+
+        if y_delta > 0:
+            copied_object.increment_type()
+        else:
+            copied_object.decrement_type()
+
+        copied_object.selected = True
+
+        self.undo_stack.push(AddObject(self.level_ref.level, copied_object, index))
+
+        self.undo_stack.endMacro()
 
     def _on_right_mouse_button_down(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG:

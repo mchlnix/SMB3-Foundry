@@ -182,6 +182,18 @@ class LevelObject(InLevelObject):
 
         self._length = value
 
+    def copy(self):
+        return LevelObject(
+            self.data,
+            self.object_set.number,
+            self.palette_group,
+            self.graphics_set,
+            self.objects_ref,
+            self.vertical_level,
+            self.index_in_level,
+            self.size_minimal,
+        )
+
     def _calculate_lengths(self):
         if self.is_single_block:
             self._length = 1

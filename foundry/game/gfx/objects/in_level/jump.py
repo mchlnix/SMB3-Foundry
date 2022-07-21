@@ -31,6 +31,9 @@ class Jump(InLevelObject):
         # for some reason those are flipped, meaning 5678, 1234
         self.exit_horizontal = ((data[2] & 0xF) << 4) + (data[2] >> 4)
 
+    def copy(self):
+        return Jump(self.data)
+
     def draw(self, painter: QPainter, block_length, transparent):
         pass
 

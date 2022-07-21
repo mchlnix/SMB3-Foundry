@@ -57,6 +57,10 @@ class InLevelObject(ObjectLike, abc.ABC):
         pass
 
     @abc.abstractmethod
+    def copy(self):
+        pass
+
+    @abc.abstractmethod
     def to_bytes(self):
         pass
 

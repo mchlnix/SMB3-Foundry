@@ -63,13 +63,13 @@ from foundry.gui.WarningList import WarningList
 from foundry.gui.commands import (
     AddEnemyAt,
     AddJump,
-    AddObjectAt,
+    AddLevelObjectAt,
     AttachLevelToRom,
     PasteObjectsAt,
     RemoveJump,
-    RemoveSelected,
+    RemoveObjects,
     ReplaceEnemy,
-    ReplaceObject,
+    ReplaceLevelObject,
     ToBackground,
     ToForeground,
 )
@@ -891,7 +891,7 @@ class FoundryMainWindow(MainWindow):
         self.undo_stack.push(ToBackground(self.level_ref.level, self.level_ref.selected_objects))
 
     def add_object_at(self, q_point: QPoint, domain=0, obj_type=0):
-        self.undo_stack.push(AddObjectAt(self.level_view, q_point, domain, obj_type))
+        self.undo_stack.push(AddLevelObjectAt(self.level_view, q_point, domain, obj_type))
 
     def add_enemy_at(self, q_point: QPoint, enemy_type=0x72):
         self.undo_stack.push(AddEnemyAt(self.level_view, q_point, enemy_type))
@@ -910,7 +910,9 @@ class FoundryMainWindow(MainWindow):
         self.undo_stack.push(PasteObjectsAt(self.level_view, self.context_menu.get_copied_objects(), q_point))
 
     def remove_selected_objects(self):
-        self.undo_stack.push(RemoveSelected(self.level_ref.level))
+        selected_objects = [obj for obj in self.level_ref.level.get_all_objects() if obj.selected]
+
+        self.undo_stack.push(RemoveObjects(self.level_ref.level, selected_objects))
 
     def on_spin(self, _):
         selected_objects = self.level_ref.selected_objects
@@ -931,7 +933,7 @@ class FoundryMainWindow(MainWindow):
             else:
                 length = None
 
-            self.undo_stack.push(ReplaceObject(self.level_ref.level, selected_object, domain, obj_type, length))
+            self.undo_stack.push(ReplaceLevelObject(self.level_ref.level, selected_object, domain, obj_type, length))
         else:
             self.undo_stack.push(ReplaceEnemy(self.level_ref.level, selected_object, obj_type))
 
