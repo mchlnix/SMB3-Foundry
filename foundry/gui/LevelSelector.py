@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from foundry import icon
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
@@ -116,6 +117,7 @@ class LevelSelector(QDialog):
 
         self.source_selector = QTabWidget()
         self.source_selector.addTab(stock_level_widget, "Stock Levels")
+        self.source_selector.setTabIcon(0, icon("list.svg"))
 
         for world_number in range(WORLD_COUNT - 1):
             world_number += 1
@@ -124,6 +126,7 @@ class LevelSelector(QDialog):
             world_map_select.level_selected.connect(self._on_level_selected_via_world_map)
 
             self.source_selector.addTab(world_map_select, f"World {world_number}")
+            self.source_selector.setTabIcon(world_number, icon("globe.svg"))
 
         # show world 1 by default
         if self.source_selector.count() > 1:

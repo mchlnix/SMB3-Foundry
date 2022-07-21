@@ -3,7 +3,7 @@ import os
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QFileDialog, QMenu
 
-from foundry import IMG_FILE_FILTER
+from foundry import IMG_FILE_FILTER, icon
 from foundry.game.File import ROM
 from foundry.gui.settings import SETTINGS, save_settings
 
@@ -58,6 +58,7 @@ class ViewMenu(QMenu):
 
         self.addSeparator()
         self._screen_shot_action = self.addAction("Save &Screenshot of Level")
+        self._screen_shot_action.setIcon(icon("image.svg"))
 
     def _on_trigger(self, action: QAction):
         checked = action.isChecked()
