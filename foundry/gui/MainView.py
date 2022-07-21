@@ -29,14 +29,6 @@ MODE_RESIZE_DIAG = MODE_RESIZE_HORIZ | MODE_RESIZE_VERT
 RESIZE_MODES = [MODE_RESIZE_HORIZ, MODE_RESIZE_VERT, MODE_RESIZE_DIAG]
 
 
-def undoable(func):
-    def wrapped(self, *args):
-        func(self, *args)
-        self.level_ref.save_level_state()
-
-    return wrapped
-
-
 class MainView(QWidget):
     def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[LevelContextMenu]):
         super(MainView, self).__init__(parent)

@@ -872,7 +872,7 @@ class LevelObject(InLevelObject):
     def decrement_type(self):
         self.change_type(False)
 
-    def change_type(self, increment: int):
+    def change_type(self, increment: bool):
         if self.obj_index < 0x10 or self.obj_index == 0x10 and not increment:
             value = 1
         else:

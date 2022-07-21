@@ -22,9 +22,8 @@ from foundry.gui.MainView import (
     MODE_RESIZE_VERT,
     MainView,
     RESIZE_MODES,
-    undoable,
 )
-from foundry.gui.commands import AddObject, RemoveObjects
+from foundry.gui.commands import AddEnemyAt, AddLevelObjectAt, AddObject, RemoveObjects
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 
@@ -563,16 +562,13 @@ class LevelView(MainView):
 
         self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
 
-    @undoable
     def dropEvent(self, event):
-        x, y = self._to_level_point(event.pos())
-
         level_object = self._object_from_mime_data(event.mimeData())
 
         if isinstance(level_object, LevelObject):
-            self.level_ref.level.add_object(level_object.domain, level_object.obj_index, x, y, None)
+            self.undo_stack.push(AddLevelObjectAt(self, event.pos(), level_object.domain, level_object.obj_index, None))
         else:
-            self.level_ref.level.add_enemy(level_object.obj_index, x, y)
+            self.undo_stack.push(AddEnemyAt(self, event.pos(), level_object.obj_index))
 
         event.accept()
 
