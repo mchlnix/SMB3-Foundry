@@ -105,6 +105,9 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.level_menu)
 
     def on_open_rom(self, path_to_rom="") -> bool:
+        if not self.safe_to_change():
+            return
+
         if not path_to_rom:
             # otherwise ask the user what new file to open
             path_to_rom, _ = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
