@@ -21,6 +21,7 @@ class InLevelObject(ObjectLike, abc.ABC):
     def __init__(self):
         super(InLevelObject, self).__init__()
 
+        # TODO base this on Position, like MapObjects do
         self.x_position = 0
         self.y_position = 0
 

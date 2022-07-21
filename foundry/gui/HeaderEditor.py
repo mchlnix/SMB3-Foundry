@@ -1,6 +1,5 @@
 from typing import Optional
 
-from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtGui import QUndoStack, Qt
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -81,15 +80,10 @@ SPINNER_MAX_VALUE = 0x0F_FF_FF
 
 
 class HeaderEditor(CustomDialog):
-    header_change: SignalInstance = Signal()
-
     def __init__(self, parent: Optional[QWidget], level_ref: LevelRef):
         super(HeaderEditor, self).__init__(parent, "Level Header Editor")
 
         self.level: Level = level_ref.level
-
-        # enables undo
-        self.header_change.connect(level_ref.save_level_state)
 
         main_layout = QVBoxLayout(self)
 
@@ -293,17 +287,11 @@ class HeaderEditor(CustomDialog):
 
         self.undo_stack.endMacro()
 
-        self.header_change.emit()
-
     def on_spin(self, new_value):
         if self.level is None or self.signalsBlocked():
             return
 
         spinner = self.sender()
-
-        function_to_connect = self.header_change.emit
-
-        self.level.data_changed.connect(function_to_connect)
 
         if spinner == self.object_palette_spinner:
             self._set_level_attr("object_palette_index", new_value)
@@ -317,8 +305,6 @@ class HeaderEditor(CustomDialog):
         elif spinner == self.enemy_pointer_spinner and new_value != self.level.next_area_enemies:
             self.undo_stack.push(SetNextAreaEnemyAddress(self.level, new_value))
 
-        self.level.data_changed.disconnect(function_to_connect)
-
         self.update()
 
     def on_combo(self, new_index):
@@ -327,10 +313,6 @@ class HeaderEditor(CustomDialog):
 
         dropdown = self.sender()
         text = dropdown.currentText()
-
-        function_to_connect = self.header_change.emit
-
-        self.level.data_changed.connect(function_to_connect)
 
         # TODO do this via properties and get rid of the ifs?
         if dropdown == self.length_dropdown and (new_length := LEVEL_LENGTHS[new_index]) != self.level.length:
@@ -371,8 +353,6 @@ class HeaderEditor(CustomDialog):
 
             self.undo_stack.endMacro()
 
-        self.level.data_changed.disconnect(function_to_connect)
-
         self.update()
 
     def on_check_box(self, checked):
@@ -382,15 +362,9 @@ class HeaderEditor(CustomDialog):
         checkbox = self.sender()
         assert checked == checkbox.isChecked()
 
-        function_to_connect = self.header_change.emit
-
-        self.level.data_changed.connect(function_to_connect)
-
         if checkbox == self.pipe_ends_level_cb:
             self._set_level_attr("pipe_ends_level", checked)
         elif checkbox == self.level_is_vertical_cb:
             self._set_level_attr("is_vertical", checked, "Level is Vertical")
-
-        self.level.data_changed.disconnect(function_to_connect)
 
         self.update()

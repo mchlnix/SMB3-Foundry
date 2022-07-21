@@ -368,9 +368,9 @@ class FoundryMainWindow(MainWindow):
         self.update_gui_for_level()
 
     def _on_level_data_changed(self):
-        self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
-
         self.save_rom_action.setEnabled(not self.undo_stack.isClean() or PaletteGroup.changed)
+
+        self.jump_destination_action.setEnabled(bool(self.level_ref.level and self.level_ref.level.has_next_area))
 
         self._save_auto_data()
 
@@ -382,6 +382,9 @@ class FoundryMainWindow(MainWindow):
         ROM().save_to_file(auto_save_rom_path, set_new_path=False)
 
     def _save_auto_data(self):
+        if not self.level_ref:
+            return
+
         (level_offset, _), (enemy_offset, _) = self.level_ref.level.to_bytes()
 
         object_set_number = self.level_ref.level.object_set_number
