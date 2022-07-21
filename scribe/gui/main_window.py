@@ -220,7 +220,9 @@ class ScribeMainWindow(MainWindow):
         self.world_view.update()
 
     def on_edit_menu(self, action: QAction):
-        if action is self.clear_tiles_action:
+        if action in [self.undo_action, self.redo_action]:
+            self.edit_menu.show()
+        elif action is self.clear_tiles_action:
             self.world_view.clear_tiles()
         elif action is self.clear_sprites_action:
             self.world_view.clear_sprites()
