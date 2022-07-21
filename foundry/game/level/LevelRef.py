@@ -83,12 +83,6 @@ class LevelRef(QObject):
         if byte_data:
             self.set_level_state(*byte_data[undo_index])
 
-    def save_level_state(self):
-        self.undo_stack.save_level_state(self._internal_level.to_bytes())
-        self.level.changed = True
-
-        self.data_changed.emit()
-
     @property
     def fully_loaded(self):
         return bool(self)

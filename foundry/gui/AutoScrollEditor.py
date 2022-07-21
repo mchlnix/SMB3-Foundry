@@ -1,11 +1,13 @@
 from typing import List, Optional
 
+from PySide6.QtGui import QUndoStack
 from PySide6.QtWidgets import QCheckBox, QLabel, QVBoxLayout
 
 from foundry.game.gfx.objects import EnemyItem
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
+from foundry.gui.commands import AddObject, RemoveObjects
 from smb3parse.constants import OBJ_AUTOSCROLL
 
 AUTOSCROLL_LABELS = {
@@ -22,9 +24,11 @@ AUTOSCROLL_LABELS = {
 class AutoScrollEditor(CustomDialog):
     def __init__(self, parent, level_ref: LevelRef):
         super(AutoScrollEditor, self).__init__(parent, title="Autoscroll Editor")
+
         self.level_ref = level_ref
 
         self.original_autoscroll_item = _get_autoscroll(self.level_ref.enemies)
+        self.original_y_value = self.original_autoscroll_item.y_position if self.original_autoscroll_item else -1
 
         QVBoxLayout(self)
 
@@ -41,6 +45,10 @@ class AutoScrollEditor(CustomDialog):
         self.layout().addWidget(self.auto_scroll_type_label)
 
         self.update()
+
+    @property
+    def undo_stack(self) -> QUndoStack:
+        return self.parent().window().findChild(QUndoStack, "undo_stack")
 
     def update(self):
         autoscroll_item = _get_autoscroll(self.level_ref.enemies)
@@ -84,14 +92,38 @@ class AutoScrollEditor(CustomDialog):
     def closeEvent(self, event):
         current_autoscroll_item = _get_autoscroll(self.level_ref.enemies)
 
-        if not (self.original_autoscroll_item is None and current_autoscroll_item is None):
-            added_or_removed_autoscroll = self.original_autoscroll_item is None or current_autoscroll_item is None
+        autoscroll_kept_disabled = self.original_autoscroll_item is None and current_autoscroll_item is None
+        autoscroll_was_disabled = self.original_autoscroll_item is not None and current_autoscroll_item is None
+        autoscroll_was_enabled = self.original_autoscroll_item is None and current_autoscroll_item is not None
 
-            if (
-                added_or_removed_autoscroll
-                or self.original_autoscroll_item.y_position != current_autoscroll_item.y_position
-            ):
-                self.level_ref.save_level_state()
+        if autoscroll_kept_disabled:
+            # nothing to do
+            pass
+        elif autoscroll_was_disabled:
+            self.level_ref.level.enemies.insert(0, self.original_autoscroll_item)
+            self.undo_stack.push(RemoveObjects(self.level_ref.level, [self.original_autoscroll_item]))
+        elif autoscroll_was_enabled:
+            self.level_ref.level.remove_object(current_autoscroll_item)
+            self.undo_stack.push(AddObject(self.level_ref.level, current_autoscroll_item, 0))
+        else:
+            # autoscroll object might have been changed, first reset state from the start
+            assert self.original_autoscroll_item is not None
+
+            if current_autoscroll_item is self.original_autoscroll_item:
+                current_autoscroll_item = self.original_autoscroll_item.copy()
+            else:
+                self.level_ref.level.remove_object(current_autoscroll_item)
+                self.level_ref.level.enemies.insert(0, self.original_autoscroll_item)
+
+            if self.original_y_value != current_autoscroll_item.y_position:
+                assert self.original_autoscroll_item is not current_autoscroll_item
+
+                self.undo_stack.beginMacro("Change Autoscroll Path")
+
+                self.undo_stack.push(RemoveObjects(self.level_ref.level, [self.original_autoscroll_item]))
+                self.undo_stack.push(AddObject(self.level_ref.level, current_autoscroll_item, 0))
+
+                self.undo_stack.endMacro()
 
         super(AutoScrollEditor, self).closeEvent(event)
 
