@@ -37,7 +37,7 @@ from foundry import (
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.Palette import PaletteGroup, restore_all_palettes, save_all_palette_groups
-from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
@@ -49,7 +49,7 @@ from foundry.gui.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
 from foundry.gui.LevelSelector import LevelSelector
 from foundry.gui.LevelSizeBar import LevelSizeBar
-from foundry.gui.LevelView import LevelView, undoable
+from foundry.gui.LevelView import LevelView
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
@@ -62,9 +62,11 @@ from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.commands import (
     AddEnemyAt,
-    AttachLevelToRom,
+    AddJump,
     AddObjectAt,
+    AttachLevelToRom,
     PasteObjectsAt,
+    RemoveJump,
     RemoveSelected,
     ReplaceEnemy,
     ReplaceObject,
@@ -1048,23 +1050,30 @@ class FoundryMainWindow(MainWindow):
 
         self.on_jump_edited(updated_jump)
 
-    @undoable
     def on_jump_added(self):
-        self.level_view.add_jump()
+        self.undo_stack.push(AddJump(self.level_ref.level))
 
-    @undoable
     def on_jump_removed(self):
-        self.level_view.remove_jump(self.jump_list.currentIndex().row())
+        self.undo_stack.push(RemoveJump(self.level_ref.level, self.jump_list.currentIndex().row()))
 
-    @undoable
-    def on_jump_edited(self, jump):
+    def on_jump_edited(self, jump: Jump):
         index = self.jump_list.currentIndex().row()
 
         assert index >= 0
 
-        if isinstance(self.level_ref.level, Level):
-            self.level_view.level_ref.jumps[index] = jump
-            self.jump_list.item(index).setText(str(jump))
+        if not isinstance(self.level_ref.level, Level):
+            return
+
+        old_jump = self.level_ref.level.jumps[index]
+
+        self.undo_stack.beginMacro(f"Editing {old_jump}")
+
+        self.undo_stack.push(RemoveJump(self.level_ref.level, index))
+        self.undo_stack.push(AddJump(self.level_ref.level, jump, index))
+
+        self.jump_list.item(index).setText(str(jump))
+
+        self.undo_stack.endMacro()
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.MiddleButton:

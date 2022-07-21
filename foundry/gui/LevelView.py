@@ -523,9 +523,6 @@ class LevelView(MainView):
         else:
             return f"World {found_level.game_world} - {found_level.name}"
 
-    def add_jump(self):
-        self.level_ref.add_jump()
-
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)
 
@@ -541,11 +538,6 @@ class LevelView(MainView):
             index = len(self.level_ref.level.enemies)
 
         self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
-
-    def remove_jump(self, index: int):
-        del self.level_ref.jumps[index]
-
-        self.update()
 
     @undoable
     def dropEvent(self, event):

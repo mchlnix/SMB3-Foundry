@@ -5,7 +5,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
-from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level
 from foundry.gui.LevelView import LevelView
@@ -343,3 +343,54 @@ class ReplaceEnemy(QUndoCommand):
 
         new_object = self.level.add_enemy(self.obj_type, x, y, self.index)
         new_object.selected = self.to_replace.selected
+
+
+class AddJump(QUndoCommand):
+    def __init__(self, level: Level, jump: Jump = None, index: int = -1):
+        super(AddJump, self).__init__()
+
+        self.level = level
+
+        if jump is None:
+            self.jump = Jump.from_properties(0, 0, 0, 0)
+        else:
+            self.jump = jump
+
+        if index == -1:
+            self.index = len(level.jumps)
+        else:
+            self.index = index
+
+        self.setText("Add Jump")
+
+    def undo(self):
+        self.level.jumps.pop(self.index)
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        self.level.jumps.insert(self.index, self.jump)
+
+        self.level.data_changed.emit()
+
+
+class RemoveJump(QUndoCommand):
+    def __init__(self, level: Level, index: int):
+        super(RemoveJump, self).__init__()
+
+        self.level = level
+
+        self.jump = self.level.jumps[index]
+        self.index = index
+
+        self.setText(f"Remove {self.jump}")
+
+    def undo(self):
+        self.level.jumps.insert(self.index, self.jump)
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        self.level.jumps.remove(self.jump)
+
+        self.level.data_changed.emit()
