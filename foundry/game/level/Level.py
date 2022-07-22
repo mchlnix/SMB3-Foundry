@@ -96,7 +96,6 @@ class Level(LevelLike):
         if new_level:
             self._update_level_size()
 
-            self.undo_stack.clear(self.to_bytes())
             self.data_changed.emit()
 
     @property
