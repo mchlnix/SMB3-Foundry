@@ -81,7 +81,7 @@ class SettingsDialog(CustomDialog):
             "When hovering your cursor over an object in a level, its name and position is shown in a tooltip."
         )
         self._tooltip_check_box = QCheckBox("Enabled")
-        self._tooltip_check_box.setChecked(self.settings.value("editor/object_tooltip_enabled"))
+        self._tooltip_check_box.setChecked(self.settings.value("level view/object_tooltip_enabled"))
         self._tooltip_check_box.toggled.connect(self._update_settings)
 
         tooltip_layout = QHBoxLayout()
@@ -215,7 +215,7 @@ class SettingsDialog(CustomDialog):
                     break
 
         self.settings.setValue("editor/object_scroll_enabled", self._scroll_check_box.isChecked())
-        self.settings.setValue("editor/object_tooltip_enabled", self._tooltip_check_box.isChecked())
+        self.settings.setValue("level view/object_tooltip_enabled", self._tooltip_check_box.isChecked())
 
         self.settings.setValue("editor/default_powerup", self.powerup_combo_box.currentIndex())
 

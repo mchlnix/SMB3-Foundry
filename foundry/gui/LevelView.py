@@ -99,7 +99,7 @@ class LevelView(MainView):
 
         object_under_cursor = self.object_at(event.pos())
 
-        if self.settings.value("editor/object_tooltip_enabled") and object_under_cursor is not None:
+        if self.settings.value("level view/object_tooltip_enabled") and object_under_cursor is not None:
             self.setToolTip(str(object_under_cursor))
         else:
             self.setToolTip("")
