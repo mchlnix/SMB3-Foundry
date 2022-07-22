@@ -67,36 +67,26 @@ class ViewMenu(QMenu):
         checked = action.isChecked()
 
         if action is self._grid_action:
-            self._level_view.draw_grid = checked
+            self.settings.setValue("level view/draw_grid", checked)
         elif action is self._trans_action:
-            self._level_view.transparency = checked
+            self.settings.setValue("level view/block_transparency", checked)
         elif action is self._jump_zones_action:
-            self._level_view.draw_jumps = checked
+            self.settings.setValue("level view/draw_jumps", checked)
         elif action is self._mario_action:
-            self._level_view.draw_mario = checked
+            self.settings.setValue("level view/draw_mario", checked)
         elif action is self._resize_action:
-            self._level_view.draw_expansions = checked
+            self.settings.setValue("level view/draw_expansion", checked)
         elif action is self._jumps_action:
-            self._level_view.draw_jumps_on_objects = checked
+            self.settings.setValue("level view/draw_jump_on_objects", checked)
         elif action is self._items_action:
-            self._level_view.draw_items_in_blocks = checked
+            self.settings.setValue("level view/draw_items_in_blocks", checked)
         elif action is self._invis_action:
-            self._level_view.draw_invisible_items = checked
+            self.settings.setValue("level view/draw_invisible_items", checked)
         elif action is self._auto_scroll_action:
-            self._level_view.draw_autoscroll = checked
+            self.settings.setValue("level view/draw_autoscroll", checked)
         elif action is self._screen_shot_action:
             self._on_screenshot()
             return
-
-        self.settings.setValue("level view/draw_mario", self._level_view.draw_mario)
-        self.settings.setValue("level view/draw_jumps", self._level_view.draw_jumps)
-        self.settings.setValue("level view/draw_grid", self._level_view.draw_grid)
-        self.settings.setValue("level view/draw_expansion", self._level_view.draw_expansions)
-        self.settings.setValue("level view/draw_jump_on_objects", self._level_view.draw_jumps_on_objects)
-        self.settings.setValue("level view/draw_items_in_blocks", self._level_view.draw_items_in_blocks)
-        self.settings.setValue("level view/draw_invisible_items", self._level_view.draw_invisible_items)
-        self.settings.setValue("level view/draw_autoscroll", self._level_view.draw_autoscroll)
-        self.settings.setValue("level view/block_transparency", self._level_view.transparency)
 
         self._level_view.update()
 
