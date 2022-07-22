@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, Signal, SignalInstance
-from PySide6.QtGui import QIcon, QImage, QPixmap, QScreen
+from PySide6.QtGui import QIcon, QImage, QPixmap
 from PySide6.QtWidgets import QComboBox, QCompleter, QWidget
 
 from foundry.game.gfx.drawable.Block import Block
@@ -29,7 +29,7 @@ class ObjectDropdown(QComboBox):
         self.currentIndexChanged.connect(self._on_object_selected)
 
         # guard against overly long item descriptions
-        self.setMaximumWidth(QScreen().availableSize().width() / 5)
+        self.setMaximumWidth(self.screen().availableSize().width() / 5)
 
         self.setWhatsThis(
             "<b>Object Dropdown</b><br/>"
