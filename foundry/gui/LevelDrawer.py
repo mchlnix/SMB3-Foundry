@@ -16,6 +16,7 @@ from foundry.game.gfx.objects import (
 )
 from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
+from foundry.gui.settings import Settings
 from smb3parse.constants import OBJ_AUTOSCROLL
 from smb3parse.levels import (
     LEVEL_MAX_LENGTH,
@@ -74,20 +75,12 @@ def _block_from_index(block_index: int, level: Level) -> Block:
 
 class LevelDrawer:
     def __init__(self):
-        self.draw_jumps = False
-        self.draw_grid = False
-        self.draw_expansions = False
-        self.draw_mario = False
-        self.draw_jumps_on_objects = True
-        self.draw_items_in_blocks = True
-        self.draw_invisible_items = True
-        self.draw_autoscroll = True
-        self.transparency = False
-
         self.block_length = Block.WIDTH
 
         self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), 1)
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 1)
+
+        self.settings = Settings("mchlnix", "level drawer")
 
     def draw(self, painter: QPainter, level: Level):
         self._draw_background(painter, level)
@@ -106,19 +99,19 @@ class LevelDrawer:
 
         self._draw_overlays(painter, level)
 
-        if self.draw_expansions:
+        if self.settings.value("level view/draw_expansion"):
             self._draw_expansions(painter, level)
 
-        if self.draw_mario:
+        if self.settings.value("level view/draw_mario"):
             self._draw_mario(painter, level)
 
-        if self.draw_jumps:
+        if self.settings.value("level view/draw_jumps"):
             self._draw_jumps(painter, level)
 
-        if self.draw_grid:
+        if self.settings.value("level view/draw_grid"):
             self._draw_grid(painter, level)
 
-        if self.draw_autoscroll:
+        if self.settings.value("level view/draw_autoscroll"):
             self._draw_auto_scroll(painter, level)
 
     def _draw_background(self, painter: QPainter, level: Level):
@@ -192,7 +185,7 @@ class LevelDrawer:
 
                     level_object._draw_block(painter, block_index, x, y, self.block_length, False)
             else:
-                level_object.draw(painter, self.block_length, self.transparency)
+                level_object.draw(painter, self.block_length, self.settings.value("level view/block_transparency"))
 
             if level_object.selected:
                 painter.save()
@@ -221,7 +214,7 @@ class LevelDrawer:
 
             # pipe entries
             if "pipe" in name and "can go" in name:
-                if not self.draw_jumps_on_objects:
+                if not self.settings.value("level view/draw_jump_on_objects"):
                     continue
 
                 fill_object = False
@@ -284,7 +277,7 @@ class LevelDrawer:
 
             # "?" - blocks, note blocks, wooden blocks and bricks
             elif "'?' with" in name or "brick with" in name or "bricks with" in name or "block with" in name:
-                if not self.draw_items_in_blocks:
+                if not self.settings.value("level view/draw_items_in_blocks"):
                     continue
 
                 pos.setY(pos.y() - self.block_length)
@@ -316,7 +309,7 @@ class LevelDrawer:
                 painter.drawImage(arrow_pos, ITEM_ARROW.scaled(self.block_length, self.block_length))
 
             elif "invisible" in name:
-                if not self.draw_invisible_items:
+                if not self.settings.value("level view/draw_invisible_items"):
                     continue
 
                 if "coin" in name:
@@ -327,7 +320,7 @@ class LevelDrawer:
                     image = EMPTY_IMAGE
 
             elif "silver coins" in name:
-                if not self.draw_invisible_items:
+                if not self.settings.value("level view/draw_invisible_items"):
                     continue
 
                 image = SILVER_COIN
@@ -366,7 +359,7 @@ class LevelDrawer:
             if level_object.selected:
                 painter.drawRect(level_object.get_rect(self.block_length))
 
-            if self.draw_expansions:
+            if self.settings.value("level view/draw_expansion"):
                 painter.save()
 
                 painter.setPen(Qt.NoPen)

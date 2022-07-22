@@ -23,9 +23,7 @@ from foundry.gui.settings import (
     GUI_STYLE,
     RESIZE_LEFT_CLICK,
     RESIZE_RIGHT_CLICK,
-    SETTINGS,
-    load_settings,
-    save_settings,
+    Settings,
 )
 from smb3parse.constants import (
     POWERUP_FIREFLOWER,
@@ -35,8 +33,6 @@ from smb3parse.constants import (
     POWERUP_RACCOON,
     POWERUP_TANOOKI,
 )
-
-load_settings()
 
 POWERUPS_NAME = 0
 POWERUPS_X = 1
@@ -61,8 +57,10 @@ png.convertTo(QImage.Format_RGB888)
 
 
 class SettingsDialog(CustomDialog):
-    def __init__(self, parent=None):
+    def __init__(self, settings: Settings, parent=None):
         super(SettingsDialog, self).__init__(parent, "Settings")
+
+        self.settings = settings
 
         mouse_box = QGroupBox("Mouse", self)
         mouse_box.setLayout(QVBoxLayout())
@@ -70,7 +68,7 @@ class SettingsDialog(CustomDialog):
         label = QLabel("Scroll objects with mouse wheel:")
         label.setToolTip("Select an object and scroll up and down to change its type.")
         self._scroll_check_box = QCheckBox("Enabled")
-        self._scroll_check_box.setChecked(SETTINGS["object_scroll_enabled"])
+        self._scroll_check_box.setChecked(self.settings.value("editor/object_scroll_enabled"))
         self._scroll_check_box.toggled.connect(self._update_settings)
 
         scroll_layout = QHBoxLayout()
@@ -83,7 +81,7 @@ class SettingsDialog(CustomDialog):
             "When hovering your cursor over an object in a level, its name and position is shown in a tooltip."
         )
         self._tooltip_check_box = QCheckBox("Enabled")
-        self._tooltip_check_box.setChecked(SETTINGS["object_tooltip_enabled"])
+        self._tooltip_check_box.setChecked(self.settings.value("editor/object_tooltip_enabled"))
         self._tooltip_check_box.toggled.connect(self._update_settings)
 
         tooltip_layout = QHBoxLayout()
@@ -94,8 +92,8 @@ class SettingsDialog(CustomDialog):
         self.lmb_radio = QRadioButton("Left Mouse Button")
         rmb_radio = QRadioButton("Right Mouse Button")
 
-        self.lmb_radio.setChecked(SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK)
-        rmb_radio.setChecked(SETTINGS["resize_mode"] == RESIZE_RIGHT_CLICK)
+        self.lmb_radio.setChecked(self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK)
+        rmb_radio.setChecked(self.settings.value("editor/resize_mode") == RESIZE_RIGHT_CLICK)
 
         self.lmb_radio.toggled.connect(self._update_settings)
 
@@ -125,7 +123,7 @@ class SettingsDialog(CustomDialog):
             gui_style = gui_style.capitalize()
 
             style_radio_button = QRadioButton(gui_style)
-            style_radio_button.setChecked(SETTINGS["gui_style"] == GUI_STYLE[gui_style.upper()]())
+            style_radio_button.setChecked(self.settings.value("editor/gui_style") == GUI_STYLE[gui_style.upper()]())
             style_radio_button.toggled.connect(self._update_settings)
 
             self.gui_style_box.layout().addWidget(style_radio_button)
@@ -135,7 +133,7 @@ class SettingsDialog(CustomDialog):
 
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText("Path to emulator")
-        self.emulator_command_input.setText(SETTINGS["instaplay_emulator"])
+        self.emulator_command_input.setText(self.settings.value("editor/instaplay_emulator"))
 
         self.emulator_command_input.textChanged.connect(self._update_settings)
 
@@ -144,7 +142,7 @@ class SettingsDialog(CustomDialog):
 
         self.command_arguments_input = QLineEdit(self)
         self.command_arguments_input.setPlaceholderText("%f")
-        self.command_arguments_input.setText(SETTINGS["instaplay_arguments"])
+        self.command_arguments_input.setText(self.settings.value("editor/instaplay_arguments"))
 
         self.command_arguments_input.textEdited.connect(self._update_settings)
 
@@ -177,7 +175,7 @@ class SettingsDialog(CustomDialog):
 
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
 
-        self.powerup_combo_box.setCurrentIndex(SETTINGS["default_powerup"])
+        self.powerup_combo_box.setCurrentIndex(self.settings.value("editor/default_powerup"))
 
         command_layout.addWidget(self.powerup_combo_box)
 
@@ -191,16 +189,18 @@ class SettingsDialog(CustomDialog):
         self.update()
 
     def update(self):
-        self.command_label.setText(f" > {SETTINGS['instaplay_emulator']} {SETTINGS['instaplay_arguments']}")
+        self.command_label.setText(
+            f" > {self.settings.value('instaplay_emulator')} {self.settings.value('instaplay_arguments')}"
+        )
 
     def _update_settings(self, _):
-        SETTINGS["instaplay_emulator"] = self.emulator_command_input.text()
-        SETTINGS["instaplay_arguments"] = self.command_arguments_input.text()
+        self.settings.setValue("editor/instaplay_emulator", self.emulator_command_input.text())
+        self.settings.setValue("editor/instaplay_arguments", self.command_arguments_input.text())
 
         if self.lmb_radio.isChecked():
-            SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
+            self.settings.setValue("editor/resize_mode", RESIZE_LEFT_CLICK)
         else:
-            SETTINGS["resize_mode"] = RESIZE_RIGHT_CLICK
+            self.settings.setValue("editor/resize_mode", RESIZE_RIGHT_CLICK)
 
         # setup style sheets
         for child_widget in self.gui_style_box.children():
@@ -209,15 +209,15 @@ class SettingsDialog(CustomDialog):
                     selected_gui_style = child_widget.text().upper()
 
                     loaded_style_sheet = GUI_STYLE[selected_gui_style]()
-                    SETTINGS["gui_style"] = loaded_style_sheet
+                    self.settings.setValue("editor/gui_style", loaded_style_sheet)
 
-                    self.parent().setStyleSheet(SETTINGS["gui_style"])
+                    self.parent().setStyleSheet(self.settings.value("editor/gui_style"))
                     break
 
-        SETTINGS["object_scroll_enabled"] = self._scroll_check_box.isChecked()
-        SETTINGS["object_tooltip_enabled"] = self._tooltip_check_box.isChecked()
+        self.settings.setValue("editor/object_scroll_enabled", self._scroll_check_box.isChecked())
+        self.settings.setValue("editor/object_tooltip_enabled", self._tooltip_check_box.isChecked())
 
-        SETTINGS["default_powerup"] = self.powerup_combo_box.currentIndex()
+        self.settings.setValue("editor/default_powerup", self.powerup_combo_box.currentIndex())
 
         self.update()
 
@@ -241,6 +241,6 @@ class SettingsDialog(CustomDialog):
         return icon_from_png
 
     def on_exit(self):
-        save_settings()
+        self.settings.sync()
 
         super(SettingsDialog, self).on_exit()

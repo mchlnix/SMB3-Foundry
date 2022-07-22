@@ -76,7 +76,7 @@ from foundry.gui.commands import (
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
-from foundry.gui.settings import SETTINGS
+from foundry.gui.settings import Settings
 from smb3parse.constants import TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
@@ -86,8 +86,10 @@ class FoundryMainWindow(MainWindow):
     def __init__(self, path_to_rom=""):
         super(FoundryMainWindow, self).__init__()
 
+        self.settings = Settings("mchlnix", "foundry")
+
         self.setWindowIcon(icon("foundry.ico"))
-        self.setStyleSheet(SETTINGS["gui_style"])
+        self.setStyleSheet(self.settings.value("editor/gui_style"))
 
         self.undo_stack = QUndoStack(self)
         self.undo_stack.setObjectName("undo_stack")
@@ -172,7 +174,7 @@ class FoundryMainWindow(MainWindow):
         self.context_menu = LevelContextMenu(self.level_ref)
         self.context_menu.triggered.connect(self.on_menu)
 
-        self.level_view = LevelView(self, self.level_ref, self.context_menu)
+        self.level_view = LevelView(self, self.level_ref, self.settings, self.context_menu)
 
         self.view_menu = ViewMenu(self.level_view)
 
@@ -376,7 +378,7 @@ class FoundryMainWindow(MainWindow):
         self._save_auto_data()
 
     def _on_show_settings(self):
-        SettingsDialog(self).exec()
+        SettingsDialog(self, self.settings).exec()
 
     @staticmethod
     def _save_auto_rom():
@@ -468,10 +470,10 @@ class FoundryMainWindow(MainWindow):
 
         temp_rom.save_to(path_to_temp_rom)
 
-        arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
+        arguments = self.settings.value("editor/instaplay_arguments").replace("%f", str(path_to_temp_rom))
         arguments = shlex.split(arguments, posix=False)
 
-        emu_path = pathlib.Path(SETTINGS["instaplay_emulator"])
+        emu_path = pathlib.Path(self.settings.value("editor/instaplay_emulator"))
 
         if emu_path.is_absolute():
             if emu_path.exists():
@@ -482,7 +484,7 @@ class FoundryMainWindow(MainWindow):
                 )
                 return
         else:
-            emulator = SETTINGS["instaplay_emulator"]
+            emulator = self.settings.value("editor/instaplay_emulator")
 
         try:
             subprocess.run([emulator, *arguments])
@@ -537,11 +539,10 @@ class FoundryMainWindow(MainWindow):
 
         return True
 
-    @staticmethod
-    def _set_default_powerup(rom: SMB3Rom) -> bool:
-        assert isinstance(SETTINGS["default_powerup"], int)
+    def _set_default_powerup(self, rom: SMB3Rom) -> bool:
+        assert isinstance(self.settings.value("editor/default_powerup"), int)
 
-        *_, powerup, hasPWing = POWERUPS[SETTINGS["default_powerup"]]
+        *_, powerup, hasPWing = POWERUPS[self.settings.value("editor/default_powerup")]
 
         rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))
 

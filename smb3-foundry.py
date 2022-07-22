@@ -9,7 +9,6 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 from foundry import auto_save_rom_path, github_issue_link
 from foundry.gui.AutoSaveDialog import AutoSaveDialog
-from foundry.gui.settings import load_settings, save_settings
 
 # compatibility for dark mode
 warnings.warning = warnings.warn
@@ -25,8 +24,6 @@ from foundry.gui.FoundryMainWindow import FoundryMainWindow  # noqa
 
 
 def main(path_to_rom):
-    load_settings()
-
     app = QApplication()
 
     if auto_save_rom_path.exists():
@@ -41,8 +38,6 @@ def main(path_to_rom):
 
     FoundryMainWindow(path_to_rom)
     app.exec()
-
-    save_settings()
 
 
 if __name__ == "__main__":

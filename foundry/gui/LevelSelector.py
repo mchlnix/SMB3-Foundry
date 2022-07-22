@@ -22,6 +22,7 @@ from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
+from foundry.gui.settings import Settings
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_COUNT
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
@@ -253,7 +254,7 @@ class WorldMapLevelSelect(QScrollArea):
         level_ref = LevelRef()
         level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
 
-        self.world_view = WorldView(self, level_ref, None)
+        self.world_view = WorldView(self, level_ref, Settings(), None)
 
         self.world_view.setMouseTracking(True)
         self.world_view.draw_start = False

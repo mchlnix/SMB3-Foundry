@@ -8,6 +8,8 @@ from PySide6.QtCore import QBuffer, QIODevice, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon, Qt
 from PySide6.QtWidgets import QApplication
 
+from foundry.gui.settings import Settings
+
 root_dir = Path(__file__).parent.parent
 
 home_dir = Path.home() / ".smb3foundry"
@@ -107,7 +109,7 @@ def get_level_thumbnail(object_set, layout_address, enemy_address):
     level_ref = LevelRef()
     level_ref.load_level("", layout_address, enemy_address, object_set)
 
-    view = LevelView(None, level_ref, None)
+    view = LevelView(None, level_ref, Settings("mchlnix", "throwaway"), None)
     view.zoom_out()
     view.zoom_out()
 

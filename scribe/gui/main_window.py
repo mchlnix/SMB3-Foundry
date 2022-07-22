@@ -6,9 +6,9 @@ from foundry import ROM_FILE_FILTER
 from foundry.game.File import ROM
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.WorldView import WorldView
+from foundry.gui.settings import Settings
 from scribe.gui.menus.edit_menu import EditMenu
 from scribe.gui.menus.view_menu import ViewMenu
-from scribe.gui.settings import Settings
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import WORLD_COUNT
@@ -25,12 +25,11 @@ class ScribeMainWindow(MainWindow):
 
         self.on_open_rom(path_to_rom)
 
-        self.world_view = WorldView(self, self.level_ref, WorldContextMenu(self.level_ref))
-        self.world_view.zoom_in()
-        self.world_view.zoom_in()
-
         self.settings = Settings("mchlnix", "smb3scribe")
-        self.world_view.drawer.settings = self.settings
+
+        self.world_view = WorldView(self, self.level_ref, self.settings, WorldContextMenu(self.level_ref))
+        self.world_view.zoom_in()
+        self.world_view.zoom_in()
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.world_view)
