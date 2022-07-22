@@ -378,7 +378,7 @@ class FoundryMainWindow(MainWindow):
         self._save_auto_data()
 
     def _on_show_settings(self):
-        SettingsDialog(self, self.settings).exec()
+        SettingsDialog(self.settings, self).exec()
 
     @staticmethod
     def _save_auto_rom():

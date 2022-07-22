@@ -225,7 +225,8 @@ class LevelView(MainView):
 
         obj = self.object_at(event.pos())
 
-        if not isinstance(obj, InLevelObject):
+        if all(isinstance(obj, EnemyItem) for obj in self.get_selected_objects()):
+            self.mouse_mode = MODE_FREE
             return
 
         self.resize_obj_start_point = obj.get_position()
