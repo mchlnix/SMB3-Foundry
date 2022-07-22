@@ -10,7 +10,7 @@ from smb3parse.levels import LEVEL_SCREEN_WIDTH
 def header_editor(main_window):
     level = main_window.level_ref
 
-    return HeaderEditor(None, level)
+    return HeaderEditor(main_window, level)
 
 
 def _test_dropdown(dropdown: QComboBox, level: Level, level_attr: str, expected_change, index_change=+1):

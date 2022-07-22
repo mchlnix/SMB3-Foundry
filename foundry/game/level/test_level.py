@@ -1,21 +1,23 @@
 import pytest
+from PySide6.QtCore import QPoint
 
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.level.Level import LEVEL_DEFAULT_HEIGHT
 
 
 @pytest.mark.parametrize(
-    "method, params", [("add_object", (0, 0, 0, 0, None)), ("add_enemy", (0, 0, 0)), ("add_jump", tuple())]
+    "method, params",
+    [("add_object_at", (QPoint(0, 0),)), ("add_enemy_at", (QPoint(0, 0),)), ("on_jump_added", tuple())],
 )
-def test_level_too_big(rom, level, method, params, qtbot):
+def test_level_too_big(rom, main_window, method, params, qtbot):
     # GIVEN a level
-    pass
+    assert not main_window.level_ref.level.is_too_big()
 
     # WHEN you add an object
-    getattr(level, method)(*params)
+    getattr(main_window, method)(*params)
 
     # THEN it should recognize itself as being too big
-    assert level.is_too_big()
+    assert main_window.level_ref.level.is_too_big()
 
 
 def test_not_too_big_jump(level):
@@ -26,7 +28,7 @@ def test_not_too_big_jump(level):
     jump = level.jumps[0]
     assert isinstance(jump, Jump)
 
-    level.remove_jump(jump)
+    level.jumps.remove(jump)
 
     # THEN the level is not marked as too big
     assert not level.is_too_big()

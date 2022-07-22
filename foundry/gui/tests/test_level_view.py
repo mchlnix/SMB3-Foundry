@@ -35,9 +35,9 @@ def test_object_at(level_view: LevelView, qtbot, coordinates, obj_index, domain,
     assert level_object.object_set.number == object_set_number
 
 
-def test_level_larger(level_view):
+def test_level_larger(main_window, level_view):
     # GIVEN level_view and a header editor
-    header_editor = HeaderEditor(None, level_view.level_ref)
+    header_editor = HeaderEditor(main_window, level_view.level_ref)
     length_dropdown = header_editor.length_dropdown
 
     original_size = level_view.size()
@@ -53,8 +53,8 @@ def test_level_larger(level_view):
     assert level_view.size().height() >= original_size.height()
 
 
-def test_level_smaller(level_view):
-    header_editor = HeaderEditor(None, level_view.level_ref)
+def test_level_smaller(main_window, level_view):
+    header_editor = HeaderEditor(main_window, level_view.level_ref)
     length_dropdown = header_editor.length_dropdown
 
     original_size = level_view.size()
