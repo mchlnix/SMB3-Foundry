@@ -878,7 +878,10 @@ class FoundryMainWindow(MainWindow):
             self.context_menu.set_copied_objects(selected_objects)
 
     def _paste_objects(self, q_point: Optional[QPoint] = None):
-        self.undo_stack.push(PasteObjectsAt(self.level_view, self.context_menu.get_copied_objects(), q_point))
+        if not (copied_objects := self.context_menu.get_copied_objects())[0]:
+            return
+
+        self.undo_stack.push(PasteObjectsAt(self.level_view, copied_objects, q_point))
 
     def remove_selected_objects(self):
         selected_objects = [obj for obj in self.level_ref.level.get_all_objects() if obj.selected]
