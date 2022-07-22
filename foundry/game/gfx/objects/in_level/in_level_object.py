@@ -16,6 +16,8 @@ class InLevelObject(ObjectLike, abc.ABC):
     domain: int
     is_4byte: bool
 
+    data: bytearray
+
     rendered_width: int
 
     def __init__(self):

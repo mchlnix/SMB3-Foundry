@@ -133,6 +133,50 @@ class MoveObjects(QUndoCommand):
         self.level.data_changed.emit()
 
 
+class ResizeObjects(QUndoCommand):
+    def __init__(
+        self,
+        level: Level,
+        objects_before: List[InLevelObject],
+        objects_after: List[InLevelObject],
+    ):
+        super(ResizeObjects, self).__init__()
+
+        self.level = level
+
+        self.objects_after = objects_after
+
+        self.object_data_before = [obj.to_bytes() for obj in objects_before]
+        self.object_data_after = [obj.to_bytes() for obj in objects_after]
+
+        self.setText(f"Resize {object_names(objects_after)}")
+
+        # # objects are already resized; undo so the undostack can redo it, when pushed
+        self.undo()
+
+    def undo(self):
+        for obj, data in zip(self.objects_after, self.object_data_before):
+            if not isinstance(obj, LevelObject):
+                continue
+
+            obj.data = bytearray(data)  # copy to not pass by reference
+
+            obj._setup()
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        for obj, data_after in zip(self.objects_after, self.object_data_after):
+            if not isinstance(obj, LevelObject):
+                continue
+
+            obj.data = bytearray(data_after)  # copy to not pass by reference
+
+            obj._setup()
+
+        self.level.data_changed.emit()
+
+
 def objects_to_indexed_objects(level: Level, objects: List[InLevelObject]) -> List[Tuple[int, InLevelObject]]:
     indexes = []
 

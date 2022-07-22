@@ -32,7 +32,7 @@ class Jump(InLevelObject):
         self.exit_horizontal = ((data[2] & 0xF) << 4) + (data[2] >> 4)
 
     def copy(self):
-        return Jump(self.data)
+        return Jump(self.to_bytes())
 
     def draw(self, painter: QPainter, block_length, transparent):
         pass

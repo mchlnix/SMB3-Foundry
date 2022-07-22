@@ -23,7 +23,7 @@ from foundry.gui.MainView import (
     MainView,
     RESIZE_MODES,
 )
-from foundry.gui.commands import AddEnemyAt, AddLevelObjectAt, AddObject, MoveObjects, RemoveObjects
+from foundry.gui.commands import AddEnemyAt, AddLevelObjectAt, AddObject, MoveObjects, RemoveObjects, ResizeObjects
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 
@@ -53,8 +53,8 @@ class LevelView(MainView):
 
         self.dragging_happened = True
 
-        self.resize_mouse_start_x = 0
         self.resize_obj_start_point = 0, 0
+        self.objects_before_resizing: List[InLevelObject] = []
 
         self.resizing_happened = False
 
@@ -293,19 +293,16 @@ class LevelView(MainView):
         if resize_mode not in RESIZE_MODES:
             return
 
-        level_x, level_y = self._to_level_point(event.pos())
-
         self.mouse_mode = resize_mode
-
-        self.resize_mouse_start_x = level_x
 
         obj = self.object_at(event.pos())
 
         if not isinstance(obj, InLevelObject):
             return
 
-        if obj is not None:
-            self.resize_obj_start_point = obj.x_position, obj.y_position
+        self.resize_obj_start_point = obj.get_position()
+
+        self.objects_before_resizing = [obj.copy() for obj in self.get_selected_objects()]
 
     def _resizing(self, event: QMouseEvent):
         self.resizing_happened = True
@@ -339,10 +336,8 @@ class LevelView(MainView):
 
     def _on_right_mouse_button_up(self, event):
         if self.resizing_happened:
-            resize_end_x, _ = self._to_level_point(event.pos())
+            self._stop_resize()
 
-            if self.resize_mouse_start_x != resize_end_x:
-                self._stop_resize(event)
         elif self.context_menu is not None:
             if self.get_selected_objects():
                 menu = self.context_menu.as_object_menu()
@@ -359,13 +354,30 @@ class LevelView(MainView):
         self.mouse_mode = MODE_FREE
         self.setCursor(Qt.ArrowCursor)
 
-    def _stop_resize(self, _):
-        if self.resizing_happened:
-            self.level_ref.save_level_state()
+    def _stop_resize(self):
+        if not self.resizing_happened:
+            return
+
+        if self.mouse_mode not in RESIZE_MODES or not self.get_selected_objects():
+            return
+
+        self.undo_stack.push(
+            ResizeObjects(self.level_ref.level, self.objects_before_resizing, self.get_selected_objects())
+        )
+
+        self.objects_before_resizing = []
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
         self.setCursor(Qt.ArrowCursor)
+
+    # TODO use Position class, instead
+    @staticmethod
+    def _get_dx_dy(self, start: Tuple[int, int], end: Tuple[int, int]) -> Tuple[int, int]:
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+
+        return dx, dy
 
     def _on_left_mouse_button_down(self, event: QMouseEvent):
         # 1 if clicking on background: deselect everything, start selection square
@@ -441,6 +453,8 @@ class LevelView(MainView):
                     self._stop_drag(drag_end_point)
                 else:
                     self.dragging_happened = False
+        elif self.resizing_happened:
+            self._stop_resize()
         elif self.selection_square.active:
             self._stop_selection_square()
 

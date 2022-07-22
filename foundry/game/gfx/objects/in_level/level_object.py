@@ -184,7 +184,7 @@ class LevelObject(InLevelObject):
 
     def copy(self):
         return LevelObject(
-            self.data,
+            self.to_bytes(),
             self.object_set.number,
             self.palette_group,
             self.graphics_set,
