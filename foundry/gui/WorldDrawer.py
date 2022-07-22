@@ -4,24 +4,19 @@ from PySide6.QtGui import QColor, QPainter, QPen, Qt
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.util import partition
+from scribe.gui.settings import Settings
 from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH, WORLD_MAP_WARP_WORLD_INDEX
 
 
 class WorldDrawer:
     def __init__(self):
-        self.draw_grid = False
-        self.draw_level_pointers = True
-        self.draw_sprites = True
-        self.draw_start = True
-        self.draw_airship_points = 0
-        self.draw_pipes = True
-        self.draw_locks = True
-
         self.block_length = Block.WIDTH
 
         self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), 1)
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 1)
+
+        self.settings = Settings()
 
     def draw(self, painter: QPainter, world: WorldMap):
         painter.save()
@@ -32,24 +27,24 @@ class WorldDrawer:
 
         self._draw_tiles(painter, world)
 
-        if self.draw_grid:
+        if self.settings.value("world view/show grid"):
             self._draw_grid(painter, world)
 
-        if self.draw_level_pointers:
+        if self.settings.value("world view/show level pointers"):
             self._draw_level_pointers(painter, world)
 
-        if self.draw_sprites:
+        if self.settings.value("world view/show sprites"):
             self._draw_sprites(painter, world)
 
-        if self.draw_start:
+        if self.settings.value("world view/show start position"):
             self._draw_start_position(painter, world)
 
-        if self.draw_airship_points:
+        if self.settings.value("world view/show airship paths"):
             self._draw_airship_travel_points(painter, world)
 
-        self.draw_pipes = True
+        # self.draw_pipes = True
 
-        if self.draw_locks:
+        if self.settings.value("world view/show locks"):
             self._draw_locks_and_bridges(painter, world)
 
         painter.restore()
@@ -117,7 +112,7 @@ class WorldDrawer:
             return
 
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
-            if self.draw_airship_points & 2**i != 2**i:
+            if self.settings.value("world view/show airship paths") & 2**i != 2**i:
                 continue
 
             for airship_point in world.airship_travel_sets[i]:

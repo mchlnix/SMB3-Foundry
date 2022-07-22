@@ -182,6 +182,18 @@ class LevelObject(InLevelObject):
 
         self._length = value
 
+    def copy(self):
+        return LevelObject(
+            self.to_bytes(),
+            self.object_set.number,
+            self.palette_group,
+            self.graphics_set,
+            self.objects_ref,
+            self.vertical_level,
+            self.index_in_level,
+            self.size_minimal,
+        )
+
     def _calculate_lengths(self):
         if self.is_single_block:
             self._length = 1
@@ -860,7 +872,7 @@ class LevelObject(InLevelObject):
     def decrement_type(self):
         self.change_type(False)
 
-    def change_type(self, increment: int):
+    def change_type(self, increment: bool):
         if self.obj_index < 0x10 or self.obj_index == 0x10 and not increment:
             value = 1
         else:

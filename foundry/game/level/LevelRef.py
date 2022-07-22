@@ -59,35 +59,9 @@ class LevelRef(QObject):
         else:
             return getattr(self._internal_level, item)
 
-    def undo(self):
-        if not self.undo_stack.undo_available:
-            return
-
-        self.set_level_state(*self.undo_stack.undo())
-
-    def redo(self):
-        if not self.undo_stack.redo_available:
-            return
-
-        self.set_level_state(*self.undo_stack.redo())
-
-    def set_level_state(self, object_data, enemy_data):
-        self.level.from_bytes(object_data, enemy_data, new_level=False)
-        self.level.changed = True
-
-        self.data_changed.emit()
-
-    def import_undo_stack_data(self, undo_index, byte_data):
-        self.level.undo_stack.import_data(undo_index, byte_data)
-
-        if byte_data:
-            self.set_level_state(*byte_data[undo_index])
-
-    def save_level_state(self):
-        self.undo_stack.save_level_state(self._internal_level.to_bytes())
-        self.level.changed = True
-
-        self.data_changed.emit()
+    @property
+    def fully_loaded(self):
+        return bool(self)
 
     def __bool__(self):
         return self._internal_level is not None and self._internal_level.fully_loaded

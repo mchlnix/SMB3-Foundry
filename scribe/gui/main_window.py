@@ -6,10 +6,11 @@ from foundry import ROM_FILE_FILTER
 from foundry.game.File import ROM
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.WorldView import WorldView
-from scribe.gui.edit_world_info import EditWorldInfo
+from scribe.gui.menus.edit_menu import EditMenu
+from scribe.gui.menus.view_menu import ViewMenu
+from scribe.gui.settings import Settings
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
@@ -19,17 +20,20 @@ class ScribeMainWindow(MainWindow):
     def __init__(self, path_to_rom: str):
         super(ScribeMainWindow, self).__init__()
 
+        self.undo_stack = QUndoStack(self)
+        self.undo_stack.setObjectName("undo_stack")
+
         self.on_open_rom(path_to_rom)
 
         self.world_view = WorldView(self, self.level_ref, WorldContextMenu(self.level_ref))
         self.world_view.zoom_in()
         self.world_view.zoom_in()
 
+        self.settings = Settings("mchlnix", "smb3scribe")
+        self.world_view.drawer.settings = self.settings
+
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.world_view)
-
-        self.undo_stack = QUndoStack(self)
-        self.undo_stack.setObjectName("undo_stack")
 
         self.setCentralWidget(self.scroll_area)
 
@@ -37,11 +41,6 @@ class ScribeMainWindow(MainWindow):
         self._setup_edit_menu()
         self._setup_view_menu()
         self._setup_level_menu()
-
-        self.menuBar().addMenu(self.file_menu)
-        self.menuBar().addMenu(self.edit_menu)
-        self.menuBar().addMenu(self.view_menu)
-        self.menuBar().addMenu(self.level_menu)
 
         self.tool_window = ToolWindow(self, self.level_ref)
         self.tool_window.tile_selected.connect(self.world_view.on_put_tile)
@@ -70,73 +69,19 @@ class ScribeMainWindow(MainWindow):
         self.file_menu.addSeparator()
         self.quit_rom_action = self.file_menu.addAction("&Quit")
 
+        self.menuBar().addMenu(self.file_menu)
+
     def _setup_edit_menu(self):
-        self.edit_menu = QMenu("&Edit")
-        self.edit_menu.triggered.connect(self.on_edit_menu)
+        self.edit_menu = EditMenu(self)
+        self.edit_menu.triggered.connect(self.world_view.update)
 
-        self.undo_action = self.undo_stack.createUndoAction(self.edit_menu)
-        self.undo_action.setShortcut(Qt.CTRL + Qt.Key_Z)
-
-        self.redo_action = self.undo_stack.createRedoAction(self.edit_menu)
-        self.redo_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_Z)
-
-        self.edit_menu.addAction(self.undo_action)
-        self.edit_menu.addAction(self.redo_action)
-
-        self.edit_menu.addSeparator()
-
-        self.clear_tiles_action = self.edit_menu.addAction("Clear &Tiles")
-        self.clear_level_pointers_action = self.edit_menu.addAction("Clear All &Level Pointers")
-        self.clear_sprites_action = self.edit_menu.addAction("Clear All &Sprites")
-
-        self.edit_menu.addSeparator()
-
-        self.edit_world_info = self.edit_menu.addAction("Edit World Info")
+        self.menuBar().addMenu(self.edit_menu)
 
     def _setup_view_menu(self):
-        self.view_menu = QMenu("&View")
-        self.view_menu.triggered.connect(self.on_view_menu)
+        self.view_menu = ViewMenu(self)
+        self.view_menu.triggered.connect(self.world_view.update)
 
-        self.grid_action = self.view_menu.addAction("&Grid")
-        self.grid_action.setShortcut(Qt.CTRL + Qt.Key_G)
-        self.grid_action.setCheckable(True)
-        self.grid_action.setChecked(self.world_view.draw_grid)
-
-        self.view_menu.addSeparator()
-
-        self.level_pointer_action = self.view_menu.addAction("&Level Pointers")
-        self.level_pointer_action.setCheckable(True)
-        self.level_pointer_action.setChecked(self.world_view.draw_level_pointers)
-
-        self.level_preview_action = self.view_menu.addAction("&Tooltip with Level Preview")
-        self.level_preview_action.setCheckable(True)
-        self.level_preview_action.setChecked(self.world_view.display_level_preview)
-
-        self.sprite_action = self.view_menu.addAction("Overworld &Sprites")
-        self.sprite_action.setCheckable(True)
-        self.sprite_action.setChecked(self.world_view.draw_sprites)
-
-        self.starting_point_action = self.view_menu.addAction("Starting &Point")
-        self.starting_point_action.setCheckable(True)
-        self.starting_point_action.setChecked(self.world_view.draw_start)
-
-        self.view_menu.addSeparator()
-
-        self.airship_travel_actions = []
-        for i in range(AIRSHIP_TRAVEL_SET_COUNT):
-            self.airship_travel_actions.append(self.view_menu.addAction(f"&Airship Travel Path {i+1}"))
-            self.airship_travel_actions[-1].setCheckable(True)
-            self.airship_travel_actions[-1].setChecked(self.world_view.draw_airship_points & 2**i == 2**i)
-
-        self.view_menu.addSeparator()
-
-        self.lock_bridge_action = self.view_menu.addAction("Lock and &Bridge Events")
-        self.lock_bridge_action.setCheckable(True)
-        self.lock_bridge_action.setChecked(self.world_view.draw_locks)
-
-        self.view_menu.addSeparator()
-
-        self.show_all_action = self.view_menu.addAction("Show All")
+        self.menuBar().addMenu(self.view_menu)
 
     def _setup_level_menu(self):
         self.level_menu = QMenu("Change &Level")
@@ -154,9 +99,15 @@ class ScribeMainWindow(MainWindow):
 
         self.reload_world_action = self.level_menu.addAction("&Reload Current World")
 
+        # load world 1 on startup
         self.level_menu.actions()[0].trigger()
 
+        self.menuBar().addMenu(self.level_menu)
+
     def on_open_rom(self, path_to_rom="") -> bool:
+        if not self.safe_to_change():
+            return
+
         if not path_to_rom:
             # otherwise ask the user what new file to open
             path_to_rom, _ = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
@@ -210,47 +161,6 @@ class ScribeMainWindow(MainWindow):
             self.on_save_rom(True)
         elif action is self.quit_rom_action:
             self.close()
-
-        self.world_view.update()
-
-    def on_edit_menu(self, action: QAction):
-        if action is self.clear_tiles_action:
-            self.world_view.clear_tiles()
-        elif action is self.clear_sprites_action:
-            self.world_view.clear_sprites()
-        elif action is self.clear_level_pointers_action:
-            self.world_view.clear_level_pointers()
-        elif action is self.edit_world_info:
-            EditWorldInfo(self, self.level_ref.level).exec()
-
-        self.world_view.update()
-
-    def on_view_menu(self, action: QAction):
-        if action is self.grid_action:
-            self.world_view.draw_grid = action.isChecked()
-        elif action is self.level_pointer_action:
-            self.world_view.draw_level_pointers = action.isChecked()
-        elif action is self.level_preview_action:
-            self.world_view.display_level_preview = action.isChecked()
-        elif action is self.sprite_action:
-            self.world_view.draw_sprites = action.isChecked()
-        elif action is self.starting_point_action:
-            self.world_view.draw_start = action.isChecked()
-        elif action in self.airship_travel_actions:
-            value = 0
-
-            for index, action in enumerate(self.airship_travel_actions):
-                if action.isChecked():
-                    value += 2**index
-
-            self.world_view.draw_airship_points = value
-        elif action is self.lock_bridge_action:
-            self.world_view.draw_locks = action.isChecked()
-
-        elif action is self.show_all_action:
-            for view_action in self.view_menu.actions():
-                if view_action.isCheckable() and not view_action.isChecked():
-                    view_action.trigger()
 
         self.world_view.update()
 

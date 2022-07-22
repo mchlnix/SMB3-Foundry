@@ -23,21 +23,29 @@ class HelpMenu(QMenu):
 
         self.triggered.connect(self._on_trigger)
 
-        self._check_updates_action = self.addAction("Check for &Updates")
+        self._check_updates_action = self.addAction("Check for Updates")
+        self._check_updates_action.setIcon(icon("bell.svg"))
 
         self.addSeparator()
 
-        self._video_action = self.addAction("Feature Video on &YouTube")
-        self._repo_action = self.addAction("&Github Repository")
+        self._video_action = self.addAction("Feature Video on YouTube")
+        self._video_action.setIcon(icon("youtube.svg"))
+
+        self._repo_action = self.addAction("Github Repository")
+        self._repo_action.setIcon(icon("github.svg"))
+
         self._discord_action = self.addAction("SMB3 Rom Hacking Discord")
+        self._discord_action.setIcon(icon("message-square.svg"))
 
         self.addSeparator()
 
-        self._enemy_compat_action = self.addAction("&Enemy Compatibility")
+        self._enemy_compat_action = self.addAction("Enemy Compatibility")
+        self._enemy_compat_action.setIcon(icon("compass.svg"))
 
         self.addSeparator()
 
-        self._about_action = self.addAction("&About")
+        self._about_action = self.addAction("About")
+        self._about_action.setIcon(icon("info.svg"))
 
     def _on_trigger(self, action: QAction):
         if action is self._check_updates_action:

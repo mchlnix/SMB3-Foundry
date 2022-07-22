@@ -9,7 +9,7 @@ import tempfile
 from typing import Optional
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut, Qt
+from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut, QUndoStack, Qt
 from PySide6.QtWidgets import (
     QDialog,
     QFileDialog,
@@ -37,7 +37,7 @@ from foundry import (
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.Palette import PaletteGroup, restore_all_palettes, save_all_palette_groups
-from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
@@ -49,7 +49,7 @@ from foundry.gui.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
 from foundry.gui.LevelSelector import LevelSelector
 from foundry.gui.LevelSizeBar import LevelSizeBar
-from foundry.gui.LevelView import LevelView, undoable
+from foundry.gui.LevelView import LevelView
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
@@ -60,6 +60,19 @@ from foundry.gui.PaletteViewer import SidePalette
 from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
+from foundry.gui.commands import (
+    AddEnemyAt,
+    AddJump,
+    AddLevelObjectAt,
+    AttachLevelToRom,
+    PasteObjectsAt,
+    RemoveJump,
+    RemoveObjects,
+    ReplaceEnemy,
+    ReplaceLevelObject,
+    ToBackground,
+    ToForeground,
+)
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
@@ -76,67 +89,79 @@ class FoundryMainWindow(MainWindow):
         self.setWindowIcon(icon("foundry.ico"))
         self.setStyleSheet(SETTINGS["gui_style"])
 
+        self.undo_stack = QUndoStack(self)
+        self.undo_stack.setObjectName("undo_stack")
+
         file_menu = QMenu("&File")
 
-        open_rom_action = file_menu.addAction("&Open ROM")
+        open_rom_action = file_menu.addAction("Open ROM")
+        open_rom_action.setIcon(icon("folder.svg"))
         open_rom_action.triggered.connect(self.on_open_rom)
-        self.open_m3l_action = file_menu.addAction("&Open M3L")
+
+        self.open_m3l_action = file_menu.addAction("Open M3L")
+        self.open_m3l_action.setIcon(icon("folder.svg"))
         self.open_m3l_action.triggered.connect(self.on_open_m3l)
 
         file_menu.addSeparator()
 
-        self.save_rom_action = file_menu.addAction("&Save ROM")
+        self.save_rom_action = file_menu.addAction("Save ROM")
         self.save_rom_action.triggered.connect(self.on_save_rom)
-        self.save_rom_as_action = file_menu.addAction("&Save ROM as ...")
+        self.save_rom_action.setIcon(icon("save.svg"))
+
+        self.save_rom_as_action = file_menu.addAction("Save ROM as ...")
         self.save_rom_as_action.triggered.connect(self.on_save_rom_as)
-        """
-        file_menu.AppendSeparator()
-        """
-        self.save_m3l_action = file_menu.addAction("&Save M3L")
+        self.save_rom_as_action.setIcon(icon("save.svg"))
+
+        self.save_m3l_action = file_menu.addAction("Save M3L")
+        self.save_m3l_action.setIcon(icon("file-text.svg"))
         self.save_m3l_action.triggered.connect(self.on_save_m3l)
-        """
-        file_menu.Append(ID_SAVE_LEVEL_TO, "&Save Level to", "")
-        file_menu.AppendSeparator()
-        file_menu.Append(ID_APPLY_IPS_PATCH, "&Apply IPS Patch", "")
-        file_menu.AppendSeparator()
-        file_menu.Append(ID_ROM_PRESET, "&ROM Preset", "")
-        """
+
         file_menu.addSeparator()
-        settings_action = file_menu.addAction("&Settings")
+
+        settings_action = file_menu.addAction("Editor Settings")
+        settings_action.setIcon(icon("sliders.svg"))
         settings_action.triggered.connect(self._on_show_settings)
+
         file_menu.addSeparator()
-        exit_action = file_menu.addAction("&Exit")
+
+        exit_action = file_menu.addAction("Exit")
+        exit_action.setIcon(icon("power.svg"))
         exit_action.triggered.connect(lambda _: self.close())
 
         self.menuBar().addMenu(file_menu)
 
-        """
-        edit_menu = wx.Menu()
-
-        edit_menu.Append(ID_EDIT_LEVEL, "&Edit Level", "")
-        edit_menu.Append(ID_EDIT_OBJ_DEFS, "&Edit Object Definitions", "")
-        edit_menu.Append(ID_EDIT_PALETTE, "&Edit Palette", "")
-        edit_menu.Append(ID_EDIT_GRAPHICS, "&Edit Graphics", "")
-        edit_menu.Append(ID_EDIT_MISC, "&Edit Miscellaneous", "")
-        edit_menu.AppendSeparator()
-        edit_menu.Append(ID_FREE_FORM_MODE, "&Free form Mode", "")
-        edit_menu.Append(ID_LIMIT_SIZE, "&Limit Size", "")
-        """
-
         self.level_menu = QMenu("&Level")
 
-        self.select_level_action = self.level_menu.addAction("&Select Level")
+        self.undo_action = self.undo_stack.createUndoAction(self)
+        self.undo_action.setIcon(icon("rotate-ccw.svg"))
+        self.level_menu.addAction(self.undo_action)
+
+        self.redo_action = self.undo_stack.createRedoAction(self)
+        self.redo_action.setIcon(icon("rotate-cw.svg"))
+        self.level_menu.addAction(self.redo_action)
+
+        self.select_level_action = self.level_menu.addAction("Select Level")
+        self.select_level_action.setIcon(icon("globe.svg"))
         self.select_level_action.triggered.connect(self.open_level_selector)
 
-        self.reload_action = self.level_menu.addAction("&Reload Level")
+        self.reload_action = self.level_menu.addAction("Reload Level")
+        self.reload_action.setIcon(icon("refresh-cw.svg"))
         self.reload_action.triggered.connect(self.reload_level)
+
         self.level_menu.addSeparator()
-        self.new_level_action = self.level_menu.addAction("New &Empty Level")
+
+        self.new_level_action = self.level_menu.addAction("New Empty Level")
+        self.new_level_action.setIcon(icon("file.svg"))
         self.new_level_action.triggered.connect(self._on_new_level)
+
         self.level_menu.addSeparator()
-        self.edit_header_action = self.level_menu.addAction("Edit Level &Header")
+
+        self.edit_header_action = self.level_menu.addAction("Edit Level Header")
+        self.edit_header_action.setIcon(icon("tool.svg"))
         self.edit_header_action.triggered.connect(self.on_header_editor)
-        self.edit_autoscroll = self.level_menu.addAction("Edit &Autoscrolling")
+
+        self.edit_autoscroll = self.level_menu.addAction("Edit Autoscrolling")
+        self.edit_autoscroll.setIcon(icon("fast-forward.svg"))
         self.edit_autoscroll.triggered.connect(self.on_edit_autoscroll)
 
         self.menuBar().addMenu(self.level_menu)
@@ -154,7 +179,7 @@ class FoundryMainWindow(MainWindow):
         self.menuBar().addMenu(self.view_menu)
         self.menuBar().addMenu(HelpMenu(self))
 
-        self.level_ref.data_changed.connect(self._on_level_data_changed)
+        self.undo_stack.indexChanged.connect(self._on_level_data_changed)
 
         self.scroll_panel = QScrollArea()
         self.scroll_panel.setWidgetResizable(True)
@@ -246,31 +271,31 @@ class FoundryMainWindow(MainWindow):
         self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
-        self.menu_toolbar.addAction(icon("settings.svg"), "Editor Settings").triggered.connect(self._on_show_settings)
+        self.menu_toolbar.addAction(settings_action)
         self.menu_toolbar.addSeparator()
-        self.menu_toolbar.addAction(icon("folder.svg"), "Open ROM").triggered.connect(self.on_open_rom)
-        self.menu_toolbar_save_action = self.menu_toolbar.addAction(icon("save.svg"), "Save Level")
-        self.menu_toolbar_save_action.triggered.connect(self.on_save_rom)
-        self.menu_toolbar.addSeparator()
-
-        self.undo_action = self.menu_toolbar.addAction(icon("rotate-ccw.svg"), "Undo Action")
-        self.undo_action.triggered.connect(self.level_ref.undo)
-        self.undo_action.setEnabled(False)
-        self.redo_action = self.menu_toolbar.addAction(icon("rotate-cw.svg"), "Redo Action")
-        self.redo_action.triggered.connect(self.level_ref.redo)
-        self.redo_action.setEnabled(False)
+        self.menu_toolbar.addAction(open_rom_action)
+        self.menu_toolbar.addAction(self.save_rom_action)
 
         self.menu_toolbar.addSeparator()
+
+        self.menu_toolbar.addAction(self.undo_action)
+        self.menu_toolbar.addAction(self.redo_action)
+
+        self.menu_toolbar.addSeparator()
+
         play_action = self.menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
         play_action.triggered.connect(self.on_play)
         play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
+
         self.menu_toolbar.addSeparator()
+
         self.menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
         self.menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In").triggered.connect(self.level_view.zoom_in)
+
         self.menu_toolbar.addSeparator()
-        header_action = self.menu_toolbar.addAction(icon("tool.svg"), "Edit Level Header")
-        header_action.triggered.connect(self.on_header_editor)
-        header_action.setWhatsThis(
+
+        self.menu_toolbar.addAction(self.edit_header_action)
+        self.edit_header_action.setWhatsThis(
             "<b>Header Editor</b><br/>"
             "Many configurations regarding the level are done in its header, like the length of "
             "the timer, or where and how Mario enters the level.<br/>"
@@ -313,9 +338,8 @@ class FoundryMainWindow(MainWindow):
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
 
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Z), self, self.level_ref.undo)
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Y), self, self.level_ref.redo)
-        QShortcut(QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_Z), self, self.level_ref.redo)
+        self.undo_action.setShortcut(Qt.CTRL + Qt.Key_Z)
+        self.redo_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_Z)
 
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Plus), self, self.level_view.zoom_in)
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self, self.level_view.zoom_out)
@@ -327,8 +351,8 @@ class FoundryMainWindow(MainWindow):
 
         self.showMaximized()
 
-    def _on_new_level(self):
-        if not self.safe_to_change():
+    def _on_new_level(self, dont_check=False):
+        if not dont_check and not self.safe_to_change():
             return
 
         object_set = ObjectSetSelector.get_object_set(self)
@@ -345,15 +369,9 @@ class FoundryMainWindow(MainWindow):
         self.update_gui_for_level()
 
     def _on_level_data_changed(self):
-        self.undo_action.setEnabled(self.level_ref.undo_stack.undo_available)
-        self.redo_action.setEnabled(self.level_ref.undo_stack.redo_available)
+        self.save_rom_action.setEnabled(not self.undo_stack.isClean() or PaletteGroup.changed)
 
-        self.jump_destination_action.setEnabled(self.level_ref.level.has_next_area)
-
-        level_has_changed = self.level_ref.level.changed and not self.level_ref.level.undo_stack.is_empty
-        level_is_m3l = not self.level_ref.level.attached_to_rom
-
-        self.menu_toolbar_save_action.setEnabled(level_has_changed or level_is_m3l or PaletteGroup.changed)
+        self.jump_destination_action.setEnabled(bool(self.level_ref.level and self.level_ref.level.has_next_area))
 
         self._save_auto_data()
 
@@ -365,38 +383,42 @@ class FoundryMainWindow(MainWindow):
         ROM().save_to_file(auto_save_rom_path, set_new_path=False)
 
     def _save_auto_data(self):
-        undo_index, data = self.level_ref.level.undo_stack.export_data()
+        if not self.level_ref:
+            return
 
-        (level_offset, _), (enemy_offset, _) = self.level_ref.level.to_bytes()
+        (object_offset, object_bytes), (enemy_offset, enemy_bytes) = self.level_ref.level.to_bytes()
 
         object_set_number = self.level_ref.level.object_set_number
 
-        base64_data = []
+        object_data = base64.b64encode(object_bytes).decode("ascii")
+        enemy_data = base64.b64encode(enemy_bytes).decode("ascii")
 
-        for (object_offset, object_data), (enemy_offset_, enemy_data) in data:
-            base64_data.append(
-                (
-                    object_offset,
-                    base64.b64encode(object_data).decode("ascii"),
-                    enemy_offset_,
-                    base64.b64encode(enemy_data).decode("ascii"),
-                )
-            )
+        data_dict = {
+            "object_set_number": object_set_number,
+            "object_address": object_offset,
+            "object_data": object_data,
+            "enemy_address": enemy_offset,
+            "enemy_data": enemy_data,
+        }
 
         with open(auto_save_level_data_path, "w") as level_data_file:
-            level_data_file.write(
-                json.dumps([object_set_number, level_offset, enemy_offset, (undo_index, base64_data)])
-            )
+            level_data_file.write(json.dumps(data_dict))
 
     def _load_auto_save(self):
         # rom already loaded
         with open(auto_save_level_data_path, "r") as level_data_file:
             json_data = level_data_file.read()
 
-            object_set_number, level_offset, enemy_offset, (undo_index, base64_data) = json.loads(json_data)
+            data_dict = json.loads(json_data)
+
+        object_address = data_dict["object_address"]
+        object_data = bytearray(base64.b64decode(data_dict["object_data"]))
+        enemy_address = data_dict["enemy_address"]
+        enemy_data = bytearray(base64.b64decode(data_dict["enemy_data"]))
+        object_set_number = data_dict["object_set_number"]
 
         # load level from ROM, or from m3l file
-        if level_offset == enemy_offset == 0:
+        if object_address == enemy_address == 0:
             if not auto_save_m3l_path.exists():
                 QMessageBox.critical(
                     self,
@@ -407,20 +429,8 @@ class FoundryMainWindow(MainWindow):
             with open(auto_save_m3l_path, "rb") as m3l_file:
                 self.load_m3l(bytearray(m3l_file.read()), auto_save_m3l_path)
         else:
-            self.update_level("recovered level", level_offset, enemy_offset, object_set_number)
-
-        # restore undo/redo stack
-        byte_data = []
-        for undo_data in base64_data:
-            level_offset, object_data, enemy_offset, enemy_data = undo_data
-
-            object_data = bytearray(base64.b64decode(object_data))
-            enemy_data = bytearray(base64.b64decode(enemy_data))
-
-            byte_data.append(((level_offset, object_data), (enemy_offset, enemy_data)))
-
-        self.level_ref.level.changed = bool(base64_data)
-        self.level_ref.import_undo_stack_data(undo_index, byte_data)
+            self.update_level("recovered level", object_address, enemy_address, object_set_number)
+            self.level_ref.level.from_bytes((object_address, object_data), (enemy_address, enemy_data), True)
 
     def _go_to_jump_destination(self):
         if not self.safe_to_change():
@@ -593,7 +603,6 @@ class FoundryMainWindow(MainWindow):
 
             if not path_to_rom:
                 self._enable_disable_gui_elements()
-                return False
 
         # Proceed loading the file chosen by the user
         try:
@@ -603,15 +612,13 @@ class FoundryMainWindow(MainWindow):
                 self._load_auto_save()
             else:
                 self._save_auto_rom()
-                return self.open_level_selector(None)
+                if not self.open_level_selector(None):
+                    self._on_new_level(dont_check=True)
 
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
-            return False
         finally:
             self._enable_disable_gui_elements()
-
-        return True
 
     def on_open_m3l(self, _) -> bool:
         if not self.safe_to_change():
@@ -641,6 +648,9 @@ class FoundryMainWindow(MainWindow):
     def load_m3l(self, m3l_data: bytearray, pathname: str):
         if not self._ask_for_palette_save():
             return
+
+        if self.level_ref.level is None:
+            self.level_ref.level = Level()
 
         self.level_ref.level.from_m3l(m3l_data)
 
@@ -717,34 +727,35 @@ class FoundryMainWindow(MainWindow):
 
             answer = level_selector.exec()
 
-            if answer == QMessageBox.Accepted:
-                if level_selector.object_set != self.level_ref.level.object_set.number:
-                    QMessageBox.critical(
-                        self,
-                        "Couldn't save M3L file into ROM.",
-                        "You selected a level, that has a different object set "
-                        f"({OBJECT_SET_NAMES[level_selector.object_set]}), than the level you are trying to save "
-                        f"into the ROM ({OBJECT_SET_NAMES[self.level_ref.level.object_set.number]}). This is currently "
-                        "not supported. Please find a level, that has the same object set.",
-                    )
-                    return
-
-                if not self._ask_for_palette_save():
-                    return
-
-                self.level_view.level_ref.attach_to_rom(
-                    level_selector.object_data_offset, level_selector.enemy_data_offset
-                )
-
-                if is_save_as:
-                    # if we save to another rom, don't consider the level
-                    # attached (to the current rom)
-                    self.level_view.level_ref.attached_to_rom = False
-                else:
-                    # the m3l is saved to the current ROM, we can get rid of the auto save
-                    auto_save_m3l_path.unlink(missing_ok=True)
-            else:
+            if answer != QMessageBox.Accepted:
                 return
+
+            if level_selector.object_set != self.level_ref.level.object_set.number:
+                QMessageBox.critical(
+                    self,
+                    "Couldn't save M3L file into ROM.",
+                    "You selected a level, that has a different object set "
+                    f"({OBJECT_SET_NAMES[level_selector.object_set]}), than the level you are trying to save "
+                    f"into the ROM ({OBJECT_SET_NAMES[self.level_ref.level.object_set.number]}). This is currently "
+                    "not supported. Please find a level, that has the same object set.",
+                )
+                return
+
+            if not self._ask_for_palette_save():
+                return
+
+            self._attach_to_rom(level_selector.object_data_offset, level_selector.enemy_data_offset)
+
+            if is_save_as:
+                # if we save to another rom, don't consider the level
+                # attached (to the current rom)
+                attach_cmd = self.undo_stack.command(self.undo_stack.index() - 1)
+                attach_cmd.setObsolete(True)
+
+                self.undo_stack.undo()
+            else:
+                # the m3l is saved to the current ROM, we can get rid of the auto save
+                auto_save_m3l_path.unlink(missing_ok=True)
 
         else:
             if not self._ask_for_palette_save():
@@ -779,8 +790,13 @@ class FoundryMainWindow(MainWindow):
         self.update_title()
 
         if not is_save_as:
-            self.level_ref.level.changed = False
-            self.level_ref.data_changed.emit()
+            self.undo_stack.setClean()
+
+    def _attach_to_rom(self, object_data_offset: int, enemy_data_offset: int):
+        if 0x0 in [object_data_offset, enemy_data_offset]:
+            raise ValueError("You cannot save level or enemy data to the beginning of the ROM (address 0x0).")
+
+        self.undo_stack.push(AttachLevelToRom(self.level_ref.level, object_data_offset, enemy_data_offset))
 
     def _save_current_changes_to_file(self, pathname: str, set_new_path: bool):
         super(FoundryMainWindow, self)._save_current_changes_to_file(pathname, set_new_path)
@@ -823,7 +839,7 @@ class FoundryMainWindow(MainWindow):
                 if selected_object != -1:
                     self.place_object_from_dropdown(self.context_menu.get_position())
                 else:
-                    self.create_object_at(self.context_menu.get_position())
+                    self.add_object_at(self.context_menu.get_position())
 
             elif item_id == CMAction.CUT:
                 self._cut_objects()
@@ -855,21 +871,17 @@ class FoundryMainWindow(MainWindow):
         else:
             self.object_toolbar.select_object(level_object)
 
-    @undoable
     def bring_objects_to_foreground(self):
-        self.level_ref.level.bring_to_foreground(self.level_ref.selected_objects)
+        self.undo_stack.push(ToForeground(self.level_ref.level, self.level_ref.selected_objects))
 
-    @undoable
     def bring_objects_to_background(self):
-        self.level_ref.level.bring_to_background(self.level_ref.selected_objects)
+        self.undo_stack.push(ToBackground(self.level_ref.level, self.level_ref.selected_objects))
 
-    @undoable
-    def create_object_at(self, q_point: QPoint):
-        self.level_view.create_object_at(q_point)
+    def add_object_at(self, q_point: QPoint, domain=0, obj_type=0):
+        self.undo_stack.push(AddLevelObjectAt(self.level_view, q_point, domain, obj_type))
 
-    @undoable
-    def create_enemy_at(self, q_point: QPoint):
-        self.level_view.create_enemy_at(q_point)
+    def add_enemy_at(self, q_point: QPoint, enemy_type=0x72):
+        self.undo_stack.push(AddEnemyAt(self.level_view, q_point, enemy_type))
 
     def _cut_objects(self):
         self._copy_objects()
@@ -881,17 +893,20 @@ class FoundryMainWindow(MainWindow):
         if selected_objects:
             self.context_menu.set_copied_objects(selected_objects)
 
-    @undoable
     def _paste_objects(self, q_point: Optional[QPoint] = None):
-        self.level_view.paste_objects_at(self.context_menu.get_copied_objects(), q_point)
+        if not (copied_objects := self.context_menu.get_copied_objects())[0]:
+            return
 
-    @undoable
+        self.undo_stack.push(PasteObjectsAt(self.level_view, copied_objects, q_point))
+
     def remove_selected_objects(self):
-        self.level_view.remove_selected_objects()
-        self.level_view.update()
-        self.spinner_panel.disable_all()
+        selected_objects = [obj for obj in self.level_ref.level.get_all_objects() if obj.selected]
 
-    @undoable
+        if not selected_objects:
+            return
+
+        self.undo_stack.push(RemoveObjects(self.level_ref.level, selected_objects))
+
     def on_spin(self, _):
         selected_objects = self.level_ref.selected_objects
 
@@ -911,9 +926,9 @@ class FoundryMainWindow(MainWindow):
             else:
                 length = None
 
-            self.level_view.replace_object(selected_object, domain, obj_type, length)
+            self.undo_stack.push(ReplaceLevelObject(self.level_ref.level, selected_object, domain, obj_type, length))
         else:
-            self.level_view.replace_enemy(selected_object, obj_type)
+            self.undo_stack.push(ReplaceEnemy(self.level_ref.level, selected_object, obj_type))
 
         self.level_ref.data_changed.emit()
 
@@ -946,13 +961,13 @@ class FoundryMainWindow(MainWindow):
             self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
         except IndexError:
             QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
-
             return
 
         self.update_gui_for_level()
 
     def update_gui_for_level(self):
         restore_all_palettes()
+        self.undo_stack.clear()
 
         self._enable_disable_gui_elements()
 
@@ -1009,6 +1024,8 @@ class FoundryMainWindow(MainWindow):
         ]
 
         level_elements.extend(self.level_menu.actions())
+        level_elements.remove(self.level_menu.actions()[0])
+        level_elements.remove(self.level_menu.actions()[1])
         level_elements.remove(self.select_level_action)
         level_elements.remove(self.new_level_action)
 
@@ -1021,6 +1038,8 @@ class FoundryMainWindow(MainWindow):
         for gui_element in level_elements:
             gui_element.setEnabled(ROM.is_loaded() and self.level_ref.fully_loaded)
 
+        self._on_level_data_changed()
+
     def on_jump_edit(self):
         index = self.jump_list.currentIndex().row()
 
@@ -1028,23 +1047,30 @@ class FoundryMainWindow(MainWindow):
 
         self.on_jump_edited(updated_jump)
 
-    @undoable
     def on_jump_added(self):
-        self.level_view.add_jump()
+        self.undo_stack.push(AddJump(self.level_ref.level))
 
-    @undoable
     def on_jump_removed(self):
-        self.level_view.remove_jump(self.jump_list.currentIndex().row())
+        self.undo_stack.push(RemoveJump(self.level_ref.level, self.jump_list.currentIndex().row()))
 
-    @undoable
-    def on_jump_edited(self, jump):
+    def on_jump_edited(self, jump: Jump):
         index = self.jump_list.currentIndex().row()
 
         assert index >= 0
 
-        if isinstance(self.level_ref.level, Level):
-            self.level_view.level_ref.jumps[index] = jump
-            self.jump_list.item(index).setText(str(jump))
+        if not isinstance(self.level_ref.level, Level):
+            return
+
+        old_jump = self.level_ref.level.jumps[index]
+
+        self.undo_stack.beginMacro(f"Editing {old_jump}")
+
+        self.undo_stack.push(RemoveJump(self.level_ref.level, index))
+        self.undo_stack.push(AddJump(self.level_ref.level, jump, index))
+
+        self.jump_list.item(index).setText(str(jump))
+
+        self.undo_stack.endMacro()
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.MiddleButton:
@@ -1052,17 +1078,18 @@ class FoundryMainWindow(MainWindow):
 
             self.place_object_from_dropdown(pos)
 
-    @undoable
     def place_object_from_dropdown(self, q_point: QPoint) -> None:
         # the dropdown is synchronized with the toolbar, so it doesn't matter where to take it from
-        level_object = self.object_dropdown.currentData(Qt.UserRole)
+        in_level_object = self.object_dropdown.currentData(Qt.UserRole)
 
-        self.object_toolbar.add_recent_object(level_object)
+        self.object_toolbar.add_recent_object(in_level_object)
 
-        if isinstance(level_object, LevelObject):
-            self.level_view.create_object_at(q_point, level_object.domain, level_object.obj_index)
-        elif isinstance(level_object, EnemyItem):
-            self.level_view.add_enemy(level_object.obj_index, q_point, -1)
+        if isinstance(in_level_object, LevelObject):
+            self.add_object_at(q_point, in_level_object.domain, in_level_object.obj_index)
+        elif isinstance(in_level_object, EnemyItem):
+            self.add_enemy_at(q_point, in_level_object.obj_index)
+
+        self.level_ref.level.data_changed.emit()
 
     def closeEvent(self, event: QCloseEvent):
         super(FoundryMainWindow, self).closeEvent(event)

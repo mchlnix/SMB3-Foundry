@@ -1,6 +1,5 @@
 import abc
 
-from foundry.gui.UndoStack import UndoStack
 from smb3parse.levels import LevelBase
 
 
@@ -12,7 +11,6 @@ class LevelLike(LevelBase, abc.ABC):
         super(LevelLike, self).__init__(object_set_number, layout_address)
 
         self.changed = False
-        self.undo_stack = UndoStack()
 
     @abc.abstractmethod
     def index_of(self, obj):

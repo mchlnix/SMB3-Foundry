@@ -15,6 +15,8 @@ class EnemyItem(InLevelObject):
     def __init__(self, data, png_data, palette_group: PaletteGroup):
         super(EnemyItem, self).__init__()
 
+        self.data = data
+
         self.is_4byte = False
         self.is_single_block = True
         self.length = 0
@@ -65,6 +67,9 @@ class EnemyItem(InLevelObject):
             y = (block_id // 64) * Block.WIDTH
 
             self.blocks.append(self.png_data.copy(QRect(x, y, Block.WIDTH, Block.HEIGHT)))
+
+    def copy(self):
+        return EnemyItem(self.to_bytes(), self.png_data, self.palette_group)
 
     def render(self):
         # nothing to re-render since enemies are just copied over
@@ -117,6 +122,8 @@ class EnemyItem(InLevelObject):
         self.x_position = x
         self.y_position = y
 
+        self.data = self.to_bytes()
+
     def move_by(self, dx, dy):
         new_x = self.x_position + dx
         new_y = self.y_position + dy
@@ -142,11 +149,13 @@ class EnemyItem(InLevelObject):
         self.obj_index = min(0xFF, self.obj_index + 1)
 
         self._setup()
+        self.data = self.to_bytes()
 
     def decrement_type(self):
         self.obj_index = max(0, self.obj_index - 1)
 
         self._setup()
+        self.data = self.to_bytes()
 
     def to_bytes(self):
         return bytearray([self.obj_index, self.x_position + int(enemy_handle_x2[self.obj_index]), self.y_position])

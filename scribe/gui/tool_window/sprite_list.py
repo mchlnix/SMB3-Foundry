@@ -4,7 +4,7 @@ from PySide6.QtGui import QDropEvent
 from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
 from foundry.game.level.LevelRef import LevelRef
-from scribe.gui.commands import SetSpriteItem, SetSpriteType
+from scribe.gui.commands import ChangeSpriteIndex, SetSpriteItem, SetSpriteType
 from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, TableWidget
 from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES
 from smb3parse.levels import FIRST_VALID_ROW
@@ -39,7 +39,7 @@ class SpriteList(TableWidget):
         source_index = self.selectedIndexes()[0].row()
         target_index = self.indexAt(event.pos()).row()
 
-        self.world.move_sprites(source_index, target_index)
+        self.undo_stack.push(ChangeSpriteIndex(self.world, source_index, target_index))
 
         self.update_content()
 

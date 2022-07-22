@@ -96,7 +96,6 @@ class Level(LevelLike):
         if new_level:
             self._update_level_size()
 
-            self.undo_stack.clear(self.to_bytes())
             self.data_changed.emit()
 
     @property
@@ -110,13 +109,6 @@ class Level(LevelLike):
     def attached_to_rom(self):
         """Whether the current level has a place in the ROM yet. If not this level is likely a m3l file."""
         return not (self.header_offset == self.enemy_offset == 0)
-
-    @attached_to_rom.setter
-    def attached_to_rom(self, should_be_attached):
-        if not should_be_attached:
-            self.header_offset = self.enemy_offset = 0
-        else:
-            raise ValueError("You cannot manually attach a ROM, use attach_to_rom() instead.")
 
     @property
     def width(self):
@@ -246,10 +238,7 @@ class Level(LevelLike):
 
         return QRect(QPoint(0, 0), QSize(width, height) * block_length)
 
-    def attach_to_rom(self, header_offset: int, enemy_item_offset: int):
-        if 0x0 in [header_offset, enemy_item_offset]:
-            raise ValueError("You cannot save level or enemy data to the beginning of the ROM (address 0x0).")
-
+    def set_addresses(self, header_offset: int, enemy_item_offset: int):
         self.header_offset = header_offset
         self.object_offset = self.header_offset + Level.HEADER_LENGTH
         self.enemy_offset = enemy_item_offset
@@ -532,15 +521,19 @@ class Level(LevelLike):
                 continue
 
             if isinstance(obj, LevelObject):
-                objects = self.objects
+                other_objects = self.objects
             elif isinstance(obj, EnemyItem):
-                objects = self.enemies
+                other_objects = self.enemies
+            else:
+                raise TypeError(f"How did you select an object of type: {type(obj)}")
 
-            objects.remove(obj)
+            other_objects.remove(obj)
 
-            index = objects.index(object_currently_in_the_foreground) + 1
+            index = other_objects.index(object_currently_in_the_foreground) + 1
 
-            objects.insert(index, obj)
+            other_objects.insert(index, obj)
+
+        self.data_changed.emit()
 
     def bring_to_background(self, level_objects: List[InLevelObject]):
         for obj in level_objects:
@@ -604,13 +597,6 @@ class Level(LevelLike):
 
         return None
 
-    def create_object_at(self, x: int, y: int, domain: int = 0, object_index: int = 0):
-        self.add_object(domain, object_index, x, y, None, len(self.objects))
-
-    def create_enemy_at(self, x: int, y: int):
-        # goomba to have something to display
-        self.add_enemy(0x72, x, y, len(self.enemies))
-
     def add_object(
         self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int = -1
     ) -> Optional[ObjectLike]:
@@ -637,16 +623,6 @@ class Level(LevelLike):
 
         return enemy
 
-    def add_jump(self):
-        self.jumps.append(Jump.from_properties(0, 0, 0, 0))
-
-        self.data_changed.emit()
-
-    def remove_jump(self, jump: Jump):
-        self.jumps.remove(jump)
-
-        self.data_changed.emit()
-
     def index_of(self, obj: InLevelObject) -> int:
         if isinstance(obj, LevelObject):
             return self.objects.index(obj)
@@ -660,6 +636,12 @@ class Level(LevelLike):
             return self.objects[index]
         else:
             return self.enemies[index % len(self.objects)]
+
+    def clear_selection(self):
+        for obj in self.get_all_objects():
+            obj.selected = False
+
+        self.data_changed.emit()
 
     def remove_object(self, obj: InLevelObject):
         if obj is None:

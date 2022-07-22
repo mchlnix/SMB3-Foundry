@@ -2,7 +2,7 @@ from bisect import bisect_right
 from typing import List, Optional, Tuple, cast
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QMouseEvent, QWheelEvent, Qt
+from PySide6.QtGui import QMouseEvent, QUndoStack, QWheelEvent, Qt
 from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import ctrl_is_pressed
@@ -22,8 +22,8 @@ from foundry.gui.MainView import (
     MODE_RESIZE_VERT,
     MainView,
     RESIZE_MODES,
-    undoable,
 )
+from foundry.gui.commands import AddEnemyAt, AddLevelObjectAt, AddObject, MoveObjects, RemoveObjects, ResizeObjects
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
 
 
@@ -53,8 +53,8 @@ class LevelView(MainView):
 
         self.dragging_happened = True
 
-        self.resize_mouse_start_x = 0
         self.resize_obj_start_point = 0, 0
+        self.objects_before_resizing: List[InLevelObject] = []
 
         self.resizing_happened = False
 
@@ -135,6 +135,10 @@ class LevelView(MainView):
     @draw_autoscroll.setter
     def draw_autoscroll(self, value):
         self.drawer.draw_autoscroll = value
+
+    @property
+    def undo_stack(self) -> QUndoStack:
+        return self.window().findChild(QUndoStack, "undo_stack")
 
     def sizeHint(self) -> QSize:
         if self.level_ref.level is None:
@@ -241,7 +245,6 @@ class LevelView(MainView):
             super(LevelView, self).wheelEvent(event)
             return False
 
-    @undoable
     def _change_object_on_mouse_wheel(self, cursor_position: QPoint, y_delta: int):
         obj_under_cursor = self.object_at(cursor_position)
 
@@ -249,11 +252,31 @@ class LevelView(MainView):
             return
 
         if y_delta > 0:
-            obj_under_cursor.increment_type()
+            macro_name = f"Increment Type of '{obj_under_cursor.name}'"
         else:
-            obj_under_cursor.decrement_type()
+            macro_name = f"Decrement Type of '{obj_under_cursor.name}'"
 
-        obj_under_cursor.selected = True
+        self.undo_stack.beginMacro(macro_name)
+
+        if isinstance(obj_under_cursor, LevelObject):
+            index = self.level_ref.level.objects.index(obj_under_cursor)
+        else:
+            index = self.level_ref.level.enemies.index(obj_under_cursor)
+
+        copied_object = obj_under_cursor.copy()
+
+        self.undo_stack.push(RemoveObjects(self.level_ref.level, [obj_under_cursor]))
+
+        if y_delta > 0:
+            copied_object.increment_type()
+        else:
+            copied_object.decrement_type()
+
+        copied_object.selected = True
+
+        self.undo_stack.push(AddObject(self.level_ref.level, copied_object, index))
+
+        self.undo_stack.endMacro()
 
     def _on_right_mouse_button_down(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG:
@@ -270,19 +293,16 @@ class LevelView(MainView):
         if resize_mode not in RESIZE_MODES:
             return
 
-        level_x, level_y = self._to_level_point(event.pos())
-
         self.mouse_mode = resize_mode
-
-        self.resize_mouse_start_x = level_x
 
         obj = self.object_at(event.pos())
 
         if not isinstance(obj, InLevelObject):
             return
 
-        if obj is not None:
-            self.resize_obj_start_point = obj.x_position, obj.y_position
+        self.resize_obj_start_point = obj.get_position()
+
+        self.objects_before_resizing = [obj.copy() for obj in self.get_selected_objects()]
 
     def _resizing(self, event: QMouseEvent):
         self.resizing_happened = True
@@ -316,10 +336,8 @@ class LevelView(MainView):
 
     def _on_right_mouse_button_up(self, event):
         if self.resizing_happened:
-            resize_end_x, _ = self._to_level_point(event.pos())
+            self._stop_resize()
 
-            if self.resize_mouse_start_x != resize_end_x:
-                self._stop_resize(event)
         elif self.context_menu is not None:
             if self.get_selected_objects():
                 menu = self.context_menu.as_object_menu()
@@ -336,13 +354,30 @@ class LevelView(MainView):
         self.mouse_mode = MODE_FREE
         self.setCursor(Qt.ArrowCursor)
 
-    def _stop_resize(self, _):
-        if self.resizing_happened:
-            self.level_ref.save_level_state()
+    def _stop_resize(self):
+        if not self.resizing_happened:
+            return
+
+        if self.mouse_mode not in RESIZE_MODES or not self.get_selected_objects():
+            return
+
+        self.undo_stack.push(
+            ResizeObjects(self.level_ref.level, self.objects_before_resizing, self.get_selected_objects())
+        )
+
+        self.objects_before_resizing = []
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
         self.setCursor(Qt.ArrowCursor)
+
+    # TODO use Position class, instead
+    @staticmethod
+    def _get_dx_dy(self, start: Tuple[int, int], end: Tuple[int, int]) -> Tuple[int, int]:
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+
+        return dx, dy
 
     def _on_left_mouse_button_down(self, event: QMouseEvent):
         # 1 if clicking on background: deselect everything, start selection square
@@ -415,9 +450,11 @@ class LevelView(MainView):
                 drag_end_point = obj.x_position, obj.y_position
 
                 if self.drag_start_point != drag_end_point:
-                    self._stop_drag()
+                    self._stop_drag(drag_end_point)
                 else:
                     self.dragging_happened = False
+        elif self.resizing_happened:
+            self._stop_resize()
         elif self.selection_square.active:
             self._stop_selection_square()
 
@@ -437,15 +474,23 @@ class LevelView(MainView):
         self._object_was_selected_on_last_click = False
         self.setCursor(Qt.ArrowCursor)
 
-    def _stop_drag(self):
-        if self.dragging_happened:
-            self.level_ref.save_level_state()
+    def _stop_drag(self, drag_end_point):
+        if not self.dragging_happened:
+            return
+
+        level_x, level_y = drag_end_point
+
+        dx = level_x - self.drag_start_point[0]
+        dy = level_y - self.drag_start_point[1]
+
+        if dx == dy == 0 or not self.get_selected_objects():
+            return
+
+        self.undo_stack.push(
+            MoveObjects(self.level_ref.level, self.get_selected_objects(), self.drag_start_point, drag_end_point, True)
+        )
 
         self.dragging_happened = False
-
-    def remove_selected_objects(self):
-        for obj in self.level_ref.selected_objects:
-            self.level_ref.remove_object(obj)
 
     def scroll_to_objects(self, objects: List[LevelObject]):
         if not objects:
@@ -527,72 +572,29 @@ class LevelView(MainView):
         else:
             return f"World {found_level.game_world} - {found_level.name}"
 
-    def add_jump(self):
-        self.level_ref.add_jump()
-
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)
-
-    def create_object_at(self, q_point: QPoint, domain: int = 0, object_index: int = 0):
-        level_x, level_y = self._to_level_point(q_point)
-
-        self.level_ref.create_object_at(level_x, level_y, domain, object_index)
-
-        self.update()
-
-    # TODO this isn't used anywhere?
-    def create_enemy_at(self, q_point: QPoint):
-        level_x, level_y = self._to_level_point(q_point)
-
-        self.level_ref.create_enemy_at(level_x, level_y)
 
     def add_object(self, domain: int, obj_index: int, q_point: QPoint, length: int, index: int = -1):
         level_x, level_y = self._to_level_point(q_point)
 
         self.level_ref.add_object(domain, obj_index, level_x, level_y, length, index)
 
-    def add_enemy(self, enemy_index: int, q_point: QPoint, index: int):
+    def add_enemy(self, enemy_index: int, q_point: QPoint, index=-1):
         level_x, level_y = self._to_level_point(q_point)
+
+        if index == -1:
+            index = len(self.level_ref.level.enemies)
 
         self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
 
-    def replace_object(self, obj: LevelObject, domain: int, obj_index: int, length: int):
-        self.remove_object(obj)
-
-        x, y = obj.get_position()
-
-        new_obj = self.level_ref.add_object(domain, obj_index, x, y, length, obj.index_in_level)
-        new_obj.selected = obj.selected
-
-    def replace_enemy(self, old_enemy: EnemyItem, enemy_index: int):
-        index_in_level = self.level_ref.index_of(old_enemy)
-
-        self.remove_object(old_enemy)
-
-        x, y = old_enemy.get_position()
-
-        new_enemy = self.level_ref.add_enemy(enemy_index, x, y, index_in_level)
-
-        new_enemy.selected = old_enemy.selected
-
-    def remove_object(self, obj):
-        self.level_ref.remove_object(obj)
-
-    def remove_jump(self, index: int):
-        del self.level_ref.jumps[index]
-
-        self.update()
-
-    @undoable
     def dropEvent(self, event):
-        x, y = self._to_level_point(event.pos())
-
         level_object = self._object_from_mime_data(event.mimeData())
 
         if isinstance(level_object, LevelObject):
-            self.level_ref.level.add_object(level_object.domain, level_object.obj_index, x, y, None)
+            self.undo_stack.push(AddLevelObjectAt(self, event.pos(), level_object.domain, level_object.obj_index, None))
         else:
-            self.level_ref.level.add_enemy(level_object.obj_index, x, y)
+            self.undo_stack.push(AddEnemyAt(self, event.pos(), level_object.obj_index))
 
         event.accept()
 

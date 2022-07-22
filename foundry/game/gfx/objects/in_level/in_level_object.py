@@ -16,11 +16,14 @@ class InLevelObject(ObjectLike, abc.ABC):
     domain: int
     is_4byte: bool
 
+    data: bytearray
+
     rendered_width: int
 
     def __init__(self):
         super(InLevelObject, self).__init__()
 
+        # TODO base this on Position, like MapObjects do
         self.x_position = 0
         self.y_position = 0
 
@@ -54,6 +57,10 @@ class InLevelObject(ObjectLike, abc.ABC):
 
     @abc.abstractmethod
     def decrement_type(self):
+        pass
+
+    @abc.abstractmethod
+    def copy(self):
         pass
 
     @abc.abstractmethod
