@@ -883,6 +883,9 @@ class FoundryMainWindow(MainWindow):
     def remove_selected_objects(self):
         selected_objects = [obj for obj in self.level_ref.level.get_all_objects() if obj.selected]
 
+        if not selected_objects:
+            return
+
         self.undo_stack.push(RemoveObjects(self.level_ref.level, selected_objects))
 
     def on_spin(self, _):
