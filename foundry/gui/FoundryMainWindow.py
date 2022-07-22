@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import os
@@ -350,8 +351,8 @@ class FoundryMainWindow(MainWindow):
 
         self.showMaximized()
 
-    def _on_new_level(self):
-        if not self.safe_to_change():
+    def _on_new_level(self, dont_check=False):
+        if not dont_check and not self.safe_to_change():
             return
 
         object_set = ObjectSetSelector.get_object_set(self)
@@ -385,22 +386,39 @@ class FoundryMainWindow(MainWindow):
         if not self.level_ref:
             return
 
-        (level_offset, _), (enemy_offset, _) = self.level_ref.level.to_bytes()
+        (object_offset, object_bytes), (enemy_offset, enemy_bytes) = self.level_ref.level.to_bytes()
 
         object_set_number = self.level_ref.level.object_set_number
 
+        object_data = base64.b64encode(object_bytes).decode("ascii")
+        enemy_data = base64.b64encode(enemy_bytes).decode("ascii")
+
+        data_dict = {
+            "object_set_number": object_set_number,
+            "object_address": object_offset,
+            "object_data": object_data,
+            "enemy_address": enemy_offset,
+            "enemy_data": enemy_data,
+        }
+
         with open(auto_save_level_data_path, "w") as level_data_file:
-            level_data_file.write(json.dumps([object_set_number, level_offset, enemy_offset]))
+            level_data_file.write(json.dumps(data_dict))
 
     def _load_auto_save(self):
         # rom already loaded
         with open(auto_save_level_data_path, "r") as level_data_file:
             json_data = level_data_file.read()
 
-            object_set_number, level_offset, enemy_offset = json.loads(json_data)
+            data_dict = json.loads(json_data)
+
+        object_address = data_dict["object_address"]
+        object_data = bytearray(base64.b64decode(data_dict["object_data"]))
+        enemy_address = data_dict["enemy_address"]
+        enemy_data = bytearray(base64.b64decode(data_dict["enemy_data"]))
+        object_set_number = data_dict["object_set_number"]
 
         # load level from ROM, or from m3l file
-        if level_offset == enemy_offset == 0:
+        if object_address == enemy_address == 0:
             if not auto_save_m3l_path.exists():
                 QMessageBox.critical(
                     self,
@@ -411,7 +429,8 @@ class FoundryMainWindow(MainWindow):
             with open(auto_save_m3l_path, "rb") as m3l_file:
                 self.load_m3l(bytearray(m3l_file.read()), auto_save_m3l_path)
         else:
-            self.update_level("recovered level", level_offset, enemy_offset, object_set_number)
+            self.update_level("recovered level", object_address, enemy_address, object_set_number)
+            self.level_ref.level.from_bytes((object_address, object_data), (enemy_address, enemy_data), True)
 
     def _go_to_jump_destination(self):
         if not self.safe_to_change():
@@ -584,7 +603,6 @@ class FoundryMainWindow(MainWindow):
 
             if not path_to_rom:
                 self._enable_disable_gui_elements()
-                return False
 
         # Proceed loading the file chosen by the user
         try:
@@ -594,15 +612,13 @@ class FoundryMainWindow(MainWindow):
                 self._load_auto_save()
             else:
                 self._save_auto_rom()
-                return self.open_level_selector(None)
+                if not self.open_level_selector(None):
+                    self._on_new_level(dont_check=True)
 
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
-            return False
         finally:
             self._enable_disable_gui_elements()
-
-        return True
 
     def on_open_m3l(self, _) -> bool:
         if not self.safe_to_change():
@@ -711,35 +727,35 @@ class FoundryMainWindow(MainWindow):
 
             answer = level_selector.exec()
 
-            if answer == QMessageBox.Accepted:
-                if level_selector.object_set != self.level_ref.level.object_set.number:
-                    QMessageBox.critical(
-                        self,
-                        "Couldn't save M3L file into ROM.",
-                        "You selected a level, that has a different object set "
-                        f"({OBJECT_SET_NAMES[level_selector.object_set]}), than the level you are trying to save "
-                        f"into the ROM ({OBJECT_SET_NAMES[self.level_ref.level.object_set.number]}). This is currently "
-                        "not supported. Please find a level, that has the same object set.",
-                    )
-                    return
-
-                if not self._ask_for_palette_save():
-                    return
-
-                self._attach_to_rom(level_selector.object_data_offset, level_selector.enemy_data_offset)
-
-                if is_save_as:
-                    # if we save to another rom, don't consider the level
-                    # attached (to the current rom)
-                    attach_cmd = self.undo_stack.command(self.undo_stack.index() - 1)
-                    attach_cmd.setObsolete(True)
-
-                    self.undo_stack.undo()
-                else:
-                    # the m3l is saved to the current ROM, we can get rid of the auto save
-                    auto_save_m3l_path.unlink(missing_ok=True)
-            else:
+            if answer != QMessageBox.Accepted:
                 return
+
+            if level_selector.object_set != self.level_ref.level.object_set.number:
+                QMessageBox.critical(
+                    self,
+                    "Couldn't save M3L file into ROM.",
+                    "You selected a level, that has a different object set "
+                    f"({OBJECT_SET_NAMES[level_selector.object_set]}), than the level you are trying to save "
+                    f"into the ROM ({OBJECT_SET_NAMES[self.level_ref.level.object_set.number]}). This is currently "
+                    "not supported. Please find a level, that has the same object set.",
+                )
+                return
+
+            if not self._ask_for_palette_save():
+                return
+
+            self._attach_to_rom(level_selector.object_data_offset, level_selector.enemy_data_offset)
+
+            if is_save_as:
+                # if we save to another rom, don't consider the level
+                # attached (to the current rom)
+                attach_cmd = self.undo_stack.command(self.undo_stack.index() - 1)
+                attach_cmd.setObsolete(True)
+
+                self.undo_stack.undo()
+            else:
+                # the m3l is saved to the current ROM, we can get rid of the auto save
+                auto_save_m3l_path.unlink(missing_ok=True)
 
         else:
             if not self._ask_for_palette_save():
@@ -945,13 +961,13 @@ class FoundryMainWindow(MainWindow):
             self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
         except IndexError:
             QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
-
             return
 
         self.update_gui_for_level()
 
     def update_gui_for_level(self):
         restore_all_palettes()
+        self.undo_stack.clear()
 
         self._enable_disable_gui_elements()
 
