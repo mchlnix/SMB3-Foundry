@@ -219,19 +219,20 @@ class LevelView(MainView):
 
     def _try_start_resize(self, resize_mode: int, event: QMouseEvent):
         if resize_mode not in RESIZE_MODES:
-            return
+            return False
+
+        if all(isinstance(obj, EnemyItem) for obj in self.get_selected_objects()):
+            return False
 
         self.mouse_mode = resize_mode
 
         obj = self.object_at(event.pos())
 
-        if all(isinstance(obj, EnemyItem) for obj in self.get_selected_objects()):
-            self.mouse_mode = MODE_FREE
-            return
-
         self.resize_obj_start_point = obj.get_position()
 
         self.objects_before_resizing = [obj.copy() for obj in self.get_selected_objects()]
+
+        return True
 
     def _resizing(self, event: QMouseEvent):
         self.resizing_happened = True
@@ -326,9 +327,12 @@ class LevelView(MainView):
             if obj is not None:
                 edge = self._cursor_on_edge_of_object(obj, event.pos())
 
-                if self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK and edge:
-
-                    self._try_start_resize(self._resize_mode_from_edge(edge), event)
+                if (
+                    self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK
+                    and edge
+                    and self._try_start_resize(self._resize_mode_from_edge(edge), event)
+                ):
+                    pass
                 else:
                     self.drag_start_point = obj.x_position, obj.y_position
         else:
