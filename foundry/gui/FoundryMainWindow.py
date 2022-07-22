@@ -1067,6 +1067,8 @@ class FoundryMainWindow(MainWindow):
         elif isinstance(in_level_object, EnemyItem):
             self.add_enemy_at(q_point, in_level_object.obj_index)
 
+        self.level_ref.level.data_changed.emit()
+
     def closeEvent(self, event: QCloseEvent):
         super(FoundryMainWindow, self).closeEvent(event)
 

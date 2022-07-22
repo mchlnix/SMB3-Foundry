@@ -335,6 +335,8 @@ class PasteObjectsAt(QUndoCommand):
         for _ in range(self.enemy_count):
             self.view.level_ref.level.enemies.pop()
 
+        self.view.level_ref.level.data_changed.emit()
+
     def redo(self):
         # TODO, replace with the level version, so we don't have to restore the last mouse position?
         # restore last mouse position, since it is used inside the method as a fallback
