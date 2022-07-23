@@ -63,8 +63,6 @@ class MainView(QWidget):
         # dragged in from the object toolbar
         self.currently_dragged_object: Optional[InLevelObject] = None
 
-        self.transparency = False
-
     @property
     def settings(self):
         return self.drawer.settings
@@ -72,14 +70,6 @@ class MainView(QWidget):
     @settings.setter
     def settings(self, value):
         self.drawer.settings = value
-
-    @property
-    def transparency(self):
-        return self.drawer.transparency
-
-    @transparency.setter
-    def transparency(self, value):
-        self.drawer.transparency = value
 
     def sizeHint(self) -> QSize:
         if not self.level_ref:
@@ -109,7 +99,8 @@ class MainView(QWidget):
         if clicked_on_background:
             self._select_object(None)
         else:
-            self.mouse_mode = MODE_DRAG
+            if event.button() & Qt.LeftButton:
+                self.mouse_mode = MODE_DRAG
 
             selected_objects = self.get_selected_objects()
 
@@ -337,4 +328,6 @@ class MainView(QWidget):
         self.selection_square.draw(painter)
 
         if self.currently_dragged_object is not None:
-            self.currently_dragged_object.draw(painter, self.block_length, self.transparency)
+            self.currently_dragged_object.draw(
+                painter, self.block_length, self.settings.value("level view/block_transparency")
+            )

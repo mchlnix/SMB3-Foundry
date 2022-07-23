@@ -525,7 +525,7 @@ class LevelView(MainView):
         level_object = self._object_from_mime_data(event.mimeData())
 
         if isinstance(level_object, LevelObject):
-            self.undo_stack.push(AddLevelObjectAt(self, event.pos(), level_object.domain, level_object.obj_index, None))
+            self.undo_stack.push(AddLevelObjectAt(self, event.pos(), level_object.domain, level_object.obj_index))
         else:
             self.undo_stack.push(AddEnemyAt(self, event.pos(), level_object.obj_index))
 

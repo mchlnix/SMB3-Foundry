@@ -242,6 +242,8 @@ class ToForeground(QUndoCommand):
     def redo(self):
         self.level.bring_to_foreground(self.objects)
 
+        self.level.data_changed.emit()
+
 
 class ToBackground(ToForeground):
     def __init__(self, level: Level, objects: List[InLevelObject]):
@@ -253,6 +255,8 @@ class ToBackground(ToForeground):
 
     def redo(self):
         self.level.bring_to_background(self.objects)
+
+        self.level.data_changed.emit()
 
 
 class AddObject(QUndoCommand):
@@ -305,6 +309,8 @@ class AddLevelObjectAt(QUndoCommand):
         self.obj_type = obj_type
         self.length = length
 
+        self.added_object: Optional[LevelObject] = None
+
         self.index = index
 
     def undo(self):
@@ -313,14 +319,19 @@ class AddLevelObjectAt(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        self.view.add_object(self.domain, self.obj_type, self.pos, self.length, self.index)
+        if self.added_object is None:
+            self.view.add_object(self.domain, self.obj_type, self.pos, self.length, self.index)
+            self.added_object = self.level.objects[self.index]
 
-        self.index = len(self.level.objects) - 1
-
-        level_obj = self.level.objects[-1]
+            # in case the index was just -1
+            self.index = self.level.objects.index(self.added_object)
+        else:
+            self.level.objects.insert(self.index, self.added_object)
 
         # TODO use level coordinates, possibly by using level directly, instead of level view
-        self.setText(f"Add {level_obj.name} at {level_obj.x_position}, {level_obj.y_position}")
+        self.setText(f"Add {self.added_object.name} at {self.added_object.x_position}, {self.added_object.y_position}")
+
+        self.level.data_changed.emit()
 
 
 class AddEnemyAt(QUndoCommand):
@@ -334,6 +345,8 @@ class AddEnemyAt(QUndoCommand):
 
         self.enemy_type = enemy_type
 
+        self.added_enemy: Optional[EnemyItem] = None
+
         self.index = index
 
     def undo(self):
@@ -342,15 +355,21 @@ class AddEnemyAt(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        self.view.add_enemy(self.enemy_type, self.pos, self.index)
+        if self.added_enemy is None:
+            self.view.add_enemy(self.enemy_type, self.pos, self.index)
+            self.added_enemy = self.level.enemies[self.index]
 
-        if self.index == -1:
-            self.index = len(self.level.enemies) - 1
+            # in case the index was just -1
+            self.index = self.level.enemies.index(self.added_enemy)
+        else:
+            self.level.enemies.insert(self.index, self.added_enemy)
 
         enemy = self.level.enemies[self.index]
 
         # TODO use level coordinates, possibly by using level directly, instead of level view
         self.setText(f"Add {enemy.name} at {enemy.x_position}, {enemy.y_position}")
+
+        self.level.data_changed.emit()
 
 
 class PasteObjectsAt(QUndoCommand):
@@ -366,6 +385,9 @@ class PasteObjectsAt(QUndoCommand):
 
         self.object_count = len(list(filter(lambda obj: isinstance(obj, LevelObject), objects)))
         self.enemy_count = len(objects) - self.object_count
+
+        self.created_objects: List[LevelObject] = []
+        self.created_enemies: List[EnemyItem] = []
 
         self.pos = pos
         self.last_mouse_position = self.view.last_mouse_position
@@ -383,9 +405,23 @@ class PasteObjectsAt(QUndoCommand):
 
     def redo(self):
         # TODO, replace with the level version, so we don't have to restore the last mouse position?
+        # maybe only use indexes into object list, instead of object refs themselves?
         # restore last mouse position, since it is used inside the method as a fallback
         self.view.last_mouse_position = self.last_mouse_position
-        self.view.paste_objects_at(self.paste_data, self.pos)
+
+        if not self.created_objects and not self.created_enemies:
+            self.view.paste_objects_at(self.paste_data, self.pos)
+
+            if self.object_count:
+                self.created_objects = self.view.level_ref.level.objects[-self.object_count :]
+
+            if self.enemy_count:
+                self.created_enemies = self.view.level_ref.level.enemies[-self.enemy_count :]
+        else:
+            self.view.level_ref.level.objects.extend(self.created_objects)
+            self.view.level_ref.level.enemies.extend(self.created_enemies)
+
+        self.view.level_ref.level.data_changed.emit()
 
 
 class RemoveObjects(QUndoCommand):
@@ -444,6 +480,8 @@ class ReplaceLevelObject(QUndoCommand):
         new_object = self.level.add_object(self.domain, self.obj_type, x, y, self.length, self.index)
         new_object.selected = self.to_replace.selected
 
+        self.level.data_changed.emit()
+
 
 class ReplaceEnemy(QUndoCommand):
     def __init__(self, level: Level, to_replace: EnemyItem, obj_type: int):
@@ -469,6 +507,8 @@ class ReplaceEnemy(QUndoCommand):
 
         new_object = self.level.add_enemy(self.obj_type, x, y, self.index)
         new_object.selected = self.to_replace.selected
+
+        self.level.data_changed.emit()
 
 
 class AddJump(QUndoCommand):
