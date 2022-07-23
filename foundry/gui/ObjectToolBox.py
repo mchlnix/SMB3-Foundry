@@ -66,17 +66,15 @@ class ObjectIcon(QWidget):
             self.object_placed.emit()
 
     def set_object(self, level_object: Optional[InLevelObject]):
-        if level_object is not None:
-            self.object = get_minimal_icon_object(level_object)
+        if level_object is not None and (obj := get_minimal_icon_object(level_object)):
 
-            if self.object:
-                self.image = self.object.as_image()
-                self.setToolTip(self.object.name)
+            self.object = obj
+            self.image = self.object.as_image()
+            self.setToolTip(self.object.name)
 
-                return
-
-        self.image = QImage()
-        self.setToolTip("")
+        else:
+            self.image = QImage()
+            self.setToolTip("")
 
         self.update()
 
