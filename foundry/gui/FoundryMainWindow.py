@@ -605,6 +605,8 @@ class FoundryMainWindow(MainWindow):
             if not path_to_rom:
                 self._enable_disable_gui_elements()
 
+                return
+
         # Proceed loading the file chosen by the user
         try:
             ROM.load_from_file(path_to_rom)
