@@ -187,8 +187,8 @@ class WorldView(MainView):
             self.setToolTip(
                 f"<b>{level_name}</b><br/>"
                 f"<u>Type:</u> {object_set_name} "
-                f"<u>Objects:</u> {level_pointer.data.level_address} "
-                f"<u>Enemies:</u> {level_pointer.data.enemy_address}<br/>"
+                f"<u>Objects:</u> {hex(level_pointer.data.level_address)} "
+                f"<u>Enemies:</u> {hex(level_pointer.data.enemy_address)}<br/>"
                 f"<img src='data:image/png;base64,{image_data}'>"
             )
 
