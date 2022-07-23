@@ -463,6 +463,7 @@ class ReplaceLevelObject(QUndoCommand):
         self.length = length
 
         self.to_replace = to_replace
+        self.created_object: Optional[LevelObject] = None
         self.index = self.level.objects.index(self.to_replace)
 
         self.setText(f"Replacing {self.to_replace.name}")
@@ -477,8 +478,12 @@ class ReplaceLevelObject(QUndoCommand):
 
         x, y = self.to_replace.get_position()
 
-        new_object = self.level.add_object(self.domain, self.obj_type, x, y, self.length, self.index)
-        new_object.selected = self.to_replace.selected
+        if self.created_object is None:
+            self.created_object = self.level.add_object(self.domain, self.obj_type, x, y, self.length, self.index)
+        else:
+            self.level.objects.insert(self.index, self.created_object)
+
+        self.created_object.selected = self.to_replace.selected
 
         self.level.data_changed.emit()
 
@@ -491,6 +496,7 @@ class ReplaceEnemy(QUndoCommand):
         self.obj_type = obj_type
 
         self.to_replace = to_replace
+        self.created_enemy: Optional[EnemyItem] = None
         self.index = self.level.enemies.index(self.to_replace)
 
         self.setText(f"Replacing {self.to_replace.name}")
@@ -505,8 +511,12 @@ class ReplaceEnemy(QUndoCommand):
 
         x, y = self.to_replace.get_position()
 
-        new_object = self.level.add_enemy(self.obj_type, x, y, self.index)
-        new_object.selected = self.to_replace.selected
+        if self.created_enemy is None:
+            self.created_enemy = self.level.add_enemy(self.obj_type, x, y, self.index)
+        else:
+            self.level.enemies.insert(self.index, self.created_enemy)
+
+        self.created_enemy.selected = self.to_replace.selected
 
         self.level.data_changed.emit()
 
