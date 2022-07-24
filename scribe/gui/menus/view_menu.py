@@ -29,6 +29,7 @@ class ViewMenu(QMenu):
         self.level_preview_action = self.addAction("&Tooltip with Level Preview")
         self.level_preview_action.setCheckable(True)
         self.level_preview_action.setChecked(self.settings.value("world view/show level previews"))
+        self.level_preview_action.setShortcut(Qt.CTRL + Qt.Key_T)
 
         self.sprite_action = self.addAction("Overworld &Sprites")
         self.sprite_action.setCheckable(True)

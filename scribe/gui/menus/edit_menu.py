@@ -34,6 +34,7 @@ class EditMenu(QMenu):
         self.addSeparator()
 
         self.edit_world_info = self.addAction("Edit World Info")
+        self.edit_world_info.setShortcut(Qt.CTRL + Qt.Key_E)
         self.edit_world_info.setIcon(icon("tool.svg"))
 
     def on_menu(self, action: QAction):
