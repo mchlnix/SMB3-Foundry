@@ -301,14 +301,6 @@ class LevelView(MainView):
         self.mouse_mode = MODE_FREE
         self.setCursor(Qt.ArrowCursor)
 
-    # TODO use Position class, instead
-    @staticmethod
-    def _get_dx_dy(self, start: Tuple[int, int], end: Tuple[int, int]) -> Tuple[int, int]:
-        dx = end[0] - start[0]
-        dy = end[1] - start[1]
-
-        return dx, dy
-
     def _on_left_mouse_button_down(self, event: QMouseEvent):
         # 1 if clicking on background: deselect everything, start selection square
         # 2 if clicking on background and ctrl: start selection_square
