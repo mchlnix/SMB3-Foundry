@@ -1,5 +1,3 @@
-import os
-
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QFileDialog, QMenu
 
@@ -93,7 +91,9 @@ class ViewMenu(QMenu):
         self.exec_()
 
     def _on_screenshot(self):
-        recommended_file = f"{os.path.expanduser('~')}/{ROM.name} - {self._level_view.level_ref.name}.png"
+        recommended_file = (
+            f"{self.settings.value('editor/default dir path')}/{ROM.name} - {self._level_view.level_ref.name}.png"
+        )
 
         pathname, _ = QFileDialog.getSaveFileName(
             self, caption="Save Screenshot", dir=recommended_file, filter=IMG_FILE_FILTER

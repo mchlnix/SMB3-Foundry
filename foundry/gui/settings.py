@@ -15,11 +15,14 @@ GUI_STYLE = {
 SETTINGS: Dict[str, Union[str, int, bool]] = dict()
 SETTINGS["editor/instaplay_emulator"] = "fceux"
 SETTINGS["editor/instaplay_arguments"] = "%f"
+SETTINGS["editor/object_scroll_enabled"] = False
 SETTINGS["editor/default_powerup"] = 0
 
 SETTINGS["editor/resize_mode"] = RESIZE_LEFT_CLICK
 SETTINGS["editor/gui_style"] = ""  # initially blank, since we can't call load_stylesheet until the app is started
-SETTINGS["editor/object_scroll_enabled"] = False
+SETTINGS["editor/default dir"] = "User"
+SETTINGS["editor/default dir path"] = ""
+SETTINGS["editor/custom default dir path"] = ""
 
 SETTINGS["level view/draw_mario"] = True
 SETTINGS["level view/draw_jumps"] = False

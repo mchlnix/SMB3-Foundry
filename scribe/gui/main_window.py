@@ -109,7 +109,9 @@ class ScribeMainWindow(MainWindow):
 
         if not path_to_rom:
             # otherwise ask the user what new file to open
-            path_to_rom, _ = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
+            path_to_rom, _ = QFileDialog.getOpenFileName(
+                self, caption="Open ROM", dir=self.settings.value("editor/default dir path"), filter=ROM_FILE_FILTER
+            )
 
             if not path_to_rom:
                 return False
@@ -137,7 +139,10 @@ class ScribeMainWindow(MainWindow):
                 suggested_file += ".nes"
 
             pathname, _ = QFileDialog.getSaveFileName(
-                self, caption="Save ROM as", dir=suggested_file, filter=ROM_FILE_FILTER
+                self,
+                caption="Save ROM as",
+                dir=f"{self.settings.value('editor/default dir path')}/{suggested_file}",
+                filter=ROM_FILE_FILTER,
             )
             if not pathname:
                 return  # the user changed their mind
