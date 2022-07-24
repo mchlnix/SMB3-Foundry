@@ -13,6 +13,12 @@ class ViewMenu(QMenu):
 
         self._level_view = level_view
 
+        self._grid_action = self.addAction("&Grid lines")
+        self._grid_action.setCheckable(True)
+        self._grid_action.setChecked(self.settings.value("level view/draw_grid"))
+
+        self.addSeparator()
+
         self._mario_action = self.addAction("&Mario")
         self._mario_action.setCheckable(True)
         self._mario_action.setChecked(self.settings.value("level view/draw_mario"))
@@ -29,19 +35,15 @@ class ViewMenu(QMenu):
         self._invis_action.setCheckable(True)
         self._invis_action.setChecked(self.settings.value("level view/draw_invisible_items"))
 
+        self.addSeparator()
+
         self._auto_scroll_action = self.addAction("&Autoscroll Path")
         self._auto_scroll_action.setCheckable(True)
         self._auto_scroll_action.setChecked(self.settings.value("level view/draw_autoscroll"))
 
-        self.addSeparator()
-
         self._jump_zones_action = self.addAction("Jump &Zones")
         self._jump_zones_action.setCheckable(True)
         self._jump_zones_action.setChecked(self.settings.value("level view/draw_jumps"))
-
-        self._grid_action = self.addAction("&Grid lines")
-        self._grid_action.setCheckable(True)
-        self._grid_action.setChecked(self.settings.value("level view/draw_grid"))
 
         self._resize_action = self.addAction("&Resize Type")
         self._resize_action.setCheckable(True)
@@ -52,6 +54,10 @@ class ViewMenu(QMenu):
         self._trans_action = self.addAction("&Block Transparency")
         self._trans_action.setCheckable(True)
         self._trans_action.setChecked(self.settings.value("level view/block_transparency"))
+
+        self._special_bg_action = self.addAction("Default Background Tiles")
+        self._special_bg_action.setCheckable(True)
+        self._special_bg_action.setChecked(self.settings.value("level view/special_background"))
 
         self.addSeparator()
         self._screen_shot_action = self.addAction("Save &Screenshot of Level")
@@ -82,6 +88,8 @@ class ViewMenu(QMenu):
             self.settings.setValue("level view/draw_invisible_items", checked)
         elif action is self._auto_scroll_action:
             self.settings.setValue("level view/draw_autoscroll", checked)
+        elif action is self._special_bg_action:
+            self.settings.setValue("level view/special_background", checked)
         elif action is self._screen_shot_action:
             self._on_screenshot()
             return

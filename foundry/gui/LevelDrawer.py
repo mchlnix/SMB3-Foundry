@@ -85,15 +85,15 @@ class LevelDrawer:
     def draw(self, painter: QPainter, level: Level):
         self._draw_background(painter, level)
 
-        if level.object_set_number == DESERT_OBJECT_SET:
-            self._draw_desert_default_graphics(painter, level)
-        elif level.object_set_number == DUNGEON_OBJECT_SET:
-            self._draw_dungeon_default_graphics(painter, level)
-        elif level.object_set_number == ICE_OBJECT_SET:
-            self._draw_ice_default_graphics(painter, level)
+        if self.settings.value("level view/special_background"):
+            if level.object_set_number == DESERT_OBJECT_SET:
+                self._draw_desert_default_graphics(painter, level)
 
-        # painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), width=1))
-        # painter.setBrush(Qt.NoBrush)
+            elif level.object_set_number == DUNGEON_OBJECT_SET:
+                self._draw_dungeon_default_graphics(painter, level)
+
+            elif level.object_set_number == ICE_OBJECT_SET:
+                self._draw_ice_default_graphics(painter, level)
 
         self._draw_objects(painter, level)
 
