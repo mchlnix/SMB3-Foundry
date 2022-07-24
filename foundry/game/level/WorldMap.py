@@ -33,7 +33,7 @@ class WorldMap(LevelLike):
 
         super(WorldMap, self).__init__(0, self.internal_world_map.layout_address)
 
-        self.name = f"World @ {layout_address} - Overworld"
+        self.name = f"World {self.data.index + 1} - Overworld"
         self._signal_emitter = WorldSignaller()
 
         self.graphics_set = GraphicsSet(OVERWORLD_GRAPHIC_SET)

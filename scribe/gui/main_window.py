@@ -2,7 +2,7 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QAction, QActionGroup, QUndoStack, Qt
 from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QScrollArea
 
-from foundry import ROM_FILE_FILTER
+from foundry import ROM_FILE_FILTER, icon
 from foundry.game.File import ROM
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.WorldView import WorldView
@@ -54,19 +54,23 @@ class ScribeMainWindow(MainWindow):
         self.file_menu.triggered.connect(self.on_file_menu)
 
         self.open_rom_action = self.file_menu.addAction("&Open ROM...")
-        self.open_rom_action.setShortcut(Qt.CTRL + Qt.Key_O)
+        self.open_rom_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_O)
+        self.open_rom_action.setIcon(icon("folder.svg"))
 
         self.file_menu.addSeparator()
 
         self.save_rom_action = self.file_menu.addAction("&Save ROM")
         self.save_rom_action.setShortcut(Qt.CTRL + Qt.Key_S)
+        self.save_rom_action.setIcon(icon("save.svg"))
 
         self.file_menu.aboutToShow.connect(lambda: self.save_rom_action.setEnabled(not self.undo_stack.isClean()))
 
         self.save_as_rom_action = self.file_menu.addAction("Save ROM &As...")
         self.save_as_rom_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_S)
+        self.save_as_rom_action.setIcon(icon("save.svg"))
         self.file_menu.addSeparator()
         self.quit_rom_action = self.file_menu.addAction("&Quit")
+        self.quit_rom_action.setIcon(icon("power.svg"))
 
         self.menuBar().addMenu(self.file_menu)
 
@@ -77,7 +81,7 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.edit_menu)
 
     def _setup_view_menu(self):
-        self.view_menu = ViewMenu(self)
+        self.view_menu = ViewMenu(self, self.world_view)
         self.view_menu.triggered.connect(self.world_view.update)
 
         self.menuBar().addMenu(self.view_menu)
@@ -97,6 +101,7 @@ class ScribeMainWindow(MainWindow):
         self.level_menu.addSeparator()
 
         self.reload_world_action = self.level_menu.addAction("&Reload Current World")
+        self.reload_world_action.setIcon(icon("refresh-cw.svg"))
 
         # load world 1 on startup
         self.level_menu.actions()[0].trigger()
