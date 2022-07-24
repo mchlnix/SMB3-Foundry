@@ -1,3 +1,8 @@
+import pathlib
+import shlex
+import subprocess
+import tempfile
+
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QAction, QActionGroup, QUndoStack, Qt
 from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QScrollArea, QToolBar
@@ -12,9 +17,11 @@ from scribe.gui.menus.view_menu import ViewMenu
 from scribe.gui.settings_dialog import SettingsDialog
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
+from smb3parse.constants import STARTING_WORLD_INDEX_ADDRESS
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.util.rom import Rom as SMB3Rom
 
 
 class ScribeMainWindow(MainWindow):
@@ -66,7 +73,7 @@ class ScribeMainWindow(MainWindow):
         self.menu_toolbar.addSeparator()
 
         play_action = self.menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
-        # play_action.triggered.connect(self.on_play)
+        play_action.triggered.connect(self.on_play)
         play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
 
         self.menu_toolbar.addSeparator()
@@ -158,6 +165,54 @@ class ScribeMainWindow(MainWindow):
 
     def _on_show_settings(self):
         SettingsDialog(self.settings, self).exec()
+
+    def on_play(self):
+        """
+        Copies the ROM, including the current level, to a temporary directory, saves the current level as level 1-1 and
+        opens the rom in an emulator.
+        """
+        temp_dir = pathlib.Path(tempfile.gettempdir()) / "smb3scribe"
+        temp_dir.mkdir(parents=True, exist_ok=True)
+
+        path_to_temp_rom = temp_dir / "instaplay.rom"
+
+        ROM().save_to(path_to_temp_rom)
+
+        temp_rom = self._open_rom(path_to_temp_rom)
+        self.world_view.world.save_to_rom(temp_rom)
+
+        temp_rom.write(STARTING_WORLD_INDEX_ADDRESS, self.world_view.world.internal_world_map.number - 1)
+
+        temp_rom.save_to(path_to_temp_rom)
+
+        arguments = self.settings.value("editor/instaplay_arguments").replace("%f", str(path_to_temp_rom))
+        arguments = shlex.split(arguments, posix=False)
+
+        emu_path = pathlib.Path(self.settings.value("editor/instaplay_emulator"))
+
+        if emu_path.is_absolute():
+            if emu_path.exists():
+                emulator = str(emu_path)
+            else:
+                QMessageBox.critical(
+                    self, "Emulator not found", f"Check it under File > Settings.\nFile {emu_path} not found."
+                )
+                return
+        else:
+            emulator = self.settings.value("editor/instaplay_emulator")
+
+        try:
+            subprocess.run([emulator, *arguments])
+        except Exception as e:
+            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
+
+    @staticmethod
+    def _open_rom(path_to_rom):
+        with open(path_to_rom, "rb") as smb3_rom:
+            data = smb3_rom.read()
+
+        rom = SMB3Rom(bytearray(data))
+        return rom
 
     def on_open_rom(self, path_to_rom="") -> bool:
         if not self.safe_to_change():
