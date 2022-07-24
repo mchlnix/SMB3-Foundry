@@ -163,15 +163,18 @@ class WorldMapData(_IndexedMixin, DataPoint):
             self.fortress_fx.append(FortressFXData(self._rom, index))
             self.fortress_fx_indexes.append(index)
 
-    def write_back(self):
+    def write_back(self, rom: Rom = None):
+        if rom is None:
+            rom = self._rom
+
         # tile_data_offset
-        self._rom.write_little_endian(self.tile_data_offset_address, self.tile_data_offset)
+        rom.write_little_endian(self.tile_data_offset_address, self.tile_data_offset)
 
         # tile_data
-        self._rom.write(self.layout_address, self.tile_data + WORLD_MAP_LAYOUT_DELIMITER)
+        rom.write(self.layout_address, self.tile_data + WORLD_MAP_LAYOUT_DELIMITER)
 
         # structure_data_offset
-        self._rom.write_little_endian(self.structure_data_offset_address, self.structure_data_offset)
+        rom.write_little_endian(self.structure_data_offset_address, self.structure_data_offset)
 
         # values depending on amount of level pointers per screen
         self.level_pointers.sort()
@@ -187,48 +190,48 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.level_count_screen_4 = level_pointer_per_screen[3]
 
         # pos_offsets_for_screen
-        self._rom.write(self.structure_block_address, self.pos_offsets_for_screen)
+        rom.write(self.structure_block_address, self.pos_offsets_for_screen)
 
         # y_pos_list_start
-        self._rom.write_little_endian(
+        rom.write_little_endian(
             LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index, self.y_pos_list_start - WORLD_MAP_BASE_OFFSET
         )
 
         # x_pos_list_start
-        self._rom.write_little_endian(
+        rom.write_little_endian(
             LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index, self.x_pos_list_start - WORLD_MAP_BASE_OFFSET
         )
 
-        self._rom.write_little_endian(self.enemy_offset_list_offset_address, self.enemy_offset_list_offset)
-        self._rom.write_little_endian(
+        rom.write_little_endian(self.enemy_offset_list_offset_address, self.enemy_offset_list_offset)
+        rom.write_little_endian(
             self.level_offset_list_offset_address, self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
         )
 
         for index, level_pointer in enumerate(self.level_pointers):
             level_pointer.change_index(index)
-            level_pointer.write_back()
+            level_pointer.write_back(rom)
 
-        self._rom.write(self.map_start_y_address, self.map_start_y)
-        self._rom.write(self.map_scroll_address, self.map_scroll)
+        rom.write(self.map_start_y_address, self.map_start_y)
+        rom.write(self.map_scroll_address, self.map_scroll)
 
-        self._rom.write(self.airship_travel_base_index_address, self.airship_travel_base_index)
+        rom.write(self.airship_travel_base_index_address, self.airship_travel_base_index)
 
         for set_number in range(AIRSHIP_TRAVEL_SET_COUNT):
-            offset_x = self._rom.little_endian(self.airship_travel_x_set_address + set_number * OFFSET_SIZE)
-            offset_y = self._rom.little_endian(self.airship_travel_y_set_address + set_number * OFFSET_SIZE)
+            offset_x = rom.little_endian(self.airship_travel_x_set_address + set_number * OFFSET_SIZE)
+            offset_y = rom.little_endian(self.airship_travel_y_set_address + set_number * OFFSET_SIZE)
 
             for index in range(AIRSHIP_TRAVEL_SET_SIZE):
                 pos: Position = self.airship_travel_sets[set_number][index]
 
-                self._rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_x + index, pos.x, pos.screen)
-                self._rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_y + index, pos.y)
+                rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_x + index, pos.x, pos.screen)
+                rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_y + index, pos.y)
 
-        self._rom.write(self.fortress_fx_base_index_address, self.fortress_fx_base_index)
+        rom.write(self.fortress_fx_base_index_address, self.fortress_fx_base_index)
 
         for offset, fortress_fx_data in enumerate(self.fortress_fx):
-            self._rom.write(self.fortress_fx_indexes_address + offset, fortress_fx_data.index)
+            rom.write(self.fortress_fx_indexes_address + offset, fortress_fx_data.index)
 
-            fortress_fx_data.write_back()
+            fortress_fx_data.write_back(rom)
 
     @property
     def structure_block_address(self):

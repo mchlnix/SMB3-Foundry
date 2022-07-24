@@ -29,10 +29,13 @@ class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):
         self.column, self.screen = self._rom.nibbles(self.col_and_screen_address)
         self.replacement_tile_index = self._rom.int(self.replacement_tile_address)
 
-    def write_back(self):
-        self._rom.write_nibbles(self.row_address, self.row)
-        self._rom.write_nibbles(self.col_and_screen_address, self.column, self.screen)
-        self._rom.write(self.replacement_tile_address, self.replacement_tile_index)
+    def write_back(self, rom: Rom = None):
+        if rom is None:
+            rom = self._rom
+
+        rom.write_nibbles(self.row_address, self.row)
+        rom.write_nibbles(self.col_and_screen_address, self.column, self.screen)
+        rom.write(self.replacement_tile_address, self.replacement_tile_index)
 
     def __eq__(self, other):
         if self.index != other.index:
