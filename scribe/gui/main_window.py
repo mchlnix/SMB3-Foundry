@@ -1,6 +1,6 @@
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QAction, QActionGroup, QUndoStack, Qt
-from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QScrollArea
+from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QScrollArea, QToolBar
 
 from foundry import ROM_FILE_FILTER, icon
 from foundry.game.File import ROM
@@ -22,6 +22,8 @@ class ScribeMainWindow(MainWindow):
 
         self.undo_stack = QUndoStack(self)
         self.undo_stack.setObjectName("undo_stack")
+
+        self.menu_toolbar = None
 
         self.on_open_rom(path_to_rom)
 
@@ -46,6 +48,43 @@ class ScribeMainWindow(MainWindow):
         self.tool_window.sprite_selection_changed.connect(self.world_view.select_sprite)
         self.tool_window.level_pointer_selection_changed.connect(self.world_view.select_level_pointer)
 
+        self.menu_toolbar = QToolBar("Menu Toolbar", self)
+        self.menu_toolbar.setOrientation(Qt.Horizontal)
+        self.menu_toolbar.setIconSize(QSize(20, 20))
+
+        # self.menu_toolbar.addAction(settings_action)
+        self.menu_toolbar.addSeparator()
+        self.menu_toolbar.addAction(self.open_rom_action)
+        self.menu_toolbar.addAction(self.save_rom_action)
+
+        self.menu_toolbar.addSeparator()
+
+        self.menu_toolbar.addAction(self.edit_menu.undo_action)
+        self.menu_toolbar.addAction(self.edit_menu.redo_action)
+
+        self.menu_toolbar.addSeparator()
+
+        play_action = self.menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
+        # play_action.triggered.connect(self.on_play)
+        play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
+
+        self.menu_toolbar.addSeparator()
+
+        zoom_out_action = self.menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
+        zoom_out_action.triggered.connect(self.world_view.zoom_out)
+        zoom_out_action.triggered.connect(self._resize_for_level)
+        zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
+        zoom_in_action.triggered.connect(self.world_view.zoom_in)
+        zoom_in_action.triggered.connect(self._resize_for_level)
+
+        self.menu_toolbar.addSeparator()
+
+        self.menu_toolbar.addAction(self.edit_menu.edit_world_info)
+
+        self.addToolBar(Qt.TopToolBarArea, self.menu_toolbar)
+
+        self._resize_for_level()
+
         self.show()
         self.tool_window.show()
 
@@ -63,6 +102,7 @@ class ScribeMainWindow(MainWindow):
         self.save_rom_action.setShortcut(Qt.CTRL + Qt.Key_S)
         self.save_rom_action.setIcon(icon("save.svg"))
 
+        self.save_rom_action.setEnabled(False)
         self.file_menu.aboutToShow.connect(lambda: self.save_rom_action.setEnabled(not self.undo_stack.isClean()))
 
         self.save_as_rom_action = self.file_menu.addAction("Save ROM &As...")
@@ -207,6 +247,9 @@ class ScribeMainWindow(MainWindow):
 
         height = inner_height + self.scroll_area.horizontalScrollBar().height() + 2 * self.scroll_area.frameWidth()
         height += self.menuBar().height()
+
+        if self.menu_toolbar:
+            height += self.menu_toolbar.height()
 
         width = inner_width + 2 * self.scroll_area.frameWidth()
 
