@@ -14,7 +14,7 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.MainView import (
     MODE_DRAG,
     MODE_FREE,
-    MODE_PLACE_TILE,
+    MODE_PUT_TILE,
     MODE_SELECTION_SQUARE,
     MainView,
 )
@@ -97,7 +97,7 @@ class WorldView(MainView):
         return self.level_ref.level
 
     def set_mouse_mode(self, new_mode: int, event: Optional[QMouseEvent]):
-        if new_mode == MODE_PLACE_TILE:
+        if new_mode == MODE_PUT_TILE:
             tile_pixmap = QPixmap(QSize(self.block_length, self.block_length))
 
             painter = QPainter(tile_pixmap)
@@ -130,7 +130,7 @@ class WorldView(MainView):
 
     def on_put_tile(self, tile_id: int):
         self._tile_to_put = tile_id
-        self.set_mouse_mode(MODE_PLACE_TILE, None)
+        self.set_mouse_mode(MODE_PUT_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         should_display_level = self.mouse_mode == MODE_FREE and self.settings.value("world view/show level previews")
@@ -145,7 +145,7 @@ class WorldView(MainView):
         if self.read_only:
             return super(WorldView, self).mouseMoveEvent(event)
 
-        if self.mouse_mode == MODE_PLACE_TILE and event.buttons() & Qt.LeftButton:
+        if self.mouse_mode == MODE_PUT_TILE and event.buttons() & Qt.LeftButton:
             level_pos = self.to_level_point(event.pos())
 
             tile = self.world.object_at(*level_pos.xy)
@@ -266,7 +266,7 @@ class WorldView(MainView):
         if not self.level_ref.point_in(x, y):
             return
 
-        if self.mouse_mode == MODE_PLACE_TILE:
+        if self.mouse_mode == MODE_PUT_TILE:
             tile = self.world.object_at(x, y)
 
             assert tile is not None
@@ -325,7 +325,7 @@ class WorldView(MainView):
         self.update()
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
-        if self.mouse_mode == MODE_PLACE_TILE:
+        if self.mouse_mode == MODE_PUT_TILE:
             self.undo_stack.endMacro()
             return
 
