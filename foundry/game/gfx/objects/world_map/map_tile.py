@@ -29,6 +29,9 @@ class MapTile(MapObject):
     def name(self, value):
         pass
 
+    def copy(self):
+        return MapTile(self.block, self.pos.copy())
+
     def draw(self, dc, block_length, _=None):
         self.block.draw(
             dc,

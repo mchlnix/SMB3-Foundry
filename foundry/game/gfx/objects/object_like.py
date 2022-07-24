@@ -24,6 +24,9 @@ class ObjectLike(abc.ABC):
     def draw(self, painter: QPainter, block_length, transparent):
         pass
 
+    def copy(self):
+        pass
+
     def set_position(self, x, y):
         self.x_position = x
         self.y_position = y
