@@ -21,6 +21,8 @@ class ToolWindow(QMainWindow):
         self.setWindowFlag(Qt.WindowCloseButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
 
+        self.setWindowTitle("Tool Window - SMB3 Scribe")
+
         self.level_ref = level_ref
 
         self.tabbed_widget = QTabWidget()

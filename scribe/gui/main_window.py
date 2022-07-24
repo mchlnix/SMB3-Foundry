@@ -239,8 +239,10 @@ class ScribeMainWindow(MainWindow):
     def load_level(self, world_number: int):
         world = SMB3WorldMap.from_world_number(ROM(), world_number)
 
-        self.level_ref.load_level("World", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+        self.level_ref.load_level(f"World {world_number}", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
         self.level_ref.level.dimensions_changed.connect(self._resize_for_level)
+
+        self.setWindowTitle(f"{self.level_ref.level.name} - SMB3 Scribe")
 
     def on_save_rom(self, is_save_as=False):
         if is_save_as:
