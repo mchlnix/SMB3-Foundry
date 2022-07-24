@@ -17,6 +17,7 @@ from smb3parse.levels.world_map import (
     list_world_map_addresses,
 )
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.util.rom import Rom
 
 OVERWORLD_GRAPHIC_SET = 0
 
@@ -237,10 +238,12 @@ class WorldMap(LevelLike):
 
         return self.internal_world_map.tile_at(pos)
 
-    def locks_at(self, x, y):
+    @staticmethod
+    def locks_at(_, __):
         return None
 
-    def pipe_at(self, x, y):
+    @staticmethod
+    def pipe_at(_, __):
         return None
 
     # TODO check if better in parent class
@@ -257,14 +260,14 @@ class WorldMap(LevelLike):
     def fully_loaded(self):
         return True
 
-    def save_to_rom(self):
+    def save_to_rom(self, rom: Rom = None):
         self._write_tile_data()
 
         self.data.map_start_y = self.start_pos.pos.y << 4
 
-        self.data.write_back()
+        self.data.write_back(rom)
 
         # sprites
         for sprite in self.sprites:
             sprite.data.calculate_addresses()
-            sprite.data.write_back()
+            sprite.data.write_back(rom)
