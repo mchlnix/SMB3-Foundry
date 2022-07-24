@@ -1,4 +1,4 @@
-from PySide6.QtGui import QCloseEvent
+from PySide6.QtGui import QCloseEvent, QUndoStack
 from PySide6.QtWidgets import QMainWindow, QMessageBox
 
 from foundry.game.File import ROM
@@ -6,13 +6,15 @@ from foundry.game.level.LevelRef import LevelRef
 
 
 class MainWindow(QMainWindow):
+    undo_stack: QUndoStack
+
     def __init__(self):
         super(MainWindow, self).__init__()
 
         self.level_ref = LevelRef()
 
     def safe_to_change(self) -> bool:
-        if not (self.level_ref and self.level_ref.level.changed):
+        if not (self.level_ref and self.level_ref.level.changed) and self.undo_stack.isClean():
             return True
 
         return self.confirm_changes()
