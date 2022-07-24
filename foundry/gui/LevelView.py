@@ -92,7 +92,7 @@ class LevelView(MainView):
             self.level_ref.selected_objects = previously_selected_objects
 
         elif self.selection_square.active:
-            self._set_selection_end(event.pos())
+            self._set_selection_end(event)
 
         elif self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK:
             self._set_cursor_for_position(event)

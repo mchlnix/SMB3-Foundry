@@ -1,19 +1,27 @@
+import pathlib
+import shlex
+import subprocess
+import tempfile
+
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QAction, QActionGroup, QUndoStack, Qt
-from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QScrollArea
+from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QScrollArea, QToolBar
 
-from foundry import ROM_FILE_FILTER
+from foundry import ROM_FILE_FILTER, icon
 from foundry.game.File import ROM
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
 from scribe.gui.menus.edit_menu import EditMenu
 from scribe.gui.menus.view_menu import ViewMenu
+from scribe.gui.settings_dialog import SettingsDialog
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
+from smb3parse.constants import STARTING_WORLD_INDEX_ADDRESS
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.util.rom import Rom as SMB3Rom
 
 
 class ScribeMainWindow(MainWindow):
@@ -22,6 +30,8 @@ class ScribeMainWindow(MainWindow):
 
         self.undo_stack = QUndoStack(self)
         self.undo_stack.setObjectName("undo_stack")
+
+        self.menu_toolbar = None
 
         self.on_open_rom(path_to_rom)
 
@@ -46,6 +56,43 @@ class ScribeMainWindow(MainWindow):
         self.tool_window.sprite_selection_changed.connect(self.world_view.select_sprite)
         self.tool_window.level_pointer_selection_changed.connect(self.world_view.select_level_pointer)
 
+        self.menu_toolbar = QToolBar("Menu Toolbar", self)
+        self.menu_toolbar.setOrientation(Qt.Horizontal)
+        self.menu_toolbar.setIconSize(QSize(20, 20))
+
+        self.menu_toolbar.addAction(self.settings_action)
+        self.menu_toolbar.addSeparator()
+        self.menu_toolbar.addAction(self.open_rom_action)
+        self.menu_toolbar.addAction(self.save_rom_action)
+
+        self.menu_toolbar.addSeparator()
+
+        self.menu_toolbar.addAction(self.edit_menu.undo_action)
+        self.menu_toolbar.addAction(self.edit_menu.redo_action)
+
+        self.menu_toolbar.addSeparator()
+
+        play_action = self.menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
+        play_action.triggered.connect(self.on_play)
+        play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
+
+        self.menu_toolbar.addSeparator()
+
+        zoom_out_action = self.menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
+        zoom_out_action.triggered.connect(self.world_view.zoom_out)
+        zoom_out_action.triggered.connect(self._resize_for_level)
+        zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
+        zoom_in_action.triggered.connect(self.world_view.zoom_in)
+        zoom_in_action.triggered.connect(self._resize_for_level)
+
+        self.menu_toolbar.addSeparator()
+
+        self.menu_toolbar.addAction(self.edit_menu.edit_world_info)
+
+        self.addToolBar(Qt.TopToolBarArea, self.menu_toolbar)
+
+        self._resize_for_level()
+
         self.show()
         self.tool_window.show()
 
@@ -54,19 +101,31 @@ class ScribeMainWindow(MainWindow):
         self.file_menu.triggered.connect(self.on_file_menu)
 
         self.open_rom_action = self.file_menu.addAction("&Open ROM...")
-        self.open_rom_action.setShortcut(Qt.CTRL + Qt.Key_O)
+        self.open_rom_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_O)
+        self.open_rom_action.setIcon(icon("folder.svg"))
 
         self.file_menu.addSeparator()
 
         self.save_rom_action = self.file_menu.addAction("&Save ROM")
         self.save_rom_action.setShortcut(Qt.CTRL + Qt.Key_S)
+        self.save_rom_action.setIcon(icon("save.svg"))
 
+        self.save_rom_action.setEnabled(False)
         self.file_menu.aboutToShow.connect(lambda: self.save_rom_action.setEnabled(not self.undo_stack.isClean()))
 
         self.save_as_rom_action = self.file_menu.addAction("Save ROM &As...")
         self.save_as_rom_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_S)
+        self.save_as_rom_action.setIcon(icon("save.svg"))
         self.file_menu.addSeparator()
+
+        self.settings_action = self.file_menu.addAction("Editor Settings")
+        self.settings_action.setIcon(icon("sliders.svg"))
+        self.settings_action.triggered.connect(self._on_show_settings)
+
+        self.file_menu.addSeparator()
+
         self.quit_rom_action = self.file_menu.addAction("&Quit")
+        self.quit_rom_action.setIcon(icon("power.svg"))
 
         self.menuBar().addMenu(self.file_menu)
 
@@ -77,7 +136,7 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.edit_menu)
 
     def _setup_view_menu(self):
-        self.view_menu = ViewMenu(self)
+        self.view_menu = ViewMenu(self, self.world_view)
         self.view_menu.triggered.connect(self.world_view.update)
 
         self.menuBar().addMenu(self.view_menu)
@@ -97,11 +156,63 @@ class ScribeMainWindow(MainWindow):
         self.level_menu.addSeparator()
 
         self.reload_world_action = self.level_menu.addAction("&Reload Current World")
+        self.reload_world_action.setIcon(icon("refresh-cw.svg"))
 
         # load world 1 on startup
         self.level_menu.actions()[0].trigger()
 
         self.menuBar().addMenu(self.level_menu)
+
+    def _on_show_settings(self):
+        SettingsDialog(self.settings, self).exec()
+
+    def on_play(self):
+        """
+        Copies the ROM, including the current level, to a temporary directory, saves the current level as level 1-1 and
+        opens the rom in an emulator.
+        """
+        temp_dir = pathlib.Path(tempfile.gettempdir()) / "smb3scribe"
+        temp_dir.mkdir(parents=True, exist_ok=True)
+
+        path_to_temp_rom = temp_dir / "instaplay.rom"
+
+        ROM().save_to(path_to_temp_rom)
+
+        temp_rom = self._open_rom(path_to_temp_rom)
+        self.world_view.world.save_to_rom(temp_rom)
+
+        temp_rom.write(STARTING_WORLD_INDEX_ADDRESS, self.world_view.world.internal_world_map.number - 1)
+
+        temp_rom.save_to(path_to_temp_rom)
+
+        arguments = self.settings.value("editor/instaplay_arguments").replace("%f", str(path_to_temp_rom))
+        arguments = shlex.split(arguments, posix=False)
+
+        emu_path = pathlib.Path(self.settings.value("editor/instaplay_emulator"))
+
+        if emu_path.is_absolute():
+            if emu_path.exists():
+                emulator = str(emu_path)
+            else:
+                QMessageBox.critical(
+                    self, "Emulator not found", f"Check it under File > Settings.\nFile {emu_path} not found."
+                )
+                return
+        else:
+            emulator = self.settings.value("editor/instaplay_emulator")
+
+        try:
+            subprocess.run([emulator, *arguments])
+        except Exception as e:
+            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
+
+    @staticmethod
+    def _open_rom(path_to_rom):
+        with open(path_to_rom, "rb") as smb3_rom:
+            data = smb3_rom.read()
+
+        rom = SMB3Rom(bytearray(data))
+        return rom
 
     def on_open_rom(self, path_to_rom="") -> bool:
         if not self.safe_to_change():
@@ -202,6 +313,9 @@ class ScribeMainWindow(MainWindow):
 
         height = inner_height + self.scroll_area.horizontalScrollBar().height() + 2 * self.scroll_area.frameWidth()
         height += self.menuBar().height()
+
+        if self.menu_toolbar:
+            height += self.menu_toolbar.height()
 
         width = inner_width + 2 * self.scroll_area.frameWidth()
 

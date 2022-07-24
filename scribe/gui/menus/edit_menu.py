@@ -1,6 +1,7 @@
 from PySide6.QtGui import QAction, Qt
 from PySide6.QtWidgets import QMenu
 
+from foundry import icon
 from scribe.gui.edit_world_info import EditWorldInfo
 
 
@@ -12,9 +13,11 @@ class EditMenu(QMenu):
 
         self.undo_action = self.undo_stack.createUndoAction(self)
         self.undo_action.setShortcut(Qt.CTRL + Qt.Key_Z)
+        self.undo_action.setIcon(icon("rotate-ccw.svg"))
 
         self.redo_action = self.undo_stack.createRedoAction(self)
         self.redo_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_Z)
+        self.redo_action.setIcon(icon("rotate-cw.svg"))
 
         self.addAction(self.undo_action)
         self.addAction(self.redo_action)
@@ -22,12 +25,16 @@ class EditMenu(QMenu):
         self.addSeparator()
 
         self.clear_tiles_action = self.addAction("Clear &Tiles")
+        self.clear_tiles_action.setIcon(icon("loader.svg"))
         self.clear_level_pointers_action = self.addAction("Clear All &Level Pointers")
+        self.clear_level_pointers_action.setIcon(icon("loader.svg"))
         self.clear_sprites_action = self.addAction("Clear All &Sprites")
+        self.clear_sprites_action.setIcon(icon("loader.svg"))
 
         self.addSeparator()
 
         self.edit_world_info = self.addAction("Edit World Info")
+        self.edit_world_info.setIcon(icon("tool.svg"))
 
     def on_menu(self, action: QAction):
         if action is self.clear_tiles_action:

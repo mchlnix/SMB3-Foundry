@@ -295,18 +295,18 @@ class MainView(QWidget):
     def _start_selection_square(self, position):
         self.selection_square.start(position)
 
-    def _set_selection_end(self, position, always_replace_selection=False):
+    def _set_selection_end(self, event: QMouseEvent):
         if not self.selection_square.is_active():
             return
 
-        self.selection_square.set_current_end(position)
+        self.selection_square.set_current_end(event.pos())
 
         sel_rect = self.selection_square.get_adjusted_rect(self.block_length, self.block_length)
 
         touched_objects = [obj for obj in self.level_ref.get_all_objects() if sel_rect.intersects(obj.get_rect())]
 
         if touched_objects != self.level_ref.selected_objects:
-            self._set_selected_objects(touched_objects, always_replace_selection)
+            self._set_selected_objects(touched_objects, not event.modifiers() & Qt.ShiftModifier)
 
         self.update()
 

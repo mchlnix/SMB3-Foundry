@@ -82,6 +82,12 @@ class PutTile(MoveTile):
             world, start=Position.from_xy(-1, -1), tile_after=tile_index, end=pos, parent=parent
         )
 
+    def redo(self):
+        super(PutTile, self).redo()
+
+        for obj in self.world.objects:
+            obj.selected = False
+
 
 class SetLevelAddress(QUndoCommand):
     def __init__(self, data: LevelPointerData, new_address: int, parent=None):

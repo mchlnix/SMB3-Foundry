@@ -271,20 +271,8 @@ class WorldMap(LevelBase):
         return tile_is_enterable(tile_index, self.rom)
 
     @property
-    def start_pos(self) -> Optional[WorldMapPosition]:
-        if self.world_index == 8:
-            # warp world
-            return None
-
-        # x coordinate is always the same
-        x = 0x20 >> 4
-
-        y_positions_of_world = [self.rom.int(Y_START_POS_LIST + index) >> 4 for index in range(8)]
-
-        y = y_positions_of_world[self.world_index]
-
-        # always on screen 1
-        return WorldMapPosition(self, 1, y, x)
+    def start_pos(self) -> WorldMapPosition:
+        return Position(0x20 >> 4, self.data.map_start_y >> 4, 0)
 
     def gen_positions(self) -> Generator["WorldMapPosition", None, None]:
         """

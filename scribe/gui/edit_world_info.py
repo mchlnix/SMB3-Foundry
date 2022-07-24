@@ -1,5 +1,5 @@
 from PySide6.QtGui import QUndoStack
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from foundry.game.Data import LEVEL_POINTER_COUNT
 from foundry.game.level.WorldMap import WorldMap
@@ -15,7 +15,7 @@ class EditWorldInfo(CustomDialog):
 
         self.world_map = world_map
 
-        self.setLayout(QHBoxLayout())
+        self.setLayout(QVBoxLayout())
 
         layout = QVBoxLayout()
 
@@ -67,6 +67,11 @@ class EditWorldInfo(CustomDialog):
         world_data_group.setLayout(layout)
 
         self.layout().addWidget(world_data_group)
+
+        self.ok_button = QPushButton("OK")
+        self.ok_button.pressed.connect(self.close)
+
+        self.layout().addWidget(self.ok_button)
 
     @property
     def undo_stack(self) -> QUndoStack:

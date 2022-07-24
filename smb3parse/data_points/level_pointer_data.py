@@ -12,6 +12,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
 )
+from smb3parse.util.rom import Rom
 
 if TYPE_CHECKING:
     from smb3parse.data_points.world_map_data import WorldMapData
@@ -85,12 +86,15 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
         self.level_offset = 0x0
         self.enemy_offset = 0x0
 
-    def write_back(self):
-        self._rom.write_nibbles(self.screen_address, self.screen, self.x)
-        self._rom.write_nibbles(self.y_address, self.y, self.object_set)
+    def write_back(self, rom: Rom = None):
+        if rom is None:
+            rom = self._rom
 
-        self._rom.write_little_endian(self.level_offset_address, self.level_offset)
-        self._rom.write_little_endian(self.enemy_offset_address, self.enemy_offset)
+        rom.write_nibbles(self.screen_address, self.screen, self.x)
+        rom.write_nibbles(self.y_address, self.y, self.object_set)
+
+        rom.write_little_endian(self.level_offset_address, self.level_offset)
+        rom.write_little_endian(self.enemy_offset_address, self.enemy_offset)
 
     def __eq__(self, other):
         if not isinstance(other, LevelPointerData):

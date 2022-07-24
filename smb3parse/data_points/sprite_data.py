@@ -10,6 +10,7 @@ from smb3parse.data_points.world_map_data import WorldMapData
 from smb3parse.levels import (
     FIRST_VALID_ROW,
 )
+from smb3parse.util.rom import Rom
 
 MAP_SPRITE_Y_POS_LIST = Map_List_Object_Ys
 MAP_SPRITE_X_POS_SCREEN_LIST = MAP_SPRITE_Y_POS_LIST + 8 * OFFSET_SIZE
@@ -76,9 +77,12 @@ class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
         self.type = MAPOBJ_EMPTY
         self.item = MAPITEM_NOITEM
 
-    def write_back(self):
-        self._rom.write(self._x_pos_screen_address, self.screen)
-        self._rom.write_nibbles(self._x_pos_address, self.x)
-        self._rom.write_nibbles(self._y_pos_address, self.y)
-        self._rom.write(self._type_address, self.type)
-        self._rom.write(self._item_address, self.item)
+    def write_back(self, rom: Rom = None):
+        if rom is None:
+            rom = self._rom
+
+        rom.write(self._x_pos_screen_address, self.screen)
+        rom.write_nibbles(self._x_pos_address, self.x)
+        rom.write_nibbles(self._y_pos_address, self.y)
+        rom.write(self._type_address, self.type)
+        rom.write(self._item_address, self.item)

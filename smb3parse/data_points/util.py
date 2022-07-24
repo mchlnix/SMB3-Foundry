@@ -95,7 +95,7 @@ class DataPoint:
     def read_values(self):
         raise NotImplementedError
 
-    def write_back(self):
+    def write_back(self, rom: Rom = None):
         raise NotImplementedError
 
 

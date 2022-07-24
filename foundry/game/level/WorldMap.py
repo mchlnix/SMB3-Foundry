@@ -7,6 +7,7 @@ from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects import AirshipTravelPoint, LevelPointer, Lock, MapTile, Sprite
+from foundry.game.gfx.objects.world_map.start_posiiton import StartPosition
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW
@@ -16,6 +17,7 @@ from smb3parse.levels.world_map import (
     list_world_map_addresses,
 )
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.util.rom import Rom
 
 OVERWORLD_GRAPHIC_SET = 0
 
@@ -33,7 +35,7 @@ class WorldMap(LevelLike):
 
         super(WorldMap, self).__init__(0, self.internal_world_map.layout_address)
 
-        self.name = f"World @ {layout_address} - Overworld"
+        self.name = f"World {self.data.index + 1} - Overworld"
         self._signal_emitter = WorldSignaller()
 
         self.graphics_set = GraphicsSet(OVERWORLD_GRAPHIC_SET)
@@ -49,6 +51,7 @@ class WorldMap(LevelLike):
         self._load_objects()
         self._load_sprites()
         self._load_level_pointers()
+        self._load_starting_position()
         self._load_airship_points()
         self._load_locks_and_bridges()
 
@@ -90,6 +93,9 @@ class WorldMap(LevelLike):
 
         for level_pointer_data in self.internal_world_map.level_pointers:
             self.level_pointers.append(LevelPointer(level_pointer_data))
+
+    def _load_starting_position(self):
+        self.start_pos = StartPosition(self.internal_world_map.start_pos)
 
     def _load_airship_points(self):
         self.airship_travel_sets: List[List[AirshipTravelPoint]] = []
@@ -232,10 +238,12 @@ class WorldMap(LevelLike):
 
         return self.internal_world_map.tile_at(pos)
 
-    def locks_at(self, x, y):
+    @staticmethod
+    def locks_at(_, __):
         return None
 
-    def pipe_at(self, x, y):
+    @staticmethod
+    def pipe_at(_, __):
         return None
 
     # TODO check if better in parent class
@@ -252,12 +260,14 @@ class WorldMap(LevelLike):
     def fully_loaded(self):
         return True
 
-    def save_to_rom(self):
+    def save_to_rom(self, rom: Rom = None):
         self._write_tile_data()
 
-        self.data.write_back()
+        self.data.map_start_y = self.start_pos.pos.y << 4
+
+        self.data.write_back(rom)
 
         # sprites
         for sprite in self.sprites:
             sprite.data.calculate_addresses()
-            sprite.data.write_back()
+            sprite.data.write_back(rom)

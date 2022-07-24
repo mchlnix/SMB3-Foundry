@@ -157,7 +157,7 @@ class WorldView(MainView):
             self._dragging(event)
 
         elif self.selection_square.active:
-            self._set_selection_end(event.pos())
+            self._set_selection_end(event)
 
         return super(WorldView, self).mouseMoveEvent(event)
 
@@ -240,6 +240,10 @@ class WorldView(MainView):
                 level_x, level_y, self.drawer.settings.value("world view/show airship paths")
             )
 
+        if not obj and self.drawer.settings.value("world view/show start position"):
+            if self.world.start_pos.pos == Position.from_xy(level_x, level_y):
+                obj = self.world.start_pos
+
         if not obj and self.drawer.settings.value("world view/show sprites"):
             obj = self.world.sprite_at(level_x, level_y)
 
@@ -283,15 +287,18 @@ class WorldView(MainView):
 
         obj = self._visible_object_at(event.pos())
 
+        # if shirt is pressed, toggle selection, while keeping current selection
+        # if shift is not pressed, remove selection and only select obj under cursor
+
         if not obj.selected and not event.modifiers() & Qt.ShiftModifier:
             self._select_object(None)
 
-        if obj and obj.selected:
-            pass
-        else:
             self.select_object_like(obj)
+            self._object_was_selected_on_last_click = True
 
         self.set_mouse_mode(MODE_DRAG, event)
+
+        self.update()
 
     def _dragging(self, event: QMouseEvent):
         level_pos = Position.from_xy(*self._to_level_point(event.pos()))
@@ -338,13 +345,19 @@ class WorldView(MainView):
         elif self.selection_square.active:
             self._stop_selection_square()
 
-        elif obj and obj.selected and not self._object_was_selected_on_last_click:
+        elif obj and not self._object_was_selected_on_last_click:
             # handle selected object on release to allow dragging
+            selected_objects = self.get_selected_objects().copy()
 
-            if event.modifiers() & Qt.ControlModifier:
-                # take selected object under cursor out of current selection
-                selected_objects = self.get_selected_objects().copy()
-                selected_objects.remove(obj)
+            if event.modifiers() & Qt.ShiftModifier:
+                if obj.selected:
+                    # take selected object under cursor out of current selection
+                    selected_objects.remove(obj)
+                else:
+                    selected_objects.append(obj)
+
+                obj.selected = obj.selected
+
                 self.select_objects(selected_objects, replace_selection=True)
             else:
                 # replace selection with only selected object
@@ -387,9 +400,6 @@ class WorldView(MainView):
 
         if no_of_sel_objects > 1:
             self.undo_stack.endMacro()
-
-    def _set_selection_end(self, position, always_replace_selection=False):
-        return super(WorldView, self)._set_selection_end(position, True)
 
     def select_object_like(self, obj: MapObject):
         if self.selected_object is not None:
