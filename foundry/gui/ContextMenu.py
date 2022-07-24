@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QMenu
 
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
+from smb3parse.data_points import Position
 
 
 class CMAction(Enum):
@@ -42,7 +43,7 @@ class LevelContextMenu(ContextMenu):
         self.level_ref = level_ref
 
         self.copied_objects: List[ObjectLike] = []
-        self.copied_objects_origin = 0, 0
+        self.copied_objects_origin = Position.from_xy(0, 0)
         self.last_opened_at = QPoint(0, 0)
 
         self.cut_action = self.addAction("Cut")
@@ -87,7 +88,7 @@ class LevelContextMenu(ContextMenu):
         min_x = max(min_x, 0)
         min_y = max(min_y, 0)
 
-        self.copied_objects_origin = min_x, min_y
+        self.copied_objects_origin = Position.from_xy(min_x, min_y)
 
     def get_copied_objects(self) -> Tuple[List[ObjectLike], Tuple[int, int]]:
         return self.copied_objects, self.copied_objects_origin

@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, QUndoStack, Qt
@@ -116,7 +116,7 @@ class WorldView(MainView):
             if event is None:
                 return
 
-            self.drag_start_point = Position.from_xy(*self._to_level_point(event.pos()))
+            self.drag_start_point = self.to_level_point(event.pos())
             self.last_mouse_position = self.drag_start_point
             self.setCursor(Qt.ClosedHandCursor)
 
@@ -146,12 +146,12 @@ class WorldView(MainView):
             return super(WorldView, self).mouseMoveEvent(event)
 
         if self.mouse_mode == MODE_PLACE_TILE and event.buttons() & Qt.LeftButton:
-            x, y = self._to_level_point(event.pos())
+            level_pos = self.to_level_point(event.pos())
 
-            tile = self.world.object_at(x, y)
+            tile = self.world.object_at(*level_pos.xy)
 
             if tile is not None and tile.type != self._tile_to_put:
-                self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
+                self.undo_stack.push(PutTile(self.world, level_pos, self._tile_to_put))
                 self.update()
         elif self.mouse_mode == MODE_DRAG:
             self._dragging(event)
@@ -165,7 +165,7 @@ class WorldView(MainView):
         if self.mouse_mode != MODE_FREE:
             return False
 
-        x, y = self._to_level_point(event.pos())
+        x, y = self.to_level_point(event.pos()).xy
 
         if self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
             return False
@@ -197,7 +197,10 @@ class WorldView(MainView):
             return False
 
     def _on_right_mouse_button_up(self, event):
-        self.set_mouse_mode(MODE_FREE, event)
+        if not self.mouse_mode == MODE_FREE:
+            self.set_mouse_mode(MODE_FREE, event)
+        else:
+            self.context_menu.popup(event.pos())
 
     def _fill_tile(self, tile_to_fill_in: int, x, y):
         if tile_to_fill_in == self._tile_to_put:
@@ -219,13 +222,11 @@ class WorldView(MainView):
         self._fill_tile(tile_to_fill_in, x, y + 1)
         self._fill_tile(tile_to_fill_in, x, y - 1)
 
-    def _to_level_point(self, q_point) -> Tuple[int, int]:
-        x, y = super(WorldView, self)._to_level_point(q_point)
-
-        return x, y + FIRST_VALID_ROW
+    def to_level_point(self, q_point) -> Position:
+        return super(WorldView, self).to_level_point(q_point) + Position.from_xy(0, FIRST_VALID_ROW)
 
     def _visible_object_at(self, point: QPoint) -> MapObject:
-        level_x, level_y = self._to_level_point(point)
+        level_x, level_y = self.to_level_point(point).xy
 
         obj = None
 
@@ -258,7 +259,7 @@ class WorldView(MainView):
         return obj
 
     def _on_left_mouse_button_down(self, event: QMouseEvent):
-        x, y = self._to_level_point(event.pos())
+        x, y = self.to_level_point(event.pos()).xy
 
         if not self.level_ref.point_in(x, y):
             return
@@ -301,10 +302,9 @@ class WorldView(MainView):
         self.update()
 
     def _dragging(self, event: QMouseEvent):
-        level_pos = Position.from_xy(*self._to_level_point(event.pos()))
-        diff_pos = level_pos - self.last_mouse_position
+        level_pos = self.to_level_point(event.pos())
 
-        dx, dy = diff_pos.xy
+        dx, dy = (level_pos - self.last_mouse_position).xy
 
         if dx == dy == 0:
             return
@@ -330,7 +330,7 @@ class WorldView(MainView):
         obj = self.object_at(event.pos())
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            drag_end_point = Position.from_xy(*self._to_level_point(event.pos()))
+            drag_end_point = self.to_level_point(event.pos())
 
             if self.get_selected_objects():
                 self._move_selected_tiles(drag_end_point)

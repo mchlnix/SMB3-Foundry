@@ -37,10 +37,9 @@ class AirshipTravelPoint(MapObject):
     def draw(self, painter: QPainter, block_length, transparent):
         x, y = self.get_position()
 
-        x *= block_length
-        y *= block_length
-
-        painter.drawImage(QPoint(x, y), AIRSHIP_TRAVEL_POINTS[self.index].scaled(block_length, block_length))
+        painter.drawImage(
+            QPoint(x, y) * block_length, AIRSHIP_TRAVEL_POINTS[self.index].scaled(block_length, block_length)
+        )
 
     def set_position(self, x, y):
         self.pos.x = x % WORLD_MAP_SCREEN_WIDTH

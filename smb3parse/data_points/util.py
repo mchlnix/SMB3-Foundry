@@ -68,6 +68,9 @@ class Position:
 
         return Position(column, row + FIRST_VALID_ROW, screen)
 
+    def __repr__(self):
+        return f"Position({self.x}, {self.y} | {self.screen}) @ {id(self)}"
+
     def __add__(self, other):
         x, y = self.xy
         o_x, o_y = other.xy

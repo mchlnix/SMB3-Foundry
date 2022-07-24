@@ -10,6 +10,7 @@ from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset
+from smb3parse.data_points import Position
 from smb3parse.levels import WORLD_MAP_LAYOUT_DELIMITER
 from smb3parse.levels.level_header import LevelHeader
 
@@ -588,9 +589,9 @@ class Level(LevelLike):
     def draw(self, *_):
         pass
 
-    def paste_object_at(self, x: int, y: int, obj: ObjectLike) -> Optional[ObjectLike]:
+    def paste_object_at(self, pos: Position, obj: ObjectLike) -> Optional[ObjectLike]:
         if isinstance(obj, EnemyItem):
-            return self.add_enemy(obj.obj_index, x, y)
+            return self.add_enemy(obj.obj_index, pos)
 
         elif isinstance(obj, LevelObject):
             if obj.is_4byte:
@@ -598,31 +599,31 @@ class Level(LevelLike):
             else:
                 length = None
 
-            return self.add_object(obj.domain, obj.obj_index, x, y, length)
+            return self.add_object(obj.domain, obj.obj_index, pos, length)
 
         return None
 
     def add_object(
-        self, domain: int, object_index: int, x: int, y: int, length: Optional[int], index: int = -1
+        self, domain: int, object_index: int, pos: Position, length: Optional[int], index: int = -1
     ) -> Optional[ObjectLike]:
         if index == -1:
             index = len(self.objects)
 
         if self.object_factory:
-            obj = self.object_factory.from_properties(domain, object_index, x, y, length, index)
+            obj = self.object_factory.from_properties(domain, object_index, *pos.xy, length, index)
             self.objects.insert(index, obj)
 
             return obj
 
         return None
 
-    def add_enemy(self, object_index: int, x: int, y: int, index: int = -1) -> EnemyItem:
+    def add_enemy(self, object_index: int, pos: Position, index: int = -1) -> EnemyItem:
         if index == -1:
             index = len(self.enemies)
         else:
             index %= len(self.objects)
 
-        enemy = self.enemy_item_factory.from_data([object_index, x, y], -1)
+        enemy = self.enemy_item_factory.from_data([object_index, *pos.xy], -1)
 
         self.enemies.insert(index, enemy)
 

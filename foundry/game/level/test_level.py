@@ -3,6 +3,7 @@ from PySide6.QtCore import QPoint
 
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.level.Level import LEVEL_DEFAULT_HEIGHT
+from smb3parse.data_points import Position
 
 
 @pytest.mark.parametrize(
@@ -83,14 +84,14 @@ def test_level_insert_in_vertical_level(level):
 
     # WHEN an object is added at a Y-value, too large for horizontal levels
     domain = object_index = 0x00
-    x, y = 0, LEVEL_DEFAULT_HEIGHT * 2
+    pos = Position.from_xy(0, LEVEL_DEFAULT_HEIGHT * 2)
 
-    level.add_object(domain, object_index, x, y, None)
+    level.add_object(domain, object_index, pos, None)
 
     # THEN that object is still the same and at the correct position
     added_object = level.objects[0]
 
     assert added_object.domain == domain
     assert added_object.obj_index == object_index
-    assert added_object.rendered_base_x == x
-    assert added_object.rendered_base_y == y
+    assert added_object.rendered_base_x == pos.x
+    assert added_object.rendered_base_y == pos.y

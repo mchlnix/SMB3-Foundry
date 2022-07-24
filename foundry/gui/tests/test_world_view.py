@@ -112,9 +112,9 @@ def test_moving_all_objects_partly_off_screen(worldview):
     start_point = QPoint(0, 0)
     end_point = QPoint(worldview.world.size[0], 0) * worldview.block_length - QPoint(1, 0)
 
-    assert worldview.world.point_in(*worldview._to_level_point(end_point)), (
+    assert worldview.world.point_in(*worldview.to_level_point(end_point).xy), (
         end_point,
-        worldview._to_level_point(end_point),
+        worldview.to_level_point(end_point),
     )
 
     worldview.select_all()

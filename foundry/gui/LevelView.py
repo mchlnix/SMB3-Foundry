@@ -25,6 +25,7 @@ from foundry.gui.MainView import (
 )
 from foundry.gui.commands import AddEnemyAt, AddLevelObjectAt, AddObject, MoveObjects, RemoveObjects, ResizeObjects
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, Settings
+from smb3parse.data_points import Position
 
 
 class LevelView(MainView):
@@ -39,16 +40,15 @@ class LevelView(MainView):
 
         self.mouse_mode = MODE_FREE
 
-        self.last_mouse_position: Tuple[int, int] = 0, 0
-
-        self.drag_start_point = 0, 0
+        self.last_mouse_position = Position.from_xy(0, 0)
 
         self.dragging_happened = True
-
-        self.resize_obj_start_point = 0, 0
-        self.objects_before_resizing: List[InLevelObject] = []
-
         self.resizing_happened = False
+
+        self.resize_obj_start_point = Position.from_xy(0, 0)
+        self.drag_start_point = Position.from_xy(0, 0)
+
+        self.objects_before_resizing: List[InLevelObject] = []
         self.objects_before_moving: List[InLevelObject] = []
 
         self.setWhatsThis(
@@ -211,9 +211,9 @@ class LevelView(MainView):
         if self.mouse_mode == MODE_DRAG:
             return
 
-        level_x, level_y = self._to_level_point(event.pos())
+        level_pos = self.to_level_point(event.pos())
 
-        self.last_mouse_position = level_x, level_y
+        self.last_mouse_position = level_pos
 
         if self._select_objects_on_click(event) and self.settings.value("editor/resize_mode") == RESIZE_RIGHT_CLICK:
             self._try_start_resize(MODE_RESIZE_DIAG, event)
@@ -230,7 +230,7 @@ class LevelView(MainView):
         if (obj := self.object_at(event.pos())) is None:
             return False
 
-        self.resize_obj_start_point = obj.get_position()
+        self.resize_obj_start_point = Position.from_xy(*obj.get_position())
 
         self.objects_before_resizing = [obj.copy() for obj in self.get_selected_objects()]
 
@@ -242,17 +242,17 @@ class LevelView(MainView):
         if isinstance(self.level_ref.level, WorldMap):
             return
 
-        level_x, level_y = self._to_level_point(event.pos())
+        level_pos = self.to_level_point(event.pos())
 
-        dx = dy = 0
+        dx, dy = (level_pos - self.resize_obj_start_point).xy
 
-        if self.mouse_mode & MODE_RESIZE_HORIZ:
-            dx = level_x - self.resize_obj_start_point[0]
+        if not self.mouse_mode & MODE_RESIZE_HORIZ:
+            dx = 0
 
-        if self.mouse_mode & MODE_RESIZE_VERT:
-            dy = level_y - self.resize_obj_start_point[1]
+        if not self.mouse_mode & MODE_RESIZE_VERT:
+            dy = 0
 
-        self.last_mouse_position = level_x, level_y
+        self.last_mouse_position = level_pos
 
         selected_objects = self.get_selected_objects()
 
@@ -328,7 +328,7 @@ class LevelView(MainView):
                 ):
                     pass
                 else:
-                    self.drag_start_point = obj.x_position, obj.y_position
+                    self.drag_start_point = Position.from_xy(*obj.get_position())
                     self.objects_before_moving = [obj.copy() for obj in self.get_selected_objects()]
         else:
             self._start_selection_square(event.pos())
@@ -348,12 +348,11 @@ class LevelView(MainView):
     def _dragging(self, event: QMouseEvent):
         self.dragging_happened = True
 
-        level_x, level_y = self._to_level_point(event.pos())
+        level_pos = self.to_level_point(event.pos())
 
-        dx = level_x - self.last_mouse_position[0]
-        dy = level_y - self.last_mouse_position[1]
+        dx, dy = (level_pos - self.last_mouse_position).xy
 
-        self.last_mouse_position = level_x, level_y
+        self.last_mouse_position = level_pos
 
         selected_objects = self.get_selected_objects()
 
@@ -375,7 +374,7 @@ class LevelView(MainView):
                 return
 
             if obj is not None:
-                drag_end_point = obj.x_position, obj.y_position
+                drag_end_point = Position.from_xy(*obj.get_position())
 
                 if self.drag_start_point != drag_end_point:
                     self._stop_drag(drag_end_point)
@@ -402,14 +401,11 @@ class LevelView(MainView):
         self._object_was_selected_on_last_click = False
         self.setCursor(Qt.ArrowCursor)
 
-    def _stop_drag(self, drag_end_point):
+    def _stop_drag(self, drag_end_point: Position):
         if not self.dragging_happened:
             return
 
-        level_x, level_y = drag_end_point
-
-        dx = level_x - self.drag_start_point[0]
-        dy = level_y - self.drag_start_point[1]
+        dx, dy = (drag_end_point - self.drag_start_point).xy
 
         if dx == dy == 0 or not self.get_selected_objects():
             return
@@ -503,17 +499,17 @@ class LevelView(MainView):
         self.level_ref.from_m3l(data)
 
     def add_object(self, domain: int, obj_index: int, q_point: QPoint, length: int, index: int = -1):
-        level_x, level_y = self._to_level_point(q_point)
+        level_pos = self.to_level_point(q_point)
 
-        self.level_ref.add_object(domain, obj_index, level_x, level_y, length, index)
+        self.level_ref.add_object(domain, obj_index, level_pos, length, index)
 
     def add_enemy(self, enemy_index: int, q_point: QPoint, index=-1):
-        level_x, level_y = self._to_level_point(q_point)
+        level_pos = self.to_level_point(q_point)
 
         if index == -1:
             index = len(self.level_ref.level.enemies)
 
-        self.level_ref.add_enemy(enemy_index, level_x, level_y, index)
+        self.level_ref.add_enemy(enemy_index, level_pos, index)
 
     def dropEvent(self, event):
         level_object = self._object_from_mime_data(event.mimeData())

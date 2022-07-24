@@ -8,6 +8,7 @@ from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level
+from smb3parse.data_points import Position
 
 if TYPE_CHECKING:
     from foundry.gui.LevelView import LevelView
@@ -366,9 +367,7 @@ class AddEnemyAt(QUndoCommand):
 
 
 class PasteObjectsAt(QUndoCommand):
-    def __init__(
-        self, level_view: "LevelView", paste_data: Tuple[List[InLevelObject], Tuple[int, int]], pos: QPoint = None
-    ):
+    def __init__(self, level_view: "LevelView", paste_data: Tuple[List[InLevelObject], Position], pos: QPoint = None):
         super(PasteObjectsAt, self).__init__()
 
         self.view = level_view
@@ -383,7 +382,7 @@ class PasteObjectsAt(QUndoCommand):
         self.created_enemies: List[EnemyItem] = []
 
         self.pos = pos
-        self.last_mouse_position: Tuple[int, int] = self.view.last_mouse_position
+        self.last_mouse_position: Position = self.view.last_mouse_position.copy()
 
         self.setText(f"Paste {object_names(objects)}")
 
@@ -400,7 +399,7 @@ class PasteObjectsAt(QUndoCommand):
         # TODO, replace with the level version, so we don't have to restore the last mouse position?
         # maybe only use indexes into object list, instead of object refs themselves?
         # restore last mouse position, since it is used inside the method as a fallback
-        self.view.last_mouse_position = self.last_mouse_position
+        self.view.last_mouse_position = self.last_mouse_position.copy()
 
         if not self.created_objects and not self.created_enemies:
             self.view.paste_objects_at(self.paste_data, self.pos)
@@ -472,7 +471,9 @@ class ReplaceLevelObject(QUndoCommand):
         x, y = self.to_replace.get_position()
 
         if self.created_object is None:
-            self.created_object = self.level.add_object(self.domain, self.obj_type, x, y, self.length, self.index)
+            self.created_object = self.level.add_object(
+                self.domain, self.obj_type, Position.from_xy(x, y), self.length, self.index
+            )
         else:
             self.level.objects.insert(self.index, self.created_object)
 
@@ -505,7 +506,7 @@ class ReplaceEnemy(QUndoCommand):
         x, y = self.to_replace.get_position()
 
         if self.created_enemy is None:
-            self.created_enemy = self.level.add_enemy(self.obj_type, x, y, self.index)
+            self.created_enemy = self.level.add_enemy(self.obj_type, Position.from_xy(x, y), self.index)
         else:
             self.level.enemies.insert(self.index, self.created_enemy)
 

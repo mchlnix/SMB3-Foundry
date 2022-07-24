@@ -15,6 +15,7 @@ from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import Settings
+from smb3parse.data_points import Position
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
@@ -49,7 +50,7 @@ class MainView(QWidget):
         self.settings = settings
 
         self.context_menu = context_menu
-        self.last_mouse_position = 0, 0
+        self.last_mouse_position = Position.from_xy(0, 0)
 
         self.zoom = 1
         self.block_length = Block.SIDE_LENGTH * self.zoom
@@ -88,9 +89,7 @@ class MainView(QWidget):
         return QPainter(self)
 
     def _select_objects_on_click(self, event: QMouseEvent) -> bool:
-        level_x, level_y = self._to_level_point(event.pos())
-
-        self.last_mouse_position = level_x, level_y
+        self.last_mouse_position = self.to_level_point(event.pos())
 
         clicked_object = self.object_at(event.pos())
 
@@ -189,13 +188,13 @@ class MainView(QWidget):
     def select_all(self):
         self.select_objects(self.level_ref.get_all_objects())
 
-    def _to_level_point(self, q_point: QPoint) -> Tuple[int, int]:
+    def to_level_point(self, q_point: QPoint) -> Position:
         screen_x, screen_y = q_point.toTuple()
 
         level_x = screen_x // self.block_length
         level_y = screen_y // self.block_length
 
-        return level_x, level_y
+        return Position.from_xy(level_x, level_y)
 
     def object_at(self, q_point: QPoint) -> Optional[ObjectLike]:
         """
@@ -204,9 +203,7 @@ class MainView(QWidget):
 
         :return: An enemy/level object, or None, if none is at the position.
         """
-        level_x, level_y = self._to_level_point(q_point)
-
-        return self.level_ref.level.object_at(level_x, level_y)
+        return self.level_ref.level.object_at(*self.to_level_point(q_point).xy)
 
     def make_screenshot(self):
         if self.level_ref is None:
@@ -225,11 +222,9 @@ class MainView(QWidget):
             event.acceptProposedAction()
 
     def dragMoveEvent(self, event: QDragMoveEvent):
-        x, y = self._to_level_point(event.pos())
-
         level_object = self._object_from_mime_data(event.mimeData())
 
-        level_object.set_position(x, y)
+        level_object.set_position(*self.to_level_point(event.pos()).xy)
 
         self.currently_dragged_object = level_object
 
@@ -253,25 +248,23 @@ class MainView(QWidget):
 
             return self.level_ref.level.enemy_item_factory.from_properties(enemy_id, 0, 0)
 
-    def paste_objects_at(self, paste_data: Tuple[List[ObjectLike], Tuple[int, int]], q_point: Optional[QPoint]):
+    def paste_objects_at(self, paste_data: Tuple[List[ObjectLike], Position], q_point: Optional[QPoint]):
         if q_point is None:
-            level_x, level_y = self.last_mouse_position
+            pos = self.last_mouse_position
         else:
-            level_x, level_y = self._to_level_point(q_point)
+            pos = self.to_level_point(q_point)
 
         objects, origin = paste_data
-
-        ori_x, ori_y = origin
 
         pasted_objects = []
 
         for obj in objects:
-            obj_x, obj_y = obj.get_position()
+            obj_pos = Position.from_xy(*obj.get_position())
 
-            offset_x, offset_y = obj_x - ori_x, obj_y - ori_y
+            paste_pos = pos + (obj_pos - origin)
 
             try:
-                pasted_objects.append(self.level_ref.paste_object_at(level_x + offset_x, level_y + offset_y, obj))
+                pasted_objects.append(self.level_ref.paste_object_at(paste_pos, obj))
             except ValueError:
                 warn("Tried pasting outside of level.", RuntimeWarning)
 
