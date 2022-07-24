@@ -214,7 +214,7 @@ class ScribeMainWindow(MainWindow):
         rom = SMB3Rom(bytearray(data))
         return rom
 
-    def on_open_rom(self, path_to_rom="") -> bool:
+    def on_open_rom(self, path_to_rom=""):
         if not self.safe_to_change():
             return
 
@@ -225,16 +225,16 @@ class ScribeMainWindow(MainWindow):
             )
 
             if not path_to_rom:
-                return False
+                return
 
         # Proceed loading the file chosen by the user
         try:
             ROM.load_from_file(path_to_rom)
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
-            return False
+            return
 
-        return True
+        return
 
     def load_level(self, world_number: int):
         world = SMB3WorldMap.from_world_number(ROM(), world_number)

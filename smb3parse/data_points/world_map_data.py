@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from smb3parse.constants import (
     AIRSHIP_TRAVEL_SET_COUNT,
@@ -179,7 +179,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         # values depending on amount of level pointers per screen
         self.level_pointers.sort()
 
-        level_pointer_per_screen = defaultdict(int)
+        level_pointer_per_screen: Dict[int, int] = defaultdict(int)
 
         for level_pointer in self.level_pointers:
             level_pointer_per_screen[level_pointer.screen] += 1

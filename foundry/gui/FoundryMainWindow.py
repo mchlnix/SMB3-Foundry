@@ -605,9 +605,9 @@ class FoundryMainWindow(MainWindow):
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self, path_to_rom="") -> bool:
+    def on_open_rom(self, path_to_rom=""):
         if not self.safe_to_change():
-            return False
+            return
 
         if not path_to_rom:
             # otherwise ask the user what new file to open

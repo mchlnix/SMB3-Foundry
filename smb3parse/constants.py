@@ -1,6 +1,6 @@
 from collections import defaultdict
 from pathlib import Path
-from typing import Union
+from typing import Dict, Union
 
 BASE_OFFSET = 0x10
 """the size of the INES header identifying the rom"""
@@ -113,7 +113,7 @@ MAPITEM_NAMES = {
     MAPITEM_UNKNOWN2: "Broken 2",
 }
 
-TILE_NAMES = defaultdict(lambda: "Blank Square")
+TILE_NAMES: Dict[int, str] = defaultdict(lambda: "Blank Square")
 TILE_NAMES.update(
     {
         0x00: "Mario Clear (Blue)",

@@ -390,7 +390,7 @@ class PasteObjectsAt(QUndoCommand):
         self.created_enemies: List[EnemyItem] = []
 
         self.pos = pos
-        self.last_mouse_position = self.view.last_mouse_position
+        self.last_mouse_position: Tuple[int, int] = self.view.last_mouse_position
 
         self.setText(f"Paste {object_names(objects)}")
 

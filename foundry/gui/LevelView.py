@@ -39,7 +39,7 @@ class LevelView(MainView):
 
         self.mouse_mode = MODE_FREE
 
-        self.last_mouse_position = 0, 0
+        self.last_mouse_position: Tuple[int, int] = 0, 0
 
         self.drag_start_point = 0, 0
 
@@ -226,7 +226,8 @@ class LevelView(MainView):
 
         self.mouse_mode = resize_mode
 
-        obj = self.object_at(event.pos())
+        if (obj := self.object_at(event.pos())) is None:
+            return False
 
         self.resize_obj_start_point = obj.get_position()
 

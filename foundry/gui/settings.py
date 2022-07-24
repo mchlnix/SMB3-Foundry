@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Dict, Union
+from typing import Callable, Dict, Union
 
 import qdarkstyle
 from PySide6.QtCore import QSettings
@@ -7,7 +7,7 @@ from PySide6.QtCore import QSettings
 RESIZE_LEFT_CLICK = "LMB"
 RESIZE_RIGHT_CLICK = "RMB"
 
-GUI_STYLE = {
+GUI_STYLE: Dict[str, Callable] = {
     "RETRO": lambda: "",
     "DRACULA": partial(qdarkstyle.load_stylesheet, pyside=True),
 }
@@ -37,7 +37,7 @@ SETTINGS["level view/block_transparency"] = True
 SETTINGS["level view/object_tooltip_enabled"] = True
 
 
-_settings = {
+_settings: Dict[str, Union[str, int, bool]] = {
     "world view/show grid": False,
     "world view/show level pointers": False,
     "world view/show level previews": False,

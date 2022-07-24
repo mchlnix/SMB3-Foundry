@@ -49,7 +49,7 @@ def get_all_world_maps(rom: Rom) -> List["WorldMap"]:
     return [WorldMap(address, rom) for address in world_map_addresses]
 
 
-def level_name(data: LevelPointerData) -> str:
+def level_name(data: Optional[LevelPointerData]) -> str:
     if data is None:
         return ""
 
@@ -271,7 +271,7 @@ class WorldMap(LevelBase):
         return tile_is_enterable(tile_index, self.rom)
 
     @property
-    def start_pos(self) -> WorldMapPosition:
+    def start_pos(self) -> Position:
         return Position(0x20 >> 4, self.data.map_start_y >> 4, 0)
 
     def gen_positions(self) -> Generator["WorldMapPosition", None, None]:
