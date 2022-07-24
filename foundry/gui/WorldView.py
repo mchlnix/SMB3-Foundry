@@ -240,15 +240,15 @@ class WorldView(MainView):
                 level_x, level_y, self.drawer.settings.value("world view/show airship paths")
             )
 
+        if not obj and self.drawer.settings.value("world view/show start position"):
+            if self.world.start_pos.pos == Position.from_xy(level_x, level_y):
+                obj = self.world.start_pos
+
         if not obj and self.drawer.settings.value("world view/show sprites"):
             obj = self.world.sprite_at(level_x, level_y)
 
         if not obj and self.drawer.settings.value("world view/show level pointers"):
             obj = self.world.level_pointer_at(level_x, level_y)
-
-        if not obj and self.drawer.settings.value("world view/show start position"):
-            if self.world.start_pos.pos == Position.from_xy(level_x, level_y):
-                obj = self.world.start_pos
 
         if not obj:
             obj = self.world.objects[Position.from_xy(level_x, level_y).tile_data_index]
