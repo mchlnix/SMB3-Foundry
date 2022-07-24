@@ -49,6 +49,7 @@ class LevelView(MainView):
         self.objects_before_resizing: List[InLevelObject] = []
 
         self.resizing_happened = False
+        self.objects_before_moving: List[InLevelObject] = []
 
         self.setWhatsThis(
             "<b>Level View</b><br/>"
@@ -328,6 +329,7 @@ class LevelView(MainView):
                     pass
                 else:
                     self.drag_start_point = obj.x_position, obj.y_position
+                    self.objects_before_moving = [obj.copy() for obj in self.get_selected_objects()]
         else:
             self._start_selection_square(event.pos())
 
@@ -412,10 +414,9 @@ class LevelView(MainView):
         if dx == dy == 0 or not self.get_selected_objects():
             return
 
-        self.undo_stack.push(
-            MoveObjects(self.level_ref.level, self.get_selected_objects(), self.drag_start_point, drag_end_point, True)
-        )
+        self.undo_stack.push(MoveObjects(self.level_ref.level, self.objects_before_moving, self.get_selected_objects()))
 
+        self.objects_before_moving.clear()
         self.dragging_happened = False
 
     def scroll_to_objects(self, objects: List[LevelObject]):

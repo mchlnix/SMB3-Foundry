@@ -98,37 +98,30 @@ class MoveObjects(QUndoCommand):
     def __init__(
         self,
         level: Level,
-        objects: List[InLevelObject],
-        start: Tuple[int, int],
-        end: Tuple[int, int],
-        already_moved=False,
+        objects_before: List[InLevelObject],
+        objects_after: List[InLevelObject],
     ):
         super(MoveObjects, self).__init__()
 
         self.level = level
-        self.objects = objects
 
-        self.dx = end[0] - start[0]
-        self.dy = end[1] - start[1]
+        self.positions_before = [obj.get_position() for obj in objects_before]
+        self.objects = objects_after
+        self.positions_after = [obj.get_position() for obj in objects_after]
 
-        self.setText(f"Move {object_names(objects)}")
+        self.setText(f"Move {object_names(objects_after)}")
 
-        if already_moved:
-            self.undo()
+        self.undo()
 
     def undo(self):
-        for obj in self.objects:
-            x, y = obj.get_position()
-
-            obj.set_position(x - self.dx, y - self.dy)
+        for obj, orig_pos in zip(self.objects, self.positions_before):
+            obj.set_position(*orig_pos)
 
         self.level.data_changed.emit()
 
     def redo(self):
-        for obj in self.objects:
-            x, y = obj.get_position()
-
-            obj.set_position(x + self.dx, y + self.dy)
+        for obj, pos_after in zip(self.objects, self.positions_after):
+            obj.set_position(*pos_after)
 
         self.level.data_changed.emit()
 
