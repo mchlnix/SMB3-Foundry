@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List, Tuple
 
 from PySide6.QtCore import QPoint, SignalInstance
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu
 
 from foundry import icon
@@ -20,20 +21,52 @@ MAX_ORIGIN = 0xFF, 0xFF
 
 
 class ContextMenu(QMenu):
-    pass
+    def __init__(self, level_ref: LevelRef):
+        super(ContextMenu, self).__init__()
+
+        self.level_ref = level_ref
+
+        self.copied_objects: List[ObjectLike] = []
+        self.copied_objects_origin = Position.from_xy(0, 0)
+
+        self.last_opened_at = QPoint(0, 0)
+
+    def get_position(self) -> QPoint:
+        return self.last_opened_at
+
+    def set_copied_objects(self, objects: List[ObjectLike]):
+        if not objects:
+            return
+
+        self.copied_objects = [obj.copy() for obj in objects]
+
+        min_x, min_y = MAX_ORIGIN
+
+        for obj in objects:
+            obj_x, obj_y = obj.get_position()
+
+            min_x = min(min_x, obj_x)
+            min_y = min(min_y, obj_y)
+
+        min_x = max(min_x, 0)
+        min_y = max(min_y, 0)
+
+        self.copied_objects_origin = Position.from_xy(min_x, min_y)
+
+    def get_copied_objects(self) -> Tuple[List[ObjectLike], Position]:
+        return self.copied_objects, self.copied_objects_origin
+
+    def popup(self, pos: QPoint, at: QAction = None):
+        self.last_opened_at = pos
+
+        return super(ContextMenu, self).popup(pos, at)
 
 
 class LevelContextMenu(ContextMenu):
     triggered: SignalInstance
 
     def __init__(self, level_ref: LevelRef):
-        super(LevelContextMenu, self).__init__()
-
-        self.level_ref = level_ref
-
-        self.copied_objects: List[ObjectLike] = []
-        self.copied_objects_origin = Position.from_xy(0, 0)
-        self.last_opened_at = QPoint(0, 0)
+        super(LevelContextMenu, self).__init__(level_ref)
 
         self.add_object_action = self.addAction("Add Object")
         self.add_object_action.setIcon(icon("plus.svg"))
@@ -58,37 +91,6 @@ class LevelContextMenu(ContextMenu):
 
         self.remove_action = self.addAction("Remove")
         self.remove_action.setIcon(icon("minus.svg"))
-
-    def set_copied_objects(self, objects: List[ObjectLike]):
-        if not objects:
-            return
-
-        self.copied_objects = objects
-
-        min_x, min_y = MAX_ORIGIN
-
-        for obj in objects:
-            obj_x, obj_y = obj.get_position()
-
-            min_x = min(min_x, obj_x)
-            min_y = min(min_y, obj_y)
-
-        min_x = max(min_x, 0)
-        min_y = max(min_y, 0)
-
-        self.copied_objects_origin = Position.from_xy(min_x, min_y)
-
-    def get_copied_objects(self) -> Tuple[List[ObjectLike], Tuple[int, int]]:
-        return self.copied_objects, self.copied_objects_origin
-
-    def set_position(self, position: QPoint):
-        self.last_opened_at = position
-
-    def get_position(self) -> QPoint:
-        return self.last_opened_at
-
-    def get_all_menu_item_ids(self):
-        return [action.property("ID") for action in self.actions()]
 
     def as_object_menu(self) -> "LevelContextMenu":
         return self._setup_items(CMMode.OBJ)

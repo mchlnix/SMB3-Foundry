@@ -2,9 +2,10 @@ import pathlib
 import shlex
 import subprocess
 import tempfile
+from typing import Optional
 
-from PySide6.QtCore import QSize
-from PySide6.QtGui import QAction, QActionGroup, QUndoStack, Qt
+from PySide6.QtCore import QPoint, QSize
+from PySide6.QtGui import QAction, QActionGroup, QKeySequence, QShortcut, QUndoStack, Qt
 from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QScrollArea, QToolBar
 
 from foundry import ROM_FILE_FILTER, icon
@@ -12,13 +13,15 @@ from foundry.game.File import ROM
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
+from scribe.gui.commands import PutTile
 from scribe.gui.menus.edit_menu import EditMenu
 from scribe.gui.menus.view_menu import ViewMenu
 from scribe.gui.settings_dialog import SettingsDialog
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.constants import STARTING_WORLD_INDEX_ADDRESS
-from smb3parse.levels import WORLD_COUNT
+from smb3parse.data_points import Position
+from smb3parse.levels import WORLD_COUNT, WORLD_MAP_BLANK_TILE_ID
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom as SMB3Rom
@@ -37,7 +40,16 @@ class ScribeMainWindow(MainWindow):
 
         self.settings = Settings("mchlnix", "smb3scribe")
 
-        self.world_view = WorldView(self, self.level_ref, self.settings, WorldContextMenu(self.level_ref))
+        self.context_menu = WorldContextMenu(self.level_ref)
+
+        self.context_menu.cut_action.triggered.connect(self._cut_objects)
+        self.context_menu.copy_action.triggered.connect(self._copy_objects)
+        self.context_menu.paste_action.triggered.connect(
+            lambda _: self._paste_objects(self.context_menu.get_position())
+        )
+        self.context_menu.paste_action.setShortcut(Qt.CTRL + Qt.Key_V)
+
+        self.world_view = WorldView(self, self.level_ref, self.settings, self.context_menu)
         self.world_view.zoom_in()
         self.world_view.zoom_in()
 
@@ -90,6 +102,10 @@ class ScribeMainWindow(MainWindow):
         self.menu_toolbar.addAction(self.edit_menu.edit_world_info)
 
         self.addToolBar(Qt.TopToolBarArea, self.menu_toolbar)
+
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_X), self, self._cut_objects)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
+        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
 
         self._resize_for_level()
 
@@ -165,6 +181,61 @@ class ScribeMainWindow(MainWindow):
 
     def _on_show_settings(self):
         SettingsDialog(self.settings, self).exec()
+
+    def _cut_objects(self):
+        self._copy_objects()
+        self.remove_selected_objects()
+
+        self.world_view.update()
+
+    def remove_selected_objects(self):
+        selected_objects = [obj for obj in self.world_view.world.get_selected_tiles() if obj.selected]
+
+        if not selected_objects:
+            return
+
+        self.undo_stack.beginMacro("Remove Selected Tiles")
+
+        for obj in selected_objects:
+            self.undo_stack.push(PutTile(self.level_ref.level, obj.pos, WORLD_MAP_BLANK_TILE_ID))
+
+        self.undo_stack.endMacro()
+
+    def _copy_objects(self):
+        selected_objects = self.world_view.get_selected_objects().copy()
+
+        if selected_objects:
+            self.context_menu.set_copied_objects(selected_objects)
+
+        self.world_view.update()
+
+    def _paste_objects(self, q_point: Optional[QPoint] = None):
+        if not (copy_data := self.context_menu.get_copied_objects())[0]:
+            return
+
+        if q_point is not None:
+            paste_target = self.world_view.to_level_point(self.world_view.mapFromGlobal(q_point))
+        else:
+            paste_target = self.world_view.last_mouse_position
+
+        copied_objects, copy_origin = copy_data
+
+        diff = paste_target - copy_origin
+
+        self.undo_stack.beginMacro(f"Pasting {len(copied_objects)} Objects")
+
+        for obj in copied_objects:
+
+            target_pos = Position.from_xy(*obj.get_position()) + diff
+
+            if not self.world_view.world.point_in(*target_pos.xy):
+                continue
+
+            self.undo_stack.push(PutTile(self.level_ref.level, target_pos, obj.type))
+
+        self.undo_stack.endMacro()
+
+        self.world_view.update()
 
     def on_play(self):
         """

@@ -200,7 +200,9 @@ class WorldView(MainView):
         if not self.mouse_mode == MODE_FREE:
             self.set_mouse_mode(MODE_FREE, event)
         else:
-            self.context_menu.popup(event.pos())
+            menu_pos = self.mapToGlobal(event.pos())
+
+            self.context_menu.popup(menu_pos)
 
     def _fill_tile(self, tile_to_fill_in: int, x, y):
         if tile_to_fill_in == self._tile_to_put:

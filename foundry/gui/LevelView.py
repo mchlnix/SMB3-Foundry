@@ -276,8 +276,6 @@ class LevelView(MainView):
             else:
                 menu = self.context_menu.as_background_menu()
 
-            self.context_menu.set_position(event.pos())
-
             menu_pos = self.mapToGlobal(event.pos())
 
             menu.popup(menu_pos)

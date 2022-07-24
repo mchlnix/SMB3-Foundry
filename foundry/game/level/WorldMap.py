@@ -246,6 +246,15 @@ class WorldMap(LevelLike):
     def pipe_at(_, __):
         return None
 
+    def get_selected_tiles(self) -> List[MapTile]:
+        selected_objs = []
+
+        for obj in self.objects:
+            if obj.selected:
+                selected_objs.append(obj)
+
+        return selected_objs
+
     # TODO check if better in parent class
     def get_rect(self, block_length: int = 1):
         width, height = self.size

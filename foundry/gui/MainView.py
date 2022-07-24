@@ -250,6 +250,7 @@ class MainView(QWidget):
 
     def paste_objects_at(self, paste_data: Tuple[List[ObjectLike], Position], q_point: Optional[QPoint]):
         if q_point is None:
+            # when keyboard shortcut was used
             pos = self.last_mouse_position
         else:
             pos = self.to_level_point(q_point)
