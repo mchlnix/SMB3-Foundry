@@ -311,6 +311,8 @@ POWERUP_ADDITION_JUDGEMS = 0x07
 POWERUP_ADDITION_PWING = 0x08
 POWERUP_ADDITION_STARMAN = 0x09
 
+STARTING_WORLD_INDEX_ADDRESS = 0x30CC3
+
 
 def update_global_offsets(path_to_global_list: Union[str, Path]):
     path_to_global_list = Path(path_to_global_list)

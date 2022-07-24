@@ -74,6 +74,7 @@ class LevelSelector(QDialog):
         self.level_name = ""
 
         self.object_set = 0
+        self.world_index = 0
         self.object_data_offset = 0x0
         self.enemy_data_offset = 0x0
 
@@ -191,6 +192,8 @@ class LevelSelector(QDialog):
             level_array_offset = Level.world_indexes[self.world_list.currentRow()] + index + 1
             self.level_name = f"World {self.world_list.currentRow()}, "
 
+        self.world_index = self.world_list.currentRow()
+
         self.level_name += f"{Level.offsets[level_array_offset].name}"
 
         object_data_for_lvl = Level.offsets[level_array_offset].rom_level_offset
@@ -220,9 +223,11 @@ class LevelSelector(QDialog):
         self.enemy_data_spinner.setValue(enemy_address)
 
     def _on_level_selected_via_world_map(
-        self, level_name: str, object_set: int, layout_address: int, enemy_address: int
+        self, level_name: str, world_index: int, object_set: int, layout_address: int, enemy_address: int
     ):
         self.level_name = level_name
+
+        self.world_index = world_index + 1
 
         self._fill_in_data(object_set, layout_address, enemy_address)
 
@@ -244,7 +249,7 @@ class LevelSelector(QDialog):
 
 
 class WorldMapLevelSelect(QScrollArea):
-    level_selected: SignalInstance = Signal(str, int, int, int)
+    level_selected: SignalInstance = Signal(str, int, int, int, int)
 
     def __init__(self, world_number: int):
         super(WorldMapLevelSelect, self).__init__()
@@ -289,6 +294,7 @@ class WorldMapLevelSelect(QScrollArea):
             # todo change to emitting the level pointer
             self.level_selected.emit(
                 self.world.level_name_at_position(x, y),
+                self.world.internal_world_map.world_index,
                 level_pointer.data.object_set,
                 level_pointer.data.level_address,
                 level_pointer.data.enemy_address,

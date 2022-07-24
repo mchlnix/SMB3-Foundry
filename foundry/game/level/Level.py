@@ -60,6 +60,11 @@ class Level(LevelLike):
         self.object_set = ObjectSet(object_set_number)
 
         self.name = level_name
+        self.world = 0
+        """
+        In which world map this level is situated. 0 means don't know. Might not always be known or level might be
+        accessible from multiple worlds, so we only set it, if we know.
+        """
 
         self.header_offset = layout_address
         self.object_offset = self.header_offset + Level.HEADER_LENGTH

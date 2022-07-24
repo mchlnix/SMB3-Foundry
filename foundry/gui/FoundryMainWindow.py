@@ -77,7 +77,7 @@ from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
 from foundry.gui.settings import Settings
-from smb3parse.constants import TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
+from smb3parse.constants import STARTING_WORLD_INDEX_ADDRESS, TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
 
@@ -441,10 +441,16 @@ class FoundryMainWindow(MainWindow):
         level_address = self.level_ref.level.next_area_objects
         enemy_address = self.level_ref.level.next_area_enemies + 1
         object_set = self.level_ref.level.next_area_object_set
+        old_world = self.level_ref.level.world
 
-        world, level = world_and_level_for_level_address(level_address)
+        world, level = world_and_level_for_level_address(level_address + Level.HEADER_LENGTH)
 
         self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
+
+        if world == -1:
+            self.level_ref.level.world = old_world
+        else:
+            self.level_ref.level.world = world
 
     def on_play(self):
         """
@@ -507,15 +513,18 @@ class FoundryMainWindow(MainWindow):
 
     def _put_current_level_to_level_1_1(self, rom: SMB3Rom) -> bool:
         # load world-1 data
-        world_1 = SMB3World.from_world_number(rom, 1)
+        if (world := self.level_ref.level.world) == 0:
+            world = 1
+
+        world_map = SMB3World.from_world_number(rom, world)
 
         # find position of "level 1" tile in world map
-        for position in world_1.gen_positions():
+        for position in world_map.gen_positions():
             if position.tile() == TILE_LEVEL_1:
                 break
         else:
             QMessageBox.critical(
-                self, "Couldn't place level", "Could not find a level 1 tile in World 1 to put your level at."
+                self, "Couldn't place level", f"Could not find a level 1 tile in World {world} to put your level at."
             )
             return False
 
@@ -535,7 +544,9 @@ class FoundryMainWindow(MainWindow):
         # replace level information with that of current level
         object_set_number = self.level_ref.object_set_number
 
-        world_1.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
+        world_map.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
+
+        rom.write(STARTING_WORLD_INDEX_ADDRESS, world - 1)
 
         return True
 
@@ -871,12 +882,15 @@ class FoundryMainWindow(MainWindow):
         if not self.safe_to_change():
             return
 
-        level_name = self.level_view.level_ref.name
-        object_data = self.level_view.level_ref.header_offset
-        enemy_data = self.level_view.level_ref.enemy_offset
-        object_set = self.level_view.level_ref.object_set_number
+        level_name = self.level_ref.name
+        object_data = self.level_ref.header_offset
+        enemy_data = self.level_ref.enemy_offset
+        object_set = self.level_ref.object_set_number
+        world_index = self.level_ref.level.world
 
         self.update_level(level_name, object_data, enemy_data, object_set)
+
+        self.level_ref.level.world = world_index
 
     def _on_placeable_object_selected(self, level_object: InLevelObject):
         if self.sender() is self.object_toolbar:
@@ -960,6 +974,8 @@ class FoundryMainWindow(MainWindow):
                 level_selector.enemy_data_offset,
                 level_selector.object_set,
             )
+
+            self.level_ref.level.world = level_selector.world_index
 
         return level_was_selected
 
