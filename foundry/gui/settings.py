@@ -23,6 +23,7 @@ SETTINGS["editor/gui_style"] = ""  # initially blank, since we can't call load_s
 SETTINGS["editor/default dir"] = "User"
 SETTINGS["editor/default dir path"] = ""
 SETTINGS["editor/custom default dir path"] = ""
+SETTINGS["editor/show_block_item_in_toolbar"] = True
 
 SETTINGS["level view/draw_mario"] = True
 SETTINGS["level view/draw_jumps"] = False
