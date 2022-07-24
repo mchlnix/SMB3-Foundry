@@ -9,6 +9,7 @@ from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
 from scribe.gui.menus.edit_menu import EditMenu
 from scribe.gui.menus.view_menu import ViewMenu
+from scribe.gui.settings_dialog import SettingsDialog
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import WORLD_COUNT
@@ -52,7 +53,7 @@ class ScribeMainWindow(MainWindow):
         self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
-        # self.menu_toolbar.addAction(settings_action)
+        self.menu_toolbar.addAction(self.settings_action)
         self.menu_toolbar.addSeparator()
         self.menu_toolbar.addAction(self.open_rom_action)
         self.menu_toolbar.addAction(self.save_rom_action)
@@ -109,6 +110,13 @@ class ScribeMainWindow(MainWindow):
         self.save_as_rom_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_S)
         self.save_as_rom_action.setIcon(icon("save.svg"))
         self.file_menu.addSeparator()
+
+        self.settings_action = self.file_menu.addAction("Editor Settings")
+        self.settings_action.setIcon(icon("sliders.svg"))
+        self.settings_action.triggered.connect(self._on_show_settings)
+
+        self.file_menu.addSeparator()
+
         self.quit_rom_action = self.file_menu.addAction("&Quit")
         self.quit_rom_action.setIcon(icon("power.svg"))
 
@@ -147,6 +155,9 @@ class ScribeMainWindow(MainWindow):
         self.level_menu.actions()[0].trigger()
 
         self.menuBar().addMenu(self.level_menu)
+
+    def _on_show_settings(self):
+        SettingsDialog(self.settings, self).exec()
 
     def on_open_rom(self, path_to_rom="") -> bool:
         if not self.safe_to_change():
