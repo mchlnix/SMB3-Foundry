@@ -24,24 +24,16 @@ from foundry.gui.MainView import (
     RESIZE_MODES,
 )
 from foundry.gui.commands import AddEnemyAt, AddLevelObjectAt, AddObject, MoveObjects, RemoveObjects, ResizeObjects
-from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, SETTINGS
+from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, Settings
 
 
 class LevelView(MainView):
-    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[LevelContextMenu]):
+    def __init__(
+        self, parent: Optional[QWidget], level: LevelRef, settings: Settings, context_menu: Optional[LevelContextMenu]
+    ):
         self.drawer = LevelDrawer()
 
-        super(LevelView, self).__init__(parent, level, context_menu)
-
-        self.draw_grid = SETTINGS["draw_grid"]
-        self.draw_jumps = SETTINGS["draw_jumps"]
-        self.draw_expansions = SETTINGS["draw_expansion"]
-        self.draw_mario = SETTINGS["draw_mario"]
-        self.transparency = SETTINGS["block_transparency"]
-        self.draw_jumps_on_objects = SETTINGS["draw_jump_on_objects"]
-        self.draw_items_in_blocks = SETTINGS["draw_items_in_blocks"]
-        self.draw_invisible_items = SETTINGS["draw_invisible_items"]
-        self.draw_autoscroll = SETTINGS["draw_autoscroll"]
+        super(LevelView, self).__init__(parent, level, settings, context_menu)
 
         self.changed = False
 
@@ -73,70 +65,6 @@ class LevelView(MainView):
         )
 
     @property
-    def draw_grid(self):
-        return self.drawer.draw_grid
-
-    @draw_grid.setter
-    def draw_grid(self, value):
-        self.drawer.draw_grid = value
-
-    @property
-    def draw_jumps(self):
-        return self.drawer.draw_jumps
-
-    @draw_jumps.setter
-    def draw_jumps(self, value):
-        self.drawer.draw_jumps = value
-
-    @property
-    def draw_mario(self):
-        return self.drawer.draw_mario
-
-    @draw_mario.setter
-    def draw_mario(self, value):
-        self.drawer.draw_mario = value
-
-    @property
-    def draw_expansions(self):
-        return self.drawer.draw_expansions
-
-    @draw_expansions.setter
-    def draw_expansions(self, value):
-        self.drawer.draw_expansions = value
-
-    @property
-    def draw_jumps_on_objects(self):
-        return self.drawer.draw_jumps_on_objects
-
-    @draw_jumps_on_objects.setter
-    def draw_jumps_on_objects(self, value):
-        self.drawer.draw_jumps_on_objects = value
-
-    @property
-    def draw_items_in_blocks(self):
-        return self.drawer.draw_items_in_blocks
-
-    @draw_items_in_blocks.setter
-    def draw_items_in_blocks(self, value):
-        self.drawer.draw_items_in_blocks = value
-
-    @property
-    def draw_invisible_items(self):
-        return self.drawer.draw_invisible_items
-
-    @draw_invisible_items.setter
-    def draw_invisible_items(self, value):
-        self.drawer.draw_invisible_items = value
-
-    @property
-    def draw_autoscroll(self):
-        return self.drawer.draw_autoscroll
-
-    @draw_autoscroll.setter
-    def draw_autoscroll(self, value):
-        self.drawer.draw_autoscroll = value
-
-    @property
     def undo_stack(self) -> QUndoStack:
         return self.window().findChild(QUndoStack, "undo_stack")
 
@@ -166,12 +94,12 @@ class LevelView(MainView):
         elif self.selection_square.active:
             self._set_selection_end(event.pos())
 
-        elif SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK:
+        elif self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK:
             self._set_cursor_for_position(event)
 
         object_under_cursor = self.object_at(event.pos())
 
-        if SETTINGS["object_tooltip_enabled"] and object_under_cursor is not None:
+        if self.settings.value("level view/object_tooltip_enabled") and object_under_cursor is not None:
             self.setToolTip(str(object_under_cursor))
         else:
             self.setToolTip("")
@@ -223,7 +151,7 @@ class LevelView(MainView):
         return edges
 
     def wheelEvent(self, event: QWheelEvent):
-        if SETTINGS["object_scroll_enabled"]:
+        if self.settings.value("editor/object_scroll_enabled"):
             pos = event.position().toPoint()
             obj_under_cursor = self.object_at(pos)
 
@@ -286,23 +214,25 @@ class LevelView(MainView):
 
         self.last_mouse_position = level_x, level_y
 
-        if self._select_objects_on_click(event) and SETTINGS["resize_mode"] == RESIZE_RIGHT_CLICK:
+        if self._select_objects_on_click(event) and self.settings.value("editor/resize_mode") == RESIZE_RIGHT_CLICK:
             self._try_start_resize(MODE_RESIZE_DIAG, event)
 
     def _try_start_resize(self, resize_mode: int, event: QMouseEvent):
         if resize_mode not in RESIZE_MODES:
-            return
+            return False
+
+        if all(isinstance(obj, EnemyItem) for obj in self.get_selected_objects()):
+            return False
 
         self.mouse_mode = resize_mode
 
         obj = self.object_at(event.pos())
 
-        if not isinstance(obj, InLevelObject):
-            return
-
         self.resize_obj_start_point = obj.get_position()
 
         self.objects_before_resizing = [obj.copy() for obj in self.get_selected_objects()]
+
+        return True
 
     def _resizing(self, event: QMouseEvent):
         self.resizing_happened = True
@@ -397,9 +327,12 @@ class LevelView(MainView):
             if obj is not None:
                 edge = self._cursor_on_edge_of_object(obj, event.pos())
 
-                if SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK and edge:
-
-                    self._try_start_resize(self._resize_mode_from_edge(edge), event)
+                if (
+                    self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK
+                    and edge
+                    and self._try_start_resize(self._resize_mode_from_edge(edge), event)
+                ):
+                    pass
                 else:
                     self.drag_start_point = obj.x_position, obj.y_position
         else:
@@ -592,7 +525,7 @@ class LevelView(MainView):
         level_object = self._object_from_mime_data(event.mimeData())
 
         if isinstance(level_object, LevelObject):
-            self.undo_stack.push(AddLevelObjectAt(self, event.pos(), level_object.domain, level_object.obj_index, None))
+            self.undo_stack.push(AddLevelObjectAt(self, event.pos(), level_object.domain, level_object.obj_index))
         else:
             self.undo_stack.push(AddEnemyAt(self, event.pos(), level_object.obj_index))
 

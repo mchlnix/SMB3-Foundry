@@ -76,8 +76,8 @@ from foundry.gui.commands import (
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
-from foundry.gui.settings import SETTINGS
-from smb3parse.constants import TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
+from foundry.gui.settings import Settings
+from smb3parse.constants import STARTING_WORLD_INDEX_ADDRESS, TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
 
@@ -86,8 +86,10 @@ class FoundryMainWindow(MainWindow):
     def __init__(self, path_to_rom=""):
         super(FoundryMainWindow, self).__init__()
 
+        self.settings = Settings("mchlnix", "foundry")
+
         self.setWindowIcon(icon("foundry.ico"))
-        self.setStyleSheet(SETTINGS["gui_style"])
+        self.setStyleSheet(self.settings.value("editor/gui_style"))
 
         self.undo_stack = QUndoStack(self)
         self.undo_stack.setObjectName("undo_stack")
@@ -172,7 +174,7 @@ class FoundryMainWindow(MainWindow):
         self.context_menu = LevelContextMenu(self.level_ref)
         self.context_menu.triggered.connect(self.on_menu)
 
-        self.level_view = LevelView(self, self.level_ref, self.context_menu)
+        self.level_view = LevelView(self, self.level_ref, self.settings, self.context_menu)
 
         self.view_menu = ViewMenu(self.level_view)
 
@@ -376,7 +378,7 @@ class FoundryMainWindow(MainWindow):
         self._save_auto_data()
 
     def _on_show_settings(self):
-        SettingsDialog(self).exec()
+        SettingsDialog(self.settings, self).exec()
 
     @staticmethod
     def _save_auto_rom():
@@ -439,10 +441,16 @@ class FoundryMainWindow(MainWindow):
         level_address = self.level_ref.level.next_area_objects
         enemy_address = self.level_ref.level.next_area_enemies + 1
         object_set = self.level_ref.level.next_area_object_set
+        old_world = self.level_ref.level.world
 
-        world, level = world_and_level_for_level_address(level_address)
+        world, level = world_and_level_for_level_address(level_address + Level.HEADER_LENGTH)
 
         self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
+
+        if world == -1:
+            self.level_ref.level.world = old_world
+        else:
+            self.level_ref.level.world = world
 
     def on_play(self):
         """
@@ -468,10 +476,10 @@ class FoundryMainWindow(MainWindow):
 
         temp_rom.save_to(path_to_temp_rom)
 
-        arguments = SETTINGS["instaplay_arguments"].replace("%f", str(path_to_temp_rom))
+        arguments = self.settings.value("editor/instaplay_arguments").replace("%f", str(path_to_temp_rom))
         arguments = shlex.split(arguments, posix=False)
 
-        emu_path = pathlib.Path(SETTINGS["instaplay_emulator"])
+        emu_path = pathlib.Path(self.settings.value("editor/instaplay_emulator"))
 
         if emu_path.is_absolute():
             if emu_path.exists():
@@ -482,7 +490,7 @@ class FoundryMainWindow(MainWindow):
                 )
                 return
         else:
-            emulator = SETTINGS["instaplay_emulator"]
+            emulator = self.settings.value("editor/instaplay_emulator")
 
         try:
             subprocess.run([emulator, *arguments])
@@ -505,15 +513,18 @@ class FoundryMainWindow(MainWindow):
 
     def _put_current_level_to_level_1_1(self, rom: SMB3Rom) -> bool:
         # load world-1 data
-        world_1 = SMB3World.from_world_number(rom, 1)
+        if (world := self.level_ref.level.world) == 0:
+            world = 1
+
+        world_map = SMB3World.from_world_number(rom, world)
 
         # find position of "level 1" tile in world map
-        for position in world_1.gen_positions():
+        for position in world_map.gen_positions():
             if position.tile() == TILE_LEVEL_1:
                 break
         else:
             QMessageBox.critical(
-                self, "Couldn't place level", "Could not find a level 1 tile in World 1 to put your level at."
+                self, "Couldn't place level", f"Could not find a level 1 tile in World {world} to put your level at."
             )
             return False
 
@@ -533,15 +544,16 @@ class FoundryMainWindow(MainWindow):
         # replace level information with that of current level
         object_set_number = self.level_ref.object_set_number
 
-        world_1.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
+        world_map.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
+
+        rom.write(STARTING_WORLD_INDEX_ADDRESS, world - 1)
 
         return True
 
-    @staticmethod
-    def _set_default_powerup(rom: SMB3Rom) -> bool:
-        assert isinstance(SETTINGS["default_powerup"], int)
+    def _set_default_powerup(self, rom: SMB3Rom) -> bool:
+        assert isinstance(self.settings.value("editor/default_powerup"), int)
 
-        *_, powerup, hasPWing = POWERUPS[SETTINGS["default_powerup"]]
+        *_, powerup, hasPWing = POWERUPS[self.settings.value("editor/default_powerup")]
 
         rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))
 
@@ -599,10 +611,14 @@ class FoundryMainWindow(MainWindow):
 
         if not path_to_rom:
             # otherwise ask the user what new file to open
-            path_to_rom, _ = QFileDialog.getOpenFileName(self, caption="Open ROM", filter=ROM_FILE_FILTER)
+            path_to_rom, _ = QFileDialog.getOpenFileName(
+                self, caption="Open ROM", dir=self.settings.value("editor/default dir path"), filter=ROM_FILE_FILTER
+            )
 
             if not path_to_rom:
                 self._enable_disable_gui_elements()
+
+                return
 
         # Proceed loading the file chosen by the user
         try:
@@ -625,7 +641,9 @@ class FoundryMainWindow(MainWindow):
             return False
 
         # otherwise ask the user what new file to open
-        pathname, _ = QFileDialog.getOpenFileName(self, caption="Open M3L file", filter=M3L_FILE_FILTER)
+        pathname, _ = QFileDialog.getOpenFileName(
+            self, caption="Open M3L file", dir=self.settings.value("editor/default dir path"), filter=M3L_FILE_FILTER
+        )
 
         if not pathname:
             return False
@@ -768,7 +786,10 @@ class FoundryMainWindow(MainWindow):
                 suggested_file += ".nes"
 
             pathname, _ = QFileDialog.getSaveFileName(
-                self, caption="Save ROM as", dir=suggested_file, filter=ROM_FILE_FILTER
+                self,
+                caption="Save ROM as",
+                dir=f"{self.settings.value('editor/default dir path')}/{suggested_file}",
+                filter=ROM_FILE_FILTER,
             )
             if not pathname:
                 return  # the user changed their mind
@@ -810,7 +831,10 @@ class FoundryMainWindow(MainWindow):
             suggested_file += ".m3l"
 
         pathname, _ = QFileDialog.getSaveFileName(
-            self, caption="Save M3L as", dir=suggested_file, filter=M3L_FILE_FILTER
+            self,
+            caption="Save M3L as",
+            dir=f"{self.settings.value('editor/default dir path')}/{suggested_file}",
+            filter=M3L_FILE_FILTER,
         )
 
         if not pathname:
@@ -858,12 +882,15 @@ class FoundryMainWindow(MainWindow):
         if not self.safe_to_change():
             return
 
-        level_name = self.level_view.level_ref.name
-        object_data = self.level_view.level_ref.header_offset
-        enemy_data = self.level_view.level_ref.enemy_offset
-        object_set = self.level_view.level_ref.object_set_number
+        level_name = self.level_ref.name
+        object_data = self.level_ref.header_offset
+        enemy_data = self.level_ref.enemy_offset
+        object_set = self.level_ref.object_set_number
+        world_index = self.level_ref.level.world
 
         self.update_level(level_name, object_data, enemy_data, object_set)
+
+        self.level_ref.level.world = world_index
 
     def _on_placeable_object_selected(self, level_object: InLevelObject):
         if self.sender() is self.object_toolbar:
@@ -947,6 +974,8 @@ class FoundryMainWindow(MainWindow):
                 level_selector.enemy_data_offset,
                 level_selector.object_set,
             )
+
+            self.level_ref.level.world = level_selector.world_index
 
         return level_was_selected
 

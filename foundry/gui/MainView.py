@@ -14,6 +14,7 @@ from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.WorldDrawer import WorldDrawer
+from foundry.gui.settings import Settings
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
@@ -30,7 +31,11 @@ RESIZE_MODES = [MODE_RESIZE_HORIZ, MODE_RESIZE_VERT, MODE_RESIZE_DIAG]
 
 
 class MainView(QWidget):
-    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[LevelContextMenu]):
+    drawer: Union[LevelDrawer, WorldDrawer]
+
+    def __init__(
+        self, parent: Optional[QWidget], level: LevelRef, settings: Settings, context_menu: Optional[LevelContextMenu]
+    ):
         super(MainView, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -40,6 +45,8 @@ class MainView(QWidget):
         self.level_ref: LevelRef = level
         self.level_ref.data_changed.connect(self.update)
         self.level_ref.needs_redraw.connect(self.update)
+
+        self.settings = settings
 
         self.context_menu = context_menu
         self.last_mouse_position = 0, 0
@@ -56,16 +63,13 @@ class MainView(QWidget):
         # dragged in from the object toolbar
         self.currently_dragged_object: Optional[InLevelObject] = None
 
-        self.drawer: Union[LevelDrawer, WorldDrawer] = LevelDrawer()
-        self.transparency = False
-
     @property
-    def transparency(self):
-        return self.drawer.transparency
+    def settings(self):
+        return self.drawer.settings
 
-    @transparency.setter
-    def transparency(self, value):
-        self.drawer.transparency = value
+    @settings.setter
+    def settings(self, value):
+        self.drawer.settings = value
 
     def sizeHint(self) -> QSize:
         if not self.level_ref:
@@ -95,7 +99,8 @@ class MainView(QWidget):
         if clicked_on_background:
             self._select_object(None)
         else:
-            self.mouse_mode = MODE_DRAG
+            if event.button() & Qt.LeftButton:
+                self.mouse_mode = MODE_DRAG
 
             selected_objects = self.get_selected_objects()
 
@@ -323,4 +328,6 @@ class MainView(QWidget):
         self.selection_square.draw(painter)
 
         if self.currently_dragged_object is not None:
-            self.currently_dragged_object.draw(painter, self.block_length, self.transparency)
+            self.currently_dragged_object.draw(
+                painter, self.block_length, self.settings.value("level view/block_transparency")
+            )

@@ -3,8 +3,8 @@ from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.settings import Settings
 from foundry.gui.util import partition
-from scribe.gui.settings import Settings
 from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH, WORLD_MAP_WARP_WORLD_INDEX
 
@@ -16,7 +16,7 @@ class WorldDrawer:
         self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), 1)
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 1)
 
-        self.settings = Settings()
+        self.settings = Settings("mchlnix", "world drawer")
 
     def draw(self, painter: QPainter, world: WorldMap):
         painter.save()

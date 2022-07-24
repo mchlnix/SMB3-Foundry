@@ -12,6 +12,7 @@ from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.LevelView import LevelView
 from foundry.gui.MainView import MainView
 from foundry.gui.WorldView import WorldView
+from foundry.gui.settings import Settings
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
@@ -63,8 +64,33 @@ with open(data_dir / "levels.dat", "r") as level_data_file:
         level_test_name.append(f"Level {world_no}-{level_no} - {level_name}")
 
 
+@pytest.fixture
+def settings():
+    settings = Settings()
+    settings.setValue("level view/block_transparency", True)
+    settings.setValue("level view/draw_jumps", True)
+    settings.setValue("level view/draw_mario", True)
+    settings.setValue("level view/draw_grid", True)
+    settings.setValue("level view/draw_expansion", True)
+    settings.setValue("level view/draw_jump_on_objects", True)
+    settings.setValue("level view/draw_items_in_blocks", True)
+    settings.setValue("level view/draw_invisible_items", True)
+    settings.setValue("level view/draw_autoscroll", True)
+    settings.setValue("level view/object_tooltip_enabled", False)
+
+    settings.setValue("world view/show grid", True)
+    settings.setValue("world view/show level pointers", True)
+    settings.setValue("world view/show sprites", True)
+    settings.setValue("world view/show airship paths", 0b111)
+    settings.setValue("world view/show start position", True)
+    settings.setValue("world view/show locks", True)
+    settings.setValue("world view/show pipes", True)
+
+    return settings
+
+
 @pytest.mark.parametrize("world_info", world_data, ids=world_test_name)
-def test_world(world_info, qtbot):
+def test_world(world_info, settings, qtbot):
     level_ref = LevelRef()
     level_ref.load_level(*world_info)
 
@@ -73,15 +99,7 @@ def test_world(world_info, qtbot):
     # monkeypatch level names, since the level name data is broken atm
     level_ref.level.name = current_test_name()
 
-    world_view = WorldView(None, level_ref, WorldContextMenu(level_ref))
-
-    world_view.settings.setValue("world view/show grid", True)
-    world_view.settings.setValue("world view/show level pointers", True)
-    world_view.settings.setValue("world view/show sprites", True)
-    world_view.settings.setValue("world view/show airship paths", 0b111)
-    world_view.settings.setValue("world view/show start position", True)
-    world_view.settings.setValue("world view/show locks", True)
-    world_view.settings.setValue("world view/show pipes", True)
+    world_view = WorldView(None, level_ref, settings, WorldContextMenu(level_ref))
 
     world_view.zoom_in()
 
@@ -93,7 +111,7 @@ def test_world(world_info, qtbot):
 
 
 @pytest.mark.parametrize("level_info", level_data, ids=level_test_name)
-def test_level(level_info, qtbot):
+def test_level(level_info, settings, qtbot):
     *level_info, transparent = level_info
     level_ref = LevelRef()
     level_ref.load_level(*level_info)
@@ -103,17 +121,9 @@ def test_level(level_info, qtbot):
     # monkeypatch level names, since the level name data is broken atm
     level_ref.level.name = current_test_name()
 
-    level_view = LevelView(None, level_ref, LevelContextMenu(level_ref))
-    level_view.transparency = transparent
-    level_view.draw_jumps = True
-    level_view.draw_grid = True
-    level_view.draw_autoscroll = True
+    settings.setValue("level view/block_transparency", transparent)
 
-    level_view.draw_expansions = True
-    level_view.draw_mario = True
-    level_view.draw_jumps_on_objects = True
-    level_view.draw_items_in_blocks = True
-    level_view.draw_invisible_items = True
+    level_view = LevelView(None, level_ref, settings, LevelContextMenu(level_ref))
 
     rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16)
 
@@ -123,23 +133,16 @@ def test_level(level_info, qtbot):
 
 
 @pytest.mark.parametrize("jump_test_name", ["jump_vertical_ref", "jump_horizontal_ref"])
-def test_draw_jumps(jump_test_name, level, qtbot):
+def test_draw_jumps(jump_test_name, level, settings, qtbot):
     with open(str(Path(__file__).parent / f"{jump_test_name}.m3l"), "rb") as m3l_file:
         level.from_m3l(bytearray(m3l_file.read()))
 
         ref = LevelRef()
         ref._internal_level = level
 
-        level_view = LevelView(None, ref, LevelContextMenu(ref))
-        level_view.draw_jumps = True
-        level_view.draw_grid = False
-        level_view.draw_autoscroll = True
+        settings.setValue("level view/draw_grid", False)
 
-        level_view.draw_expansions = True
-        level_view.draw_mario = True
-        level_view.draw_jumps_on_objects = True
-        level_view.draw_items_in_blocks = True
-        level_view.draw_invisible_items = True
+        level_view = LevelView(None, ref, settings, LevelContextMenu(ref))
 
         level_view.resize(level_view.sizeHint())
 
@@ -156,22 +159,15 @@ def _get_all_m3l_files(with_ending=True):
 
 
 @pytest.mark.parametrize("m3l_file_name", _get_all_m3l_files(), ids=_get_all_m3l_files(False))
-def test_draw_m3ls(m3l_file_name, level, qtbot):
+def test_draw_m3ls(m3l_file_name, level, settings, qtbot):
     with open(m3l_file_name, "rb") as m3l_file:
         level.from_m3l(bytearray(m3l_file.read()))
 
         ref = LevelRef()
         ref._internal_level = level
 
-        level_view = LevelView(None, ref, LevelContextMenu(ref))
-        level_view.draw_jumps = True
-        level_view.draw_grid = False
-        level_view.draw_autoscroll = True
+        settings.setValue("level view/draw_grid", False)
 
-        level_view.draw_expansions = True
-        level_view.draw_mario = True
-        level_view.draw_jumps_on_objects = True
-        level_view.draw_items_in_blocks = True
-        level_view.draw_invisible_items = True
+        level_view = LevelView(None, ref, settings, LevelContextMenu(ref))
 
         compare_images(m3l_file_name.stem, str(reference_image_dir / f"{m3l_file_name.stem}.png"), level_view.grab())

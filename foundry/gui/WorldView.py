@@ -19,6 +19,7 @@ from foundry.gui.MainView import (
     MainView,
 )
 from foundry.gui.WorldDrawer import WorldDrawer
+from foundry.gui.settings import Settings
 from scribe.gui.commands import (
     MoveMapObject,
     MoveTile,
@@ -29,7 +30,6 @@ from scribe.gui.commands import (
     SetSpriteItem,
     SetSpriteType,
 )
-from scribe.gui.settings import Settings
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_NAMES, TILE_SPADE_HOUSE
 from smb3parse.data_points import Position
@@ -39,12 +39,16 @@ from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP
 class WorldView(MainView):
     context_menu: WorldContextMenu
 
-    def __init__(self, parent: Optional[QWidget], level: LevelRef, context_menu: Optional[WorldContextMenu] = None):
-        super(WorldView, self).__init__(parent, level, context_menu)
-
+    def __init__(
+        self,
+        parent: Optional[QWidget],
+        level: LevelRef,
+        settings: Settings,
+        context_menu: Optional[WorldContextMenu] = None,
+    ):
         self.drawer = WorldDrawer()
 
-        self.settings = Settings()
+        super(WorldView, self).__init__(parent, level, settings, context_menu)
 
         self._tile_to_put: int = WORLD_MAP_BLANK_TILE_ID
 
@@ -183,8 +187,8 @@ class WorldView(MainView):
             self.setToolTip(
                 f"<b>{level_name}</b><br/>"
                 f"<u>Type:</u> {object_set_name} "
-                f"<u>Objects:</u> {level_pointer.data.level_address} "
-                f"<u>Enemies:</u> {level_pointer.data.enemy_address}<br/>"
+                f"<u>Objects:</u> {hex(level_pointer.data.level_address)} "
+                f"<u>Enemies:</u> {hex(level_pointer.data.enemy_address)}<br/>"
                 f"<img src='data:image/png;base64,{image_data}'>"
             )
 

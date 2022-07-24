@@ -1,4 +1,4 @@
-from PySide6.QtCore import QRect
+from PySide6.QtCore import QRect, QStandardPaths
 from PySide6.QtGui import QColor, QIcon, QImage, QPixmap, Qt
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -23,9 +23,7 @@ from foundry.gui.settings import (
     GUI_STYLE,
     RESIZE_LEFT_CLICK,
     RESIZE_RIGHT_CLICK,
-    SETTINGS,
-    load_settings,
-    save_settings,
+    Settings,
 )
 from smb3parse.constants import (
     POWERUP_FIREFLOWER,
@@ -35,8 +33,6 @@ from smb3parse.constants import (
     POWERUP_RACCOON,
     POWERUP_TANOOKI,
 )
-
-load_settings()
 
 POWERUPS_NAME = 0
 POWERUPS_X = 1
@@ -60,9 +56,20 @@ png = QImage(str(data_dir / "gfx.png"))
 png.convertTo(QImage.Format_RGB888)
 
 
+default_dirs = {
+    "User": QStandardPaths.writableLocation(QStandardPaths.HomeLocation),
+    "Desktop": QStandardPaths.writableLocation(QStandardPaths.DesktopLocation),
+    "Documents": QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation),
+    "Downloads": QStandardPaths.writableLocation(QStandardPaths.DownloadLocation),
+    "Custom": "",
+}
+
+
 class SettingsDialog(CustomDialog):
-    def __init__(self, parent=None):
+    def __init__(self, settings: Settings, parent=None):
         super(SettingsDialog, self).__init__(parent, "Settings")
+
+        self.settings = settings
 
         mouse_box = QGroupBox("Mouse", self)
         mouse_box.setLayout(QVBoxLayout())
@@ -70,7 +77,7 @@ class SettingsDialog(CustomDialog):
         label = QLabel("Scroll objects with mouse wheel:")
         label.setToolTip("Select an object and scroll up and down to change its type.")
         self._scroll_check_box = QCheckBox("Enabled")
-        self._scroll_check_box.setChecked(SETTINGS["object_scroll_enabled"])
+        self._scroll_check_box.setChecked(self.settings.value("editor/object_scroll_enabled"))
         self._scroll_check_box.toggled.connect(self._update_settings)
 
         scroll_layout = QHBoxLayout()
@@ -83,7 +90,7 @@ class SettingsDialog(CustomDialog):
             "When hovering your cursor over an object in a level, its name and position is shown in a tooltip."
         )
         self._tooltip_check_box = QCheckBox("Enabled")
-        self._tooltip_check_box.setChecked(SETTINGS["object_tooltip_enabled"])
+        self._tooltip_check_box.setChecked(self.settings.value("level view/object_tooltip_enabled"))
         self._tooltip_check_box.toggled.connect(self._update_settings)
 
         tooltip_layout = QHBoxLayout()
@@ -94,8 +101,8 @@ class SettingsDialog(CustomDialog):
         self.lmb_radio = QRadioButton("Left Mouse Button")
         rmb_radio = QRadioButton("Right Mouse Button")
 
-        self.lmb_radio.setChecked(SETTINGS["resize_mode"] == RESIZE_LEFT_CLICK)
-        rmb_radio.setChecked(SETTINGS["resize_mode"] == RESIZE_RIGHT_CLICK)
+        self.lmb_radio.setChecked(self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK)
+        rmb_radio.setChecked(self.settings.value("editor/resize_mode") == RESIZE_RIGHT_CLICK)
 
         self.lmb_radio.toggled.connect(self._update_settings)
 
@@ -114,28 +121,56 @@ class SettingsDialog(CustomDialog):
         mouse_box.layout().addLayout(resize_layout)
 
         # -----------------------------------------------
-        # GUI theme section
+        # GUI section
 
-        self.gui_style_box = QGroupBox("GUI", self)
-        QHBoxLayout(self.gui_style_box)
+        self.gui_box = QGroupBox("GUI", self)
+        QVBoxLayout(self.gui_box)
 
-        self.gui_style_box.layout().addWidget(QLabel("Style:"))
+        style_layout = QHBoxLayout()
+
+        style_layout.addWidget(QLabel("Style:"))
 
         for gui_style in GUI_STYLE.keys():
             gui_style = gui_style.capitalize()
 
             style_radio_button = QRadioButton(gui_style)
-            style_radio_button.setChecked(SETTINGS["gui_style"] == GUI_STYLE[gui_style.upper()]())
+            style_radio_button.setChecked(self.settings.value("editor/gui_style") == GUI_STYLE[gui_style.upper()]())
             style_radio_button.toggled.connect(self._update_settings)
 
-            self.gui_style_box.layout().addWidget(style_radio_button)
+            style_layout.addWidget(style_radio_button)
+
+        self.gui_box.layout().addLayout(style_layout)
+
+        path_layout = QHBoxLayout()
+
+        self.path_dropdown = path_dropdown = QComboBox(self)
+        path_dropdown.addItems(default_dirs.keys())
+        path_dropdown.setCurrentText(self.settings.value("editor/default dir"))
+        path_dropdown.currentTextChanged.connect(self.on_dropdown)
+
+        path_layout.addWidget(QLabel("Default path:"))
+        path_layout.addWidget(path_dropdown)
+
+        self.gui_box.layout().addLayout(path_layout)
+
+        default_dir_layout = QHBoxLayout()
+
+        self.default_dir_label = QLabel()
+
+        self.default_dir_button = QPushButton(icon("folder.svg"), "", self)
+        self.default_dir_button.pressed.connect(self._get_default_dir)
+
+        default_dir_layout.addWidget(self.default_dir_label, stretch=1)
+        default_dir_layout.addWidget(self.default_dir_button)
+
+        self.gui_box.layout().addLayout(default_dir_layout)
 
         # -----------------------------------------------
         # emulator command
 
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText("Path to emulator")
-        self.emulator_command_input.setText(SETTINGS["instaplay_emulator"])
+        self.emulator_command_input.setText(self.settings.value("editor/instaplay_emulator"))
 
         self.emulator_command_input.textChanged.connect(self._update_settings)
 
@@ -144,7 +179,7 @@ class SettingsDialog(CustomDialog):
 
         self.command_arguments_input = QLineEdit(self)
         self.command_arguments_input.setPlaceholderText("%f")
-        self.command_arguments_input.setText(SETTINGS["instaplay_arguments"])
+        self.command_arguments_input.setText(self.settings.value("editor/instaplay_arguments"))
 
         self.command_arguments_input.textEdited.connect(self._update_settings)
 
@@ -175,9 +210,8 @@ class SettingsDialog(CustomDialog):
 
             self.powerup_combo_box.addItem(powerup_icon, name)
 
+        self.powerup_combo_box.setCurrentIndex(self.settings.value("editor/default_powerup"))
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
-
-        self.powerup_combo_box.setCurrentIndex(SETTINGS["default_powerup"])
 
         command_layout.addWidget(self.powerup_combo_box)
 
@@ -185,49 +219,83 @@ class SettingsDialog(CustomDialog):
 
         layout = QVBoxLayout(self)
         layout.addWidget(mouse_box)
-        layout.addWidget(self.gui_style_box)
+        layout.addWidget(self.gui_box)
         layout.addWidget(command_box)
 
+        self.on_dropdown(self.path_dropdown.currentText())
         self.update()
 
     def update(self):
-        self.command_label.setText(f" > {SETTINGS['instaplay_emulator']} {SETTINGS['instaplay_arguments']}")
+        self.command_label.setText(
+            f" > {self.settings.value('editor/instaplay_emulator')} {self.settings.value('editor/instaplay_arguments')}"
+        )
 
-    def _update_settings(self, _):
-        SETTINGS["instaplay_emulator"] = self.emulator_command_input.text()
-        SETTINGS["instaplay_arguments"] = self.command_arguments_input.text()
+    def _update_settings(self, _=None):
+        self.settings.setValue("editor/instaplay_emulator", self.emulator_command_input.text())
+        self.settings.setValue("editor/instaplay_arguments", self.command_arguments_input.text())
 
         if self.lmb_radio.isChecked():
-            SETTINGS["resize_mode"] = RESIZE_LEFT_CLICK
+            self.settings.setValue("editor/resize_mode", RESIZE_LEFT_CLICK)
         else:
-            SETTINGS["resize_mode"] = RESIZE_RIGHT_CLICK
+            self.settings.setValue("editor/resize_mode", RESIZE_RIGHT_CLICK)
 
         # setup style sheets
-        for child_widget in self.gui_style_box.children():
+        for child_widget in self.gui_box.children():
             if isinstance(child_widget, QRadioButton):
                 if child_widget.isChecked():
                     selected_gui_style = child_widget.text().upper()
 
                     loaded_style_sheet = GUI_STYLE[selected_gui_style]()
-                    SETTINGS["gui_style"] = loaded_style_sheet
+                    self.settings.setValue("editor/gui_style", loaded_style_sheet)
 
-                    self.parent().setStyleSheet(SETTINGS["gui_style"])
+                    self.parent().setStyleSheet(self.settings.value("editor/gui_style"))
                     break
 
-        SETTINGS["object_scroll_enabled"] = self._scroll_check_box.isChecked()
-        SETTINGS["object_tooltip_enabled"] = self._tooltip_check_box.isChecked()
+        self.settings.setValue("editor/default dir", self.path_dropdown.currentText())
+        if self.path_dropdown.currentText() == "Custom":
+            self.settings.setValue("editor/custom default dir path", self.default_dir_label.text())
 
-        SETTINGS["default_powerup"] = self.powerup_combo_box.currentIndex()
+        self.settings.setValue("editor/default dir path", self.default_dir_label.text())
+
+        self.settings.setValue("editor/object_scroll_enabled", self._scroll_check_box.isChecked())
+        self.settings.setValue("level view/object_tooltip_enabled", self._tooltip_check_box.isChecked())
+
+        self.settings.setValue("editor/default_powerup", self.powerup_combo_box.currentIndex())
 
         self.update()
 
     def _get_emulator_path(self):
-        path_to_emulator, _ = QFileDialog.getOpenFileName(self, caption="Select emulator executable")
+        path_to_emulator, _ = QFileDialog.getOpenFileName(
+            self,
+            caption="Select emulator executable",
+            dir=QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation),
+        )
 
         if not path_to_emulator:
             return
 
         self.emulator_command_input.setText(path_to_emulator)
+
+    def _get_default_dir(self):
+        path_to_roms = QFileDialog.getExistingDirectory(
+            self, caption="Select Rom directory", dir=QStandardPaths.writableLocation(QStandardPaths.HomeLocation)
+        )
+
+        if not path_to_roms:
+            return
+
+        self.path_dropdown.setCurrentText("Custom")
+        self.default_dir_label.setText(path_to_roms)
+
+        self._update_settings()
+
+    def on_dropdown(self, new_text):
+        if new_text == "Custom":
+            self.default_dir_label.setText(self.settings.value("editor/custom default dir path"))
+        elif new_text in default_dirs:
+            self.default_dir_label.setText(default_dirs[new_text])
+
+        self._update_settings()
 
     @staticmethod
     def _load_from_png(x: int, y: int) -> QIcon:
@@ -241,6 +309,6 @@ class SettingsDialog(CustomDialog):
         return icon_from_png
 
     def on_exit(self):
-        save_settings()
+        self.settings.sync()
 
         super(SettingsDialog, self).on_exit()
