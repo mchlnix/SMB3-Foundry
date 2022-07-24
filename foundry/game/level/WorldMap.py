@@ -7,6 +7,7 @@ from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects import AirshipTravelPoint, LevelPointer, Lock, MapTile, Sprite
+from foundry.game.gfx.objects.world_map.start_posiiton import StartPosition
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW
@@ -49,6 +50,7 @@ class WorldMap(LevelLike):
         self._load_objects()
         self._load_sprites()
         self._load_level_pointers()
+        self._load_starting_position()
         self._load_airship_points()
         self._load_locks_and_bridges()
 
@@ -90,6 +92,9 @@ class WorldMap(LevelLike):
 
         for level_pointer_data in self.internal_world_map.level_pointers:
             self.level_pointers.append(LevelPointer(level_pointer_data))
+
+    def _load_starting_position(self):
+        self.start_pos = StartPosition(self.internal_world_map.start_pos)
 
     def _load_airship_points(self):
         self.airship_travel_sets: List[List[AirshipTravelPoint]] = []
@@ -254,6 +259,8 @@ class WorldMap(LevelLike):
 
     def save_to_rom(self):
         self._write_tile_data()
+
+        self.data.map_start_y = self.start_pos.pos.y << 4
 
         self.data.write_back()
 

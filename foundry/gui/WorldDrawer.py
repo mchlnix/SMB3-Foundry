@@ -1,4 +1,4 @@
-from PySide6.QtCore import QPoint, QRect, QSize
+from PySide6.QtCore import QPoint
 from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
 from foundry.game.gfx.drawable.Block import Block
@@ -93,19 +93,7 @@ class WorldDrawer:
             sprite.draw(painter, self.block_length, False, sprite.selected)
 
     def _draw_start_position(self, painter: QPainter, world: WorldMap):
-        start_pos = world.internal_world_map.start_pos
-
-        if start_pos is None:
-            return
-
-        world, screen, y, x = start_pos.tuple()
-
-        x *= self.block_length
-        y *= self.block_length
-
-        painter.fillRect(
-            QRect(QPoint(x, y), QSize(self.block_length, self.block_length)), QColor(0x00, 0x00, 0xFF, 0x80)
-        )
+        world.start_pos.draw(painter, self.block_length, False)
 
     def _draw_airship_travel_points(self, painter: QPainter, world: WorldMap):
         if world.data.index == WORLD_MAP_WARP_WORLD_INDEX:
