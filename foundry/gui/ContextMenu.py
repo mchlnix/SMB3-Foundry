@@ -4,19 +4,10 @@ from typing import List, Tuple
 from PySide6.QtCore import QPoint, SignalInstance
 from PySide6.QtWidgets import QMenu
 
+from foundry import icon
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from smb3parse.data_points import Position
-
-
-class CMAction(Enum):
-    REMOVE = 1
-    ADD_OBJECT = 2
-    COPY = 4
-    PASTE = 5
-    CUT = 6
-    BACKGROUND = 7
-    FOREGROUND = 8
 
 
 class CMMode(Enum):
@@ -24,8 +15,6 @@ class CMMode(Enum):
     OBJ = 2
     LIST = 3
 
-
-ID_PROP = "ID"
 
 MAX_ORIGIN = 0xFF, 0xFF
 
@@ -46,30 +35,29 @@ class LevelContextMenu(ContextMenu):
         self.copied_objects_origin = Position.from_xy(0, 0)
         self.last_opened_at = QPoint(0, 0)
 
-        self.cut_action = self.addAction("Cut")
-        self.cut_action.setProperty(ID_PROP, CMAction.CUT)
-
-        self.copy_action = self.addAction("Copy")
-        self.copy_action.setProperty(ID_PROP, CMAction.COPY)
-
-        self.paste_action = self.addAction("Paste")
-        self.paste_action.setProperty(ID_PROP, CMAction.PASTE)
+        self.add_object_action = self.addAction("Add Object")
+        self.add_object_action.setIcon(icon("plus.svg"))
 
         self.addSeparator()
 
-        self.into_background_action = self.addAction("To Background")
-        self.into_background_action.setProperty(ID_PROP, CMAction.BACKGROUND)
+        self.cut_action = self.addAction("Cut")
+        self.cut_action.setIcon(icon("scissors.svg"))
+        self.copy_action = self.addAction("Copy")
+        self.copy_action.setIcon(icon("copy.svg"))
+        self.paste_action = self.addAction("Paste")
+        self.paste_action.setIcon(icon("clipboard.svg"))
+
+        self.addSeparator()
 
         self.into_foreground_action = self.addAction("To Foreground")
-        self.into_foreground_action.setProperty(ID_PROP, CMAction.FOREGROUND)
+        self.into_foreground_action.setIcon(icon("upload.svg"))
+        self.into_background_action = self.addAction("To Background")
+        self.into_background_action.setIcon(icon("download.svg"))
 
         self.addSeparator()
 
         self.remove_action = self.addAction("Remove")
-        self.remove_action.setProperty(ID_PROP, CMAction.REMOVE)
-
-        self.add_object_action = self.addAction("Add Object")
-        self.add_object_action.setProperty(ID_PROP, CMAction.ADD_OBJECT)
+        self.remove_action.setIcon(icon("minus.svg"))
 
     def set_copied_objects(self, objects: List[ObjectLike]):
         if not objects:
