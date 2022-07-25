@@ -852,22 +852,24 @@ class FoundryMainWindow(MainWindow):
             QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
 
     def on_menu(self, action: QAction):
+        pos = self.level_view.mapFromGlobal(self.context_menu.get_position())
+
         if action is self.context_menu.remove_action:
             self.remove_selected_objects()
         elif action is self.context_menu.add_object_action:
             selected_object = self.object_dropdown.currentIndex()
 
             if selected_object != -1:
-                self.place_object_from_dropdown(self.context_menu.get_position())
+                self.place_object_from_dropdown(pos)
             else:
-                self.add_object_at(self.context_menu.get_position())
+                self.add_object_at(pos)
 
         elif action is self.context_menu.cut_action:
             self._cut_objects()
         elif action is self.context_menu.copy_action:
             self._copy_objects()
         elif action is self.context_menu.paste_action:
-            self._paste_objects(self.context_menu.get_position())
+            self._paste_objects(pos)
         elif action is self.context_menu.into_foreground_action:
             self.bring_objects_to_foreground()
         elif action is self.context_menu.into_background_action:
