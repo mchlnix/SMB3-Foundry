@@ -1,19 +1,19 @@
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import Qt
+from PySide6.QtWidgets import QMenu
 
 from foundry.game.gfx.objects import LevelObject
-from foundry.gui.ContextMenu import LevelContextMenu
 
 
 def test_correct_menu_position(main_window, monkeypatch, qtbot):
     # don't actually open the context menu but save its position for later assert
     menu_popup_position = QPoint(0, 0)
 
-    def popup_mock(_, pos):
+    def popup_mock(_, pos, _at=None):
         nonlocal menu_popup_position
         menu_popup_position = pos
 
-    monkeypatch.setattr(LevelContextMenu, "popup", popup_mock)
+    monkeypatch.setattr(QMenu, "popup", popup_mock)
 
     # GIVEN a main window and its context menu
     context_menu = main_window.context_menu
