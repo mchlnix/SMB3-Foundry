@@ -9,6 +9,7 @@ from PySide6.QtGui import QDesktopServices, QIcon, Qt
 from PySide6.QtWidgets import QApplication
 
 from foundry.gui.settings import Settings
+from smb3parse.objects.object_set import DESERT_OBJECT_SET
 
 root_dir = Path(__file__).parent.parent
 
@@ -110,6 +111,9 @@ def get_level_thumbnail(object_set, layout_address, enemy_address):
     level_ref.load_level("", layout_address, enemy_address, object_set)
 
     view = LevelView(None, level_ref, Settings("mchlnix", "throwaway"), None)
+
+    view.settings.setValue("level view/block_transparency", object_set != DESERT_OBJECT_SET)
+
     view.zoom_out()
     view.zoom_out()
 
