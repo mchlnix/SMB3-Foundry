@@ -1,6 +1,7 @@
 import json
 import urllib.error
 import urllib.request
+from functools import lru_cache
 from pathlib import Path
 from typing import Union
 
@@ -91,6 +92,7 @@ def get_latest_version_name(timeout: int = 10) -> str:
         raise ValueError("Parsing the received information failed.")
 
 
+@lru_cache(256)
 def icon(icon_name: str):
     icon_path = icon_dir / icon_name
     data_path = data_dir / icon_name

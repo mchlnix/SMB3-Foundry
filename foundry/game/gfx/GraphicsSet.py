@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from foundry.game.File import ROM
 from smb3parse.constants import Level_BG_Pages1, Level_BG_Pages2
 
@@ -47,6 +49,7 @@ GRAPHIC_SET_NAMES = [
 ]
 
 
+@lru_cache(32)
 class GraphicsSet:
     GRAPHIC_SET_BG_PAGE_1 = bytearray()
     GRAPHIC_SET_BG_PAGE_2 = bytearray()

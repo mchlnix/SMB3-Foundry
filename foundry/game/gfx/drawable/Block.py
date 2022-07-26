@@ -28,6 +28,11 @@ def get_block(block_index: int, palette_group: PaletteGroup, graphics_set: Graph
     return block
 
 
+@lru_cache(2**16)
+def get_tile(index, palette_group, palette_index, graphics_set, mirrored=False):
+    return Tile(index, palette_group, palette_index, graphics_set, mirrored)
+
+
 def get_worldmap_tile(block_index: int):
     return get_block(
         block_index, load_palette_group(WORLD_MAP_OBJECT_SET, 0), GraphicsSet(0), ROM.get_tsa_data(WORLD_MAP_OBJECT_SET)
@@ -73,15 +78,15 @@ class Block:
         ru = tsa_data[TSA_BANK_2 + block_index]
         rd = tsa_data[TSA_BANK_3 + block_index]
 
-        self.lu_tile = Tile(lu, palette_group, palette_index, graphics_set)
-        self.ld_tile = Tile(ld, palette_group, palette_index, graphics_set)
+        self.lu_tile = get_tile(lu, palette_group, palette_index, graphics_set)
+        self.ld_tile = get_tile(ld, palette_group, palette_index, graphics_set)
 
         if mirrored:
-            self.ru_tile = Tile(lu, palette_group, palette_index, graphics_set, mirrored=True)
-            self.rd_tile = Tile(ld, palette_group, palette_index, graphics_set, mirrored=True)
+            self.ru_tile = get_tile(lu, palette_group, palette_index, graphics_set, mirrored=True)
+            self.rd_tile = get_tile(ld, palette_group, palette_index, graphics_set, mirrored=True)
         else:
-            self.ru_tile = Tile(ru, palette_group, palette_index, graphics_set)
-            self.rd_tile = Tile(rd, palette_group, palette_index, graphics_set)
+            self.ru_tile = get_tile(ru, palette_group, palette_index, graphics_set)
+            self.rd_tile = get_tile(rd, palette_group, palette_index, graphics_set)
 
         self.image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format_RGB888)
         painter = QPainter(self.image)
