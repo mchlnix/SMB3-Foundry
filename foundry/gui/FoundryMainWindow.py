@@ -27,6 +27,7 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import (
+    ASM_FILE_FILTER,
     M3L_FILE_FILTER,
     ROM_FILE_FILTER,
     auto_save_level_data_path,
@@ -117,6 +118,10 @@ class FoundryMainWindow(MainWindow):
         self.save_m3l_action = file_menu.addAction("Save M3L")
         self.save_m3l_action.setIcon(icon("file-text.svg"))
         self.save_m3l_action.triggered.connect(self.on_save_m3l)
+
+        self.save_asm_action = file_menu.addAction("Save ASM")
+        self.save_asm_action.setIcon(icon("cpu.svg"))
+        self.save_asm_action.triggered.connect(self.on_save_asm)
 
         file_menu.addSeparator()
 
@@ -850,6 +855,36 @@ class FoundryMainWindow(MainWindow):
                 m3l_file.write(m3l_bytes)
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
+
+    def on_save_asm(self, _):
+        suggested_file = self.level_view.level_ref.name
+
+        if suggested_file.endswith(".m3l"):
+            suggested_file.replace(".m3l", ".asm")
+        else:
+            suggested_file += ".asm"
+
+        level_asm, enemy_asm = self.level_ref.level.to_asm()
+
+        self.save_asm(suggested_file, level_asm, "Level Bytes")
+        self.save_asm(suggested_file.replace(".asm", "_enemies.asm"), enemy_asm, "Enemy Bytes")
+
+    def save_asm(self, suggested_file: str, asm: str, what: str):
+        pathname, _ = QFileDialog.getSaveFileName(
+            self,
+            caption="Save M3L as",
+            dir=f"{self.settings.value('editor/default dir path')}/{suggested_file}",
+            filter=ASM_FILE_FILTER,
+        )
+
+        if not pathname:
+            return
+
+        try:
+            with open(pathname, "w") as m3l_file:
+                m3l_file.write(asm)
+        except IOError as exp:
+            QMessageBox.warning(self, type(exp).__name__, f"Couldn't save {what} to '{pathname}'.")
 
     def on_menu(self, action: QAction):
         pos = self.level_view.mapFromGlobal(self.context_menu.get_position())

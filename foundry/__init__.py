@@ -40,6 +40,7 @@ enemy_compat_link = QUrl.fromLocalFile(str(doc_dir.joinpath("SMB3 enemy compatib
 
 ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
+ASM_FILE_FILTER = "ASM files (*.asm);;All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 

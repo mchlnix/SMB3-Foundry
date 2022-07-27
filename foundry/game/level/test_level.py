@@ -95,3 +95,10 @@ def test_level_insert_in_vertical_level(level):
     assert added_object.obj_index == object_index
     assert added_object.rendered_base_x == pos.x
     assert added_object.rendered_base_y == pos.y
+
+
+def test_to_asm(level):
+    print()
+    print(level.to_asm()[0])
+    print()
+    print(level.to_asm()[1])

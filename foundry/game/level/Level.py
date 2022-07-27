@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
@@ -9,9 +9,9 @@ from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
-from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset
+from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset, OFFSET_SIZE
 from smb3parse.data_points import Position
-from smb3parse.levels import WORLD_MAP_LAYOUT_DELIMITER
+from smb3parse.levels import OFFSET_BY_OBJECT_SET_A000, WORLD_MAP_LAYOUT_DELIMITER
 from smb3parse.levels.level_header import LevelHeader
 
 LEVEL_POINTER_OFFSET = Level_TilesetIdx_ByTileset
@@ -686,6 +686,68 @@ class Level(LevelLike):
         m3l_bytes.append(0xFF)
 
         return m3l_bytes
+
+    def bytes_as_asm(self, data: Union[bytearray, int]) -> str:
+        if isinstance(data, int):
+            hex_data = f"${data:02X}"
+        else:
+            assert isinstance(data, bytearray)
+            hex_data = ", ".join([f"${byte:02X}" for byte in data])
+
+        return hex_data.replace("0x", "$").upper()
+
+    def to_asm(self) -> str:
+        return self._level_asm(), self._enemy_asm()
+
+    def _enemy_asm(self):
+        ret_lines: List[str] = []
+
+        ret_lines.append(f"\t.byte {self.bytes_as_asm(1)}\t\t\t; Unused byte, set to $01")
+
+        for enemy in self.enemies:
+            ret_lines.append(f"\t.byte {self.bytes_as_asm(enemy.to_bytes())}\t; {enemy.name} @ {enemy.get_position()}")
+
+        return "\n".join(ret_lines)
+
+    def _level_asm(self):
+        ret_lines: List[str] = []
+
+        object_set_offset = (ROM().int(OFFSET_BY_OBJECT_SET_A000 + self.object_set.number) * OFFSET_SIZE - 10) * 0x1000
+
+        level_offset = (self.layout_address - BASE_OFFSET - object_set_offset) & 0xFFFF
+
+        ret_lines.append(f"; Original address was ${level_offset:04X}")
+        ret_lines.append(f"; {self.name}'s layout data")
+
+        ret_lines.append(f"\t.byte {self.bytes_as_asm(self.header_bytes[0:2])}\t\t\t ; Next Area Layout Offset")
+        ret_lines.append(f"\t.byte {self.bytes_as_asm(self.header_bytes[2:4])}\t\t\t ; Next Area Enemy & Item Offset")
+        ret_lines.append(
+            f"\t.byte {self.bytes_as_asm(self.header_bytes[4])}\t\t\t\t ; Level Size Index | Y-Start Index"
+        )
+        ret_lines.append(
+            f"\t.byte {self.bytes_as_asm(self.header_bytes[5])}\t\t\t\t ; BG Pal | Enemy Pal | X-Start Index | Unused"
+        )
+        ret_lines.append(
+            f"\t.byte {self.bytes_as_asm(self.header_bytes[6])}"
+            "\t\t\t\t ; Pipe Ends Level | VScroll Index | Vertical Flag | Next Area Object Set"
+        )
+        ret_lines.append(
+            f"\t.byte {self.bytes_as_asm(self.header_bytes[7])}\t\t\t\t ; Level Entry Action | Graphic Set"
+        )
+        ret_lines.append(
+            f"\t.byte {self.bytes_as_asm(self.header_bytes[8])}\t\t\t\t ; Time Index | Unused | Music Index"
+        )
+        ret_lines.append("")
+
+        for obj in self.objects + self.jumps:
+            if obj.is_4byte:
+                indent = ""
+            else:
+                indent = "\t\t"
+
+            ret_lines.append(f"\t.byte {self.bytes_as_asm(obj.to_bytes())}{indent} ; {obj.name} @ {obj.get_position()}")
+
+        return "\n".join(ret_lines)
 
     def from_m3l(self, m3l_bytes: bytearray):
         world_number, level_number, self.object_set_number = m3l_bytes[:3]
