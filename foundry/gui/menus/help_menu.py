@@ -64,9 +64,7 @@ class HelpMenu(QMenu):
             open_url(enemy_compat_link)
 
         elif action is self._about_action:
-            about = AboutDialog(self)
-
-            about.show()
+            self.on_about()
 
     def _on_check_for_update(self):
         self._parent.setCursor(Qt.WaitCursor)
@@ -108,3 +106,8 @@ class HelpMenu(QMenu):
         info_box.exec()
 
         self._parent.setCursor(Qt.ArrowCursor)
+
+    def on_about(self):
+        about = AboutDialog(self._parent)
+
+        about.show()

@@ -15,6 +15,7 @@ from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
 from scribe.gui.commands import PutTile
 from scribe.gui.menus.edit_menu import EditMenu
+from scribe.gui.menus.help_menu import HelpMenu
 from scribe.gui.menus.view_menu import ViewMenu
 from scribe.gui.settings_dialog import SettingsDialog
 from scribe.gui.tool_window.tool_window import ToolWindow
@@ -62,6 +63,7 @@ class ScribeMainWindow(MainWindow):
         self._setup_edit_menu()
         self._setup_view_menu()
         self._setup_level_menu()
+        self._setup_help_menu()
 
         self.tool_window = ToolWindow(self, self.level_ref)
         self.tool_window.tile_selected.connect(self.world_view.on_put_tile)
@@ -178,6 +180,11 @@ class ScribeMainWindow(MainWindow):
         self.level_menu.actions()[0].trigger()
 
         self.menuBar().addMenu(self.level_menu)
+
+    def _setup_help_menu(self):
+        self.help_menu = HelpMenu(self)
+
+        self.menuBar().addMenu(self.help_menu)
 
     def _on_show_settings(self):
         SettingsDialog(self.settings, self).exec()

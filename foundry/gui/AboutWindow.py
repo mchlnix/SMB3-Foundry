@@ -21,7 +21,7 @@ class AboutDialog(CustomDialog):
 
         main_layout = QBoxLayout(QBoxLayout.LeftToRight, self)
 
-        image = QPixmap(str(data_dir.joinpath("foundry.ico"))).scaled(200, 200)
+        image = QPixmap(str(data_dir.joinpath("foundry.ico"))).scaled(200, 200, mode=Qt.SmoothTransformation)
 
         icon = QLabel(self)
         icon.setPixmap(image)
@@ -58,6 +58,8 @@ class AboutDialog(CustomDialog):
         text_layout.addWidget(QLabel("Spinzig for compiling the enemy incompatibilities.", self))
 
         main_layout.addLayout(text_layout)
+
+        self.setContentsMargins(10, 10, 10, 10)
 
 
 class LinkLabel(QLabel):
