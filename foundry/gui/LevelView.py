@@ -363,16 +363,12 @@ class LevelView(MainView):
         obj = self.object_at(event.pos())
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            if not isinstance(obj, InLevelObject):
-                return
+            drag_end_point = self.to_level_point(event.pos())
 
-            if obj is not None:
-                drag_end_point = Position.from_xy(*obj.get_position())
-
-                if self.drag_start_point != drag_end_point:
-                    self._stop_drag(drag_end_point)
-                else:
-                    self.dragging_happened = False
+            if self.drag_start_point != drag_end_point:
+                self._stop_drag(drag_end_point)
+            else:
+                self.dragging_happened = False
         elif self.resizing_happened:
             self._stop_resize()
         elif self.selection_square.active:
