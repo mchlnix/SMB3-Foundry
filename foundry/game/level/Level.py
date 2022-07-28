@@ -747,6 +747,8 @@ class Level(LevelLike):
 
             ret_lines.append(f"\t.byte {self.bytes_as_asm(obj.to_bytes())}{indent} ; {obj.name} @ {obj.get_position()}")
 
+        ret_lines.append("\t.byte $FF\t\t\t\t ; delimiter")
+
         return "\n".join(ret_lines)
 
     def from_m3l(self, m3l_bytes: bytearray):
