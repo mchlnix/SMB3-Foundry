@@ -38,6 +38,7 @@ class LevelRef(QObject):
         self._internal_level.needs_redraw.connect(self.needs_redraw.emit)
         self._internal_level.data_changed.connect(self.data_changed.emit)
         self._internal_level.jumps_changed.connect(self.jumps_changed.emit)
+        self._internal_level.level_changed.connect(self.level_changed.emit)
 
     @property
     def selected_objects(self):

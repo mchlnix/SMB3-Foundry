@@ -90,6 +90,8 @@ class FoundryMainWindow(MainWindow):
 
         self.settings = Settings("mchlnix", "foundry")
 
+        self.level_ref.level_changed.connect(self.update_gui_for_level)
+
         self.setWindowIcon(icon("foundry.ico"))
         self.setStyleSheet(self.settings.value("editor/gui_style"))
 
@@ -374,7 +376,7 @@ class FoundryMainWindow(MainWindow):
         minimal_level_header = bytearray([0, 0, 0, 0, 0, 0, 0x81, object_set, 0])
         self.level_ref.level.from_bytes(object_data=(0, minimal_level_header), enemy_data=(0, bytearray()))
 
-        self.update_gui_for_level()
+        self.level_ref.level_changed.emit()
 
     def _on_level_data_changed(self):
         self.save_rom_action.setEnabled(not self.undo_stack.isClean() or PaletteGroup.changed)
@@ -1026,8 +1028,6 @@ class FoundryMainWindow(MainWindow):
         except IndexError:
             QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
             return
-
-        self.update_gui_for_level()
 
     def update_gui_for_level(self):
         restore_all_palettes()

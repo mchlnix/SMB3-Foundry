@@ -36,6 +36,7 @@ class LevelSignaller(QObject):
     needs_redraw: SignalInstance = Signal()
     data_changed: SignalInstance = Signal()
     jumps_changed: SignalInstance = Signal()
+    level_changed: SignalInstance = Signal()
 
 
 class Level(LevelLike):
@@ -130,6 +131,10 @@ class Level(LevelLike):
     @property
     def jumps_changed(self):
         return self._signal_emitter.jumps_changed
+
+    @property
+    def level_changed(self):
+        return self._signal_emitter.level_changed
 
     def reload(self):
         (_, header_and_object_data), (_, enemy_data) = self.to_bytes()

@@ -27,6 +27,7 @@ class WorldSignaller(QObject):
     data_changed: SignalInstance = Signal()
     dimensions_changed: SignalInstance = Signal()
     jumps_changed: SignalInstance = Signal()
+    level_changed: SignalInstance = Signal()
 
 
 class WorldMap(LevelLike):
@@ -161,6 +162,10 @@ class WorldMap(LevelLike):
     @property
     def jumps_changed(self):
         return self._signal_emitter.jumps_changed
+
+    @property
+    def level_changed(self):
+        return self._signal_emitter.level_changed
 
     def draw(self, dc, zoom, transparency=None, show_expansion=None):
         for obj in self.objects:
