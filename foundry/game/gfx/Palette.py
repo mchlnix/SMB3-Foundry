@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional, Tuple
 
 from PySide6.QtGui import QColor
-from attr import dataclass
+from dataclasses import dataclass
 
 from foundry import root_dir
 from foundry.game.File import ROM
