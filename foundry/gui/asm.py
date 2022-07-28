@@ -1,6 +1,6 @@
 from os import PathLike
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
@@ -30,6 +30,16 @@ def asm_to_bytes(asm: str) -> bytearray:
     ret.append(0xFF)
 
     return ret
+
+
+def bytes_to_asm(data: Union[bytearray, int]) -> str:
+    if isinstance(data, int):
+        hex_data = f"${data:02X}"
+    else:
+        assert isinstance(data, bytearray)
+        hex_data = ", ".join([f"${byte:02X}" for byte in data])
+
+    return hex_data.replace("0x", "$").upper()
 
 
 def load_asm_filename(what: str, default_path=""):

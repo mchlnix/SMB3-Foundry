@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
@@ -9,6 +9,7 @@ from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
+from foundry.gui.asm import bytes_to_asm
 from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset, OFFSET_SIZE
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH, OFFSET_BY_OBJECT_SET_A000, WORLD_MAP_LAYOUT_DELIMITER
@@ -687,25 +688,16 @@ class Level(LevelLike):
 
         return m3l_bytes
 
-    def bytes_as_asm(self, data: Union[bytearray, int]) -> str:
-        if isinstance(data, int):
-            hex_data = f"${data:02X}"
-        else:
-            assert isinstance(data, bytearray)
-            hex_data = ", ".join([f"${byte:02X}" for byte in data])
-
-        return hex_data.replace("0x", "$").upper()
-
     def to_asm(self) -> str:
         return self._level_asm(), self._enemy_asm()
 
     def _enemy_asm(self):
         ret_lines: List[str] = []
 
-        ret_lines.append(f"\t.byte {self.bytes_as_asm(1)}\t\t\t; Unused byte, set to $01")
+        ret_lines.append(f"\t.byte {bytes_to_asm(0x01)}\t\t\t; Unused byte, set to $01")
 
         for enemy in self.enemies:
-            ret_lines.append(f"\t.byte {self.bytes_as_asm(enemy.to_bytes())}\t; {enemy.name} @ {enemy.get_position()}")
+            ret_lines.append(f"\t.byte {bytes_to_asm(enemy.to_bytes())}\t; {enemy.name} @ {enemy.get_position()}")
 
         return "\n".join(ret_lines)
 
@@ -719,24 +711,18 @@ class Level(LevelLike):
         ret_lines.append(f"; Original address was ${level_offset:04X}")
         ret_lines.append(f"; {self.name}'s layout data")
 
-        ret_lines.append(f"\t.byte {self.bytes_as_asm(self.header_bytes[0:2])}\t\t\t ; Next Area Layout Offset")
-        ret_lines.append(f"\t.byte {self.bytes_as_asm(self.header_bytes[2:4])}\t\t\t ; Next Area Enemy & Item Offset")
+        ret_lines.append(f"\t.byte {bytes_to_asm(self.header_bytes[0:2])}\t\t\t ; Next Area Layout Offset")
+        ret_lines.append(f"\t.byte {bytes_to_asm(self.header_bytes[2:4])}\t\t\t ; Next Area Enemy & Item Offset")
+        ret_lines.append(f"\t.byte {bytes_to_asm(self.header_bytes[4])}\t\t\t\t ; Level Size Index | Y-Start Index")
         ret_lines.append(
-            f"\t.byte {self.bytes_as_asm(self.header_bytes[4])}\t\t\t\t ; Level Size Index | Y-Start Index"
+            f"\t.byte {bytes_to_asm(self.header_bytes[5])}\t\t\t\t ; BG Pal | Enemy Pal | X-Start Index | Unused"
         )
         ret_lines.append(
-            f"\t.byte {self.bytes_as_asm(self.header_bytes[5])}\t\t\t\t ; BG Pal | Enemy Pal | X-Start Index | Unused"
-        )
-        ret_lines.append(
-            f"\t.byte {self.bytes_as_asm(self.header_bytes[6])}"
+            f"\t.byte {bytes_to_asm(self.header_bytes[6])}"
             "\t\t\t\t ; Pipe Ends Level | VScroll Index | Vertical Flag | Next Area Object Set"
         )
-        ret_lines.append(
-            f"\t.byte {self.bytes_as_asm(self.header_bytes[7])}\t\t\t\t ; Level Entry Action | Graphic Set"
-        )
-        ret_lines.append(
-            f"\t.byte {self.bytes_as_asm(self.header_bytes[8])}\t\t\t\t ; Time Index | Unused | Music Index"
-        )
+        ret_lines.append(f"\t.byte {bytes_to_asm(self.header_bytes[7])}\t\t\t\t ; Level Entry Action | Graphic Set")
+        ret_lines.append(f"\t.byte {bytes_to_asm(self.header_bytes[8])}\t\t\t\t ; Time Index | Unused | Music Index")
         ret_lines.append("")
 
         for obj in self.objects + self.jumps:
@@ -745,7 +731,7 @@ class Level(LevelLike):
             else:
                 indent = "\t\t"
 
-            ret_lines.append(f"\t.byte {self.bytes_as_asm(obj.to_bytes())}{indent} ; {obj.name} @ {obj.get_position()}")
+            ret_lines.append(f"\t.byte {bytes_to_asm(obj.to_bytes())}{indent} ; {obj.name} @ {obj.get_position()}")
 
         ret_lines.append("\t.byte $FF\t\t\t\t ; delimiter")
 

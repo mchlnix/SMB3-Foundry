@@ -9,8 +9,8 @@ from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET, load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.CustomChildWindow import CustomChildWindow
-from foundry.gui.LevelSelector import OBJECT_SET_ITEMS
 from foundry.gui.Spinner import Spinner
 
 

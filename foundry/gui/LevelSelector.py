@@ -20,44 +20,13 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
+from foundry.gui import OBJECT_SET_ITEMS, WORLD_ITEMS
 from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
 from smb3parse.levels import FIRST_VALID_ROW, HEADER_LENGTH, WORLD_COUNT
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
-
-WORLD_ITEMS = [
-    "World Maps",
-    "World 1",
-    "World 2",
-    "World 3",
-    "World 4",
-    "World 5",
-    "World 6",
-    "World 7",
-    "World 8",
-    "Lost Levels",
-]
-
-OBJECT_SET_ITEMS = [
-    "0 Overworld",
-    "1 Plains",
-    "2 Dungeon",
-    "3 Hilly",
-    "4 Sky",
-    "5 Piranha Plant",
-    "6 Water",
-    "7 Mushroom",
-    "8 Pipe",
-    "9 Desert",
-    "A Ship",
-    "B Giant",
-    "C Ice",
-    "D Cloudy",
-    "E Underground",
-    "F Spade Bonus",
-]
 
 
 OVERWORLD_MAPS_INDEX = 0

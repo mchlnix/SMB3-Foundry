@@ -18,8 +18,9 @@ from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.level.Level import LEVEL_POINTER_OFFSET, Level
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.CustomDialog import CustomDialog
-from foundry.gui.LevelSelector import LevelSelector, OBJECT_SET_ITEMS
+from foundry.gui.LevelSelector import LevelSelector
 from foundry.gui.Spinner import Spinner
 from foundry.gui.commands import (
     SetLevelAttribute,
