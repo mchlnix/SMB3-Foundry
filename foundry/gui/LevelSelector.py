@@ -24,7 +24,7 @@ from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
-from smb3parse.levels import FIRST_VALID_ROW, WORLD_COUNT
+from smb3parse.levels import FIRST_VALID_ROW, HEADER_LENGTH, WORLD_COUNT
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 WORLD_ITEMS = [
@@ -199,7 +199,7 @@ class LevelSelector(QDialog):
         object_data_for_lvl = Level.offsets[level_array_offset].rom_level_offset
 
         if not level_is_overworld:
-            object_data_for_lvl -= Level.HEADER_LENGTH
+            object_data_for_lvl -= HEADER_LENGTH
 
         if not level_is_overworld:
             enemy_data_for_lvl = Level.offsets[level_array_offset].enemy_offset

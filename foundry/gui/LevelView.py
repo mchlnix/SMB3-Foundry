@@ -26,6 +26,7 @@ from foundry.gui.MainView import (
 from foundry.gui.commands import AddEnemyAt, AddLevelObjectAt, AddObject, MoveObjects, RemoveObjects, ResizeObjects
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, Settings
 from smb3parse.data_points import Position
+from smb3parse.levels import HEADER_LENGTH
 
 
 class LevelView(MainView):
@@ -481,7 +482,7 @@ class LevelView(MainView):
 
         level_index = (
             bisect_right(
-                [level.rom_level_offset - Level.HEADER_LENGTH for level in Level.sorted_offsets], end_of_level_objects
+                [level.rom_level_offset - HEADER_LENGTH for level in Level.sorted_offsets], end_of_level_objects
             )
             - 1
         )

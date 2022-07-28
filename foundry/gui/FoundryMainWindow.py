@@ -79,6 +79,7 @@ from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
 from foundry.gui.settings import Settings
 from smb3parse.constants import STARTING_WORLD_INDEX_ADDRESS, TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
+from smb3parse.levels import HEADER_LENGTH
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
 
@@ -448,7 +449,7 @@ class FoundryMainWindow(MainWindow):
         object_set = self.level_ref.level.next_area_object_set
         old_world = self.level_ref.level.world
 
-        world, level = world_and_level_for_level_address(level_address + Level.HEADER_LENGTH)
+        world, level = world_and_level_for_level_address(level_address + HEADER_LENGTH)
 
         self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
 

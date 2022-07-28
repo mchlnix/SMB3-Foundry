@@ -11,7 +11,7 @@ from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset, OFFSET_SIZE
 from smb3parse.data_points import Position
-from smb3parse.levels import OFFSET_BY_OBJECT_SET_A000, WORLD_MAP_LAYOUT_DELIMITER
+from smb3parse.levels import HEADER_LENGTH, OFFSET_BY_OBJECT_SET_A000, WORLD_MAP_LAYOUT_DELIMITER
 from smb3parse.levels.level_header import LevelHeader
 
 LEVEL_POINTER_OFFSET = Level_TilesetIdx_ByTileset
@@ -46,8 +46,6 @@ class Level(LevelLike):
 
     WORLDS = len(world_indexes)
 
-    HEADER_LENGTH = 9  # bytes
-
     def __init__(
         self, level_name: str = "", layout_address: int = 0, enemy_data_offset: int = 0, object_set_number: int = 1
     ):
@@ -68,7 +66,7 @@ class Level(LevelLike):
         """
 
         self.header_offset = layout_address
-        self.object_offset = self.header_offset + Level.HEADER_LENGTH
+        self.object_offset = self.header_offset + HEADER_LENGTH
         self.enemy_offset = enemy_data_offset
 
         self.objects: List[LevelObject] = []
@@ -87,7 +85,7 @@ class Level(LevelLike):
 
         rom = ROM()
 
-        self.header_bytes = rom.bulk_read(Level.HEADER_LENGTH, self.header_offset)
+        self.header_bytes = rom.bulk_read(HEADER_LENGTH, self.header_offset)
         self._parse_header()
 
         object_data = ROM.rom_data[self.object_offset :]
@@ -139,9 +137,9 @@ class Level(LevelLike):
     def reload(self):
         (_, header_and_object_data), (_, enemy_data) = self.to_bytes()
 
-        self.header_bytes = header_and_object_data[: Level.HEADER_LENGTH]
+        self.header_bytes = header_and_object_data[:HEADER_LENGTH]
 
-        object_data = header_and_object_data[Level.HEADER_LENGTH :]
+        object_data = header_and_object_data[HEADER_LENGTH:]
 
         self._parse_header()
         self._load_level_data(object_data, enemy_data, new_level=False)
@@ -246,7 +244,7 @@ class Level(LevelLike):
 
     def set_addresses(self, header_offset: int, enemy_item_offset: int):
         self.header_offset = header_offset
-        self.object_offset = self.header_offset + Level.HEADER_LENGTH
+        self.object_offset = self.header_offset + HEADER_LENGTH
         self.enemy_offset = enemy_item_offset
 
     def was_saved(self):
@@ -255,7 +253,7 @@ class Level(LevelLike):
     @property
     def objects_end(self):
         return (
-            self.header_offset + Level.HEADER_LENGTH + self.current_object_size() + len(WORLD_MAP_LAYOUT_DELIMITER)
+            self.header_offset + HEADER_LENGTH + self.current_object_size() + len(WORLD_MAP_LAYOUT_DELIMITER)
         )  # the delimiter
 
     @property
@@ -763,10 +761,10 @@ class Level(LevelLike):
 
         m3l_bytes = m3l_bytes[3:]
 
-        self.header_bytes = m3l_bytes[: Level.HEADER_LENGTH]
+        self.header_bytes = m3l_bytes[:HEADER_LENGTH]
         self._parse_header()
 
-        m3l_bytes = m3l_bytes[Level.HEADER_LENGTH :]
+        m3l_bytes = m3l_bytes[HEADER_LENGTH:]
 
         # figure out how many bytes are the objects
         self._load_objects(m3l_bytes)
@@ -819,8 +817,8 @@ class Level(LevelLike):
         self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data
 
-        self.header_bytes = object_bytes[0 : Level.HEADER_LENGTH]
-        objects = object_bytes[Level.HEADER_LENGTH :]
+        self.header_bytes = object_bytes[0:HEADER_LENGTH]
+        objects = object_bytes[HEADER_LENGTH:]
 
         self._parse_header(should_emit=False)
         self._load_level_data(objects, enemies, new_level)
