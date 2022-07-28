@@ -40,7 +40,7 @@ class ObjectSetSelector(QDialog):
             self.reject()
 
     @staticmethod
-    def get_object_set(parent):
+    def get_object_set(parent=None):
         dialog = ObjectSetSelector(parent)
 
         if dialog.exec() == QDialog.Accepted:

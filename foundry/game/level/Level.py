@@ -752,8 +752,8 @@ class Level(LevelLike):
         return "\n".join(ret_lines)
 
     def from_m3l(self, m3l_bytes: bytearray):
-        world_number, level_number, self.object_set_number = m3l_bytes[:3]
-        self.object_set = ObjectSet(self.object_set_number)
+        world_number, level_number, object_set_number = m3l_bytes[:3]
+        self.object_set = ObjectSet(object_set_number)
 
         self.header_offset = self.enemy_offset = 0
 

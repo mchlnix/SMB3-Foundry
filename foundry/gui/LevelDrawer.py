@@ -86,13 +86,13 @@ class LevelDrawer:
         self._draw_background(painter, level)
 
         if self.settings.value("level view/special_background"):
-            if level.object_set_number == DESERT_OBJECT_SET:
+            if level.object_set.number == DESERT_OBJECT_SET:
                 self._draw_desert_default_graphics(painter, level)
 
-            elif level.object_set_number == DUNGEON_OBJECT_SET:
+            elif level.object_set.number == DUNGEON_OBJECT_SET:
                 self._draw_dungeon_default_graphics(painter, level)
 
-            elif level.object_set_number == ICE_OBJECT_SET:
+            elif level.object_set.number == ICE_OBJECT_SET:
                 self._draw_ice_default_graphics(painter, level)
 
         self._draw_objects(painter, level)
@@ -117,7 +117,7 @@ class LevelDrawer:
     def _draw_background(self, painter: QPainter, level: Level):
         painter.save()
 
-        if level.object_set_number == CLOUDY_OBJECT_SET:
+        if level.object_set.number == CLOUDY_OBJECT_SET:
             bg_color = NESPalette[load_palette_group(level.object_set_number, level.header.object_palette_index)[3][2]]
         else:
             bg_color = bg_color_for_object_set(level.object_set_number, level.header.object_palette_index)
