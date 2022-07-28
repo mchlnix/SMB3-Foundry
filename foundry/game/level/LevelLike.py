@@ -10,8 +10,6 @@ class LevelLike(LevelBase, abc.ABC):
     def __init__(self, object_set_number, layout_address):
         super(LevelLike, self).__init__(object_set_number, layout_address)
 
-        self.changed = False
-
     @abc.abstractmethod
     def index_of(self, obj):
         pass

@@ -14,10 +14,7 @@ class MainWindow(QMainWindow):
         self.level_ref = LevelRef()
 
     def safe_to_change(self) -> bool:
-        if not (self.level_ref and self.level_ref.level.changed) and self.undo_stack.isClean():
-            return True
-
-        return self.confirm_changes()
+        return self.undo_stack.isClean() or self.confirm_changes()
 
     def confirm_changes(self):
         answer = QMessageBox.question(

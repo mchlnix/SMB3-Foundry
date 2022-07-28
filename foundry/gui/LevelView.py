@@ -37,8 +37,6 @@ class LevelView(MainView):
 
         super(LevelView, self).__init__(parent, level, settings, context_menu)
 
-        self.changed = False
-
         self.mouse_mode = MODE_FREE
 
         self.last_mouse_position = Position.from_xy(0, 0)
@@ -260,8 +258,6 @@ class LevelView(MainView):
         for obj in selected_objects:
             obj.resize_by(dx, dy)
 
-            self.level_ref.level.changed = True
-
         self.update()
 
     def get_selected_objects(self) -> List[InLevelObject]:
@@ -357,8 +353,6 @@ class LevelView(MainView):
 
         for obj in selected_objects:
             obj.move_by(dx, dy)
-
-            self.level_ref.level.changed = True
 
         self.update()
 

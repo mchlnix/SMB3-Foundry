@@ -53,9 +53,6 @@ class Level(LevelLike):
 
         self._signal_emitter = LevelSignaller()
 
-        self.changed = False
-        """Whether the current level was modified since it was loaded/last saved."""
-
         self.object_set = ObjectSet(object_set_number)
 
         self.name = level_name
