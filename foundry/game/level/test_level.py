@@ -3,6 +3,7 @@ from PySide6.QtCore import QPoint
 
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.level.Level import LEVEL_DEFAULT_HEIGHT
+from foundry.gui.asm import asm_to_bytes
 from smb3parse.data_points import Position
 
 
@@ -98,7 +99,7 @@ def test_level_insert_in_vertical_level(level):
 
 
 def test_to_asm(level):
-    print()
-    print(level.to_asm()[0])
-    print()
-    print(level.to_asm()[1])
+    level_asm, enemy_asm = level.to_asm()
+
+    assert level.to_bytes()[0][1] + bytearray([0xFF]) == asm_to_bytes(level_asm)
+    assert level.to_bytes()[1][1] == asm_to_bytes(enemy_asm)[1:]

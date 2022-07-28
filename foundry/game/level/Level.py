@@ -785,6 +785,16 @@ class Level(LevelLike):
 
         self._load_level_data(object_bytes, enemy_bytes)
 
+        self.level_changed.emit()
+
+    def from_asm(self, object_set_number: int, object_bytes: bytearray):
+        self.object_set_number = object_set_number
+        self.object_set = ObjectSet(object_set_number)
+
+        self.from_bytes((0, object_bytes[:-1]), (0, bytearray()), new_level=True)
+
+        self.level_changed.emit()
+
     def save_to_rom(self):
         for offset, data in self.to_bytes():
             ROM().bulk_write(data, offset)
