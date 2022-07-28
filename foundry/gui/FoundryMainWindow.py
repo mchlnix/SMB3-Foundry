@@ -1,7 +1,6 @@
 import base64
 import json
 import logging
-import os
 import pathlib
 import shlex
 import subprocess
@@ -27,8 +26,6 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import (
-    ASM_FILE_FILTER,
-    M3L_FILE_FILTER,
     ROM_FILE_FILTER,
     auto_save_level_data_path,
     auto_save_m3l_path,
@@ -74,6 +71,8 @@ from foundry.gui.commands import (
     ToBackground,
     ToForeground,
 )
+from foundry.gui.m3l import load_m3l, load_m3l_filename, save_m3l
+from foundry.gui.menus.file_menu import FileMenu
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
@@ -98,47 +97,16 @@ class FoundryMainWindow(MainWindow):
         self.undo_stack = QUndoStack(self)
         self.undo_stack.setObjectName("undo_stack")
 
-        file_menu = QMenu("&File")
+        self.file_menu = FileMenu(self.level_ref, self.settings)
 
-        open_rom_action = file_menu.addAction("Open ROM")
-        open_rom_action.setIcon(icon("folder.svg"))
-        open_rom_action.triggered.connect(self.on_open_rom)
+        self.file_menu.open_rom_action.triggered.connect(self.on_open_rom)
+        self.file_menu.open_m3l_action.triggered.connect(self.on_open_m3l)
+        self.file_menu.save_rom_action.triggered.connect(self.on_save_rom)
+        self.file_menu.save_rom_as_action.triggered.connect(self.on_save_rom_as)
+        self.file_menu.settings_action.triggered.connect(self._on_show_settings)
+        self.file_menu.exit_action.triggered.connect(lambda _: self.close())
 
-        self.open_m3l_action = file_menu.addAction("Open M3L")
-        self.open_m3l_action.setIcon(icon("folder.svg"))
-        self.open_m3l_action.triggered.connect(self.on_open_m3l)
-
-        file_menu.addSeparator()
-
-        self.save_rom_action = file_menu.addAction("Save ROM")
-        self.save_rom_action.triggered.connect(self.on_save_rom)
-        self.save_rom_action.setIcon(icon("save.svg"))
-
-        self.save_rom_as_action = file_menu.addAction("Save ROM as ...")
-        self.save_rom_as_action.triggered.connect(self.on_save_rom_as)
-        self.save_rom_as_action.setIcon(icon("save.svg"))
-
-        self.save_m3l_action = file_menu.addAction("Save M3L")
-        self.save_m3l_action.setIcon(icon("file-text.svg"))
-        self.save_m3l_action.triggered.connect(self.on_save_m3l)
-
-        self.save_asm_action = file_menu.addAction("Save ASM")
-        self.save_asm_action.setIcon(icon("cpu.svg"))
-        self.save_asm_action.triggered.connect(self.on_save_asm)
-
-        file_menu.addSeparator()
-
-        settings_action = file_menu.addAction("Editor Settings")
-        settings_action.setIcon(icon("sliders.svg"))
-        settings_action.triggered.connect(self._on_show_settings)
-
-        file_menu.addSeparator()
-
-        exit_action = file_menu.addAction("Exit")
-        exit_action.setIcon(icon("power.svg"))
-        exit_action.triggered.connect(lambda _: self.close())
-
-        self.menuBar().addMenu(file_menu)
+        self.menuBar().addMenu(self.file_menu)
 
         self.level_menu = QMenu("&Level")
 
@@ -281,10 +249,10 @@ class FoundryMainWindow(MainWindow):
         self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
-        self.menu_toolbar.addAction(settings_action)
+        self.menu_toolbar.addAction(self.file_menu.settings_action)
         self.menu_toolbar.addSeparator()
-        self.menu_toolbar.addAction(open_rom_action)
-        self.menu_toolbar.addAction(self.save_rom_action)
+        self.menu_toolbar.addAction(self.file_menu.open_rom_action)
+        self.menu_toolbar.addAction(self.file_menu.save_rom_action)
 
         self.menu_toolbar.addSeparator()
 
@@ -379,7 +347,10 @@ class FoundryMainWindow(MainWindow):
         self.level_ref.level_changed.emit()
 
     def _on_level_data_changed(self):
-        self.save_rom_action.setEnabled(not self.undo_stack.isClean() or PaletteGroup.changed)
+        level_is_not_attached = self.level_ref.level and not self.level_ref.level.attached_to_rom
+        changes_were_made = not self.undo_stack.isClean() or PaletteGroup.changed
+
+        self.file_menu.save_rom_action.setEnabled(level_is_not_attached or changes_were_made)
 
         self.jump_destination_action.setEnabled(bool(self.level_ref.level and self.level_ref.level.has_next_area))
 
@@ -436,8 +407,7 @@ class FoundryMainWindow(MainWindow):
                     "Could not recover m3l file, that was edited, when the editor crashed.",
                 )
 
-            with open(auto_save_m3l_path, "rb") as m3l_file:
-                self.load_m3l(bytearray(m3l_file.read()), auto_save_m3l_path)
+            self.load_m3l(auto_save_m3l_path)
         else:
             self.update_level("recovered level", object_address, enemy_address, object_set_number)
             self.level_ref.level.from_bytes((object_address, object_data), (enemy_address, enemy_data), True)
@@ -646,43 +616,23 @@ class FoundryMainWindow(MainWindow):
 
     def on_open_m3l(self, _) -> bool:
         if not self.safe_to_change():
-            return False
+            return
 
         # otherwise ask the user what new file to open
-        pathname, _ = QFileDialog.getOpenFileName(
-            self, caption="Open M3L file", dir=self.settings.value("editor/default dir path"), filter=M3L_FILE_FILTER
-        )
+        if not (pathname := load_m3l_filename(self.settings.value("editor/default dir path"))):
+            return
 
-        if not pathname:
-            return False
+        self.load_m3l(pathname)
+        save_m3l(auto_save_m3l_path, self.level_ref.level.to_m3l())
 
-        # Proceed loading the file chosen by the user
-        try:
-            with open(pathname, "rb") as m3l_file:
-
-                m3l_data = bytearray(m3l_file.read())
-        except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{pathname}'.")
-
-            return False
-
-        self.load_m3l(m3l_data, pathname)
-        self.save_m3l(auto_save_m3l_path, self.level_ref.level.to_m3l())
-
-        return True
-
-    def load_m3l(self, m3l_data: bytearray, pathname: str):
+    def load_m3l(self, pathname: str):
         if not self._ask_for_palette_save():
             return
 
         if self.level_ref.level is None:
             self.level_ref.level = Level()
 
-        self.level_ref.level.from_m3l(m3l_data)
-
-        self.level_view.level_ref.name = os.path.basename(pathname)
-
-        self.update_gui_for_level()
+        load_m3l(pathname, self.level_ref.level)
 
     def safe_to_change(self) -> bool:
         return super(FoundryMainWindow, self).safe_to_change() and self._ask_for_palette_save()
@@ -709,7 +659,7 @@ class FoundryMainWindow(MainWindow):
             self,
             "Please confirm",
             "You changed some object palettes. This is a change, that potentially affects other levels in this ROM. Do "
-            "you want to save these changes?",
+            "you want to save these changes and continue?",
             QMessageBox.Cancel | QMessageBox.RestoreDefaults | QMessageBox.Yes,
             QMessageBox.Cancel,
         )
@@ -831,63 +781,6 @@ class FoundryMainWindow(MainWindow):
         super(FoundryMainWindow, self)._save_current_changes_to_file(pathname, set_new_path)
 
         self._save_auto_rom()
-
-    def on_save_m3l(self, _):
-        suggested_file = self.level_view.level_ref.name
-
-        if not suggested_file.endswith(".m3l"):
-            suggested_file += ".m3l"
-
-        pathname, _ = QFileDialog.getSaveFileName(
-            self,
-            caption="Save M3L as",
-            dir=f"{self.settings.value('editor/default dir path')}/{suggested_file}",
-            filter=M3L_FILE_FILTER,
-        )
-
-        if not pathname:
-            return
-
-        m3l_bytes = self.level_view.level_ref.level.to_m3l()
-
-        self.save_m3l(pathname, m3l_bytes)
-
-    def save_m3l(self, pathname: os.PathLike, m3l_bytes: bytearray):
-        try:
-            with open(pathname, "wb") as m3l_file:
-                m3l_file.write(m3l_bytes)
-        except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Couldn't save level to '{pathname}'.")
-
-    def on_save_asm(self, _):
-        suggested_file = self.level_view.level_ref.name
-
-        if suggested_file.endswith(".m3l"):
-            suggested_file.replace(".m3l", ".asm")
-        else:
-            suggested_file += ".asm"
-
-        level_asm, enemy_asm = self.level_ref.level.to_asm()
-
-        self.save_asm(suggested_file, level_asm, "Level Bytes")
-        self.save_asm(suggested_file.replace(".asm", "_enemies.asm"), enemy_asm, "Enemy Bytes")
-
-    def save_asm(self, suggested_file: str, asm: str, what: str):
-        pathname, _ = QFileDialog.getSaveFileName(
-            self,
-            caption="Save M3L as",
-            dir=f"{self.settings.value('editor/default dir path')}/{suggested_file}",
-            filter=ASM_FILE_FILTER,
-        )
-
-        if not pathname:
-            return
-
-        try:
-            with open(pathname, "w") as m3l_file:
-                m3l_file.write(asm)
-        except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Couldn't save {what} to '{pathname}'.")
 
     def on_menu(self, action: QAction):
         pos = self.level_view.mapFromGlobal(self.context_menu.get_position())
@@ -1040,7 +933,7 @@ class FoundryMainWindow(MainWindow):
 
         is_a_world_map = isinstance(self.level_ref.level, WorldMap)
 
-        self.save_m3l_action.setEnabled(not is_a_world_map)
+        self.file_menu.save_m3l_action.setEnabled(not is_a_world_map)
         self.edit_header_action.setEnabled(not is_a_world_map)
 
         if is_a_world_map:
@@ -1063,9 +956,9 @@ class FoundryMainWindow(MainWindow):
         # actions and widgets, that depend on whether the ROM is loaded
         rom_elements = [
             # entries in file menu
-            self.open_m3l_action,
-            self.save_rom_action,
-            self.save_rom_as_action,
+            self.file_menu.open_m3l_action,
+            self.file_menu.save_rom_action,
+            self.file_menu.save_rom_as_action,
             # entry in level menu
             self.select_level_action,
         ]
@@ -1073,7 +966,7 @@ class FoundryMainWindow(MainWindow):
         # actions and widgets, that depend on whether a level is loaded or not
         level_elements = [
             # entry in file menu
-            self.save_m3l_action,
+            self.file_menu.save_m3l_action,
             # top toolbar
             self.menu_toolbar,
             # other gui elements

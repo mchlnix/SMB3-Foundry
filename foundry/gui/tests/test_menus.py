@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from PySide6.QtCore import QPoint
 from PySide6.QtWidgets import QFileDialog
 
 from foundry.game.File import ROM
@@ -25,25 +26,23 @@ def test_level_reload_action(main_window):
 
     assert _action_is_in_menu_bar(main_window, reload_action)
 
-    main_window.level_ref.level.changed = True
+    main_window.add_enemy_at(QPoint(100, 100))
 
-    assert main_window.level_ref.level.changed
+    assert not main_window.undo_stack.isClean()
 
     # WHEN the reload action is clicked/triggered
     reload_action.trigger()
 
     # THEN the level is not changed anymore
-    assert not main_window.level_ref.level.changed
+    assert main_window.undo_stack.isClean()
 
 
 def test_load_m3l(main_window, qtbot):
     QFileDialog.getOpenFileName = _mocked_open_file_name
-    # GIVEN the load from m3l action, th<t is visible from the menu
+    # GIVEN the load from m3l action, that is visible from the menu
     rom_data_before_load = ROM.rom_data.copy()
 
-    open_m3l_action = main_window.open_m3l_action
-
-    assert _action_is_in_menu_bar(main_window, open_m3l_action)
+    open_m3l_action = main_window.file_menu.open_m3l_action
 
     # WHEN the action is triggered and a m3l file is selected
     open_m3l_action.trigger()
