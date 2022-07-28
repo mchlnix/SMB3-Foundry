@@ -58,11 +58,13 @@ from foundry.gui.PaletteViewer import SidePalette
 from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
+from foundry.gui.asm import load_asm_filename
 from foundry.gui.commands import (
     AddEnemyAt,
     AddJump,
     AddLevelObjectAt,
     AttachLevelToRom,
+    ImportASMEnemies,
     PasteObjectsAt,
     RemoveJump,
     RemoveObjects,
@@ -103,6 +105,7 @@ class FoundryMainWindow(MainWindow):
         self.file_menu.open_m3l_action.triggered.connect(self.on_open_m3l)
         self.file_menu.save_rom_action.triggered.connect(self.on_save_rom)
         self.file_menu.save_rom_as_action.triggered.connect(self.on_save_rom_as)
+        self.file_menu.import_enemy_asm_action.triggered.connect(self.on_import_enemies_from_asm)
         self.file_menu.settings_action.triggered.connect(self._on_show_settings)
         self.file_menu.exit_action.triggered.connect(lambda _: self.close())
 
@@ -770,6 +773,12 @@ class FoundryMainWindow(MainWindow):
 
         if not is_save_as:
             self.undo_stack.setClean()
+
+    def on_import_enemies_from_asm(self):
+        if not (pathname := load_asm_filename("Enemy ASM", self.settings.value("editor/default dir path"))):
+            return
+
+        self.undo_stack.push(ImportASMEnemies(self.level_ref.level, pathname))
 
     def _attach_to_rom(self, object_data_offset: int, enemy_data_offset: int):
         if 0x0 in [object_data_offset, enemy_data_offset]:

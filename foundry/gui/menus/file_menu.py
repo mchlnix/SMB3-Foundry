@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QMenu
 
 from foundry import icon
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.asm import load_asm_enemy, load_asm_filename, load_asm_level, save_asm, save_asm_filename
+from foundry.gui.asm import load_asm_filename, load_asm_level, save_asm, save_asm_filename
 from foundry.gui.m3l import save_m3l, save_m3l_filename
 from foundry.gui.settings import Settings
 
@@ -77,8 +77,6 @@ class FileMenu(QMenu):
             self.on_save_enemy_asm()
         elif action is self.open_level_asm_action:
             self.on_open_level_asm()
-        elif action is self.import_enemy_asm_action:
-            self.on_import_enemies_from_asm()
         elif action is self.save_m3l_action:
             self.on_save_m3l()
 
@@ -87,12 +85,6 @@ class FileMenu(QMenu):
             return
 
         load_asm_level(pathname, self.level_ref.level)
-
-    def on_import_enemies_from_asm(self):
-        if not (pathname := load_asm_filename("Enemy ASM", self.settings.value("editor/default dir path"))):
-            return
-
-        load_asm_enemy(pathname, self.level_ref.level)
 
     def on_save_level_asm(self):
         suggested_file = f"{self.settings.value('editor/default dir path')}/{self.level_ref.name}.asm"

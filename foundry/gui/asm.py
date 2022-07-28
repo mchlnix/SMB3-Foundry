@@ -78,7 +78,9 @@ def load_asm_enemy(pathname: PathLike, level: "Level"):
         QMessageBox.warning(None, type(exp).__name__, f"Cannot open file '{pathname}'.")
         return
 
-    level._load_enemies(asm_to_bytes(asm_enemy_data)[1:])
+    _, (__, current_enemy_bytes) = level.to_bytes()
+
+    level._load_enemies(current_enemy_bytes[:-1] + asm_to_bytes(asm_enemy_data)[1:])
 
     level.data_changed.emit()
 

@@ -1,4 +1,6 @@
 from operator import itemgetter
+from os import PathLike
+from pathlib import Path
 from typing import List, Optional, TYPE_CHECKING, Tuple
 
 from PySide6.QtCore import QPoint
@@ -8,6 +10,7 @@ from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level
+from foundry.gui.asm import load_asm_enemy
 from smb3parse.data_points import Position
 
 if TYPE_CHECKING:
@@ -249,6 +252,35 @@ class ToBackground(ToForeground):
 
     def redo(self):
         self.level.bring_to_background(self.objects)
+
+        self.level.data_changed.emit()
+
+
+class ImportASMEnemies(QUndoCommand):
+    def __init__(self, level: Level, path: PathLike):
+        super(ImportASMEnemies, self).__init__()
+
+        self.level = level
+
+        self.path = path
+
+        self.enemies_before = level.enemies.copy()
+        self.enemies_after = []
+
+        self.setText(f"Importing Enemies from {Path(path).name}")
+
+    def undo(self):
+        self.level.enemies = self.enemies_before
+
+        self.level.data_changed.emit()
+
+    def redo(self):
+        if not self.enemies_after:
+            load_asm_enemy(self.path, self.level)
+
+            self.enemies_after = self.level.enemies.copy()
+        else:
+            self.level.enemies = self.enemies_after
 
         self.level.data_changed.emit()
 
