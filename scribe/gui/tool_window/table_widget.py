@@ -1,6 +1,6 @@
 from typing import List
 
-from PySide6.QtCore import QAbstractItemModel, QModelIndex, Signal
+from PySide6.QtCore import QAbstractItemModel, QModelIndex, Signal, SignalInstance
 from PySide6.QtGui import QUndoStack
 from PySide6.QtWidgets import (
     QComboBox,
@@ -18,7 +18,7 @@ from foundry.gui.Spinner import Spinner
 
 
 class TableWidget(QTableWidget):
-    selection_changed = Signal(int)
+    selection_changed: SignalInstance = Signal(int)
 
     def __init__(self, parent, level_ref: LevelRef):
         super(TableWidget, self).__init__(parent)
@@ -40,6 +40,7 @@ class TableWidget(QTableWidget):
     def set_headers(self, headers: List[str]):
         self.setColumnCount(len(headers))
 
+        # TODO doesn't do anything?
         self.setHorizontalHeaderLabels(headers)
 
     @property

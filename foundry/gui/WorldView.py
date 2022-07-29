@@ -421,6 +421,9 @@ class WorldView(MainView):
     def select_level_pointer(self, index: int):
         self.select_object_like(self.world.level_pointers[index])
 
+    def select_locks_and_bridges(self, index: int):
+        self.select_object_like(self.world.locks_and_bridges[index])
+
     def clear_tiles(self):
         self.undo_stack.beginMacro("Clear Tiles")
 

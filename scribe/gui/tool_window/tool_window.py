@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QMainWindow, QTabWidget
 
 from scribe.gui.tool_window.block_picker import BlockPicker
 from scribe.gui.tool_window.level_pointer_list import LevelPointerList
+from scribe.gui.tool_window.locks_list import LocksList
 from scribe.gui.tool_window.sprite_list import SpriteList
 
 
@@ -13,6 +14,7 @@ class ToolWindow(QMainWindow):
 
     sprite_selection_changed: SignalInstance = Signal(int)
     level_pointer_selection_changed: SignalInstance = Signal(int)
+    locks_selection_changed: SignalInstance = Signal(int)
 
     def __init__(self, parent, level_ref):
         super(ToolWindow, self).__init__(parent)
@@ -36,13 +38,18 @@ class ToolWindow(QMainWindow):
         self.sprite_list = SpriteList(self, self.level_ref)
         self.sprite_list.selection_changed.connect(self.sprite_selection_changed.emit)
 
+        self.locks_list = LocksList(self, self.level_ref)
+        self.locks_list.selection_changed.connect(self.locks_selection_changed.emit)
+
         self.tabbed_widget.addTab(self.tile_picker, "Tiles")
         self.tabbed_widget.addTab(self.level_pointer_list, "Level Pointers")
         self.tabbed_widget.addTab(self.sprite_list, "Sprites")
+        self.tabbed_widget.addTab(self.locks_list, "Locks and Bridges")
 
         # clear selection if you change the tab
         self.tabbed_widget.currentChanged.connect(lambda _: self.level_pointer_list.clearSelection())
         self.tabbed_widget.currentChanged.connect(lambda _: self.sprite_list.clearSelection())
+        self.tabbed_widget.currentChanged.connect(lambda _: self.locks_list.clearSelection())
 
         self.setCentralWidget(self.tabbed_widget)
 

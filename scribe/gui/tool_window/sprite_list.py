@@ -72,6 +72,7 @@ class SpriteList(TableWidget):
         self.blockSignals(True)
 
         for index, sprite in enumerate(self.world.sprites):
+            # TODO set icon to the sprite
             sprite_type = QTableWidgetItem(MAPOBJ_NAMES[sprite.data.type])
             item_type = QTableWidgetItem(MAPITEM_NAMES[sprite.data.item])
             pos = QTableWidgetItem(f"Screen {sprite.data.screen}: x={sprite.data.x}, y={sprite.data.y}")

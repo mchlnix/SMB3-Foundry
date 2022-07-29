@@ -84,6 +84,7 @@ class LevelPointerList(TableWidget):
             hex_level_address = QTableWidgetItem(hex(lp.data.level_address))
             hex_enemy_address = QTableWidgetItem(hex(lp.data.enemy_address))
             pos = QTableWidgetItem(f"Screen {lp.data.screen}: x={lp.data.x}, y={lp.data.y}")
+            # TODO Maybe set the tile of the pointer as an icon next to the pos?
 
             self.setItem(row, 0, object_set_name)
             self.setItem(row, 1, hex_level_address)

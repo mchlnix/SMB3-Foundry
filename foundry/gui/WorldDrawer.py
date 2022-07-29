@@ -118,4 +118,4 @@ class WorldDrawer:
             return
 
         for lock_object in world.locks_and_bridges:
-            lock_object.draw(painter, self.block_length, False)
+            lock_object.draw(painter, self.block_length, False, lock_object.selected)

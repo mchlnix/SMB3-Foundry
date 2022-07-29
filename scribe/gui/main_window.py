@@ -69,6 +69,7 @@ class ScribeMainWindow(MainWindow):
         self.tool_window.tile_selected.connect(self.world_view.on_put_tile)
         self.tool_window.sprite_selection_changed.connect(self.world_view.select_sprite)
         self.tool_window.level_pointer_selection_changed.connect(self.world_view.select_level_pointer)
+        self.tool_window.locks_selection_changed.connect(self.world_view.select_locks_and_bridges)
 
         self.menu_toolbar = QToolBar("Menu Toolbar", self)
         self.menu_toolbar.setOrientation(Qt.Horizontal)
