@@ -622,7 +622,7 @@ class Level(LevelLike):
         if index == -1:
             index = len(self.enemies)
         else:
-            index %= len(self.objects)
+            index -= len(self.objects)
 
         enemy = self.enemy_item_factory.from_data([object_index, *pos.xy], -1)
 
