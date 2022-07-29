@@ -243,9 +243,14 @@ class WorldMap(LevelLike):
 
         return self.internal_world_map.tile_at(pos)
 
-    @staticmethod
-    def locks_at(_, __):
-        return None
+    def locks_at(self, x, y):
+        pos = Position.from_xy(x, y)
+
+        for lock in reversed(self.locks_and_bridges):
+            if lock.data.is_at(pos):
+                return lock
+        else:
+            return None
 
     @staticmethod
     def pipe_at(_, __):
