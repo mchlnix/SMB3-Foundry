@@ -72,6 +72,13 @@ class WorldDrawer:
 
             painter.drawLine(QPoint(x, 0), QPoint(x, (WORLD_MAP_HEIGHT + FIRST_VALID_ROW) * self.block_length))
 
+        painter.setPen(QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 3))
+
+        for i in range(1, world.data.screen_count):
+            x = i * WORLD_MAP_SCREEN_WIDTH * self.block_length
+
+            painter.drawLine(QPoint(x, 0), QPoint(x, (WORLD_MAP_HEIGHT + FIRST_VALID_ROW) * self.block_length))
+
     def _draw_tiles(self, painter: QPainter, world: WorldMap):
         not_selected, selected = partition(lambda tile_: tile_.selected, world.get_all_objects())
 
