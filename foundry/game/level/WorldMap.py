@@ -219,7 +219,7 @@ class WorldMap(LevelLike):
     def sprite_at(self, x, y) -> Optional[Sprite]:
         pos = Position.from_xy(x, y)
 
-        for sprite in self.sprites:
+        for sprite in reversed(self.sprites):
             if sprite.data.is_at(pos):
                 return sprite
         else:
