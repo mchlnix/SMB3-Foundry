@@ -1,15 +1,14 @@
 import typing
 
-from PySide6.QtCore import QSize
+from PySide6.QtCore import QModelIndex, QSize
 from PySide6.QtGui import QPainter, QPixmap
-from PySide6.QtWidgets import QComboBox, QTableWidgetItem
+from PySide6.QtWidgets import QStyledItemDelegate, QTableWidgetItem, QWidget
 
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
-from scribe.gui.commands import SetSpriteItem, SetSpriteType
-from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, TableWidget
-from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES
-from smb3parse.levels import FIRST_VALID_ROW
+from foundry.gui.BlockViewer import BlockBank
+from scribe.gui.commands import ChangeReplacementTile
+from scribe.gui.tool_window.table_widget import DialogDelegate, TableWidget
 
 
 class LocksList(TableWidget):
@@ -26,10 +25,9 @@ class LocksList(TableWidget):
 
         self.set_headers(["Replacement Tile", "Linked Fortress", "Map Position", "Boom Boom Positions"])
 
-        self.setItemDelegateForColumn(0, DropdownDelegate(self, list(MAPOBJ_NAMES.values())))
-        self.setItemDelegateForColumn(1, DropdownDelegate(self, list(MAPITEM_NAMES.values())))
+        self.setItemDelegateForColumn(0, BlockBankDelegate(self))
         self.setItemDelegateForColumn(
-            2,
+            3,
             DialogDelegate(
                 self,
                 "No can do",
@@ -41,21 +39,16 @@ class LocksList(TableWidget):
         self.update_content()
 
     def _save_fortress_fx(self, row: int, column: int):
-        if column == 2:
+        if column in [2, 3]:
             return
 
-        sprite = self.world.sprites[row]
-
-        widget = typing.cast(QComboBox, self.cellWidget(row, column))
-        data = widget.currentText()
-
-        if sprite.data.y < FIRST_VALID_ROW:
-            sprite.data.y = FIRST_VALID_ROW
+        lock = self.world.locks_and_bridges[row]
 
         if column == 0:
-            self.undo_stack.push(SetSpriteType(sprite.data, list(MAPOBJ_NAMES.values()).index(data)))
-        elif column == 1:
-            self.undo_stack.push(SetSpriteItem(sprite.data, list(MAPITEM_NAMES.values()).index(data)))
+            widget = typing.cast(BlockBank, self.cellWidget(row, column))
+            data = widget.last_clicked_index
+
+            self.undo_stack.push(ChangeReplacementTile(self.world, lock.data.index, data))
         else:
             return
 
@@ -79,7 +72,9 @@ class LocksList(TableWidget):
             replacement_tile.setIcon(block_icon)
 
             fortress_index = QTableWidgetItem(hex(fortress_fx.data.index))
-            boomboom_pos = QTableWidgetItem(f"{hex(0x10 + 0x10 * index)} - {hex(0x20 + 0x10 * index - 1)}")
+            boomboom_pos = QTableWidgetItem(
+                f"{hex(0x10 + 0x10 * fortress_fx.data.index)} - {hex(0x20 + 0x10 * fortress_fx.data.index - 1)}"
+            )
             pos = QTableWidgetItem(f"Screen {fortress_fx.data.screen}: x={fortress_fx.data.x}, y={fortress_fx.data.y}")
 
             self.setItem(index, 0, replacement_tile)
@@ -88,3 +83,14 @@ class LocksList(TableWidget):
             self.setItem(index, 3, pos)
 
         self.blockSignals(False)
+
+
+class BlockBankDelegate(QStyledItemDelegate):
+    def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
+        block_bank = BlockBank(parent)
+        block_bank.clicked.connect(block_bank.hide)
+
+        return block_bank
+
+    def setEditorData(self, editor: BlockBank, index: QModelIndex):
+        editor.show()
