@@ -7,8 +7,9 @@ from PySide6.QtWidgets import QStyledItemDelegate, QTableWidgetItem, QWidget
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.BlockViewer import BlockBank
-from scribe.gui.commands import ChangeReplacementTile
-from scribe.gui.tool_window.table_widget import DialogDelegate, TableWidget
+from foundry.gui.Spinner import Spinner
+from scribe.gui.commands import ChangeLockIndex, ChangeReplacementTile
+from scribe.gui.tool_window.table_widget import DialogDelegate, SpinBoxDelegate, TableWidget
 
 
 class LocksList(TableWidget):
@@ -23,9 +24,11 @@ class LocksList(TableWidget):
         self.cellChanged.connect(self._save_fortress_fx)
         self.setIconSize(QSize(32, 32))
 
-        self.set_headers(["Replacement Tile", "Linked Fortress", "Map Position", "Boom Boom Positions"])
+        self.set_headers(["Replacement Tile", "Linked Fortress", "Boom Boom Positions", "Map Position"])
 
         self.setItemDelegateForColumn(0, BlockBankDelegate(self))
+        self.setItemDelegateForColumn(1, SpinBoxDelegate(self))
+        self.setItemDelegateForColumn(2, NoneDelegate(self))
         self.setItemDelegateForColumn(
             3,
             DialogDelegate(
@@ -49,6 +52,13 @@ class LocksList(TableWidget):
             data = widget.last_clicked_index
 
             self.undo_stack.push(ChangeReplacementTile(self.world, lock.data.index, data))
+
+        elif column == 1:
+            widget = typing.cast(Spinner, self.cellWidget(row, column))
+            data = widget.value()
+
+            self.undo_stack.push(ChangeLockIndex(self.world, lock, data))
+
         else:
             return
 
@@ -92,3 +102,11 @@ class BlockBankDelegate(QStyledItemDelegate):
 
     def setEditorData(self, editor: BlockBank, index: QModelIndex):
         editor.show()
+
+
+class NoneDelegate(QStyledItemDelegate):
+    def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
+        return None
+
+    def setEditorData(self, editor, index: QModelIndex):
+        pass

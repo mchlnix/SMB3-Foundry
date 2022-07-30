@@ -1,7 +1,7 @@
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
-from foundry.game.gfx.objects import LevelPointer
+from foundry.game.gfx.objects import LevelPointer, Lock
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
 from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, TILE_NAMES
@@ -222,6 +222,43 @@ class ChangeReplacementTile(QUndoCommand):
                 self.old_replacement_tile_index = lock.data.replacement_tile_index
 
                 lock.data.replacement_tile_index = self.replacement_tile_index
+
+
+class ChangeLockIndex(QUndoCommand):
+    def __init__(self, world: WorldMap, lock: Lock, new_index: int, parent=None):
+        super(ChangeLockIndex, self).__init__(parent)
+
+        self.world = world
+        self.lock = lock
+
+        self.old_index = lock.data.index
+        self.old_replacement_tile = lock.data.replacement_tile_index
+        self.new_index = new_index
+
+    def undo(self):
+        self._change_lock_index(self.old_index)
+
+    def redo(self):
+        self._change_lock_index(self.new_index)
+
+    def _change_lock_index(self, new_index: int):
+        if self.old_index == self.new_index:
+            return
+
+        for lock in self.world.locks_and_bridges:
+            if lock is self.lock:
+                continue
+
+            if lock.data.index == new_index:
+                self.lock.data.change_index(new_index)
+                self.lock.data.replacement_tile_index = lock.data.replacement_tile_index
+                self.lock.data.set_pos(lock.data.pos)
+
+                break
+
+        else:
+            self.lock.data.change_index(new_index)
+            self.lock.data.read_values()
 
 
 class SetWorldIndex(QUndoCommand):
