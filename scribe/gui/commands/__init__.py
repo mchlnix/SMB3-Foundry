@@ -202,6 +202,28 @@ class SetScreenCount(QUndoCommand):
         self.world.reread_tiles()
 
 
+class ChangeReplacementTile(QUndoCommand):
+    def __init__(self, world: WorldMap, fortress_fx_index: int, replacement_tile_index: int, parent=None):
+        super(ChangeReplacementTile, self).__init__(parent)
+
+        self.world = world
+        self.fx_index = fortress_fx_index
+        self.replacement_tile_index = replacement_tile_index
+        self.old_replacement_tile_index = -1
+
+    def undo(self):
+        for lock in self.world.locks_and_bridges:
+            if lock.data.index == self.fx_index:
+                lock.data.replacement_tile_index = self.old_replacement_tile_index
+
+    def redo(self):
+        for lock in self.world.locks_and_bridges:
+            if lock.data.index == self.fx_index:
+                self.old_replacement_tile_index = lock.data.replacement_tile_index
+
+                lock.data.replacement_tile_index = self.replacement_tile_index
+
+
 class SetWorldIndex(QUndoCommand):
     def __init__(self, world: WorldMap, new_index: int, parent=None):
         super(SetWorldIndex, self).__init__(parent)
