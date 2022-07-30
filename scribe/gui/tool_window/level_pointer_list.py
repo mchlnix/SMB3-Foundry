@@ -75,8 +75,6 @@ class LevelPointerList(TableWidget):
         self.world.data_changed.emit()
 
     def update_content(self):
-        self.clear()
-
         self.setRowCount(self.world.internal_world_map.level_count)
 
         for row, lp in enumerate(self.world.level_pointers):

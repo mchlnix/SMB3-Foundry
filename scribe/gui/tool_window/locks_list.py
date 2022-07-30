@@ -55,8 +55,6 @@ class LocksList(TableWidget):
         self.world.data_changed.emit()
 
     def update_content(self):
-        self.clear()
-
         self.setRowCount(len(self.world.locks_and_bridges))
 
         self.blockSignals(True)

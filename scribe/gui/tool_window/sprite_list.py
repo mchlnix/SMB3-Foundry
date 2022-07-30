@@ -65,8 +65,6 @@ class SpriteList(TableWidget):
         self.world.data_changed.emit()
 
     def update_content(self):
-        self.clear()
-
         self.setRowCount(len(self.world.sprites))
 
         self.blockSignals(True)
