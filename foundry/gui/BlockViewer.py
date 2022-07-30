@@ -121,6 +121,8 @@ class BlockBank(QWidget):
 
         self._size = QSize(self.sprites_horiz * Block.WIDTH * self.zoom, self.sprites_vert * Block.HEIGHT * self.zoom)
 
+        self.last_clicked_index = 0x00
+
         self.setFixedSize(self._size)
 
     def resizeEvent(self, event: QResizeEvent):
@@ -165,6 +167,7 @@ class BlockBank(QWidget):
         dec_index = row * self.sprites_horiz + column
 
         if dec_index < 0xFF:
+            self.last_clicked_index = dec_index
             self.clicked.emit(dec_index)
 
     def paintEvent(self, event: QPaintEvent):
