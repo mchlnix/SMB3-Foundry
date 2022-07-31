@@ -28,6 +28,8 @@ class Tile:
         graphics_set: GraphicsSet,
         mirrored=False,
     ):
+        self.tile_index = object_index
+
         start = object_index * Tile.SIZE
 
         self.cached_tiles: Dict[int, QImage] = dict()
