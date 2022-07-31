@@ -112,6 +112,9 @@ def test_moving_all_objects_partly_off_screen(worldview):
     start_point = QPoint(0, 0)
     end_point = QPoint(worldview.world.size[0], 0) * worldview.block_length - QPoint(1, 0)
 
+    # hide sprites, otherwise we drag it instead
+    worldview.settings.setValue("world view/show sprites", False)
+
     assert worldview.world.point_in(*worldview.to_level_point(end_point).xy), (
         end_point,
         worldview.to_level_point(end_point),
@@ -127,6 +130,8 @@ def test_moving_all_objects_partly_off_screen(worldview):
             assert map_object.type != WORLD_MAP_BLANK_TILE_ID, index
         else:
             assert map_object.type == WORLD_MAP_BLANK_TILE_ID, index
+
+    worldview.settings.setValue("world view/show sprites", True)
 
 
 def test_move_sprite(worldview):
