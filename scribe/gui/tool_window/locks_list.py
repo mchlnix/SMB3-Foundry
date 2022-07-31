@@ -23,7 +23,7 @@ class LocksList(TableWidget):
 
         self.cellChanged.connect(self._save_fortress_fx)
 
-        self.set_headers(["Replacement Tile", "Lock Index", "Boom Boom Positions", "Map Position"])
+        self.set_headers(["Replacement Tile", "Lock Index", "Boom Boom Y Positions", "Map Position"])
 
         self.setItemDelegateForColumn(0, BlockBankDelegate(self))
         self.setItemDelegateForColumn(1, SpinBoxDelegate(self))
@@ -83,6 +83,8 @@ class LocksList(TableWidget):
                 f"{hex(0x10 + 0x10 * fortress_fx.data.index)} - {hex(0x20 + 0x10 * fortress_fx.data.index - 1)}"
             )
             pos = QTableWidgetItem(f"Screen {fortress_fx.data.screen}: x={fortress_fx.data.x}, y={fortress_fx.data.y}")
+
+            self._set_map_tile_as_icon(pos, fortress_fx.get_position())
 
             self.setItem(index, 0, replacement_tile)
             self.setItem(index, 1, fortress_index)

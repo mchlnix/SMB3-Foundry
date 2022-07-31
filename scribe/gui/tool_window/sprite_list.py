@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 from foundry.game.level.LevelRef import LevelRef
 from scribe.gui.commands import ChangeSpriteIndex, SetSpriteItem, SetSpriteType
 from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, TableWidget
-from smb3parse.constants import MAP_ITEM_SPRITES, MAPITEM_NAMES, MAPOBJ_NAMES, MAP_OBJ_SPRITES
+from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, MAP_ITEM_SPRITES, MAP_OBJ_SPRITES
 from smb3parse.levels import FIRST_VALID_ROW
 
 
@@ -80,6 +80,8 @@ class SpriteList(TableWidget):
             item_type = QTableWidgetItem(MAPITEM_NAMES[sprite.data.item])
             item_type.setIcon(QPixmap(MAP_ITEM_SPRITES[sprite.data.item].scaled(self.iconSize())))
             pos = QTableWidgetItem(f"Screen {sprite.data.screen}: x={sprite.data.x}, y={sprite.data.y}")
+
+            self._set_map_tile_as_icon(pos, sprite.get_position())
 
             self.setItem(index, 0, sprite_type)
             self.setItem(index, 1, item_type)

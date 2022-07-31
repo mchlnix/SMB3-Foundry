@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Tuple
 
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, QSize, Signal, SignalInstance
-from PySide6.QtGui import QImage, QPixmap, QUndoStack
+from PySide6.QtGui import QImage, QPainter, QPixmap, QUndoStack
 from PySide6.QtWidgets import (
     QComboBox,
     QHeaderView,
@@ -9,9 +9,11 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QStyledItemDelegate,
     QTableWidget,
+    QTableWidgetItem,
     QWidget,
 )
 
+from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.Spinner import Spinner
@@ -62,6 +64,18 @@ class TableWidget(QTableWidget):
 
     def update_content(self):
         pass
+
+    def _set_map_tile_as_icon(self, item: QTableWidgetItem, pos: Tuple[int, int]):
+        if not self.world.point_in(*pos):
+            return
+
+        block_icon = QPixmap(self.iconSize())
+
+        painter = QPainter(block_icon)
+        get_worldmap_tile(self.world.tile_at(*pos)).draw(painter, 0, 0, self.iconSize().width())
+        painter.end()
+
+        item.setIcon(block_icon)
 
 
 class DropdownDelegate(QStyledItemDelegate):
