@@ -24,7 +24,7 @@ class LocksList(TableWidget):
         self.cellChanged.connect(self._save_fortress_fx)
         self.setIconSize(QSize(32, 32))
 
-        self.set_headers(["Replacement Tile", "Linked Fortress", "Boom Boom Positions", "Map Position"])
+        self.set_headers(["Replacement Tile", "Lock Index", "Boom Boom Positions", "Map Position"])
 
         self.setItemDelegateForColumn(0, BlockBankDelegate(self))
         self.setItemDelegateForColumn(1, SpinBoxDelegate(self))
