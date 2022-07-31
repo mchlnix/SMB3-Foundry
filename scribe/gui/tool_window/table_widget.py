@@ -1,7 +1,7 @@
 from typing import List
 
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, QSize, Signal, SignalInstance
-from PySide6.QtGui import QUndoStack
+from PySide6.QtGui import QImage, QPixmap, QUndoStack
 from PySide6.QtWidgets import (
     QComboBox,
     QHeaderView,
@@ -64,17 +64,28 @@ class TableWidget(QTableWidget):
 
 
 class DropdownDelegate(QStyledItemDelegate):
-    def __init__(self, parent, items: List[str]):
+    def __init__(self, parent, items: List[str], icons: List[QImage] = None):
         super(DropdownDelegate, self).__init__(parent)
 
         self._items = items
+
+        if icons is None:
+            self._icons = []
+        else:
+            self._icons = icons
 
     def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
         combobox = QComboBox(parent)
         combobox.currentTextChanged.connect(lambda _: combobox.clearFocus())
 
-        for index, name in enumerate(self._items):
-            combobox.addItem(name, index)
+        if not self._icons:
+            for name in self._items:
+                combobox.addItem(name)
+        else:
+            for icon, name in zip(self._icons, self._items):
+                combobox.addItem(QPixmap(icon.scaled(32, 32)), name)
+
+        combobox.setIconSize(QSize(32, 32))
 
         return combobox
 
