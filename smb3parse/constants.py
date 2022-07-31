@@ -2,6 +2,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, Union
 
+from foundry.game.gfx.drawable import load_from_png
+
 BASE_OFFSET = 0x10
 """the size of the INES header identifying the rom"""
 
@@ -74,6 +76,29 @@ MAPOBJ_NAMES = {
     MAPOBJ_CANOE: "Canoe",
 }
 
+EMPTY_IMAGE = load_from_png(0, 53)
+
+MAP_OBJ_SPRITES = {
+    MAPOBJ_EMPTY: EMPTY_IMAGE,
+    MAPOBJ_HELP: load_from_png(43, 2),
+    MAPOBJ_AIRSHIP: load_from_png(44, 2),
+    MAPOBJ_HAMMERBRO: load_from_png(45, 2),
+    MAPOBJ_BOOMERANGBRO: load_from_png(46, 2),
+    MAPOBJ_HEAVYBRO: load_from_png(47, 2),
+    MAPOBJ_FIREBRO: load_from_png(48, 2),
+    MAPOBJ_W7PLANT: load_from_png(49, 2),
+    MAPOBJ_UNK08: load_from_png(50, 2),
+    MAPOBJ_NSPADE: load_from_png(51, 2),
+    MAPOBJ_WHITETOADHOUSE: load_from_png(52, 2),
+    MAPOBJ_COINSHIP: load_from_png(53, 2),
+    MAPOBJ_UNK0C: load_from_png(54, 2),
+    MAPOBJ_BATTLESHIP: load_from_png(55, 2),
+    MAPOBJ_TANK: load_from_png(56, 2),
+    MAPOBJ_W8AIRSHIP: load_from_png(57, 2),
+    MAPOBJ_CANOE: load_from_png(58, 2),
+}
+
+
 # 1 - Super, 2 - Fire, 3 - Leaf, 4 - Frog, 5 - Tanooki, 6 - Hammer, 7 - Judgems, 8 - Pwing, 9 - Star
 # A - Anchor, B - Hammer, C - Warp Whistle, D - Music Box
 
@@ -111,6 +136,27 @@ MAPITEM_NAMES = {
     MAPITEM_MUSICBOX: "Music Box",
     MAPITEM_UNKNOWN1: "Broken 1",
     MAPITEM_UNKNOWN2: "Broken 2",
+}
+
+EMPTY_IMAGE = load_from_png(0, 53)
+
+MAP_ITEM_SPRITES = {
+    MAPITEM_NOITEM: EMPTY_IMAGE,
+    MAPITEM_MUSHROOM: load_from_png(6, 48),
+    MAPITEM_FIREFLOWER: load_from_png(16, 53),
+    MAPITEM_LEAF: load_from_png(57, 53),
+    MAPITEM_FROG: load_from_png(56, 53),
+    MAPITEM_TANOOKI: load_from_png(54, 53),
+    MAPITEM_HAMMERSUIT: load_from_png(58, 53),
+    MAPITEM_JUDGEMS: load_from_png(19, 51),
+    MAPITEM_PWING: load_from_png(55, 53),
+    MAPITEM_STAR: load_from_png(5, 48),
+    MAPITEM_ANCHOR: load_from_png(61, 53),
+    MAPITEM_HAMMER: load_from_png(63, 53),
+    MAPITEM_WHISTLE: load_from_png(60, 53),
+    MAPITEM_MUSICBOX: load_from_png(62, 53),
+    MAPITEM_UNKNOWN1: EMPTY_IMAGE,
+    MAPITEM_UNKNOWN2: EMPTY_IMAGE,
 }
 
 TILE_NAMES: Dict[int, str] = defaultdict(lambda: "Blank Square")

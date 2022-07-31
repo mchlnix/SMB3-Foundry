@@ -1,12 +1,12 @@
 import typing
 
-from PySide6.QtGui import QDropEvent
+from PySide6.QtGui import QDropEvent, QPixmap
 from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
 from foundry.game.level.LevelRef import LevelRef
 from scribe.gui.commands import ChangeSpriteIndex, SetSpriteItem, SetSpriteType
 from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, TableWidget
-from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES
+from smb3parse.constants import MAP_ITEM_SPRITES, MAPITEM_NAMES, MAPOBJ_NAMES, MAP_OBJ_SPRITES
 from smb3parse.levels import FIRST_VALID_ROW
 
 
@@ -70,9 +70,11 @@ class SpriteList(TableWidget):
         self.blockSignals(True)
 
         for index, sprite in enumerate(self.world.sprites):
-            # TODO set icon to the sprite
             sprite_type = QTableWidgetItem(MAPOBJ_NAMES[sprite.data.type])
+            sprite_type.setIcon(QPixmap(MAP_OBJ_SPRITES[sprite.data.type].scaled(self.iconSize())))
+
             item_type = QTableWidgetItem(MAPITEM_NAMES[sprite.data.item])
+            item_type.setIcon(QPixmap(MAP_ITEM_SPRITES[sprite.data.item].scaled(self.iconSize())))
             pos = QTableWidgetItem(f"Screen {sprite.data.screen}: x={sprite.data.x}, y={sprite.data.y}")
 
             self.setItem(index, 0, sprite_type)

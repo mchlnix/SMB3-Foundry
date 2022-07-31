@@ -17,7 +17,7 @@ from foundry.game.gfx.objects import (
 from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
 from foundry.gui.settings import Settings
-from smb3parse.constants import OBJ_AUTOSCROLL
+from smb3parse.constants import EMPTY_IMAGE, OBJ_AUTOSCROLL
 from smb3parse.levels import (
     LEVEL_MAX_LENGTH,
     LEVEL_SCREEN_HEIGHT,
@@ -45,8 +45,6 @@ LEFT_ARROW = load_from_png(35, 53)
 RIGHT_ARROW = load_from_png(36, 53)
 
 ITEM_ARROW = load_from_png(53, 53)
-
-EMPTY_IMAGE = load_from_png(0, 53)
 
 
 SPECIAL_BACKGROUND_OBJECTS = [
