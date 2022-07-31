@@ -325,6 +325,8 @@ class ScribeMainWindow(MainWindow):
 
         self.setWindowTitle(f"{self.level_ref.level.name} - SMB3 Scribe")
 
+        self.undo_stack.clear()
+
     def on_save_rom(self, is_save_as=False):
         if is_save_as:
             suggested_file = ROM.name
@@ -379,7 +381,6 @@ class ScribeMainWindow(MainWindow):
             return
 
         # if the user is ok with changing, let's go!
-        self.undo_stack.clear()
         self.load_level(index + 1)
 
         self._resize_for_level()
