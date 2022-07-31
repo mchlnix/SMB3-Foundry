@@ -156,7 +156,7 @@ class BlockBank(QWidget):
 
         self.status_message_changed.emit(status_message)
 
-    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         x, y = event.pos().toTuple()
 
         block_length = Block.WIDTH * self.zoom
