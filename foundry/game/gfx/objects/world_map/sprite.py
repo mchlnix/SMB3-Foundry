@@ -6,6 +6,7 @@ from PySide6.QtGui import QColor
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.constants import MAPOBJ_NAMES, MAP_OBJ_SPRITES
 from smb3parse.data_points import Position, SpriteData
+from smb3parse.levels import FIRST_VALID_ROW
 
 
 class Sprite(MapObject):
@@ -13,6 +14,9 @@ class Sprite(MapObject):
         super(Sprite, self).__init__()
 
         self.data = sprite_data
+
+        if self.data.row < FIRST_VALID_ROW:
+            self.data.row = FIRST_VALID_ROW
 
     @property
     def name(self):
