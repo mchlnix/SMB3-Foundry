@@ -35,7 +35,9 @@ class TableWidget(QTableWidget):
 
         self.setSelectionBehavior(self.SelectRows)
         self.setSelectionMode(self.SingleSelection)
-        self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.horizontalHeader().setStretchLastSection(True)
 
         self.itemSelectionChanged.connect(lambda: self.selection_changed.emit(self.selected_row))
 
