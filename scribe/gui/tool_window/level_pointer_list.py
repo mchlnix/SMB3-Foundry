@@ -78,6 +78,8 @@ class LevelPointerList(TableWidget):
     def update_content(self):
         self.setRowCount(self.world.internal_world_map.level_count)
 
+        self.blockSignals(True)
+
         for row, lp in enumerate(self.world.level_pointers):
             object_set_name = QTableWidgetItem(OBJECT_SET_NAMES[lp.data.object_set])
 
@@ -97,3 +99,5 @@ class LevelPointerList(TableWidget):
             self.setItem(row, 1, hex_level_address)
             self.setItem(row, 2, hex_enemy_address)
             self.setItem(row, 3, pos)
+
+        self.blockSignals(False)
