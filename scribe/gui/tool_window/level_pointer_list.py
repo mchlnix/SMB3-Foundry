@@ -1,9 +1,10 @@
 import typing
 
-from PySide6.QtGui import QDropEvent
+from PySide6.QtGui import QDropEvent, QPainter, QPixmap
 from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
+from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
 from scribe.gui.commands import ChangeLevelPointerIndex, SetEnemyAddress, SetLevelAddress, SetObjectSet
@@ -79,6 +80,14 @@ class LevelPointerList(TableWidget):
 
         for row, lp in enumerate(self.world.level_pointers):
             object_set_name = QTableWidgetItem(OBJECT_SET_NAMES[lp.data.object_set])
+
+            block_icon = QPixmap(self.iconSize())
+            painter = QPainter(block_icon)
+            get_worldmap_tile(self.world.tile_at(*lp.get_position())).draw(painter, 0, 0, self.iconSize().width())
+            painter.end()
+
+            object_set_name.setIcon(block_icon)
+
             hex_level_address = QTableWidgetItem(hex(lp.data.level_address))
             hex_enemy_address = QTableWidgetItem(hex(lp.data.enemy_address))
             pos = QTableWidgetItem(f"Screen {lp.data.screen}: x={lp.data.x}, y={lp.data.y}")

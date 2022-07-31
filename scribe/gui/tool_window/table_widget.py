@@ -1,6 +1,6 @@
 from typing import List
 
-from PySide6.QtCore import QAbstractItemModel, QModelIndex, Signal, SignalInstance
+from PySide6.QtCore import QAbstractItemModel, QModelIndex, QSize, Signal, SignalInstance
 from PySide6.QtGui import QUndoStack
 from PySide6.QtWidgets import (
     QComboBox,
@@ -24,6 +24,7 @@ class TableWidget(QTableWidget):
         super(TableWidget, self).__init__(parent)
 
         self.setDragDropMode(self.InternalMove)
+        self.setIconSize(QSize(32, 32))
 
         self.level_ref = level_ref
 

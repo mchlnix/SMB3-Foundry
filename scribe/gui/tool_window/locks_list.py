@@ -1,6 +1,6 @@
 import typing
 
-from PySide6.QtCore import QModelIndex, QSize
+from PySide6.QtCore import QModelIndex
 from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtWidgets import QStyledItemDelegate, QTableWidgetItem, QWidget
 
@@ -22,7 +22,6 @@ class LocksList(TableWidget):
         self.level_ref.data_changed.connect(self.update_content)
 
         self.cellChanged.connect(self._save_fortress_fx)
-        self.setIconSize(QSize(32, 32))
 
         self.set_headers(["Replacement Tile", "Lock Index", "Boom Boom Positions", "Map Position"])
 
