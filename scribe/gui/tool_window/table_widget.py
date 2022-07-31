@@ -25,6 +25,7 @@ class TableWidget(QTableWidget):
 
         self.setDragDropMode(self.InternalMove)
         self.setIconSize(QSize(32, 32))
+        self.setAlternatingRowColors(True)
 
         self.level_ref = level_ref
 
