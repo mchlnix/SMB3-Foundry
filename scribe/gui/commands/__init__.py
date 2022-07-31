@@ -3,6 +3,7 @@ from typing import Tuple
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
+from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects import LevelPointer, Lock
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
@@ -221,19 +222,31 @@ class ChangeReplacementTile(QUndoCommand):
         self.world = world
         self.fx_index = fortress_fx_index
         self.replacement_tile_index = replacement_tile_index
+
         self.old_replacement_tile_index = -1
+        self.old_tile_indexes = []
 
     def undo(self):
         for lock in self.world.locks_and_bridges:
             if lock.data.index == self.fx_index:
-                lock.data.replacement_tile_index = self.old_replacement_tile_index
+                lock.data.tile_indexes = self.old_tile_indexes
+                lock.data.replacement_block_index = self.old_replacement_tile_index
 
     def redo(self):
+        block = get_worldmap_tile(self.replacement_tile_index)
+
         for lock in self.world.locks_and_bridges:
             if lock.data.index == self.fx_index:
-                self.old_replacement_tile_index = lock.data.replacement_tile_index
+                self.old_tile_indexes = lock.data.tile_indexes
+                self.old_replacement_tile_index = lock.data.replacement_block_index
 
-                lock.data.replacement_tile_index = self.replacement_tile_index
+                lock.data.tile_indexes = [
+                    block.lu_tile.tile_index,
+                    block.ru_tile.tile_index,
+                    block.ld_tile.tile_index,
+                    block.rd_tile.tile_index,
+                ]
+                lock.data.replacement_block_index = self.replacement_tile_index
 
 
 class ChangeLockIndex(QUndoCommand):
@@ -244,7 +257,7 @@ class ChangeLockIndex(QUndoCommand):
         self.lock = lock
 
         self.old_index = lock.data.index
-        self.old_replacement_tile = lock.data.replacement_tile_index
+        self.old_replacement_tile = lock.data.replacement_block_index
         self.new_index = new_index
 
     def undo(self):
@@ -263,7 +276,7 @@ class ChangeLockIndex(QUndoCommand):
 
             if lock.data.index == new_index:
                 self.lock.data.change_index(new_index)
-                self.lock.data.replacement_tile_index = lock.data.replacement_tile_index
+                self.lock.data.replacement_block_index = lock.data.replacement_block_index
                 self.lock.data.set_pos(lock.data.pos)
 
                 break

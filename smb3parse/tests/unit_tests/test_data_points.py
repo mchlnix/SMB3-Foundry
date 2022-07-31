@@ -154,7 +154,7 @@ def test_reading_airship_travel_sets(world_1):
 def test_reading_locks(world_1):
     assert world_1.data.fortress_fx_count == 4
     assert world_1.data.fortress_fx[0].pos == Position(4, 5, 0)
-    assert world_1.data.fortress_fx[0].replacement_tile_index == 0x46
+    assert world_1.data.fortress_fx[0].replacement_block_index == 0x46
 
     assert world_1.data.fortress_fx_indexes == [0, 0, 0, 0]
 

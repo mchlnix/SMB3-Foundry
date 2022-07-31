@@ -17,7 +17,7 @@ class Lock(MapObject):
 
         self.data = fortress_fx_data
 
-        self.replacement_tile = get_worldmap_tile(self.data.replacement_tile_index)
+        self.replacement_tile = get_worldmap_tile(self.data.replacement_block_index)
 
     def draw(self, painter: QPainter, block_length, transparent, selected=False):
         pos = QPoint(*self.data.pos.xy) * block_length

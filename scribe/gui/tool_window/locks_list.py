@@ -70,11 +70,11 @@ class LocksList(TableWidget):
         self.blockSignals(True)
 
         for index, fortress_fx in enumerate(self.world.locks_and_bridges):
-            replacement_tile = QTableWidgetItem(hex(fortress_fx.data.replacement_tile_index))
+            replacement_tile = QTableWidgetItem(hex(fortress_fx.data.replacement_block_index))
 
             block_icon = QPixmap(self.iconSize())
             painter = QPainter(block_icon)
-            get_worldmap_tile(fortress_fx.data.replacement_tile_index).draw(painter, 0, 0, self.iconSize().width())
+            get_worldmap_tile(fortress_fx.data.replacement_block_index).draw(painter, 0, 0, self.iconSize().width())
             painter.end()
 
             replacement_tile.setIcon(block_icon)
