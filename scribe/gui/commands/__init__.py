@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
@@ -68,10 +70,20 @@ class MoveMapObject(QUndoCommand):
         self.setText(f"Move {self.map_object.name}")
 
     def undo(self):
-        self.map_object.set_position(*self.start)
+        self._move_map_object(self.start)
 
     def redo(self):
-        self.map_object.set_position(*self.end)
+        self._move_map_object(self.end)
+
+    def _move_map_object(self, new_pos: Tuple[int, int]):
+        self.map_object.set_position(*new_pos)
+
+        if isinstance(self.map_object, Lock):
+            for lock in self.world.locks_and_bridges:
+                if lock.data.index == self.map_object.data.index:
+                    lock.set_position(*new_pos)
+
+        self.world.data_changed.emit()
 
 
 class PutTile(MoveTile):
