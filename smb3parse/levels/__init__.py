@@ -164,4 +164,4 @@ class LevelBase(ABC):
         self.object_set = ObjectSet(self.object_set_number)
 
     def point_in(self, x, y):
-        return x < self.width and y < self.height
+        return 0 <= x < self.width and 0 <= y < self.height
