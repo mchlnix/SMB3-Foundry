@@ -13,8 +13,8 @@ from foundry.gui.HeaderEditor import CAMERA_MOVEMENTS
 from foundry.gui.LevelView import LevelView
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.util import clear_layout
-from smb3parse.constants import OBJ_AUTOSCROLL
-from smb3parse.objects.object_set import PLAINS_OBJECT_SET
+from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_BOOMBOOM
+from smb3parse.objects.object_set import DUNGEON_OBJECT_SET, PLAINS_OBJECT_SET
 
 
 class WarningList(QWidget):
@@ -115,6 +115,18 @@ class WarningList(QWidget):
                     self.warnings.append(
                         (f"{enemy} incompatible with {other_enemy}, when on same screen", [enemy, other_enemy])
                     )
+
+        # boom boom not in dungeon level
+        for enemy in level.enemies:
+            if enemy.type != OBJ_BOOMBOOM:
+                continue
+
+            if level.object_set_number != DUNGEON_OBJECT_SET:
+                self.warnings.append(
+                    ("You should only use BoomBoom enemies in levels of object set 'Dungeon'.", [enemy])
+                )
+
+            break
 
         self.update()
         self.warnings_updated.emit(bool(self.warnings))
