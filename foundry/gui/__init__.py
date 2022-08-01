@@ -1,3 +1,5 @@
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
+
 WORLD_ITEMS = [
     "World Maps",
     "World 1",
@@ -29,3 +31,14 @@ OBJECT_SET_ITEMS = [
     "E Underground",
     "F Spade Bonus",
 ]
+
+
+def label_and_widget(label_text: str, widget: QWidget) -> QHBoxLayout:
+    label = QLabel(label_text)
+
+    layout = QHBoxLayout()
+
+    layout.addWidget(label)
+    layout.addWidget(widget)
+
+    return layout

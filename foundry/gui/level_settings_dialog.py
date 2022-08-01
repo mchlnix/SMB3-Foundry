@@ -1,10 +1,11 @@
 from typing import List, Optional
 
 from PySide6.QtGui import QUndoStack
-from PySide6.QtWidgets import QCheckBox, QLabel, QVBoxLayout
+from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QVBoxLayout
 
 from foundry.game.gfx.objects import EnemyItem
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui import label_and_widget
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
 from foundry.gui.commands import AddObject, RemoveObjects
@@ -21,9 +22,9 @@ AUTOSCROLL_LABELS = {
 }
 
 
-class AutoScrollEditor(CustomDialog):
+class LevelSettingsDialog(CustomDialog):
     def __init__(self, parent, level_ref: LevelRef):
-        super(AutoScrollEditor, self).__init__(parent, title="Autoscroll Editor")
+        super(LevelSettingsDialog, self).__init__(parent, title="Other Level Settings")
 
         self.level_ref = level_ref
 
@@ -31,6 +32,10 @@ class AutoScrollEditor(CustomDialog):
         self.original_y_value = self.original_autoscroll_item.y_position if self.original_autoscroll_item else -1
 
         QVBoxLayout(self)
+
+        # Autoscroll
+        auto_scroll_group = QGroupBox("Autoscrolling", self)
+        QVBoxLayout(auto_scroll_group)
 
         self.enabled_checkbox = QCheckBox("Enable Autoscroll in level", self)
         self.enabled_checkbox.toggled.connect(self._insert_autoscroll_object)
@@ -40,9 +45,11 @@ class AutoScrollEditor(CustomDialog):
 
         self.auto_scroll_type_label = QLabel(self)
 
-        self.layout().addWidget(self.enabled_checkbox)
-        self.layout().addWidget(self.y_position_spinner)
-        self.layout().addWidget(self.auto_scroll_type_label)
+        auto_scroll_group.layout().addWidget(self.enabled_checkbox)
+        auto_scroll_group.layout().addLayout(label_and_widget("Scroll Type: ", self.y_position_spinner))
+        auto_scroll_group.layout().addWidget(self.auto_scroll_type_label)
+
+        self.layout().addWidget(auto_scroll_group)
 
         self.update()
 
@@ -51,6 +58,7 @@ class AutoScrollEditor(CustomDialog):
         return self.parent().window().findChild(QUndoStack, "undo_stack")
 
     def update(self):
+        # auto scroll
         autoscroll_item = _get_autoscroll(self.level_ref.enemies)
 
         self.enabled_checkbox.setChecked(autoscroll_item is not None)
@@ -125,7 +133,7 @@ class AutoScrollEditor(CustomDialog):
 
                 self.undo_stack.endMacro()
 
-        super(AutoScrollEditor, self).closeEvent(event)
+        super(LevelSettingsDialog, self).closeEvent(event)
 
 
 def _get_autoscroll(enemy_items: List[EnemyItem]) -> Optional[EnemyItem]:

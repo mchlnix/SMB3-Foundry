@@ -79,7 +79,7 @@ class LocksList(TableWidget):
             replacement_tile.setIcon(block_icon)
 
             fortress_index = QTableWidgetItem(hex(fortress_fx.data.index))
-            boomboom_pos = QTableWidgetItem(
+            boom_boom_pos = QTableWidgetItem(
                 f"{hex(0x10 + 0x10 * fortress_fx.data.index)} - {hex(0x20 + 0x10 * fortress_fx.data.index - 1)}"
             )
             pos = QTableWidgetItem(f"Screen {fortress_fx.data.screen}: x={fortress_fx.data.x}, y={fortress_fx.data.y}")
@@ -88,7 +88,7 @@ class LocksList(TableWidget):
 
             self.setItem(index, 0, replacement_tile)
             self.setItem(index, 1, fortress_index)
-            self.setItem(index, 2, boomboom_pos)
+            self.setItem(index, 2, boom_boom_pos)
             self.setItem(index, 3, pos)
 
         self.blockSignals(False)

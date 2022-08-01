@@ -39,7 +39,7 @@ from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.AutoScrollEditor import AutoScrollEditor
+from foundry.gui.level_settings_dialog import LevelSettingsDialog
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.EnemySizeBar import EnemySizeBar
 from foundry.gui.HeaderEditor import HeaderEditor
@@ -121,6 +121,8 @@ class FoundryMainWindow(MainWindow):
         self.redo_action.setIcon(icon("rotate-cw.svg"))
         self.level_menu.addAction(self.redo_action)
 
+        self.level_menu.addSeparator()
+
         self.select_level_action = self.level_menu.addAction("Select Level")
         self.select_level_action.setIcon(icon("globe.svg"))
         self.select_level_action.triggered.connect(self.open_level_selector)
@@ -137,13 +139,13 @@ class FoundryMainWindow(MainWindow):
 
         self.level_menu.addSeparator()
 
-        self.edit_header_action = self.level_menu.addAction("Edit Level Header")
+        self.edit_header_action = self.level_menu.addAction("Level Header")
         self.edit_header_action.setIcon(icon("tool.svg"))
         self.edit_header_action.triggered.connect(self.on_header_editor)
 
-        self.edit_autoscroll = self.level_menu.addAction("Edit Autoscrolling")
-        self.edit_autoscroll.setIcon(icon("fast-forward.svg"))
-        self.edit_autoscroll.triggered.connect(self.on_edit_autoscroll)
+        self.edit_level_settings = self.level_menu.addAction("Other Level Settings")
+        self.edit_level_settings.setIcon(icon("settings.svg"))
+        self.edit_level_settings.triggered.connect(self.on_edit_level_settings)
 
         self.menuBar().addMenu(self.level_menu)
 
@@ -918,8 +920,8 @@ class FoundryMainWindow(MainWindow):
 
         return level_was_selected
 
-    def on_edit_autoscroll(self, _):
-        AutoScrollEditor(self, self.level_ref).exec()
+    def on_edit_level_settings(self, _):
+        LevelSettingsDialog(self, self.level_ref).exec()
 
     def on_header_editor(self, _):
         HeaderEditor(self, self.level_ref).exec()
