@@ -1,0 +1,27 @@
+Foundry
+-------
+- BoomBoom Lock shenanigans, dependent on upper nibble of its Y-Position, so most BoomBooms are not visible and editing
+  them is not really user friendly, maybe make special routine to always display BoomBoom inside level and preserve its
+  upper nibble? And then make the lock related edits via Scribe?
+
+- Chest Items and their exit object are still handled by manually adding/dragging them around. That's not great. Also,
+  what happens, when you add more than one?
+
+- Remove Autoscroll Object, and other "special" objects, whose functionality is configured using the editor from the
+  object toolbar, so that users don't add them unnecessarily
+
+- Currently it is not that easy to place a level on the world map, when editing it directly from the ROM, you basically
+  need to save it as an M3L, then open it again and *then* place it where you want (right?)
+
+
+Scribe
+------
+
+- Pipes, super complicated, apparently, and probably not easy to make easy to manipulate/understandable
+
+
+smb3parse
+---------
+
+- maybe document the data point classes better, to preserve the knowledge it took to parse them correctly in the first
+  place
