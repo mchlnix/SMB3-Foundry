@@ -80,9 +80,7 @@ class LocksList(TableWidget):
 
             fortress_index = QTableWidgetItem(hex(fortress_fx.data.index))
 
-            boom_boom_pos = QTableWidgetItem(
-                f"{hex(0x10 + 0x10 * index)} - {hex(0x20 + 0x10 * index - 1)}"
-            )
+            boom_boom_pos = QTableWidgetItem(f"{hex(0x10 + 0x10 * index)} - {hex(0x20 + 0x10 * index - 1)}")
             pos = QTableWidgetItem(f"Screen {fortress_fx.data.screen}: x={fortress_fx.data.x}, y={fortress_fx.data.y}")
 
             self._set_map_tile_as_icon(pos, fortress_fx.get_position())

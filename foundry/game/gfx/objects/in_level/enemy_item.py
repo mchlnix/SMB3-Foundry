@@ -8,6 +8,7 @@ from foundry.game.gfx.Palette import PaletteGroup
 from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from smb3parse.constants import OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM
 from smb3parse.objects.object_set import ENEMY_ITEM_GRAPHICS_SET, ENEMY_ITEM_OBJECT_SET
 
 
@@ -22,8 +23,18 @@ class EnemyItem(InLevelObject):
         self.length = 0
 
         self.obj_index = data[0]
-        self.x_position = data[1] - enemy_handle_x2[self.obj_index]
-        self.y_position = data[2]
+
+        # boom boom specific
+        if self._is_boom_boom():
+            # lock index is encoded in high nibble of the y-position
+            self.lock_index = max((data[2] >> 4) - 1, 0)
+        else:
+            self.lock_index = 0
+
+        x = data[1] - enemy_handle_x2[self.obj_index]
+        y = data[2] - self.lock_index * 0x10
+
+        self.set_position(x, y)
 
         self.domain = 0
 
@@ -158,7 +169,12 @@ class EnemyItem(InLevelObject):
         self.data = self.to_bytes()
 
     def to_bytes(self):
-        return bytearray([self.obj_index, self.x_position + int(enemy_handle_x2[self.obj_index]), self.y_position])
+        y_position = self.y_position
+
+        if self._is_boom_boom():
+            y_position += 0x10 * self.lock_index
+
+        return bytearray([self.obj_index, self.x_position + int(enemy_handle_x2[self.obj_index]), y_position])
 
     def as_image(self) -> QImage:
         image = QImage(
@@ -179,3 +195,6 @@ class EnemyItem(InLevelObject):
 
     def __repr__(self):
         return f"EnemyObject: {self}"
+
+    def _is_boom_boom(self):
+        return self.type in [OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM]

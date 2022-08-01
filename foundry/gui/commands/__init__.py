@@ -98,6 +98,24 @@ class SetNextAreaObjectSet(SetLevelAttribute):
         self.setText(f"Object Set of Next Area to {OBJECT_SET_NAMES[new_object_set]}")
 
 
+class ChangeLockIndex(QUndoCommand):
+    def __init__(self, enemy: EnemyItem, new_lock_index: int):
+        super(ChangeLockIndex, self).__init__()
+
+        self.enemy = enemy
+        self.old_index = enemy.lock_index
+
+        self.new_index = new_lock_index
+
+        self.setText(f"Set {enemy.name} to break Lock #{new_lock_index}")
+
+    def undo(self):
+        self.enemy.lock_index = self.old_index
+
+    def redo(self):
+        self.enemy.lock_index = self.new_index
+
+
 class MoveObjects(QUndoCommand):
     def __init__(
         self,
