@@ -18,8 +18,5 @@ Scribe
 
 smb3parse
 ---------
-- after implementing Locks, we need to find a way to change the boom boom y position accordingly; we need to do this in
-  scribe, because this depends on the world map fortress fx base offset, which we don't (always) have in Foundry
-
 - maybe document the data point classes better, to preserve the knowledge it took to parse them correctly in the first
   place
