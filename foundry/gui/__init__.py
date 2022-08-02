@@ -33,8 +33,11 @@ OBJECT_SET_ITEMS = [
 ]
 
 
-def label_and_widget(label_text: str, widget: QWidget, add_stretch=True) -> QHBoxLayout:
+def label_and_widget(label_text: str, widget: QWidget, add_stretch=True, tooltip="") -> QHBoxLayout:
     label = QLabel(label_text)
+
+    if tooltip:
+        label.setToolTip(tooltip)
 
     layout = QHBoxLayout()
 

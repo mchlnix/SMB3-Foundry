@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
 from foundry import data_dir, icon
 from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.game.gfx.drawable.Block import Block
+from foundry.gui import label_and_widget
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.HorizontalLine import HorizontalLine
 from foundry.gui.settings import (
@@ -74,29 +75,30 @@ class SettingsDialog(CustomDialog):
         mouse_box = QGroupBox("Mouse", self)
         mouse_box.setLayout(QVBoxLayout())
 
-        label = QLabel("Scroll objects with mouse wheel:")
-        label.setToolTip("Select an object and scroll up and down to change its type.")
         self._scroll_check_box = QCheckBox("Enabled")
         self._scroll_check_box.setChecked(self.settings.value("editor/object_scroll_enabled"))
         self._scroll_check_box.toggled.connect(self._update_settings)
 
-        scroll_layout = QHBoxLayout()
-        scroll_layout.addWidget(label)
-        scroll_layout.addStretch(1)
-        scroll_layout.addWidget(self._scroll_check_box)
-
-        label = QLabel("Show object names on hover:")
-        label.setToolTip(
-            "When hovering your cursor over an object in a level, its name and position is shown in a tooltip."
+        mouse_box.layout().addLayout(
+            label_and_widget(
+                "Scroll objects with mouse wheel:",
+                self._scroll_check_box,
+                tooltip="Select an object and scroll up and down to change its type.",
+            )
         )
+
         self._tooltip_check_box = QCheckBox("Enabled")
         self._tooltip_check_box.setChecked(self.settings.value("level view/object_tooltip_enabled"))
         self._tooltip_check_box.toggled.connect(self._update_settings)
 
-        tooltip_layout = QHBoxLayout()
-        tooltip_layout.addWidget(label)
-        tooltip_layout.addStretch(1)
-        tooltip_layout.addWidget(self._tooltip_check_box)
+        mouse_box.layout().addLayout(
+            label_and_widget(
+                "Show object names on hover:",
+                self._tooltip_check_box,
+                tooltip="When hovering your cursor over an object in a level, "
+                "its name and position is shown in a tooltip.",
+            )
+        )
 
         self.lmb_radio = QRadioButton("Left Mouse Button")
         rmb_radio = QRadioButton("Right Mouse Button")
@@ -116,8 +118,6 @@ class SettingsDialog(CustomDialog):
         resize_layout.addWidget(self.lmb_radio)
         resize_layout.addWidget(rmb_radio)
 
-        mouse_box.layout().addLayout(scroll_layout)
-        mouse_box.layout().addLayout(tooltip_layout)
         mouse_box.layout().addLayout(resize_layout)
 
         # -----------------------------------------------
@@ -129,6 +129,7 @@ class SettingsDialog(CustomDialog):
         style_layout = QHBoxLayout()
 
         style_layout.addWidget(QLabel("Style:"))
+        style_layout.addStretch(1)
 
         for gui_style in GUI_STYLE.keys():
             gui_style = gui_style.capitalize()
