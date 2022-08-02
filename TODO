@@ -9,11 +9,14 @@ Foundry
 - Currently it is not that easy to place a level on the world map, when editing it directly from the ROM, you basically
   need to save it as an M3L, then open it again and *then* place it where you want (right?)
 
+- If a door or Pipe in a level is not in a Jump Zone, it will default to the first jump in the level (object order, or
+  screen order?)
+
 
 Scribe
 ------
 
-- Pipes, super complicated, apparently, and probably not easy to make easy to manipulate/understandable
+- Pipes, super complicated, apparently, and probably not easy to make easy to manipulate/understand
 
 
 smb3parse
