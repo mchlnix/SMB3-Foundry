@@ -11,14 +11,16 @@ from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID
 class BlockIcon(QWidget):
     clicked: SignalInstance = Signal(int)
 
-    def __init__(self, block_id=0, zoom_level=2):
+    def __init__(self, block_id, palette_group=0, zoom_level=2):
         super(BlockIcon, self).__init__()
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
+        self.palette_group = palette_group
+
         self.block_id = block_id
 
-        self.block = get_worldmap_tile(block_id)
+        self.block = get_worldmap_tile(block_id, palette_group)
 
         self.zoom_level = zoom_level
 
@@ -26,7 +28,7 @@ class BlockIcon(QWidget):
         old_block_id = self.block_id
         self.block_id = block_id
 
-        self.block = get_worldmap_tile(block_id)
+        self.block = get_worldmap_tile(block_id, self.palette_group)
 
         self.update()
 
@@ -50,12 +52,14 @@ class BlockIcon(QWidget):
 class BlockList(QWidget):
     block_was_picked: SignalInstance = Signal(int)
 
-    def __init__(self):
+    def __init__(self, palette_group):
         super(BlockList, self).__init__()
 
         self.setLayout(QHBoxLayout())
 
-        self.current_block = BlockIcon(0, zoom_level=4)
+        self.palette_group = palette_group
+
+        self.current_block = BlockIcon(0, palette_group, zoom_level=4)
         self.current_block.clicked.connect(self.set_current_block)
 
         self.recent_blocks = [BlockIcon(WORLD_MAP_BLANK_TILE_ID) for _ in range(9)]
@@ -84,6 +88,12 @@ class BlockList(QWidget):
 
         self.block_was_picked.emit(new_block_id)
 
+    def update_palette_group(self, palette_group: int):
+        for block_icon in [self.current_block] + self.recent_blocks:
+            block_icon.palette_group = palette_group
+
+            block_icon.set_block_id(block_icon.block_id)
+
 
 class BlockPicker(QWidget):
     tile_selected: SignalInstance = Signal(int)
@@ -96,9 +106,9 @@ class BlockPicker(QWidget):
         self.level_ref = level_ref
 
         self.block_bank = BlockBank(self, palette_group=level_ref.level.data.palette_index)
-        self.level_ref.level_changed.connect(self._update_block_bank_palette_group)
+        self.level_ref.level_changed.connect(self._update_palette_group)
 
-        self.block_list = BlockList()
+        self.block_list = BlockList(level_ref.level.data.palette_index)
 
         self.block_bank.clicked.connect(self.block_list.set_current_block)
         self.block_list.block_was_picked.connect(self.tile_selected.emit)
@@ -109,7 +119,8 @@ class BlockPicker(QWidget):
     def set_zoom(self, zoom_level):
         self.block_bank.zoom = zoom_level
 
-    def _update_block_bank_palette_group(self):
+    def _update_palette_group(self):
         self.block_bank.palette_group = self.level_ref.level.data.palette_index
-
         self.block_bank.update()
+
+        self.block_list.update_palette_group(self.level_ref.level.data.palette_index)
