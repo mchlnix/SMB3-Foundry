@@ -443,7 +443,7 @@ class FoundryMainWindow(MainWindow):
         temp_dir = pathlib.Path(tempfile.gettempdir()) / "smb3foundry"
         temp_dir.mkdir(parents=True, exist_ok=True)
 
-        path_to_temp_rom = temp_dir / "instaplay.rom"
+        path_to_temp_rom = temp_dir / "instaplay.nes"
 
         ROM().save_to(path_to_temp_rom)
 
