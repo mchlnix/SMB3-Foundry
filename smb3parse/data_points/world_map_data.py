@@ -10,6 +10,7 @@ from smb3parse.constants import (
     Map_Airship_Dest_XSets,
     Map_Airship_Dest_YSets,
     Map_Airship_Travel_BaseIdx,
+    Map_Bottom_Tiles,
     Map_Tile_ColorSets,
     Map_Y_Starts,
     OFFSET_SIZE,
@@ -43,6 +44,9 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.tile_data_offset_address = 0x0
 
         self.tile_data = bytearray()
+
+        self.bottom_border_tile = 0x0
+        self.bottom_border_tile_address = 0x0
 
         self.palette_index = 0
         self.palette_index_address = 0x0
@@ -99,6 +103,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.structure_data_offset_address = STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.index
 
         self.palette_index_address = Map_Tile_ColorSets + self.index
+        self.bottom_border_tile_address = Map_Bottom_Tiles + self.index
 
         self.y_pos_list_start_address = LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index
         self.x_pos_list_start_address = LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index
@@ -125,6 +130,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.tile_data = self._rom.read_until(self.layout_address, WORLD_MAP_LAYOUT_DELIMITER)
 
         self.palette_index = self._rom.int(self.palette_index_address)
+        self.bottom_border_tile = self._rom.int(self.bottom_border_tile_address)
 
         self.structure_data_offset = self._rom.little_endian(self.structure_data_offset_address)
 
@@ -182,6 +188,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         rom.write(self.layout_address, self.tile_data + WORLD_MAP_LAYOUT_DELIMITER)
 
         rom.write(self.palette_index_address, self.palette_index)
+        rom.write(self.bottom_border_tile_address, self.bottom_border_tile)
 
         # structure_data_offset
         rom.write_little_endian(self.structure_data_offset_address, self.structure_data_offset)
