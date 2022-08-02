@@ -12,6 +12,7 @@ class LevelRef(QObject):
     level_changed: SignalInstance = Signal()
     data_changed: SignalInstance = Signal()
     jumps_changed: SignalInstance = Signal()
+    palette_changed: SignalInstance = Signal()
 
     def __init__(self):
         super(LevelRef, self).__init__()
@@ -35,10 +36,13 @@ class LevelRef(QObject):
     def level(self, level):
         self._internal_level = level
 
-        self._internal_level.needs_redraw.connect(self.needs_redraw.emit)
-        self._internal_level.data_changed.connect(self.data_changed.emit)
-        self._internal_level.jumps_changed.connect(self.jumps_changed.emit)
-        self._internal_level.level_changed.connect(self.level_changed.emit)
+        level.needs_redraw.connect(self.needs_redraw.emit)
+        level.data_changed.connect(self.data_changed.emit)
+        level.jumps_changed.connect(self.jumps_changed.emit)
+        level.level_changed.connect(self.level_changed.emit)
+
+        if hasattr(level, "palette_changed"):
+            level.palette_changed.connect(self.palette_changed.emit)
 
     @property
     def selected_objects(self):

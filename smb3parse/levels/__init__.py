@@ -83,6 +83,8 @@ Same with the ROM page and addresses 0xC000 - 0xFFFF.
 
 WORLD_COUNT = 9  # includes warp zone
 
+WORLD_MAP_PALETTE_COUNT = 8
+
 WORLD_MAP_HEIGHT = 9  # blocks
 WORLD_MAP_SCREEN_WIDTH = 16  # blocks
 

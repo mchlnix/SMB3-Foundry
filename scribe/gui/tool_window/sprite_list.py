@@ -14,9 +14,6 @@ class SpriteList(TableWidget):
     def __init__(self, parent, level_ref: LevelRef):
         super(SpriteList, self).__init__(parent, level_ref)
 
-        self.level_ref.level_changed.connect(self.update_content)
-        self.level_ref.data_changed.connect(self.update_content)
-
         self.cellChanged.connect(self._save_sprite)
 
         self.set_headers(["Sprite Type", "Item Type", "Map Position"])

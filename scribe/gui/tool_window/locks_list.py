@@ -18,9 +18,6 @@ class LocksList(TableWidget):
 
         self.setDragDropMode(self.NoDragDrop)
 
-        self.level_ref.level_changed.connect(self.update_content)
-        self.level_ref.data_changed.connect(self.update_content)
-
         self.cellChanged.connect(self._save_fortress_fx)
 
         self.set_headers(["Replacement Tile", "Lock Index", "Boom Boom Y Positions", "Map Position"])

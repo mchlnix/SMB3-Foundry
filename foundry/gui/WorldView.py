@@ -50,6 +50,8 @@ class WorldView(MainView):
 
         super(WorldView, self).__init__(parent, level, settings, context_menu)
 
+        level.palette_changed.connect(self.update_palette)
+
         self._tile_to_put: int = WORLD_MAP_BLANK_TILE_ID
 
         self.selection_square.set_offset(0, FIRST_VALID_ROW)
@@ -95,6 +97,13 @@ class WorldView(MainView):
     @property
     def world(self) -> WorldMap:
         return self.level_ref.level
+
+    def update_palette(self):
+        for map_tile in self.world.objects:
+            map_tile.block.palette_group = self.world.data.palette_index
+            map_tile.change_type(map_tile.block.index)
+
+        self.update()
 
     def set_mouse_mode(self, new_mode: int, event: Optional[QMouseEvent]):
         if new_mode == MODE_PUT_TILE:

@@ -31,6 +31,10 @@ class TableWidget(QTableWidget):
 
         self.level_ref = level_ref
 
+        self.level_ref.level_changed.connect(self.update_content)
+        self.level_ref.palette_changed.connect(self.update_content)
+        self.level_ref.data_changed.connect(self.update_content)
+
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.setSelectionBehavior(self.SelectRows)
@@ -74,7 +78,9 @@ class TableWidget(QTableWidget):
         block_icon = QPixmap(self.iconSize())
 
         painter = QPainter(block_icon)
-        get_worldmap_tile(self.world.tile_at(*pos)).draw(painter, 0, 0, self.iconSize().width())
+        get_worldmap_tile(self.world.tile_at(*pos), self.world.data.palette_index).draw(
+            painter, 0, 0, self.iconSize().width()
+        )
         painter.end()
 
         item.setIcon(block_icon)

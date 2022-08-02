@@ -102,6 +102,25 @@ class PutTile(MoveTile):
             obj.selected = False
 
 
+class WorldPaletteIndex(QUndoCommand):
+    def __init__(self, world: WorldMap, new_index: int):
+        super(WorldPaletteIndex, self).__init__()
+
+        self.world = world
+        self.old_index = world.data.palette_index
+        self.new_index = new_index
+
+    def undo(self):
+        self.world.data.palette_index = self.old_index
+
+        self.world.palette_changed.emit()
+
+    def redo(self):
+        self.world.data.palette_index = self.new_index
+
+        self.world.palette_changed.emit()
+
+
 class SetLevelAddress(QUndoCommand):
     def __init__(self, data: LevelPointerData, new_address: int, parent=None):
         super(SetLevelAddress, self).__init__(parent)

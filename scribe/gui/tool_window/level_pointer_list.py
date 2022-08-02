@@ -15,9 +15,6 @@ class LevelPointerList(TableWidget):
     def __init__(self, parent, level_ref: LevelRef):
         super(LevelPointerList, self).__init__(parent, level_ref)
 
-        self.level_ref.level_changed.connect(self.update_content)
-        self.level_ref.data_changed.connect(self.update_content)
-
         self.cellChanged.connect(self._save_level_pointer)
 
         self.set_headers(["Object Set", "Level Offset", "Enemy/Item Offset", "Map Position"])

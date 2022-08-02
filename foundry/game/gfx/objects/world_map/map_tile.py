@@ -49,7 +49,7 @@ class MapTile(MapObject):
         return self.pos.xy
 
     def change_type(self, new_type):
-        self.block = get_worldmap_tile(new_type, self.block.palette_group.index)
+        self.block = get_worldmap_tile(new_type, self.block.palette_group)
 
         self.type = self.block.index
 

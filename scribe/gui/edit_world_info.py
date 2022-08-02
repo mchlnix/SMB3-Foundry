@@ -6,8 +6,8 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui import label_and_widget
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
-from scribe.gui.commands import AddLevelPointer, RemoveLevelPointer, SetScreenCount, SetWorldIndex
-from smb3parse.levels import MAX_SCREEN_COUNT, WORLD_COUNT
+from scribe.gui.commands import AddLevelPointer, RemoveLevelPointer, SetScreenCount, SetWorldIndex, WorldPaletteIndex
+from smb3parse.levels import MAX_SCREEN_COUNT, WORLD_COUNT, WORLD_MAP_PALETTE_COUNT
 
 
 class EditWorldInfo(CustomDialog):
@@ -46,9 +46,15 @@ class EditWorldInfo(CustomDialog):
         index_spin_box = Spinner(self, maximum=WORLD_COUNT, base=10)
         index_spin_box.setMinimum(1)
         index_spin_box.setValue(self.world_map.data.index + 1)
-        index_spin_box.valueChanged.connect(self._change_index)
+        index_spin_box.valueChanged.connect(self._change_world_index)
 
         layout.addLayout(label_and_widget("World Number", index_spin_box))
+
+        palette_spin_box = Spinner(self, maximum=WORLD_MAP_PALETTE_COUNT - 1)
+        palette_spin_box.setValue(self.world_map.data.palette_index)
+        palette_spin_box.valueChanged.connect(self._change_palette_index)
+
+        layout.addLayout(label_and_widget("Color Palette Index", palette_spin_box))
 
         world_data_group = QGroupBox("World Data")
         world_data_group.setLayout(layout)
@@ -71,13 +77,18 @@ class EditWorldInfo(CustomDialog):
 
         self.undo_stack.push(SetScreenCount(self.world_map, new_amount))
 
-    def _change_index(self, new_index):
+    def _change_world_index(self, new_index):
         new_index -= 1
 
         if self.world_map.data.index == new_index:
             return
 
         self.undo_stack.push(SetWorldIndex(self.world_map, new_index))
+
+    def _change_palette_index(self, new_index):
+        self.undo_stack.push(WorldPaletteIndex(self.world_map, new_index))
+
+        self.world_map.palette_changed.emit()
 
     def _change_level_pointer_count(self, new_count):
         current_count = self.world_map.data.level_count
