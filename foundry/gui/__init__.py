@@ -33,12 +33,16 @@ OBJECT_SET_ITEMS = [
 ]
 
 
-def label_and_widget(label_text: str, widget: QWidget) -> QHBoxLayout:
+def label_and_widget(label_text: str, widget: QWidget, add_stretch=True) -> QHBoxLayout:
     label = QLabel(label_text)
 
     layout = QHBoxLayout()
 
     layout.addWidget(label)
+
+    if add_stretch:
+        layout.addStretch(1)
+
     layout.addWidget(widget)
 
     return layout

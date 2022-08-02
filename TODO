@@ -12,6 +12,8 @@ Foundry
 - If a door or Pipe in a level is not in a Jump Zone, it will default to the first jump in the level (object order, or
   screen order?)
 
+- Parse the ASM Macros from Southbirds Disassembly, so you can load levels directly from it (Maybe also export them?)
+
 
 Scribe
 ------

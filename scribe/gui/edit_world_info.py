@@ -1,8 +1,9 @@
 from PySide6.QtGui import QUndoStack
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QGroupBox, QPushButton, QVBoxLayout, QWidget
 
 from foundry.game.Data import LEVEL_POINTER_COUNT
 from foundry.game.level.WorldMap import WorldMap
+from foundry.gui import label_and_widget
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
 from scribe.gui.commands import AddLevelPointer, RemoveLevelPointer, SetScreenCount, SetWorldIndex
@@ -17,57 +18,44 @@ class EditWorldInfo(CustomDialog):
 
         self.setLayout(QVBoxLayout())
 
+        # world size
         layout = QVBoxLayout()
-
-        screen_amount_layout = QHBoxLayout()
-        screen_amount_layout.addWidget(QLabel("Screen Count"))
-        screen_amount_layout.addStretch(1)
 
         screen_spin_box = Spinner(self, maximum=MAX_SCREEN_COUNT, base=10)
         screen_spin_box.setMinimum(1)
         screen_spin_box.setValue(self.world_map.data.screen_count)
         screen_spin_box.valueChanged.connect(self._change_screen_count)
 
-        screen_amount_layout.addWidget(screen_spin_box)
-        layout.addLayout(screen_amount_layout)
-
-        level_count_layout = QHBoxLayout()
-        level_count_layout.addWidget(QLabel("Level Count"))
-        level_count_layout.addStretch(1)
+        layout.addLayout(label_and_widget("Screen Count", screen_spin_box))
 
         level_count_spin_box = Spinner(self, maximum=LEVEL_POINTER_COUNT, base=10)
         level_count_spin_box.setMinimum(0)
         level_count_spin_box.setValue(self.world_map.data.level_count)
         level_count_spin_box.valueChanged.connect(self._change_level_pointer_count)
 
-        level_count_layout.addWidget(level_count_spin_box)
-        layout.addLayout(level_count_layout)
+        layout.addLayout(label_and_widget("Level Count", level_count_spin_box))
 
         world_size_group = QGroupBox("World Size")
         world_size_group.setLayout(layout)
 
         self.layout().addWidget(world_size_group)
 
+        # world data
         layout = QVBoxLayout()
-
-        world_index_layout = QHBoxLayout()
-        world_index_layout.addWidget(QLabel("World Number"))
-        world_index_layout.addStretch(1)
 
         index_spin_box = Spinner(self, maximum=WORLD_COUNT, base=10)
         index_spin_box.setMinimum(1)
         index_spin_box.setValue(self.world_map.data.index + 1)
         index_spin_box.valueChanged.connect(self._change_index)
 
-        world_index_layout.addWidget(index_spin_box)
-
-        layout.addLayout(world_index_layout)
+        layout.addLayout(label_and_widget("World Number", index_spin_box))
 
         world_data_group = QGroupBox("World Data")
         world_data_group.setLayout(layout)
 
         self.layout().addWidget(world_data_group)
 
+        # ok button
         self.ok_button = QPushButton("OK")
         self.ok_button.pressed.connect(self.close)
 
