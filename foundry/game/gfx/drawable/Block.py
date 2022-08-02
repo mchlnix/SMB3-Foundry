@@ -33,9 +33,12 @@ def get_tile(index, palette_group, palette_index, graphics_set, mirrored=False):
     return Tile(index, palette_group, palette_index, graphics_set, mirrored)
 
 
-def get_worldmap_tile(block_index: int):
+def get_worldmap_tile(block_index: int, palette_index=0):
     return get_block(
-        block_index, load_palette_group(WORLD_MAP_OBJECT_SET, 0), GraphicsSet(0), ROM.get_tsa_data(WORLD_MAP_OBJECT_SET)
+        block_index,
+        load_palette_group(WORLD_MAP_OBJECT_SET, palette_index),
+        GraphicsSet(0),
+        ROM.get_tsa_data(WORLD_MAP_OBJECT_SET),
     )
 
 
@@ -64,6 +67,7 @@ class Block:
         self.index = block_index
 
         palette_index = (block_index & 0b1100_0000) >> 6
+        self.palette_group = palette_group
 
         if graphics_set.number == CLOUDY_GRAPHICS_SET:
             self.bg_color = NESPalette[palette_group[palette_index][2]]

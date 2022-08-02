@@ -10,6 +10,7 @@ from smb3parse.constants import (
     Map_Airship_Dest_XSets,
     Map_Airship_Dest_YSets,
     Map_Airship_Travel_BaseIdx,
+    Map_Tile_ColorSets,
     Map_Y_Starts,
     OFFSET_SIZE,
     World_Map_Max_PanR,
@@ -42,6 +43,9 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.tile_data_offset_address = 0x0
 
         self.tile_data = bytearray()
+
+        self.palette_index = 0
+        self.palette_index_address = 0x0
 
         self.structure_data_offset = 0x0
         self.structure_data_offset_address = 0x0
@@ -94,6 +98,8 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.tile_data_offset_address = LAYOUT_LIST_OFFSET + OFFSET_SIZE * self.index
         self.structure_data_offset_address = STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.index
 
+        self.palette_index_address = Map_Tile_ColorSets + self.index
+
         self.y_pos_list_start_address = LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index
         self.x_pos_list_start_address = LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index
 
@@ -117,6 +123,8 @@ class WorldMapData(_IndexedMixin, DataPoint):
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
         self.tile_data = self._rom.read_until(self.layout_address, WORLD_MAP_LAYOUT_DELIMITER)
+
+        self.palette_index = self._rom.int(self.palette_index_address)
 
         self.structure_data_offset = self._rom.little_endian(self.structure_data_offset_address)
 
@@ -172,6 +180,8 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         # tile_data
         rom.write(self.layout_address, self.tile_data + WORLD_MAP_LAYOUT_DELIMITER)
+
+        rom.write(self.palette_index_address, self.palette_index)
 
         # structure_data_offset
         rom.write_little_endian(self.structure_data_offset_address, self.structure_data_offset)

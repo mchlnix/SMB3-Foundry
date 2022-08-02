@@ -101,7 +101,7 @@ class WorldView(MainView):
             tile_pixmap = QPixmap(QSize(self.block_length, self.block_length))
 
             painter = QPainter(tile_pixmap)
-            get_worldmap_tile(self._tile_to_put).draw(painter, 0, 0, self.block_length)
+            get_worldmap_tile(self._tile_to_put, self.world.data.palette_index).draw(painter, 0, 0, self.block_length)
             painter.end()
 
             self.setCursor(QCursor(tile_pixmap))

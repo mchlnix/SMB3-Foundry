@@ -3,6 +3,7 @@ from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter, Qt
 from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
+from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.BlockViewer import BlockBank
 from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID
 
@@ -87,12 +88,16 @@ class BlockList(QWidget):
 class BlockPicker(QWidget):
     tile_selected: SignalInstance = Signal(int)
 
-    def __init__(self):
+    def __init__(self, level_ref: LevelRef):
         super(BlockPicker, self).__init__()
 
         self.setLayout(QVBoxLayout())
 
-        self.block_bank = BlockBank(self)
+        self.level_ref = level_ref
+
+        self.block_bank = BlockBank(self, palette_group=level_ref.level.data.palette_index)
+        self.level_ref.level_changed.connect(self._update_block_bank_palette_group)
+
         self.block_list = BlockList()
 
         self.block_bank.clicked.connect(self.block_list.set_current_block)
@@ -103,3 +108,8 @@ class BlockPicker(QWidget):
 
     def set_zoom(self, zoom_level):
         self.block_bank.zoom = zoom_level
+
+    def _update_block_bank_palette_group(self):
+        self.block_bank.palette_group = self.level_ref.level.data.palette_index
+
+        self.block_bank.update()

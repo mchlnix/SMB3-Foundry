@@ -40,7 +40,7 @@ class WorldMap(LevelLike):
         self._signal_emitter = WorldSignaller()
 
         self.graphics_set = GraphicsSet(OVERWORLD_GRAPHIC_SET)
-        self.palette_group = load_palette_group(WORLD_MAP_OBJECT_SET, 0)
+        self.palette_group = load_palette_group(WORLD_MAP_OBJECT_SET, self.data.palette_index)
 
         self.object_set = WORLD_MAP_OBJECT_SET
         self.tsa_data = ROM.get_tsa_data(self.object_set)

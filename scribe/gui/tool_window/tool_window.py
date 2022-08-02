@@ -29,7 +29,7 @@ class ToolWindow(QMainWindow):
 
         self.tabbed_widget = QTabWidget()
 
-        self.tile_picker = BlockPicker()
+        self.tile_picker = BlockPicker(level_ref)
         self.tile_picker.tile_selected.connect(self.tile_selected.emit)
 
         self.level_pointer_list = LevelPointerList(self, self.level_ref)

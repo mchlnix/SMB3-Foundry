@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from foundry.game.gfx.drawable.Block import get_worldmap_tile
+from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.constants import TILE_NAMES
 from smb3parse.data_points import Position
@@ -8,7 +8,7 @@ from smb3parse.levels import WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
 
 
 class MapTile(MapObject):
-    def __init__(self, block, pos: Position):
+    def __init__(self, block: Block, pos: Position):
         super(MapTile, self).__init__()
 
         self.pos = pos
@@ -49,7 +49,7 @@ class MapTile(MapObject):
         return self.pos.xy
 
     def change_type(self, new_type):
-        self.block = get_worldmap_tile(new_type)
+        self.block = get_worldmap_tile(new_type, self.block.palette_group.index)
 
         self.type = self.block.index
 
