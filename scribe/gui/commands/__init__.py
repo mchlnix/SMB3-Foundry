@@ -110,6 +110,8 @@ class WorldPaletteIndex(QUndoCommand):
         self.old_index = world.data.palette_index
         self.new_index = new_index
 
+        self.setText(f"Setting Palette Index to {hex(new_index)}")
+
     def undo(self):
         self.world.data.palette_index = self.old_index
 
@@ -119,6 +121,23 @@ class WorldPaletteIndex(QUndoCommand):
         self.world.data.palette_index = self.new_index
 
         self.world.palette_changed.emit()
+
+
+class WorldBottomTile(QUndoCommand):
+    def __init__(self, world: WorldMap, new_index: int):
+        super(WorldBottomTile, self).__init__()
+
+        self.world = world
+        self.old_index = world.data.bottom_border_tile
+        self.new_index = new_index
+
+        self.setText(f"Setting Bottom Tile to {hex(new_index)}")
+
+    def undo(self):
+        self.world.data.bottom_border_tile = self.old_index
+
+    def redo(self):
+        self.world.data.bottom_border_tile = self.new_index
 
 
 class SetLevelAddress(QUndoCommand):
