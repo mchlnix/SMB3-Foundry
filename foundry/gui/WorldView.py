@@ -176,7 +176,10 @@ class WorldView(MainView):
 
         x, y = self.to_level_point(event.pos()).xy
 
-        if self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
+        try:
+            if self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
+                return False
+        except ValueError:
             return False
 
         if (level_pointer := self.world.level_pointer_at(x, y)) is None:

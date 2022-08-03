@@ -99,7 +99,9 @@ class LevelSelector(QDialog):
             world_number += 1
 
             world_map_select = WorldMapLevelSelect(world_number)
+            world_map_select.level_clicked.connect(self._on_level_selected_via_world_map)
             world_map_select.level_selected.connect(self._on_level_selected_via_world_map)
+            world_map_select.level_selected.connect(self.on_ok)
 
             self.source_selector.addTab(world_map_select, f"World {world_number}")
             self.source_selector.setTabIcon(world_number, icon("globe.svg"))
@@ -213,7 +215,7 @@ class LevelSelector(QDialog):
 
         self._fill_in_data(level_pointer.object_set, level_pointer.level_address, level_pointer.enemy_address)
 
-        self.on_ok()
+        self.button_ok.setFocus()
 
     def on_ok(self, _=None):
         if self.world_list.currentRow() == OVERWORLD_MAPS_INDEX:
@@ -231,6 +233,7 @@ class LevelSelector(QDialog):
 
 
 class WorldMapLevelSelect(QScrollArea):
+    level_clicked: SignalInstance = Signal(str, LevelPointerData)
     level_selected: SignalInstance = Signal(str, LevelPointerData)
 
     def __init__(self, world_number: int):
@@ -253,7 +256,13 @@ class WorldMapLevelSelect(QScrollArea):
 
         self.setMouseTracking(True)
 
+    def mouseDoubleClickEvent(self, event: QMouseEvent):
+        self._try_emit(event, self.level_selected)
+
     def mouseReleaseEvent(self, event: QMouseEvent):
+        self._try_emit(event, self.level_clicked)
+
+    def _try_emit(self, event: QMouseEvent, signal: SignalInstance):
         x, y = self.world_view.mapFromParent(event.pos()).toTuple()
 
         x //= Block.WIDTH * self.world_view.zoom
@@ -271,9 +280,10 @@ class WorldMapLevelSelect(QScrollArea):
                 QMessageBox.warning(
                     self, "No can do", "Spade and mushroom house currently not supported, when getting a level address."
                 )
+                event.accept()
                 return
 
-            self.level_selected.emit(self.world.level_name_at_position(x, y), level_pointer.data)
+            signal.emit(self.world.level_name_at_position(x, y), level_pointer.data)
         except ValueError:
             pass
 
