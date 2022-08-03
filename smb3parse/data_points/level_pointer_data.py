@@ -51,15 +51,11 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
 
     @property
     def level_address(self):
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + self.object_set) * OFFSET_SIZE - 10) * 0x1000
-
-        return BASE_OFFSET + object_set_offset + self.level_offset
+        return BASE_OFFSET + self.object_set_offset + self.level_offset
 
     @level_address.setter
     def level_address(self, value):
-        object_set_offset = (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + self.object_set) * OFFSET_SIZE - 10) * 0x1000
-
-        self.level_offset = (value - BASE_OFFSET - object_set_offset) & 0xFFFF
+        self.level_offset = (value - BASE_OFFSET - self.object_set_offset) & 0xFFFF
 
     @property
     def enemy_address(self):
@@ -68,6 +64,10 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
     @enemy_address.setter
     def enemy_address(self, value):
         self.enemy_offset = value - BASE_OFFSET
+
+    @property
+    def object_set_offset(self):
+        return (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + self.object_set) * OFFSET_SIZE - 10) * 0x1000
 
     def read_values(self):
         self.screen, self.x = self._rom.nibbles(self.screen_address)
