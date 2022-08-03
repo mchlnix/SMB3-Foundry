@@ -3,13 +3,16 @@ from typing import List, Optional
 from PySide6.QtGui import QUndoStack
 from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QLabel, QVBoxLayout
 
+from foundry.game.File import ROM
 from foundry.game.gfx.objects import EnemyItem
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui import label_and_widget
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
 from foundry.gui.commands import AddObject, ChangeLockIndex, RemoveObjects
-from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM
+from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM, OBJ_PIPE_EXITS, PIPE_PAIR_COUNT
+from smb3parse.data_points import Position
+from smb3parse.data_points.pipe_data import PipeData
 
 AUTOSCROLL_LABELS = {
     -1: "No Autoscroll in Level.",
@@ -37,7 +40,7 @@ class LevelSettingsDialog(CustomDialog):
         auto_scroll_group = QGroupBox("Autoscrolling", self)
         QVBoxLayout(auto_scroll_group)
 
-        self.enabled_checkbox = QCheckBox("Enable Autoscroll in level", self)
+        self.enabled_checkbox = QCheckBox("Enable Autoscroll in Level", self)
         self.enabled_checkbox.toggled.connect(self._insert_autoscroll_object)
 
         self.y_position_spinner = Spinner(self, maximum=0x60 - 1)
@@ -71,8 +74,35 @@ class LevelSettingsDialog(CustomDialog):
         boom_boom_group.layout().addWidget(self.boom_boom_dropdown)
         boom_boom_group.layout().addLayout(label_and_widget("Lock index", self.boom_boom_index_spinner))
 
+        pipe_pair_group = QGroupBox("Pipe Pair")
+        QVBoxLayout(pipe_pair_group)
+
+        self.original_pipe_item = _get_pipe_item(self.level_ref.enemies)
+
+        self.pipe_pair_check_box = QCheckBox("Enable exiting somewhere else on WorldMap")
+        self.pipe_pair_check_box.setChecked(self.original_pipe_item is not None)
+        self.pipe_pair_check_box.clicked.connect(self._on_pipe_check_box)
+        pipe_pair_group.layout().addWidget(self.pipe_pair_check_box)
+
+        self.sky_tower_check_box = QCheckBox("Like Sky Tower (Top and Bottom, instead of Left and Right)")
+        self.sky_tower_check_box.clicked.connect(self._on_update_y_position)
+        pipe_pair_group.layout().addWidget(self.sky_tower_check_box)
+
+        self.pipe_pair_spinner = Spinner(self, maximum=PIPE_PAIR_COUNT - 1)
+        self.pipe_pair_spinner.valueChanged.connect(self._on_update_y_position)
+        pipe_pair_group.layout().addLayout(label_and_widget("Pipe Pair Index", self.pipe_pair_spinner))
+
+        self.left_pos_label = QLabel("-")
+        pipe_pair_group.layout().addLayout(label_and_widget("Left Exit", self.left_pos_label))
+
+        self.right_pos_label = QLabel("-")
+        pipe_pair_group.layout().addLayout(label_and_widget("Right Exit", self.right_pos_label))
+
+        self._update_position_labels()
+
         self.layout().addWidget(auto_scroll_group)
         self.layout().addWidget(boom_boom_group)
+        self.layout().addWidget(pipe_pair_group)
 
         self.update()
 
@@ -114,6 +144,53 @@ class LevelSettingsDialog(CustomDialog):
         self.level_ref.data_changed.emit()
 
         self.update()
+
+    def _on_pipe_check_box(self, checked):
+        if checked:
+            self.level_ref.level.add_enemy(OBJ_PIPE_EXITS, Position.from_xy(0, 0))
+        else:
+            self.level_ref.level.remove_object(_get_pipe_item(self.level_ref.enemies))
+
+        self._update_position_labels()
+
+    def _on_update_y_position(self):
+        pipe_item = _get_pipe_item(self.level_ref.enemies)
+
+        if pipe_item is not None:
+            new_value = self.pipe_pair_spinner.value()
+
+            if self.sky_tower_check_box.isChecked():
+                new_value += 0x80
+
+            pipe_item.y_position = new_value
+
+        self._update_position_labels()
+
+    def _update_position_labels(self):
+        pipe_item = _get_pipe_item(self.level_ref.enemies)
+
+        self.sky_tower_check_box.setEnabled(pipe_item is not None)
+        self.sky_tower_check_box.setChecked(pipe_item is not None and pipe_item.y_position & 0x80 == 0x80)
+        self.pipe_pair_spinner.setEnabled(pipe_item is not None)
+
+        if pipe_item is None:
+            self.left_pos_label.setText("-")
+            self.right_pos_label.setText("-")
+
+            self.pipe_pair_spinner.setValue(0)
+        else:
+            self.pipe_pair_spinner.setValue(pipe_item.y_position % 0x80)
+
+            pipe_data = PipeData(ROM(), pipe_item.y_position)
+
+            self.left_pos_label.setText(
+                f"Screen: {pipe_data.screen_left}, x: {pipe_data.x_left}, y: {pipe_data.y_left}"
+            )
+            self.right_pos_label.setText(
+                f"Screen: {pipe_data.screen_right}, x: {pipe_data.x_right}, y: {pipe_data.y_right}"
+            )
+
+        self.level_ref.data_changed.emit()
 
     def _create_autoscroll_object(self):
         return self.level_ref.level.enemy_item_factory.from_properties(
@@ -198,3 +275,11 @@ def _get_boom_booms(enemy_items: List[EnemyItem]) -> List[EnemyItem]:
             boom_booms.append(item)
 
     return boom_booms
+
+
+def _get_pipe_item(enemy_items: List[EnemyItem]) -> Optional[EnemyItem]:
+    for item in enemy_items:
+        if item.obj_index == OBJ_PIPE_EXITS:
+            return item
+    else:
+        return None
