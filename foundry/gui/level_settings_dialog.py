@@ -74,7 +74,7 @@ class LevelSettingsDialog(CustomDialog):
         boom_boom_group.layout().addWidget(self.boom_boom_dropdown)
         boom_boom_group.layout().addLayout(label_and_widget("Lock index", self.boom_boom_index_spinner))
 
-        pipe_pair_group = QGroupBox("Pipe Pair")
+        pipe_pair_group = QGroupBox("Pipe Pair Exits")
         QVBoxLayout(pipe_pair_group)
 
         self.original_pipe_item = _get_pipe_item(self.level_ref.enemies)
@@ -210,6 +210,7 @@ class LevelSettingsDialog(CustomDialog):
     def closeEvent(self, event):
         self._handle_auto_scroll_on_close()
         self._handle_boom_booms_on_close()
+        self._handle_pipe_pair_on_close()
 
         super(LevelSettingsDialog, self).closeEvent(event)
 
@@ -221,6 +222,49 @@ class LevelSettingsDialog(CustomDialog):
 
             if boom_boom.lock_index != new_index:
                 self.undo_stack.push(ChangeLockIndex(boom_boom, new_index))
+
+    def _handle_pipe_pair_on_close(self):
+        current_pipe_item = _get_pipe_item(self.level_ref.enemies)
+
+        pipe_kept_disabled = self.original_pipe_item is None and current_pipe_item is None
+        pipe_was_disabled = self.original_pipe_item is not None and current_pipe_item is None
+        pipe_was_enabled = self.original_pipe_item is None and current_pipe_item is not None
+
+        if pipe_kept_disabled:
+            pass
+        elif pipe_was_disabled:
+            self.level_ref.level.enemies.insert(0, self.original_pipe_item)
+
+            self.undo_stack.beginMacro("Disable Pipe Pair Exits")
+            self.undo_stack.push(RemoveObjects(self.level_ref.level, [self.original_pipe_item]))
+            self.undo_stack.endMacro()
+
+        elif pipe_was_enabled:
+            self.level_ref.level.remove_object(current_pipe_item)
+
+            self.undo_stack.beginMacro("Enable Pipe Pair Exits")
+            self.undo_stack.push(AddObject(self.level_ref.level, current_pipe_item, 0))
+            self.undo_stack.endMacro()
+
+        else:
+            # autoscroll object might have been changed, first reset state from the start
+            assert self.original_pipe_item is not None
+
+            if current_pipe_item is self.original_pipe_item:
+                current_pipe_item = self.original_pipe_item.copy()
+            else:
+                self.level_ref.level.remove_object(current_pipe_item)
+                self.level_ref.level.enemies.append(self.original_pipe_item)
+
+            if self.original_y_value != current_pipe_item.y_position:
+                assert self.original_pipe_item is not current_pipe_item
+
+                self.undo_stack.beginMacro(f"Pipe Pair Exits Index to {hex(current_pipe_item.y_position)}")
+
+                self.undo_stack.push(RemoveObjects(self.level_ref.level, [self.original_pipe_item]))
+                self.undo_stack.push(AddObject(self.level_ref.level, current_pipe_item))
+
+                self.undo_stack.endMacro()
 
     def _handle_auto_scroll_on_close(self):
         current_autoscroll_item = _get_autoscroll(self.level_ref.enemies)
