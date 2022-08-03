@@ -705,6 +705,8 @@ class FoundryMainWindow(MainWindow):
             )
 
             level_selector = LevelSelector(self)
+            if self.level_ref:
+                level_selector.goto_world(self.level_ref.level.world)
 
             answer = level_selector.exec()
 
@@ -905,6 +907,8 @@ class FoundryMainWindow(MainWindow):
             return
 
         level_selector = LevelSelector(self)
+        if self.level_ref:
+            level_selector.goto_world(self.level_ref.level.world)
 
         level_was_selected = level_selector.exec() == QDialog.Accepted
 

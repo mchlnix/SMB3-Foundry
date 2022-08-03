@@ -129,6 +129,12 @@ class LevelSelector(QDialog):
         if key_event.key() == Qt.Key_Escape:
             self.reject()
 
+    def goto_world(self, world_number: int):
+        if world_number not in range(1, WORLD_COUNT + 1):
+            world_number = 1
+
+        self.source_selector.setCurrentIndex(world_number)
+
     def on_world_click(self):
         index = self.world_list.currentRow()
 

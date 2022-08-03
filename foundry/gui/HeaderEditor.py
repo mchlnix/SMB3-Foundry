@@ -261,6 +261,10 @@ class HeaderEditor(CustomDialog):
 
     def _set_jump_destination(self):
         level_selector = LevelSelector(self)
+
+        if self.level:
+            level_selector.goto_world(self.level.world)
+
         level_was_selected = level_selector.exec() == QDialog.Accepted
 
         if not level_was_selected:
