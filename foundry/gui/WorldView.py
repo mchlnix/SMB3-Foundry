@@ -144,7 +144,7 @@ class WorldView(MainView):
     def mouseMoveEvent(self, event: QMouseEvent):
         should_display_level = self.mouse_mode == MODE_FREE and self.settings.value("world view/show level previews")
 
-        if should_display_level and not self._set_level_thumbnail(event):
+        if not should_display_level or not self._set_level_thumbnail(event):
             # clear tooltip if supposed to show one, but no level thumbnail was available (e.g. no level there)
             self.setCursor(Qt.ArrowCursor)
 
@@ -185,7 +185,8 @@ class WorldView(MainView):
         if (level_pointer := self.world.level_pointer_at(x, y)) is None:
             return False
 
-        self.setCursor(Qt.PointingHandCursor)
+        if self.read_only:
+            self.setCursor(Qt.PointingHandCursor)
 
         try:
             level_name = self.world.level_name_at_position(x, y)
