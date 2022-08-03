@@ -13,7 +13,7 @@ from foundry.gui.HeaderEditor import CAMERA_MOVEMENTS
 from foundry.gui.LevelView import LevelView
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.util import clear_layout
-from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_BOOMBOOM
+from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_BOOMBOOM, OBJ_PIPE_EXITS
 from smb3parse.objects.object_set import DUNGEON_OBJECT_SET, PLAINS_OBJECT_SET
 
 
@@ -124,6 +124,21 @@ class WarningList(QWidget):
             if level.object_set_number != DUNGEON_OBJECT_SET:
                 self.warnings.append(
                     ("You should only use BoomBoom enemies in levels of object set 'Dungeon'.", [enemy])
+                )
+
+            break
+
+        for enemy in level.enemies:
+            if enemy.type != OBJ_PIPE_EXITS:
+                continue
+
+            if not level.header.pipe_ends_level:
+                self.warnings.append(
+                    (
+                        "You have a Pipe Pair Exit set (Level Settings), "
+                        "but Pipes don't end your Level (Lever Header).",
+                        [],
+                    )
                 )
 
             break
