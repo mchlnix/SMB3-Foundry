@@ -39,7 +39,6 @@ from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.level_settings_dialog import LevelSettingsDialog
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.EnemySizeBar import EnemySizeBar
 from foundry.gui.HeaderEditor import HeaderEditor
@@ -73,13 +72,19 @@ from foundry.gui.commands import (
     ToBackground,
     ToForeground,
 )
+from foundry.gui.level_settings_dialog import LevelSettingsDialog
 from foundry.gui.m3l import load_m3l, load_m3l_filename, save_m3l
 from foundry.gui.menus.file_menu import FileMenu
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.object_menu import ObjectMenu
 from foundry.gui.menus.view_menu import ViewMenu
 from foundry.gui.settings import Settings
-from smb3parse.constants import STARTING_WORLD_INDEX_ADDRESS, TILE_LEVEL_1, Title_DebugMenu, Title_PrepForWorldMap
+from smb3parse.constants import (
+    STARTING_WORLD_INDEX_ADDRESS,
+    TILE_LEVEL_1,
+    Title_DebugMenu,
+    Title_PrepForWorldMap,
+)
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.util.rom import Rom as SMB3Rom
@@ -132,6 +137,10 @@ class FoundryMainWindow(MainWindow):
         self.new_level_action.triggered.connect(self._on_new_level)
 
         self.level_menu.addSeparator()
+
+        self.place_level_action = self.level_menu.addAction("Place Level on Map")
+        self.place_level_action.setIcon(icon("map-pin.svg"))
+        self.place_level_action.triggered.connect(self.on_place_level)
 
         self.reload_action = self.level_menu.addAction("Reload Level")
         self.reload_action.setIcon(icon("refresh-cw.svg"))
@@ -834,6 +843,36 @@ class FoundryMainWindow(MainWindow):
         self.update_level(level_name, object_data, enemy_data, object_set)
 
         self.level_ref.level.world = world_index
+
+    def on_place_level(self):
+        if not self.level_ref:
+            return
+
+        level_selector = LevelSelector(self)
+        level_selector.goto_world(self.level_ref.level.world)
+        level_selector.deactivate_level_list()
+
+        if level_selector.exec() != QMessageBox.Accepted:
+            return
+
+        if (level_pointer := level_selector.clicked_level_pointer) is None:
+            QMessageBox.warning(
+                self,
+                "No Level on Map selected",
+                "You need to click a position on a World Map. "
+                "If the position you want to use is not clickable, you can save this level as an M3L, "
+                "add/move a level pointer to that position in Scribe and try again.",
+            )
+
+            return
+
+        level_pointer.object_set = self.level_ref.level.object_set_number
+
+        if self.level_ref.level.attached_to_rom:
+            level_pointer.level_address = self.level_ref.level.layout_address
+            level_pointer.enemy_address = self.level_ref.level.enemy_offset - 1
+
+        level_pointer.write_back()
 
     def _on_placeable_object_selected(self, level_object: InLevelObject):
         if self.sender() is self.object_toolbar:

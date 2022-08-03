@@ -1,3 +1,5 @@
+from typing import Optional
+
 from PySide6.QtCore import QMargins, QSize, Signal, SignalInstance
 from PySide6.QtGui import QCloseEvent, QKeyEvent, QMouseEvent, Qt
 from PySide6.QtWidgets import (
@@ -25,6 +27,7 @@ from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
+from smb3parse.data_points import LevelPointerData
 from smb3parse.levels import FIRST_VALID_ROW, HEADER_LENGTH, WORLD_COUNT
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -46,6 +49,8 @@ class LevelSelector(QDialog):
         self.world_index = 0
         self.object_data_offset = 0x0
         self.enemy_data_offset = 0x0
+
+        self.clicked_level_pointer: Optional[LevelPointerData] = None
 
         self.world_label = QLabel(parent=self, text="World")
         self.world_list = QListWidget(parent=self)
@@ -135,6 +140,9 @@ class LevelSelector(QDialog):
 
         self.source_selector.setCurrentIndex(world_number)
 
+    def deactivate_level_list(self):
+        self.source_selector.setTabEnabled(0, False)
+
     def on_world_click(self):
         index = self.world_list.currentRow()
 
@@ -197,14 +205,13 @@ class LevelSelector(QDialog):
         self.object_data_spinner.setValue(layout_address)
         self.enemy_data_spinner.setValue(enemy_address)
 
-    def _on_level_selected_via_world_map(
-        self, level_name: str, world_index: int, object_set: int, layout_address: int, enemy_address: int
-    ):
+    def _on_level_selected_via_world_map(self, level_name: str, level_pointer: LevelPointerData):
         self.level_name = level_name
+        self.clicked_level_pointer = level_pointer
 
-        self.world_index = world_index + 1
+        self.world_index = level_pointer.world.index + 1
 
-        self._fill_in_data(object_set, layout_address, enemy_address)
+        self._fill_in_data(level_pointer.object_set, level_pointer.level_address, level_pointer.enemy_address)
 
         self.on_ok()
 
@@ -224,7 +231,7 @@ class LevelSelector(QDialog):
 
 
 class WorldMapLevelSelect(QScrollArea):
-    level_selected: SignalInstance = Signal(str, int, int, int, int)
+    level_selected: SignalInstance = Signal(str, LevelPointerData)
 
     def __init__(self, world_number: int):
         super(WorldMapLevelSelect, self).__init__()
@@ -266,14 +273,7 @@ class WorldMapLevelSelect(QScrollArea):
                 )
                 return
 
-            # todo change to emitting the level pointer
-            self.level_selected.emit(
-                self.world.level_name_at_position(x, y),
-                self.world.internal_world_map.world_index,
-                level_pointer.data.object_set,
-                level_pointer.data.level_address,
-                level_pointer.data.enemy_address,
-            )
+            self.level_selected.emit(self.world.level_name_at_position(x, y), level_pointer.data)
         except ValueError:
             pass
 
