@@ -1010,6 +1010,9 @@ class FoundryMainWindow(MainWindow):
         for gui_element in level_elements:
             gui_element.setEnabled(ROM.is_loaded() and self.level_ref.fully_loaded)
 
+        if self.level_ref:
+            self.reload_action.setEnabled(self.level_ref.level.attached_to_rom)
+
         self._on_level_data_changed()
 
     def on_jump_edit(self):
