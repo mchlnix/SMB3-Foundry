@@ -660,12 +660,10 @@ class Level(LevelLike):
             self.enemies.remove(obj)
 
     def to_m3l(self) -> bytearray:
-        world_number = level_number = 1
-
         m3l_bytes = bytearray()
 
-        m3l_bytes.append(world_number)
-        m3l_bytes.append(level_number)
+        m3l_bytes.append(self.world)
+        m3l_bytes.append(0)
         m3l_bytes.append(self.object_set_number)
 
         m3l_bytes.extend(self.header_bytes)
@@ -738,8 +736,11 @@ class Level(LevelLike):
         return "\n".join(ret_lines)
 
     def from_m3l(self, m3l_bytes: bytearray):
-        world_number, level_number, object_set_number = m3l_bytes[:3]
+        self.world, level_number, object_set_number = m3l_bytes[:3]
         self.object_set = ObjectSet(object_set_number)
+        self.object_set_number = object_set_number
+
+        self.name = f"Level {self.world}-{level_number} - M3L"
 
         self.header_offset = self.enemy_offset = 0
 
