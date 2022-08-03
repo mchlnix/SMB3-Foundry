@@ -50,9 +50,8 @@ def test_load_m3l(main_window, qtbot):
     # THEN the level ref contains the level from the m3l and they consist of the same bytes
     m3l_data = bytearray(open(test_m3l_path, "rb").read())
 
-    # world and level number is not preserved
-    m3l_data[0] = 1
-    m3l_data[1] = 1
+    # level number is not preserved
+    m3l_data[1] = 0
 
     assert not main_window.level_ref.level.attached_to_rom
     assert main_window.level_ref.level.to_m3l() == m3l_data
