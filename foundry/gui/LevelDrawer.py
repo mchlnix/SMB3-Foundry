@@ -17,7 +17,7 @@ from foundry.game.gfx.objects import (
 from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
 from foundry.gui.settings import Settings
-from smb3parse.constants import EMPTY_IMAGE, OBJ_AUTOSCROLL
+from smb3parse.constants import EMPTY_IMAGE, OBJ_AUTOSCROLL, OBJ_PIPE_EXITS
 from smb3parse.levels import (
     LEVEL_MAX_LENGTH,
     LEVEL_SCREEN_HEIGHT,
@@ -53,6 +53,13 @@ SPECIAL_BACKGROUND_OBJECTS = [
     "underground background under this",
     "sets background to actual background color",
 ]
+
+
+OMITTED_ITEMS = [OBJ_AUTOSCROLL, OBJ_PIPE_EXITS]
+"""
+These configure things based on their y-position in the level. This is done in the editor directly now. So no need to
+actually render them in the level.
+"""
 
 
 def _block_from_index(block_index: int, level: Level) -> Block:
@@ -167,6 +174,9 @@ class LevelDrawer:
 
     def _draw_objects(self, painter: QPainter, level: Level):
         for level_object in level.get_all_objects():
+            if isinstance(level_object, EnemyItem) and level_object.type in OMITTED_ITEMS:
+                continue
+
             level_object.render()
 
             if level_object.name.lower() in SPECIAL_BACKGROUND_OBJECTS:

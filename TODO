@@ -3,9 +3,6 @@ Foundry
 - Chest Items and their exit object are still handled by manually adding/dragging them around. That's not great. Also,
   what happens, when you add more than one?
 
-- Remove Autoscroll Object, and other "special" objects, whose functionality is configured using the editor from the
-  object toolbar, so that users don't add them unnecessarily
-
 - Currently it is not that easy to place a level on the world map, when editing it directly from the ROM, you basically
   need to save it as an M3L, then open it again and *then* place it where you want (right?)
 
@@ -18,7 +15,6 @@ Foundry
 Scribe
 ------
 
-- Pipes, super complicated, apparently, and probably not easy to make easy to manipulate/understand
 - Change world info when dialog is closed, not immediately so there are less undo commands produced
 - Tooltip with world tile name in tool window
 
