@@ -713,30 +713,11 @@ class FoundryMainWindow(MainWindow):
                 QMessageBox.Ok,
             )
 
-            level_selector = LevelSelector(self)
-            if self.level_ref:
-                level_selector.goto_world(self.level_ref.level.world)
-
-            answer = level_selector.exec()
-
-            if answer != QMessageBox.Accepted:
-                return
-
-            if level_selector.object_set != self.level_ref.level.object_set.number:
-                QMessageBox.critical(
-                    self,
-                    "Couldn't save M3L file into ROM.",
-                    "You selected a level, that has a different object set "
-                    f"({OBJECT_SET_NAMES[level_selector.object_set]}), than the level you are trying to save "
-                    f"into the ROM ({OBJECT_SET_NAMES[self.level_ref.level.object_set.number]}). This is currently "
-                    "not supported. Please find a level, that has the same object set.",
-                )
-                return
-
             if not self._ask_for_palette_save():
                 return
 
-            self._attach_to_rom(level_selector.object_data_offset, level_selector.enemy_data_offset)
+            if not self.on_place_level():
+                return
 
             if is_save_as:
                 # if we save to another rom, don't consider the level
@@ -844,16 +825,16 @@ class FoundryMainWindow(MainWindow):
 
         self.level_ref.level.world = world_index
 
-    def on_place_level(self):
+    def on_place_level(self) -> bool:
         if not self.level_ref:
-            return
+            return False
 
         level_selector = LevelSelector(self)
         level_selector.goto_world(self.level_ref.level.world)
         level_selector.deactivate_level_list()
 
         if level_selector.exec() != QMessageBox.Accepted:
-            return
+            return False
 
         if (level_pointer := level_selector.clicked_level_pointer) is None:
             QMessageBox.warning(
@@ -864,15 +845,19 @@ class FoundryMainWindow(MainWindow):
                 "add/move a level pointer to that position in Scribe and try again.",
             )
 
-            return
+            return False
 
         level_pointer.object_set = self.level_ref.level.object_set_number
 
         if self.level_ref.level.attached_to_rom:
             level_pointer.level_address = self.level_ref.level.layout_address
             level_pointer.enemy_address = self.level_ref.level.enemy_offset - 1
+        else:
+            self._attach_to_rom(level_selector.object_data_offset, level_selector.enemy_data_offset)
 
         level_pointer.write_back()
+
+        return True
 
     def _on_placeable_object_selected(self, level_object: InLevelObject):
         if self.sender() is self.object_toolbar:
