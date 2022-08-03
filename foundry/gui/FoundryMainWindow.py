@@ -123,15 +123,15 @@ class FoundryMainWindow(MainWindow):
 
         self.level_menu.addSeparator()
 
+        self.select_level_action = self.level_menu.addAction("Select New Level")
+        self.select_level_action.setIcon(icon("globe.svg"))
+        self.select_level_action.triggered.connect(self.open_level_selector)
+
         self.new_level_action = self.level_menu.addAction("New Empty Level")
         self.new_level_action.setIcon(icon("file.svg"))
         self.new_level_action.triggered.connect(self._on_new_level)
 
         self.level_menu.addSeparator()
-
-        self.select_level_action = self.level_menu.addAction("Select Level")
-        self.select_level_action.setIcon(icon("globe.svg"))
-        self.select_level_action.triggered.connect(self.open_level_selector)
 
         self.reload_action = self.level_menu.addAction("Reload Level")
         self.reload_action.setIcon(icon("refresh-cw.svg"))
