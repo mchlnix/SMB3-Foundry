@@ -209,7 +209,12 @@ class LevelSelector(QDialog):
 
     def _on_level_selected_via_world_map(self, level_name: str, level_pointer: LevelPointerData):
         self.level_name = level_name
-        self.clicked_level_pointer = level_pointer
+
+        if self.clicked_level_pointer == level_pointer:
+            # same level was clicked again,
+            self.on_ok()
+        else:
+            self.clicked_level_pointer = level_pointer
 
         self.world_index = level_pointer.world.index + 1
 
