@@ -2,7 +2,7 @@ from itertools import product
 from typing import Callable
 
 from PySide6.QtCore import QSize, Signal, SignalInstance
-from PySide6.QtGui import QColor, QMouseEvent, QPixmap, Qt
+from PySide6.QtGui import QColor, QMouseEvent, QPixmap, QUndoStack, Qt
 from PySide6.QtWidgets import (
     QAbstractButton,
     QDialog,
@@ -26,6 +26,7 @@ from foundry.game.gfx.Palette import (
 )
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.commands import UpdatePalette
 from foundry.gui.util import clear_layout
 
 
@@ -229,6 +230,10 @@ class SidePalette(QWidget):
             "Note: The first color (the left most one) is always the same among all 4 palettes."
         )
 
+    @property
+    def undo_stack(self) -> QUndoStack:
+        return self.parent().window().findChild(QUndoStack, "undo_stack")
+
     def update(self):
         clear_layout(self.layout())
 
@@ -244,17 +249,13 @@ class SidePalette(QWidget):
 
     def color_changer(self, palette_group: PaletteGroup, palette_no: int) -> Callable:
         def actual_changer(index_in_palette, index_in_nes_color_table):
-            if palette_group[palette_no][index_in_palette] == index_in_nes_color_table:
+            palette = palette_group[palette_no]
+            if palette[index_in_palette] == index_in_nes_color_table:
                 return
 
-            # colors at index 0 are shared among all palettes of a palette group
-            if index_in_palette == 0:
-                for palette in palette_group.palettes:
-                    palette[0] = index_in_nes_color_table
-            else:
-                palette_group[palette_no][index_in_palette] = index_in_nes_color_table
-
-            PaletteGroup.changed = True
+            self.undo_stack.push(
+                UpdatePalette(self.level_ref, palette_group, palette_no, index_in_palette, index_in_nes_color_table)
+            )
 
             self.level_ref.reload()
 

@@ -673,15 +673,15 @@ class FoundryMainWindow(MainWindow):
             self,
             "Please confirm",
             "You changed some object palettes. This is a change, that potentially affects other levels in this ROM. Do "
-            "you want to save these changes and continue?",
-            QMessageBox.Cancel | QMessageBox.RestoreDefaults | QMessageBox.Yes,
+            "you want to save these changes, or restore the defaults and continue?",
+            QMessageBox.Cancel | QMessageBox.RestoreDefaults | QMessageBox.Save,
             QMessageBox.Cancel,
         )
 
         if answer == QMessageBox.Cancel:
             return False
 
-        if answer == QMessageBox.Yes:
+        if answer == QMessageBox.Save:
             save_all_palette_groups()
         elif answer == QMessageBox.RestoreDefaults:
             restore_all_palettes()
