@@ -15,8 +15,6 @@ Scribe
 
 - Change world info when dialog is closed, not immediately so there are less undo commands produced
 - Tooltip with world tile name in tool window
-- Render the other static lines, like the border tiles and black bars as well, to not have the "world starts at y=2" confusion?
-
 
 smb3parse
 ---------
