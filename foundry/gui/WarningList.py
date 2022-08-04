@@ -126,6 +126,11 @@ class WarningList(QWidget):
                     ("You should only use BoomBoom enemies in levels of object set 'Dungeon'.", [enemy])
                 )
 
+            if enemy.y_position < 0x10:
+                self.warnings.append(
+                    ("If your BoomBoom has a lower y-position than 16, you need to add 1 to your Lock Index.", [enemy])
+                )
+
             break
 
         for enemy in level.enemies:
