@@ -72,7 +72,7 @@ from foundry.gui.commands import (
     ToBackground,
     ToForeground,
 )
-from foundry.gui.level_settings_dialog import LevelSettingsDialog
+from foundry.gui.level_settings.level_settings_dialog import LevelSettingsDialog
 from foundry.gui.m3l import load_m3l, load_m3l_filename, save_m3l
 from foundry.gui.menus.file_menu import FileMenu
 from foundry.gui.menus.help_menu import HelpMenu
