@@ -98,14 +98,15 @@ class BlockList(QWidget):
 class BlockPicker(QWidget):
     tile_selected: SignalInstance = Signal(int)
 
-    def __init__(self, level_ref: LevelRef):
-        super(BlockPicker, self).__init__()
+    def __init__(self, parent, level_ref: LevelRef):
+        super(BlockPicker, self).__init__(parent)
 
         self.setLayout(QVBoxLayout())
 
         self.level_ref = level_ref
 
         self.block_bank = BlockBank(self, palette_group=level_ref.level.data.palette_index)
+        self.block_bank.status_message_changed.connect(self.window().statusBar().showMessage)
         self.level_ref.palette_changed.connect(self._update_palette_group)
         self.level_ref.level_changed.connect(self._update_palette_group)
 

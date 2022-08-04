@@ -12,6 +12,7 @@ from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from foundry.gui.Spinner import Spinner
+from smb3parse.constants import TILE_NAMES
 
 
 class BlockViewer(CustomChildWindow):
@@ -152,7 +153,7 @@ class BlockBank(QWidget):
         dec_index = row * self.sprites_horiz + column
         hex_index = hex(dec_index).upper().replace("X", "x")
 
-        status_message = f"Row: {row}, Column: {column}, Index: {dec_index} / {hex_index}"
+        status_message = f"{TILE_NAMES[dec_index]} – {hex_index} @ ({column}, {row})"
 
         self.status_message_changed.emit(status_message)
 
