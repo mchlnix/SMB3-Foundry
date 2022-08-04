@@ -91,7 +91,7 @@ class WarningList(QWidget):
 
         # no items, that would crash the game
         for obj in level.objects:
-            if obj.name == "MSG_CRASH":
+            if obj.name == "MSG_CRASH" or "SMAS only" in obj.name:
                 self.warnings.append(
                     (
                         f"Object at {obj.get_position()} will likely cause the game to crash, when loading or on "

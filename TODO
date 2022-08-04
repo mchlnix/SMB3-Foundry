@@ -13,6 +13,10 @@ Foundry
   code lies. Is there code in between levels? Can we find address ranges, which can be used to store levels? What about
   expanded Roms?
 
+- Edit pipe pairs?
+
+- Make translatable?
+
 Scribe
 ------
 - Change world info when dialog is closed, not immediately so there are less undo commands produced
