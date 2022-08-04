@@ -16,18 +16,18 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from foundry.game.File import ROM
 from foundry.game.gfx.Palette import (
     COLORS_PER_PALETTE,
     NESPalette,
     PALETTES_PER_PALETTES_GROUP,
     PALETTE_GROUPS_PER_OBJECT_SET,
-    PaletteGroup,
+    change_color,
     load_palette_group,
 )
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.commands import UpdatePalette
-from foundry.gui.util import clear_layout
 
 
 class PaletteViewer(CustomDialog):
@@ -42,20 +42,18 @@ class PaletteViewer(CustomDialog):
 
         layout = QGridLayout(self)
 
-        for palette_group in range(PALETTE_GROUPS_PER_OBJECT_SET):
+        for palette_group_number in range(PALETTE_GROUPS_PER_OBJECT_SET):
             group_box = QGroupBox()
-            group_box.setTitle(f"Palette Group {palette_group}")
+            group_box.setTitle(f"Palette Group {palette_group_number}")
 
             group_box_layout = QVBoxLayout(group_box)
             group_box_layout.setSpacing(0)
 
-            palette = load_palette_group(self.level_ref.level.object_set_number, palette_group)
-
             for palette_no in range(PALETTES_PER_PALETTES_GROUP):
-                group_box_layout.addWidget(PaletteWidget(palette, palette_no))
+                group_box_layout.addWidget(PaletteWidget(level_ref, palette_group_number, palette_no))
 
-            row = palette_group // self.palettes_per_row
-            col = palette_group % self.palettes_per_row
+            row = palette_group_number // self.palettes_per_row
+            col = palette_group_number % self.palettes_per_row
 
             layout.addWidget(group_box, row, col)
 
@@ -63,14 +61,16 @@ class PaletteViewer(CustomDialog):
 class PaletteWidget(QWidget):
     # index in palette, color index in NES palette
     color_changed: SignalInstance = Signal(int, int)
+    color_committed: SignalInstance = Signal(int, int)
 
-    def __init__(self, palette_group: PaletteGroup, palette_number: int):
+    def __init__(self, level_ref: LevelRef, group_number: int, palette_number: int):
         super(PaletteWidget, self).__init__()
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(1, 2, 0, 2)
 
-        self._palette_group = palette_group
+        self.level_ref = level_ref
+        self.group_number = group_number
         self._palette_number = palette_number
 
         self.clickable = False
@@ -87,41 +87,59 @@ class PaletteWidget(QWidget):
 
         self._update_colors()
 
+    @property
+    def _palette_group(self):
+        return load_palette_group(self.level_ref.level.object_set_number, self.group_number)
+
+    def update(self):
+        self._update_colors()
+
     def _open_color_table(self):
         if not self.clickable:
             return
 
+        index_in_palette = self.layout().indexOf(self.sender())
+        original_color_index = self.sender().color_index
+
         color_table = ColorTable()
-        return_code = color_table.exec()
+        color_table.color_clicked.connect(lambda x: self.color_changed.emit(index_in_palette, x))
+        color_table.color_clicked.connect(self._update_colors)
 
-        if return_code == QDialog.Accepted:
-            index_in_palette = self.layout().indexOf(self.sender())
-            color_in_nes_palette = color_table.selected_color_index
+        answer = color_table.exec()
 
-            self.color_changed.emit(index_in_palette, color_in_nes_palette)
+        self.color_changed.emit(index_in_palette, original_color_index)
 
-            self._update_colors()
+        if answer == QDialog.Accepted:
+            if color_table.selected_color_index != original_color_index:
+                self.color_committed.emit(index_in_palette, color_table.selected_color_index)
+
+        self._update_colors()
 
     def _update_colors(self):
         for color_index, color_square in zip(self._palette_group[self._palette_number], self._color_squares):
-            color = NESPalette[color_index]
-
-            color_square.set_color(color)
+            color_square.set_color(color_index)
 
 
 class ColorSquare(QLabel):
     clicked: SignalInstance = Signal()
 
-    def __init__(self, color: QColor = QColor(Qt.white), square_length=16):
+    def __init__(self, color_index=-1, square_length=16):
         super(ColorSquare, self).__init__()
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self.square_size = QSize(square_length, square_length)
 
-        self._set_color(color)
+        self._set_color(color_index)
 
-    def _set_color(self, color: QColor):
+    def _set_color(self, color_index: int):
+        self.color_index = color_index
+
+        if color_index != -1:
+            color = NESPalette[color_index]
+        else:
+            color = QColor(Qt.white)
+
         self.color = color
         color_square = QPixmap(self.square_size)
         color_square.fill(color)
@@ -130,8 +148,8 @@ class ColorSquare(QLabel):
 
         self.select(False)
 
-    def set_color(self, color: QColor):
-        self._set_color(color)
+    def set_color(self, color_index: int):
+        self._set_color(color_index)
         self.update()
 
     def select(self, selected):
@@ -156,6 +174,7 @@ class ColorTable(QDialog):
     table_rows = 4
     table_columns = 16
 
+    color_clicked: SignalInstance = Signal(int)
     ok_clicked: SignalInstance = Signal(int)
 
     def __init__(self):
@@ -163,7 +182,7 @@ class ColorTable(QDialog):
 
         self.setWindowTitle("NES Color Table")
 
-        self._currently_selected_square: ColorSquare = ColorSquare(QColor(Qt.white))
+        self._currently_selected_square: ColorSquare = ColorSquare()
         self.selected_color_index = 0
         """Index into the NES Palette, that was selected."""
 
@@ -173,9 +192,9 @@ class ColorTable(QDialog):
         self.color_table_layout.setSpacing(0)
 
         for row, column in product(range(self.table_rows), range(self.table_columns)):
-            color = NESPalette[row * self.table_columns + column]
+            color_index = row * self.table_columns + column
 
-            square = ColorSquare(color, self.square_length)
+            square = ColorSquare(color_index, self.square_length)
             square.setLineWidth(0)
 
             square.clicked.connect(self._on_click)
@@ -191,7 +210,9 @@ class ColorTable(QDialog):
         layout.addWidget(self.buttons, alignment=Qt.AlignCenter)
 
     def _on_click(self):
+        color_index = self.sender().color_index
         self.select_square(self.sender())
+        self.color_clicked.emit(color_index)
 
     def select_square(self, color_square: ColorSquare):
         self._currently_selected_square.select(False)
@@ -221,6 +242,10 @@ class SidePalette(QWidget):
         self.setLayout(QVBoxLayout(self))
         self.layout().setSpacing(0)
 
+        self._palette_widgets = []
+
+        self.update()
+
         self.setWhatsThis(
             "<b>Object Palettes</b><br/>"
             "This shows the current palette group of the level, which can be changed in the level header "
@@ -231,32 +256,45 @@ class SidePalette(QWidget):
         )
 
     @property
+    def palette_group(self):
+        return load_palette_group(self.level_ref.object_set_number, self.level_ref.object_palette_index)
+
+    @property
     def undo_stack(self) -> QUndoStack:
         return self.parent().window().findChild(QUndoStack, "undo_stack")
 
-    def update(self):
-        clear_layout(self.layout())
-
-        palette_group_index = self.level_ref.object_palette_index
-        palette_group = load_palette_group(self.level_ref.object_set_number, palette_group_index)
-
+    def _setup(self):
         for palette_no in range(PALETTES_PER_PALETTES_GROUP):
-            widget = PaletteWidget(palette_group, palette_no)
-            widget.color_changed.connect(self.color_changer(palette_group, palette_no))
+            widget = PaletteWidget(self.level_ref, self.level_ref.object_palette_index, palette_no)
+            widget.color_changed.connect(self.on_color_change(palette_no))
+            widget.color_committed.connect(self.on_color_commit(palette_no))
             widget.clickable = True
 
             self.layout().addWidget(widget)
+            self._palette_widgets.append(widget)
 
-    def color_changer(self, palette_group: PaletteGroup, palette_no: int) -> Callable:
+    def update(self):
+        if self.layout().isEmpty() and ROM.is_loaded() and self.level_ref:
+            self._setup()
+
+        for widget in self._palette_widgets:
+            widget.group_number = self.level_ref.level.header.object_palette_index
+            widget.update()
+
+    def on_color_change(self, palette_no: int) -> Callable:
         def actual_changer(index_in_palette, index_in_nes_color_table):
-            palette = palette_group[palette_no]
-            if palette[index_in_palette] == index_in_nes_color_table:
-                return
+            change_color(self.palette_group, palette_no, index_in_palette, index_in_nes_color_table)
 
-            self.undo_stack.push(
-                UpdatePalette(self.level_ref, palette_group, palette_no, index_in_palette, index_in_nes_color_table)
-            )
-
-            self.level_ref.reload()
+            self.level_ref.level.reload()
 
         return actual_changer
+
+    def on_color_commit(self, palette_no: int) -> Callable:
+        def actual_commiter(index_in_palette, index_in_nes_color_table):
+            self.undo_stack.push(
+                UpdatePalette(
+                    self.level_ref, self.palette_group, palette_no, index_in_palette, index_in_nes_color_table
+                )
+            )
+
+        return actual_commiter

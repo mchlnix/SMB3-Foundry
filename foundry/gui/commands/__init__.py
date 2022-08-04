@@ -7,7 +7,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
-from foundry.game.gfx.Palette import PaletteGroup
+from foundry.game.gfx.Palette import PaletteGroup, change_color
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level
@@ -119,40 +119,33 @@ class ChangeLockIndex(QUndoCommand):
 
 class UpdatePalette(QUndoCommand):
     def __init__(
-        self, level, palette_group: PaletteGroup, palette_index: int, index_in_palette: int, new_color_index: int
+        self, level, palette_group: PaletteGroup, index_in_group: int, index_in_palette: int, new_color_index: int
     ):
         super(UpdatePalette, self).__init__()
 
         self.level = level
 
         self.palette_group = palette_group
-        self.palette = palette_group.palettes[palette_index]
+        self.index_in_group = index_in_group
 
         self.palette_was_changed = PaletteGroup.changed
 
         self.index_in_palette = index_in_palette
 
-        self.old_color_index = self.palette[index_in_palette]
+        self.old_color_index = palette_group[index_in_group][index_in_palette]
         self.new_color_index = new_color_index
 
     def undo(self):
-        self._change_color(self.old_color_index)
+        change_color(self.palette_group, self.index_in_group, self.index_in_palette, self.old_color_index)
+
+        self.level.reload()
         PaletteGroup.changed = self.palette_was_changed
 
     def redo(self):
-        self._change_color(self.new_color_index)
-
-        PaletteGroup.changed = True
-
-    def _change_color(self, new_color_index: int):
-        # colors at index 0 are shared among all palettes of a palette group
-        if self.index_in_palette == 0:
-            for palette in self.palette_group.palettes:
-                palette[0] = new_color_index
-        else:
-            self.palette[self.index_in_palette] = new_color_index
+        change_color(self.palette_group, self.index_in_group, self.index_in_palette, self.new_color_index)
 
         self.level.reload()
+        PaletteGroup.changed = True
 
 
 class MoveObjects(QUndoCommand):
