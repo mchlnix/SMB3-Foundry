@@ -7,9 +7,14 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.settings import Settings
 from foundry.gui.util import partition
 from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
-from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_BORDER_TOP_TILE_ID, WORLD_MAP_HEIGHT, \
-    WORLD_MAP_SCREEN_WIDTH, \
-    WORLD_MAP_WARP_WORLD_INDEX
+from smb3parse.levels import (
+    FIRST_VALID_ROW,
+    WORLD_MAP_BLANK_TILE_ID,
+    WORLD_MAP_BORDER_TOP_TILE_ID,
+    WORLD_MAP_HEIGHT,
+    WORLD_MAP_SCREEN_WIDTH,
+    WORLD_MAP_WARP_WORLD_INDEX,
+)
 
 
 BORDER_UL = load_from_png(61, 3)

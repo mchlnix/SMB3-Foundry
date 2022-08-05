@@ -17,7 +17,7 @@ from foundry.game.gfx.objects import (
 from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
 from foundry.gui.settings import Settings
-from smb3parse.constants import EMPTY_IMAGE, OBJ_AUTOSCROLL, OBJ_PIPE_EXITS
+from smb3parse.constants import EMPTY_IMAGE, OBJ_AUTOSCROLL, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER, OBJ_PIPE_EXITS
 from smb3parse.levels import (
     LEVEL_MAX_LENGTH,
     LEVEL_SCREEN_HEIGHT,
@@ -55,7 +55,7 @@ SPECIAL_BACKGROUND_OBJECTS = [
 ]
 
 
-OMITTED_ITEMS = [OBJ_AUTOSCROLL, OBJ_PIPE_EXITS]
+OMITTED_ITEMS = [OBJ_AUTOSCROLL, OBJ_PIPE_EXITS, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER]
 """
 These configure things based on their y-position in the level. This is done in the editor directly now. So no need to
 actually render them in the level.

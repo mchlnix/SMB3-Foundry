@@ -1,7 +1,6 @@
 Foundry
 -------
-- Chest Items and their exit object are still handled by manually adding/dragging them around. That's not great. Also,
-  what happens, when you add more than one?
+- Show chest items as overlay?
 
 - If a door or Pipe in a level is not in a Jump Zone, it will default to the first jump in the level (object order, or
   screen order?)
