@@ -55,8 +55,6 @@ class WorldView(MainView):
 
         self._tile_to_put: int = WORLD_MAP_BLANK_TILE_ID
 
-        self.selection_square.set_offset(0, FIRST_VALID_ROW)
-
         self.mouse_mode = MODE_FREE
 
         self.drag_start_point = Position.from_xy(0, 0)
@@ -82,6 +80,14 @@ class WorldView(MainView):
         )
 
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.select_all)
+
+    def sizeHint(self) -> QSize:
+        size = super(WorldView, self).sizeHint()
+
+        if self.settings.value("world view/show border"):
+            size += QSize(0, 3) * self.block_length
+
+        return size
 
     @property
     def settings(self):
@@ -119,6 +125,11 @@ class WorldView(MainView):
         elif new_mode == MODE_SELECTION_SQUARE:
             if event is None:
                 return
+
+            if self.settings.value("world view/show border"):
+                self.selection_square.set_offset(0, 0)
+            else:
+                self.selection_square.set_offset(0, FIRST_VALID_ROW)
 
             self.selection_square.start(event.pos())
 
@@ -240,7 +251,12 @@ class WorldView(MainView):
         self._fill_tile(tile_to_fill_in, x, y - 1)
 
     def to_level_point(self, q_point) -> Position:
-        return super(WorldView, self).to_level_point(q_point) + Position.from_xy(0, FIRST_VALID_ROW)
+        pos = super(WorldView, self).to_level_point(q_point)
+
+        if not self.settings.value("world view/show border"):
+            pos += Position.from_xy(0, FIRST_VALID_ROW)
+
+        return pos
 
     def _visible_object_at(self, point: QPoint) -> MapObject:
         level_x, level_y = self.to_level_point(point).xy
@@ -278,7 +294,7 @@ class WorldView(MainView):
     def _on_left_mouse_button_down(self, event: QMouseEvent):
         x, y = self.to_level_point(event.pos()).xy
 
-        if not self.level_ref.point_in(x, y):
+        if not self.world.point_in(x, y):
             return
 
         if self.mouse_mode == MODE_PUT_TILE:

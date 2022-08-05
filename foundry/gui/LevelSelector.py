@@ -18,7 +18,6 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import icon
-from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
@@ -28,7 +27,7 @@ from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
 from smb3parse.data_points import LevelPointerData
-from smb3parse.levels import FIRST_VALID_ROW, HEADER_LENGTH, WORLD_COUNT
+from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
@@ -268,12 +267,9 @@ class WorldMapLevelSelect(QScrollArea):
         self._try_emit(event, self.level_clicked)
 
     def _try_emit(self, event: QMouseEvent, signal: SignalInstance):
-        x, y = self.world_view.mapFromParent(event.pos()).toTuple()
+        pos = self.world_view.mapFromParent(event.pos())
 
-        x //= Block.WIDTH * self.world_view.zoom
-        y //= Block.HEIGHT * self.world_view.zoom
-
-        y += FIRST_VALID_ROW
+        x, y = self.world_view.to_level_point(pos).xy
 
         try:
             level_pointer = self.world.level_pointer_at(x, y)

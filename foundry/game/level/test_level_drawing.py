@@ -53,8 +53,10 @@ with open(data_dir / "levels.dat", "r") as level_data_file:
         level_name = parts[-1]
 
         if object_set_number == WORLD_MAP_OBJECT_SET:
-            world_data.append((level_name, level_address, enemy_address, object_set_number))
+            world_data.append((level_name, level_address, enemy_address, object_set_number, False))
+            world_data.append((level_name, level_address, enemy_address, object_set_number, True))
             world_test_name.append(f"Overworld {world_no} - {level_name}")
+            world_test_name.append(f"Overworld {world_no} - {level_name} - Bordered")
             continue
 
         level_data.append((level_name, level_address - HEADER_LENGTH, enemy_address, object_set_number, False))
@@ -79,6 +81,7 @@ def settings():
     settings.setValue("level view/object_tooltip_enabled", False)
 
     settings.setValue("world view/show grid", True)
+    settings.setValue("world view/show border", False)
     settings.setValue("world view/show level pointers", True)
     settings.setValue("world view/show sprites", True)
     settings.setValue("world view/show airship paths", 0b111)
@@ -92,18 +95,23 @@ def settings():
 @pytest.mark.parametrize("world_info", world_data, ids=world_test_name)
 def test_world(world_info, settings, qtbot):
     level_ref = LevelRef()
-    level_ref.load_level(*world_info)
+
+    show_border = world_info[-1]
+
+    level_ref.load_level(*world_info[:-1])
 
     Block._block_cache.clear()
 
     # monkeypatch level names, since the level name data is broken atm
     level_ref.level.name = current_test_name()
 
+    settings.setValue("world view/show border", show_border)
+
     world_view = WorldView(None, level_ref, settings, WorldContextMenu(level_ref))
 
     world_view.zoom_in()
 
-    rect = QRect(QPoint(0, 0), QSize(*level_ref.level.size) * 16 * 2)
+    rect = QRect(QPoint(0, 0), QSize(world_view.sizeHint()))
 
     world_view.setGeometry(rect)
 

@@ -159,6 +159,7 @@ class ScribeMainWindow(MainWindow):
     def _setup_view_menu(self):
         self.view_menu = ViewMenu(self, self.world_view)
         self.view_menu.triggered.connect(self.world_view.update)
+        self.view_menu.triggered.connect(self._resize_for_level)
 
         self.menuBar().addMenu(self.view_menu)
 

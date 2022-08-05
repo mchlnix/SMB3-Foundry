@@ -40,6 +40,7 @@ SETTINGS["level view/object_tooltip_enabled"] = True
 
 _settings: Dict[str, Union[str, int, bool]] = {
     "world view/show grid": False,
+    "world view/show border": False,
     "world view/show level pointers": False,
     "world view/show level previews": False,
     "world view/show sprites": True,
@@ -76,6 +77,8 @@ class Settings(QSettings):
         elif type_ is bool and isinstance(returned_value, str):
             # boolean values loaded from disk are returned as strings for some reason
             return returned_value == "true"
+        elif type_ is None:
+            return returned_value
         else:
             return type_(returned_value)
 

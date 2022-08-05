@@ -19,6 +19,10 @@ class ViewMenu(QMenu):
         self.grid_action.setCheckable(True)
         self.grid_action.setChecked(self.settings.value("world view/show grid"))
 
+        self.border_action = self.addAction("Borders")
+        self.border_action.setCheckable(True)
+        self.border_action.setChecked(self.settings.value("world view/show border"))
+
         self.addSeparator()
 
         self.level_pointer_action = self.addAction("&Level Pointers")
@@ -69,6 +73,8 @@ class ViewMenu(QMenu):
     def on_menu(self, action: QAction):
         if action is self.grid_action:
             self.settings.setValue("world view/show grid", action.isChecked())
+        elif action is self.border_action:
+            self.settings.setValue("world view/show border", action.isChecked())
         elif action is self.level_pointer_action:
             self.settings.setValue("world view/show level pointers", action.isChecked())
         elif action is self.level_preview_action:

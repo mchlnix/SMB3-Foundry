@@ -276,8 +276,9 @@ class WorldMap(LevelLike):
 
         return QRect(QPoint(0, 0), QSize(width, height) * block_length)
 
-    def point_in(self, x, y):
-        y -= FIRST_VALID_ROW
+    def point_in(self, x, y, with_border=False):
+        if not with_border:
+            y -= FIRST_VALID_ROW
         return super(WorldMap, self).point_in(x, y)
 
     @property
