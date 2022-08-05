@@ -21,8 +21,6 @@ Scribe
 ------
 - Change world info when dialog is closed, not immediately so there are less undo commands produced
 
-- Give "Empty" Sprites some representation
-
 smb3parse
 ---------
 - maybe document the data point classes better, to preserve the knowledge it took to parse them correctly in the first

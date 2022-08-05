@@ -9,6 +9,7 @@ from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects import AirshipTravelPoint, LevelPointer, Lock, MapTile, Sprite
 from foundry.game.gfx.objects.world_map.start_posiiton import StartPosition
 from foundry.game.level.LevelLike import LevelLike
+from smb3parse.constants import MAPOBJ_EMPTY
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.levels.world_map import (
@@ -225,7 +226,7 @@ class WorldMap(LevelLike):
         pos = Position.from_xy(x, y)
 
         for sprite in reversed(self.sprites):
-            if sprite.data.is_at(pos):
+            if sprite.data.is_at(pos) and sprite.type != MAPOBJ_EMPTY:
                 return sprite
         else:
             return None

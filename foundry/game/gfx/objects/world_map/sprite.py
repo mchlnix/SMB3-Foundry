@@ -26,6 +26,14 @@ class Sprite(MapObject):
     def name(self, value):
         pass
 
+    @property
+    def type(self):
+        return self.data.type
+
+    @type.setter
+    def type(self, value):
+        self.change_type(value)
+
     def draw(self, painter, block_length, transparent, selected=False):
         pos = QPoint(*self.data.pos.xy) * block_length
 
