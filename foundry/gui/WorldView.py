@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import get_level_thumbnail
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
+from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects import LevelObject, MapTile
 from foundry.game.gfx.objects.world_map.map_object import MapObject
@@ -100,7 +101,7 @@ class WorldView(MainView):
 
     def update_palette(self):
         for map_tile in self.world.objects:
-            map_tile.block.palette_group = self.world.data.palette_index
+            map_tile.block.palette_group = load_palette_group(self.world.object_set, self.world.data.palette_index)
             map_tile.change_type(map_tile.block.index)
 
         self.update()
@@ -146,7 +147,8 @@ class WorldView(MainView):
 
         if not should_display_level or not self._set_level_thumbnail(event):
             # clear tooltip if supposed to show one, but no level thumbnail was available (e.g. no level there)
-            self.setCursor(Qt.ArrowCursor)
+            if self.cursor() == Qt.PointingHandCursor:
+                self.setCursor(Qt.ArrowCursor)
 
             self.setToolTip("")
             QToolTip.hideText()

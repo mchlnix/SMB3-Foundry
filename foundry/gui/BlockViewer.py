@@ -99,7 +99,7 @@ class BlockViewer(CustomChildWindow):
         self.sprite_bank.update()
 
     def on_palette(self, value):
-        self.sprite_bank.palette_group = value
+        self.sprite_bank.palette_group_index = value
         self.sprite_bank.update()
 
 
@@ -107,7 +107,7 @@ class BlockBank(QWidget):
     status_message_changed: SignalInstance = Signal(str)
     clicked: SignalInstance = Signal(int)
 
-    def __init__(self, parent, object_set=0, palette_group=0, zoom=2):
+    def __init__(self, parent, object_set=0, palette_group_index=0, zoom=2):
         super(BlockBank, self).__init__(parent)
         self.setMouseTracking(True)
 
@@ -117,7 +117,7 @@ class BlockBank(QWidget):
         self.sprites_vert = ceil(self.sprites / self.sprites_horiz)
 
         self.object_set = object_set
-        self.palette_group = palette_group
+        self.palette_group_index = palette_group_index
         self.zoom = zoom
 
         self._size = QSize(self.sprites_horiz * Block.WIDTH * self.zoom, self.sprites_vert * Block.HEIGHT * self.zoom)
@@ -177,7 +177,7 @@ class BlockBank(QWidget):
         painter.drawRect(QRect(QPoint(0, 0), self.size()))
 
         graphics_set = GraphicsSet(self.object_set)
-        palette = load_palette_group(self.object_set, self.palette_group)
+        palette = load_palette_group(self.object_set, self.palette_group_index)
         tsa_data = ROM.get_tsa_data(self.object_set)
 
         horizontal = self.sprites_horiz

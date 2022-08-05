@@ -105,7 +105,7 @@ class BlockPicker(QWidget):
 
         self.level_ref = level_ref
 
-        self.block_bank = BlockBank(self, palette_group=level_ref.level.data.palette_index)
+        self.block_bank = BlockBank(self, palette_group_index=level_ref.level.data.palette_index)
         self.block_bank.status_message_changed.connect(self.window().statusBar().showMessage)
         self.level_ref.palette_changed.connect(self._update_palette_group)
         self.level_ref.level_changed.connect(self._update_palette_group)
@@ -122,7 +122,7 @@ class BlockPicker(QWidget):
         self.block_bank.zoom = zoom_level
 
     def _update_palette_group(self):
-        self.block_bank.palette_group = self.level_ref.level.data.palette_index
+        self.block_bank.palette_group_index = self.level_ref.level.data.palette_index
         self.block_bank.update()
 
         self.block_list.update_palette_group(self.level_ref.level.data.palette_index)

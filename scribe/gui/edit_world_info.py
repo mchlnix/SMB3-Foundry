@@ -99,7 +99,7 @@ class EditWorldInfo(CustomDialog):
         self.icon_button.setIcon(block_icon)
 
     def _on_button_press(self):
-        block_bank = BlockBank(None, palette_group=self.world_map.data.palette_index)
+        block_bank = BlockBank(None, palette_group_index=self.world_map.data.palette_index)
         block_bank.setWindowModality(Qt.WindowModal)
 
         block_bank.last_clicked_index = self.world_map.data.bottom_border_tile
