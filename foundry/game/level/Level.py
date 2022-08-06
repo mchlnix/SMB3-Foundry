@@ -621,8 +621,6 @@ class Level(LevelLike):
     def add_enemy(self, object_index: int, pos: Position, index: int = -1) -> EnemyItem:
         if index == -1:
             index = len(self.enemies)
-        else:
-            index -= len(self.objects)
 
         enemy = self.enemy_item_factory.from_data([object_index, *pos.xy], -1)
 
