@@ -231,20 +231,20 @@ class FoundryMainWindow(MainWindow):
 
         splitter.setChildrenCollapsible(False)
 
-        level_toolbar = QToolBar("Level Info Toolbar", self)
-        level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
-        level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        level_toolbar.setOrientation(Qt.Horizontal)
-        level_toolbar.setFloatable(False)
+        self.level_toolbar = QToolBar("Level Info Toolbar", self)
+        self.level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        self.level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        self.level_toolbar.setOrientation(Qt.Horizontal)
+        self.level_toolbar.setFloatable(False)
 
-        level_toolbar.addWidget(self.spinner_panel)
-        level_toolbar.addWidget(self.object_dropdown)
-        level_toolbar.addWidget(size_and_palette)
-        level_toolbar.addWidget(splitter)
+        self.level_toolbar.addWidget(self.spinner_panel)
+        self.level_toolbar.addWidget(self.object_dropdown)
+        self.level_toolbar.addWidget(size_and_palette)
+        self.level_toolbar.addWidget(splitter)
 
-        level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        self.level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
 
-        self.addToolBar(Qt.RightToolBarArea, level_toolbar)
+        self.addToolBar(Qt.RightToolBarArea, self.level_toolbar)
 
         self.object_toolbar = ObjectToolBar(self)
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
@@ -1010,12 +1010,7 @@ class FoundryMainWindow(MainWindow):
             self.menu_toolbar,
             # other gui elements
             self.level_view,
-            self.spinner_panel,
-            self.object_toolbar,
-            self.level_size_bar,
-            self.enemy_size_bar,
-            self.object_list,
-            self.jump_list,
+            self.level_toolbar,
             self.object_toolbar,
         ]
 
