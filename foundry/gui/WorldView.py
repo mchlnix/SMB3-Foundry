@@ -258,6 +258,21 @@ class WorldView(MainView):
 
         return pos
 
+    def _on_middle_mouse_button_down(self, event: QMouseEvent):
+        x, y = self.to_level_point(event.pos()).xy
+
+        if not self.world.point_in(x, y):
+            return
+
+        if self.mouse_mode != MODE_FREE:
+            return
+
+        obj = self.world.objects[Position.from_xy(x, y).tile_data_index]
+
+        assert obj is not None
+
+        self.on_put_tile(obj.type)
+
     def _visible_object_at(self, point: QPoint) -> MapObject:
         level_x, level_y = self.to_level_point(point).xy
 

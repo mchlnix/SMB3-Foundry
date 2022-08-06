@@ -120,12 +120,17 @@ class MainView(QWidget):
 
         if pressed_button == Qt.LeftButton:
             self._on_left_mouse_button_down(event)
+        elif pressed_button == Qt.MiddleButton:
+            self._on_middle_mouse_button_down(event)
         elif pressed_button == Qt.RightButton:
             self._on_right_mouse_button_down(event)
         else:
             return super(MainView, self).mousePressEvent(event)
 
     def _on_left_mouse_button_down(self, event: QMouseEvent):
+        pass
+
+    def _on_middle_mouse_button_down(self, event: QMouseEvent):
         pass
 
     def _on_right_mouse_button_down(self, event: QMouseEvent):
