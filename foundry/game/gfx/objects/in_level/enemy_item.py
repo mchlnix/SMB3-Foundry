@@ -8,7 +8,7 @@ from foundry.game.gfx.Palette import PaletteGroup
 from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from smb3parse.constants import OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM
+from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM
 from smb3parse.objects.object_set import ENEMY_ITEM_GRAPHICS_SET, ENEMY_ITEM_OBJECT_SET
 
 
@@ -30,6 +30,12 @@ class EnemyItem(InLevelObject):
             self.lock_index = max((data[2] >> 4) - 1, 0)
         else:
             self.lock_index = 0
+
+        if self.obj_index == OBJ_AUTOSCROLL:
+            self.auto_scroll_type = data[2]
+            data[2] = 0
+        else:
+            self.auto_scroll_type = 0
 
         x = data[1] - enemy_handle_x2[self.obj_index]
         y = data[2] - self.lock_index * 0x10
@@ -130,6 +136,9 @@ class EnemyItem(InLevelObject):
         x = max(0, x)
         y = max(0, y)
 
+        if self._is_auto_scroll():
+            y = 0
+
         self.x_position = x
         self.y_position = y
 
@@ -173,6 +182,8 @@ class EnemyItem(InLevelObject):
 
         if self._is_boom_boom():
             y_position += 0x10 * self.lock_index
+        elif self._is_auto_scroll():
+            y_position = self.auto_scroll_type
 
         return bytearray([self.obj_index, self.x_position + int(enemy_handle_x2[self.obj_index]), y_position])
 
@@ -198,3 +209,6 @@ class EnemyItem(InLevelObject):
 
     def _is_boom_boom(self):
         return self.type in [OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM]
+
+    def _is_auto_scroll(self):
+        return self.type == OBJ_AUTOSCROLL
