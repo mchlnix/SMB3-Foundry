@@ -315,6 +315,7 @@ class MainView(QWidget):
         self.update()
 
     def paintEvent(self, event: QPaintEvent):
+        print("Repaint  ...  ")
         painter = self.get_painter()
 
         if self.level_ref is None:

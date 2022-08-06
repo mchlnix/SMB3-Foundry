@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from PySide6.QtCore import QPoint, QSize
+from PySide6.QtCore import QPoint, QSize, QTimer
 from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, QUndoStack, Qt
 from PySide6.QtWidgets import QToolTip, QWidget
 
@@ -80,6 +80,11 @@ class WorldView(MainView):
         )
 
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.select_all)
+
+        self.redraw_timer = QTimer(self)
+        self.redraw_timer.setInterval(500)
+        self.redraw_timer.timeout.connect(self.repaint)
+        self.redraw_timer.start()
 
     def sizeHint(self) -> QSize:
         size = super(WorldView, self).sizeHint()

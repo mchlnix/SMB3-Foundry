@@ -75,7 +75,7 @@ class Tile:
         assert len(self.pixels) == 3 * Tile.PIXEL_COUNT
 
     def as_image(self, tile_length=8):
-        if tile_length not in self.cached_tiles.keys():
+        if True or tile_length not in self.cached_tiles.keys():
             width = height = tile_length
 
             image = QImage(self.pixels, self.WIDTH, self.HEIGHT, QImage.Format_RGB888)

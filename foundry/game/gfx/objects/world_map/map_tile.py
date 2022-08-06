@@ -32,7 +32,11 @@ class MapTile(MapObject):
     def copy(self):
         return MapTile(self.block, self.pos.copy())
 
-    def draw(self, dc, block_length, _=None):
+    def draw(self, dc, block_length, _=None, anim_frame=0):
+        self.block.graphics_set.anim_frame = anim_frame
+
+        self.block.rerender()
+
         self.block.draw(
             dc,
             self.x_position * block_length,

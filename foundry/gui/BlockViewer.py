@@ -1,6 +1,6 @@
 from math import ceil
 
-from PySide6.QtCore import QPoint, QRect, QSize, Signal, SignalInstance
+from PySide6.QtCore import QPoint, QRect, QSize, QTimer, Signal, SignalInstance
 from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter, QPen, QResizeEvent, Qt
 from PySide6.QtWidgets import QComboBox, QLabel, QLayout, QStatusBar, QToolBar, QWidget
 
@@ -126,6 +126,14 @@ class BlockBank(QWidget):
 
         self.setFixedSize(self._size)
 
+        self.anim_frame = 0
+
+        self.draw_timer = QTimer(self)
+        self.draw_timer.timeout.connect(self.repaint)
+        self.draw_timer.setInterval(500)
+
+        self.draw_timer.start()
+
     def resizeEvent(self, event: QResizeEvent):
         self.update()
 
@@ -172,11 +180,14 @@ class BlockBank(QWidget):
             self.clicked.emit(dec_index)
 
     def paintEvent(self, event: QPaintEvent):
+        print(self.anim_frame)
         painter = QPainter(self)
 
         painter.drawRect(QRect(QPoint(0, 0), self.size()))
 
         graphics_set = GraphicsSet(self.object_set)
+        graphics_set.anim_frame = self.anim_frame
+
         palette = load_palette_group(self.object_set, self.palette_group_index)
         tsa_data = ROM.get_tsa_data(self.object_set)
 
@@ -205,3 +216,6 @@ class BlockBank(QWidget):
             x *= block_length
 
             painter.drawLine(QPoint(x, 0), QPoint(x, 16 * block_length))
+
+        self.anim_frame += 1
+        self.anim_frame %= 4

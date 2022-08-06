@@ -49,7 +49,6 @@ GRAPHIC_SET_NAMES = [
 ]
 
 
-@lru_cache(32)
 class GraphicsSet:
     GRAPHIC_SET_BG_PAGE_1 = bytearray()
     GRAPHIC_SET_BG_PAGE_2 = bytearray()
@@ -59,13 +58,21 @@ class GraphicsSet:
             self.GRAPHIC_SET_BG_PAGE_1 = ROM().bulk_read(BG_PAGE_COUNT, Level_BG_Pages1)
             self.GRAPHIC_SET_BG_PAGE_2 = ROM().bulk_read(BG_PAGE_COUNT, Level_BG_Pages2)
 
-        self.data = bytearray()
+        self._data = bytearray()
+        self._anim_data = []
+        self.anim_frame = 0
         self.number = graphic_set_number
 
         segments = []
 
         if graphic_set_number == WORLD_MAP:
-            segments = [0x14, 0x16, 0x20, 0x21, 0x22, 0x23]
+            segments = [0x16, 0x20, 0x21, 0x22, 0x23]
+
+            for index in [0x14, 0x70, 0x72, 0x74]:
+                self._anim_data.append(bytearray())
+
+                self._read_in_chr_rom_segment(index, self._anim_data[-1])
+
         if graphic_set_number not in range(BG_PAGE_COUNT):
             self._read_in([graphic_set_number, graphic_set_number + 2])
         else:
@@ -86,12 +93,19 @@ class GraphicsSet:
 
         self._read_in(segments)
 
+    @property
+    def data(self):
+        if self.number == WORLD_MAP:
+            return self._anim_data[self.anim_frame] + self._data
+        else:
+            return self._data
+
     def _read_in(self, segments):
         for segment in segments:
-            self._read_in_chr_rom_segment(segment)
+            self._read_in_chr_rom_segment(segment, self._data)
 
-    def _read_in_chr_rom_segment(self, index):
+    def _read_in_chr_rom_segment(self, index, data):
         offset = CHR_ROM_OFFSET + index * CHR_ROM_SEGMENT_SIZE
         chr_rom_data = ROM().bulk_read(2 * CHR_ROM_SEGMENT_SIZE, offset)
 
-        self.data.extend(chr_rom_data)
+        data.extend(chr_rom_data)

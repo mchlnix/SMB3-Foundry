@@ -35,6 +35,8 @@ class WorldDrawer:
 
         self.settings = Settings("mchlnix", "world drawer")
 
+        self.anim_frame = 0
+
     def draw(self, painter: QPainter, world: WorldMap):
         painter.save()
 
@@ -69,6 +71,9 @@ class WorldDrawer:
             self._draw_locks_and_bridges(painter, world)
 
         painter.restore()
+
+        self.anim_frame += 1
+        self.anim_frame %= 4
 
     def _draw_background(self, painter: QPainter, world: WorldMap):
         bg_color = Qt.black
@@ -113,10 +118,10 @@ class WorldDrawer:
         not_selected, selected = partition(lambda tile_: tile_.selected, world.get_all_objects())
 
         for tile in not_selected:
-            tile.draw(painter, self.block_length, False)
+            tile.draw(painter, self.block_length, False, anim_frame=self.anim_frame)
 
         for tile in selected:
-            tile.draw(painter, self.block_length, False)
+            tile.draw(painter, self.block_length, False, anim_frame=self.anim_frame)
 
             painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
             painter.drawRect(tile.get_rect(self.block_length))
