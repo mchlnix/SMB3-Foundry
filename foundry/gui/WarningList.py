@@ -13,7 +13,14 @@ from foundry.gui.HeaderEditor import CAMERA_MOVEMENTS
 from foundry.gui.LevelView import LevelView
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.util import clear_layout
-from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_BOOMBOOM, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER, OBJ_PIPE_EXITS
+from smb3parse.constants import (
+    OBJ_AUTOSCROLL,
+    OBJ_BOOMBOOM,
+    OBJ_CHEST_EXIT,
+    OBJ_CHEST_ITEM_SETTER,
+    OBJ_PIPE_EXITS,
+    OBJ_TREASURE_CHEST,
+)
 from smb3parse.objects.object_set import DUNGEON_OBJECT_SET, PLAINS_OBJECT_SET
 
 
@@ -150,13 +157,29 @@ class WarningList(QWidget):
 
         chest_exit_objects = [enemy for enemy in level.enemies if enemy.type == OBJ_CHEST_EXIT]
         chest_exit_items = [enemy for enemy in level.enemies if enemy.type == OBJ_CHEST_ITEM_SETTER]
+        chest_objects = [enemy for enemy in level.enemies if enemy.type == OBJ_TREASURE_CHEST]
 
         if len(chest_exit_objects) != len(chest_exit_items) or len(chest_exit_objects) > 1 or len(chest_exit_items) > 1:
             self.warnings.append(
                 (
                     f"You have {len(chest_exit_objects)} Chest Exit objects and {len(chest_exit_items)} "
-                    f"Chest Item object. You can only have one of each or none of them in one level.",
+                    f"Chest Item objects. You can only have one of each or none of them in one level.",
                     chest_exit_items + chest_exit_objects,
+                )
+            )
+
+        if chest_exit_items and not chest_objects:
+            self.warnings.append(
+                (
+                    f"You have {len(chest_exit_items)} Chest Item objects, but no chest in the level to set items for.",
+                    chest_exit_items,
+                )
+            )
+        elif chest_objects and not chest_exit_items:
+            self.warnings.append(
+                (
+                    f"You have {len(chest_objects)} Chests, but no object that sets their items in the level.",
+                    chest_objects,
                 )
             )
 
