@@ -55,7 +55,7 @@ SPECIAL_BACKGROUND_OBJECTS = [
 ]
 
 
-OMITTED_ITEMS = [OBJ_AUTOSCROLL, OBJ_PIPE_EXITS, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER]
+OMITTED_ITEMS = [OBJ_PIPE_EXITS, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER]
 """
 These configure things based on their y-position in the level. This is done in the editor directly now. So no need to
 actually render them in the level.
