@@ -18,9 +18,15 @@ Foundry
 
 - Make translatable?
 
+- Make M3Ls instaplayable
+
 Scribe
 ------
 - Change world info when dialog is closed, not immediately so there are less undo commands produced
+
+- Export all world data into a file and enable importing it back into a rom (not just the layout, like m3l)
+
+- Find a way to make changing screen counts and moving worlds around work without data loss
 
 smb3parse
 ---------
