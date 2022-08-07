@@ -39,9 +39,9 @@ class ScribeMainWindow(MainWindow):
 
         self.menu_toolbar = None
 
-        self.on_open_rom(path_to_rom)
-
         self.settings = Settings("mchlnix", "smb3scribe")
+
+        self.on_open_rom(path_to_rom)
 
         self.context_menu = WorldContextMenu(self.level_ref)
 
