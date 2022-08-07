@@ -56,6 +56,8 @@ class WorldView(MainView):
         level.palette_changed.connect(self.update_anim_timer)
         level.level_changed.connect(self.update_anim_timer)
 
+        self.update_anim_timer()
+
         self._tile_to_put: int = WORLD_MAP_BLANK_TILE_ID
 
         self.mouse_mode = MODE_FREE

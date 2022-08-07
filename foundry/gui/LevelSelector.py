@@ -248,12 +248,16 @@ class WorldMapLevelSelect(QScrollArea):
         level_ref = LevelRef()
         level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
 
-        self.world_view = WorldView(self, level_ref, Settings(), None)
+        world_settings = Settings()
+        world_settings.setValue("world view/show level previews", True)
+        world_settings.setValue("world view/animated tiles", True)
+        world_settings.setValue("world view/show border", True)
+
+        self.world_view = WorldView(self, level_ref, world_settings, None)
 
         self.world_view.setMouseTracking(True)
-        self.world_view.draw_start = False
         self.world_view.read_only = True
-        self.world_view.settings.setValue("world view/show level previews", True)
+
         self.world_view.zoom_in()
 
         self.setWidget(self.world_view)
