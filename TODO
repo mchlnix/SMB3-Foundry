@@ -28,6 +28,8 @@ Scribe
 
 - Find a way to make changing screen counts and moving worlds around work without data loss
 
+- Add warning to level pointers on row 8, since those are not possible in game.
+
 smb3parse
 ---------
 - maybe document the data point classes better, to preserve the knowledge it took to parse them correctly in the first
