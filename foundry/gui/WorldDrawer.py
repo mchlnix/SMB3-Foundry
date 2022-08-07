@@ -3,6 +3,7 @@ from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
 from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
+from foundry.game.gfx.objects import MapTile
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.settings import Settings
 from foundry.gui.util import partition
@@ -72,9 +73,6 @@ class WorldDrawer:
 
         painter.restore()
 
-        self.anim_frame += 1
-        self.anim_frame %= 4
-
     def _draw_background(self, painter: QPainter, world: WorldMap):
         bg_color = Qt.black
 
@@ -118,13 +116,23 @@ class WorldDrawer:
         not_selected, selected = partition(lambda tile_: tile_.selected, world.get_all_objects())
 
         for tile in not_selected:
-            tile.draw(painter, self.block_length, False, anim_frame=self.anim_frame)
+            self._draw_tile(painter, world, tile)
 
         for tile in selected:
-            tile.draw(painter, self.block_length, False, anim_frame=self.anim_frame)
+            self._draw_tile(painter, world, tile)
 
             painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
             painter.drawRect(tile.get_rect(self.block_length))
+
+        # TODO make anim frame a parameter to draw and Tile()
+        tile.block.graphics_set.anim_frame = self.anim_frame
+
+    def _draw_tile(self, painter: QPainter, world: WorldMap, tile: MapTile):
+        # both exceptions are hard coded and don't animate
+        if world.data.index == 4 or (world.data.index == 7 and tile.pos.screen == 3):
+            tile.draw(painter, self.block_length, anim_frame=0)
+        else:
+            tile.draw(painter, self.block_length, anim_frame=self.anim_frame)
 
     def _draw_border(self, painter: QPainter, world: WorldMap):
         # side borders

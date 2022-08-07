@@ -28,6 +28,7 @@ def get_block(block_index: int, palette_group: PaletteGroup, graphics_set: Graph
     return block
 
 
+@lru_cache(2**10)
 def get_tile(index, palette_group, palette_index, graphics_set, mirrored=False):
     return Tile(index, palette_group, palette_index, graphics_set, mirrored)
 
@@ -73,6 +74,8 @@ class Block:
 
         self.mirrored = mirrored
 
+        self.images: Dict[int, QImage] = {}
+
         if graphics_set.number == CLOUDY_GRAPHICS_SET:
             self.bg_color = NESPalette[palette_group[self.palette_index][2]]
         else:
@@ -81,6 +84,9 @@ class Block:
         self._render()
 
     def _render(self):
+        if self.graphics_set.anim_frame in self.images:
+            return
+
         # can't hash list, so turn it into a string instead
         self._block_id: BlockId = (self.index, str(self.palette_group), self.graphics_set.number)
 
@@ -99,8 +105,9 @@ class Block:
             self.ru_tile = get_tile(ru, self.palette_group, self.palette_index, self.graphics_set)
             self.rd_tile = get_tile(rd, self.palette_group, self.palette_index, self.graphics_set)
 
-        self.image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format_RGB888)
-        painter = QPainter(self.image)
+        image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format_RGB888)
+
+        painter = QPainter(image)
 
         painter.drawImage(QPoint(0, 0), self.lu_tile.as_image())
         painter.drawImage(QPoint(Tile.WIDTH, 0), self.ru_tile.as_image())
@@ -109,10 +116,12 @@ class Block:
 
         painter.end()
 
-        if _image_only_one_color(self.image) and self.image.pixelColor(0, 0) == QColor(*MASK_COLOR):
+        if _image_only_one_color(image) and image.pixelColor(0, 0) == QColor(*MASK_COLOR):
             self._whole_block_is_transparent = True
         else:
             self._whole_block_is_transparent = False
+
+        self.images[self.graphics_set.anim_frame] = image
 
     def rerender(self):
         self._render()
@@ -120,8 +129,9 @@ class Block:
     def draw(self, painter: QPainter, x, y, block_length, selected=False, transparent=False):
         block_attributes = (self._block_id, block_length, selected, transparent, self.graphics_set.anim_frame)
 
-        if True or block_attributes not in Block._block_cache:
-            image = self.image.copy()
+        if block_attributes not in Block._block_cache:
+            self.rerender()
+            image = self.images[self.graphics_set.anim_frame].copy()
 
             if block_length != Block.WIDTH:
                 image = image.scaled(block_length, block_length)

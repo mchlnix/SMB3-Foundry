@@ -1,6 +1,6 @@
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QPainter, QPixmap, QUndoStack, Qt
-from PySide6.QtWidgets import QGroupBox, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from foundry.game.Data import LEVEL_POINTER_COUNT
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
@@ -16,6 +16,7 @@ from scribe.gui.commands import (
     SetWorldIndex,
     WorldBottomTile,
     WorldPaletteIndex,
+    WorldTickPerFrame,
 )
 from smb3parse.levels import MAX_SCREEN_COUNT, WORLD_COUNT, WORLD_MAP_PALETTE_COUNT
 
@@ -60,6 +61,18 @@ class EditWorldInfo(CustomDialog):
 
         layout.addLayout(label_and_widget("World Number", index_spin_box))
 
+        self.orig_tick_per_frame = self.world_map.data.frame_tick_count
+
+        ticks_per_frame_spin_box = Spinner(self, maximum=0xFF, base=10)
+        ticks_per_frame_spin_box.setValue(self.world_map.data.frame_tick_count)
+        ticks_per_frame_spin_box.valueChanged.connect(self._change_anim_frame)
+
+        layout.addLayout(label_and_widget("Ticks between Animation Frames", ticks_per_frame_spin_box))
+
+        self.animation_hint_label = QLabel()
+        layout.addWidget(self.animation_hint_label)
+        self._update_hint_label()
+
         palette_spin_box = Spinner(self, maximum=WORLD_MAP_PALETTE_COUNT - 1)
         palette_spin_box.setValue(self.world_map.data.palette_index)
         palette_spin_box.valueChanged.connect(self._change_palette_index)
@@ -98,6 +111,16 @@ class EditWorldInfo(CustomDialog):
 
         self.icon_button.setIcon(block_icon)
 
+    def _update_hint_label(self):
+        world_number = self.world_map.data.index
+
+        if world_number == 4:
+            self.animation_hint_label.setText("Note: World 5 cannot be animated")
+        elif world_number == 7:
+            self.animation_hint_label.setText("Note: World 8's last screen cannot be animated")
+        else:
+            self.animation_hint_label.setText("")
+
     def _on_button_press(self):
         block_bank = BlockBank(None, palette_group_index=self.world_map.data.palette_index)
         block_bank.setWindowModality(Qt.WindowModal)
@@ -128,6 +151,13 @@ class EditWorldInfo(CustomDialog):
             return
 
         self.undo_stack.push(SetWorldIndex(self.world_map, new_index))
+
+        self._update_hint_label()
+
+    def _change_anim_frame(self, new_count):
+        self.world_map.data.frame_tick_count = new_count
+
+        self.world_map.palette_changed.emit()
 
     def _change_palette_index(self, new_index):
         self.undo_stack.push(WorldPaletteIndex(self.world_map, new_index))
@@ -168,3 +198,10 @@ class EditWorldInfo(CustomDialog):
             for _ in range(count):
                 self.undo_stack.push(AddLevelPointer(self.world_map))
             self.undo_stack.endMacro()
+
+    def closeEvent(self, event):
+        curr_tick_per_frame = self.world_map.data.frame_tick_count
+        self.world_map.data.frame_tick_count = self.orig_tick_per_frame
+
+        if self.orig_tick_per_frame != curr_tick_per_frame:
+            self.undo_stack.push(WorldTickPerFrame(self.world_map, curr_tick_per_frame))

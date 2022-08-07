@@ -49,6 +49,7 @@ GRAPHIC_SET_NAMES = [
 ]
 
 
+@lru_cache(32)
 class GraphicsSet:
     GRAPHIC_SET_BG_PAGE_1 = bytearray()
     GRAPHIC_SET_BG_PAGE_2 = bytearray()

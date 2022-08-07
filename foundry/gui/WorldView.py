@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QToolTip, QWidget
 from foundry import get_level_thumbnail
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.Palette import load_palette_group
-from foundry.game.gfx.drawable.Block import get_worldmap_tile
+from foundry.game.gfx.drawable.Block import get_tile, get_worldmap_tile
 from foundry.game.gfx.objects import LevelObject, MapTile
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.LevelRef import LevelRef
@@ -48,10 +48,13 @@ class WorldView(MainView):
         context_menu: Optional[WorldContextMenu] = None,
     ):
         self.drawer = WorldDrawer()
+        self.redraw_timer: Optional[QTimer] = None
 
         super(WorldView, self).__init__(parent, level, settings, context_menu)
 
         level.palette_changed.connect(self.update_palette)
+        level.palette_changed.connect(self.update_anim_timer)
+        level.level_changed.connect(self.update_anim_timer)
 
         self._tile_to_put: int = WORLD_MAP_BLANK_TILE_ID
 
@@ -81,10 +84,27 @@ class WorldView(MainView):
 
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.select_all)
 
-        self.redraw_timer = QTimer(self)
-        self.redraw_timer.setInterval(500)
-        self.redraw_timer.timeout.connect(self.repaint)
-        self.redraw_timer.start()
+    def next_anim_step(self):
+        self.drawer.anim_frame += 1
+        self.drawer.anim_frame %= 4
+        get_tile.cache_clear()
+
+        self.repaint()
+
+    def update_anim_timer(self):
+        if not self.level_ref:
+            return
+
+        if self.redraw_timer is not None:
+            self.redraw_timer.stop()
+            self.drawer.anim_frame = 0
+            get_tile.cache_clear()
+
+        if self.world.data.frame_tick_count:
+            self.redraw_timer = QTimer(self)
+            self.redraw_timer.setInterval(1000 / 60 * self.world.data.frame_tick_count)
+            self.redraw_timer.timeout.connect(self.next_anim_step)
+            self.redraw_timer.start()
 
     def sizeHint(self) -> QSize:
         size = super(WorldView, self).sizeHint()

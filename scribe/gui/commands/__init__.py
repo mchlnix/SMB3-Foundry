@@ -102,6 +102,30 @@ class PutTile(MoveTile):
             obj.selected = False
 
 
+class WorldTickPerFrame(QUndoCommand):
+    def __init__(self, world: WorldMap, new_tick_count: int):
+        super(WorldTickPerFrame, self).__init__()
+
+        self.world = world
+        self.old_count = world.data.frame_tick_count
+        self.new_count = new_tick_count
+
+        if self.new_count == 0:
+            self.setText("Deactivate Map Tile Animation")
+        else:
+            self.setText(f"Set Ticks per Tile Animation Frame to {self.new_count}")
+
+    def undo(self):
+        self.world.data.frame_tick_count = self.old_count
+
+        self.world.palette_changed.emit()
+
+    def redo(self):
+        self.world.data.frame_tick_count = self.new_count
+
+        self.world.palette_changed.emit()
+
+
 class WorldPaletteIndex(QUndoCommand):
     def __init__(self, world: WorldMap, new_index: int):
         super(WorldPaletteIndex, self).__init__()
