@@ -100,7 +100,7 @@ class WorldView(MainView):
             self.drawer.anim_frame = 0
             get_tile.cache_clear()
 
-        if self.world.data.frame_tick_count:
+        if self.world.data.frame_tick_count and self.settings.value("world view/animated tiles"):
             self.redraw_timer = QTimer(self)
             self.redraw_timer.setInterval(1000 / 60 * self.world.data.frame_tick_count)
             self.redraw_timer.timeout.connect(self.next_anim_step)

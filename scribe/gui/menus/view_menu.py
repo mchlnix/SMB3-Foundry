@@ -3,11 +3,12 @@ from PySide6.QtWidgets import QFileDialog, QMenu
 
 from foundry import IMG_FILE_FILTER, icon
 from foundry.game.File import ROM
+from foundry.gui.WorldView import WorldView
 from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 
 
 class ViewMenu(QMenu):
-    def __init__(self, parent, world_view):
+    def __init__(self, parent, world_view: WorldView):
         super(ViewMenu, self).__init__("&View", parent)
 
         self.triggered.connect(self.on_menu)
@@ -22,6 +23,10 @@ class ViewMenu(QMenu):
         self.border_action = self.addAction("Borders")
         self.border_action.setCheckable(True)
         self.border_action.setChecked(self.settings.value("world view/show border"))
+
+        self.animation_action = self.addAction("Animated Tiles")
+        self.animation_action.setCheckable(True)
+        self.animation_action.setChecked(self.settings.value("world view/animated tiles"))
 
         self.addSeparator()
 
@@ -75,6 +80,9 @@ class ViewMenu(QMenu):
             self.settings.setValue("world view/show grid", action.isChecked())
         elif action is self.border_action:
             self.settings.setValue("world view/show border", action.isChecked())
+        elif action is self.animation_action:
+            self.settings.setValue("world view/animated tiles", action.isChecked())
+            self.world_view.update_anim_timer()
         elif action is self.level_pointer_action:
             self.settings.setValue("world view/show level pointers", action.isChecked())
         elif action is self.level_preview_action:

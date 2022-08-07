@@ -41,6 +41,7 @@ SETTINGS["level view/object_tooltip_enabled"] = True
 _settings: Dict[str, Union[str, int, bool]] = {
     "world view/show grid": False,
     "world view/show border": False,
+    "world view/animated tiles": True,
     "world view/show level pointers": False,
     "world view/show level previews": False,
     "world view/show sprites": True,
