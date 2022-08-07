@@ -92,7 +92,7 @@ class LocksList(TableWidget):
 
 class BlockBankDelegate(QStyledItemDelegate):
     def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
-        block_bank = BlockBank(parent)
+        block_bank = BlockBank(None)
         block_bank.clicked.connect(block_bank.hide)
 
         return block_bank
