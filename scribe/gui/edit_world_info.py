@@ -32,19 +32,21 @@ class EditWorldInfo(CustomDialog):
         # world size
         layout = QVBoxLayout()
 
-        screen_spin_box = Spinner(self, maximum=MAX_SCREEN_COUNT, base=10)
-        screen_spin_box.setMinimum(1)
-        screen_spin_box.setValue(self.world_map.data.screen_count)
-        screen_spin_box.valueChanged.connect(self._change_screen_count)
+        self.old_screen_count = self.world_map.data.screen_count
+        self.old_tile_data = self.world_map.data.tile_data.copy()
 
-        layout.addLayout(label_and_widget("Screen Count", screen_spin_box))
+        self.screen_spin_box = Spinner(self, maximum=MAX_SCREEN_COUNT, base=10)
+        self.screen_spin_box.setMinimum(1)
+        self.screen_spin_box.setValue(self.world_map.data.screen_count)
+        self.screen_spin_box.valueChanged.connect(self._change_screen_count)
 
-        level_count_spin_box = Spinner(self, maximum=LEVEL_POINTER_COUNT, base=10)
-        level_count_spin_box.setMinimum(0)
-        level_count_spin_box.setValue(self.world_map.data.level_count)
-        level_count_spin_box.valueChanged.connect(self._change_level_pointer_count)
+        layout.addLayout(label_and_widget("Screen Count", self.screen_spin_box))
 
-        layout.addLayout(label_and_widget("Level Count", level_count_spin_box))
+        self.level_count_spin_box = Spinner(self, maximum=LEVEL_POINTER_COUNT, base=10)
+        self.level_count_spin_box.setMinimum(0)
+        self.level_count_spin_box.setValue(self.world_map.data.level_count)
+
+        layout.addLayout(label_and_widget("Level Count", self.level_count_spin_box))
 
         world_size_group = QGroupBox("World Size")
         world_size_group.setLayout(layout)
@@ -142,7 +144,8 @@ class EditWorldInfo(CustomDialog):
         if self.world_map.data.screen_count == new_amount:
             return
 
-        self.undo_stack.push(SetScreenCount(self.world_map, new_amount))
+        self.world_map.data.screen_count = new_amount
+        self.world_map.reread_tiles()
 
     def _change_world_index(self, new_index):
         new_index -= 1
@@ -205,3 +208,13 @@ class EditWorldInfo(CustomDialog):
 
         if self.orig_tick_per_frame != curr_tick_per_frame:
             self.undo_stack.push(WorldTickPerFrame(self.world_map, curr_tick_per_frame))
+
+        self._change_level_pointer_count(self.level_count_spin_box.value())
+
+        self.world_map.data.screen_count = self.old_screen_count
+        self.world_map.data.tile_data = self.old_tile_data
+
+        self.world_map.reread_tiles(save_existing=False)
+
+        if self.world_map.data.screen_count != self.screen_spin_box.value():
+            self.undo_stack.push(SetScreenCount(self.world_map, self.screen_spin_box.value()))

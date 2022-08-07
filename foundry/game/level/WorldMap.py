@@ -201,8 +201,9 @@ class WorldMap(LevelLike):
         else:
             world_data.tile_data[: len(old_tile_data)] = old_tile_data
 
-    def reread_tiles(self):
-        self._write_tile_data()
+    def reread_tiles(self, save_existing=True):
+        if save_existing:
+            self._write_tile_data()
 
         self._load_objects()
 
