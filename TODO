@@ -2,8 +2,6 @@ Foundry
 -------
 - Show chest items as overlay?
 
-- Draw Autoscroll objects, like BoomBooms, independent of their true y-position.
-
 - If a door or Pipe in a level is not in a Jump Zone, it will default to the first jump in the level (object order, or
   screen order?)
 
