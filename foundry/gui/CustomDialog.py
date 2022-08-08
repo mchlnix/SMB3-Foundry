@@ -11,7 +11,7 @@ class CustomDialog(QDialog):
 
     def keyPressEvent(self, event: QKeyEvent):
         if event.key() == Qt.Key_Escape:
-            self.on_exit()
+            self.close()
 
     def on_exit(self):
         self.hide()
