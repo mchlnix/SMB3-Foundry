@@ -34,6 +34,8 @@ class ScribeMainWindow(MainWindow):
 
         self.setWindowIcon(icon("scribe.ico"))
 
+        self.level_ref.level_changed.connect(self._resize_for_level)
+
         self.undo_stack = QUndoStack(self)
         self.undo_stack.setObjectName("undo_stack")
 
