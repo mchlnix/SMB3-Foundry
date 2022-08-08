@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 
 
 class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
+    SIZE = 2 * OFFSET_SIZE + 2  # object offset, enemy offset, 2 bytes for position in map
+
     def __init__(self, world_map_data: "WorldMapData", index: int):
         self.world = world_map_data
         self.index = index

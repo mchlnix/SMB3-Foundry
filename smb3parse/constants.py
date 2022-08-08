@@ -344,6 +344,9 @@ AIRSHIP_TRAVEL_SET_SIZE = 6  # bytes
 FORTRESS_FX_COUNT = 17  # entries/bytes
 PIPE_PAIR_COUNT = 24  # entries
 
+GAME_LEVEL_POINTER_COUNT = 340  # without the 10 from warp world
+GAME_SCREEN_COUNT = 20
+
 OFFSET_SIZE = 2  # byte
 
 OBJ_PIPE_EXITS = 0x25
