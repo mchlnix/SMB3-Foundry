@@ -84,7 +84,6 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.fortress_fx_base_index_address = 0x0
 
         self.fortress_fx_indexes: List[int] = []
-        self.fortress_fx_indexes_address = 0x0
 
         self.fortress_fx_count = 0
         self.fortress_fx: List[FortressFXData] = []
@@ -108,7 +107,6 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
     def calculate_addresses(self):
         self.tile_data_offset_address = LAYOUT_LIST_OFFSET + OFFSET_SIZE * self.index
-        self.structure_data_offset_address = STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.index
 
         self.palette_index_address = Map_Tile_ColorSets + self.index
         self.obj_color_index_address = Map_Object_ColorSets + self.index
@@ -116,6 +114,8 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.bottom_border_tile_address = Map_Bottom_Tiles + self.index
         # TODO you can define a separate tick count for each anim frame, not used in game though
         self.frame_tick_count_address = Map_AnimSpeeds + self.index * 4  # 4 animation frames
+
+        self.structure_data_offset_address = STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.index
 
         self.y_pos_list_start_address = LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index
         self.x_pos_list_start_address = LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index
@@ -134,8 +134,6 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self.fortress_fx_base_index_address = FortressFXBase_ByWorld + self.index
         self.fortress_fx_base_index = self._rom.int(self.fortress_fx_base_index_address)
-
-        self.fortress_fx_indexes_address = FortressFX_W1 + self.fortress_fx_base_index
 
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
@@ -160,7 +158,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.level_offset_list_offset = self._rom.little_endian(self.level_offset_list_offset_address)
 
         if self.index != WORLD_MAP_WARP_WORLD_INDEX:
-            assert self.level_offset_list_offset == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+            assert self.level_offset_list_offset == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE, (hex(self.level_offset_list_offset - self.enemy_offset_list_offset), self.level_count)
 
         self.map_start_y = self._rom.int(self.map_start_y_address)
         self.map_scroll = self._rom.int(self.map_scroll_address)
@@ -187,7 +185,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.fortress_fx_indexes.clear()
 
         for offset in range(self.fortress_fx_count):
-            index = self._rom.int(self.fortress_fx_indexes_address + offset)
+            index = self._rom.int(self.fortress_fx_indexes_start_address + offset)
 
             self.fortress_fx.append(FortressFXData(self._rom, index))
             self.fortress_fx_indexes.append(index)
@@ -264,9 +262,13 @@ class WorldMapData(_IndexedMixin, DataPoint):
         rom.write(self.fortress_fx_base_index_address, self.fortress_fx_base_index)
 
         for offset, fortress_fx_data in enumerate(self.fortress_fx):
-            rom.write(self.fortress_fx_indexes_address + offset, fortress_fx_data.index)
+            rom.write(self.fortress_fx_indexes_start_address + offset, fortress_fx_data.index)
 
             fortress_fx_data.write_back(rom)
+
+    @property
+    def fortress_fx_indexes_start_address(self):
+        return FortressFX_W1 + self.fortress_fx_base_index
 
     @property
     def structure_block_address(self):
@@ -276,6 +278,19 @@ class WorldMapData(_IndexedMixin, DataPoint):
     def structure_block_address(self, value):
         self.structure_data_offset = value - WORLD_MAP_BASE_OFFSET
 
+        # we need to save the level count here, since its a property of the two attributes we change here
+        level_count = self.level_count
+
+        self.y_pos_list_start = self.structure_block_address + MAX_SCREEN_COUNT
+        self.x_pos_list_start = self.y_pos_list_start + level_count
+
+        self.enemy_offset_list_offset = self.x_pos_list_start + self.level_count - WORLD_MAP_BASE_OFFSET
+        self.level_offset_list_offset = self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+
+    @property
+    def structure_block_size(self):
+        return self.level_count * LevelPointerData.SIZE + len(self.pos_offsets_for_screen)
+
     @property
     def layout_address(self):
         return WORLD_MAP_BASE_OFFSET + self.tile_data_offset
@@ -283,6 +298,10 @@ class WorldMapData(_IndexedMixin, DataPoint):
     @layout_address.setter
     def layout_address(self, value):
         self.tile_data_offset = value - WORLD_MAP_BASE_OFFSET
+
+    @property
+    def tile_data_size(self):
+        return len(self.tile_data) + 1  # the delimiter at the end
 
     @property
     def screen_count(self):

@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.Spinner import Spinner
+from foundry.gui.Spinner import SPINNER_MAX_VALUE, Spinner
 
 
 class TableWidget(QTableWidget):
@@ -119,20 +119,27 @@ class DropdownDelegate(QStyledItemDelegate):
 
 
 class SpinBoxDelegate(QStyledItemDelegate):
-    def __init__(self, parent):
+    def __init__(self, parent, minimum=0, maximum=SPINNER_MAX_VALUE, base=16):
         super(SpinBoxDelegate, self).__init__(parent)
 
+        self.minimum = minimum
+        self.maximum = maximum
+        self.base = base
+
     def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
-        return Spinner(parent)
+        return Spinner(parent, self.maximum, self.base)
 
     def setEditorData(self, editor: Spinner, index: QModelIndex):
         if isinstance(value := index.data(), str):
-            value = int(value, 16)
+            value = int(value, self.base)
 
         editor.setValue(value)
 
     def setModelData(self, editor: Spinner, model: QAbstractItemModel, index: QModelIndex) -> None:
-        model.setData(index, hex(editor.value()))
+        if self.base == 16:
+            model.setData(index, hex(editor.value()))
+        else:
+            model.setData(index, editor.value())
 
 
 class DialogDelegate(QStyledItemDelegate):

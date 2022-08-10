@@ -1,9 +1,10 @@
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QPainter, QPixmap, QUndoStack, Qt
-from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtGui import QCloseEvent, QPainter, QPixmap, QUndoStack, Qt
+from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
-from foundry.game.Data import LEVEL_POINTER_COUNT
+from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
+from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui import label_and_widget
 from foundry.gui.BlockViewer import BlockBank
@@ -18,7 +19,8 @@ from scribe.gui.commands import (
     WorldPaletteIndex,
     WorldTickPerFrame,
 )
-from smb3parse.levels import MAX_SCREEN_COUNT, WORLD_COUNT, WORLD_MAP_PALETTE_COUNT
+from scribe.gui.world_overview import WorldOverview
+from smb3parse.levels import WORLD_MAP_PALETTE_COUNT
 
 
 class EditWorldInfo(CustomDialog):
@@ -29,39 +31,8 @@ class EditWorldInfo(CustomDialog):
 
         self.setLayout(QVBoxLayout())
 
-        # world size
-        layout = QVBoxLayout()
-
-        self.old_screen_count = self.world_map.data.screen_count
-        self.old_tile_data = self.world_map.data.tile_data.copy()
-
-        self.screen_spin_box = Spinner(self, maximum=MAX_SCREEN_COUNT, base=10)
-        self.screen_spin_box.setMinimum(1)
-        self.screen_spin_box.setValue(self.world_map.data.screen_count)
-        self.screen_spin_box.valueChanged.connect(self._change_screen_count)
-
-        layout.addLayout(label_and_widget("Screen Count", self.screen_spin_box))
-
-        self.level_count_spin_box = Spinner(self, maximum=LEVEL_POINTER_COUNT, base=10)
-        self.level_count_spin_box.setMinimum(0)
-        self.level_count_spin_box.setValue(self.world_map.data.level_count)
-
-        layout.addLayout(label_and_widget("Level Count", self.level_count_spin_box))
-
-        world_size_group = QGroupBox("World Size")
-        world_size_group.setLayout(layout)
-
-        self.layout().addWidget(world_size_group)
-
         # world data
         layout = QVBoxLayout()
-
-        index_spin_box = Spinner(self, maximum=WORLD_COUNT, base=10)
-        index_spin_box.setMinimum(1)
-        index_spin_box.setValue(self.world_map.data.index + 1)
-        index_spin_box.valueChanged.connect(self._change_world_index)
-
-        layout.addLayout(label_and_widget("World Number", index_spin_box))
 
         self.orig_tick_per_frame = self.world_map.data.frame_tick_count
 
@@ -73,7 +44,6 @@ class EditWorldInfo(CustomDialog):
 
         self.animation_hint_label = QLabel()
         layout.addWidget(self.animation_hint_label)
-        self._update_hint_label()
 
         palette_spin_box = Spinner(self, maximum=WORLD_MAP_PALETTE_COUNT - 1)
         palette_spin_box.setValue(self.world_map.data.palette_index)
@@ -88,15 +58,29 @@ class EditWorldInfo(CustomDialog):
         layout.addLayout(label_and_widget("Bottom Border Tile", self.icon_button))
 
         world_data_group = QGroupBox("World Data")
+        world_data_group.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         world_data_group.setLayout(layout)
 
         self.layout().addWidget(world_data_group)
+        level_ref = LevelRef()
+        level_ref.level = self.world_map
+
+        self.world_overview = WorldOverview(self, level_ref, ROM())
+        self.world_overview.data_changed.connect(self._update_hint_label)
+        self.world_overview.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+
+        self.layout().addWidget(self.world_overview)
+
+        self.error_label = QLabel(self.world_overview.status_msg)
+        self.layout().addWidget(self.error_label)
 
         # ok button
         self.ok_button = QPushButton("OK")
         self.ok_button.pressed.connect(self.close)
 
         self.layout().addWidget(self.ok_button)
+
+        self._update_hint_label()
 
     @property
     def undo_stack(self) -> QUndoStack:
@@ -123,6 +107,15 @@ class EditWorldInfo(CustomDialog):
         else:
             self.animation_hint_label.setText("")
 
+        self.error_label.setText(self.world_overview.status_msg)
+
+        if self.world_overview.valid():
+            self.error_label.setStyleSheet("QLabel { }")
+        else:
+            self.error_label.setStyleSheet("QLabel { color : red; }")
+
+        self.ok_button.setEnabled(self.world_overview.valid())
+
     def _on_button_press(self):
         block_bank = BlockBank(None, palette_group_index=self.world_map.data.palette_index)
         block_bank.setWindowModality(Qt.WindowModal)
@@ -140,23 +133,6 @@ class EditWorldInfo(CustomDialog):
 
         block_bank.showNormal()
 
-    def _change_screen_count(self, new_amount):
-        if self.world_map.data.screen_count == new_amount:
-            return
-
-        self.world_map.data.screen_count = new_amount
-        self.world_map.reread_tiles()
-
-    def _change_world_index(self, new_index):
-        new_index -= 1
-
-        if self.world_map.data.index == new_index:
-            return
-
-        self.undo_stack.push(SetWorldIndex(self.world_map, new_index))
-
-        self._update_hint_label()
-
     def _change_anim_frame(self, new_count):
         self.world_map.data.frame_tick_count = new_count
 
@@ -168,19 +144,6 @@ class EditWorldInfo(CustomDialog):
         self._update_button_icon()
 
         self.world_map.palette_changed.emit()
-
-    def _change_level_pointer_count(self, new_count):
-        current_count = self.world_map.data.level_count
-
-        diff = new_count - current_count
-
-        if diff == 0:
-            return
-
-        if diff < 0:
-            self._remove_level_pointers(abs(diff))
-        else:
-            self._add_level_pointers(diff)
 
     def _remove_level_pointers(self, count):
         if count == 1:
@@ -202,19 +165,16 @@ class EditWorldInfo(CustomDialog):
                 self.undo_stack.push(AddLevelPointer(self.world_map))
             self.undo_stack.endMacro()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent):
+        if not self.world_overview.valid():
+            event.ignore()
+
+            return
+
+        self.world_overview.finalize(self.undo_stack)
+
         curr_tick_per_frame = self.world_map.data.frame_tick_count
         self.world_map.data.frame_tick_count = self.orig_tick_per_frame
 
         if self.orig_tick_per_frame != curr_tick_per_frame:
             self.undo_stack.push(WorldTickPerFrame(self.world_map, curr_tick_per_frame))
-
-        self._change_level_pointer_count(self.level_count_spin_box.value())
-
-        self.world_map.data.screen_count = self.old_screen_count
-        self.world_map.data.tile_data = self.old_tile_data
-
-        self.world_map.reread_tiles(save_existing=False)
-
-        if self.world_map.data.screen_count != self.screen_spin_box.value():
-            self.undo_stack.push(SetScreenCount(self.world_map, self.screen_spin_box.value()))

@@ -192,7 +192,7 @@ class WorldMap(LevelLike):
 
         return None
 
-    def _write_tile_data(self):
+    def write_tiles(self):
         world_data = self.data
         old_tile_data = bytearray([obj.type for obj in sorted(self.objects)])
 
@@ -201,10 +201,7 @@ class WorldMap(LevelLike):
         else:
             world_data.tile_data[: len(old_tile_data)] = old_tile_data
 
-    def reread_tiles(self, save_existing=True):
-        if save_existing:
-            self._write_tile_data()
-
+    def reread_tiles(self):
         self._load_objects()
 
         self.data_changed.emit()
@@ -288,7 +285,7 @@ class WorldMap(LevelLike):
         return True
 
     def save_to_rom(self, rom: Rom = None):
-        self._write_tile_data()
+        self.write_tiles()
 
         self.data.map_start_y = self.start_pos.pos.y << 4
 
