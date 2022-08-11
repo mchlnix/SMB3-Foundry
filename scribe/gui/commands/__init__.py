@@ -7,7 +7,7 @@ from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects import LevelPointer, Lock
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
-from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, TILE_NAMES
+from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, SPRITE_COUNT, TILE_NAMES
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID
 
@@ -271,15 +271,11 @@ class SetScreenCount(QUndoCommand):
         self.world_data.screen_count = self.old_screen_count
         self.world_data.tile_data = self.old_world_data
 
-        self.world_data.write_back()
-
         if self.world_map is not None:
             self.world_map.reread_tiles()
 
     def redo(self):
         self.world_data.screen_count = self.new_screen_count
-
-        self.world_data.write_back()
 
         if self.world_map is not None:
             self.world_map.reread_tiles()
@@ -375,7 +371,6 @@ class SetWorldIndex(QUndoCommand):
         self._change_world_index(self.new_index)
 
     def _change_world_index(self, new_index: int):
-        print(self.world_data.index, " -> ", new_index)
         self.world_data.change_index(new_index)
 
         for sprite in self.sprites:
@@ -393,12 +388,8 @@ class SetStructureBlockAddress(QUndoCommand):
     def undo(self):
         self.world_data.structure_block_address = self.old_address
 
-        self.world_data.write_back()
-
     def redo(self):
         self.world_data.structure_block_address = self.new_address
-
-        self.world_data.write_back()
 
 
 class SetTileDataOffset(QUndoCommand):
@@ -411,11 +402,9 @@ class SetTileDataOffset(QUndoCommand):
 
     def undo(self):
         self.world_data.tile_data_offset = self.old_offset
-        self.world_data.write_back()
 
     def redo(self):
         self.world_data.tile_data_offset = self.new_offset
-        self.world_data.write_back()
 
 
 class ChangeSpriteIndex(QUndoCommand):
@@ -453,71 +442,77 @@ class ChangeLevelPointerIndex(QUndoCommand):
 
 
 class AddLevelPointer(QUndoCommand):
-    def __init__(self, world_data: WorldMapData , world: WorldMap = None):
+    def __init__(self, world_data: WorldMapData, world: WorldMap = None):
         super(AddLevelPointer, self).__init__()
 
         self.world = world
         self.world_data = world_data
 
+        self.level_pointer_data = LevelPointerData(self.world_data, self.world_data.level_count)
+        self.level_pointer_data.pos = Position(FIRST_VALID_ROW, 0, 0)
+        self.level_pointer_data.object_set = 1
+        self.level_pointer_data.level_address = 0x0
+        self.level_pointer_data.enemy_address = 0x0
+
+        self.level_pointer = LevelPointer(self.level_pointer_data)
+
         self.setText("Add Level Pointer")
 
     def undo(self):
         self.world_data.level_count_screen_1 -= 1
-        self.world_data.level_pointers.pop(0)
+        self.world_data.level_pointers.remove(self.level_pointer_data)
 
         if self.world is not None:
-            self.world.level_pointers.pop(0)
+            self.world.level_pointers.remove(self.level_pointer)
 
     def redo(self):
         self.world_data.level_count_screen_1 += 1
 
-        new_level_pointer = LevelPointerData(self.world_data, self.world_data.level_count)
-        new_level_pointer.pos = Position(FIRST_VALID_ROW, 0, 0)
-        new_level_pointer.object_set = 1
-        new_level_pointer.level_address = 0x0
-        new_level_pointer.enemy_address = 0x0
-
-        self.world_data.level_pointers.insert(0, new_level_pointer)
+        self.world_data.level_pointers.append(self.level_pointer_data)
 
         if self.world is not None:
-            self.world.level_pointers.insert(0, LevelPointer(new_level_pointer))
+            self.world.level_pointers.append(self.level_pointer)
 
 
 class RemoveLevelPointer(QUndoCommand):
-    def __init__(self, world_data: WorldMapData , index=-1, world: WorldMap = None):
+    def __init__(self, world_data: WorldMapData, index=-1, world: WorldMap = None):
         super(RemoveLevelPointer, self).__init__()
 
         self.world = world
         self.world_data = world_data
 
         if index == -1:
-            index = self.world_data.level_count - 1
+            index = len(self.world_data.level_pointers) - 1
 
         self.index = index
 
-        print(index, self.world_data.level_count, len(self.world_data.level_pointers))
-        self.removed_level_pointer = self.world_data.level_pointers[index]
+        self.removed_level_pointer_data = self.world_data.level_pointers[index]
+
+        if world is not None:
+            self.removed_level_pointer = world.level_pointers[index]
+        else:
+            self.removed_level_pointer = None
 
         self.setText(f"Remove Level Pointer #{index}")
 
     def undo(self):
         # TODO not nice
-        attr_name = f"level_count_screen_{self.removed_level_pointer.screen + 1}"
+        attr_name = f"level_count_screen_{self.removed_level_pointer_data.screen + 1}"
 
-        lvls_on_screen = getattr(self.world_data, f"level_count_screen_{self.removed_level_pointer.screen + 1}")
+        lvls_on_screen = getattr(self.world_data, attr_name)
 
         setattr(self.world_data, attr_name, lvls_on_screen + 1)
 
-        self.world_data.level_pointers.insert(self.index, self.removed_level_pointer)
+        self.world_data.level_pointers.insert(self.index, self.removed_level_pointer_data)
 
         if self.world is not None:
-            self.world.level_pointers.insert(self.index, LevelPointer(self.removed_level_pointer))
+            self.world.level_pointers.insert(self.index, self.removed_level_pointer)
 
     def redo(self):
         # TODO not nice
-        attr_name = f"level_count_screen_{self.removed_level_pointer.screen + 1}"
+        attr_name = f"level_count_screen_{self.removed_level_pointer_data.screen + 1}"
 
-        lvls_on_screen = getattr(self.world_data, f"level_count_screen_{self.removed_level_pointer.screen + 1}")
+        lvls_on_screen = getattr(self.world_data, attr_name)
 
         assert lvls_on_screen > 0
 
@@ -527,3 +522,50 @@ class RemoveLevelPointer(QUndoCommand):
 
         if self.world is not None:
             self.world.level_pointers.pop(self.index)
+
+
+class WorldDataStandIn:
+    def __init__(self, world_data: WorldMapData):
+        self.level_count = self._orig_level_count = world_data.level_count
+        self.screen_count = self._orig_screen_count = world_data.screen_count
+        self.index = self._orig_index = world_data.index
+
+        self.sprites = [SpriteData(world_data, index) for index in range(SPRITE_COUNT)]
+
+        self.data = world_data
+
+    @property
+    def changed(self):
+        lc_changed = self.level_count != self._orig_level_count
+        sc_changed = self.screen_count != self._orig_screen_count
+        ind_changed = self.index != self._orig_index
+
+        return lc_changed or sc_changed or ind_changed
+
+
+class SaveWorldsOnUndo(QUndoCommand):
+    def __init__(self, worlds: List[WorldDataStandIn]):
+        super(SaveWorldsOnUndo, self).__init__()
+
+        self.worlds = worlds
+
+    def undo(self):
+        for world in self.worlds:
+            world.data.write_back()
+
+            for sprite in world.sprites:
+                sprite.write_back()
+
+
+class SaveWorldsOnRedo(QUndoCommand):
+    def __init__(self, worlds: List[WorldDataStandIn]):
+        super(SaveWorldsOnRedo, self).__init__()
+
+        self.worlds = worlds
+
+    def redo(self):
+        for world in self.worlds:
+            world.data.write_back()
+
+            for sprite in world.sprites:
+                sprite.write_back()

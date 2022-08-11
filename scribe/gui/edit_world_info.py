@@ -11,10 +11,6 @@ from foundry.gui.BlockViewer import BlockBank
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
 from scribe.gui.commands import (
-    AddLevelPointer,
-    RemoveLevelPointer,
-    SetScreenCount,
-    SetWorldIndex,
     WorldBottomTile,
     WorldPaletteIndex,
     WorldTickPerFrame,
@@ -144,26 +140,6 @@ class EditWorldInfo(CustomDialog):
         self._update_button_icon()
 
         self.world_map.palette_changed.emit()
-
-    def _remove_level_pointers(self, count):
-        if count == 1:
-            self.undo_stack.push(RemoveLevelPointer(self.world_map))
-
-        else:
-            self.undo_stack.beginMacro(f"Removing {count} Level Pointers")
-            for _ in range(count):
-                self.undo_stack.push(RemoveLevelPointer(self.world_map))
-            self.undo_stack.endMacro()
-
-    def _add_level_pointers(self, count):
-        if count == 1:
-            self.undo_stack.push(AddLevelPointer(self.world_map))
-
-        else:
-            self.undo_stack.beginMacro(f"Adding {count} Level Pointers")
-            for _ in range(count):
-                self.undo_stack.push(AddLevelPointer(self.world_map))
-            self.undo_stack.endMacro()
 
     def closeEvent(self, event: QCloseEvent):
         if not self.world_overview.valid():

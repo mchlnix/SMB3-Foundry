@@ -158,7 +158,10 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.level_offset_list_offset = self._rom.little_endian(self.level_offset_list_offset_address)
 
         if self.index != WORLD_MAP_WARP_WORLD_INDEX:
-            assert self.level_offset_list_offset == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE, (hex(self.level_offset_list_offset - self.enemy_offset_list_offset), self.level_count)
+            assert self.level_offset_list_offset == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE, (
+                hex(self.level_offset_list_offset - self.enemy_offset_list_offset),
+                self.level_count,
+            )
 
         self.map_start_y = self._rom.int(self.map_start_y_address)
         self.map_scroll = self._rom.int(self.map_scroll_address)
@@ -211,6 +214,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         # values depending on amount of level pointers per screen
         self.level_pointers.sort()
+        assert self.level_count == len(self.level_pointers)
 
         level_pointer_per_screen: Dict[int, int] = defaultdict(int)
 
@@ -373,4 +377,4 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self.x_pos_list_start += diff
 
-        self.level_offset_list_offset = self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+        self.structure_block_address = self.structure_block_address
