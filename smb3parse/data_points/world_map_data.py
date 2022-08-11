@@ -322,7 +322,6 @@ class WorldMapData(_IndexedMixin, DataPoint):
         elif new_screen_count < self.screen_count:
             self.tile_data = self.tile_data[: new_screen_count * WORLD_MAP_SCREEN_SIZE]
 
-        self.map_scroll = self.screen_count << 4
         assert len(self.tile_data) == self.screen_count * WORLD_MAP_SCREEN_SIZE
 
     @property

@@ -97,6 +97,9 @@ WORLD_MAP_BLANK_TILE_ID = 0xFE
 MAX_SCREEN_COUNT = 4
 
 FIRST_VALID_ROW = 2
+
+NO_MAP_SCROLLING = 0x10
+
 """
 Tiles in rows before this one are part of the border and not valid overworld tiles.
 """

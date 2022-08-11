@@ -1,6 +1,6 @@
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QCloseEvent, QPainter, QPixmap, QUndoStack, Qt
-from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
@@ -11,12 +11,13 @@ from foundry.gui.BlockViewer import BlockBank
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
 from scribe.gui.commands import (
+    SetWorldScroll,
     WorldBottomTile,
     WorldPaletteIndex,
     WorldTickPerFrame,
 )
 from scribe.gui.world_overview import WorldOverview
-from smb3parse.levels import WORLD_MAP_PALETTE_COUNT
+from smb3parse.levels import NO_MAP_SCROLLING, WORLD_MAP_PALETTE_COUNT
 
 
 class EditWorldInfo(CustomDialog):
@@ -30,16 +31,10 @@ class EditWorldInfo(CustomDialog):
         # world data
         layout = QVBoxLayout()
 
-        self.orig_tick_per_frame = self.world_map.data.frame_tick_count
+        self.scrolls_check_box = QCheckBox("Scrolls to next screen, when at the edge")
+        self.scrolls_check_box.setChecked(self.world_map.data.map_scroll not in [0, NO_MAP_SCROLLING])
 
-        ticks_per_frame_spin_box = Spinner(self, maximum=0xFF, base=10)
-        ticks_per_frame_spin_box.setValue(self.world_map.data.frame_tick_count)
-        ticks_per_frame_spin_box.valueChanged.connect(self._change_anim_frame)
-
-        layout.addLayout(label_and_widget("Ticks between Animation Frames", ticks_per_frame_spin_box))
-
-        self.animation_hint_label = QLabel()
-        layout.addWidget(self.animation_hint_label)
+        layout.addWidget(self.scrolls_check_box)
 
         palette_spin_box = Spinner(self, maximum=WORLD_MAP_PALETTE_COUNT - 1)
         palette_spin_box.setValue(self.world_map.data.palette_index)
@@ -57,12 +52,24 @@ class EditWorldInfo(CustomDialog):
         world_data_group.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         world_data_group.setLayout(layout)
 
+        self.orig_tick_per_frame = self.world_map.data.frame_tick_count
+
+        ticks_per_frame_spin_box = Spinner(self, maximum=0xFF, base=10)
+        ticks_per_frame_spin_box.setValue(self.world_map.data.frame_tick_count)
+        ticks_per_frame_spin_box.valueChanged.connect(self._change_anim_frame)
+
+        layout.addLayout(label_and_widget("Ticks between Animation Frames", ticks_per_frame_spin_box))
+
+        self.animation_hint_label = QLabel()
+        layout.addWidget(self.animation_hint_label)
+
         self.layout().addWidget(world_data_group)
+
         level_ref = LevelRef()
         level_ref.level = self.world_map
 
         self.world_overview = WorldOverview(self, level_ref, ROM())
-        self.world_overview.data_changed.connect(self._update_hint_label)
+        self.world_overview.data_changed.connect(self._update_hint_labels)
         self.world_overview.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
 
         self.layout().addWidget(self.world_overview)
@@ -76,7 +83,7 @@ class EditWorldInfo(CustomDialog):
 
         self.layout().addWidget(self.ok_button)
 
-        self._update_hint_label()
+        self._update_hint_labels()
 
     @property
     def undo_stack(self) -> QUndoStack:
@@ -93,13 +100,13 @@ class EditWorldInfo(CustomDialog):
 
         self.icon_button.setIcon(block_icon)
 
-    def _update_hint_label(self):
+    def _update_hint_labels(self):
         world_number = self.world_map.data.index
 
         if world_number == 4:
-            self.animation_hint_label.setText("Note: World 5 cannot be animated")
+            self.animation_hint_label.setText("Note: World 5 cannot scroll and isn't animated")
         elif world_number == 7:
-            self.animation_hint_label.setText("Note: World 8's last screen cannot be animated")
+            self.animation_hint_label.setText("Note: World 8 cannot scroll and the last screen isn't animated")
         else:
             self.animation_hint_label.setText("")
 
@@ -146,6 +153,11 @@ class EditWorldInfo(CustomDialog):
             event.ignore()
 
             return
+
+        should_scroll = self.scrolls_check_box.isChecked()
+
+        if should_scroll != (self.world_map.data.map_scroll not in [0x00, NO_MAP_SCROLLING]):
+            self.undo_stack.push(SetWorldScroll(self.world_map.data, should_scroll))
 
         self.world_overview.finalize(self.undo_stack)
 

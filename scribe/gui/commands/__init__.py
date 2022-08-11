@@ -9,7 +9,7 @@ from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
 from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, SPRITE_COUNT, TILE_NAMES
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
-from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID
+from smb3parse.levels import FIRST_VALID_ROW, NO_MAP_SCROLLING, WORLD_MAP_BLANK_TILE_ID
 
 
 class MoveTile(QUndoCommand):
@@ -350,6 +350,23 @@ class ChangeLockIndex(QUndoCommand):
         else:
             self.lock.data.change_index(new_index)
             self.lock.data.read_values()
+
+
+class SetWorldScroll(QUndoCommand):
+    def __init__(self, world_data: WorldMapData, should_scroll: bool):
+        super(SetWorldScroll, self).__init__()
+
+        self.world_data = world_data
+        self.old_value = world_data.map_scroll
+        self.new_value = world_data.screen_count << 4 if should_scroll else NO_MAP_SCROLLING
+
+    def undo(self):
+        self.world_data.map_scroll = self.old_value
+        self.world_data.write_back()
+
+    def redo(self):
+        self.world_data.map_scroll = self.new_value
+        self.world_data.write_back()
 
 
 class SetWorldIndex(QUndoCommand):
