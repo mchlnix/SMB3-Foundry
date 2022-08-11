@@ -185,7 +185,7 @@ class WorldView(MainView):
 
         if not should_display_level or not self._set_level_thumbnail(event):
             # clear tooltip if supposed to show one, but no level thumbnail was available (e.g. no level there)
-            if self.cursor() == Qt.PointingHandCursor:
+            if self.cursor().shape() == Qt.PointingHandCursor:
                 self.setCursor(Qt.ArrowCursor)
 
             self.setToolTip("")
@@ -216,7 +216,11 @@ class WorldView(MainView):
 
         x, y = self.to_level_point(event.pos()).xy
 
+        if not self.world.point_in(x, y):
+            return False
+
         try:
+            # TODO make this check based on the object set of the level pointer, not the tile
             if self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
                 return False
         except ValueError:

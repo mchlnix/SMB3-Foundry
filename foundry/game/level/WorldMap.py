@@ -245,7 +245,7 @@ class WorldMap(LevelLike):
     def tile_at(self, x, y):
         pos = Position.from_xy(x, y)
 
-        return self.internal_world_map.tile_at(pos)
+        return self.objects[pos.tile_data_index].type
 
     def locks_at(self, x, y):
         pos = Position.from_xy(x, y)
