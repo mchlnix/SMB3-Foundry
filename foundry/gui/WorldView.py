@@ -459,7 +459,10 @@ class WorldView(MainView):
 
         old_objects = self.world.objects.copy()
 
-        for selected_obj in reversed(sel_objects):
+        if dx > 0 or dy > 0:
+            sel_objects.reverse()
+
+        for selected_obj in sel_objects:
             if not isinstance(selected_obj, MapTile):
                 continue
 

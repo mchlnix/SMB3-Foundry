@@ -47,7 +47,7 @@ class MoveTile(QUndoCommand):
             source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
             source_obj.selected = False
 
-        if self.end.tile_data_index < len(self.world.objects):
+        if 0 <= self.end.tile_data_index < len(self.world.objects):
             target_obj = self.world.objects[self.end.tile_data_index]
             target_obj.change_type(self.tile_after)
             target_obj.selected = True
