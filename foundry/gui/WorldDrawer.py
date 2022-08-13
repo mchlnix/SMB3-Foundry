@@ -10,6 +10,7 @@ from foundry.gui.util import partition
 from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 from smb3parse.levels import (
     FIRST_VALID_ROW,
+    NO_MAP_SCROLLING,
     WORLD_MAP_BLANK_TILE_ID,
     WORLD_MAP_BORDER_TOP_TILE_ID,
     WORLD_MAP_HEIGHT,
@@ -105,7 +106,12 @@ class WorldDrawer:
 
             painter.drawLine(QPoint(x, y_offset), QPoint(x, map_height * self.block_length))
 
-        painter.setPen(QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 3))
+        # TODO seems like map scroll could deactivate scrolling partly, so this could be more fine grained
+        # make screen divider red for no scrolling and green for scrolling
+        if world.data.map_scroll in [0x0, NO_MAP_SCROLLING]:
+            painter.setPen(QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 3))
+        else:
+            painter.setPen(QPen(QColor(0x00, 0xFF, 0x00, 0xFF), 3))
 
         for i in range(1, world.data.screen_count):
             x = i * WORLD_MAP_SCREEN_WIDTH * self.block_length
@@ -113,6 +119,9 @@ class WorldDrawer:
             painter.drawLine(QPoint(x, 0), QPoint(x, map_height * self.block_length))
 
     def _draw_tiles(self, painter: QPainter, world: WorldMap):
+        if not world.get_all_objects():
+            return
+
         not_selected, selected = partition(lambda tile_: tile_.selected, world.get_all_objects())
 
         for tile in not_selected:

@@ -360,6 +360,11 @@ class SetWorldScroll(QUndoCommand):
         self.old_value = world_data.map_scroll
         self.new_value = world_data.screen_count << 4 if should_scroll else NO_MAP_SCROLLING
 
+        if should_scroll:
+            self.setText("Activate Map Scroll")
+        else:
+            self.setText("Deactivate Map Scroll")
+
     def undo(self):
         self.world_data.map_scroll = self.old_value
         self.world_data.write_back()
