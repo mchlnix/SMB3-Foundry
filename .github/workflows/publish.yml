@@ -72,7 +72,6 @@ jobs:
         cfg:
           - {os: ubuntu-20.04, prefix: 'linux', suffix: '', architecture: 'x64'}
           - {os: windows-2019, prefix: 'win64', suffix: '.exe', architecture: 'x64'}
-          - {os: windows-2019, prefix: 'win32', suffix: '.exe', architecture: 'x86'}
           - {os: macos-latest, prefix: 'osx', suffix: '', architecture: 'x64'}
         editor:
           - {name: 'smb3-foundry'}
@@ -212,16 +211,6 @@ jobs:
           asset_name: "win64-smb3-foundry.exe"
           asset_content_type: application/octet-stream
 
-      - name: Upload SMB3 Foundry Windows x32
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "artifacts/win32-smb3-foundry.exe/win32-smb3-foundry.exe"
-          asset_name: "win32-smb3-foundry.exe"
-          asset_content_type: application/octet-stream
-
       - name: Upload SMB3 Scribe Linux
         uses: actions/upload-release-asset@v1
         env:
@@ -250,16 +239,6 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "artifacts/win64-smb3-scribe.exe/win64-smb3-scribe.exe"
           asset_name: "win64-smb3-scribe.exe"
-          asset_content_type: application/octet-stream
-
-      - name: Upload SMB3 Scribe Windows x32
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "artifacts/win32-smb3-scribe.exe/win32-smb3-scribe.exe"
-          asset_name: "win32-smb3-scribe.exe"
           asset_content_type: application/octet-stream
 
       - name: Upload SMB3 Foundry Manual
