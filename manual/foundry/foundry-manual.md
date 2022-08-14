@@ -397,15 +397,15 @@ Each Overworld can choose 4 of these to use in its Levels. That means, that you 
 this Level into and what Locks you have available there. You can then choose from Lock 0 to Lock 3. It doesn't matter
 that it's not 1-4. Just happened that way.
 
-Normally which Lock is used is encoded in the y position of the BoomBoom in the "upper nibble". The details aren't
-important, but that means, that a BoomBoom unlocking Lock 3 would be somewhere at y position 70 something. Way outside
-the LevelView. So I decided to take that part out of the y position and show the BoomBoom where it will appear in the
+Normally which Lock is used is encoded in the y position of the Boom Boom in the "upper nibble". The details aren't
+important, but that means, that a Boom Boom unlocking Lock 3 would be somewhere at y position 70 something. Way outside
+the LevelView. So I decided to take that part out of the y position and show the Boom Boom where it will appear in the
 Level normally, because that's what the Rom does as well.
 
-Instead, you can choose which BoomBoom in the Level you want to set the Lock Index for here. You have to add the BoomBooms
+Instead, you can choose which Boom Boom in the Level you want to set the Lock Index for here. You have to add the Boom Booms
 first, I'm afraid, otherwise the Dropdown will be empty and you won't be able to change the Lock Index, like shown here.
 
-That means, you could destroy different Locks/close different Bridges, depending on which BoomBoom in the Level you kill.
+That means, you could destroy different Locks/close different Bridges, depending on which Boom Boom in the Level you kill.
 Probably. Try it?
 
 If you wonder how you know which Lock Index points to which Lock and how you can change those; you can do that in Scribe,

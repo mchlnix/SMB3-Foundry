@@ -85,7 +85,7 @@ have all 3 paths be the same.
 In the View Menu, you can activate each Path by itself, to make it easier to drag the individual points across the map.
 Those are marked with their number and a little dot next to it. Every dot is in a different Position, so you can see all
 airship points, even if they are on top of each other. In the example above, Point 1 and 4 are at the bottom and Point 3
-and 6 ar in the top right.
+and 6 are in the top right.
 
 ## Tool Window
 
@@ -112,7 +112,8 @@ You can hover over the Tiles and their name and tile index are shown in the Stat
 ![](tool-window-pointers.png)
 
 This table contains every Level Pointer currently in the World Map. They are listed in the order they are stored in the
-Rom, which should usually also be the order by screen, then row, then column.
+Rom, which should usually also be the order by screen, then row, then column. When the Editor saves a World it
+makes sure that the level pointers are in that order.
 
 You can change the Object Set of each Pointer and the address of both the Objects (Level Offset) and the Enemies. The
 Level information can be more comfortably set through Foundry, however, by opening the Level and placing it onto a Level
@@ -137,7 +138,7 @@ the actual game.
 Akin to the Level Pointer List, you can not change the Map Position of a Sprite in this List, but you can enable them
 in the View Menu and then simply drag them around.
 
-Empty Sprites, meaning those entries without a Sprite Type set, will not be rendered in the World View and can those not
+Empty Sprites, meaning those entries without a Sprite Type set, will not be rendered in the World View and thus cannot
 be moved around. So simply give it a Type first and move it then.
 
 The Sprite Item is mostly relevant for the Hammer Bros and is what you get in the chest, after you beat them after
@@ -150,11 +151,11 @@ placed there, once it shows up, so you should probably use up all the other spac
 
 ![](tool-window-locks.png)
 
-Locks and Bridges describes the functionality of replacing a Tile on the World Map with another tile, when a BoomBoom is
+Locks and Bridges describes the functionality of replacing a Tile on the World Map with another tile, when a Boom Boom is
 defeated and its Orb collected. There are 17 entries, defining the Replacement Tile and the Map Position of the tile
 to be replaced.
 
-A World Map can choose 4 out of the 17, so at most 4 Tiles can be replaced by defeating 4 different BoomBooms.
+A World Map can choose 4 out of the 17, so at most 4 Tiles can be replaced by defeating 4 different Boom Booms.
 
 The replacement tile should be obvious and double-clicking on it pops up a Tile Selector. Remember, however, that tiles
 are grouped by their sub palette. When replacing a Tile using this mechanism here, it keeps the sub-palette of the one
@@ -168,9 +169,10 @@ for the Lock with Index 0, which is what all unused entries are. It is only actu
 There is nothing stopping you from reusing Locks in more than one World though. If the replacement works out in both
 Worlds, go for it.
 
-The Boom Boom position is just additional information. A BoomBoom needs to be put at that y position to result in the Lock
-of that row to be popped. But in Foundry, selecting the Lock is done via the Level Settings, so there is no need to
-remember this and to set the BoomBoom to a position in that range by hand.
+The Boom Boom position is just additional information. A Boom Boom needs to be put at that on of those y positions tocd -
+result in the Lock of that row to be popped. But in Foundry, selecting the Lock is done via the Level Settings, so there
+is no need to remember this and to set the Boom Boom to a position in that range by hand. Simply put it where you want
+the Boom Boom to be.
 
 ## World Info
 
@@ -179,7 +181,7 @@ remember this and to set the BoomBoom to a position in that range by hand.
 ### World Data Settings
 
 Just because a world consists of multiple screens, does not mean it needs to scroll between those. You could also
-connect them via Pipe Pairs in Foundry and want to hide the fact, that there are multiple screens. That is achieved,
+connect them via Pipe Pairs in Foundry and hide the fact, that there are multiple screens. That is achieved,
 by disabling scrolling.
 
 If you have a World with more than one screen, disable scrolling and still walk past the first screen, you'll find Mario
@@ -202,7 +204,7 @@ the value is, the faster they switch. A value of 0 deactivates Animation, which 
 in your Map.
 
 Note that World 5 and World 8 Screen 4 are hard coded to not have animations. This is represented in Scribe, where these
-parts are also not animated, no matter the setting here, to stay true to the Rom.
+parts are also not animated, no matter what is set here, to stay true to the Rom.
 
 ### World Order and Size
 
@@ -216,7 +218,7 @@ This is because a lot of code depends on it being where it is and having the Lev
 Pointers actually don't really exist with an Object Address, Enemy Address etc. They are simply marked as "at this position"
 and are then used to jump to different worlds. That's why it doesn't make sense to let that world be edited.
 
-Note: Changing the position of the current world might be a bit buggy, with the GUI not knowing you did it, but internally
+Note: Changing the position of the current world might be a bit buggy, with the GUI not reacting to it, but internally
 everything is taken care off and will be saved just fine.
 
 ## Editor Settings
