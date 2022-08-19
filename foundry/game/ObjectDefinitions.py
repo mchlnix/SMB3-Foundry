@@ -1,6 +1,5 @@
 from enum import Enum
 from functools import lru_cache
-from typing import List
 
 from foundry import data_dir
 from smb3parse.objects.object_set import (
@@ -104,7 +103,7 @@ class ObjectDefinition:
         return f"ObjectDefinition: {self.description}"
 
 
-object_metadata: List[List[ObjectDefinition]] = [[]]
+object_metadata: list[list[ObjectDefinition]] = [[]]
 enemy_handle_x = []
 enemy_handle_x2 = []
 enemy_handle_y = []

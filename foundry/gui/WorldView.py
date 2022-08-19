@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from PySide6.QtCore import QPoint, QSize, QTimer
 from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, QUndoStack, Qt
@@ -533,7 +533,7 @@ class WorldView(MainView):
 
         self.undo_stack.endMacro()
 
-    def scroll_to_objects(self, objects: List[LevelObject]):
+    def scroll_to_objects(self, objects: list[LevelObject]):
         if not objects:
             return
 

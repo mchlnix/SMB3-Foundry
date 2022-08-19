@@ -1,5 +1,4 @@
 import abc
-from typing import Tuple
 
 from PySide6.QtCore import QRect
 from PySide6.QtGui import QPainter
@@ -38,7 +37,7 @@ class ObjectLike(abc.ABC):
 
         self.set_position(new_x, new_y)
 
-    def get_position(self) -> Tuple[int, int]:
+    def get_position(self) -> tuple[int, int]:
         return self.x_position, self.y_position
 
     def point_in(self, x, y):

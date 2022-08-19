@@ -1,5 +1,4 @@
 import json
-from typing import Dict, List, Tuple
 
 from PySide6.QtCore import QEvent, QRect, Qt, Signal, SignalInstance
 from PySide6.QtGui import QCursor, QFocusEvent
@@ -42,10 +41,10 @@ class WarningList(QWidget):
         self.setWindowFlag(Qt.Popup)
         self.layout().setContentsMargins(5, 5, 5, 5)
 
-        self._enemy_dict: Dict[str, Tuple[str, str]] = {}
+        self._enemy_dict: dict[str, tuple[str, str]] = {}
         self._build_enemy_clan_dict()
 
-        self.warnings: List[Tuple[str, List[LevelObject]]] = []
+        self.warnings: list[tuple[str, list[InLevelObject]]] = []
 
     def _update_warnings(self):
         self.warnings.clear()
@@ -187,7 +186,7 @@ class WarningList(QWidget):
         self.update()
         self.warnings_updated.emit(bool(self.warnings))
 
-    def _find_enemies_in_level(self, enemy_id: int) -> List[EnemyItem]:
+    def _find_enemies_in_level(self, enemy_id: int) -> list[EnemyItem]:
         return [enemy for enemy in self.level_ref.level.enemies if enemy.type == enemy_id]
 
     def _build_enemy_clan_dict(self):
@@ -201,7 +200,10 @@ class WarningList(QWidget):
                     for enemy in enemy_list:
                         self._enemy_dict[enemy] = (clan, group)
 
-    def warn(self, msg: str, objects: List[InLevelObject] = None):
+    def warn(self, msg: str, objects: list[InLevelObject] = None):
+        if objects is None:
+            objects = []
+
         self.warnings.append((msg, objects))
 
     def update(self):
@@ -248,7 +250,7 @@ class WarningList(QWidget):
 class WarningLabel(QLabel):
     hovered: SignalInstance = Signal()
 
-    def __init__(self, text: str, related_objects: List[LevelObject]):
+    def __init__(self, text: str, related_objects: list[LevelObject]):
         super(WarningLabel, self).__init__(text)
 
         self.related_objects = related_objects

@@ -1,5 +1,4 @@
 import typing
-from typing import Dict, List
 
 from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtGui import QDropEvent, QUndoStack
@@ -34,7 +33,7 @@ class WorldOverview(TableWidget):
         super(WorldOverview, self).__init__(parent, level_ref)
 
         self.rom = rom
-        self.world_data_points: List[WorldDataStandIn] = []
+        self.world_data_points: list[WorldDataStandIn] = []
 
         self.cellChanged.connect(self._change_data)
 
@@ -143,7 +142,7 @@ class WorldOverview(TableWidget):
 
         undo_stack.push(SaveWorldsOnUndo(self.world_data_points))
 
-        world_dict: Dict[int, WorldDataStandIn] = {world.index: world for world in self.world_data_points}
+        world_dict: dict[int, WorldDataStandIn] = {world.index: world for world in self.world_data_points}
 
         first_world = WorldMapData(ROM(), 0)
 

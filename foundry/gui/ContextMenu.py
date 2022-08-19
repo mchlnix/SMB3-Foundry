@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import List, Tuple
 
 from PySide6.QtCore import QPoint, SignalInstance
 from PySide6.QtGui import QAction
@@ -26,7 +25,7 @@ class ContextMenu(QMenu):
 
         self.level_ref = level_ref
 
-        self.copied_objects: List[ObjectLike] = []
+        self.copied_objects: list[ObjectLike] = []
         self.copied_objects_origin = Position.from_xy(0, 0)
 
         self.last_opened_at = QPoint(0, 0)
@@ -34,7 +33,7 @@ class ContextMenu(QMenu):
     def get_position(self) -> QPoint:
         return self.last_opened_at
 
-    def set_copied_objects(self, objects: List[ObjectLike]):
+    def set_copied_objects(self, objects: list[ObjectLike]):
         if not objects:
             return
 
@@ -53,7 +52,7 @@ class ContextMenu(QMenu):
 
         self.copied_objects_origin = Position.from_xy(min_x, min_y)
 
-    def get_copied_objects(self) -> Tuple[List[ObjectLike], Position]:
+    def get_copied_objects(self) -> tuple[list[ObjectLike], Position]:
         return self.copied_objects, self.copied_objects_origin
 
     def popup(self, pos: QPoint, at: QAction = None):

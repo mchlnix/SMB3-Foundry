@@ -95,7 +95,7 @@ class ObjectSet:
         return self._object_length_lookup_table[domain][object_id // OBJECT_GROUP_SIZE]
 
 
-ObjectSetLevelData = namedtuple("ObjectSetPointerType", "offset name level_range")
+ObjectSetLevelData = namedtuple("ObjectSetLevelData", "offset name level_range")
 
 object_set_level_data = [
     ObjectSetLevelData(0x0000, "Map Screen", range(0x18010, 0x1A00F)),

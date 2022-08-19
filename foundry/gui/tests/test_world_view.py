@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QMouseEvent, Qt
@@ -43,7 +41,7 @@ def drag_from_to(
     worldview,
     start_point: QPoint,
     end_point: QPoint,
-    points: List[QPoint] = None,
+    points: list[QPoint] = None,
     modifiers: Qt.KeyboardModifier = Qt.NoModifier,
 ):
     if points is None:

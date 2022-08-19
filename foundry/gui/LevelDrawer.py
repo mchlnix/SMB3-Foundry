@@ -1,5 +1,4 @@
 from itertools import product
-from typing import Tuple
 
 from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QBrush, QColor, QPainter, QPen, Qt
@@ -353,7 +352,7 @@ class LevelDrawer:
         painter.restore()
 
     @staticmethod
-    def _object_in_jump_area(level: Level, pos: Tuple[int, int]):
+    def _object_in_jump_area(level: Level, pos: tuple[int, int]):
         for jump in level.jumps:
             jump_rect = jump.get_rect(1, level.is_vertical)
 

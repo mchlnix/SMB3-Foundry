@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Dict, List, Tuple
 
 from smb3parse.constants import (
     AIRSHIP_TRAVEL_SET_COUNT,
@@ -77,16 +76,16 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.airship_travel_x_set_address = 0x0
         self.airship_travel_y_set_address = 0x0
 
-        self.airship_travel_sets: Tuple[List[Position], List[Position], List[Position]] = ([], [], [])
+        self.airship_travel_sets: tuple[list[Position], list[Position], list[Position]] = ([], [], [])
 
         # lock and bridge data
         self.fortress_fx_base_index = 0
         self.fortress_fx_base_index_address = 0x0
 
-        self.fortress_fx_indexes: List[int] = []
+        self.fortress_fx_indexes: list[int] = []
 
         self.fortress_fx_count = 0
-        self.fortress_fx: List[FortressFXData] = []
+        self.fortress_fx: list[FortressFXData] = []
 
         # level pointer data
         self.pos_offsets_for_screen = bytearray(MAX_SCREEN_COUNT)
@@ -101,7 +100,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.level_offset_list_offset = 0
         self.level_offset_list_offset_address = 0x0
 
-        self.level_pointers: List[LevelPointerData] = []
+        self.level_pointers: list[LevelPointerData] = []
 
         super(WorldMapData, self).__init__(rom)
 
@@ -216,7 +215,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.level_pointers.sort()
         assert self.level_count == len(self.level_pointers)
 
-        level_pointer_per_screen: Dict[int, int] = defaultdict(int)
+        level_pointer_per_screen: dict[int, int] = defaultdict(int)
 
         for level_pointer in self.level_pointers:
             level_pointer_per_screen[level_pointer.screen] += 1

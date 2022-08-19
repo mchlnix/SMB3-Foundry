@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QVBoxLayout
@@ -129,7 +129,7 @@ class AutoScrollMixin(SettingsMixin):
         super(AutoScrollMixin, self).closeEvent(event)
 
 
-def _get_autoscroll(enemy_items: List[EnemyItem]) -> Optional[EnemyItem]:
+def _get_autoscroll(enemy_items: list[EnemyItem]) -> Optional[EnemyItem]:
     for item in enemy_items:
         if item.obj_index == OBJ_AUTOSCROLL:
             return item

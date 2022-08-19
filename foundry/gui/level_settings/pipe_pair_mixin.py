@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QVBoxLayout
 
@@ -142,7 +142,7 @@ class PipePairMixin(SettingsMixin):
                 self.undo_stack.endMacro()
 
 
-def _get_pipe_item(enemy_items: List[EnemyItem]) -> Optional[EnemyItem]:
+def _get_pipe_item(enemy_items: list[EnemyItem]) -> Optional[EnemyItem]:
     for item in enemy_items:
         if item.obj_index == OBJ_PIPE_EXITS:
             return item

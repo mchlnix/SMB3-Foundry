@@ -1,4 +1,4 @@
-from typing import Generator, List, Optional
+from typing import Generator, Optional
 from warnings import warn
 
 from smb3parse.constants import (
@@ -34,7 +34,7 @@ from smb3parse.util.rom import Rom
 Y_START_POS_LIST = Map_Y_Starts
 
 
-def list_world_map_addresses(rom: Rom) -> List[int]:
+def list_world_map_addresses(rom: Rom) -> list[int]:
     addresses = []
 
     for world in range(WORLD_COUNT):
@@ -43,7 +43,7 @@ def list_world_map_addresses(rom: Rom) -> List[int]:
     return addresses
 
 
-def get_all_world_maps(rom: Rom) -> List["WorldMap"]:
+def get_all_world_maps(rom: Rom) -> list["WorldMap"]:
     world_map_addresses = list_world_map_addresses(rom)
 
     return [WorldMap(address, rom) for address in world_map_addresses]

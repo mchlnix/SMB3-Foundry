@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
@@ -76,7 +74,7 @@ class MoveMapObject(QUndoCommand):
     def redo(self):
         self._move_map_object(self.end)
 
-    def _move_map_object(self, new_pos: Tuple[int, int]):
+    def _move_map_object(self, new_pos: tuple[int, int]):
         self.map_object.set_position(*new_pos)
 
         if isinstance(self.map_object, Lock):
@@ -290,7 +288,7 @@ class ChangeReplacementTile(QUndoCommand):
         self.replacement_tile_index = replacement_tile_index
 
         self.old_replacement_tile_index = -1
-        self.old_tile_indexes = []
+        self.old_tile_indexes = bytearray(4)
 
     def undo(self):
         for lock in self.world.locks_and_bridges:
@@ -306,12 +304,14 @@ class ChangeReplacementTile(QUndoCommand):
                 self.old_tile_indexes = lock.data.tile_indexes
                 self.old_replacement_tile_index = lock.data.replacement_block_index
 
-                lock.data.tile_indexes = [
-                    block.lu_tile.tile_index,
-                    block.ru_tile.tile_index,
-                    block.ld_tile.tile_index,
-                    block.rd_tile.tile_index,
-                ]
+                lock.data.tile_indexes = bytearray(
+                    [
+                        block.lu_tile.tile_index,
+                        block.ru_tile.tile_index,
+                        block.ld_tile.tile_index,
+                        block.rd_tile.tile_index,
+                    ]
+                )
                 lock.data.replacement_block_index = self.replacement_tile_index
 
 
@@ -375,7 +375,7 @@ class SetWorldScroll(QUndoCommand):
 
 
 class SetWorldIndex(QUndoCommand):
-    def __init__(self, world_data: WorldMapData, sprites: List[SpriteData], new_index: int, parent=None):
+    def __init__(self, world_data: WorldMapData, sprites: list[SpriteData], new_index: int, parent=None):
         super(SetWorldIndex, self).__init__(parent)
 
         self.world_data = world_data
@@ -566,7 +566,7 @@ class WorldDataStandIn:
 
 
 class SaveWorldsOnUndo(QUndoCommand):
-    def __init__(self, worlds: List[WorldDataStandIn]):
+    def __init__(self, worlds: list[WorldDataStandIn]):
         super(SaveWorldsOnUndo, self).__init__()
 
         self.worlds = worlds
@@ -580,7 +580,7 @@ class SaveWorldsOnUndo(QUndoCommand):
 
 
 class SaveWorldsOnRedo(QUndoCommand):
-    def __init__(self, worlds: List[WorldDataStandIn]):
+    def __init__(self, worlds: list[WorldDataStandIn]):
         super(SaveWorldsOnRedo, self).__init__()
 
         self.worlds = worlds

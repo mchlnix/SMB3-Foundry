@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 from PySide6.QtGui import QColor
 from dataclasses import dataclass
@@ -36,7 +36,7 @@ PALETTE_DATA_SIZE = (
 class PaletteGroup:
     object_set: int
     index: int
-    palettes: List[bytearray]
+    palettes: list[bytearray]
 
     changed = False
 
@@ -78,7 +78,7 @@ class PaletteGroup:
             palette_address += COLORS_PER_PALETTE
 
 
-_palette_group_cache: Dict[Tuple[int, int], PaletteGroup] = {}
+_palette_group_cache: dict[tuple[int, int], PaletteGroup] = {}
 
 
 def load_palette_group(object_set: int, palette_group_index: int, use_cache=True) -> PaletteGroup:

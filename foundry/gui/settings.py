@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Callable, Dict, Union
+from typing import Callable, Union
 
 import qdarkstyle
 from PySide6.QtCore import QSettings
@@ -7,12 +7,12 @@ from PySide6.QtCore import QSettings
 RESIZE_LEFT_CLICK = "LMB"
 RESIZE_RIGHT_CLICK = "RMB"
 
-GUI_STYLE: Dict[str, Callable] = {
+GUI_STYLE: dict[str, Callable] = {
     "RETRO": lambda: "",
     "DRACULA": partial(qdarkstyle.load_stylesheet, pyside=True),
 }
 
-SETTINGS: Dict[str, Union[str, int, bool]] = dict()
+SETTINGS: dict[str, Union[str, int, bool]] = dict()
 SETTINGS["editor/instaplay_emulator"] = "fceux"
 SETTINGS["editor/instaplay_arguments"] = "%f"
 SETTINGS["editor/object_scroll_enabled"] = False
@@ -38,7 +38,7 @@ SETTINGS["level view/special_background"] = True
 SETTINGS["level view/object_tooltip_enabled"] = True
 
 
-_settings: Dict[str, Union[str, int, bool]] = {
+_settings: dict[str, Union[str, int, bool]] = {
     "world view/show grid": False,
     "world view/show border": False,
     "world view/animated tiles": True,

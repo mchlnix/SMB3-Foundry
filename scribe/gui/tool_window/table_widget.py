@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, QSize, Signal, SignalInstance
 from PySide6.QtGui import QImage, QPainter, QPixmap, QUndoStack
 from PySide6.QtWidgets import (
@@ -47,7 +45,7 @@ class TableWidget(QTableWidget):
 
         self.undo_stack.indexChanged.connect(self.update_content)
 
-    def set_headers(self, headers: List[str]):
+    def set_headers(self, headers: list[str]):
         self.setColumnCount(len(headers))
 
         # TODO doesn't do anything?
@@ -71,7 +69,7 @@ class TableWidget(QTableWidget):
     def update_content(self):
         pass
 
-    def _set_map_tile_as_icon(self, item: QTableWidgetItem, pos: Tuple[int, int]):
+    def _set_map_tile_as_icon(self, item: QTableWidgetItem, pos: tuple[int, int]):
         if not self.world.point_in(*pos):
             return
 
@@ -87,7 +85,7 @@ class TableWidget(QTableWidget):
 
 
 class DropdownDelegate(QStyledItemDelegate):
-    def __init__(self, parent, items: List[str], icons: List[QImage] = None):
+    def __init__(self, parent, items: list[str], icons: list[QImage] = None):
         super(DropdownDelegate, self).__init__(parent)
 
         self._items = items

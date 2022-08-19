@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.constants import TILE_NAMES
@@ -49,7 +47,7 @@ class MapTile(MapObject):
     def set_position(self, x, y):
         self.pos = Position.from_xy(x, y)
 
-    def get_position(self) -> Tuple[int, int]:
+    def get_position(self) -> tuple[int, int]:
         return self.pos.xy
 
     def change_type(self, new_type):

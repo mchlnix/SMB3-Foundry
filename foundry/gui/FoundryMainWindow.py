@@ -628,7 +628,7 @@ class FoundryMainWindow(MainWindow):
         finally:
             self._enable_disable_gui_elements()
 
-    def on_open_m3l(self, _) -> bool:
+    def on_open_m3l(self, _):
         if not self.safe_to_change():
             return
 

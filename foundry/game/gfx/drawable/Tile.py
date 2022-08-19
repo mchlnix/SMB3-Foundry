@@ -1,5 +1,3 @@
-from typing import Dict
-
 from PySide6.QtGui import QImage
 
 from foundry.game.gfx.GraphicsSet import GraphicsSet
@@ -32,7 +30,7 @@ class Tile:
 
         start = object_index * Tile.SIZE
 
-        self.cached_tiles: Dict[int, QImage] = dict()
+        self.cached_tiles: dict[int, QImage] = dict()
 
         self.palette = palette_group[palette_index]
 

@@ -1,14 +1,12 @@
-from typing import List, Tuple
-
 from foundry import data_dir
 from foundry.game.Data import Mario3Level
 
-ObjectData = Tuple[int, bytearray]
-EnemyItemData = Tuple[int, bytearray]
-LevelByteData = Tuple[ObjectData, EnemyItemData]
+ObjectData = tuple[int, bytearray]
+EnemyItemData = tuple[int, bytearray]
+LevelByteData = tuple[ObjectData, EnemyItemData]
 
 
-def _load_level_offsets() -> Tuple[List[Mario3Level], List[int]]:
+def _load_level_offsets() -> tuple[list[Mario3Level], list[int]]:
     offsets = [Mario3Level(0, 0, 0, 0, 0, "Placeholder")]
     world_indexes = [0]
 

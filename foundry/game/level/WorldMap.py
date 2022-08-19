@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
@@ -49,7 +49,7 @@ class WorldMap(LevelLike):
 
         self.size = 0, 0
 
-        self.objects: List[MapTile] = []
+        self.objects: list[MapTile] = []
 
         self._load_objects()
         self._load_sprites()
@@ -86,13 +86,13 @@ class WorldMap(LevelLike):
         self._calc_size()
 
     def _load_sprites(self):
-        self.sprites: List[Sprite] = []
+        self.sprites: list[Sprite] = []
 
         for sprite_data in self.internal_world_map.gen_sprites():
             self.sprites.append(Sprite(sprite_data))
 
     def _load_level_pointers(self):
-        self.level_pointers: List[LevelPointer] = []
+        self.level_pointers: list[LevelPointer] = []
 
         for level_pointer_data in self.internal_world_map.level_pointers:
             self.level_pointers.append(LevelPointer(level_pointer_data))
@@ -101,7 +101,7 @@ class WorldMap(LevelLike):
         self.start_pos = StartPosition(self.internal_world_map.start_pos)
 
     def _load_airship_points(self):
-        self.airship_travel_sets: List[List[AirshipTravelPoint]] = []
+        self.airship_travel_sets: list[list[AirshipTravelPoint]] = []
 
         for set_no, airship_travel_set in enumerate(self.data.airship_travel_sets):
             self.airship_travel_sets.append(
@@ -109,7 +109,7 @@ class WorldMap(LevelLike):
             )
 
     def _load_locks_and_bridges(self):
-        self.locks_and_bridges: List[Lock] = []
+        self.locks_and_bridges: list[Lock] = []
 
         for fortress_fx in self.data.fortress_fx:
             self.locks_and_bridges.append(Lock(fortress_fx))
@@ -260,7 +260,7 @@ class WorldMap(LevelLike):
     def pipe_at(_, __):
         return None
 
-    def get_selected_tiles(self) -> List[MapTile]:
+    def get_selected_tiles(self) -> list[MapTile]:
         selected_objs = []
 
         for obj in self.objects:

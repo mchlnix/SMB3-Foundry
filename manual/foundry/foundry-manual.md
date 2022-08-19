@@ -6,8 +6,8 @@
 
 ### 1 - Level Data Section
 
-A Level in SMB3 is made up of 3 things: Enemy/Item data, which contains all Goombas, Koopas and special items, that 
-change how the level works, Object Data, which contains all the platforms, pipes and coin blocks in the level, and an 
+A Level in SMB3 is made up of 3 things: Enemy/Item data, which contains all Goombas, Koopas and special items, that
+change how the level works, Object Data, which contains all the platforms, pipes and coin blocks in the level, and an
 Object Set, which determines, which Objects you have access to.
 
 Because of memory constraints of the old hardware SMB3 was made to run on, you don't always have access to all Objects
@@ -36,13 +36,13 @@ In the other tabs are the 9 Worlds SMB3 has to offer. They are rendered as they 
 changes to some of these Overworlds, using Scribe, for example, then those will be shown here, too.
 
 Some Overworlds might be too big to fit into the screen completely, so use the horizontal scroll bar, that will appear
-in those situations to get to where you want to be. 
+in those situations to get to where you want to be.
 
 ### 3 - Overworld Screen
 
 If you move your cursor over the map, it will change into a pointing hand, when it has found a level pointer at that
 position. If you hold it there, a tooltip with a little preview of the level will appear, so that you don't have to open
-it to remember which level you put there. Clicking it once, will fill in the Level Information of that level into the 
+it to remember which level you put there. Clicking it once, will fill in the Level Information of that level into the
 Level Data Section below, clicking it again, or double-clicking any level will load it immediately.
 
 Note that there are many more levels, that just the standard 1-10s, since every tile a Sprite (like a Hammer Bro) can
@@ -68,7 +68,7 @@ Next to them there is the Instaplay button. If you have set a path to an emulato
 and you press this button, the editor will make a copy of your Rom and place
 the level as it currently is to the Level-1 tile of the world the level belongs to. We can know the World of a level, if
 it was opened from a World Map in the Level Selector, or if it was opened from an M3L file, which had a world number set.
-If no world is known, World-1 is used. 
+If no world is known, World-1 is used.
 
 If your world map has no Level-1 tile anywhere, please put one in for the time of
 development. It's hard to know where to put a level, while keeping the world intact as you intend, so using the Level-1
@@ -82,13 +82,13 @@ Finally there are two zoom buttons, that let you zoom in and out of your level t
 ### 3 - Level Header and Jump Destination
 
 There are a lot of properties a level has, that are defined in the first 9 Bytes of the Object Data. To give you easy
-access to those, they are grouped in the Level Header Editor, which you can access through this button. More on that 
+access to those, they are grouped in the Level Header Editor, which you can access through this button. More on that
 later.
 
 On of the properties defined in the Level Header is the Jump Destination of the Level. Every Level can declare one other
 Level that Pipes, Doors or other special Objects will transport the player.
 
-Pressing this button will take you to this Level, since most of the time, those levels are bonus areas and not accessible 
+Pressing this button will take you to this Level, since most of the time, those levels are bonus areas and not accessible
 from the Overworld. So if you want to edit your Bonus Sub-Level of your version of 1-1, select that one first and then
 go to the Jump Destination with this button.
 
@@ -127,7 +127,7 @@ The Objects you can resize are shown in their smallest form, that makes sense, s
 resize them after dropping them in the Level. If you are unsure what a certain Object or Enemy is supposed to be, hover
 over them to get a Tooltip with its full name.
 
-Objects, that you added to the level will also be added to the Recent Tab, so if you find yourself using the same 3 
+Objects, that you added to the level will also be added to the Recent Tab, so if you find yourself using the same 3
 Objects repeatedly, you might like using it more than re-selecting them all the time.
 
 ## Level Editor - Upper Right
@@ -168,7 +168,7 @@ Levels have a Level Palette, which dictates what colors are used to draw the Obj
 Palette, but since we do not render Enemies according to their palette, it is not editable at the moment.
 
 A palette has 4 sets of 4 colors, as seen here, laid out horizontally. The first color is the background color and is
-always the same across the 4 sets. The others can be chosen freely from the color palette the NES was capable of 
+always the same across the 4 sets. The others can be chosen freely from the color palette the NES was capable of
 displaying.
 
 If you double-click on one of the colors, you will be able to choose a replacement. Be careful though! There is a limited
@@ -221,7 +221,7 @@ like putting a shortcut to it here made sense. And this way the Add Jump Button 
 
 ## Level Position
 
-As discussed, a Jump is valid for one screen (and technically for all following screens, that don't have a Jump set 
+As discussed, a Jump is valid for one screen (and technically for all following screens, that don't have a Jump set
 themselves). If you have trouble visualizing where each screen is, you can turn on a Grid and the Jump Zones in the View
 Menu.
 
@@ -298,7 +298,7 @@ property.
 
 ![](level-header-1.png)
 
-The Level Tab houses all the properties relevant to the whole level, incredibly. 
+The Level Tab houses all the properties relevant to the whole level, incredibly.
 
 The Level length can only be set through a number of screens. Those are 16 Blocks long each. A level is at least 1
 screen long and at most 16.
@@ -318,19 +318,19 @@ the Objects and Enemies from the Level beforehand, though, otherwise they might 
 in the Level View.
 
 You can also make it so the level doesn't end with a Black Ending Area and an item card, but just by going through a pipe.
-Probably what you want if you want to combine two pipe in the overworld with each other through a Level. More on that 
+Probably what you want if you want to combine two pipes in the overworld with each other through a Level. More on that
 later.
 
 ### Mario Tab
 
 ![](level-header-2.png)
 
-Here you can set where and how Mario starts in the Level. This is also shown in the Level View, if enabled in the View 
+Here you can set where and how Mario starts in the Level. This is also shown in the Level View, if enabled in the View
 Menu. Note that these settings only come into play, if you enter the Level from the Overworld. If you jump into it, the
 Jump in the previous Level decides where Mario appears.
 
 With the Action you can make sure, that it makes sense in your Level. For example, if you enter the Level by going into
-a Pipe in the Overworld, then you should set the Entry Action accordingly. You also have to set a Pipe Object there in 
+a Pipe in the Overworld, then you should set the Entry Action accordingly. You also have to set a Pipe Object there in
 the Level.
 
 ### Graphics Tab
@@ -362,7 +362,7 @@ jump to is accessible through the Overworld. So keep that pen and paper within r
 
 ## Other Level Settings
 
-Some properties of the Level are set by special Items in the Level and their y position defines what how exactly they 
+Some properties of the Level are set by special Items in the Level and their y position defines how exactly they
 change the Level. This is technically how Jumps work as well, only that those are Objects, instead.
 
 To make working with those Items easier, I took some of them out, meaning they won't be rendered in the Level View, but
@@ -378,9 +378,9 @@ to do. Autoscroll Levels work by moving the camera independent of Mario, and he 
 instead changes in angle and speed are defined in a very roundabout way, probably aimed at saving space, rather than being
 easily modifiable 30 years later.
 
-You can enable visual guide in the View Menu, which shows you exactly what will be visible to the player along the way.
+You can enable a visual guide in the View Menu, which shows you exactly what will be visible to the player along the way.
 To understand what you are seeing, it might make sense to open an Autoscroll Level in an emulator and compare, what you
-see with what is show in the Level View.
+see with what is shown in the Level View.
 Lira and I spent many days figuring out the complex code that determines how the Autoscroll moves and tried to make them
 editable, but couldn't find an easy interface to present to users.
 
@@ -388,7 +388,7 @@ editable, but couldn't find an easy interface to present to users.
 
 That's the name of my Metal Band, btw. When you enter Fortress Levels, and defeat a Boom Boom at the end, it will unlock
 something in the overworld. Maybe a Lock will be replaced by a Pathway tile, or an open Draw Bridge is replaced with a
-closed, passable Draw Bridge. This is often simply called as a Lock or Bridge.
+closed, passable Draw Bridge. This is often simply called a Lock or Bridge.
 
 There is a list of some 20-odd Lock definitions, consisting of the Position, where in the overworld it happens, and the
 replacement tile. It is a bit more complicated, but that's what I try to save you from worrying about.
@@ -419,10 +419,10 @@ Powerup is in the chest (again by y position).
 In normal Levels you would need to place a Chest into the Level of course, and set the Item to something. You don't
 necessarily need to end the Level though, that's why those are separate options.
 
-Hammer Bro Levels work differently, though. They are one screen Levels, with just some Platforms in them, because which
-Enemy appears (Hammer Bro, Boomerang Bro, etc; there is just a generic "Hammer Bro" Enemy in there) and which item you
-get after winning is determined by the Overworld Sprite, so the Hammer Bro on the World Map. Different Bros can be 
-different Enemies and give different Items, even though you run into them on the same spot. They do need the 
+Hammer Bro Levels work differently. They are one screen Levels, with just some Platforms in them, because which
+Enemy appears (Hammer Bro, Boomerang Bro, etc.; there is just a generic "Hammer Bro" Enemy in there) and which item you
+get after winning is determined by the Overworld Sprite, so the Hammer Bro on the World Map. Different Bros can be
+different Enemies and give different Items, even though you run into them on the same spot. They do need the
 Chest-Ending Item set, though, meaning that checkbox must be checked.
 
 It's best to study some of those Levels to see, how they actually work.
@@ -435,11 +435,11 @@ In all other Levels, after beating them, you come out, still on top of that Leve
 
 Even crazier, if you go back into that Level from the *other* Pipe, you can actually go back and forth. This is, because
 the game checks if you used the "left" or "right" of center Pipe and based on that, sends you to one Map location or
-the other. You can also set this to the way the Sky Tower in World 5 works, so the game looks at the "top" and "bottom" 
+the other. You can also set this to the way the Sky Tower in World 5 works, so the game looks at the "top" and "bottom"
 to determine the appropriate exit.
 
 This is done through something I call a Pipe-Pair Item. Similar to the Lock Index, this Item points to a predefined Pipe
-Pair using its y position. You can flick through them, to see where there left and right Exit leads to and even use them
+Pair using its y position. You can flick through them, to see where their left and right Exit leads to and even use them
 on multiple Overworlds, if you want. Again, it might be worth looking at World 7 with its many Pipe Levels and check
 their settings.
 

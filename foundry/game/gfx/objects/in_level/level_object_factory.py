@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
@@ -19,7 +19,7 @@ class LevelObjectFactory:
         object_set: int,
         graphic_set: int,
         palette_group_index: int,
-        objects_ref: List[LevelObject],
+        objects_ref: list[LevelObject],
         vertical_level: bool,
         size_minimal: bool = False,
     ):

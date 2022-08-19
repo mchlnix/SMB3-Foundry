@@ -19,7 +19,7 @@ class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):
         self.row_address = 0x0
         self.col_and_screen_address = 0x0
 
-        self.tile_indexes = [0x00, 0x00, 0x00, 0x00]
+        self.tile_indexes = bytearray([0x00, 0x00, 0x00, 0x00])
         self.tile_indexes_address = 0x0
 
         self.replacement_block_index = 0

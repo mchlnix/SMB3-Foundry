@@ -1,7 +1,7 @@
 from operator import itemgetter
 from os import PathLike
 from pathlib import Path
-from typing import List, Optional, TYPE_CHECKING, Tuple
+from typing import Optional, TYPE_CHECKING
 
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QUndoCommand
@@ -152,8 +152,8 @@ class MoveObjects(QUndoCommand):
     def __init__(
         self,
         level: Level,
-        objects_before: List[InLevelObject],
-        objects_after: List[InLevelObject],
+        objects_before: list[InLevelObject],
+        objects_after: list[InLevelObject],
     ):
         super(MoveObjects, self).__init__()
 
@@ -184,8 +184,8 @@ class ResizeObjects(QUndoCommand):
     def __init__(
         self,
         level: Level,
-        objects_before: List[InLevelObject],
-        objects_after: List[InLevelObject],
+        objects_before: list[InLevelObject],
+        objects_after: list[InLevelObject],
     ):
         super(ResizeObjects, self).__init__()
 
@@ -224,7 +224,7 @@ class ResizeObjects(QUndoCommand):
         self.level.data_changed.emit()
 
 
-def objects_to_indexed_objects(level: Level, objects: List[InLevelObject]) -> List[Tuple[int, InLevelObject]]:
+def objects_to_indexed_objects(level: Level, objects: list[InLevelObject]) -> list[tuple[int, InLevelObject]]:
     indexes = []
 
     for obj in objects:
@@ -242,7 +242,7 @@ def objects_to_indexed_objects(level: Level, objects: List[InLevelObject]) -> Li
     return indexes
 
 
-def move_objects(level: Level, indexed_objects: List[Tuple[int, InLevelObject]], restore_only=False):
+def move_objects(level: Level, indexed_objects: list[tuple[int, InLevelObject]], restore_only=False):
     for index, obj in indexed_objects:
         if isinstance(obj, LevelObject):
             if not restore_only:
@@ -258,7 +258,7 @@ def move_objects(level: Level, indexed_objects: List[Tuple[int, InLevelObject]],
             level.enemies.insert(index, obj)
 
 
-def object_names(objects: List[InLevelObject]) -> str:
+def object_names(objects: list[InLevelObject]) -> str:
     amount = len(objects)
 
     if amount == 1:
@@ -271,7 +271,7 @@ def object_names(objects: List[InLevelObject]) -> str:
 
 
 class ToForeground(QUndoCommand):
-    def __init__(self, level: Level, objects: List[InLevelObject]):
+    def __init__(self, level: Level, objects: list[InLevelObject]):
         super(ToForeground, self).__init__()
 
         self.level = level
@@ -293,7 +293,7 @@ class ToForeground(QUndoCommand):
 
 
 class ToBackground(ToForeground):
-    def __init__(self, level: Level, objects: List[InLevelObject]):
+    def __init__(self, level: Level, objects: list[InLevelObject]):
         super(ToBackground, self).__init__(level, objects)
 
         self.indexes_before.reverse()
@@ -315,7 +315,7 @@ class ImportASMEnemies(QUndoCommand):
         self.path = path
 
         self.enemies_before = level.enemies.copy()
-        self.enemies_after = []
+        self.enemies_after: list[EnemyItem] = []
 
         self.setText(f"Importing Enemies from {Path(path).name}")
 
@@ -449,7 +449,7 @@ class AddEnemyAt(QUndoCommand):
 
 
 class PasteObjectsAt(QUndoCommand):
-    def __init__(self, level_view: "LevelView", paste_data: Tuple[List[InLevelObject], Position], pos: QPoint = None):
+    def __init__(self, level_view: "LevelView", paste_data: tuple[list[InLevelObject], Position], pos: QPoint = None):
         super(PasteObjectsAt, self).__init__()
 
         self.view = level_view
@@ -460,8 +460,8 @@ class PasteObjectsAt(QUndoCommand):
         self.object_count = len(list(filter(lambda obj: isinstance(obj, LevelObject), objects)))
         self.enemy_count = len(objects) - self.object_count
 
-        self.created_objects: List[LevelObject] = []
-        self.created_enemies: List[EnemyItem] = []
+        self.created_objects: list[LevelObject] = []
+        self.created_enemies: list[EnemyItem] = []
 
         self.pos = pos
         self.last_mouse_position: Position = self.view.last_mouse_position.copy()
@@ -499,7 +499,7 @@ class PasteObjectsAt(QUndoCommand):
 
 
 class RemoveObjects(QUndoCommand):
-    def __init__(self, level: Level, objects: List[InLevelObject]):
+    def __init__(self, level: Level, objects: list[InLevelObject]):
         super(RemoveObjects, self).__init__()
 
         self.level = level

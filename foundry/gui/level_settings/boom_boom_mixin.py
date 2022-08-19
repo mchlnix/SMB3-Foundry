@@ -1,5 +1,3 @@
-from typing import List
-
 from PySide6.QtWidgets import QComboBox, QGroupBox, QVBoxLayout
 
 from foundry.game.gfx.objects import EnemyItem
@@ -60,7 +58,7 @@ class BoomBoomMixin(SettingsMixin):
                 self.undo_stack.push(ChangeLockIndex(boom_boom, new_index))
 
 
-def _get_boom_booms(enemy_items: List[EnemyItem]) -> List[EnemyItem]:
+def _get_boom_booms(enemy_items: list[EnemyItem]) -> list[EnemyItem]:
     boom_booms = []
 
     for item in enemy_items:

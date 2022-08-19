@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import Optional, cast
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
@@ -68,10 +68,10 @@ class Level(LevelLike):
         self.object_offset = self.header_offset + HEADER_LENGTH
         self.enemy_offset = enemy_data_offset
 
-        self.objects: List[LevelObject] = []
+        self.objects: list[LevelObject] = []
         self.header_bytes: bytearray = bytearray()
-        self.jumps: List[Jump] = []
-        self.enemies: List[EnemyItem] = []
+        self.jumps: list[Jump] = []
+        self.enemies: list[EnemyItem] = []
 
         if self.layout_address == self.enemy_offset == 0:
             # probably loaded to become an m3l
@@ -508,8 +508,8 @@ class Level(LevelLike):
     def too_many_enemies_or_items(self):
         return self.current_enemies_size() > self.enemy_size_on_disk
 
-    def get_all_objects(self) -> List[InLevelObject]:
-        return self.objects + self.enemies
+    def get_all_objects(self) -> list[InLevelObject]:
+        return cast("list[InLevelObject]", self.objects) + cast("list[InLevelObject]", self.enemies)
 
     def object_at(self, x: int, y: int) -> Optional[InLevelObject]:
         for obj in reversed(self.get_all_objects()):
@@ -518,7 +518,7 @@ class Level(LevelLike):
         else:
             return None
 
-    def bring_to_foreground(self, objects: List[InLevelObject]):
+    def bring_to_foreground(self, objects: list[InLevelObject]):
         for obj in objects:
             intersecting_objects = self.get_intersecting_objects(obj)
 
@@ -528,9 +528,9 @@ class Level(LevelLike):
                 continue
 
             if isinstance(obj, LevelObject):
-                other_objects = self.objects
+                other_objects = cast("list[InLevelObject]", self.objects)
             elif isinstance(obj, EnemyItem):
-                other_objects = self.enemies
+                other_objects = cast("list[InLevelObject]", self.enemies)
             else:
                 raise TypeError(f"How did you select an object of type: {type(obj)}")
 
@@ -542,7 +542,7 @@ class Level(LevelLike):
 
         self.data_changed.emit()
 
-    def bring_to_background(self, level_objects: List[InLevelObject]):
+    def bring_to_background(self, level_objects: list[InLevelObject]):
         for obj in level_objects:
             intersecting_objects = self.get_intersecting_objects(obj)
 
@@ -551,10 +551,11 @@ class Level(LevelLike):
             if obj is object_currently_in_the_background:
                 continue
 
+            # TODO make into method to save on cast calls
             if isinstance(obj, LevelObject):
-                objects = self.objects
+                objects = cast("list[InLevelObject]", self.objects)
             elif isinstance(obj, EnemyItem):
-                objects = self.enemies
+                objects = cast("list[InLevelObject]", self.enemies)
             else:
                 raise TypeError()
 
@@ -564,7 +565,7 @@ class Level(LevelLike):
 
             objects.insert(index, obj)
 
-    def get_intersecting_objects(self, obj: InLevelObject) -> List[InLevelObject]:
+    def get_intersecting_objects(self, obj: InLevelObject) -> list[InLevelObject]:
         """
         Returns all objects of the same type, that overlap the rectangle of the given object, including itself. The
         objects are in the order, that they appear in, in memory, meaning back to front.
@@ -573,13 +574,13 @@ class Level(LevelLike):
         :return:
         """
         if isinstance(obj, LevelObject):
-            objects_to_check = self.objects
+            objects_to_check = cast("list[InLevelObject]", self.objects)
         elif isinstance(obj, EnemyItem):
-            objects_to_check = self.enemies
+            objects_to_check = cast("list[InLevelObject]", self.enemies)
         else:
             raise TypeError()
 
-        intersecting_objects: List[InLevelObject] = []
+        intersecting_objects: list[InLevelObject] = []
 
         for other_object in objects_to_check:
             if obj.get_rect().intersects(other_object.get_rect()):
@@ -684,11 +685,11 @@ class Level(LevelLike):
 
         return m3l_bytes
 
-    def to_asm(self) -> str:
+    def to_asm(self) -> tuple[str, str]:
         return self._level_asm(), self._enemy_asm()
 
     def _enemy_asm(self):
-        ret_lines: List[str] = []
+        ret_lines: list[str] = []
 
         ret_lines.append(f"\t.byte {bytes_to_asm(0x01)}\t\t\t; Unused byte, set to $01")
 
@@ -698,7 +699,7 @@ class Level(LevelLike):
         return "\n".join(ret_lines)
 
     def _level_asm(self):
-        ret_lines: List[str] = []
+        ret_lines: list[str] = []
 
         object_set_offset = (ROM().int(OFFSET_BY_OBJECT_SET_A000 + self.object_set.number) * OFFSET_SIZE - 10) * 0x1000
 
@@ -811,7 +812,7 @@ class Level(LevelLike):
 
         return (self.header_offset, data), (self.enemy_offset, enemies)
 
-    def from_bytes(self, object_data: Tuple[int, bytearray], enemy_data: Tuple[int, bytearray], new_level=True):
+    def from_bytes(self, object_data: tuple[int, bytearray], enemy_data: tuple[int, bytearray], new_level=True):
 
         self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data

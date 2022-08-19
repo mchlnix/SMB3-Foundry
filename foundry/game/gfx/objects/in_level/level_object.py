@@ -1,4 +1,3 @@
-from typing import List
 from warnings import warn
 
 from PySide6.QtCore import QRect, QSize
@@ -57,7 +56,7 @@ class LevelObject(InLevelObject):
         object_set: int,
         palette_group: PaletteGroup,
         graphics_set: GraphicsSet,
-        objects_ref: List["LevelObject"],
+        objects_ref: list["LevelObject"],
         is_vertical: bool,
         index: int,
         size_minimal: bool = False,
@@ -906,7 +905,7 @@ class LevelObject(InLevelObject):
     def point_in(self, x: int, y: int) -> bool:
         return self.rect.contains(x, y)
 
-    def get_status_info(self) -> List[tuple]:
+    def get_status_info(self) -> list[tuple]:
         return [
             ("x", self.rendered_base_x),
             ("y", self.rendered_base_y),

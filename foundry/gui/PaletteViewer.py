@@ -242,7 +242,7 @@ class SidePalette(QWidget):
         self.setLayout(QVBoxLayout(self))
         self.layout().setSpacing(0)
 
-        self._palette_widgets = []
+        self._palette_widgets: list[PaletteWidget] = []
 
         self.update()
 

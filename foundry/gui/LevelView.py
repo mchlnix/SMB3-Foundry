@@ -1,5 +1,5 @@
 from bisect import bisect_right
-from typing import List, Optional, Tuple, cast
+from typing import Optional, cast
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QMouseEvent, QUndoStack, QWheelEvent, Qt
@@ -47,8 +47,8 @@ class LevelView(MainView):
         self.resize_obj_start_point = Position.from_xy(0, 0)
         self.drag_start_point = Position.from_xy(0, 0)
 
-        self.objects_before_resizing: List[InLevelObject] = []
-        self.objects_before_moving: List[InLevelObject] = []
+        self.objects_before_resizing: list[InLevelObject] = []
+        self.objects_before_moving: list[InLevelObject] = []
 
         self.setWhatsThis(
             "<b>Level View</b><br/>"
@@ -260,8 +260,8 @@ class LevelView(MainView):
 
         self.update()
 
-    def get_selected_objects(self) -> List[InLevelObject]:
-        return cast(List[InLevelObject], super(LevelView, self).get_selected_objects())
+    def get_selected_objects(self) -> list[InLevelObject]:
+        return cast(list[InLevelObject], super(LevelView, self).get_selected_objects())
 
     def _on_right_mouse_button_up(self, event):
         if self.resizing_happened:
@@ -404,7 +404,7 @@ class LevelView(MainView):
         self.objects_before_moving.clear()
         self.dragging_happened = False
 
-    def scroll_to_objects(self, objects: List[LevelObject]):
+    def scroll_to_objects(self, objects: list[LevelObject]):
         if not objects:
             return
 
@@ -413,7 +413,7 @@ class LevelView(MainView):
 
         self.parent().parent().ensureVisible(min_x, min_y)
 
-    def level_safe_to_save(self) -> Tuple[bool, str, str]:
+    def level_safe_to_save(self) -> tuple[bool, str, str]:
         is_safe = True
         reason = ""
         additional_info = ""

@@ -1,6 +1,6 @@
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, Union
+from typing import Union
 
 from foundry.game.gfx.drawable import load_from_png
 
@@ -159,7 +159,7 @@ MAP_ITEM_SPRITES = {
     MAPITEM_UNKNOWN2: EMPTY_IMAGE,
 }
 
-TILE_NAMES: Dict[int, str] = defaultdict(lambda: "Blank Square")
+TILE_NAMES: dict[int, str] = defaultdict(lambda: "Blank Square")
 TILE_NAMES.update(
     {
         0x00: "Mario Clear (Blue)",

@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QPainter
 
@@ -46,7 +44,7 @@ class AirshipTravelPoint(MapObject):
         self.pos.y = y
         self.pos.screen = x // WORLD_MAP_SCREEN_WIDTH
 
-    def get_position(self) -> Tuple[int, int]:
+    def get_position(self) -> tuple[int, int]:
         return self.pos.xy
 
     def change_type(self, new_type):

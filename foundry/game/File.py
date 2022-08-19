@@ -1,5 +1,5 @@
 from os.path import basename
-from typing import List, Optional
+from typing import Optional
 
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
 from smb3parse.util.rom import INESHeader, Rom
@@ -25,7 +25,7 @@ class ROM(Rom):
     path: str = ""
     name: str = ""
 
-    W_INIT_OS_LIST: List[int] = []
+    W_INIT_OS_LIST: list[int] = []
 
     def __init__(self, path: Optional[str] = None):
         if not ROM.rom_data:

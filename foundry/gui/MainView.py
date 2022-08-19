@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Union
 from warnings import warn
 
 from PySide6.QtCore import QMimeData, QPoint, QSize
@@ -187,7 +187,7 @@ class MainView(QWidget):
 
         self.level_ref.selected_objects = selected_items
 
-    def get_selected_objects(self) -> List[ObjectLike]:
+    def get_selected_objects(self) -> list[ObjectLike]:
         return self.level_ref.selected_objects
 
     def select_all(self):
@@ -253,7 +253,7 @@ class MainView(QWidget):
 
             return self.level_ref.level.enemy_item_factory.from_properties(enemy_id, 0, 0)
 
-    def paste_objects_at(self, paste_data: Tuple[List[ObjectLike], Position], q_point: Optional[QPoint]):
+    def paste_objects_at(self, paste_data: tuple[list[ObjectLike], Position], q_point: Optional[QPoint]):
         if q_point is None:
             # when keyboard shortcut was used
             pos = self.last_mouse_position

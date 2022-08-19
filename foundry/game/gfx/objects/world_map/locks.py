@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter
 
@@ -32,7 +30,7 @@ class Lock(MapObject):
     def set_position(self, x, y):
         self.data.pos = Position.from_xy(x, y)
 
-    def get_position(self) -> Tuple[int, int]:
+    def get_position(self) -> tuple[int, int]:
         return self.data.pos.xy
 
     def change_type(self, new_type):
