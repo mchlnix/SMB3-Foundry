@@ -70,7 +70,7 @@ jobs:
     strategy:
       matrix:
         cfg:
-          - {os: ubuntu-20.04, prefix: 'linux', suffix: '', architecture: 'x64'}
+          - {os: ubuntu-22.04, prefix: 'linux', suffix: '', architecture: 'x64'}
           - {os: windows-2019, prefix: 'win64', suffix: '.exe', architecture: 'x64'}
           - {os: macos-latest, prefix: 'osx', suffix: '', architecture: 'x64'}
         editor:
@@ -95,6 +95,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           python -m pip install pyinstaller
+
+      - name: Ubuntu Only
+        if: ${{ matrix.cfg.prefix == 'linux' }}
+        run: |
+          sudo apt-get install -y libegl1 libxcb-shape0 libqt5gui5
 
       - name: Build Executable
         run: |
