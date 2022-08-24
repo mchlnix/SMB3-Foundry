@@ -77,7 +77,7 @@ $ python3 foundry/smb3-foundry.py
 Note that you need to install the graphical user interface framework, that the editor uses. This is easily done using `pip3`, which should already be installed, when having installed Python.
 
 ```shell script
-$ pip3 install PySide6
+$ pip3 install -r requirements.txt
 ```
 
 ## Getting a ROM
