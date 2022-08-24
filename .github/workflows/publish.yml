@@ -122,22 +122,31 @@ jobs:
       - name: Check out
         uses: actions/checkout@v3
 
-      - name: Setup node/npm
-        uses: actions/setup-node@v2
-
       - name: Get Dependencies
         run: |
-          npm install markdown-pdf
-          wget https://github.com/sindresorhus/github-markdown-css/blob/gh-pages/github-markdown.css
+          sudo apt-get install pandoc texlive-latex-base texlive-fonts-recommended texlive-extra-utils texlive-latex-extra
 
-      - name: Build PDF
-        run: node_modules/.bin/markdown-pdf --css-path github-markdwon.css MANUAL.md
+      - name: Build PDFs
+        run: |
+          pushd manual/foundry/
+          pandoc foundry-manual.md -o manual-foundry.pdf
+          popd
+          pushd manual/scribe/
+          pandoc scribe-manual.md -o manual-scribe.pdf
+          popd
 
-      - name: Upload Artifact
+
+      - name: Upload Foundry Manual
         uses: actions/upload-artifact@v2
         with:
-          name: MANUAL.pdf
-          path: MANUAL.pdf
+          path: manual/foundry/manual-foundry.pdf
+          name: manual-foundry
+
+      - name: Upload Scribe Manual
+        uses: actions/upload-artifact@v2
+        with:
+          path: manual/scribe/manual-scribe.pdf
+          name: manual-scribe
 
   # We're forced to create a separate publish job since the create-release
   # action fails if it is run twice on the same tag. But we have multiple
@@ -253,6 +262,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "artifacts/MANUAL.pdf/MANUAL.pdf"
-          asset_name: "MANUAL.pdf"
+          asset_path: "artifacts/manual-foundry/manual-foundry.pdf"
+          asset_name: "manual-foundry.pdf"
+          asset_content_type: application/pdf
+
+      - name: Upload SMB3 Scribe Manual
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "artifacts/manual-scribe/manual-scribe.pdf"
+          asset_name: "manual-scribe.pdf"
           asset_content_type: application/pdf
