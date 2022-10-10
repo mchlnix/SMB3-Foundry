@@ -187,7 +187,7 @@ jobs:
           release_name: ${{ steps.release_info.outputs.RELEASE_NAME }}
           body: ${{ steps.release_info.outputs.RELEASE_BODY }}
           draft: false
-          prerelease: true
+          prerelease: ${{ steps.tag_name.outputs.SOURCE_TAG == 'nightly' }}
 
       - name: Download All Artifacts
         uses: actions/download-artifact@v2
