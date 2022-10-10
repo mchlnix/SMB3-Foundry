@@ -244,6 +244,9 @@ class WorldMapLevelSelect(QScrollArea):
     def __init__(self, world_number: int):
         super(WorldMapLevelSelect, self).__init__()
 
+        self.ignore_levels = False
+        """Set to True, if you only care about Position in the Map, not a level at the position."""
+
         self.world = WorldMap.from_world_number(world_number)
 
         level_ref = LevelRef()
@@ -285,6 +288,9 @@ class WorldMapLevelSelect(QScrollArea):
 
         level_pos = self.world_view.to_level_point(pos)
         self.map_position_clicked.emit(level_pos)
+
+        if self.ignore_levels:
+            return
 
         x, y = level_pos.xy
 

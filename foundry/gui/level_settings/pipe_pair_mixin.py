@@ -190,6 +190,7 @@ class PipeExitSetScreen(QDialog):
             world_number += 1
 
             world_map_select = WorldMapLevelSelect(world_number)
+            world_map_select.ignore_levels = True
             world_map_select.map_position_clicked.connect(self._set_position)
             world_map_select.map_position_clicked.connect(self.accept)
 
