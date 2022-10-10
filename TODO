@@ -26,4 +26,4 @@ smb3parse
 - maybe document the data point classes better, to preserve the knowledge it took to parse them correctly in the first
   place
 
-- Why are the sprites not part of the world map? Makes reordering the worlds kinda weird.
+- Why are the sprites not part of the world map data point? Makes reordering the worlds kinda weird.
