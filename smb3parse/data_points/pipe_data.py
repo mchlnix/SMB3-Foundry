@@ -87,6 +87,9 @@ class PipeData(_IndexedMixin, DataPoint):
 
         self._combined_left_x = new_comb_x
 
+        # FIXME: we disregard the possibility to scroll to half the screen here by setting 0x80
+        self.scroll_x_high_left = value
+
     @property
     def x_left(self):
         return self._combined_left_x % WORLD_MAP_SCREEN_WIDTH
@@ -105,6 +108,9 @@ class PipeData(_IndexedMixin, DataPoint):
         new_comb_x += value * WORLD_MAP_SCREEN_WIDTH
 
         self._combined_right_x = new_comb_x
+
+        # FIXME: we disregard the possibility to scroll to half the screen here by setting 0x08
+        self.scroll_x_high_right = value
 
     @property
     def x_right(self):
