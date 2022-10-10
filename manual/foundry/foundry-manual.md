@@ -444,11 +444,16 @@ on multiple Overworlds, if you want. Again, it might be worth looking at World 7
 their settings.
 
 Since Levels don't have exactly one Overworld associated with them, I can't show you the Pipe Pair on a World map to
-better visualize where the positions are. But maybe I can think of something later.
+better visualize where the positions are. They can be used in multiple worlds, but they always lead back to the current
+one.
 
-You also cannot currently edit the Positions of those Pipe Pairs. Same Problem, I would probably want to show you a world
-map, so you can click on the two spots you want, but which one do I show you? The Pipe Pairs can be used on any of the World maps.
-Just ask you? That's a whole 'nother dialog box... Aw man, I hate dialog boxes.
+You can edit them, by clicking the "Change Exit Locations" button. You will be presented with all World maps. Choose the
+one you want to use the Pipe Exit Pair on (the one of the current level, if available, will be selected by default).
+Then click on the position the left exit is supposed to be, after that, click on the spot the right exit is supposed to
+be.
+
+This is a rom-wide change. You will not be asked separately if you want to save these changes. If you save your level,
+you save these changes, if you don't, you don't. If you want to undo the changes, you can do so via the undo-commands.
 
 
 
