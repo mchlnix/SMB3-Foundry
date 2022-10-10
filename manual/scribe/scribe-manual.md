@@ -46,7 +46,7 @@ You can toggle if Mario is being shown in the View Menu.
 ### 2 - Level Pointers
 
 Levels are put on the World Map in the form of Level Pointers. They point to a specific address for the Objects and 
-Enemies/Items of the Level in the Rom and the Object Set of the Rom. More on this in the Tool Window Section later.
+Enemies/Items of the Level in the Rom and the Object Set of the Level. More on this in the Tool Window Section later.
 
 You can move them freely around the Overworld. Some Tiles can be used to enter a Level, whenever you step on it, some 
 others, like the one on the right of Mario, need a Sprite, so a Hammer Bro, or an Airship on them, to activate. That's
