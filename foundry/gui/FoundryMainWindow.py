@@ -353,6 +353,8 @@ class FoundryMainWindow(MainWindow):
             # was cancelled
             return
 
+        ROM.reload_from_file()
+
         self.level_ref.level = Level(f"New {OBJECT_SET_NAMES[object_set]} Level", object_set_number=object_set)
 
         minimal_level_header = bytearray([0, 0, 0, 0, 0, 0, 0x81, object_set, 0])
@@ -436,6 +438,8 @@ class FoundryMainWindow(MainWindow):
         old_world = self.level_ref.level.world
 
         world, level = world_and_level_for_level_address(level_address + HEADER_LENGTH)
+
+        ROM.reload_from_file()
 
         self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
 
@@ -636,6 +640,8 @@ class FoundryMainWindow(MainWindow):
         if not (pathname := load_m3l_filename(self.settings.value("editor/default dir path"))):
             return
 
+        ROM.reload_from_file()
+
         self.load_m3l(pathname)
         save_m3l(auto_save_m3l_path, self.level_ref.level.to_m3l())
 
@@ -821,6 +827,8 @@ class FoundryMainWindow(MainWindow):
         object_set = self.level_ref.object_set_number
         world_index = self.level_ref.level.world
 
+        ROM.reload_from_file()
+
         self.update_level(level_name, object_data, enemy_data, object_set)
 
         self.level_ref.level.world = world_index
@@ -937,6 +945,8 @@ class FoundryMainWindow(MainWindow):
         level_was_selected = level_selector.exec() == QDialog.Accepted
 
         if level_was_selected:
+            ROM.reload_from_file()
+
             self.update_level(
                 level_selector.level_name,
                 level_selector.object_data_offset,

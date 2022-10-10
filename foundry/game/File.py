@@ -79,6 +79,11 @@ class ROM(Rom):
             ROM.additional_data = data[additional_data_start:].decode("utf-8")
 
     @staticmethod
+    def reload_from_file():
+        if ROM.path:
+            ROM.load_from_file(ROM.path)
+
+    @staticmethod
     def save_to_file(path: str, set_new_path=True):
         with open(path, "wb") as f:
             f.write(bytearray(ROM.rom_data))
