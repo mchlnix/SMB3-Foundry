@@ -72,6 +72,7 @@ class PipePairMixin(SettingsMixin):
             self, "Select Pipe Pair Exit", "On the next screen, choose where the Left/Top Exit should lead to."
         )
         left_pair_screen = PipeExitSetScreen(self)
+        left_pair_screen.current_world = self.level_ref.level.world
         left_pair_screen.exec()
 
         QMessageBox.information(
