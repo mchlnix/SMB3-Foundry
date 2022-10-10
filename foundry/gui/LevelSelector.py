@@ -26,7 +26,7 @@ from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
-from smb3parse.data_points import LevelPointerData
+from smb3parse.data_points import LevelPointerData, Position
 from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -239,6 +239,7 @@ class LevelSelector(QDialog):
 class WorldMapLevelSelect(QScrollArea):
     level_clicked: SignalInstance = Signal(str, LevelPointerData)
     level_selected: SignalInstance = Signal(str, LevelPointerData)
+    map_position_clicked: SignalInstance = Signal(Position)
 
     def __init__(self, world_number: int):
         super(WorldMapLevelSelect, self).__init__()
@@ -270,10 +271,22 @@ class WorldMapLevelSelect(QScrollArea):
     def mouseReleaseEvent(self, event: QMouseEvent):
         self._try_emit(event, self.level_clicked)
 
-    def _try_emit(self, event: QMouseEvent, signal: SignalInstance):
+    def _try_emit(self, event: QMouseEvent, level_signal: SignalInstance):
+        """
+        Analyzes the clicked position described in event and, if a valid level was clicked, emits the signal specified
+        by level_signal.
+
+        A map_position_clicked event will be emitted, regardless of whether a level was clicked or not.
+
+        :param event: The mouse event describing the interaction.
+        :param level_signal: The signal to emit, if a valid level was clicked.
+        """
         pos = self.world_view.mapFromParent(event.pos())
 
-        x, y = self.world_view.to_level_point(pos).xy
+        level_pos = self.world_view.to_level_point(pos)
+        self.map_position_clicked.emit(level_pos)
+
+        x, y = level_pos.xy
 
         try:
             level_pointer = self.world.level_pointer_at(x, y)
@@ -288,7 +301,7 @@ class WorldMapLevelSelect(QScrollArea):
                 event.accept()
                 return
 
-            signal.emit(self.world.level_name_at_position(x, y), level_pointer.data)
+            level_signal.emit(self.world.level_name_at_position(x, y), level_pointer.data)
         except ValueError:
             pass
 

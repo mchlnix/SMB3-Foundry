@@ -66,6 +66,7 @@ class WorldMap(LevelLike):
 
     @staticmethod
     def from_world_number(world_index: int):
+        """World number is 1-based. So the first world is World 1."""
         if not 1 <= world_index <= 9:
             raise ValueError(f"World Number of '{world_index} not allowed. Keep it between 1 and 9.")
 

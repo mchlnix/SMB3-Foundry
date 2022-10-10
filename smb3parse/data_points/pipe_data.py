@@ -1,4 +1,5 @@
 from smb3parse.constants import PipewayCtlr_MapScrlXHi, PipewayCtlr_MapX, PipewayCtlr_MapXHi, PipewayCtlr_MapY
+from smb3parse.data_points import Position
 from smb3parse.data_points.util import DataPoint, _IndexedMixin
 from smb3parse.levels import WORLD_MAP_SCREEN_WIDTH
 from smb3parse.util.rom import Rom
@@ -112,3 +113,23 @@ class PipeData(_IndexedMixin, DataPoint):
     @x_right.setter
     def x_right(self, value):
         self._combined_right_x = self.screen_right * WORLD_MAP_SCREEN_WIDTH + value
+
+    @property
+    def left_pos(self):
+        return Position(self.x_left, self.y_left, self.screen_left)
+
+    @left_pos.setter
+    def left_pos(self, value: Position):
+        self.x_left = value.x
+        self.y_left = value.y
+        self.screen_left = value.screen
+
+    @property
+    def right_pos(self):
+        return Position(self.x_right, self.y_right, self.screen_right)
+
+    @right_pos.setter
+    def right_pos(self, value: Position):
+        self.x_right = value.x
+        self.y_right = value.y
+        self.screen_right = value.screen

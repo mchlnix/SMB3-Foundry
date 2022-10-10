@@ -6,13 +6,16 @@ from typing import Optional, TYPE_CHECKING
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QUndoCommand
 
+from foundry.game.File import ROM
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.Palette import PaletteGroup, change_color
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level
 from foundry.gui.asm import load_asm_enemy
+from smb3parse.constants import PIPE_PAIR_COUNT
 from smb3parse.data_points import Position
+from smb3parse.data_points.pipe_data import PipeData
 
 if TYPE_CHECKING:
     from foundry.gui.LevelView import LevelView
@@ -646,3 +649,21 @@ class RemoveJump(QUndoCommand):
         self.level.jumps.remove(self.jump)
 
         self.level.data_changed.emit()
+
+
+class UpdatePipeData(QUndoCommand):
+    def __init__(self, pipe_data: list[PipeData]):
+        super(UpdatePipeData, self).__init__()
+
+        self.pipe_data_before = [PipeData(ROM(), index) for index in range(PIPE_PAIR_COUNT)]
+        self.pipe_data_after = pipe_data
+
+        self.setText("Updating Pipe Exit Pair Data")
+
+    def undo(self) -> None:
+        for pipe_data in self.pipe_data_before:
+            pipe_data.write_back()
+
+    def redo(self) -> None:
+        for pipe_data in self.pipe_data_after:
+            pipe_data.write_back()
