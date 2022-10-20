@@ -2,6 +2,7 @@
 
 import dataclasses
 import pathlib
+from typing import Callable
 
 from py65.devices import mpu6502
 from py65.disassembler import Disassembler
@@ -102,6 +103,9 @@ class MemoryObserver(list):
 
         self.rom = rom
 
+        self._read_observers: dict[list[int, Callable]] = {}
+        self._write_observers: dict[list[int, Callable]] = {}
+
         # load PRG 30
         self._load_bank(30, 0x8000)
 
@@ -119,19 +123,35 @@ class MemoryObserver(list):
 
         self[offset : offset + PRG_BANK_SIZE] = self.rom.read(prg_bank_position, PRG_BANK_SIZE)
 
-    def __getitem__(self, item):
-        if item == 0x10:
-            return 0b1000_0000
+    def add_read_observer(self, address_list: list[int], callback: Callable):
+        self._read_observers[address_list] = callback
 
-        return super(MemoryObserver, self).__getitem__(item)
+    def add_write_observer(self, address_list: list[int], callback: Callable):
+        self._write_observers[tuple(address_list)] = callback
 
-    def __setitem__(self, key, value):
-        if key in [MEM_Screen_Start_AddressL, MEM_Screen_Start_AddressH]:
+    def __getitem__(self, address: int):
+        if address == 0x10:
+            return_value = 0b1000_0000
+        else:
+            return_value = super(MemoryObserver, self).__getitem__(address)
+
+        for address_range, callback in self._read_observers.items():
+            if address in address_range:
+                callback(address, return_value)
+
+        return return_value
+
+    def __setitem__(self, address, value):
+        for address_range, callback in self._write_observers.items():
+            if address in address_range:
+                callback(address, value)
+
+        if address in [MEM_Screen_Start_AddressL, MEM_Screen_Start_AddressH]:
             # ignore these addresses, since they seem to access the Mapper, but actually overwrite a pointer to the
             # screen memory
             return
 
-        return super(MemoryObserver, self).__setitem__(key, value)
+        return super(MemoryObserver, self).__setitem__(address, value)
 
 
 @dataclasses.dataclass
