@@ -1,7 +1,7 @@
 """First draft of a parser, emulating the 6502 processor of the NES and letting the ROM generate the level."""
 
-import dataclasses
 import pathlib
+from dataclasses import dataclass, field
 from typing import Callable
 
 from py65.devices import mpu6502
@@ -154,13 +154,47 @@ class MemoryObserver(list):
         return super(MemoryObserver, self).__setitem__(address, value)
 
 
-@dataclasses.dataclass
+@dataclass
+class ParsedObject:
+    object_set_num: int
+
+    obj_bytes: list[int]
+    pos_in_mem: int
+
+    tiles_in_level: list[tuple[int, int]] = field(default_factory=list)
+
+    def __str__(self):
+        return f"Obj @ {hex(self.pos_in_mem)}: {list(map(hex, self.obj_bytes))}, {self.tiles_in_level}"
+
+    @property
+    def domain(self):
+        return self.obj_bytes[0] >> 5
+
+    @property
+    def obj_id(self):
+        return self.obj_bytes[2]
+
+    @property
+    def is_fixed(self):
+        return self.obj_id < 0x10
+
+    @property
+    def x(self):
+        return self.obj_bytes[1]
+
+    @property
+    def y(self):
+        return self.obj_bytes[0] & 0b1_1111
+
+
+@dataclass
 class ParsedLevel:
     object_set_num: int
     graphics_set_num: int
     object_palette_num: int
     enemy_palette_num: int
     screen_memory: list[int]
+    parsed_objects: list[ParsedObject]
 
 
 class NesCPU(mpu6502.MPU):
@@ -179,6 +213,7 @@ class NesCPU(mpu6502.MPU):
         self.c000_bank = 0
 
         self.did_start_object_parsing = False
+        self.objects: list[ParsedObject] = []
 
         # instructions
         self.old_inst_0xa9 = self.instruct[0xA9]
@@ -195,6 +230,10 @@ class NesCPU(mpu6502.MPU):
         self.memory[MEM_Player_X] = pos.x << 4
         self.memory[MEM_Player_Y] = pos.y << 4
 
+        self.memory.add_write_observer(
+            list(range(MEM_Screen_Memory_Start, MEM_Screen_Memory_End)), self._screen_memory_watcher
+        )
+
         self.run_until(ROM_EndObjectParsing)
 
         return ParsedLevel(
@@ -203,48 +242,64 @@ class NesCPU(mpu6502.MPU):
             object_palette_num=self.memory[MEM_Object_Palette],
             enemy_palette_num=self.memory[MEM_Enemy_Palette],
             screen_memory=self.memory[MEM_Screen_Memory_Start:MEM_Screen_Memory_End],
+            parsed_objects=self.objects,
         )
+
+    def _screen_memory_watcher(self, address: int, value: int):
+        if not self.objects:
+            # probably a call for the default background graphics
+            return
+
+        assert address in range(MEM_Screen_Memory_Start, MEM_Screen_Memory_End), address
+
+        address -= MEM_Screen_Memory_Start
+
+        self.objects[-1].tiles_in_level.append((address, value))
 
     def run_until(self, address: int, max_steps: int = -1):
         while self.pc != address and self.step_count != max_steps:
             self.step()
 
     def step(self):
-        if not self.should_log:
-            super(NesCPU, self).step()
-            return
-
-        ins_len, op = self.dis_asm.instruction_at(self.pc)
-
         if self.pc == 0x98EE:
-            level_pointer = (self.memory[0x62] << 8) + self.memory[0x61]
-            object_bytes = self.memory[level_pointer : level_pointer + 3]
-            object_bytes_text = list(map(hex, object_bytes))
+            self._maybe_finish_parsing_last_object()
+            parsed_object = self._start_parsing_next_object()
 
-            optional_byte = hex(self.memory[level_pointer + 3])
+            object_bytes_text = list(map(hex, parsed_object.obj_bytes))
 
-            is_fixed = object_bytes[2] <= 0x0F
+            optional_byte = hex(self.memory[parsed_object.pos_in_mem + 3])
 
-            domain_offset = (object_bytes[0] >> 5) * 0x1F
+            domain_offset = parsed_object.domain * 0x1F
 
-            if is_fixed:
-                obj_type = object_bytes[2] + domain_offset
+            if parsed_object.is_fixed:
+                obj_type = parsed_object.obj_id + domain_offset
             else:
-                obj_type = (object_bytes[2] >> 4) + domain_offset + 16 - 1
+                obj_type = (parsed_object.obj_id >> 4) + domain_offset + 16 - 1
 
-            name = ObjectSet(self.memory[MEM_Level_TileSet]).get_definition_of(obj_type).description.replace("/", "_")
+            object_set_num = self.memory[MEM_Level_TileSet]
 
-            print(f"---> Parsing Object from {hex(level_pointer)}, '{name}' {object_bytes_text} ({optional_byte})")
+            name = ObjectSet(object_set_num).get_definition_of(obj_type).description.replace("/", "_")
+
+            print(
+                f"---> Parsing Object from {hex(parsed_object.pos_in_mem)}, "
+                f"'{name}' {object_bytes_text} ({optional_byte})"
+            )
 
             pathlib.Path(f"/tmp/memory_{self.step_count}_{name}.bin").write_bytes(bytes(self.memory))
 
         elif self.pc == ROM_EndObjectParsing:
+            self._maybe_finish_parsing_last_object()
             breakpoint()
         elif self.pc == 0xD22B:
             # breakpoint()
             pass
         elif self.pc == 0xFF4E:
             breakpoint()
+
+        if not self.should_log:
+            return super(NesCPU, self).step()
+
+        ins_len, op = self.dis_asm.instruction_at(self.pc)
 
         if "ST" in op:
             color = GREEN
@@ -265,6 +320,32 @@ class NesCPU(mpu6502.MPU):
         super(NesCPU, self).step()
 
         print(f"           A={self.a:X}, X={self.x:X}, Y={self.y:X}, A000={self.a000_bank}, C000={self.c000_bank}")
+
+    def _start_parsing_next_object(self):
+        level_pointer = (self.memory[0x62] << 8) + self.memory[0x61]
+        object_bytes = self.memory[level_pointer : level_pointer + 3]
+
+        object_set_num = self.memory[MEM_Level_TileSet]
+
+        parsed_object = ParsedObject(object_set_num, object_bytes, level_pointer)
+
+        self.objects.append(parsed_object)
+
+        return parsed_object
+
+    def _maybe_finish_parsing_last_object(self):
+        if not self.objects:
+            return
+
+        cur_parsed_object = self.objects[-1]
+
+        level_pointer = (self.memory[0x62] << 8) + self.memory[0x61]
+        obj_len = level_pointer - cur_parsed_object.pos_in_mem
+
+        assert obj_len in [3, 4]
+
+        if obj_len == 4:
+            cur_parsed_object.obj_bytes.append(self.memory[level_pointer - 1])
 
     @staticmethod
     def _replace_address_with_label(op: str, cur_color):
