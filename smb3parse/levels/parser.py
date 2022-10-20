@@ -32,6 +32,7 @@ MEM_World_Num = 0x0727
 
 MEM_Object_Palette = 0x073A
 MEM_Enemy_Palette = 0x073B
+MEM_Random_Pool_Start = 0x0781
 
 MEM_Screen_Memory_Start = 0x6000
 MEM_Screen_Memory_End = 0x7950
@@ -69,6 +70,7 @@ MEM_ADDRESSES = {
     "0726": "Player_Current",
     "0727": "World_Num",
     "0739": "Clear_Pattern",
+    "0781": "MEM_Random_Pool_Start",
     "7DFE": "JumpAddressA",
     "7DFF": "JumpAddressB",
     "7E00": "JumpEnemiesA",
@@ -146,6 +148,7 @@ class NesCPU(mpu6502.MPU):
         super(NesCPU, self).__init__()
 
         self.memory = MemoryObserver([0x0] * 0x10000, rom)
+        self.memory[MEM_Random_Pool_Start] = 0x88  # as in the ROM
 
         self.rom = rom
         self.should_log = should_log
