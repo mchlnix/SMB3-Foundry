@@ -10,7 +10,8 @@ from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
 from smb3parse.data_points import Position
 from smb3parse.levels import LEVEL_SCREEN_WIDTH
-from smb3parse.levels.parser import NesCPU, ParsedLevel
+from smb3parse.util.parser.cpu import NesCPU
+from smb3parse.util.parser.level import ParsedLevel
 
 width = LEVEL_SCREEN_WIDTH * 15
 height = 27
