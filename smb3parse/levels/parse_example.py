@@ -1,6 +1,7 @@
 import pathlib
 
-from PySide6.QtGui import QPainter
+from PySide6.QtCore import QPoint
+from PySide6.QtGui import QMouseEvent, QPainter
 from PySide6.QtWidgets import QApplication, QWidget
 
 from foundry.game.File import ROM
@@ -42,14 +43,34 @@ class Canvas(QWidget):
 
             block.draw(painter, x * Block.SIDE_LENGTH, y * Block.SIDE_LENGTH, Block.SIDE_LENGTH)
 
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        self._find_object_at_pos(event.position())
+
+    def _find_object_at_pos(self, pos: QPoint):
+        x = (pos.x() // Block.SIDE_LENGTH) % LEVEL_SCREEN_WIDTH
+        y = pos.y() // Block.SIDE_LENGTH
+        screen = pos.x() // LEVEL_SCREEN_WIDTH // Block.SIDE_LENGTH
+
+        index = screen * LEVEL_SCREEN_WIDTH * 27
+        index += y * LEVEL_SCREEN_WIDTH
+        index += x
+
+        for level_object in reversed(self.level.parsed_objects):
+            for pos_in_mem, tile_id in level_object.tiles_in_level:
+                if pos_in_mem == index:
+                    print("Hit", str(level_object))
+                    return
+
 
 if __name__ == "__main__":
-    rom = ROM("smb3.nes")
+    rom = ROM("SMB3.nes")
 
-    mpu = NesCPU(rom, True)
+    mpu = NesCPU(rom)
 
     # parse 1-1
     parsed_level = mpu.load_from_world_map(0, Position(4, 2, 0))
+
+    print("\n".join(map(str, parsed_level.parsed_objects)))
 
     pathlib.Path("/tmp/memory.bin").write_bytes(bytes(mpu.memory[0x6000:0x7950]))
 
