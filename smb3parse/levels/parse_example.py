@@ -1,0 +1,60 @@
+import pathlib
+
+from PySide6.QtGui import QPainter
+from PySide6.QtWidgets import QApplication, QWidget
+
+from foundry.game.File import ROM
+from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import load_palette_group
+from foundry.game.gfx.drawable.Block import Block, get_block
+from smb3parse.data_points import Position
+from smb3parse.levels import LEVEL_SCREEN_WIDTH
+from smb3parse.levels.parser import NesCPU, ParsedLevel
+
+width = LEVEL_SCREEN_WIDTH * 15
+height = 27
+
+
+class Canvas(QWidget):
+    def __init__(self, level: ParsedLevel):
+        super(Canvas, self).__init__()
+
+        self.level = level
+
+        self.palette_group = load_palette_group(level.object_set_num, level.object_palette_num)
+        self.gfx_set = GraphicsSet(level.graphics_set_num)
+        self.tsa_data = ROM.get_tsa_data(level.object_set_num)
+
+        self.setFixedSize(width * Block.SIDE_LENGTH, height * Block.SIDE_LENGTH)
+
+        self.show()
+
+    def paintEvent(self, event) -> None:
+        painter = QPainter(self)
+
+        for i, block_index in enumerate(self.level.screen_memory):
+            screen = i // (LEVEL_SCREEN_WIDTH * 27)
+
+            x = (i % LEVEL_SCREEN_WIDTH) + screen * LEVEL_SCREEN_WIDTH
+            y = (i // LEVEL_SCREEN_WIDTH) % height
+
+            block = get_block(block_index, self.palette_group, self.gfx_set, self.tsa_data)
+
+            block.draw(painter, x * Block.SIDE_LENGTH, y * Block.SIDE_LENGTH, Block.SIDE_LENGTH)
+
+
+if __name__ == "__main__":
+    rom = ROM("smb3.nes")
+
+    mpu = NesCPU(rom, True)
+
+    # parse 1-1
+    parsed_level = mpu.load_from_world_map(0, Position(4, 2, 0))
+
+    pathlib.Path("/tmp/memory.bin").write_bytes(bytes(mpu.memory[0x6000:0x7950]))
+
+    app = QApplication()
+
+    canvas = Canvas(parsed_level)
+
+    app.exec()
