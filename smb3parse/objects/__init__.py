@@ -7,6 +7,7 @@ from typing import Optional
 
 MIN_DOMAIN = 0
 MAX_DOMAIN = 7
+DOMAIN_COUNT = 8
 MIN_Y_VALUE = 0
 MAX_Y_VALUE = 27
 MIN_ID_VALUE = 0

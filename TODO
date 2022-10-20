@@ -15,6 +15,8 @@ Foundry
 
 - Ask if the map should be scrolled, when using Pipe Pairs.
 
+- Set jump destination from location doesn't update the byte preview
+
 Scribe
 ------
 - Export all world data into a file and enable importing it back into a rom (not just the layout, like m3l)

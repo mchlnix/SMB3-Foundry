@@ -1,9 +1,15 @@
+import pathlib
 from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
 from typing import Optional, Union
 
-from smb3parse.constants import BASE_OFFSET
+from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
 from smb3parse.util import little_endian
+
+TSA_OS_LIST = PAGE_A000_ByTileset
+TSA_TABLE_SIZE = 0x400
+
+PRG_BANK_SIZE = 0x2000
 
 
 class INESHeader(Structure):
@@ -51,13 +57,32 @@ class Rom:
         # data in expanded Roms is inserted between PRG29 and PRG30
         # (0-indexed); so any offset, that goes beyond PRG29 needs
         # to be adjusted by adding however much data was inserted
-        if offset < (BASE_OFFSET + (30 * 0x2000)):
+        if offset < (BASE_OFFSET + (30 * PRG_BANK_SIZE)):
             return offset
 
         # we need to normalize this bank 30 or 31 or CHR
         # offset to the correct bank based on PRG size
         no_bytes_added_to_rom = self._header.prg_size - Rom.VANILLA_PRG_SIZE
         return offset + no_bytes_added_to_rom
+
+    def tsa_data_for_object_set(self, object_set: int) -> bytearray:
+        # TSA_OS_LIST offset value assumes vanilla ROM size, so normalize it
+
+        tsa_index = self.int(TSA_OS_LIST + object_set)
+
+        if object_set == 0:
+            # Note that for the World Map, PAGE_A000 is set to bank 11, but
+            # the actual drawing of the map and the map tiles are defined
+            # in bank 12. prg030.asm handles swapping hard-coded to bank 12
+            # and drawing the initial map via Map_Reload_with_Completions.
+            # Therefore, the PAGE_A000_ByTileset doesn't have the TSA data for
+            # the map tiles.
+            tsa_index = WORLD_MAP_TSA_INDEX
+
+        # INES header size + (bank with tsa data * sizeof(bank))
+        tsa_start = BASE_OFFSET + tsa_index * PRG_BANK_SIZE
+
+        return self.read(tsa_start, TSA_TABLE_SIZE)
 
     def little_endian(self, offset: int) -> int:
         offset = self.prg_normalize(offset)
@@ -104,6 +129,10 @@ class Rom:
         byte = (high_nibble << 4) + low_nibble
 
         self.write(offset, byte)
+
+    @staticmethod
+    def from_file(path: PathLike):
+        return Rom(pathlib.Path(path).read_bytes())
 
     def save_to(self, path: PathLike):
         with open(path, "wb") as file:

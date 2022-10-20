@@ -7,14 +7,13 @@ from foundry import root_dir
 from foundry.game.File import ROM
 from smb3parse.constants import PalSet_Maps, Palette_By_Tileset
 from smb3parse.levels import BASE_OFFSET
-from smb3parse.util.rom import Rom
+from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
 MAP_PALETTE_ADDRESS = PalSet_Maps
 
-PRG_SIZE = 0x2000
 PALETTE_PRG_NO = 22
 
-PALETTE_BASE_ADDRESS = BASE_OFFSET + PALETTE_PRG_NO * PRG_SIZE
+PALETTE_BASE_ADDRESS = BASE_OFFSET + PALETTE_PRG_NO * PRG_BANK_SIZE
 PALETTE_OFFSET_LIST = Palette_By_Tileset
 PALETTE_OFFSET_SIZE = 2  # bytes
 

@@ -1,24 +1,14 @@
 from os.path import basename
 from typing import Optional
 
-from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
 from smb3parse.util.rom import INESHeader, Rom
-
-# W = WORLD_MAP
-# OS = OFFSET
-
-OS_SIZE = 2  # byte
-
-TSA_OS_LIST = PAGE_A000_ByTileset
-TSA_TABLE_SIZE = 0x400
-TSA_TABLE_INTERVAL = TSA_TABLE_SIZE + 0x1C00
 
 
 class ROM(Rom):
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
 
     rom_data = bytearray()
-    header = None
+    header: Optional[INESHeader] = None
 
     additional_data = ""
 
@@ -38,24 +28,10 @@ class ROM(Rom):
 
     @staticmethod
     def get_tsa_data(object_set: int) -> bytes:
+        """Returns bytes, instead of bytearray, because bytes is hashable. FIXME?"""
         rom = ROM()
 
-        # TSA_OS_LIST offset value assumes vanilla ROM size, so normalize it
-        tsa_index = rom.int(TSA_OS_LIST + object_set)
-
-        if object_set == 0:
-            # Note that for the World Map, PAGE_A000 is set to bank 11, but
-            # the actual drawing of the map and the map tiles are defined
-            # in bank 12. prg030.asm handles swapping hard-coded to bank 12
-            # and drawing the initial map via Map_Reload_with_Completions.
-            # Therefore, the PAGE_A000_ByTileset doesn't have the TSA data for
-            # the map tiles.
-            tsa_index = WORLD_MAP_TSA_INDEX
-
-        # INES header size + (bank with tsa data * sizeof(bank))
-        tsa_start = BASE_OFFSET + tsa_index * TSA_TABLE_INTERVAL
-
-        return bytes(rom.read(tsa_start, TSA_TABLE_SIZE))
+        return bytes(rom.tsa_data_for_object_set(object_set))
 
     @staticmethod
     def load_from_file(path: str):
