@@ -19,7 +19,7 @@ class EnemyItem(InLevelObject):
         self.data = data
 
         self.is_4byte = False
-        self.is_single_block = True
+        self.is_fixed = True
         self.length = 0
 
         self.obj_index = data[0]

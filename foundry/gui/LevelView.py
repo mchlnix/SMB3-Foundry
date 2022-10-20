@@ -111,7 +111,7 @@ class LevelView(MainView):
         level_object = self.object_at(event.pos())
 
         if isinstance(level_object, (EnemyItem, LevelObject)):
-            is_resizable = not level_object.is_single_block
+            is_resizable = not level_object.is_fixed
 
             edges = self._cursor_on_edge_of_object(level_object, event.pos())
 

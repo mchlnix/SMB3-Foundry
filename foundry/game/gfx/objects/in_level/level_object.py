@@ -71,7 +71,7 @@ class LevelObject(InLevelObject):
         self.rendered_base_x = 0
         self.rendered_base_y = 0
 
-        self.is_single_block = False
+        self.is_fixed = False
 
         self.palette_group = palette_group
 
@@ -156,11 +156,11 @@ class LevelObject(InLevelObject):
     def obj_index(self, value):
         self._obj_index = value
 
-        self.is_single_block = self.obj_index <= 0x0F
+        self.is_fixed = self.obj_index <= 0x0F
 
         domain_offset = self.domain * 0x1F
 
-        if self.is_single_block:
+        if self.is_fixed:
             self.type = self.obj_index + domain_offset
         else:
             self.type = (self.obj_index >> 4) + domain_offset + 16 - 1
@@ -175,7 +175,7 @@ class LevelObject(InLevelObject):
 
     @length.setter
     def length(self, value):
-        if not self.is_4byte and not self.is_single_block:
+        if not self.is_4byte and not self.is_fixed:
             self._obj_index &= 0xF0
             self._obj_index |= value & 0x0F
 
@@ -194,7 +194,7 @@ class LevelObject(InLevelObject):
         )
 
     def _calculate_lengths(self):
-        if self.is_single_block:
+        if self.is_fixed:
             self._length = 1
         else:
             self._length = self.obj_index & 0b0000_1111
@@ -543,7 +543,7 @@ class LevelObject(InLevelObject):
                     # nothing underneath this object, extend to the ground
                     new_height = self.ground_level - base_y
 
-                if self.is_single_block:
+                if self.is_fixed:
                     new_width = self.length
 
                 min_height = min(self.height, 2)
@@ -756,7 +756,7 @@ class LevelObject(InLevelObject):
     def expands(self):
         expands = EXPANDS_NOT
 
-        if self.is_single_block:
+        if self.is_fixed:
             return expands
 
         if self.is_4byte:
@@ -959,7 +959,7 @@ class LevelObject(InLevelObject):
         data.append((self.domain << 5) | y_position)
         data.append(x_position)
 
-        if not self.is_4byte and not self.is_single_block:
+        if not self.is_4byte and not self.is_fixed:
             third_byte = (self.obj_index & 0xF0) + self.length
         else:
             third_byte = self.obj_index
