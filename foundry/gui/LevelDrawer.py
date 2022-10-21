@@ -227,7 +227,7 @@ class LevelDrawer:
                 fill_object = False
 
                 # center() is one pixel off for some reason
-                pos = rect.topLeft() + QPoint(*(rect.size() / 2).toTuple())
+                pos = rect.topLeft() + QPoint(rect.width() // 2, rect.height() // 2)
 
                 trigger_position = level_object.get_position()
 
@@ -238,7 +238,8 @@ class LevelDrawer:
                     pos.setY(pos.y() - self.block_length / 2)
 
                     # leftward pipes trigger on the column to the left of the opening
-                    x, y = level_object.get_rect().bottomRight().toTuple()
+                    x = level_object.get_rect().bottomRight().x()
+                    y = level_object.get_rect().bottomRight().y()
                     trigger_position = (x - 1, y)
 
                 elif "right" in name:
@@ -259,7 +260,8 @@ class LevelDrawer:
                     pos.setY(rect.bottom())
 
                     # upwards pipes trigger on the second to last row
-                    x, y = level_object.get_rect().bottomLeft().toTuple()
+                    x = level_object.get_rect().bottomLeft().x()
+                    y = level_object.get_rect().bottomLeft().y()
                     trigger_position = (x, y - 1)
 
                 if not self._object_in_jump_area(level, trigger_position):

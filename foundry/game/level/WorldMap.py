@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, cast
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
@@ -24,12 +24,12 @@ OVERWORLD_GRAPHIC_SET = 0
 
 
 class WorldSignaller(QObject):
-    needs_redraw: SignalInstance = Signal()
-    data_changed: SignalInstance = Signal()
-    dimensions_changed: SignalInstance = Signal()
-    jumps_changed: SignalInstance = Signal()
-    level_changed: SignalInstance = Signal()
-    palette_changed: SignalInstance = Signal()
+    needs_redraw: SignalInstance = cast(SignalInstance, Signal())
+    data_changed: SignalInstance = cast(SignalInstance, Signal())
+    dimensions_changed: SignalInstance = cast(SignalInstance, Signal())
+    jumps_changed: SignalInstance = cast(SignalInstance, Signal())
+    level_changed: SignalInstance = cast(SignalInstance, Signal())
+    palette_changed: SignalInstance = cast(SignalInstance, Signal())
 
 
 class WorldMap(LevelLike):

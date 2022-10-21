@@ -160,6 +160,10 @@ class EnemyItem(InLevelObject):
     def type(self):
         return self.obj_index
 
+    @type.setter
+    def type(self, value):
+        self.obj_index = value
+
     def change_type(self, new_type):
         self.obj_index = new_type
 

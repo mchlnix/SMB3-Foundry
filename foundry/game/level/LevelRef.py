@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, cast
 
 from PySide6.QtCore import QObject, Signal, SignalInstance
 
@@ -8,11 +8,11 @@ from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
 class LevelRef(QObject):
-    needs_redraw: SignalInstance = Signal()
-    level_changed: SignalInstance = Signal()
-    data_changed: SignalInstance = Signal()
-    jumps_changed: SignalInstance = Signal()
-    palette_changed: SignalInstance = Signal()
+    needs_redraw: SignalInstance = cast(SignalInstance, Signal())
+    level_changed: SignalInstance = cast(SignalInstance, Signal())
+    data_changed: SignalInstance = cast(SignalInstance, Signal())
+    jumps_changed: SignalInstance = cast(SignalInstance, Signal())
+    palette_changed: SignalInstance = cast(SignalInstance, Signal())
 
     def __init__(self):
         super(LevelRef, self).__init__()

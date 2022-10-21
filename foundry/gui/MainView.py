@@ -187,14 +187,15 @@ class MainView(QWidget):
 
         self.level_ref.selected_objects = selected_items
 
-    def get_selected_objects(self) -> list[ObjectLike]:
+    def get_selected_objects(self):
         return self.level_ref.selected_objects
 
     def select_all(self):
         self.select_objects(self.level_ref.get_all_objects())
 
     def to_level_point(self, q_point: QPoint) -> Position:
-        screen_x, screen_y = q_point.toTuple()
+        screen_x = q_point.x()
+        screen_y = q_point.y()
 
         level_x = screen_x // self.block_length
         level_y = screen_y // self.block_length
@@ -241,15 +242,15 @@ class MainView(QWidget):
         self.repaint()
 
     def _object_from_mime_data(self, mime_data: QMimeData) -> InLevelObject:
-        object_type, *object_bytes = mime_data.data("application/level-object")
+        object_type, *object_bytes = mime_data.data("application/level-object").data()
 
         if object_type == b"\x00":
-            domain = int.from_bytes(object_bytes[0], "big") >> 5
-            object_index = int.from_bytes(object_bytes[2], "big")
+            domain = object_bytes[0] >> 5
+            object_index = object_bytes[2]
 
             return self.level_ref.level.object_factory.from_properties(domain, object_index, 0, 0, None, 999)
         else:
-            enemy_id = int.from_bytes(object_bytes[0], "big")
+            enemy_id = object_bytes[0]
 
             return self.level_ref.level.enemy_item_factory.from_properties(enemy_id, 0, 0)
 

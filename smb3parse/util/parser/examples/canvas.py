@@ -1,4 +1,4 @@
-from PySide6.QtCore import QPoint
+from PySide6.QtCore import QPointF
 from PySide6.QtGui import QMouseEvent, QPainter
 from PySide6.QtWidgets import QWidget
 
@@ -43,7 +43,7 @@ class Canvas(QWidget):
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self._find_object_at_pos(event.position())
 
-    def _find_object_at_pos(self, pos: QPoint):
+    def _find_object_at_pos(self, pos: QPointF):
         x = (pos.x() // Block.SIDE_LENGTH) % LEVEL_SCREEN_WIDTH
         y = pos.y() // Block.SIDE_LENGTH
         screen = pos.x() // LEVEL_SCREEN_WIDTH // Block.SIDE_LENGTH

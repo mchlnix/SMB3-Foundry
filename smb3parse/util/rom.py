@@ -37,8 +37,8 @@ class INESHeader(Structure):
 class Rom:
     VANILLA_PRG_SIZE = 0x40000
 
-    def __init__(self, rom_data: bytearray, header: Optional[INESHeader] = None):
-        self._data = rom_data
+    def __init__(self, rom_data: Union[bytes, bytearray], header: Optional[INESHeader] = None):
+        self._data = bytearray(rom_data)
 
         if header is None:
             header = INESHeader.from_buffer_copy(bytes(rom_data))

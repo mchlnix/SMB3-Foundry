@@ -5,19 +5,51 @@ from PySide6.QtGui import QPainter
 
 
 class ObjectLike(abc.ABC):
-    name: str
-
     # TODO too ambiguous to be part of an API?
-    type: int
+    # This whole thing with everything needing to be a property to be type consistent kinda blows...
     selected: bool
 
     rect: QRect
 
-    x_position: int
-    y_position: int
-
     def __init__(self):
         self.selected = False
+        self._name = ""
+        self._type = 0
+
+        self._x_position = 0
+        self._y_position = 0
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def x_position(self):
+        return self._x_position
+
+    @x_position.setter
+    def x_position(self, value):
+        self._x_position = value
+
+    @property
+    def y_position(self):
+        return self._y_position
+
+    @y_position.setter
+    def y_position(self, value):
+        self._y_position = value
+
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self, value):
+        self._type = value
 
     @abc.abstractmethod
     def draw(self, painter: QPainter, block_length, transparent):
@@ -44,8 +76,11 @@ class ObjectLike(abc.ABC):
         return self.rect.contains(x, y)
 
     def get_rect(self, block_length=1) -> QRect:
-        x, y = self.rect.topLeft().toTuple()
-        w, h = self.rect.size().toTuple()
+        x = self.rect.topLeft().x()
+        y = self.rect.topLeft().y()
+
+        w = self.rect.size().width()
+        h = self.rect.size().height()
 
         x *= block_length
         w *= block_length

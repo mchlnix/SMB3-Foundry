@@ -3,7 +3,7 @@ from typing import Optional, cast
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QMouseEvent, QUndoStack, QWheelEvent, Qt
-from PySide6.QtWidgets import QToolTip, QWidget
+from PySide6.QtWidgets import QScrollArea, QToolTip, QWidget
 
 from foundry import ctrl_is_pressed
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
@@ -39,7 +39,7 @@ class LevelView(MainView):
 
         self.mouse_mode = MODE_FREE
 
-        self.last_mouse_position = Position.from_xy(0, 0)
+        self.last_mouse_position: Position = Position.from_xy(0, 0)
 
         self.dragging_happened = True
         self.resizing_happened = False
@@ -66,7 +66,7 @@ class LevelView(MainView):
 
     @property
     def undo_stack(self) -> QUndoStack:
-        return self.window().findChild(QUndoStack, "undo_stack")
+        return cast(QUndoStack, self.window().findChild(QUndoStack, "undo_stack"))
 
     def sizeHint(self) -> QSize:
         if self.level_ref.level is None:
@@ -411,7 +411,8 @@ class LevelView(MainView):
         min_x = min([obj.x_position for obj in objects]) * self.block_length
         min_y = min([obj.y_position for obj in objects]) * self.block_length
 
-        self.parent().parent().ensureVisible(min_x, min_y)
+        # not great, not terrible
+        cast(QScrollArea, self.parent().parent()).ensureVisible(min_x, min_y)
 
     def level_safe_to_save(self) -> tuple[bool, str, str]:
         is_safe = True

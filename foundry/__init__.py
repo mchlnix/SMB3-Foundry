@@ -3,11 +3,11 @@ import urllib.error
 import urllib.request
 from functools import lru_cache
 from pathlib import Path
-from typing import Union
+from typing import Union, cast
 
 from PySide6.QtCore import QBuffer, QIODevice, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon, Qt
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QWidget
 
 from foundry.gui.settings import Settings
 from smb3parse.objects.object_set import DESERT_OBJECT_SET
@@ -42,6 +42,9 @@ ROM_FILE_FILTER = "ROM files (*.nes *.rom);;All files (*)"
 M3L_FILE_FILTER = "M3L files (*.m3l);;All files (*)"
 ASM_FILE_FILTER = "ASM files (*.asm);;All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
+
+
+NO_PARENT = cast(QWidget, None)
 
 
 def ctrl_is_pressed():

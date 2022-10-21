@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Union
 
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
-from foundry import ASM_FILE_FILTER
+from foundry import ASM_FILE_FILTER, NO_PARENT
 from foundry.gui.ObjectSetSelector import ObjectSetSelector
 
 if TYPE_CHECKING:
@@ -23,7 +23,7 @@ def asm_to_bytes(asm: str) -> bytearray:
 
         if ".word" in stripped_line:
             QMessageBox.warning(
-                None,
+                NO_PARENT,
                 "Parsing Error",
                 f"Cannot parse '{stripped_line}'. Probably an unknown offset, you'll have to set in the level header. "
                 f"Using 0x0000 as value for now.",
@@ -39,7 +39,7 @@ def asm_to_bytes(asm: str) -> bytearray:
             bytes_in_line = bytearray([_parse_macros_in_line(stripped_line)])
 
         else:
-            bytes_in_line = [int(byte, 16) for byte in stripped_line.replace(", ", "").split("$")[1:]]
+            bytes_in_line = bytearray([int(byte, 16) for byte in stripped_line.replace(", ", "").split("$")[1:]])
 
         ret.extend(bytes_in_line)
 
@@ -74,7 +74,7 @@ def bytes_to_asm(data: Union[bytearray, int]) -> str:
 
 def load_asm_filename(what: str, default_path=""):
     pathname, _ = QFileDialog.getOpenFileName(
-        None, caption=f"Open {what} file", dir=default_path, filter=ASM_FILE_FILTER
+        NO_PARENT, caption=f"Open {what} file", dir=default_path, filter=ASM_FILE_FILTER
     )
 
     return pathname
@@ -82,7 +82,7 @@ def load_asm_filename(what: str, default_path=""):
 
 def save_asm_filename(what: str, default_path=""):
     pathname, _ = QFileDialog.getSaveFileName(
-        None,
+        NO_PARENT,
         caption=f"Save {what} as",
         dir=default_path,
         filter=ASM_FILE_FILTER,
@@ -96,7 +96,7 @@ def load_asm_level(pathname: PathLike, level: "Level"):
         with open(pathname, "r") as asm_file:
             asm_level_data = asm_file.read()
     except IOError as exp:
-        QMessageBox.critical(None, type(exp).__name__, f"Cannot open file '{pathname}'.")
+        QMessageBox.critical(NO_PARENT, type(exp).__name__, f"Cannot open file '{pathname}'.")
         return
 
     object_set = ObjectSetSelector.get_object_set()
@@ -108,7 +108,7 @@ def load_asm_level(pathname: PathLike, level: "Level"):
     try:
         level.from_asm(object_set, asm_to_bytes(asm_level_data))
     except ValueError as ve:
-        QMessageBox.critical(None, type(ve).__name__, str(ve))
+        QMessageBox.critical(NO_PARENT, type(ve).__name__, str(ve))
         return
 
     level.name = Path(pathname).stem
@@ -119,7 +119,7 @@ def load_asm_enemy(pathname: PathLike, level: "Level"):
         with open(pathname, "r") as asm_file:
             asm_enemy_data = asm_file.read()
     except IOError as exp:
-        QMessageBox.warning(None, type(exp).__name__, f"Cannot open file '{pathname}'.")
+        QMessageBox.warning(NO_PARENT, type(exp).__name__, f"Cannot open file '{pathname}'.")
         return
 
     _, (__, current_enemy_bytes) = level.to_bytes()
@@ -134,7 +134,7 @@ def save_asm(what: str, pathname: PathLike, asm_data: str):
         with open(pathname, "w") as asm_file:
             asm_file.write(asm_data)
     except IOError as exp:
-        QMessageBox.warning(None, type(exp).__name__, f"Couldn't save {what} to '{pathname}'.")
+        QMessageBox.warning(NO_PARENT, type(exp).__name__, f"Couldn't save {what} to '{pathname}'.")
 
 
 # taken from https://github.com/captainsouthbird/smb3/blob/b900ac59622f58a2266b30a32acc700e89415e83/smb3.asm#L3025
