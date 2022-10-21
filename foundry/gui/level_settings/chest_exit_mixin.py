@@ -4,6 +4,7 @@ from PySide6.QtGui import QMouseEvent, QPixmap
 from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QVBoxLayout
 
 from foundry.game.gfx.objects import EnemyItem
+from foundry.game.gfx.objects.world_map.sprite import MAP_ITEM_SPRITES
 from foundry.game.level.Level import Level
 from foundry.gui import label_and_widget
 from foundry.gui.commands import AddObject, MoveObjects, RemoveObjects
@@ -12,7 +13,6 @@ from smb3parse.constants import (
     MAPITEM_MUSHROOM,
     MAPITEM_MUSICBOX,
     MAPITEM_NAMES,
-    MAP_ITEM_SPRITES,
     OBJ_CHEST_EXIT,
     OBJ_CHEST_ITEM_SETTER,
 )

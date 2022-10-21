@@ -3,8 +3,6 @@
 from py65.devices import mpu6502
 from py65.disassembler import Disassembler
 
-# FIXME remove the foundry import
-from foundry.game.ObjectSet import ObjectSet
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, PAGE_C000_ByTileset
 from smb3parse.data_points import Position
 from smb3parse.util.parser import (
@@ -136,21 +134,7 @@ class NesCPU(mpu6502.MPU):
 
                 optional_byte = hex(self.memory[parsed_object.pos_in_mem + 3])
 
-                domain_offset = parsed_object.domain * 0x1F
-
-                if parsed_object.is_fixed:
-                    obj_type = parsed_object.obj_id + domain_offset
-                else:
-                    obj_type = (parsed_object.obj_id >> 4) + domain_offset + 16 - 1
-
-                object_set_num = self.memory[MEM_Level_TileSet]
-
-                name = ObjectSet(object_set_num).get_definition_of(obj_type).description.replace("/", "_")
-
-                print(
-                    f"---> Parsing Object from {hex(parsed_object.pos_in_mem)}, "
-                    f"'{name}' {object_bytes_text} ({optional_byte})"
-                )
+                print(f"--> Parsing Object from {hex(parsed_object.pos_in_mem)}, {object_bytes_text} ({optional_byte})")
 
         elif self.pc == ROM_EndObjectParsing:
             self._maybe_finish_parsing_last_object()

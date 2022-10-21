@@ -3,10 +3,11 @@ import typing
 from PySide6.QtGui import QDropEvent, QPixmap
 from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
+from foundry.game.gfx.objects.world_map.sprite import MAP_ITEM_SPRITES, MAP_OBJ_SPRITES
 from foundry.game.level.LevelRef import LevelRef
 from scribe.gui.commands import ChangeSpriteIndex, SetSpriteItem, SetSpriteType
 from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, TableWidget
-from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, MAP_ITEM_SPRITES, MAP_OBJ_SPRITES
+from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES
 from smb3parse.levels import FIRST_VALID_ROW
 
 

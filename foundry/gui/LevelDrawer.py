@@ -13,10 +13,11 @@ from foundry.game.gfx.objects import (
     EnemyItem,
     LevelObject,
 )
+from foundry.game.gfx.objects.world_map.sprite import EMPTY_IMAGE
 from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
 from foundry.gui.settings import Settings
-from smb3parse.constants import EMPTY_IMAGE, OBJ_AUTOSCROLL, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER, OBJ_PIPE_EXITS
+from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER, OBJ_PIPE_EXITS
 from smb3parse.levels import (
     LEVEL_MAX_LENGTH,
     LEVEL_SCREEN_HEIGHT,
