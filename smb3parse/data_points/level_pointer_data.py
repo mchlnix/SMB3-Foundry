@@ -69,7 +69,7 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
 
     @property
     def object_set_offset(self):
-        return (self._rom.int(OFFSET_BY_OBJECT_SET_A000 + self.object_set) * OFFSET_SIZE - 10) * 0x1000
+        return self._rom.int(OFFSET_BY_OBJECT_SET_A000 + self.object_set) * 0x2000 - 0xA000
 
     def read_values(self):
         self.screen, self.x = self._rom.nibbles(self.screen_address)
