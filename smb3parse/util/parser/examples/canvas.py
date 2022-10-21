@@ -1,16 +1,12 @@
-import pathlib
-
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QMouseEvent, QPainter
-from PySide6.QtWidgets import QApplication, QWidget
+from PySide6.QtWidgets import QWidget
 
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
-from smb3parse.data_points import Position
 from smb3parse.levels import LEVEL_SCREEN_WIDTH
-from smb3parse.util.parser.cpu import NesCPU
 from smb3parse.util.parser.level import ParsedLevel
 
 width = LEVEL_SCREEN_WIDTH * 15
@@ -61,22 +57,3 @@ class Canvas(QWidget):
                 if pos_in_mem == index:
                     print("Hit", str(level_object))
                     return
-
-
-if __name__ == "__main__":
-    rom = ROM("SMB3.nes")
-
-    mpu = NesCPU(rom)
-
-    # parse 1-1
-    parsed_level = mpu.load_from_world_map(0, Position(4, 2, 0))
-
-    print("\n".join(map(str, parsed_level.parsed_objects)))
-
-    pathlib.Path("/tmp/memory.bin").write_bytes(bytes(mpu.memory[0x6000:0x7950]))
-
-    app = QApplication()
-
-    canvas = Canvas(parsed_level)
-
-    app.exec()

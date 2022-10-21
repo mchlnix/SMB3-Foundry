@@ -1,3 +1,6 @@
+MEM_LevelStartA = 0x61
+MEM_LevelStartB = 0x62
+
 MEM_Player_Y = 0x0075
 MEM_Player_Screen = 0x0077
 MEM_Player_X = 0x0079
@@ -21,8 +24,9 @@ MEM_Graphics_Set = 0x7EBD
 MEM_Screen_Start_AddressL = 0x8000
 MEM_Screen_Start_AddressH = 0x8001
 
-ROM_Level_Load_Entry = 0x891A
+ROM_Level_Load_Entry = 0x891A  # From World Map Position
 ROM_EndObjectParsing = 0x9934
+ROM_LevelLoad_By_TileSet = 0x9A1D  # Directly By Address
 
 
 MEM_ADDRESS_LABELS = {

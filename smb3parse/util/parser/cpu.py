@@ -7,11 +7,14 @@ from py65.disassembler import Disassembler
 
 # FIXME remove the foundry import
 from foundry.game.ObjectSet import ObjectSet
+from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, PAGE_C000_ByTileset
 from smb3parse.data_points import Position
 from smb3parse.util.parser import (
     MEM_ADDRESS_LABELS,
     MEM_Enemy_Palette,
     MEM_Graphics_Set,
+    MEM_LevelStartA,
+    MEM_LevelStartB,
     MEM_Level_TileSet,
     MEM_Object_Palette,
     MEM_PAGE_A000,
@@ -25,6 +28,7 @@ from smb3parse.util.parser import (
     MEM_Screen_Memory_Start,
     MEM_World_Num,
     ROM_EndObjectParsing,
+    ROM_LevelLoad_By_TileSet,
     ROM_Level_Load_Entry,
 )
 from smb3parse.util.parser.level import ParsedLevel
@@ -64,7 +68,6 @@ class NesCPU(mpu6502.MPU):
 
     def load_from_world_map(self, world: int, pos: Position) -> ParsedLevel:
         self.start_pc = ROM_Level_Load_Entry
-        self.reset()
 
         self.memory[MEM_Player_Current] = 0  # Mario
         self.memory[MEM_World_Num] = world
@@ -73,10 +76,32 @@ class NesCPU(mpu6502.MPU):
         self.memory[MEM_Player_X] = pos.x << 4
         self.memory[MEM_Player_Y] = pos.y << 4
 
+        return self._load_level()
+
+    def load_from_address(self, object_set_num: int, level_address: int, _enemy_address: int) -> ParsedLevel:
+        self.start_pc = ROM_LevelLoad_By_TileSet
+
+        object_set_offset = self.rom.int(PAGE_A000_ByTileset + object_set_num) * 0x2000 - 0xA000
+        level_offset = level_address - object_set_offset - BASE_OFFSET
+
+        self.memory[MEM_Level_TileSet] = object_set_num
+        self.memory[MEM_LevelStartA] = level_offset & 0xFF
+        self.memory[MEM_LevelStartB] = level_offset >> 8
+
+        self.memory[MEM_PAGE_A000] = self.a000_bank = self.rom.int(PAGE_A000_ByTileset + object_set_num)
+        self.memory[MEM_PAGE_C000] = self.c000_bank = self.rom.int(PAGE_C000_ByTileset + object_set_num)
+
+        self.memory.load_a000_page(self.a000_bank)
+        self.memory.load_c000_page(self.c000_bank)
+
+        return self._load_level()
+
+    def _load_level(self) -> ParsedLevel:
         self.memory.add_write_observer(
             list(range(MEM_Screen_Memory_Start, MEM_Screen_Memory_End)), self._screen_memory_watcher
         )
 
+        self.reset()
         self.run_until(ROM_EndObjectParsing)
 
         return ParsedLevel(
@@ -137,10 +162,12 @@ class NesCPU(mpu6502.MPU):
             # breakpoint()
             pass
         elif self.pc == 0xFF4E:
-            breakpoint()
+            # breakpoint()
+            pass
 
         if not self.should_log:
-            return super(NesCPU, self).step()
+            super(NesCPU, self).step()
+            return
 
         ins_len, op = self.dis_asm.instruction_at(self.pc)
 
@@ -185,7 +212,7 @@ class NesCPU(mpu6502.MPU):
         level_pointer = (self.memory[0x62] << 8) + self.memory[0x61]
         obj_len = level_pointer - cur_parsed_object.pos_in_mem
 
-        assert obj_len in [3, 4]
+        assert obj_len in [3, 4], (obj_len, cur_parsed_object)
 
         if obj_len == 4:
             cur_parsed_object.obj_bytes.append(self.memory[level_pointer - 1])
