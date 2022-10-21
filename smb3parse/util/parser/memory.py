@@ -11,8 +11,8 @@ class NESMemory(list):
 
         self.rom = rom
 
-        self._read_observers: dict[tuple[int, ...], Callable] = {}
-        self._write_observers: dict[tuple[int, ...], Callable] = {}
+        self._read_observers: dict[range, Callable] = {}
+        self._write_observers: dict[range, Callable] = {}
 
         # load PRG 30
         self._load_bank(30, 0x8000)
@@ -31,11 +31,11 @@ class NESMemory(list):
 
         self[offset : offset + PRG_BANK_SIZE] = self.rom.read(prg_bank_position, PRG_BANK_SIZE)
 
-    def add_read_observer(self, address_list: list[int], callback: Callable):
-        self._read_observers[tuple(address_list)] = callback
+    def add_read_observer(self, address_range: range, callback: Callable):
+        self._read_observers[address_range] = callback
 
-    def add_write_observer(self, address_list: list[int], callback: Callable):
-        self._write_observers[tuple(address_list)] = callback
+    def add_write_observer(self, address_range: range, callback: Callable):
+        self._write_observers[address_range] = callback
 
     def __getitem__(self, address):
         if address == 0x10:

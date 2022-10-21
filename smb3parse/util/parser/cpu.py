@@ -1,7 +1,5 @@
 """First draft of a parser, emulating the 6502 processor of the NES and letting the ROM generate the level."""
 
-import pathlib
-
 from py65.devices import mpu6502
 from py65.disassembler import Disassembler
 
@@ -98,7 +96,7 @@ class NesCPU(mpu6502.MPU):
 
     def _load_level(self) -> ParsedLevel:
         self.memory.add_write_observer(
-            list(range(MEM_Screen_Memory_Start, MEM_Screen_Memory_End)), self._screen_memory_watcher
+            range(MEM_Screen_Memory_Start, MEM_Screen_Memory_End), self._screen_memory_watcher
         )
 
         self.reset()
@@ -133,27 +131,26 @@ class NesCPU(mpu6502.MPU):
             self._maybe_finish_parsing_last_object()
             parsed_object = self._start_parsing_next_object()
 
-            object_bytes_text = list(map(hex, parsed_object.obj_bytes))
+            if self.should_log:
+                object_bytes_text = list(map(hex, parsed_object.obj_bytes))
 
-            optional_byte = hex(self.memory[parsed_object.pos_in_mem + 3])
+                optional_byte = hex(self.memory[parsed_object.pos_in_mem + 3])
 
-            domain_offset = parsed_object.domain * 0x1F
+                domain_offset = parsed_object.domain * 0x1F
 
-            if parsed_object.is_fixed:
-                obj_type = parsed_object.obj_id + domain_offset
-            else:
-                obj_type = (parsed_object.obj_id >> 4) + domain_offset + 16 - 1
+                if parsed_object.is_fixed:
+                    obj_type = parsed_object.obj_id + domain_offset
+                else:
+                    obj_type = (parsed_object.obj_id >> 4) + domain_offset + 16 - 1
 
-            object_set_num = self.memory[MEM_Level_TileSet]
+                object_set_num = self.memory[MEM_Level_TileSet]
 
-            name = ObjectSet(object_set_num).get_definition_of(obj_type).description.replace("/", "_")
+                name = ObjectSet(object_set_num).get_definition_of(obj_type).description.replace("/", "_")
 
-            print(
-                f"---> Parsing Object from {hex(parsed_object.pos_in_mem)}, "
-                f"'{name}' {object_bytes_text} ({optional_byte})"
-            )
-
-            pathlib.Path(f"/tmp/memory_{self.step_count}_{name}.bin").write_bytes(bytes(self.memory))
+                print(
+                    f"---> Parsing Object from {hex(parsed_object.pos_in_mem)}, "
+                    f"'{name}' {object_bytes_text} ({optional_byte})"
+                )
 
         elif self.pc == ROM_EndObjectParsing:
             self._maybe_finish_parsing_last_object()

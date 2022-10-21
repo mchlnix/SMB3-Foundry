@@ -1,4 +1,4 @@
-import pathlib
+# import pathlib
 
 from PySide6.QtWidgets import QApplication
 
@@ -10,14 +10,16 @@ from smb3parse.util.parser.examples.canvas import Canvas
 if __name__ == "__main__":
     rom = ROM("SMB3.nes")
 
-    mpu = NesCPU(rom, True)
+    mpu = NesCPU(rom)
 
     # parse 1-1
     parsed_level = mpu.load_from_address(PLAINS_OBJECT_SET, 0x1FB92, 0xC537)
 
-    print("\n".join(map(str, parsed_level.parsed_objects)))
+    quit()
 
-    pathlib.Path("/tmp/memory.bin").write_bytes(bytes(mpu.memory[0x6000:0x7950]))
+    # print("\n".join(map(str, parsed_level.parsed_objects)))
+
+    # pathlib.Path("/tmp/memory.bin").write_bytes(bytes(mpu.memory[0x6000:0x7950]))
 
     app = QApplication()
 
