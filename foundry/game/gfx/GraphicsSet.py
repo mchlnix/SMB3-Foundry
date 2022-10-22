@@ -90,7 +90,14 @@ class GraphicsSet:
             elif graphic_set_number == VS_2P:
                 segments.extend([0x04, 0x05, 0x06, 0x07])
             else:
-                segments.extend([0x00, 0x00, 0x00, 0x00])
+                segments.extend(
+                    [
+                        common_index + 2,
+                        common_index + 4,
+                        common_index + 6,
+                        common_index + 8,
+                    ]
+                )
 
         self._read_in(segments)
 
@@ -99,7 +106,14 @@ class GraphicsSet:
         if self.number == WORLD_MAP:
             return self._anim_data[self.anim_frame] + self._data
         else:
-            return self._data
+            page_1 = self._data[0 : 2 * CHR_ROM_SEGMENT_SIZE]
+
+            start = 2 * CHR_ROM_SEGMENT_SIZE + self.anim_frame * 2 * CHR_ROM_SEGMENT_SIZE
+            end = 2 * CHR_ROM_SEGMENT_SIZE + start + 2 * CHR_ROM_SEGMENT_SIZE
+
+            page_2 = self._data[start:end]
+
+            return page_1 + page_2
 
     def _read_in(self, segments):
         for segment in segments:
