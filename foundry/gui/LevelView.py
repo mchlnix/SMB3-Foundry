@@ -1,12 +1,13 @@
 from bisect import bisect_right
 from typing import Optional, cast
 
-from PySide6.QtCore import QPoint, QSize
+from PySide6.QtCore import QPoint, QSize, QTimer
 from PySide6.QtGui import QMouseEvent, QUndoStack, QWheelEvent, Qt
 from PySide6.QtWidgets import QScrollArea, QToolTip, QWidget
 
 from foundry import ctrl_is_pressed
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
+from foundry.game.gfx.drawable.Block import get_tile
 from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level
@@ -34,8 +35,13 @@ class LevelView(MainView):
         self, parent: Optional[QWidget], level: LevelRef, settings: Settings, context_menu: Optional[LevelContextMenu]
     ):
         self.drawer = LevelDrawer()
+        self.redraw_timer: Optional[QTimer] = None
 
         super(LevelView, self).__init__(parent, level, settings, context_menu)
+
+        level.palette_changed.connect(self.update_anim_timer)
+        level.level_changed.connect(self.update_anim_timer)
+        self.update_anim_timer()
 
         self.mouse_mode = MODE_FREE
 
@@ -67,6 +73,28 @@ class LevelView(MainView):
     @property
     def undo_stack(self) -> QUndoStack:
         return cast(QUndoStack, self.window().findChild(QUndoStack, "undo_stack"))
+
+    def next_anim_step(self):
+        self.drawer.anim_frame += 1
+        self.drawer.anim_frame %= 4
+        get_tile.cache_clear()
+
+        self.repaint()
+
+    def update_anim_timer(self):
+        if not self.level_ref:
+            return
+
+        if self.redraw_timer is not None:
+            self.redraw_timer.stop()
+            self.drawer.anim_frame = 0
+            get_tile.cache_clear()
+
+        if self.settings.value("level view/block_animation"):
+            self.redraw_timer = QTimer(self)
+            self.redraw_timer.setInterval(120)
+            self.redraw_timer.timeout.connect(self.next_anim_step)
+            self.redraw_timer.start()
 
     def sizeHint(self) -> QSize:
         if self.level_ref.level is None:

@@ -51,6 +51,10 @@ class ViewMenu(QMenu):
 
         self.addSeparator()
 
+        self._anim_action = self.addAction("Show Block Animation")
+        self._anim_action.setCheckable(True)
+        self._anim_action.setChecked(self.settings.value("level view/block_animation"))
+
         self._trans_action = self.addAction("&Block Transparency")
         self._trans_action.setCheckable(True)
         self._trans_action.setChecked(self.settings.value("level view/block_transparency"))
@@ -72,6 +76,9 @@ class ViewMenu(QMenu):
 
         if action is self._grid_action:
             self.settings.setValue("level view/draw_grid", checked)
+        elif action is self._anim_action:
+            self.settings.setValue("level view/block_animation", checked)
+            self._level_view.update_anim_timer()
         elif action is self._trans_action:
             self.settings.setValue("level view/block_transparency", checked)
         elif action is self._jump_zones_action:

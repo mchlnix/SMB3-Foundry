@@ -1,11 +1,11 @@
-from PySide6.QtCore import QPointF
+from PySide6.QtCore import QPointF, QTimer
 from PySide6.QtGui import QMouseEvent, QPainter
 from PySide6.QtWidgets import QWidget
 
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
-from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.game.gfx.drawable.Block import Block, get_block, get_tile
 from smb3parse.levels import LEVEL_SCREEN_WIDTH
 from smb3parse.util.parser.level import ParsedLevel
 
@@ -19,6 +19,12 @@ class Canvas(QWidget):
 
         self.level = level
 
+        self.timer = QTimer()
+        self.timer.setInterval(120)
+        self.timer.timeout.connect(self.anim_timer)  # type: ignore
+
+        self.timer.start()
+
         self.palette_group = load_palette_group(level.object_set_num, level.object_palette_num)
         self.gfx_set = GraphicsSet(level.graphics_set_num)
         self.tsa_data = ROM.get_tsa_data(level.object_set_num)
@@ -26,6 +32,13 @@ class Canvas(QWidget):
         self.setFixedSize(width * Block.SIDE_LENGTH, height * Block.SIDE_LENGTH)
 
         self.show()
+
+    def anim_timer(self):
+        self.gfx_set.anim_frame += 1
+        self.gfx_set.anim_frame %= 4
+        get_tile.cache_clear()
+
+        self.repaint()
 
     def paintEvent(self, event) -> None:
         painter = QPainter(self)

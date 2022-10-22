@@ -34,6 +34,7 @@ SETTINGS["level view/draw_items_in_blocks"] = True
 SETTINGS["level view/draw_invisible_items"] = True
 SETTINGS["level view/draw_autoscroll"] = False
 SETTINGS["level view/block_transparency"] = True
+SETTINGS["level view/block_animation"] = True
 SETTINGS["level view/special_background"] = True
 SETTINGS["level view/object_tooltip_enabled"] = True
 

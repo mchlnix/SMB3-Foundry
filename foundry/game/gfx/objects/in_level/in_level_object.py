@@ -20,6 +20,8 @@ class InLevelObject(ObjectLike, abc.ABC):
 
     rendered_width: int
 
+    anim_frame: int = 0
+
     def __init__(self):
         super(InLevelObject, self).__init__()
 

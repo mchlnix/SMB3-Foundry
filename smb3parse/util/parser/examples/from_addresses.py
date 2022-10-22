@@ -15,8 +15,6 @@ if __name__ == "__main__":
     # parse 1-1
     parsed_level = mpu.load_from_address(PLAINS_OBJECT_SET, 0x1FB92, 0xC537)
 
-    quit()
-
     # print("\n".join(map(str, parsed_level.parsed_objects)))
 
     # pathlib.Path("/tmp/memory.bin").write_bytes(bytes(mpu.memory[0x6000:0x7950]))

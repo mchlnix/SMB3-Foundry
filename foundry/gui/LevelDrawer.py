@@ -86,6 +86,7 @@ class LevelDrawer:
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 1)
 
         self.settings = Settings("mchlnix", "level drawer")
+        self.anim_frame = 0
 
     def draw(self, painter: QPainter, level: Level):
         self._draw_background(painter, level)
@@ -136,12 +137,14 @@ class LevelDrawer:
         bg_block = _block_from_index(140, level)
 
         for x, y in product(range(level.width), range(level.height)):
+            bg_block.graphics_set.anim_frame = self.anim_frame
             bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
 
         # draw ceiling
         ceiling_block = _block_from_index(139, level)
 
         for x in range(level.width):
+            ceiling_block.graphics_set.anim_frame = self.anim_frame
             ceiling_block.draw(painter, x * self.block_length, 0, self.block_length)
 
         # draw floor
@@ -155,7 +158,9 @@ class LevelDrawer:
             pixel_x = block_x * self.block_length
 
             upper_floor_blocks[block_x % 2].draw(painter, pixel_x, upper_y, self.block_length)
+            upper_floor_blocks[block_x % 2].graphics_set.anim_frame = self.anim_frame
             lower_floor_blocks[block_x % 2].draw(painter, pixel_x, lower_y, self.block_length)
+            lower_floor_blocks[block_x % 2].graphics_set.anim_frame = self.anim_frame
 
     def _draw_desert_default_graphics(self, painter: QPainter, level: Level):
         floor_level = (GROUND - 1) * self.block_length
@@ -164,12 +169,14 @@ class LevelDrawer:
         floor_block = _block_from_index(floor_block_index, level)
 
         for x in range(level.width):
+            floor_block.graphics_set.anim_frame = self.anim_frame
             floor_block.draw(painter, x * self.block_length, floor_level, self.block_length)
 
     def _draw_ice_default_graphics(self, painter: QPainter, level: Level):
         bg_block = _block_from_index(0x80, level)
 
         for x, y in product(range(level.width), range(level.height)):
+            bg_block.graphics_set.anim_frame = self.anim_frame
             bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
 
     def _draw_objects(self, painter: QPainter, level: Level):
@@ -193,6 +200,7 @@ class LevelDrawer:
 
                     level_object._draw_block(painter, block_index, x, y, self.block_length, False)
             else:
+                level_object.anim_frame = self.anim_frame
                 level_object.draw(painter, self.block_length, self.settings.value("level view/block_transparency"))
 
             if level_object.selected:

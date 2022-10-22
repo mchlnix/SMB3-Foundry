@@ -715,6 +715,7 @@ class LevelObject(InLevelObject):
         if block_index not in self.block_cache:
             self.block_cache[block_index] = get_block(block_index, self.palette_group, self.graphics_set, self.tsa_data)
 
+        self.block_cache[block_index].graphics_set.anim_frame = self.anim_frame
         self.block_cache[block_index].draw(
             painter,
             x * block_length,
