@@ -49,7 +49,6 @@ GRAPHIC_SET_NAMES = [
 ]
 
 
-@lru_cache(32)
 class GraphicsSet:
     GRAPHIC_SET_BG_PAGE_1 = bytearray()
     GRAPHIC_SET_BG_PAGE_2 = bytearray()
@@ -124,3 +123,8 @@ class GraphicsSet:
         chr_rom_data = ROM().bulk_read(2 * CHR_ROM_SEGMENT_SIZE, offset)
 
         data.extend(chr_rom_data)
+
+    @staticmethod
+    @lru_cache(32)
+    def from_number(graphic_set_number: int) -> "GraphicsSet":
+        return GraphicsSet(graphic_set_number)

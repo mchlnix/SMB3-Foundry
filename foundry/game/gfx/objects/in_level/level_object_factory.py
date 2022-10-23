@@ -36,7 +36,7 @@ class LevelObjectFactory:
 
     def set_graphic_set(self, graphic_set: int):
         self.graphic_set = graphic_set
-        self.graphics_set = GraphicsSet(self.graphic_set)
+        self.graphics_set = GraphicsSet.from_number(self.graphic_set)
 
     def set_palette_group_index(self, palette_group_index: int):
         self.palette_group_index = palette_group_index

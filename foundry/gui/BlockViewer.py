@@ -182,7 +182,7 @@ class BlockBank(QWidget):
 
         painter.drawRect(QRect(QPoint(0, 0), self.size()))
 
-        graphics_set = GraphicsSet(self.object_set)
+        graphics_set = GraphicsSet.from_number(self.object_set)
 
         palette = load_palette_group(self.object_set, self.palette_group_index)
         tsa_data = ROM.get_tsa_data(self.object_set)

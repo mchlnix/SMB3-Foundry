@@ -72,7 +72,7 @@ def _block_from_index(block_index: int, level: Level) -> Block:
     """
 
     palette_group = load_palette_group(level.object_set_number, level.header.object_palette_index)
-    graphics_set = GraphicsSet(level.header.graphic_set_index)
+    graphics_set = GraphicsSet.from_number(level.header.graphic_set_index)
     tsa_data = ROM().get_tsa_data(level.object_set_number)
 
     return Block(block_index, palette_group, graphics_set, tsa_data)

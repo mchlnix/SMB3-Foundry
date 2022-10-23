@@ -26,7 +26,7 @@ class Canvas(QWidget):
         self.timer.start()
 
         self.palette_group = load_palette_group(level.object_set_num, level.object_palette_num)
-        self.gfx_set = GraphicsSet(level.graphics_set_num)
+        self.gfx_set = GraphicsSet.from_number(level.graphics_set_num)
         self.tsa_data = ROM.get_tsa_data(level.object_set_num)
 
         self.setFixedSize(width * Block.SIDE_LENGTH, height * Block.SIDE_LENGTH)

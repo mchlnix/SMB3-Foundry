@@ -10,6 +10,9 @@ from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QSc
 
 from foundry import ROM_FILE_FILTER, icon
 from foundry.game.File import ROM
+from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import restore_all_palettes
+from foundry.game.gfx.drawable.Block import get_block, get_tile
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
@@ -314,6 +317,10 @@ class ScribeMainWindow(MainWindow):
         # Proceed loading the file chosen by the user
         try:
             ROM.load_from_file(path_to_rom)
+            get_block.cache_clear()
+            get_tile.cache_clear()
+            GraphicsSet.from_number.cache_clear()
+            restore_all_palettes()
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
             return

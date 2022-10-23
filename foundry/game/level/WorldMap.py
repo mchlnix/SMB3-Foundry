@@ -41,7 +41,7 @@ class WorldMap(LevelLike):
         self.name = f"World {self.data.index + 1} - Overworld"
         self._signal_emitter = WorldSignaller()
 
-        self.graphics_set = GraphicsSet(OVERWORLD_GRAPHIC_SET)
+        self.graphics_set = GraphicsSet.from_number(OVERWORLD_GRAPHIC_SET)
         self.palette_group = load_palette_group(WORLD_MAP_OBJECT_SET, self.data.palette_index)
 
         self.object_set = WORLD_MAP_OBJECT_SET
