@@ -10,7 +10,7 @@ from smb3parse.util.parser.examples.canvas import Canvas
 if __name__ == "__main__":
     rom = ROM("SMB3.nes")
 
-    mpu = NesCPU(rom)
+    mpu = NesCPU(rom, True)
 
     # parse 1-1
     parsed_level = mpu.load_from_world_map(0, Position(4, 2, 0))

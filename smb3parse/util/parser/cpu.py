@@ -193,7 +193,10 @@ class NesCPU(mpu6502.MPU):
         level_pointer = (self.memory[0x62] << 8) + self.memory[0x61]
         obj_len = level_pointer - cur_parsed_object.pos_in_mem
 
-        assert obj_len in [3, 4], (obj_len, cur_parsed_object)
+        assert obj_len in [0, 3, 4], (obj_len, cur_parsed_object)
+
+        if obj_len == 0:
+            self.objects.pop()
 
         if obj_len == 4:
             cur_parsed_object.obj_bytes.append(self.memory[level_pointer - 1])

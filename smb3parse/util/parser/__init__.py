@@ -70,6 +70,7 @@ MEM_ADDRESS_LABELS = {
     "9A1D": "LevelLoad By TileSet",
     "9A49": "LeveLoad_DynSizeGens",
     "9A75": "LeveLoad_FixedSizeGens",
+    "9B73": "Scroll_Update",
     "B0FF": "Map PrepareLevel",
     "D2F8": "LL_RunGroundTopTiles",
     "D2FE": "LL_RunGroundMidTiles",
