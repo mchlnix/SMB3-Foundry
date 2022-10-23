@@ -294,6 +294,8 @@ class HeaderEditor(CustomDialog):
 
         self.undo_stack.endMacro()
 
+        self.update()
+
     def on_spin(self, new_value):
         if self.level is None or self.signalsBlocked():
             return
