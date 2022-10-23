@@ -17,8 +17,6 @@ Foundry
 
 - Set jump destination from location doesn't update the byte preview
 
-- Reset scroll on level change
-
 Scribe
 ------
 - Export all world data into a file and enable importing it back into a rom (not just the layout, like m3l)

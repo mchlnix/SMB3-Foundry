@@ -967,6 +967,8 @@ class FoundryMainWindow(MainWindow):
     def update_level(self, level_name: str, object_data_offset: int, enemy_data_offset: int, object_set: int):
         try:
             self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
+            self.scroll_panel.horizontalScrollBar().setValue(0)
+            self.scroll_panel.verticalScrollBar().setValue(0)
         except IndexError:
             QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
             return
