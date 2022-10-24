@@ -105,6 +105,7 @@ class GraphicsSet:
         if self.number == WORLD_MAP:
             return self._anim_data[self.anim_frame] + self._data
         else:
+            # cycle through the second page containing the animated tiles for level objects
             page_1 = self._data[0 : 2 * CHR_ROM_SEGMENT_SIZE]
 
             start = 2 * CHR_ROM_SEGMENT_SIZE + self.anim_frame * 2 * CHR_ROM_SEGMENT_SIZE
@@ -118,7 +119,8 @@ class GraphicsSet:
         for segment in segments:
             self._read_in_chr_rom_segment(segment, self._data)
 
-    def _read_in_chr_rom_segment(self, index, data):
+    @staticmethod
+    def _read_in_chr_rom_segment(index, data):
         offset = CHR_ROM_OFFSET + index * CHR_ROM_SEGMENT_SIZE
         chr_rom_data = ROM().bulk_read(2 * CHR_ROM_SEGMENT_SIZE, offset)
 
