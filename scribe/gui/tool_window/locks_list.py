@@ -10,6 +10,7 @@ from foundry.gui.BlockViewer import BlockBank
 from foundry.gui.Spinner import Spinner
 from scribe.gui.commands import ChangeLockIndex, ChangeReplacementTile
 from scribe.gui.tool_window.table_widget import DialogDelegate, SpinBoxDelegate, TableWidget
+from smb3parse.constants import FORTRESS_FX_COUNT
 
 
 class LocksList(TableWidget):
@@ -23,7 +24,7 @@ class LocksList(TableWidget):
         self.set_headers(["Replacement Tile", "Lock Index", "Boom Boom Y Positions", "Map Position"])
 
         self.setItemDelegateForColumn(0, BlockBankDelegate(self))
-        self.setItemDelegateForColumn(1, SpinBoxDelegate(self))
+        self.setItemDelegateForColumn(1, SpinBoxDelegate(self, maximum=FORTRESS_FX_COUNT - 1))
         self.setItemDelegateForColumn(2, NoneDelegate(self))
         self.setItemDelegateForColumn(
             3,
