@@ -12,12 +12,31 @@ from smb3parse.util.rom import Rom
 
 @dataclass
 class Position:
+    """
+    Describes the Position of something either in a Level, or on a World Map.
+
+    Since both screens in levels and on maps are 16 Blocks wide, the screen attribute can safely be used for both.
+    """
+
     x: int
     y: int
+    """
+    When the position is use for a World Map Tile, it also counts the border around it. So the first Map Tile of the
+    World Map Layout would be at x=0, y=2.
+    """
+
     screen: int
+    """
+    Describes the 16 block wide section of Tiles of a World Map, or Objects in a Level. Which screen the player is on
+    matters in both contexts, which is why it is necessary to keep track of it.
+    """
 
     @property
     def tile_data_index(self):
+        """
+        The tile data for a World Map is stored in one long list in memory. Based on the Position data of this object
+        this Property returns the index of the tile at this Position in the memory.
+        """
         return self.screen * WORLD_MAP_SCREEN_SIZE + (self.row - FIRST_VALID_ROW) * WORLD_MAP_SCREEN_WIDTH + self.column
 
     @property
@@ -86,6 +105,12 @@ class Position:
 
 
 class DataPoint:
+    """
+    Describes a collection of data extracted from the ROM and the addresses they were extracted from.
+
+    This enables reading and writing back these values in a unified way.
+    """
+
     def __init__(self, rom: Rom):
         self._rom = rom
 
@@ -93,6 +118,10 @@ class DataPoint:
         self.read_values()
 
     def calculate_addresses(self):
+        """
+        Often times data is accessed, by first finding its position in memory from a lookup table. So first these
+        addresses need to be found, expanded and only then can be read and written to.
+        """
         raise NotImplementedError
 
     def read_values(self):
@@ -104,6 +133,11 @@ class DataPoint:
 
 # TODO change to using position? in the back end or front?
 class _PositionMixin:
+    """
+    Whenever a Datapoint corresponds to an object at a specific position in a Level or on a WorldMap, this Mixin
+    provides easy access to position information.
+    """
+
     def __init__(self, *args, **kwargs):
         self.screen_address = 0x0
         self.screen = 0
@@ -199,6 +233,12 @@ class _PositionMixin:
 
 
 class _IndexedMixin:
+    """
+    Often times Datapoints are stored in lists or lookup tables and accessed through their index in said list or table.
+    Since these indexes might change, and could affect the addresses of its sub-data, changing the index of a Datapoint
+    often makes a recalculation of its addresses necessary.
+    """
+
     index: int
 
     def change_index(self, index: int):

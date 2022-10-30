@@ -38,69 +38,157 @@ from smb3parse.util.rom import Rom
 
 
 class WorldMapData(_IndexedMixin, DataPoint):
+    """
+    This object compiles all information associated with World Maps, like their tile data, palette index, screen count
+    and more.
+    """
+
     def __init__(self, rom: Rom, world_index: int):
         self.index = world_index
 
-        self.tile_data_offset = 0x0
         self.tile_data_offset_address = 0x0
+        self.tile_data_offset = 0x0
+        """The offset into the RAM the tile data for this World Map is located, when its PRG is loaded."""
 
         self.tile_data = bytearray()
+        """
+        All the Tile IDs, that make up the layout of the World Map. Will be a multiple of 16 x 9 tile IDs, depending on
+        how many screens there are.
+        """
 
-        self.bottom_border_tile = 0x0
         self.bottom_border_tile_address = 0x0
+        self.bottom_border_tile = 0x0
+        """The Tile ID, that is used to fill the bottom row of the border around the World Map."""
 
-        self.palette_index = 0
         self.palette_index_address = 0x0
+        self.palette_index = 0
+        """Which color palette should be used with this World Map."""
 
-        self.obj_color_index = 0
         self.obj_color_index_address = 0x0
+        self.obj_color_index = 0
+        """Which color palette should be used for the Overworld Sprites, like Hammer Bros."""
 
-        self.frame_tick_count = 0
         self.frame_tick_count_address = 0
+        self.frame_tick_count = 0
+        """
+        How many ticks each animation frame stays on screen, before switching to the next. The higher this value is, the
+        slower the animated Tiles are changing. 0 means no animation.
+        """
 
-        self.structure_data_offset = 0x0
         self.structure_data_offset_address = 0x0
+        self.structure_data_offset = 0x0
+        """
+        The structure data is a handful of lists for the Level and Sprite Locations and their types and items. All the
+        lists appear one after another, making it one block of data.
+        """
 
-        # starting point on world map
-        self.map_start_y = 0
         self.map_start_y_address = 0x0
+        self.map_start_y = 0
+        """
+        The y Position of where Mario starts, when entering the Overworld. In the vanilla game the x coordinate is hard
+        coded to column 2, so only the y/row position can be changed.
+        """
 
-        # if/how the world map scrolls, through multiple screens
-        self.map_scroll = 0
         self.map_scroll_address = 0x0
+        self.map_scroll = 0
+        """
+        Determines, whether the screen should scroll onto the next, when the player reaches the edge of their current
+        screen.
+        If disabled, it can hide, that this world has multiple screens, as in World 5.
+        """
 
-        # air ship travel data
-        self.airship_travel_base_index = 0
         self.airship_travel_base_index_address = 0x0
+        self.airship_travel_base_index = 0
+        """
+        All Airship travel routes are in one large list. Every World Map can have 3 indexes into this list, therefore
+        selecting 3 of these routes for it to use. Which one of these three is then used is determined randomly, when
+        the World Map is initially loaded.
+
+        These 3 times 8 (without Warp World) indexes are in one long list and each World Map remembers where its 3
+        indexes are by saving that index. In the Vanilla Game, the indexes are simply the world number (0-indexed)
+        times 3, so 0x0, 0x3, 0x6 etc.
+
+        One could change this, so that two worlds use the exact same indexes, for example. But since there is enough
+        space for every World to choose its own 3 indexes, there is no reason to do such a thing.
+
+        So changing this value should not be necessary.
+        """
 
         self.airship_travel_x_set_address = 0x0
         self.airship_travel_y_set_address = 0x0
 
         self.airship_travel_sets: tuple[list[Position], list[Position], list[Position]] = ([], [], [])
+        """
+        Each World Map has 3 possible Airship routes, one of which is chosen at random, when the World Map is initially
+        loaded.
+
+        Each of them has 6 Positions on the world map, which the Airship is traveling along.
+        """
 
         # lock and bridge data
-        self.fortress_fx_base_index = 0
         self.fortress_fx_base_index_address = 0x0
+        self.fortress_fx_base_index = 0
+        """
+        See also FortressFXData.
+
+        Similar to the Airship routes, there is a list of FortressFX data points, except that each World Map gets 4.
+
+        There are a total of 17 possible locks, which each World can choose from. In the Vanilla game, there is no
+        overlap between Worlds, but if the layout makes sense two Worlds can share Locks.
+
+        Since each World has space to define 4 locks, there is no reason to change this value.
+        """
 
         self.fortress_fx_indexes: list[int] = []
+        """The 4 indexes into the list of 17 locks, that the World has chosen."""
 
         self.fortress_fx_count = 0
+        """Amount of locks this World has designated. Should always be 4."""
+
         self.fortress_fx: list[FortressFXData] = []
+        """The FortressFxData objects, this World has selected."""
 
         # level pointer data
         self.pos_offsets_for_screen = bytearray(MAX_SCREEN_COUNT)
+        """
+        When entering a Level, a list of level positions is searched through. Once the players current position is found
+        that Positions index is used to look up the Level information in another list.
 
-        self.y_pos_list_start = 0x0
+        Since these positions are ordered by screen and to make searching faster, the game saves the first position of
+        each screen in this list.
+
+        Four bytes, one for each screen, where the first byte is naturally always 0.
+        """
+
         self.y_pos_list_start_address = 0x0
-        self.x_pos_list_start = 0x0
-        self.x_pos_list_start_address = 0x0
+        self.y_pos_list_start = 0x0
+        """
+        The address of the list of y Positions for Level Pointers for this World Map.
 
-        self.enemy_offset_list_offset = 0
+        When trying to find the Level the player is standing on, first the y Positions are gone through, until a
+        suitable one was found, then, from that index on, the x Positions are gone through until a match is found there,
+        too.
+
+        That index can then be used to find the Level and Enemy/Item Offset of that Level.
+        """
+
+        self.x_pos_list_start_address = 0x0
+        self.x_pos_list_start = 0x0
+        """See y_pos_list_start."""
+
         self.enemy_offset_list_offset_address = 0x0
-        self.level_offset_list_offset = 0
+        self.enemy_offset_list_offset = 0x0
+        """See y_pos_list_start."""
+
         self.level_offset_list_offset_address = 0x0
+        self.level_offset_list_offset = 0x0
+        """See y_pos_list_start."""
 
         self.level_pointers: list[LevelPointerData] = []
+        """
+        The parsed information of Position on World Map, location in memory and Object set of all Level Pointers this
+        World has defined.
+        """
 
         super(WorldMapData, self).__init__(rom)
 
@@ -281,7 +369,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
     def structure_block_address(self, value):
         self.structure_data_offset = value - WORLD_MAP_BASE_OFFSET
 
-        # we need to save the level count here, since its a property of the two attributes we change here
+        # we need to save the level count here, since it's a property of the two attributes we change here
         level_count = self.level_count
 
         self.y_pos_list_start = self.structure_block_address + MAX_SCREEN_COUNT

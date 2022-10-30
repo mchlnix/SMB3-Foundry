@@ -6,6 +6,9 @@ from typing import Union
 BASE_OFFSET = 0x10
 """the size of the INES header identifying the rom"""
 
+A000_OFFSET = BASE_OFFSET + 0xA000
+C000_OFFSET = BASE_OFFSET + 0xC000
+
 WORLD_MAP_TSA_INDEX = 12
 
 TILE_LEVEL_1 = 0x03

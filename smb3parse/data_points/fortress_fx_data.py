@@ -13,28 +13,64 @@ from smb3parse.util.rom import Rom
 
 
 class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):
+    """
+    Fortress FX data, describes the mechanism of replacing a Tile on the World Map with another, after collecting the
+    Orb object, upon defeating a Fortress Boss.
+
+    This is most commonly used to replace Locks with pathways and open Bridges with closed ones, allowing access to
+    previously blocked off places on the Map.
+
+
+    """
+
     def __init__(self, rom: Rom, index: int):
         self.index = index
 
         self.row_address = 0x0
+        self.row = 0
+        """
+        The y position of the Tile to be replaced on the World Map, including the two upper border rows. Valid values
+        are 2 - 10.
+        """
+
         self.col_and_screen_address = 0x0
+        self.column = 0
+        """The x position of the Tile to be replaced on the World Map, within the screen. So 0 - 15."""
 
-        self.tile_indexes = bytearray([0x00, 0x00, 0x00, 0x00])
+        self.screen = 0
+        """The screen number the Tile to be replaced is on, starting from 0 to a maximum of 3."""
+
         self.tile_indexes_address = 0x0
+        self.tile_indexes = bytearray([0x00, 0x00, 0x00, 0x00])
+        """
+        These 4 indexes point to 8x8 pixel tiles in the graphic memory. These will replace the MapTile currently at the
+        given position and can be chosen freely. See also replacement_block_index.
+        """
 
-        self.replacement_block_index = 0
         self.replacement_block_address = 0x0
+        self.replacement_block_index = 0
+        """
+        The index pointing to a block, described by the TSA data of the Overworld Object Set. The block is not used for
+        its graphical appearance, see tile_indexes for that. The Block is used for its properties, meaning, can it be
+        walked on, can you enter a level through it, etc.
+        """
 
-        self.map_completion_bit_index = 0x0
         self.map_completion_data_address = 0x0
+        self.map_completion_bit_index = 0x0
+        """
+        The offset into the Map Completion List, which keeps track of which Levels and Fortress FX's have been completed
+        yet. Depends on the row the Tile, that should be replaced, is located on.
+        """
 
-        # these together give the offset into the memory with the map tiles, so the tile can be replaced in memory,
-        # without loading the whole map again (probably the reason)
-        self.v_addr_high = 0x0
         self.v_addr_high_address = 0x0
+        self.v_addr_high = 0x0
+        """
+        This together with v_addr_low give the offset into the graphics memory housing the World Map Data. This way the
+        Tile graphic can be switched out, without having to reload the entire World Map (probably).
+        """
 
-        self.v_addr_low = 0x0
         self.v_addr_low_address = 0x0
+        self.v_addr_low = 0x0
 
         super(FortressFXData, self).__init__(rom)
 
@@ -77,7 +113,7 @@ class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):
         rom.write_nibbles(self.map_completion_data_address, self.screen, self.column)
 
         # 8 is not a valid row for any level pointer, row 9 has its value
-        self.map_completion_bit_index = 0x80 >> min(self.row - FIRST_VALID_ROW, 8)
+        self.map_completion_bit_index = 0x80 >> min(self.row - FIRST_VALID_ROW, 0x08)
 
         rom.write(self.map_completion_data_address + 1, self.map_completion_bit_index)
 

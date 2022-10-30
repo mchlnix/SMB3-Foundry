@@ -12,27 +12,45 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
 )
-from smb3parse.util.rom import Rom
+from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
 if TYPE_CHECKING:
     from smb3parse.data_points.world_map_data import WorldMapData
 
 
 class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
+    """
+    Levels are defined by the memory location of the level header and level object data, the memory location of the
+    enemy and item data and the Object Set of the Level, necessary to interpret the level object data correctly.
+
+    Since there is no look up table for these values in the ROM itself, levels can be found in two ways, either by a
+    level pointer on a World Map, or by their memory locations and object set being part of another level's header.
+
+    This class deals with the former method. It stores the memory locations and object set of the Level, as well as a
+    reference to the World Map it is located in and the position it is at in said World Map.
+    """
+
     SIZE = 2 * OFFSET_SIZE + 2  # object offset, enemy offset, 2 bytes for position in map
 
     def __init__(self, world_map_data: "WorldMapData", index: int):
         self.world = world_map_data
+        """A reference to the WorldMapData object for the Overworld this LevelPointer was found in."""
         self.index = index
 
         self.object_set_address = 0x0
         self.object_set = 0
+        """The Object Set to be used, when parsing and generating the Level Objects of the Level."""
 
         self.level_offset_address = 0x0
         self.level_offset = 0
+        """
+        The PRG Bank with the level data will be loaded into RAM at location 0xA000, so every level offset will be
+        between 0xA000 and 0xBFFF. Points to the Level Header.
+        """
 
         self.enemy_offset_address = 0x0
         self.enemy_offset = 0
+        """The offset into the ROM, that the enemy data can be found."""
 
         super(LevelPointerData, self).__init__(self.world._rom)
 
@@ -69,7 +87,11 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
 
     @property
     def object_set_offset(self):
-        return self._rom.int(OFFSET_BY_OBJECT_SET_A000 + self.object_set) * 0x2000 - 0xA000
+        """
+        Returns the offset, based on the level pointers object set, that needs to be added to its level header offset in
+        order to get the actual memory location of the level in the ROM.
+        """
+        return self._rom.int(OFFSET_BY_OBJECT_SET_A000 + self.object_set) * PRG_BANK_SIZE - 0xA000
 
     def read_values(self):
         self.screen, self.x = self._rom.nibbles(self.screen_address)
