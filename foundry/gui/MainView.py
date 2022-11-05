@@ -244,7 +244,7 @@ class MainView(QWidget):
     def _object_from_mime_data(self, mime_data: QMimeData) -> InLevelObject:
         object_type, *object_bytes = mime_data.data("application/level-object").data()
 
-        if object_type == b"\x00":
+        if object_type == 0:
             domain = object_bytes[0] >> 5
             object_index = object_bytes[2]
 
