@@ -68,66 +68,46 @@ def _obj_range(object_set: int, start: int) -> list[int]:
 
 
 def goes_to_next_level(object_set_num: int, domain: int, obj_id: int):
-    definition = object_set_to_definition[object_set_num]
-
     # TODO only domain 0 is different, so condense this more
-    object_id_ranges_by_domain_and_definition = {
+    object_id_ranges_by_domain_and_definition: dict[int, dict[int, list[int]]] = {
         1: {
             0: [0x04],
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
         },
         2: {
             0: [0x0F],
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
         },
         3: {
             0: [0x05],
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
         },
         4: {
             0: [0x00, 0x06],
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
         },
-        5: {
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
-        },
-        6: {
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
-        },
+        5: {},
+        6: {},
         7: {
             0: [0x0B],
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
         },
         8: {
             0: [0x0A],
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
         },
-        9: {
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
-        },
+        9: {},
         10: {
             0: [0x05],
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
         },
         11: {
             0: [0x0F],
-            1: [0x90, 0xB0, 0xC0, 0xE0],
-            2: [0x07, 0x10],
         },
         12: {
             0: [0x08, 0xD5],
         },
     }
+
+    for definition in range(1, 12):
+        # these objects are in all level object definitions
+        object_id_ranges_by_domain_and_definition[definition][1] = [0x90, 0xC0, 0xE0]
+        object_id_ranges_by_domain_and_definition[definition][2] = [0x07, 0x10]
+
+    definition = object_set_to_definition[object_set_num]
 
     if definition not in object_set_to_definition:
         return False

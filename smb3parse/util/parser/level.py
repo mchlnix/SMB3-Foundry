@@ -23,6 +23,7 @@ class ParsedLevel:
             for parsed_enemy in self.parsed_enemies
         )
 
+    # TODO put those in level object next to goes_to_level?
     def has_generic_exit(self):
         """
         Certain objects jump not to the Destination marked in the level header, but a predefined Exit Level, that every
@@ -38,9 +39,30 @@ class ParsedLevel:
         elif definition == 6:
             domain = 3
             id_range = range(0x60, 0x70)
-        else:  # definition == 9
+        elif definition == 9:
             domain = 3
             id_range = range(0x50, 0x70)
+        else:
+            return False
+
+        return any(
+            parsed_object.domain == domain and parsed_object.obj_id in id_range for parsed_object in self.parsed_objects
+        )
+
+    def has_big_q_level(self):
+        """
+        Certain objects jump not to the Destination marked in the level header, but a predefined Big Question Mark
+        Level, that every world can set freely.
+
+        :return: Returns True, if this Level has such an object.
+        """
+        definition = object_set_to_definition[self.object_set_num]
+
+        if definition in range(1, 12):
+            domain = 1
+            id_range = range(0xB0, 0xC0)
+        else:
+            return False
 
         return any(
             parsed_object.domain == domain and parsed_object.obj_id in id_range for parsed_object in self.parsed_objects
