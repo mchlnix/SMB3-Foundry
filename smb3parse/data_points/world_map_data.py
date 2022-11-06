@@ -25,6 +25,8 @@ from smb3parse.constants import (
     Map_Tile_ColorSets,
     Map_Y_Starts,
     OFFSET_SIZE,
+    ToadShop_Layouts,
+    ToadShop_Objects,
     World_Map_Max_PanR,
 )
 from smb3parse.data_points import FortressFXData
@@ -243,6 +245,20 @@ class WorldMapData(_IndexedMixin, DataPoint):
         but this can actually be configured.
         """
 
+        self.toad_warp_level_offset_address = 0x0
+        self.toad_warp_level_offset = 0x0
+        """
+        The address of the Toad Level. Even though it does not look like a normal level, it is still saved in the ROM as
+        one. Every Overworld could have its own, but they all have the same in the Vanilla game.
+        """
+
+        self.toad_warp_item_address = 0x0
+        self.toad_warp_item = 0
+        """
+        Is saved as an offset, but only determines what is in the Toad Chest in the upper nibble. 0x02(00) for the warp
+        whistle, 0x0A(00) for the Anchor.
+        """
+
         super(WorldMapData, self).__init__(rom)
 
     def calculate_addresses(self):
@@ -288,6 +304,9 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.big_q_block_level_offset_address = LevelJctBQ_Layout + OFFSET_SIZE * self.index
         self.big_q_block_enemy_offset_address = LevelJctBQ_Objects + OFFSET_SIZE * self.index
         self.big_q_block_object_set_address = LevelJctBQ_Tileset + self.index
+
+        self.toad_warp_level_offset_address = ToadShop_Layouts + OFFSET_SIZE * self.index
+        self.toad_warp_item_address = ToadShop_Objects + OFFSET_SIZE * self.index
 
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
@@ -360,6 +379,9 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.big_q_block_level_offset = self._rom.little_endian(self.big_q_block_level_offset_address)
         self.big_q_block_enemy_offset = self._rom.little_endian(self.big_q_block_enemy_offset_address)
         self.big_q_block_object_set = self._rom.int(self.big_q_block_object_set_address)
+
+        self.toad_warp_level_offset = self._rom.little_endian(self.toad_warp_level_offset_address)
+        self.toad_warp_item = self._rom.little_endian(self.toad_warp_item_address)
 
     def write_back(self, rom: Rom = None):
         if rom is None:
@@ -451,6 +473,9 @@ class WorldMapData(_IndexedMixin, DataPoint):
         rom.write_little_endian(self.big_q_block_level_offset_address, self.big_q_block_level_offset)
         rom.write_little_endian(self.big_q_block_enemy_offset_address, self.big_q_block_enemy_offset)
         rom.write(self.big_q_block_object_set_address, self.big_q_block_object_set)
+
+        rom.write_little_endian(self.toad_warp_level_offset_address, self.toad_warp_level_offset)
+        rom.write_little_endian(self.toad_warp_item_address, self.toad_warp_item)
 
     @property
     def fortress_fx_indexes_start_address(self):
