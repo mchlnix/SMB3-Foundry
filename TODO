@@ -15,6 +15,12 @@ Foundry
 
 - Ask if the map should be scrolled, when using Pipe Pairs.
 
+- Scroll to Jump Zone Position, when editing Jumps
+
+- Rearrange Menus to split Rom and Level configs
+
+- Fix drag and drop, always drops MSG_NOTHING domain 0, id 0x20
+
 Scribe
 ------
 - Export all world data into a file and enable importing it back into a rom (not just the layout, like m3l)
