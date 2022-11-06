@@ -19,6 +19,8 @@ MEM_Random_Pool_Start = 0x0781
 MEM_Screen_Memory_Start = 0x6000
 MEM_Screen_Memory_End = 0x7950
 
+MEM_Reset_Latch = 0x7964
+
 MEM_Graphics_Set = 0x7EBD
 
 MEM_Screen_Start_AddressL = 0x8000
@@ -58,6 +60,7 @@ MEM_ADDRESS_LABELS = {
     "0727": "World_Num",
     "0739": "Clear_Pattern",
     "0781": "MEM_Random_Pool_Start",
+    "7964": "MEM_Reset_Latch",
     "7DFE": "JumpAddressA",
     "7DFF": "JumpAddressB",
     "7E00": "JumpEnemiesA",

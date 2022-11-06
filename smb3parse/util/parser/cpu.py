@@ -21,6 +21,7 @@ from smb3parse.util.parser import (
     MEM_Player_X,
     MEM_Player_Y,
     MEM_Random_Pool_Start,
+    MEM_Reset_Latch,
     MEM_Screen_Memory_End,
     MEM_Screen_Memory_Start,
     MEM_World_Num,
@@ -47,6 +48,7 @@ class NesCPU(mpu6502.MPU):
 
         self.memory = NESMemory([0x0] * 0x10000, rom)
         self.memory[MEM_Random_Pool_Start] = 0x88  # as in the ROM
+        self.memory[MEM_Reset_Latch] = 0x5A  # prevents crash in LoadLevel_LittleCloudSolidRun
 
         self.rom = rom
         self.should_log = should_log
