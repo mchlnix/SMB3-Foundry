@@ -3,9 +3,19 @@ from collections import defaultdict
 from smb3parse.constants import (
     AIRSHIP_TRAVEL_SET_COUNT,
     AIRSHIP_TRAVEL_SET_SIZE,
+    Airship_Layouts,
+    Airship_Objects,
     BASE_OFFSET,
+    CoinShip_Layouts,
+    CoinShip_Objects,
     FortressFXBase_ByWorld,
     FortressFX_W1,
+    LevelJctBQ_Layout,
+    LevelJctBQ_Objects,
+    LevelJctBQ_Tileset,
+    LevelJctGE_Layout,
+    LevelJctGE_Objects,
+    LevelJctGE_Tileset,
     Map_Airship_Dest_XSets,
     Map_Airship_Dest_YSets,
     Map_Airship_Travel_BaseIdx,
@@ -34,6 +44,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_WARP_WORLD_INDEX,
 )
+from smb3parse.objects.object_set import AIR_SHIP_OBJECT_SET, ObjectSet
 from smb3parse.util.rom import Rom
 
 
@@ -190,6 +201,48 @@ class WorldMapData(_IndexedMixin, DataPoint):
         World has defined.
         """
 
+        self.airship_enemy_offset_address = 0x0
+        self.airship_enemy_offset = 0x0
+        self.airship_level_offset_address = 0x0
+        self.airship_level_offset = 0x0
+        """
+        The Airship Level that leads you to a Koopa Kid is defined per World, so you go to the same one each time. Its
+        Object Set is hard coded as Airship.
+        """
+
+        self.coin_ship_enemy_offset_address = 0x0
+        self.coin_ship_enemy_offset = 0x0
+        self.coin_ship_level_offset_address = 0x0
+        self.coin_ship_level_offset = 0x0
+        """
+        The coin ship Bonus Level that you get to via the overworld Sprite. It is defined per World, so you go to the
+        same one each time. Its Object Set is hard coded as Airship.
+        """
+
+        self.generic_exit_object_set_address = 0x0
+        self.generic_exit_object_set = 0
+        self.generic_exit_enemy_offset_address = 0x0
+        self.generic_exit_enemy_offset = 0x0
+        self.generic_exit_level_offset_address = 0x0
+        self.generic_exit_level_offset = 0x0
+        """
+        Some Object Sets have a Pipe, that ignores the Jump Destination of the Header and instead goes to a Level that
+        is supposed to be used like a Generic Exit, allowing both this and a bonus level via normal Pipes. That level
+        can be set per World. In the Vanilla Game the Object Set is always Plains, but this can actually be configured.
+        """
+
+        self.big_q_block_object_set_address = 0x0
+        self.big_q_block_object_set = 0
+        self.big_q_block_enemy_offset_address = 0x0
+        self.big_q_block_enemy_offset = 0x0
+        self.big_q_block_level_offset_address = 0x0
+        self.big_q_block_level_offset = 0x0
+        """
+        Some Object Sets have a Pipe, that ignores the Jump Destination of the Header and instead goes to a Level with a
+        Big Question Mark Block, that can be set per World. In the Vanilla Game the Object Set is always Underground,
+        but this can actually be configured.
+        """
+
         super(WorldMapData, self).__init__(rom)
 
     def calculate_addresses(self):
@@ -221,6 +274,20 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self.fortress_fx_base_index_address = FortressFXBase_ByWorld + self.index
         self.fortress_fx_base_index = self._rom.int(self.fortress_fx_base_index_address)
+
+        self.airship_level_offset_address = Airship_Layouts + OFFSET_SIZE * self.index
+        self.airship_enemy_offset_address = Airship_Objects + OFFSET_SIZE * self.index
+
+        self.coin_ship_level_offset_address = CoinShip_Layouts + OFFSET_SIZE * self.index
+        self.coin_ship_enemy_offset_address = CoinShip_Objects + OFFSET_SIZE * self.index
+
+        self.generic_exit_level_offset_address = LevelJctGE_Layout + OFFSET_SIZE * self.index
+        self.generic_exit_enemy_offset_address = LevelJctGE_Objects + OFFSET_SIZE * self.index
+        self.generic_exit_object_set_address = LevelJctGE_Tileset + self.index
+
+        self.big_q_block_level_offset_address = LevelJctBQ_Layout + OFFSET_SIZE * self.index
+        self.big_q_block_enemy_offset_address = LevelJctBQ_Objects + OFFSET_SIZE * self.index
+        self.big_q_block_object_set_address = LevelJctBQ_Tileset + self.index
 
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
@@ -279,6 +346,20 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
             self.fortress_fx.append(FortressFXData(self._rom, index))
             self.fortress_fx_indexes.append(index)
+
+        self.airship_level_offset = self._rom.little_endian(self.airship_level_offset_address)
+        self.airship_enemy_offset = self._rom.little_endian(self.airship_enemy_offset_address)
+
+        self.coin_ship_level_offset = self._rom.little_endian(self.coin_ship_level_offset_address)
+        self.coin_ship_enemy_offset = self._rom.little_endian(self.coin_ship_enemy_offset_address)
+
+        self.generic_exit_level_offset = self._rom.little_endian(self.generic_exit_level_offset_address)
+        self.generic_exit_enemy_offset = self._rom.little_endian(self.generic_exit_enemy_offset_address)
+        self.generic_exit_object_set = self._rom.int(self.generic_exit_object_set_address)
+
+        self.big_q_block_level_offset = self._rom.little_endian(self.big_q_block_level_offset_address)
+        self.big_q_block_enemy_offset = self._rom.little_endian(self.big_q_block_enemy_offset_address)
+        self.big_q_block_object_set = self._rom.int(self.big_q_block_object_set_address)
 
     def write_back(self, rom: Rom = None):
         if rom is None:
@@ -357,6 +438,20 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
             fortress_fx_data.write_back(rom)
 
+        rom.write_little_endian(self.airship_level_offset_address, self.airship_level_offset)
+        rom.write_little_endian(self.airship_enemy_offset_address, self.airship_enemy_offset)
+
+        rom.write_little_endian(self.coin_ship_level_offset_address, self.coin_ship_level_offset)
+        rom.write_little_endian(self.coin_ship_enemy_offset_address, self.coin_ship_enemy_offset)
+
+        rom.write_little_endian(self.generic_exit_level_offset_address, self.generic_exit_level_offset)
+        rom.write_little_endian(self.generic_exit_enemy_offset_address, self.generic_exit_enemy_offset)
+        rom.write(self.generic_exit_object_set_address, self.generic_exit_object_set)
+
+        rom.write_little_endian(self.big_q_block_level_offset_address, self.big_q_block_level_offset)
+        rom.write_little_endian(self.big_q_block_enemy_offset_address, self.big_q_block_enemy_offset)
+        rom.write(self.big_q_block_object_set_address, self.big_q_block_object_set)
+
     @property
     def fortress_fx_indexes_start_address(self):
         return FortressFX_W1 + self.fortress_fx_base_index
@@ -389,6 +484,50 @@ class WorldMapData(_IndexedMixin, DataPoint):
     @layout_address.setter
     def layout_address(self, value):
         self.tile_data_offset = value - WORLD_MAP_BASE_OFFSET
+
+    @property
+    def airship_level_address(self):
+        # TODO make object set rom dependent
+        return ObjectSet(self.airship_level_object_set).level_offset + self.airship_level_offset
+
+    @airship_level_address.setter
+    def airship_level_address(self, value):
+        self.airship_level_offset = value - self.airship_level_object_set.level_offset
+
+    @property
+    def airship_level_object_set(self):
+        return AIR_SHIP_OBJECT_SET
+
+    @property
+    def coin_ship_level_address(self):
+        # TODO make object set rom dependent
+        return ObjectSet(self.coin_ship_level_object_set).level_offset + self.coin_ship_level_offset
+
+    @coin_ship_level_address.setter
+    def coin_ship_level_address(self, value):
+        self.coin_ship_level_offset = value - ObjectSet(self.coin_ship_level_object_set).level_offset
+
+    @property
+    def coin_ship_level_object_set(self):
+        return AIR_SHIP_OBJECT_SET
+
+    @property
+    def generic_exit_level_address(self):
+        # TODO make object set rom dependent
+        return ObjectSet(self.generic_exit_object_set).level_offset + self.generic_exit_level_offset
+
+    @generic_exit_level_address.setter
+    def generic_exit_level_address(self, value):
+        self.generic_exit_level_offset = value - ObjectSet(self.generic_exit_object_set).level_offset
+
+    @property
+    def big_q_block_level_address(self):
+        # TODO make object set rom dependent
+        return ObjectSet(self.big_q_block_object_set).level_offset + self.big_q_block_level_offset
+
+    @big_q_block_level_address.setter
+    def big_q_block_level_address(self, value):
+        self.big_q_block_level_offset = value - ObjectSet(self.big_q_block_object_set).level_offset
 
     @property
     def tile_data_size(self):
