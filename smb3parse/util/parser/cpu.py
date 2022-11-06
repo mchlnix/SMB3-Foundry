@@ -5,6 +5,7 @@ from py65.disassembler import Disassembler
 
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, PAGE_C000_ByTileset
 from smb3parse.data_points import Position
+from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
 from smb3parse.util.parser import (
     MEM_ADDRESS_LABELS,
     MEM_Enemy_Palette,
@@ -29,7 +30,7 @@ from smb3parse.util.parser import (
 )
 from smb3parse.util.parser.level import ParsedLevel
 from smb3parse.util.parser.memory import NESMemory
-from smb3parse.util.parser.object import ParsedObject
+from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
 from smb3parse.util.rom import Rom
 
 PINK = "\033[95m"
@@ -74,7 +75,7 @@ class NesCPU(mpu6502.MPU):
 
         return self._load_level()
 
-    def load_from_address(self, object_set_num: int, level_address: int, _enemy_address: int) -> ParsedLevel:
+    def load_from_address(self, object_set_num: int, level_address: int, enemy_address: int) -> ParsedLevel:
         self.start_pc = ROM_LevelLoad_By_TileSet
 
         object_set_offset = self.rom.int(PAGE_A000_ByTileset + object_set_num) * 0x2000 - 0xA000
@@ -90,7 +91,17 @@ class NesCPU(mpu6502.MPU):
         self.memory.load_a000_page(self.a000_bank)
         self.memory.load_c000_page(self.c000_bank)
 
-        return self._load_level()
+        level = self._load_level()
+
+        enemy_address += 1
+
+        while self.rom.int(enemy_address) != 0xFF:
+            enemy_bytes = list(map(int, self.rom.read(enemy_address, 3)))
+            level.parsed_enemies.append(ParsedEnemy(ENEMY_ITEM_OBJECT_SET, enemy_bytes, enemy_address))
+
+            enemy_address += 3
+
+        return level
 
     def _load_level(self) -> ParsedLevel:
         self.memory.add_write_observer(

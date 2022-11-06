@@ -1,6 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-from smb3parse.util.parser.object import ParsedObject
+from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
 
 
 @dataclass
@@ -11,3 +11,4 @@ class ParsedLevel:
     enemy_palette_num: int
     screen_memory: list[int]
     parsed_objects: list[ParsedObject]
+    parsed_enemies: list[ParsedEnemy] = field(default_factory=list)

@@ -23,4 +23,6 @@ if __name__ == "__main__":
 
     canvas = Canvas(parsed_level)
 
+    print(parsed_level.parsed_enemies)
+
     app.exec()
