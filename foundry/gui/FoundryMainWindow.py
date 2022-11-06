@@ -76,7 +76,7 @@ from foundry.gui.level_settings.level_settings_dialog import LevelSettingsDialog
 from foundry.gui.m3l import load_m3l, load_m3l_filename, save_m3l
 from foundry.gui.menus.file_menu import FileMenu
 from foundry.gui.menus.help_menu import HelpMenu
-from foundry.gui.menus.object_menu import ObjectMenu
+from foundry.gui.menus.rom_menu import RomMenu
 from foundry.gui.menus.view_menu import ViewMenu
 from foundry.gui.settings import Settings
 from smb3parse.constants import (
@@ -158,8 +158,8 @@ class FoundryMainWindow(MainWindow):
 
         self.menuBar().addMenu(self.level_menu)
 
-        self._object_menu = ObjectMenu(self.level_ref)
-        self.menuBar().addMenu(self._object_menu)
+        self._rom_menu = RomMenu(self.level_ref)
+        self.menuBar().addMenu(self._rom_menu)
 
         self.context_menu = LevelContextMenu(self.level_ref)
         self.context_menu.triggered.connect(self.on_menu)
@@ -1032,7 +1032,7 @@ class FoundryMainWindow(MainWindow):
         level_elements.remove(self.select_level_action)
         level_elements.remove(self.new_level_action)
 
-        level_elements.extend(self._object_menu.actions())
+        level_elements.extend(self._rom_menu.actions())
         level_elements.extend(self.view_menu.actions())
 
         for gui_element in rom_elements:
