@@ -48,10 +48,15 @@ class ObjectSet:
         self.number = object_set_number
 
         if self.number == ENEMY_ITEM_OBJECT_SET:
-            self.level_offset = 0
+            self.level_offset = 0  # TODO shouldn't this be BASE_OFFSET?
             self.name = "Enemy/Item Object set"
         else:
             self.level_offset, self.name, self._level_range = object_set_level_data[object_set_number]
+
+            # TODO this can be calculated with the ROM, so get rid of the definition file
+            from smb3parse.levels import LEVEL_BASE_OFFSET
+
+            self.level_offset += LEVEL_BASE_OFFSET
 
             self._object_length_lookup_table = _object_set_to_object_length_lookup_table[object_set_number]
 

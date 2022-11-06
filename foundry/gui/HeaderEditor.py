@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 
 from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
-from foundry.game.level.Level import LEVEL_POINTER_OFFSET, Level
+from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.CustomDialog import CustomDialog
@@ -356,7 +356,7 @@ class HeaderEditor(CustomDialog):
             self.undo_stack.push(object_set_cmd)
 
             # update min and max, based on new object set
-            min_level_address = LEVEL_POINTER_OFFSET + self.level.header.jump_object_set.level_offset
+            min_level_address = self.level.header.jump_object_set.level_offset
             self.level_pointer_spinner.setMinimum(min_level_address)
             self.level_pointer_spinner.setMaximum(min_level_address + 0xFFFF)
 

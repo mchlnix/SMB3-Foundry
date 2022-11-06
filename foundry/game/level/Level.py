@@ -10,12 +10,10 @@ from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from foundry.gui.asm import bytes_to_asm
-from smb3parse.constants import BASE_OFFSET, Level_TilesetIdx_ByTileset, OFFSET_SIZE
+from smb3parse.constants import BASE_OFFSET, OFFSET_SIZE
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH, OFFSET_BY_OBJECT_SET_A000, WORLD_MAP_LAYOUT_DELIMITER
 from smb3parse.levels.level_header import LevelHeader
-
-LEVEL_POINTER_OFFSET = Level_TilesetIdx_ByTileset
 
 ENEMY_SIZE = 3
 
@@ -272,7 +270,7 @@ class Level(LevelLike):
         if value == self.header.jump_level_address:
             return
 
-        value -= LEVEL_POINTER_OFFSET + self.header.jump_object_set.level_offset
+        value -= self.header.jump_object_set.level_offset
 
         self.header_bytes[0] = 0x00FF & value
         self.header_bytes[1] = value >> 8

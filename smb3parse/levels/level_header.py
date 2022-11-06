@@ -3,7 +3,6 @@ from smb3parse.levels import (
     DEFAULT_VERTICAL_WIDTH,
     ENEMY_BASE_OFFSET,
     HEADER_LENGTH,
-    LEVEL_BASE_OFFSET,
     LEVEL_LENGTH_INTERVAL,
     LEVEL_MIN_LENGTH,
 )
@@ -70,4 +69,4 @@ class LevelHeader:
 
     @property
     def jump_level_address(self):
-        return LEVEL_BASE_OFFSET + self.jump_object_set.level_offset + self.jump_level_offset
+        return self.jump_object_set.level_offset + self.jump_level_offset
