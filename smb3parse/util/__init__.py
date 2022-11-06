@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 def little_endian(two_bytes: bytearray) -> int:
     """
     Takes a byte array of length 2 and returns the integer it represents in little endian.
@@ -24,3 +27,13 @@ def compare_bytearrays(bytearray_1, bytearray_2, chunk_size=32):
             print([hex(bit) for bit in old_chunk])
             print([hex(bit) for bit in new_chunk])
             assert False
+
+
+def lrange(a1: int, a2: Optional[int] = None, a3: Optional[int] = None, /):
+    if a2 is None:
+        return list(range(a1))
+
+    if a3 is None:
+        return list(range(a1, a2))
+
+    return list(range(a1, a2, a3))

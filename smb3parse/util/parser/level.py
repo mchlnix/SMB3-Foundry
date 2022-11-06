@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+from smb3parse.objects.level_object import goes_to_next_level, object_set_to_definition
 from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
 
 
@@ -12,3 +13,35 @@ class ParsedLevel:
     screen_memory: list[int]
     parsed_objects: list[ParsedObject]
     parsed_enemies: list[ParsedEnemy] = field(default_factory=list)
+
+    def has_jump(self):
+        return any(
+            goes_to_next_level(self.object_set_num, parsed_object.domain, parsed_object.obj_id)
+            for parsed_object in self.parsed_objects
+        ) or any(
+            goes_to_next_level(self.object_set_num, parsed_enemy.domain, parsed_enemy.obj_id)
+            for parsed_enemy in self.parsed_enemies
+        )
+
+    def has_generic_exit(self):
+        """
+        Certain objects jump not to the Destination marked in the level header, but a predefined Exit Level, that every
+        world can set freely.
+
+        :return: Returns True, if this Level has such an object.
+        """
+        definition = object_set_to_definition[self.object_set_num]
+
+        if definition in [2, 11]:
+            domain = 4
+            id_range = range(0xE0, 0xF0)
+        elif definition == 6:
+            domain = 3
+            id_range = range(0x60, 0x70)
+        else:  # definition == 9
+            domain = 3
+            id_range = range(0x50, 0x70)
+
+        return any(
+            parsed_object.domain == domain and parsed_object.obj_id in id_range for parsed_object in self.parsed_objects
+        )

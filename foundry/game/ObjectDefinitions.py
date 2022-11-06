@@ -2,25 +2,7 @@ from enum import Enum
 from functools import lru_cache
 
 from foundry import data_dir
-from smb3parse.objects.object_set import (
-    AIR_SHIP_OBJECT_SET,
-    CLOUDY_OBJECT_SET,
-    DESERT_OBJECT_SET,
-    DUNGEON_OBJECT_SET,
-    ENEMY_ITEM_OBJECT_SET,
-    GIANT_OBJECT_SET,
-    HILLY_OBJECT_SET,
-    ICE_OBJECT_SET,
-    MUSHROOM_OBJECT_SET,
-    PIPE_OBJECT_SET,
-    PIRANHA_PLANT_OBJECT_SET,
-    PLAINS_OBJECT_SET,
-    SKY_OBJECT_SET,
-    SPADE_BONUS_OBJECT_SET,
-    UNDERGROUND_OBJECT_SET,
-    WATER_OBJECT_SET,
-    WORLD_MAP_OBJECT_SET,
-)
+from smb3parse.objects.level_object import ENEMY_OBJECT_DEFINITION, object_set_to_definition
 
 
 class GeneratorType(Enum):
@@ -59,9 +41,6 @@ class EndType(Enum):
     END_ON_TOP_OR_LEFT = 1
     END_ON_BOTTOM_OR_RIGHT = 2
     TWO_ENDS = 3
-
-
-ENEMY_OBJECT_DEFINITION = 12
 
 
 class ObjectDefinition:
@@ -136,27 +115,6 @@ with open(data_dir.joinpath("data.dat"), "r") as f:
             enemy_handle_y.append(int(y))
 
         second_index += 1
-
-
-object_set_to_definition = {
-    WORLD_MAP_OBJECT_SET: 0,
-    PLAINS_OBJECT_SET: 1,
-    MUSHROOM_OBJECT_SET: 1,
-    SPADE_BONUS_OBJECT_SET: 1,
-    HILLY_OBJECT_SET: 2,
-    SKY_OBJECT_SET: 3,
-    DUNGEON_OBJECT_SET: 4,
-    AIR_SHIP_OBJECT_SET: 5,
-    CLOUDY_OBJECT_SET: 6,
-    DESERT_OBJECT_SET: 7,
-    WATER_OBJECT_SET: 8,
-    PIPE_OBJECT_SET: 8,
-    PIRANHA_PLANT_OBJECT_SET: 9,
-    GIANT_OBJECT_SET: 9,
-    ICE_OBJECT_SET: 10,
-    UNDERGROUND_OBJECT_SET: 11,
-    ENEMY_ITEM_OBJECT_SET: ENEMY_OBJECT_DEFINITION,
-}
 
 
 @lru_cache(2**4)
