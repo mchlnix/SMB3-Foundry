@@ -62,8 +62,12 @@ class NesCPU(mpu6502.MPU):
         self.objects: list[ParsedObject] = []
 
         # instructions
-        self.old_inst_0xa9 = self.instruct[0xA9]
-        self.instruct[0xA9] = NesCPU.new_inst_0xa9
+        self.old_inst_0xa9 = NesCPU.inst_0xa9
+
+        # self.instruct is a class attribute, so changes to it are kept between instantiations, therefore only replace
+        # the load instruction once
+        if self.instruct[0xA9] != NesCPU.new_inst_0xa9:
+            self.instruct[0xA9] = NesCPU.new_inst_0xa9
 
     def load_from_world_map(self, world: int, pos: Position) -> ParsedLevel:
         self.start_pc = ROM_Level_Load_Entry
