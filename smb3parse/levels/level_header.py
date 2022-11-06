@@ -56,9 +56,7 @@ class LevelHeader:
 
         self.music_index = self.data[8] & 0b0000_1111
 
-        self.jump_level_address = (
-            (self.data[1] << 8) + self.data[0] + LEVEL_BASE_OFFSET + self.jump_object_set.level_offset
-        )
+        self.jump_level_offset = (self.data[1] << 8) + self.data[0]
         self.jump_enemy_address = (self.data[3] << 8) + self.data[2] + ENEMY_BASE_OFFSET
 
     def mario_position(self):
@@ -69,3 +67,7 @@ class LevelHeader:
             y += (self.screens - 1) * 15  # TODO: Why?
 
         return x, y
+
+    @property
+    def jump_level_address(self):
+        return LEVEL_BASE_OFFSET + self.jump_object_set.level_offset + self.jump_level_offset
