@@ -22,7 +22,7 @@ def test_correct_menu_position(main_window, monkeypatch, qtbot):
     # WHEN the level is scrolled to the right and a right click happens on the level_view to add an object
     main_window.scroll_panel.horizontalScrollBar().setValue(500)
 
-    click_pos = QPoint(200, 200)
+    click_pos = main_window.pos() + QPoint(200, 200)
     point_in_level_view = level_view.mapFromGlobal(click_pos)
     qtbot.mouseClick(level_view, Qt.RightButton, pos=point_in_level_view)
 
