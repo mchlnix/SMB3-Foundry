@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QMainWindow, QMessageBox
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.util import center_widget
 
 
 class MainWindow(QMainWindow):
@@ -10,6 +11,8 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
+
+        center_widget(self)
 
         self.level_ref = LevelRef()
 

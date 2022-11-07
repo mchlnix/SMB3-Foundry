@@ -1,10 +1,19 @@
 from itertools import filterfalse, tee
 
+from PySide6.QtCore import QPoint
+from PySide6.QtWidgets import QApplication, QWidget
+
 
 def clear_layout(layout):
     while layout.count():
         item = layout.takeAt(0)
         item.widget().deleteLater()
+
+
+def center_widget(widget: QWidget):
+    center_offset = QPoint(widget.width() // 2, widget.height() // 2)
+
+    widget.move(QApplication.primaryScreen().availableGeometry().center() - center_offset)
 
 
 # from https://docs.python.org/3/library/itertools.html
