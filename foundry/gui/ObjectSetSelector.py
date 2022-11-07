@@ -40,8 +40,11 @@ class ObjectSetSelector(QDialog):
             self.reject()
 
     @staticmethod
-    def get_object_set(parent=None):
+    def get_object_set(parent=None, alternative_title=""):
         dialog = ObjectSetSelector(parent)
+
+        if alternative_title:
+            dialog.setWindowTitle(alternative_title)
 
         if dialog.exec() == QDialog.Accepted:
             return dialog.result

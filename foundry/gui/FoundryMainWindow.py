@@ -349,7 +349,7 @@ class FoundryMainWindow(MainWindow):
         if not dont_check and not self.safe_to_change():
             return
 
-        object_set = ObjectSetSelector.get_object_set(self)
+        object_set = ObjectSetSelector.get_object_set(self, alternative_title="Creating New Level")
 
         if object_set == -1:
             # was cancelled
