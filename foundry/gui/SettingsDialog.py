@@ -72,6 +72,27 @@ class SettingsDialog(CustomDialog):
 
         self.settings = settings
 
+        # -----------------------------------------------
+        # Online Section
+
+        online_box = QGroupBox("Online", self)
+        online_box.setLayout(QVBoxLayout())
+
+        self._update_check_box = QCheckBox("Enabled")
+        self._update_check_box.setChecked(self.settings.value("editor/update_on_startup"))
+        self._update_check_box.toggled.connect(self._update_settings)
+
+        online_box.layout().addLayout(
+            label_and_widget(
+                "Check for Updates on Startup:",
+                self._update_check_box,
+                tooltip="Checks the Repository for a new Version when the Editor is started.",
+            )
+        )
+
+        # -----------------------------------------------
+        # Mouse Section
+
         mouse_box = QGroupBox("Mouse", self)
         mouse_box.setLayout(QVBoxLayout())
 
@@ -121,7 +142,7 @@ class SettingsDialog(CustomDialog):
         mouse_box.layout().addLayout(resize_layout)
 
         # -----------------------------------------------
-        # GUI section
+        # GUI Section
 
         self.gui_box = QGroupBox("GUI", self)
         QVBoxLayout(self.gui_box)
@@ -167,7 +188,7 @@ class SettingsDialog(CustomDialog):
         self.gui_box.layout().addLayout(default_dir_layout)
 
         # -----------------------------------------------
-        # emulator command
+        # Emulator Command Section
 
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText("Path to emulator")
@@ -219,6 +240,7 @@ class SettingsDialog(CustomDialog):
         # ----------------------
 
         layout = QVBoxLayout(self)
+        layout.addWidget(online_box)
         layout.addWidget(mouse_box)
         layout.addWidget(self.gui_box)
         layout.addWidget(command_box)
@@ -258,6 +280,7 @@ class SettingsDialog(CustomDialog):
 
         self.settings.setValue("editor/default dir path", self.default_dir_label.text())
 
+        self.settings.setValue("editor/update_on_startup", self._update_check_box.isChecked())
         self.settings.setValue("editor/object_scroll_enabled", self._scroll_check_box.isChecked())
         self.settings.setValue("level view/object_tooltip_enabled", self._tooltip_check_box.isChecked())
 

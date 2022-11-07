@@ -1,5 +1,6 @@
 from PySide6.QtCore import QStandardPaths
 from PySide6.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QFileDialog,
     QGroupBox,
@@ -11,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import icon
+from foundry.gui import label_and_widget
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.SettingsDialog import default_dirs
 from foundry.gui.settings import (
@@ -24,6 +26,25 @@ class SettingsDialog(CustomDialog):
 
         self.settings = settings
 
+        # -----------------------------------------------
+        # Online Section
+
+        online_box = QGroupBox("Online", self)
+        online_box.setLayout(QVBoxLayout())
+
+        self._update_check_box = QCheckBox("Enabled")
+        self._update_check_box.setChecked(self.settings.value("editor/update_on_startup"))
+        self._update_check_box.toggled.connect(self._update_settings)
+
+        online_box.layout().addLayout(
+            label_and_widget(
+                "Check for Updates on Startup:",
+                self._update_check_box,
+                tooltip="Checks the Repository for a new Version when the Editor is started.",
+            )
+        )
+
+        # -----------------------------------------------
         # GUI section
 
         self.gui_box = QGroupBox("GUI", self)
@@ -54,7 +75,7 @@ class SettingsDialog(CustomDialog):
         self.gui_box.layout().addLayout(default_dir_layout)
 
         # -----------------------------------------------
-        # emulator command
+        # Emulator Command Section
 
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText("Path to emulator")
@@ -88,9 +109,10 @@ class SettingsDialog(CustomDialog):
         command_layout.addWidget(QLabel("Command used to play the rom:"))
         command_layout.addWidget(self.command_label)
 
-        # ----------------------
+        # -----------------------------------------------
 
         layout = QVBoxLayout(self)
+        layout.addWidget(online_box)
         layout.addWidget(self.gui_box)
         layout.addWidget(command_box)
 
@@ -105,6 +127,8 @@ class SettingsDialog(CustomDialog):
     def _update_settings(self, _=None):
         self.settings.setValue("editor/instaplay_emulator", self.emulator_command_input.text())
         self.settings.setValue("editor/instaplay_arguments", self.command_arguments_input.text())
+
+        self.settings.setValue("editor/update_on_startup", self._update_check_box.isChecked())
 
         self.settings.setValue("editor/default dir", self.path_dropdown.currentText())
         if self.path_dropdown.currentText() == "Custom":
