@@ -85,7 +85,7 @@ class ApprovalDialog(QDialog):
 
         apply_button = button_box.addButton("Accept as new Reference", QDialogButtonBox.ApplyRole)
         apply_button.clicked.connect(self._on_overwrite)
-        apply_button.setShortcut(Qt.CTRL + Qt.Key_A)
+        apply_button.setShortcut(Qt.CTRL | Qt.Key_A)
 
         main_layout.addWidget(scroll_area)
         main_layout.addWidget(button_box, alignment=Qt.AlignCenter)

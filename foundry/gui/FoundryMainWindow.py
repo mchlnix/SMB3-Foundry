@@ -324,18 +324,18 @@ class FoundryMainWindow(MainWindow):
 
         self.delete_shortcut = QShortcut(QKeySequence(Qt.Key_Delete), self, self.remove_selected_objects)
 
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_X), self, self._cut_objects)
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
+        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_X), self, self._cut_objects)
+        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_C), self, self._copy_objects)
+        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_V), self, self._paste_objects)
 
-        self.undo_action.setShortcut(Qt.CTRL + Qt.Key_Z)
-        self.redo_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_Z)
+        self.undo_action.setShortcut(Qt.CTRL | Qt.Key_Z)
+        self.redo_action.setShortcut(Qt.CTRL | Qt.SHIFT | Qt.Key_Z)
 
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Plus), self, self.level_view.zoom_in)
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self, self.level_view.zoom_out)
+        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_Plus), self, self.level_view.zoom_in)
+        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_Minus), self, self.level_view.zoom_out)
 
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_L), self, self.object_dropdown.setFocus)
+        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_A), self, self.level_view.select_all)
+        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_L), self, self.object_dropdown.setFocus)
 
         self.check_for_update_on_startup()
 

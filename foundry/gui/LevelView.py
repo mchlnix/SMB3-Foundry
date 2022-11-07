@@ -109,7 +109,7 @@ class LevelView(MainView):
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if self.mouse_mode == MODE_DRAG:
-            self.setCursor(Qt.ClosedHandCursor)
+            self.setCursor(Qt.CursorShape.ClosedHandCursor)
             self._dragging(event)
 
         elif self.mouse_mode in RESIZE_MODES:
@@ -144,12 +144,12 @@ class LevelView(MainView):
             edges = self._cursor_on_edge_of_object(level_object, event.position().toPoint())
 
             if is_resizable and edges:
-                if edges == Qt.RightEdge and level_object.expands() & EXPANDS_HORIZ:
-                    cursor = Qt.SizeHorCursor
-                elif edges == Qt.BottomEdge and level_object.expands() & EXPANDS_VERT:
-                    cursor = Qt.SizeVerCursor
+                if edges == Qt.Edge.RightEdge and level_object.expands() & EXPANDS_HORIZ:
+                    cursor = Qt.CursorShape.SizeHorCursor
+                elif edges == Qt.Edge.BottomEdge and level_object.expands() & EXPANDS_VERT:
+                    cursor = Qt.CursorShape.SizeVerCursor
                 elif (level_object.expands() & EXPANDS_BOTH) == EXPANDS_BOTH:
-                    cursor = Qt.SizeFDiagCursor
+                    cursor = Qt.CursorShape.SizeFDiagCursor
                 else:
                     return
 
@@ -159,22 +159,22 @@ class LevelView(MainView):
                 return
 
         if self.mouse_mode not in RESIZE_MODES:
-            self.setCursor(Qt.ArrowCursor)
+            self.setCursor(Qt.CursorShape.ArrowCursor)
 
-    def _cursor_on_edge_of_object(self, level_object: InLevelObject, pos: QPoint, edge_width: int = 4) -> Qt.Edges:
+    def _cursor_on_edge_of_object(self, level_object: InLevelObject, pos: QPoint, edge_width: int = 4) -> Qt.Edge:
         right = (level_object.get_rect().left() + level_object.get_rect().width()) * self.block_length
         bottom = (level_object.get_rect().top() + level_object.get_rect().height()) * self.block_length
 
         on_right_edge = pos.x() in range(right - edge_width, right)
         on_bottom_edge = pos.y() in range(bottom - edge_width, bottom)
 
-        edges = Qt.Edges()
+        edges = Qt.Edge()
 
         if on_right_edge:
-            edges |= Qt.RightEdge
+            edges |= Qt.Edge.RightEdge
 
         if on_bottom_edge:
-            edges |= Qt.BottomEdge
+            edges |= Qt.Edge.BottomEdge
 
         return edges
 
@@ -307,7 +307,7 @@ class LevelView(MainView):
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
-        self.setCursor(Qt.ArrowCursor)
+        self.setCursor(Qt.CursorShape.ArrowCursor)
 
     def _stop_resize(self):
         if not self.resizing_happened:
@@ -324,7 +324,7 @@ class LevelView(MainView):
 
         self.resizing_happened = False
         self.mouse_mode = MODE_FREE
-        self.setCursor(Qt.ArrowCursor)
+        self.setCursor(Qt.CursorShape.ArrowCursor)
 
     def _on_left_mouse_button_down(self, event: QMouseEvent):
         # 1 if clicking on background: deselect everything, start selection square
@@ -357,13 +357,13 @@ class LevelView(MainView):
             self._start_selection_square(event.position().toPoint())
 
     @staticmethod
-    def _resize_mode_from_edge(edge: Qt.Edges):
+    def _resize_mode_from_edge(edge: Qt.Edge):
         mode = 0
 
-        if edge & Qt.RightEdge:
+        if edge & Qt.Edge.RightEdge:
             mode |= MODE_RESIZE_HORIZ
 
-        if edge & Qt.BottomEdge:
+        if edge & Qt.Edge.BottomEdge:
             mode |= MODE_RESIZE_VERT
 
         return mode
@@ -416,7 +416,7 @@ class LevelView(MainView):
 
         self.mouse_mode = MODE_FREE
         self._object_was_selected_on_last_click = False
-        self.setCursor(Qt.ArrowCursor)
+        self.setCursor(Qt.CursorShape.ArrowCursor)
 
     def _stop_drag(self, drag_end_point: Position):
         if not self.dragging_happened:

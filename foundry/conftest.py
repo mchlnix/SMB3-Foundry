@@ -60,6 +60,7 @@ def main_window(qtbot):
     FoundryMainWindow.on_open_rom = mocked_open_rom_and_level_select
     FoundryMainWindow.showMaximized = lambda _: None  # don't open automatically
     FoundryMainWindow.safe_to_change = lambda _: True  # don't ask for confirmation on changed level
+    FoundryMainWindow.check_for_update_on_startup = lambda _: True  # don't check for update
 
     main_window = FoundryMainWindow()
 

@@ -54,7 +54,7 @@ class ScribeMainWindow(MainWindow):
         self.context_menu.paste_action.triggered.connect(
             lambda _: self._paste_objects(self.context_menu.get_position())
         )
-        self.context_menu.paste_action.setShortcut(Qt.CTRL + Qt.Key_V)
+        self.context_menu.paste_action.setShortcut(Qt.CTRL | Qt.Key_V)
 
         self.world_view = WorldView(self, self.level_ref, self.settings, self.context_menu)
         self.world_view.zoom_in()
@@ -112,9 +112,9 @@ class ScribeMainWindow(MainWindow):
 
         self.addToolBar(Qt.TopToolBarArea, self.menu_toolbar)
 
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_X), self, self._cut_objects)
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_C), self, self._copy_objects)
-        QShortcut(QKeySequence(Qt.CTRL + Qt.Key_V), self, self._paste_objects)
+        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_X), self, self._cut_objects)
+        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_C), self, self._copy_objects)
+        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_V), self, self._paste_objects)
 
         self._resize_for_level()
 
@@ -126,20 +126,20 @@ class ScribeMainWindow(MainWindow):
         self.file_menu.triggered.connect(self.on_file_menu)
 
         self.open_rom_action = self.file_menu.addAction("&Open ROM...")
-        self.open_rom_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_O)
+        self.open_rom_action.setShortcut(Qt.CTRL | Qt.SHIFT | Qt.Key_O)
         self.open_rom_action.setIcon(icon("folder.svg"))
 
         self.file_menu.addSeparator()
 
         self.save_rom_action = self.file_menu.addAction("&Save ROM")
-        self.save_rom_action.setShortcut(Qt.CTRL + Qt.Key_S)
+        self.save_rom_action.setShortcut(Qt.CTRL | Qt.Key_S)
         self.save_rom_action.setIcon(icon("save.svg"))
 
         self.save_rom_action.setEnabled(False)
         self.undo_stack.cleanChanged.connect(lambda: self.save_rom_action.setEnabled(not self.undo_stack.isClean()))
 
         self.save_as_rom_action = self.file_menu.addAction("Save ROM &As...")
-        self.save_as_rom_action.setShortcut(Qt.CTRL + Qt.SHIFT + Qt.Key_S)
+        self.save_as_rom_action.setShortcut(Qt.CTRL | Qt.SHIFT | Qt.Key_S)
         self.save_as_rom_action.setIcon(icon("save.svg"))
         self.file_menu.addSeparator()
 

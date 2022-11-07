@@ -17,7 +17,7 @@ class LocksList(TableWidget):
     def __init__(self, parent, level_ref: LevelRef):
         super(LocksList, self).__init__(parent, level_ref)
 
-        self.setDragDropMode(self.NoDragDrop)
+        self.setDragDropMode(self.DragDropMode.NoDragDrop)
 
         self.cellChanged.connect(self._save_fortress_fx)
 

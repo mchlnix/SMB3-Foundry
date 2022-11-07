@@ -17,6 +17,7 @@ def main_window(rom, qtbot):
     ScribeMainWindow.showMaximized = lambda _: None  # don't open automatically
     ScribeMainWindow.show = lambda _: None  # don't open automatically
     ScribeMainWindow.safe_to_change = lambda _: True  # don't ask for confirmation on changed level
+    ScribeMainWindow.check_for_update_on_startup = lambda _: True  # don't check for updates
     ToolWindow.show = lambda _: None
 
     main_window = ScribeMainWindow("")

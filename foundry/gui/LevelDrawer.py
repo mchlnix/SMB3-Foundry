@@ -380,7 +380,7 @@ class LevelDrawer:
             if self.settings.value("level view/draw_expansion"):
                 painter.save()
 
-                painter.setPen(Qt.NoPen)
+                painter.setPen(Qt.PenStyle.NoPen)
 
                 if level_object.expands() == EXPANDS_BOTH:
                     painter.setBrush(QColor(0xFF, 0, 0xFF, 0x80))
@@ -406,7 +406,7 @@ class LevelDrawer:
 
     def _draw_jumps(self, painter: QPainter, level: Level):
         for jump in level.jumps:
-            painter.setBrush(QBrush(QColor(0xFF, 0x00, 0x00), Qt.FDiagPattern))
+            painter.setBrush(QBrush(QColor(0xFF, 0x00, 0x00), Qt.BrushStyle.FDiagPattern))
 
             painter.drawRect(jump.get_rect(self.block_length, level.is_vertical))
 

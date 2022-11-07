@@ -39,7 +39,7 @@ class MainView(QWidget):
     ):
         super(MainView, self).__init__(parent)
 
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
 
@@ -98,7 +98,7 @@ class MainView(QWidget):
         if clicked_on_background:
             self._select_object(None)
         else:
-            if event.button() & Qt.LeftButton:
+            if event.button() & Qt.MouseButton.LeftButton:
                 self.mouse_mode = MODE_DRAG
 
             selected_objects = self.get_selected_objects()
@@ -118,11 +118,11 @@ class MainView(QWidget):
 
         pressed_button = event.button()
 
-        if pressed_button == Qt.LeftButton:
+        if pressed_button == Qt.MouseButton.LeftButton:
             self._on_left_mouse_button_down(event)
-        elif pressed_button == Qt.MiddleButton:
+        elif pressed_button == Qt.MouseButton.MiddleButton:
             self._on_middle_mouse_button_down(event)
-        elif pressed_button == Qt.RightButton:
+        elif pressed_button == Qt.MouseButton.RightButton:
             self._on_right_mouse_button_down(event)
         else:
             return super(MainView, self).mousePressEvent(event)
@@ -142,9 +142,9 @@ class MainView(QWidget):
 
         released_button = event.button()
 
-        if released_button == Qt.LeftButton:
+        if released_button == Qt.MouseButton.LeftButton:
             self._on_left_mouse_button_up(event)
-        elif released_button == Qt.RightButton:
+        elif released_button == Qt.MouseButton.RightButton:
             self._on_right_mouse_button_up(event)
         else:
             return super(MainView, self).mouseReleaseEvent(event)
@@ -306,7 +306,7 @@ class MainView(QWidget):
         touched_objects = [obj for obj in self.level_ref.get_all_objects() if sel_rect.intersects(obj.get_rect())]
 
         if touched_objects != self.level_ref.selected_objects:
-            self._set_selected_objects(touched_objects, not event.modifiers() & Qt.ShiftModifier)
+            self._set_selected_objects(touched_objects, not event.modifiers() & Qt.KeyboardModifier.ShiftModifier)
 
         self.update()
 

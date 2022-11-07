@@ -23,7 +23,7 @@ class TableWidget(QTableWidget):
     def __init__(self, parent, level_ref: LevelRef):
         super(TableWidget, self).__init__(parent)
 
-        self.setDragDropMode(self.InternalMove)
+        self.setDragDropMode(self.DragDropMode.InternalMove)
         self.setIconSize(QSize(32, 32))
         self.setAlternatingRowColors(True)
 
@@ -35,10 +35,10 @@ class TableWidget(QTableWidget):
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
-        self.setSelectionBehavior(self.SelectRows)
-        self.setSelectionMode(self.SingleSelection)
+        self.setSelectionBehavior(self.SelectionBehavior.SelectRows)
+        self.setSelectionMode(self.SelectionMode.SingleSelection)
 
-        self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.horizontalHeader().setStretchLastSection(True)
 
         self.itemSelectionChanged.connect(lambda: self.selection_changed.emit(self.selected_row))

@@ -11,7 +11,7 @@ class ObjectList(QListWidget):
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(self.SelectionMode.ExtendedSelection)
 
         self.level_ref: LevelRef = level_ref
         self.level_ref.data_changed.connect(self.update_content)
@@ -32,13 +32,13 @@ class ObjectList(QListWidget):
         )
 
     def mousePressEvent(self, event: QMouseEvent):
-        if event.button() == Qt.RightButton:
+        if event.button() == Qt.MouseButton.RightButton:
             self.on_right_down(event)
         else:
             return super(ObjectList, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if event.button() == Qt.RightButton:
+        if event.button() == Qt.MouseButton.RightButton:
             self.on_right_up(event)
         else:
             return super(ObjectList, self).mouseReleaseEvent(event)
@@ -82,7 +82,7 @@ class ObjectList(QListWidget):
         for index, level_object in enumerate(level_objects):
             item = self.item(index)
 
-            item.setData(Qt.UserRole, level_object)
+            item.setData(Qt.ItemDataRole.UserRole, level_object)
             item.setSelected(level_object.selected)
 
         self.blockSignals(False)
@@ -91,7 +91,7 @@ class ObjectList(QListWidget):
             self.scrollTo(self.selectedIndexes()[-1])
 
     def selected_objects(self):
-        return [self.item(index.row()).data(Qt.UserRole) for index in self.selectedIndexes()]
+        return [self.item(index.row()).data(Qt.ItemDataRole.UserRole) for index in self.selectedIndexes()]
 
     def on_selection_changed(self):
         selected_objects = self.selected_objects()

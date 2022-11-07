@@ -75,12 +75,12 @@ class WorldDrawer:
         painter.restore()
 
     def _draw_background(self, painter: QPainter, world: WorldMap):
-        bg_color = Qt.black
+        bg_color = Qt.GlobalColor.black
 
         painter.fillRect(world.get_rect(self.block_length), bg_color)
 
     def _draw_grid(self, painter: QPainter, world: WorldMap):
-        painter.setPen(QPen(Qt.gray, 1))
+        painter.setPen(QPen(Qt.GlobalColor.gray, 1))
 
         map_height = WORLD_MAP_HEIGHT
 
@@ -148,8 +148,12 @@ class WorldDrawer:
         x_left = 0
         x_right = (world.width - 1) * self.block_length
 
-        border_side_l = BORDER_SIDE_L.scaled(QSize(self.block_length, self.block_length), Qt.KeepAspectRatio)
-        border_side_r = BORDER_SIDE_R.scaled(QSize(self.block_length, self.block_length), Qt.KeepAspectRatio)
+        border_side_l = BORDER_SIDE_L.scaled(
+            QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio
+        )
+        border_side_r = BORDER_SIDE_R.scaled(
+            QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio
+        )
 
         for y in range(WORLD_MAP_HEIGHT + 3):
             painter.drawImage(x_left, y * self.block_length, border_side_l)
@@ -175,10 +179,10 @@ class WorldDrawer:
             bottom_border.draw(painter, x * self.block_length, y_last_row, self.block_length)
 
         # border corners
-        border_ul = BORDER_UL.scaled(QSize(self.block_length, self.block_length), Qt.KeepAspectRatio)
-        border_ur = BORDER_UR.scaled(QSize(self.block_length, self.block_length), Qt.KeepAspectRatio)
-        border_bl = BORDER_BL.scaled(QSize(self.block_length, self.block_length), Qt.KeepAspectRatio)
-        border_br = BORDER_BR.scaled(QSize(self.block_length, self.block_length), Qt.KeepAspectRatio)
+        border_ul = BORDER_UL.scaled(QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio)
+        border_ur = BORDER_UR.scaled(QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio)
+        border_bl = BORDER_BL.scaled(QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio)
+        border_br = BORDER_BR.scaled(QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio)
 
         painter.drawImage(x_left, y_second_row, border_ul)
         painter.drawImage(x_right, y_second_row, border_ur)
