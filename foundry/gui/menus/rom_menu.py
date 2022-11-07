@@ -7,6 +7,7 @@ from foundry import icon
 from foundry.game.gfx.objects import LevelObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.BlockViewer import BlockViewer
+from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.LevelViewer import LevelViewer
 from foundry.gui.ObjectViewer import ObjectViewer
 from foundry.gui.PaletteViewer import PaletteViewer
@@ -41,7 +42,12 @@ class RomMenu(QMenu):
 
     def _on_trigger(self, action: QAction):
         if action is self._view_levels_in_memory_action:
-            self._level_viewer = LevelViewer(self)
+            pd = LevelParseProgressDialog()
+
+            if pd.wasCanceled():
+                return
+
+            self._level_viewer = LevelViewer(self, pd.levels_per_object_set, pd.levels_by_address)
             self._level_viewer.show()
 
         elif action is self._view_blocks_action:
