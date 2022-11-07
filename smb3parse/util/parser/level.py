@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.level_object import goes_to_next_level, object_set_to_definition
 from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
 
@@ -13,6 +14,10 @@ class ParsedLevel:
     screen_memory: list[int]
     parsed_objects: list[ParsedObject]
     parsed_enemies: list[ParsedEnemy] = field(default_factory=list)
+
+    @property
+    def length(self):
+        return HEADER_LENGTH + sum(len(obj.obj_bytes) for obj in self.parsed_objects)
 
     def has_jump(self):
         return any(
