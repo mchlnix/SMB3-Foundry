@@ -339,6 +339,8 @@ class FoundryMainWindow(MainWindow):
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_A), self, self.level_view.select_all)
         QShortcut(QKeySequence(Qt.CTRL + Qt.Key_L), self, self.object_dropdown.setFocus)
 
+        self.check_for_update_on_startup()
+
         self.on_open_rom(path_to_rom)
 
         self.showMaximized()

@@ -46,6 +46,8 @@ class ScribeMainWindow(MainWindow):
 
         self.settings = Settings("mchlnix", "smb3scribe")
 
+        self.check_for_update_on_startup()
+
         self.on_open_rom(path_to_rom)
 
         self.context_menu = WorldContextMenu(self.level_ref)

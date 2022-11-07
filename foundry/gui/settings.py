@@ -25,6 +25,9 @@ SETTINGS["editor/default dir path"] = ""
 SETTINGS["editor/custom default dir path"] = ""
 SETTINGS["editor/show_block_item_in_toolbar"] = True
 
+SETTINGS["editor/update_on_startup"] = False
+SETTINGS["editor/asked_for_startup"] = False
+
 SETTINGS["level view/draw_mario"] = True
 SETTINGS["level view/draw_jumps"] = False
 SETTINGS["level view/draw_grid"] = False
