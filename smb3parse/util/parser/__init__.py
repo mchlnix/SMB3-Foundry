@@ -1,6 +1,9 @@
 MEM_LevelStartA = 0x61
 MEM_LevelStartB = 0x62
 
+MEM_EnemiesStartA = 0x67
+MEM_EnemiesStartB = 0x68
+
 MEM_Player_Y = 0x0075
 MEM_Player_Screen = 0x0077
 MEM_Player_X = 0x0079

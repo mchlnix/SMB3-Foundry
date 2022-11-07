@@ -8,6 +8,8 @@ from smb3parse.data_points import Position
 from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
 from smb3parse.util.parser import (
     MEM_ADDRESS_LABELS,
+    MEM_EnemiesStartA,
+    MEM_EnemiesStartB,
     MEM_Enemy_Palette,
     MEM_Graphics_Set,
     MEM_LevelStartA,
@@ -90,6 +92,8 @@ class NesCPU(mpu6502.MPU):
         self.memory[MEM_Level_TileSet] = object_set_num
         self.memory[MEM_LevelStartA] = level_offset & 0xFF
         self.memory[MEM_LevelStartB] = level_offset >> 8
+        self.memory[MEM_EnemiesStartA] = enemy_address & 0xFF
+        self.memory[MEM_EnemiesStartB] = enemy_address >> 8
 
         self.memory[MEM_PAGE_A000] = self.a000_bank = self.rom.int(PAGE_A000_ByTileset + object_set_num)
         self.memory[MEM_PAGE_C000] = self.c000_bank = self.rom.int(PAGE_C000_ByTileset + object_set_num)
@@ -99,13 +103,12 @@ class NesCPU(mpu6502.MPU):
 
         level = self._load_level()
 
-        enemy_address += 1
+        if enemy_address >= 0x0:
+            while self.rom.int(enemy_address) != 0xFF:
+                enemy_bytes = list(map(int, self.rom.read(enemy_address, 3)))
+                level.parsed_enemies.append(ParsedEnemy(ENEMY_ITEM_OBJECT_SET, enemy_bytes, enemy_address))
 
-        while self.rom.int(enemy_address) != 0xFF:
-            enemy_bytes = list(map(int, self.rom.read(enemy_address, 3)))
-            level.parsed_enemies.append(ParsedEnemy(ENEMY_ITEM_OBJECT_SET, enemy_bytes, enemy_address))
-
-            enemy_address += 3
+                enemy_address += 3
 
         return level
 
