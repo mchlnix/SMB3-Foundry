@@ -110,7 +110,7 @@ object_set_level_data = [
     ObjectSetLevelData(0x8000, "Sky", range(0x227E0, 0x2400F)),
     ObjectSetLevelData(0xC000, "Piranha Plant", range(0x26A6F, 0x2800F)),
     ObjectSetLevelData(0xA000, "Water", range(0x24BA7, 0x2600F)),
-    ObjectSetLevelData(0x0000, "Mushroom House", range(0x0000, 0x0000)),
+    ObjectSetLevelData(0xA000, "Mushroom House", range(0x0000, 0x0000)),
     ObjectSetLevelData(0xA000, "Pipe", range(0x24BA7, 0x2600F)),
     ObjectSetLevelData(0xE000, "Desert", range(0x28F3F, 0x2A00F)),
     ObjectSetLevelData(0x14000, "Ship", range(0x2EC07, 0x3000F)),

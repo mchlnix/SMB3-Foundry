@@ -46,7 +46,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_WARP_WORLD_INDEX,
 )
-from smb3parse.objects.object_set import AIR_SHIP_OBJECT_SET, ObjectSet
+from smb3parse.objects.object_set import AIR_SHIP_OBJECT_SET, MUSHROOM_OBJECT_SET, ObjectSet
 from smb3parse.util.rom import Rom
 
 
@@ -553,6 +553,18 @@ class WorldMapData(_IndexedMixin, DataPoint):
     @big_q_block_level_address.setter
     def big_q_block_level_address(self, value):
         self.big_q_block_level_offset = value - ObjectSet(self.big_q_block_object_set).level_offset
+
+    @property
+    def toad_warp_level_address(self):
+        return ObjectSet(self.toad_warp_object_set).level_offset + self.toad_warp_level_offset
+
+    @toad_warp_level_address.setter
+    def toad_warp_level_address(self, value):
+        self.toad_warp_level_offset = value - ObjectSet(self.toad_warp_object_set).level_offset
+
+    @property
+    def toad_warp_object_set(self):
+        return MUSHROOM_OBJECT_SET
 
     @property
     def tile_data_size(self):

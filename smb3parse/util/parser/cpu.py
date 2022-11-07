@@ -116,6 +116,7 @@ class NesCPU(mpu6502.MPU):
 
         self.reset()
         self.run_until(ROM_EndObjectParsing)
+        self._maybe_finish_parsing_last_object()
 
         return ParsedLevel(
             object_set_num=self.memory[MEM_Level_TileSet],
