@@ -33,7 +33,6 @@ from foundry import (
     icon,
 )
 from foundry.game.File import ROM
-from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.Palette import PaletteGroup, restore_all_palettes, save_all_palette_groups
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
@@ -87,6 +86,7 @@ from smb3parse.constants import (
 )
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.levels.world_map import WorldMap as SMB3World
+from smb3parse.objects.object_set import OBJECT_SET_NAMES
 from smb3parse.util.rom import Rom as SMB3Rom
 
 

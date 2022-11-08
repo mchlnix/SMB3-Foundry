@@ -33,6 +33,25 @@ MAX_OBJECT_SET = 0x0F
 # amount of consecutive objects in a group, that share the same byte length
 OBJECT_GROUP_SIZE = 16
 
+OBJECT_SET_NAMES = [
+    "Overworld",
+    "Plains",
+    "Dungeon",
+    "Hilly",
+    "Sky",
+    "Piranha Plant",
+    "Water",
+    "Mushroom",
+    "Pipe",
+    "Desert",
+    "Ship",
+    "Giant",
+    "Ice",
+    "Cloudy",
+    "Underground",
+    "Spade Bonus",
+]
+
 
 def assert_valid_object_set_number(object_set_number: int):
     if not is_valid_object_set_number(object_set_number):

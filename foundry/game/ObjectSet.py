@@ -1,25 +1,6 @@
 from foundry.game.ObjectDefinitions import ObjectDefinition, load_object_definitions
 from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, ObjectSet as SMB3ObjectSet
 
-OBJECT_SET_NAMES = [
-    "Overworld",
-    "Plains",
-    "Dungeon",
-    "Hilly",
-    "Sky",
-    "Piranha Plant",
-    "Water",
-    "Mushroom",
-    "Pipe",
-    "Desert",
-    "Ship",
-    "Giant",
-    "Ice",
-    "Cloudy",
-    "Underground",
-    "Spade Bonus",
-]
-
 
 class ObjectSet(SMB3ObjectSet):
     def __init__(self, object_set_number: int):

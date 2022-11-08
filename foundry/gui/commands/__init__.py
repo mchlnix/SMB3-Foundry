@@ -7,7 +7,6 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.File import ROM
-from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.Palette import PaletteGroup, change_color
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
@@ -16,6 +15,7 @@ from foundry.gui.asm import load_asm_enemy
 from smb3parse.constants import PIPE_PAIR_COUNT
 from smb3parse.data_points import Position
 from smb3parse.data_points.pipe_data import PipeData
+from smb3parse.objects.object_set import OBJECT_SET_NAMES
 
 if TYPE_CHECKING:
     from foundry.gui.LevelView import LevelView

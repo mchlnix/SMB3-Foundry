@@ -5,7 +5,6 @@ from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap,
 from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import get_level_thumbnail
-from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import get_tile, get_worldmap_tile
 from foundry.game.gfx.objects import LevelObject, MapTile
@@ -35,6 +34,7 @@ from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_NAMES, TILE_SPADE_HOUSE
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_HEIGHT
+from smb3parse.objects.object_set import OBJECT_SET_NAMES
 
 
 class WorldView(MainView):

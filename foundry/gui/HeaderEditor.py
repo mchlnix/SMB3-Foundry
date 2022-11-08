@@ -14,7 +14,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from foundry.game.ObjectSet import OBJECT_SET_NAMES
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
@@ -29,6 +28,7 @@ from foundry.gui.commands import (
     SetNextAreaObjectSet,
 )
 from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
+from smb3parse.objects.object_set import OBJECT_SET_NAMES
 
 LEVEL_LENGTHS = [0x10 * (i + 1) for i in range(0, 2**4)]
 STR_LEVEL_LENGTHS = [f"{length - 1:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS]
