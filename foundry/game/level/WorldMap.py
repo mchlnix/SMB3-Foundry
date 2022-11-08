@@ -285,7 +285,7 @@ class WorldMap(LevelLike):
     def fully_loaded(self):
         return True
 
-    def save_to_rom(self, rom: Rom = None):
+    def save_to_rom(self, rom: Optional[Rom] = None):
         self.write_tiles()
 
         self.data.map_start_y = self.start_pos.pos.y << 4

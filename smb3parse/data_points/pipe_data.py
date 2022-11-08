@@ -1,3 +1,5 @@
+from typing import Optional
+
 from smb3parse.constants import PipewayCtlr_MapScrlXHi, PipewayCtlr_MapX, PipewayCtlr_MapXHi, PipewayCtlr_MapY
 from smb3parse.data_points import Position
 from smb3parse.data_points.util import DataPoint, _IndexedMixin
@@ -82,7 +84,7 @@ class PipeData(_IndexedMixin, DataPoint):
 
         self.scroll_and_x_high_left, self.scroll_and_x_high_right = self._rom.nibbles(self.scroll_and_x_high_address)
 
-    def write_back(self, rom: Rom = None):
+    def write_back(self, rom: Optional[Rom] = None):
         if rom is None:
             rom = self._rom
 

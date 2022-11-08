@@ -6,7 +6,7 @@ from py65.disassembler import Disassembler
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, PAGE_C000_ByTileset
 from smb3parse.data_points import Position
 from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
-from smb3parse.util.parser import (
+from smb3parse.util.parser.constants import (
     MEM_ADDRESS_LABELS,
     MEM_EnemiesStartA,
     MEM_EnemiesStartB,

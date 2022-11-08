@@ -1,6 +1,6 @@
 from builtins import NotImplementedError
 from dataclasses import dataclass
-from typing import overload
+from typing import Optional, overload
 
 from smb3parse.levels import (
     FIRST_VALID_ROW,
@@ -127,7 +127,7 @@ class DataPoint:
     def read_values(self):
         raise NotImplementedError
 
-    def write_back(self, rom: Rom = None):
+    def write_back(self, rom: Optional[Rom] = None):
         raise NotImplementedError
 
 

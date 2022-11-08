@@ -1,3 +1,5 @@
+from typing import Optional
+
 from smb3parse.constants import (
     FortressFX_MapCompIdx,
     FortressFX_MapLocation,
@@ -100,7 +102,7 @@ class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):
         self.v_addr_high = self._rom.int(self.v_addr_high_address)
         self.v_addr_low = self._rom.int(self.v_addr_low_address)
 
-    def write_back(self, rom: Rom = None):
+    def write_back(self, rom: Optional[Rom] = None):
         if rom is None:
             rom = self._rom
 

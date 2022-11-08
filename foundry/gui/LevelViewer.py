@@ -7,13 +7,11 @@ from foundry.game.File import ROM
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import PAGE_A000_ByTileset
 from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, PLAINS_OBJECT_SET, SPADE_BONUS_OBJECT_SET
-from smb3parse.util.parser.level import ParsedLevel
+from smb3parse.util.parser import FoundLevel
 
 
 class LevelViewer(CustomChildWindow):
-    def __init__(
-        self, parent, addresses_by_object_set: dict[int, list[int]], levels_by_address: dict[int, ParsedLevel]
-    ):
+    def __init__(self, parent, addresses_by_object_set: dict[int, list[int]], levels_by_address: dict[int, FoundLevel]):
         super(LevelViewer, self).__init__(parent, "Level Viewer")
 
         self.addresses_by_object_set = addresses_by_object_set
@@ -34,10 +32,10 @@ class LevelViewer(CustomChildWindow):
 
         for address in sorted(levels_by_address.keys()):
             level = levels_by_address[address]
-            tab_index = prg_banks.index(prg_banks_by_object_set[level.object_set_num])
+            tab_index = prg_banks.index(prg_banks_by_object_set[level.data.object_set_num])
 
             byte_view = self._tab_widget.widget(tab_index)
-            byte_view.levels_in_order.append((level.object_set_num - 1, address, level.length))
+            byte_view.levels_in_order.append((level.data.object_set_num - 1, address, level.data.length))
 
 
 class ByteView(QWidget):

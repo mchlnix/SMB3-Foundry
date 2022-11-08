@@ -1,5 +1,7 @@
 from collections import defaultdict
 
+from typing import Optional
+
 from smb3parse.constants import (
     AIRSHIP_TRAVEL_SET_COUNT,
     AIRSHIP_TRAVEL_SET_SIZE,
@@ -383,7 +385,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.toad_warp_level_offset = self._rom.little_endian(self.toad_warp_level_offset_address)
         self.toad_warp_item = self._rom.little_endian(self.toad_warp_item_address)
 
-    def write_back(self, rom: Rom = None):
+    def write_back(self, rom: Optional[Rom] = None):
         if rom is None:
             rom = self._rom
 
