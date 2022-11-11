@@ -58,8 +58,6 @@ class BlockViewer(CustomChildWindow):
         self.setStatusBar(QStatusBar(self))
         self.sprite_bank.status_message_changed.connect(self.statusBar().showMessage)
 
-        return
-
     @property
     def object_set(self):
         return self._object_set

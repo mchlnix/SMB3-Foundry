@@ -20,8 +20,7 @@ def save_m3l_filename(default_path=""):
 
 def load_m3l(pathname: str, level: Level):
     try:
-        with open(pathname, "rb") as m3l_file:
-            m3l_data = bytearray(m3l_file.read())
+        m3l_data = bytearray(Path(pathname).read_bytes())
     except IOError as exp:
         QMessageBox.warning(None, type(exp).__name__, f"Cannot open file '{pathname}'.")
         return
@@ -33,7 +32,6 @@ def load_m3l(pathname: str, level: Level):
 
 def save_m3l(pathname: str, m3l_bytes: bytearray):
     try:
-        with open(pathname, "wb") as m3l_file:
-            m3l_file.write(m3l_bytes)
+        Path(pathname).write_bytes(m3l_bytes)
     except IOError as exp:
         QMessageBox.warning(None, type(exp).__name__, f"Couldn't save level to '{pathname}'.")

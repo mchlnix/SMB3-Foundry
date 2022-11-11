@@ -53,7 +53,7 @@ if __name__ == "__main__":
         box.setWindowTitle("Crash report")
         box.setText(
             f"An unexpected error occurred! Please contact the developers at {github_issue_link} "
-            f"with the error below:\n\n{str(e)}\n\n{traceback.format_exc()}"
+            f"with the error below:\n\n{e}\n\n{traceback.format_exc()}"
         )
         box.exec()
         raise

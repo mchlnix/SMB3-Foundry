@@ -1,6 +1,7 @@
 import pathlib
 from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
+from pathlib import Path
 from typing import Optional, Union
 
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
@@ -135,8 +136,7 @@ class Rom:
         return Rom(pathlib.Path(path).read_bytes())
 
     def save_to(self, path: PathLike):
-        with open(path, "wb") as file:
-            file.write(self._data)
+        Path(path).open("wb").write(self._data)
 
     def int(self, offset: int) -> int:
         read_bytes = self.read(offset, 1)

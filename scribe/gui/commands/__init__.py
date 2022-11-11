@@ -132,7 +132,7 @@ class WorldPaletteIndex(QUndoCommand):
         self.old_index = world.data.palette_index
         self.new_index = new_index
 
-        self.setText(f"Setting Palette Index to {hex(new_index)}")
+        self.setText(f"Setting Palette Index to {new_index:#x}")
 
     def undo(self):
         self.world.data.palette_index = self.old_index
@@ -153,7 +153,7 @@ class WorldBottomTile(QUndoCommand):
         self.old_index = world.data.bottom_border_tile
         self.new_index = new_index
 
-        self.setText(f"Setting Bottom Tile to {hex(new_index)}")
+        self.setText(f"Setting Bottom Tile to {new_index:#x}")
 
     def undo(self):
         self.world.data.bottom_border_tile = self.old_index
@@ -171,7 +171,7 @@ class SetLevelAddress(QUndoCommand):
         self.old_address = data.level_address
         self.new_address = new_address
 
-        self.setText(f"Set LP #{self.data.index + 1} Level Address to {hex(new_address)}")
+        self.setText(f"Set LP #{self.data.index + 1} Level Address to {new_address:#x}")
 
     def undo(self):
         self.data.level_address = self.old_address
@@ -189,7 +189,7 @@ class SetEnemyAddress(QUndoCommand):
         self.old_address = data.enemy_address
         self.new_address = new_address
 
-        self.setText(f"Set LP #{self.data.index + 1} Enemy Address to {hex(new_address)}")
+        self.setText(f"Set LP #{self.data.index + 1} Enemy Address to {new_address:#x}")
 
     def undo(self):
         self.data.enemy_address = self.old_address

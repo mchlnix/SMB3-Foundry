@@ -48,7 +48,7 @@ def test_load_m3l(main_window, qtbot):
     open_m3l_action.trigger()
 
     # THEN the level ref contains the level from the m3l and they consist of the same bytes
-    m3l_data = bytearray(open(test_m3l_path, "rb").read())
+    m3l_data = bytearray(Path(test_m3l_path).read_bytes())
 
     # level number is not preserved
     m3l_data[1] = 0

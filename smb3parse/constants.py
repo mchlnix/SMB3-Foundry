@@ -335,11 +335,11 @@ def update_global_offsets(path_to_global_list: Union[str, Path]):
     if not path_to_global_list.exists():
         return
 
-    with open(path_to_global_list, "r") as label_file:
-        for line in label_file.readlines():
+    with path_to_global_list.open("r") as label_file:
+        for line in label_file:
             label_name, hex_address = line.split(":")
 
-            if label_name.startswith("PRG0") or label_name.startswith("_"):
+            if label_name.startswith(("PRG0", "_")):
                 continue
 
             global_address = int(hex_address, 16)

@@ -93,8 +93,7 @@ def save_asm_filename(what: str, default_path=""):
 
 def load_asm_level(pathname: PathLike, level: "Level"):
     try:
-        with open(pathname, "r") as asm_file:
-            asm_level_data = asm_file.read()
+        asm_level_data = Path(pathname).read_text()
     except IOError as exp:
         QMessageBox.critical(NO_PARENT, type(exp).__name__, f"Cannot open file '{pathname}'.")
         return
@@ -116,8 +115,7 @@ def load_asm_level(pathname: PathLike, level: "Level"):
 
 def load_asm_enemy(pathname: PathLike, level: "Level"):
     try:
-        with open(pathname, "r") as asm_file:
-            asm_enemy_data = asm_file.read()
+        asm_enemy_data = Path(pathname).read_text()
     except IOError as exp:
         QMessageBox.warning(NO_PARENT, type(exp).__name__, f"Cannot open file '{pathname}'.")
         return
@@ -131,8 +129,7 @@ def load_asm_enemy(pathname: PathLike, level: "Level"):
 
 def save_asm(what: str, pathname: PathLike, asm_data: str):
     try:
-        with open(pathname, "w") as asm_file:
-            asm_file.write(asm_data)
+        Path(pathname).write_text(asm_data)
     except IOError as exp:
         QMessageBox.warning(NO_PARENT, type(exp).__name__, f"Couldn't save {what} to '{pathname}'.")
 

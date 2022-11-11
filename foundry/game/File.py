@@ -1,4 +1,5 @@
 from os.path import basename
+from pathlib import Path
 from typing import Optional
 
 from smb3parse.util.rom import INESHeader, Rom
@@ -61,8 +62,7 @@ class ROM(Rom):
 
     @staticmethod
     def save_to_file(path: str, set_new_path=True):
-        with open(path, "wb") as f:
-            f.write(bytearray(ROM.rom_data))
+        Path(path).open("wb").write(bytearray(ROM.rom_data))
 
         if ROM.additional_data:
             with open(path, "ab") as f:

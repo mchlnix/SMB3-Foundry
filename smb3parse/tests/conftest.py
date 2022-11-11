@@ -26,7 +26,7 @@ def rom() -> Generator[Rom, None, None]:
             f"To run the test suite, place a US SMB3 Rom named '{test_rom_path}' in the root of the repository."
         )
 
-    with open(test_rom_path, "rb") as rom_file:
+    with test_rom_path.open("rb") as rom_file:
         data = bytearray(rom_file.read())
         yield Rom(data, INESHeader.from_buffer_copy(data))
 

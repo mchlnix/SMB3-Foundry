@@ -5,6 +5,7 @@ import pathlib
 import shlex
 import subprocess
 import tempfile
+from pathlib import Path
 from typing import Optional
 
 from PySide6.QtCore import QPoint, QSize
@@ -400,15 +401,11 @@ class FoundryMainWindow(MainWindow):
             "enemy_data": enemy_data,
         }
 
-        with open(auto_save_level_data_path, "w") as level_data_file:
-            level_data_file.write(json.dumps(data_dict))
+        Path(auto_save_level_data_path).write_text(json.dumps(data_dict))
 
     def _load_auto_save(self):
         # rom already loaded
-        with open(auto_save_level_data_path, "r") as level_data_file:
-            json_data = level_data_file.read()
-
-            data_dict = json.loads(json_data)
+        data_dict = json.loads(Path(auto_save_level_data_path).read_text())
 
         object_address = data_dict["object_address"]
         object_data = bytearray(base64.b64decode(data_dict["object_data"]))
@@ -462,7 +459,7 @@ class FoundryMainWindow(MainWindow):
 
         ROM().save_to(path_to_temp_rom)
 
-        temp_rom = self._open_rom(path_to_temp_rom)
+        temp_rom = SMB3Rom.from_file(path_to_temp_rom)
 
         if not self._put_current_level_to_level_1_1(temp_rom):
             return
@@ -493,15 +490,7 @@ class FoundryMainWindow(MainWindow):
         try:
             subprocess.run([emulator, *arguments])
         except Exception as e:
-            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
-
-    @staticmethod
-    def _open_rom(path_to_rom):
-        with open(path_to_rom, "rb") as smb3_rom:
-            data = smb3_rom.read()
-
-        rom = SMB3Rom(bytearray(data))
-        return rom
+            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{e}")
 
     def _show_jump_dest(self):
         header_editor = HeaderEditor(self, self.level_ref)

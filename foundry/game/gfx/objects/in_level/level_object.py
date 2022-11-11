@@ -213,11 +213,9 @@ class LevelObject(InLevelObject):
         self.rendered_width = new_width = self.width
         self.rendered_height = new_height = self.height
 
-        try:
+        # if the object has not been added yet, stick with the one given in the constructor
+        if self in self.objects_ref:
             self.index_in_level = self.objects_ref.index(self)
-        except ValueError:
-            # the object has not been added yet, so stick with the one given in the constructor
-            pass
 
         blocks_to_draw = []
 

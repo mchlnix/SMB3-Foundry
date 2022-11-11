@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional
 
 from PySide6.QtGui import QColor
@@ -135,8 +136,7 @@ def restore_all_palettes():
 
 palette_file = root_dir.joinpath("data", "Default.pal")
 
-with open(palette_file, "rb") as f:
-    color_data = f.read()
+color_data = Path(palette_file).open("rb").read()
 
 offset = 0x18  # first color position
 

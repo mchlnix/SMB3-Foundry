@@ -168,7 +168,7 @@ class PipePairMixin(SettingsMixin):
                 assert self.original_pipe_item is not current_pipe_item
 
                 self.original_pipe_item.y_position = self.original_pipe_y_value
-                self.undo_stack.beginMacro(f"Pipe Pair Exits Index to {hex(current_pipe_item.y_position)}")
+                self.undo_stack.beginMacro(f"Pipe Pair Exits Index to {current_pipe_item.y_position:#x}")
 
                 self.undo_stack.push(RemoveObjects(self.level_ref.level, [self.original_pipe_item]))
                 self.undo_stack.push(AddObject(self.level_ref.level, current_pipe_item))

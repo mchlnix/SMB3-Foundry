@@ -37,7 +37,7 @@ def _test_object_against_reference(level_object: LevelObject, qtbot, minimal=Fal
 
     view.setGeometry(0, 0, *level_object.display_size().toTuple())
 
-    image_name = f"object_set_{object_set_number}_domain_{level_object.domain}_index_{hex(level_object.obj_index)}.png"
+    image_name = f"object_set_{object_set_number}_domain_{level_object.domain}_index_{level_object.obj_index:#x}.png"
 
     if minimal:
         image_name = "minimal_" + image_name

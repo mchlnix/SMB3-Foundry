@@ -267,7 +267,7 @@ class ScribeMainWindow(MainWindow):
 
         ROM().save_to(path_to_temp_rom)
 
-        temp_rom = self._open_rom(path_to_temp_rom)
+        temp_rom = SMB3Rom.from_file(path_to_temp_rom)
         self.world_view.world.save_to_rom(temp_rom)
 
         temp_rom.write(STARTING_WORLD_INDEX_ADDRESS, self.world_view.world.internal_world_map.number - 1)
@@ -293,15 +293,7 @@ class ScribeMainWindow(MainWindow):
         try:
             subprocess.run([emulator, *arguments])
         except Exception as e:
-            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{str(e)}")
-
-    @staticmethod
-    def _open_rom(path_to_rom):
-        with open(path_to_rom, "rb") as smb3_rom:
-            data = smb3_rom.read()
-
-        rom = SMB3Rom(bytearray(data))
-        return rom
+            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{e}")
 
     def on_open_rom(self, path_to_rom=""):
         if not self.safe_to_change():
@@ -326,8 +318,6 @@ class ScribeMainWindow(MainWindow):
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
             return
-
-        return
 
     def load_level(self, world_number: int):
         world = SMB3WorldMap.from_world_number(ROM(), world_number)

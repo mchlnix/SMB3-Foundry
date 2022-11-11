@@ -1,5 +1,6 @@
 from enum import Enum
 from functools import lru_cache
+from pathlib import Path
 
 from foundry import data_dir
 from smb3parse.objects.level_object import ENEMY_OBJECT_DEFINITION, object_set_to_definition
@@ -126,8 +127,7 @@ def load_object_definitions(object_set):
     if object_definition == ENEMY_OBJECT_DEFINITION:
         return object_metadata[object_definition]
 
-    with open(data_dir.joinpath(f"romobjs{object_definition}.dat"), "rb") as obj_def:
-        data = obj_def.read()
+    data = Path(data_dir.joinpath(f"romobjs{object_definition}.dat")).read_bytes()
 
     assert len(data) > 0
 

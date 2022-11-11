@@ -33,7 +33,7 @@ class SetLevelAddressData(QUndoCommand):
         self.new_header_offset = header_offset
         self.new_enemy_offset = enemy_offset
 
-        self.setText(f"Save Level to {hex(self.new_header_offset)} and {hex(self.new_enemy_offset)}")
+        self.setText(f"Save Level to {self.new_header_offset:#x} and {self.new_enemy_offset:#x}")
 
     def undo(self):
         self.level.set_addresses(self.old_header_offset, self.old_enemy_offset)
@@ -46,7 +46,7 @@ class AttachLevelToRom(SetLevelAddressData):
     def __init__(self, level: Level, header_offset: int, enemy_offset: int):
         super(AttachLevelToRom, self).__init__(level, header_offset, enemy_offset)
 
-        self.setText(f"Attach Level to {hex(self.new_header_offset)} and {hex(self.new_enemy_offset)}")
+        self.setText(f"Attach Level to {self.new_header_offset:#x} and {self.new_enemy_offset:#x}")
 
 
 class DetachLevelFromRom(SetLevelAddressData):
@@ -85,14 +85,14 @@ class SetNextAreaObjectAddress(SetLevelAttribute):
     def __init__(self, level: Level, new_address: int):
         super(SetNextAreaObjectAddress, self).__init__(level, "next_area_objects", new_address)
 
-        self.setText(f"Object Address of Next Area to {hex(new_address)}")
+        self.setText(f"Object Address of Next Area to {new_address:#x}")
 
 
 class SetNextAreaEnemyAddress(SetLevelAttribute):
     def __init__(self, level: Level, new_address: int):
         super(SetNextAreaEnemyAddress, self).__init__(level, "next_area_enemies", new_address)
 
-        self.setText(f"Enemy Address of Next Area to {hex(new_address)}")
+        self.setText(f"Enemy Address of Next Area to {new_address:#x}")
 
 
 class SetNextAreaObjectSet(SetLevelAttribute):

@@ -117,7 +117,7 @@ class WorldMap(LevelBase):
         try:
             self.number = memory_addresses.index(layout_address) + 1
         except ValueError:
-            raise ValueError(f"World map was not found at given memory address {hex(layout_address)}.")
+            raise ValueError(f"World map was not found at given memory address {layout_address:x}.")
 
         self.data = WorldMapData(self.rom, self.world_index)
 

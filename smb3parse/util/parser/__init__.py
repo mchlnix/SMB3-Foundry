@@ -114,7 +114,7 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
 
                 continue
 
-            if object_set_number in [SPADE_BONUS_OBJECT_SET]:
+            if object_set_number == SPADE_BONUS_OBJECT_SET:
                 continue
 
             print(f"W{world_num + 1}", hex(level_address), hex(enemy_address), object_set_number)

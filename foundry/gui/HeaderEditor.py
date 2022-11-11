@@ -285,7 +285,7 @@ class HeaderEditor(CustomDialog):
         object_set_number = level_selector.object_set
 
         self.undo_stack.beginMacro(
-            f"Set Next Area to {hex(level_address)}/{hex(enemy_address)}, {OBJECT_SET_NAMES[object_set_number]}"
+            f"Set Next Area to {level_address:#x}/{enemy_address:#x}, {OBJECT_SET_NAMES[object_set_number]}"
         )
 
         self.undo_stack.push(SetNextAreaObjectSet(self.level, object_set_number))

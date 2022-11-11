@@ -155,7 +155,7 @@ class NesCPU(mpu6502.MPU):
 
                 optional_byte = hex(self.memory[parsed_object.pos_in_mem + 3])
 
-                print(f"--> Parsing Object from {hex(parsed_object.pos_in_mem)}, {object_bytes_text} ({optional_byte})")
+                print(f"--> Parsing Object from {parsed_object.pos_in_mem:#x}, {object_bytes_text} ({optional_byte})")
 
         elif self.pc == ROM_EndObjectParsing:
             self._maybe_finish_parsing_last_object()

@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from PySide6.QtCore import QMargins, QSize, Signal, SignalInstance
@@ -309,7 +310,7 @@ class WorldMapLevelSelect(QScrollArea):
 
             level_signal.emit(self.world.level_name_at_position(x, y), level_pointer.data)
         except ValueError:
-            pass
+            logging.exception()
 
     def sizeHint(self) -> QSize:
         orig_size = super(WorldMapLevelSelect, self).sizeHint()
