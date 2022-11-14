@@ -98,3 +98,6 @@ class ROM(Rom):
     def bulk_write(self, data: bytearray, position: int):
         position = self.prg_normalize(position)
         ROM.rom_data[position : position + len(data)] = data
+
+    def search(self, needle: bytes) -> int:
+        return ROM.rom_data.find(needle)
