@@ -515,7 +515,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
     @property
     def airship_level_address(self):
         # TODO make object set rom dependent
-        return ObjectSet(self.airship_level_object_set).level_offset + self.airship_level_offset
+        return ObjectSet(self._rom, self.airship_level_object_set).level_offset + self.airship_level_offset
 
     @airship_level_address.setter
     def airship_level_address(self, value):
@@ -528,11 +528,11 @@ class WorldMapData(_IndexedMixin, DataPoint):
     @property
     def coin_ship_level_address(self):
         # TODO make object set rom dependent
-        return ObjectSet(self.coin_ship_level_object_set).level_offset + self.coin_ship_level_offset
+        return ObjectSet(self._rom, self.coin_ship_level_object_set).level_offset + self.coin_ship_level_offset
 
     @coin_ship_level_address.setter
     def coin_ship_level_address(self, value):
-        self.coin_ship_level_offset = value - ObjectSet(self.coin_ship_level_object_set).level_offset
+        self.coin_ship_level_offset = value - ObjectSet(self._rom, self.coin_ship_level_object_set).level_offset
 
     @property
     def coin_ship_level_object_set(self):
@@ -541,28 +541,28 @@ class WorldMapData(_IndexedMixin, DataPoint):
     @property
     def generic_exit_level_address(self):
         # TODO make object set rom dependent
-        return ObjectSet(self.generic_exit_object_set).level_offset + self.generic_exit_level_offset
+        return ObjectSet(self._rom, self.generic_exit_object_set).level_offset + self.generic_exit_level_offset
 
     @generic_exit_level_address.setter
     def generic_exit_level_address(self, value):
-        self.generic_exit_level_offset = value - ObjectSet(self.generic_exit_object_set).level_offset
+        self.generic_exit_level_offset = value - ObjectSet(self._rom, self.generic_exit_object_set).level_offset
 
     @property
     def big_q_block_level_address(self):
         # TODO make object set rom dependent
-        return ObjectSet(self.big_q_block_object_set).level_offset + self.big_q_block_level_offset
+        return ObjectSet(self._rom, self.big_q_block_object_set).level_offset + self.big_q_block_level_offset
 
     @big_q_block_level_address.setter
     def big_q_block_level_address(self, value):
-        self.big_q_block_level_offset = value - ObjectSet(self.big_q_block_object_set).level_offset
+        self.big_q_block_level_offset = value - ObjectSet(self._rom, self.big_q_block_object_set).level_offset
 
     @property
     def toad_warp_level_address(self):
-        return ObjectSet(self.toad_warp_object_set).level_offset + self.toad_warp_level_offset
+        return ObjectSet(self._rom, self.toad_warp_object_set).level_offset + self.toad_warp_level_offset
 
     @toad_warp_level_address.setter
     def toad_warp_level_address(self, value):
-        self.toad_warp_level_offset = value - ObjectSet(self.toad_warp_object_set).level_offset
+        self.toad_warp_level_offset = value - ObjectSet(self._rom, self.toad_warp_object_set).level_offset
 
     @property
     def toad_warp_object_set(self):

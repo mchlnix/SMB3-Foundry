@@ -63,7 +63,7 @@ class LevelObject(InLevelObject):
     ):
         super(LevelObject, self).__init__()
 
-        self.object_set = ObjectSet(object_set)
+        self.object_set = ObjectSet.from_number(object_set)
 
         self.graphics_set = graphics_set
         self.tsa_data = ROM.get_tsa_data(object_set)

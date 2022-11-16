@@ -28,7 +28,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.objects.object_set import ObjectSet, WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
 
 Y_START_POS_LIST = Map_Y_Starts
@@ -108,7 +108,7 @@ class WorldMap(LevelBase):
     """
 
     def __init__(self, layout_address: int, rom: Rom):
-        super(WorldMap, self).__init__(WORLD_MAP_OBJECT_SET, layout_address)
+        super(WorldMap, self).__init__(ObjectSet(rom, WORLD_MAP_OBJECT_SET), layout_address)
 
         self.rom = rom
 

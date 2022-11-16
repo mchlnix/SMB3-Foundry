@@ -135,7 +135,7 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                 if not parsed_level.has_jump():
                     break
 
-                header_of_old_level = LevelHeader(rom.read(level_address, HEADER_LENGTH), object_set_number)
+                header_of_old_level = LevelHeader(rom, rom.read(level_address, HEADER_LENGTH), object_set_number)
 
                 object_set_number = header_of_old_level.jump_object_set_number
 

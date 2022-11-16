@@ -3,15 +3,14 @@ from typing import Optional
 from smb3parse.levels import HEADER_LENGTH, LevelBase
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMapPosition
-from smb3parse.objects.object_set import assert_valid_object_set_number
+from smb3parse.objects.object_set import ObjectSet, assert_valid_object_set_number
 from smb3parse.util.rom import Rom
 
 
 class Level(LevelBase):
     def __init__(self, rom: Rom, object_set_number: int, layout_address: int, enemy_address: int):
-        super(Level, self).__init__(object_set_number, layout_address)
+        super(Level, self).__init__(ObjectSet(rom, object_set_number), layout_address)
 
-        self.object_set_number = object_set_number
         self.enemy_address = enemy_address
 
         self.world_map_position: Optional[WorldMapPosition] = None
@@ -22,7 +21,7 @@ class Level(LevelBase):
 
         self.header_bytes = self._rom.read(self.header_address, HEADER_LENGTH)
 
-        self.header = LevelHeader(self.header_bytes, self.object_set_number)
+        self.header = LevelHeader(rom, self.header_bytes, self.object_set_number)
 
     def set_world_map_position(self, position: WorldMapPosition):
         self.world_map_position = position

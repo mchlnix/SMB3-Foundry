@@ -1,7 +1,8 @@
 from typing import Optional
 
 from smb3parse.constants import (
-    C000_OFFSET,
+    BASE_OFFSET,
+    PAGE_C000_OFFSET,
     MAPITEM_NOITEM,
     MAPOBJ_EMPTY,
     Map_List_Object_Ys,
@@ -73,7 +74,8 @@ class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
         :param list_of_list_address:
         :return:
         """
-        list_address = C000_OFFSET + self._rom.little_endian(list_of_list_address + self.world.index * OFFSET_SIZE)
+        list_offset = self._rom.little_endian(list_of_list_address + self.world.index * OFFSET_SIZE)
+        list_address = BASE_OFFSET + PAGE_C000_OFFSET + list_offset
 
         return list_address + self.index
 

@@ -47,7 +47,7 @@ class EnemyItem(InLevelObject):
         self.graphics_set = GraphicsSet.from_number(ENEMY_ITEM_GRAPHICS_SET)
         self.palette_group = palette_group
 
-        self.object_set = ObjectSet(ENEMY_ITEM_OBJECT_SET)
+        self.object_set = ObjectSet.from_number(ENEMY_ITEM_OBJECT_SET)
 
         self.png_data = png_data
 

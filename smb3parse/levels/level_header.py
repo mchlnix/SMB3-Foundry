@@ -7,20 +7,21 @@ from smb3parse.levels import (
     LEVEL_MIN_LENGTH,
 )
 from smb3parse.objects.object_set import ObjectSet, assert_valid_object_set_number
+from smb3parse.util.rom import Rom
 
 MARIO_X_POSITIONS = [0x18, 0x70, 0xD8, 0x80]  # 0x10249
 MARIO_Y_POSITIONS = [0x17, 0x04, 0x00, 0x14, 0x07, 0x0B, 0x0F, 0x18]  # 0x3D7A0 + 0x3D7A8
 
 
 class LevelHeader:
-    def __init__(self, header_bytes: bytearray, object_set_number: int):
+    def __init__(self, rom: Rom, header_bytes: bytearray, object_set_number: int):
         if len(header_bytes) != HEADER_LENGTH:
             raise ValueError(f"A level header is made up of {HEADER_LENGTH} bytes, but {len(header_bytes)} were given.")
 
         assert_valid_object_set_number(object_set_number)
 
         self._object_set_number = object_set_number
-        self._object_set = ObjectSet(self._object_set_number)
+        self._object_set = ObjectSet(rom, self._object_set_number)
 
         self.data = header_bytes
 
@@ -45,7 +46,7 @@ class LevelHeader:
             self.width = DEFAULT_VERTICAL_WIDTH
 
         self.jump_object_set_number = self.data[6] & 0b0000_1111  # for indexing purposes
-        self.jump_object_set = ObjectSet(self.jump_object_set_number)
+        self.jump_object_set = ObjectSet(rom, self.jump_object_set_number)
 
         self.start_action = (self.data[7] & 0b1110_0000) >> 5
 

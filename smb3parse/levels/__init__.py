@@ -11,8 +11,6 @@ from smb3parse.constants import (
     Map_LevelLayouts,
     Map_ObjSets,
     Map_Tile_Layouts,
-    PAGE_A000_ByTileset,
-    PAGE_C000_ByTileset,
     Tile_Attributes_TS0,
 )
 from smb3parse.objects.object_set import ObjectSet
@@ -67,18 +65,6 @@ LEVELS_IN_WORLD_LIST_OFFSET = Map_LevelLayouts
 The memory locations of levels inside a world map are listed in a row. This offset points to the memory locations of
 these lists for every world. The first 2 bytes following this offset point to the levels in world 1, the next 2 for
 world 2 etc.
-"""
-
-OFFSET_BY_OBJECT_SET_A000 = PAGE_A000_ByTileset
-"""
-A list of values, which specify which ROM page should be loaded into addresses 0xA000 - 0xBFFF for a given object set.
-This is necessary, since the ROM is larger then the addressable RAM in the NES. The offsets of levels are always into
-the RAM, which means, to address levels at different parts in the ROM these parts need to be loaded into the RAM first.
-"""
-
-OFFSET_BY_OBJECT_SET_C000 = PAGE_C000_ByTileset
-"""
-Same with the ROM page and addresses 0xC000 - 0xFFFF.
 """
 
 WORLD_COUNT = 9  # includes warp zone
@@ -163,11 +149,11 @@ class LevelBase(ABC):
     width: int
     height: int
 
-    def __init__(self, object_set_number: int, layout_address: int):
+    def __init__(self, object_set: ObjectSet, layout_address: int):
         self.layout_address = layout_address
 
-        self.object_set_number = object_set_number
-        self.object_set = ObjectSet(self.object_set_number)
+        self.object_set = object_set
+        self.object_set_number = object_set.number
 
     def point_in(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height

@@ -6,8 +6,18 @@ from typing import Union
 BASE_OFFSET = 0x10
 """the size of the INES header identifying the rom"""
 
-A000_OFFSET = BASE_OFFSET + 0xA000
-C000_OFFSET = BASE_OFFSET + 0xC000
+PAGE_A000_OFFSET = 0xA000
+"""
+Certain PRG Banks are loaded into memory beginning at address 0xA000, which is why offsets into them are between 0xA000
+and 0xBFFF.
+
+To get the absolute address of things within those Banks, this implicit 0xA000 offset needs to be subtracted first.
+"""
+
+PAGE_C000_OFFSET = 0xC000
+"""
+See PAGE_A000_OFFSET. Just with 0xC000 as the implicit offset.
+"""
 
 WORLD_MAP_TSA_INDEX = 12
 

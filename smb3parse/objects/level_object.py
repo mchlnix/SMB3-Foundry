@@ -68,7 +68,6 @@ def _obj_range(object_set: int, start: int) -> list[int]:
 
 
 def goes_to_next_level(object_set_num: int, domain: int, obj_id: int):
-    # TODO only domain 0 is different, so condense this more
     object_id_ranges_by_domain_and_definition: dict[int, dict[int, list[int]]] = {
         1: {
             0: [0x04],

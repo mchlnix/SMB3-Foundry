@@ -10,9 +10,10 @@ from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from foundry.gui.asm import bytes_to_asm
+from smb3parse import OFFSET_BY_OBJECT_SET_A000
 from smb3parse.constants import BASE_OFFSET, OFFSET_SIZE
 from smb3parse.data_points import Position
-from smb3parse.levels import HEADER_LENGTH, OFFSET_BY_OBJECT_SET_A000, WORLD_MAP_LAYOUT_DELIMITER
+from smb3parse.levels import HEADER_LENGTH, WORLD_MAP_LAYOUT_DELIMITER
 from smb3parse.levels.level_header import LevelHeader
 
 ENEMY_SIZE = 3
@@ -49,11 +50,11 @@ class Level(LevelLike):
     def __init__(
         self, level_name: str = "", layout_address: int = 0, enemy_data_offset: int = 0, object_set_number: int = 1
     ):
-        super(Level, self).__init__(object_set_number, layout_address)
+        object_set = ObjectSet.from_number(object_set_number)
+
+        super(Level, self).__init__(object_set, layout_address)
 
         self._signal_emitter = LevelSignaller()
-
-        self.object_set = ObjectSet(object_set_number)
 
         self.name = level_name
         self.world = 0
@@ -75,7 +76,7 @@ class Level(LevelLike):
             # probably loaded to become an m3l
             self.size = (0, 0)
             self.header_bytes = bytearray(9)
-            self.header = LevelHeader(self.header_bytes, self.object_set.number)
+            self.header = LevelHeader(ROM(), self.header_bytes, self.object_set.number)
             self.object_factory = None
             self.enemy_factory = None
             return
@@ -164,7 +165,7 @@ class Level(LevelLike):
         return len(self.enemies) * ENEMY_SIZE
 
     def _parse_header(self, should_emit=True):
-        self.header = LevelHeader(self.header_bytes, self.object_set_number)
+        self.header = LevelHeader(ROM(), self.header_bytes, self.object_set_number)
 
         self.object_factory = LevelObjectFactory(
             self.object_set_number,
@@ -734,7 +735,7 @@ class Level(LevelLike):
 
     def from_m3l(self, m3l_bytes: bytearray):
         self.world, level_number, object_set_number = m3l_bytes[:3]
-        self.object_set = ObjectSet(object_set_number)
+        self.object_set = ObjectSet.from_number(object_set_number)
         self.object_set_number = object_set_number
 
         self.name = f"Level {self.world}-{level_number} - M3L"
@@ -773,7 +774,7 @@ class Level(LevelLike):
 
     def from_asm(self, object_set_number: int, object_bytes: bytearray):
         self.object_set_number = object_set_number
-        self.object_set = ObjectSet(object_set_number)
+        self.object_set = ObjectSet.from_number(object_set_number)
 
         self.from_bytes((0, object_bytes[:-1]), (0, bytearray()), new_level=True)
 

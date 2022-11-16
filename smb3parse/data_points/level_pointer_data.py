@@ -1,5 +1,6 @@
 from typing import Optional, TYPE_CHECKING
 
+from smb3parse import OFFSET_BY_OBJECT_SET_A000
 from smb3parse.constants import (
     BASE_OFFSET,
     OFFSET_SIZE,
@@ -7,7 +8,6 @@ from smb3parse.constants import (
 from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
 from smb3parse.levels import (
     FIRST_VALID_ROW,
-    OFFSET_BY_OBJECT_SET_A000,
     WORLD_MAP_BASE_OFFSET,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,

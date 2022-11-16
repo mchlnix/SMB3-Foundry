@@ -1,9 +1,15 @@
+from pathlib import Path
+
 import pytest
 from hypothesis import given, strategies
 
 from smb3parse.levels import DEFAULT_HORIZONTAL_HEIGHT, DEFAULT_VERTICAL_WIDTH, HEADER_LENGTH, is_valid_level_length
 from smb3parse.levels.level_header import LevelHeader
-from smb3parse.objects.object_set import MAX_OBJECT_SET, MIN_OBJECT_SET, is_valid_object_set_number
+from smb3parse.objects.object_set import MAX_OBJECT_SET, MIN_OBJECT_SET, PIPE_OBJECT_SET, is_valid_object_set_number
+from smb3parse.tests.conftest import test_rom_path
+from smb3parse.util.rom import Rom
+
+rom = Rom(Path(test_rom_path).open("rb").read())
 
 
 @given(
@@ -11,7 +17,7 @@ from smb3parse.objects.object_set import MAX_OBJECT_SET, MIN_OBJECT_SET, is_vali
     object_set_number=strategies.integers(min_value=MIN_OBJECT_SET, max_value=MAX_OBJECT_SET),
 )
 def test_construction(header_bytes, object_set_number):
-    level_header = LevelHeader(header_bytes, object_set_number)
+    level_header = LevelHeader(rom, header_bytes, object_set_number)
 
     if level_header.is_vertical:
         assert level_header.width == DEFAULT_VERTICAL_WIDTH
@@ -37,17 +43,17 @@ def test_construction(header_bytes, object_set_number):
 
 def test_value_error():
     with pytest.raises(ValueError, match="A level header is made up of"):
-        LevelHeader(bytearray(HEADER_LENGTH + 1), MIN_OBJECT_SET)
+        LevelHeader(rom, bytearray(HEADER_LENGTH + 1), MIN_OBJECT_SET)
 
     with pytest.raises(ValueError, match="Object set number"):
-        LevelHeader(bytearray(HEADER_LENGTH), MAX_OBJECT_SET + 1)
+        LevelHeader(rom, bytearray(HEADER_LENGTH), MAX_OBJECT_SET + 1)
 
 
 def test_level_1_1():
     object_set_number = 1
     level_header_bytes = bytearray([0x93, 0xBC, 0x06, 0xC0, 0xEA, 0x80, 0x81, 0x01, 0x00])
 
-    level_header = LevelHeader(level_header_bytes, object_set_number)
+    level_header = LevelHeader(rom, level_header_bytes, object_set_number)
 
     assert level_header.width == 0xB0  # blocks
     assert level_header.height == DEFAULT_HORIZONTAL_HEIGHT  # blocks
@@ -75,7 +81,7 @@ def test_level_1_1_bonus():
     object_set_number = 1
     level_header_bytes = bytearray([0x82, 0xBB, 0x27, 0xC5, 0x81, 0x85, 0xC1, 0x01, 0x01])
 
-    level_header = LevelHeader(level_header_bytes, object_set_number)
+    level_header = LevelHeader(rom, level_header_bytes, object_set_number)
 
     assert level_header.width == 0x20  # blocks
     assert level_header.height == DEFAULT_HORIZONTAL_HEIGHT  # blocks
@@ -100,10 +106,10 @@ def test_level_1_1_bonus():
 
 
 def test_level_7_1():
-    object_set_number = 8
+    object_set_number = PIPE_OBJECT_SET
     level_header_bytes = bytearray([0x61, 0xAA, 0x4D, 0xC2, 0x07, 0x80, 0xB1, 0x08, 0x01])
 
-    level_header = LevelHeader(level_header_bytes, object_set_number)
+    level_header = LevelHeader(rom, level_header_bytes, object_set_number)
 
     assert level_header.width == DEFAULT_VERTICAL_WIDTH  # blocks
     assert level_header.height == 0x80  # blocks

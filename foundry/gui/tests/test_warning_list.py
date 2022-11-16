@@ -5,7 +5,7 @@ from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
 def test_enemy_names(main_window):
     warning_list = main_window.warning_list
 
-    enemy_object_set = ObjectSet(ENEMY_ITEM_OBJECT_SET)
+    enemy_object_set = ObjectSet.from_number(ENEMY_ITEM_OBJECT_SET)
 
     enemy_names = [obj_def.description for obj_def in enemy_object_set.definitions]
 

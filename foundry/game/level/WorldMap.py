@@ -3,6 +3,7 @@ from typing import Optional, cast
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
+from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
@@ -36,7 +37,9 @@ class WorldMap(LevelLike):
     def __init__(self, layout_address):
         self.internal_world_map = _WorldMap(layout_address, ROM())
 
-        super(WorldMap, self).__init__(0, self.internal_world_map.layout_address)
+        object_set = ObjectSet.from_number(WORLD_MAP_OBJECT_SET)
+
+        super(WorldMap, self).__init__(object_set, self.internal_world_map.layout_address)
 
         self.name = f"World {self.data.index + 1} - Overworld"
         self._signal_emitter = WorldSignaller()
@@ -44,8 +47,7 @@ class WorldMap(LevelLike):
         self.graphics_set = GraphicsSet.from_number(OVERWORLD_GRAPHIC_SET)
         self.palette_group = load_palette_group(WORLD_MAP_OBJECT_SET, self.data.palette_index)
 
-        self.object_set = WORLD_MAP_OBJECT_SET
-        self.tsa_data = ROM.get_tsa_data(self.object_set)
+        self.tsa_data = ROM.get_tsa_data(self.object_set.number)
 
         self.size = 0, 0
 

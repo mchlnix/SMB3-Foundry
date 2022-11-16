@@ -17,19 +17,23 @@ palette data
 
 There are 16 object sets in SMB3.
 
-0x0 Overworld
-0x1 Plain
-0x2 Fortress
-0x3 Hills
-0x4 Sky
-0x5 Piranha Plant?
-0x6 Water
-0x7 Mushroom?
-0x8 Pipe
-0x9 Desert
-0xA Ship
-0xB Giant
-0xC Ice
-0xD Cloud
-0xE Underground
-0xF Spade Bonus Game
+ObjectSetLevelData = namedtuple("ObjectSetLevelData", "offset name level_range")
+
+object_set_level_data = [
+    ObjectSetLevelData(0x0000, "Map Screen", range(0x18010, 0x1A00F)),
+    ObjectSetLevelData(0x4000, "Plains", range(0x1E512, 0x2000F)),
+    ObjectSetLevelData(0x10000, "Dungeon", range(0x2A7F7, 0x2C00F)),
+    ObjectSetLevelData(0x6000, "Hilly", range(0x20587, 0x2200F)),
+    ObjectSetLevelData(0x8000, "Sky", range(0x227E0, 0x2400F)),
+    ObjectSetLevelData(0xC000, "Piranha Plant", range(0x26A6F, 0x2800F)),
+    ObjectSetLevelData(0xA000, "Water", range(0x24BA7, 0x2600F)),
+    ObjectSetLevelData(0xA000, "Mushroom House", range(0x0000, 0x0000)),
+    ObjectSetLevelData(0xA000, "Pipe", range(0x24BA7, 0x2600F)),
+    ObjectSetLevelData(0xE000, "Desert", range(0x28F3F, 0x2A00F)),
+    ObjectSetLevelData(0x14000, "Ship", range(0x2EC07, 0x3000F)),
+    ObjectSetLevelData(0xC000, "Giant", range(0x26A6F, 0x2800F)),
+    ObjectSetLevelData(0x8000, "Ice", range(0x227E0, 0x2400F)),
+    ObjectSetLevelData(0xC000, "Cloudy", range(0x26A6F, 0x2800F)),
+    ObjectSetLevelData(0x0000, "Underground", range(0x1A587, 0x1C00F)),
+    ObjectSetLevelData(0x0000, "Spade House", range(0xA010, 0xC00F)),
+]

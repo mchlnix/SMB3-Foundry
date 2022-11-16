@@ -1,5 +1,6 @@
 import abc
 
+from foundry.game.ObjectSet import ObjectSet
 from smb3parse.levels import LevelBase
 
 
@@ -7,8 +8,8 @@ class LevelLike(LevelBase, abc.ABC):
     width: int
     height: int
 
-    def __init__(self, object_set_number, layout_address):
-        super(LevelLike, self).__init__(object_set_number, layout_address)
+    def __init__(self, object_set: ObjectSet, layout_address):
+        super(LevelLike, self).__init__(object_set, layout_address)
 
     @abc.abstractmethod
     def index_of(self, obj):
