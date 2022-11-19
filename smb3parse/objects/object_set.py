@@ -212,6 +212,7 @@ _object_set_to_object_length_lookup_table = {
     # 16: Enemy/Item set always 3 bytes
 }
 
+# TODO this could be read out of the ROM see LoadLevel_EndGoalDecoSquare
 _ending_graphic_offset = {
     WORLD_MAP_OBJECT_SET: 0,
     PLAINS_OBJECT_SET: 0,

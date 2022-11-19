@@ -18,6 +18,10 @@ class ObjectSet(SMB3ObjectSet):
         return self.definitions[object_id]
 
     def get_ending_offset(self) -> int:
+        """
+        The blocks that make up the ending Object are hard coded in the ROM. This function will return the offset into
+        the ROM, that corresponds to this Object Set.
+        """
         if self.number == ENEMY_ITEM_OBJECT_SET:
             raise ValueError(f"This method shouldn't be called for the {self.name}")
 
@@ -26,4 +30,5 @@ class ObjectSet(SMB3ObjectSet):
     @staticmethod
     @lru_cache(16)
     def from_number(object_set_num: int) -> "ObjectSet":
+        """Helper function, that is cacheable, since initializers are not."""
         return ObjectSet(object_set_num)

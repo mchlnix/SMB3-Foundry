@@ -45,6 +45,16 @@ class EndType(Enum):
 
 
 class ObjectDefinition:
+    """
+    An object's data, like height, width and which blocks it uses are information, that is not stored in any look up
+    tables in the ROM, rather it is the result of generator code, written for many dozen different objects.
+
+    To make this easier to emulate we have the data.dat file from Workshop, listing all objects and their
+    properties, which we can use to abstract away the drawing.
+
+    The object definition is bundling this information.
+    """
+
     def __init__(self, string):
         string = string.rstrip().replace("<", "").replace(">", "")
 
