@@ -13,4 +13,4 @@ def test_enemy_item_set_value_error():
     enemy_item_set = ObjectSet(rom, ENEMY_ITEM_OBJECT_SET)
 
     with pytest.raises(ValueError):
-        assert enemy_item_set.ending_graphic_offset
+        assert enemy_item_set.ending_graphic_index

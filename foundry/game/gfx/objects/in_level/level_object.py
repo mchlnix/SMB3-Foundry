@@ -42,8 +42,6 @@ ORIENTATION_TO_STR = {
     GeneratorType.ENDING: "Ending",
 }
 
-# todo what is this, exactly?
-ENDING_OBJECT_OFFSET = 0x1C8F9
 
 # not all objects provide a block index for blank block
 BLANK = -1
@@ -424,7 +422,7 @@ class LevelObject(InLevelObject):
 
             # todo magic number
             # ending graphics
-            rom_offset = ENDING_OBJECT_OFFSET + self.object_set.get_ending_offset() * 0x60
+            rom_offset = self.object_set.get_ending_offset()
 
             rom = ROM()
 

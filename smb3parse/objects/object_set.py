@@ -77,7 +77,7 @@ class ObjectSet:
 
             self.level_offset += object_set_offset - PAGE_A000_OFFSET
 
-            self._ending_graphic_offset = _ending_graphic_offset[object_set_number]
+            self._ending_graphic_index = _object_set_to_ending_graphic_index[object_set_number]
 
         if self.number < len(OBJECT_SET_NAMES):
             self.name = OBJECT_SET_NAMES[self.number]
@@ -85,15 +85,15 @@ class ObjectSet:
             self.name = f"Object Set {self.number:#x}"
 
     @property
-    def ending_graphic_offset(self):
+    def ending_graphic_index(self):
         if self.number == ENEMY_ITEM_OBJECT_SET:
             raise ValueError(f"{self.name} is not a level object set and does not provide an ending graphic offset.")
 
-        return self._ending_graphic_offset
+        return self._ending_graphic_index
 
 
 # TODO this could be read out of the ROM see LoadLevel_EndGoalDecoSquare
-_ending_graphic_offset = {
+_object_set_to_ending_graphic_index = {
     WORLD_MAP_OBJECT_SET: 0,
     PLAINS_OBJECT_SET: 0,
     DUNGEON_OBJECT_SET: 0,
@@ -101,7 +101,7 @@ _ending_graphic_offset = {
     MUSHROOM_OBJECT_SET: 0,
     AIR_SHIP_OBJECT_SET: 0,
     CLOUDY_OBJECT_SET: 0,
-    UNDERGROUND_OBJECT_SET: 0,  # Underground
+    UNDERGROUND_OBJECT_SET: 0,
     SPADE_BONUS_OBJECT_SET: 0,
     ENEMY_ITEM_OBJECT_SET: 0,
     SKY_OBJECT_SET: 1,
