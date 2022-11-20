@@ -1,9 +1,6 @@
 import base64
 import json
 import logging
-import pathlib
-import shlex
-import subprocess
 import tempfile
 from pathlib import Path
 from typing import Optional
@@ -447,56 +444,30 @@ class FoundryMainWindow(MainWindow):
         else:
             self.level_ref.level.world = world
 
-    def on_play(self):
+    def on_play(self, temp_dir=Path()):
         """
         Copies the ROM, including the current level, to a temporary directory, saves the current level as level 1-1 and
         opens the rom in an emulator.
         """
-        temp_dir = pathlib.Path(tempfile.gettempdir()) / "smb3foundry"
+        temp_dir = Path(tempfile.gettempdir()) / "smb3foundry"
         temp_dir.mkdir(parents=True, exist_ok=True)
 
-        path_to_temp_rom = temp_dir / "instaplay.nes"
+        super(FoundryMainWindow, self).on_play(temp_dir)
 
-        ROM().save_to(path_to_temp_rom)
-
-        temp_rom = SMB3Rom.from_file(path_to_temp_rom)
+    def _save_changes_to_instaplay_rom(self, path_to_temp_rom) -> bool:
+        temp_rom = ROM.from_file(path_to_temp_rom)
 
         if not self._put_current_level_to_level_1_1(temp_rom):
-            return
+            return False
 
         if not self._set_default_powerup(temp_rom):
-            return
+            return False
 
         save_all_palette_groups(temp_rom)
 
         temp_rom.save_to(path_to_temp_rom)
 
-        arguments = self.settings.value("editor/instaplay_arguments").replace("%f", str(path_to_temp_rom))
-        arguments = shlex.split(arguments, posix=False)
-
-        emu_path = pathlib.Path(self.settings.value("editor/instaplay_emulator"))
-
-        if emu_path.is_absolute():
-            if emu_path.exists():
-                emulator = str(emu_path)
-            else:
-                QMessageBox.critical(
-                    self, "Emulator not found", f"Check it under File > Settings.\nFile {emu_path} not found."
-                )
-                return
-        else:
-            emulator = self.settings.value("editor/instaplay_emulator")
-
-        try:
-            subprocess.run([emulator, *arguments])
-        except Exception as e:
-            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{e}")
-
-    def _show_jump_dest(self):
-        header_editor = HeaderEditor(self, self.level_ref)
-        header_editor.tab_widget.setCurrentIndex(3)
-
-        header_editor.exec()
+        return True
 
     def _put_current_level_to_level_1_1(self, rom: SMB3Rom) -> bool:
         # load world-1 data
@@ -583,6 +554,12 @@ class FoundryMainWindow(MainWindow):
             rom.write(Map_Power_DispResetLocation, bytes([nop, nop, nop]))
 
         return True
+
+    def _show_jump_dest(self):
+        header_editor = HeaderEditor(self, self.level_ref)
+        header_editor.tab_widget.setCurrentIndex(3)
+
+        header_editor.exec()
 
     def update_title(self):
         if self.level_view.level_ref is not None and ROM is not None:

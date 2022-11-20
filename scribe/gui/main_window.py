@@ -1,7 +1,5 @@
-import pathlib
-import shlex
-import subprocess
 import tempfile
+from pathlib import Path
 from typing import Optional
 
 from PySide6.QtCore import QPoint, QSize
@@ -28,7 +26,6 @@ from smb3parse.data_points import Position
 from smb3parse.levels import WORLD_COUNT, WORLD_MAP_BLANK_TILE_ID
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
-from smb3parse.util.rom import Rom as SMB3Rom
 
 
 class ScribeMainWindow(MainWindow):
@@ -255,45 +252,25 @@ class ScribeMainWindow(MainWindow):
 
         self.world_view.update()
 
-    def on_play(self):
+    def on_play(self, temp_dir=Path()):
         """
         Copies the ROM, including the current level, to a temporary directory, saves the current level as level 1-1 and
         opens the rom in an emulator.
         """
-        temp_dir = pathlib.Path(tempfile.gettempdir()) / "smb3scribe"
+        temp_dir = Path(tempfile.gettempdir()) / "smb3scribe"
         temp_dir.mkdir(parents=True, exist_ok=True)
 
-        path_to_temp_rom = temp_dir / "instaplay.nes"
+        super(ScribeMainWindow, self).on_play(temp_dir)
 
-        ROM().save_to(path_to_temp_rom)
-
-        temp_rom = SMB3Rom.from_file(path_to_temp_rom)
+    def _save_changes_to_instaplay_rom(self, path_to_temp_rom) -> bool:
+        temp_rom = ROM.from_file(path_to_temp_rom)
         self.world_view.world.save_to_rom(temp_rom)
 
         temp_rom.write(STARTING_WORLD_INDEX_ADDRESS, self.world_view.world.internal_world_map.number - 1)
 
         temp_rom.save_to(path_to_temp_rom)
 
-        arguments = self.settings.value("editor/instaplay_arguments").replace("%f", str(path_to_temp_rom))
-        arguments = shlex.split(arguments, posix=False)
-
-        emu_path = pathlib.Path(self.settings.value("editor/instaplay_emulator"))
-
-        if emu_path.is_absolute():
-            if emu_path.exists():
-                emulator = str(emu_path)
-            else:
-                QMessageBox.critical(
-                    self, "Emulator not found", f"Check it under File > Settings.\nFile {emu_path} not found."
-                )
-                return
-        else:
-            emulator = self.settings.value("editor/instaplay_emulator")
-
-        try:
-            subprocess.run([emulator, *arguments])
-        except Exception as e:
-            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{e}")
+        return True
 
     def on_open_rom(self, path_to_rom=""):
         if not self.safe_to_change():
