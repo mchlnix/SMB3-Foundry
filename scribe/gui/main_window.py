@@ -306,7 +306,10 @@ class ScribeMainWindow(MainWindow):
             )
 
             if not path_to_rom:
-                quit()
+                if not ROM.is_loaded():
+                    quit()
+                else:
+                    return
 
         # Proceed loading the file chosen by the user
         try:
