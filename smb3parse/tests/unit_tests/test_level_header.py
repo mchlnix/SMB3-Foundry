@@ -9,7 +9,7 @@ from smb3parse.objects.object_set import MAX_OBJECT_SET, MIN_OBJECT_SET, PIPE_OB
 from smb3parse.tests.conftest import test_rom_path
 from smb3parse.util.rom import Rom
 
-rom = Rom(Path(test_rom_path).open("rb").read())
+rom = Rom.from_file(Path(test_rom_path))
 
 
 @given(

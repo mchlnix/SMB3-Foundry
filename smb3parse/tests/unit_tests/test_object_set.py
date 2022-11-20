@@ -6,7 +6,7 @@ from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, ObjectSet
 from smb3parse.tests.conftest import test_rom_path
 from smb3parse.util.rom import Rom
 
-rom = Rom(Path(test_rom_path).open("rb").read())
+rom = Rom.from_file(Path(test_rom_path))
 
 
 def test_enemy_item_set_value_error():
