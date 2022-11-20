@@ -48,7 +48,7 @@ Alternatively you can try the methods below.
 
 ### Windows
 
-1. You need to have at least Python3.6 installed. To do that, go to
+1. You need to have at least Python3.9 installed. To do that, go to
 https://www.python.org/downloads. Make sure to tick the box "Add Python to
 Path"!
 2. You need to install the Qt for Python GUI framework. To do that, open a command

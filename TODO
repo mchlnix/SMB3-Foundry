@@ -19,7 +19,8 @@ Foundry
 
 - Rearrange Menus to split Rom and Level configs
 
-- Fix drag and drop, always drops MSG_NOTHING domain 0, id 0x20
+- Opening new ROM, but cancelling might leave editor in a weird state
+
 
 Scribe
 ------
