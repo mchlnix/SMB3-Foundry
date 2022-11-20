@@ -284,7 +284,7 @@ class WorldMapLevelSelect(QScrollArea):
         :param event: The mouse event describing the interaction.
         :param level_signal: The signal to emit, if a valid level was clicked.
         """
-        pos = self.world_view.mapFromParent(event.pos())
+        pos = self.world_view.mapFromParent(event.position().toPoint())
 
         level_pos = self.world_view.to_level_point(pos)
         self.map_position_clicked.emit(level_pos)

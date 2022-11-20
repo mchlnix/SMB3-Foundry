@@ -47,6 +47,10 @@ ORIENTATION_TO_STR = {
 BLANK = -1
 
 
+class LevelObjectRenderWarning(UserWarning):
+    pass
+
+
 class LevelObject(InLevelObject):
     def __init__(
         self,
@@ -328,7 +332,7 @@ class LevelObject(InLevelObject):
                 right = fill_block
             else:
                 # todo other two ends not used with diagonals?
-                warn(f"{self.name} was not rendered.", RuntimeWarning)
+                warn(f"{self.name} was not rendered.", LevelObjectRenderWarning)
                 self.rendered_blocks = []
                 return
 
@@ -638,7 +642,7 @@ class LevelObject(InLevelObject):
                     blocks_to_draw.append(right)
 
                 if not len(blocks_to_draw) % self.height == 0:
-                    warn(f"Blocks to draw are not divisible by height. {self}", RuntimeWarning)
+                    warn(f"Blocks to draw are not divisible by height. {self}", LevelObjectRenderWarning)
 
                 new_width = int(len(blocks_to_draw) / self.height)
 
@@ -655,7 +659,7 @@ class LevelObject(InLevelObject):
                     blocks_to_draw.extend(bottom_row)
         else:
             if not self.orientation == GeneratorType.SINGLE_BLOCK_OBJECT:
-                warn(f"Didn't render {self.name}", RuntimeWarning)
+                warn(f"Didn't render {self.name}", LevelObjectRenderWarning)
                 # breakpoint()
 
             if self.name.lower() == "black boss room background":
@@ -682,7 +686,7 @@ class LevelObject(InLevelObject):
             warn(
                 f"Not enough Blocks for calculated height: {self.name}. "
                 f"Blocks for height: {len(self.rendered_blocks) / new_width}. Rendered height: {self.rendered_height}",
-                RuntimeWarning,
+                LevelObjectRenderWarning,
             )
 
             self.rendered_height = len(self.rendered_blocks) / new_width
@@ -690,7 +694,7 @@ class LevelObject(InLevelObject):
             warn(
                 f"Calculated Width is 0, setting to 1: {self.name}. "
                 f"Blocks to draw: {len(self.rendered_blocks)}. Rendered height: {self.rendered_height}",
-                RuntimeWarning,
+                LevelObjectRenderWarning,
             )
 
             self.rendered_width = 1

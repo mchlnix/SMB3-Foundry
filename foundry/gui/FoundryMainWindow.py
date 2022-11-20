@@ -1048,7 +1048,7 @@ class FoundryMainWindow(MainWindow):
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.MiddleButton:
-            pos = self.level_view.mapFromGlobal(self.mapToGlobal(event.pos()))
+            pos = self.level_view.mapFromGlobal(self.mapToGlobal(event.position().toPoint()))
 
             self.place_object_from_dropdown(pos)
 

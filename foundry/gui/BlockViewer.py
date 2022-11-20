@@ -147,7 +147,7 @@ class BlockBank(QWidget):
         self.setFixedSize(new_size)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        x, y = event.pos().toTuple()
+        x, y = event.position().toPoint().toTuple()
 
         block_length = Block.WIDTH * self.zoom
 
@@ -162,7 +162,7 @@ class BlockBank(QWidget):
         self.status_message_changed.emit(status_message)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
-        x, y = event.pos().toTuple()
+        x, y = event.position().toPoint().toTuple()
 
         block_length = Block.WIDTH * self.zoom
 

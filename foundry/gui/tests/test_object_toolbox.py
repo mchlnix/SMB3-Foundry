@@ -20,7 +20,7 @@ def test_object_icon(domain, obj_index, qtbot):
     widget.layout().addStretch()
 
     widget.adjustSize()
-    qtbot.wait_for_window_shown(widget)
+    qtbot.wait_exposed(widget)
 
 
 def test_object_toolbar(qtbot):

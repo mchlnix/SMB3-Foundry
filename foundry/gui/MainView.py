@@ -1,7 +1,7 @@
 from typing import Optional, Union
 from warnings import warn
 
-from PySide6.QtCore import QMimeData, QPoint, QSize
+from PySide6.QtCore import QMimeData, QPoint, QPointF, QSize
 from PySide6.QtGui import QContextMenuEvent, QDragEnterEvent, QDragMoveEvent, QMouseEvent, QPaintEvent, QPainter, Qt
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
@@ -89,9 +89,9 @@ class MainView(QWidget):
         return QPainter(self)
 
     def _select_objects_on_click(self, event: QMouseEvent) -> bool:
-        self.last_mouse_position = self.to_level_point(event.pos())
+        self.last_mouse_position = self.to_level_point(event.position().toPoint())
 
-        clicked_object = self.object_at(event.pos())
+        clicked_object = self.object_at(event.position().toPoint())
 
         clicked_on_background = clicked_object is None
 
@@ -230,7 +230,7 @@ class MainView(QWidget):
     def dragMoveEvent(self, event: QDragMoveEvent):
         level_object = self._object_from_mime_data(event.mimeData())
 
-        level_object.set_position(*self.to_level_point(event.pos()).xy)
+        level_object.set_position(*self.to_level_point(event.position().toPoint()).xy)
 
         self.currently_dragged_object = level_object
 
@@ -292,14 +292,14 @@ class MainView(QWidget):
     def zoom_in(self):
         self._set_zoom(self.zoom * 2)
 
-    def _start_selection_square(self, position):
-        self.selection_square.start(position)
+    def _start_selection_square(self, point: Union[QPoint, QPointF]):
+        self.selection_square.start(point)
 
     def _set_selection_end(self, event: QMouseEvent):
         if not self.selection_square.is_active():
             return
 
-        self.selection_square.set_current_end(event.pos())
+        self.selection_square.set_current_end(event.position().toPoint())
 
         sel_rect = self.selection_square.get_adjusted_rect(self.block_length, self.block_length)
 

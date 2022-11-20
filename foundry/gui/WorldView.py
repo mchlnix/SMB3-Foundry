@@ -160,13 +160,13 @@ class WorldView(MainView):
             else:
                 self.selection_square.set_offset(0, FIRST_VALID_ROW)
 
-            self.selection_square.start(event.pos())
+            self._start_selection_square(event.position().toPoint())
 
         elif new_mode == MODE_DRAG:
             if event is None:
                 return
 
-            self.drag_start_point = self.to_level_point(event.pos())
+            self.drag_start_point = self.to_level_point(event.position().toPoint())
             self.last_mouse_position = self.drag_start_point
             self.setCursor(Qt.ClosedHandCursor)
 
@@ -197,7 +197,7 @@ class WorldView(MainView):
             return super(WorldView, self).mouseMoveEvent(event)
 
         if self.mouse_mode == MODE_PUT_TILE and event.buttons() & Qt.LeftButton:
-            level_pos = self.to_level_point(event.pos())
+            level_pos = self.to_level_point(event.position().toPoint())
 
             tile = self.world.object_at(*level_pos.xy)
 
@@ -216,7 +216,7 @@ class WorldView(MainView):
         if self.mouse_mode != MODE_FREE:
             return False
 
-        x, y = self.to_level_point(event.pos()).xy
+        x, y = self.to_level_point(event.position().toPoint()).xy
 
         if not self.world.point_in(x, y):
             return False
@@ -259,7 +259,7 @@ class WorldView(MainView):
         if not self.mouse_mode == MODE_FREE:
             self.set_mouse_mode(MODE_FREE, event)
         else:
-            menu_pos = self.mapToGlobal(event.pos())
+            menu_pos = self.mapToGlobal(event.position().toPoint())
 
             self.context_menu.popup(menu_pos)
 
@@ -292,7 +292,7 @@ class WorldView(MainView):
         return pos
 
     def _on_middle_mouse_button_down(self, event: QMouseEvent):
-        x, y = self.to_level_point(event.pos()).xy
+        x, y = self.to_level_point(event.position().toPoint()).xy
 
         if not self.world.point_in(x, y):
             return
@@ -340,7 +340,7 @@ class WorldView(MainView):
         return obj
 
     def _on_left_mouse_button_down(self, event: QMouseEvent):
-        x, y = self.to_level_point(event.pos()).xy
+        x, y = self.to_level_point(event.position().toPoint()).xy
 
         if not self.world.point_in(x, y):
             return
@@ -367,7 +367,7 @@ class WorldView(MainView):
             self.set_mouse_mode(MODE_SELECTION_SQUARE, event)
             return
 
-        obj = self._visible_object_at(event.pos())
+        obj = self._visible_object_at(event.position().toPoint())
 
         # if shirt is pressed, toggle selection, while keeping current selection
         # if shift is not pressed, remove selection and only select obj under cursor
@@ -383,7 +383,7 @@ class WorldView(MainView):
         self.update()
 
     def _dragging(self, event: QMouseEvent):
-        level_pos = self.to_level_point(event.pos())
+        level_pos = self.to_level_point(event.position().toPoint())
 
         dx, dy = (level_pos - self.last_mouse_position).xy
 
@@ -408,10 +408,10 @@ class WorldView(MainView):
             self.undo_stack.endMacro()
             return
 
-        obj = self.object_at(event.pos())
+        obj = self.object_at(event.position().toPoint())
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            drag_end_point = self.to_level_point(event.pos())
+            drag_end_point = self.to_level_point(event.position().toPoint())
 
             if self.get_selected_objects():
                 self._move_selected_tiles(drag_end_point)

@@ -125,7 +125,7 @@ class LevelView(MainView):
         elif self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK:
             self._set_cursor_for_position(event)
 
-        object_under_cursor = self.object_at(event.pos())
+        object_under_cursor = self.object_at(event.position().toPoint())
 
         if self.settings.value("level view/object_tooltip_enabled") and object_under_cursor is not None:
             self.setToolTip(str(object_under_cursor))
@@ -136,12 +136,12 @@ class LevelView(MainView):
         return super(LevelView, self).mouseMoveEvent(event)
 
     def _set_cursor_for_position(self, event: QMouseEvent):
-        level_object = self.object_at(event.pos())
+        level_object = self.object_at(event.position().toPoint())
 
         if isinstance(level_object, (EnemyItem, LevelObject)):
             is_resizable = not level_object.is_fixed
 
-            edges = self._cursor_on_edge_of_object(level_object, event.pos())
+            edges = self._cursor_on_edge_of_object(level_object, event.position().toPoint())
 
             if is_resizable and edges:
                 if edges == Qt.RightEdge and level_object.expands() & EXPANDS_HORIZ:
@@ -238,7 +238,7 @@ class LevelView(MainView):
         if self.mouse_mode == MODE_DRAG:
             return
 
-        level_pos = self.to_level_point(event.pos())
+        level_pos = self.to_level_point(event.position().toPoint())
 
         self.last_mouse_position = level_pos
 
@@ -254,7 +254,7 @@ class LevelView(MainView):
 
         self.mouse_mode = resize_mode
 
-        if (obj := self.object_at(event.pos())) is None:
+        if (obj := self.object_at(event.position().toPoint())) is None:
             return False
 
         self.resize_obj_start_point = Position.from_xy(*obj.get_position())
@@ -269,7 +269,7 @@ class LevelView(MainView):
         if isinstance(self.level_ref.level, WorldMap):
             return
 
-        level_pos = self.to_level_point(event.pos())
+        level_pos = self.to_level_point(event.position().toPoint())
 
         dx, dy = (level_pos - self.resize_obj_start_point).xy
 
@@ -301,7 +301,7 @@ class LevelView(MainView):
             else:
                 menu = self.context_menu.as_background_menu()
 
-            menu_pos = self.mapToGlobal(event.pos())
+            menu_pos = self.mapToGlobal(event.position().toPoint())
 
             menu.popup(menu_pos)
 
@@ -335,14 +335,14 @@ class LevelView(MainView):
         # 6 if clicking on unselected object and ctrl: select this object
 
         if self._select_objects_on_click(event):
-            obj = self.object_at(event.pos())
+            obj = self.object_at(event.position().toPoint())
 
             if not isinstance(obj, InLevelObject):
                 return
 
             # enable all drag functionality
             if obj is not None:
-                edge = self._cursor_on_edge_of_object(obj, event.pos())
+                edge = self._cursor_on_edge_of_object(obj, event.position().toPoint())
 
                 if (
                     self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK
@@ -354,7 +354,7 @@ class LevelView(MainView):
                     self.drag_start_point = Position.from_xy(*obj.get_position())
                     self.objects_before_moving = [obj.copy() for obj in self.get_selected_objects()]
         else:
-            self._start_selection_square(event.pos())
+            self._start_selection_square(event.position().toPoint())
 
     @staticmethod
     def _resize_mode_from_edge(edge: Qt.Edges):
@@ -371,7 +371,7 @@ class LevelView(MainView):
     def _dragging(self, event: QMouseEvent):
         self.dragging_happened = True
 
-        level_pos = self.to_level_point(event.pos())
+        level_pos = self.to_level_point(event.position().toPoint())
 
         dx, dy = (level_pos - self.last_mouse_position).xy
 
@@ -388,10 +388,10 @@ class LevelView(MainView):
         return cast(Optional[InLevelObject], super(LevelView, self).object_at(q_point))
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
-        obj = self.object_at(event.pos())
+        obj = self.object_at(event.position().toPoint())
 
         if self.mouse_mode == MODE_DRAG and self.dragging_happened:
-            drag_end_point = self.to_level_point(event.pos())
+            drag_end_point = self.to_level_point(event.position().toPoint())
 
             if self.drag_start_point != drag_end_point:
                 self._stop_drag(drag_end_point)
@@ -533,9 +533,11 @@ class LevelView(MainView):
         level_object = self._object_from_mime_data(event.mimeData())
 
         if isinstance(level_object, LevelObject):
-            self.undo_stack.push(AddLevelObjectAt(self, event.pos(), level_object.domain, level_object.obj_index))
+            self.undo_stack.push(
+                AddLevelObjectAt(self, event.position().toPoint(), level_object.domain, level_object.obj_index)
+            )
         else:
-            self.undo_stack.push(AddEnemyAt(self, event.pos(), level_object.obj_index))
+            self.undo_stack.push(AddEnemyAt(self, event.position().toPoint(), level_object.obj_index))
 
         event.accept()
 

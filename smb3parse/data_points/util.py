@@ -45,7 +45,7 @@ class Position:
 
     @row.setter
     def row(self, value):
-        self.y = value
+        self.y = int(value)
 
     @property
     def column(self):
@@ -53,11 +53,11 @@ class Position:
 
     @column.setter
     def column(self, value):
-        self.x = value
+        self.x = int(value)
 
     @property
     def xy(self):
-        return self.screen * WORLD_MAP_SCREEN_WIDTH + self.x, self.y
+        return int(self.screen) * WORLD_MAP_SCREEN_WIDTH + self.x, self.y
 
     def copy(self):
         return Position.from_xy(*self.xy)
@@ -73,7 +73,7 @@ class Position:
         screen = x // WORLD_MAP_SCREEN_WIDTH
         x = x % WORLD_MAP_SCREEN_WIDTH
 
-        return Position(x, y, screen)
+        return Position(int(x), int(y), int(screen))
 
     @staticmethod
     def from_tile_data_index(index: int):

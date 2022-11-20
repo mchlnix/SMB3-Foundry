@@ -39,7 +39,7 @@ class SpriteList(TableWidget):
 
     def dropEvent(self, event: QDropEvent) -> None:
         source_index = self.selectedIndexes()[0].row()
-        target_index = self.indexAt(event.pos()).row()
+        target_index = self.indexAt(event.position().toPoint()).row()
 
         self.undo_stack.push(ChangeSpriteIndex(self.world, source_index, target_index))
 

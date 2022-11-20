@@ -55,7 +55,7 @@ class WorldOverview(TableWidget):
 
     def dropEvent(self, event: QDropEvent) -> None:
         source_index = self.selectedIndexes()[0].row()
-        target_index = self.indexAt(event.pos()).row()
+        target_index = self.indexAt(event.position().toPoint()).row()
 
         source_world = self.world_data_for(source_index)
         target_world = self.world_data_for(target_index)

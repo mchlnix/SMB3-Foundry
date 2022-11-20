@@ -21,6 +21,8 @@ Foundry
 
 - Opening new ROM, but cancelling might leave editor in a weird state
 
+- Somehow list the "hidden" levels of Worlds, like CoinShip and Generic Exit
+
 
 Scribe
 ------

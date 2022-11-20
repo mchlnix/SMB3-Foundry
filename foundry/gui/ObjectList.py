@@ -44,7 +44,7 @@ class ObjectList(QListWidget):
             return super(ObjectList, self).mouseReleaseEvent(event)
 
     def on_right_down(self, event: QMouseEvent):
-        item_under_mouse = self.itemAt(event.pos())
+        item_under_mouse = self.itemAt(event.position().toPoint())
 
         if item_under_mouse is None:
             event.ignore()
@@ -60,7 +60,7 @@ class ObjectList(QListWidget):
             self.level_ref.selected_objects = [selected_object]
 
     def on_right_up(self, event):
-        item_under_mouse = self.itemAt(event.pos())
+        item_under_mouse = self.itemAt(event.position().toPoint())
 
         if item_under_mouse is None:
             event.ignore()
