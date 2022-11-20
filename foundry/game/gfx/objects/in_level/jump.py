@@ -14,7 +14,7 @@ class Jump(InLevelObject):
     def __init__(self, data):
         super(Jump, self).__init__()
 
-        self.data = data
+        self.data = data[0 : Jump.SIZE]
 
         # domain: 0b1110
         # unused: 0b0001

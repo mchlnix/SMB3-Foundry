@@ -77,8 +77,8 @@ class Level(LevelLike):
             self.size = (0, 0)
             self.header_bytes = bytearray(9)
             self.header = LevelHeader(ROM(), self.header_bytes, self.object_set.number)
-            self.object_factory = None
-            self.enemy_factory = None
+            self.object_factory: Optional[LevelObjectFactory] = None
+            self.enemy_factory: Optional[EnemyItemFactory] = None
             return
 
         rom = ROM()
@@ -210,18 +210,14 @@ class Level(LevelLike):
             return
 
         while True:
-            obj_data, data = data[0:3], data[3:]
+            potential_obj_data = data[0:4]
 
-            domain = (obj_data[0] & 0b1110_0000) >> 5
+            level_object = self.object_factory.from_data(potential_obj_data, len(self.objects))
 
-            obj_id = obj_data[2]
-            has_length_byte = self.object_set.object_length(domain, obj_id) == 4
+            data = data[3:]
 
-            if has_length_byte:
-                fourth_byte, data = data[0], data[1:]
-                obj_data.append(fourth_byte)
-
-            level_object = self.object_factory.from_data(obj_data, len(self.objects))
+            if level_object.is_4byte:
+                data.pop(0)
 
             if isinstance(level_object, LevelObject):
                 self.objects.append(level_object)
