@@ -1,4 +1,4 @@
-import logging
+from contextlib import suppress
 from typing import Optional
 
 from PySide6.QtCore import QMargins, QSize, Signal, SignalInstance
@@ -26,10 +26,9 @@ from foundry.gui import OBJECT_SET_ITEMS, WORLD_ITEMS
 from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
-from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_SPADE_HOUSE
 from smb3parse.data_points import LevelPointerData, Position
 from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
-from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.objects.object_set import MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET, WORLD_MAP_OBJECT_SET
 
 
 OVERWORLD_MAPS_INDEX = 0
@@ -295,22 +294,22 @@ class WorldMapLevelSelect(QScrollArea):
 
         x, y = level_pos.xy
 
-        try:
+        with suppress(ValueError):
             level_pointer = self.world.level_pointer_at(x, y)
 
             if level_pointer is None:
                 return
 
-            if self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
+            if level_pointer.data.object_set in [MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
                 QMessageBox.warning(
-                    self, "No can do", "Spade and mushroom house currently not supported, when getting a level address."
+                    self,
+                    "No can do",
+                    "Spade and mushroom house levels are currently not supported, when getting a level address.",
                 )
                 event.accept()
                 return
 
             level_signal.emit(self.world.level_name_at_position(x, y), level_pointer.data)
-        except ValueError:
-            logging.exception()
 
     def sizeHint(self) -> QSize:
         orig_size = super(WorldMapLevelSelect, self).sizeHint()
