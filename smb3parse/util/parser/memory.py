@@ -14,11 +14,13 @@ class NESMemory(list):
         self._read_observers: dict[range, Callable] = {}
         self._write_observers: dict[range, Callable] = {}
 
-        # load PRG 30
-        self._load_bank(30, 0x8000)
+        last_prg_index = rom.header.prg_units * 2 - 1
 
-        # load PRG 31
-        self._load_bank(31, 0xE000)
+        # load second to last PRG, 30 in the vanilla rom into 0x8000 - 0x9FFF
+        self._load_bank(last_prg_index - 1, 0x8000)
+
+        # load last PRG, 31 in the vanilla rom into 0xE000 - 0xFFFF
+        self._load_bank(last_prg_index, 0xE000)
 
     def load_a000_page(self, prg_index: int):
         self._load_bank(prg_index, 0xA000)
