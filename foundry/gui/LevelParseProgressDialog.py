@@ -4,8 +4,7 @@ from PySide6.QtWidgets import QApplication, QProgressDialog
 
 from foundry.game.File import ROM
 from smb3parse.levels import WORLD_COUNT
-from smb3parse.util.parser import gen_levels_in_rom
-from smb3parse.util.parser.level import ParsedLevel
+from smb3parse.util.parser import FoundLevel, gen_levels_in_rom
 
 
 class LevelParseProgressDialog(QProgressDialog):
@@ -15,7 +14,7 @@ class LevelParseProgressDialog(QProgressDialog):
         )
 
         self.levels_per_object_set: dict[int, set[int]] = defaultdict(set)
-        self.levels_by_address: dict[int, ParsedLevel] = {}
+        self.levels_by_address: dict[int, FoundLevel] = {}
 
         self.setWindowTitle("Parsing World Maps to find Levels")
         self.forceShow()

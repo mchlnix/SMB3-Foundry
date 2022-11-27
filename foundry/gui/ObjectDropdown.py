@@ -29,7 +29,7 @@ class ObjectDropdown(QComboBox):
         self.currentIndexChanged.connect(self._on_object_selected)
 
         # guard against overly long item descriptions
-        self.setMaximumWidth(self.screen().availableSize().width() / 5)
+        self.setMaximumWidth(self.screen().availableSize().width() // 5)
 
         self.setWhatsThis(
             "<b>Object Dropdown</b><br/>"

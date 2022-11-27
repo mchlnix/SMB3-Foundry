@@ -11,7 +11,7 @@ from smb3parse.util.parser import FoundLevel
 
 
 class LevelViewer(CustomChildWindow):
-    def __init__(self, parent, addresses_by_object_set: dict[int, list[int]], levels_by_address: dict[int, FoundLevel]):
+    def __init__(self, parent, addresses_by_object_set: dict[int, set[int]], levels_by_address: dict[int, FoundLevel]):
         super(LevelViewer, self).__init__(parent, "Level Viewer")
 
         self.addresses_by_object_set = addresses_by_object_set

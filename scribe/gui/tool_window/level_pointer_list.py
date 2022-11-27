@@ -46,14 +46,17 @@ class LevelPointerList(TableWidget):
         if column == 3 or self.cellWidget(row, column) is None:
             return
 
+        str_data = ""
+        int_data = 0
+
         level_pointer = self.world.level_pointers[row]
 
         if column == 0:
-            widget = typing.cast(QComboBox, self.cellWidget(row, column))
-            data = widget.currentText()
+            combo_box = typing.cast(QComboBox, self.cellWidget(row, column))
+            str_data = combo_box.currentText()
         elif column in [1, 2]:
-            widget = typing.cast(Spinner, self.cellWidget(row, column))
-            data = widget.value()
+            spinner = typing.cast(Spinner, self.cellWidget(row, column))
+            int_data = spinner.value()
         else:
             return
 
@@ -61,11 +64,11 @@ class LevelPointerList(TableWidget):
             level_pointer.data.y = FIRST_VALID_ROW
 
         if column == 0:
-            self.undo_stack.push(SetObjectSet(level_pointer.data, OBJECT_SET_NAMES.index(data)))
+            self.undo_stack.push(SetObjectSet(level_pointer.data, OBJECT_SET_NAMES.index(str_data)))
         elif column == 1:
-            self.undo_stack.push(SetLevelAddress(level_pointer.data, data))
+            self.undo_stack.push(SetLevelAddress(level_pointer.data, int_data))
         elif column == 2:
-            self.undo_stack.push(SetEnemyAddress(level_pointer.data, data))
+            self.undo_stack.push(SetEnemyAddress(level_pointer.data, int_data))
         else:
             return
 

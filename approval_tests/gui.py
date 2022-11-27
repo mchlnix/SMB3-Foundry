@@ -2,6 +2,7 @@ from typing import Union
 
 from PySide6.QtGui import QGuiApplication, QPixmap, Qt
 from PySide6.QtWidgets import (
+    QBoxLayout,
     QDialog,
     QDialogButtonBox,
     QHBoxLayout,
@@ -17,13 +18,14 @@ image_source = Union[QPixmap, str]
 
 def _get_pixmap_from_source(image: image_source) -> QPixmap:
     if isinstance(image, str):
-        image = QPixmap(str)
+        image = QPixmap(image)
 
     return image
 
 
 class ApprovalDialog(QDialog):
     Ignore = QDialogButtonBox.Ignore
+    image_layout: QBoxLayout
 
     def __init__(self, test_name: str, reference_image: QPixmap, generated_image: QPixmap):
         super(ApprovalDialog, self).__init__()

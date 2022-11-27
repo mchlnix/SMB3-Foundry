@@ -44,7 +44,7 @@ class JumpList(QListWidget):
         self.addItems([str(jump) for jump in jumps])
 
     def contextMenuEvent(self, event: QContextMenuEvent):
-        item = self.itemAt(event.position().toPoint())
+        item = self.itemAt(event.pos())
 
         menu = QMenu()
 

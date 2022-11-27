@@ -1,3 +1,5 @@
+from typing import cast
+
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QCloseEvent, QPainter, QPixmap, QUndoStack, Qt
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
@@ -43,7 +45,7 @@ class EditWorldInfo(CustomDialog):
         layout.addLayout(label_and_widget("Color Palette Index", palette_spin_box))
 
         self.icon_button = QPushButton("")
-        self.icon_button.pressed.connect(self._on_button_press)
+        self.icon_button.clicked.connect(self._on_button_press)
         self._update_button_icon()
 
         layout.addLayout(label_and_widget("Bottom Border Tile", self.icon_button))
@@ -79,7 +81,7 @@ class EditWorldInfo(CustomDialog):
 
         # ok button
         self.ok_button = QPushButton("OK")
-        self.ok_button.pressed.connect(self.close)
+        self.ok_button.clicked.connect(self.close)
 
         self.layout().addWidget(self.ok_button)
 
@@ -87,7 +89,7 @@ class EditWorldInfo(CustomDialog):
 
     @property
     def undo_stack(self) -> QUndoStack:
-        return self.window().parent().findChild(QUndoStack, "undo_stack")
+        return cast(QUndoStack, self.window().parent().findChild(QUndoStack, "undo_stack"))
 
     def _update_button_icon(self):
         block = get_worldmap_tile(self.world_map.data.bottom_border_tile, self.world_map.data.palette_index)

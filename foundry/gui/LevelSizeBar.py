@@ -99,7 +99,7 @@ class SizeBar(QWidget):
         pixels_per_byte = event.rect().width() / total_length
 
         bar = QRect(event.rect())
-        bar.setWidth(pixels_per_byte * self.current_value)
+        bar.setWidth(int(pixels_per_byte * self.current_value))
 
         if self.current_value > self.original_value:
             painter.fillRect(bar, Qt.red)

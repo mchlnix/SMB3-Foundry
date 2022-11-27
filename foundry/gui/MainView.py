@@ -1,7 +1,7 @@
 from typing import Optional, Union
 from warnings import warn
 
-from PySide6.QtCore import QMimeData, QPoint, QPointF, QSize
+from PySide6.QtCore import QMimeData, QPoint, QSize
 from PySide6.QtGui import QContextMenuEvent, QDragEnterEvent, QDragMoveEvent, QMouseEvent, QPaintEvent, QPainter, Qt
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
@@ -10,7 +10,7 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.ContextMenu import LevelContextMenu
+from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.LevelDrawer import LevelDrawer
 from foundry.gui.SelectionSquare import SelectionSquare
 from foundry.gui.WorldDrawer import WorldDrawer
@@ -35,7 +35,7 @@ class MainView(QWidget):
     drawer: Union[LevelDrawer, WorldDrawer]
 
     def __init__(
-        self, parent: Optional[QWidget], level: LevelRef, settings: Settings, context_menu: Optional[LevelContextMenu]
+        self, parent: Optional[QWidget], level: LevelRef, settings: Settings, context_menu: Optional[ContextMenu]
     ):
         super(MainView, self).__init__(parent)
 
@@ -292,7 +292,7 @@ class MainView(QWidget):
     def zoom_in(self):
         self._set_zoom(self.zoom * 2)
 
-    def _start_selection_square(self, point: Union[QPoint, QPointF]):
+    def _start_selection_square(self, point: QPoint):
         self.selection_square.start(point)
 
     def _set_selection_end(self, event: QMouseEvent):

@@ -607,7 +607,8 @@ class Level(LevelLike):
             index = len(self.objects)
 
         if self.object_factory:
-            obj = self.object_factory.from_properties(domain, object_index, *pos.xy, length, index)
+            x, y = pos.xy
+            obj = self.object_factory.from_properties(domain, object_index, x, y, length, index)
             self.objects.insert(index, obj)
 
             return obj

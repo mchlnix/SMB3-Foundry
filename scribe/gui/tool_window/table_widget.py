@@ -1,4 +1,6 @@
-from PySide6.QtCore import QAbstractItemModel, QModelIndex, QSize, Signal, SignalInstance
+from typing import cast
+
+from PySide6.QtCore import QAbstractItemModel, QSize, Signal, SignalInstance
 from PySide6.QtGui import QImage, QPainter, QPixmap, QUndoStack
 from PySide6.QtWidgets import (
     QComboBox,
@@ -57,7 +59,7 @@ class TableWidget(QTableWidget):
 
     @property
     def undo_stack(self) -> QUndoStack:
-        return self.window().parent().findChild(QUndoStack, "undo_stack")
+        return cast(QUndoStack, self.window().parent().findChild(QUndoStack, "undo_stack"))
 
     @property
     def selected_row(self):
@@ -95,7 +97,7 @@ class DropdownDelegate(QStyledItemDelegate):
         else:
             self._icons = icons
 
-    def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
+    def createEditor(self, parent: QWidget, option, index) -> QWidget:
         combobox = QComboBox(parent)
         combobox.currentTextChanged.connect(lambda _: combobox.clearFocus())
 
@@ -110,7 +112,9 @@ class DropdownDelegate(QStyledItemDelegate):
 
         return combobox
 
-    def setEditorData(self, editor: QComboBox, index: QModelIndex):
+    def setEditorData(self, editor, index):
+        assert isinstance(editor, QComboBox)
+
         editor.setCurrentText(index.data())
 
         editor.showPopup()
@@ -124,16 +128,19 @@ class SpinBoxDelegate(QStyledItemDelegate):
         self.maximum = maximum
         self.base = base
 
-    def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
+    def createEditor(self, parent: QWidget, option, index) -> QWidget:
         return Spinner(parent, self.maximum, self.base)
 
-    def setEditorData(self, editor: Spinner, index: QModelIndex):
+    def setEditorData(self, editor: QWidget, index):
         if isinstance(value := index.data(), str):
             value = int(value, self.base)
 
+        assert isinstance(editor, Spinner)
         editor.setValue(value)
 
-    def setModelData(self, editor: Spinner, model: QAbstractItemModel, index: QModelIndex) -> None:
+    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index) -> None:
+        assert isinstance(editor, Spinner)
+
         if self.base == 16:
             model.setData(index, hex(editor.value()))
         else:
@@ -147,7 +154,7 @@ class DialogDelegate(QStyledItemDelegate):
         self.title = title
         self.text = text
 
-    def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
+    def createEditor(self, parent: QWidget, option, index) -> QWidget:
         dialog = QMessageBox(
             QMessageBox.Information,
             self.title,
@@ -157,5 +164,5 @@ class DialogDelegate(QStyledItemDelegate):
 
         return dialog
 
-    def setModelData(self, editor: QWidget, model, index: QModelIndex) -> None:
+    def setModelData(self, editor: QWidget, model, index) -> None:
         return model.data(index)

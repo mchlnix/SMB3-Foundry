@@ -155,7 +155,7 @@ class ObjectDrawArea(QWidget):
         self.object_factory.set_graphic_set(graphic_set)
         self.update_object()
 
-    def resize(self, size: QSize):
+    def resize(self, arg__1, arg__2=None) -> None:
         if isinstance(self.current_object, Jump):
             return
 

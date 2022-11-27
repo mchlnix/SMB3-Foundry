@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, cast
 
 from PySide6.QtCore import QPoint, QSize, QTimer
 from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, QUndoStack, Qt
@@ -126,7 +126,7 @@ class WorldView(MainView):
 
     @property
     def undo_stack(self) -> QUndoStack:
-        return self.window().findChild(QUndoStack, "undo_stack")
+        return cast(QUndoStack, self.window().findChild(QUndoStack, "undo_stack"))
 
     @property
     def world(self) -> WorldMap:

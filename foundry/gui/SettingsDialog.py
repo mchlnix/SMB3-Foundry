@@ -76,13 +76,14 @@ class SettingsDialog(CustomDialog):
         # Online Section
 
         online_box = QGroupBox("Online", self)
-        online_box.setLayout(QVBoxLayout())
+        layout = QVBoxLayout()
+        online_box.setLayout(layout)
 
         self._update_check_box = QCheckBox("Enabled")
         self._update_check_box.setChecked(self.settings.value("editor/update_on_startup"))
         self._update_check_box.toggled.connect(self._update_settings)
 
-        online_box.layout().addLayout(
+        layout.addLayout(
             label_and_widget(
                 "Check for Updates on Startup:",
                 self._update_check_box,
@@ -94,13 +95,14 @@ class SettingsDialog(CustomDialog):
         # Mouse Section
 
         mouse_box = QGroupBox("Mouse", self)
-        mouse_box.setLayout(QVBoxLayout())
+        layout = QVBoxLayout()
+        mouse_box.setLayout(layout)
 
         self._scroll_check_box = QCheckBox("Enabled")
         self._scroll_check_box.setChecked(self.settings.value("editor/object_scroll_enabled"))
         self._scroll_check_box.toggled.connect(self._update_settings)
 
-        mouse_box.layout().addLayout(
+        layout.addLayout(
             label_and_widget(
                 "Scroll objects with mouse wheel:",
                 self._scroll_check_box,
@@ -112,7 +114,7 @@ class SettingsDialog(CustomDialog):
         self._tooltip_check_box.setChecked(self.settings.value("level view/object_tooltip_enabled"))
         self._tooltip_check_box.toggled.connect(self._update_settings)
 
-        mouse_box.layout().addLayout(
+        layout.addLayout(
             label_and_widget(
                 "Show object names on hover:",
                 self._tooltip_check_box,
@@ -139,13 +141,14 @@ class SettingsDialog(CustomDialog):
         resize_layout.addWidget(self.lmb_radio)
         resize_layout.addWidget(rmb_radio)
 
-        mouse_box.layout().addLayout(resize_layout)
+        layout.addLayout(resize_layout)
 
         # -----------------------------------------------
         # GUI Section
 
         self.gui_box = QGroupBox("GUI", self)
-        QVBoxLayout(self.gui_box)
+        layout = QVBoxLayout()
+        self.gui_box.setLayout(layout)
 
         style_layout = QHBoxLayout()
 
@@ -161,7 +164,7 @@ class SettingsDialog(CustomDialog):
 
             style_layout.addWidget(style_radio_button)
 
-        self.gui_box.layout().addLayout(style_layout)
+        layout.addLayout(style_layout)
 
         path_layout = QHBoxLayout()
 
@@ -173,19 +176,19 @@ class SettingsDialog(CustomDialog):
         path_layout.addWidget(QLabel("Default path:"))
         path_layout.addWidget(path_dropdown)
 
-        self.gui_box.layout().addLayout(path_layout)
+        layout.addLayout(path_layout)
 
         default_dir_layout = QHBoxLayout()
 
         self.default_dir_label = QLabel()
 
         self.default_dir_button = QPushButton(icon("folder.svg"), "", self)
-        self.default_dir_button.pressed.connect(self._get_default_dir)
+        self.default_dir_button.clicked.connect(self._get_default_dir)
 
         default_dir_layout.addWidget(self.default_dir_label, stretch=1)
         default_dir_layout.addWidget(self.default_dir_button)
 
-        self.gui_box.layout().addLayout(default_dir_layout)
+        layout.addLayout(default_dir_layout)
 
         # -----------------------------------------------
         # Emulator Command Section
@@ -197,7 +200,7 @@ class SettingsDialog(CustomDialog):
         self.emulator_command_input.textChanged.connect(self._update_settings)
 
         self.emulator_path_button = QPushButton(icon("folder.svg"), "", self)
-        self.emulator_path_button.pressed.connect(self._get_emulator_path)
+        self.emulator_path_button.clicked.connect(self._get_emulator_path)
 
         self.command_arguments_input = QLineEdit(self)
         self.command_arguments_input.setPlaceholderText("%f")

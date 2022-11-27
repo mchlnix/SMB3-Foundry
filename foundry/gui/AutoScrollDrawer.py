@@ -40,10 +40,10 @@ class AutoScrollDrawer:
 
         self.pixel_length = 1
 
-        self.acceleration_pen = Qt.PenStyle.NoPen
-        self.acceleration_brush = Qt.BrushStyle.NoBrush
-        self.scroll_pen = Qt.PenStyle.NoPen
-        self.scroll_brush = Qt.BrushStyle.NoBrush
+        self.acceleration_pen = QPen(Qt.PenStyle.NoPen)
+        self.acceleration_brush = QBrush(Qt.BrushStyle.NoBrush)
+        self.scroll_pen = QPen(Qt.PenStyle.NoPen)
+        self.scroll_brush = QBrush(Qt.BrushStyle.NoBrush)
 
         self.screen_polygon = QPolygonF()
 

@@ -1,6 +1,5 @@
 import typing
 
-from PySide6.QtCore import QModelIndex
 from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtWidgets import QStyledItemDelegate, QTableWidgetItem, QWidget
 
@@ -45,14 +44,14 @@ class LocksList(TableWidget):
         lock = self.world.locks_and_bridges[row]
 
         if column == 0:
-            widget = typing.cast(BlockBank, self.cellWidget(row, column))
-            data = widget.last_clicked_index
+            block_bank = typing.cast(BlockBank, self.cellWidget(row, column))
+            data = block_bank.last_clicked_index
 
             self.undo_stack.push(ChangeReplacementTile(self.world, lock.data.index, data))
 
         elif column == 1:
-            widget = typing.cast(Spinner, self.cellWidget(row, column))
-            data = widget.value()
+            spinner = typing.cast(Spinner, self.cellWidget(row, column))
+            data = spinner.value()
 
             self.undo_stack.push(ChangeLockIndex(self.world, lock, data))
 
@@ -92,19 +91,19 @@ class LocksList(TableWidget):
 
 
 class BlockBankDelegate(QStyledItemDelegate):
-    def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
+    def createEditor(self, parent: QWidget, option, index) -> QWidget:
         block_bank = BlockBank(None)
         block_bank.clicked.connect(block_bank.hide)
 
         return block_bank
 
-    def setEditorData(self, editor: BlockBank, index: QModelIndex):
+    def setEditorData(self, editor, index):
         editor.show()
 
 
 class NoneDelegate(QStyledItemDelegate):
-    def createEditor(self, parent: QWidget, option, index: QModelIndex) -> QWidget:
+    def createEditor(self, parent: QWidget, option, index) -> QWidget:
         return None
 
-    def setEditorData(self, editor, index: QModelIndex):
+    def setEditorData(self, editor, index):
         pass
