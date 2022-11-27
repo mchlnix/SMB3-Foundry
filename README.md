@@ -1,9 +1,13 @@
 # A modern Super Mario Bros. 3 Level Editor
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
 [![YouTube Video of Version 1.0](https://i.imgur.com/ZQXDyCr.png)](https://youtu.be/7_22cAffMmE)
-YouTube Video of Version 1.0, check [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) for more up to date versions
+YouTube Video of 1.0 Beta Version
+
+## Downloads
+
+SMB3 Foundry Level Editor: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.0/linux-smb3-foundry">Linux</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.0/win-smb3-foundry">Windows</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.0/osx-smb3-foundry">OSX</a>  
+SMB3 Scribe Overworld Editor: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.0/linux-smb3-scribe">Linux</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.0/win-smb3-scribe">Windows</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.0/osx-smb3-scribe">OSX</a>  
+Manuals: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.0/manual-foundry.pdf">SMB3 Foundry</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.0/manual-scribe.pdf">SMB3 Scribe</a>
 
 ## Features right now
 
@@ -13,15 +17,13 @@ YouTube Video of Version 1.0, check [Releases](https://github.com/mchlnix/SMB3-F
  - Object-Viewer
  - Loading/Saving of levels
  - Zooming
- - Selection of multiple objects
- - Copy/Cut/Paste objects
- - Vertical Levels
+ - Select, Move and Remove multiple Objects
+ - Copy/Cut/Paste Objects
+ - Supports editing Vertical Levels
  - Undo/Redo System
- - Instant Header Editing
- - Jump (Level pointer) editing
+ - Change Palettes, Music and Jumps to other Levels
+ - Play any level directly, without having to overwrite your ROM
  - Make screenshots of your Level
- - Play any level directly, without having to save it to ROM
- - Drag and Drop objects into the level
 
 ## To come
 
@@ -30,10 +32,6 @@ YouTube Video of Version 1.0, check [Releases](https://github.com/mchlnix/SMB3-F
 ## Not planned right now
 
  - Support of other versions, other than the US release
- 
-## User Manual
-
-The beginning of a user manual is available [here](https://github.com/mchlnix/SMB3-Foundry/blob/master/MANUAL.md). It is more technical, explaining basic concepts of the SMB3 game, rather than the actual use of the editor.
 
 ## Contact
 
@@ -42,7 +40,7 @@ Come to the [SMB3 Romhacking Discord](https://discord.gg/pm87gm7) and message Mi
 ## How to run
 
 ### The Easy Way
-You can use the editions in the [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) tab on Github under **Assets**. Those should work out of the box.
+You can use the executables in the [Releases](https://github.com/mchlnix/SMB3-Foundry/releases) tab on Github under **Assets**. Those should work out of the box.
 
 Alternatively you can try the methods below.
 
