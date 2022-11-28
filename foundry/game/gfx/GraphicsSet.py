@@ -1,8 +1,12 @@
-from binascii import unhexlify
 from functools import lru_cache
 
 from foundry.game.File import ROM
-from smb3parse.constants import Level_BG_Pages1, Level_BG_Pages2
+from smb3parse.constants import (
+    Level_BG_Pages1,
+    Level_BG_Pages2,
+    STOCK_LEVEL_BG_PAGES1_BYTES,
+    STOCK_LEVEL_BG_PAGES2_BYTES,
+)
 
 CHR_ROM_OFFSET = 0x40010
 CHR_ROM_SEGMENT_SIZE = 0x400
@@ -56,12 +60,8 @@ class GraphicsSet:
 
     def __init__(self, graphic_set_number):
         if not self.GRAPHIC_SET_BG_PAGE_1:
-            self.GRAPHIC_SET_BG_PAGE_1 = self._heuristic_bg_pages(
-                unhexlify(b"0008101c0c58585c5830346e18381c242c5c586c683428"), Level_BG_Pages1
-            )
-            self.GRAPHIC_SET_BG_PAGE_2 = self._heuristic_bg_pages(
-                unhexlify(b"00606060603e605e60606a606060605e2e5e6060607060"), Level_BG_Pages2
-            )
+            self.GRAPHIC_SET_BG_PAGE_1 = self._heuristic_bg_pages(STOCK_LEVEL_BG_PAGES1_BYTES, Level_BG_Pages1)
+            self.GRAPHIC_SET_BG_PAGE_2 = self._heuristic_bg_pages(STOCK_LEVEL_BG_PAGES2_BYTES, Level_BG_Pages2)
 
         self._data = bytearray()
         self._anim_data = []

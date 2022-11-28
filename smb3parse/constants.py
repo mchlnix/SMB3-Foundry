@@ -1,3 +1,4 @@
+from binascii import unhexlify
 from collections import defaultdict
 from pathlib import Path
 from typing import Union
@@ -20,6 +21,12 @@ See PAGE_A000_OFFSET. Just with 0xC000 as the implicit offset.
 """
 
 WORLD_MAP_TSA_INDEX = 12
+
+STOCK_LEVEL_BG_PAGES1_BYTES = unhexlify(b"0008101c0c58585c5830346e18381c242c5c586c683428")
+"""The Level_BG_Pages1 byte array from the stock ROM"""
+
+STOCK_LEVEL_BG_PAGES2_BYTES = unhexlify(b"00606060603e605e60606a606060605e2e5e6060607060")
+"""The Level_BG_Pages2 byte array from the stock ROM"""
 
 TILE_LEVEL_1 = 0x03
 TILE_LEVEL_2 = 0x04
