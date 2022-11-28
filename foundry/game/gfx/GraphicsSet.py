@@ -1,7 +1,12 @@
 from functools import lru_cache
 
 from foundry.game.File import ROM
-from smb3parse.constants import Level_BG_Pages1, Level_BG_Pages2
+from smb3parse.constants import (
+    Level_BG_Pages1,
+    Level_BG_Pages2,
+    STOCK_LEVEL_BG_PAGES1_BYTES,
+    STOCK_LEVEL_BG_PAGES2_BYTES,
+)
 
 CHR_ROM_OFFSET = 0x40010
 CHR_ROM_SEGMENT_SIZE = 0x400
@@ -55,8 +60,8 @@ class GraphicsSet:
 
     def __init__(self, graphic_set_number):
         if not self.GRAPHIC_SET_BG_PAGE_1:
-            self.GRAPHIC_SET_BG_PAGE_1 = ROM().bulk_read(BG_PAGE_COUNT, Level_BG_Pages1)
-            self.GRAPHIC_SET_BG_PAGE_2 = ROM().bulk_read(BG_PAGE_COUNT, Level_BG_Pages2)
+            self.GRAPHIC_SET_BG_PAGE_1 = self._heuristic_bg_pages(STOCK_LEVEL_BG_PAGES1_BYTES, Level_BG_Pages1)
+            self.GRAPHIC_SET_BG_PAGE_2 = self._heuristic_bg_pages(STOCK_LEVEL_BG_PAGES2_BYTES, Level_BG_Pages2)
 
         self._data = bytearray()
         self._anim_data = []
@@ -118,6 +123,23 @@ class GraphicsSet:
     def _read_in(self, segments):
         for segment in segments:
             self._read_in_chr_rom_segment(segment, self._data)
+
+    def _heuristic_bg_pages(self, bg_page_bytes: bytes, fallback_addr: int) -> int:
+        """Searches through the ROM's PRG030 bank (second-to-last bank) for the main array responsible
+        for rendering the correct graphics. Currently the heuristics in order of precedence are:
+
+        1. Search for the bytes from the stock ROM (given as the bg_page_bytes argument)
+            - When changing up the assembly, it's probably rare that this array changes, but it can
+              easily change position in the bank, so this is most likely to be correct if it is found.
+
+        2. Use the given `fallback_addr`.
+
+        TODO: Do more/better heuristics than searching the stock bytes.
+        """
+        bgpages_addr = ROM().search_bank(bg_page_bytes, ROM.PRG030_INDEX)
+        if bgpages_addr == -1:
+            bgpages_addr = fallback_addr
+        return ROM().bulk_read(BG_PAGE_COUNT, bgpages_addr)
 
     @staticmethod
     def _read_in_chr_rom_segment(index, data):

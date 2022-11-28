@@ -2,11 +2,15 @@ from os.path import basename
 from pathlib import Path
 from typing import Optional
 
-from smb3parse.util.rom import INESHeader, Rom
+from smb3parse.util.rom import INESHeader, Rom, PRG_BANK_SIZE
 
 
 class ROM(Rom):
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
+    PRG030_INDEX = -2
+    """The index passed to search_bank to search the vanilla prg030 bank, regardless of expanded ROM"""
+    PRG031_INDEX = -1
+    """The index passed to search_bank to search the vanilla prg031 bank, regardless of expanded ROM"""
 
     rom_data = bytearray()
     header: Optional[INESHeader] = None
@@ -98,3 +102,20 @@ class ROM(Rom):
     def bulk_write(self, data: bytearray, position: int):
         position = self.prg_normalize(position)
         ROM.rom_data[position : position + len(data)] = data
+
+    def search(self, needle: bytes, start: int = 0, end: int = None) -> int:
+        end = len(needle) if end is None else end
+        return ROM.rom_data.find(needle, start, end)
+
+    def search_bank(self, needle: bytes, bank: int) -> int:
+        """Search a specific bank given a zero-based bank index.
+        If negative values are used, -1 is the last bank, -2 is the second-to-last bank, etc.
+        """
+        num_prg_banks = ROM.header.prg_size // PRG_BANK_SIZE
+        # Search must be within ROM bounds
+        if (abs(bank) > num_prg_banks) or (bank == num_prg_banks):
+            return -1
+        # Mod here for negative banks (negative indices index from the end)
+        bank = bank % num_prg_banks
+        start = bank * PRG_BANK_SIZE
+        return self.search(needle, start, start + PRG_BANK_SIZE)
