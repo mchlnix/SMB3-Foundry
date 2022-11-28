@@ -125,8 +125,8 @@ class GraphicsSet:
             self._read_in_chr_rom_segment(segment, self._data)
 
     def _heuristic_bg_pages(self, bg_page_bytes: bytes, fallback_addr: int) -> int:
-        """Searches through the ROM for the main array responsible for rendering the correct graphics.
-        Currently the heuristics in order of precedence are:
+        """Searches through the ROM's PRG030 bank (second-to-last bank) for the main array responsible
+        for rendering the correct graphics. Currently the heuristics in order of precedence are:
 
         1. Search for the bytes from the stock ROM (given as the bg_page_bytes argument)
             - When changing up the assembly, it's probably rare that this array changes, but it can
@@ -136,7 +136,7 @@ class GraphicsSet:
 
         TODO: Do more/better heuristics than searching the stock bytes.
         """
-        bgpages_addr = ROM().search(bg_page_bytes)
+        bgpages_addr = ROM().search_bank(bg_page_bytes, ROM.PRG030_INDEX)
         if bgpages_addr == -1:
             bgpages_addr = fallback_addr
         return ROM().bulk_read(BG_PAGE_COUNT, bgpages_addr)
