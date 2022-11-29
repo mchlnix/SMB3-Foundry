@@ -46,6 +46,10 @@ class Rom:
 
         self._header = header
 
+    @property
+    def prg_units(self):
+        return self._header.prg_units
+
     def prg_normalize(self, offset: int) -> int:
         """Takes a vanilla ROM PRG offset and returns a
         new offset that is correct for the current ROM's
