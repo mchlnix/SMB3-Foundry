@@ -159,7 +159,7 @@ class Rom:
     def _write(self, offset: NormalizedAddress, data: bytes):
         self._data[offset : offset + len(data)] = data
 
-    def find(self, needle: Union[bytes, int], start: AnyAddress = 0, end: AnyAddress = -1) -> int:
+    def find(self, needle: Union[bytes, int], start: AnyAddress = 0, end: AnyAddress = -1) -> NormalizedAddress:
         if isinstance(needle, int):
             needle = bytes([needle])
 
@@ -172,8 +172,8 @@ class Rom:
 
         return self._find(needle, start, end)
 
-    def _find(self, needle: bytes, start: NormalizedAddress, end: NormalizedAddress) -> int:
-        return self._data.find(needle, start, end)
+    def _find(self, needle: bytes, start: NormalizedAddress, end: NormalizedAddress) -> NormalizedAddress:
+        return NormalizedAddress(self._data.find(needle, start, end))
 
     def nibbles(self, offset: AnyAddress) -> tuple[int, int]:
         byte = self.int(offset)
