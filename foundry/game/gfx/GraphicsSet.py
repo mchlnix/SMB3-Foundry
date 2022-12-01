@@ -59,9 +59,9 @@ class GraphicsSet:
     GRAPHIC_SET_BG_PAGE_2 = bytearray()
 
     def __init__(self, graphic_set_number):
-        if not self.GRAPHIC_SET_BG_PAGE_1:
-            self.GRAPHIC_SET_BG_PAGE_1 = self._heuristic_bg_pages(STOCK_LEVEL_BG_PAGES1_BYTES, Level_BG_Pages1)
-            self.GRAPHIC_SET_BG_PAGE_2 = self._heuristic_bg_pages(STOCK_LEVEL_BG_PAGES2_BYTES, Level_BG_Pages2)
+        if not GraphicsSet.GRAPHIC_SET_BG_PAGE_1:
+            GraphicsSet.GRAPHIC_SET_BG_PAGE_1 = self._heuristic_bg_pages(STOCK_LEVEL_BG_PAGES1_BYTES, Level_BG_Pages1)
+            GraphicsSet.GRAPHIC_SET_BG_PAGE_2 = self._heuristic_bg_pages(STOCK_LEVEL_BG_PAGES2_BYTES, Level_BG_Pages2)
 
         self._data = bytearray()
         self._anim_data = []
@@ -81,8 +81,8 @@ class GraphicsSet:
         if graphic_set_number not in range(BG_PAGE_COUNT):
             self._read_in([graphic_set_number, graphic_set_number + 2])
         else:
-            gfx_index = self.GRAPHIC_SET_BG_PAGE_1[graphic_set_number]
-            common_index = self.GRAPHIC_SET_BG_PAGE_2[graphic_set_number]
+            gfx_index = GraphicsSet.GRAPHIC_SET_BG_PAGE_1[graphic_set_number]
+            common_index = GraphicsSet.GRAPHIC_SET_BG_PAGE_2[graphic_set_number]
 
             segments.append(gfx_index)
             segments.append(common_index)
@@ -124,7 +124,7 @@ class GraphicsSet:
         for segment in segments:
             self._read_in_chr_rom_segment(segment, self._data)
 
-    def _heuristic_bg_pages(self, bg_page_bytes: bytes, fallback_addr: int) -> int:
+    def _heuristic_bg_pages(self, bg_page_bytes: bytes, fallback_addr: int) -> bytearray:
         """Searches through the ROM's PRG030 bank (second-to-last bank) for the main array responsible
         for rendering the correct graphics. Currently the heuristics in order of precedence are:
 
