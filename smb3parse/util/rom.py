@@ -4,6 +4,8 @@ from os import PathLike
 from pathlib import Path
 from typing import Optional, Union
 
+from typing_extensions import TypeAlias
+
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
 from smb3parse.util import little_endian
 
@@ -11,6 +13,30 @@ TSA_OS_LIST = PAGE_A000_ByTileset
 TSA_TABLE_SIZE = 0x400
 
 PRG_BANK_SIZE = 0x2000
+
+
+RawAddress: TypeAlias = int
+
+
+class NormalizedAddress(RawAddress):
+    """
+    Roms can be expanded to hold more data than the original SMB3 game. This data is added between PRG_029 and PRG_030.
+
+    This makes it necessary to reroute any address, that would've gone to the old PRG_030 and PRG_031 to the new PRG_030
+    and PRG_031.
+
+    Since this cannot happen twice, without exceeding the size of the Rom, we have to keep track of which addresses have
+    already been normalized.
+
+    This is done using these types and a type checker, as well as only having 3 methods in the Rom class dealing with
+    raw Rom data. _read, _write and _find. Any other method using these must normalize their addresses and not give them
+    out.
+    """
+
+    pass
+
+
+AnyAddress: TypeAlias = Union[RawAddress, NormalizedAddress]
 
 
 class INESHeader(Structure):
@@ -50,7 +76,7 @@ class Rom:
     def prg_units(self):
         return self._header.prg_units
 
-    def prg_normalize(self, offset: int) -> int:
+    def prg_normalize(self, offset: AnyAddress) -> NormalizedAddress:
         """Takes a vanilla ROM PRG offset and returns a
         new offset that is correct for the current ROM's
         PRG size
@@ -59,16 +85,20 @@ class Rom:
         call this multiple times giving it resulting offsets
         from previous calls to it.
         """
+        if isinstance(offset, NormalizedAddress):
+            return offset
+
         # data in expanded Roms is inserted between PRG29 and PRG30
         # (0-indexed); so any offset, that goes beyond PRG29 needs
         # to be adjusted by adding however much data was inserted
         if offset < (BASE_OFFSET + (30 * PRG_BANK_SIZE)):
-            return offset
+            return NormalizedAddress(offset)
 
         # we need to normalize this bank 30 or 31 or CHR
         # offset to the correct bank based on PRG size
         no_bytes_added_to_rom = self._header.prg_size - Rom.VANILLA_PRG_SIZE
-        return offset + no_bytes_added_to_rom
+
+        return NormalizedAddress(offset + no_bytes_added_to_rom)
 
     def tsa_data_for_object_set(self, object_set: int) -> bytearray:
         # TSA_OS_LIST offset value assumes vanilla ROM size, so normalize it
@@ -89,37 +119,59 @@ class Rom:
 
         return self.read(tsa_start, TSA_TABLE_SIZE)
 
-    def little_endian(self, offset: int) -> int:
-        offset = self.prg_normalize(offset)
-        return little_endian(self._data[offset : offset + 2])
+    def little_endian(self, offset: AnyAddress) -> int:
+        return little_endian(self.read(offset, 2))
 
-    def write_little_endian(self, offset: int, integer: int):
-        offset = self.prg_normalize(offset)
+    def write_little_endian(self, offset: AnyAddress, integer: int):
         right_byte = (integer & 0xFF00) >> 8
         left_byte = integer & 0x00FF
 
         self.write(offset, bytes([left_byte, right_byte]))
 
-    def read(self, offset: int, length: int) -> bytearray:
+    def read(self, offset: AnyAddress, length: int) -> bytearray:
         offset = self.prg_normalize(offset)
+
+        return self._read(offset, length)
+
+    def _read(self, offset: NormalizedAddress, length: int) -> bytearray:
         return self._data[offset : offset + length]
 
-    def read_until(self, offset, delimiter):
+    def read_until(self, offset: AnyAddress, delimiter: Union[bytes, int]):
+        if isinstance(delimiter, int):
+            delimiter = bytes([delimiter])
+
         end = self.find(delimiter, offset)
 
         return self.read(offset, end - offset)
 
-    def write(self, offset: int, data: Union[bytes, int]):
+    def write(self, offset: AnyAddress, data: Union[bytes, int]):
         if isinstance(data, int):
             data = bytes([data])
 
         offset = self.prg_normalize(offset)
+
+        return self._write(offset, data)
+
+    def _write(self, offset: NormalizedAddress, data: bytes):
         self._data[offset : offset + len(data)] = data
 
-    def find(self, byte: bytes, offset: int = 0) -> int:
-        return self._data.find(byte, offset)
+    def find(self, needle: Union[bytes, int], start: AnyAddress = 0, end: AnyAddress = -1) -> int:
+        if isinstance(needle, int):
+            needle = bytes([needle])
 
-    def nibbles(self, offset: int) -> tuple[int, int]:
+        start = self.prg_normalize(start)
+
+        if end == -1:
+            end = len(self._data)
+
+        end = self.prg_normalize(end)
+
+        return self._find(needle, start, end)
+
+    def _find(self, needle: bytes, start: NormalizedAddress, end: NormalizedAddress) -> int:
+        return self._data.find(needle, start, end)
+
+    def nibbles(self, offset: AnyAddress) -> tuple[int, int]:
         byte = self.int(offset)
 
         high_nibble = byte >> 4
@@ -127,7 +179,7 @@ class Rom:
 
         return high_nibble, low_nibble
 
-    def write_nibbles(self, offset: int, high_nibble: int, low_nibble: int = 0):
+    def write_nibbles(self, offset: AnyAddress, high_nibble: int, low_nibble: int = 0):
         if any(nibble > 0x0F for nibble in [high_nibble, low_nibble]):
             raise ValueError(f"{high_nibble=} or {low_nibble=} was larger than 0x0F.")
 
@@ -142,7 +194,7 @@ class Rom:
     def save_to(self, path: PathLike):
         Path(path).open("wb").write(self._data)
 
-    def int(self, offset: int) -> int:
+    def int(self, offset: AnyAddress) -> int:
         read_bytes = self.read(offset, 1)
 
         return read_bytes[0]
