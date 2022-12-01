@@ -76,6 +76,10 @@ class Rom:
     def prg_units(self):
         return self._header.prg_units
 
+    @property
+    def prg_banks(self):
+        return self.prg_units * 2
+
     def prg_normalize(self, offset: AnyAddress) -> NormalizedAddress:
         """Takes a vanilla ROM PRG offset and returns a
         new offset that is correct for the current ROM's
