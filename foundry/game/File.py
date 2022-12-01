@@ -104,8 +104,9 @@ class ROM(Rom):
         ROM.rom_data[position : position + len(data)] = data
 
     def search(self, needle: bytes, start: int = 0, end: int = None) -> int:
-        end = len(needle) if end is None else end
-        return ROM.rom_data.find(needle, start, end)
+        diff = end - start
+        start = self.prg_normalize(start)
+        return ROM.rom_data.find(needle, start, start + diff)
 
     def search_bank(self, needle: bytes, bank: int) -> int:
         """Search a specific bank given a zero-based bank index.
@@ -117,5 +118,5 @@ class ROM(Rom):
             return -1
         # Mod here for negative banks (negative indices index from the end)
         bank = bank % num_prg_banks
-        start = bank * PRG_BANK_SIZE
+        start = BASE_OFFSET + bank * PRG_BANK_SIZE
         return self.search(needle, start, start + PRG_BANK_SIZE)
