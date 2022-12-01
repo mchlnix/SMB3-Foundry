@@ -139,12 +139,12 @@ class GraphicsSet:
         bgpages_addr = ROM().search_bank(bg_page_bytes, ROM.PRG030_INDEX)
         if bgpages_addr == -1:
             bgpages_addr = fallback_addr
-        return ROM().bulk_read(BG_PAGE_COUNT, bgpages_addr)
+        return ROM().read(bgpages_addr, BG_PAGE_COUNT)
 
     @staticmethod
     def _read_in_chr_rom_segment(index, data):
         offset = CHR_ROM_OFFSET + index * CHR_ROM_SEGMENT_SIZE
-        chr_rom_data = ROM().bulk_read(2 * CHR_ROM_SEGMENT_SIZE, offset)
+        chr_rom_data = ROM().read(offset, 2 * CHR_ROM_SEGMENT_SIZE)
 
         data.extend(chr_rom_data)
 

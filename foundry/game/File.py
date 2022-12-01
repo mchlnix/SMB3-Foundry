@@ -85,37 +85,16 @@ class ROM(Rom):
     def is_loaded() -> bool:
         return bool(ROM.path)
 
-    def get_byte(self, position: int) -> int:
-        position = self.prg_normalize(position)
-
-        if position < len(ROM.rom_data):
-            return ROM.rom_data[position]
-
-        raise IndexError(
-            f"Attempted to read from offset 0x{position:X} when ROM is only of size 0x{len(ROM.rom_data):X}"
-        )
-
-    def bulk_read(self, count: int, position: int) -> bytearray:
-        position = self.prg_normalize(position)
-        return ROM.rom_data[position : position + count]
-
-    def bulk_write(self, data: bytearray, position: int):
-        position = self.prg_normalize(position)
-        ROM.rom_data[position : position + len(data)] = data
-
-    def search(self, needle: bytes, start: int = 0, end: int = None) -> int:
-        end = len(needle) if end is None else end
-        return ROM.rom_data.find(needle, start, end)
-
     def search_bank(self, needle: bytes, bank: int) -> int:
         """Search a specific bank given a zero-based bank index.
         If negative values are used, -1 is the last bank, -2 is the second-to-last bank, etc.
         """
-        num_prg_banks = ROM.header.prg_size // PRG_BANK_SIZE
-        # Search must be within ROM bounds
-        if (abs(bank) > num_prg_banks) or (bank == num_prg_banks):
-            return -1
+        num_prg_banks = ROM().prg_banks
         # Mod here for negative banks (negative indices index from the end)
         bank = bank % num_prg_banks
+
+        if bank not in range(num_prg_banks):
+            return -1
+
         start = bank * PRG_BANK_SIZE
-        return self.search(needle, start, start + PRG_BANK_SIZE)
+        return self.find(needle, start, start + PRG_BANK_SIZE)

@@ -437,7 +437,7 @@ class LevelObject(InLevelObject):
 
             for y in range(ending_graphic_height):
                 for x in range(page_width):
-                    block_index = rom.get_byte(rom_offset + y * page_width + x - 1)
+                    block_index = rom.int(rom_offset + y * page_width + x - 1)
 
                     block_position = (y_offset + y) * new_width + x + page_limit + 1
                     blocks_to_draw[block_position] = block_index

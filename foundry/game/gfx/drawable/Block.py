@@ -19,7 +19,7 @@ TSA_BANK_3 = 3 * 256
 @lru_cache(2**10)
 def get_block(block_index: int, palette_group: PaletteGroup, graphics_set: GraphicsSet, tsa_data: bytes):
     if block_index > 0xFF:
-        rom_block_index = ROM().get_byte(block_index)  # block_index is an offset into the graphic memory
+        rom_block_index = ROM().int(block_index)  # block_index is an offset into the graphic memory
         block = Block(rom_block_index, palette_group, graphics_set, tsa_data)
     else:
         block = Block(block_index, palette_group, graphics_set, tsa_data)
