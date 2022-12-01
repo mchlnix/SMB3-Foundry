@@ -2,7 +2,7 @@ import pathlib
 from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
 from smb3parse.util import little_endian
@@ -11,6 +11,14 @@ TSA_OS_LIST = PAGE_A000_ByTileset
 TSA_TABLE_SIZE = 0x400
 
 PRG_BANK_SIZE = 0x2000
+
+
+class NormalizedAddress(int):
+    """Type class used to inform Rom.prg_normalize that an address is already normalized."""
+
+    def __new__(cls, val: int):
+        result = super(NormalizedAddress, cls).__new__(cls, val)
+        return cast(NormalizedAddress, result)
 
 
 class INESHeader(Structure):
@@ -50,7 +58,7 @@ class Rom:
     def prg_units(self):
         return self._header.prg_units
 
-    def prg_normalize(self, offset: int) -> int:
+    def prg_normalize(self, offset: int) -> NormalizedAddress:
         """Takes a vanilla ROM PRG offset and returns a
         new offset that is correct for the current ROM's
         PRG size
@@ -59,16 +67,18 @@ class Rom:
         call this multiple times giving it resulting offsets
         from previous calls to it.
         """
+        if isinstance(offset, NormalizedAddress):
+            return offset
         # data in expanded Roms is inserted between PRG29 and PRG30
         # (0-indexed); so any offset, that goes beyond PRG29 needs
         # to be adjusted by adding however much data was inserted
         if offset < (BASE_OFFSET + (30 * PRG_BANK_SIZE)):
-            return offset
+            return NormalizedAddress(offset)
 
         # we need to normalize this bank 30 or 31 or CHR
         # offset to the correct bank based on PRG size
         no_bytes_added_to_rom = self._header.prg_size - Rom.VANILLA_PRG_SIZE
-        return offset + no_bytes_added_to_rom
+        return NormalizedAddress(offset + no_bytes_added_to_rom)
 
     def tsa_data_for_object_set(self, object_set: int) -> bytearray:
         # TSA_OS_LIST offset value assumes vanilla ROM size, so normalize it

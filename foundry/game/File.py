@@ -2,15 +2,12 @@ from os.path import basename
 from pathlib import Path
 from typing import Optional
 
-from smb3parse.util.rom import INESHeader, Rom, PRG_BANK_SIZE
+from smb3parse.constants import BASE_OFFSET
+from smb3parse.util.rom import INESHeader, NormalizedAddress, Rom, PRG_BANK_SIZE
 
 
 class ROM(Rom):
     MARKER_VALUE = bytes("SMB3FOUNDRY", "ascii")
-    PRG030_INDEX = -2
-    """The index passed to search_bank to search the vanilla prg030 bank, regardless of expanded ROM"""
-    PRG031_INDEX = -1
-    """The index passed to search_bank to search the vanilla prg031 bank, regardless of expanded ROM"""
 
     rom_data = bytearray()
     header: Optional[INESHeader] = None
@@ -103,13 +100,19 @@ class ROM(Rom):
         position = self.prg_normalize(position)
         ROM.rom_data[position : position + len(data)] = data
 
-    def search(self, needle: bytes, start: int = 0, end: int = None) -> int:
+    def search(self, needle: bytes, start: int = 0, end: int = None) -> NormalizedAddress:
+        """Search the ROM data for given bytes.
+
+        Note that no matter where the given bytes are found (since we are searching the raw
+        ROM bytes), the offset at which they are found is inherently a NormalizedAddress.
+        """
         diff = end - start
         start = self.prg_normalize(start)
-        return ROM.rom_data.find(needle, start, start + diff)
+        return NormalizedAddress(ROM.rom_data.find(needle, start, start + diff))
 
-    def search_bank(self, needle: bytes, bank: int) -> int:
+    def search_bank(self, needle: bytes, bank: int) -> NormalizedAddress:
         """Search a specific bank given a zero-based bank index.
+
         If negative values are used, -1 is the last bank, -2 is the second-to-last bank, etc.
         """
         num_prg_banks = ROM.header.prg_size // PRG_BANK_SIZE

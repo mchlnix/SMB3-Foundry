@@ -2,6 +2,7 @@ from functools import lru_cache
 
 from foundry.game.File import ROM
 from smb3parse.constants import (
+    LEVEL_BG_PAGES_BANK,
     Level_BG_Pages1,
     Level_BG_Pages2,
     STOCK_LEVEL_BG_PAGES1_BYTES,
@@ -131,12 +132,13 @@ class GraphicsSet:
         1. Search for the bytes from the stock ROM (given as the bg_page_bytes argument)
             - When changing up the assembly, it's probably rare that this array changes, but it can
               easily change position in the bank, so this is most likely to be correct if it is found.
+            - Note that we assume that it will be in bank 30 (prior to address normalization)
 
         2. Use the given `fallback_addr`.
 
         TODO: Do more/better heuristics than searching the stock bytes.
         """
-        bgpages_addr = ROM().search_bank(bg_page_bytes, ROM.PRG030_INDEX)
+        bgpages_addr = ROM().search_bank(bg_page_bytes, LEVEL_BG_PAGES_BANK)
         if bgpages_addr == -1:
             bgpages_addr = fallback_addr
         return ROM().bulk_read(BG_PAGE_COUNT, bgpages_addr)
