@@ -81,14 +81,7 @@ class Rom:
         return self.prg_units * 2
 
     def prg_normalize(self, offset: AnyAddress) -> NormalizedAddress:
-        """Takes a vanilla ROM PRG offset and returns a
-        new offset that is correct for the current ROM's
-        PRG size
-
-        IMPORTANT: This method is not idempotent! You cannot
-        call this multiple times giving it resulting offsets
-        from previous calls to it.
-        """
+        """Takes a vanilla ROM PRG offset and returns a new offset that is correct for the current ROM's PRG size."""
         if isinstance(offset, NormalizedAddress):
             return offset
 
