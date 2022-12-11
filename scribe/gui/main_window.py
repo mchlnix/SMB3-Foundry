@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QSc
 from foundry import ROM_FILE_FILTER, icon
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import restore_all_palettes
+from foundry.game.gfx import restore_all_palettes
 from foundry.game.gfx.drawable.Block import get_block, get_tile
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.WorldView import WorldView

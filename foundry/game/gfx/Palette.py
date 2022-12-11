@@ -122,18 +122,6 @@ def save_all_palette_groups(rom: Optional[Rom] = None):
         PaletteGroup.changed = False
 
 
-def restore_all_palettes():
-    for palette_group in _palette_group_cache.values():
-        palette_group.restore()
-
-    # TODO find a better place for this, maybe separate block/tile render file, or something
-    from foundry.game.gfx.drawable.Block import get_block, get_tile
-
-    get_tile.cache_clear()
-    get_block.cache_clear()
-    PaletteGroup.changed = False
-
-
 palette_file = root_dir.joinpath("data", "Default.pal")
 
 color_data = Path(palette_file).open("rb").read()
@@ -158,18 +146,3 @@ def bg_color_for_object_set(object_set_number: int, palette_group_index: int) ->
 
 def bg_color_for_palette_group(palette_group: PaletteGroup) -> QColor:
     return NESPalette[palette_group[0][0]]
-
-
-def change_color(palette_group: PaletteGroup, index_in_group: int, index_in_palette: int, new_color_index: int):
-    # colors at index 0 are shared among all palettes of a palette group
-    if index_in_palette == 0:
-        for palette_ in palette_group.palettes:
-            palette_[0] = new_color_index
-    else:
-        palette_group[index_in_group][index_in_palette] = new_color_index
-
-    # TODO find a better place for this, maybe separate block/tile render file, or something
-    from foundry.game.gfx.drawable.Block import get_block, get_tile
-
-    get_tile.cache_clear()
-    get_block.cache_clear()

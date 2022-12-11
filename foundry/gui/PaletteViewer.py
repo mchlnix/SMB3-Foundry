@@ -22,9 +22,9 @@ from foundry.game.gfx.Palette import (
     NESPalette,
     PALETTES_PER_PALETTES_GROUP,
     PALETTE_GROUPS_PER_OBJECT_SET,
-    change_color,
     load_palette_group,
 )
+from foundry.game.gfx import change_color
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.CustomDialog import CustomDialog
 from foundry.gui.commands import UpdatePalette

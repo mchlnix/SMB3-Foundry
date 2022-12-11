@@ -31,7 +31,8 @@ from foundry import (
     icon,
 )
 from foundry.game.File import ROM
-from foundry.game.gfx.Palette import PaletteGroup, restore_all_palettes, save_all_palette_groups
+from foundry.game.gfx.Palette import PaletteGroup, save_all_palette_groups
+from foundry.game.gfx import restore_all_palettes
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level, world_and_level_for_level_address

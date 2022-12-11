@@ -5,6 +5,7 @@ from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap,
 from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import get_level_thumbnail
+from foundry.game.gfx import get_block
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import get_tile, get_worldmap_tile
 from foundry.game.gfx.objects import LevelObject, MapTile
@@ -89,6 +90,8 @@ class WorldView(MainView):
     def next_anim_step(self):
         self.drawer.anim_frame += 1
         self.drawer.anim_frame %= 4
+
+        # to get the tiles for the next animation step
         get_tile.cache_clear()
 
         self.repaint()
@@ -100,6 +103,8 @@ class WorldView(MainView):
         if self.redraw_timer is not None:
             self.redraw_timer.stop()
             self.drawer.anim_frame = 0
+
+            # to get the tiles for the next animation step
             get_tile.cache_clear()
 
         if self.world.data.frame_tick_count and self.settings.value("world view/animated tiles"):
@@ -139,6 +144,7 @@ class WorldView(MainView):
             )
             map_tile.change_type(map_tile.block.index)
 
+        get_block.cache_clear()
         self.update()
 
     def set_mouse_mode(self, new_mode: int, event: Optional[QMouseEvent]):
