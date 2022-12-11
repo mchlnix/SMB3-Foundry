@@ -424,8 +424,6 @@ class LevelObject(InLevelObject):
                 blocks_to_draw.append(self.blocks[0])
                 blocks_to_draw.extend([self.blocks[1]] * (new_width - 1))
 
-            # todo magic number
-            # ending graphics
             rom_offset = self.object_set.get_ending_offset()
 
             rom = ROM()

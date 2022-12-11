@@ -267,7 +267,6 @@ class WorldMap(LevelBase):
 
         :return: Whether the tile is enterable.
         """
-        # todo allows spade houses, but those break. treat them differently when loading their level
         return tile_is_enterable(tile_index, self.rom)
 
     @property

@@ -119,7 +119,6 @@ class EnemyItem(InLevelObject):
             mask = block.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
             block.setAlphaChannel(mask)
 
-            # todo better effect
             if self.selected:
                 apply_selection_overlay(block, mask)
 
@@ -132,7 +131,7 @@ class EnemyItem(InLevelObject):
         return [("Name", self.name), ("X", self.x_position), ("Y", self.y_position)]
 
     def set_position(self, x, y):
-        # todo also check for the upper bounds
+        # todo also check for the upper bounds (difficult, since we don't have the level size here)
         x = max(0, x)
         y = max(0, y)
 

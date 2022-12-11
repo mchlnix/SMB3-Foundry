@@ -28,7 +28,6 @@ class ParsedLevel:
             for parsed_enemy in self.parsed_enemies
         )
 
-    # TODO put those in level object next to goes_to_level?
     def has_generic_exit(self):
         """
         Certain objects jump not to the Destination marked in the level header, but a predefined Exit Level, that every
