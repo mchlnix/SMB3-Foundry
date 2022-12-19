@@ -83,7 +83,7 @@ class Level(LevelLike):
 
         rom = ROM()
 
-        self.header_bytes = rom.bulk_read(HEADER_LENGTH, self.header_offset)
+        self.header_bytes = rom.read(self.header_offset, HEADER_LENGTH)
         self._parse_header()
 
         object_data = ROM.rom_data[self.object_offset :]
@@ -779,7 +779,7 @@ class Level(LevelLike):
 
     def save_to_rom(self):
         for offset, data in self.to_bytes():
-            ROM().bulk_write(data, offset)
+            ROM().write(offset, data)
 
     def to_bytes(self) -> LevelByteData:
         data = bytearray()
