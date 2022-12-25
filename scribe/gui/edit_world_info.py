@@ -2,7 +2,7 @@ from typing import cast
 
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QCloseEvent, QPainter, QPixmap, QUndoStack, Qt
-from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
@@ -15,10 +15,12 @@ from foundry.gui.Spinner import Spinner
 from scribe.gui.commands import (
     SetWorldScroll,
     WorldBottomTile,
+    WorldMusicIndex,
     WorldPaletteIndex,
     WorldTickPerFrame,
 )
 from scribe.gui.world_overview import WorldOverview
+from smb3parse.constants import MUSIC_THEMES
 from smb3parse.levels import NO_MAP_SCROLLING, WORLD_MAP_PALETTE_COUNT
 
 
@@ -43,6 +45,13 @@ class EditWorldInfo(CustomDialog):
         palette_spin_box.valueChanged.connect(self._change_palette_index)
 
         layout.addLayout(label_and_widget("Color Palette Index", palette_spin_box))
+
+        music_dropdown = QComboBox(self)
+        music_dropdown.addItems([f"{name} ({value:#X})" for value, name in MUSIC_THEMES.items()])
+        music_dropdown.currentIndexChanged.connect(self._change_music_index)
+        music_dropdown.setCurrentIndex(list(MUSIC_THEMES.keys()).index(world_map.data.music_index))
+
+        layout.addLayout(label_and_widget("Music Theme", music_dropdown))
 
         self.icon_button = QPushButton("")
         self.icon_button.clicked.connect(self._on_button_press)
@@ -149,6 +158,11 @@ class EditWorldInfo(CustomDialog):
         self._update_button_icon()
 
         self.world_map.palette_changed.emit()
+
+    def _change_music_index(self, new_index: int):
+        music_index = list(MUSIC_THEMES.keys())[new_index]
+
+        self.undo_stack.push(WorldMusicIndex(self.world_map, music_index))
 
     def closeEvent(self, event: QCloseEvent):
         if not self.world_overview.valid():

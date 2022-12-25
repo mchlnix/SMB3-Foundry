@@ -4,7 +4,7 @@ from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects import LevelPointer, Lock
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
-from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, SPRITE_COUNT, TILE_NAMES
+from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, MUSIC_THEMES, SPRITE_COUNT, TILE_NAMES
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.levels import FIRST_VALID_ROW, NO_MAP_SCROLLING, WORLD_MAP_BLANK_TILE_ID
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
@@ -132,7 +132,7 @@ class WorldPaletteIndex(QUndoCommand):
         self.old_index = world.data.palette_index
         self.new_index = new_index
 
-        self.setText(f"Setting Palette Index to {new_index:#x}")
+        self.setText(f"Setting Palette Index to {new_index:Xx}")
 
     def undo(self):
         self.world.data.palette_index = self.old_index
@@ -143,6 +143,23 @@ class WorldPaletteIndex(QUndoCommand):
         self.world.data.palette_index = self.new_index
 
         self.world.palette_changed.emit()
+
+
+class WorldMusicIndex(QUndoCommand):
+    def __init__(self, world: WorldMap, new_index: int):
+        super(WorldMusicIndex, self).__init__()
+
+        self.world = world
+        self.old_index = world.data.music_index
+        self.new_index = new_index
+
+        self.setText(f"Setting Music Theme to '{MUSIC_THEMES[new_index]}' ({new_index:#X})")
+
+    def undo(self):
+        self.world.data.music_index = self.old_index
+
+    def redo(self):
+        self.world.data.music_index = self.new_index
 
 
 class WorldBottomTile(QUndoCommand):

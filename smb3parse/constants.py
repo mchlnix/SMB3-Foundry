@@ -55,6 +55,36 @@ TILE_BOWSER_CASTLE = 0xCC  # TILE_BOWSERCASTLELL
 TILE_HAND_TRAP = 0xE6
 TILE_SPADE_HOUSE = 0xE8
 
+MUSIC_THEMES = {
+    0x01: "World 1",
+    0x02: "World 2",
+    0x03: "World 3",
+    0x04: "World 4",
+    0x05: "World 5",
+    0x06: "World 6",
+    0x07: "World 7",
+    0x08: "World 8",
+    0x09: "Warp World / Coin Heaven",
+    0x0A: "Starman / Invincibility",
+    0x0B: "Warp Whistle",
+    0x0C: "Music Box",
+    0x0D: "King's Room",
+    0x0E: "Bonus Game",
+    0x0F: "Ending Music",
+    0x10: "Overworld 1",
+    0x20: "Underground",
+    0x30: "Water",
+    0x40: "Fortress",
+    0x50: "Boss Battle",
+    0x60: "Airship",
+    0x70: "Hammer Bros. Battle",
+    0x80: "Toad House",
+    0x90: "Overworld 2",
+    0xA0: "P-Switch",
+    0xB0: "Bowser",
+    0xC0: "Bowser's World 8 Letter",
+}
+
 SPRITE_COUNT = 9
 
 MAPOBJ_EMPTY = 0x00
