@@ -29,6 +29,7 @@ from smb3parse.constants import (
     OFFSET_SIZE,
     ToadShop_Layouts,
     ToadShop_Objects,
+    World_BGM,
     World_Map_Max_PanR,
 )
 from smb3parse.data_points import FortressFXData
@@ -261,6 +262,12 @@ class WorldMapData(_IndexedMixin, DataPoint):
         whistle, 0x0A(00) for the Anchor.
         """
 
+        self.music_index_address = 0x0
+        self.music_index = 0x0
+        """
+        The index of the music theme, that is played in the overworld.
+        """
+
         super(WorldMapData, self).__init__(rom)
 
     def calculate_addresses(self):
@@ -309,6 +316,8 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self.toad_warp_level_offset_address = ToadShop_Layouts + OFFSET_SIZE * self.index
         self.toad_warp_item_address = ToadShop_Objects + OFFSET_SIZE * self.index
+
+        self.music_index_address = World_BGM + self.index
 
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
@@ -384,6 +393,8 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self.toad_warp_level_offset = self._rom.little_endian(self.toad_warp_level_offset_address)
         self.toad_warp_item = self._rom.little_endian(self.toad_warp_item_address)
+
+        self.music_index = self._rom.int(self.music_index_address)
 
     def write_back(self, rom: Optional[Rom] = None):
         if rom is None:
@@ -478,6 +489,8 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         rom.write_little_endian(self.toad_warp_level_offset_address, self.toad_warp_level_offset)
         rom.write_little_endian(self.toad_warp_item_address, self.toad_warp_item)
+
+        rom.write(self.music_index_address, self.music_index)
 
     @property
     def fortress_fx_indexes_start_address(self):
