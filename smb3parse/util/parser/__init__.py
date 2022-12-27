@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Generator
 
 from smb3parse.constants import OFFSET_SIZE
+from smb3parse.data_points import LevelPointerData
 from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMap
@@ -19,7 +20,43 @@ class FoundLevel:
     level_offset_positions: list[int]
     enemy_offset_positions: list[int]
 
+    world_number: int
+
     data: ParsedLevel
+
+    found_in_world: bool = False
+    found_as_jump: bool = False
+    is_generic: bool = False
+
+
+@dataclass
+class FoundLevelRecord:
+    level_address: int
+    level_address_offset: int
+
+    enemy_address: int
+    enemy_address_offset: int
+
+    object_set: int
+
+    found_in_world: bool = False
+    found_as_jump: bool = False
+    is_generic: bool = False
+
+    @staticmethod
+    def from_level_pointer(
+        level_pointer: LevelPointerData, from_world: bool, from_jump: bool, generic: bool
+    ) -> "FoundLevelRecord":
+        return FoundLevelRecord(
+            level_pointer.level_address,
+            level_pointer.level_offset_address,
+            level_pointer.enemy_address,
+            level_pointer.enemy_offset_address,
+            level_pointer.object_set,
+            True,
+            False,
+            False,
+        )
 
 
 def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaultdict, dict[int, FoundLevel]]]:
@@ -32,92 +69,104 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
 
         world = WorldMap.from_world_number(rom, world_num + 1)
 
-        level_tuples = [
-            (lp.level_address, lp.level_offset_address, lp.enemy_address, lp.enemy_offset_address, lp.object_set)
-            for lp in world.level_pointers
+        found_level_records: list[FoundLevelRecord] = [
+            (FoundLevelRecord.from_level_pointer(lp, True, False, False)) for lp in world.level_pointers
         ]
 
         # add airship
-        level_tuples.append(
-            (
+        found_level_records.append(
+            FoundLevelRecord(
                 world.data.airship_level_address,
                 world.data.airship_level_offset_address,
                 world.data.airship_enemy_offset,
                 world.data.airship_enemy_offset_address,
                 world.data.airship_level_object_set,
+                False,
+                False,
+                True,
             )
         )
 
         # add generic exit
-        level_tuples.append(
-            (
+        found_level_records.append(
+            FoundLevelRecord(
                 world.data.generic_exit_level_address,
                 world.data.generic_exit_level_offset_address,
                 world.data.generic_exit_enemy_offset,
                 world.data.generic_exit_enemy_offset_address,
                 world.data.generic_exit_object_set,
+                False,
+                False,
+                True,
             )
         )
 
         # add big ? level
-        level_tuples.append(
-            (
+        found_level_records.append(
+            FoundLevelRecord(
                 world.data.big_q_block_level_address,
                 world.data.big_q_block_level_offset_address,
                 world.data.big_q_block_enemy_offset,
                 world.data.big_q_block_enemy_offset_address,
                 world.data.big_q_block_object_set,
+                False,
+                False,
+                True,
             )
         )
 
         # add coin ship level
-        level_tuples.append(
-            (
+        found_level_records.append(
+            FoundLevelRecord(
                 world.data.coin_ship_level_address,
                 world.data.coin_ship_level_offset_address,
                 world.data.coin_ship_enemy_offset,
                 world.data.coin_ship_enemy_offset_address,
                 world.data.coin_ship_level_object_set,
+                False,
+                False,
+                True,
             )
         )
 
         # add special/white toad house level
-        level_tuples.append(
-            (
+        found_level_records.append(
+            FoundLevelRecord(
                 world.data.toad_warp_level_address,
                 world.data.toad_warp_level_offset_address,
                 0x0,  # enemy item data is used directly, not as an offset
                 world.data.toad_warp_item_address,
                 MUSHROOM_OBJECT_SET,
+                False,
+                False,
+                True,
             ),
         )
 
         should_stop = False
-        for (
-            level_address,
-            level_address_position,
-            enemy_address,
-            enemy_address_position,
-            object_set_number,
-        ) in level_tuples:
+        for record in found_level_records:
             if should_stop:
                 return defaultdict(list), levels_by_address
 
-            if level_address in levels_by_address:
-                found_level = levels_by_address[level_address]
+            if record.level_address in levels_by_address:
+                found_level = levels_by_address[record.level_address]
 
-                assert level_address_position not in found_level.level_offset_positions
-                found_level.level_offset_positions.append(level_address_position)
+                assert record.level_address_offset not in found_level.level_offset_positions
+                found_level.level_offset_positions.append(record.level_address_offset)
 
-                assert enemy_address_position not in found_level.enemy_offset_positions
-                found_level.enemy_offset_positions.append(enemy_address_position)
+                assert record.enemy_address_offset not in found_level.enemy_offset_positions
+                found_level.enemy_offset_positions.append(record.enemy_address_offset)
+
+                found_level.found_in_world |= record.found_in_world
+                found_level.found_as_jump |= record.found_as_jump
+                found_level.is_generic |= record.is_generic
 
                 continue
 
-            if object_set_number == SPADE_BONUS_OBJECT_SET:
+            if record.object_set == SPADE_BONUS_OBJECT_SET:
                 continue
 
-            print(f"W{world_num + 1}", hex(level_address), hex(enemy_address), object_set_number)
+            print(f"W{world_num + 1}", hex(record.level_address), hex(record.enemy_address), record.object_set)
             # traverse Jump Destinations by following the offsets in the header
             while True:
                 levels_in_world += 1
@@ -127,29 +176,48 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                 if should_stop:
                     break
 
-                parsed_level = NesCPU(rom).load_from_address(object_set_number, level_address, enemy_address)
-                found_level = FoundLevel([level_address_position], [enemy_address_position], parsed_level)
+                parsed_level = NesCPU(rom).load_from_address(
+                    record.object_set, record.level_address, record.enemy_address
+                )
+                found_level = FoundLevel(
+                    [record.level_address_offset], [record.enemy_address_offset], world_num + 1, parsed_level
+                )
 
-                levels_by_address[level_address] = found_level
+                found_level.found_in_world = record.found_in_world
+                found_level.found_as_jump = record.found_as_jump
+                found_level.is_generic = record.is_generic
+
+                levels_by_address[record.level_address] = found_level
 
                 if not parsed_level.has_jump():
                     break
 
-                header_of_old_level = LevelHeader(rom, rom.read(level_address, HEADER_LENGTH), object_set_number)
+                header_of_old_level = LevelHeader(rom, rom.read(record.level_address, HEADER_LENGTH), record.object_set)
+
+                level_address_position = record.level_address
+                level_address = header_of_old_level.jump_level_address
+
+                enemy_address_position = level_address + OFFSET_SIZE
+                enemy_address = header_of_old_level.jump_enemy_address
 
                 object_set_number = header_of_old_level.jump_object_set_number
 
-                level_address = header_of_old_level.jump_level_address
-                level_address_position = level_address
-
-                enemy_address = header_of_old_level.jump_enemy_address
-                enemy_address_position = level_address + OFFSET_SIZE
+                new_record = FoundLevelRecord(
+                    level_address, level_address_position, enemy_address, enemy_address_position, object_set_number
+                )
 
                 if 0 in [header_of_old_level.jump_level_offset, object_set_number]:
                     break
 
                 if level_address in levels_by_address:
+                    found_level = levels_by_address[level_address]
+                    found_level.found_as_jump = True
                     break
+
+                new_record.found_in_world = False
+                new_record.found_as_jump = True
+
+                record = new_record
 
                 print("    ", hex(level_address), object_set_number)
 
