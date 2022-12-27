@@ -1,12 +1,19 @@
 from random import randint, seed
 
 from PySide6.QtGui import QColor, QPaintEvent, QPainter, Qt
-from PySide6.QtWidgets import QTabWidget, QWidget
+from PySide6.QtWidgets import QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget
 
 from foundry.game.File import ROM
 from foundry.gui.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import PAGE_A000_ByTileset
-from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, PLAINS_OBJECT_SET, SPADE_BONUS_OBJECT_SET
+from smb3parse.data_points import WorldMapData
+from smb3parse.levels import WORLD_COUNT
+from smb3parse.objects.object_set import (
+    ENEMY_ITEM_OBJECT_SET,
+    OBJECT_SET_NAMES,
+    PLAINS_OBJECT_SET,
+    SPADE_BONUS_OBJECT_SET,
+)
 from smb3parse.util.parser import FoundLevel
 
 
@@ -36,6 +43,91 @@ class LevelViewer(CustomChildWindow):
 
             byte_view = self._tab_widget.widget(tab_index)
             byte_view.levels_in_order.append((level.data.object_set_num - 1, address, level.data.length))
+
+        self._tab_widget.insertTab(0, self._gen_tree_view(levels_by_address), "Levels")
+
+    def _gen_tree_view(self, levels_by_address: dict[int, FoundLevel]) -> QTreeWidget:
+        tree_widget = QTreeWidget()
+
+        world_tree_items = []
+        level_item_by_address = {}
+
+        def _get_level_item(address: int, level: FoundLevel, parent: QTreeWidgetItem):
+            if address in level_item_by_address:
+                return level_item_by_address[address]
+
+            if any(position not in levels_by_address for position in level.level_offset_positions):
+                print(f"{address:#x}", "accessible from world map")
+
+            print(
+                hex(address),
+                level.data.object_set_num,
+                f"From World: {level.found_in_world}, Jump: {level.found_as_jump}, Generic: {level.is_generic}",
+            )
+
+            level_item = QTreeWidgetItem()
+            level_item.setText(0, self._gen_level_name(address, level) + f" @ 0x{address:x}")
+            parent.addChild(level_item)
+
+            level_item_by_address[address] = level_item
+
+            return level_item
+
+        # Step 1: Make world tree items
+        for world_num in range(WORLD_COUNT - 1):
+            world_item = QTreeWidgetItem(tree_widget)
+            world_item.setText(0, f"World {world_num + 1}")
+
+            world_tree_items.append(world_item)
+
+        # Step 2.1: Make Top Level Tree Items
+        for address, level in levels_by_address.items():
+            if level.found_in_world:
+                parent = world_tree_items[level.world_number - 1]
+                _get_level_item(address, level, parent)
+
+        # Step 2.2: Make Generic Level Tree Items
+        for address, level in levels_by_address.items():
+            if level.is_generic:
+                parent = world_tree_items[level.world_number - 1]
+                _get_level_item(address, level, parent)
+
+        # Step 3: Make Jump Level Tree Widgets
+        for address, level in levels_by_address.items():
+            if level.found_as_jump:
+                for position in level.level_offset_positions:
+                    if position in levels_by_address:
+                        assert position in level_item_by_address, (
+                            hex(address),
+                            level,
+                            levels_by_address[position],
+                            hex(position),
+                        )
+                        _get_level_item(address, level, level_item_by_address[position])
+
+        tree_widget.expandAll()
+
+        return tree_widget
+
+    def _gen_level_name(self, level_address: int, level: FoundLevel) -> str:
+        world_data = WorldMapData(ROM(), level.world_number - 1)
+
+        if world_data.big_q_block_level_address == level_address:
+            return "Big Question Mark Block Level"
+
+        if world_data.airship_level_address == level_address:
+            return "Airship Level"
+
+        if world_data.coin_ship_level_address == level_address:
+            return "Coin Ship Level"
+
+        if world_data.generic_exit_level_address == level_address:
+            return "Generic Exit Level"
+
+        if world_data.toad_warp_level_address == level_address:
+            return "Toad Warp Level"
+
+        return f"{OBJECT_SET_NAMES[level.data.object_set_num]} Level"
 
 
 class ByteView(QWidget):
