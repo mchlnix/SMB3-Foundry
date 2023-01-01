@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget
 
 from foundry.game.File import ROM
 from foundry.gui.CustomChildWindow import CustomChildWindow
-from smb3parse.constants import PAGE_A000_ByTileset
+from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset
 from smb3parse.data_points import WorldMapData
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.objects.object_set import (
@@ -15,6 +15,7 @@ from smb3parse.objects.object_set import (
     SPADE_BONUS_OBJECT_SET,
 )
 from smb3parse.util.parser import FoundLevel
+from smb3parse.util.rom import PRG_BANK_SIZE
 
 
 class LevelViewer(CustomChildWindow):
@@ -153,9 +154,11 @@ class ByteView(QWidget):
 
         start = self.levels_in_order[0][1]
 
+        level_start = level_length = 0
+
         for object_set, level_start, level_length in self.levels_in_order:
             color = self._random_colors[object_set]
-
+            print(level_start, start)
             level_start -= start
 
             for level_byte in range(level_length):
@@ -164,6 +167,19 @@ class ByteView(QWidget):
                 y = (cur_pos // width) * byte_side_length
 
                 painter.fillRect(x, y, byte_side_length, byte_side_length, color)
+
+        last_drawn_index = level_start + level_length + 1
+
+        end_of_bank = PRG_BANK_SIZE - ((start - BASE_OFFSET) % PRG_BANK_SIZE)
+
+        print(f"Drawing rest of the bank from {last_drawn_index} to {end_of_bank}")
+
+        for level_byte in range(end_of_bank - last_drawn_index):
+            cur_pos = last_drawn_index + level_byte
+            x = (cur_pos % width) * byte_side_length
+            y = (cur_pos // width) * byte_side_length
+
+            painter.fillRect(x, y, byte_side_length, byte_side_length, Qt.red)
 
         painter.setPen(Qt.black)
 
