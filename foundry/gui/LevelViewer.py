@@ -1,6 +1,6 @@
 from random import randint, seed
 
-from PySide6.QtGui import QColor, QPaintEvent, QPainter, Qt
+from PySide6.QtGui import QColor, QColorConstants, QPaintEvent, QPainter
 from PySide6.QtWidgets import QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget
 
 from foundry.game.File import ROM
@@ -27,24 +27,29 @@ class LevelViewer(CustomChildWindow):
 
         prg_banks_by_object_set = ROM().read(PAGE_A000_ByTileset, 16)
 
-        # get connection between PRG bank and object set
-        prg_banks = list(set(prg_banks_by_object_set[PLAINS_OBJECT_SET:SPADE_BONUS_OBJECT_SET]))
-        prg_banks.sort()
-
         self._tab_widget = QTabWidget(self)
 
         self.setCentralWidget(self._tab_widget)
 
-        for prg in prg_banks:
-            self._tab_widget.addTab(ByteView([]), f"PRG #{prg}")
+        # get prg numbers for object sets and sort them
+        sorted_prg_bank_numbers = list(set(prg_banks_by_object_set[PLAINS_OBJECT_SET:SPADE_BONUS_OBJECT_SET]))
+        sorted_prg_bank_numbers.sort()
 
+        # create tab widgets with PRG numbers in their titles
+        for prg_number in sorted_prg_bank_numbers:
+            self._tab_widget.addTab(ByteView([]), f"PRG #{prg_number}")
+
+        # got through all levels and assign them to their respective prg tab widget, based on their object set
         for address in sorted(levels_by_address.keys()):
             level = levels_by_address[address]
-            tab_index = prg_banks.index(prg_banks_by_object_set[level.data.object_set_num])
+            tab_index_from_object_set = sorted_prg_bank_numbers.index(
+                prg_banks_by_object_set[level.data.object_set_num]
+            )
 
-            byte_view = self._tab_widget.widget(tab_index)
+            byte_view = self._tab_widget.widget(tab_index_from_object_set)
             byte_view.levels_in_order.append((level.data.object_set_num - 1, address, level.data.length))
 
+        # insert tree view with all levels at the start of the tabs
         self._tab_widget.insertTab(0, self._gen_tree_view(levels_by_address), "Levels")
 
     def _gen_tree_view(self, levels_by_address: dict[int, FoundLevel]) -> QTreeWidget:
@@ -53,24 +58,24 @@ class LevelViewer(CustomChildWindow):
         world_tree_items = []
         level_item_by_address = {}
 
-        def _get_level_item(address: int, level: FoundLevel, parent: QTreeWidgetItem):
-            if address in level_item_by_address:
-                return level_item_by_address[address]
+        def _get_level_item(address_: int, level_: FoundLevel, parent_: QTreeWidgetItem):
+            if address_ in level_item_by_address:
+                return level_item_by_address[address_]
 
-            if any(position not in levels_by_address for position in level.level_offset_positions):
-                print(f"{address:#x}", "accessible from world map")
+            if any(position_ not in levels_by_address for position_ in level_.level_offset_positions):
+                print(f"{address_:#x}", "accessible from world map")
 
             print(
-                hex(address),
-                level.data.object_set_num,
-                f"From World: {level.found_in_world}, Jump: {level.found_as_jump}, Generic: {level.is_generic}",
+                hex(address_),
+                level_.data.object_set_num,
+                f"From World: {level_.found_in_world}, Jump: {level_.found_as_jump}, Generic: {level_.is_generic}",
             )
 
             level_item = QTreeWidgetItem()
-            level_item.setText(0, self._gen_level_name(address, level) + f" @ 0x{address:x}")
-            parent.addChild(level_item)
+            level_item.setText(0, self._gen_level_name(address_, level_) + f" @ 0x{address_:x}")
+            parent_.addChild(level_item)
 
-            level_item_by_address[address] = level_item
+            level_item_by_address[address_] = level_item
 
             return level_item
 
@@ -110,7 +115,8 @@ class LevelViewer(CustomChildWindow):
 
         return tree_widget
 
-    def _gen_level_name(self, level_address: int, level: FoundLevel) -> str:
+    @staticmethod
+    def _gen_level_name(level_address: int, level: FoundLevel) -> str:
         world_data = WorldMapData(ROM(), level.world_number - 1)
 
         if world_data.big_q_block_level_address == level_address:
@@ -152,14 +158,13 @@ class ByteView(QWidget):
         width = self.width() // byte_side_length
         height = self.height() // byte_side_length
 
-        start = self.levels_in_order[0][1]
-
+        first_level_start = self.levels_in_order[0][1]
         level_start = level_length = 0
 
+        # draw all level data from 0
         for object_set, level_start, level_length in self.levels_in_order:
             color = self._random_colors[object_set]
-            print(level_start, start)
-            level_start -= start
+            level_start -= first_level_start
 
             for level_byte in range(level_length):
                 cur_pos = level_start + level_byte
@@ -168,9 +173,9 @@ class ByteView(QWidget):
 
                 painter.fillRect(x, y, byte_side_length, byte_side_length, color)
 
+        # draw the rest of the memory left in the ROM bank in red
         last_drawn_index = level_start + level_length + 1
-
-        end_of_bank = PRG_BANK_SIZE - ((start - BASE_OFFSET) % PRG_BANK_SIZE)
+        end_of_bank = PRG_BANK_SIZE - ((first_level_start - BASE_OFFSET) % PRG_BANK_SIZE)
 
         print(f"Drawing rest of the bank from {last_drawn_index} to {end_of_bank}")
 
@@ -179,9 +184,10 @@ class ByteView(QWidget):
             x = (cur_pos % width) * byte_side_length
             y = (cur_pos // width) * byte_side_length
 
-            painter.fillRect(x, y, byte_side_length, byte_side_length, Qt.red)
+            painter.fillRect(x, y, byte_side_length, byte_side_length, QColorConstants.Red)
 
-        painter.setPen(Qt.black)
+        # draw the grid over everything
+        painter.setPen(QColorConstants.Black)
 
         for x in range(1, width):
             x *= byte_side_length
