@@ -18,6 +18,35 @@ from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE
 
 
+def _gen_level_name(level_address: int, level: FoundLevel) -> str:
+    """
+    Takes the given Level at the given address and tries to construct a meaningful level description from it.
+
+    :param level_address: The absolute address the level data can be found at.
+    :param level: A FoundLevel instance describing the level.
+
+    :return: The constructed Level name.
+    """
+    world_data = WorldMapData(ROM(), level.world_number - 1)
+
+    if world_data.big_q_block_level_address == level_address:
+        return "Big Question Mark Block Level"
+
+    if world_data.airship_level_address == level_address:
+        return "Airship Level"
+
+    if world_data.coin_ship_level_address == level_address:
+        return "Coin Ship Level"
+
+    if world_data.generic_exit_level_address == level_address:
+        return "Generic Exit Level"
+
+    if world_data.toad_warp_level_address == level_address:
+        return "Toad Warp Level"
+
+    return f"{OBJECT_SET_NAMES[level.data.object_set_num]} Level"
+
+
 class LevelViewer(CustomChildWindow):
     def __init__(self, parent, addresses_by_object_set: dict[int, set[int]], levels_by_address: dict[int, FoundLevel]):
         super(LevelViewer, self).__init__(parent, "Level Viewer")
@@ -72,7 +101,7 @@ class LevelViewer(CustomChildWindow):
             )
 
             level_item = QTreeWidgetItem()
-            level_item.setText(0, self._gen_level_name(address_, level_) + f" @ 0x{address_:x}")
+            level_item.setText(0, _gen_level_name(address_, level_) + f" @ 0x{address_:x}")
             parent_.addChild(level_item)
 
             level_item_by_address[address_] = level_item
@@ -114,27 +143,6 @@ class LevelViewer(CustomChildWindow):
         tree_widget.expandAll()
 
         return tree_widget
-
-    @staticmethod
-    def _gen_level_name(level_address: int, level: FoundLevel) -> str:
-        world_data = WorldMapData(ROM(), level.world_number - 1)
-
-        if world_data.big_q_block_level_address == level_address:
-            return "Big Question Mark Block Level"
-
-        if world_data.airship_level_address == level_address:
-            return "Airship Level"
-
-        if world_data.coin_ship_level_address == level_address:
-            return "Coin Ship Level"
-
-        if world_data.generic_exit_level_address == level_address:
-            return "Generic Exit Level"
-
-        if world_data.toad_warp_level_address == level_address:
-            return "Toad Warp Level"
-
-        return f"{OBJECT_SET_NAMES[level.data.object_set_num]} Level"
 
 
 class ByteView(QWidget):
