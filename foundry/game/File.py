@@ -1,8 +1,41 @@
+import json
 from os.path import basename
 from pathlib import Path
 from typing import Optional
 
 from smb3parse.util.rom import INESHeader, Rom, PRG_BANK_SIZE
+
+
+class AdditionalData:
+    """
+    Set of additional, foundry specific data, meant to persist between invocations of the editor. Can be used to keep
+    ROM specific decisions or settings, that have no place in the actual game data.
+    """
+
+    def __init__(self):
+        self.managed_level_positions: bool | None = None
+        """
+        If this is True, then the positions of the level data in the ROM is completely managed by the editor. The old
+        way of remembering the position of a level, while editing, and manually opening it using this address will not
+        work with this.
+        """
+
+    def __str__(self) -> str:
+        return json.dumps(
+            {
+                "managed_level_positions": self.managed_level_positions,
+            }
+        )
+
+    @staticmethod
+    def from_str(string_data: str) -> "AdditionalData":
+        data_obj = AdditionalData()
+
+        data_dict = json.loads(string_data)
+
+        data_obj.managed_level_positions = data_dict["managed_level_positions"]
+
+        return data_obj
 
 
 class ROM(Rom):
@@ -15,7 +48,7 @@ class ROM(Rom):
     rom_data = bytearray()
     header: Optional[INESHeader] = None
 
-    additional_data = ""
+    additional_data = AdditionalData()
 
     path: str = ""
     name: str = ""
@@ -51,18 +84,22 @@ class ROM(Rom):
 
         if additional_data_start == -1:
             ROM.rom_data = data
-            ROM.additional_data = ""
+            ROM.additional_data = AdditionalData()
         else:
             ROM.rom_data = data[:additional_data_start]
 
             additional_data_start += len(ROM.MARKER_VALUE)
 
-            ROM.additional_data = data[additional_data_start:].decode("utf-8")
+            ROM.additional_data = AdditionalData.from_str(data[additional_data_start:].decode("utf-8"))
 
     @staticmethod
     def reload_from_file():
+        additional_data = ROM.additional_data
+
         if ROM.path:
             ROM.load_from_file(ROM.path)
+
+        ROM.additional_data = additional_data
 
     @staticmethod
     def save_to_file(path: str, set_new_path=True):
@@ -71,15 +108,11 @@ class ROM(Rom):
         if ROM.additional_data:
             with open(path, "ab") as f:
                 f.write(ROM.MARKER_VALUE)
-                f.write(ROM.additional_data.encode("utf-8"))
+                f.write(str(ROM.additional_data).encode("utf-8"))
 
         if set_new_path:
             ROM.path = path
             ROM.name = basename(path)
-
-    @staticmethod
-    def set_additional_data(additional_data):
-        ROM.additional_data = additional_data
 
     @staticmethod
     def is_loaded() -> bool:

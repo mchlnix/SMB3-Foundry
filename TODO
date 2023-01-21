@@ -9,6 +9,11 @@ Foundry
   code lies. Is there code in between levels? Can we find address ranges, which can be used to store levels? What about
   expanded Roms?
 
+  - No code between levels
+  - Can find Level Data Ranges in the ROM
+  - Save level management data in the rom file, so we don't have to ask every time
+
+
 - Make translatable?
 
 - Make M3Ls instaplayable
