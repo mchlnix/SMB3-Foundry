@@ -589,6 +589,8 @@ class FoundryMainWindow(MainWindow):
         try:
             ROM.load_from_file(path_to_rom)
 
+            self._ask_for_level_management()
+
             if path_to_rom == auto_save_rom_path:
                 self._load_auto_save()
             else:
@@ -631,6 +633,25 @@ class FoundryMainWindow(MainWindow):
 
     def on_save_rom_as(self, _):
         self.save_rom(True)
+
+    def _ask_for_level_management(self) -> bool | None:
+        if ROM.additional_data.managed_level_positions is not None:
+            return
+
+        answer = QMessageBox.question(
+            self,
+            "Automatic Level Address Management",
+            "Levels of the same type are stored in the same area of the ROM. If you want to extend one Level, you "
+            "might overwrite the Level, that comes after it in memory.\n\n"
+            "Foundry can automatically rearrange the levels, so that this doesn't happen and so that you can use "
+            "as much memory as is available for that level type.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Ignore,
+        )
+
+        if answer == QMessageBox.StandardButton.Ignore:
+            return
+
+        ROM.additional_data.managed_level_positions = answer == QMessageBox.StandardButton.Yes
 
     def _ask_for_palette_save(self) -> bool:
         """
