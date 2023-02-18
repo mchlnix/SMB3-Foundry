@@ -21,6 +21,7 @@ class FoundLevel:
 
     world_number: int
     object_set_number: int
+    byte_length: int
 
     found_in_world: bool = False
     found_as_jump: bool = False
@@ -38,6 +39,7 @@ class FoundLevel:
             data["enemy_offset_positions"],
             data["world_number"],
             data["object_set_number"],
+            data["byte_length"],
             data["found_in_world"],
             data["found_as_jump"],
             data["is_generic"],
@@ -191,11 +193,16 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                 if should_stop:
                     break
 
+                parsed_level = NesCPU(rom).load_from_address(
+                    record.object_set, record.level_address, record.enemy_address
+                )
+
                 found_level = FoundLevel(
                     [record.level_address_offset],
                     [record.enemy_address_offset],
                     world_num + 1,
                     record.object_set,
+                    parsed_level.length,
                 )
 
                 found_level.found_in_world = record.found_in_world
@@ -203,10 +210,6 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                 found_level.is_generic = record.is_generic
 
                 levels_by_address[record.level_address] = found_level
-
-                parsed_level = NesCPU(rom).load_from_address(
-                    record.object_set, record.level_address, record.enemy_address
-                )
 
                 if not parsed_level.has_jump():
                     break
