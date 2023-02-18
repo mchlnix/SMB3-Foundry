@@ -20,6 +20,8 @@ class FoundLevel:
     enemy_offset_positions: list[int]
 
     world_number: int
+
+    level_offset: int
     object_set_number: int
     byte_length: int
 
@@ -38,6 +40,7 @@ class FoundLevel:
             data["level_offset_positions"],
             data["enemy_offset_positions"],
             data["world_number"],
+            data["level_offset"],
             data["object_set_number"],
             data["byte_length"],
             data["found_in_world"],
@@ -201,6 +204,7 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                     [record.level_address_offset],
                     [record.enemy_address_offset],
                     world_num + 1,
+                    record.level_address,
                     record.object_set,
                     parsed_level.length,
                     record.found_in_world,
