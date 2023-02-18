@@ -44,7 +44,7 @@ def _gen_level_name(level_address: int, level: FoundLevel) -> str:
     if world_data.toad_warp_level_address == level_address:
         return "Toad Warp Level"
 
-    return f"{OBJECT_SET_NAMES[level.data.object_set_num]} Level"
+    return f"{OBJECT_SET_NAMES[level.object_set_number]} Level"
 
 
 class LevelViewer(CustomChildWindow):
@@ -54,13 +54,12 @@ class LevelViewer(CustomChildWindow):
         self.addresses_by_object_set = addresses_by_object_set
         self.levels_by_address = levels_by_address
 
-        prg_banks_by_object_set = ROM().read(PAGE_A000_ByTileset, 16)
-
         self._tab_widget = QTabWidget(self)
 
         self.setCentralWidget(self._tab_widget)
 
         # get prg numbers for object sets and sort them
+        prg_banks_by_object_set = ROM().read(PAGE_A000_ByTileset, 16)
         sorted_prg_bank_numbers = list(set(prg_banks_by_object_set[PLAINS_OBJECT_SET:SPADE_BONUS_OBJECT_SET]))
         sorted_prg_bank_numbers.sort()
 
@@ -71,21 +70,20 @@ class LevelViewer(CustomChildWindow):
         # got through all levels and assign them to their respective prg tab widget, based on their object set
         for address in sorted(levels_by_address.keys()):
             level = levels_by_address[address]
-            tab_index_from_object_set = sorted_prg_bank_numbers.index(
-                prg_banks_by_object_set[level.data.object_set_num]
-            )
+            tab_index_from_object_set = sorted_prg_bank_numbers.index(prg_banks_by_object_set[level.object_set_number])
 
             byte_view = self._tab_widget.widget(tab_index_from_object_set)
-            byte_view.levels_in_order.append((level.data.object_set_num - 1, address, level.data.length))
+            byte_view.levels_in_order.append((level.object_set_number - 1, address, level.byte_length))
 
         # insert tree view with all levels at the start of the tabs
         self._tab_widget.insertTab(0, self._gen_tree_view(levels_by_address), "Levels")
 
-    def _gen_tree_view(self, levels_by_address: dict[int, FoundLevel]) -> QTreeWidget:
+    @staticmethod
+    def _gen_tree_view(levels_by_address: dict[int, FoundLevel]) -> QTreeWidget:
         tree_widget = QTreeWidget()
 
         world_tree_items = []
-        level_item_by_address = {}
+        level_item_by_address: dict[int, QTreeWidgetItem] = {}
 
         def _get_level_item(address_: int, level_: FoundLevel, parent_: QTreeWidgetItem):
             if address_ in level_item_by_address:
@@ -96,7 +94,7 @@ class LevelViewer(CustomChildWindow):
 
             print(
                 hex(address_),
-                level_.data.object_set_num,
+                level_.object_set_number,
                 f"From World: {level_.found_in_world}, Jump: {level_.found_as_jump}, Generic: {level_.is_generic}",
             )
 
