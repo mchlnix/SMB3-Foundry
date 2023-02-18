@@ -23,9 +23,9 @@ class FoundLevel:
     object_set_number: int
     byte_length: int
 
-    found_in_world: bool = False
-    found_as_jump: bool = False
-    is_generic: bool = False
+    found_in_world: bool
+    found_as_jump: bool
+    is_generic: bool
 
     def to_dict(self) -> dict[str, list[int] | int | bool]:
         ret_dict = vars(self)
@@ -203,11 +203,10 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                     world_num + 1,
                     record.object_set,
                     parsed_level.length,
+                    record.found_in_world,
+                    record.found_as_jump,
+                    record.is_generic,
                 )
-
-                found_level.found_in_world = record.found_in_world
-                found_level.found_as_jump = record.found_as_jump
-                found_level.is_generic = record.is_generic
 
                 levels_by_address[record.level_address] = found_level
 
