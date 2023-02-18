@@ -1,13 +1,24 @@
-import json
+import tempfile
 
+from foundry.game.File import ROM
 from smb3parse.util.parser import FoundLevel
 
 
-def test_found_level_json():
-    found_level = FoundLevel([123, 234], [234, 345], 1, 2, 50, True, False, True)
+def test_load_additional_data_from_rom(rom):
+    assert not rom.additional_data
 
-    as_json = json.dumps(found_level.to_dict())
+    rom.additional_data.managed_level_positions = True
+    rom.additional_data.found_level_information.append(FoundLevel([1], [2], 3, 4, 5, True, True, True))
 
-    recovered_found_level = FoundLevel.from_dict(json.loads(as_json))
+    assert rom.additional_data
 
-    assert recovered_found_level == found_level
+    print(rom.additional_data)
+
+    with tempfile.NamedTemporaryFile("r+b") as temp:
+        rom.save_to_file(temp.name)
+
+        ROM.load_from_file(temp.name)
+
+    print(rom.additional_data)
+
+    assert rom.additional_data

@@ -3,7 +3,8 @@ from os.path import basename
 from pathlib import Path
 from typing import Optional
 
-from smb3parse.util.rom import INESHeader, Rom, PRG_BANK_SIZE
+from smb3parse.util.parser import FoundLevel
+from smb3parse.util.rom import INESHeader, PRG_BANK_SIZE, Rom
 
 
 class AdditionalData:
@@ -20,10 +21,13 @@ class AdditionalData:
         work with this.
         """
 
+        self.found_level_information: list[FoundLevel] = []
+
     def __str__(self) -> str:
         return json.dumps(
             {
                 "managed_level_positions": self.managed_level_positions,
+                "found_level_information": [found_level.to_dict() for found_level in self.found_level_information],
             }
         )
 
@@ -33,9 +37,15 @@ class AdditionalData:
 
         data_dict = json.loads(string_data)
 
-        data_obj.managed_level_positions = data_dict["managed_level_positions"]
+        data_obj.managed_level_positions = data_dict.get("managed_level_positions", False)
+        data_obj.found_level_information = [
+            FoundLevel.from_dict(data) for data in data_dict.get("found_level_information", [])
+        ]
 
         return data_obj
+
+    def __bool__(self):
+        return bool(self.managed_level_positions or self.found_level_information)
 
 
 class ROM(Rom):
