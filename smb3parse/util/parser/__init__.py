@@ -11,7 +11,6 @@ from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMap
 from smb3parse.objects.object_set import MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET
 from smb3parse.util.parser.cpu import NesCPU
-from smb3parse.util.parser.level import ParsedLevel
 from smb3parse.util.rom import Rom
 
 
@@ -21,12 +20,28 @@ class FoundLevel:
     enemy_offset_positions: list[int]
 
     world_number: int
-
-    data: ParsedLevel
+    object_set_number: int
 
     found_in_world: bool = False
     found_as_jump: bool = False
     is_generic: bool = False
+
+    def to_dict(self) -> dict[str, list[int] | int | bool]:
+        ret_dict = vars(self)
+
+        return ret_dict
+
+    @staticmethod
+    def from_dict(data: dict) -> "FoundLevel":
+        return FoundLevel(
+            data["level_offset_positions"],
+            data["enemy_offset_positions"],
+            data["world_number"],
+            data["object_set_number"],
+            data["found_in_world"],
+            data["found_as_jump"],
+            data["is_generic"],
+        )
 
 
 @dataclass
@@ -53,9 +68,9 @@ class FoundLevelRecord:
             level_pointer.enemy_address,
             level_pointer.enemy_offset_address,
             level_pointer.object_set,
-            True,
-            False,
-            False,
+            from_world,
+            from_jump,
+            generic,
         )
 
 
@@ -176,11 +191,11 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                 if should_stop:
                     break
 
-                parsed_level = NesCPU(rom).load_from_address(
-                    record.object_set, record.level_address, record.enemy_address
-                )
                 found_level = FoundLevel(
-                    [record.level_address_offset], [record.enemy_address_offset], world_num + 1, parsed_level
+                    [record.level_address_offset],
+                    [record.enemy_address_offset],
+                    world_num + 1,
+                    record.object_set,
                 )
 
                 found_level.found_in_world = record.found_in_world
@@ -188,6 +203,10 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                 found_level.is_generic = record.is_generic
 
                 levels_by_address[record.level_address] = found_level
+
+                parsed_level = NesCPU(rom).load_from_address(
+                    record.object_set, record.level_address, record.enemy_address
+                )
 
                 if not parsed_level.has_jump():
                     break
@@ -229,7 +248,7 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
 
     for level_address in sorted(levels_by_address.keys()):
         found_level = levels_by_address[level_address]
-        levels_per_object_set[found_level.data.object_set_num].append(level_address)
+        levels_per_object_set[found_level.object_set_number].append(level_address)
 
     for object_set, levels_addresses in sorted(levels_per_object_set.items()):
         level_count += len(levels_addresses)
