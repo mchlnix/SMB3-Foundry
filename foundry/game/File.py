@@ -37,7 +37,7 @@ class AdditionalData:
 
         data_dict = json.loads(string_data)
 
-        data_obj.managed_level_positions = data_dict.get("managed_level_positions", False)
+        data_obj.managed_level_positions = data_dict.get("managed_level_positions", None)
         data_obj.found_level_information = [
             FoundLevel.from_dict(data) for data in data_dict.get("found_level_information", [])
         ]
@@ -45,7 +45,11 @@ class AdditionalData:
         return data_obj
 
     def __bool__(self):
-        return bool(self.managed_level_positions or self.found_level_information)
+        return bool(self.managed_level_positions is not None or self.found_level_information)
+
+    def clear(self):
+        self.managed_level_positions = None
+        self.found_level_information.clear()
 
 
 class ROM(Rom):

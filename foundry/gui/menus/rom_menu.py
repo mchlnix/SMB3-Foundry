@@ -4,6 +4,7 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu
 
 from foundry import icon
+from foundry.game.File import ROM
 from foundry.game.gfx.objects import LevelObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.BlockViewer import BlockViewer
@@ -40,6 +41,9 @@ class RomMenu(QMenu):
 
         self._view_levels_in_memory_action = self.addAction("View Levels in Memory")
         self._view_levels_in_memory_action.setIcon(icon("server.svg"))
+
+        self._clear_editor_data_action = self.addAction("Clear Editor Data in ROM")
+        self._clear_editor_data_action.setIcon(icon("loader.svg"))
 
         self._rom_settings_action = self.addAction("ROM Settings")
         self._rom_settings_action.setIcon(icon("settings.svg"))
@@ -85,6 +89,9 @@ class RomMenu(QMenu):
 
             case self._view_palettes_action:
                 PaletteViewer(self, self._level_ref).exec()
+
+            case self._clear_editor_data_action:
+                ROM.additional_data.clear()
 
             case self._rom_settings_action:
                 RomSettingsDialog(self).exec()
