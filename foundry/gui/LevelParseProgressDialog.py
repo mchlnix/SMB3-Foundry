@@ -17,6 +17,7 @@ class LevelParseProgressDialog(QProgressDialog):
         self.levels_by_address: dict[int, FoundLevel] = {}
 
         self.setWindowTitle("Parsing World Maps to find Levels")
+        self.setModal(True)
         self.forceShow()
 
         QApplication.processEvents()
