@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Optional
 
 from PySide6.QtGui import QAction
@@ -51,12 +52,27 @@ class RomMenu(QMenu):
     def _on_trigger(self, action: QAction):
         match action:
             case self._view_levels_in_memory_action:
-                pd = LevelParseProgressDialog()
+                if ROM.additional_data.managed_level_positions:
+                    levels_per_object_set: dict[int, set[int]] = defaultdict(set)
 
-                if pd.wasCanceled():
-                    return
+                    for found_level in ROM.additional_data.found_level_information:
+                        levels_per_object_set[found_level.object_set_number].add(found_level.level_offset)
 
-                self._level_viewer = LevelViewer(self, pd.levels_per_object_set, pd.levels_by_address)
+                    levels_by_address = {
+                        found_level.level_offset: found_level
+                        for found_level in ROM.additional_data.found_level_information
+                    }
+
+                else:
+                    pd = LevelParseProgressDialog()
+
+                    if pd.wasCanceled():
+                        return
+
+                    levels_per_object_set = pd.levels_per_object_set
+                    levels_by_address = pd.levels_by_address
+
+                self._level_viewer = LevelViewer(self, levels_per_object_set, levels_by_address)
                 self._level_viewer.show()
 
             case self._view_blocks_action:

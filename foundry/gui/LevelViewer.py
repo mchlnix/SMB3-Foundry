@@ -126,17 +126,31 @@ class LevelViewer(CustomChildWindow):
                 _get_level_item(address, level, parent)
 
         # Step 3: Make Jump Level Tree Widgets
-        for address, level in levels_by_address.items():
-            if level.found_as_jump:
-                for position in level.level_offset_positions:
-                    if position in levels_by_address:
-                        assert position in level_item_by_address, (
-                            hex(address),
-                            level,
-                            levels_by_address[position],
-                            hex(position),
-                        )
-                        _get_level_item(address, level, level_item_by_address[position])
+        jump_destinations = [(address, level) for address, level in levels_by_address.items() if level.found_as_jump]
+
+        # it is not always a given, that jumped to levels come after jumped from levels, so we might need to go through
+        # them multiple times
+        while jump_destinations:
+            address, level = jump_destinations.pop(0)
+
+            if not all(
+                position in level_item_by_address
+                for position in level.level_offset_positions
+                if position in levels_by_address
+            ):
+                # not all levels, that jump to this one have widgets yet, so put it back at the end of the list
+                jump_destinations.append((address, level))
+                continue
+
+            for position in level.level_offset_positions:
+                if position in levels_by_address:
+                    assert position in level_item_by_address, (
+                        hex(address),
+                        level,
+                        levels_by_address[position],
+                        hex(position),
+                    )
+                    _get_level_item(address, level, level_item_by_address[position])
 
         tree_widget.expandAll()
 
