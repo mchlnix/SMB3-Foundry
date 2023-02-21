@@ -12,13 +12,13 @@ def test_load_additional_data_from_rom(rom):
 
     assert rom.additional_data
 
-    print(rom.additional_data)
+    old_rom_path = ROM.path
 
     with tempfile.NamedTemporaryFile("r+b") as temp:
         rom.save_to_file(temp.name)
 
         ROM.load_from_file(temp.name)
 
-    print(rom.additional_data)
+    ROM.path = old_rom_path
 
     assert rom.additional_data
