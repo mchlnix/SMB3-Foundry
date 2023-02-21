@@ -44,7 +44,7 @@ world_data = []
 level_test_name = []
 world_test_name = []
 
-with open(data_dir / "levels.dat", "r") as level_data_file:
+with Path(data_dir / "levels.dat").open("r") as level_data_file:
     for line in level_data_file.readlines():
         parts = line.strip().split(",")
 

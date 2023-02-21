@@ -35,10 +35,10 @@ Y_START_POS_LIST = Map_Y_Starts
 
 
 def list_world_map_addresses(rom: Rom) -> list[int]:
-    addresses = []
-
-    for world in range(WORLD_COUNT):
-        addresses.append(WORLD_MAP_BASE_OFFSET + rom.little_endian(LAYOUT_LIST_OFFSET + OFFSET_SIZE * world))
+    addresses = [
+        WORLD_MAP_BASE_OFFSET + rom.little_endian(LAYOUT_LIST_OFFSET + OFFSET_SIZE * world)
+        for world in range(WORLD_COUNT)
+    ]
 
     return addresses
 

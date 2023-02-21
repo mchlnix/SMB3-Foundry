@@ -264,11 +264,7 @@ class WorldMap(LevelLike):
         return None
 
     def get_selected_tiles(self) -> list[MapTile]:
-        selected_objs = []
-
-        for obj in self.objects:
-            if obj.selected:
-                selected_objs.append(obj)
+        selected_objs = [obj for obj in self.objects if obj.selected]
 
         return selected_objs
 

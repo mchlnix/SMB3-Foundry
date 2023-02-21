@@ -59,10 +59,6 @@ class BoomBoomMixin(SettingsMixin):
 
 
 def _get_boom_booms(enemy_items: list[EnemyItem]) -> list[EnemyItem]:
-    boom_booms = []
-
-    for item in enemy_items:
-        if item.obj_index in [OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM]:
-            boom_booms.append(item)
+    boom_booms = [item for item in enemy_items if item.obj_index in [OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM]]
 
     return boom_booms

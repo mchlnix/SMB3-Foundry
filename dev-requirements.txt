@@ -1,7 +1,7 @@
-black
-flake8
+black==23.1.0
+flake8==6.0.0
 hypothesis
 mypy
 pytest
 pytest-qt
-refurb
+refurb==1.12.0

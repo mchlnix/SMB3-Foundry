@@ -138,7 +138,7 @@ class PipePairMixin(SettingsMixin):
 
         current_pipe_item = _get_pipe_item(self.level_ref.enemies)
 
-        pipe_kept_disabled = self.original_pipe_item is None and current_pipe_item is None
+        pipe_kept_disabled = self.original_pipe_item is current_pipe_item is None
         pipe_was_disabled = self.original_pipe_item is not None and current_pipe_item is None
         pipe_was_enabled = self.original_pipe_item is None and current_pipe_item is not None
 

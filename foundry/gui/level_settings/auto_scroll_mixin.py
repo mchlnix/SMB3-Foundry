@@ -94,7 +94,7 @@ class AutoScrollMixin(SettingsMixin):
     def closeEvent(self, event: QMouseEvent):
         current_autoscroll_item = _get_autoscroll(self.level_ref.enemies)
 
-        autoscroll_kept_disabled = self.original_autoscroll_item is None and current_autoscroll_item is None
+        autoscroll_kept_disabled = self.original_autoscroll_item is current_autoscroll_item is None
         autoscroll_was_disabled = self.original_autoscroll_item is not None and current_autoscroll_item is None
         autoscroll_was_enabled = self.original_autoscroll_item is None and current_autoscroll_item is not None
 

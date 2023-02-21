@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pytest
 from PySide6.QtGui import QPixmap
@@ -34,7 +34,7 @@ def rom():
 
 
 def compare_images(image_name: str, ref_image_path: str, gen_image: QPixmap):
-    if os.path.exists(ref_image_path):
+    if Path(ref_image_path).exists():
         result = ApprovalDialog.compare(image_name, QPixmap(ref_image_path), gen_image)
 
         if result == ApprovalDialog.Rejected:

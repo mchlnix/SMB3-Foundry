@@ -23,9 +23,6 @@ class ObjectStatusBar(QStatusBar):
     def _fill(self, obj: InLevelObject):
         info = obj.get_status_info()
 
-        message_parts = []
-
-        for key, value in info:
-            message_parts.append(f"{key}: {value}")
+        message_parts = [f"{key}: {value}" for key, value in info]
 
         self.showMessage(" | ".join(message_parts))

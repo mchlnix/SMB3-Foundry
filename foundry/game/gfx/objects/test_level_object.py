@@ -1,4 +1,3 @@
-import os
 from itertools import product
 from pathlib import Path
 
@@ -24,7 +23,7 @@ from smb3parse.objects.object_set import (
 )
 
 reference_image_dir = Path(__file__).parent.joinpath("test_refs")
-os.makedirs(reference_image_dir, exist_ok=True)
+reference_image_dir.mkdir(parents=True, exist_ok=True)
 
 
 def _test_object_against_reference(level_object: LevelObject, qtbot, minimal=False):
