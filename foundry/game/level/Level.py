@@ -575,11 +575,9 @@ class Level(LevelLike):
         else:
             raise TypeError()
 
-        intersecting_objects: list[InLevelObject] = []
-
-        for other_object in objects_to_check:
-            if obj.get_rect().intersects(other_object.get_rect()):
-                intersecting_objects.append(other_object)
+        intersecting_objects: list[InLevelObject] = [
+            other_object for other_object in objects_to_check if obj.get_rect().intersects(other_object.get_rect())
+        ]
 
         return intersecting_objects
 
@@ -809,7 +807,6 @@ class Level(LevelLike):
         return (self.header_offset, data), (self.enemy_offset, enemies)
 
     def from_bytes(self, object_data: tuple[int, bytearray], enemy_data: tuple[int, bytearray], new_level=True):
-
         self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data
 

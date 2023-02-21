@@ -359,7 +359,6 @@ class WorldMapData(_IndexedMixin, DataPoint):
             offset_y = self._rom.little_endian(self.airship_travel_y_set_address + set_number * OFFSET_SIZE)
 
             for index in range(AIRSHIP_TRAVEL_SET_SIZE):
-
                 x, screen = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_x + index)
                 y, _ = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_y + index)
 

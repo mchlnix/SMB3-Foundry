@@ -240,7 +240,6 @@ class ScribeMainWindow(MainWindow):
         self.undo_stack.beginMacro(f"Pasting {len(copied_objects)} Objects")
 
         for obj in copied_objects:
-
             target_pos = Position.from_xy(*obj.get_position()) + diff
 
             if not self.world_view.world.point_in(*target_pos.xy):

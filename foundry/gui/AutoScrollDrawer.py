@@ -83,7 +83,6 @@ class AutoScrollDrawer:
         self.current_pos = self._determine_auto_scroll_start(block_length)
 
         for movement_command_index in range(first_movement_command_index, last_movement_command_index + 1):
-
             movement_command = self.rom.int(AScroll_Movement + movement_command_index)
             movement_repeat = self.rom.int(AScroll_MovementRepeat + movement_command_index)
 

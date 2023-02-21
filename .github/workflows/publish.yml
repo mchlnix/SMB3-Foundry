@@ -23,7 +23,7 @@ jobs:
         python3.11 -m pip install flake8 black
 
     - name: Black
-      run: python3.11 -m black -l 120 --check foundry scribe smb3parse
+      run: python3.11 -m black -l 120 --check --diff foundry scribe smb3parse
 
     - name: Flake8
       run: python3.11 -m flake8 foundry scribe smb3parse
