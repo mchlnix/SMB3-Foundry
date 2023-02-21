@@ -6,47 +6,59 @@ jobs:
   code_style:
     name: Check Code Style
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Check out
       uses: actions/checkout@v3
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.11"
+        architecture: x64
+
     - name: Download packages
       run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install flake8 black
+        python3.11 -m pip install --upgrade pip
+        python3.11 -m pip install flake8 black
 
     - name: Black
-      run: python3 -m black -l 120 --check foundry scribe smb3parse
+      run: python3.11 -m black -l 120 --check foundry scribe smb3parse
 
     - name: Flake8
-      run: python3 -m flake8 foundry scribe smb3parse
+      run: python3.11 -m flake8 foundry scribe smb3parse
 
   static_analysis:
     name: Static Analysis
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Check out
       uses: actions/checkout@v3
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.11"
+        architecture: x64
+
     - name: Download packages
       run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install refurb mypy
+        python3.11 -m pip install --upgrade pip
+        python3.11 -m pip install refurb mypy
 
     - name: mypy
-      run: python3 -m mypy foundry scribe smb3parse
+      run: python3.11 -m mypy foundry scribe smb3parse
 
     - name: refurb
-      run: python3 -m refurb foundry scribe smb3parse
+      run: python3.11 -m refurb foundry scribe smb3parse
 
 
   set_nightly_tag:
     name: Set nightly tag on dev
     if: startsWith(github.ref, 'refs/heads/dev')
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Check out
       uses: actions/checkout@v3
@@ -108,7 +120,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: "3.11"
           architecture: ${{ matrix.cfg.architecture }}
 
       - name: Display Python version
@@ -141,7 +153,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     name: Build Manual
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Check out
         uses: actions/checkout@v3
@@ -197,7 +209,7 @@ jobs:
           echo ::set-output name=RELEASE_BODY::"$(git tag --format="%(body)" --points-at ${{ steps.tag_name.outputs.SOURCE_TAG }} | head -n +3)"
 
       - name: Check for correct tag
-        run: python3 .ci-tag-check.py
+        run: python3.11 .ci-tag-check.py
         env:
           TAG_NAME: ${{ steps.tag_name.outputs.SOURCE_TAG }}
 
