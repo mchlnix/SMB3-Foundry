@@ -1,10 +1,12 @@
 import abc
 
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QImage
 
 from foundry.game import EXPANDS_NOT
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.Palette import PaletteGroup
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.object_like import ObjectLike
 
 
@@ -18,6 +20,7 @@ class InLevelObject(ObjectLike, abc.ABC):
 
     data: bytearray
 
+    rendered_height: int
     rendered_width: int
 
     anim_frame: int = 0
@@ -28,6 +31,9 @@ class InLevelObject(ObjectLike, abc.ABC):
         # TODO base this on Position, like MapObjects do
         self.x_position = 0
         self.y_position = 0
+
+    def display_size(self, zoom_factor: int = 1):
+        return QSize(self.rendered_width * Block.SIDE_LENGTH, self.rendered_height * Block.SIDE_LENGTH) * zoom_factor
 
     @property
     def obj_index(self):

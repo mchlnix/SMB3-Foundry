@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, cast
 
 from PySide6.QtGui import QGuiApplication, QPixmap, Qt
 from PySide6.QtWidgets import (
@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-image_source = Union[QPixmap, str]
+image_source: TypeAlias = QPixmap | str
 
 
 def _get_pixmap_from_source(image: image_source) -> QPixmap:
@@ -44,7 +44,7 @@ class ApprovalDialog(QDialog):
 
         self.layout().addWidget(scroll_area)
 
-        screen_width, screen_height = QGuiApplication.primaryScreen().size().toTuple()
+        screen_width, screen_height = cast(tuple, QGuiApplication.primaryScreen().size().toTuple())
 
         if reference_image.width() + gen_image.width() >= screen_width:
             self.image_layout = QVBoxLayout()

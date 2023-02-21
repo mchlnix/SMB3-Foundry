@@ -1,4 +1,4 @@
-from typing import Union
+from typing import cast
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QPaintEvent, QPainter
@@ -140,7 +140,9 @@ class ObjectDrawArea(QWidget):
 
         self.object_factory = LevelObjectFactory(object_set, graphic_set, palette_index, [], False, size_minimal=True)
 
-        self.current_object = self.object_factory.from_data(bytearray([0x0, 0x0, 0x0]), 0)
+        self.current_object: LevelObject = cast(
+            LevelObject, self.object_factory.from_data(bytearray([0x0, 0x0, 0x0]), 0)
+        )
 
         self.update_object()
 
@@ -163,13 +165,20 @@ class ObjectDrawArea(QWidget):
             QSize(self.current_object.rendered_width * Block.WIDTH, self.current_object.rendered_height * Block.HEIGHT)
         )
 
-    def update_object(self, object_data: Union[bytearray, LevelObject, Jump] = None):
+    def update_object(self, object_data: bytearray | LevelObject | Jump | None = None):
         if object_data is None:
             object_data = self.current_object.data
+
         elif isinstance(object_data, (LevelObject, Jump)):
             object_data = object_data.data
 
-        self.current_object = self.object_factory.from_data(object_data, 0)
+        obj = self.object_factory.from_data(object_data, 0)
+
+        if isinstance(obj, Jump):
+            # fixme display actual graphic
+            return
+
+        self.current_object = obj
 
         self.resize(QSize())
         self.update()

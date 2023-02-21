@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import TypeVar
 
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.enemy_item_factory import EnemyItemFactory
@@ -12,16 +12,15 @@ from foundry.game.gfx.objects.world_map.locks import Lock
 from foundry.game.gfx.objects.world_map.map_tile import MapTile
 from foundry.game.gfx.objects.world_map.sprite import Sprite
 
+Iconifiable = TypeVar("Iconifiable", None, _InLevelObject)
 
-def get_minimal_icon_object(level_object: _InLevelObject) -> Optional[_InLevelObject]:
+
+def get_minimal_icon_object(level_object: Iconifiable) -> Iconifiable:
     """
     Returns the object with a length, so that every block is rendered. E. g. clouds with length 0, don't have a face.
     """
-    if isinstance(level_object, EnemyItem):
-        return level_object
-
     if not isinstance(level_object, LevelObject):
-        return None
+        return level_object
 
     level_object.ground_level = 3
 

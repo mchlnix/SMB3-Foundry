@@ -57,10 +57,10 @@ def compare_images(image_name: str, ref_image_path: str, gen_image: QPixmap):
 @pytest.fixture
 def main_window(qtbot):
     # mock the rom loading, since it is a modal dialog. the rom is loaded in conftest.py
-    FoundryMainWindow.on_open_rom = mocked_open_rom_and_level_select
-    FoundryMainWindow.showMaximized = lambda _: None  # don't open automatically
-    FoundryMainWindow.safe_to_change = lambda _: True  # don't ask for confirmation on changed level
-    FoundryMainWindow.check_for_update_on_startup = lambda _: True  # don't check for update
+    setattr(FoundryMainWindow, "on_open_rom", mocked_open_rom_and_level_select)
+    setattr(FoundryMainWindow, "showMaximized", lambda _: None)  # don't open automatically
+    setattr(FoundryMainWindow, "safe_to_change", lambda _: True)  # don't ask for confirmation on changed level
+    setattr(FoundryMainWindow, "check_for_update_on_startup", lambda _: True)  # don't check for update
 
     main_window = FoundryMainWindow()
 
@@ -69,7 +69,7 @@ def main_window(qtbot):
     return main_window
 
 
-def mocked_open_rom_and_level_select(self: FoundryMainWindow, _):
+def mocked_open_rom_and_level_select(self: FoundryMainWindow, _=""):
     self.update_level("Level 1-1", level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
 
     return True

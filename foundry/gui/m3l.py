@@ -18,7 +18,7 @@ def save_m3l_filename(default_path=""):
     return pathname
 
 
-def load_m3l(pathname: str, level: Level):
+def load_m3l(pathname: Path | str, level: Level):
     try:
         m3l_data = bytearray(Path(pathname).read_bytes())
     except IOError as exp:
@@ -30,7 +30,7 @@ def load_m3l(pathname: str, level: Level):
     level.name = Path(pathname).stem
 
 
-def save_m3l(pathname: str, m3l_bytes: bytearray):
+def save_m3l(pathname: Path | str, m3l_bytes: bytearray):
     try:
         Path(pathname).write_bytes(m3l_bytes)
     except IOError as exp:

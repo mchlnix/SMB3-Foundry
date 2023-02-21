@@ -46,11 +46,17 @@ class LevelRef(QObject):
 
     @property
     def selected_objects(self):
+        if self._internal_level is None:
+            return []
+
         return [obj for obj in self._internal_level.get_all_objects() if obj.selected]
 
     @selected_objects.setter
     def selected_objects(self, selected_objects):
         if selected_objects == self.selected_objects:
+            return
+
+        if self._internal_level is None:
             return
 
         for obj in self._internal_level.get_all_objects():

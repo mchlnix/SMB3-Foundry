@@ -94,6 +94,8 @@ def test_get_level_on_screen_2(rom):
     world_2 = WorldMap.from_world_number(rom, 2)
     level_pointer = world_2.level_for_position(Position(2, 2, 1))
 
+    assert level_pointer
+
     assert level_pointer.object_set == object_set
     assert level_pointer.level_address == level_address
     assert level_pointer.enemy_address == enemy_address

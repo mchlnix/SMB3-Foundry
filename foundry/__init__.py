@@ -3,7 +3,7 @@ import urllib.error
 import urllib.request
 from functools import lru_cache
 from pathlib import Path
-from typing import Union, cast
+from typing import cast
 
 from PySide6.QtCore import QBuffer, QIODevice, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon, Qt
@@ -55,7 +55,7 @@ def shift_is_pressed():
     return bool(QApplication.keyboardModifiers() & Qt.ShiftModifier)
 
 
-def open_url(url: Union[str, QUrl]):
+def open_url(url: str | QUrl):
     QDesktopServices.openUrl(QUrl(url))
 
 

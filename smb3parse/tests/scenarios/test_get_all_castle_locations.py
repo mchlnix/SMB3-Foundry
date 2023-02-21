@@ -23,8 +23,6 @@ def test_get_castle_map_positions(rom):
             if world_map_position.tile() == TILE_CASTLE_BOTTOM:
                 found_castle_locations.append(world_map_position)
                 break
-        else:
-            found_castle_locations.append(None)
 
     for stock_location, found_location in zip(stock_castle_locations, found_castle_locations):
         assert found_location.tuple() == stock_location, f"Failed at {found_location.world}"

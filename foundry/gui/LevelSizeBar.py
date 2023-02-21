@@ -75,8 +75,8 @@ class SizeBar(QWidget):
 
         self.level = level_ref
 
-        self.original_value = 1
-        self.current_value = 1
+        self.original_value: float = 1.0
+        self.current_value: float = 1.0
         self.value_color = QColor.black
 
     def sizeHint(self) -> QSize:

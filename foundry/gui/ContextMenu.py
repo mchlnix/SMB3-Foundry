@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Sequence
 
 from PySide6.QtCore import QPoint, SignalInstance
 from PySide6.QtGui import QAction
@@ -33,7 +34,7 @@ class ContextMenu(QMenu):
     def get_position(self) -> QPoint:
         return self.last_opened_at
 
-    def set_copied_objects(self, objects: list[ObjectLike]):
+    def set_copied_objects(self, objects: Sequence[ObjectLike]):
         if not objects:
             return
 

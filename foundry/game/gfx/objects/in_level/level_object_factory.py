@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from foundry.game.gfx.objects import Jump, LevelObject
@@ -11,7 +9,7 @@ class LevelObjectFactory:
     graphic_set: int
     palette_group_index: int
 
-    graphics_set: Optional[GraphicsSet] = None
+    graphics_set: GraphicsSet | None = None
     palette_group: PaletteGroup
 
     def __init__(
@@ -42,7 +40,7 @@ class LevelObjectFactory:
         self.palette_group_index = palette_group_index
         self.palette_group = load_palette_group(self.object_set, self.palette_group_index)
 
-    def from_data(self, data: bytearray, index: int) -> Union[Jump, LevelObject]:
+    def from_data(self, data: bytearray, index: int) -> Jump | LevelObject:
         if Jump.is_jump(data):
             return Jump(data)
 
@@ -66,7 +64,7 @@ class LevelObjectFactory:
         object_index: int,
         x: int,
         y: int,
-        length: Optional[int],
+        length: int | None,
         index: int,
     ):
         if self.vertical_level:

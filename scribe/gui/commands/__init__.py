@@ -52,7 +52,9 @@ class MoveTile(QUndoCommand):
 
 
 class MoveMapObject(QUndoCommand):
-    def __init__(self, world: WorldMap, map_object: MapObject, end: Position, start: Position = None, parent=None):
+    def __init__(
+        self, world: WorldMap, map_object: MapObject, end: Position, start: Position | None = None, parent=None
+    ):
         super(MoveMapObject, self).__init__(parent)
 
         self.world = world
@@ -60,7 +62,7 @@ class MoveMapObject(QUndoCommand):
         self.map_object = map_object
 
         if start is None:
-            self.start = map_object.get_position()
+            self.start: tuple[int, int] = map_object.get_position()
         else:
             self.start = start.xy
 
@@ -270,7 +272,7 @@ class SetSpriteItem(QUndoCommand):
 
 
 class SetScreenCount(QUndoCommand):
-    def __init__(self, world_data: WorldMapData, screen_count: int, world_map: WorldMap = None):
+    def __init__(self, world_data: WorldMapData, screen_count: int, world_map: WorldMap | None = None):
         super(SetScreenCount, self).__init__()
 
         self.world_data = world_data
@@ -481,7 +483,7 @@ class ChangeLevelPointerIndex(QUndoCommand):
 
 
 class AddLevelPointer(QUndoCommand):
-    def __init__(self, world_data: WorldMapData, world: WorldMap = None):
+    def __init__(self, world_data: WorldMapData, world: WorldMap | None = None):
         super(AddLevelPointer, self).__init__()
 
         self.world = world
@@ -514,7 +516,7 @@ class AddLevelPointer(QUndoCommand):
 
 
 class RemoveLevelPointer(QUndoCommand):
-    def __init__(self, world_data: WorldMapData, index=-1, world: WorldMap = None):
+    def __init__(self, world_data: WorldMapData, index=-1, world: WorldMap | None = None):
         super(RemoveLevelPointer, self).__init__()
 
         self.world = world

@@ -442,7 +442,7 @@ class LevelObject(InLevelObject):
 
             # the ending object is seemingly always 1 block too wide (going into the next screen)
             for end_of_line in range(len(blocks_to_draw) - 1, 0, -new_width):
-                del blocks_to_draw[end_of_line]
+                blocks_to_draw.pop(end_of_line)
 
             new_width -= 1
 
@@ -633,11 +633,11 @@ class LevelObject(InLevelObject):
                         start = new_start
                         end = new_end
 
-                    left, *middle, right = self.blocks[start:end]
+                    left_, *middle_, right_ = self.blocks[start:end]
 
-                    blocks_to_draw.append(left)
-                    blocks_to_draw.extend(middle * (new_width - 2))
-                    blocks_to_draw.append(right)
+                    blocks_to_draw.append(left_)
+                    blocks_to_draw.extend(middle_ * (new_width - 2))
+                    blocks_to_draw.append(right_)
 
                 if not len(blocks_to_draw) % self.height == 0:
                     warn(f"Blocks to draw are not divisible by height. {self}", LevelObjectRenderWarning)
@@ -645,13 +645,13 @@ class LevelObject(InLevelObject):
                 new_width = int(len(blocks_to_draw) / self.height)
 
                 top_row = blocks_to_draw[0:new_width]
-                middle_blocks = blocks_to_draw[new_width : new_width * 2]
+                middle_blocks_ = blocks_to_draw[new_width : new_width * 2]
                 bottom_row = blocks_to_draw[-new_width:]
 
                 blocks_to_draw = top_row
 
                 for y in range(1, new_height - 1):
-                    blocks_to_draw.extend(middle_blocks)
+                    blocks_to_draw.extend(middle_blocks_)
 
                 if new_height > 1:
                     blocks_to_draw.extend(bottom_row)
@@ -913,9 +913,6 @@ class LevelObject(InLevelObject):
             ("Orientation", ORIENTATION_TO_STR[self.orientation]),
             ("Ending", ENDING_STR[self.ending]),
         ]
-
-    def display_size(self, zoom_factor: int = 1):
-        return QSize(self.rendered_width * Block.SIDE_LENGTH, self.rendered_height * Block.SIDE_LENGTH) * zoom_factor
 
     def as_image(self) -> QImage:
         self.rendered_base_x = 0

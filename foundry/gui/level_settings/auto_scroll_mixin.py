@@ -65,6 +65,7 @@ class AutoScrollMixin(SettingsMixin):
 
     def _update_auto_scroll_type(self, _):
         autoscroll_item = _get_autoscroll(self.level_ref.enemies)
+        assert autoscroll_item is not None
 
         autoscroll_item.auto_scroll_type = self.auto_scroll_type_spinner.value()
 
@@ -101,6 +102,8 @@ class AutoScrollMixin(SettingsMixin):
             # nothing to do
             pass
         elif autoscroll_was_disabled:
+            assert self.original_autoscroll_item is not None
+
             self.level_ref.level.enemies.insert(0, self.original_autoscroll_item)
             self.undo_stack.push(RemoveObjects(self.level_ref.level, [self.original_autoscroll_item]))
         elif autoscroll_was_enabled:

@@ -3,7 +3,7 @@ import json
 import logging
 import tempfile
 from pathlib import Path
-from typing import Optional
+from typing import Optional, cast
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut, QUndoStack, Qt
@@ -83,6 +83,7 @@ from smb3parse.constants import (
     Title_DebugMenu,
     Title_PrepForWorldMap,
 )
+from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
@@ -616,7 +617,7 @@ class FoundryMainWindow(MainWindow):
         self.load_m3l(pathname)
         save_m3l(auto_save_m3l_path, self.level_ref.level.to_m3l())
 
-    def load_m3l(self, pathname: str):
+    def load_m3l(self, pathname: Path | str):
         if not self._ask_for_palette_save():
             return
 
@@ -634,7 +635,7 @@ class FoundryMainWindow(MainWindow):
     def on_save_rom_as(self, _):
         self.save_rom(True)
 
-    def _ask_for_level_management(self) -> bool | None:
+    def _ask_for_level_management(self):
         if ROM.additional_data.managed_level_positions is not None:
             return
 
@@ -889,7 +890,9 @@ class FoundryMainWindow(MainWindow):
         if not (copied_objects := self.context_menu.get_copied_objects())[0]:
             return
 
-        self.undo_stack.push(PasteObjectsAt(self.level_view, copied_objects, q_point))
+        copied_level_objects = cast(tuple[list[InLevelObject], Position], copied_objects)
+
+        self.undo_stack.push(PasteObjectsAt(self.level_view, copied_level_objects, q_point))
 
     def remove_selected_objects(self):
         selected_objects = [obj for obj in self.level_ref.level.get_all_objects() if obj.selected]

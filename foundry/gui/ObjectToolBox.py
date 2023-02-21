@@ -9,6 +9,7 @@ from foundry.game.gfx.Palette import bg_color_for_palette_group
 from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.objects import (
     EnemyItemFactory,
+    Jump,
     LevelObject,
     LevelObjectFactory,
     get_minimal_icon_object,
@@ -72,6 +73,8 @@ class ObjectIcon(QWidget):
         if not (event.buttons() & Qt.LeftButton):
             return super(ObjectIcon, self).mouseMoveEvent(event)
 
+        assert self.object is not None
+
         drag = QDrag(self)
 
         mime_data = QMimeData()
@@ -93,8 +96,10 @@ class ObjectIcon(QWidget):
             self.object_placed.emit()
 
     def set_object(self, level_object: Optional[InLevelObject]):
-        if level_object is not None and (obj := get_minimal_icon_object(level_object)):
+        if isinstance(level_object, Jump):
+            return
 
+        elif level_object is not None and (obj := get_minimal_icon_object(level_object)):
             self.object = obj
 
             if obj.name.lower() in objects_to_use_pngs_instead:

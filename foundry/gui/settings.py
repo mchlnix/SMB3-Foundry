@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Callable, Union
+from typing import Callable
 
 import qdarkstyle
 from PySide6.QtCore import QSettings
@@ -12,7 +12,7 @@ GUI_STYLE: dict[str, Callable] = {
     "DRACULA": partial(qdarkstyle.load_stylesheet, pyside=True),
 }
 
-SETTINGS: dict[str, Union[str, int, bool]] = dict()
+SETTINGS: dict[str, str | int | bool] = dict()
 SETTINGS["editor/instaplay_emulator"] = "fceux"
 SETTINGS["editor/instaplay_arguments"] = "%f"
 SETTINGS["editor/object_scroll_enabled"] = False
@@ -42,7 +42,7 @@ SETTINGS["level view/special_background"] = True
 SETTINGS["level view/object_tooltip_enabled"] = True
 
 
-_settings: dict[str, Union[str, int, bool]] = {
+_settings: dict[str, str | int | bool] = {
     "world view/show grid": False,
     "world view/show border": False,
     "world view/animated tiles": True,

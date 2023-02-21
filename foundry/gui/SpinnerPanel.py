@@ -5,7 +5,6 @@ from PySide6.QtWidgets import QFormLayout, QSizePolicy, QWidget
 
 from foundry.game.gfx.objects import LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
 
@@ -68,7 +67,7 @@ class SpinnerPanel(QWidget):
         if len(self.level_ref.selected_objects) == 1:
             selected_object = self.level_ref.selected_objects[0]
 
-            if isinstance(selected_object, ObjectLike):
+            if isinstance(selected_object, InLevelObject):
                 self._populate_spinners(selected_object)
 
         else:

@@ -1,7 +1,6 @@
 from binascii import unhexlify
 from collections import defaultdict
 from pathlib import Path
-from typing import Union
 
 
 BASE_OFFSET = 0x10
@@ -376,7 +375,7 @@ POWERUP_ADDITION_STARMAN = 0x09
 STARTING_WORLD_INDEX_ADDRESS = 0x30CC3
 
 
-def update_global_offsets(path_to_global_list: Union[str, Path]):
+def update_global_offsets(path_to_global_list: str | Path):
     path_to_global_list = Path(path_to_global_list)
 
     if not path_to_global_list.exists():

@@ -1,6 +1,6 @@
 from os import PathLike
 from pathlib import Path
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
@@ -62,7 +62,7 @@ def _parse_macros_in_line(line: str) -> int:
     return byte
 
 
-def bytes_to_asm(data: Union[bytearray, int]) -> str:
+def bytes_to_asm(data: bytearray | int) -> str:
     if isinstance(data, int):
         hex_data = f"${data:02X}"
     else:

@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Sequence
 from warnings import warn
 
 from PySide6.QtCore import QMimeData, QPoint, QSize
@@ -32,11 +32,9 @@ RESIZE_MODES = [MODE_RESIZE_HORIZ, MODE_RESIZE_VERT, MODE_RESIZE_DIAG]
 
 
 class MainView(QWidget):
-    drawer: Union[LevelDrawer, WorldDrawer]
+    drawer: LevelDrawer | WorldDrawer
 
-    def __init__(
-        self, parent: Optional[QWidget], level: LevelRef, settings: Settings, context_menu: Optional[ContextMenu]
-    ):
+    def __init__(self, parent: QWidget | None, level: LevelRef, settings: Settings, context_menu: ContextMenu | None):
         super(MainView, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
@@ -62,7 +60,7 @@ class MainView(QWidget):
         """whether an object was selected with the current click; will be cleared, on release of the mouse button"""
 
         # dragged in from the object toolbar
-        self.currently_dragged_object: Optional[InLevelObject] = None
+        self.currently_dragged_object: InLevelObject | None = None
 
     @property
     def settings(self):
@@ -202,7 +200,7 @@ class MainView(QWidget):
 
         return Position.from_xy(level_x, level_y)
 
-    def object_at(self, q_point: QPoint) -> Optional[ObjectLike]:
+    def object_at(self, q_point: QPoint) -> ObjectLike | None:
         """
         Returns an enemy or level object at the position. The x and y is relative to the View (for example, when you
         receive a mouse event) and will be converted into level coordinates internally.
@@ -254,7 +252,7 @@ class MainView(QWidget):
 
             return self.level_ref.level.enemy_item_factory.from_properties(enemy_id, 0, 0)
 
-    def paste_objects_at(self, paste_data: tuple[list[ObjectLike], Position], q_point: Optional[QPoint]):
+    def paste_objects_at(self, paste_data: tuple[Sequence[ObjectLike], Position], q_point: QPoint | None):
         if q_point is None:
             # when keyboard shortcut was used
             pos = self.last_mouse_position

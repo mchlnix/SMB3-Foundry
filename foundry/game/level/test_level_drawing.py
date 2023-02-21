@@ -36,7 +36,7 @@ def _test_level_against_reference(main_view: MainView, qtbot):
 
 
 def current_test_name():
-    return os.environ.get("PYTEST_CURRENT_TEST").split(":")[-1].replace("/", "_")
+    return os.environ.get("PYTEST_CURRENT_TEST", "no_test_name").split(":")[-1].replace("/", "_")
 
 
 level_data = []

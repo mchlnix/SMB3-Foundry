@@ -82,7 +82,10 @@ class PipePairMixin(SettingsMixin):
         right_pair_screen.current_world = left_pair_screen.current_world
         right_pair_screen.exec()
 
-        pipe_data = self.pipe_datas[_get_pipe_item(self.level_ref.enemies).y_position]
+        pipe_item = _get_pipe_item(self.level_ref.enemies)
+        assert pipe_item is not None
+
+        pipe_data = self.pipe_datas[pipe_item.y_position]
 
         pipe_data.left_pos = left_pair_screen.selected_position
         pipe_data.right_pos = right_pair_screen.selected_position
@@ -119,7 +122,7 @@ class PipePairMixin(SettingsMixin):
         else:
             self.pipe_pair_spinner.setValue(pipe_item.y_position % 0x80)
 
-            pipe_data = self.pipe_datas[_get_pipe_item(self.level_ref.enemies).y_position]
+            pipe_data = self.pipe_datas[pipe_item.y_position]
 
             self.left_pos_label.setText(
                 f"Screen: {pipe_data.screen_left}, x: {pipe_data.x_left}, y: {pipe_data.y_left}"
@@ -142,6 +145,8 @@ class PipePairMixin(SettingsMixin):
         if pipe_kept_disabled:
             pass
         elif pipe_was_disabled:
+            assert self.original_pipe_item
+
             self.level_ref.level.enemies.insert(0, self.original_pipe_item)
 
             self.undo_stack.beginMacro("Disable Pipe Pair Exits")
@@ -149,6 +154,8 @@ class PipePairMixin(SettingsMixin):
             self.undo_stack.endMacro()
 
         elif pipe_was_enabled:
+            assert current_pipe_item is not None
+
             self.level_ref.level.remove_object(current_pipe_item)
 
             self.undo_stack.beginMacro("Enable Pipe Pair Exits")
@@ -163,6 +170,8 @@ class PipePairMixin(SettingsMixin):
             else:
                 self.level_ref.level.remove_object(current_pipe_item)
                 self.level_ref.level.enemies.append(self.original_pipe_item)
+
+            assert current_pipe_item is not None
 
             if self.original_pipe_y_value != current_pipe_item.y_position:
                 assert self.original_pipe_item is not current_pipe_item

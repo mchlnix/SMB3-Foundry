@@ -1,4 +1,5 @@
 import json
+from typing import Sequence
 
 from PySide6.QtCore import QEvent, QRect, Qt, Signal, SignalInstance
 from PySide6.QtGui import QCursor, QFocusEvent
@@ -6,7 +7,7 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from foundry.game import GROUND
 from foundry.game.ObjectDefinitions import GeneratorType
-from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.HeaderEditor import CAMERA_MOVEMENTS
@@ -200,11 +201,11 @@ class WarningList(QWidget):
                     for enemy in enemy_list:
                         self._enemy_dict[enemy] = (clan, group)
 
-    def warn(self, msg: str, objects: list[InLevelObject] = None):
+    def warn(self, msg: str, objects: Sequence[InLevelObject] | None = None):
         if objects is None:
             objects = []
 
-        self.warnings.append((msg, objects))
+        self.warnings.append((msg, list(objects)))
 
     def update(self):
         self.hide()
@@ -250,7 +251,7 @@ class WarningList(QWidget):
 class WarningLabel(QLabel):
     hovered: SignalInstance = Signal()
 
-    def __init__(self, text: str, related_objects: list[LevelObject]):
+    def __init__(self, text: str, related_objects: list[InLevelObject]):
         super(WarningLabel, self).__init__(text)
 
         self.related_objects = related_objects

@@ -602,7 +602,7 @@ class Level(LevelLike):
 
     def add_object(
         self, domain: int, object_index: int, pos: Position, length: Optional[int], index: int = -1
-    ) -> Optional[ObjectLike]:
+    ) -> Optional[LevelObject]:
         if index == -1:
             index = len(self.objects)
 

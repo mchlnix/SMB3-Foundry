@@ -27,7 +27,7 @@ class ManagedLevelsMixin(SettingsMixin):
 
         self.layout().addWidget(boom_boom_group)
 
-        self.level_info_box = QGroupBox("Level Info")
+        self.level_info_box = QGroupBox("Level Positions in Banks")
         QVBoxLayout(self.level_info_box)
         self.layout().addWidget(self.level_info_box)
 

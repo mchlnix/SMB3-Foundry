@@ -13,12 +13,12 @@ from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_SCREEN_WIDTH
 @pytest.fixture
 def main_window(rom, qtbot):
     # mock the rom loading, since it is a modal dialog. the rom is loaded in conftest.py
-    ScribeMainWindow.on_open_rom = lambda *_: True
-    ScribeMainWindow.showMaximized = lambda _: None  # don't open automatically
-    ScribeMainWindow.show = lambda _: None  # don't open automatically
-    ScribeMainWindow.safe_to_change = lambda _: True  # don't ask for confirmation on changed level
-    ScribeMainWindow.check_for_update_on_startup = lambda _: True  # don't check for updates
-    ToolWindow.show = lambda _: None
+    setattr(ScribeMainWindow, "on_open_rom", lambda *_: True)
+    setattr(ScribeMainWindow, "showMaximized", lambda _: None)  # don't open automatically
+    setattr(ScribeMainWindow, "show", lambda _: None)  # don't open automatically
+    setattr(ScribeMainWindow, "safe_to_change", lambda _: True)  # don't ask for confirmation on changed level
+    setattr(ScribeMainWindow, "check_for_update_on_startup", lambda _: True)  # don't check for updates
+    setattr(ToolWindow, "show", lambda _: None)
 
     main_window = ScribeMainWindow("")
 
@@ -42,7 +42,7 @@ def drag_from_to(
     worldview,
     start_point: QPoint,
     end_point: QPoint,
-    points: list[QPoint] = None,
+    points: list[QPoint] | None = None,
     modifiers: Qt.KeyboardModifier = Qt.NoModifier,
 ):
     if points is None:

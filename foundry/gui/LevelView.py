@@ -516,7 +516,7 @@ class LevelView(MainView):
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)
 
-    def add_object(self, domain: int, obj_index: int, q_point: QPoint, length: int, index: int = -1):
+    def add_object(self, domain: int, obj_index: int, q_point: QPoint, length: int | None, index: int = -1):
         level_pos = self.to_level_point(q_point)
 
         self.level_ref.add_object(domain, obj_index, level_pos, length, index)

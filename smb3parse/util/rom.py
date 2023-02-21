@@ -2,7 +2,6 @@ import pathlib
 from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
 from pathlib import Path
-from typing import Optional, Union
 
 from typing_extensions import TypeAlias
 
@@ -36,7 +35,7 @@ class NormalizedAddress(RawAddress):
     pass
 
 
-AnyAddress: TypeAlias = Union[RawAddress, NormalizedAddress]
+AnyAddress: TypeAlias = RawAddress | NormalizedAddress
 
 
 class INESHeader(Structure):
@@ -64,7 +63,7 @@ class INESHeader(Structure):
 class Rom:
     VANILLA_PRG_SIZE = 0x40000
 
-    def __init__(self, rom_data: bytearray, header: Optional[INESHeader] = None):
+    def __init__(self, rom_data: bytearray, header: INESHeader | None = None):
         self._data = rom_data
 
         if header is None:
@@ -133,7 +132,7 @@ class Rom:
     def _read(self, offset: NormalizedAddress, length: int) -> bytearray:
         return self._data[offset : offset + length]
 
-    def read_until(self, offset: AnyAddress, delimiter: Union[bytes, int]):
+    def read_until(self, offset: AnyAddress, delimiter: bytes | int):
         if isinstance(delimiter, int):
             delimiter = bytes([delimiter])
 
@@ -141,7 +140,7 @@ class Rom:
 
         return self.read(offset, end - offset)
 
-    def write(self, offset: AnyAddress, data: Union[bytes, int]):
+    def write(self, offset: AnyAddress, data: bytes | int):
         if isinstance(data, int):
             data = bytes([data])
 
@@ -152,7 +151,7 @@ class Rom:
     def _write(self, offset: NormalizedAddress, data: bytes):
         self._data[offset : offset + len(data)] = data
 
-    def find(self, needle: Union[bytes, int], start: AnyAddress = 0, end: AnyAddress = -1) -> NormalizedAddress:
+    def find(self, needle: bytes | int, start: AnyAddress = 0, end: AnyAddress = -1) -> NormalizedAddress:
         if isinstance(needle, int):
             needle = bytes([needle])
 

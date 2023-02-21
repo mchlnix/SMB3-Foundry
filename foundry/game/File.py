@@ -69,7 +69,7 @@ class ROM(Rom):
 
     W_INIT_OS_LIST: list[int] = []
 
-    def __init__(self, path: Optional[str] = None):
+    def __init__(self, path: Path | str | None = None):
         if not ROM.rom_data:
             if path is None:
                 raise ValueError("Rom was not loaded!")
@@ -86,12 +86,12 @@ class ROM(Rom):
         return bytes(rom.tsa_data_for_object_set(object_set))
 
     @staticmethod
-    def load_from_file(path: str):
+    def load_from_file(path: Path | str):
         with open(path, "rb") as rom:
             data = bytearray(rom.read())
 
         ROM.header = INESHeader.from_buffer_copy(data)
-        ROM.path = path
+        ROM.path = str(path)
         ROM.name = basename(path)
 
         additional_data_start = data.find(ROM.MARKER_VALUE)
@@ -116,7 +116,7 @@ class ROM(Rom):
         ROM.additional_data = additional_data
 
     @staticmethod
-    def save_to_file(path: str, set_new_path=True):
+    def save_to_file(path: Path | str, set_new_path=True):
         Path(path).open("wb").write(bytearray(ROM.rom_data))
 
         if ROM.additional_data:
@@ -125,7 +125,7 @@ class ROM(Rom):
                 f.write(str(ROM.additional_data).encode("utf-8"))
 
         if set_new_path:
-            ROM.path = path
+            ROM.path = str(path)
             ROM.name = basename(path)
 
     @staticmethod

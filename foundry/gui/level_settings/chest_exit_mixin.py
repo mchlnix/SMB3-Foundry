@@ -32,14 +32,6 @@ class _ChestState:
         else:
             return -2
 
-    @property
-    def had_exit(self):
-        return self.chest_exit is not None
-
-    @property
-    def had_item(self):
-        return self.chest_item is not None
-
     def _get_chest_exit(self) -> Optional[EnemyItem]:
         for item in self.level.enemies:
             if item.obj_index == OBJ_CHEST_EXIT:
@@ -65,7 +57,7 @@ class ChestExitMixin(SettingsMixin):
         QVBoxLayout(chest_group)
 
         self.chest_end_checkbox = QCheckBox("Getting Chest ends Level", self)
-        self.chest_end_checkbox.setChecked(self.before.had_exit)
+        self.chest_end_checkbox.setChecked(self.before.chest_exit is not None)
 
         self.chest_item_dropdown = QComboBox()
         self.chest_item_dropdown.addItem("No Item (Hammer Bros Levels)")
@@ -73,7 +65,7 @@ class ChestExitMixin(SettingsMixin):
         for item_id in range(MAPITEM_MUSHROOM, MAPITEM_MUSICBOX + 1):
             self.chest_item_dropdown.addItem(QPixmap(MAP_ITEM_SPRITES[item_id]), MAPITEM_NAMES[item_id])
 
-        if self.before.had_item:
+        if self.before.chest_item is not None:
             self.chest_item_dropdown.setCurrentIndex(self.before.item_index)
         else:
             self.chest_item_dropdown.setCurrentIndex(0)
@@ -92,7 +84,7 @@ class ChestExitMixin(SettingsMixin):
         chest_item_name = MAPITEM_NAMES[item_index]
 
         # was enabled
-        if self.chest_end_checkbox.isChecked() and not self.before.had_exit:
+        if self.chest_end_checkbox.isChecked() and self.before.chest_exit is None:
             self.undo_stack.beginMacro(f"Enable Chest Exit with '{chest_item_name}'")
 
             chest_exit_item = self.level.enemy_item_factory.from_properties(OBJ_CHEST_EXIT, 0, 0)
@@ -100,7 +92,9 @@ class ChestExitMixin(SettingsMixin):
             self.undo_stack.endMacro()
 
         # was disabled
-        elif self.before.had_exit and not self.chest_end_checkbox.isChecked():
+        elif self.before.chest_exit is not None and not self.chest_end_checkbox.isChecked():
+            assert self.before.chest_exit is not None
+
             self.undo_stack.beginMacro("Disabling Chest Exit")
             self.undo_stack.push(RemoveObjects(self.level, [self.before.chest_exit]))
 
@@ -108,14 +102,14 @@ class ChestExitMixin(SettingsMixin):
 
         # not item set
         elif item_index == 0:
-            if self.before.had_item:
+            if self.before.chest_item is not None:
                 self.undo_stack.push(RemoveObjects(self.level, [self.before.chest_item]))
 
         # item was changed/set
         elif self.before.item_index != item_index:
             self.undo_stack.beginMacro(f"Set Chest Item to '{chest_item_name}'")
 
-            if self.before.had_item:
+            if self.before.chest_item is not None:
                 before_move = self.before.chest_item.copy()
                 self.before.chest_item.y_position = item_index
 

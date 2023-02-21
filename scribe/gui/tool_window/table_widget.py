@@ -87,7 +87,7 @@ class TableWidget(QTableWidget):
 
 
 class DropdownDelegate(QStyledItemDelegate):
-    def __init__(self, parent, items: list[str], icons: list[QImage] = None):
+    def __init__(self, parent, items: list[str], icons: list[QImage] | None = None):
         super(DropdownDelegate, self).__init__(parent)
 
         self._items = items
