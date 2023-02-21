@@ -11,12 +11,36 @@ jobs:
     - name: Check out
       uses: actions/checkout@v3
 
-    - name: Coding Style Check
+    - name: Download packages
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install flake8 black
-        python3 -m black -l 120 --check foundry/ smb3parse/ scribe/
-        python3 -m flake8 foundry/ smb3parse/ scribe/
+
+    - name: Black
+      run: python3 -m black -l 120 --check foundry scribe smb3parse
+
+    - name: Flake8
+      run: python3 -m flake8 foundry scribe smb3parse
+
+  static_analysis:
+    name: Static Analysis
+
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out
+      uses: actions/checkout@v3
+
+    - name: Download packages
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install refurb mypy
+
+    - name: mypy
+      run: python3 -m mypy foundry scribe smb3parse
+
+    - name: refurb
+      run: python3 -m refurb foundry scribe smb3parse
+
 
   set_nightly_tag:
     name: Set nightly tag on dev

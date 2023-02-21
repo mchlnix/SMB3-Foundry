@@ -1,5 +1,7 @@
 black
 flake8
 hypothesis
+mypy
 pytest
 pytest-qt
+refurb
