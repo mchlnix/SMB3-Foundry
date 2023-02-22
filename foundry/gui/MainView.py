@@ -316,7 +316,7 @@ class MainView(QWidget):
     def paintEvent(self, event: QPaintEvent):
         painter = self.get_painter()
 
-        if self.level_ref is None:
+        if not self.level_ref:
             return
 
         self.drawer.block_length = self.block_length

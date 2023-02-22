@@ -36,6 +36,9 @@ class LevelRef(QObject):
     def level(self, level):
         self._internal_level = level
 
+        if level is None:
+            return
+
         level.needs_redraw.connect(self.needs_redraw.emit)
         level.data_changed.connect(self.data_changed.emit)
         level.jumps_changed.connect(self.jumps_changed.emit)

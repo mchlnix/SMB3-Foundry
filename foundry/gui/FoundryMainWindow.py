@@ -590,6 +590,8 @@ class FoundryMainWindow(MainWindow):
         try:
             ROM.load_from_file(path_to_rom)
 
+            self.close_level()
+
             self._ask_for_level_management()
 
             if path_to_rom == auto_save_rom_path:
@@ -965,6 +967,10 @@ class FoundryMainWindow(MainWindow):
         except IndexError:
             QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
             return
+
+    def close_level(self):
+        self.level_ref.level = None
+        self._enable_disable_gui_elements()
 
     def update_gui_for_level(self):
         restore_all_palettes()
