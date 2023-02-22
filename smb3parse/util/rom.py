@@ -2,8 +2,7 @@ import pathlib
 from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
 from pathlib import Path
-
-from typing_extensions import TypeAlias
+from typing import TypeAlias
 
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
 from smb3parse.util import little_endian
