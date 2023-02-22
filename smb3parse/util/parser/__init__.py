@@ -240,6 +240,8 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
 
                 if level_address in levels_by_address:
                     found_level = levels_by_address[level_address]
+                    assert level_address_position not in found_level.level_offset_positions
+                    found_level.level_offset_positions.append(level_address_position)
                     found_level.found_as_jump = True
                     break
 
