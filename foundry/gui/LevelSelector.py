@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import icon
+from foundry.game.File import ROM
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
@@ -129,7 +130,12 @@ class LevelSelector(QDialog):
         self.setLayout(main_layout)
 
         self.world_list.setCurrentRow(1)  # select Level 1-1
-        self.on_world_click()
+
+        if not ROM().additional_data:
+            self.on_world_click()
+        else:
+            first_level = ROM().additional_data.found_level_information[0]
+            self._fill_in_data(first_level.object_set_number, first_level.level_offset, first_level.enemy_offset)
 
     def keyPressEvent(self, key_event: QKeyEvent):
         if key_event.key() == Qt.Key_Escape:

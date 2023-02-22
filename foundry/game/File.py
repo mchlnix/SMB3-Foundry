@@ -1,8 +1,12 @@
 import json
+from collections import defaultdict
+from operator import attrgetter
 from os.path import basename
 from pathlib import Path
 from typing import Optional
 
+from smb3parse import PAGE_A000_ByTileset
+from smb3parse.constants import BASE_OFFSET
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import INESHeader, PRG_BANK_SIZE, Rom
 
@@ -45,11 +49,32 @@ class AdditionalData:
         return data_obj
 
     def __bool__(self):
-        return bool(self.managed_level_positions is not None or self.found_level_information)
+        return bool(self.managed_level_positions and self.found_level_information)
 
     def clear(self):
         self.managed_level_positions = None
         self.found_level_information.clear()
+
+
+class MovableLevel(FoundLevel):
+    new_level_offset: int
+    level_data: bytearray
+    level_base: FoundLevel
+
+    @staticmethod
+    def from_found_level(level: FoundLevel, new_level_offset: int = 0):
+        ret_level = MovableLevel([], [], 0, 0, 0, 0, 0, False, False, False)
+
+        ret_level.__dict__.update(vars(level))
+
+        ret_level.level_base = level
+        ret_level.new_level_offset = new_level_offset
+        ret_level.level_data = bytearray()
+
+        return ret_level
+
+    def update_level_offset(self, value):
+        self.level_base.level_offset = value
 
 
 class ROM(Rom):
@@ -131,6 +156,56 @@ class ROM(Rom):
     @staticmethod
     def is_loaded() -> bool:
         return bool(ROM.path)
+
+    def rearrange_levels(self):
+        # 0. Sort Levels by bank
+        prg_banks_by_object_set = self.read(PAGE_A000_ByTileset, 16)
+
+        levels_by_bank: dict[int, list[MovableLevel]] = defaultdict(list)
+
+        for level in self.additional_data.found_level_information:
+            levels_by_bank[prg_banks_by_object_set[level.object_set_number]].append(
+                MovableLevel.from_found_level(level)
+            )
+
+        # 1. Go through each bank one by one
+        for bank, levels in levels_by_bank.items():
+            print(f"Doing Bank {bank}")
+            object_set_offset = BASE_OFFSET + bank * PRG_BANK_SIZE - 0xA000
+
+            # 2. Take all the levels and sort them by address
+            levels.sort(key=attrgetter("level_offset"))
+
+            # 3. Take the first one as the bank start
+            first_level = levels[0]
+            last_level_end = first_level.level_offset + first_level.byte_length + 1
+
+            # 4. Compute and update level position in all its pointers
+            for level in levels[1:]:
+                for pointer_to_level in level.level_offset_positions:
+                    self.write_little_endian(pointer_to_level, last_level_end - object_set_offset)
+
+                level.new_level_offset = last_level_end
+
+                last_level_end += level.byte_length + 1
+
+        for bank, levels in levels_by_bank.items():
+            print(f"Doing Bank {bank}")
+
+            # 2. Take all the levels and sort them by address
+            levels.sort(key=attrgetter("level_offset"))
+
+            for level in levels[1:]:
+                print(hex(level.level_offset), "->", hex(level.new_level_offset))
+
+                level.level_data = self.read(level.level_offset, level.byte_length + 1)
+
+            for level in levels[1:]:
+                level.update_level_offset(level.new_level_offset)
+
+                self.write(level.new_level_offset, level.level_data)
+
+        self.save_to_file(ROM.path)
 
     def search_bank(self, needle: bytes, bank: int) -> int:
         """Search a specific bank given a zero-based bank index.

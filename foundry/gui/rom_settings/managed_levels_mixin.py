@@ -1,8 +1,9 @@
 from collections import defaultdict
 
-from PySide6.QtWidgets import QCheckBox, QGroupBox, QHBoxLayout, QLabel, QVBoxLayout
+from PySide6.QtWidgets import QCheckBox, QGroupBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from foundry.game.File import ROM
+from foundry.gui.HorizontalLine import HorizontalLine
 from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.Spinner import Spinner
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
@@ -27,12 +28,15 @@ class ManagedLevelsMixin(SettingsMixin):
 
         self.layout().addWidget(boom_boom_group)
 
-        self.level_info_box = QGroupBox("Level Positions in Banks")
+        self.level_info_box = QGroupBox("Level Range in Rom Banks")
         QVBoxLayout(self.level_info_box)
         self.layout().addWidget(self.level_info_box)
 
         self.level_info_box.hide()
         self.level_info_box_initialized = False
+
+        self.level_rearrange_button = QPushButton("Rearrange Levels (will save Rom)")
+        self.level_rearrange_button.clicked.connect(lambda: ROM().rearrange_levels())
 
         self.update_level_info()
 
@@ -99,6 +103,9 @@ class ManagedLevelsMixin(SettingsMixin):
                 level_start_layout.addWidget(QLabel(f" to 0x{prg_end - 1:x}"))
 
                 self.level_info_box.layout().addLayout(level_start_layout)
+                self.level_info_box.layout().addWidget(HorizontalLine())
+
+            self.level_info_box.layout().addWidget(self.level_rearrange_button)
 
             self.level_info_box_initialized = True
 
