@@ -28,11 +28,11 @@ class EnemySizeBar(LevelSizeBar):
 
     @property
     def current_value(self):
-        return self.level.current_enemies_size()
+        return self.level_ref.current_enemies_size()
 
     @property
     def original_value(self):
-        if not self.level.level.attached_to_rom and self.level.enemy_size_on_disk == 0:
+        if not self.level_ref.level.attached_to_rom and self.level_ref.enemy_size_on_disk == 0:
             return float("INF")
         else:
-            return self.level.enemy_size_on_disk
+            return self.level_ref.enemy_size_on_disk

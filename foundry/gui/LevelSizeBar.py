@@ -2,6 +2,7 @@ from PySide6.QtCore import QRect, QSize, Qt
 from PySide6.QtGui import QColor, QPaintEvent, QPainter
 from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
 
+from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
 
 
@@ -9,9 +10,9 @@ class LevelSizeBar(QWidget):
     def __init__(self, parent, level: LevelRef):
         super(LevelSizeBar, self).__init__(parent)
 
-        self.level = level
+        self.level_ref = level
 
-        self.level.data_changed.connect(self.update)
+        self.level_ref.data_changed.connect(self.update)
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
 
@@ -26,7 +27,7 @@ class LevelSizeBar(QWidget):
             "than the level originally had)."
         )
 
-        self.size_bar = SizeBar(self.level)
+        self.size_bar = SizeBar(self.level_ref)
         self.size_bar.value_color = self.value_color
 
         self.info_label = QLabel()
@@ -57,14 +58,20 @@ class LevelSizeBar(QWidget):
 
     @property
     def original_value(self) -> float:
-        if not self.level.level.attached_to_rom and self.level.object_size_on_disk == 0:
-            return float("INF")
-        else:
-            return self.level.object_size_on_disk
+        level_size = self.level_ref.object_size_on_disk
+
+        if not self.level_ref.level.attached_to_rom and level_size == 0:
+            level_size = float("INF")
+
+        elif ROM().additional_data:
+            free_space_in_bank = ROM().additional_data.free_space_for_object_set(self.level_ref.level.object_set_number)
+            level_size += free_space_in_bank
+
+        return level_size
 
     @property
     def current_value(self) -> float:
-        return self.level.current_object_size()
+        return self.level_ref.current_object_size()
 
 
 class SizeBar(QWidget):

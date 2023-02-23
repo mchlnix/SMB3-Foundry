@@ -1,6 +1,7 @@
 from collections import defaultdict
 from typing import Optional
 
+from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu
 
@@ -17,6 +18,8 @@ from foundry.gui.rom_settings.rom_settings_dialog import RomSettingsDialog
 
 
 class RomMenu(QMenu):
+    needs_gui_refresh: SignalInstance = Signal()
+
     def __init__(self, level_ref: LevelRef, title="&Rom"):
         super(RomMenu, self).__init__(title)
 
@@ -108,6 +111,10 @@ class RomMenu(QMenu):
 
             case self._clear_editor_data_action:
                 ROM.additional_data.clear()
+                self.needs_gui_refresh.emit()
 
             case self._rom_settings_action:
-                RomSettingsDialog(self).exec()
+                dialog = RomSettingsDialog(self)
+                dialog.needs_gui_update.connect(self.needs_gui_refresh.emit)
+
+                dialog.exec()

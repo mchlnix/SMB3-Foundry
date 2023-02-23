@@ -159,6 +159,7 @@ class FoundryMainWindow(MainWindow):
         self.menuBar().addMenu(self.level_menu)
 
         self._rom_menu = RomMenu(self.level_ref)
+        self._rom_menu.needs_gui_refresh.connect(self._enable_disable_gui_elements)
         self.menuBar().addMenu(self._rom_menu)
 
         self.context_menu = LevelContextMenu(self.level_ref)
@@ -1042,6 +1043,9 @@ class FoundryMainWindow(MainWindow):
 
         if self.level_ref:
             self.reload_action.setEnabled(self.level_ref.level.attached_to_rom)
+
+            self.level_size_bar.update()
+            self.enemy_size_bar.update()
 
         self._on_level_data_changed()
 

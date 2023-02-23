@@ -51,6 +51,24 @@ class AdditionalData:
     def __bool__(self):
         return bool(self.managed_level_positions and self.found_level_information)
 
+    def free_space_for_object_set(self, object_set_number: int):
+        prg_banks_by_object_set = ROM().read(PAGE_A000_ByTileset, 16)
+
+        levels_by_bank: dict[int, list[FoundLevel]] = defaultdict(list)
+
+        for level in self.found_level_information:
+            levels_by_bank[prg_banks_by_object_set[level.object_set_number]].append(
+                MovableLevel.from_found_level(level)
+            )
+
+        last_level = levels_by_bank[prg_banks_by_object_set[object_set_number]][-1]
+
+        free_space_start = last_level.level_offset + last_level.byte_length + 1
+
+        free_space_left = PRG_BANK_SIZE - (free_space_start % PRG_BANK_SIZE)
+
+        return free_space_left
+
     def clear(self):
         self.managed_level_positions = None
         self.found_level_information.clear()
@@ -62,13 +80,15 @@ class MovableLevel(FoundLevel):
     level_base: FoundLevel
 
     @staticmethod
-    def from_found_level(level: FoundLevel, new_level_offset: int = 0):
+    def from_found_level(level: FoundLevel, new_level_offset: int = -1):
         ret_level = MovableLevel([], [], 0, 0, 0, 0, 0, False, False, False)
 
         ret_level.__dict__.update(vars(level))
 
         ret_level.level_base = level
-        ret_level.new_level_offset = new_level_offset
+        if new_level_offset == -1:
+            ret_level.new_level_offset = level.level_offset
+
         ret_level.level_data = bytearray()
 
         return ret_level
@@ -168,11 +188,12 @@ class ROM(Rom):
                 MovableLevel.from_found_level(level)
             )
 
-        # 1. Go through each bank one by one
-        for bank, levels in levels_by_bank.items():
-            print(f"Doing Bank {bank}")
-            object_set_offset = BASE_OFFSET + bank * PRG_BANK_SIZE - 0xA000
+        old_address_to_new: dict[int, int] = dict()
 
+        # 1. Go through each bank one by one and figure out the new level addresses
+
+        for bank, levels in levels_by_bank.items():
+            # Calculate the new positions for them
             # 2. Take all the levels and sort them by address
             levels.sort(key=attrgetter("level_offset"))
 
@@ -180,14 +201,26 @@ class ROM(Rom):
             first_level = levels[0]
             last_level_end = first_level.level_offset + first_level.byte_length + 1
 
-            # 4. Compute and update level position in all its pointers
+            # Put them into a dictionary from old address to new address
             for level in levels[1:]:
-                for pointer_to_level in level.level_offset_positions:
-                    self.write_little_endian(pointer_to_level, last_level_end - object_set_offset)
+                old_address_to_new[level.level_offset] = last_level_end
 
                 level.new_level_offset = last_level_end
 
                 last_level_end += level.byte_length + 1
+
+        # Go through all levels and write the new position on their level position pointers
+        for bank, levels in levels_by_bank.items():
+            object_set_offset = BASE_OFFSET + bank * PRG_BANK_SIZE - 0xA000
+
+            for level in levels:
+                for position in level.level_offset_positions:
+                    self.write_little_endian(position, level.new_level_offset - object_set_offset)
+
+                # Go through all levels and update their level position pointers as necessary
+                level.level_base.level_offset_positions = [
+                    old_address_to_new.get(position, position) for position in level.level_offset_positions
+                ]
 
         for bank, levels in levels_by_bank.items():
             print(f"Doing Bank {bank}")
@@ -195,12 +228,12 @@ class ROM(Rom):
             # 2. Take all the levels and sort them by address
             levels.sort(key=attrgetter("level_offset"))
 
-            for level in levels[1:]:
+            for level in levels:
                 print(hex(level.level_offset), "->", hex(level.new_level_offset))
 
                 level.level_data = self.read(level.level_offset, level.byte_length + 1)
 
-            for level in levels[1:]:
+            for level in levels:
                 level.update_level_offset(level.new_level_offset)
 
                 self.write(level.new_level_offset, level.level_data)

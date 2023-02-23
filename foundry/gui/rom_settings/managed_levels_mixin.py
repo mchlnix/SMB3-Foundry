@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from PySide6.QtCore import SignalInstance
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from foundry.game.File import ROM
@@ -13,6 +14,8 @@ from smb3parse.util.rom import PRG_BANK_SIZE
 
 
 class ManagedLevelsMixin(SettingsMixin):
+    needs_gui_update: SignalInstance
+
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -47,11 +50,13 @@ class ManagedLevelsMixin(SettingsMixin):
 
         self.level_info_box.setEnabled(self.enabled_checkbox.isChecked())
         if not self.enabled_checkbox.isChecked():
+            self.needs_gui_update.emit()
             return
         else:
             self.level_info_box.show()
 
         if self.level_info_box_initialized:
+            self.needs_gui_update.emit()
             return
 
         if was_enabled:
@@ -108,6 +113,8 @@ class ManagedLevelsMixin(SettingsMixin):
             self.level_info_box.layout().addWidget(self.level_rearrange_button)
 
             self.level_info_box_initialized = True
+
+        self.needs_gui_update.emit()
 
     def closeEvent(self, event):
         super().closeEvent(event)

@@ -1,3 +1,4 @@
+from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtGui import QUndoStack
 
 from foundry.gui.CustomDialog import CustomDialog
@@ -5,6 +6,8 @@ from foundry.gui.rom_settings.managed_levels_mixin import ManagedLevelsMixin
 
 
 class RomSettingsDialog(ManagedLevelsMixin, CustomDialog):
+    needs_gui_update: SignalInstance = Signal()
+
     def __init__(self, parent):
         super(RomSettingsDialog, self).__init__(parent)
 
