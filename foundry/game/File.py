@@ -188,51 +188,44 @@ class ROM(Rom):
                 MovableLevel.from_found_level(level)
             )
 
-        old_address_to_new: dict[int, int] = dict()
-
-        # 1. Go through each bank one by one and figure out the new level addresses
-
-        for bank, levels in levels_by_bank.items():
-            # Calculate the new positions for them
-            # 2. Take all the levels and sort them by address
+        # 1. Sort levels by their level address
+        for levels in levels_by_bank.values():
             levels.sort(key=attrgetter("level_offset"))
 
-            # 3. Take the first one as the bank start
+        # 2. Generate new level addresses based on the old ones and the level sizes
+        old_level_address_to_new: dict[int, int] = dict()
+
+        for levels in levels_by_bank.values():
+            # 2.1. Take the first one as the bank start
+            # FIXME: Figure out bank start on initial parsing and save that in additional data
             first_level = levels[0]
             last_level_end = first_level.level_offset + first_level.byte_length + 1
 
-            # Put them into a dictionary from old address to new address
+            # 2.2 Put them into a dictionary from old address to new address
             for level in levels[1:]:
-                old_address_to_new[level.level_offset] = last_level_end
+                old_level_address_to_new[level.level_offset] = last_level_end
+                last_level_end += level.byte_length + 1  # one extra byte for the FF delimiter at the end
 
-                level.new_level_offset = last_level_end
-
-                last_level_end += level.byte_length + 1
-
-        # Go through all levels and write the new position on their level position pointers
+        # 3. Go through all levels and update their level position pointers, with the new addresses
         for bank, levels in levels_by_bank.items():
             object_set_offset = BASE_OFFSET + bank * PRG_BANK_SIZE - 0xA000
 
+            # 3.1. Write new addresses in old positions, before actually moving the levels to the new position
             for level in levels:
                 for position in level.level_offset_positions:
-                    self.write_little_endian(position, level.new_level_offset - object_set_offset)
+                    self.write_little_endian(position, old_level_address_to_new[level.level_offset] - object_set_offset)
 
-                # Go through all levels and update their level position pointers as necessary
                 level.level_base.level_offset_positions = [
-                    old_address_to_new.get(position, position) for position in level.level_offset_positions
+                    old_level_address_to_new.get(position, position) for position in level.level_offset_positions
                 ]
 
-        for bank, levels in levels_by_bank.items():
-            print(f"Doing Bank {bank}")
-
-            # 2. Take all the levels and sort them by address
-            levels.sort(key=attrgetter("level_offset"))
-
+        # 4. Write level data to new position in bank
+        for levels in levels_by_bank.values():
+            # 4.1 Get level data from old position
             for level in levels:
-                print(hex(level.level_offset), "->", hex(level.new_level_offset))
-
                 level.level_data = self.read(level.level_offset, level.byte_length + 1)
 
+            # 4.2 Save level data to new position
             for level in levels:
                 level.update_level_offset(level.new_level_offset)
 
