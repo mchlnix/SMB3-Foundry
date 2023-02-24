@@ -776,8 +776,14 @@ class Level(LevelLike):
         self.level_changed.emit()
 
     def save_to_rom(self):
-        for offset, data in self.to_bytes():
-            ROM().write(offset, data)
+        if ROM().additional_data:
+            level_data, enemy_data = self.to_bytes()
+
+            ROM().rearrange_levels(level_data)
+            ROM().rearrange_enemies(enemy_data)
+        else:
+            for offset, data in self.to_bytes():
+                ROM().write(offset, data)
 
     def to_bytes(self) -> LevelByteData:
         data = bytearray()

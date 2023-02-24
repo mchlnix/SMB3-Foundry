@@ -181,8 +181,8 @@ class ROM(Rom):
     def is_loaded() -> bool:
         return bool(ROM.path)
 
-    def rearrange_levels(self):
-        # 0. Sort Levels by bank
+    def rearrange_levels(self, save_level_info=(-1, bytearray())):
+        # 0.1 Sort Levels by bank
         prg_banks_by_object_set = self.read(PAGE_A000_ByTileset, 16)
 
         levels_by_bank: dict[int, list[MovableLevel]] = defaultdict(list)
@@ -191,6 +191,17 @@ class ROM(Rom):
             levels_by_bank[prg_banks_by_object_set[level.object_set_number]].append(
                 MovableLevel.from_found_level(level)
             )
+
+        # 0.2 If a level is supposed to be saved, put the data of it into the movable level
+        save_level_address, save_level_data = save_level_info
+
+        if save_level_address != -1:
+            for levels in levels_by_bank.values():
+                for level in levels:
+                    if level.level_offset == save_level_address:
+                        print("Found level to save")
+                        level.level_data = save_level_data
+                        level.object_data_length = len(save_level_data) - 1  # ignore delimiter here
 
         # 1. Sort levels by their level address
         for levels in levels_by_bank.values():
@@ -224,11 +235,21 @@ class ROM(Rom):
                     old_level_address_to_new.get(position, position) for position in level.level_offset_positions
                 ]
 
+                for position in level.enemy_offset_positions:
+                    if position - 2 in old_level_address_to_new:
+                        print("BRUH", hex(position))
+
+                level.level_base.enemy_offset_positions = [
+                    old_level_address_to_new.get(position - 2, position - 2) + 2
+                    for position in level.enemy_offset_positions
+                ]
+
         # 4. Write level data to new position in bank
         for levels in levels_by_bank.values():
             # 4.1 Get level data from old position
             for level in levels:
-                level.level_data = self.read(level.level_offset, level.object_data_length + 1)
+                if not level.level_data:
+                    level.level_data = self.read(level.level_offset, level.object_data_length + 1)
 
             # 4.2 Save level data to new position
             for level in levels:
@@ -242,7 +263,7 @@ class ROM(Rom):
 
         self.save_to_file(ROM.path)
 
-    def rearrange_enemies(self):
+    def rearrange_enemies(self, save_enemy_info=(-1, bytearray())):
         enemy_bank_start = PRG_BANK_SIZE * 6
 
         # 1. Sort levels based on their enemy offset (filter out enemy offsets, that aren't real/mean something else)
@@ -250,6 +271,15 @@ class ROM(Rom):
             filter(lambda lvl: lvl.enemy_offset >= enemy_bank_start, self.additional_data.found_level_information),
             key=attrgetter("enemy_offset"),
         )
+
+        print(f"---------------------------- {len(levels)}")
+
+        # 0.2 If a level is supposed to be saved, put the data of it into the movable level
+        save_enemy_address, save_enemy_data = save_enemy_info
+
+        for level in levels:
+            if level.enemy_offset == save_enemy_address:
+                level.enemy_data_length = len(save_enemy_data) - 1  # do not account for delimiter here
 
         # 2. Set the start of the enemy data bank
         last_enemy_end = enemy_bank_start + BASE_OFFSET
@@ -285,7 +315,13 @@ class ROM(Rom):
                 )
 
             for position in level.enemy_offset_positions:
-                print("enemy offset position", hex(level.level_offset), hex(position), "writes", hex(old_enemy_address_to_new[level.enemy_offset] - BASE_OFFSET))
+                print(
+                    "enemy offset position",
+                    hex(level.level_offset),
+                    hex(position),
+                    "writes",
+                    hex(old_enemy_address_to_new[level.enemy_offset] - BASE_OFFSET),
+                )
                 self.write_little_endian(position, old_enemy_address_to_new[level.enemy_offset] - BASE_OFFSET)
 
             if duplicate:
@@ -300,6 +336,8 @@ class ROM(Rom):
         old_enemy_data_sets = {
             level.enemy_offset: self.read(level.enemy_offset - 1, level.enemy_data_length + 2) for level in levels
         }
+        save_enemy_data.insert(0, 0)
+        old_enemy_data_sets[save_enemy_address] = save_enemy_data
 
         already_copied = []
 
