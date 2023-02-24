@@ -776,7 +776,7 @@ class Level(LevelLike):
         self.level_changed.emit()
 
     def save_to_rom(self):
-        if ROM().additional_data:
+        if ROM().additional_data.managed_level_positions:
             level_data, enemy_data = self.to_bytes()
 
             ROM().rearrange_levels(level_data)

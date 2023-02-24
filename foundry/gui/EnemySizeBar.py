@@ -38,7 +38,7 @@ class EnemySizeBar(LevelSizeBar):
         if not self.level_ref.level.attached_to_rom and enemy_size == 0:
             enemy_size = float("INF")
 
-        elif ROM().additional_data:
+        elif ROM().additional_data.managed_level_positions:
             free_space_in_bank = ROM().additional_data.free_space_for_enemies()
             enemy_size += free_space_in_bank
 

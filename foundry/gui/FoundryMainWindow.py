@@ -42,6 +42,7 @@ from foundry.gui.EnemySizeBar import EnemySizeBar
 from foundry.gui.HeaderEditor import HeaderEditor
 from foundry.gui.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
+from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.LevelSelector import LevelSelector
 from foundry.gui.LevelSizeBar import LevelSizeBar
 from foundry.gui.LevelView import LevelView
@@ -656,6 +657,19 @@ class FoundryMainWindow(MainWindow):
             return
 
         ROM.additional_data.managed_level_positions = answer == QMessageBox.StandardButton.Yes
+
+        if ROM.additional_data.managed_level_positions:
+            pd = LevelParseProgressDialog()
+
+            if pd.wasCanceled():
+                ROM.additional_data.managed_level_positions = None
+                return
+
+            ROM.additional_data.found_level_information = [
+                pd.levels_by_address[key] for key in sorted(pd.levels_by_address.keys())
+            ]
+
+            ROM().rearrange_levels()
 
     def _ask_for_palette_save(self) -> bool:
         """

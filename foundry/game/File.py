@@ -49,7 +49,7 @@ class AdditionalData:
         return data_obj
 
     def __bool__(self):
-        return bool(self.managed_level_positions and self.found_level_information)
+        return bool(self.managed_level_positions is not None or self.found_level_information)
 
     def free_space_for_object_set(self, object_set_number: int):
         prg_banks_by_object_set = ROM().read(PAGE_A000_ByTileset, 16)

@@ -63,7 +63,7 @@ class LevelSizeBar(QWidget):
         if not self.level_ref.level.attached_to_rom and level_size == 0:
             level_size = float("INF")
 
-        elif ROM().additional_data:
+        elif ROM().additional_data.managed_level_positions:
             free_space_in_bank = ROM().additional_data.free_space_for_object_set(self.level_ref.level.object_set_number)
             level_size += free_space_in_bank
 

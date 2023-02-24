@@ -131,7 +131,7 @@ class LevelSelector(QDialog):
 
         self.world_list.setCurrentRow(1)  # select Level 1-1
 
-        if not ROM().additional_data:
+        if not ROM().additional_data.managed_level_positions:
             self.on_world_click()
         else:
             first_level = ROM().additional_data.found_level_information[0]
