@@ -40,11 +40,11 @@ class LevelSizeBar(QWidget):
         layout.addWidget(self.info_label)
 
     def update(self):
-        original_value_string = "∞" if self.original_value == float("INF") else str(self.original_value)
+        original_value_string = "∞" if self.max_value == float("INF") else str(self.max_value)
         self.info_label.setText(f"{self.value_description}: {self.current_value}/{original_value_string} Bytes")
 
         self.size_bar.current_value = self.current_value
-        self.size_bar.original_value = self.original_value
+        self.size_bar.original_value = self.max_value
 
         return super(LevelSizeBar, self).update()
 
@@ -57,7 +57,7 @@ class LevelSizeBar(QWidget):
         return "Objects"
 
     @property
-    def original_value(self) -> float:
+    def max_value(self) -> float:
         level_size = self.level_ref.object_size_on_disk
 
         if not self.level_ref.level.attached_to_rom and level_size == 0:

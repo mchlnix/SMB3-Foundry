@@ -89,7 +89,8 @@ class MainWindow(QMainWindow):
         return False
 
     def _save_current_changes_to_file(self, pathname: str, set_new_path: bool):
-        self.level_ref.save_to_rom()
+        if self.level_ref:
+            self.level_ref.save_to_rom()
 
         try:
             ROM().save_to_file(pathname, set_new_path)

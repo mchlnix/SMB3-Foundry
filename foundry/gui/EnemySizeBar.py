@@ -32,7 +32,7 @@ class EnemySizeBar(LevelSizeBar):
         return self.level_ref.current_enemies_size()
 
     @property
-    def original_value(self):
+    def max_value(self):
         enemy_size = self.level_ref.enemy_size_on_disk
 
         if not self.level_ref.level.attached_to_rom and enemy_size == 0:

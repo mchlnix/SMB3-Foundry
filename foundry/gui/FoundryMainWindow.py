@@ -704,7 +704,7 @@ class FoundryMainWindow(MainWindow):
             if answer == QMessageBox.No:
                 return
 
-        if not self.level_ref.attached_to_rom:
+        if self.level_ref and not self.level_ref.attached_to_rom:
             QMessageBox.information(
                 self,
                 "Importing M3L into ROM",

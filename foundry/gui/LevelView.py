@@ -447,6 +447,9 @@ class LevelView(MainView):
         reason = ""
         additional_info = ""
 
+        if not self.level_ref:
+            return is_safe, reason, additional_info
+
         if self.level_ref.too_many_level_objects():
             level = self._cuts_into_other_objects()
 
