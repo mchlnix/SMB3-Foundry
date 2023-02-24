@@ -1,9 +1,13 @@
 import tempfile
 
+import pytest
+
 from foundry.game.File import ROM
 from smb3parse.util.parser import FoundLevel
 
 
+# try this test last, because it messes with the singleton ROM
+@pytest.mark.trylast
 def test_load_additional_data_from_rom(rom):
     assert not rom.additional_data
 
