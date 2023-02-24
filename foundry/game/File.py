@@ -234,6 +234,8 @@ class ROM(Rom):
             for level in levels:
                 new_level_offset = old_level_address_to_new[level.level_offset]
 
+                print(hex(level.level_offset), "->", hex(new_level_offset))
+
                 level.update_level_offset(new_level_offset)
 
                 self.write(new_level_offset, level.level_data)
@@ -241,31 +243,66 @@ class ROM(Rom):
         self.save_to_file(ROM.path)
 
     def rearrange_enemies(self):
-        # 1. Sort levels based on their enemy offset
-        levels = sorted(self.additional_data.found_level_information, key=attrgetter("enemy_offset"))
+        enemy_bank_start = PRG_BANK_SIZE * 6
 
-        # 2. Find the first enemy data set as a starting point
-        first_level = levels[0]
+        # 1. Sort levels based on their enemy offset (filter out enemy offsets, that aren't real/mean something else)
+        levels = sorted(
+            filter(lambda lvl: lvl.enemy_offset >= enemy_bank_start, self.additional_data.found_level_information),
+            key=attrgetter("enemy_offset"),
+        )
 
-        last_enemy_end = first_level.enemy_offset + first_level.enemy_data_length + 2  # enemies have 2 delimiter bytes
+        # 2. Set the start of the enemy data bank
+        last_enemy_end = enemy_bank_start
 
         # 3. Go through the rest of the levels and adjust the enemy offsets to leave no empty space
-        old_enemy_address_to_new: dict[int, int] = {first_level.enemy_offset: first_level.enemy_offset}
+        old_enemy_address_to_new: dict[int, int] = {}
 
-        for level in levels[1:]:
+        saved = 0
+
+        # 4 Update enemy pointers with the new offset
+        for level in levels:
+            # some levels share enemies, so we don't count them again, otherwise we copy them into memory multiple times
+            duplicate = level.enemy_offset in old_enemy_address_to_new
+
             old_enemy_address_to_new[level.enemy_offset] = last_enemy_end
+
+            for position in level.enemy_offset_positions:
+                self.write_little_endian(position, old_enemy_address_to_new[level.enemy_offset] - BASE_OFFSET)
+
+            if duplicate:
+                continue
+
+            print(
+                hex(level.level_offset),
+                hex(level.enemy_offset),
+                "->",
+                hex(last_enemy_end),
+                level.enemy_data_length,
+                "saved:",
+                f"{level.enemy_offset - last_enemy_end - saved}",
+            )
+
+            saved = level.enemy_offset - last_enemy_end
 
             last_enemy_end += level.enemy_data_length + 2
 
         # 4. Finally, write the enemy data to their new positions
         # 4.1 Get enemy data from old position
         old_enemy_data_sets = [self.read(level.enemy_offset - 1, level.enemy_data_length + 2) for level in levels]
+        already_copied = []
 
         for level, old_enemy_data in zip(levels, old_enemy_data_sets):
             # 4.2 Save enemy data to new position
             level.enemy_offset = old_enemy_address_to_new[level.enemy_offset]
 
-            self.write(level.enemy_offset - 1, old_enemy_data)
+            if level.enemy_offset not in already_copied:
+                print(f"Writing {len(old_enemy_data)} to {level.enemy_offset:x}")
+                self.write(level.enemy_offset - 1, old_enemy_data)
+                already_copied.append(level.enemy_offset)
+            else:
+                print(f"Would've written to {level.enemy_offset:x} twice.")
+
+        print(sum(level.enemy_data_length + 2 for level in levels))
 
         self.save_to_file(ROM.path)
 

@@ -537,6 +537,14 @@ class WorldMapData(_IndexedMixin, DataPoint):
         return AIR_SHIP_OBJECT_SET
 
     @property
+    def airship_enemy_address(self):
+        return BASE_OFFSET + self.airship_enemy_offset
+
+    @airship_enemy_address.setter
+    def airship_enemy_address(self, value):
+        self.airship_enemy_offset = value - BASE_OFFSET
+
+    @property
     def coin_ship_level_address(self):
         return ObjectSet(self._rom, self.coin_ship_level_object_set).level_offset + self.coin_ship_level_offset
 
@@ -549,6 +557,14 @@ class WorldMapData(_IndexedMixin, DataPoint):
         return AIR_SHIP_OBJECT_SET
 
     @property
+    def coin_ship_enemy_address(self):
+        return BASE_OFFSET + self.coin_ship_enemy_offset
+
+    @coin_ship_enemy_address.setter
+    def coin_ship_enemy_address(self, value):
+        self.coin_ship_enemy_offset = value - BASE_OFFSET
+
+    @property
     def generic_exit_level_address(self):
         return ObjectSet(self._rom, self.generic_exit_object_set).level_offset + self.generic_exit_level_offset
 
@@ -557,12 +573,28 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.generic_exit_level_offset = value - ObjectSet(self._rom, self.generic_exit_object_set).level_offset
 
     @property
+    def generic_exit_enemy_address(self):
+        return BASE_OFFSET + self.generic_exit_enemy_offset
+
+    @generic_exit_enemy_address.setter
+    def generic_exit_enemy_address(self, value):
+        self.generic_exit_enemy_offset = value - BASE_OFFSET
+
+    @property
     def big_q_block_level_address(self):
         return ObjectSet(self._rom, self.big_q_block_object_set).level_offset + self.big_q_block_level_offset
 
     @big_q_block_level_address.setter
     def big_q_block_level_address(self, value):
         self.big_q_block_level_offset = value - ObjectSet(self._rom, self.big_q_block_object_set).level_offset
+
+    @property
+    def big_q_block_enemy_address(self):
+        return BASE_OFFSET + self.big_q_block_enemy_offset
+
+    @big_q_block_enemy_address.setter
+    def big_q_block_enemy_address(self, value):
+        self.big_q_block_enemy_offset = value - BASE_OFFSET
 
     @property
     def toad_warp_level_address(self):

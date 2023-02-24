@@ -104,7 +104,7 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
             FoundLevelRecord(
                 world.data.airship_level_address,
                 world.data.airship_level_offset_address,
-                world.data.airship_enemy_offset,
+                world.data.airship_enemy_address,
                 world.data.airship_enemy_offset_address,
                 world.data.airship_level_object_set,
                 False,
@@ -118,7 +118,7 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
             FoundLevelRecord(
                 world.data.generic_exit_level_address,
                 world.data.generic_exit_level_offset_address,
-                world.data.generic_exit_enemy_offset,
+                world.data.generic_exit_enemy_address,
                 world.data.generic_exit_enemy_offset_address,
                 world.data.generic_exit_object_set,
                 False,
@@ -132,7 +132,7 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
             FoundLevelRecord(
                 world.data.big_q_block_level_address,
                 world.data.big_q_block_level_offset_address,
-                world.data.big_q_block_enemy_offset,
+                world.data.big_q_block_enemy_address,
                 world.data.big_q_block_enemy_offset_address,
                 world.data.big_q_block_object_set,
                 False,
@@ -146,7 +146,7 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
             FoundLevelRecord(
                 world.data.coin_ship_level_address,
                 world.data.coin_ship_level_offset_address,
-                world.data.coin_ship_enemy_offset,
+                world.data.coin_ship_enemy_address,
                 world.data.coin_ship_enemy_offset_address,
                 world.data.coin_ship_level_object_set,
                 False,
