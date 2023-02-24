@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Optional
 
 from smb3parse import PAGE_A000_ByTileset
-from smb3parse.constants import BASE_OFFSET
+from smb3parse.constants import BASE_OFFSET, PRGROM_Change_A000
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import INESHeader, PRG_BANK_SIZE, Rom
 
@@ -63,11 +63,18 @@ class AdditionalData:
 
         last_level = levels_by_bank[prg_banks_by_object_set[object_set_number]][-1]
 
-        free_space_start = last_level.level_offset + last_level.byte_length + 1
+        free_space_start = last_level.level_offset + last_level.object_data_length + 1
 
         free_space_left = PRG_BANK_SIZE - (free_space_start % PRG_BANK_SIZE)
 
         return free_space_left
+
+    def free_space_for_enemies(self):
+        level_with_last_enemy_data = max(self.found_level_information, key=attrgetter("enemy_offset"))
+
+        end_of_enemy_data = level_with_last_enemy_data.enemy_offset + level_with_last_enemy_data.enemy_data_length + 1
+
+        return PRG_BANK_SIZE - (end_of_enemy_data % PRG_BANK_SIZE)
 
     def clear(self):
         self.managed_level_positions = None
@@ -81,7 +88,7 @@ class MovableLevel(FoundLevel):
 
     @staticmethod
     def from_found_level(level: FoundLevel, new_level_offset: int = -1):
-        ret_level = MovableLevel([], [], 0, 0, 0, 0, 0, False, False, False)
+        ret_level = MovableLevel([], [], 0, 0, 0, 0, 0, 0, False, False, False)
 
         ret_level.__dict__.update(vars(level))
 
@@ -199,16 +206,17 @@ class ROM(Rom):
             # 2.1. Take the first one as the bank start
             # FIXME: Figure out bank start on initial parsing and save that in additional data
             first_level = levels[0]
-            last_level_end = first_level.level_offset + first_level.byte_length + 1
+
+            last_level_end = first_level.level_offset
 
             # 2.2 Put them into a dictionary from old address to new address
-            for level in levels[1:]:
+            for level in levels:
                 old_level_address_to_new[level.level_offset] = last_level_end
-                last_level_end += level.byte_length + 1  # one extra byte for the FF delimiter at the end
+                last_level_end += level.object_data_length + 1  # one extra byte for the FF delimiter at the end
 
         # 3. Go through all levels and update their level position pointers, with the new addresses
         for bank, levels in levels_by_bank.items():
-            object_set_offset = BASE_OFFSET + bank * PRG_BANK_SIZE - 0xA000
+            object_set_offset = BASE_OFFSET + bank * PRG_BANK_SIZE - PRGROM_Change_A000
 
             # 3.1. Write new addresses in old positions, before actually moving the levels to the new position
             for level in levels:
@@ -223,13 +231,42 @@ class ROM(Rom):
         for levels in levels_by_bank.values():
             # 4.1 Get level data from old position
             for level in levels:
-                level.level_data = self.read(level.level_offset, level.byte_length + 1)
+                level.level_data = self.read(level.level_offset, level.object_data_length + 1)
 
             # 4.2 Save level data to new position
             for level in levels:
                 level.update_level_offset(level.new_level_offset)
 
                 self.write(level.new_level_offset, level.level_data)
+
+        self.save_to_file(ROM.path)
+
+    def rearrange_enemies(self):
+        # 1. Sort levels based on their enemy offset
+        levels = sorted(self.additional_data.found_level_information, key=attrgetter("enemy_offset"))
+
+        # 2. Find the first enemy data set as a starting point
+        first_level = levels[0]
+
+        last_enemy_end = first_level.enemy_offset + first_level.enemy_data_length + 2  # enemies have 2 delimiter bytes
+
+        # 3. Go through the rest of the levels and adjust the enemy offsets to leave no empty space
+        old_enemy_address_to_new: dict[int, int] = {first_level.enemy_offset: first_level.enemy_offset}
+
+        for level in levels[1:]:
+            old_enemy_address_to_new[level.enemy_offset] = last_enemy_end
+
+            last_enemy_end += level.enemy_data_length + 2
+
+        # 4. Finally, write the enemy data to their new positions
+        # 4.1 Get enemy data from old position
+        old_enemy_data_sets = [self.read(level.enemy_offset - 1, level.enemy_data_length + 2) for level in levels]
+
+        for level, old_enemy_data in zip(levels, old_enemy_data_sets):
+            # 4.2 Save enemy data to new position
+            level.enemy_offset = old_enemy_address_to_new[level.enemy_offset]
+
+            self.write(level.enemy_offset - 1, old_enemy_data)
 
         self.save_to_file(ROM.path)
 

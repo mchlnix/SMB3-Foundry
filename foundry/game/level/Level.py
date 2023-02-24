@@ -11,12 +11,10 @@ from foundry.game.level import LevelByteData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from foundry.gui.asm import bytes_to_asm
 from smb3parse import OFFSET_BY_OBJECT_SET_A000
-from smb3parse.constants import BASE_OFFSET, OFFSET_SIZE
+from smb3parse.constants import BASE_OFFSET, ENEMY_SIZE, OFFSET_SIZE
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH, WORLD_MAP_LAYOUT_DELIMITER
 from smb3parse.levels.level_header import LevelHeader
-
-ENEMY_SIZE = 3
 
 TIME_INF = -1
 
@@ -656,7 +654,7 @@ class Level(LevelLike):
         m3l_bytes = bytearray()
 
         m3l_bytes.append(self.world)
-        m3l_bytes.append(0)
+        m3l_bytes.append(0)  # Level number based on vanilla level list of SMB3 Workshop
         m3l_bytes.append(self.object_set_number)
 
         m3l_bytes.extend(self.header_bytes)
@@ -667,14 +665,16 @@ class Level(LevelLike):
         for jump in self.jumps:
             m3l_bytes.extend(jump.to_bytes())
 
-        # only write 0xFF, even though the stock ROM would use 0xFF00 or 0xFF01
-        # this is done to keep compatibility to older editors
+        # level data delimiter
         m3l_bytes.append(0xFF)
+
+        # at the start of enemy data; no idea what for
         m3l_bytes.append(0x01)
 
         for enemy in sorted(self.enemies, key=lambda _enemy: _enemy.x_position):
             m3l_bytes.extend(enemy.to_bytes())
 
+        # enemy data delimiter
         m3l_bytes.append(0xFF)
 
         return m3l_bytes

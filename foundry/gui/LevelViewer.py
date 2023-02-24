@@ -73,7 +73,7 @@ class LevelViewer(CustomChildWindow):
             tab_index_from_object_set = sorted_prg_bank_numbers.index(prg_banks_by_object_set[level.object_set_number])
 
             byte_view = self._tab_widget.widget(tab_index_from_object_set)
-            byte_view.levels_in_order.append((level.object_set_number - 1, address, level.byte_length))
+            byte_view.levels_in_order.append((level.object_set_number - 1, address, level.object_data_length))
 
         # insert tree view with all levels at the start of the tabs
         self._tab_widget.insertTab(0, self._gen_tree_view(levels_by_address), "Levels")

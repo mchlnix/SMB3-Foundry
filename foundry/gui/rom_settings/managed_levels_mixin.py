@@ -39,7 +39,7 @@ class ManagedLevelsMixin(SettingsMixin):
         self.level_info_box_initialized = False
 
         self.level_rearrange_button = QPushButton("Rearrange Levels (will save Rom)")
-        self.level_rearrange_button.clicked.connect(lambda: ROM().rearrange_levels())
+        self.level_rearrange_button.clicked.connect(self.on_rearrange)
 
         self.update_level_info()
 
@@ -113,6 +113,12 @@ class ManagedLevelsMixin(SettingsMixin):
             self.level_info_box.layout().addWidget(self.level_rearrange_button)
 
             self.level_info_box_initialized = True
+
+        self.needs_gui_update.emit()
+
+    def on_rearrange(self):
+        ROM().rearrange_levels()
+        ROM().rearrange_enemies()
 
         self.needs_gui_update.emit()
 

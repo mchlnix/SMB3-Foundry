@@ -8,7 +8,7 @@ def test_load_additional_data_from_rom(rom):
     assert not rom.additional_data
 
     rom.additional_data.managed_level_positions = True
-    rom.additional_data.found_level_information.append(FoundLevel([1], [2], 3, 4, 5, 6, 7, True, True, True))
+    rom.additional_data.found_level_information.append(FoundLevel([1], [2], 3, 4, 5, 6, 7, 8, True, True, True))
 
     assert rom.additional_data
 

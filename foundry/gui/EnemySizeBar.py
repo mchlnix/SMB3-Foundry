@@ -1,5 +1,6 @@
 from PySide6.QtGui import QColor
 
+from foundry.game.File import ROM
 from foundry.gui.LevelSizeBar import LevelSizeBar
 
 
@@ -32,7 +33,13 @@ class EnemySizeBar(LevelSizeBar):
 
     @property
     def original_value(self):
-        if not self.level_ref.level.attached_to_rom and self.level_ref.enemy_size_on_disk == 0:
-            return float("INF")
-        else:
-            return self.level_ref.enemy_size_on_disk
+        enemy_size = self.level_ref.enemy_size_on_disk
+
+        if not self.level_ref.level.attached_to_rom and enemy_size == 0:
+            enemy_size = float("INF")
+
+        elif ROM().additional_data:
+            free_space_in_bank = ROM().additional_data.free_space_for_enemies()
+            enemy_size += free_space_in_bank
+
+        return enemy_size

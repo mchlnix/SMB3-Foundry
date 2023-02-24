@@ -352,6 +352,7 @@ GAME_LEVEL_POINTER_COUNT = 340  # without the 10 from warp world
 GAME_SCREEN_COUNT = 20
 
 OFFSET_SIZE = 2  # byte
+ENEMY_SIZE = 3  # byte
 
 OBJ_PIPE_EXITS = 0x25
 OBJ_BOOMBOOM = 0x4B

@@ -103,6 +103,8 @@ class NesCPU(mpu6502.MPU):
 
         level = self._load_level()
 
+        enemy_address += 1
+
         if enemy_address >= 0x0:
             while self.rom.int(enemy_address) != 0xFF:
                 enemy_bytes = list(map(int, self.rom.read(enemy_address, 3)))
