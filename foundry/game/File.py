@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Optional
 
 from smb3parse import PAGE_A000_ByTileset
-from smb3parse.constants import BASE_OFFSET, PRGROM_Change_A000
+from smb3parse.constants import BASE_OFFSET, PAGE_A000_OFFSET
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import INESHeader, PRG_BANK_SIZE, Rom
 
@@ -82,19 +82,16 @@ class AdditionalData:
 
 
 class MovableLevel(FoundLevel):
-    new_level_offset: int
     level_data: bytearray
     level_base: FoundLevel
 
     @staticmethod
-    def from_found_level(level: FoundLevel, new_level_offset: int = -1):
+    def from_found_level(level: FoundLevel):
         ret_level = MovableLevel([], [], 0, 0, 0, 0, 0, 0, False, False, False)
 
         ret_level.__dict__.update(vars(level))
 
         ret_level.level_base = level
-        if new_level_offset == -1:
-            ret_level.new_level_offset = level.level_offset
 
         ret_level.level_data = bytearray()
 
@@ -207,16 +204,16 @@ class ROM(Rom):
             # FIXME: Figure out bank start on initial parsing and save that in additional data
             first_level = levels[0]
 
-            last_level_end = first_level.level_offset
+            new_level_start = first_level.level_offset
 
             # 2.2 Put them into a dictionary from old address to new address
             for level in levels:
-                old_level_address_to_new[level.level_offset] = last_level_end
-                last_level_end += level.object_data_length + 1  # one extra byte for the FF delimiter at the end
+                old_level_address_to_new[level.level_offset] = new_level_start
+                new_level_start += level.object_data_length + 1  # one extra byte for the FF delimiter at the end
 
         # 3. Go through all levels and update their level position pointers, with the new addresses
         for bank, levels in levels_by_bank.items():
-            object_set_offset = BASE_OFFSET + bank * PRG_BANK_SIZE - PRGROM_Change_A000
+            object_set_offset = BASE_OFFSET + bank * PRG_BANK_SIZE - PAGE_A000_OFFSET
 
             # 3.1. Write new addresses in old positions, before actually moving the levels to the new position
             for level in levels:
@@ -235,9 +232,11 @@ class ROM(Rom):
 
             # 4.2 Save level data to new position
             for level in levels:
-                level.update_level_offset(level.new_level_offset)
+                new_level_offset = old_level_address_to_new[level.level_offset]
 
-                self.write(level.new_level_offset, level.level_data)
+                level.update_level_offset(new_level_offset)
+
+                self.write(new_level_offset, level.level_data)
 
         self.save_to_file(ROM.path)
 
