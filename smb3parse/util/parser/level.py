@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from smb3parse.constants import ENEMY_SIZE
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.level_object import goes_to_next_level, object_set_to_definition
+from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
 from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
 
 
@@ -29,7 +30,7 @@ class ParsedLevel:
             goes_to_next_level(self.object_set_num, parsed_object.domain, parsed_object.obj_id)
             for parsed_object in self.parsed_objects
         ) or any(
-            goes_to_next_level(self.object_set_num, parsed_enemy.domain, parsed_enemy.obj_id)
+            goes_to_next_level(ENEMY_ITEM_OBJECT_SET, parsed_enemy.domain, parsed_enemy.obj_id)
             for parsed_enemy in self.parsed_enemies
         )
 
