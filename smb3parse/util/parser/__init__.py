@@ -230,7 +230,7 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                 level_address_position = record.level_address
                 level_address = header_of_old_level.jump_level_address
 
-                enemy_address_position = level_address + OFFSET_SIZE
+                enemy_address_position = record.level_address + OFFSET_SIZE
                 enemy_address = header_of_old_level.jump_enemy_address
 
                 object_set_number = header_of_old_level.jump_object_set_number
@@ -246,6 +246,7 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                     found_level = levels_by_address[level_address]
                     assert level_address_position not in found_level.level_offset_positions
                     found_level.level_offset_positions.append(level_address_position)
+                    found_level.enemy_offset_positions.append(enemy_address_position)
                     found_level.found_as_jump = True
                     break
 

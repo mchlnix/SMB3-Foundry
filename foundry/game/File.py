@@ -252,7 +252,7 @@ class ROM(Rom):
         )
 
         # 2. Set the start of the enemy data bank
-        last_enemy_end = enemy_bank_start
+        last_enemy_end = enemy_bank_start + BASE_OFFSET
 
         # 3. Go through the rest of the levels and adjust the enemy offsets to leave no empty space
         old_enemy_address_to_new: dict[int, int] = {}
@@ -264,23 +264,32 @@ class ROM(Rom):
             # some levels share enemies, so we don't count them again, otherwise we copy them into memory multiple times
             duplicate = level.enemy_offset in old_enemy_address_to_new
 
-            old_enemy_address_to_new[level.enemy_offset] = last_enemy_end
+            if not duplicate:
+                old_enemy_address_to_new[level.enemy_offset] = last_enemy_end
+                print(
+                    hex(level.level_offset),
+                    hex(level.enemy_offset),
+                    "->",
+                    hex(old_enemy_address_to_new[level.enemy_offset]),
+                    level.enemy_data_length,
+                    "saved:",
+                    f"{level.enemy_offset - last_enemy_end - saved}",
+                )
+            else:
+                print(
+                    hex(level.level_offset),
+                    hex(level.enemy_offset),
+                    "->",
+                    hex(old_enemy_address_to_new[level.enemy_offset]),
+                    level.enemy_data_length,
+                )
 
             for position in level.enemy_offset_positions:
+                print("enemy offset position", hex(level.level_offset), hex(position), "writes", hex(old_enemy_address_to_new[level.enemy_offset] - BASE_OFFSET))
                 self.write_little_endian(position, old_enemy_address_to_new[level.enemy_offset] - BASE_OFFSET)
 
             if duplicate:
                 continue
-
-            print(
-                hex(level.level_offset),
-                hex(level.enemy_offset),
-                "->",
-                hex(last_enemy_end),
-                level.enemy_data_length,
-                "saved:",
-                f"{level.enemy_offset - last_enemy_end - saved}",
-            )
 
             saved = level.enemy_offset - last_enemy_end
 
@@ -288,17 +297,22 @@ class ROM(Rom):
 
         # 4. Finally, write the enemy data to their new positions
         # 4.1 Get enemy data from old position
-        old_enemy_data_sets = [self.read(level.enemy_offset - 1, level.enemy_data_length + 2) for level in levels]
+        old_enemy_data_sets = {
+            level.enemy_offset: self.read(level.enemy_offset - 1, level.enemy_data_length + 2) for level in levels
+        }
+
         already_copied = []
 
-        for level, old_enemy_data in zip(levels, old_enemy_data_sets):
+        for level in levels:
             # 4.2 Save enemy data to new position
+            old_enemy_data = old_enemy_data_sets[level.enemy_offset]
             level.enemy_offset = old_enemy_address_to_new[level.enemy_offset]
 
             if level.enemy_offset not in already_copied:
                 print(f"Writing {len(old_enemy_data)} to {level.enemy_offset:x}")
                 self.write(level.enemy_offset - 1, old_enemy_data)
                 already_copied.append(level.enemy_offset)
+
             else:
                 print(f"Would've written to {level.enemy_offset:x} twice.")
 
