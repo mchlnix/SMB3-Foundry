@@ -1,104 +1,13 @@
-import json
 from collections import defaultdict
 from operator import attrgetter
 from os.path import basename
 from pathlib import Path
 from typing import Optional
 
+from foundry.game.additional_data import AdditionalData, MovableLevel
 from smb3parse import PAGE_A000_ByTileset
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_OFFSET
-from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import INESHeader, PRG_BANK_SIZE, Rom
-
-
-class AdditionalData:
-    """
-    Set of additional, foundry specific data, meant to persist between invocations of the editor. Can be used to keep
-    ROM specific decisions or settings, that have no place in the actual game data.
-    """
-
-    def __init__(self):
-        self.managed_level_positions: bool | None = None
-        """
-        If this is True, then the positions of the level data in the ROM is completely managed by the editor. The old
-        way of remembering the position of a level, while editing, and manually opening it using this address will not
-        work with this.
-        """
-
-        self.found_level_information: list[FoundLevel] = []
-
-    def __str__(self) -> str:
-        return json.dumps(
-            {
-                "managed_level_positions": self.managed_level_positions,
-                "found_level_information": [found_level.to_dict() for found_level in self.found_level_information],
-            }
-        )
-
-    @staticmethod
-    def from_str(string_data: str) -> "AdditionalData":
-        data_obj = AdditionalData()
-
-        data_dict = json.loads(string_data)
-
-        data_obj.managed_level_positions = data_dict.get("managed_level_positions", None)
-        data_obj.found_level_information = [
-            FoundLevel.from_dict(data) for data in data_dict.get("found_level_information", [])
-        ]
-
-        return data_obj
-
-    def __bool__(self):
-        return bool(self.managed_level_positions is not None or self.found_level_information)
-
-    def free_space_for_object_set(self, object_set_number: int):
-        prg_banks_by_object_set = ROM().read(PAGE_A000_ByTileset, 16)
-
-        levels_by_bank: dict[int, list[FoundLevel]] = defaultdict(list)
-
-        for level in self.found_level_information:
-            levels_by_bank[prg_banks_by_object_set[level.object_set_number]].append(
-                MovableLevel.from_found_level(level)
-            )
-
-        last_level = levels_by_bank[prg_banks_by_object_set[object_set_number]][-1]
-
-        free_space_start = last_level.level_offset + last_level.object_data_length + 1
-
-        free_space_left = PRG_BANK_SIZE - (free_space_start % PRG_BANK_SIZE)
-
-        return free_space_left
-
-    def free_space_for_enemies(self):
-        level_with_last_enemy_data = max(self.found_level_information, key=attrgetter("enemy_offset"))
-
-        end_of_enemy_data = level_with_last_enemy_data.enemy_offset + level_with_last_enemy_data.enemy_data_length + 1
-
-        return PRG_BANK_SIZE - (end_of_enemy_data % PRG_BANK_SIZE)
-
-    def clear(self):
-        self.managed_level_positions = None
-        self.found_level_information.clear()
-
-
-class MovableLevel(FoundLevel):
-    level_data: bytearray
-    level_base: FoundLevel
-
-    @staticmethod
-    def from_found_level(level: FoundLevel):
-        ret_level = MovableLevel([], [], 0, 0, 0, 0, 0, 0, False, False, False)
-
-        ret_level.__dict__.update(vars(level))
-
-        ret_level.level_base = level
-
-        ret_level.level_data = bytearray()
-
-        return ret_level
-
-    def update_level_offset(self, value):
-        self.level_base.level_offset = value
 
 
 class ROM(Rom):
@@ -111,7 +20,7 @@ class ROM(Rom):
     rom_data = bytearray()
     header: Optional[INESHeader] = None
 
-    additional_data = AdditionalData()
+    additional_data: AdditionalData
 
     path: str = ""
     name: str = ""
@@ -147,13 +56,13 @@ class ROM(Rom):
 
         if additional_data_start == -1:
             ROM.rom_data = data
-            ROM.additional_data = AdditionalData()
+            ROM.additional_data = AdditionalData(ROM())
         else:
             ROM.rom_data = data[:additional_data_start]
 
             additional_data_start += len(ROM.MARKER_VALUE)
 
-            ROM.additional_data = AdditionalData.from_str(data[additional_data_start:].decode("utf-8"))
+            ROM.additional_data = AdditionalData.from_str(data[additional_data_start:].decode("utf-8"), ROM())
 
     @staticmethod
     def reload_from_file():
