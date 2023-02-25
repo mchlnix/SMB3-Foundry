@@ -31,10 +31,10 @@ def world_and_level_for_level_address(level_address: int):
 
 
 class LevelSignaller(QObject):
-    needs_redraw: SignalInstance = cast(SignalInstance, Signal())
-    data_changed: SignalInstance = cast(SignalInstance, Signal())
-    jumps_changed: SignalInstance = cast(SignalInstance, Signal())
-    level_changed: SignalInstance = cast(SignalInstance, Signal())
+    needs_redraw: SignalInstance = Signal()
+    data_changed: SignalInstance = Signal()
+    jumps_changed: SignalInstance = Signal()
+    level_changed: SignalInstance = Signal()
 
 
 class Level(LevelLike):
