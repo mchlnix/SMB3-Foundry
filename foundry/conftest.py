@@ -15,10 +15,10 @@ test_rom_path = root_dir / "SMB3.nes"
 assert test_rom_path.exists(), f"The test suite needs a SMB3(U) Rom at '{test_rom_path}' to run."
 
 level_1_1_object_address = 0x1FB92
-level_1_1_enemy_address = 0xC537 + 1
+level_1_1_enemy_address = 0xC537
 
 level_1_2_object_address = 0x20F3A
-level_1_2_enemy_address = 0xC6BA + 1
+level_1_2_enemy_address = 0xC6BA
 
 
 @pytest.fixture
@@ -26,11 +26,11 @@ def level(rom, qtbot):
     return Level("Level 1-1", level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
 
 
-@pytest.fixture(scope="module", autouse=True)
+@pytest.fixture()
 def rom():
-    rom = ROM(test_rom_path)
+    ROM.load_from_file(test_rom_path)
 
-    yield rom
+    yield ROM()
 
 
 def compare_images(image_name: str, ref_image_path: str, gen_image: QPixmap):

@@ -233,8 +233,7 @@ class LevelSelector(QDialog):
 
         self.object_set = self.object_set_dropdown.currentIndex()
         self.object_data_offset = self.object_data_spinner.value()
-        # skip the first byte, because it seems useless
-        self.enemy_data_offset = self.enemy_data_spinner.value() + 1
+        self.enemy_data_offset = self.enemy_data_spinner.value()
 
         self.accept()
 

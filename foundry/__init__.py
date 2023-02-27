@@ -3,7 +3,7 @@ import urllib.error
 import urllib.request
 from functools import lru_cache
 from pathlib import Path
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from PySide6.QtCore import QBuffer, QIODevice, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon, Qt
@@ -11,6 +11,9 @@ from PySide6.QtWidgets import QApplication, QMessageBox, QPushButton, QWidget
 
 from foundry.gui.settings import Settings
 from smb3parse.objects.object_set import DESERT_OBJECT_SET
+
+if TYPE_CHECKING:
+    from foundry.game.level import EnemyItemAddress, LevelAddress
 
 root_dir = Path(__file__).parent.parent
 
@@ -155,7 +158,7 @@ def icon(icon_name: str):
         raise FileNotFoundError(icon_path)
 
 
-def get_level_thumbnail(object_set, layout_address, enemy_address):
+def get_level_thumbnail(object_set, layout_address: "LevelAddress", enemy_address: "EnemyItemAddress"):
     from foundry.game.level.LevelRef import LevelRef
     from foundry.gui.LevelView import LevelView
 

@@ -32,10 +32,11 @@ from foundry import (
 )
 from foundry.game.File import ROM
 from foundry.game.additional_data import LevelOrganizer
-from foundry.game.gfx.Palette import PaletteGroup, save_all_palette_groups
 from foundry.game.gfx import restore_all_palettes
+from foundry.game.gfx.Palette import PaletteGroup, save_all_palette_groups
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.level import EnemyItemAddress, LevelAddress
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import LevelContextMenu
@@ -979,7 +980,9 @@ class FoundryMainWindow(MainWindow):
     def on_header_editor(self, _):
         HeaderEditor(self, self.level_ref).exec()
 
-    def update_level(self, level_name: str, object_data_offset: int, enemy_data_offset: int, object_set: int):
+    def update_level(
+        self, level_name: str, object_data_offset: LevelAddress, enemy_data_offset: EnemyItemAddress, object_set: int
+    ):
         try:
             self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
             self.scroll_panel.horizontalScrollBar().setValue(0)

@@ -2,6 +2,7 @@ import json
 from collections import defaultdict
 from operator import attrgetter
 
+from foundry.game.level import EnemyItemData, ObjectData
 from smb3parse import PAGE_A000_ByTileset
 from smb3parse.constants import BASE_OFFSET, ENEMY_DATA_BANK_INDEX, PAGE_A000_OFFSET
 from smb3parse.util.parser import FoundLevel
@@ -105,8 +106,8 @@ class LevelOrganizer:
         self,
         rom: "Rom",
         levels: list[FoundLevel],
-        level_to_save: tuple[int, bytearray] = (-1, bytearray()),
-        enemies_to_save: tuple[int, bytearray] = (-1, bytearray()),
+        level_to_save: ObjectData = (-1, bytearray()),
+        enemies_to_save: EnemyItemData = (-1, bytearray()),
     ):
         self.rom = rom
 
@@ -212,8 +213,7 @@ class LevelOrganizer:
         save_enemy_address, save_enemy_data = self.enemies_to_save
 
         for level in levels:
-            if level.enemy_offset == save_enemy_address - 1:
-                print("Found Level", hex(level.level_offset), hex(level.enemy_offset))
+            if level.enemy_offset == save_enemy_address:
                 level.enemy_data_length = len(save_enemy_data) - 1  # do not account for delimiter here
 
         # 2. Set the start of the enemy data bank

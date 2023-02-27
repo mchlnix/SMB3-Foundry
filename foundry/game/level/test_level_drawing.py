@@ -50,6 +50,7 @@ with Path(data_dir / "levels.dat").open("r") as level_data_file:
 
         world_no, level_no = map(int, parts[:2])
         level_address, enemy_address, object_set_number = [int(number, 16) for number in parts[2:-1]]
+        enemy_address -= 1  # start one earlier at the 0x00/0x01 byte
         level_name = parts[-1]
 
         if object_set_number == WORLD_MAP_OBJECT_SET:

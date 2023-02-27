@@ -2,6 +2,7 @@ from typing import Optional, cast
 
 from PySide6.QtCore import QObject, Signal, SignalInstance
 
+from foundry.game.level import EnemyItemAddress, LevelAddress
 from foundry.game.level.Level import Level
 from foundry.game.level.WorldMap import WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
@@ -18,7 +19,13 @@ class LevelRef(QObject):
         super(LevelRef, self).__init__()
         self._internal_level: Optional[Level] = None
 
-    def load_level(self, level_name: str, object_data_offset: int, enemy_data_offset: int, object_set_number: int):
+    def load_level(
+        self,
+        level_name: str,
+        object_data_offset: LevelAddress,
+        enemy_data_offset: EnemyItemAddress,
+        object_set_number: int,
+    ):
         if object_set_number == WORLD_MAP_OBJECT_SET:
             self.level = WorldMap(object_data_offset)
         else:

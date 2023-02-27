@@ -100,6 +100,7 @@ def test_level_insert_in_vertical_level(level):
 
 def test_to_asm(level):
     level_asm, enemy_asm = level.to_asm()
+    (_, level_bytes), (__, enemy_bytes) = level.to_bytes()
 
-    assert level.to_bytes()[0][1] + bytearray([0xFF]) == asm_to_bytes(level_asm)
-    assert level.to_bytes()[1][1] == asm_to_bytes(enemy_asm)[1:]
+    assert level_bytes + bytearray([0xFF]) == asm_to_bytes(level_asm)
+    assert enemy_bytes == asm_to_bytes(enemy_asm)

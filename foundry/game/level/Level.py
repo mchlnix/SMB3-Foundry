@@ -8,7 +8,7 @@ from foundry.game.additional_data import LevelOrganizer
 from foundry.game.gfx.objects import EnemyItem, EnemyItemFactory, Jump, LevelObject, LevelObjectFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
-from foundry.game.level import LevelByteData, _load_level_offsets
+from foundry.game.level import EnemyItemData, LevelByteData, ObjectData, _load_level_offsets
 from foundry.game.level.LevelLike import LevelLike
 from foundry.gui.asm import bytes_to_asm
 from smb3parse import OFFSET_BY_OBJECT_SET_A000
@@ -70,6 +70,7 @@ class Level(LevelLike):
         self.header_bytes: bytearray = bytearray()
         self.jumps: list[Jump] = []
         self.enemies: list[EnemyItem] = []
+        self.first_enemy_byte = 0x00
 
         if self.layout_address == self.enemy_offset == 0:
             # probably loaded to become an m3l
@@ -184,6 +185,9 @@ class Level(LevelLike):
             self.data_changed.emit()
 
     def _load_enemies(self, data: bytearray):
+        if not data:
+            return
+
         self.enemies.clear()
 
         def data_left(_data: bytearray):
@@ -191,6 +195,9 @@ class Level(LevelLike):
             # editor, it might not, since they only wrote the 0xFF to end the enemy data
 
             return _data and not _data[0] == 0xFF  # and _data[1] in [0x00, 0x01]
+
+        self.first_enemy_byte = data[0]
+        data = data[1:]
 
         enemy_data, data = data[0:ENEMY_SIZE], data[ENEMY_SIZE:]
 
@@ -673,7 +680,7 @@ class Level(LevelLike):
         m3l_bytes.append(0xFF)
 
         # at the start of enemy data; no idea what for
-        m3l_bytes.append(0x01)
+        m3l_bytes.append(self.first_enemy_byte)
 
         for enemy in sorted(self.enemies, key=lambda _enemy: _enemy.x_position):
             m3l_bytes.extend(enemy.to_bytes())
@@ -761,10 +768,6 @@ class Level(LevelLike):
         object_bytes = m3l_bytes[:object_size]
         enemy_bytes = m3l_bytes[object_size:]
 
-        if len(enemy_bytes) % 3 - len(WORLD_MAP_LAYOUT_DELIMITER) == 1:
-            # compatibility with workshop
-            enemy_bytes = enemy_bytes[1:]
-
         self._signal_emitter.blockSignals(False)
 
         self._load_level_data(object_bytes, enemy_bytes)
@@ -782,8 +785,6 @@ class Level(LevelLike):
     def save_to_rom(self):
         if ROM().additional_data.managed_level_positions:
             level_data, enemy_data = self.to_bytes()
-
-            print(len(enemy_data[1]))
 
             lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information, level_data, enemy_data)
             lo.rearrange_levels()
@@ -808,6 +809,7 @@ class Level(LevelLike):
         data.append(0xFF)
 
         enemies = bytearray()
+        enemies.append(self.first_enemy_byte)
 
         if self.is_vertical:
             enemies_objects = sorted(self.enemies, key=lambda _enemy: _enemy.y_position)
@@ -821,7 +823,7 @@ class Level(LevelLike):
 
         return (self.header_offset, data), (self.enemy_offset, enemies)
 
-    def from_bytes(self, object_data: tuple[int, bytearray], enemy_data: tuple[int, bytearray], new_level=True):
+    def from_bytes(self, object_data: ObjectData, enemy_data: EnemyItemData, new_level=True):
         self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data
 

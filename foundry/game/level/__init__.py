@@ -1,9 +1,14 @@
+from typing import TypeAlias
+
 from foundry import data_dir
 from foundry.game.Data import Mario3Level
 
-ObjectData = tuple[int, bytearray]
-EnemyItemData = tuple[int, bytearray]
-LevelByteData = tuple[ObjectData, EnemyItemData]
+LevelAddress: TypeAlias = int
+EnemyItemAddress: TypeAlias = int
+
+ObjectData: TypeAlias = tuple[LevelAddress, bytearray]
+EnemyItemData: TypeAlias = tuple[EnemyItemAddress, bytearray]
+LevelByteData: TypeAlias = tuple[ObjectData, EnemyItemData]
 
 
 def _load_level_offsets() -> tuple[list[Mario3Level], list[int]]:
