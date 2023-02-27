@@ -4,12 +4,14 @@ from PySide6.QtCore import SignalInstance
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from foundry.game.File import ROM
+from foundry.game.additional_data import LevelOrganizer
 from foundry.gui.HorizontalLine import HorizontalLine
 from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.Spinner import Spinner
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from smb3parse import PAGE_A000_ByTileset
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
+from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE
 
 
@@ -37,6 +39,14 @@ class ManagedLevelsMixin(SettingsMixin):
 
         self.level_info_box.hide()
         self.level_info_box_initialized = False
+
+        if self.level_ref and self.level_ref.level and self.level_ref.level.attached_to_rom:
+            self.current_level_address = self.level_ref.level.layout_address
+        else:
+            self.current_level_address = 0
+
+        self.new_level_address = self.new_enemy_address = 0
+        self.found_level: FoundLevel | None = None
 
         self.level_rearrange_button = QPushButton("Rearrange Levels (will save Rom)")
         self.level_rearrange_button.clicked.connect(self.on_rearrange)
@@ -68,11 +78,25 @@ class ManagedLevelsMixin(SettingsMixin):
         else:
             pd = LevelParseProgressDialog()
 
+            if pd.wasCanceled():
+                self.enabled_checkbox.setChecked(False)
+                return
+
             levels_per_object_set = pd.levels_per_object_set
 
             ROM.additional_data.found_level_information = [
                 pd.levels_by_address[key] for key in sorted(pd.levels_by_address.keys())
             ]
+
+            if self.current_level_address:
+                self.found_level = next(
+                    (
+                        level
+                        for level in ROM.additional_data.found_level_information
+                        if level.level_offset == self.current_level_address
+                    ),
+                    None,
+                )
 
         # get prg numbers for object sets and sort them
         prg_banks_by_object_set = ROM().read(PAGE_A000_ByTileset, 16)
@@ -117,8 +141,14 @@ class ManagedLevelsMixin(SettingsMixin):
         self.needs_gui_update.emit()
 
     def on_rearrange(self):
-        ROM().rearrange_levels()
-        ROM().rearrange_enemies()
+        lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information)
+        lo.rearrange_levels()
+        lo.rearrange_enemies()
+
+        ROM().save_to_file(ROM.path)
+
+        if self.found_level:
+            self.level_ref.level.set_addresses(self.found_level.level_offset, self.found_level.enemy_offset)
 
         self.needs_gui_update.emit()
 

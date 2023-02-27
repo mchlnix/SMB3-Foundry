@@ -31,6 +31,7 @@ from foundry import (
     icon,
 )
 from foundry.game.File import ROM
+from foundry.game.additional_data import LevelOrganizer
 from foundry.game.gfx.Palette import PaletteGroup, save_all_palette_groups
 from foundry.game.gfx import restore_all_palettes
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
@@ -669,7 +670,11 @@ class FoundryMainWindow(MainWindow):
                 pd.levels_by_address[key] for key in sorted(pd.levels_by_address.keys())
             ]
 
-            ROM().rearrange_levels()
+            lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information)
+            lo.rearrange_levels()
+            lo.rearrange_enemies()
+
+            ROM().save_to_file(ROM.path)
 
     def _ask_for_palette_save(self) -> bool:
         """

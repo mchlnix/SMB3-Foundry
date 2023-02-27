@@ -4,6 +4,7 @@ from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import ObjectSet
+from foundry.game.additional_data import LevelOrganizer
 from foundry.game.gfx.objects import EnemyItem, EnemyItemFactory, Jump, LevelObject, LevelObjectFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
@@ -109,6 +110,9 @@ class Level(LevelLike):
     def attached_to_rom(self):
         """Whether the current level has a place in the ROM yet. If not this level is likely a m3l file."""
         return not (self.header_offset == self.enemy_offset == 0)
+
+    def detach_from_rom(self):
+        self.header_offset = self.enemy_offset = 0
 
     @property
     def width(self):
@@ -779,8 +783,13 @@ class Level(LevelLike):
         if ROM().additional_data.managed_level_positions:
             level_data, enemy_data = self.to_bytes()
 
-            ROM().rearrange_levels(level_data)
-            ROM().rearrange_enemies(enemy_data)
+            print(len(enemy_data[1]))
+
+            lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information, level_data, enemy_data)
+            lo.rearrange_levels()
+            lo.rearrange_enemies()
+
+            ROM().save_to_file(ROM.path)
         else:
             for offset, data in self.to_bytes():
                 ROM().write(offset, data)

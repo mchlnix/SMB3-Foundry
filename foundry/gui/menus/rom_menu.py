@@ -114,7 +114,7 @@ class RomMenu(QMenu):
                 self.needs_gui_refresh.emit()
 
             case self._rom_settings_action:
-                dialog = RomSettingsDialog(self)
+                dialog = RomSettingsDialog(self, self._level_ref)
                 dialog.needs_gui_update.connect(self.needs_gui_refresh.emit)
 
                 dialog.exec()

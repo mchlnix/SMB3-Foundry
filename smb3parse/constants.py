@@ -21,6 +21,9 @@ See PAGE_A000_OFFSET. Just with 0xC000 as the implicit offset.
 
 WORLD_MAP_TSA_INDEX = 12
 
+ENEMY_DATA_BANK_INDEX = 6
+"""The 6th PRG bank is where all the enemy/item data is located. And nothing else."""
+
 STOCK_LEVEL_BG_PAGES1_BYTES = unhexlify(b"0008101c0c58585c5830346e18381c242c5c586c683428")
 """The Level_BG_Pages1 byte array from the stock ROM"""
 
