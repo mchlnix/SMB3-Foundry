@@ -9,9 +9,10 @@ Foundry
   code lies. Is there code in between levels? Can we find address ranges, which can be used to store levels? What about
   expanded Roms?
 
-  - No code between levels
-  - Can find Level Data Ranges in the ROM
-  - Save level management data in the rom file, so we don't have to ask every time
+  - Save Level Data Beginning explicitly, instead of using the first level, to make it configurable
+  - Fail better, when a level can't be parsed
+  - Update manual regarding this feature
+  - When parsed, show found levels, instead of Vanilla Levels in level viewer?
 
 
 - Make translatable?
@@ -23,8 +24,6 @@ Foundry
 - Scroll to Jump Zone Position, when editing Jumps
 
 - Rearrange Menus to split Rom and Level configs
-
-- Opening new ROM, but cancelling might leave editor in a weird state
 
 - Somehow list the "hidden" levels of Worlds, like CoinShip and Generic Exit
 

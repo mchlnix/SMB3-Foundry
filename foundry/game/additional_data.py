@@ -271,7 +271,6 @@ class LevelOrganizer:
         old_enemy_data_sets = {
             level.enemy_offset: self.rom.read(level.enemy_offset, level.enemy_data_length + 2) for level in levels
         }
-        save_enemy_data.insert(0, 0)
         old_enemy_data_sets[save_enemy_address] = save_enemy_data
 
         already_copied = []
