@@ -647,11 +647,13 @@ class FoundryMainWindow(MainWindow):
 
         answer = QMessageBox.question(
             self,
-            "Automatic Level Address Management",
-            "Levels of the same type are stored in the same area of the ROM. If you want to extend one Level, you "
-            "might overwrite the Level, that comes after it in memory.\n\n"
-            "Foundry can automatically rearrange the levels, so that this doesn't happen and so that you can use "
-            "as much memory as is available for that level type.",
+            "Automatic Level Management Feature",
+            "Levels of the same type are stored in the same area of the ROM. If you add new objects to a Level, you "
+            "might overwrite the Level, that comes right after it in memory.\n\n"
+            "Foundry can parse your ROM and find all Levels accessible to the player (!). That way, when you extend a "
+            "Level, Foundry can automatically move the Levels, so that this doesn't happen and so that you can use as "
+            "much memory as is available for that type of Level.\n\n"
+            "This can also be (de-)activated under 'Rom Settings' later.",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Ignore,
         )
 
