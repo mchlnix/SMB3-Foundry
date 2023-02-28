@@ -225,7 +225,7 @@ class LevelOrganizer:
 
         for level in levels:
             if level.enemy_offset == save_enemy_address:
-                level.enemy_data_length = len(save_enemy_data) - 1  # do not account for delimiter here
+                level.enemy_data_length = len(save_enemy_data) - 2  # do not account for delimiters here
 
         # 2. Set the start of the enemy data bank
         last_enemy_end = enemy_bank_start + BASE_OFFSET
