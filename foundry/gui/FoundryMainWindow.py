@@ -995,6 +995,7 @@ class FoundryMainWindow(MainWindow):
 
     def close_level(self):
         self.level_ref.level = None
+        self.undo_stack.clear()
         self._enable_disable_gui_elements()
 
     def update_gui_for_level(self):
