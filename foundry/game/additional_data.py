@@ -131,12 +131,23 @@ class LevelOrganizer:
         save_level_address, save_level_data = self.level_to_save
 
         if save_level_address != -1:
+            level_found = False
+
             for levels in levels_by_bank.values():
                 for level in levels:
                     if level.level_offset == save_level_address:
                         print("Found level to save")
                         level.level_data = save_level_data
                         level.object_data_length = len(save_level_data) - 1  # ignore delimiter here
+
+                        level_found = True
+                        break
+
+                if level_found:
+                    break
+
+            else:
+                raise LookupError(f"Could not find level, that was supposed to be saved. {save_level_address:x}")
 
         # 1. Sort levels by their level address
         for levels in levels_by_bank.values():
