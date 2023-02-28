@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QScrollArea, QToolTip, QWidget
 
 from foundry import ctrl_is_pressed
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
+from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import get_tile
 from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
@@ -450,32 +451,54 @@ class LevelView(MainView):
         if not self.level_ref:
             return is_safe, reason, additional_info
 
-        if self.level_ref.too_many_level_objects():
-            level = self._cuts_into_other_objects()
+        if ROM.additional_data.managed_level_positions:
+            free_space_in_bank = ROM.additional_data.free_space_for_object_set(self.level_ref.level.object_set_number)
+            free_space_for_enemies = ROM.additional_data.free_space_for_enemies()
 
-            is_safe = False
-            reason = "Too many level objects."
+            additional_level_data = (
+                self.level_ref.level.current_object_size() - self.level_ref.level.object_size_on_disk
+            )
+            additional_enemy_data = (
+                self.level_ref.level.current_enemies_size() - self.level_ref.level.enemy_size_on_disk
+            )
 
-            if level:
-                additional_info = f"Would overwrite data of '{level}'."
-            else:
-                additional_info = (
-                    "It wouldn't overwrite another level, " "but it might still overwrite other important data."
-                )
+            if free_space_in_bank < additional_level_data:
+                is_safe = False
+                reason = "Not enough space in ROM"
+                additional_info = "There is not enough space in the ROM for this level."
 
-        elif self.level_ref.too_many_enemies_or_items():
-            level = self._cuts_into_other_enemies()
+            elif free_space_for_enemies < additional_enemy_data:
+                is_safe = False
+                reason = "Not enough space in ROM"
+                additional_info = "There is not enough space in the ROM for the enemies/items in this Level."
 
-            is_safe = False
-            reason = "Too many enemies or items."
+        else:
+            if self.level_ref.too_many_level_objects():
+                level = self._cuts_into_other_objects()
 
-            if level:
-                additional_info = f"Would probably overwrite enemy/item data of '{level}'."
-            else:
-                additional_info = (
-                    "It wouldn't overwrite enemy/item data of another level, "
-                    "but it might still overwrite other important data."
-                )
+                is_safe = False
+                reason = "Too many level objects."
+
+                if level:
+                    additional_info = f"Would overwrite data of '{level}'."
+                else:
+                    additional_info = (
+                        "It wouldn't overwrite another level, but it might still overwrite other important data."
+                    )
+
+            elif self.level_ref.too_many_enemies_or_items():
+                level = self._cuts_into_other_enemies()
+
+                is_safe = False
+                reason = "Too many enemies or items."
+
+                if level:
+                    additional_info = f"Would probably overwrite enemy/item data of '{level}'."
+                else:
+                    additional_info = (
+                        "It wouldn't overwrite enemy/item data of another level, "
+                        "but it might still overwrite other important data."
+                    )
 
         return is_safe, reason, additional_info
 

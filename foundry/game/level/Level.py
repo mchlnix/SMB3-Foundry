@@ -240,10 +240,6 @@ class Level(LevelLike):
         self.object_size_on_disk = self.current_object_size()
         self.enemy_size_on_disk = self.current_enemies_size()
 
-    @property
-    def size_on_disk(self):
-        return self.object_size_on_disk + self.enemy_size_on_disk
-
     def get_rect(self, block_length: int = 1):
         width, height = self.size
 
