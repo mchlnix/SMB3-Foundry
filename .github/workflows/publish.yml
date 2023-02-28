@@ -197,6 +197,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.11"
+          architecture: x64
+
       - name: Set environment tag name
         id: tag_name
         run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
