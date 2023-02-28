@@ -785,8 +785,6 @@ class Level(LevelLike):
             lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information, level_data, enemy_data)
             lo.rearrange_levels()
             lo.rearrange_enemies()
-
-            ROM().save_to_file(ROM.path)
         else:
             for offset, data in self.to_bytes():
                 ROM().write(offset, data)
