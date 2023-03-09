@@ -26,8 +26,10 @@ class FoundLevel:
 
     object_set_number: int
     object_data_length: int
+    """Length of all Level Objects, including the Level Header, but without the delimiter at the end."""
 
     enemy_data_length: int
+    """Length of all Enemy Objects, without the delimiter at the beginning and end."""
 
     found_in_world: bool
     found_as_jump: bool

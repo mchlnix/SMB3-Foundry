@@ -71,3 +71,7 @@ class LevelHeader:
     @property
     def jump_level_address(self):
         return self.jump_object_set.level_offset + self.jump_level_offset
+
+    @jump_level_address.setter
+    def jump_level_address(self, value):
+        self.jump_level_offset = value - self.jump_object_set.level_offset

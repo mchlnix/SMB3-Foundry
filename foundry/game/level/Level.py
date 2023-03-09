@@ -778,16 +778,43 @@ class Level(LevelLike):
 
         self.level_changed.emit()
 
-    def save_to_rom(self):
-        if ROM().additional_data.managed_level_positions:
-            level_data, enemy_data = self.to_bytes()
+    def save_to_rom(self) -> None:
+        (level_address, level_data), (enemy_address, enemy_data) = self.to_bytes()
 
-            lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information, level_data, enemy_data)
+        if ROM().additional_data.managed_level_positions:
+            current_level = next(
+                filter(
+                    lambda level: level.level_offset == level_data[0], ROM().additional_data.found_level_information
+                ),
+                None,
+            )
+
+            if current_level is None:
+                raise LookupError()
+
+            current_level.object_data_length = self.current_object_size()
+            current_level.enemy_data_length = self.current_enemies_size()
+
+            lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information)
+
             lo.rearrange_levels()
-            lo.rearrange_enemies()
-        else:
-            for offset, data in self.to_bytes():
-                ROM().write(offset, data)
+
+            assert current_level.level_offset in lo.old_level_address_to_new, (
+                hex(current_level.level_offset),
+                lo.old_level_address_to_new,
+            )
+            current_level.level_offset = lo.old_level_address_to_new[current_level.level_offset]
+
+            address_changes = lo.rearrange_enemies()
+
+            assert current_level.enemy_offset in address_changes
+            current_level.enemy_offset = address_changes[current_level.enemy_offset]
+
+            level_address = current_level.level_offset
+            enemy_address = current_level.enemy_offset
+
+        ROM().write(level_address, level_data)
+        ROM().write(enemy_address, enemy_data)
 
     def to_bytes(self) -> LevelByteData:
         data = bytearray()

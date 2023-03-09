@@ -10,6 +10,9 @@ ObjectData: TypeAlias = tuple[LevelAddress, bytearray]
 EnemyItemData: TypeAlias = tuple[EnemyItemAddress, bytearray]
 LevelByteData: TypeAlias = tuple[ObjectData, EnemyItemData]
 
+EMPTY_OBJECT_DATA: ObjectData = (-1, bytearray())
+EMPTY_ENEMY_DATA: EnemyItemData = (-1, bytearray())
+
 
 def _load_level_offsets() -> tuple[list[Mario3Level], list[int]]:
     offsets = [Mario3Level(0, 0, 0, 0, 0, "Placeholder")]
