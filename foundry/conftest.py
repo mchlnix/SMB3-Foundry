@@ -1,4 +1,5 @@
 from pathlib import Path
+from random import seed
 
 import pytest
 from PySide6.QtGui import QPixmap
@@ -19,6 +20,11 @@ level_1_1_enemy_address = 0xC537
 
 level_1_2_object_address = 0x20F3A
 level_1_2_enemy_address = 0xC6BA
+
+
+@pytest.fixture(scope="session", autouse=True)
+def seed_random():
+    seed(0)
 
 
 @pytest.fixture

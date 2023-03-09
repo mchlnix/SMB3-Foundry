@@ -13,6 +13,7 @@ Foundry
   - Fail better, when a level can't be parsed
   - Update manual regarding this feature
   - When parsed, show found levels, instead of Vanilla Levels in level viewer?
+  - Don't allow it, when level is not saved?
 
 
 - Make translatable?
