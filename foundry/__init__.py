@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, cast
 
 from PySide6.QtCore import QBuffer, QIODevice, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon, Qt
-from PySide6.QtWidgets import QApplication, QMessageBox, QPushButton, QWidget
+from PySide6.QtWidgets import QApplication, QMessageBox, QWidget
 
 from foundry.gui.settings import Settings
 from smb3parse.objects.object_set import DESERT_OBJECT_SET
@@ -99,50 +99,12 @@ def get_latest_version_name(timeout: int = 10) -> str:
         raise ValueError("Parsing the received information failed.")
 
 
-def check_for_update(parent: QWidget, only_for_named_version=False):
-    parent.setCursor(Qt.WaitCursor)
-
-    current_version = get_current_version_name()
-
+def check_for_update(parent: QWidget) -> str:
     try:
-        latest_version = get_latest_version_name()
+        return get_latest_version_name()
     except ValueError as ve:
         QMessageBox.critical(parent, "Error while checking for updates", f"Error: {ve}")
-        parent.setCursor(Qt.ArrowCursor)
-        return
-
-    if current_version != latest_version:
-        latest_release_url = f"{releases_link}/tag/{latest_version}"
-
-        go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest release")
-        go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
-
-        info_box = QMessageBox(
-            QMessageBox.Information, "New release available", f"New Version '{latest_version}' is available."
-        )
-    elif not only_for_named_version:
-        nightly_release_url = f"{releases_link}/tag/nightly"
-
-        go_to_github_button = QPushButton(icon("external-link.svg"), "Check for nightly release")
-        go_to_github_button.clicked.connect(lambda: open_url(nightly_release_url))
-
-        info_box = QMessageBox(
-            QMessageBox.Information,
-            "No newer release",
-            f"Stable version '{current_version}' is up to date. But there might be a newer 'nightly' version "
-            f"available.",
-        )
-    else:
-        parent.setCursor(Qt.ArrowCursor)
-
-        return
-
-    info_box.addButton(QMessageBox.Cancel)
-    info_box.addButton(go_to_github_button, QMessageBox.AcceptRole)
-
-    info_box.exec()
-
-    parent.setCursor(Qt.ArrowCursor)
+        return ""
 
 
 @lru_cache(256)

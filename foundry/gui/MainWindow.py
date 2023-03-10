@@ -2,10 +2,10 @@ import shlex
 import subprocess
 from pathlib import Path
 
-from PySide6.QtGui import QCloseEvent, QUndoStack
-from PySide6.QtWidgets import QMainWindow, QMessageBox
+from PySide6.QtGui import QCloseEvent, QUndoStack, Qt
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QPushButton
 
-from foundry import Settings, check_for_update
+from foundry import Settings, check_for_update, get_current_version_name, icon, open_url, releases_link
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.util import center_widget
@@ -31,8 +31,65 @@ class MainWindow(QMainWindow):
             self.settings.setValue("editor/asked_for_startup", True)
             self.settings.setValue("editor/update_on_startup", answer == QMessageBox.Yes)
 
-        if self.settings.value("editor/update_on_startup"):
-            check_for_update(self, only_for_named_version=True)
+        if not self.settings.value("editor/update_on_startup"):
+            return
+
+        self.check_for_update(ask_for_nightly=False)
+
+    def check_for_update(self, ask_for_nightly=True, honor_ignore=True):
+        # Retrieve current version from GitHub
+        self.setCursor(Qt.WaitCursor)
+
+        latest_version = check_for_update(self)
+        current_version = get_current_version_name()
+
+        error = not latest_version
+        version_is_ignored = latest_version == self.settings.value("editor/version_to_ignore")
+        should_ignore = version_is_ignored and honor_ignore
+
+        update_available = latest_version != current_version
+        nothing_to_update = not update_available and not ask_for_nightly
+
+        if error or should_ignore or nothing_to_update:
+            self.setCursor(Qt.ArrowCursor)
+            return
+
+        if update_available:
+            latest_release_url = f"{releases_link}/tag/{latest_version}"
+
+            go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest release")
+            go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
+
+            info_box = QMessageBox(
+                QMessageBox.Information, "New release available", f"New Version '{latest_version}' is available."
+            )
+        else:
+            nightly_release_url = f"{releases_link}/tag/nightly"
+
+            go_to_github_button = QPushButton(icon("external-link.svg"), "Check for nightly release")
+            go_to_github_button.clicked.connect(lambda: open_url(nightly_release_url))
+
+            info_box = QMessageBox(
+                QMessageBox.Information,
+                "No newer release",
+                f"Stable version '{current_version}' is up to date. But there might be a newer 'nightly' version "
+                f"available.",
+            )
+
+        if not version_is_ignored:
+            ignore_button = QPushButton(f"Don't ask again for '{latest_version}'")
+            ignore_button.clicked.connect(lambda: self._ignore_latest_version(latest_version))
+            info_box.addButton(ignore_button, QMessageBox.ButtonRole.NoRole)
+
+        info_box.addButton(QMessageBox.Cancel)
+        info_box.addButton(go_to_github_button, QMessageBox.AcceptRole)
+
+        info_box.exec()
+
+        self.setCursor(Qt.ArrowCursor)
+
+    def _ignore_latest_version(self, latest_version: str):
+        self.settings.setValue("editor/version_to_ignore", latest_version)
 
     def safe_to_change(self) -> bool:
         return self.undo_stack.isClean() or self.confirm_changes()

@@ -2,7 +2,6 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu
 
 from foundry import (
-    check_for_update,
     discord_link,
     enemy_compat_link,
     feature_video_link,
@@ -11,18 +10,19 @@ from foundry import (
     open_url,
 )
 from foundry.gui.AboutWindow import AboutDialog
+from foundry.gui.MainWindow import MainWindow
 
 
 class HelpMenu(QMenu):
-    def __init__(self, parent, title="&Help"):
+    def __init__(self, parent: MainWindow, title="&Help"):
         super(HelpMenu, self).__init__(title)
 
         self._parent = parent
 
         self.triggered.connect(self._on_trigger)
 
-        self._check_updates_action = self.addAction("Check for Updates")
-        self._check_updates_action.setIcon(icon("bell.svg"))
+        self.check_updates_action = self.addAction("Check for Updates")
+        self.check_updates_action.setIcon(icon("bell.svg"))
 
         self.addSeparator()
 
@@ -46,8 +46,8 @@ class HelpMenu(QMenu):
         self._about_action.setIcon(icon("info.svg"))
 
     def _on_trigger(self, action: QAction):
-        if action is self._check_updates_action:
-            check_for_update(self._parent)
+        if action is self.check_updates_action:
+            self._parent.check_for_update(ask_for_nightly=True, honor_ignore=False)
 
         elif action is self._video_action:
             open_url(feature_video_link)
