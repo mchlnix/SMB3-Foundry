@@ -784,13 +784,13 @@ class Level(LevelLike):
         if ROM().additional_data.managed_level_positions:
             current_level = next(
                 filter(
-                    lambda level: level.level_offset == level_data[0], ROM().additional_data.found_level_information
+                    lambda level: level.level_offset == level_address, ROM().additional_data.found_level_information
                 ),
                 None,
             )
 
             if current_level is None:
-                raise LookupError("Current Level could not be found in ROM.")
+                raise LookupError(f"Current Level {level_address:x} could not be found in ROM. Attach it first.")
 
             current_level.object_data_length = self.current_object_size()
             current_level.enemy_data_length = self.current_enemies_size()
