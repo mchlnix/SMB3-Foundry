@@ -146,8 +146,12 @@ class MainWindow(QMainWindow):
         return False
 
     def _save_current_changes_to_file(self, pathname: str, set_new_path: bool):
-        if self.level_ref:
-            self.level_ref.save_to_rom()
+        try:
+            if self.level_ref:
+                self.level_ref.save_to_rom()
+        except LookupError as lue:
+            QMessageBox.warning(self, f"{type(lue).__name__}", f"{lue}.")
+            return
 
         try:
             ROM().save_to_file(pathname, set_new_path)

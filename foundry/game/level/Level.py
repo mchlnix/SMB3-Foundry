@@ -790,7 +790,7 @@ class Level(LevelLike):
             )
 
             if current_level is None:
-                raise LookupError()
+                raise LookupError("Current Level could not be found in ROM.")
 
             current_level.object_data_length = self.current_object_size()
             current_level.enemy_data_length = self.current_enemies_size()
