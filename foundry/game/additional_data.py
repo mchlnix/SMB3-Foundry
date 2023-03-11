@@ -178,8 +178,6 @@ class LevelOrganizer:
             for level in levels:
                 new_level_offset = self.old_level_address_to_new[level.level_offset]
 
-                print(hex(level.level_offset), "->", hex(new_level_offset))
-
                 level.update_level_offset(new_level_offset)
 
                 self.rom.write(new_level_offset, level.level_data)
@@ -207,12 +205,6 @@ class LevelOrganizer:
         header = LevelHeader(self.rom, found_save_level.level_data[:9], found_save_level.object_set_number)
 
         if header.jump_level_address in self.old_level_address_to_new:
-            print(
-                "############",
-                hex(header.jump_level_address),
-                "->",
-                hex(self.old_level_address_to_new[header.jump_level_address]),
-            )
             header.jump_level_address = self.old_level_address_to_new[header.jump_level_address]
 
         found_save_level.level_data[:9] = header.data
@@ -259,7 +251,6 @@ class LevelOrganizer:
                 if level.level_offset != save_level_address:
                     continue
 
-                print("Found level to save")
                 found_save_level = level
                 found_save_level.level_data = save_level_data
                 found_save_level.object_data_length = (

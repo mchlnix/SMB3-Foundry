@@ -176,6 +176,7 @@ class FoundryMainWindow(MainWindow):
         self.menuBar().addMenu(HelpMenu(self))
 
         self.undo_stack.indexChanged.connect(self._on_level_data_changed)
+        self.undo_stack.cleanChanged.connect(self._on_level_data_changed)
 
         self.scroll_panel = QScrollArea()
         self.scroll_panel.setWidgetResizable(True)

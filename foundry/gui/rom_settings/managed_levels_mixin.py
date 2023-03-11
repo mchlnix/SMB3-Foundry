@@ -5,18 +5,20 @@ from PySide6.QtWidgets import QCheckBox, QGroupBox, QHBoxLayout, QLabel, QVBoxLa
 
 from foundry.game.File import ROM
 from foundry.game.additional_data import LevelOrganizer
+from foundry.game.level.Level import Level
+from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.HorizontalLine import HorizontalLine
 from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.Spinner import Spinner
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from smb3parse import PAGE_A000_ByTileset
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
-from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE
 
 
 class ManagedLevelsMixin(SettingsMixin):
     needs_gui_update: SignalInstance
+    level_ref: LevelRef
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -39,14 +41,6 @@ class ManagedLevelsMixin(SettingsMixin):
 
         self.level_info_box.hide()
         self.level_info_box_initialized = False
-
-        if self.level_ref and self.level_ref.level and self.level_ref.level.attached_to_rom:
-            self.current_level_address = self.level_ref.level.layout_address
-        else:
-            self.current_level_address = 0
-
-        self.new_level_address = self.new_enemy_address = 0
-        self.found_level: FoundLevel | None = None
 
         self.update_level_info()
 
@@ -84,16 +78,6 @@ class ManagedLevelsMixin(SettingsMixin):
             ROM.additional_data.found_level_information = [
                 pd.levels_by_address[key] for key in sorted(pd.levels_by_address.keys())
             ]
-
-            if self.current_level_address:
-                self.found_level = next(
-                    (
-                        level
-                        for level in ROM.additional_data.found_level_information
-                        if level.level_offset == self.current_level_address
-                    ),
-                    None,
-                )
 
         # get prg numbers for object sets and sort them
         prg_banks_by_object_set = ROM().read(PAGE_A000_ByTileset, 16)
@@ -136,6 +120,13 @@ class ManagedLevelsMixin(SettingsMixin):
 
         self.needs_gui_update.emit()
 
+    @property
+    def level(self) -> Level | None:
+        if self.level_ref is not None:
+            return self.level_ref.level
+        else:
+            return None
+
     def on_rearrange(self):
         lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information)
         lo.rearrange_levels()
@@ -143,8 +134,23 @@ class ManagedLevelsMixin(SettingsMixin):
 
         ROM().save_to_file(ROM.path)
 
-        if self.found_level:
-            self.level_ref.level.set_addresses(self.found_level.level_offset, self.found_level.enemy_offset)
+        if self.level and self.level.attached_to_rom:
+            new_level_address = lo.old_level_address_to_new[self.level.layout_address]
+            new_enemy_address = lo.old_enemy_address_to_new[self.level.enemy_offset]
+
+            new_jump_level_address = lo.old_level_address_to_new[self.level.header.jump_level_address]
+            new_jump_enemy_address = lo.old_enemy_address_to_new[self.level.header.jump_enemy_address]
+
+            print(f"Level      {self.level.layout_address:x} -> {new_level_address}")
+            print(f"Enemy      {self.level.enemy_offset:x} -> {new_enemy_address}")
+
+            self.level.set_addresses(new_level_address, new_enemy_address)
+
+            print(f"Jump Level {self.level.header.jump_level_address:x} -> {new_jump_level_address}")
+            print(f"Jump Enemy {self.level.header.jump_enemy_address:x} -> {new_jump_enemy_address}")
+
+            self.level.header.jump_level_address = new_jump_level_address
+            self.level.header.jump_enemy_address = new_jump_enemy_address
 
         self.needs_gui_update.emit()
 
