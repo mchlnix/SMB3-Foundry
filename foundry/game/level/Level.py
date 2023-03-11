@@ -782,6 +782,9 @@ class Level(LevelLike):
         (level_address, level_data), (enemy_address, enemy_data) = self.to_bytes()
 
         if ROM().additional_data.managed_level_positions:
+            if not self.attached_to_rom:
+                raise ValueError("This level is not attached to the ROM. Please place it somewhere on a world map.")
+
             current_level = next(
                 filter(
                     lambda level: level.level_offset == level_address, ROM().additional_data.found_level_information
