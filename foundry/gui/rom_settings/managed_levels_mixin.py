@@ -63,7 +63,7 @@ class ManagedLevelsMixin(SettingsMixin):
         if was_enabled:
             levels_per_object_set: dict[int, set[int]] = defaultdict(set)
 
-            for found_level in ROM.additional_data.found_level_information:
+            for found_level in ROM.additional_data.found_levels:
                 levels_per_object_set[found_level.object_set_number].add(found_level.level_offset)
 
         else:
@@ -75,7 +75,7 @@ class ManagedLevelsMixin(SettingsMixin):
 
             levels_per_object_set = pd.levels_per_object_set
 
-            ROM.additional_data.found_level_information = [
+            ROM.additional_data.found_levels = [
                 pd.levels_by_address[key] for key in sorted(pd.levels_by_address.keys())
             ]
 
@@ -128,29 +128,29 @@ class ManagedLevelsMixin(SettingsMixin):
             return None
 
     def on_rearrange(self):
-        lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information)
+        lo = LevelOrganizer(ROM(), ROM().additional_data.found_levels)
         lo.rearrange_levels()
         lo.rearrange_enemies()
 
         ROM().save_to_file(ROM.path)
 
         if self.level and self.level.attached_to_rom:
-            new_level_address = lo.old_level_address_to_new[self.level.layout_address]
+            new_level_address = lo.old_level_address_to_new[self.level.header_offset]
             new_enemy_address = lo.old_enemy_address_to_new[self.level.enemy_offset]
 
             new_jump_level_address = lo.old_level_address_to_new[self.level.header.jump_level_address]
             new_jump_enemy_address = lo.old_enemy_address_to_new[self.level.header.jump_enemy_address]
 
-            print(f"Level      {self.level.layout_address:x} -> {new_level_address}")
-            print(f"Enemy      {self.level.enemy_offset:x} -> {new_enemy_address}")
+            print(f"Level      {self.level.layout_address:x} -> {new_level_address:x}")
+            print(f"Enemy      {self.level.enemy_offset:x} -> {new_enemy_address:x}")
 
             self.level.set_addresses(new_level_address, new_enemy_address)
 
-            print(f"Jump Level {self.level.header.jump_level_address:x} -> {new_jump_level_address}")
-            print(f"Jump Enemy {self.level.header.jump_enemy_address:x} -> {new_jump_enemy_address}")
+            print(f"Jump Level {self.level.header.jump_level_address:x} -> {new_jump_level_address:x}")
+            print(f"Jump Enemy {self.level.header.jump_enemy_address:x} -> {new_jump_enemy_address:x}")
 
-            self.level.header.jump_level_address = new_jump_level_address
-            self.level.header.jump_enemy_address = new_jump_enemy_address
+            self.level.next_area_objects = new_jump_level_address
+            self.level.next_area_enemies = new_jump_enemy_address
 
         self.needs_gui_update.emit()
 
@@ -158,4 +158,4 @@ class ManagedLevelsMixin(SettingsMixin):
         super().closeEvent(event)
 
         if not self.enabled_checkbox.isChecked():
-            ROM.additional_data.found_level_information.clear()
+            ROM.additional_data.found_levels.clear()

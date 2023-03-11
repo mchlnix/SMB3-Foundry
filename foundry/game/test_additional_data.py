@@ -167,6 +167,9 @@ def test_rearrange_levels_consistency(level_organizer):
 
     # THEN the result will not change a second time
     assert first_result == second_result
+    assert all(
+        old_address == new_address for old_address, new_address in level_organizer.old_level_address_to_new.items()
+    )
 
 
 def test_rearrange_levels_with_larger_data(mock_rom):

@@ -670,11 +670,11 @@ class FoundryMainWindow(MainWindow):
                 ROM.additional_data.managed_level_positions = None
                 return
 
-            ROM.additional_data.found_level_information = [
+            ROM.additional_data.found_levels = [
                 pd.levels_by_address[key] for key in sorted(pd.levels_by_address.keys())
             ]
 
-            lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information)
+            lo = LevelOrganizer(ROM(), ROM().additional_data.found_levels)
             lo.rearrange_levels()
             lo.rearrange_enemies()
 

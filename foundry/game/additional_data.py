@@ -39,13 +39,13 @@ class AdditionalData:
         work with this.
         """
 
-        self.found_level_information: list[FoundLevel] = []
+        self.found_levels: list[FoundLevel] = []
 
     def __str__(self) -> str:
         return json.dumps(
             {
                 "managed_level_positions": self.managed_level_positions,
-                "found_level_information": [found_level.to_dict() for found_level in self.found_level_information],
+                "found_levels": [found_level.to_dict() for found_level in self.found_levels],
             }
         )
 
@@ -56,21 +56,19 @@ class AdditionalData:
         data_dict = json.loads(string_data)
 
         data_obj.managed_level_positions = data_dict.get("managed_level_positions", None)
-        data_obj.found_level_information = [
-            FoundLevel.from_dict(data) for data in data_dict.get("found_level_information", [])
-        ]
+        data_obj.found_levels = [FoundLevel.from_dict(data) for data in data_dict.get("found_levels", [])]
 
         return data_obj
 
     def __bool__(self):
-        return bool(self.managed_level_positions is not None or self.found_level_information)
+        return bool(self.managed_level_positions is not None or self.found_levels)
 
     def free_space_for_object_set(self, object_set_number: int):
         prg_banks_by_object_set = self.rom.read(PAGE_A000_ByTileset, 16)
 
         levels_by_bank: dict[int, list[FoundLevel]] = defaultdict(list)
 
-        for level in self.found_level_information:
+        for level in self.found_levels:
             levels_by_bank[prg_banks_by_object_set[level.object_set_number]].append(
                 MovableLevel.from_found_level(level)
             )
@@ -84,7 +82,7 @@ class AdditionalData:
         return free_space_left
 
     def free_space_for_enemies(self):
-        level_with_last_enemy_data = max(self.found_level_information, key=attrgetter("enemy_offset"))
+        level_with_last_enemy_data = max(self.found_levels, key=attrgetter("enemy_offset"))
 
         end_of_enemy_data = (
             level_with_last_enemy_data.enemy_offset
@@ -97,7 +95,7 @@ class AdditionalData:
 
     def clear(self):
         self.managed_level_positions = None
-        self.found_level_information.clear()
+        self.found_levels.clear()
 
 
 class MovableLevel(FoundLevel):
@@ -270,7 +268,7 @@ class LevelOrganizer:
                 MovableLevel.from_found_level(level)
             )
 
-    def rearrange_enemies(self) -> dict[EnemyItemAddress, EnemyItemAddress]:
+    def rearrange_enemies(self):
         # 1. Sort levels based on their enemy offset (filter out enemy offsets, that aren't real/mean something else)
         sorted_levels = self._sort_levels_by_enemy_address()
 
@@ -287,8 +285,6 @@ class LevelOrganizer:
 
         # 3.2 Save enemy data to new position
         self._update_enemy_address_and_copy_data(old_enemy_data_sets, sorted_levels)
-
-        return self.old_enemy_address_to_new
 
     def _update_enemy_address_and_copy_data(self, old_enemy_data_sets, sorted_levels):
         already_copied = []

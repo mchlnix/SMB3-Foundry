@@ -134,7 +134,7 @@ class LevelSelector(QDialog):
         if not ROM().additional_data.managed_level_positions:
             self.on_world_click()
         else:
-            first_level = ROM().additional_data.found_level_information[0]
+            first_level = ROM().additional_data.found_levels[0]
             self._fill_in_data(first_level.object_set_number, first_level.level_offset, first_level.enemy_offset)
 
     def keyPressEvent(self, key_event: QKeyEvent):

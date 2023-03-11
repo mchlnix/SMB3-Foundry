@@ -4,7 +4,7 @@ from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.additional_data import LevelOrganizer
+from foundry.game.additional_data import LEVEL_DATA_DELIMITER_COUNT, LevelOrganizer
 from foundry.game.gfx.objects import EnemyItem, EnemyItemFactory, Jump, LevelObject, LevelObjectFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
@@ -14,8 +14,9 @@ from foundry.gui.asm import bytes_to_asm
 from smb3parse import OFFSET_BY_OBJECT_SET_A000
 from smb3parse.constants import BASE_OFFSET, ENEMY_SIZE, OFFSET_SIZE
 from smb3parse.data_points import Position
-from smb3parse.levels import HEADER_LENGTH, WORLD_MAP_LAYOUT_DELIMITER
+from smb3parse.levels import HEADER_LENGTH
 from smb3parse.levels.level_header import LevelHeader
+from smb3parse.util.parser import FoundLevel
 
 TIME_INF = -1
 
@@ -256,7 +257,7 @@ class Level(LevelLike):
     @property
     def objects_end(self):
         return (
-            self.header_offset + HEADER_LENGTH + self.current_object_size() + len(WORLD_MAP_LAYOUT_DELIMITER)
+            self.header_offset + HEADER_LENGTH + self.current_object_size() + LEVEL_DATA_DELIMITER_COUNT
         )  # the delimiter
 
     @property
@@ -267,6 +268,7 @@ class Level(LevelLike):
     def next_area_objects(self):
         return self.header.jump_level_address
 
+    # TODO: Rename to from Next Area to Jump (Destination)
     @next_area_objects.setter
     def next_area_objects(self, value):
         if value == self.header.jump_level_address:
@@ -759,7 +761,7 @@ class Level(LevelLike):
 
         # figure out how many bytes are the objects
         self._load_objects(m3l_bytes)
-        object_size = self.current_object_size() + len(WORLD_MAP_LAYOUT_DELIMITER)  # delimiter
+        object_size = self.current_object_size() + LEVEL_DATA_DELIMITER_COUNT  # delimiter
 
         object_bytes = m3l_bytes[:object_size]
         enemy_bytes = m3l_bytes[object_size:]
@@ -779,45 +781,55 @@ class Level(LevelLike):
         self.level_changed.emit()
 
     def save_to_rom(self) -> None:
-        (level_address, level_data), (enemy_address, enemy_data) = self.to_bytes()
-
         if ROM().additional_data.managed_level_positions:
-            if not self.attached_to_rom:
-                raise ValueError("This level is not attached to the ROM. Please place it somewhere on a world map.")
+            current_level = self._find_corresponding_level()
 
-            current_level = next(
-                filter(
-                    lambda level: level.level_offset == level_address, ROM().additional_data.found_level_information
-                ),
-                None,
-            )
+            self._update_level_and_enemy_size(current_level)
 
-            if current_level is None:
-                raise LookupError(f"Current Level {level_address:x} could not be found in ROM. Attach it first.")
-
-            current_level.object_data_length = self.current_object_size()
-            current_level.enemy_data_length = self.current_enemies_size()
-
-            lo = LevelOrganizer(ROM(), ROM().additional_data.found_level_information)
+            lo = LevelOrganizer(ROM(), ROM().additional_data.found_levels)
 
             lo.rearrange_levels()
+            lo.rearrange_enemies()
 
-            assert current_level.level_offset in lo.old_level_address_to_new, (
-                hex(current_level.level_offset),
-                lo.old_level_address_to_new,
-            )
-            current_level.level_offset = lo.old_level_address_to_new[current_level.level_offset]
+            self._update_level_and_enemy_addresses(current_level, lo)
 
-            address_changes = lo.rearrange_enemies()
+            self.set_addresses(current_level.level_offset, current_level.enemy_offset)
+            self.next_area_objects = lo.old_level_address_to_new[self.header.jump_level_address]
+            self.next_area_enemies = lo.old_enemy_address_to_new[self.header.jump_enemy_address]
 
-            assert current_level.enemy_offset in address_changes
-            current_level.enemy_offset = address_changes[current_level.enemy_offset]
-
-            level_address = current_level.level_offset
-            enemy_address = current_level.enemy_offset
+        (level_address, level_data), (enemy_address, enemy_data) = self.to_bytes()
 
         ROM().write(level_address, level_data)
         ROM().write(enemy_address, enemy_data)
+
+    @staticmethod
+    def _update_level_and_enemy_addresses(current_level: FoundLevel, lo: LevelOrganizer):
+        assert current_level.level_offset in lo.old_level_address_to_new, (
+            hex(current_level.level_offset),
+            lo.old_level_address_to_new,
+        )
+        assert current_level.enemy_offset in lo.old_enemy_address_to_new
+
+        current_level.level_offset = lo.old_level_address_to_new[current_level.level_offset]
+        current_level.enemy_offset = lo.old_enemy_address_to_new[current_level.enemy_offset]
+
+    def _update_level_and_enemy_size(self, current_level: FoundLevel):
+        current_level.object_data_length = HEADER_LENGTH + self.current_object_size()
+        current_level.enemy_data_length = self.current_enemies_size()
+
+    def _find_corresponding_level(self) -> FoundLevel:
+        if not self.attached_to_rom:
+            raise ValueError("This level is not attached to the ROM. Please place it somewhere on a world map.")
+
+        current_level = next(
+            filter(lambda level: level.level_offset == self.header_offset, ROM().additional_data.found_levels),
+            None,
+        )
+
+        if current_level is None:
+            raise LookupError(f"Current Level {self.header_offset:x} could not be found in ROM. Attach it first.")
+
+        return current_level
 
     def to_bytes(self) -> LevelByteData:
         data = bytearray()

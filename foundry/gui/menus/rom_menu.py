@@ -58,12 +58,11 @@ class RomMenu(QMenu):
                 if ROM.additional_data.managed_level_positions:
                     levels_per_object_set: dict[int, set[int]] = defaultdict(set)
 
-                    for found_level in ROM.additional_data.found_level_information:
+                    for found_level in ROM.additional_data.found_levels:
                         levels_per_object_set[found_level.object_set_number].add(found_level.level_offset)
 
                     levels_by_address = {
-                        found_level.level_offset: found_level
-                        for found_level in ROM.additional_data.found_level_information
+                        found_level.level_offset: found_level for found_level in ROM.additional_data.found_levels
                     }
 
                 else:
