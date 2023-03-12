@@ -135,9 +135,15 @@ class FoundryMainWindow(MainWindow):
         self.select_level_action.setIcon(icon("globe.svg"))
         self.select_level_action.triggered.connect(self.open_level_selector)
 
+        self.level_menu.addSeparator()
+
         self.new_level_action = self.level_menu.addAction("New Empty Level")
         self.new_level_action.setIcon(icon("file.svg"))
         self.new_level_action.triggered.connect(self._on_new_level)
+
+        self.close_level_action = self.level_menu.addAction("Close Level")
+        self.close_level_action.setIcon(icon("x.svg"))
+        self.close_level_action.triggered.connect(self.close_level)
 
         self.level_menu.addSeparator()
 
@@ -1034,6 +1040,7 @@ class FoundryMainWindow(MainWindow):
         rom_elements = [
             # entries in file menu
             self.file_menu.open_m3l_action,
+            self.file_menu.open_level_asm_action,
             self.file_menu.save_rom_action,
             self.file_menu.save_rom_as_action,
             # entry in level menu
@@ -1044,6 +1051,8 @@ class FoundryMainWindow(MainWindow):
         level_elements = [
             # entry in file menu
             self.file_menu.save_m3l_action,
+            self.file_menu.save_level_asm_action,
+            self.file_menu.export_enemy_asm_action,
             # top toolbar
             self.menu_toolbar,
             # other gui elements
@@ -1053,8 +1062,8 @@ class FoundryMainWindow(MainWindow):
         ]
 
         level_elements.extend(self.level_menu.actions())
-        level_elements.remove(self.level_menu.actions()[0])
-        level_elements.remove(self.level_menu.actions()[1])
+        level_elements.remove(self.undo_action)
+        level_elements.remove(self.redo_action)
         level_elements.remove(self.select_level_action)
         level_elements.remove(self.new_level_action)
 
