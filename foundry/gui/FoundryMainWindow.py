@@ -131,19 +131,13 @@ class FoundryMainWindow(MainWindow):
 
         self.level_menu.addSeparator()
 
-        self.select_level_action = self.level_menu.addAction("Select New Level")
-        self.select_level_action.setIcon(icon("globe.svg"))
-        self.select_level_action.triggered.connect(self.open_level_selector)
-
-        self.level_menu.addSeparator()
-
         self.new_level_action = self.level_menu.addAction("New Empty Level")
         self.new_level_action.setIcon(icon("file.svg"))
         self.new_level_action.triggered.connect(self._on_new_level)
 
-        self.close_level_action = self.level_menu.addAction("Close Level")
-        self.close_level_action.setIcon(icon("x.svg"))
-        self.close_level_action.triggered.connect(self.close_level)
+        self.select_level_action = self.level_menu.addAction("Select New Level")
+        self.select_level_action.setIcon(icon("globe.svg"))
+        self.select_level_action.triggered.connect(self.open_level_selector)
 
         self.level_menu.addSeparator()
 
@@ -164,6 +158,12 @@ class FoundryMainWindow(MainWindow):
         self.edit_level_settings = self.level_menu.addAction("Other Level Settings")
         self.edit_level_settings.setIcon(icon("settings.svg"))
         self.edit_level_settings.triggered.connect(self.on_edit_level_settings)
+
+        self.level_menu.addSeparator()
+
+        self.close_level_action = self.level_menu.addAction("Close Level")
+        self.close_level_action.setIcon(icon("x.svg"))
+        self.close_level_action.triggered.connect(self.close_level)
 
         self.menuBar().addMenu(self.level_menu)
 
