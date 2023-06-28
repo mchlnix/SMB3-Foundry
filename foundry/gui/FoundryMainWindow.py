@@ -531,7 +531,7 @@ class FoundryMainWindow(MainWindow):
         # replace level information with that of current level
         object_set_number = self.level_ref.object_set_number
 
-        world_map.replace_level_at_position((layout_address, enemy_address - 1, object_set_number), position)
+        world_map.replace_level_at_position((layout_address, enemy_address, object_set_number), position)
 
         rom.write(STARTING_WORLD_INDEX_ADDRESS, world - 1)
 
