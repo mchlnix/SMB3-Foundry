@@ -8,7 +8,11 @@ from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.BlockViewer import BlockBank
 from foundry.gui.Spinner import Spinner
 from scribe.gui.commands import ChangeLockIndex, ChangeReplacementTile
-from scribe.gui.tool_window.table_widget import DialogDelegate, SpinBoxDelegate, TableWidget
+from scribe.gui.tool_window.table_widget import (
+    DialogDelegate,
+    SpinBoxDelegate,
+    TableWidget,
+)
 from smb3parse.constants import FORTRESS_FX_COUNT
 
 

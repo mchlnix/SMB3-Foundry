@@ -58,18 +58,35 @@ def _test_check_box(check_box: QCheckBox, level: Level, level_attr: str, expecte
     ],
 )
 def test_dropdown(header_editor, dropdown, level_attr, expected_change):
-    _test_dropdown(getattr(header_editor, dropdown), header_editor.level, level_attr, expected_change)
+    _test_dropdown(
+        getattr(header_editor, dropdown),
+        header_editor.level,
+        level_attr,
+        expected_change,
+    )
 
 
 def test_y_starting_point(header_editor):
     _test_dropdown(
-        getattr(header_editor, "y_position_dropdown"), header_editor.level, "start_y_index", -1, index_change=-1
+        getattr(header_editor, "y_position_dropdown"),
+        header_editor.level,
+        "start_y_index",
+        -1,
+        index_change=-1,
     )
 
 
 @pytest.mark.parametrize(
     "check_box_name, level_attr, expected_value",
-    [("pipe_ends_level_cb", "pipe_ends_level", True), ("level_is_vertical_cb", "is_vertical", True)],
+    [
+        ("pipe_ends_level_cb", "pipe_ends_level", True),
+        ("level_is_vertical_cb", "is_vertical", True),
+    ],
 )
 def test_check_box(header_editor, check_box_name, level_attr, expected_value):
-    _test_check_box(getattr(header_editor, check_box_name), header_editor.level, level_attr, expected_value)
+    _test_check_box(
+        getattr(header_editor, check_box_name),
+        header_editor.level,
+        level_attr,
+        expected_value,
+    )

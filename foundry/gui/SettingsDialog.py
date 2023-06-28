@@ -305,7 +305,9 @@ class SettingsDialog(CustomDialog):
 
     def _get_default_dir(self):
         path_to_roms = QFileDialog.getExistingDirectory(
-            self, caption="Select Rom directory", dir=QStandardPaths.writableLocation(QStandardPaths.HomeLocation)
+            self,
+            caption="Select Rom directory",
+            dir=QStandardPaths.writableLocation(QStandardPaths.HomeLocation),
         )
 
         if not path_to_roms:
@@ -326,7 +328,14 @@ class SettingsDialog(CustomDialog):
 
     @staticmethod
     def _load_from_png(x: int, y: int) -> QIcon:
-        image = png.copy(QRect(x * Block.SIDE_LENGTH, y * Block.SIDE_LENGTH, Block.SIDE_LENGTH, Block.SIDE_LENGTH))
+        image = png.copy(
+            QRect(
+                x * Block.SIDE_LENGTH,
+                y * Block.SIDE_LENGTH,
+                Block.SIDE_LENGTH,
+                Block.SIDE_LENGTH,
+            )
+        )
         mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
         image.setAlphaChannel(mask)
 

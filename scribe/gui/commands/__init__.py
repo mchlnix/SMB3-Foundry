@@ -4,14 +4,27 @@ from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects import LevelPointer, Lock
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
-from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES, MUSIC_THEMES, SPRITE_COUNT, TILE_NAMES
+from smb3parse.constants import (
+    MAPITEM_NAMES,
+    MAPOBJ_NAMES,
+    MUSIC_THEMES,
+    SPRITE_COUNT,
+    TILE_NAMES,
+)
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.levels import FIRST_VALID_ROW, NO_MAP_SCROLLING, WORLD_MAP_BLANK_TILE_ID
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
 
 
 class MoveTile(QUndoCommand):
-    def __init__(self, world: WorldMap, start: Position, tile_after: int, end: Position, parent=None):
+    def __init__(
+        self,
+        world: WorldMap,
+        start: Position,
+        tile_after: int,
+        end: Position,
+        parent=None,
+    ):
         super(MoveTile, self).__init__(parent)
 
         self.world = world
@@ -53,7 +66,12 @@ class MoveTile(QUndoCommand):
 
 class MoveMapObject(QUndoCommand):
     def __init__(
-        self, world: WorldMap, map_object: MapObject, end: Position, start: Position | None = None, parent=None
+        self,
+        world: WorldMap,
+        map_object: MapObject,
+        end: Position,
+        start: Position | None = None,
+        parent=None,
     ):
         super(MoveMapObject, self).__init__(parent)
 
@@ -92,7 +110,11 @@ class PutTile(MoveTile):
 
     def __init__(self, world: WorldMap, pos: Position, tile_index: int, parent=None):
         super(PutTile, self).__init__(
-            world, start=Position.from_xy(-1, -1), tile_after=tile_index, end=pos, parent=parent
+            world,
+            start=Position.from_xy(-1, -1),
+            tile_after=tile_index,
+            end=pos,
+            parent=parent,
         )
 
     def redo(self):
@@ -272,7 +294,12 @@ class SetSpriteItem(QUndoCommand):
 
 
 class SetScreenCount(QUndoCommand):
-    def __init__(self, world_data: WorldMapData, screen_count: int, world_map: WorldMap | None = None):
+    def __init__(
+        self,
+        world_data: WorldMapData,
+        screen_count: int,
+        world_map: WorldMap | None = None,
+    ):
         super(SetScreenCount, self).__init__()
 
         self.world_data = world_data
@@ -299,7 +326,13 @@ class SetScreenCount(QUndoCommand):
 
 
 class ChangeReplacementTile(QUndoCommand):
-    def __init__(self, world: WorldMap, fortress_fx_index: int, replacement_tile_index: int, parent=None):
+    def __init__(
+        self,
+        world: WorldMap,
+        fortress_fx_index: int,
+        replacement_tile_index: int,
+        parent=None,
+    ):
         super(ChangeReplacementTile, self).__init__(parent)
 
         self.world = world
@@ -394,7 +427,13 @@ class SetWorldScroll(QUndoCommand):
 
 
 class SetWorldIndex(QUndoCommand):
-    def __init__(self, world_data: WorldMapData, sprites: list[SpriteData], new_index: int, parent=None):
+    def __init__(
+        self,
+        world_data: WorldMapData,
+        sprites: list[SpriteData],
+        new_index: int,
+        parent=None,
+    ):
         super(SetWorldIndex, self).__init__(parent)
 
         self.world_data = world_data

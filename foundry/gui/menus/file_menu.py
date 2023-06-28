@@ -3,7 +3,12 @@ from PySide6.QtWidgets import QMenu
 
 from foundry import icon
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.asm import load_asm_filename, load_asm_level, save_asm, save_asm_filename
+from foundry.gui.asm import (
+    load_asm_filename,
+    load_asm_level,
+    save_asm,
+    save_asm_filename,
+)
 from foundry.gui.m3l import save_m3l, save_m3l_filename
 from foundry.gui.settings import Settings
 

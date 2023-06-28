@@ -11,7 +11,12 @@ def restore_all_palettes():
     PaletteGroup.changed = False
 
 
-def change_color(palette_group: PaletteGroup, index_in_group: int, index_in_palette: int, new_color_index: int):
+def change_color(
+    palette_group: PaletteGroup,
+    index_in_group: int,
+    index_in_palette: int,
+    new_color_index: int,
+):
     # colors at index 0 are shared among all palettes of a palette group
     if index_in_palette == 0:
         for palette_ in palette_group.palettes:

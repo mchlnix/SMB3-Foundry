@@ -3,7 +3,14 @@ from warnings import warn
 from PySide6.QtCore import QRect, QSize
 from PySide6.QtGui import QImage, QPainter
 
-from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, GROUND, SKY
+from foundry.game import (
+    EXPANDS_BOTH,
+    EXPANDS_HORIZ,
+    EXPANDS_NOT,
+    EXPANDS_VERT,
+    GROUND,
+    SKY,
+)
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from foundry.game.ObjectSet import ObjectSet
@@ -301,7 +308,10 @@ class LevelObject(InLevelObject):
                 new_height = (self.length + 1) * self.height
                 new_width = (self.length + 1) * (self.width - 1)  # without fill block
 
-                if self.orientation in [GeneratorType.DIAG_DOWN_RIGHT, GeneratorType.DIAG_UP_RIGHT]:
+                if self.orientation in [
+                    GeneratorType.DIAG_DOWN_RIGHT,
+                    GeneratorType.DIAG_UP_RIGHT,
+                ]:
                     fill_block = self.blocks[0:1]
                     slopes = self.blocks[1:]
 
@@ -355,7 +365,10 @@ class LevelObject(InLevelObject):
                 for row in rows:
                     row.reverse()
 
-            if self.orientation in [GeneratorType.DIAG_DOWN_RIGHT, GeneratorType.DIAG_UP_RIGHT]:
+            if self.orientation in [
+                GeneratorType.DIAG_DOWN_RIGHT,
+                GeneratorType.DIAG_UP_RIGHT,
+            ]:
                 if not self.height > self.width:
                     rows.reverse()
 
@@ -373,7 +386,10 @@ class LevelObject(InLevelObject):
             for row in rows:
                 blocks_to_draw.extend(row)
 
-        elif self.orientation in [GeneratorType.PYRAMID_TO_GROUND, GeneratorType.PYRAMID_2]:
+        elif self.orientation in [
+            GeneratorType.PYRAMID_TO_GROUND,
+            GeneratorType.PYRAMID_2,
+        ]:
             # since pyramids grow horizontally in both directions when extending
             # we need to check for new ground every time it grows
 
@@ -515,7 +531,11 @@ class LevelObject(InLevelObject):
                 if new_height > 1:
                     blocks_to_draw.extend(bottom_row)
 
-        elif self.orientation in [GeneratorType.HORIZONTAL, GeneratorType.HORIZ_TO_GROUND, GeneratorType.HORIZONTAL_2]:
+        elif self.orientation in [
+            GeneratorType.HORIZONTAL,
+            GeneratorType.HORIZ_TO_GROUND,
+            GeneratorType.HORIZONTAL_2,
+        ]:
             new_width = self.length + 1
 
             downwards_extending_vine = 1, 0, 0x06
@@ -640,7 +660,10 @@ class LevelObject(InLevelObject):
                     blocks_to_draw.append(right_)
 
                 if not len(blocks_to_draw) % self.height == 0:
-                    warn(f"Blocks to draw are not divisible by height. {self}", LevelObjectRenderWarning)
+                    warn(
+                        f"Blocks to draw are not divisible by height. {self}",
+                        LevelObjectRenderWarning,
+                    )
 
                 new_width = int(len(blocks_to_draw) / self.height)
 
@@ -697,7 +720,12 @@ class LevelObject(InLevelObject):
 
             self.rendered_width = 1
 
-        self.rect = QRect(self.rendered_base_x, self.rendered_base_y, self.rendered_width, self.rendered_height)
+        self.rect = QRect(
+            self.rendered_base_x,
+            self.rendered_base_y,
+            self.rendered_width,
+            self.rendered_height,
+        )
 
     def draw(self, painter: QPainter, block_length, transparent):
         for index, block_index in enumerate(self.rendered_blocks):
@@ -919,7 +947,10 @@ class LevelObject(InLevelObject):
         self.rendered_base_y = 0
 
         image = QImage(
-            QSize(self.rendered_width * Block.SIDE_LENGTH, self.rendered_height * Block.SIDE_LENGTH),
+            QSize(
+                self.rendered_width * Block.SIDE_LENGTH,
+                self.rendered_height * Block.SIDE_LENGTH,
+            ),
             QImage.Format_RGB888,
         )
 
@@ -949,7 +980,10 @@ class LevelObject(InLevelObject):
             x_position = self.x_position
             y_position = self.y_position
 
-        if self.orientation in [GeneratorType.PYRAMID_TO_GROUND, GeneratorType.PYRAMID_2]:
+        if self.orientation in [
+            GeneratorType.PYRAMID_TO_GROUND,
+            GeneratorType.PYRAMID_2,
+        ]:
             x_position = self.rendered_base_x - 1 + self.rendered_width // 2
 
         data.append((self.domain << 5) | y_position)

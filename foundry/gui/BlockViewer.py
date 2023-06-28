@@ -118,7 +118,10 @@ class BlockBank(QWidget):
         self.palette_group_index = palette_group_index
         self.zoom = zoom
 
-        self._size = QSize(self.sprites_horiz * Block.WIDTH * self.zoom, self.sprites_vert * Block.HEIGHT * self.zoom)
+        self._size = QSize(
+            self.sprites_horiz * Block.WIDTH * self.zoom,
+            self.sprites_vert * Block.HEIGHT * self.zoom,
+        )
 
         self.last_clicked_index = 0x00
 
@@ -142,7 +145,10 @@ class BlockBank(QWidget):
         self._after_zoom()
 
     def _after_zoom(self):
-        new_size = QSize(self.sprites_horiz * Block.WIDTH * self.zoom, self.sprites_vert * Block.HEIGHT * self.zoom)
+        new_size = QSize(
+            self.sprites_horiz * Block.WIDTH * self.zoom,
+            self.sprites_vert * Block.HEIGHT * self.zoom,
+        )
 
         self.setFixedSize(new_size)
 

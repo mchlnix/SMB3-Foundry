@@ -123,7 +123,12 @@ class ChangeLockIndex(QUndoCommand):
 
 class UpdatePalette(QUndoCommand):
     def __init__(
-        self, level, palette_group: PaletteGroup, index_in_group: int, index_in_palette: int, new_color_index: int
+        self,
+        level,
+        palette_group: PaletteGroup,
+        index_in_group: int,
+        index_in_palette: int,
+        new_color_index: int,
     ):
         super(UpdatePalette, self).__init__(None)
 
@@ -140,13 +145,23 @@ class UpdatePalette(QUndoCommand):
         self.new_color_index = new_color_index
 
     def undo(self):
-        change_color(self.palette_group, self.index_in_group, self.index_in_palette, self.old_color_index)
+        change_color(
+            self.palette_group,
+            self.index_in_group,
+            self.index_in_palette,
+            self.old_color_index,
+        )
 
         self.level.reload()
         PaletteGroup.changed = self.palette_was_changed
 
     def redo(self):
-        change_color(self.palette_group, self.index_in_group, self.index_in_palette, self.new_color_index)
+        change_color(
+            self.palette_group,
+            self.index_in_group,
+            self.index_in_palette,
+            self.new_color_index,
+        )
 
         self.level.reload()
         PaletteGroup.changed = True
@@ -377,7 +392,13 @@ class AddObject(QUndoCommand):
 
 class AddLevelObjectAt(QUndoCommand):
     def __init__(
-        self, level_view: "LevelView", pos: QPoint, domain=0, obj_type=0, length: Optional[int] = None, index=-1
+        self,
+        level_view: "LevelView",
+        pos: QPoint,
+        domain=0,
+        obj_type=0,
+        length: Optional[int] = None,
+        index=-1,
     ):
         super(AddLevelObjectAt, self).__init__(None)
 
@@ -454,7 +475,12 @@ class AddEnemyAt(QUndoCommand):
 
 
 class PasteObjectsAt(QUndoCommand):
-    def __init__(self, level_view: "LevelView", paste_data: tuple[list[InLevelObject], Position], pos: QPoint = None):
+    def __init__(
+        self,
+        level_view: "LevelView",
+        paste_data: tuple[list[InLevelObject], Position],
+        pos: QPoint = None,
+    ):
         super(PasteObjectsAt, self).__init__(None)
 
         self.view = level_view
@@ -534,7 +560,14 @@ class RemoveObjects(QUndoCommand):
 
 # Could maybe be replaced by a macro of remove and add object?
 class ReplaceLevelObject(QUndoCommand):
-    def __init__(self, level: Level, to_replace: LevelObject, domain: int, obj_type: int, length: int | None):
+    def __init__(
+        self,
+        level: Level,
+        to_replace: LevelObject,
+        domain: int,
+        obj_type: int,
+        length: int | None,
+    ):
         super(ReplaceLevelObject, self).__init__(None)
 
         self.level = level
@@ -560,7 +593,11 @@ class ReplaceLevelObject(QUndoCommand):
 
         if self.created_object is None:
             self.created_object = self.level.add_object(
-                self.domain, self.obj_type, Position.from_xy(x, y), self.length, self.index
+                self.domain,
+                self.obj_type,
+                Position.from_xy(x, y),
+                self.length,
+                self.index,
             )
         else:
             self.level.objects.insert(self.index, self.created_object)

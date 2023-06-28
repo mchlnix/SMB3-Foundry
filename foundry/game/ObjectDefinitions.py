@@ -3,7 +3,10 @@ from functools import lru_cache
 from pathlib import Path
 
 from foundry import data_dir
-from smb3parse.objects.level_object import ENEMY_OBJECT_DEFINITION, object_set_to_definition
+from smb3parse.objects.level_object import (
+    ENEMY_OBJECT_DEFINITION,
+    object_set_to_definition,
+)
 
 
 class GeneratorType(Enum):

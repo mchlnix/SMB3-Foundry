@@ -5,7 +5,14 @@ from pathlib import Path
 from PySide6.QtGui import QCloseEvent, QUndoStack, Qt
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QPushButton
 
-from foundry import Settings, check_for_update, get_current_version_name, icon, open_url, releases_link
+from foundry import (
+    Settings,
+    check_for_update,
+    get_current_version_name,
+    icon,
+    open_url,
+    releases_link,
+)
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.util import center_widget
@@ -25,7 +32,9 @@ class MainWindow(QMainWindow):
     def check_for_update_on_startup(self):
         if not self.settings.value("editor/asked_for_startup"):
             answer = QMessageBox.question(
-                self, "Automatic Update Checks", "Do you want the editor to automatically check for updates on startup?"
+                self,
+                "Automatic Update Checks",
+                "Do you want the editor to automatically check for updates on startup?",
             )
 
             self.settings.setValue("editor/asked_for_startup", True)
@@ -61,7 +70,9 @@ class MainWindow(QMainWindow):
             go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
 
             info_box = QMessageBox(
-                QMessageBox.Information, "New release available", f"New Version '{latest_version}' is available."
+                QMessageBox.Information,
+                "New release available",
+                f"New Version '{latest_version}' is available.",
             )
         else:
             nightly_release_url = f"{releases_link}/tag/nightly"
@@ -131,7 +142,9 @@ class MainWindow(QMainWindow):
                 emulator = str(emu_path)
             else:
                 QMessageBox.critical(
-                    self, "Emulator not found", f"Check it under File > Settings.\nFile {emu_path} not found."
+                    self,
+                    "Emulator not found",
+                    f"Check it under File > Settings.\nFile {emu_path} not found.",
                 )
                 return
         else:
@@ -140,7 +153,11 @@ class MainWindow(QMainWindow):
         try:
             subprocess.run([emulator, *arguments])
         except Exception as e:
-            QMessageBox.critical(self, "Emulator command failed.", f"Check it under File > Settings.\n{e}")
+            QMessageBox.critical(
+                self,
+                "Emulator command failed.",
+                f"Check it under File > Settings.\n{e}",
+            )
 
     def _save_changes_to_instaplay_rom(self, path_to_temp_rom) -> bool:
         return False
@@ -156,7 +173,11 @@ class MainWindow(QMainWindow):
         try:
             ROM.save_to_file(pathname, set_new_path)
         except IOError as exp:
-            QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
+            QMessageBox.warning(
+                self,
+                f"{type(exp).__name__}",
+                f"Cannot save ROM data to file '{pathname}'.",
+            )
 
     def closeEvent(self, event: QCloseEvent):
         if not self.safe_to_change():

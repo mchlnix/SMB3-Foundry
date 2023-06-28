@@ -1,6 +1,11 @@
 from typing import Optional
 
-from smb3parse.constants import PipewayCtlr_MapScrlXHi, PipewayCtlr_MapX, PipewayCtlr_MapXHi, PipewayCtlr_MapY
+from smb3parse.constants import (
+    PipewayCtlr_MapScrlXHi,
+    PipewayCtlr_MapX,
+    PipewayCtlr_MapXHi,
+    PipewayCtlr_MapY,
+)
 from smb3parse.data_points import Position
 from smb3parse.data_points.util import DataPoint, _IndexedMixin
 from smb3parse.levels import WORLD_MAP_SCREEN_WIDTH
@@ -93,7 +98,11 @@ class PipeData(_IndexedMixin, DataPoint):
 
         rom.write_nibbles(self.y_address, self.y_left, self.y_right)
 
-        rom.write_nibbles(self.scroll_and_x_high_address, self.scroll_and_x_high_left, self.scroll_and_x_high_right)
+        rom.write_nibbles(
+            self.scroll_and_x_high_address,
+            self.scroll_and_x_high_left,
+            self.scroll_and_x_high_right,
+        )
 
     @property
     def _combined_left_x(self):

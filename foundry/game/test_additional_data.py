@@ -3,7 +3,11 @@ from random import randbytes, shuffle
 
 import pytest
 
-from foundry.game.additional_data import ENEMY_DATA_DELIMITER_COUNT, LEVEL_DATA_DELIMITER_COUNT, LevelOrganizer
+from foundry.game.additional_data import (
+    ENEMY_DATA_DELIMITER_COUNT,
+    LEVEL_DATA_DELIMITER_COUNT,
+    LevelOrganizer,
+)
 from foundry.game.level import EMPTY_OBJECT_DATA, EnemyItemAddress, LevelAddress
 from smb3parse import PAGE_A000_ByTileset
 from smb3parse.constants import (
@@ -77,7 +81,10 @@ def mock_rom(rom):
             levels = []
 
             for level_offset, level_size_, enemy_offset, enemy_size_ in zip(
-                self.starting_level_offsets, self.level_sizes, self.starting_enemy_offsets, self.enemy_sizes
+                self.starting_level_offsets,
+                self.level_sizes,
+                self.starting_enemy_offsets,
+                self.enemy_sizes,
             ):
                 level = _mk_level(level_offset, enemy_offset)
                 level.object_data_length = level_size_
@@ -126,7 +133,17 @@ def level_organizer_with_duplicates(level_organizer):
     # add level with the same enemies as another one in the list already
     level_organizer.levels.append(
         FoundLevel(
-            [], [], 1, 0, first_enemy_data + level_count // 2 * enemy_offset_diff, 1, 0, enemy_size, False, False, False
+            [],
+            [],
+            1,
+            0,
+            first_enemy_data + level_count // 2 * enemy_offset_diff,
+            1,
+            0,
+            enemy_size,
+            False,
+            False,
+            False,
         )
     )
 
@@ -181,7 +198,9 @@ def test_rearrange_levels_with_larger_data(mock_rom):
     new_bytes = bytearray(randbytes(new_size) + bytes([0xFF]))
 
     level_organizer = LevelOrganizer(
-        mock_rom, mock_rom.initial_levels(), level_to_save=(larger_level.level_offset, new_bytes)
+        mock_rom,
+        mock_rom.initial_levels(),
+        level_to_save=(larger_level.level_offset, new_bytes),
     )
     level_organizer.rearrange_levels()
 
@@ -222,7 +241,8 @@ def test_separate_levels_by_banks(level_organizer):
 
 
 @pytest.mark.parametrize(
-    "level_to_save", [EMPTY_OBJECT_DATA, (first_plains_level + 2 * level_offset_diff, bytearray(20))]
+    "level_to_save",
+    [EMPTY_OBJECT_DATA, (first_plains_level + 2 * level_offset_diff, bytearray(20))],
 )
 def test_inject_level_to_be_saved(level_organizer, level_to_save):
     level_organizer.level_to_save = level_to_save
@@ -282,7 +302,10 @@ def test_generate_new_level_addresses_larger(level_organizer):
     for initial_address, new_address in list(level_organizer.old_level_address_to_new.items())[
         : level_to_make_bigger_index + 1
     ]:
-        assert new_address == initial_address, (level_to_make_bigger_index, level_organizer.old_level_address_to_new)
+        assert new_address == initial_address, (
+            level_to_make_bigger_index,
+            level_organizer.old_level_address_to_new,
+        )
 
     for initial_address, new_address in list(level_organizer.old_level_address_to_new.items())[
         level_to_make_bigger_index + 1 :
@@ -315,7 +338,10 @@ def test_update_level_and_enemy_address_pointers(level_organizer):
 
     for level in level_organizer.levels[: level_to_make_bigger_index + 1]:
         for new_position, old_position in zip(level.level_offset_positions, old_level_positions[level.level_offset]):
-            assert new_position == old_position, (level_to_make_bigger_index, level_organizer.old_level_address_to_new)
+            assert new_position == old_position, (
+                level_to_make_bigger_index,
+                level_organizer.old_level_address_to_new,
+            )
 
         for new_position, old_position in zip(level.enemy_offset_positions, old_enemy_positions[level.level_offset]):
             assert new_position == old_position
@@ -384,7 +410,9 @@ def test_rearrange_enemies_with_larger_data(mock_rom):
     new_bytes = bytearray(bytes([0x00]) + randbytes(new_size) + bytes([0xFF]))
 
     level_organizer = LevelOrganizer(
-        mock_rom, mock_rom.initial_levels(), enemies_to_save=(larger_level.enemy_offset, new_bytes)
+        mock_rom,
+        mock_rom.initial_levels(),
+        enemies_to_save=(larger_level.enemy_offset, new_bytes),
     )
     level_organizer.rearrange_enemies()
 

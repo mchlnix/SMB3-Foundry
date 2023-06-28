@@ -48,7 +48,12 @@ class ObjectDropdown(QComboBox):
 
     def set_object_set(self, object_set_index: int, graphic_set_index: int) -> None:
         factory = LevelObjectFactory(
-            object_set_index, graphic_set_index, 0, [], vertical_level=False, size_minimal=True
+            object_set_index,
+            graphic_set_index,
+            0,
+            [],
+            vertical_level=False,
+            size_minimal=True,
         )
 
         self._on_object_factory_change(factory)
@@ -92,7 +97,10 @@ class ObjectDropdown(QComboBox):
                     domain, static_object_id, x=0, y=0, length=1, index=0
                 )
 
-                if isinstance(level_object := get_minimal_icon_object(level_object), (LevelObject, EnemyItem)):
+                if isinstance(
+                    level_object := get_minimal_icon_object(level_object),
+                    (LevelObject, EnemyItem),
+                ):
                     self._add_item(level_object)
 
             for expanding_object_id in range(0x10, MAX_ID_VALUE, 0x10):

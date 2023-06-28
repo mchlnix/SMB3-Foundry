@@ -23,7 +23,12 @@ class EnemyItemFactory:
         y_offset = 12 * rows_per_object_set * Block.HEIGHT
 
         self.png_data = ENEMY_ITEM_SPRITE_SHEET.copy(
-            QRect(0, y_offset, ENEMY_ITEM_SPRITE_SHEET.width(), ENEMY_ITEM_SPRITE_SHEET.height() - y_offset)
+            QRect(
+                0,
+                y_offset,
+                ENEMY_ITEM_SPRITE_SHEET.width(),
+                ENEMY_ITEM_SPRITE_SHEET.height() - y_offset,
+            )
         )
 
         self.palette_group = load_palette_group(object_set, palette_index)

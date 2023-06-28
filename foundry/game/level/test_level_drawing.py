@@ -60,8 +60,24 @@ with Path(data_dir / "levels.dat").open("r") as level_data_file:
             world_test_name.append(f"Overworld {world_no} - {level_name} - Bordered")
             continue
 
-        level_data.append((level_name, level_address - HEADER_LENGTH, enemy_address, object_set_number, False))
-        level_data.append((level_name, level_address - HEADER_LENGTH, enemy_address, object_set_number, True))
+        level_data.append(
+            (
+                level_name,
+                level_address - HEADER_LENGTH,
+                enemy_address,
+                object_set_number,
+                False,
+            )
+        )
+        level_data.append(
+            (
+                level_name,
+                level_address - HEADER_LENGTH,
+                enemy_address,
+                object_set_number,
+                True,
+            )
+        )
 
         level_test_name.append(f"Level {world_no}-{level_no} - {level_name}, no transparency")
         level_test_name.append(f"Level {world_no}-{level_no} - {level_name}")
@@ -155,7 +171,11 @@ def test_draw_jumps(jump_test_name, level, settings, qtbot):
 
         level_view.resize(level_view.sizeHint())
 
-        compare_images(jump_test_name, str(Path(__file__).parent / f"{jump_test_name}.png"), level_view.grab())
+        compare_images(
+            jump_test_name,
+            str(Path(__file__).parent / f"{jump_test_name}.png"),
+            level_view.grab(),
+        )
 
 
 def _get_all_m3l_files(with_ending=True):
@@ -179,4 +199,8 @@ def test_draw_m3ls(m3l_file_name, level, settings, qtbot):
 
         level_view = LevelView(None, ref, settings, LevelContextMenu(ref))
 
-        compare_images(m3l_file_name.stem, str(reference_image_dir / f"{m3l_file_name.stem}.png"), level_view.grab())
+        compare_images(
+            m3l_file_name.stem,
+            str(reference_image_dir / f"{m3l_file_name.stem}.png"),
+            level_view.grab(),
+        )

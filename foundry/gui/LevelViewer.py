@@ -48,7 +48,12 @@ def _gen_level_name(level_address: int, level: FoundLevel) -> str:
 
 
 class LevelViewer(CustomChildWindow):
-    def __init__(self, parent, addresses_by_object_set: dict[int, set[int]], levels_by_address: dict[int, FoundLevel]):
+    def __init__(
+        self,
+        parent,
+        addresses_by_object_set: dict[int, set[int]],
+        levels_by_address: dict[int, FoundLevel],
+    ):
         super(LevelViewer, self).__init__(parent, "Level Viewer")
 
         self.addresses_by_object_set = addresses_by_object_set

@@ -36,7 +36,10 @@ class AboutDialog(CustomDialog):
         text_layout.addWidget((QLabel("", self)))
         text_layout.addWidget(QLabel("With thanks to:", self))
         text_layout.addWidget(
-            LinkLabel(self, f'<a href="{LINK_HUKKA}">Hukka</a> for <a href="{LINK_SMB3WS}">SMB3 Workshop</a>')
+            LinkLabel(
+                self,
+                f'<a href="{LINK_HUKKA}">Hukka</a> for <a href="{LINK_SMB3WS}">SMB3 Workshop</a>',
+            )
         )
         text_layout.addWidget(
             LinkLabel(
@@ -46,7 +49,10 @@ class AboutDialog(CustomDialog):
             )
         )
         text_layout.addWidget(
-            LinkLabel(self, f'<a href="{LINK_PIJOKRA}">PiJoKra</a> for helping to parse the disassembly')
+            LinkLabel(
+                self,
+                f'<a href="{LINK_PIJOKRA}">PiJoKra</a> for helping to parse the disassembly',
+            )
         )
         text_layout.addWidget(
             LinkLabel(

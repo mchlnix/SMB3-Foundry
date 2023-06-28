@@ -2,7 +2,16 @@ from typing import cast
 
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QCloseEvent, QPainter, QPixmap, QUndoStack, Qt
-from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QGroupBox,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
 
 from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import get_worldmap_tile

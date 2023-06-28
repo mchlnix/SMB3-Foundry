@@ -150,7 +150,8 @@ class AutoScrollDrawer:
                     AScroll_MovementLoop + movement_loop_start_index, number_of_commands
                 )
                 movement_loop_repeats = self.rom.read(
-                    AScroll_MovementLoopTicks + movement_loop_start_index, number_of_commands
+                    AScroll_MovementLoopTicks + movement_loop_start_index,
+                    number_of_commands,
                 )
 
                 for _ in range(repeat):
@@ -180,7 +181,8 @@ class AutoScrollDrawer:
 
                 self.current_pos += (
                     QPointF(
-                        h_updates_per_tick * self.horizontal_speed / 256, v_updates_per_tick * self.vertical_speed / 256
+                        h_updates_per_tick * self.horizontal_speed / 256,
+                        v_updates_per_tick * self.vertical_speed / 256,
                     )
                     * self.pixel_length
                 )

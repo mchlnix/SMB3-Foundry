@@ -11,7 +11,17 @@ from smb3parse.levels.world_map import (
 )
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
-world_map_addresses = [0x185BA, 0x1864B, 0x1876C, 0x1891D, 0x18A3E, 0x18B5F, 0x18D10, 0x18E31, 0x19072]
+world_map_addresses = [
+    0x185BA,
+    0x1864B,
+    0x1876C,
+    0x1891D,
+    0x18A3E,
+    0x18B5F,
+    0x18D10,
+    0x18E31,
+    0x19072,
+]
 world_map_screen_counts = [1, 2, 3, 2, 2, 3, 2, 4, 1]
 world_1_addresses = [
     0x1FB9B,

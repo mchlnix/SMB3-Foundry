@@ -25,7 +25,14 @@ from foundry.gui.MainView import (
     MainView,
     RESIZE_MODES,
 )
-from foundry.gui.commands import AddEnemyAt, AddLevelObjectAt, AddObject, MoveObjects, RemoveObjects, ResizeObjects
+from foundry.gui.commands import (
+    AddEnemyAt,
+    AddLevelObjectAt,
+    AddObject,
+    MoveObjects,
+    RemoveObjects,
+    ResizeObjects,
+)
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, Settings
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH
@@ -33,7 +40,11 @@ from smb3parse.levels import HEADER_LENGTH
 
 class LevelView(MainView):
     def __init__(
-        self, parent: Optional[QWidget], level: LevelRef, settings: Settings, context_menu: Optional[LevelContextMenu]
+        self,
+        parent: Optional[QWidget],
+        level: LevelRef,
+        settings: Settings,
+        context_menu: Optional[LevelContextMenu],
     ):
         self.drawer = LevelDrawer()
         self.redraw_timer: Optional[QTimer] = None
@@ -318,7 +329,11 @@ class LevelView(MainView):
             return
 
         self.undo_stack.push(
-            ResizeObjects(self.level_ref.level, self.objects_before_resizing, self.get_selected_objects())
+            ResizeObjects(
+                self.level_ref.level,
+                self.objects_before_resizing,
+                self.get_selected_objects(),
+            )
         )
 
         self.objects_before_resizing = []
@@ -428,7 +443,13 @@ class LevelView(MainView):
         if dx == dy == 0 or not self.get_selected_objects():
             return
 
-        self.undo_stack.push(MoveObjects(self.level_ref.level, self.objects_before_moving, self.get_selected_objects()))
+        self.undo_stack.push(
+            MoveObjects(
+                self.level_ref.level,
+                self.objects_before_moving,
+                self.get_selected_objects(),
+            )
+        )
 
         self.objects_before_moving.clear()
         self.dragging_happened = False
@@ -527,7 +548,8 @@ class LevelView(MainView):
 
         level_index = (
             bisect_right(
-                [level.rom_level_offset - HEADER_LENGTH for level in Level.sorted_offsets], end_of_level_objects
+                [level.rom_level_offset - HEADER_LENGTH for level in Level.sorted_offsets],
+                end_of_level_objects,
             )
             - 1
         )
@@ -542,7 +564,14 @@ class LevelView(MainView):
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)
 
-    def add_object(self, domain: int, obj_index: int, q_point: QPoint, length: int | None, index: int = -1):
+    def add_object(
+        self,
+        domain: int,
+        obj_index: int,
+        q_point: QPoint,
+        length: int | None,
+        index: int = -1,
+    ):
         level_pos = self.to_level_point(q_point)
 
         self.level_ref.add_object(domain, obj_index, level_pos, length, index)
@@ -560,7 +589,12 @@ class LevelView(MainView):
 
         if isinstance(level_object, LevelObject):
             self.undo_stack.push(
-                AddLevelObjectAt(self, event.position().toPoint(), level_object.domain, level_object.obj_index)
+                AddLevelObjectAt(
+                    self,
+                    event.position().toPoint(),
+                    level_object.domain,
+                    level_object.obj_index,
+                )
             )
         else:
             self.undo_stack.push(AddEnemyAt(self, event.position().toPoint(), level_object.obj_index))

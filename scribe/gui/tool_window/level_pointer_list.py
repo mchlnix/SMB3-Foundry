@@ -5,8 +5,18 @@ from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.Spinner import Spinner
-from scribe.gui.commands import ChangeLevelPointerIndex, SetEnemyAddress, SetLevelAddress, SetObjectSet
-from scribe.gui.tool_window.table_widget import DialogDelegate, DropdownDelegate, SpinBoxDelegate, TableWidget
+from scribe.gui.commands import (
+    ChangeLevelPointerIndex,
+    SetEnemyAddress,
+    SetLevelAddress,
+    SetObjectSet,
+)
+from scribe.gui.tool_window.table_widget import (
+    DialogDelegate,
+    DropdownDelegate,
+    SpinBoxDelegate,
+    TableWidget,
+)
 from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
 

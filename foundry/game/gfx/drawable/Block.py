@@ -17,7 +17,12 @@ TSA_BANK_3 = 3 * 256
 
 
 @lru_cache(2**10)
-def get_block(block_index: int, palette_group: PaletteGroup, graphics_set: GraphicsSet, tsa_data: bytes):
+def get_block(
+    block_index: int,
+    palette_group: PaletteGroup,
+    graphics_set: GraphicsSet,
+    tsa_data: bytes,
+):
     if block_index > 0xFF:
         rom_block_index = ROM().int(block_index)  # block_index is an offset into the graphic memory
         block = Block(rom_block_index, palette_group, graphics_set, tsa_data)
@@ -87,7 +92,11 @@ class Block:
             return
 
         # can't hash list, so turn it into a string instead
-        self._block_id: BlockId = (self.index, str(self.palette_group), self.graphics_set.number)
+        self._block_id: BlockId = (
+            self.index,
+            str(self.palette_group),
+            self.graphics_set.number,
+        )
 
         lu = self.tsa_data[TSA_BANK_0 + self.index]
         ld = self.tsa_data[TSA_BANK_1 + self.index]
@@ -98,8 +107,20 @@ class Block:
         self.ld_tile = get_tile(ld, self.palette_group, self.palette_index, self.graphics_set)
 
         if self.mirrored:
-            self.ru_tile = get_tile(lu, self.palette_group, self.palette_index, self.graphics_set, mirrored=True)
-            self.rd_tile = get_tile(ld, self.palette_group, self.palette_index, self.graphics_set, mirrored=True)
+            self.ru_tile = get_tile(
+                lu,
+                self.palette_group,
+                self.palette_index,
+                self.graphics_set,
+                mirrored=True,
+            )
+            self.rd_tile = get_tile(
+                ld,
+                self.palette_group,
+                self.palette_index,
+                self.graphics_set,
+                mirrored=True,
+            )
         else:
             self.ru_tile = get_tile(ru, self.palette_group, self.palette_index, self.graphics_set)
             self.rd_tile = get_tile(rd, self.palette_group, self.palette_index, self.graphics_set)
@@ -126,7 +147,13 @@ class Block:
         self._render()
 
     def draw(self, painter: QPainter, x, y, block_length, selected=False, transparent=False):
-        block_attributes = (self._block_id, block_length, selected, transparent, self.graphics_set.anim_frame)
+        block_attributes = (
+            self._block_id,
+            block_length,
+            selected,
+            transparent,
+            self.graphics_set.anim_frame,
+        )
 
         if block_attributes not in Block._block_cache:
             self.rerender()

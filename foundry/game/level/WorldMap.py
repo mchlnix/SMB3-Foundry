@@ -7,7 +7,13 @@ from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
-from foundry.game.gfx.objects import AirshipTravelPoint, LevelPointer, Lock, MapTile, Sprite
+from foundry.game.gfx.objects import (
+    AirshipTravelPoint,
+    LevelPointer,
+    Lock,
+    MapTile,
+    Sprite,
+)
 from foundry.game.gfx.objects.world_map.start_posiiton import StartPosition
 from foundry.game.level.LevelLike import LevelLike
 from smb3parse.constants import MAPOBJ_EMPTY

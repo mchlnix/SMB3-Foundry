@@ -9,7 +9,11 @@ from smb3parse.data_points import Position
 
 @pytest.mark.parametrize(
     "method, params",
-    [("add_object_at", (QPoint(0, 0),)), ("add_enemy_at", (QPoint(0, 0),)), ("on_jump_added", tuple())],
+    [
+        ("add_object_at", (QPoint(0, 0),)),
+        ("add_enemy_at", (QPoint(0, 0),)),
+        ("on_jump_added", tuple()),
+    ],
 )
 def test_level_too_big(rom, main_window, method, params, qtbot):
     # GIVEN a level

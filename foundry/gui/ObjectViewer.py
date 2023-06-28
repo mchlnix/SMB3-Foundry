@@ -2,7 +2,15 @@ from typing import cast
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QPaintEvent, QPainter
-from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLayout, QStatusBar, QToolBar, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QComboBox,
+    QHBoxLayout,
+    QLayout,
+    QStatusBar,
+    QToolBar,
+    QVBoxLayout,
+    QWidget,
+)
 
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.gfx.drawable.Block import Block, get_block
@@ -162,7 +170,10 @@ class ObjectDrawArea(QWidget):
             return
 
         self.setMinimumSize(
-            QSize(self.current_object.rendered_width * Block.WIDTH, self.current_object.rendered_height * Block.HEIGHT)
+            QSize(
+                self.current_object.rendered_width * Block.WIDTH,
+                self.current_object.rendered_height * Block.HEIGHT,
+            )
         )
 
     def update_object(self, object_data: bytearray | LevelObject | Jump | None = None):
@@ -191,7 +202,8 @@ class ObjectDrawArea(QWidget):
 
         painter.translate(
             QPoint(
-                -Block.WIDTH * self.current_object.rendered_base_x, -Block.HEIGHT * self.current_object.rendered_base_y
+                -Block.WIDTH * self.current_object.rendered_base_x,
+                -Block.HEIGHT * self.current_object.rendered_base_y,
             )
         )
 

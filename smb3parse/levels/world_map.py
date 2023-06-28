@@ -74,7 +74,10 @@ def _get_special_enterable_tiles(rom: Rom) -> bytes:
 
 def _get_completable_tiles(rom: Rom) -> bytearray:
     completable_tile_amount = (
-        rom.find(COMPLETABLE_LIST_END_MARKER.to_bytes(1, byteorder="big"), COMPLETABLE_TILES_LIST)
+        rom.find(
+            COMPLETABLE_LIST_END_MARKER.to_bytes(1, byteorder="big"),
+            COMPLETABLE_TILES_LIST,
+        )
         - COMPLETABLE_TILES_LIST
     )
 

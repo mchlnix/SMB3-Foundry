@@ -71,7 +71,12 @@ def test_level_smaller(main_window, level_view):
 
 @pytest.mark.parametrize("scroll_amount", [0, 100])
 @pytest.mark.parametrize(
-    "coordinates", [(2, 2), (334, 265), (233, 409)]  # background symbols  # background cloud  # goomba
+    "coordinates",
+    [
+        (2, 2),
+        (334, 265),
+        (233, 409),
+    ],  # background symbols  # background cloud  # goomba
 )
 @pytest.mark.parametrize("wheel_delta, type_change", [(10, 1), (-10, -1)])  # scroll wheel up  # scroll wheel down
 def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_window, qtbot):

@@ -149,10 +149,12 @@ class WorldDrawer:
         x_right = (world.width - 1) * self.block_length
 
         border_side_l = BORDER_SIDE_L.scaled(
-            QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio
+            QSize(self.block_length, self.block_length),
+            Qt.AspectRatioMode.KeepAspectRatio,
         )
         border_side_r = BORDER_SIDE_R.scaled(
-            QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio
+            QSize(self.block_length, self.block_length),
+            Qt.AspectRatioMode.KeepAspectRatio,
         )
 
         for y in range(WORLD_MAP_HEIGHT + 3):
@@ -179,10 +181,22 @@ class WorldDrawer:
             bottom_border.draw(painter, x * self.block_length, y_last_row, self.block_length)
 
         # border corners
-        border_ul = BORDER_UL.scaled(QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio)
-        border_ur = BORDER_UR.scaled(QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio)
-        border_bl = BORDER_BL.scaled(QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio)
-        border_br = BORDER_BR.scaled(QSize(self.block_length, self.block_length), Qt.AspectRatioMode.KeepAspectRatio)
+        border_ul = BORDER_UL.scaled(
+            QSize(self.block_length, self.block_length),
+            Qt.AspectRatioMode.KeepAspectRatio,
+        )
+        border_ur = BORDER_UR.scaled(
+            QSize(self.block_length, self.block_length),
+            Qt.AspectRatioMode.KeepAspectRatio,
+        )
+        border_bl = BORDER_BL.scaled(
+            QSize(self.block_length, self.block_length),
+            Qt.AspectRatioMode.KeepAspectRatio,
+        )
+        border_br = BORDER_BR.scaled(
+            QSize(self.block_length, self.block_length),
+            Qt.AspectRatioMode.KeepAspectRatio,
+        )
 
         painter.drawImage(x_left, y_second_row, border_ul)
         painter.drawImage(x_right, y_second_row, border_ur)

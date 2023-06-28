@@ -2,7 +2,9 @@ from typing import TypeVar
 
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.enemy_item_factory import EnemyItemFactory
-from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject as _InLevelObject
+from foundry.game.gfx.objects.in_level.in_level_object import (
+    InLevelObject as _InLevelObject,
+)
 from foundry.game.gfx.objects.in_level.jump import Jump
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory

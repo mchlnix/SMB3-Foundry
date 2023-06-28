@@ -33,7 +33,13 @@ class InLevelObject(ObjectLike, abc.ABC):
         self.y_position = 0
 
     def display_size(self, zoom_factor: int = 1):
-        return QSize(self.rendered_width * Block.SIDE_LENGTH, self.rendered_height * Block.SIDE_LENGTH) * zoom_factor
+        return (
+            QSize(
+                self.rendered_width * Block.SIDE_LENGTH,
+                self.rendered_height * Block.SIDE_LENGTH,
+            )
+            * zoom_factor
+        )
 
     @property
     def obj_index(self):

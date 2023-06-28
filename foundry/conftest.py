@@ -29,7 +29,12 @@ def seed_random():
 
 @pytest.fixture
 def level(rom, qtbot):
-    return Level("Level 1-1", level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
+    return Level(
+        "Level 1-1",
+        level_1_1_object_address,
+        level_1_1_enemy_address,
+        PLAINS_OBJECT_SET,
+    )
 
 
 @pytest.fixture()
@@ -76,6 +81,11 @@ def main_window(qtbot):
 
 
 def mocked_open_rom_and_level_select(self: FoundryMainWindow, _=""):
-    self.update_level("Level 1-1", level_1_1_object_address, level_1_1_enemy_address, PLAINS_OBJECT_SET)
+    self.update_level(
+        "Level 1-1",
+        level_1_1_object_address,
+        level_1_1_enemy_address,
+        PLAINS_OBJECT_SET,
+    )
 
     return True

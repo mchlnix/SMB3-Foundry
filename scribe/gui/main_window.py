@@ -4,7 +4,14 @@ from typing import Optional
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QAction, QActionGroup, QKeySequence, QShortcut, QUndoStack, Qt
-from PySide6.QtWidgets import QApplication, QFileDialog, QMenu, QMessageBox, QScrollArea, QToolBar
+from PySide6.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QMenu,
+    QMessageBox,
+    QScrollArea,
+    QToolBar,
+)
 
 from foundry import ROM_FILE_FILTER, icon
 from foundry.game.File import ROM
@@ -265,7 +272,10 @@ class ScribeMainWindow(MainWindow):
         temp_rom = ROM.from_file(path_to_temp_rom)
         self.world_view.world.save_to_rom(temp_rom)
 
-        temp_rom.write(STARTING_WORLD_INDEX_ADDRESS, self.world_view.world.internal_world_map.number - 1)
+        temp_rom.write(
+            STARTING_WORLD_INDEX_ADDRESS,
+            self.world_view.world.internal_world_map.number - 1,
+        )
 
         temp_rom.save_to(path_to_temp_rom)
 
@@ -278,7 +288,10 @@ class ScribeMainWindow(MainWindow):
         if not path_to_rom:
             # otherwise ask the user what new file to open
             path_to_rom, _ = QFileDialog.getOpenFileName(
-                self, caption="Open ROM", dir=self.settings.value("editor/default dir path"), filter=ROM_FILE_FILTER
+                self,
+                caption="Open ROM",
+                dir=self.settings.value("editor/default dir path"),
+                filter=ROM_FILE_FILTER,
             )
 
             if not path_to_rom:

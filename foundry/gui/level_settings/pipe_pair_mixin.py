@@ -1,6 +1,15 @@
 from typing import Optional
 
-from PySide6.QtWidgets import QCheckBox, QDialog, QGroupBox, QLabel, QMessageBox, QPushButton, QTabWidget, QVBoxLayout
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QDialog,
+    QGroupBox,
+    QLabel,
+    QMessageBox,
+    QPushButton,
+    QTabWidget,
+    QVBoxLayout,
+)
 
 from foundry import icon
 from foundry.game.File import ROM
@@ -69,14 +78,18 @@ class PipePairMixin(SettingsMixin):
 
     def _on_set_pipe_exits(self):
         QMessageBox.information(
-            self, "Select Pipe Pair Exit", "On the next screen, choose where the Left/Top Exit should lead to."
+            self,
+            "Select Pipe Pair Exit",
+            "On the next screen, choose where the Left/Top Exit should lead to.",
         )
         left_pair_screen = PipeExitSetScreen(self)
         left_pair_screen.current_world = self.level_ref.level.world
         left_pair_screen.exec()
 
         QMessageBox.information(
-            self, "Select Pipe Pair Exit", "On the next screen, choose where the Right/Bottom Exit should lead to."
+            self,
+            "Select Pipe Pair Exit",
+            "On the next screen, choose where the Right/Bottom Exit should lead to.",
         )
         right_pair_screen = PipeExitSetScreen(self)
         right_pair_screen.current_world = left_pair_screen.current_world

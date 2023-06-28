@@ -3,9 +3,19 @@ from pathlib import Path
 import pytest
 from hypothesis import given, strategies
 
-from smb3parse.levels import DEFAULT_HORIZONTAL_HEIGHT, DEFAULT_VERTICAL_WIDTH, HEADER_LENGTH, is_valid_level_length
+from smb3parse.levels import (
+    DEFAULT_HORIZONTAL_HEIGHT,
+    DEFAULT_VERTICAL_WIDTH,
+    HEADER_LENGTH,
+    is_valid_level_length,
+)
 from smb3parse.levels.level_header import LevelHeader
-from smb3parse.objects.object_set import MAX_OBJECT_SET, MIN_OBJECT_SET, PIPE_OBJECT_SET, is_valid_object_set_number
+from smb3parse.objects.object_set import (
+    MAX_OBJECT_SET,
+    MIN_OBJECT_SET,
+    PIPE_OBJECT_SET,
+    is_valid_object_set_number,
+)
 from smb3parse.tests.conftest import test_rom_path
 from smb3parse.util.rom import Rom
 

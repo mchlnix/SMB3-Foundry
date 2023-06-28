@@ -36,7 +36,10 @@ class AboutDialog(CustomDialog):
         text_layout.addWidget(LinkLabel(self, f'By <a href="{LINK_SMB3F}">Michael</a>'))
         text_layout.addWidget(QLabel("With thanks to:", self))
         text_layout.addWidget(
-            LinkLabel(self, f'<a href="{LINK_BEN}">Beneficii</a> for their <a href="{LINK_SMB3ME}">SMB3 Map Editor</a>')
+            LinkLabel(
+                self,
+                f'<a href="{LINK_BEN}">Beneficii</a> for their <a href="{LINK_SMB3ME}">SMB3 Map Editor</a>',
+            )
         )
         text_layout.addWidget(
             LinkLabel(

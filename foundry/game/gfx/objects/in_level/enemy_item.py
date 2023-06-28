@@ -1,7 +1,11 @@
 from PySide6.QtCore import QRect, QSize
 from PySide6.QtGui import QColor, QImage, QPainter, Qt
 
-from foundry.game.ObjectDefinitions import enemy_handle_x, enemy_handle_x2, enemy_handle_y
+from foundry.game.ObjectDefinitions import (
+    enemy_handle_x,
+    enemy_handle_x2,
+    enemy_handle_y,
+)
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PaletteGroup
@@ -188,7 +192,13 @@ class EnemyItem(InLevelObject):
         elif self._is_auto_scroll():
             y_position = self.auto_scroll_type
 
-        return bytearray([self.obj_index, self.x_position + int(enemy_handle_x2[self.obj_index]), y_position])
+        return bytearray(
+            [
+                self.obj_index,
+                self.x_position + int(enemy_handle_x2[self.obj_index]),
+                y_position,
+            ]
+        )
 
     def as_image(self) -> QImage:
         image = QImage(

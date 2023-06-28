@@ -334,16 +334,36 @@ class HeaderEditor(CustomDialog):
             self._set_level_attr("time_index", new_index, display_value=text)
 
         elif dropdown == self.camera_movement_dropdown:
-            self._set_level_attr("scroll_type", new_index, display_name="Camera Movement", display_value=text)
+            self._set_level_attr(
+                "scroll_type",
+                new_index,
+                display_name="Camera Movement",
+                display_value=text,
+            )
 
         elif dropdown == self.x_position_dropdown:
-            self._set_level_attr("start_x_index", new_index, display_name="Mario Start X", display_value=text)
+            self._set_level_attr(
+                "start_x_index",
+                new_index,
+                display_name="Mario Start X",
+                display_value=text,
+            )
 
         elif dropdown == self.y_position_dropdown:
-            self._set_level_attr("start_y_index", new_index, display_name="Mario Start Y", display_value=text)
+            self._set_level_attr(
+                "start_y_index",
+                new_index,
+                display_name="Mario Start Y",
+                display_value=text,
+            )
 
         elif dropdown == self.action_dropdown:
-            self._set_level_attr("start_action", new_index, display_name="Mario Start Action", display_value=text)
+            self._set_level_attr(
+                "start_action",
+                new_index,
+                display_name="Mario Start Action",
+                display_value=text,
+            )
 
         elif dropdown == self.graphic_set_dropdown:
             self._set_level_attr("graphic_set", new_index, display_value=text)

@@ -6,7 +6,15 @@ from pathlib import Path
 from typing import Optional, cast
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut, QUndoStack, Qt
+from PySide6.QtGui import (
+    QAction,
+    QCloseEvent,
+    QKeySequence,
+    QMouseEvent,
+    QShortcut,
+    QUndoStack,
+    Qt,
+)
 from PySide6.QtWidgets import (
     QDialog,
     QFileDialog,
@@ -396,7 +404,10 @@ class FoundryMainWindow(MainWindow):
         if not self.level_ref:
             return
 
-        (object_offset, object_bytes), (enemy_offset, enemy_bytes) = self.level_ref.level.to_bytes()
+        (object_offset, object_bytes), (
+            enemy_offset,
+            enemy_bytes,
+        ) = self.level_ref.level.to_bytes()
 
         object_set_number = self.level_ref.level.object_set_number
 
@@ -495,7 +506,9 @@ class FoundryMainWindow(MainWindow):
                 break
         else:
             QMessageBox.critical(
-                self, "Couldn't place level", f"Could not find a level 1 tile in World {world} to put your level at."
+                self,
+                "Couldn't place level",
+                f"Could not find a level 1 tile in World {world} to put your level at.",
             )
             return False
 
@@ -508,7 +521,10 @@ class FoundryMainWindow(MainWindow):
             return False
 
         # write level and enemy data of current level
-        (layout_address, layout_bytes), (enemy_address, enemy_bytes) = self.level_ref.level.to_bytes()
+        (layout_address, layout_bytes), (
+            enemy_address,
+            enemy_bytes,
+        ) = self.level_ref.level.to_bytes()
         rom.write(layout_address, layout_bytes)
         rom.write(enemy_address, enemy_bytes)
 
@@ -589,7 +605,10 @@ class FoundryMainWindow(MainWindow):
         if not path_to_rom:
             # otherwise ask the user what new file to open
             path_to_rom, _ = QFileDialog.getOpenFileName(
-                self, caption="Open ROM", dir=self.settings.value("editor/default dir path"), filter=ROM_FILE_FILTER
+                self,
+                caption="Open ROM",
+                dir=self.settings.value("editor/default dir path"),
+                filter=ROM_FILE_FILTER,
             )
 
             if not path_to_rom:
@@ -990,14 +1009,22 @@ class FoundryMainWindow(MainWindow):
         HeaderEditor(self, self.level_ref).exec()
 
     def update_level(
-        self, level_name: str, object_data_offset: LevelAddress, enemy_data_offset: EnemyItemAddress, object_set: int
+        self,
+        level_name: str,
+        object_data_offset: LevelAddress,
+        enemy_data_offset: EnemyItemAddress,
+        object_set: int,
     ):
         try:
             self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
             self.scroll_panel.horizontalScrollBar().setValue(0)
             self.scroll_panel.verticalScrollBar().setValue(0)
         except IndexError:
-            QMessageBox.critical(self, "Please confirm", "Failed loading level. The level offsets don't match.")
+            QMessageBox.critical(
+                self,
+                "Please confirm",
+                "Failed loading level. The level offsets don't match.",
+            )
             return
 
     def close_level(self):

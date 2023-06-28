@@ -1,7 +1,10 @@
 from typing import Callable
 
 from smb3parse.constants import BASE_OFFSET
-from smb3parse.util.parser.constants import MEM_Screen_Start_AddressH, MEM_Screen_Start_AddressL
+from smb3parse.util.parser.constants import (
+    MEM_Screen_Start_AddressH,
+    MEM_Screen_Start_AddressL,
+)
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
 

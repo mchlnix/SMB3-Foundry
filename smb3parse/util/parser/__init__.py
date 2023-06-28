@@ -73,7 +73,10 @@ class FoundLevelRecord:
 
     @staticmethod
     def from_level_pointer(
-        level_pointer: LevelPointerData, from_world: bool, from_jump: bool, generic: bool
+        level_pointer: LevelPointerData,
+        from_world: bool,
+        from_jump: bool,
+        generic: bool,
     ) -> "FoundLevelRecord":
         return FoundLevelRecord(
             level_pointer.level_address,
@@ -87,7 +90,9 @@ class FoundLevelRecord:
         )
 
 
-def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaultdict, dict[int, FoundLevel]]]:
+def gen_levels_in_rom(
+    rom: Rom,
+) -> Generator[tuple[int, int], bool, tuple[defaultdict, dict[int, FoundLevel]]]:
     levels_by_address: dict[int, FoundLevel] = {}
 
     start = time.time()
@@ -194,7 +199,12 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
             if record.object_set == SPADE_BONUS_OBJECT_SET:
                 continue
 
-            print(f"W{world_num + 1}", hex(record.level_address), hex(record.enemy_address), record.object_set)
+            print(
+                f"W{world_num + 1}",
+                hex(record.level_address),
+                hex(record.enemy_address),
+                record.object_set,
+            )
             # traverse Jump Destinations by following the offsets in the header
             while True:
                 levels_in_world += 1
@@ -227,7 +237,11 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                 if not parsed_level.has_jump():
                     break
 
-                header_of_old_level = LevelHeader(rom, rom.read(record.level_address, HEADER_LENGTH), record.object_set)
+                header_of_old_level = LevelHeader(
+                    rom,
+                    rom.read(record.level_address, HEADER_LENGTH),
+                    record.object_set,
+                )
 
                 level_address_position = record.level_address
                 level_address = header_of_old_level.jump_level_address
@@ -238,7 +252,11 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
                 object_set_number = header_of_old_level.jump_object_set_number
 
                 new_record = FoundLevelRecord(
-                    level_address, level_address_position, enemy_address, enemy_address_position, object_set_number
+                    level_address,
+                    level_address_position,
+                    enemy_address,
+                    enemy_address_position,
+                    object_set_number,
                 )
 
                 if 0 in [header_of_old_level.jump_level_offset, object_set_number]:
@@ -312,7 +330,12 @@ def gen_levels_in_rom(rom: Rom) -> Generator[tuple[int, int], bool, tuple[defaul
     for object_set_num in range(1, 15):
         print(
             object_set_num,
-            list(map(hex, set(levels_per_object_set[object_set_num]).difference(levels[object_set_num]))),
+            list(
+                map(
+                    hex,
+                    set(levels_per_object_set[object_set_num]).difference(levels[object_set_num]),
+                )
+            ),
         )
 
     return levels_per_object_set, levels_by_address

@@ -5,10 +5,21 @@ from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 from foundry.game.File import ROM
 from foundry.game.ObjectSet import ObjectSet
 from foundry.game.additional_data import LEVEL_DATA_DELIMITER_COUNT, LevelOrganizer
-from foundry.game.gfx.objects import EnemyItem, EnemyItemFactory, Jump, LevelObject, LevelObjectFactory
+from foundry.game.gfx.objects import (
+    EnemyItem,
+    EnemyItemFactory,
+    Jump,
+    LevelObject,
+    LevelObjectFactory,
+)
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
-from foundry.game.level import EnemyItemData, LevelByteData, ObjectData, _load_level_offsets
+from foundry.game.level import (
+    EnemyItemData,
+    LevelByteData,
+    ObjectData,
+    _load_level_offsets,
+)
 from foundry.game.level.LevelLike import LevelLike
 from foundry.gui.asm import bytes_to_asm
 from smb3parse import OFFSET_BY_OBJECT_SET_A000

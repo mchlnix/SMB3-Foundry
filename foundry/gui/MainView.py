@@ -2,7 +2,15 @@ from typing import Sequence
 from warnings import warn
 
 from PySide6.QtCore import QMimeData, QPoint, QSize
-from PySide6.QtGui import QContextMenuEvent, QDragEnterEvent, QDragMoveEvent, QMouseEvent, QPaintEvent, QPainter, Qt
+from PySide6.QtGui import (
+    QContextMenuEvent,
+    QDragEnterEvent,
+    QDragMoveEvent,
+    QMouseEvent,
+    QPaintEvent,
+    QPainter,
+    Qt,
+)
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from foundry import ctrl_is_pressed
@@ -34,7 +42,13 @@ RESIZE_MODES = [MODE_RESIZE_HORIZ, MODE_RESIZE_VERT, MODE_RESIZE_DIAG]
 class MainView(QWidget):
     drawer: LevelDrawer | WorldDrawer
 
-    def __init__(self, parent: QWidget | None, level: LevelRef, settings: Settings, context_menu: ContextMenu | None):
+    def __init__(
+        self,
+        parent: QWidget | None,
+        level: LevelRef,
+        settings: Settings,
+        context_menu: ContextMenu | None,
+    ):
         super(MainView, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
@@ -304,7 +318,10 @@ class MainView(QWidget):
         touched_objects = [obj for obj in self.level_ref.get_all_objects() if sel_rect.intersects(obj.get_rect())]
 
         if touched_objects != self.level_ref.selected_objects:
-            self._set_selected_objects(touched_objects, not event.modifiers() & Qt.KeyboardModifier.ShiftModifier)
+            self._set_selected_objects(
+                touched_objects,
+                not event.modifiers() & Qt.KeyboardModifier.ShiftModifier,
+            )
 
         self.update()
 
@@ -327,5 +344,7 @@ class MainView(QWidget):
 
         if self.currently_dragged_object is not None:
             self.currently_dragged_object.draw(
-                painter, self.block_length, self.settings.value("level view/block_transparency")
+                painter,
+                self.block_length,
+                self.settings.value("level view/block_transparency"),
             )

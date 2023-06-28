@@ -1,7 +1,16 @@
 from typing import Optional, cast
 
 from PySide6.QtCore import QPoint, QSize, QTimer
-from PySide6.QtGui import QCursor, QKeySequence, QMouseEvent, QPainter, QPixmap, QShortcut, QUndoStack, Qt
+from PySide6.QtGui import (
+    QCursor,
+    QKeySequence,
+    QMouseEvent,
+    QPainter,
+    QPixmap,
+    QShortcut,
+    QUndoStack,
+    Qt,
+)
 from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import get_level_thumbnail
@@ -32,7 +41,12 @@ from scribe.gui.commands import (
     SetSpriteType,
 )
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse.constants import TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2, TILE_NAMES, TILE_SPADE_HOUSE
+from smb3parse.constants import (
+    TILE_MUSHROOM_HOUSE_1,
+    TILE_MUSHROOM_HOUSE_2,
+    TILE_NAMES,
+    TILE_SPADE_HOUSE,
+)
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_HEIGHT
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
@@ -229,7 +243,11 @@ class WorldView(MainView):
 
         try:
             # TODO make this check based on the object set of the level pointer, not the tile
-            if self.world.tile_at(x, y) in [TILE_SPADE_HOUSE, TILE_MUSHROOM_HOUSE_1, TILE_MUSHROOM_HOUSE_2]:
+            if self.world.tile_at(x, y) in [
+                TILE_SPADE_HOUSE,
+                TILE_MUSHROOM_HOUSE_1,
+                TILE_MUSHROOM_HOUSE_2,
+            ]:
                 return False
         except ValueError:
             return False
@@ -246,7 +264,9 @@ class WorldView(MainView):
             object_set_name = OBJECT_SET_NAMES[level_pointer.data.object_set]
 
             image_data = get_level_thumbnail(
-                level_pointer.data.object_set, level_pointer.data.level_address, level_pointer.data.enemy_address
+                level_pointer.data.object_set,
+                level_pointer.data.level_address,
+                level_pointer.data.enemy_address,
             )
 
             self.setToolTip(
@@ -325,7 +345,9 @@ class WorldView(MainView):
 
         if not obj and self.drawer.settings.value("world view/show airship paths"):
             obj = self.world.airship_point_at(
-                level_x, level_y, self.drawer.settings.value("world view/show airship paths")
+                level_x,
+                level_y,
+                self.drawer.settings.value("world view/show airship paths"),
             )
 
         if not obj and self.drawer.settings.value("world view/show start position"):
@@ -424,7 +446,12 @@ class WorldView(MainView):
 
             if self.selected_object and not isinstance(self.selected_object, MapTile):
                 self.undo_stack.push(
-                    MoveMapObject(self.world, self.selected_object, start=self.drag_start_point, end=drag_end_point)
+                    MoveMapObject(
+                        self.world,
+                        self.selected_object,
+                        start=self.drag_start_point,
+                        end=drag_end_point,
+                    )
                 )
 
             self.dragging_happened = False

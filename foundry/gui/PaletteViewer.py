@@ -283,7 +283,12 @@ class SidePalette(QWidget):
 
     def on_color_change(self, palette_no: int) -> Callable:
         def actual_changer(index_in_palette, index_in_nes_color_table):
-            change_color(self.palette_group, palette_no, index_in_palette, index_in_nes_color_table)
+            change_color(
+                self.palette_group,
+                palette_no,
+                index_in_palette,
+                index_in_nes_color_table,
+            )
 
             self.level_ref.level.reload()
 
@@ -293,7 +298,11 @@ class SidePalette(QWidget):
         def actual_commiter(index_in_palette, index_in_nes_color_table):
             self.undo_stack.push(
                 UpdatePalette(
-                    self.level_ref, self.palette_group, palette_no, index_in_palette, index_in_nes_color_table
+                    self.level_ref,
+                    self.palette_group,
+                    palette_no,
+                    index_in_palette,
+                    index_in_nes_color_table,
                 )
             )
 

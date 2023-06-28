@@ -6,7 +6,11 @@ from PySide6.QtGui import QBrush, QColor, QPainter, QPen, Qt
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT, GROUND
 from foundry.game.File import ROM
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import NESPalette, bg_color_for_object_set, load_palette_group
+from foundry.game.gfx.Palette import (
+    NESPalette,
+    bg_color_for_object_set,
+    load_palette_group,
+)
 from foundry.game.gfx.drawable import load_from_png, make_image_selected, mario_actions
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects import (
@@ -17,13 +21,23 @@ from foundry.game.gfx.objects.world_map.sprite import EMPTY_IMAGE
 from foundry.game.level.Level import Level
 from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
 from foundry.gui.settings import Settings
-from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER, OBJ_PIPE_EXITS
+from smb3parse.constants import (
+    OBJ_AUTOSCROLL,
+    OBJ_CHEST_EXIT,
+    OBJ_CHEST_ITEM_SETTER,
+    OBJ_PIPE_EXITS,
+)
 from smb3parse.levels import (
     LEVEL_MAX_LENGTH,
     LEVEL_SCREEN_HEIGHT,
     LEVEL_SCREEN_WIDTH,
 )
-from smb3parse.objects.object_set import CLOUDY_OBJECT_SET, DESERT_OBJECT_SET, DUNGEON_OBJECT_SET, ICE_OBJECT_SET
+from smb3parse.objects.object_set import (
+    CLOUDY_OBJECT_SET,
+    DESERT_OBJECT_SET,
+    DUNGEON_OBJECT_SET,
+    ICE_OBJECT_SET,
+)
 
 FIRE_FLOWER = load_from_png(16, 53)
 LEAF = load_from_png(17, 53)
@@ -148,8 +162,14 @@ class LevelDrawer:
             ceiling_block.draw(painter, x * self.block_length, 0, self.block_length)
 
         # draw floor
-        upper_floor_blocks = [_block_from_index(20, level), _block_from_index(21, level)]
-        lower_floor_blocks = [_block_from_index(22, level), _block_from_index(23, level)]
+        upper_floor_blocks = [
+            _block_from_index(20, level),
+            _block_from_index(21, level),
+        ]
+        lower_floor_blocks = [
+            _block_from_index(22, level),
+            _block_from_index(23, level),
+        ]
 
         upper_y = (GROUND - 2) * self.block_length
         lower_y = (GROUND - 1) * self.block_length
@@ -201,7 +221,11 @@ class LevelDrawer:
                     level_object._draw_block(painter, block_index, x, y, self.block_length, False)
             else:
                 level_object.anim_frame = self.anim_frame
-                level_object.draw(painter, self.block_length, self.settings.value("level view/block_transparency"))
+                level_object.draw(
+                    painter,
+                    self.block_length,
+                    self.settings.value("level view/block_transparency"),
+                )
 
             if level_object.selected:
                 painter.save()

@@ -184,7 +184,12 @@ class ObjectToolBox(QWidget):
             graphic_set_index = object_set_index
 
         factory = LevelObjectFactory(
-            object_set_index, graphic_set_index, 0, [], vertical_level=False, size_minimal=True
+            object_set_index,
+            graphic_set_index,
+            0,
+            [],
+            vertical_level=False,
+            size_minimal=True,
         )
 
         object_ids = list(range(0x00, 0x10)) + list(range(0x10, MAX_ID_VALUE, 0x10))
@@ -194,7 +199,10 @@ class ObjectToolBox(QWidget):
                 domain=domain, object_index=obj_index, x=0, y=0, length=None, index=0
             )
 
-            if not isinstance(level_object, LevelObject) or level_object.name in ["MSG_NOTHING", "MSG_CRASH"]:
+            if not isinstance(level_object, LevelObject) or level_object.name in [
+                "MSG_NOTHING",
+                "MSG_CRASH",
+            ]:
                 continue
 
             self.add_object(level_object)

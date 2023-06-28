@@ -91,7 +91,10 @@ def test_sort_level_pointers(world_1):
     original_level_pointers = world_1.level_pointers
     changed_level_pointers = original_level_pointers.copy()
 
-    changed_level_pointers[2], changed_level_pointers[-2] = changed_level_pointers[-2], changed_level_pointers[2]
+    changed_level_pointers[2], changed_level_pointers[-2] = (
+        changed_level_pointers[-2],
+        changed_level_pointers[2],
+    )
 
     assert original_level_pointers != changed_level_pointers
 
@@ -149,7 +152,14 @@ def test_change_index_of_world_2(rom):
 
 
 def test_reading_airship_travel_sets(world_1):
-    set_0 = [(0x6, 0xA, 0), (0x6, 0x2, 0), (0xC, 0x2, 0), (0x6, 0xA, 0), (0x6, 0x2, 0), (0xC, 0x2, 0)]
+    set_0 = [
+        (0x6, 0xA, 0),
+        (0x6, 0x2, 0),
+        (0xC, 0x2, 0),
+        (0x6, 0xA, 0),
+        (0x6, 0x2, 0),
+        (0xC, 0x2, 0),
+    ]
     assert world_1.data.airship_travel_sets[0] == list(starmap(Position, set_0))
 
 

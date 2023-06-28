@@ -11,7 +11,12 @@ from foundry.game.level import (
     ObjectData,
 )
 from smb3parse import PAGE_A000_ByTileset
-from smb3parse.constants import BASE_OFFSET, ENEMY_DATA_BANK_INDEX, OFFSET_SIZE, PAGE_A000_OFFSET
+from smb3parse.constants import (
+    BASE_OFFSET,
+    ENEMY_DATA_BANK_INDEX,
+    OFFSET_SIZE,
+    PAGE_A000_OFFSET,
+)
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
@@ -169,7 +174,8 @@ class LevelOrganizer:
             for level in levels:
                 if not level.level_data:
                     level.level_data = self.rom.read(
-                        level.level_offset, level.object_data_length + LEVEL_DATA_DELIMITER_COUNT
+                        level.level_offset,
+                        level.object_data_length + LEVEL_DATA_DELIMITER_COUNT,
                     )
 
             # 4.2 Save level data to new position
@@ -183,7 +189,8 @@ class LevelOrganizer:
     def _update_level_address_at_level_pointers(self, level, object_set_offset):
         for position in level.level_offset_positions:
             self.rom.write_little_endian(
-                position, self.old_level_address_to_new[level.level_offset] - object_set_offset
+                position,
+                self.old_level_address_to_new[level.level_offset] - object_set_offset,
             )
 
     def _update_level_and_enemy_address_pointers(self, level):
@@ -200,7 +207,11 @@ class LevelOrganizer:
         if found_save_level is None:
             return
 
-        header = LevelHeader(self.rom, found_save_level.level_data[:9], found_save_level.object_set_number)
+        header = LevelHeader(
+            self.rom,
+            found_save_level.level_data[:9],
+            found_save_level.object_set_number,
+        )
 
         if header.jump_level_address in self.old_level_address_to_new:
             header.jump_level_address = self.old_level_address_to_new[header.jump_level_address]
@@ -323,7 +334,10 @@ class LevelOrganizer:
                 self.old_enemy_address_to_new[level.enemy_offset] = last_enemy_end
 
             for position in level.enemy_offset_positions:
-                self.rom.write_little_endian(position, self.old_enemy_address_to_new[level.enemy_offset] - BASE_OFFSET)
+                self.rom.write_little_endian(
+                    position,
+                    self.old_enemy_address_to_new[level.enemy_offset] - BASE_OFFSET,
+                )
 
             if was_duplicate:
                 continue

@@ -119,7 +119,10 @@ class ViewMenu(QMenu):
         )
 
         pathname, _ = QFileDialog.getSaveFileName(
-            self, caption="Save Screenshot", dir=recommended_file, filter=IMG_FILE_FILTER
+            self,
+            caption="Save Screenshot",
+            dir=recommended_file,
+            filter=IMG_FILE_FILTER,
         )
 
         if not pathname:

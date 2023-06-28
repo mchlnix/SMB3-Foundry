@@ -116,7 +116,8 @@ class NesCPU(mpu6502.MPU):
 
     def _load_level(self) -> ParsedLevel:
         self.memory.add_write_observer(
-            range(MEM_Screen_Memory_Start, MEM_Screen_Memory_End), self._screen_memory_watcher
+            range(MEM_Screen_Memory_Start, MEM_Screen_Memory_End),
+            self._screen_memory_watcher,
         )
 
         self.reset()

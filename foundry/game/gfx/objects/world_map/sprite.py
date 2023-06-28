@@ -118,7 +118,10 @@ class Sprite(MapObject):
 
         rect = QRect(pos, QSize(block_length, block_length))
 
-        painter.drawImage(rect.topLeft(), MAP_OBJ_SPRITES[self.data.type].scaled(block_length, block_length))
+        painter.drawImage(
+            rect.topLeft(),
+            MAP_OBJ_SPRITES[self.data.type].scaled(block_length, block_length),
+        )
 
         if selected:
             painter.fillRect(rect, QColor(0x00, 0xFF, 0x00, 0x80))

@@ -6,7 +6,11 @@ import pytest
 from foundry import root_dir
 from foundry.conftest import compare_images
 from foundry.game.File import ROM
-from foundry.game.gfx.objects import LevelObject, LevelObjectFactory, get_minimal_icon_object
+from foundry.game.gfx.objects import (
+    LevelObject,
+    LevelObjectFactory,
+    get_minimal_icon_object,
+)
 from foundry.gui.ObjectViewer import ObjectDrawArea
 from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
 from smb3parse.objects.object_set import (
@@ -80,11 +84,26 @@ def test_object_rendering_8_1(object_index, qtbot):
 @pytest.mark.parametrize(
     "object_index, domain, object_set, graphic_set",
     [
-        (0x20, 0x00, UNDERGROUND_OBJECT_SET, UNDERGROUND_GRAPHICS_SET),  # 45 Degree Underground Hill - Down/Left
+        (
+            0x20,
+            0x00,
+            UNDERGROUND_OBJECT_SET,
+            UNDERGROUND_GRAPHICS_SET,
+        ),  # 45 Degree Underground Hill - Down/Left
         (0x2F, 0x00, UNDERGROUND_OBJECT_SET, UNDERGROUND_GRAPHICS_SET),
-        (0x60, 0x03, HILLY_OBJECT_SET, HILLY_GRAPHICS_SET),  # 30 Degree Hill - Down/Left
+        (
+            0x60,
+            0x03,
+            HILLY_OBJECT_SET,
+            HILLY_GRAPHICS_SET,
+        ),  # 30 Degree Hill - Down/Left
         (0x6F, 0x03, HILLY_OBJECT_SET, HILLY_GRAPHICS_SET),
-        (0xA0, 0x03, UNDERGROUND_OBJECT_SET, UNDERGROUND_GRAPHICS_SET),  # 30 Degree Underwater Hill - Down/Left
+        (
+            0xA0,
+            0x03,
+            UNDERGROUND_OBJECT_SET,
+            UNDERGROUND_GRAPHICS_SET,
+        ),  # 30 Degree Underwater Hill - Down/Left
         (0xAF, 0x03, UNDERGROUND_OBJECT_SET, UNDERGROUND_GRAPHICS_SET),
     ],
 )
@@ -114,7 +133,12 @@ def test_object_rendering_0_0(object_index, domain, object_set, graphic_set, qtb
 @pytest.mark.parametrize(
     "object_index, domain, object_set, graphic_set",
     [
-        (0xF0, 0x0, DUNGEON_OBJECT_SET, DUNGEON_GRAPHICS_SET),  # Vertically oriented X-blocks
+        (
+            0xF0,
+            0x0,
+            DUNGEON_OBJECT_SET,
+            DUNGEON_GRAPHICS_SET,
+        ),  # Vertically oriented X-blocks
         (0xF7, 0x0, DUNGEON_OBJECT_SET, DUNGEON_GRAPHICS_SET),
     ],
 )
@@ -137,7 +161,11 @@ def test_no_change_to_bytes():
 
 
 @pytest.mark.parametrize(
-    "attribute, increase", zip(["domain", "obj_index", "length", "x_position", "y_position"], [1, 0x10, 1, 1, 1])
+    "attribute, increase",
+    zip(
+        ["domain", "obj_index", "length", "x_position", "y_position"],
+        [1, 0x10, 1, 1, 1],
+    ),
 )
 def test_change_attribute_to_bytes(attribute, increase):
     object_factory = LevelObjectFactory(1, 1, 0, [], False)
@@ -155,7 +183,11 @@ def gen_object_factories():
     ROM(root_dir.joinpath("SMB3.nes"))
 
     for object_set in range(MAX_OBJECT_SET + 1):
-        if object_set in [WORLD_MAP_OBJECT_SET, MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
+        if object_set in [
+            WORLD_MAP_OBJECT_SET,
+            MUSHROOM_OBJECT_SET,
+            SPADE_BONUS_OBJECT_SET,
+        ]:
             continue
 
         yield LevelObjectFactory(object_set, object_set, 0, [], False)
@@ -171,7 +203,8 @@ def gen_object_ids():
 
 
 @pytest.mark.parametrize(
-    "factory, domain, obj_id", list(product(gen_object_factories(), range(0, MAX_DOMAIN), gen_object_ids()))
+    "factory, domain, obj_id",
+    list(product(gen_object_factories(), range(0, MAX_DOMAIN), gen_object_ids())),
 )
 def test_all_objects(factory, domain, obj_id, qtbot):
     level_object = factory.from_properties(domain, obj_id, 0, 0, 8, 0)
@@ -183,7 +216,8 @@ def test_all_objects(factory, domain, obj_id, qtbot):
 
 
 @pytest.mark.parametrize(
-    "factory, domain, obj_id", list(product(gen_object_factories(), range(0, MAX_DOMAIN), gen_object_ids()))
+    "factory, domain, obj_id",
+    list(product(gen_object_factories(), range(0, MAX_DOMAIN), gen_object_ids())),
 )
 def test_all_minimal_objects(factory, domain, obj_id, qtbot):
     level_object = factory.from_properties(domain, obj_id, 0, 0, 0, 0)

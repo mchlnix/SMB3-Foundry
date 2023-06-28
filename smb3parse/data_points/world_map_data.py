@@ -49,7 +49,11 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_WARP_WORLD_INDEX,
 )
-from smb3parse.objects.object_set import AIR_SHIP_OBJECT_SET, MUSHROOM_OBJECT_SET, ObjectSet
+from smb3parse.objects.object_set import (
+    AIR_SHIP_OBJECT_SET,
+    MUSHROOM_OBJECT_SET,
+    ObjectSet,
+)
 from smb3parse.util.rom import Rom
 
 
@@ -433,17 +437,20 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         # y_pos_list_start
         rom.write_little_endian(
-            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index, self.y_pos_list_start - WORLD_MAP_BASE_OFFSET
+            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index,
+            self.y_pos_list_start - WORLD_MAP_BASE_OFFSET,
         )
 
         # x_pos_list_start
         rom.write_little_endian(
-            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index, self.x_pos_list_start - WORLD_MAP_BASE_OFFSET
+            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index,
+            self.x_pos_list_start - WORLD_MAP_BASE_OFFSET,
         )
 
         rom.write_little_endian(self.enemy_offset_list_offset_address, self.enemy_offset_list_offset)
         rom.write_little_endian(
-            self.level_offset_list_offset_address, self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+            self.level_offset_list_offset_address,
+            self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE,
         )
 
         for index, level_pointer in enumerate(self.level_pointers):

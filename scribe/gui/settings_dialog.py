@@ -154,7 +154,9 @@ class SettingsDialog(CustomDialog):
 
     def _get_default_dir(self):
         path_to_roms = QFileDialog.getExistingDirectory(
-            self, caption="Select Rom directory", dir=QStandardPaths.writableLocation(QStandardPaths.HomeLocation)
+            self,
+            caption="Select Rom directory",
+            dir=QStandardPaths.writableLocation(QStandardPaths.HomeLocation),
         )
 
         if not path_to_roms:

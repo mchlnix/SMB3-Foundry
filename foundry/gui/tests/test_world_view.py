@@ -49,7 +49,13 @@ def drag_from_to(
         points = []
 
     # click left on a tile
-    click_event = QMouseEvent(QMouseEvent.MouseButtonPress, start_point, Qt.LeftButton, Qt.LeftButton, modifiers)
+    click_event = QMouseEvent(
+        QMouseEvent.MouseButtonPress,
+        start_point,
+        Qt.LeftButton,
+        Qt.LeftButton,
+        modifiers,
+    )
     worldview.mousePressEvent(click_event)
 
     for point in points + [end_point]:
@@ -94,7 +100,11 @@ def test_selecting_all_objects_via_selection_square(worldview, qtbot):
 
     assert not worldview.get_selected_objects()
     click_event = QMouseEvent(
-        QMouseEvent.MouseButtonPress, start_point, Qt.LeftButton, Qt.LeftButton, Qt.ControlModifier
+        QMouseEvent.MouseButtonPress,
+        start_point,
+        Qt.LeftButton,
+        Qt.LeftButton,
+        Qt.ControlModifier,
     )
     worldview.mousePressEvent(click_event)
 

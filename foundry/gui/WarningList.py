@@ -29,7 +29,13 @@ from smb3parse.objects.object_set import DUNGEON_OBJECT_SET, PLAINS_OBJECT_SET
 class WarningList(QWidget):
     warnings_updated: SignalInstance = Signal(bool)
 
-    def __init__(self, parent, level_ref: LevelRef, level_view_ref: LevelView, object_list_ref: ObjectList):
+    def __init__(
+        self,
+        parent,
+        level_ref: LevelRef,
+        level_view_ref: LevelView,
+        object_list_ref: ObjectList,
+    ):
         super(WarningList, self).__init__(parent)
 
         self.level_ref = level_ref
@@ -74,15 +80,24 @@ class WarningList(QWidget):
             if obj.object_info == (PLAINS_OBJECT_SET, 0, 0x06):
                 continue
 
-            if obj.orientation in [GeneratorType.HORIZ_TO_GROUND, GeneratorType.PYRAMID_TO_GROUND]:
+            if obj.orientation in [
+                GeneratorType.HORIZ_TO_GROUND,
+                GeneratorType.PYRAMID_TO_GROUND,
+            ]:
                 if obj.y_position + obj.rendered_height == GROUND:
-                    self.warn(f"{obj} extends until the level bottom. This can crash the game.", [obj])
+                    self.warn(
+                        f"{obj} extends until the level bottom. This can crash the game.",
+                        [obj],
+                    )
 
         # autoscroll objects
         for item in level.enemies:
             if item.obj_index == OBJ_AUTOSCROLL:
                 if item.y_position >= 0x60:
-                    self.warn(f"{item}'s y-position is too low. Maximum is 95 or 0x5F.", [item])
+                    self.warn(
+                        f"{item}'s y-position is too low. Maximum is 95 or 0x5F.",
+                        [item],
+                    )
 
                 if level.header.scroll_type_index != 0:
                     self.warn(
@@ -94,7 +109,10 @@ class WarningList(QWidget):
         autoscroll_items = [item for item in level.enemies if item.obj_index == OBJ_AUTOSCROLL]
 
         if len(autoscroll_items) > 1:
-            self.warn("Level has more than one AutoScrolling items. Does that work?", autoscroll_items)
+            self.warn(
+                "Level has more than one AutoScrolling items. Does that work?",
+                autoscroll_items,
+            )
 
         # no items, that would crash the game
         for obj in level.objects:
@@ -117,7 +135,10 @@ class WarningList(QWidget):
                 other_clan, other_group = self._enemy_dict[other_enemy.name]
 
                 if clan == other_clan and group != other_group:
-                    self.warn(f"{enemy} incompatible with {other_enemy}, when on same screen", [enemy, other_enemy])
+                    self.warn(
+                        f"{enemy} incompatible with {other_enemy}, when on same screen",
+                        [enemy, other_enemy],
+                    )
 
         # boom boom not in dungeon level
         for enemy in level.enemies:
@@ -125,11 +146,15 @@ class WarningList(QWidget):
                 continue
 
             if level.object_set_number != DUNGEON_OBJECT_SET:
-                self.warn("You should only use BoomBoom enemies in levels of object set 'Dungeon'.", [enemy])
+                self.warn(
+                    "You should only use BoomBoom enemies in levels of object set 'Dungeon'.",
+                    [enemy],
+                )
 
             if enemy.y_position < 0x10:
                 self.warn(
-                    "If your BoomBoom has a lower y-position than 16, you need to add 1 to your Lock Index.", [enemy]
+                    "If your BoomBoom has a lower y-position than 16, you need to add 1 to your Lock Index.",
+                    [enemy],
                 )
 
             break

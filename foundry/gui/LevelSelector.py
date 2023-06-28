@@ -29,7 +29,11 @@ from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
 from smb3parse.data_points import LevelPointerData, Position
 from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
-from smb3parse.objects.object_set import MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET, WORLD_MAP_OBJECT_SET
+from smb3parse.objects.object_set import (
+    MUSHROOM_OBJECT_SET,
+    SPADE_BONUS_OBJECT_SET,
+    WORLD_MAP_OBJECT_SET,
+)
 
 
 OVERWORLD_MAPS_INDEX = 0
@@ -135,7 +139,11 @@ class LevelSelector(QDialog):
             self.on_world_click()
         else:
             first_level = ROM().additional_data.found_levels[0]
-            self._fill_in_data(first_level.object_set_number, first_level.level_offset, first_level.enemy_offset)
+            self._fill_in_data(
+                first_level.object_set_number,
+                first_level.level_offset,
+                first_level.enemy_offset,
+            )
 
     def keyPressEvent(self, key_event: QKeyEvent):
         if key_event.key() == Qt.Key_Escape:
@@ -223,7 +231,11 @@ class LevelSelector(QDialog):
 
         self.world_index = level_pointer.world.index + 1
 
-        self._fill_in_data(level_pointer.object_set, level_pointer.level_address, level_pointer.enemy_address)
+        self._fill_in_data(
+            level_pointer.object_set,
+            level_pointer.level_address,
+            level_pointer.enemy_address,
+        )
 
         self.button_ok.setFocus()
 
@@ -305,7 +317,10 @@ class WorldMapLevelSelect(QScrollArea):
             if level_pointer is None:
                 return
 
-            if level_pointer.data.object_set in [MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
+            if level_pointer.data.object_set in [
+                MUSHROOM_OBJECT_SET,
+                SPADE_BONUS_OBJECT_SET,
+            ]:
                 QMessageBox.warning(
                     self,
                     "No can do",
