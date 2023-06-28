@@ -351,7 +351,7 @@ class LevelObject(InLevelObject):
 
                 rows.append(amount_left * left + slopes[offset : offset + slope_width] + amount_right * right)
 
-            if self.orientation in [GeneratorType.DIAG_UP_RIGHT]:
+            if self.orientation == GeneratorType.DIAG_UP_RIGHT:
                 for row in rows:
                     row.reverse()
 
@@ -364,10 +364,10 @@ class LevelObject(InLevelObject):
                 for row in rows:
                     row.reverse()
 
-            if self.orientation in [GeneratorType.DIAG_UP_RIGHT]:
+            if self.orientation == GeneratorType.DIAG_UP_RIGHT:
                 base_y -= new_height - 1
 
-            if self.orientation in [GeneratorType.DIAG_DOWN_LEFT]:
+            if self.orientation == GeneratorType.DIAG_DOWN_LEFT:
                 base_x -= new_width - slope_width
 
             for row in rows:
@@ -793,7 +793,7 @@ class LevelObject(InLevelObject):
                 return EXPANDS_VERT
             else:
                 return EXPANDS_HORIZ
-        elif self.orientation in [GeneratorType.VERTICAL]:
+        elif self.orientation == GeneratorType.VERTICAL:
             if self.is_4byte:
                 return EXPANDS_HORIZ
             else:

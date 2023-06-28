@@ -154,7 +154,7 @@ class MainWindow(QMainWindow):
             return
 
         try:
-            ROM().save_to_file(pathname, set_new_path)
+            ROM.save_to_file(pathname, set_new_path)
         except IOError as exp:
             QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
 

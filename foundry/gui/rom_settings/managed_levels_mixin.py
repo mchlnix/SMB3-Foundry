@@ -132,7 +132,7 @@ class ManagedLevelsMixin(SettingsMixin):
         lo.rearrange_levels()
         lo.rearrange_enemies()
 
-        ROM().save_to_file(ROM.path)
+        ROM.save_to_file(ROM.path)
 
         if self.level and self.level.attached_to_rom:
             new_level_address = lo.old_level_address_to_new[self.level.header_offset]

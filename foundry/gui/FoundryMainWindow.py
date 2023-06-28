@@ -390,7 +390,7 @@ class FoundryMainWindow(MainWindow):
 
     @staticmethod
     def _save_auto_rom():
-        ROM().save_to_file(auto_save_rom_path, set_new_path=False)
+        ROM.save_to_file(auto_save_rom_path, set_new_path=False)
 
     def _save_auto_data(self):
         if not self.level_ref:
@@ -684,7 +684,7 @@ class FoundryMainWindow(MainWindow):
             lo.rearrange_levels()
             lo.rearrange_enemies()
 
-            ROM().save_to_file(ROM.path)
+            ROM.save_to_file(ROM.path)
 
     def _ask_for_palette_save(self) -> bool:
         """
