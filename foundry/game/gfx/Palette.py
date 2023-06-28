@@ -1,21 +1,20 @@
-from pathlib import Path
+from dataclasses import dataclass
 from typing import Optional
 
 from PySide6.QtGui import QColor
-from dataclasses import dataclass
 
 from foundry import root_dir
 from foundry.game.File import ROM
-from smb3parse.constants import PalSet_Maps, Palette_By_Tileset
+from foundry.gui.util import grouper
+from smb3parse.constants import Palette_By_Tileset
 from smb3parse.levels import BASE_OFFSET
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
-
-MAP_PALETTE_ADDRESS = PalSet_Maps
 
 PALETTE_PRG_NO = 22
 
 PALETTE_BASE_ADDRESS = BASE_OFFSET + PALETTE_PRG_NO * PRG_BANK_SIZE
-PALETTE_OFFSET_LIST = Palette_By_Tileset
+PALETTE_OFFSET_LIST_US = Palette_By_Tileset
+PALETTE_OFFSET_LIST_JP = 0x374AB  # found by searching through the JP ROM, calculating backwards to find the offset list
 PALETTE_OFFSET_SIZE = 2  # bytes
 
 PALETTE_GROUPS_PER_OBJECT_SET = 8
@@ -31,11 +30,23 @@ PALETTE_DATA_SIZE = (
     * COLORS_PER_PALETTE
 )
 
+color_data = root_dir.joinpath("data", "Default.pal").read_bytes()
+
+NES_COLOR_COUNT = 64
+BYTES_IN_COLOR = 3 + 1  # bytes + separator
+assert len(color_data) == NES_COLOR_COUNT * BYTES_IN_COLOR, (
+    len(color_data),
+    NES_COLOR_COUNT * BYTES_IN_COLOR,
+)
+
+NESPalette = [QColor(r, g, b) for r, g, b, _ in grouper(color_data, 4, incomplete="strict")]
+
 
 @dataclass(eq=False)
 class PaletteGroup:
     object_set: int
     index: int
+    offset: int
     palettes: list[bytearray]
 
     changed = False
@@ -64,7 +75,7 @@ class PaletteGroup:
         if rom is None:
             rom = ROM()
 
-        palette_offset_position = PALETTE_OFFSET_LIST + (self.object_set * PALETTE_OFFSET_SIZE)
+        palette_offset_position = self.offset + (self.object_set * PALETTE_OFFSET_SIZE)
         palette_offset = rom.little_endian(palette_offset_position)
 
         palette_address = PALETTE_BASE_ADDRESS + palette_offset
@@ -94,24 +105,43 @@ def load_palette_group(object_set: int, palette_group_index: int, use_cache=True
     key = (object_set, palette_group_index)
 
     if key not in _palette_group_cache or not use_cache:
-        rom = ROM()
+        # the data is in different locations for US and JP roms
+        for palette_offset_list in (PALETTE_OFFSET_LIST_US, PALETTE_OFFSET_LIST_JP):
+            try:
+                palettes = _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list)
 
-        palette_offset_position = PALETTE_OFFSET_LIST + (object_set * PALETTE_OFFSET_SIZE)
-        palette_offset = rom.little_endian(palette_offset_position)
+                _palette_group_cache[key] = PaletteGroup(object_set, palette_group_index, palette_offset_list, palettes)
+            except ValueError:
+                continue
 
-        palette_address = PALETTE_BASE_ADDRESS + palette_offset
-        palette_address += palette_group_index * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
-
-        palettes = []
-
-        for _ in range(PALETTES_PER_PALETTES_GROUP):
-            palettes.append(bytearray(rom.read(palette_address, COLORS_PER_PALETTE)))
-
-            palette_address += COLORS_PER_PALETTE
-
-        _palette_group_cache[key] = PaletteGroup(object_set, palette_group_index, palettes)
+            break
+        else:
+            raise ValueError("Couldn't find valid Palette data at offsets for stock US or stock JP ROM.")
 
     return _palette_group_cache[key]
+
+
+def _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list_address: int):
+    rom = ROM()
+
+    palette_offset_position = palette_offset_list_address + (object_set * PALETTE_OFFSET_SIZE)
+    palette_offset = rom.little_endian(palette_offset_position)
+
+    palette_address = PALETTE_BASE_ADDRESS + palette_offset
+    palette_address += palette_group_index * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
+
+    palettes = []
+
+    for _ in range(PALETTES_PER_PALETTES_GROUP):
+        palettes.append(bytearray(rom.read(palette_address, COLORS_PER_PALETTE)))
+
+        palette_address += COLORS_PER_PALETTE
+
+    # There are 64 colors in the NES's palette. Any other value indicates, that we did not find the right palette data
+    if not all(color_index in range(NES_COLOR_COUNT) for palette in palettes for color_index in palette):
+        raise ValueError("Found invalid Palette index value. Probably didn't find correct Palette Data in ROM.")
+
+    return palettes
 
 
 def save_all_palette_groups(rom: Optional[Rom] = None):
@@ -120,22 +150,6 @@ def save_all_palette_groups(rom: Optional[Rom] = None):
 
     if rom is None:
         PaletteGroup.changed = False
-
-
-palette_file = root_dir.joinpath("data", "Default.pal")
-
-color_data = Path(palette_file).open("rb").read()
-
-offset = 0x18  # first color position
-
-NESPalette = []
-COLOR_COUNT = 64
-BYTES_IN_COLOR = 3 + 1  # bytes + separator
-
-for i in range(COLOR_COUNT):
-    NESPalette.append(QColor(color_data[offset], color_data[offset + 1], color_data[offset + 2]))
-
-    offset += BYTES_IN_COLOR
 
 
 def bg_color_for_object_set(object_set_number: int, palette_group_index: int) -> QColor:
