@@ -2,39 +2,15 @@ import pathlib
 from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
 from pathlib import Path
-from typing import TypeAlias
 
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
+from smb3parse.types import AnyAddress, NormalizedAddress
 from smb3parse.util import little_endian
 
 TSA_OS_LIST = PAGE_A000_ByTileset
 TSA_TABLE_SIZE = 0x400
 
 PRG_BANK_SIZE = 0x2000
-
-
-RawAddress: TypeAlias = int
-
-
-class NormalizedAddress(RawAddress):
-    """
-    Roms can be expanded to hold more data than the original SMB3 game. This data is added between PRG_029 and PRG_030.
-
-    This makes it necessary to reroute any address, that would've gone to the old PRG_030 and PRG_031 to the new PRG_030
-    and PRG_031.
-
-    Since this cannot happen twice, without exceeding the size of the Rom, we have to keep track of which addresses have
-    already been normalized.
-
-    This is done using these types and a type checker, as well as only having 3 methods in the Rom class dealing with
-    raw Rom data. _read, _write and _find. Any other method using these must normalize their addresses and not give them
-    out.
-    """
-
-    pass
-
-
-AnyAddress: TypeAlias = RawAddress | NormalizedAddress
 
 
 class INESHeader(Structure):
@@ -80,7 +56,7 @@ class Rom:
 
     def prg_normalize(self, offset: AnyAddress) -> NormalizedAddress:
         """Takes a vanilla ROM PRG offset and returns a new offset that is correct for the current ROM's PRG size."""
-        if isinstance(offset, NormalizedAddress):
+        if type(offset) == NormalizedAddress:
             return offset
 
         # data in expanded Roms is inserted between PRG29 and PRG30
@@ -150,14 +126,19 @@ class Rom:
     def _write(self, offset: NormalizedAddress, data: bytes):
         self._data[offset : offset + len(data)] = data
 
-    def find(self, needle: bytes | int, start: AnyAddress = 0, end: AnyAddress = -1) -> NormalizedAddress:
+    def find(
+        self,
+        needle: bytes | int,
+        start: AnyAddress = NormalizedAddress(0),
+        end: AnyAddress = NormalizedAddress(-1),
+    ) -> NormalizedAddress:
         if isinstance(needle, int):
             needle = bytes([needle])
 
         start = self.prg_normalize(start)
 
         if end == -1:
-            end = len(self._data)
+            end = NormalizedAddress(len(self._data))
 
         end = self.prg_normalize(end)
 
