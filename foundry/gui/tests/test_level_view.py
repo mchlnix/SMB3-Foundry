@@ -3,7 +3,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QWheelEvent, Qt
 
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from foundry.gui.HeaderEditor import HeaderEditor
+from foundry.gui.dialogs.HeaderEditor import HeaderEditor
 from foundry.gui.LevelView import LevelView
 from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, PLAINS_OBJECT_SET
 

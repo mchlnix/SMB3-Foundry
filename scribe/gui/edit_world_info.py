@@ -18,8 +18,8 @@ from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui import label_and_widget
-from foundry.gui.BlockViewer import BlockBank
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.windows.BlockViewer import BlockBank
+from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.Spinner import Spinner
 from scribe.gui.commands import (
     SetWorldScroll,

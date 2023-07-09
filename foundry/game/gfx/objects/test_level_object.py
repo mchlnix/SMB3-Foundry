@@ -11,7 +11,7 @@ from foundry.game.gfx.objects import (
     LevelObjectFactory,
     get_minimal_icon_object,
 )
-from foundry.gui.ObjectViewer import ObjectDrawArea
+from foundry.gui.windows.ObjectViewer import ObjectDrawArea
 from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
 from smb3parse.objects.object_set import (
     DUNGEON_GRAPHICS_SET,

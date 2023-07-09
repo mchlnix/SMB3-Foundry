@@ -26,7 +26,7 @@ from foundry.game.gfx.Palette import (
 )
 from foundry.game.gfx import change_color
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.commands import UpdatePalette
 
 

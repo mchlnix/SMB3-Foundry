@@ -13,8 +13,8 @@ from PySide6.QtWidgets import (
 
 from foundry import icon
 from foundry.gui import label_and_widget
-from foundry.gui.CustomDialog import CustomDialog
-from foundry.gui.SettingsDialog import default_dirs
+from foundry.gui.dialogs.CustomDialog import CustomDialog
+from foundry.gui.dialogs.SettingsDialog import default_dirs
 from foundry.gui.settings import (
     Settings,
 )

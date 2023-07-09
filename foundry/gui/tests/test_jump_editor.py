@@ -1,4 +1,4 @@
-from foundry.gui.JumpEditor import JumpEditor
+from foundry.gui.dialogs.JumpEditor import JumpEditor
 
 
 def _check_jump_cb(jump_before):

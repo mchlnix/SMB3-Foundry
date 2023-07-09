@@ -1,4 +1,4 @@
-from foundry.gui.AboutWindow import AboutDialog
+from foundry.gui.dialogs.AboutWindow import AboutDialog
 
 
 def test_open_about_window(qtbot):

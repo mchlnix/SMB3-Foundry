@@ -1,4 +1,4 @@
-from foundry.gui.PaletteViewer import ColorTable
+from foundry.gui.dialogs.PaletteViewer import ColorTable
 
 
 def test_open_color_palette(qtbot):

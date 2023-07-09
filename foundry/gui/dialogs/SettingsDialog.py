@@ -18,7 +18,7 @@ from foundry import data_dir, icon
 from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.game.gfx.drawable.Block import Block
 from foundry.gui import label_and_widget
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.HorizontalLine import HorizontalLine
 from foundry.gui.settings import (
     GUI_STYLE,

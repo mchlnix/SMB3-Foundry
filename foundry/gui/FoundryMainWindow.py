@@ -49,8 +49,8 @@ from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.EnemySizeBar import EnemySizeBar
-from foundry.gui.HeaderEditor import HeaderEditor
-from foundry.gui.JumpEditor import JumpEditor
+from foundry.gui.dialogs.HeaderEditor import HeaderEditor
+from foundry.gui.dialogs.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
 from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.LevelSelector import LevelSelector
@@ -62,8 +62,8 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectSetSelector import ObjectSetSelector
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
-from foundry.gui.PaletteViewer import SidePalette
-from foundry.gui.SettingsDialog import POWERUPS, SettingsDialog
+from foundry.gui.dialogs.PaletteViewer import SidePalette
+from foundry.gui.dialogs.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.asm import load_asm_filename

@@ -2,8 +2,8 @@ from PySide6.QtGui import QPixmap, Qt
 from PySide6.QtWidgets import QBoxLayout, QLabel
 
 from foundry import data_dir, get_current_version_name
-from foundry.gui.AboutWindow import LinkLabel
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.dialogs.AboutWindow import LinkLabel
+from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.HorizontalLine import HorizontalLine
 
 LINK_SMB3F = "https://github.com/mchlnix/SMB3-Foundry"

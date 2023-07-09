@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.BlockViewer import BlockBank
+from foundry.gui.windows.BlockViewer import BlockBank
 from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID
 
 

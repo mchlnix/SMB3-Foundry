@@ -9,11 +9,11 @@ from foundry import icon
 from foundry.game.File import ROM
 from foundry.game.gfx.objects import LevelObject
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.BlockViewer import BlockViewer
+from foundry.gui.windows.BlockViewer import BlockViewer
 from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
-from foundry.gui.LevelViewer import LevelViewer
-from foundry.gui.ObjectViewer import ObjectViewer
-from foundry.gui.PaletteViewer import PaletteViewer
+from foundry.gui.windows.LevelViewer import LevelViewer
+from foundry.gui.windows.ObjectViewer import ObjectViewer
+from foundry.gui.dialogs.PaletteViewer import PaletteViewer
 from foundry.gui.rom_settings.rom_settings_dialog import RomSettingsDialog
 
 

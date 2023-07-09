@@ -1,7 +1,7 @@
 from PySide6.QtGui import QUndoStack
 
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.level_settings.auto_scroll_mixin import AutoScrollMixin
 from foundry.gui.level_settings.boom_boom_mixin import BoomBoomMixin
 from foundry.gui.level_settings.chest_exit_mixin import ChestExitMixin

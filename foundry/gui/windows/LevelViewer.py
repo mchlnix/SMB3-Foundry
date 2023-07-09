@@ -4,7 +4,7 @@ from PySide6.QtGui import QColor, QColorConstants, QPaintEvent, QPainter
 from PySide6.QtWidgets import QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget
 
 from foundry.game.File import ROM
-from foundry.gui.CustomChildWindow import CustomChildWindow
+from foundry.gui.windows.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset
 from smb3parse.data_points import WorldMapData
 from smb3parse.levels import WORLD_COUNT

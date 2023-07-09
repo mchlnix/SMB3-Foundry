@@ -2,7 +2,7 @@ from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtGui import QUndoStack
 
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.CustomDialog import CustomDialog
+from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.rom_settings.managed_levels_mixin import ManagedLevelsMixin
 
 

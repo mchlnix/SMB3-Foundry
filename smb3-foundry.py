@@ -8,7 +8,7 @@ import warnings
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from foundry import auto_save_rom_path, github_issue_link
-from foundry.gui.AutoSaveDialog import AutoSaveDialog
+from foundry.gui.dialogs.AutoSaveDialog import AutoSaveDialog
 
 # compatibility for dark mode
 warnings.warning = warnings.warn

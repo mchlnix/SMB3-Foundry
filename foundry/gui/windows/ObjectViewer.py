@@ -16,7 +16,7 @@ from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.objects import Jump, LevelObject, LevelObjectFactory
 from foundry.gui import OBJECT_SET_ITEMS
-from foundry.gui.CustomChildWindow import CustomChildWindow
+from foundry.gui.windows.CustomChildWindow import CustomChildWindow
 from foundry.gui.Spinner import Spinner
 from foundry.gui.util import clear_layout
 
