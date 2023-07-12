@@ -281,7 +281,7 @@ class HeaderEditor(CustomDialog):
         self.blockSignals(False)
 
         level_address = level_selector.object_data_offset
-        enemy_address = level_selector.enemy_data_offset - 1
+        enemy_address = level_selector.enemy_data_offset
         object_set_number = level_selector.object_set
 
         self.undo_stack.beginMacro(
