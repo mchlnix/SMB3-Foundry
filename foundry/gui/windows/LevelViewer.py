@@ -104,7 +104,7 @@ class LevelViewer(CustomChildWindow):
             )
 
             level_item = QTreeWidgetItem()
-            level_item.setText(0, _gen_level_name(address_, level_) + f" @ 0x{address_:x}")
+            level_item.setText(0, _gen_level_name(address_, level_) + f" @ 0x{address_:x} / 0x{level.enemy_offset:x}")
             parent_.addChild(level_item)
 
             level_item_by_address[address_] = level_item
