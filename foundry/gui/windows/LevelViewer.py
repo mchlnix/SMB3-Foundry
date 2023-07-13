@@ -3,9 +3,10 @@ from dataclasses import dataclass
 from random import randint, seed
 
 from PySide6.QtCore import QPoint, QRect, QSize
-from PySide6.QtGui import QBrush, QColor, QColorConstants, QPaintEvent, QPainter
+from PySide6.QtGui import QBrush, QColor, QColorConstants, QMouseEvent, QPaintEvent, QPainter
 from PySide6.QtWidgets import QScrollArea, QSizePolicy, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget
 
+from foundry import get_level_thumbnail
 from foundry.game.File import ROM
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset
@@ -181,6 +182,8 @@ class ByteView(QWidget):
 
         self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
 
+        self.setMouseTracking(True)
+
     def sizeHint(self):
         return QSize(1000, self.heightForWidth(self.parentWidget().width()))
 
@@ -248,6 +251,7 @@ class _Block:
     color: QColor
     name: str
     size: int
+    level: tuple[int, int, int] | None = None
 
 
 class LevelBlockView(ByteView):
@@ -293,6 +297,7 @@ class LevelBlockView(ByteView):
                     self._random_colors[object_set],
                     f"0x{abs_level_start:x}: {OBJECT_SET_NAMES[object_set]}",
                     level_length,
+                    (object_set, abs_level_start, level_length),
                 )
             )
             current_pos += level_length + 1
@@ -319,6 +324,53 @@ class LevelBlockView(ByteView):
             y = index // blocks_per_line
 
         return QPoint(x * self.block_width, y * self.block_height)
+
+    def _get_block_at(self, x, y) -> _Block | None:
+        blocks_per_line = max(1, self.width() // self.block_width)
+
+        if blocks_per_line * self.block_width < x:
+            return None
+
+        blocks = self._parse_levels_for_blocks()
+        lines = math.ceil(len(blocks) / blocks_per_line)
+
+        if lines * self.block_height < y:
+            return None
+
+        x_offset = x // self.block_width
+        y_offset = y // self.block_height
+
+        index = y_offset * blocks_per_line + x_offset
+
+        if index >= len(blocks):
+            return None
+
+        return blocks[index]
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        self._set_thumbnail(event.x(), event.y())
+
+        super().mouseMoveEvent(event)
+
+    def _set_thumbnail(self, x, y):
+        block = self._get_block_at(x, y)
+
+        if block is None or block.level is None:
+            self.setToolTip(None)
+            return
+
+        image_data = get_level_thumbnail(
+            block.level[0],
+            block.level[1],
+            0x0,
+        )
+
+        self.setToolTip(
+            f"<b>{block.name}</b><br/>"
+            f"<u>Type:</u> {OBJECT_SET_NAMES[block.level[0]]} "
+            f"<u>Objects:</u> {block.level[1]:#x} "
+            f"<img src='data:image/png;base64,{image_data}'>"
+        )
 
     def _paint_block(self, painter: QPainter, pos: QPoint, block: _Block):
         rect = QRect(pos, QSize(self.block_width, self.block_height))
