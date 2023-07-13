@@ -1,4 +1,5 @@
 import math
+from dataclasses import dataclass
 from random import randint, seed
 
 from PySide6.QtCore import QPoint, QRect, QSize
@@ -242,42 +243,66 @@ class ByteView(QWidget):
             painter.drawLine(0, y, self.width(), y)
 
 
+@dataclass
+class _Block:
+    color: QColor
+    name: str
+    size: int
+
+
 class LevelBlockView(ByteView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.block_height = 100  # px
-        self.block_width = 160  # px
+        self.block_width = 170  # px
 
     def heightForWidth(self, width):
         if not self.levels_in_order:
             return 600
 
-        potential_blocks = 0
-
-        if self.first_level_start != 0:
-            potential_blocks += 1  # code/unknown
-
-        current_pos = self.first_level_start % PRG_BANK_SIZE
-
-        for _, level_start, level_length in self.levels_in_order:
-            level_start %= PRG_BANK_SIZE
-
-            if current_pos != level_start:
-                potential_blocks += 1  # gap
-                current_pos = level_start
-
-            potential_blocks += 1  # level
-            current_pos += level_length + 1
-
-        if current_pos != PRG_BANK_SIZE:
-            potential_blocks += 1
+        block_count = len(self._parse_levels_for_blocks())
 
         blocks_per_line = max(1, width // self.block_width)
 
-        lines = math.ceil(potential_blocks / blocks_per_line)
+        lines = math.ceil(block_count / blocks_per_line)
 
         return lines * self.block_height
+
+    def _parse_levels_for_blocks(self):
+        potential_blocks: list[_Block] = []
+
+        current_pos = self.first_level_start
+
+        prg_start = self.first_level_start // PRG_BANK_SIZE * PRG_BANK_SIZE
+
+        if self.first_level_start != prg_start:
+            potential_blocks.append(
+                _Block(QColorConstants.Gray, f"0x{prg_start:x}: Code/Unknown", current_pos % PRG_BANK_SIZE)
+            )
+
+        for object_set, abs_level_start, level_length in self.levels_in_order:
+            if current_pos != abs_level_start:
+                potential_blocks.append(
+                    _Block(QColorConstants.Red, f"0x{current_pos:x}: Unused Space", abs_level_start - current_pos)
+                )
+                current_pos = abs_level_start
+
+            potential_blocks.append(
+                _Block(
+                    self._random_colors[object_set],
+                    f"0x{abs_level_start:x}: {OBJECT_SET_NAMES[object_set]}",
+                    level_length,
+                )
+            )
+            current_pos += level_length + 1
+
+        if current_pos % PRG_BANK_SIZE != 0:
+            rest = PRG_BANK_SIZE - current_pos % PRG_BANK_SIZE
+
+            potential_blocks.append(_Block(QColorConstants.Red, "Unused Space", rest))
+
+        return potential_blocks
 
     def _starting_point_by_index(self, index: int):
         view_width = self.width() // self.block_width * self.block_width
@@ -295,10 +320,10 @@ class LevelBlockView(ByteView):
 
         return QPoint(x * self.block_width, y * self.block_height)
 
-    def _paint_square(self, painter: QPainter, pos: QPoint, color: QColor, level_size: int, name: str):
+    def _paint_block(self, painter: QPainter, pos: QPoint, block: _Block):
         rect = QRect(pos, QSize(self.block_width, self.block_height))
 
-        painter.fillRect(rect, QBrush(color))
+        painter.fillRect(rect, QBrush(block.color))
 
         painter.setPen(QColorConstants.Black)
         painter.drawRect(rect)
@@ -306,53 +331,11 @@ class LevelBlockView(ByteView):
         name_pos = pos + QPoint(5, self.block_height // 3)
         size_pos = pos + QPoint(5, 2 * self.block_height // 3)
 
-        painter.drawText(name_pos, f"{name}")
-        painter.drawText(size_pos, f"Size: {level_size} Bytes ({round(100 / PRG_BANK_SIZE * level_size, 1)} %)")
-
-    def _draw_free_memory(self, painter, index, size):
-        self._paint_square(
-            painter,
-            self._starting_point_by_index(index),
-            QColorConstants.Red,
-            size,
-            "Unused Space",
-        )
+        painter.drawText(name_pos, f"{block.name}")
+        painter.drawText(size_pos, f"Size: {block.size} Bytes ({round(100 / PRG_BANK_SIZE * block.size, 1)} %)")
 
     def paintEvent(self, event: QPaintEvent):
         p = QPainter(self)
 
-        index = 0
-
-        self._paint_square(
-            p,
-            self._starting_point_by_index(index),
-            QColorConstants.Gray,
-            self.first_level_start % PRG_BANK_SIZE,
-            "Game Code/Unknown",
-        )
-
-        index += 1
-
-        current_pos = self.first_level_start
-
-        for object_set, level_start, level_length in self.levels_in_order:
-            if current_pos != level_start:
-                self._draw_free_memory(p, index, level_start - current_pos)
-
-                index += 1
-                current_pos = level_start
-
-            self._paint_square(
-                p,
-                self._starting_point_by_index(index),
-                self._random_colors[object_set],
-                level_length,
-                f"{OBJECT_SET_NAMES[object_set]} Level",
-            )
-
-            index += 1
-
-            current_pos += level_length + 1
-
-        if current_pos % PRG_BANK_SIZE < PRG_BANK_SIZE:
-            self._draw_free_memory(p, index, PRG_BANK_SIZE - current_pos % PRG_BANK_SIZE)
+        for index, block in enumerate(self._parse_levels_for_blocks()):
+            self._paint_block(p, self._starting_point_by_index(index), block)
