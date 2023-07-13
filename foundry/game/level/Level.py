@@ -99,7 +99,11 @@ class Level(LevelLike):
         self._parse_header()
 
         object_data = ROM.rom_data[self.object_offset :]
-        enemy_data = ROM.rom_data[self.enemy_offset :]
+
+        if self.enemy_offset == 0x0:
+            enemy_data = bytearray()
+        else:
+            enemy_data = ROM.rom_data[self.enemy_offset :]
 
         self._load_level_data(object_data, enemy_data)
 
