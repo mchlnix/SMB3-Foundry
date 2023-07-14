@@ -29,6 +29,8 @@ SETTINGS["editor/update_on_startup"] = False
 SETTINGS["editor/asked_for_startup"] = False
 SETTINGS["editor/version_to_ignore"] = ""
 
+SETTINGS["editor/settings_version"] = 0
+
 SETTINGS["level view/draw_mario"] = True
 SETTINGS["level view/draw_jumps"] = False
 SETTINGS["level view/draw_grid"] = False
@@ -68,6 +70,8 @@ class Settings(QSettings):
 
         self.sync()
 
+        self.update_by_version()
+
     @property
     def is_default(self):
         return self.organizationName() == "mchlnix" and self.applicationName() == "default"
@@ -96,3 +100,20 @@ class Settings(QSettings):
             return
         else:
             return super(Settings, self).sync()
+
+    def update_by_version(self):
+        if self.applicationName() == "foundry":
+            self._update_foundry_by_version()
+
+    def _update_foundry_by_version(self):
+        while True:
+            settings_version = self.value("editor/settings_version")
+
+            if settings_version == 0:
+                print("Updated to version 1")
+                self.setValue("world view/show level pointers", True)
+
+                self.setValue("editor/settings_version", settings_version + 1)
+                continue
+
+            break
