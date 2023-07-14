@@ -282,6 +282,9 @@ class WorldMapLevelSelect(QScrollArea):
         level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
 
         world_settings = Settings()
+        world_settings.setValue(
+            "world view/show level pointers", Settings("mchlnix", "foundry").value("world view/show level pointers")
+        )
         world_settings.setValue("world view/show level previews", True)
         world_settings.setValue("world view/animated tiles", True)
         world_settings.setValue("world view/show border", True)

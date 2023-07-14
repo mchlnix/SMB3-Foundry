@@ -47,7 +47,7 @@ _settings: dict[str, str | int | bool] = {
     "world view/show grid": False,
     "world view/show border": False,
     "world view/animated tiles": True,
-    "world view/show level pointers": False,
+    "world view/show level pointers": True,
     "world view/show level previews": False,
     "world view/show sprites": True,
     "world view/show start position": False,

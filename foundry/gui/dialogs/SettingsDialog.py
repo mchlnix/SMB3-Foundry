@@ -150,6 +150,18 @@ class SettingsDialog(CustomDialog):
         layout = QVBoxLayout()
         self.gui_box.setLayout(layout)
 
+        level_highlight_layout = QHBoxLayout()
+        level_highlight_layout.addWidget(QLabel("Highlight Levels in LevelSelector World Maps:"))
+        level_highlight_layout.addStretch(1)
+
+        self.level_highlight_check_box = QCheckBox("Enabled")
+        self.level_highlight_check_box.setChecked(self.settings.value("world view/show level pointers"))
+        self.level_highlight_check_box.stateChanged.connect(self._update_settings)
+
+        level_highlight_layout.addWidget(self.level_highlight_check_box)
+
+        self.gui_box.layout().addLayout(level_highlight_layout)
+
         style_layout = QHBoxLayout()
 
         style_layout.addWidget(QLabel("Style:"))
@@ -264,6 +276,8 @@ class SettingsDialog(CustomDialog):
             self.settings.setValue("editor/resize_mode", RESIZE_LEFT_CLICK)
         else:
             self.settings.setValue("editor/resize_mode", RESIZE_RIGHT_CLICK)
+
+        self.settings.setValue("world view/show level pointers", self.level_highlight_check_box.isChecked())
 
         # setup style sheets
         for child_widget in self.gui_box.children():
