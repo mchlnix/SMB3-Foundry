@@ -283,9 +283,15 @@ class FoundryMainWindow(MainWindow):
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
         self.menu_toolbar.addAction(self.file_menu.settings_action)
+
         self.menu_toolbar.addSeparator()
+
         self.menu_toolbar.addAction(self.file_menu.open_rom_action)
         self.menu_toolbar.addAction(self.file_menu.save_rom_action)
+
+        self.menu_toolbar.addSeparator()
+
+        self.menu_toolbar.addAction(self.select_level_action)
 
         self.menu_toolbar.addSeparator()
 
