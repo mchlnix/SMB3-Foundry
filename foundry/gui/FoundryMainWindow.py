@@ -101,6 +101,9 @@ from smb3parse.objects.object_set import OBJECT_SET_NAMES
 from smb3parse.util.rom import Rom as SMB3Rom
 
 
+TOOLBAR_ICON_SIZE = QSize(20, 20)
+
+
 class FoundryMainWindow(MainWindow):
     def __init__(self, path_to_rom=""):
         super(FoundryMainWindow, self).__init__()
@@ -280,7 +283,7 @@ class FoundryMainWindow(MainWindow):
 
         self.menu_toolbar = QToolBar("Menu Toolbar", self)
         self.menu_toolbar.setOrientation(Qt.Horizontal)
-        self.menu_toolbar.setIconSize(QSize(20, 20))
+        self.menu_toolbar.setIconSize(TOOLBAR_ICON_SIZE)
 
         self.menu_toolbar.addAction(self.file_menu.settings_action)
 

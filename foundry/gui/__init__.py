@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
 
 WORLD_ITEMS = [
-    "World Maps",
     "World 1",
     "World 2",
     "World 3",
@@ -11,6 +10,7 @@ WORLD_ITEMS = [
     "World 7",
     "World 8",
     "Lost Levels",
+    "World Maps",
 ]
 
 OBJECT_SET_ITEMS = [

@@ -35,9 +35,9 @@ from smb3parse.objects.object_set import (
     WORLD_MAP_OBJECT_SET,
 )
 
-
-OVERWORLD_MAPS_INDEX = 0
-WORLD_1_INDEX = 1
+WORLD_1_INDEX = 0
+LOST_LEVELS_INDEX = 8
+OVERWORLD_MAPS_INDEX = 9
 
 
 class LevelSelector(QDialog):
@@ -99,9 +99,7 @@ class LevelSelector(QDialog):
         self.source_selector.addTab(stock_level_widget, "Stock Levels")
         self.source_selector.setTabIcon(0, icon("list.svg"))
 
-        for world_number in range(WORLD_COUNT - 1):
-            world_number += 1
-
+        for world_number in range(1, WORLD_COUNT):
             world_map_select = WorldMapLevelSelect(world_number)
             world_map_select.level_clicked.connect(self._on_level_selected_via_world_map)
             world_map_select.level_selected.connect(self._on_level_selected_via_world_map)
@@ -133,7 +131,7 @@ class LevelSelector(QDialog):
 
         self.setLayout(main_layout)
 
-        self.world_list.setCurrentRow(1)  # select Level 1-1
+        self.world_list.setCurrentRow(WORLD_1_INDEX)  # select Level 1-1
 
         if not ROM().additional_data.managed_level_positions:
             self.on_world_click()
@@ -163,11 +161,16 @@ class LevelSelector(QDialog):
 
         assert index >= 0
 
+        if index == OVERWORLD_MAPS_INDEX:
+            world_number = 0  # world maps
+        else:
+            world_number = index + 1
+
         self.level_list.clear()
 
         # skip first meaningless item
         for level in Level.offsets[1:]:
-            if level.game_world == index:
+            if level.game_world == world_number:
                 if level.name:
                     self.level_list.addItem(level.name)
 
@@ -181,16 +184,25 @@ class LevelSelector(QDialog):
 
         assert index >= 0
 
+        level_is_lost = self.world_list.currentRow() == LOST_LEVELS_INDEX
         level_is_overworld = self.world_list.currentRow() == OVERWORLD_MAPS_INDEX
+
+        self.world_index = self.world_list.currentRow() + 1
 
         if level_is_overworld:
             level_array_offset = index + 1
             self.level_name = ""
         else:
-            level_array_offset = Level.world_indexes[self.world_list.currentRow()] + index + 1
-            self.level_name = f"World {self.world_list.currentRow()}, "
+            level_array_offset = Level.world_indexes[self.world_index] + index + 1
 
-        self.world_index = self.world_list.currentRow()
+            if level_is_lost:
+                self.level_name = "Lost World, "
+            else:
+                self.level_name = f"World {self.world_index}, "
+
+        if level_is_lost:
+            # selected a "lost level" that isn't actually in world 9
+            self.world_index = 1
 
         self.level_name += f"{Level.offsets[level_array_offset].name}"
 
