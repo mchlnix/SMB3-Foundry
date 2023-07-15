@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QScrollArea,
     QScrollBar,
+    QSizePolicy,
     QTabWidget,
     QVBoxLayout,
     QWidget,
@@ -300,6 +301,8 @@ class WorldMapLevelSelect(QScrollArea):
 
         self.setMouseTracking(True)
 
+        self.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
     def mouseDoubleClickEvent(self, event: QMouseEvent):
         self._try_emit(event, self.level_selected)
 
@@ -347,8 +350,11 @@ class WorldMapLevelSelect(QScrollArea):
             level_signal.emit(self.world.level_name_at_position(x, y), level_pointer.data)
 
     def sizeHint(self) -> QSize:
-        orig_size = super(WorldMapLevelSelect, self).sizeHint()
+        orig_size: QSize = super(WorldMapLevelSelect, self).sizeHint()
+        widget_size: QSize = self.widget().sizeHint()
+
+        size = QSize(orig_size.width(), widget_size.height())
 
         scrollbar_width = QScrollBar().sizeHint().width()
 
-        return orig_size.grownBy(QMargins(scrollbar_width, scrollbar_width, 0, 0))
+        return size.grownBy(QMargins(scrollbar_width, scrollbar_width, 0, 0))
