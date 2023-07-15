@@ -273,7 +273,17 @@ class SettingsDialog(CustomDialog):
         self.powerup_combo_box.setCurrentIndex(self.settings.value("editor/default_powerup"))
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
 
-        command_layout.addWidget(self.powerup_combo_box)
+        self.starman_checkbox = QCheckBox()
+        self.starman_checkbox.setIcon(self._load_from_png(18, 53))
+        self.starman_checkbox.setChecked(self.settings.value("editor/powerup_starman"))
+        self.starman_checkbox.stateChanged.connect(self._update_settings)
+
+        powerup_layout = QHBoxLayout()
+
+        powerup_layout.addWidget(self.powerup_combo_box, stretch=1)
+        powerup_layout.addWidget(self.starman_checkbox)
+
+        command_layout.addLayout(powerup_layout)
 
         # ----------------------
 
@@ -325,6 +335,7 @@ class SettingsDialog(CustomDialog):
         self.settings.setValue("level view/object_tooltip_enabled", self._tooltip_check_box.isChecked())
 
         self.settings.setValue("editor/default_powerup", self.powerup_combo_box.currentIndex())
+        self.settings.setValue("editor/powerup_starman", self.starman_checkbox.isChecked())
 
         self.update()
 
