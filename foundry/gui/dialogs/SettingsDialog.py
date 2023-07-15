@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from PySide6.QtCore import QRect, QStandardPaths
 from PySide6.QtGui import QColor, QIcon, QImage, QPixmap, Qt
 from PySide6.QtWidgets import (
@@ -40,17 +42,38 @@ POWERUPS_X = 1
 POWERUPS_Y = 2
 POWERUPS_VALUE = 3
 POWERUPS_PWING = 4
+
+
+@dataclass
+class PowerupEntry:
+    description: str
+    png_x: int
+    png_y: int
+    power_up_code: int
+    has_p_wing: bool
+
+    @staticmethod
+    def from_tuple(self, values):
+        return PowerupEntry(*values)
+
+    def to_tuple(self):
+        return self.description, self.png_x, self.png_y, self.power_up_code, self.has_p_wing
+
+    def __iter__(self):
+        return iter(self.to_tuple())
+
+
 POWERUPS = [
-    ("Small Mario", 32, 53, 0, False),
-    ("Big Mario", 6, 48, POWERUP_MUSHROOM, False),
-    ("Raccoon Mario", 57, 53, POWERUP_RACCOON, False),
-    ("Fire Mario", 16, 53, POWERUP_FIREFLOWER, False),
-    ("Tanooki Mario", 54, 53, POWERUP_TANOOKI, False),
-    ("Frog Mario", 56, 53, POWERUP_FROG, False),
-    ("Hammer Mario", 58, 53, POWERUP_HAMMER, False),
+    PowerupEntry("Small Mario", 32, 53, 0, False),
+    PowerupEntry("Big Mario", 6, 48, POWERUP_MUSHROOM, False),
+    PowerupEntry("Raccoon Mario", 57, 53, POWERUP_RACCOON, False),
+    PowerupEntry("Fire Mario", 16, 53, POWERUP_FIREFLOWER, False),
+    PowerupEntry("Tanooki Mario", 54, 53, POWERUP_TANOOKI, False),
+    PowerupEntry("Frog Mario", 56, 53, POWERUP_FROG, False),
+    PowerupEntry("Hammer Mario", 58, 53, POWERUP_HAMMER, False),
     # Even though P-Wing can *technically* be combined, it only really works with Raccoon and Tanooki suit
-    ("Raccoon Mario with P-Wing", 55, 53, POWERUP_RACCOON, True),
-    ("Tanooki Mario with P-Wing", 55, 53, POWERUP_TANOOKI, True),
+    PowerupEntry("Raccoon Mario with P-Wing", 55, 53, POWERUP_RACCOON, True),
+    PowerupEntry("Tanooki Mario with P-Wing", 55, 53, POWERUP_TANOOKI, True),
 ]
 
 png = QImage(str(data_dir / "gfx.png"))

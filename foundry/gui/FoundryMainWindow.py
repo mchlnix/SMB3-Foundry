@@ -89,6 +89,8 @@ from foundry.gui.menus.rom_menu import RomMenu
 from foundry.gui.menus.view_menu import ViewMenu
 from foundry.gui.settings import Settings
 from smb3parse.constants import (
+    POWERUP_ADDITION_PWING,
+    POWERUP_ADDITION_STARMAN,
     STARTING_WORLD_INDEX_ADDRESS,
     TILE_LEVEL_1,
     Title_DebugMenu,
@@ -547,41 +549,45 @@ class FoundryMainWindow(MainWindow):
         return True
 
     def _set_default_powerup(self, rom: SMB3Rom) -> bool:
-        assert isinstance(self.settings.value("editor/default_powerup"), int)
+        powerup = POWERUPS[self.settings.value("editor/default_powerup")]
+        plus_starman = self.settings.value("editor/powerup_starman")
 
-        *_, powerup, hasPWing = POWERUPS[self.settings.value("editor/default_powerup")]
-
-        rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup]))
+        rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup.power_up_code]))
 
         nop = 0xEA
         rts = 0x60
         lda = 0xA9
-        staAbsolute = 0x8D
+        sta_abs = 0x8D
 
-        # If a P-wing powerup is selected, another variable needs to be set with the P-wing value
-        # This piece of code overwrites a part of Title_DebugMenu
-        if hasPWing:
+        # If a P-wing powerup or starman is selected, another variable needs to be set with the P-wing/Star Man value
+        debug_bytes = bytearray()
+
+        if plus_starman:
+            map_power_starman_hi = 0x03
+            map_power_starman_lo = 0xF2
+
+            debug_bytes.extend(
+                [
+                    lda,
+                    POWERUP_ADDITION_STARMAN,
+                    sta_abs,
+                    map_power_starman_lo,
+                    map_power_starman_hi,
+                ]
+            )
+
+        if powerup.has_p_wing:
             Map_Power_DispHigh = 0x03
             Map_Power_DispLow = 0xF3
 
-            # We need to start one byte before Title_DebugMenu to remove the RTS of Title_PrepForWorldMap
-            # The assembly code below reads as follows:
-            # LDA 0x08
-            # STA $03F3
-            # RTS
-            rom.write(
-                Title_DebugMenu - 0x1,
-                bytes(
-                    [
-                        lda,
-                        0x8,
-                        staAbsolute,
-                        Map_Power_DispLow,
-                        Map_Power_DispHigh,
-                        # The RTS to get out of the now extended Title_PrepForWorldMap
-                        rts,
-                    ]
-                ),
+            debug_bytes.extend(
+                [
+                    lda,
+                    POWERUP_ADDITION_PWING,
+                    sta_abs,
+                    Map_Power_DispLow,
+                    Map_Power_DispHigh,
+                ]
             )
 
             # Remove code that resets the powerup value by replacing it with no-operations
@@ -590,6 +596,17 @@ class FoundryMainWindow(MainWindow):
             # set as Raccoon Mario instead of P-wing
             Map_Power_DispResetLocation = 0x3C5A2
             rom.write(Map_Power_DispResetLocation, bytes([nop, nop, nop]))
+
+        if debug_bytes:
+            # add rts, to jump back out of the debug menu
+            debug_bytes.append(rts)
+
+            # We need to start one byte before Title_DebugMenu to remove the RTS of Title_PrepForWorldMap
+            # The assembly code below reads as follows:
+            # LDA 0x08
+            # STA $03F3
+            # RTS
+            rom.write(Title_DebugMenu - 0x1, debug_bytes)
 
         return True
 

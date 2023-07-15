@@ -17,6 +17,7 @@ SETTINGS["editor/instaplay_emulator"] = "fceux"
 SETTINGS["editor/instaplay_arguments"] = "%f"
 SETTINGS["editor/object_scroll_enabled"] = False
 SETTINGS["editor/default_powerup"] = 0
+SETTINGS["editor/powerup_starman"] = False
 
 SETTINGS["editor/resize_mode"] = RESIZE_LEFT_CLICK
 SETTINGS["editor/gui_style"] = ""  # initially blank, since we can't call load_stylesheet until the app is started
