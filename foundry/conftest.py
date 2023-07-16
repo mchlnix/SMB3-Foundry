@@ -66,7 +66,7 @@ def compare_images(image_name: str, ref_image_path: str, gen_image: QPixmap):
 
 
 @pytest.fixture
-def main_window(qtbot):
+def main_window(qtbot, rom):
     # mock the rom loading, since it is a modal dialog. the rom is loaded in conftest.py
     setattr(FoundryMainWindow, "on_open_rom", mocked_open_rom_and_level_select)
     setattr(FoundryMainWindow, "showMaximized", lambda _: None)  # don't open automatically
