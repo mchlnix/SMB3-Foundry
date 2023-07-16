@@ -1,3 +1,4 @@
+from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PaletteGroup, _palette_group_cache
 from foundry.game.gfx.drawable.Block import get_block, get_tile
 
@@ -9,6 +10,10 @@ def restore_all_palettes():
     get_tile.cache_clear()
     get_block.cache_clear()
     PaletteGroup.changed = False
+
+
+def restore_graphics():
+    GraphicsSet.from_number.cache_clear()
 
 
 def change_color(

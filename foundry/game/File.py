@@ -60,6 +60,20 @@ class ROM(Rom):
 
             ROM.additional_data = AdditionalData.from_str(data[additional_data_start:].decode("utf-8"), ROM())
 
+        ROM.reset_graphics()
+
+    @staticmethod
+    def reset_graphics():
+        """
+        Clears all the graphics related caches, so they have to be read in again, when a new ROM is loaded.
+        :return:
+        """
+        # circular import with ROM
+        from foundry.game.gfx import restore_all_palettes, restore_graphics
+
+        restore_all_palettes()
+        restore_graphics()
+
     @staticmethod
     def reload_from_file():
         additional_data = ROM.additional_data
