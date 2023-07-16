@@ -111,7 +111,6 @@ class Settings(QSettings):
             settings_version = self.value("editor/settings_version")
 
             if settings_version == 0:
-                print("Updated to version 1")
                 self.setValue("world view/show level pointers", True)
 
                 self.setValue("editor/settings_version", settings_version + 1)
