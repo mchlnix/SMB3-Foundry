@@ -5,6 +5,7 @@ from PySide6.QtGui import QWheelEvent, Qt
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.gui.dialogs.HeaderEditor import HeaderEditor
 from foundry.gui.LevelView import LevelView
+from smb3parse.data_points import Position
 from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, PLAINS_OBJECT_SET
 
 
@@ -117,3 +118,18 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
     new_type = level_view.object_at(pos).type
 
     assert new_type == original_type + type_change, (original_type, new_type)
+
+
+def test_select_one_of_same_block_on_click(level_view: LevelView, qtbot):
+    obj_pos = Position(10, 10, 0)
+
+    # 1,0x04,0x04,1,1,<4>,9,0,0,'?' with Single coin
+    obj_bg = level_view.level_ref.level.add_object(domain=0x01, object_index=0x04, pos=obj_pos, length=3, index=100)
+    obj_fg = level_view.level_ref.level.add_object(domain=0x01, object_index=0x04, pos=obj_pos, length=3, index=101)
+
+    assert None not in [obj_bg, obj_fg]
+    assert level_view.get_selected_objects() == []
+
+    qtbot.mouseClick(level_view, Qt.LeftButton, pos=level_view.from_level_point(obj_pos))
+
+    assert level_view.get_selected_objects() == [obj_fg]

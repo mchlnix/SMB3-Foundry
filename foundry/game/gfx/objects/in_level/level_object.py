@@ -1008,7 +1008,7 @@ class LevelObject(InLevelObject):
         if not isinstance(other, LevelObject):
             return False
         else:
-            return self.to_bytes() == other.to_bytes()
+            return self.to_bytes() == other.to_bytes() and self.index_in_level == other.index_in_level
 
     def __lt__(self, other):
         return self.index_in_level < other.index_in_level
