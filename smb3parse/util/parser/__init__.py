@@ -302,7 +302,7 @@ def gen_levels_in_rom(
 
     print("---------------------", level_count, "------------------------")
 
-    level_data = pathlib.Path("data/levels.dat")
+    level_data = pathlib.Path(__file__).parent.parent.parent.joinpath("data", "levels.dat")
 
     missing = 0
     levels: dict[int, set[int]] = defaultdict(set)
