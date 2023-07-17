@@ -308,12 +308,13 @@ class LevelView(MainView):
             self._stop_resize()
 
         elif self.context_menu is not None:
-            if self.get_selected_objects():
-                menu = self.context_menu.as_object_menu()
-            else:
-                menu = self.context_menu.as_background_menu()
-
             menu_pos = self.mapToGlobal(event.position().toPoint())
+            object_under_cursor = self.object_at(event.position())
+
+            if self.get_selected_objects():
+                menu = self.context_menu.as_object_menu(object_under_cursor)
+            else:
+                menu = self.context_menu.as_background_menu(object_under_cursor)
 
             menu.popup(menu_pos)
 

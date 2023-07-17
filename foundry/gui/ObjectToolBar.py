@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt, Signal, SignalInstance
 from PySide6.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
 
+from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.gui.ObjectToolBox import ObjectIcon
@@ -55,6 +56,12 @@ class ObjectToolBar(QWidget):
             self.object_selected.emit(object_icon.object)
 
     def select_object(self, level_object: InLevelObject):
+        if not isinstance(level_object, (LevelObject, EnemyItem)):
+            return
+
+        if (level_object := self.tool_box.get_equivalent(level_object)) is None:
+            return
+
         self.tool_box.select_object(level_object)
 
         self.current_object_icon.set_object(level_object)

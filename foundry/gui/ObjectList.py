@@ -1,3 +1,4 @@
+from PySide6.QtCore import QModelIndex
 from PySide6.QtGui import QMouseEvent, Qt
 from PySide6.QtWidgets import QListWidget, QSizePolicy, QWidget
 
@@ -66,7 +67,11 @@ class ObjectList(QListWidget):
             event.ignore()
             return
 
-        self.context_menu.as_list_menu().popup(event.globalPos())
+        index: QModelIndex = self.indexFromItem(item_under_mouse)
+
+        level_object = self.level_ref.level.objects[index.row()]
+
+        self.context_menu.as_list_menu(level_object).popup(event.globalPos())
 
     def update_content(self):
         level_objects = self.level_ref.get_all_objects()

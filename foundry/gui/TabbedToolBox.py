@@ -90,3 +90,6 @@ class TabbedToolBox(QTabWidget):
 
     def add_recent_object(self, level_object: InLevelObject):
         self._recent_toolbox.place_at_front(level_object)
+
+    def get_equivalent(self, level_object: LevelObject | EnemyItem):
+        return self._objects_toolbox.get_equivalent(level_object) or self._enemies_toolbox.get_equivalent(level_object)

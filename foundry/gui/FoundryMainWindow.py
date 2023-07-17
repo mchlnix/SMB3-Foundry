@@ -871,7 +871,11 @@ class FoundryMainWindow(MainWindow):
                 self.place_object_from_dropdown(pos)
             else:
                 self.add_object_at(pos)
+        elif action is self.context_menu.grab_selected_object_action:
+            assert self.context_menu.object_to_grab is not None
 
+            self.object_toolbar.select_object(self.context_menu.object_to_grab)
+            self.object_dropdown.select_object(self.context_menu.object_to_grab)
         elif action is self.context_menu.cut_action:
             self._cut_objects()
         elif action is self.context_menu.copy_action:

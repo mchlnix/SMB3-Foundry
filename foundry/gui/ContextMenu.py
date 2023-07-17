@@ -1,11 +1,12 @@
 from enum import Enum
-from typing import Sequence
+from typing import Self, Sequence
 
 from PySide6.QtCore import QPoint, SignalInstance
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu
 
 from foundry import icon
+from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from smb3parse.data_points import Position
@@ -68,8 +69,10 @@ class LevelContextMenu(ContextMenu):
     def __init__(self, level_ref: LevelRef):
         super(LevelContextMenu, self).__init__(level_ref)
 
-        self.add_object_action = self.addAction("Add Object")
+        self.add_object_action = self.addAction("Place Object")
         self.add_object_action.setIcon(icon("plus.svg"))
+        self.grab_selected_object_action = self.addAction("Grab Object")
+        self.grab_selected_object_action.setIcon(icon("crosshair.svg"))
 
         self.addSeparator()
 
@@ -92,18 +95,27 @@ class LevelContextMenu(ContextMenu):
         self.remove_action = self.addAction("Remove")
         self.remove_action.setIcon(icon("minus.svg"))
 
-    def as_object_menu(self) -> "LevelContextMenu":
-        return self._setup_items(CMMode.OBJ)
+        self.object_to_grab: LevelObject | EnemyItem | None = None
 
-    def as_background_menu(self) -> "LevelContextMenu":
-        return self._setup_items(CMMode.BG)
+    def as_object_menu(self, level_object: LevelObject | EnemyItem | None) -> Self:
+        return self._setup_items(CMMode.OBJ, level_object)
 
-    def as_list_menu(self) -> "LevelContextMenu":
-        return self._setup_items(CMMode.LIST)
+    def as_background_menu(self, level_object: LevelObject | EnemyItem | None) -> Self:
+        return self._setup_items(CMMode.BG, level_object)
 
-    def _setup_items(self, mode: CMMode):
+    def as_list_menu(self, level_object: LevelObject | EnemyItem | None) -> Self:
+        return self._setup_items(CMMode.LIST, level_object)
+
+    def _setup_items(self, mode: CMMode | None, object_under_cursor: LevelObject | EnemyItem | None) -> Self:
+        self.object_to_grab = object_under_cursor
+
         objects_selected = bool(self.level_ref.selected_objects)
         objects_copied = bool(self.copied_objects)
+
+        self.grab_selected_object_action.setEnabled(object_under_cursor is not None)
+        self.grab_selected_object_action.setText(
+            f"Grab '{object_under_cursor.name}'" if object_under_cursor else "Nothing to grab"
+        )
 
         self.cut_action.setEnabled(not mode == CMMode.BG and objects_selected)
         self.copy_action.setEnabled(not mode == CMMode.BG and objects_selected)

@@ -245,6 +245,16 @@ class ObjectToolBox(QWidget):
     def has_object(self, level_object):
         return self.index_of_object(level_object) != -1
 
+    def get_equivalent(self, level_object):
+        for index in range(self._layout.count()):
+            internal_object = self._layout.itemAtPosition(index // 2, index % 2).widget().object
+
+            if internal_object.object_set == level_object.object_set and internal_object.type == level_object.type:
+                return internal_object
+
+        else:
+            return None
+
     def index_of_object(self, level_object):
         for index in range(self._layout.count()):
             if self._layout.itemAtPosition(index // 2, index % 2).widget().object == level_object:
