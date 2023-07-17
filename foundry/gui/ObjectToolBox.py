@@ -49,12 +49,14 @@ class ObjectIcon(QWidget):
     MAX_SIZE = MIN_SIZE * 2
 
     clicked: SignalInstance = Signal()
-    object_placed: SignalInstance = Signal()
 
     def __init__(self, level_object: Optional[InLevelObject] = None):
         super(ObjectIcon, self).__init__()
 
         size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        # set to False so move event is only fired, when they are clicked and dragged
+        self.setMouseTracking(False)
 
         self.setSizePolicy(size_policy)
 
@@ -92,8 +94,9 @@ class ObjectIcon(QWidget):
 
         drag.setMimeData(mime_data)
 
-        if drag.exec() == Qt.MoveAction:
-            self.object_placed.emit()
+        self.clicked.emit()
+
+        drag.exec()
 
     def set_object(self, level_object: Optional[InLevelObject]):
         if isinstance(level_object, Jump):
@@ -156,7 +159,6 @@ class ObjectIcon(QWidget):
 
 class ObjectToolBox(QWidget):
     object_icon_clicked: SignalInstance = Signal(ObjectIcon)
-    object_placed: SignalInstance = Signal(ObjectIcon)
 
     def __init__(self, parent: Optional[QWidget] = None):
         super(ObjectToolBox, self).__init__(parent)
@@ -172,7 +174,6 @@ class ObjectToolBox(QWidget):
         icon = ObjectIcon(level_object)
 
         icon.clicked.connect(self._on_icon_clicked)
-        icon.object_placed.connect(lambda: self.object_placed.emit(icon))
 
         if index == -1:
             index = self._layout.count()

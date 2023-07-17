@@ -59,6 +59,7 @@ class ObjectToolBar(QWidget):
 
         self.current_object_icon.set_object(level_object)
         self.current_object_name.setText(level_object.name)
+        self.add_recent_object(level_object)
 
     def add_recent_object(self, level_object: InLevelObject):
         self.tool_box.add_recent_object(level_object)
