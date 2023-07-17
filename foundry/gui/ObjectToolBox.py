@@ -170,6 +170,14 @@ class ObjectToolBox(QWidget):
 
         self._layout.setAlignment(Qt.AlignHCenter)
 
+    def sizeHint(self):
+        orig_size_hint: QSize = super().sizeHint()
+        width = 2 * ObjectIcon.MIN_SIZE.width()
+
+        orig_size_hint.setWidth(width)
+
+        return orig_size_hint
+
     def add_object(self, level_object: InLevelObject, index: int = -1):
         icon = ObjectIcon(level_object)
 
