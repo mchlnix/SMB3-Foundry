@@ -1,6 +1,17 @@
 from typing import Optional
 
 
+# nn - actual number to be used
+# ll - short for 00ll, 2 byte address in the zero page, basically RAM
+# hhll - full address, 2 bytes high, 2 bytes low
+RTS = 0x60
+NOP = 0xEA
+LDY_CONST = 0xA0  # LDY #$nn
+LDA_CONST = 0xA9  # LDA #$nn
+STA_OFFSET = 0x8D  # STA $hhll
+STY_RAM = 0x84  # STY $ll
+
+
 def little_endian(two_bytes: bytearray) -> int:
     """
     Takes a byte array of length 2 and returns the integer it represents in little endian.

@@ -100,6 +100,7 @@ from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
+from smb3parse.util import LDY_CONST, STY_RAM
 from smb3parse.util.rom import Rom as SMB3Rom
 
 
@@ -514,8 +515,12 @@ class FoundryMainWindow(MainWindow):
         rom.write(after_player_init, 0x20)
         rom.write_little_endian(after_player_init + 1, 0xACAE)
 
-        rom.write(0x30CBE, bytes([0xA0, 0x04]))
-        rom.write(0x30CC0, bytes([0x84, 0xDE]))
+        title_screen_state_inject_point = 0x30CBE
+        title_screen_state_after_selecting_player_count = 0x04
+        ram_title_screen_address = 0xDE
+
+        rom.write(title_screen_state_inject_point, bytes([LDY_CONST, title_screen_state_after_selecting_player_count]))
+        rom.write(title_screen_state_inject_point + 2, bytes([STY_RAM, ram_title_screen_address]))
 
     def _put_current_level_to_level_1_1(self, rom: SMB3Rom) -> bool:
         # load world-1 data
