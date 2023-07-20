@@ -2,6 +2,7 @@ import shlex
 import subprocess
 from pathlib import Path
 
+from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QCloseEvent, QUndoStack, Qt
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QPushButton
 
@@ -150,6 +151,8 @@ class MainWindow(QMainWindow):
         else:
             emulator = self.settings.value("editor/instaplay_emulator")
 
+        self.setDisabled(True)
+
         try:
             subprocess.run([emulator, *arguments])
         except Exception as e:
@@ -158,6 +161,10 @@ class MainWindow(QMainWindow):
                 "Emulator command failed.",
                 f"Check it under File > Settings.\n{e}",
             )
+        finally:
+            QCoreApplication.processEvents()
+
+            self.setDisabled(False)
 
     def _save_changes_to_instaplay_rom(self, path_to_temp_rom) -> bool:
         return False
