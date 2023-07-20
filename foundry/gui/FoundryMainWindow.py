@@ -498,11 +498,24 @@ class FoundryMainWindow(MainWindow):
         if not self._set_default_powerup(temp_rom):
             return False
 
+        self._skip_title_screen(temp_rom)
+
         save_all_palette_groups(temp_rom)
 
         temp_rom.save_to(path_to_temp_rom)
 
         return True
+
+    @staticmethod
+    def _skip_title_screen(rom: SMB3Rom):
+        # skip rendering the title screen by jumping to the code after selecting player count (1P or 2P)
+        after_player_init = 0x3090C
+
+        rom.write(after_player_init, 0x20)
+        rom.write_little_endian(after_player_init + 1, 0xACAE)
+
+        rom.write(0x30CBE, bytes([0xA0, 0x04]))
+        rom.write(0x30CC0, bytes([0x84, 0xDE]))
 
     def _put_current_level_to_level_1_1(self, rom: SMB3Rom) -> bool:
         # load world-1 data
