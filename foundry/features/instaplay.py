@@ -1,6 +1,8 @@
 from foundry.game.level.Level import Level
 from foundry.gui.dialogs.SettingsDialog import PowerupEntry
 from smb3parse.constants import (
+    BASE_OFFSET,
+    PAGE_A000_OFFSET,
     POWERUP_ADDITION_PWING,
     POWERUP_ADDITION_STARMAN,
     STARTING_WORLD_INDEX_ADDRESS,
@@ -10,8 +12,8 @@ from smb3parse.constants import (
 )
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.levels.world_map import WorldMap
-from smb3parse.util import LDA_CONST, LDY_CONST, NOP, RTS, STA_OFFSET, STY_RAM
-from smb3parse.util.rom import Rom
+from smb3parse.util import JSR, LDA_CONST, LDY_CONST, NOP, RTS, STA_OFFSET, STY_RAM
+from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
 
 class CantFindFirstTile(LookupError):
@@ -98,17 +100,22 @@ class InstaPlayer:
 
     def skip_title_screen(self):
         # skip rendering the title screen by jumping to the code after selecting player count (1P or 2P)
-        after_player_init = 0x3090C
+        prg_24_offset = BASE_OFFSET + 24 * PRG_BANK_SIZE - PAGE_A000_OFFSET
 
-        self.rom.write(after_player_init, 0x20)
-        self.rom.write_little_endian(after_player_init + 1, 0xACAE)
+        after_player_init = prg_24_offset + 0xA8FC
+        title_screen_state_injection_rel = 0xACAE
 
-        title_screen_state_inject_point = 0x30CBE
+        self.rom.write(after_player_init, JSR)
+        self.rom.write_little_endian(after_player_init + 1, title_screen_state_injection_rel)
+
+        title_screen_state_injection_abs = prg_24_offset + title_screen_state_injection_rel
         title_screen_state_after_player_selection = 0x04
         ram_title_screen_address = 0xDE
 
-        self.rom.write(title_screen_state_inject_point, bytes([LDY_CONST, title_screen_state_after_player_selection]))
-        self.rom.write(title_screen_state_inject_point + 2, bytes([STY_RAM, ram_title_screen_address]))
+        self.rom.write(title_screen_state_injection_abs, LDY_CONST)
+        self.rom.write(title_screen_state_injection_abs + 1, title_screen_state_after_player_selection)
+        self.rom.write(title_screen_state_injection_abs + 2, STY_RAM)
+        self.rom.write(title_screen_state_injection_abs + 3, ram_title_screen_address)
 
 
 def _set_ram_value(value: int, ram_address) -> bytearray:

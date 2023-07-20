@@ -6,6 +6,7 @@ from typing import Optional
 # hhll - full address, 2 bytes high, 2 bytes low
 RTS = 0x60
 NOP = 0xEA
+JSR = 0x20  # JSR $hhll
 LDY_CONST = 0xA0  # LDY #$nn
 LDA_CONST = 0xA9  # LDA #$nn
 STA_OFFSET = 0x8D  # STA $hhll
