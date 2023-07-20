@@ -38,6 +38,7 @@ from foundry import (
     auto_save_rom_path,
     icon,
 )
+from foundry.features.instaplay import CantFindFirstTile, InstaPlayer, LevelNotAttached
 from foundry.game.File import ROM
 from foundry.game.additional_data import LevelOrganizer
 from foundry.game.gfx import restore_all_palettes
@@ -49,8 +50,6 @@ from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.EnemySizeBar import EnemySizeBar
-from foundry.gui.dialogs.HeaderEditor import HeaderEditor
-from foundry.gui.dialogs.JumpEditor import JumpEditor
 from foundry.gui.JumpList import JumpList
 from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.LevelSelector import LevelSelector
@@ -62,8 +61,6 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectSetSelector import ObjectSetSelector
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.ObjectToolBar import ObjectToolBar
-from foundry.gui.dialogs.PaletteViewer import SidePalette
-from foundry.gui.dialogs.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.asm import load_asm_filename
@@ -81,6 +78,8 @@ from foundry.gui.commands import (
     ToBackground,
     ToForeground,
 )
+from foundry.gui.dialogs import HeaderEditor, JumpEditor, SettingsDialog, SidePalette
+from foundry.gui.dialogs.SettingsDialog import POWERUPS
 from foundry.gui.level_settings.level_settings_dialog import LevelSettingsDialog
 from foundry.gui.m3l import load_m3l, load_m3l_filename, save_m3l
 from foundry.gui.menus.file_menu import FileMenu
@@ -88,21 +87,9 @@ from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.rom_menu import RomMenu
 from foundry.gui.menus.view_menu import ViewMenu
 from foundry.gui.settings import Settings
-from smb3parse.constants import (
-    POWERUP_ADDITION_PWING,
-    POWERUP_ADDITION_STARMAN,
-    STARTING_WORLD_INDEX_ADDRESS,
-    TILE_LEVEL_1,
-    Title_DebugMenu,
-    Title_PrepForWorldMap,
-)
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH
-from smb3parse.levels.world_map import WorldMap as SMB3World
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
-from smb3parse.util import LDY_CONST, STY_RAM
-from smb3parse.util.rom import Rom as SMB3Rom
-
 
 TOOLBAR_ICON_SIZE = QSize(20, 20)
 
@@ -493,138 +480,37 @@ class FoundryMainWindow(MainWindow):
     def _save_changes_to_instaplay_rom(self, path_to_temp_rom) -> bool:
         temp_rom = ROM.from_file(path_to_temp_rom)
 
-        if not self._put_current_level_to_level_1_1(temp_rom):
+        insta_player = InstaPlayer(temp_rom)
+
+        try:
+            insta_player.put_current_level_to_level_1_1(self.level_ref.level)
+
+        except CantFindFirstTile as e:
+            title = "Couldn't place level"
+            message = f"Could not find a level 1 tile in World {e.world} to put your level at."
+
+            QMessageBox.critical(self, title, message)
+
             return False
 
-        if not self._set_default_powerup(temp_rom):
+        except LevelNotAttached:
+            title = "Couldn't place level"
+            message = "The Level is not part of the rom yet (M3L?). Try saving it into the ROM first."
+
+            QMessageBox.critical(self, title, message)
+
             return False
 
-        self._skip_title_screen(temp_rom)
+        powerup = POWERUPS[self.settings.value("editor/default_powerup")]
+        starman = self.settings.value("editor/powerup_starman")
+
+        insta_player.set_default_powerup(powerup, with_starman=starman)
+
+        insta_player.skip_title_screen()
 
         save_all_palette_groups(temp_rom)
 
         temp_rom.save_to(path_to_temp_rom)
-
-        return True
-
-    @staticmethod
-    def _skip_title_screen(rom: SMB3Rom):
-        # skip rendering the title screen by jumping to the code after selecting player count (1P or 2P)
-        after_player_init = 0x3090C
-
-        rom.write(after_player_init, 0x20)
-        rom.write_little_endian(after_player_init + 1, 0xACAE)
-
-        title_screen_state_inject_point = 0x30CBE
-        title_screen_state_after_selecting_player_count = 0x04
-        ram_title_screen_address = 0xDE
-
-        rom.write(title_screen_state_inject_point, bytes([LDY_CONST, title_screen_state_after_selecting_player_count]))
-        rom.write(title_screen_state_inject_point + 2, bytes([STY_RAM, ram_title_screen_address]))
-
-    def _put_current_level_to_level_1_1(self, rom: SMB3Rom) -> bool:
-        # load world-1 data
-        if (world := self.level_ref.level.world) == 0:
-            world = 1
-
-        world_map = SMB3World.from_world_number(rom, world)
-
-        # find position of "level 1" tile in world map
-        for position in world_map.gen_positions():
-            if position.tile() == TILE_LEVEL_1:
-                break
-        else:
-            QMessageBox.critical(
-                self,
-                "Couldn't place level",
-                f"Could not find a level 1 tile in World {world} to put your level at.",
-            )
-            return False
-
-        if not self.level_ref.level.attached_to_rom:
-            QMessageBox.critical(
-                self,
-                "Couldn't place level",
-                "The Level is not part of the rom yet (M3L?). Try saving it into the ROM first.",
-            )
-            return False
-
-        # write level and enemy data of current level
-        (layout_address, layout_bytes), (
-            enemy_address,
-            enemy_bytes,
-        ) = self.level_ref.level.to_bytes()
-        rom.write(layout_address, layout_bytes)
-        rom.write(enemy_address, enemy_bytes)
-
-        # replace level information with that of current level
-        object_set_number = self.level_ref.object_set_number
-
-        world_map.replace_level_at_position((layout_address, enemy_address, object_set_number), position)
-
-        rom.write(STARTING_WORLD_INDEX_ADDRESS, world - 1)
-
-        return True
-
-    def _set_default_powerup(self, rom: SMB3Rom) -> bool:
-        powerup = POWERUPS[self.settings.value("editor/default_powerup")]
-        plus_starman = self.settings.value("editor/powerup_starman")
-
-        rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup.power_up_code]))
-
-        nop = 0xEA
-        rts = 0x60
-        lda = 0xA9
-        sta_abs = 0x8D
-
-        # If a P-wing powerup or starman is selected, another variable needs to be set with the P-wing/Star Man value
-        debug_bytes = bytearray()
-
-        if plus_starman:
-            map_power_starman_hi = 0x03
-            map_power_starman_lo = 0xF2
-
-            debug_bytes.extend(
-                [
-                    lda,
-                    POWERUP_ADDITION_STARMAN,
-                    sta_abs,
-                    map_power_starman_lo,
-                    map_power_starman_hi,
-                ]
-            )
-
-        if powerup.has_p_wing:
-            Map_Power_DispHigh = 0x03
-            Map_Power_DispLow = 0xF3
-
-            debug_bytes.extend(
-                [
-                    lda,
-                    POWERUP_ADDITION_PWING,
-                    sta_abs,
-                    Map_Power_DispLow,
-                    Map_Power_DispHigh,
-                ]
-            )
-
-            # Remove code that resets the powerup value by replacing it with no-operations
-            # Otherwise this code would copy the value of the normal powerup here
-            # (So if the powerup would be Raccoon Mario, Map_Power_Disp would also be
-            # set as Raccoon Mario instead of P-wing
-            Map_Power_DispResetLocation = 0x3C5A2
-            rom.write(Map_Power_DispResetLocation, bytes([nop, nop, nop]))
-
-        if debug_bytes:
-            # add rts, to jump back out of the debug menu
-            debug_bytes.append(rts)
-
-            # We need to start one byte before Title_DebugMenu to remove the RTS of Title_PrepForWorldMap
-            # The assembly code below reads as follows:
-            # LDA 0x08
-            # STA $03F3
-            # RTS
-            rom.write(Title_DebugMenu - 0x1, debug_bytes)
 
         return True
 
