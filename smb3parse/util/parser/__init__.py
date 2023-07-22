@@ -10,6 +10,7 @@ from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMap
 from smb3parse.objects.object_set import MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET
+from smb3parse.util import hex_int
 from smb3parse.util.parser.cpu import NesCPU
 from smb3parse.util.rom import Rom
 
@@ -313,8 +314,8 @@ def gen_levels_in_rom(
 
         world_no, *_, level_address, _, object_set_no, _ = line.split(",")
 
-        level_address = int(level_address, 16) - 9
-        object_set_num = int(object_set_no, 16)
+        level_address = hex_int(level_address) - 9
+        object_set_num = hex_int(object_set_no)
 
         if int(world_no) in [0, 9]:
             continue

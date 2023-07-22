@@ -2,6 +2,7 @@ from binascii import unhexlify
 from collections import defaultdict
 from pathlib import Path
 
+from smb3parse.util import hex_int
 
 BASE_OFFSET = 0x10
 """the size of the INES header identifying the rom"""
@@ -397,7 +398,7 @@ def update_global_offsets(path_to_global_list: str | Path):
             if label_name.startswith(("PRG0", "_")):
                 continue
 
-            global_address = int(hex_address, 16)
+            global_address = hex_int(hex_address)
 
             globals()[label_name] = BASE_OFFSET + global_address
 

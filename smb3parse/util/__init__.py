@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Optional
 
 
@@ -11,6 +12,9 @@ LDY_CONST = 0xA0  # LDY #$nn
 LDA_CONST = 0xA9  # LDA #$nn
 STA_OFFSET = 0x8D  # STA $hhll
 STY_RAM = 0x84  # STY $ll
+
+
+hex_int = partial(int, base=16)
 
 
 def little_endian(two_bytes: bytearray) -> int:

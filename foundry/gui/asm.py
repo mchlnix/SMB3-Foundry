@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from foundry import ASM_FILE_FILTER, NO_PARENT
 from foundry.gui.ObjectSetSelector import ObjectSetSelector
+from smb3parse.util import hex_int
 
 if TYPE_CHECKING:
     from foundry.game.level.Level import Level
@@ -39,7 +40,7 @@ def asm_to_bytes(asm: str) -> bytearray:
             bytes_in_line = bytearray([_parse_macros_in_line(stripped_line)])
 
         else:
-            bytes_in_line = bytearray([int(byte, 16) for byte in stripped_line.replace(", ", "").split("$")[1:]])
+            bytes_in_line = bytearray(map(hex_int, stripped_line.replace(", ", "").split("$")[1:]))
 
         ret.extend(bytes_in_line)
 

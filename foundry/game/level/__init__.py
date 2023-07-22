@@ -2,6 +2,7 @@ from typing import TypeAlias
 
 from foundry import data_dir
 from foundry.game.Data import Mario3Level
+from smb3parse.util import hex_int
 
 LevelAddress: TypeAlias = int
 EnemyItemAddress: TypeAlias = int
@@ -22,7 +23,7 @@ def _load_level_offsets() -> tuple[list[Mario3Level], list[int]]:
         for line_no, line in enumerate(level_data.readlines()):
             data = line.rstrip("\n").split(",")
 
-            numbers = [int(_hex, 16) for _hex in data[0:5]]
+            numbers = map(hex_int, data[0:5])
             level_name = data[5]
 
             (

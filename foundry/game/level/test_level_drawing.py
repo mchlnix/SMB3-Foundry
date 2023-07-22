@@ -16,6 +16,7 @@ from foundry.gui.settings import Settings
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.util import hex_int
 
 reference_image_dir = Path(__file__).parent.joinpath("test_refs")
 reference_image_dir.mkdir(parents=True, exist_ok=True)
@@ -49,7 +50,7 @@ with Path(data_dir / "levels.dat").open("r") as level_data_file:
         parts = line.strip().split(",")
 
         world_no, level_no = map(int, parts[:2])
-        level_address, enemy_address, object_set_number = [int(number, 16) for number in parts[2:-1]]
+        level_address, enemy_address, object_set_number = map(hex_int, parts[2:-1])
         enemy_address -= 1  # start one earlier at the 0x00/0x01 byte
         level_name = parts[-1]
 
