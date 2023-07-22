@@ -278,7 +278,7 @@ class LevelBlockView(ByteView):
 
         current_pos = self.first_level_start
 
-        prg_start = self.first_level_start // PRG_BANK_SIZE * PRG_BANK_SIZE
+        prg_start = (self.first_level_start // PRG_BANK_SIZE) * PRG_BANK_SIZE
 
         if self.first_level_start != prg_start:
             potential_blocks.append(
