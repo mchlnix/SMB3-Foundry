@@ -49,11 +49,9 @@ from foundry.game.level import EnemyItemAddress, LevelAddress
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import LevelContextMenu
-from foundry.gui.EnemySizeBar import EnemySizeBar
 from foundry.gui.JumpList import JumpList
 from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.LevelSelector import LevelSelector
-from foundry.gui.LevelSizeBar import LevelSizeBar
 from foundry.gui.LevelView import LevelView
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.ObjectDropdown import ObjectDropdown
@@ -87,6 +85,8 @@ from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.rom_menu import RomMenu
 from foundry.gui.menus.view_menu import ViewMenu
 from foundry.gui.settings import Settings
+from foundry.gui.widgets.EnemySizeBar import EnemySizeBar
+from foundry.gui.widgets.LevelSizeBar import LevelSizeBar
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import OBJECT_SET_NAMES

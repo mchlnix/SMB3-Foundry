@@ -25,9 +25,9 @@ from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui import OBJECT_SET_ITEMS, WORLD_ITEMS
-from foundry.gui.Spinner import Spinner
 from foundry.gui.WorldView import WorldView
 from foundry.gui.settings import Settings
+from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.data_points import LevelPointerData, Position
 from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
 from smb3parse.objects.object_set import (

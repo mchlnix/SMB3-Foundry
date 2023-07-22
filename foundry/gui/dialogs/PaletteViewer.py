@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
 )
 
 from foundry.game.File import ROM
+from foundry.game.gfx import change_color
 from foundry.game.gfx.Palette import (
     COLORS_PER_PALETTE,
     NESPalette,
@@ -24,10 +25,9 @@ from foundry.game.gfx.Palette import (
     PALETTE_GROUPS_PER_OBJECT_SET,
     load_palette_group,
 )
-from foundry.game.gfx import change_color
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.commands import UpdatePalette
+from foundry.gui.dialogs.CustomDialog import CustomDialog
 
 
 class PaletteViewer(CustomDialog):

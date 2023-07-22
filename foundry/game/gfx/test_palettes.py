@@ -1,5 +1,5 @@
-from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from foundry.game.gfx import restore_all_palettes
+from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 
 
 def test_restore_palettes():

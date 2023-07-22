@@ -10,9 +10,9 @@ from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.game.gfx.objects import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.dialogs.HeaderEditor import CAMERA_MOVEMENTS
 from foundry.gui.LevelView import LevelView
 from foundry.gui.ObjectList import ObjectList
+from foundry.gui.dialogs.HeaderEditor import CAMERA_MOVEMENTS
 from foundry.gui.util import clear_layout
 from smb3parse.constants import (
     OBJ_AUTOSCROLL,

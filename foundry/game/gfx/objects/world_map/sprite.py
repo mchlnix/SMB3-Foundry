@@ -42,7 +42,6 @@ from smb3parse.constants import (
 from smb3parse.data_points import Position, SpriteData
 from smb3parse.levels import FIRST_VALID_ROW
 
-
 EMPTY_IMAGE = load_from_png(0, 53)
 
 MAP_OBJ_SPRITES = {

@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 
 from foundry.game.gfx.objects import Jump
 from foundry.gui.dialogs.CustomDialog import CustomDialog
-from foundry.gui.Spinner import Spinner
+from foundry.gui.widgets.Spinner import Spinner
 
 JUMP_ACTIONS = [
     "Downward Pipe 1",

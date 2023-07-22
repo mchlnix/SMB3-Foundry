@@ -14,9 +14,9 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import data_dir
-from foundry.gui.Spinner import Spinner
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.util import center_widget
+from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.util import hex_int
 from smb3parse.util.rom import Rom
 

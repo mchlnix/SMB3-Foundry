@@ -5,9 +5,9 @@ from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QVBoxLayout
 
 from foundry.game.gfx.objects import EnemyItem
 from foundry.gui import label_and_widget
-from foundry.gui.Spinner import Spinner
 from foundry.gui.commands import AddObject, RemoveObjects
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
+from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_AUTOSCROLL
 
 AUTOSCROLL_LABELS = {

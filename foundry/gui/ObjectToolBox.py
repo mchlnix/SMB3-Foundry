@@ -17,7 +17,6 @@ from foundry.game.gfx.objects import (
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 
-
 objects_to_use_pngs_instead = {
     "'?' with flower": load_from_png(0, 4),
     "'?' with leaf": load_from_png(1, 4),

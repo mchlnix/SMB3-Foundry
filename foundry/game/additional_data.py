@@ -21,7 +21,6 @@ from smb3parse.levels.level_header import LevelHeader
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
-
 _ENEMY_BANK_START = ENEMY_DATA_BANK_INDEX * PRG_BANK_SIZE + BASE_OFFSET
 
 LEVEL_DATA_DELIMITER_COUNT = 1

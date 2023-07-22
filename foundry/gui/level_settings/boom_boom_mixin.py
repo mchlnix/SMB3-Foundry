@@ -2,9 +2,9 @@ from PySide6.QtWidgets import QComboBox, QGroupBox, QVBoxLayout
 
 from foundry.game.gfx.objects import EnemyItem
 from foundry.gui import label_and_widget
-from foundry.gui.Spinner import Spinner
 from foundry.gui.commands import ChangeLockIndex
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
+from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM
 
 

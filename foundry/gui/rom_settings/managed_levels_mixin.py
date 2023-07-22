@@ -7,10 +7,10 @@ from foundry.game.File import ROM
 from foundry.game.additional_data import LevelOrganizer
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.HorizontalLine import HorizontalLine
 from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
-from foundry.gui.Spinner import Spinner
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
+from foundry.gui.widgets.HorizontalLine import HorizontalLine
+from foundry.gui.widgets.Spinner import Spinner
 from smb3parse import PAGE_A000_ByTileset
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
 from smb3parse.util.rom import PRG_BANK_SIZE

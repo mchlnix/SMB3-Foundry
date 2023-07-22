@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QTableWidgetItem
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.Spinner import Spinner
+from foundry.gui.widgets.Spinner import Spinner
 from scribe.gui.commands import (
     AddLevelPointer,
     RemoveLevelPointer,

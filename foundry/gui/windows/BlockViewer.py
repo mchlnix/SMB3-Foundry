@@ -10,8 +10,8 @@ from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET, load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.gui import OBJECT_SET_ITEMS
+from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
-from foundry.gui.Spinner import Spinner
 from smb3parse.constants import TILE_NAMES
 
 

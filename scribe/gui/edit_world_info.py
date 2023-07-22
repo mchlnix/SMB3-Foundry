@@ -20,7 +20,7 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui import label_and_widget
 from foundry.gui.windows.BlockViewer import BlockBank
 from foundry.gui.dialogs.CustomDialog import CustomDialog
-from foundry.gui.Spinner import Spinner
+from foundry.gui.widgets.Spinner import Spinner
 from scribe.gui.commands import (
     SetWorldScroll,
     WorldBottomTile,

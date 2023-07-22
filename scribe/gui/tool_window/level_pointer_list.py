@@ -4,7 +4,7 @@ from PySide6.QtGui import QDropEvent
 from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.Spinner import Spinner
+from foundry.gui.widgets.Spinner import Spinner
 from scribe.gui.commands import (
     ChangeLevelPointerIndex,
     SetEnemyAddress,

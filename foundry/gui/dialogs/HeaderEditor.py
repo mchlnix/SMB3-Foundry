@@ -18,15 +18,15 @@ from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui import OBJECT_SET_ITEMS
-from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.LevelSelector import LevelSelector
-from foundry.gui.Spinner import Spinner
 from foundry.gui.commands import (
     SetLevelAttribute,
     SetNextAreaEnemyAddress,
     SetNextAreaObjectAddress,
     SetNextAreaObjectSet,
 )
+from foundry.gui.dialogs.CustomDialog import CustomDialog
+from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
 

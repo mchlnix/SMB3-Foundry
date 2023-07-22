@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QFormLayout, QSizePolicy, QWidget
 from foundry.game.gfx.objects import LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.Spinner import Spinner
+from foundry.gui.widgets.Spinner import Spinner
 
 MAX_DOMAIN = 0x07
 MAX_TYPE = 0xFF

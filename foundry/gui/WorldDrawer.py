@@ -18,7 +18,6 @@ from smb3parse.levels import (
     WORLD_MAP_WARP_WORLD_INDEX,
 )
 
-
 BORDER_UL = load_from_png(61, 3)
 BORDER_UR = BORDER_UL.mirrored(True, False)
 BORDER_BR = load_from_png(63, 3)
