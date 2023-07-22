@@ -67,14 +67,14 @@ class RomMenu(QMenu):
                 self._show_object_viewer()
 
             case self._view_palettes_action:
-                PaletteViewer(self, self._level_ref).exec()
+                PaletteViewer(self.parent(), self._level_ref).exec()
 
             case self._clear_editor_data_action:
                 ROM.additional_data.clear()
                 self.needs_gui_refresh.emit()
 
             case self._rom_settings_action:
-                dialog = RomSettingsDialog(self, self._level_ref)
+                dialog = RomSettingsDialog(self.parent(), self._level_ref)
                 dialog.needs_gui_update.connect(self.needs_gui_refresh.emit)
 
                 dialog.exec()
@@ -99,12 +99,12 @@ class RomMenu(QMenu):
                 levels_by_address = pd.levels_by_address
 
         if levels_per_object_set:
-            self._level_viewer = LevelViewer(self, levels_per_object_set, levels_by_address)
+            self._level_viewer = LevelViewer(self.parent(), levels_per_object_set, levels_by_address)
             self._level_viewer.show()
 
     def _show_block_viewer(self):
         if self._block_viewer is None:
-            self._block_viewer = BlockViewer(parent=self)
+            self._block_viewer = BlockViewer(parent=self.parent())
 
         if self._level_ref.level is not None:
             self._block_viewer.object_set = self._level_ref.object_set.number
@@ -114,7 +114,7 @@ class RomMenu(QMenu):
 
     def _show_object_viewer(self):
         if self._object_viewer is None:
-            self._object_viewer = ObjectViewer(parent=self)
+            self._object_viewer = ObjectViewer(parent=self.parent())
 
         if self._level_ref.level is not None:
             object_set = self._level_ref.object_set.number
