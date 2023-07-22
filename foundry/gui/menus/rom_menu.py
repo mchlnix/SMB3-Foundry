@@ -49,13 +49,13 @@ class RomMenu(QMenu):
 
         self.addSeparator()
 
-        self._game_properties_action = self.addAction("Game Properties")
-        self._game_properties_action.setIcon(icon("bar-chart-2.svg"))
+        self.game_properties_action = self.addAction("Game Properties")
+        self.game_properties_action.setIcon(icon("bar-chart-2.svg"))
 
         self.addSeparator()
 
-        self._rom_settings_action = self.addAction("ROM Settings")
-        self._rom_settings_action.setIcon(icon("settings.svg"))
+        self.rom_settings_action = self.addAction("ROM Settings")
+        self.rom_settings_action.setIcon(icon("settings.svg"))
 
         self._clear_editor_data_action = self.addAction("Clear Editor Data in ROM")
         self._clear_editor_data_action.setIcon(icon("loader.svg"))
@@ -78,13 +78,13 @@ class RomMenu(QMenu):
                 ROM.additional_data.clear()
                 self.needs_gui_refresh.emit()
 
-            case self._rom_settings_action:
+            case self.rom_settings_action:
                 dialog = RomSettingsDialog(self.parent(), self._level_ref)
                 dialog.needs_gui_update.connect(self.needs_gui_refresh.emit)
 
                 dialog.exec()
 
-            case self._game_properties_action:
+            case self.game_properties_action:
                 try:
                     prop_dialog = GamePropertiesDialog(self.parent(), ROM())
                 except ValueError as ve:

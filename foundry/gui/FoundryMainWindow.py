@@ -284,6 +284,8 @@ class FoundryMainWindow(MainWindow):
 
         self.menu_toolbar.addSeparator()
 
+        self.menu_toolbar.addAction(self._rom_menu.rom_settings_action)
+        self.menu_toolbar.addAction(self._rom_menu.game_properties_action)
         self.menu_toolbar.addAction(self.select_level_action)
 
         self.menu_toolbar.addSeparator()
