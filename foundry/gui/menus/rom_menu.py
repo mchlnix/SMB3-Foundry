@@ -3,18 +3,19 @@ from typing import Optional
 
 from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QDialog, QMenu, QMessageBox
 
 from foundry import icon
 from foundry.game.File import ROM
 from foundry.game.gfx.objects import LevelObject
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.windows.BlockViewer import BlockViewer
 from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
-from foundry.gui.windows.LevelViewer import LevelViewer
-from foundry.gui.windows.ObjectViewer import ObjectViewer
+from foundry.gui.dialogs.GamePropertiesDialog import GamePropertiesDialog
 from foundry.gui.dialogs.PaletteViewer import PaletteViewer
 from foundry.gui.rom_settings.rom_settings_dialog import RomSettingsDialog
+from foundry.gui.windows.BlockViewer import BlockViewer
+from foundry.gui.windows.LevelViewer import LevelViewer
+from foundry.gui.windows.ObjectViewer import ObjectViewer
 
 
 class RomMenu(QMenu):
@@ -46,8 +47,12 @@ class RomMenu(QMenu):
         self._view_levels_in_memory_action = self.addAction("View Levels in Memory")
         self._view_levels_in_memory_action.setIcon(icon("server.svg"))
 
-        self._clear_editor_data_action = self.addAction("Clear Editor Data in ROM")
-        self._clear_editor_data_action.setIcon(icon("loader.svg"))
+        self.addSeparator()
+
+        self._game_properties_action = self.addAction("Game Properties")
+        self._game_properties_action.setIcon(icon("bar-chart-2.svg"))
+
+        self.addSeparator()
 
         self._rom_settings_action = self.addAction("ROM Settings")
         self._rom_settings_action.setIcon(icon("settings.svg"))
@@ -78,6 +83,18 @@ class RomMenu(QMenu):
                 dialog.needs_gui_update.connect(self.needs_gui_refresh.emit)
 
                 dialog.exec()
+
+            case self._game_properties_action:
+                try:
+                    prop_dialog = GamePropertiesDialog(self.parent(), ROM())
+                except ValueError as ve:
+                    QMessageBox.critical(self.parent(), "Error opening Game Properties", str(ve))
+                    return
+
+                result = prop_dialog.exec()
+
+                if result == QDialog.Accepted:
+                    ROM.save_to_file(ROM.path)
 
     def _show_level_viewer(self):
         levels_per_object_set: dict[int, set[int]] = defaultdict(set)
