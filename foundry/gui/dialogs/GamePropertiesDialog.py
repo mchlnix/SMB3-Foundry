@@ -33,10 +33,14 @@ class _PropInfo:
     max_value: int = 0
     base_value: int = 0
     is_subtracted: bool = False
+    is_inverted: bool = False
     unit: str = ""
 
     def value_str(self, value):
-        if self.is_subtracted:
+        if self.is_inverted:
+            value = 0x100 - value
+
+        elif self.is_subtracted:
             value = self.base_value - value
 
         return f"{value} {self.unit}"
@@ -203,6 +207,10 @@ class GamePropertiesDialog(CustomDialog):
 
             line = line.removeprefix("SUB_")
             data.base_value, line = hex_int(line[:2]), line[2:]
+
+        elif line.startswith("INV"):
+            data.is_inverted = True
+            line = line.removeprefix("INV")
 
         else:
             assert line.startswith("INT")
