@@ -30,6 +30,15 @@ class _PropInfo:
     rom_address: int = 0
     min_value: int = 0
     max_value: int = 0
+    base_value: int = 0
+    is_subtracted: bool = False
+    unit: str = ""
+
+    def value_str(self, value):
+        if self.is_subtracted:
+            value = self.base_value - value
+
+        return f"{value} {self.unit}"
 
 
 class _InfoWidget(QWidget):
@@ -51,7 +60,7 @@ class _InfoWidget(QWidget):
 
         decimal_label = QLabel()
 
-        self._spinner.valueChanged.connect(lambda x: decimal_label.setText(str(x)))
+        self._spinner.valueChanged.connect(lambda x: decimal_label.setText(prop_info.value_str(x)))
 
         edit_layout.addWidget(QLabel("Value:"))
         edit_layout.addStretch(1)
@@ -142,6 +151,9 @@ class GamePropertiesDialog(CustomDialog):
             elif line.startswith("type "):
                 self._parse_property_values(current_prop_item, line)
 
+            elif line.startswith("unit "):
+                self._parse_unit(current_prop_item, line)
+
         self._make_setting_widgets()
 
     def _make_setting_widgets(self):
@@ -179,7 +191,25 @@ class GamePropertiesDialog(CustomDialog):
 
         line = line.removeprefix("type ")
 
-        data.rom_address, data.min_value, data.max_value = map(hex_int, line.split(" "))
+        if line.startswith("SUB_"):
+            data.is_subtracted = True
+
+            line = line.removeprefix("SUB_")
+            data.base_value, line = hex_int(line[:2]), line[2:]
+
+        else:
+            assert line.startswith("INT")
+            line = line.removeprefix("INT")
+
+        data.rom_address, data.min_value, data.max_value = map(hex_int, line.strip().split(" "))
+
+    def _parse_unit(self, current_prop_item, line):
+        if current_prop_item not in self._prop_item_to_data:
+            raise ValueError("No caption was found, before type values were set.")
+
+        line = line.removeprefix("unit ")
+
+        self._prop_item_to_data[current_prop_item].unit = line.strip()
 
     @property
     def undo_stack(self) -> QUndoStack:
