@@ -17,8 +17,9 @@ from foundry import data_dir
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.util import center_widget
 from foundry.gui.widgets.Spinner import Spinner
+from smb3parse.constants import BASE_OFFSET
 from smb3parse.util import hex_int
-from smb3parse.util.rom import Rom
+from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
 _PROP_PATH = data_dir / "game_properties.ini"
 
@@ -70,6 +71,12 @@ class _InfoWidget(QWidget):
         layout.addWidget(info_label)
         layout.addLayout(edit_layout)
         layout.addStretch(1)
+        layout.addWidget(
+            QLabel(
+                f"ROM Address: {prop_info.rom_address:#X} / "
+                f"PRG_{(prop_info.rom_address - BASE_OFFSET) // PRG_BANK_SIZE:0>3}"
+            )
+        )
 
         self._read_current_value()
 
