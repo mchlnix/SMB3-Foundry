@@ -5,6 +5,7 @@ from PySide6.QtCore import QEvent, QRect, Qt, Signal, SignalInstance
 from PySide6.QtGui import QCursor, QFocusEvent
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
+from foundry import root_dir
 from foundry.game import GROUND
 from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.game.gfx.objects import EnemyItem
@@ -216,7 +217,7 @@ class WarningList(QWidget):
         return [enemy for enemy in self.level_ref.level.enemies if enemy.type == enemy_id]
 
     def _build_enemy_clan_dict(self):
-        with open("data/enemy_data.json", "r") as enemy_data_file:
+        with open(root_dir.joinpath("data", "enemy_data.json"), "r") as enemy_data_file:
             enemy_data = json.loads(enemy_data_file.read())
 
             self._enemy_dict.clear()
