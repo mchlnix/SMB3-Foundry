@@ -56,7 +56,7 @@ class Rom:
 
     def prg_normalize(self, offset: AnyAddress) -> NormalizedAddress:
         """Takes a vanilla ROM PRG offset and returns a new offset that is correct for the current ROM's PRG size."""
-        if type(offset) == NormalizedAddress:
+        if type(offset) == NormalizedAddress:  # noqa: E721  isinstance doesn't work with type alias
             return offset
 
         # data in expanded Roms is inserted between PRG29 and PRG30
