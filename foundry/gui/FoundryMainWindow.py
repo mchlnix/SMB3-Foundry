@@ -1081,6 +1081,10 @@ class FoundryMainWindow(MainWindow):
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.MiddleButton:
+            if event.buttons() != Qt.NoButton:
+                # avoid accidental middle mouse clicks while dragging or resizing
+                return
+
             pos = self.level_view.mapFromGlobal(self.mapToGlobal(event.position().toPoint()))
 
             self.place_object_from_dropdown(pos)
