@@ -32,6 +32,7 @@ from smb3parse.data_points import LevelPointerData, Position
 from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
 from smb3parse.objects.object_set import (
     MUSHROOM_OBJECT_SET,
+    OBJECT_SET_NAMES,
     SPADE_BONUS_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
@@ -97,21 +98,22 @@ class LevelSelector(QDialog):
         stock_level_layout.addWidget(self.level_list, 1, 1)
 
         # List of found levels
-        self.found_levels = []
-        for found_level in ROM.additional_data.found_levels:
-            self.found_levels.append(found_level)
-        self.found_levels.sort(key=lambda x: (x.object_set_number, x.level_offset))
+        self.found_levels = ROM.additional_data.found_levels.copy()
+        self.found_levels.sort(key=lambda x: (x.world_number, x.level_offset))
 
         self.found_label = QLabel(parent=self, text="Found Levels")
         self.found_list = QListWidget(parent=self)
         for found_level in self.found_levels:
-            level_descr = OBJECT_SET_ITEMS[found_level.object_set_number]
-            level_descr += ", Level Offset: 0x%0.4x" % found_level.level_offset
-            level_descr += ", Enemy Offset: 0x%0.4x" % found_level.enemy_offset
-            if found_level.found_in_world:
-                level_descr += ", (World " + str(found_level.world_number) + ")"
-            elif found_level.found_as_jump:
-                level_descr += ", (Jump Destination)"
+            level_descr = f"World {found_level.world_number}\t"
+
+            level_descr += f"Level: 0x{found_level.level_offset:x}\t"
+            level_descr += f"Enemy: 0x{found_level.enemy_offset:0>4x}\t"
+
+            level_descr += OBJECT_SET_NAMES[found_level.object_set_number]
+
+            if found_level.found_as_jump:
+                level_descr += " (Jump Destination)"
+
             self.found_list.addItem(level_descr)
 
         self.found_list.itemDoubleClicked.connect(self.on_ok)
@@ -122,12 +124,18 @@ class LevelSelector(QDialog):
         found_level_layout.addWidget(self.found_label, 0, 0)
         found_level_layout.addWidget(self.found_list, 1, 0)
 
+        tab_index = 0
+
         self.source_selector = QTabWidget()
         self.source_selector.addTab(stock_level_widget, "Stock Levels")
-        self.source_selector.setTabIcon(0, icon("list.svg"))
+        self.source_selector.setTabIcon(tab_index, icon("list.svg"))
 
-        self.source_selector.addTab(found_level_widget, "Found Levels")
-        self.source_selector.setTabIcon(1, icon("list.svg"))
+        tab_index += 1
+
+        if self.found_levels:
+            self.source_selector.addTab(found_level_widget, "Found Levels")
+            self.source_selector.setTabIcon(tab_index, icon("list.svg"))
+            tab_index += 1
 
         for world_number in range(1, WORLD_COUNT):
             world_map_select = WorldMapLevelSelect(world_number)
@@ -136,11 +144,11 @@ class LevelSelector(QDialog):
             world_map_select.level_selected.connect(self.on_ok)
 
             self.source_selector.addTab(world_map_select, f"World {world_number}")
-            self.source_selector.setTabIcon(world_number + 1, icon("globe.svg"))
+            self.source_selector.setTabIcon(tab_index + world_number - 1, icon("globe.svg"))
 
         # show world 1 by default
-        if self.source_selector.count() > 1:
-            self.source_selector.setCurrentIndex(1)
+        if self.source_selector.count() > tab_index:
+            self.source_selector.setCurrentIndex(tab_index)
 
         data_layout = QGridLayout()
 
