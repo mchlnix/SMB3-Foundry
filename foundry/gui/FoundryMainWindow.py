@@ -741,12 +741,10 @@ class FoundryMainWindow(MainWindow):
 
             return
 
-        self._save_current_changes_to_file(pathname, set_new_path=True)
+        if not is_save_as and self._save_current_changes_to_file(pathname, set_new_path=True):
+            self.undo_stack.setClean()
 
         self.update_title()
-
-        if not is_save_as:
-            self.undo_stack.setClean()
 
     def on_import_enemies_from_asm(self):
         if not (pathname := load_asm_filename("Enemy ASM", self.settings.value("editor/default dir path"))):
@@ -761,9 +759,10 @@ class FoundryMainWindow(MainWindow):
         self.undo_stack.push(AttachLevelToRom(self.level_ref.level, object_data_offset, enemy_data_offset))
 
     def _save_current_changes_to_file(self, pathname: str, set_new_path: bool):
-        super(FoundryMainWindow, self)._save_current_changes_to_file(pathname, set_new_path)
-
-        self._save_auto_rom()
+        try:
+            return super(FoundryMainWindow, self)._save_current_changes_to_file(pathname, set_new_path)
+        finally:
+            self._save_auto_rom()
 
     def on_menu(self, action: QAction):
         pos = self.level_view.mapFromGlobal(self.context_menu.get_position())

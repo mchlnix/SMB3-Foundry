@@ -169,22 +169,21 @@ class MainWindow(QMainWindow):
     def _save_changes_to_instaplay_rom(self, path_to_temp_rom) -> bool:
         return False
 
-    def _save_current_changes_to_file(self, pathname: str, set_new_path: bool):
+    def _save_current_changes_to_file(self, pathname: str, set_new_path: bool) -> bool:
         try:
             if self.level_ref:
                 self.level_ref.save_to_rom()
         except LookupError as lue:
             QMessageBox.warning(self, f"{type(lue).__name__}", f"{lue}.")
-            return
+            return False
 
         try:
             ROM.save_to_file(pathname, set_new_path)
         except IOError as exp:
-            QMessageBox.warning(
-                self,
-                f"{type(exp).__name__}",
-                f"Cannot save ROM data to file '{pathname}'.",
-            )
+            QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
+            return False
+
+        return True
 
     def closeEvent(self, event: QCloseEvent):
         if not self.safe_to_change():
