@@ -809,8 +809,12 @@ class Level(LevelLike):
             self._update_level_and_enemy_addresses(current_level, lo)
 
             self.set_addresses(current_level.level_offset, current_level.enemy_offset)
-            self.next_area_objects = lo.old_level_address_to_new[self.header.jump_level_address]
-            self.next_area_enemies = lo.old_enemy_address_to_new[self.header.jump_enemy_address]
+
+            if self.header.jump_level_offset != 0x0:
+                self.next_area_objects = lo.old_level_address_to_new[self.header.jump_level_address]
+
+            if self.header.jump_enemy_offset != 0x0:
+                self.next_area_enemies = lo.old_enemy_address_to_new[self.header.jump_enemy_address]
 
         (level_address, level_data), (enemy_address, enemy_data) = self.to_bytes()
 
