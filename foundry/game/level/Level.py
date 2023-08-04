@@ -806,6 +806,18 @@ class Level(LevelLike):
             lo.rearrange_levels()
             lo.rearrange_enemies()
 
+            if self.header.jump_level_address and self.header.jump_level_address not in lo.old_level_address_to_new:
+                raise LookupError(
+                    f"Jump Destination Level Address in Header '0x{self.header.jump_level_address:X}' does not point to"
+                    " any known level"
+                )
+
+            if self.header.jump_enemy_address and self.header.jump_enemy_address not in lo.old_enemy_address_to_new:
+                raise LookupError(
+                    f"Jump Destination Enemy Address in Header '0x{self.header.jump_enemy_address:X}' does not point to"
+                    " any known enemy data group"
+                )
+
             self._update_level_and_enemy_addresses(current_level, lo)
 
             self.set_addresses(current_level.level_offset, current_level.enemy_offset)
