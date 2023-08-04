@@ -303,7 +303,7 @@ def gen_levels_in_rom(
 
     print("---------------------", level_count, "------------------------")
 
-    root_dir = pathlib.Path(__file__).parent.parent.parent
+    root_dir = pathlib.Path(__file__).parent.parent.parent.parent
 
     stock_level_file = root_dir / "data" / "levels.dat"
 
