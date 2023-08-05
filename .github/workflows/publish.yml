@@ -79,7 +79,7 @@ jobs:
       run: git tag --delete nightly || true
 
     - name: Set new nightly tag
-      run: 'git tag --annotate nightly -m "Nightly
+      run: 'git tag --annotate nightly -m "+$(git rev-list --count origin/master..HEAD) commits
 
 
       CAUTION: Nightlies are untested alpha releases. Most users should use ''$(git describe --tags --exclude=nightly --abbrev=0)''!
