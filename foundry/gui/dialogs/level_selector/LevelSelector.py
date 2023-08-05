@@ -8,7 +8,6 @@ from PySide6.QtWidgets import (
     QDialog,
     QGridLayout,
     QLabel,
-    QListWidget,
     QMessageBox,
     QPushButton,
     QScrollArea,
@@ -16,7 +15,6 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QTabWidget,
     QVBoxLayout,
-    QWidget,
 )
 
 from foundry import icon
@@ -25,6 +23,7 @@ from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.WorldView import WorldView
+from foundry.gui.dialogs.level_selector.found_level_list import FoundLevelWidget
 from foundry.gui.dialogs.level_selector.stock_level_list import StockLevelWidget
 from foundry.gui.settings import Settings
 from foundry.gui.widgets.Spinner import Spinner
@@ -32,7 +31,6 @@ from smb3parse.data_points import LevelPointerData, Position
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.objects.object_set import (
     MUSHROOM_OBJECT_SET,
-    OBJECT_SET_NAMES,
     SPADE_BONUS_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
@@ -54,13 +52,6 @@ class LevelSelector(QDialog):
 
         self.clicked_level_pointer: Optional[LevelPointerData] = None
 
-        self._stock_level_widget = StockLevelWidget()
-
-        self._stock_level_widget.world_list.itemDoubleClicked.connect(self._on_ok)
-        self._stock_level_widget.level_list.itemDoubleClicked.connect(self._on_ok)
-
-        self._stock_level_widget.level_list.itemClicked.connect(self._on_stock_level_selected)
-
         self.enemy_data_label = QLabel(parent=self, text="Enemy Data")
         self.enemy_data_spinner = Spinner(parent=self)
 
@@ -78,43 +69,29 @@ class LevelSelector(QDialog):
         self.button_cancel = QPushButton("Cancel", self)
         self.button_cancel.clicked.connect(self.close)
 
-        # List of found levels
-        self.found_levels = ROM.additional_data.found_levels.copy()
-        self.found_levels.sort(key=lambda x: (x.world_number, x.level_offset))
-
-        self.found_label = QLabel(parent=self, text="Found Levels")
-        self.found_list = QListWidget(parent=self)
-        for found_level in self.found_levels:
-            level_descr = f"World {found_level.world_number}\t"
-
-            level_descr += f"Level: 0x{found_level.level_offset:x}\t"
-            level_descr += f"Enemy: 0x{found_level.enemy_offset:0>4x}\t"
-
-            level_descr += OBJECT_SET_NAMES[found_level.object_set_number]
-
-            if found_level.found_as_jump:
-                level_descr += " (Jump Destination)"
-
-            self.found_list.addItem(level_descr)
-
-        self.found_list.itemDoubleClicked.connect(self._on_ok)
-        self.found_list.itemSelectionChanged.connect(self._on_found_level_selected)
-
-        found_level_widget = QWidget()
-        found_level_layout = QGridLayout(found_level_widget)
-        found_level_layout.addWidget(self.found_label, 0, 0)
-        found_level_layout.addWidget(self.found_list, 1, 0)
+        # adding the tabs
+        self.source_selector = QTabWidget()
 
         tab_index = 0
 
-        self.source_selector = QTabWidget()
+        self._stock_level_widget = StockLevelWidget()
+
+        self._stock_level_widget.world_list.itemDoubleClicked.connect(self._on_ok)
+        self._stock_level_widget.level_list.itemDoubleClicked.connect(self._on_ok)
+
+        self._stock_level_widget.level_list.itemClicked.connect(self._on_stock_level_selected)
+
         self.source_selector.addTab(self._stock_level_widget, "Stock Levels")
         self.source_selector.setTabIcon(tab_index, icon("list.svg"))
 
         tab_index += 1
 
-        if self.found_levels:
-            self.source_selector.addTab(found_level_widget, "Found Levels")
+        if ROM.additional_data.found_levels:
+            self._found_level_widget = FoundLevelWidget()
+            self._found_level_widget.level_list.itemDoubleClicked.connect(self._on_ok)
+            self._found_level_widget.level_list.itemSelectionChanged.connect(self._on_found_level_selected)
+
+            self.source_selector.addTab(self._found_level_widget, "Found Levels")
             self.source_selector.setTabIcon(tab_index, icon("list.svg"))
             tab_index += 1
 
@@ -149,16 +126,6 @@ class LevelSelector(QDialog):
         main_layout.addLayout(data_layout)
 
         self.setLayout(main_layout)
-
-        if not ROM().additional_data.managed_level_positions:
-            self._stock_level_widget.world_list.setCurrentRow(0)
-        else:
-            first_level = ROM().additional_data.found_levels[0]
-            self._fill_in_data(
-                first_level.object_set_number,
-                first_level.level_offset,
-                first_level.enemy_offset,
-            )
 
     def keyPressEvent(self, key_event: QKeyEvent):
         if key_event.key() == Qt.Key_Escape:
@@ -211,16 +178,15 @@ class LevelSelector(QDialog):
         self.button_ok.setFocus()
 
     def _on_found_level_selected(self):
-        index = self.found_list.currentRow()
         self._fill_in_data(
-            self.found_levels[index].object_set_number,
-            self.found_levels[index].level_offset,
-            self.found_levels[index].enemy_offset,
+            self._found_level_widget.object_set_number,
+            self._found_level_widget.level_address,
+            self._found_level_widget.enemy_address,
         )
         self.button_ok.setFocus()
 
     def _on_ok(self, _=None):
-        if self._stock_level_widget.level_is_overworld:
+        if self.object_set_dropdown.currentIndex() == WORLD_MAP_OBJECT_SET:
             return
 
         self.object_set = self.object_set_dropdown.currentIndex()
