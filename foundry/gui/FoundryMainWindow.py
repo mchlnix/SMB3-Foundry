@@ -85,8 +85,8 @@ from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.rom_menu import RomMenu
 from foundry.gui.menus.view_menu import ViewMenu
 from foundry.gui.settings import Settings
-from foundry.gui.widgets.EnemySizeBar import EnemySizeBar
-from foundry.gui.widgets.LevelSizeBar import LevelSizeBar
+from foundry.gui.widgets.size_bar.EnemySizeBar import EnemySizeBar
+from foundry.gui.widgets.size_bar.LevelSizeBar import LevelSizeBar
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import OBJECT_SET_NAMES

@@ -1,7 +1,7 @@
 from PySide6.QtGui import QColor
 
 from foundry.game.File import ROM
-from foundry.gui.widgets.LevelSizeBar import LevelSizeBar
+from .LevelSizeBar import LevelSizeBar
 
 
 class EnemySizeBar(LevelSizeBar):
