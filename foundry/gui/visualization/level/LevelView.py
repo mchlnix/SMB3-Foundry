@@ -15,8 +15,8 @@ from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import LevelContextMenu
-from foundry.gui.LevelDrawer import LevelDrawer
-from foundry.gui.MainView import (
+from foundry.gui.visualization.level.LevelDrawer import LevelDrawer
+from foundry.gui.visualization.MainView import (
     MODE_DRAG,
     MODE_FREE,
     MODE_RESIZE_DIAG,

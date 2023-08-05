@@ -122,7 +122,7 @@ def icon(icon_name: str):
 
 def get_level_thumbnail(object_set, layout_address: "LevelAddress", enemy_address: "EnemyItemAddress"):
     from foundry.game.level.LevelRef import LevelRef
-    from foundry.gui.LevelView import LevelView
+    from foundry.gui.visualization.level.LevelView import LevelView
 
     level_ref = LevelRef()
     level_ref.load_level("", layout_address, enemy_address, object_set)

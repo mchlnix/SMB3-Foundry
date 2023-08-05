@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 from foundry import ROM_FILE_FILTER, icon
 from foundry.game.File import ROM
 from foundry.gui.MainWindow import MainWindow
-from foundry.gui.WorldView import WorldView
+from foundry.gui.visualization.world.WorldView import WorldView
 from foundry.gui.settings import Settings
 from scribe.gui.commands import PutTile
 from scribe.gui.menus.edit_menu import EditMenu

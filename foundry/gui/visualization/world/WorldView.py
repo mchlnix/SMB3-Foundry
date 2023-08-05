@@ -21,14 +21,14 @@ from foundry.game.gfx.objects import LevelObject, MapTile
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.MainView import (
+from foundry.gui.visualization.MainView import (
     MODE_DRAG,
     MODE_FREE,
     MODE_PUT_TILE,
     MODE_SELECTION_SQUARE,
     MainView,
 )
-from foundry.gui.WorldDrawer import WorldDrawer
+from foundry.gui.visualization.world.WorldDrawer import WorldDrawer
 from foundry.gui.settings import Settings
 from scribe.gui.commands import (
     MoveMapObject,

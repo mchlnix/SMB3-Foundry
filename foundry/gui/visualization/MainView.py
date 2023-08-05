@@ -19,11 +19,11 @@ from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import ContextMenu
-from foundry.gui.LevelDrawer import LevelDrawer
-from foundry.gui.SelectionSquare import SelectionSquare
-from foundry.gui.WorldDrawer import WorldDrawer
 from foundry.gui.settings import Settings
 from smb3parse.data_points import Position
+from .SelectionSquare import SelectionSquare
+from .level.LevelDrawer import LevelDrawer
+from .world.WorldDrawer import WorldDrawer
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks

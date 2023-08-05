@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.WorldView import WorldView
+from foundry.gui.visualization.world.WorldView import WorldView
 from foundry.gui.settings import Settings
 from smb3parse.data_points import LevelPointerData, Position
 from smb3parse.objects.object_set import (

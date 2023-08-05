@@ -31,13 +31,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from foundry import (
-    ROM_FILE_FILTER,
-    auto_save_level_data_path,
-    auto_save_m3l_path,
-    auto_save_rom_path,
-    icon,
-)
+from foundry import ROM_FILE_FILTER, auto_save_level_data_path, auto_save_m3l_path, auto_save_rom_path, icon
 from foundry.features.instaplay import CantFindFirstTile, InstaPlayer, LevelNotAttached
 from foundry.game.File import ROM
 from foundry.game.additional_data import LevelOrganizer
@@ -50,13 +44,16 @@ from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.JumpList import JumpList
-from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
+from foundry.gui.dialogs.HeaderEditor import HeaderEditor
+from foundry.gui.dialogs.JumpEditor import JumpEditor
+from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialog
+from foundry.gui.dialogs.PaletteViewer import SidePalette
 from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
-from foundry.gui.LevelView import LevelView
+from foundry.gui.visualization.level.LevelView import LevelView
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
-from foundry.gui.ObjectSetSelector import ObjectSetSelector
+from foundry.gui.dialogs.ObjectSetSelector import ObjectSetSelector
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.widgets.object_toolbar.ObjectToolBar import ObjectToolBar
 from foundry.gui.SpinnerPanel import SpinnerPanel
@@ -76,8 +73,7 @@ from foundry.gui.commands import (
     ToBackground,
     ToForeground,
 )
-from foundry.gui.dialogs import HeaderEditor, JumpEditor, SettingsDialog, SidePalette
-from foundry.gui.dialogs.SettingsDialog import POWERUPS
+from foundry.gui.dialogs.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.level_settings.level_settings_dialog import LevelSettingsDialog
 from foundry.gui.m3l import load_m3l, load_m3l_filename, save_m3l
 from foundry.gui.menus.file_menu import FileMenu

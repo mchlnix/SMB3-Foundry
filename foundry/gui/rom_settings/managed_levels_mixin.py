@@ -7,7 +7,7 @@ from foundry.game.File import ROM
 from foundry.game.additional_data import LevelOrganizer
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
+from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.HorizontalLine import HorizontalLine
 from foundry.gui.widgets.Spinner import Spinner

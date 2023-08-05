@@ -19,7 +19,7 @@ from foundry.game.gfx.objects import (
 )
 from foundry.game.gfx.objects.world_map.sprite import EMPTY_IMAGE
 from foundry.game.level.Level import Level
-from foundry.gui.AutoScrollDrawer import AutoScrollDrawer
+from foundry.gui.visualization.level.AutoScrollDrawer import AutoScrollDrawer
 from foundry.gui.settings import Settings
 from smb3parse.constants import (
     OBJ_AUTOSCROLL,

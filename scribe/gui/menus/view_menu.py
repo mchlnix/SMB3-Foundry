@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QFileDialog, QMenu
 
 from foundry import IMG_FILE_FILTER, icon
 from foundry.game.File import ROM
-from foundry.gui.WorldView import WorldView
+from foundry.gui.visualization.world.WorldView import WorldView
 from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 
 

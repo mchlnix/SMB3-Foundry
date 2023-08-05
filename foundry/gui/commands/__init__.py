@@ -19,7 +19,7 @@ from smb3parse.data_points.pipe_data import PipeData
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
 
 if TYPE_CHECKING:
-    from foundry.gui.LevelView import LevelView
+    from foundry.gui.visualization.level.LevelView import LevelView
 
 
 class SetLevelAddressData(QUndoCommand):
