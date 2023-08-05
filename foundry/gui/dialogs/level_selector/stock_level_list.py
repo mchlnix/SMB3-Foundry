@@ -12,21 +12,32 @@ class StockLevelWidget(QWidget):
     def __init__(self):
         super().__init__()
 
-        self._world_label = QLabel(parent=self, text="World")
         self.world_list = QListWidget(parent=self)
         self.world_list.addItems(WORLD_ITEMS)
         self.world_list.itemClicked.connect(self._on_world_click)
 
-        self._level_label = QLabel(parent=self, text="Level")
         self.level_list = QListWidget(parent=self)
 
         stock_level_layout = QGridLayout(self)
 
-        stock_level_layout.addWidget(self._world_label, 0, 0)
-        stock_level_layout.addWidget(self._level_label, 0, 1)
+        world_label = QLabel("World")
+        level_label = QLabel("Level")
+
+        description_label = QLabel()
+        description_label.setWordWrap(True)
+        description_label.setText(
+            "These are the Level and Enemy addresses of the US version of SMB3. If Levels are moved (e.g. by the "
+            "automatic Level management) or overwritten by other Levels, then loading these might result in an error "
+            "or broken Level."
+        )
+
+        stock_level_layout.addWidget(world_label, 0, 0)
+        stock_level_layout.addWidget(level_label, 0, 1)
 
         stock_level_layout.addWidget(self.world_list, 1, 0)
         stock_level_layout.addWidget(self.level_list, 1, 1)
+
+        stock_level_layout.addWidget(description_label, 2, 0, 1, 2)
 
     def _on_world_click(self):
         index = self.world_list.currentRow()
