@@ -21,9 +21,6 @@ class StockLevelWidget(QWidget):
 
         stock_level_layout = QGridLayout(self)
 
-        world_label = QLabel("World")
-        level_label = QLabel("Level")
-
         description_label = QLabel()
         description_label.setWordWrap(True)
         description_label.setText(
@@ -35,8 +32,8 @@ class StockLevelWidget(QWidget):
         if ROM.additional_data.found_levels:
             description_label.setStyleSheet("QLabel { color : red; }")
 
-        stock_level_layout.addWidget(world_label, 0, 0)
-        stock_level_layout.addWidget(level_label, 0, 1)
+        stock_level_layout.addWidget(QLabel("World"), 0, 0)
+        stock_level_layout.addWidget(QLabel("Level"), 0, 1)
 
         stock_level_layout.addWidget(self.world_list, 1, 0)
         stock_level_layout.addWidget(self.level_list, 1, 1)
