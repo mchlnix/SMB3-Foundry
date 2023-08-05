@@ -4,11 +4,13 @@ from PySide6.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
 from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
-from foundry.gui.ObjectToolBox import ObjectIcon
-from foundry.gui.TabbedToolBox import TabbedToolBox
+from .ObjectToolBox import ObjectIcon
+from .TabbedToolBox import TabbedToolBox
 
 
 class ObjectToolBar(QWidget):
+    """The Widget holding the tabbed toolbox and the current item icon. Sits at the top of the hierarchy."""
+
     object_selected: SignalInstance = Signal(ObjectLike)
 
     def __init__(self, parent=None):

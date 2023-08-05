@@ -1,21 +1,13 @@
-from itertools import product
 from typing import Optional
 
 from PySide6.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
 from PySide6.QtGui import QDrag, QImage, QMouseEvent, QPaintEvent, QPainter
-from PySide6.QtWidgets import QGridLayout, QSizePolicy, QWidget
+from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from foundry.game.gfx.Palette import bg_color_for_palette_group
 from foundry.game.gfx.drawable import load_from_png
-from foundry.game.gfx.objects import (
-    EnemyItemFactory,
-    Jump,
-    LevelObject,
-    LevelObjectFactory,
-    get_minimal_icon_object,
-)
+from foundry.game.gfx.objects import Jump, LevelObject, get_minimal_icon_object
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 
 objects_to_use_pngs_instead = {
     "'?' with flower": load_from_png(0, 4),
@@ -44,6 +36,8 @@ objects_to_use_pngs_instead = {
 
 
 class ObjectIcon(QWidget):
+    """Icon showing a minimized version of a Level Object or Enemy. Can be dragged from to get the item data."""
+
     MIN_SIZE = QSize(32, 32)
     MAX_SIZE = MIN_SIZE * 2
 
@@ -154,136 +148,3 @@ class ObjectIcon(QWidget):
     @staticmethod
     def fits_inside(size1: QSize, size2: QSize):
         return size1.width() <= size2.width() and size1.height() <= size2.height()
-
-
-class ObjectToolBox(QWidget):
-    object_icon_clicked: SignalInstance = Signal(ObjectIcon)
-
-    def __init__(self, parent: Optional[QWidget] = None):
-        super(ObjectToolBox, self).__init__(parent)
-
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-
-        self._layout = QGridLayout(self)
-        self._layout.setAlignment(Qt.AlignCenter)
-
-        self._layout.setAlignment(Qt.AlignHCenter)
-
-    def sizeHint(self):
-        orig_size_hint: QSize = super().sizeHint()
-        width = 2 * ObjectIcon.MIN_SIZE.width()
-
-        orig_size_hint.setWidth(width)
-
-        return orig_size_hint
-
-    def add_object(self, level_object: InLevelObject, index: int = -1):
-        icon = ObjectIcon(level_object)
-
-        icon.clicked.connect(self._on_icon_clicked)
-
-        if index == -1:
-            index = self._layout.count()
-
-        self._layout.addWidget(icon, index // 2, index % 2)
-
-    def add_from_object_set(self, object_set_index: int, graphic_set_index: int = -1):
-        if graphic_set_index == -1:
-            graphic_set_index = object_set_index
-
-        factory = LevelObjectFactory(
-            object_set_index,
-            graphic_set_index,
-            0,
-            [],
-            vertical_level=False,
-            size_minimal=True,
-        )
-
-        object_ids = list(range(0x00, 0x10)) + list(range(0x10, MAX_ID_VALUE, 0x10))
-
-        for domain, obj_index in product(range(MAX_DOMAIN + 1), object_ids):
-            level_object = factory.from_properties(
-                domain=domain, object_index=obj_index, x=0, y=0, length=None, index=0
-            )
-
-            if not isinstance(level_object, LevelObject) or level_object.name in [
-                "MSG_NOTHING",
-                "MSG_CRASH",
-            ]:
-                continue
-
-            self.add_object(level_object)
-
-    def add_from_enemy_set(self, object_set_index: int):
-        factory = EnemyItemFactory(object_set_index, 0)
-
-        for obj_index in range(MAX_ENEMY_ITEM_ID + 1):
-            enemy_item = factory.from_properties(obj_index, x=0, y=0)
-
-            if enemy_item.name in ["MSG_NOTHING", "MSG_CRASH"]:
-                continue
-
-            self.add_object(enemy_item)
-
-    def clear(self):
-        self._extract_objects()
-
-    def _on_icon_clicked(self):
-        self.object_icon_clicked.emit(self.sender())
-
-    @property
-    def draw_background_color(self):
-        return self._layout.itemAt(0).draw_background_color
-
-    @draw_background_color.setter
-    def draw_background_color(self, value):
-        for index in range(self._layout.count()):
-            self._layout.itemAt(index).draw_background_color = value
-
-    def has_object(self, level_object):
-        return self.index_of_object(level_object) != -1
-
-    def get_equivalent(self, level_object):
-        for index in range(self._layout.count()):
-            internal_object = self._layout.itemAtPosition(index // 2, index % 2).widget().object
-
-            if internal_object.object_set == level_object.object_set and internal_object.type == level_object.type:
-                return internal_object
-
-        else:
-            return None
-
-    def index_of_object(self, level_object):
-        for index in range(self._layout.count()):
-            if self._layout.itemAtPosition(index // 2, index % 2).widget().object == level_object:
-                return index
-        else:
-            return -1
-
-    def _extract_objects(self):
-        objects = []
-
-        while True:
-            item = self._layout.takeAt(0)
-
-            if item is None:
-                break
-            else:
-                objects.append(item.widget().object)
-                item.widget().deleteLater()
-
-        return objects
-
-    def place_at_front(self, level_object):
-        objects = self._extract_objects()
-
-        if level_object in objects:
-            objects.remove(level_object)
-
-        objects.insert(0, level_object)
-
-        assert self._layout.count() == 0
-
-        for obj in objects:
-            self.add_object(obj)

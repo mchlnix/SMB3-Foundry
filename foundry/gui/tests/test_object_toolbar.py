@@ -1,4 +1,4 @@
-from foundry.gui.ObjectToolBar import ObjectToolBar
+from foundry.gui.widgets.object_toolbar.ObjectToolBar import ObjectToolBar
 
 
 def test_creation(qtbot):

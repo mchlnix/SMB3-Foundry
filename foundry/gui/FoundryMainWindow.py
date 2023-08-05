@@ -58,7 +58,7 @@ from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectSetSelector import ObjectSetSelector
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
-from foundry.gui.ObjectToolBar import ObjectToolBar
+from foundry.gui.widgets.object_toolbar.ObjectToolBar import ObjectToolBar
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.WarningList import WarningList
 from foundry.gui.asm import load_asm_filename

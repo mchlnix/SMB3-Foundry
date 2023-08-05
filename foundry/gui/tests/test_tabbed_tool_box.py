@@ -1,4 +1,4 @@
-from foundry.gui.TabbedToolBox import TabbedToolBox
+from foundry.gui.widgets.object_toolbar.TabbedToolBox import TabbedToolBox
 
 
 def test_tabbed_tool_box(qtbot):

@@ -3,10 +3,12 @@ from PySide6.QtWidgets import QScrollArea, QTabWidget
 
 from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from foundry.gui.ObjectToolBox import ObjectIcon, ObjectToolBox
+from .ObjectToolBox import ObjectIcon, ObjectToolBox
 
 
 class TabbedToolBox(QTabWidget):
+    """Holds 3 ObjectToolboxes. One for Level Objects, one for enemies and one for recently used items."""
+
     object_icon_clicked: SignalInstance = Signal(ObjectIcon)
 
     def __init__(self, parent=None):
