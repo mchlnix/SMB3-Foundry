@@ -21,25 +21,21 @@ from PySide6.QtWidgets import (
 
 from foundry import icon
 from foundry.game.File import ROM
-from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui import OBJECT_SET_ITEMS, WORLD_ITEMS
+from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.WorldView import WorldView
+from foundry.gui.dialogs.level_selector.stock_level_list import StockLevelWidget
 from foundry.gui.settings import Settings
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.data_points import LevelPointerData, Position
-from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
+from smb3parse.levels import WORLD_COUNT
 from smb3parse.objects.object_set import (
     MUSHROOM_OBJECT_SET,
     OBJECT_SET_NAMES,
     SPADE_BONUS_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
-
-WORLD_1_INDEX = 0
-LOST_LEVELS_INDEX = 8
-OVERWORLD_MAPS_INDEX = 9
 
 
 class LevelSelector(QDialog):
@@ -58,18 +54,12 @@ class LevelSelector(QDialog):
 
         self.clicked_level_pointer: Optional[LevelPointerData] = None
 
-        self.world_label = QLabel(parent=self, text="World")
-        self.world_list = QListWidget(parent=self)
-        self.world_list.addItems(WORLD_ITEMS)
+        self._stock_level_widget = StockLevelWidget()
 
-        self.world_list.itemDoubleClicked.connect(self.on_ok)
-        self.world_list.itemSelectionChanged.connect(self.on_world_click)
+        self._stock_level_widget.world_list.itemDoubleClicked.connect(self._on_ok)
+        self._stock_level_widget.level_list.itemDoubleClicked.connect(self._on_ok)
 
-        self.level_label = QLabel(parent=self, text="Level")
-        self.level_list = QListWidget(parent=self)
-
-        self.level_list.itemDoubleClicked.connect(self.on_ok)
-        self.level_list.itemSelectionChanged.connect(self.on_level_click)
+        self._stock_level_widget.level_list.itemClicked.connect(self._on_stock_level_selected)
 
         self.enemy_data_label = QLabel(parent=self, text="Enemy Data")
         self.enemy_data_spinner = Spinner(parent=self)
@@ -82,20 +72,11 @@ class LevelSelector(QDialog):
         self.object_set_dropdown.addItems(OBJECT_SET_ITEMS)
 
         self.button_ok = QPushButton("Ok", self)
-        self.button_ok.clicked.connect(self.on_ok)
+        self.button_ok.clicked.connect(self._on_ok)
         self.button_ok.setFocus()
 
         self.button_cancel = QPushButton("Cancel", self)
         self.button_cancel.clicked.connect(self.close)
-
-        stock_level_widget = QWidget()
-        stock_level_layout = QGridLayout(stock_level_widget)
-
-        stock_level_layout.addWidget(self.world_label, 0, 0)
-        stock_level_layout.addWidget(self.level_label, 0, 1)
-
-        stock_level_layout.addWidget(self.world_list, 1, 0)
-        stock_level_layout.addWidget(self.level_list, 1, 1)
 
         # List of found levels
         self.found_levels = ROM.additional_data.found_levels.copy()
@@ -116,8 +97,8 @@ class LevelSelector(QDialog):
 
             self.found_list.addItem(level_descr)
 
-        self.found_list.itemDoubleClicked.connect(self.on_ok)
-        self.found_list.itemSelectionChanged.connect(self.on_found_click)
+        self.found_list.itemDoubleClicked.connect(self._on_ok)
+        self.found_list.itemSelectionChanged.connect(self._on_found_level_selected)
 
         found_level_widget = QWidget()
         found_level_layout = QGridLayout(found_level_widget)
@@ -127,7 +108,7 @@ class LevelSelector(QDialog):
         tab_index = 0
 
         self.source_selector = QTabWidget()
-        self.source_selector.addTab(stock_level_widget, "Stock Levels")
+        self.source_selector.addTab(self._stock_level_widget, "Stock Levels")
         self.source_selector.setTabIcon(tab_index, icon("list.svg"))
 
         tab_index += 1
@@ -141,7 +122,7 @@ class LevelSelector(QDialog):
             world_map_select = WorldMapLevelSelect(world_number)
             world_map_select.level_clicked.connect(self._on_level_selected_via_world_map)
             world_map_select.level_selected.connect(self._on_level_selected_via_world_map)
-            world_map_select.level_selected.connect(self.on_ok)
+            world_map_select.level_selected.connect(self._on_ok)
 
             self.source_selector.addTab(world_map_select, f"World {world_number}")
             self.source_selector.setTabIcon(tab_index + world_number - 1, icon("globe.svg"))
@@ -169,10 +150,8 @@ class LevelSelector(QDialog):
 
         self.setLayout(main_layout)
 
-        self.world_list.setCurrentRow(WORLD_1_INDEX)  # select Level 1-1
-
         if not ROM().additional_data.managed_level_positions:
-            self.on_world_click()
+            self._stock_level_widget.world_list.setCurrentRow(0)
         else:
             first_level = ROM().additional_data.found_levels[0]
             self._fill_in_data(
@@ -194,76 +173,18 @@ class LevelSelector(QDialog):
     def deactivate_level_list(self):
         self.source_selector.setTabEnabled(0, False)
 
-    def on_world_click(self):
-        index = self.world_list.currentRow()
+    def _on_stock_level_selected(self):
+        self.world_index = self._stock_level_widget.world_number
+        self.level_name = self._stock_level_widget.level_name
 
-        assert index >= 0
+        self.enemy_data_spinner.setDisabled(self._stock_level_widget.level_is_overworld)
+        self.button_ok.setDisabled(self._stock_level_widget.level_is_overworld)
 
-        if index == OVERWORLD_MAPS_INDEX:
-            world_number = 0  # world maps
-        else:
-            world_number = index + 1
-
-        self.level_list.clear()
-
-        # skip first meaningless item
-        for level in Level.offsets[1:]:
-            if level.game_world == world_number:
-                if level.name:
-                    self.level_list.addItem(level.name)
-
-        if self.level_list.count():
-            self.level_list.setCurrentRow(0)
-
-            self.on_level_click()
-
-    def on_level_click(self):
-        index = self.level_list.currentRow()
-
-        assert index >= 0
-
-        level_is_lost = self.world_list.currentRow() == LOST_LEVELS_INDEX
-        level_is_overworld = self.world_list.currentRow() == OVERWORLD_MAPS_INDEX
-
-        self.world_index = self.world_list.currentRow() + 1
-
-        if level_is_overworld:
-            level_array_offset = index + 1
-            self.level_name = ""
-        else:
-            level_array_offset = Level.world_indexes[self.world_index] + index + 1
-
-            if level_is_lost:
-                self.level_name = "Lost World, "
-            else:
-                self.level_name = f"World {self.world_index}, "
-
-        if level_is_lost:
-            # selected a "lost level" that isn't actually in world 9
-            self.world_index = 1
-
-        self.level_name += f"{Level.offsets[level_array_offset].name}"
-
-        object_data_for_lvl = Level.offsets[level_array_offset].rom_level_offset
-
-        if not level_is_overworld:
-            object_data_for_lvl -= HEADER_LENGTH
-
-        if not level_is_overworld:
-            enemy_data_for_lvl = Level.offsets[level_array_offset].enemy_offset
-        else:
-            enemy_data_for_lvl = 0
-
-        if enemy_data_for_lvl > 0:
-            # data in look up table is off by one, since workshop ignores the first byte
-            enemy_data_for_lvl -= 1
-
-        self.enemy_data_spinner.setEnabled(not level_is_overworld)
-
-        object_set_index = Level.offsets[level_array_offset].real_obj_set
-        self.button_ok.setDisabled(level_is_overworld)
-
-        self._fill_in_data(object_set_index, object_data_for_lvl, enemy_data_for_lvl)
+        self._fill_in_data(
+            self._stock_level_widget.object_set_number,
+            self._stock_level_widget.level_address,
+            self._stock_level_widget.enemy_address,
+        )
 
     def _fill_in_data(self, object_set: int, layout_address: int, enemy_address: int):
         self.object_set_dropdown.setCurrentIndex(object_set)
@@ -275,7 +196,7 @@ class LevelSelector(QDialog):
 
         if self.clicked_level_pointer == level_pointer:
             # same level was clicked again,
-            self.on_ok()
+            self._on_ok()
         else:
             self.clicked_level_pointer = level_pointer
 
@@ -289,7 +210,7 @@ class LevelSelector(QDialog):
 
         self.button_ok.setFocus()
 
-    def on_found_click(self):
+    def _on_found_level_selected(self):
         index = self.found_list.currentRow()
         self._fill_in_data(
             self.found_levels[index].object_set_number,
@@ -298,8 +219,8 @@ class LevelSelector(QDialog):
         )
         self.button_ok.setFocus()
 
-    def on_ok(self, _=None):
-        if self.world_list.currentRow() == OVERWORLD_MAPS_INDEX:
+    def _on_ok(self, _=None):
+        if self._stock_level_widget.level_is_overworld:
             return
 
         self.object_set = self.object_set_dropdown.currentIndex()

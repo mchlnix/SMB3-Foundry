@@ -51,7 +51,7 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.JumpList import JumpList
 from foundry.gui.LevelParseProgressDialog import LevelParseProgressDialog
-from foundry.gui.LevelSelector import LevelSelector
+from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
 from foundry.gui.LevelView import LevelView
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.ObjectDropdown import ObjectDropdown

@@ -18,7 +18,7 @@ from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui import OBJECT_SET_ITEMS
-from foundry.gui.LevelSelector import LevelSelector
+from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
 from foundry.gui.commands import (
     SetLevelAttribute,
     SetNextAreaEnemyAddress,
