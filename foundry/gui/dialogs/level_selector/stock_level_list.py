@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QGridLayout, QLabel, QListWidget, QWidget
 
+from foundry.game.File import ROM
 from foundry.game.level.Level import Level
 from foundry.gui import WORLD_ITEMS
 from smb3parse.levels import HEADER_LENGTH
@@ -30,6 +31,9 @@ class StockLevelWidget(QWidget):
             "automatic Level management) or overwritten by other Levels, then loading these might result in an error "
             "or broken Level."
         )
+
+        if ROM.additional_data.found_levels:
+            description_label.setStyleSheet("QLabel { color : red; }")
 
         stock_level_layout.addWidget(world_label, 0, 0)
         stock_level_layout.addWidget(level_label, 0, 1)
