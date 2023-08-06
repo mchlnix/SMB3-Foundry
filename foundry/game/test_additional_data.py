@@ -109,7 +109,7 @@ def _mk_level(level_offset: LevelAddress, enemy_offset: EnemyItemAddress):
         enemy_data_length=enemy_size,
         found_in_world=False,
         found_as_jump=False,
-        is_generic=False,
+        is_world_specific=False,
     )
 
     return level

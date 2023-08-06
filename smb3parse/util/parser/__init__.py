@@ -34,7 +34,7 @@ class FoundLevel:
 
     found_in_world: bool
     found_as_jump: bool
-    is_generic: bool
+    is_world_specific: bool
 
     def to_dict(self) -> dict[str, list[int] | int | bool]:
         ret_dict = vars(self)
@@ -54,7 +54,7 @@ class FoundLevel:
             data["enemy_data_length"],
             data["found_in_world"],
             data["found_as_jump"],
-            data["is_generic"],
+            data.get("is_world_specific", data.get("is_generic", False)),  # backwards compatible
         )
 
 
@@ -70,14 +70,14 @@ class FoundLevelRecord:
 
     found_in_world: bool = False
     found_as_jump: bool = False
-    is_generic: bool = False
+    is_world_specific: bool = False
 
     @staticmethod
     def from_level_pointer(
         level_pointer: LevelPointerData,
         from_world: bool,
         from_jump: bool,
-        generic: bool,
+        world_specific: bool,
     ) -> "FoundLevelRecord":
         return FoundLevelRecord(
             level_pointer.level_address,
@@ -87,7 +87,7 @@ class FoundLevelRecord:
             level_pointer.object_set,
             from_world,
             from_jump,
-            generic,
+            world_specific,
         )
 
 
@@ -193,7 +193,7 @@ def gen_levels_in_rom(
 
                 found_level.found_in_world |= record.found_in_world
                 found_level.found_as_jump |= record.found_as_jump
-                found_level.is_generic |= record.is_generic
+                found_level.is_world_specific |= record.is_world_specific
 
                 continue
 
@@ -230,7 +230,7 @@ def gen_levels_in_rom(
                     parsed_level.enemy_data_length,
                     record.found_in_world,
                     record.found_as_jump,
-                    record.is_generic,
+                    record.is_world_specific,
                 )
 
                 levels_by_address[record.level_address] = found_level

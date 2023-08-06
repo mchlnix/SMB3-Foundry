@@ -108,7 +108,8 @@ class LevelViewer(CustomChildWindow):
             print(
                 hex(address_),
                 level_.object_set_number,
-                f"From World: {level_.found_in_world}, Jump: {level_.found_as_jump}, Generic: {level_.is_generic}",
+                f"From World: {level_.found_in_world}, Jump: {level_.found_as_jump}, "
+                f"World Specific: {level_.is_world_specific}",
             )
 
             level_item = QTreeWidgetItem()
@@ -134,7 +135,7 @@ class LevelViewer(CustomChildWindow):
 
         # Step 2.2: Make Generic Level Tree Items
         for address, level in levels_by_address.items():
-            if level.is_generic:
+            if level.is_world_specific:
                 parent = world_tree_items[level.world_number - 1]
                 _get_level_item(address, level, parent)
 
