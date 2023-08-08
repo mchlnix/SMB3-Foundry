@@ -27,6 +27,7 @@ from foundry.gui.commands import (
 )
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.widgets.Spinner import Spinner
+from smb3parse.levels import ENEMY_BASE_OFFSET
 from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
 
@@ -190,11 +191,19 @@ class HeaderEditor(CustomDialog):
         # next area settings
         self.level_pointer_spinner = Spinner(self)
         self.level_pointer_spinner.valueChanged.connect(self.on_spin)
+        self.level_pointer_spinner.setMinimum(0)
+        self.level_pointer_spinner.setMaximum(0xFFFF)
+
+        self._level_address_label = QLabel()
+        self._level_address_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.enemy_pointer_spinner = Spinner(self)
         self.enemy_pointer_spinner.valueChanged.connect(self.on_spin)
         self.enemy_pointer_spinner.setMinimum(0)
         self.enemy_pointer_spinner.setMaximum(0xFFFF)
+
+        self._enemy_address_label = QLabel()
+        self._enemy_address_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.next_area_object_set_dropdown = QComboBox()
         self.next_area_object_set_dropdown.addItems(OBJECT_SET_ITEMS)
@@ -206,8 +215,10 @@ class HeaderEditor(CustomDialog):
         form = QFormLayout()
         form.setFormAlignment(Qt.AlignCenter)
 
-        form.addRow("Address of Objects: ", self.level_pointer_spinner)
-        form.addRow("Address of Enemies: ", self.enemy_pointer_spinner)
+        form.addRow("Offset of Level Objects: ", self.level_pointer_spinner)
+        form.addRow("Address of Level Objects: ", self._level_address_label)
+        form.addRow("Offset of Enemies: ", self.enemy_pointer_spinner)
+        form.addRow("Address of Enemies: ", self._enemy_address_label)
         form.addRow("Object Set: ", self.next_area_object_set_dropdown)
 
         form.addRow(QLabel(""))
@@ -248,9 +259,13 @@ class HeaderEditor(CustomDialog):
 
         self.blockSignals(True)
 
-        self.level_pointer_spinner.setValue(self.level.next_area_objects)
-        self.enemy_pointer_spinner.setValue(self.level.next_area_enemies)
-        self.next_area_object_set_dropdown.setCurrentIndex(self.level.next_area_object_set)
+        self.level_pointer_spinner.setValue(self.level.header.jump_level_offset)
+        self._level_address_label.setText(
+            hex(self.level.header.jump_object_set.level_offset + self.level_pointer_spinner.value())
+        )
+        self.enemy_pointer_spinner.setValue(self.level.header.jump_enemy_offset)
+        self._enemy_address_label.setText(hex(ENEMY_BASE_OFFSET + self.enemy_pointer_spinner.value()))
+        self.next_area_object_set_dropdown.setCurrentIndex(self.level.next_area_object_set_no)
 
         self.blockSignals(False)
 
@@ -308,11 +323,11 @@ class HeaderEditor(CustomDialog):
         elif spinner == self.enemy_palette_spinner:
             self._set_level_attr("enemy_palette_index", new_value)
 
-        elif spinner == self.level_pointer_spinner and new_value != self.level.next_area_objects:
-            self.undo_stack.push(SetNextAreaObjectAddress(self.level, new_value))
+        elif spinner == self.level_pointer_spinner and new_value != self.level.header.jump_level_offset:
+            self.undo_stack.push(SetNextAreaObjectAddress(self.level, self.level.object_set.level_offset + new_value))
 
-        elif spinner == self.enemy_pointer_spinner and new_value != self.level.next_area_enemies:
-            self.undo_stack.push(SetNextAreaEnemyAddress(self.level, new_value))
+        elif spinner == self.enemy_pointer_spinner and new_value != self.level.header.jump_enemy_offset:
+            self.undo_stack.push(SetNextAreaEnemyAddress(self.level, ENEMY_BASE_OFFSET + new_value))
 
         self.update()
 
@@ -368,17 +383,12 @@ class HeaderEditor(CustomDialog):
         elif dropdown == self.graphic_set_dropdown:
             self._set_level_attr("graphic_set", new_index, display_value=text)
 
-        elif dropdown == self.next_area_object_set_dropdown and new_index != self.level.next_area_object_set:
+        elif dropdown == self.next_area_object_set_dropdown and new_index != self.level.next_area_object_set_no:
             object_set_cmd = SetNextAreaObjectSet(self.level, new_index)
 
             # in case the level address changes based on the new object set, don't list that command separately
             self.undo_stack.beginMacro(object_set_cmd.text())
             self.undo_stack.push(object_set_cmd)
-
-            # update min and max, based on new object set
-            min_level_address = self.level.header.jump_object_set.level_offset
-            self.level_pointer_spinner.setMinimum(min_level_address)
-            self.level_pointer_spinner.setMaximum(min_level_address + 0xFFFF)
 
             self.undo_stack.endMacro()
 
