@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+from smb3parse.util import apply
+
 
 @dataclass
 class ParsedObject:
@@ -11,7 +13,7 @@ class ParsedObject:
     tiles_in_level: list[tuple[int, int]] = field(default_factory=list)
 
     def __str__(self):
-        return f"Obj @ {self.pos_in_mem:#x}: {list(map(hex, self.obj_bytes))}, {self.tiles_in_level}"
+        return f"Obj @ {self.pos_in_mem:#x}: {apply(hex, self.obj_bytes)}, {self.tiles_in_level}"
 
     @property
     def domain(self):
@@ -42,7 +44,7 @@ class ParsedEnemy:
     pos_in_mem: int
 
     def __str__(self):
-        return f"Enemy @ {self.pos_in_mem:#x}: {list(map(hex, self.obj_bytes))}"
+        return f"Enemy @ {self.pos_in_mem:#x}: {apply(hex, self.obj_bytes)}"
 
     @property
     def domain(self):

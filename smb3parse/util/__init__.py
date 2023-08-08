@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Optional
+from typing import Callable, Iterable, Optional
 
 
 # nn - actual number to be used
@@ -53,3 +53,7 @@ def lrange(a1: int, a2: Optional[int] = None, a3: Optional[int] = None, /):
         return list(range(a1, a2))
 
     return list(range(a1, a2, a3))
+
+
+def apply(func: Callable, iterable: Iterable, *iterables: Iterable):
+    return list(map(func, iterable, *iterables))

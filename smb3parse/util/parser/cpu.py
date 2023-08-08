@@ -6,6 +6,7 @@ from py65.disassembler import Disassembler
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, PAGE_C000_ByTileset
 from smb3parse.data_points import Position
 from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
+from smb3parse.util import apply
 from smb3parse.util.parser.constants import (
     MEM_ADDRESS_LABELS,
     MEM_EnemiesStartA,
@@ -107,7 +108,7 @@ class NesCPU(mpu6502.MPU):
 
         if enemy_address >= 0x0:
             while self.rom.int(enemy_address) != 0xFF:
-                enemy_bytes = list(map(int, self.rom.read(enemy_address, 3)))
+                enemy_bytes = apply(int, self.rom.read(enemy_address, 3))
                 level.parsed_enemies.append(ParsedEnemy(ENEMY_ITEM_OBJECT_SET, enemy_bytes, enemy_address))
 
                 enemy_address += 3
@@ -154,7 +155,7 @@ class NesCPU(mpu6502.MPU):
             parsed_object = self._start_parsing_next_object()
 
             if self.should_log:
-                object_bytes_text = list(map(hex, parsed_object.obj_bytes))
+                object_bytes_text = apply(hex, parsed_object.obj_bytes)
 
                 optional_byte = hex(self.memory[parsed_object.pos_in_mem + 3])
 
@@ -187,7 +188,7 @@ class NesCPU(mpu6502.MPU):
 
         self.step_count += 1
 
-        ins_bytes = list(map(hex, self.memory[self.pc : self.pc + ins_len]))
+        ins_bytes = apply(hex, self.memory[self.pc : self.pc + ins_len])
         op = self._replace_address_with_label(self._replace_register_values(op), color)
 
         print(f"{self.step_count:5} {self.pc:X}: {color}{op}{CLEAR}, {ins_bytes}")

@@ -18,6 +18,7 @@ from smb3parse.constants import (
     VANILLA_PRG_BANK_COUNT,
 )
 from smb3parse.objects.object_set import DESERT_OBJECT_SET, PLAINS_OBJECT_SET
+from smb3parse.util import apply
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
@@ -165,7 +166,7 @@ def test_rearrange_levels(mock_rom):
     assert new_level_offsets != mock_rom.starting_level_offsets, "Nothing happened"
 
     for level, expected_level_offset in zip(level_organizer.levels, mock_rom.expected_level_offsets):
-        assert hex(level.level_offset) == hex(expected_level_offset), list(map(hex, mock_rom.expected_level_offsets))
+        assert hex(level.level_offset) == hex(expected_level_offset), apply(hex, mock_rom.expected_level_offsets)
 
     for expected_level_offset, level_bytes in zip(mock_rom.expected_level_offsets, mock_rom.level_bytes):
         assert mock_rom.read(expected_level_offset, len(level_bytes)) == level_bytes
@@ -213,7 +214,7 @@ def test_rearrange_levels_with_larger_data(mock_rom):
     assert new_level_offsets != mock_rom.starting_level_offsets, "Nothing happened"
 
     for level, expected_level_offset in zip(level_organizer.levels, mock_rom.expected_level_offsets):
-        assert hex(level.level_offset) == hex(expected_level_offset), list(map(hex, mock_rom.expected_level_offsets))
+        assert hex(level.level_offset) == hex(expected_level_offset), apply(hex, mock_rom.expected_level_offsets)
 
     for expected_level_offset, level_bytes in zip(mock_rom.expected_level_offsets, mock_rom.level_bytes):
         assert mock_rom.read(expected_level_offset, len(level_bytes)) == level_bytes
@@ -425,7 +426,7 @@ def test_rearrange_enemies_with_larger_data(mock_rom):
     assert new_enemy_offsets != mock_rom.starting_enemy_offsets, "Nothing happened"
 
     for level, expected_enemy_offset in zip(level_organizer.levels, mock_rom.expected_enemy_offsets):
-        assert hex(level.enemy_offset) == hex(expected_enemy_offset), list(map(hex, mock_rom.expected_enemy_offsets))
+        assert hex(level.enemy_offset) == hex(expected_enemy_offset), apply(hex, mock_rom.expected_enemy_offsets)
 
     for expected_enemy_offset, enemy_bytes in zip(mock_rom.expected_enemy_offsets, mock_rom.enemy_bytes):
         assert mock_rom.read(expected_enemy_offset, len(enemy_bytes)) == enemy_bytes
