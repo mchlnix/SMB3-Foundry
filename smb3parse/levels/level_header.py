@@ -27,6 +27,8 @@ class LevelHeader:
         if len(header_bytes) != HEADER_LENGTH:
             raise ValueError(f"A level header is made up of {HEADER_LENGTH} bytes, but {len(header_bytes)} were given.")
 
+        self._rom = rom
+
         assert_valid_object_set_number(object_set_number)
 
         self._object_set_number = object_set_number
@@ -54,8 +56,8 @@ class LevelHeader:
             self.height = self.length
             self.width = DEFAULT_VERTICAL_WIDTH
 
-        self.jump_object_set_number = self.data[6] & 0b0000_1111  # for indexing purposes
-        self.jump_object_set = ObjectSet(rom, self.jump_object_set_number)
+        self._jump_object_set_number = self.data[6] & 0b0000_1111  # for indexing purposes
+        self._jump_object_set = ObjectSet(rom, self.jump_object_set_number)
 
         self.start_action = (self.data[7] & 0b1110_0000) >> 5
 
@@ -92,3 +94,15 @@ class LevelHeader:
     @jump_enemy_address.setter
     def jump_enemy_address(self, value):
         self.jump_enemy_offset = value - ENEMY_BASE_OFFSET
+
+    @property
+    def jump_object_set_number(self):
+        return self._jump_object_set_number
+
+    @jump_object_set_number.setter
+    def jump_object_set_number(self, value):
+        self._jump_object_set_number = value
+
+    @property
+    def jump_object_set(self):
+        return ObjectSet(self._rom, self._jump_object_set_number)
