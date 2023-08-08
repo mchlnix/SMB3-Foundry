@@ -156,7 +156,7 @@ class WorldPaletteIndex(QUndoCommand):
         self.old_index = world.data.palette_index
         self.new_index = new_index
 
-        self.setText(f"Setting Palette Index to {new_index:Xx}")
+        self.setText(f"Setting Palette Index to {new_index:#x}")
 
     def undo(self):
         self.world.data.palette_index = self.old_index

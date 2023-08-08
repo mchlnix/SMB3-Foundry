@@ -56,7 +56,7 @@ class EditWorldInfo(CustomDialog):
         layout.addLayout(label_and_widget("Color Palette Index", palette_spin_box))
 
         music_dropdown = QComboBox(self)
-        music_dropdown.addItems([f"{name} ({value:#X})" for value, name in MUSIC_THEMES.items()])
+        music_dropdown.addItems([f"{name} ({value:#x})" for value, name in MUSIC_THEMES.items()])
         music_dropdown.currentIndexChanged.connect(self._change_music_index)
         music_dropdown.setCurrentIndex(list(MUSIC_THEMES.keys()).index(world_map.data.music_index))
 
