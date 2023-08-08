@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from foundry import ASM_FILE_FILTER, NO_PARENT
-from foundry.gui.dialogs import ObjectSetSelector
+from foundry.gui.dialogs.ObjectSetSelector import ObjectSetSelector
 from smb3parse.util import hex_int
 
 if TYPE_CHECKING:

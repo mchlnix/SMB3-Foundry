@@ -1,5 +1,7 @@
+from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QLabel, QListWidget, QVBoxLayout, QWidget
 
+from foundry import get_level_thumbnail
 from foundry.game.File import ROM
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
 
@@ -13,6 +15,7 @@ class FoundLevelWidget(QWidget):
 
         found_label = QLabel("Found Levels")
         self.level_list = QListWidget()
+        self.level_list.setMouseTracking(True)
 
         description_label = QLabel()
 
@@ -45,6 +48,33 @@ class FoundLevelWidget(QWidget):
                 level_descr += " (Jump Destination)"
 
             self.level_list.addItem(level_descr)
+
+        self.level_list.mouseMoveEvent = self._set_thumbnail
+        self._last_checked_row = -1
+
+    def _set_thumbnail(self, event: QMouseEvent):
+        pos = self.level_list.mapFromGlobal(event.globalPosition().toPoint())
+
+        row = self.level_list.row(self.level_list.itemAt(pos))
+
+        if row == self._last_checked_row:
+            return
+
+        self._last_checked_row = row
+
+        if row == -1:
+            self.level_list.setToolTip(None)
+            return
+
+        level = self.found_levels[row]
+
+        image_data = get_level_thumbnail(
+            level.object_set_number,
+            level.level_offset,
+            level.enemy_offset,
+        )
+
+        self.level_list.setToolTip(f"<img src='data:image/png;base64,{image_data}'>")
 
     @property
     def _level_index(self):
