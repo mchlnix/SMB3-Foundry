@@ -54,7 +54,7 @@ def _test_check_box(check_box: QCheckBox, level: Level, level_attr: str, expecte
         ("x_position_dropdown", "start_x_index", +1),
         ("action_dropdown", "start_action", +1),
         ("graphic_set_dropdown", "graphic_set", +1),
-        ("next_area_object_set_dropdown", "next_area_object_set", +1),
+        ("next_area_object_set_dropdown", "next_area_object_set_no", +1),
     ],
 )
 def test_dropdown(header_editor, dropdown, level_attr, expected_change):

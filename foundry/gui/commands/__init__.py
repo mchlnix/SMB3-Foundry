@@ -98,7 +98,7 @@ class SetNextAreaEnemyAddress(SetLevelAttribute):
 
 class SetNextAreaObjectSet(SetLevelAttribute):
     def __init__(self, level: Level, new_object_set: int):
-        super(SetNextAreaObjectSet, self).__init__(level, "next_area_object_set", new_object_set)
+        super(SetNextAreaObjectSet, self).__init__(level, "next_area_object_set_no", new_object_set)
 
         self.setText(f"Object Set of Next Area to {OBJECT_SET_NAMES[new_object_set]}")
 

@@ -451,7 +451,7 @@ class FoundryMainWindow(MainWindow):
 
         level_address = self.level_ref.level.next_area_objects
         enemy_address = self.level_ref.level.next_area_enemies
-        object_set = self.level_ref.level.next_area_object_set
+        object_set = self.level_ref.level.next_area_object_set_no
         old_world = self.level_ref.level.world
 
         world, level = world_and_level_for_level_address(level_address + HEADER_LENGTH)

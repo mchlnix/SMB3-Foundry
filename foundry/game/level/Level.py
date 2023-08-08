@@ -25,7 +25,7 @@ from foundry.gui.asm import bytes_to_asm
 from smb3parse import OFFSET_BY_OBJECT_SET_A000
 from smb3parse.constants import BASE_OFFSET, ENEMY_SIZE, OFFSET_SIZE
 from smb3parse.data_points import Position
-from smb3parse.levels import HEADER_LENGTH
+from smb3parse.levels import ENEMY_BASE_OFFSET, HEADER_LENGTH
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.util.parser import FoundLevel
 
@@ -309,7 +309,7 @@ class Level(LevelLike):
         if value == self.header.jump_enemy_address:
             return
 
-        value -= BASE_OFFSET
+        value -= ENEMY_BASE_OFFSET
 
         self.header_bytes[2] = 0x00FF & value
         self.header_bytes[3] = value >> 8
@@ -443,11 +443,11 @@ class Level(LevelLike):
         self._parse_header()
 
     @property
-    def next_area_object_set(self):
+    def next_area_object_set_no(self):
         return self.header.jump_object_set_number
 
-    @next_area_object_set.setter
-    def next_area_object_set(self, index):
+    @next_area_object_set_no.setter
+    def next_area_object_set_no(self, index):
         if index == self.header.jump_object_set_number:
             return
 
@@ -806,13 +806,13 @@ class Level(LevelLike):
             lo.rearrange_levels()
             lo.rearrange_enemies()
 
-            if self.header.jump_level_address and self.header.jump_level_address not in lo.old_level_address_to_new:
+            if self.header.jump_level_offset and self.header.jump_level_address not in lo.old_level_address_to_new:
                 raise LookupError(
                     f"Jump Destination Level Address in Header '0x{self.header.jump_level_address:X}' does not point to"
                     " any known level"
                 )
 
-            if self.header.jump_enemy_address and self.header.jump_enemy_address not in lo.old_enemy_address_to_new:
+            if self.header.jump_enemy_offset and self.header.jump_enemy_address not in lo.old_enemy_address_to_new:
                 raise LookupError(
                     f"Jump Destination Enemy Address in Header '0x{self.header.jump_enemy_address:X}' does not point to"
                     " any known enemy data group"
