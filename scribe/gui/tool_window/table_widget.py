@@ -4,11 +4,8 @@ from PySide6.QtCore import QAbstractItemModel, QSize, Signal, SignalInstance
 from PySide6.QtGui import QImage, QPainter, QPixmap, QUndoStack
 from PySide6.QtWidgets import (
     QComboBox,
-    QHeaderView,
     QMessageBox,
-    QSizePolicy,
     QStyledItemDelegate,
-    QTableWidget,
     QTableWidgetItem,
     QWidget,
 )
@@ -17,9 +14,10 @@ from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.widgets.Spinner import SPINNER_MAX_VALUE, Spinner
+from foundry.gui.widgets.table_widget import TableWidget as FoundryTableWidget
 
 
-class TableWidget(QTableWidget):
+class TableWidget(FoundryTableWidget):
     selection_changed: SignalInstance = Signal(int)
 
     def __init__(self, parent, level_ref: LevelRef):
@@ -27,7 +25,6 @@ class TableWidget(QTableWidget):
 
         self.setDragDropMode(self.DragDropMode.InternalMove)
         self.setIconSize(QSize(32, 32))
-        self.setAlternatingRowColors(True)
 
         self.level_ref = level_ref
 
@@ -35,23 +32,7 @@ class TableWidget(QTableWidget):
         self.level_ref.palette_changed.connect(self.update_content)
         self.level_ref.data_changed.connect(self.update_content)
 
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-
-        self.setSelectionBehavior(self.SelectionBehavior.SelectRows)
-        self.setSelectionMode(self.SelectionMode.SingleSelection)
-
-        self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-        self.horizontalHeader().setStretchLastSection(True)
-
-        self.itemSelectionChanged.connect(lambda: self.selection_changed.emit(self.selected_row))
-
         self.undo_stack.indexChanged.connect(self.update_content)
-
-    def set_headers(self, headers: list[str]):
-        self.setColumnCount(len(headers))
-
-        # TODO doesn't do anything?
-        self.setHorizontalHeaderLabels(headers)
 
     @property
     def world(self) -> WorldMap:
@@ -60,13 +41,6 @@ class TableWidget(QTableWidget):
     @property
     def undo_stack(self) -> QUndoStack:
         return cast(QUndoStack, self.window().parent().findChild(QUndoStack, "undo_stack"))
-
-    @property
-    def selected_row(self):
-        if self.selectedIndexes():
-            return self.selectedIndexes()[0].row()
-        else:
-            return -1
 
     def update_content(self):
         pass
