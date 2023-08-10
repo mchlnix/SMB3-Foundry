@@ -445,14 +445,18 @@ class WorldView(MainView):
                 self._move_selected_tiles(drag_end_point)
 
             if self.selected_object and not isinstance(self.selected_object, MapTile):
-                self.undo_stack.push(
-                    MoveMapObject(
-                        self.world,
-                        self.selected_object,
-                        start=self.drag_start_point,
-                        end=drag_end_point,
-                    )
+                move_command = MoveMapObject(
+                    self.world, self.selected_object, start=self.drag_start_point, end=drag_end_point
                 )
+
+                x, y = self.to_level_point(event.position().toPoint()).xy
+
+                if not self.world.point_in(x, y):
+                    # Move went outside the world area. easy way to undo the move, without tracking it in the undo stack
+                    move_command.redo()
+                    move_command.undo()
+                else:
+                    self.undo_stack.push(move_command)
 
             self.dragging_happened = False
 
