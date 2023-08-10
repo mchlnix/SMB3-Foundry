@@ -124,6 +124,9 @@ class LevelSelector(QDialog):
         if world_number not in range(1, WORLD_COUNT + 1):
             world_number = 1
 
+        if ROM.additional_data.found_levels:
+            world_number += 1
+
         self.source_selector.setCurrentIndex(world_number)
 
     def deactivate_level_list(self):
