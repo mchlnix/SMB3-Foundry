@@ -529,7 +529,7 @@ class AddLevelPointer(QUndoCommand):
         self.world_data = world_data
 
         self.level_pointer_data = LevelPointerData(self.world_data, self.world_data.level_count)
-        self.level_pointer_data.pos = Position(FIRST_VALID_ROW, 0, 0)
+        self.level_pointer_data.pos = Position(0, FIRST_VALID_ROW, 0)
         self.level_pointer_data.object_set = 1
         self.level_pointer_data.level_address = 0x0
         self.level_pointer_data.enemy_address = 0x0
