@@ -964,6 +964,9 @@ class FoundryMainWindow(MainWindow):
             return
 
     def close_level(self):
+        if not self.safe_to_change():
+            return
+
         self.level_ref.level = None
         self.undo_stack.clear()
         self._enable_disable_gui_elements()
