@@ -1,4 +1,4 @@
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, Qt
 from PySide6.QtWidgets import QMenu
 
 from foundry import icon
@@ -29,6 +29,7 @@ class FileMenu(QMenu):
 
         self.save_rom_action = self.addAction("Save ROM")
         self.save_rom_action.setIcon(icon("save.svg"))
+        self.save_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_S)
 
         self.save_rom_as_action = self.addAction("Save ROM as ...")
         self.save_rom_as_action.setIcon(icon("save.svg"))
