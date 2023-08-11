@@ -38,6 +38,7 @@ from smb3parse.objects.object_set import (
     DUNGEON_OBJECT_SET,
     ICE_OBJECT_SET,
 )
+from smb3parse.util import apply
 
 FIRE_FLOWER = load_from_png(16, 53)
 LEAF = load_from_png(17, 53)
@@ -74,6 +75,11 @@ OMITTED_ITEMS = [OBJ_PIPE_EXITS, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER]
 These configure things based on their y-position in the level. This is done in the editor directly now. So no need to
 actually render them in the level.
 """
+
+
+ENEMY_ITEMS_WITH_OVERLAYS = apply(
+    str.lower, ("Invisible door (appears when you hit a P-switch)", "Red Koopa Paratroopa")
+)
 
 
 def _block_from_index(block_index: int, level: Level) -> Block:
@@ -242,7 +248,7 @@ class LevelDrawer:
             name = level_object.name.lower()
 
             # only handle this specific enemy item for now
-            if isinstance(level_object, EnemyItem) and "invisible door" not in name:
+            if isinstance(level_object, EnemyItem) and name not in ENEMY_ITEMS_WITH_OVERLAYS:
                 continue
 
             pos = level_object.get_rect(self.block_length).topLeft()
@@ -366,6 +372,31 @@ class LevelDrawer:
                     continue
 
                 image = SILVER_COIN
+
+            elif "red koopa" in name:
+                if not self.settings.value("level view/draw_invisible_items"):
+                    continue
+
+                painter.save()
+
+                koopa_trail_pen = QPen(Qt.GlobalColor.red)
+                koopa_trail_pen.setStyle(Qt.PenStyle.DotLine)
+                koopa_trail_pen.setWidth(self.block_length // 8)
+
+                start_pos = pos + QPoint(self._half_block, 2 * self.block_length)
+                end_pos = start_pos + QPoint(0, 7 * self.block_length)
+
+                painter.setPen(koopa_trail_pen)
+
+                painter.drawLine(start_pos, end_pos)
+
+                koopa_trail_pen.setStyle(Qt.PenStyle.SolidLine)
+                painter.setPen(koopa_trail_pen)
+                painter.drawLine(pos.x(), end_pos.y(), pos.x() + self.block_length, end_pos.y())
+
+                painter.restore()
+
+                continue
             else:
                 continue
 
