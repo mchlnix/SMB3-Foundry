@@ -1,9 +1,11 @@
-from PySide6.QtCore import Signal, SignalInstance
-from PySide6.QtWidgets import QScrollArea, QTabWidget
+from PySide6.QtCore import Qt, Signal, SignalInstance
+from PySide6.QtWidgets import QScrollArea, QScrollBar, QTabWidget
 
 from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from .ObjectToolBox import ObjectIcon, ObjectToolBox
+
+_INDEX_RECENTLY_USED = 0
 
 
 class TabbedToolBox(QTabWidget):
@@ -17,25 +19,23 @@ class TabbedToolBox(QTabWidget):
         self.setTabPosition(self.TabPosition.East)
 
         self._recent_toolbox = ObjectToolBox(self)
+        self._recent_toolbox.setObjectName("Recent")
         self._recent_toolbox.object_icon_clicked.connect(self.object_icon_clicked.emit)
 
         self._objects_toolbox = ObjectToolBox(self)
+        self._objects_toolbox.setObjectName("Level Objects")
         self._objects_toolbox.object_icon_clicked.connect(self.object_icon_clicked.emit)
 
         self._enemies_toolbox = ObjectToolBox(self)
+        self._enemies_toolbox.setObjectName("Enemies")
         self._enemies_toolbox.object_icon_clicked.connect(self.object_icon_clicked.emit)
 
-        self._object_scroll_area = QScrollArea(self)
-        self._object_scroll_area.setWidgetResizable(True)
-        self._object_scroll_area.setWidget(self._objects_toolbox)
+        for toolbox in (self._recent_toolbox, self._objects_toolbox, self._enemies_toolbox):
+            scroll_area = QScrollArea(self)
+            scroll_area.setWidgetResizable(True)
+            scroll_area.setWidget(toolbox)
 
-        self._enemies_scroll_area = QScrollArea(self)
-        self._enemies_scroll_area.setWidgetResizable(True)
-        self._enemies_scroll_area.setWidget(self._enemies_toolbox)
-
-        self.addTab(self._recent_toolbox, "Recent")
-        self.addTab(self._object_scroll_area, "Objects")
-        self.addTab(self._enemies_scroll_area, "Enemies / Items")
+            self.addTab(scroll_area, toolbox.objectName())
 
         self.show_level_object_tab()
 
@@ -52,28 +52,24 @@ class TabbedToolBox(QTabWidget):
         )
 
     def sizeHint(self):
-        size = super().sizeHint()
-        width = self._recent_toolbox.sizeHint().width()
-        width = max(width, self._objects_toolbox.sizeHint().width())
-        width = max(width, self._enemies_toolbox.sizeHint().width())
+        orig_size = super().sizeHint()
+        scrollbar_width = QScrollBar(Qt.Orientation.Vertical).sizeHint().width()
 
-        size.setWidth(
-            max(width, size.width()) + self.tabBar().width() + self._object_scroll_area.verticalScrollBar().width() + 5
-        )
+        orig_size.setWidth(orig_size.width() + self.tabBar().width() + scrollbar_width)
 
-        return size
+        return orig_size
 
     def show_recent_tab(self):
-        self.setCurrentIndex(self.indexOf(self._recent_toolbox))
+        self.setCurrentIndex(_INDEX_RECENTLY_USED)
 
     def show_level_object_tab(self):
-        self.setCurrentIndex(self.indexOf(self._object_scroll_area))
+        self.setCurrentIndex(1)
 
     def show_enemy_item_tab(self):
-        self.setCurrentIndex(self.indexOf(self._enemies_scroll_area))
+        self.setCurrentIndex(2)
 
     def select_object(self, level_object):
-        recent_tab_showing = self.currentIndex() == self.indexOf(self._recent_toolbox)
+        recent_tab_showing = self.currentIndex() == _INDEX_RECENTLY_USED
 
         if self._recent_toolbox.has_object(level_object) and recent_tab_showing:
             pass
