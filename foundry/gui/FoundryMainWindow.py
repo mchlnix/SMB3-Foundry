@@ -138,6 +138,12 @@ class FoundryMainWindow(MainWindow):
 
         self.level_menu.addSeparator()
 
+        test_level_action = self.level_menu.addAction(icon("play-circle.svg"), "Test Level")
+        test_level_action.triggered.connect(self.on_play)
+        test_level_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
+
+        self.level_menu.addSeparator()
+
         self.place_level_action = self.level_menu.addAction("Place Level on Map")
         self.place_level_action.setIcon(icon("map-pin.svg"))
         self.place_level_action.triggered.connect(self.on_place_level)
@@ -291,9 +297,7 @@ class FoundryMainWindow(MainWindow):
 
         self.menu_toolbar.addSeparator()
 
-        play_action = self.menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
-        play_action.triggered.connect(self.on_play)
-        play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
+        self.menu_toolbar.addAction(test_level_action)
 
         self.menu_toolbar.addSeparator()
 
