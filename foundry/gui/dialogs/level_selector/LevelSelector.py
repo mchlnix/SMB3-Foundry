@@ -52,6 +52,7 @@ class LevelSelector(QDialog):
         self.object_set_dropdown.addItems(OBJECT_SET_ITEMS)
 
         self.button_ok = QPushButton("Ok", self)
+        self.button_ok.setEnabled(False)
         self.button_ok.clicked.connect(self._on_ok)
         self.button_ok.setFocus()
 
@@ -167,6 +168,7 @@ class LevelSelector(QDialog):
             level_pointer.enemy_address,
         )
 
+        self.button_ok.setEnabled(True)
         self.button_ok.setFocus()
 
     def _on_found_level_selected(self):
@@ -175,6 +177,7 @@ class LevelSelector(QDialog):
             self._found_level_widget.level_address,
             self._found_level_widget.enemy_address,
         )
+        self.button_ok.setEnabled(True)
         self.button_ok.setFocus()
 
     def _on_ok(self, _=None):
