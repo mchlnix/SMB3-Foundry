@@ -33,7 +33,7 @@ OBJECT_SET_ITEMS = [
 ]
 
 
-def label_and_widget(label_text: str, widget: QWidget, add_stretch=True, tooltip="") -> QHBoxLayout:
+def label_and_widget(label_text: str, widget: QWidget, *widgets: QWidget, add_stretch=True, tooltip="") -> QHBoxLayout:
     label = QLabel(label_text)
 
     if tooltip:
@@ -47,5 +47,8 @@ def label_and_widget(label_text: str, widget: QWidget, add_stretch=True, tooltip
         layout.addStretch(1)
 
     layout.addWidget(widget)
+
+    for additional_widget in widgets:
+        layout.addWidget(additional_widget)
 
     return layout

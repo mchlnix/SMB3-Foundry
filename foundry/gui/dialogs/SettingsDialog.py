@@ -154,12 +154,7 @@ class SettingsDialog(CustomDialog):
         radio_group.addButton(self.lmb_radio)
         radio_group.addButton(rmb_radio)
 
-        resize_layout = QHBoxLayout()
-        resize_layout.addWidget(QLabel("Object resize mode:"))
-        resize_layout.addStretch(1)
-        resize_layout.addWidget(self.lmb_radio)
-        resize_layout.addWidget(rmb_radio)
-
+        resize_layout = label_and_widget("Object resize mode:", self.lmb_radio, rmb_radio)
         layout.addLayout(resize_layout)
 
         # -----------------------------------------------
@@ -169,22 +164,16 @@ class SettingsDialog(CustomDialog):
         layout = QVBoxLayout()
         self.gui_box.setLayout(layout)
 
-        level_highlight_layout = QHBoxLayout()
-        level_highlight_layout.addWidget(QLabel("Highlight Levels in LevelSelector World Maps:"))
-        level_highlight_layout.addStretch(1)
-
         self.level_highlight_check_box = QCheckBox("Enabled")
         self.level_highlight_check_box.setChecked(self.settings.value("world view/show level pointers"))
         self.level_highlight_check_box.stateChanged.connect(self._update_settings)
 
-        level_highlight_layout.addWidget(self.level_highlight_check_box)
-
+        level_highlight_layout = label_and_widget(
+            "Highlight Levels in LevelSelector World Maps:", self.level_highlight_check_box
+        )
         self.gui_box.layout().addLayout(level_highlight_layout)
 
-        style_layout = QHBoxLayout()
-
-        style_layout.addWidget(QLabel("Style:"))
-        style_layout.addStretch(1)
+        style_choices = []
 
         for gui_style in GUI_STYLE.keys():
             gui_style = gui_style.capitalize()
@@ -193,8 +182,9 @@ class SettingsDialog(CustomDialog):
             style_radio_button.setChecked(self.settings.value("editor/gui_style") == GUI_STYLE[gui_style.upper()]())
             style_radio_button.toggled.connect(self._update_settings)
 
-            style_layout.addWidget(style_radio_button)
+            style_choices.append(style_radio_button)
 
+        style_layout = label_and_widget("Style:", *style_choices)
         layout.addLayout(style_layout)
 
         path_layout = QHBoxLayout()

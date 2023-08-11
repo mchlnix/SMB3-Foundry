@@ -15,9 +15,7 @@ from foundry import icon
 from foundry.gui import label_and_widget
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.dialogs.SettingsDialog import default_dirs
-from foundry.gui.settings import (
-    Settings,
-)
+from foundry.gui.settings import Settings
 
 
 class SettingsDialog(CustomDialog):
