@@ -52,10 +52,6 @@ class PowerupEntry:
     power_up_code: int
     has_p_wing: bool
 
-    @staticmethod
-    def from_tuple(self, values):
-        return PowerupEntry(*values)
-
     def to_tuple(self):
         return self.description, self.png_x, self.png_y, self.power_up_code, self.has_p_wing
 
@@ -384,7 +380,7 @@ class SettingsDialog(CustomDialog):
                 Block.SIDE_LENGTH,
             )
         )
-        mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+        mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
         image.setAlphaChannel(mask)
 
         pixmap = QPixmap.fromImage(image)
