@@ -841,9 +841,10 @@ class FoundryMainWindow(MainWindow):
         return True
 
     def _on_placeable_object_selected(self, level_object: InLevelObject):
-        if self.sender() is self.object_toolbar:
+        if self.sender() is not self.object_dropdown:
             self.object_dropdown.select_object(level_object)
-        else:
+
+        if self.sender() is not self.object_toolbar:
             self.object_toolbar.select_object(level_object)
 
     def bring_objects_to_foreground(self):
@@ -977,6 +978,8 @@ class FoundryMainWindow(MainWindow):
         self.file_menu.save_m3l_action.setEnabled(not is_a_world_map)
         self.edit_header_action.setEnabled(not is_a_world_map)
 
+        self.object_toolbar.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
+
         if is_a_world_map:
             self.object_dropdown.clear()
             self.object_dropdown.setEnabled(False)
@@ -988,8 +991,6 @@ class FoundryMainWindow(MainWindow):
             self.object_dropdown.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
 
             self.jump_list.setEnabled(True)
-
-        self.object_toolbar.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
 
         self.level_view.update()
 
