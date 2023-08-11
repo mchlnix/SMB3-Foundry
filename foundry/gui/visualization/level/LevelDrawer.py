@@ -268,7 +268,7 @@ class LevelDrawer:
                     image = LEFT_ARROW
 
                     pos.setX(rect.right())
-                    pos.setY(pos.y() - self.block_length / 2)
+                    pos.setY(pos.y() - self._half_block)
 
                     # leftward pipes trigger on the column to the left of the opening
                     x = level_object.get_rect().bottomRight().x()
@@ -278,18 +278,18 @@ class LevelDrawer:
                 elif "right" in name:
                     image = RIGHT_ARROW
                     pos.setX(rect.left() - self.block_length)
-                    pos.setY(pos.y() - self.block_length / 2)
+                    pos.setY(pos.y() - self._half_block)
 
                 elif "down" in name:
                     image = DOWN_ARROW
 
-                    pos.setX(pos.x() - self.block_length / 2)
+                    pos.setX(pos.x() - self._half_block)
                     pos.setY(rect.top() - self.block_length)
                 else:
                     # upwards pipe
                     image = UP_ARROW
 
-                    pos.setX(pos.x() - self.block_length / 2)
+                    pos.setX(pos.x() - self._half_block)
                     pos.setY(rect.bottom())
 
                     # upwards pipes trigger on the second to last row
@@ -463,3 +463,7 @@ class LevelDrawer:
         drawer = AutoScrollDrawer(item.auto_scroll_type, level)
 
         drawer.draw(painter, self.block_length)
+
+    @property
+    def _half_block(self):
+        return self.block_length // 2
