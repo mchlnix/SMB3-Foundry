@@ -77,8 +77,8 @@ class LevelSelector(QDialog):
 
         if ROM.additional_data.found_levels:
             self._found_level_widget = FoundLevelWidget()
-            self._found_level_widget.level_list.itemDoubleClicked.connect(self._on_ok)
-            self._found_level_widget.level_list.itemSelectionChanged.connect(self._on_found_level_selected)
+            self._found_level_widget.level_table.itemDoubleClicked.connect(self._on_ok)
+            self._found_level_widget.level_table.itemSelectionChanged.connect(self._on_found_level_selected)
 
             self.source_selector.addTab(self._found_level_widget, "Found Levels")
             self.source_selector.setTabIcon(tab_index, icon("list.svg"))
@@ -117,7 +117,7 @@ class LevelSelector(QDialog):
         self.setLayout(main_layout)
 
     def keyPressEvent(self, key_event: QKeyEvent):
-        if key_event.key() == Qt.Key_Escape:
+        if key_event.key() == Qt.Key.Key_Escape:
             self.reject()
 
     def goto_world(self, world_number: int):

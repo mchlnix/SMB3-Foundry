@@ -1,9 +1,12 @@
-from PySide6.QtGui import QMouseEvent
-from PySide6.QtWidgets import QLabel, QListWidget, QVBoxLayout, QWidget
+from PySide6.QtCore import QPoint
+from PySide6.QtGui import QMouseEvent, Qt
+from PySide6.QtWidgets import QLabel, QTableWidgetItem, QVBoxLayout, QWidget
 
-from foundry import get_level_thumbnail
+from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.File import ROM
+from foundry.gui.widgets.table_widget import TableWidget
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
+from smb3parse.util.parser import FoundLevel
 
 LOST_LEVELS_INDEX = 8
 OVERWORLD_MAPS_INDEX = 9
@@ -13,9 +16,12 @@ class FoundLevelWidget(QWidget):
     def __init__(self):
         super().__init__()
 
+        # List of found levels
+        self._found_levels = ROM.additional_data.found_levels.copy()
+        self._found_levels.sort(key=lambda x: (x.world_number, x.level_offset))
+
         found_label = QLabel("Found Levels")
-        self.level_list = QListWidget()
-        self.level_list.setMouseTracking(True)
+        self.level_table = _FoundLevelTable(self, self._found_levels)
 
         description_label = QLabel()
 
@@ -29,44 +35,69 @@ class FoundLevelWidget(QWidget):
 
         found_level_layout = QVBoxLayout(self)
         found_level_layout.addWidget(found_label, 0)
-        found_level_layout.addWidget(self.level_list, 1)
+        found_level_layout.addWidget(self.level_table, 1)
         found_level_layout.addWidget(description_label, 0)
 
-        # List of found levels
-        self.found_levels = ROM.additional_data.found_levels.copy()
-        self.found_levels.sort(key=lambda x: (x.world_number, x.level_offset))
+    @property
+    def level_address(self):
+        return self._found_levels[self.level_table.level_index].level_offset
 
-        for found_level in self.found_levels:
-            level_descr = f"World {found_level.world_number}\t"
+    @property
+    def enemy_address(self):
+        return self._found_levels[self.level_table.level_index].enemy_offset
 
-            level_descr += f"Level: 0x{found_level.level_offset:x}\t"
-            level_descr += f"Enemy: 0x{found_level.enemy_offset:0>4x}\t"
+    @property
+    def object_set_number(self):
+        return self._found_levels[self.level_table.level_index].object_set_number
 
-            level_descr += OBJECT_SET_NAMES[found_level.object_set_number]
 
-            if found_level.found_as_jump and not found_level.found_in_world:
-                level_descr += " (Jump Destination)"
+class _FoundLevelTable(TableWidget):
+    def __init__(self, parent, levels: list[FoundLevel]):
+        super().__init__(parent)
 
-            self.level_list.addItem(level_descr)
+        self.setSortingEnabled(True)
+        self.setMouseTracking(True)
 
-        self.level_list.mouseMoveEvent = self._set_thumbnail
-        self._last_checked_row = -1
+        self._levels = levels
+        self._last_checked_level_index = -1
+        """The index of the last level we generated a thumbnail for."""
+
+        self.set_headers(["World", "Object Set", "Level Addr.", "Enemy Addr.", "Jump Dest.", "World Specific"])
+
+        self._update_content()
+
+    def _level_index_for_row(self, row):
+        return self.item(row, 0).data(Qt.ItemDataRole.UserRole)
+
+    @property
+    def level_index(self):
+        return self._level_index_for_row(self.currentRow())
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        return self._set_thumbnail(event)
 
     def _set_thumbnail(self, event: QMouseEvent):
-        pos = self.level_list.mapFromGlobal(event.globalPosition().toPoint())
+        pos_plus_header = event.globalPosition() - QPoint(0, self.horizontalHeader().height() + 1)
 
-        row = self.level_list.row(self.level_list.itemAt(pos))
+        pos = self.mapFromGlobal(pos_plus_header.toPoint())
 
-        if row == self._last_checked_row:
+        # when double-clicking to select a level, this happened, killed the call and somehow made tooltips appear in the
+        # level view, even after the level selector was cleaned up, so explicitly check that we still have an item
+        if (item := self.itemAt(pos)) is None:
             return
 
-        self._last_checked_row = row
+        level_index = self._level_index_for_row(self.row(item))
 
-        if row == -1:
-            self.level_list.setToolTip(None)
+        if level_index == self._last_checked_level_index:
             return
 
-        level = self.found_levels[row]
+        self._last_checked_level_index = level_index
+
+        if level_index == -1:
+            self.setToolTip(None)
+            return
+
+        level = self._levels[level_index]
 
         image_data = get_level_thumbnail(
             level.object_set_number,
@@ -74,20 +105,43 @@ class FoundLevelWidget(QWidget):
             level.enemy_offset,
         )
 
-        self.level_list.setToolTip(f"<img src='data:image/png;base64,{image_data}'>")
+        self.setToolTip(f"<img src='data:image/png;base64,{pixmap_to_base64(image_data)}'>")
 
-    @property
-    def _level_index(self):
-        return self.level_list.currentRow()
+    def _update_content(self):
+        self.setRowCount(len(self._levels))
 
-    @property
-    def level_address(self):
-        return self.found_levels[self._level_index].level_offset
+        self.blockSignals(True)
 
-    @property
-    def enemy_address(self):
-        return self.found_levels[self._level_index].enemy_offset
+        for index, found_level in enumerate(self._levels):
+            # sorting messes up the indexes, so save the level_index in found level list in the table time for world no
+            world_table_item = QTableWidgetItem(f"World {found_level.world_number}")
+            world_table_item.setData(Qt.ItemDataRole.UserRole, index)
 
-    @property
-    def object_set_number(self):
-        return self.found_levels[self._level_index].object_set_number
+            self.setItem(index, 0, world_table_item)
+            self.setItem(index, 1, QTableWidgetItem(OBJECT_SET_NAMES[found_level.object_set_number]))
+            self.setItem(index, 2, QTableWidgetItem(f"0x{found_level.level_offset:x}"))
+            self.setItem(index, 3, QTableWidgetItem(f"0x{found_level.enemy_offset:0>4x}"))
+
+            if found_level.found_as_jump and not found_level.found_in_world:
+                cross_item = QTableWidgetItem("X")
+                cross_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+                self.setItem(index, 4, cross_item)
+            else:
+                no_cross_item = QTableWidgetItem("")
+                no_cross_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+                self.setItem(index, 4, no_cross_item)
+
+            if found_level.is_world_specific:
+                cross_item = QTableWidgetItem("X")
+                cross_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+                self.setItem(index, 5, cross_item)
+            else:
+                no_cross_item = QTableWidgetItem("")
+                no_cross_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+                self.setItem(index, 5, no_cross_item)
+
+        self.blockSignals(False)

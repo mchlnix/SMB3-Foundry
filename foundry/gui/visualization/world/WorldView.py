@@ -13,7 +13,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QToolTip, QWidget
 
-from foundry import get_level_thumbnail
+from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.gfx import get_block
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import get_tile, get_worldmap_tile
@@ -274,7 +274,7 @@ class WorldView(MainView):
                 f"<u>Type:</u> {object_set_name} "
                 f"<u>Objects:</u> {level_pointer.data.level_address:#x} "
                 f"<u>Enemies:</u> {level_pointer.data.enemy_address:#x}<br/>"
-                f"<img src='data:image/png;base64,{image_data}'>"
+                f"<img src='data:image/png;base64,{pixmap_to_base64(image_data)}'>"
             )
 
             return True

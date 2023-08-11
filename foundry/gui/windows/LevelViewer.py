@@ -6,7 +6,7 @@ from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QBrush, QColor, QColorConstants, QMouseEvent, QPaintEvent, QPainter
 from PySide6.QtWidgets import QScrollArea, QSizePolicy, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget
 
-from foundry import get_level_thumbnail
+from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.File import ROM
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset
@@ -370,7 +370,7 @@ class LevelBlockView(ByteView):
             f"<b>{block.name}</b><br/>"
             f"<u>Type:</u> {OBJECT_SET_NAMES[block.level[0]]} "
             f"<u>Objects:</u> {block.level[1]:#x} "
-            f"<img src='data:image/png;base64,{image_data}'>"
+            f"<img src='data:image/png;base64,{pixmap_to_base64(image_data)}'>"
         )
 
     def _paint_block(self, painter: QPainter, pos: QPoint, block: _Block):

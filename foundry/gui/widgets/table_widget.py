@@ -29,6 +29,7 @@ class TableWidget(QTableWidget):
 
         # TODO doesn't do anything?
         self.setHorizontalHeaderLabels(headers)
+        self.resizeColumnsToContents()
 
     @property
     def selected_row(self):

@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from PySide6.QtCore import QBuffer, QIODevice, QUrl
-from PySide6.QtGui import QDesktopServices, QIcon, Qt
+from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, Qt
 from PySide6.QtWidgets import QApplication, QMessageBox, QWidget
 
 from foundry.gui.settings import Settings
@@ -134,11 +134,13 @@ def get_level_thumbnail(object_set, layout_address: "LevelAddress", enemy_addres
     view.zoom_out()
     view.zoom_out()
 
-    level_pixmap = view.grab()
+    return view.grab()
 
+
+def pixmap_to_base64(pixmap: QPixmap) -> str:
     buffer = QBuffer()
     buffer.open(QIODevice.WriteOnly)
-    level_pixmap.save(buffer, "PNG", quality=100)
+    pixmap.save(buffer, "PNG", quality=100)
     image_data = bytes(buffer.data().toBase64()).decode()
 
     return image_data
