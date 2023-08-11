@@ -24,7 +24,8 @@ def _get_pixmap_from_source(image: image_source) -> QPixmap:
 
 
 class ApprovalDialog(QDialog):
-    Ignore = QDialogButtonBox.Ignore
+    Ignore = 99
+    Overwrite = 100
     image_layout: QBoxLayout
 
     def __init__(self, test_name: str, reference_image: QPixmap, generated_image: QPixmap):
@@ -82,21 +83,21 @@ class ApprovalDialog(QDialog):
 
         button_box = QDialogButtonBox()
 
-        button_box.addButton("Reject", QDialogButtonBox.RejectRole).clicked.connect(self.reject)
-        button_box.addButton(QDialogButtonBox.Ignore).clicked.connect(self._on_ignore)
+        button_box.addButton("Reject", QDialogButtonBox.ButtonRole.RejectRole).clicked.connect(self.reject)
+        button_box.addButton(QDialogButtonBox.StandardButton.Ignore).clicked.connect(self._on_ignore)
 
-        apply_button = button_box.addButton("Accept as new Reference", QDialogButtonBox.ApplyRole)
+        apply_button = button_box.addButton("Accept as new Reference", QDialogButtonBox.ButtonRole.ApplyRole)
         apply_button.clicked.connect(self._on_overwrite)
-        apply_button.setShortcut(Qt.CTRL | Qt.Key_A)
+        apply_button.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_A)
 
         main_layout.addWidget(scroll_area)
-        main_layout.addWidget(button_box, alignment=Qt.AlignCenter)
+        main_layout.addWidget(button_box, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def _on_overwrite(self):
-        self.done(QDialogButtonBox.Apply)
+        self.done(self.Overwrite)
 
     def _on_ignore(self):
-        self.done(QDialogButtonBox.Ignore)
+        self.done(self.Ignore)
 
     @staticmethod
     def compare(test_name: str, reference_image: image_source, generated_image: image_source):
@@ -104,7 +105,7 @@ class ApprovalDialog(QDialog):
         generated_image = _get_pixmap_from_source(generated_image)
 
         if generated_image.toImage() == reference_image.toImage():
-            return QDialog.Accepted
+            return QDialog.DialogCode.Accepted
 
         dialog = ApprovalDialog(test_name, reference_image, generated_image)
 

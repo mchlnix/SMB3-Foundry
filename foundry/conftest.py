@@ -48,17 +48,16 @@ def compare_images(image_name: str, ref_image_path: str, gen_image: QPixmap):
     if Path(ref_image_path).exists():
         result = ApprovalDialog.compare(image_name, QPixmap(ref_image_path), gen_image)
 
-        if result == ApprovalDialog.Rejected:
+        if result == ApprovalDialog.DialogCode.Rejected:
             pytest.fail(f"{image_name} did not look like the reference.")
-        elif result == ApprovalDialog.Accepted:
-            pass
+        elif result == ApprovalDialog.Overwrite:
+            # accepted and overwrite ref
+            gen_image.toImage().save(ref_image_path)
         elif result == ApprovalDialog.Ignore:
             pytest.skip(f"{image_name} did not look like the reference, but was ignored.")
         else:
-            # accepted and overwrite ref
-            gen_image.toImage().save(ref_image_path)
-
             pass
+
     else:
         gen_image.toImage().save(ref_image_path)
 
