@@ -230,7 +230,7 @@ class FoundryMainWindow(MainWindow):
         jump_buttons.layout().addWidget(set_jump_destination_button)
 
         splitter = QSplitter(self)
-        splitter.setOrientation(Qt.Vertical)
+        splitter.setOrientation(Qt.Orientation.Vertical)
 
         splitter.addWidget(self.object_list)
         splitter.setStretchFactor(0, 1)
@@ -240,9 +240,9 @@ class FoundryMainWindow(MainWindow):
         splitter.setChildrenCollapsible(False)
 
         self.level_toolbar = QToolBar("Level Info Toolbar", self)
-        self.level_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        self.level_toolbar.setContextMenuPolicy(Qt.ContextMenuPolicy.PreventContextMenu)
         self.level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        self.level_toolbar.setOrientation(Qt.Horizontal)
+        self.level_toolbar.setOrientation(Qt.Orientation.Horizontal)
         self.level_toolbar.setFloatable(False)
 
         self.level_toolbar.addWidget(self.spinner_panel)
@@ -250,25 +250,25 @@ class FoundryMainWindow(MainWindow):
         self.level_toolbar.addWidget(size_and_palette)
         self.level_toolbar.addWidget(splitter)
 
-        self.level_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        self.level_toolbar.setAllowedAreas(Qt.ToolBarArea.LeftToolBarArea | Qt.ToolBarArea.RightToolBarArea)
 
-        self.addToolBar(Qt.RightToolBarArea, self.level_toolbar)
+        self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.level_toolbar)
 
         self.object_toolbar = ObjectToolBar(self)
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
         object_toolbar = QToolBar("Object Toolbar", self)
-        object_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        object_toolbar.setContextMenuPolicy(Qt.ContextMenuPolicy.PreventContextMenu)
         object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         object_toolbar.setFloatable(False)
 
         object_toolbar.addWidget(self.object_toolbar)
-        object_toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        object_toolbar.setAllowedAreas(Qt.ToolBarArea.LeftToolBarArea | Qt.ToolBarArea.RightToolBarArea)
 
-        self.addToolBar(Qt.LeftToolBarArea, object_toolbar)
+        self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, object_toolbar)
 
         self.menu_toolbar = QToolBar("Menu Toolbar", self)
-        self.menu_toolbar.setOrientation(Qt.Horizontal)
+        self.menu_toolbar.setOrientation(Qt.Orientation.Horizontal)
         self.menu_toolbar.setIconSize(TOOLBAR_ICON_SIZE)
 
         self.menu_toolbar.addAction(self.file_menu.settings_action)
@@ -335,25 +335,25 @@ class FoundryMainWindow(MainWindow):
 
         self.warning_list.warnings_updated.connect(warning_action.setEnabled)
 
-        self.addToolBar(Qt.TopToolBarArea, self.menu_toolbar)
+        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.menu_toolbar)
 
         self.status_bar = ObjectStatusBar(self, self.level_ref)
         self.setStatusBar(self.status_bar)
 
-        self.delete_shortcut = QShortcut(QKeySequence(Qt.Key_Delete), self, self.remove_selected_objects)
+        self.delete_shortcut = QShortcut(QKeySequence(Qt.Key.Key_Delete), self, self.remove_selected_objects)
 
-        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_X), self, self._cut_objects)
-        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_C), self, self._copy_objects)
-        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_V), self, self._paste_objects)
+        QShortcut(QKeySequence(Qt.Key.Key_Control | Qt.Key.Key_X), self, self._cut_objects)
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_C), self, self._copy_objects)
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_V), self, self._paste_objects)
 
-        self.undo_action.setShortcut(Qt.CTRL | Qt.Key_Z)
-        self.redo_action.setShortcut(Qt.CTRL | Qt.SHIFT | Qt.Key_Z)
+        self.undo_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_Z)
+        self.redo_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_Z)
 
-        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_Plus), self, self.level_view.zoom_in)
-        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_Minus), self, self.level_view.zoom_out)
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_Plus), self, self.level_view.zoom_in)
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_Minus), self, self.level_view.zoom_out)
 
-        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_A), self, self.level_view.select_all)
-        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_L), self, self.object_dropdown.setFocus)
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_A), self, self.level_view.select_all)
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_L), self, self.object_dropdown.setFocus)
 
         self.check_for_update_on_startup()
 
@@ -1076,8 +1076,8 @@ class FoundryMainWindow(MainWindow):
         self.undo_stack.endMacro()
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if event.button() == Qt.MiddleButton:
-            if event.buttons() != Qt.NoButton:
+        if event.button() == Qt.MouseButton.MiddleButton:
+            if event.buttons() != Qt.MouseButton.NoButton:
                 # avoid accidental middle mouse clicks while dragging or resizing
                 return
 
@@ -1087,7 +1087,7 @@ class FoundryMainWindow(MainWindow):
 
     def place_object_from_dropdown(self, q_point: QPoint) -> None:
         # the dropdown is synchronized with the toolbar, so it doesn't matter where to take it from
-        in_level_object = self.object_dropdown.currentData(Qt.UserRole)
+        in_level_object = self.object_dropdown.currentData(Qt.ItemDataRole.UserRole)
 
         self.object_toolbar.add_recent_object(in_level_object)
 
