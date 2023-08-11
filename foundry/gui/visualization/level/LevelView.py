@@ -502,12 +502,15 @@ class LevelView(MainView):
                 reason = "Too many level objects."
 
                 if level:
-                    additional_info = f"Would overwrite data of '{level}'."
+                    additional_info = f"Would overwrite data of original level '{level}'."
                 else:
                     additional_info = (
                         "It wouldn't overwrite another level, but it might still overwrite other important data."
                     )
 
+                additional_info += (
+                    " If you deleted a bunch of objects and saved the level afterwards, this is probably a false alarm."
+                )
             elif self.level_ref.too_many_enemies_or_items():
                 level = self._cuts_into_other_enemies()
 
@@ -515,12 +518,16 @@ class LevelView(MainView):
                 reason = "Too many enemies or items."
 
                 if level:
-                    additional_info = f"Would probably overwrite enemy/item data of '{level}'."
+                    additional_info = f"Would probably overwrite enemy/item data of original level '{level}'."
                 else:
                     additional_info = (
                         "It wouldn't overwrite enemy/item data of another level, "
                         "but it might still overwrite other important data."
                     )
+
+                additional_info += (
+                    " If you deleted a bunch of enemies and saved the level afterwards, this is probably a false alarm."
+                )
 
         return is_safe, reason, additional_info
 
