@@ -1,3 +1,4 @@
+from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtGui import QAction, Qt
 from PySide6.QtWidgets import QMenu
 
@@ -48,6 +49,8 @@ class EditMenu(QMenu):
             self.world_view.clear_level_pointers()
         elif action is self.edit_world_info:
             EditWorldInfo(self.parent(), self.world_view.level_ref.level).exec()
+
+            self.world_order_maybe_changed.emit()
 
     @property
     def undo_stack(self):

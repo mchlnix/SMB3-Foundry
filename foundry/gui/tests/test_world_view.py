@@ -22,7 +22,7 @@ def main_window(rom, qtbot):
 
     main_window = ScribeMainWindow("")
 
-    main_window.level_menu.actions()[0].trigger()
+    main_window.world_menu.actions()[0].trigger()
 
     main_window.world_view.zoom_out()
     main_window.world_view.zoom_out()

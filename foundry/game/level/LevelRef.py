@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import cast
 
 from PySide6.QtCore import QObject, Signal, SignalInstance
 
@@ -17,7 +17,7 @@ class LevelRef(QObject):
 
     def __init__(self):
         super(LevelRef, self).__init__()
-        self._internal_level: Optional[Level] = None
+        self._internal_level: Level | WorldMap | None = None
 
     def load_level(
         self,

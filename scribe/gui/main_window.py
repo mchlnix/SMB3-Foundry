@@ -162,6 +162,8 @@ class ScribeMainWindow(MainWindow):
         self.edit_menu = EditMenu(self)
         self.edit_menu.triggered.connect(self.world_view.update)
 
+        self.edit_menu.world_order_maybe_changed.connect(self._on_world_order_changed)
+
         self.menuBar().addMenu(self.edit_menu)
 
     def _setup_view_menu(self):
@@ -172,31 +174,37 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.view_menu)
 
     def _setup_level_menu(self):
-        self.level_menu = QMenu("Change &Level")
-        self.level_menu.triggered.connect(self.on_level_menu)
+        self.world_menu = QMenu("Change &World")
+        self.world_menu.triggered.connect(self.on_level_menu)
 
         level_menu_action_group = QActionGroup(self)
 
         for level_index in range(WORLD_COUNT):
-            action = self.level_menu.addAction(f"World &{level_index + 1}")
+            action = self.world_menu.addAction(f"World &{level_index + 1}")
             action.setCheckable(True)
 
             level_menu_action_group.addAction(action)
 
-        self.level_menu.addSeparator()
+        self.world_menu.addSeparator()
 
-        self.reload_world_action = self.level_menu.addAction("&Reload Current World")
+        self.reload_world_action = self.world_menu.addAction("&Reload Current World")
         self.reload_world_action.setIcon(icon("refresh-cw.svg"))
 
         # load world 1 on startup
-        self.level_menu.actions()[0].trigger()
+        self.world_menu.actions()[0].trigger()
 
-        self.menuBar().addMenu(self.level_menu)
+        self.menuBar().addMenu(self.world_menu)
 
     def _setup_help_menu(self):
         self.help_menu = HelpMenu(self)
 
         self.menuBar().addMenu(self.help_menu)
+
+    def _on_world_order_changed(self):
+        """If the world order was changed through the world info dialog, change the selected world in the world menu."""
+        new_world_index = self.level_ref.level.world.internal_world_map.data.index
+
+        self.world_menu.actions()[new_world_index].setChecked(True)
 
     def _on_show_settings(self):
         SettingsDialog(self.settings, self).exec()
@@ -354,7 +362,7 @@ class ScribeMainWindow(MainWindow):
         if action is self.reload_world_action:
             index = self.level_ref.data.index
         else:
-            index = self.level_menu.actions().index(action)
+            index = self.world_menu.actions().index(action)
 
             if self.level_ref and index == self.level_ref.data.index:
                 # if clicked on the world, that is already active, do nothing
@@ -362,7 +370,7 @@ class ScribeMainWindow(MainWindow):
 
         # if the user decides against changing worlds, re-check the action of the current world
         if not self.safe_to_change():
-            self.level_menu.actions()[self.level_ref.data.index].trigger()
+            self.world_menu.actions()[self.level_ref.data.index].trigger()
             return
 
         # if the user is ok with changing, let's go!
