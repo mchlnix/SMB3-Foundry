@@ -1002,7 +1002,7 @@ class LevelObject(InLevelObject):
         return data
 
     def __repr__(self) -> str:
-        return f"LevelObject {self.name} at {self.x_position}, {self.y_position} {self.data.hex()}"
+        return f"LevelObject '{self.name}'/0x{self.data.hex()} at ({self.x_position}, {self.y_position})"
 
     def __eq__(self, other):
         if not isinstance(other, LevelObject):
