@@ -10,7 +10,7 @@ class CustomDialog(QDialog):
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
     def keyPressEvent(self, event: QKeyEvent):
-        if event.key() == Qt.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:
             self.close()
 
     def on_exit(self):

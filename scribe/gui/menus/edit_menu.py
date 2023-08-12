@@ -6,17 +6,19 @@ from scribe.gui.edit_world_info import EditWorldInfo
 
 
 class EditMenu(QMenu):
+    world_order_maybe_changed: SignalInstance = Signal()
+
     def __init__(self, parent):
         super(EditMenu, self).__init__("&Edit", parent)
 
         self.triggered.connect(self.on_menu)
 
         self.undo_action = self.undo_stack.createUndoAction(self)
-        self.undo_action.setShortcut(Qt.CTRL | Qt.Key_Z)
+        self.undo_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_Z)
         self.undo_action.setIcon(icon("rotate-ccw.svg"))
 
         self.redo_action = self.undo_stack.createRedoAction(self)
-        self.redo_action.setShortcut(Qt.CTRL | Qt.SHIFT | Qt.Key_Z)
+        self.redo_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_Z)
         self.redo_action.setIcon(icon("rotate-cw.svg"))
 
         self.addAction(self.undo_action)
@@ -34,7 +36,7 @@ class EditMenu(QMenu):
         self.addSeparator()
 
         self.edit_world_info = self.addAction("Edit World Info")
-        self.edit_world_info.setShortcut(Qt.CTRL | Qt.Key_E)
+        self.edit_world_info.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_E)
         self.edit_world_info.setIcon(icon("tool.svg"))
 
     def on_menu(self, action: QAction):

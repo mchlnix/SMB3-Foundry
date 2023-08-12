@@ -99,7 +99,7 @@ class WorldView(MainView):
             "If all else fails, click the play button up top to see your level in game in seconds."
         )
 
-        QShortcut(QKeySequence(Qt.CTRL | Qt.Key_A), self, self.select_all)
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_A), self, self.select_all)
 
     def next_anim_step(self):
         self.drawer.anim_frame += 1

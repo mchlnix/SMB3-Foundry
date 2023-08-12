@@ -16,7 +16,7 @@ class ViewMenu(QMenu):
         self.world_view = world_view
 
         self.grid_action = self.addAction("&Grid")
-        self.grid_action.setShortcut(Qt.CTRL | Qt.Key_G)
+        self.grid_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_G)
         self.grid_action.setCheckable(True)
         self.grid_action.setChecked(self.settings.value("world view/show grid"))
 
@@ -33,22 +33,22 @@ class ViewMenu(QMenu):
         self.level_pointer_action = self.addAction("&Level Pointers")
         self.level_pointer_action.setCheckable(True)
         self.level_pointer_action.setChecked(self.settings.value("world view/show level pointers"))
-        self.level_pointer_action.setShortcut(Qt.CTRL | Qt.Key_L)
+        self.level_pointer_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_L)
 
         self.level_preview_action = self.addAction("&Tooltip with Level Preview")
         self.level_preview_action.setCheckable(True)
         self.level_preview_action.setChecked(self.settings.value("world view/show level previews"))
-        self.level_preview_action.setShortcut(Qt.CTRL | Qt.Key_T)
+        self.level_preview_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_T)
 
         self.sprite_action = self.addAction("Overworld &Sprites")
         self.sprite_action.setCheckable(True)
         self.sprite_action.setChecked(self.settings.value("world view/show sprites"))
-        self.sprite_action.setShortcut(Qt.CTRL | Qt.Key_O)
+        self.sprite_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_O)
 
         self.starting_point_action = self.addAction("Starting &Point")
         self.starting_point_action.setCheckable(True)
         self.starting_point_action.setChecked(self.settings.value("world view/show start position"))
-        self.starting_point_action.setShortcut(Qt.CTRL | Qt.Key_P)
+        self.starting_point_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_P)
 
         self.addSeparator()
 
@@ -65,7 +65,7 @@ class ViewMenu(QMenu):
         self.lock_bridge_action = self.addAction("Lock and &Bridge Events")
         self.lock_bridge_action.setCheckable(True)
         self.lock_bridge_action.setChecked(self.settings.value("world view/show locks"))
-        self.lock_bridge_action.setShortcut(Qt.CTRL | Qt.Key_B)
+        self.lock_bridge_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_B)
 
         self.addSeparator()
 

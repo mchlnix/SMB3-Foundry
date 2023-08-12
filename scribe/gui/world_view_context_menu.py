@@ -14,15 +14,15 @@ class WorldContextMenu(ContextMenu):
         self.level_ref = level_ref
 
         self.cut_action = self.addAction("Cut Tiles")
-        self.cut_action.setShortcut(Qt.CTRL | Qt.Key_X)
+        self.cut_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_X)
         self.cut_action.setIcon(icon("scissors.svg"))
 
         self.copy_action = self.addAction("Copy Tiles")
-        self.copy_action.setShortcut(Qt.CTRL | Qt.Key_C)
+        self.copy_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_C)
         self.copy_action.setIcon(icon("copy.svg"))
 
         self.paste_action = self.addAction("Paste Tiles")
-        self.paste_action.setShortcut(Qt.CTRL | Qt.Key_V)
+        self.paste_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_V)
         self.paste_action.setIcon(icon("clipboard.svg"))
 
     @property
