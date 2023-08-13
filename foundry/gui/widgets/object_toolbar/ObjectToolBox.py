@@ -4,9 +4,11 @@ from typing import Optional
 from PySide6.QtCore import QSize, Qt, Signal, SignalInstance
 from PySide6.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
-from foundry.game.gfx.objects import EnemyItemFactory, LevelObject, LevelObjectFactory
+from foundry.game import should_be_placeable
+from foundry.game.gfx.objects import EnemyItemFactory, LevelObjectFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
+from smb3parse.util import apply
 from .object_icon import ObjectIcon
 
 
@@ -59,31 +61,26 @@ class ObjectToolBox(QWidget):
             size_minimal=True,
         )
 
+        domains = range(MAX_DOMAIN + 1)
         object_ids = list(range(0x00, 0x10)) + list(range(0x10, MAX_ID_VALUE, 0x10))
 
-        for domain, obj_index in product(range(MAX_DOMAIN + 1), object_ids):
-            level_object = factory.from_properties(
-                domain=domain, object_index=obj_index, x=0, y=0, length=None, index=0
-            )
+        level_objects = [
+            factory.from_properties(domain, obj_index, 0, 0, None, 0)
+            for domain, obj_index in product(domains, object_ids)
+        ]
 
-            if not isinstance(level_object, LevelObject) or level_object.name in [
-                "MSG_NOTHING",
-                "MSG_CRASH",
-            ]:
-                continue
+        valid_level_objects = filter(should_be_placeable, level_objects)
 
-            self.add_object(level_object)
+        apply(self.add_object, valid_level_objects)
 
     def add_from_enemy_set(self, object_set_index: int):
-        factory = EnemyItemFactory(object_set_index, 0)
+        factory = EnemyItemFactory(object_set_index)
 
-        for obj_index in range(MAX_ENEMY_ITEM_ID + 1):
-            enemy_item = factory.from_properties(obj_index, x=0, y=0)
+        enemy_items = map(factory.from_properties, range(MAX_ENEMY_ITEM_ID + 1))
 
-            if enemy_item.name in ["MSG_NOTHING", "MSG_CRASH"]:
-                continue
+        valid_enemy_items = filter(should_be_placeable, enemy_items)
 
-            self.add_object(enemy_item)
+        apply(self.add_object, valid_enemy_items)
 
     def clear(self):
         self._extract_objects()

@@ -17,7 +17,7 @@ class EnemyItemFactory:
 
     definitions: list = []
 
-    def __init__(self, object_set: int, palette_index: int):
+    def __init__(self, object_set: int, palette_index=0):
         rows_per_object_set = 256 // 64
 
         y_offset = 12 * rows_per_object_set * Block.HEIGHT
@@ -36,7 +36,7 @@ class EnemyItemFactory:
     def from_data(self, data, _):
         return EnemyItem(data, self.png_data, self.palette_group)
 
-    def from_properties(self, enemy_item_id: int, x: int, y: int):
+    def from_properties(self, enemy_item_id: int, x=0, y=0):
         data = bytearray(3)
 
         data[0] = enemy_item_id
