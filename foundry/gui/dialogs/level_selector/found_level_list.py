@@ -77,6 +77,12 @@ class _FoundLevelTable(TableWidget):
         return self._set_thumbnail(event)
 
     def _set_thumbnail(self, event: QMouseEvent):
+        if not self.isVisible():
+            # for some reason, even after the level selector is closed, the thumbnails still appear, but now in the
+            # level view. no idea why.
+            self.setToolTip("")
+            return
+
         pos_plus_header = event.globalPosition() - QPoint(0, self.horizontalHeader().height() + 1)
 
         pos = self.mapFromGlobal(pos_plus_header.toPoint())
