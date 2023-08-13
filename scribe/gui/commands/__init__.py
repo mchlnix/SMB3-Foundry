@@ -1,5 +1,6 @@
 from PySide6.QtGui import QUndoCommand
 
+from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects import LevelPointer, Lock
 from foundry.game.gfx.objects.world_map.map_object import MapObject
@@ -14,6 +15,23 @@ from smb3parse.constants import (
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.levels import FIRST_VALID_ROW, NO_MAP_SCROLLING, WORLD_MAP_BLANK_TILE_ID
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
+
+
+class DirtyAdditionalDataMixin(object):
+    def __init__(self, *args, **kwargs):
+        self._dirty_before = ROM.additional_data.needs_refresh
+
+        super().__init__(*args, **kwargs)
+
+    def undo(self):
+        ROM.additional_data.needs_refresh = self._dirty_before
+
+        super().undo()  # type: ignore
+
+    def redo(self):
+        ROM.additional_data.needs_refresh = True
+
+        super().redo()  # type: ignore
 
 
 class MoveTile(QUndoCommand):
@@ -64,7 +82,7 @@ class MoveTile(QUndoCommand):
             target_obj.selected = True
 
 
-class MoveMapObject(QUndoCommand):
+class MoveMapObject(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(
         self,
         world: WorldMap,
@@ -91,8 +109,12 @@ class MoveMapObject(QUndoCommand):
     def undo(self):
         self._move_map_object(self.start)
 
+        super().undo()
+
     def redo(self):
         self._move_map_object(self.end)
+
+        super().redo()
 
     def _move_map_object(self, new_pos: tuple[int, int]):
         self.map_object.set_position(*new_pos)
@@ -203,7 +225,7 @@ class WorldBottomTile(QUndoCommand):
         self.world.data.bottom_border_tile = self.new_index
 
 
-class SetLevelAddress(QUndoCommand):
+class SetLevelAddress(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(self, data: LevelPointerData, new_address: int, parent=None):
         super(SetLevelAddress, self).__init__(parent)
 
@@ -217,11 +239,15 @@ class SetLevelAddress(QUndoCommand):
     def undo(self):
         self.data.level_address = self.old_address
 
+        super().undo()
+
     def redo(self):
         self.data.level_address = self.new_address
 
+        super().redo()
 
-class SetEnemyAddress(QUndoCommand):
+
+class SetEnemyAddress(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(self, data: LevelPointerData, new_address: int, parent=None):
         super(SetEnemyAddress, self).__init__(parent)
 
@@ -235,11 +261,15 @@ class SetEnemyAddress(QUndoCommand):
     def undo(self):
         self.data.enemy_address = self.old_address
 
+        super().undo()
+
     def redo(self):
         self.data.enemy_address = self.new_address
 
+        super().redo()
 
-class SetObjectSet(QUndoCommand):
+
+class SetObjectSet(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(self, data: LevelPointerData, object_set_number: int, parent=None):
         super(SetObjectSet, self).__init__(parent)
 
@@ -253,8 +283,12 @@ class SetObjectSet(QUndoCommand):
     def undo(self):
         self.data.object_set = self.old_object_set
 
+        super().undo()
+
     def redo(self):
         self.data.object_set = self.new_object_set
+
+        super().redo()
 
 
 class SetSpriteType(QUndoCommand):
@@ -293,7 +327,7 @@ class SetSpriteItem(QUndoCommand):
         self.data.item = self.new_item
 
 
-class SetScreenCount(QUndoCommand):
+class SetScreenCount(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(
         self,
         world_data: WorldMapData,
@@ -318,11 +352,15 @@ class SetScreenCount(QUndoCommand):
         if self.world_map is not None:
             self.world_map.reread_tiles()
 
+        super().undo()
+
     def redo(self):
         self.world_data.screen_count = self.new_screen_count
 
         if self.world_map is not None:
             self.world_map.reread_tiles()
+
+        super().redo()
 
 
 class ChangeReplacementTile(QUndoCommand):
@@ -426,7 +464,7 @@ class SetWorldScroll(QUndoCommand):
         self.world_data.write_back()
 
 
-class SetWorldIndex(QUndoCommand):
+class SetWorldIndex(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(
         self,
         world_data: WorldMapData,
@@ -447,8 +485,12 @@ class SetWorldIndex(QUndoCommand):
     def undo(self):
         self._change_world_index(self.old_index)
 
+        super().undo()
+
     def redo(self):
         self._change_world_index(self.new_index)
+
+        super().redo()
 
     def _change_world_index(self, new_index: int):
         self.world_data.change_index(new_index)
@@ -457,7 +499,7 @@ class SetWorldIndex(QUndoCommand):
             sprite.calculate_addresses()
 
 
-class SetStructureBlockAddress(QUndoCommand):
+class SetStructureBlockAddress(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(self, world_data: WorldMapData, new_address: int):
         super(SetStructureBlockAddress, self).__init__()
 
@@ -468,11 +510,15 @@ class SetStructureBlockAddress(QUndoCommand):
     def undo(self):
         self.world_data.structure_block_address = self.old_address
 
+        super().undo()
+
     def redo(self):
         self.world_data.structure_block_address = self.new_address
 
+        super().redo()
 
-class SetTileDataOffset(QUndoCommand):
+
+class SetTileDataOffset(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(self, world_data: WorldMapData, new_offset: int):
         super(SetTileDataOffset, self).__init__()
 
@@ -483,8 +529,12 @@ class SetTileDataOffset(QUndoCommand):
     def undo(self):
         self.world_data.tile_data_offset = self.old_offset
 
+        super().undo()
+
     def redo(self):
         self.world_data.tile_data_offset = self.new_offset
+
+        super().redo()
 
 
 class ChangeSpriteIndex(QUndoCommand):
@@ -504,7 +554,7 @@ class ChangeSpriteIndex(QUndoCommand):
         self.world.move_sprites(self.old_index, self.new_index)
 
 
-class ChangeLevelPointerIndex(QUndoCommand):
+class ChangeLevelPointerIndex(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(self, world: WorldMap, old_index: int, new_index: int, parent=None):
         super(ChangeLevelPointerIndex, self).__init__(parent)
         self.world = world
@@ -517,11 +567,15 @@ class ChangeLevelPointerIndex(QUndoCommand):
     def undo(self):
         self.world.move_level_pointers(self.new_index, self.old_index)
 
+        super().undo()
+
     def redo(self):
         self.world.move_level_pointers(self.old_index, self.new_index)
 
+        super().redo()
 
-class AddLevelPointer(QUndoCommand):
+
+class AddLevelPointer(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(self, world_data: WorldMapData, world: WorldMap | None = None):
         super(AddLevelPointer, self).__init__()
 
@@ -545,6 +599,8 @@ class AddLevelPointer(QUndoCommand):
         if self.world is not None:
             self.world.level_pointers.remove(self.level_pointer)
 
+        super().undo()
+
     def redo(self):
         self.world_data.level_count_screen_1 += 1
 
@@ -553,8 +609,10 @@ class AddLevelPointer(QUndoCommand):
         if self.world is not None:
             self.world.level_pointers.append(self.level_pointer)
 
+        super().redo()
 
-class RemoveLevelPointer(QUndoCommand):
+
+class RemoveLevelPointer(DirtyAdditionalDataMixin, QUndoCommand):
     def __init__(self, world_data: WorldMapData, index=-1, world: WorldMap | None = None):
         super(RemoveLevelPointer, self).__init__()
 
@@ -588,6 +646,8 @@ class RemoveLevelPointer(QUndoCommand):
         if self.world is not None:
             self.world.level_pointers.insert(self.index, self.removed_level_pointer)
 
+        super().undo()
+
     def redo(self):
         # TODO not nice
         attr_name = f"level_count_screen_{self.removed_level_pointer_data.screen + 1}"
@@ -602,6 +662,8 @@ class RemoveLevelPointer(QUndoCommand):
 
         if self.world is not None:
             self.world.level_pointers.pop(self.index)
+
+        super().redo()
 
 
 class WorldDataStandIn:

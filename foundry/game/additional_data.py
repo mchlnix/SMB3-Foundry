@@ -45,11 +45,14 @@ class AdditionalData:
 
         self.found_levels: list[FoundLevel] = []
 
+        self.needs_refresh = False
+
     def __str__(self) -> str:
         return json.dumps(
             {
                 "managed_level_positions": self.managed_level_positions,
                 "found_levels": [found_level.to_dict() for found_level in self.found_levels],
+                "needs_refresh": self.needs_refresh,
             }
         )
 
@@ -61,6 +64,7 @@ class AdditionalData:
 
         data_obj.managed_level_positions = data_dict.get("managed_level_positions", None)
         data_obj.found_levels = [FoundLevel.from_dict(data) for data in data_dict.get("found_levels", [])]
+        data_obj.needs_refresh = data_dict.get("needs_refresh", True)
 
         return data_obj
 

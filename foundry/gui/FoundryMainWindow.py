@@ -562,6 +562,8 @@ class FoundryMainWindow(MainWindow):
 
             self._ask_for_level_management()
 
+            self._check_for_refresh()
+
             if path_to_rom == auto_save_rom_path:
                 self._load_auto_save()
             else:
@@ -627,21 +629,47 @@ class FoundryMainWindow(MainWindow):
         ROM.additional_data.managed_level_positions = answer == QMessageBox.StandardButton.Yes
 
         if ROM.additional_data.managed_level_positions:
-            pd = LevelParseProgressDialog()
+            self._parse_levels_in_rom()
 
-            if pd.wasCanceled():
-                ROM.additional_data.managed_level_positions = None
-                return
+    @staticmethod
+    def _parse_levels_in_rom():
+        pd = LevelParseProgressDialog()
 
-            ROM.additional_data.found_levels = [
-                pd.levels_by_address[key] for key in sorted(pd.levels_by_address.keys())
-            ]
+        if pd.wasCanceled():
+            ROM.additional_data.managed_level_positions = None
+            return
 
-            lo = LevelOrganizer(ROM(), ROM().additional_data.found_levels)
-            lo.rearrange_levels()
-            lo.rearrange_enemies()
+        ROM.additional_data.found_levels = [pd.levels_by_address[key] for key in sorted(pd.levels_by_address.keys())]
 
-            ROM.save_to_file(ROM.path)
+        lo = LevelOrganizer(ROM(), ROM().additional_data.found_levels)
+        lo.rearrange_levels()
+        lo.rearrange_enemies()
+
+        ROM.save_to_file(ROM.path)
+
+    def _check_for_refresh(self):
+        """Scribe can move around levels, so we would need to read them in again."""
+        if not ROM.additional_data.needs_refresh:
+            return
+
+        answer = QMessageBox.question(
+            self,
+            "External Changes to Levels detected",
+            "We detected changes to where Levels are saved from a different source (probably SMB3 Scribe). We need to "
+            "parse the ROM again to update the locations of the moved Levels.\n\n"
+            "If you choose 'No', then the Found Level information will be deleted, but you can still select Levels "
+            "through the world maps in the Level Selector, as before.\n\n"
+            "Reparse the Levels?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
+
+        ROM.additional_data.found_levels.clear()
+        ROM.additional_data.needs_refresh = False
+
+        ROM.additional_data.managed_level_positions = answer == QMessageBox.StandardButton.Yes
+
+        if ROM.additional_data.managed_level_positions:
+            self._parse_levels_in_rom()
 
     def _ask_for_palette_save(self) -> bool:
         """
