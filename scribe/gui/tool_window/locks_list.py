@@ -5,8 +5,8 @@ from PySide6.QtWidgets import QStyledItemDelegate, QTableWidgetItem, QWidget
 
 from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.windows.BlockViewer import BlockBank
 from foundry.gui.widgets.Spinner import Spinner
+from foundry.gui.windows.BlockViewer import BlockBank
 from scribe.gui.commands import ChangeLockIndex, ChangeReplacementTile
 from scribe.gui.tool_window.table_widget import (
     DialogDelegate,

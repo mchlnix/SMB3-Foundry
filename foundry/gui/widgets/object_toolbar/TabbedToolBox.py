@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QScrollArea, QScrollBar, QTabWidget
 
 from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+
 from .ObjectToolBox import ObjectIcon, ObjectToolBox
 
 _INDEX_RECENTLY_USED = 0

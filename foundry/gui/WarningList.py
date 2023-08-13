@@ -7,14 +7,14 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from foundry import data_dir
 from foundry.game import GROUND
-from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.game.gfx.objects import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.visualization.level.LevelView import LevelView
-from foundry.gui.ObjectList import ObjectList
+from foundry.game.ObjectDefinitions import GeneratorType
 from foundry.gui.dialogs.HeaderEditor import CAMERA_MOVEMENTS
+from foundry.gui.ObjectList import ObjectList
 from foundry.gui.util import clear_layout
+from foundry.gui.visualization.level.LevelView import LevelView
 from smb3parse.constants import (
     OBJ_AUTOSCROLL,
     OBJ_BOOMBOOM,

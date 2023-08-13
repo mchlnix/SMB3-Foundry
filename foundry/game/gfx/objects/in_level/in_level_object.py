@@ -4,10 +4,10 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QImage
 
 from foundry.game import EXPANDS_NOT
-from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.Palette import PaletteGroup
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.object_like import ObjectLike
+from foundry.game.gfx.Palette import PaletteGroup
+from foundry.game.ObjectSet import ObjectSet
 
 
 class InLevelObject(ObjectLike, abc.ABC):

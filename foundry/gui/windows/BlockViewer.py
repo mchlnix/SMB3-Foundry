@@ -1,14 +1,14 @@
 from math import ceil
 
 from PySide6.QtCore import QPoint, QRect, QSize, QTimer, Signal, SignalInstance
-from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter, QPen, QResizeEvent, Qt
+from PySide6.QtGui import QMouseEvent, QPainter, QPaintEvent, QPen, QResizeEvent, Qt
 from PySide6.QtWidgets import QComboBox, QLabel, QLayout, QStatusBar, QToolBar, QWidget
 
 from foundry import icon
 from foundry.game.File import ROM
+from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET, load_palette_group
-from foundry.game.gfx.drawable.Block import Block, get_block
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow

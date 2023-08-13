@@ -5,33 +5,26 @@ from PySide6.QtGui import QBrush, QColor, QPainter, QPen, Qt
 
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT, GROUND
 from foundry.game.File import ROM
+from foundry.game.gfx.drawable import load_from_png, make_image_selected, mario_actions
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects.world_map.sprite import EMPTY_IMAGE
 from foundry.game.gfx.Palette import (
     NESPalette,
     bg_color_for_object_set,
     load_palette_group,
 )
-from foundry.game.gfx.drawable import load_from_png, make_image_selected, mario_actions
-from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects import (
-    EnemyItem,
-    LevelObject,
-)
-from foundry.game.gfx.objects.world_map.sprite import EMPTY_IMAGE
 from foundry.game.level.Level import Level
-from foundry.gui.visualization.level.AutoScrollDrawer import AutoScrollDrawer
 from foundry.gui.settings import Settings
+from foundry.gui.visualization.level.AutoScrollDrawer import AutoScrollDrawer
 from smb3parse.constants import (
     OBJ_AUTOSCROLL,
     OBJ_CHEST_EXIT,
     OBJ_CHEST_ITEM_SETTER,
     OBJ_PIPE_EXITS,
 )
-from smb3parse.levels import (
-    LEVEL_MAX_LENGTH,
-    LEVEL_SCREEN_HEIGHT,
-    LEVEL_SCREEN_WIDTH,
-)
+from smb3parse.levels import LEVEL_MAX_LENGTH, LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.objects.object_set import (
     CLOUDY_OBJECT_SET,
     DESERT_OBJECT_SET,

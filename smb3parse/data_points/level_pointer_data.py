@@ -1,10 +1,7 @@
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from smb3parse import OFFSET_BY_OBJECT_SET_A000
-from smb3parse.constants import (
-    BASE_OFFSET,
-    OFFSET_SIZE,
-)
+from smb3parse.constants import BASE_OFFSET, OFFSET_SIZE
 from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
 from smb3parse.levels import (
     FIRST_VALID_ROW,

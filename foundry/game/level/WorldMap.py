@@ -3,10 +3,8 @@ from typing import Optional, cast
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
-from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.objects import (
     AirshipTravelPoint,
     LevelPointer,
@@ -15,15 +13,15 @@ from foundry.game.gfx.objects import (
     Sprite,
 )
 from foundry.game.gfx.objects.world_map.start_posiiton import StartPosition
+from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.level.LevelLike import LevelLike
+from foundry.game.ObjectSet import ObjectSet
 from smb3parse.constants import MAPOBJ_EMPTY
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW
-from smb3parse.levels.world_map import (
-    WORLD_MAP_HEIGHT,
-    WorldMap as _WorldMap,
-    list_world_map_addresses,
-)
+from smb3parse.levels.world_map import WORLD_MAP_HEIGHT
+from smb3parse.levels.world_map import WorldMap as _WorldMap
+from smb3parse.levels.world_map import list_world_map_addresses
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util.rom import Rom
 

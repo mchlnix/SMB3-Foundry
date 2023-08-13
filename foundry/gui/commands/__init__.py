@@ -1,16 +1,16 @@
 from operator import itemgetter
 from os import PathLike
 from pathlib import Path
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.File import ROM
 from foundry.game.gfx import change_color
-from foundry.game.gfx.Palette import PaletteGroup
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.Palette import PaletteGroup
 from foundry.game.level.Level import Level
 from foundry.gui.asm import load_asm_enemy
 from smb3parse.constants import PIPE_PAIR_COUNT

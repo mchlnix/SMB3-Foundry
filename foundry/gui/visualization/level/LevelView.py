@@ -2,7 +2,7 @@ from bisect import bisect_right
 from typing import Optional, cast
 
 from PySide6.QtCore import QPoint, QSize, QTimer
-from PySide6.QtGui import QMouseEvent, QUndoStack, QWheelEvent, Qt
+from PySide6.QtGui import QMouseEvent, Qt, QUndoStack, QWheelEvent
 from PySide6.QtWidgets import QScrollArea, QToolTip, QWidget
 
 from foundry import ctrl_is_pressed
@@ -14,17 +14,6 @@ from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.ContextMenu import LevelContextMenu
-from foundry.gui.visualization.level.LevelDrawer import LevelDrawer
-from foundry.gui.visualization.MainView import (
-    MODE_DRAG,
-    MODE_FREE,
-    MODE_RESIZE_DIAG,
-    MODE_RESIZE_HORIZ,
-    MODE_RESIZE_VERT,
-    MainView,
-    RESIZE_MODES,
-)
 from foundry.gui.commands import (
     AddEnemyAt,
     AddLevelObjectAt,
@@ -33,7 +22,18 @@ from foundry.gui.commands import (
     RemoveObjects,
     ResizeObjects,
 )
+from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, Settings
+from foundry.gui.visualization.level.LevelDrawer import LevelDrawer
+from foundry.gui.visualization.MainView import (
+    MODE_DRAG,
+    MODE_FREE,
+    MODE_RESIZE_DIAG,
+    MODE_RESIZE_HORIZ,
+    MODE_RESIZE_VERT,
+    RESIZE_MODES,
+    MainView,
+)
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH
 

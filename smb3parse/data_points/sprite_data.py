@@ -2,17 +2,15 @@ from typing import Optional
 
 from smb3parse.constants import (
     BASE_OFFSET,
-    PAGE_C000_OFFSET,
     MAPITEM_NOITEM,
     MAPOBJ_EMPTY,
-    Map_List_Object_Ys,
     OFFSET_SIZE,
+    PAGE_C000_OFFSET,
+    Map_List_Object_Ys,
 )
 from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
 from smb3parse.data_points.world_map_data import WorldMapData
-from smb3parse.levels import (
-    FIRST_VALID_ROW,
-)
+from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.util.rom import Rom
 
 MAP_SPRITE_Y_POS_LIST = Map_List_Object_Ys

@@ -3,3 +3,6 @@ ignore = [109, 112, 113, 126, 129]
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::foundry.game.gfx.objects.in_level.level_object.LevelObjectRenderWarning"]
+
+[tool.isort]
+profile = "black"

@@ -1,7 +1,7 @@
 from typing import cast
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QPaintEvent, QPainter
+from PySide6.QtGui import QPainter, QPaintEvent
 from PySide6.QtWidgets import (
     QComboBox,
     QHBoxLayout,
@@ -12,8 +12,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.gfx.objects import Jump, LevelObject, LevelObjectFactory
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.util import clear_layout

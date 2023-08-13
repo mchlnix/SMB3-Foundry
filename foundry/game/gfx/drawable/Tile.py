@@ -1,8 +1,8 @@
 from PySide6.QtGui import QImage
 
+from foundry.game.gfx.drawable import MASK_COLOR, bit_reverse
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, PaletteGroup
-from foundry.game.gfx.drawable import MASK_COLOR, bit_reverse
 from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET
 
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index

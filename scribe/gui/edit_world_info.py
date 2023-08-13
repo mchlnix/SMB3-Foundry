@@ -1,7 +1,7 @@
 from typing import cast
 
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QCloseEvent, QPainter, QPixmap, QUndoStack, Qt
+from PySide6.QtGui import QCloseEvent, QPainter, QPixmap, Qt, QUndoStack
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -18,9 +18,9 @@ from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui import label_and_widget
-from foundry.gui.windows.BlockViewer import BlockBank
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.widgets.Spinner import Spinner
+from foundry.gui.windows.BlockViewer import BlockBank
 from scribe.gui.commands import (
     SetWorldScroll,
     WorldBottomTile,

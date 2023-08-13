@@ -12,16 +12,13 @@ from foundry.game import (
     SKY,
 )
 from foundry.game.File import ROM
+from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.Palette import PaletteGroup, bg_color_for_object_set
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import PaletteGroup, bg_color_for_object_set
-from foundry.game.gfx.drawable.Block import Block, get_block
-from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from smb3parse.levels import (
-    LEVEL_SCREEN_HEIGHT,
-    LEVEL_SCREEN_WIDTH,
-)
+from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
 ENDING_STR = {

@@ -3,9 +3,9 @@ from PySide6.QtGui import QMouseEvent, QPainter
 from PySide6.QtWidgets import QWidget
 
 from foundry.game.File import ROM
+from foundry.game.gfx.drawable.Block import Block, get_block, get_tile
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
-from foundry.game.gfx.drawable.Block import Block, get_block, get_tile
 from smb3parse.levels import LEVEL_SCREEN_WIDTH
 from smb3parse.util.parser.level import ParsedLevel
 

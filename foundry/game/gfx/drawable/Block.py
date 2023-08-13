@@ -4,10 +4,10 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QColor, QImage, QPainter, Qt
 
 from foundry.game.File import ROM
-from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import NESPalette, PaletteGroup, load_palette_group
 from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Tile import Tile
+from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.Palette import NESPalette, PaletteGroup, load_palette_group
 from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET, WORLD_MAP_OBJECT_SET
 
 TSA_BANK_0 = 0 * 256

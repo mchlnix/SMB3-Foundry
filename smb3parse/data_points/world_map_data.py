@@ -1,17 +1,17 @@
 from collections import defaultdict
-
 from typing import Optional
 
 from smb3parse.constants import (
     AIRSHIP_TRAVEL_SET_COUNT,
     AIRSHIP_TRAVEL_SET_SIZE,
+    BASE_OFFSET,
+    OFFSET_SIZE,
     Airship_Layouts,
     Airship_Objects,
-    BASE_OFFSET,
     CoinShip_Layouts,
     CoinShip_Objects,
-    FortressFXBase_ByWorld,
     FortressFX_W1,
+    FortressFXBase_ByWorld,
     LevelJctBQ_Layout,
     LevelJctBQ_Objects,
     LevelJctBQ_Tileset,
@@ -26,7 +26,6 @@ from smb3parse.constants import (
     Map_Object_ColorSets,
     Map_Tile_ColorSets,
     Map_Y_Starts,
-    OFFSET_SIZE,
     ToadShop_Layouts,
     ToadShop_Objects,
     World_BGM,
@@ -37,10 +36,10 @@ from smb3parse.data_points.level_pointer_data import LevelPointerData
 from smb3parse.data_points.util import DataPoint, Position, _IndexedMixin
 from smb3parse.levels import (
     LAYOUT_LIST_OFFSET,
-    LEVELS_IN_WORLD_LIST_OFFSET,
     LEVEL_ENEMY_LIST_OFFSET,
     LEVEL_X_POS_LISTS,
     LEVEL_Y_POS_LISTS,
+    LEVELS_IN_WORLD_LIST_OFFSET,
     MAX_SCREEN_COUNT,
     STRUCTURE_DATA_OFFSETS,
     WORLD_MAP_BASE_OFFSET,

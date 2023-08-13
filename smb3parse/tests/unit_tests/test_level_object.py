@@ -1,8 +1,6 @@
 import pytest
 
-from smb3parse.objects import (
-    MAX_Y_VALUE,
-)
+from smb3parse.objects import MAX_Y_VALUE
 from smb3parse.objects.level_object import LevelObject
 
 

@@ -1,5 +1,5 @@
 from PySide6.QtCore import QRect, QSize, Qt
-from PySide6.QtGui import QColor, QPaintEvent, QPainter
+from PySide6.QtGui import QColor, QPainter, QPaintEvent
 from PySide6.QtWidgets import QWidget
 
 from foundry.game.level.LevelRef import LevelRef

@@ -1,13 +1,13 @@
 from typing import Optional
 
 from PySide6.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
-from PySide6.QtGui import QDrag, QImage, QMouseEvent, QPaintEvent, QPainter
+from PySide6.QtGui import QDrag, QImage, QMouseEvent, QPainter, QPaintEvent
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
-from foundry.game.gfx.Palette import bg_color_for_palette_group
 from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.objects import Jump, LevelObject, get_minimal_icon_object
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.Palette import bg_color_for_palette_group
 
 objects_to_use_pngs_instead = {
     "'?' with flower": load_from_png(0, 4),

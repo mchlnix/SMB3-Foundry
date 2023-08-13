@@ -1,17 +1,17 @@
 from PySide6.QtCore import QRect, QSize
 from PySide6.QtGui import QColor, QImage, QPainter, Qt
 
+from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
+from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.Palette import PaletteGroup
 from foundry.game.ObjectDefinitions import (
     enemy_handle_x,
     enemy_handle_x2,
     enemy_handle_y,
 )
 from foundry.game.ObjectSet import ObjectSet
-from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import PaletteGroup
-from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
-from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM
 from smb3parse.objects.object_set import ENEMY_ITEM_GRAPHICS_SET, ENEMY_ITEM_OBJECT_SET
 

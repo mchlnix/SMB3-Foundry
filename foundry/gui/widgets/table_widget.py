@@ -1,9 +1,5 @@
 from PySide6.QtCore import Signal, SignalInstance
-from PySide6.QtWidgets import (
-    QHeaderView,
-    QSizePolicy,
-    QTableWidget,
-)
+from PySide6.QtWidgets import QHeaderView, QSizePolicy, QTableWidget
 
 
 class TableWidget(QTableWidget):

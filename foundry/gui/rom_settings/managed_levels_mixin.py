@@ -3,8 +3,8 @@ from collections import defaultdict
 from PySide6.QtCore import SignalInstance
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QHBoxLayout, QLabel, QVBoxLayout
 
-from foundry.game.File import ROM
 from foundry.game.additional_data import LevelOrganizer
+from foundry.game.File import ROM
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialog

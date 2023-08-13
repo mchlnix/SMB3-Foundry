@@ -17,9 +17,8 @@ from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.data_points import LevelPointerData
 from smb3parse.levels import WORLD_COUNT
-from smb3parse.objects.object_set import (
-    WORLD_MAP_OBJECT_SET,
-)
+from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+
 from .found_level_list import FoundLevelWidget
 from .overworld_selection_map import WorldMapLevelSelect
 from .stock_level_list import StockLevelWidget

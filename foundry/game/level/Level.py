@@ -2,9 +2,8 @@ from typing import Optional, cast
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
-from foundry.game.File import ROM
-from foundry.game.ObjectSet import ObjectSet
 from foundry.game.additional_data import LEVEL_DATA_DELIMITER_COUNT, LevelOrganizer
+from foundry.game.File import ROM
 from foundry.game.gfx.objects import (
     EnemyItem,
     EnemyItemFactory,
@@ -21,6 +20,7 @@ from foundry.game.level import (
     _load_level_offsets,
 )
 from foundry.game.level.LevelLike import LevelLike
+from foundry.game.ObjectSet import ObjectSet
 from foundry.gui.asm import bytes_to_asm
 from smb3parse import OFFSET_BY_OBJECT_SET_A000
 from smb3parse.constants import BASE_OFFSET, ENEMY_SIZE, OFFSET_SIZE

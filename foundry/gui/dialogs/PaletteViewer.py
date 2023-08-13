@@ -2,7 +2,7 @@ from itertools import product
 from typing import Callable
 
 from PySide6.QtCore import QSize, Signal, SignalInstance
-from PySide6.QtGui import QColor, QMouseEvent, QPixmap, QUndoStack, Qt
+from PySide6.QtGui import QColor, QMouseEvent, QPixmap, Qt, QUndoStack
 from PySide6.QtWidgets import (
     QAbstractButton,
     QDialog,
@@ -20,9 +20,9 @@ from foundry.game.File import ROM
 from foundry.game.gfx import change_color
 from foundry.game.gfx.Palette import (
     COLORS_PER_PALETTE,
-    NESPalette,
-    PALETTES_PER_PALETTES_GROUP,
     PALETTE_GROUPS_PER_OBJECT_SET,
+    PALETTES_PER_PALETTES_GROUP,
+    NESPalette,
     load_palette_group,
 )
 from foundry.game.level.LevelRef import LevelRef

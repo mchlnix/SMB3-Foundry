@@ -1,5 +1,5 @@
 from PySide6.QtCore import QSize, Signal, SignalInstance
-from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter, Qt
+from PySide6.QtGui import QMouseEvent, QPainter, QPaintEvent, Qt
 from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile

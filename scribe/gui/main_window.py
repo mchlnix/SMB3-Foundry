@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from PySide6.QtCore import QPoint, QSize
-from PySide6.QtGui import QAction, QActionGroup, QKeySequence, QShortcut, QUndoStack, Qt
+from PySide6.QtGui import QAction, QActionGroup, QKeySequence, QShortcut, Qt, QUndoStack
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -16,8 +16,8 @@ from PySide6.QtWidgets import (
 from foundry import ROM_FILE_FILTER, icon
 from foundry.game.File import ROM
 from foundry.gui.MainWindow import MainWindow
-from foundry.gui.visualization.world.WorldView import WorldView
 from foundry.gui.settings import Settings
+from foundry.gui.visualization.world.WorldView import WorldView
 from scribe.gui.commands import PutTile
 from scribe.gui.menus.edit_menu import EditMenu
 from scribe.gui.menus.help_menu import HelpMenu

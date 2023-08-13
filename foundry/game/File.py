@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from foundry.game.additional_data import AdditionalData
-from smb3parse.util.rom import INESHeader, PRG_BANK_SIZE, Rom
+from smb3parse.util.rom import PRG_BANK_SIZE, INESHeader, Rom
 
 
 class ROM(Rom):

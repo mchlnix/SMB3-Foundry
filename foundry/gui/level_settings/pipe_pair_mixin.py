@@ -15,8 +15,8 @@ from foundry import icon
 from foundry.game.File import ROM
 from foundry.game.gfx.objects import EnemyItem
 from foundry.gui import label_and_widget
-from foundry.gui.dialogs.level_selector.LevelSelector import WorldMapLevelSelect
 from foundry.gui.commands import AddObject, RemoveObjects, UpdatePipeData
+from foundry.gui.dialogs.level_selector.LevelSelector import WorldMapLevelSelect
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_PIPE_EXITS, PIPE_PAIR_COUNT

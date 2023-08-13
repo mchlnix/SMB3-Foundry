@@ -1,6 +1,7 @@
 from PySide6.QtGui import QColor
 
 from foundry.game.File import ROM
+
 from .LevelSizeBar import LevelSizeBar
 
 

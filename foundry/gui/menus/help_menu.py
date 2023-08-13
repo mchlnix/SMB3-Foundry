@@ -9,8 +9,8 @@ from foundry import (
     icon,
     open_url,
 )
-from foundry.gui.MainWindow import MainWindow
 from foundry.gui.dialogs.AboutWindow import AboutDialog
+from foundry.gui.MainWindow import MainWindow
 
 
 class HelpMenu(QMenu):

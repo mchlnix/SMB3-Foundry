@@ -12,8 +12,8 @@ from PySide6.QtGui import (
     QKeySequence,
     QMouseEvent,
     QShortcut,
-    QUndoStack,
     Qt,
+    QUndoStack,
 )
 from PySide6.QtWidgets import (
     QDialog,
@@ -31,33 +31,23 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from foundry import ROM_FILE_FILTER, auto_save_level_data_path, auto_save_m3l_path, auto_save_rom_path, icon
+from foundry import (
+    ROM_FILE_FILTER,
+    auto_save_level_data_path,
+    auto_save_m3l_path,
+    auto_save_rom_path,
+    icon,
+)
 from foundry.features.instaplay import CantFindFirstTile, InstaPlayer, LevelNotAttached
-from foundry.game.File import ROM
 from foundry.game.additional_data import LevelOrganizer
+from foundry.game.File import ROM
 from foundry.game.gfx import restore_all_palettes
-from foundry.game.gfx.Palette import PaletteGroup, save_all_palette_groups
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.Palette import PaletteGroup, save_all_palette_groups
 from foundry.game.level import EnemyItemAddress, LevelAddress
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.ContextMenu import LevelContextMenu
-from foundry.gui.JumpList import JumpList
-from foundry.gui.dialogs.HeaderEditor import HeaderEditor
-from foundry.gui.dialogs.JumpEditor import JumpEditor
-from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialog
-from foundry.gui.dialogs.PaletteViewer import SidePalette
-from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
-from foundry.gui.visualization.level.LevelView import LevelView
-from foundry.gui.MainWindow import MainWindow
-from foundry.gui.ObjectDropdown import ObjectDropdown
-from foundry.gui.ObjectList import ObjectList
-from foundry.gui.dialogs.ObjectSetSelector import ObjectSetSelector
-from foundry.gui.ObjectStatusBar import ObjectStatusBar
-from foundry.gui.widgets.object_toolbar.ObjectToolBar import ObjectToolBar
-from foundry.gui.SpinnerPanel import SpinnerPanel
-from foundry.gui.WarningList import WarningList
 from foundry.gui.asm import load_asm_filename
 from foundry.gui.commands import (
     AddEnemyAt,
@@ -73,14 +63,30 @@ from foundry.gui.commands import (
     ToBackground,
     ToForeground,
 )
+from foundry.gui.ContextMenu import LevelContextMenu
+from foundry.gui.dialogs.HeaderEditor import HeaderEditor
+from foundry.gui.dialogs.JumpEditor import JumpEditor
+from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
+from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialog
+from foundry.gui.dialogs.ObjectSetSelector import ObjectSetSelector
+from foundry.gui.dialogs.PaletteViewer import SidePalette
 from foundry.gui.dialogs.SettingsDialog import POWERUPS, SettingsDialog
+from foundry.gui.JumpList import JumpList
 from foundry.gui.level_settings.level_settings_dialog import LevelSettingsDialog
 from foundry.gui.m3l import load_m3l, load_m3l_filename, save_m3l
+from foundry.gui.MainWindow import MainWindow
 from foundry.gui.menus.file_menu import FileMenu
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.rom_menu import RomMenu
 from foundry.gui.menus.view_menu import ViewMenu
+from foundry.gui.ObjectDropdown import ObjectDropdown
+from foundry.gui.ObjectList import ObjectList
+from foundry.gui.ObjectStatusBar import ObjectStatusBar
 from foundry.gui.settings import Settings
+from foundry.gui.SpinnerPanel import SpinnerPanel
+from foundry.gui.visualization.level.LevelView import LevelView
+from foundry.gui.WarningList import WarningList
+from foundry.gui.widgets.object_toolbar.ObjectToolBar import ObjectToolBar
 from foundry.gui.widgets.size_bar.EnemySizeBar import EnemySizeBar
 from foundry.gui.widgets.size_bar.LevelSizeBar import LevelSizeBar
 from smb3parse.data_points import Position

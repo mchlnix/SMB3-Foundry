@@ -9,8 +9,8 @@ from foundry.game.gfx.objects import EnemyItemFactory, LevelObjectFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 from smb3parse.util import apply
-from .object_icon import ObjectIcon
 
+from .object_icon import ObjectIcon
 
 COLUMN_COUNT = 2
 

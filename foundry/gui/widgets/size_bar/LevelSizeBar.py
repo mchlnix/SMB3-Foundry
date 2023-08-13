@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
+
 from .size_bar import SizeBar
 
 

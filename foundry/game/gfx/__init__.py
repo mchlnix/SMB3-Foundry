@@ -1,6 +1,6 @@
+from foundry.game.gfx.drawable.Block import get_block, get_tile
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PaletteGroup, _palette_group_cache
-from foundry.game.gfx.drawable.Block import get_block, get_tile
 
 
 def restore_all_palettes():

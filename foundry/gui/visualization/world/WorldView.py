@@ -8,19 +8,20 @@ from PySide6.QtGui import (
     QPainter,
     QPixmap,
     QShortcut,
-    QUndoStack,
     Qt,
+    QUndoStack,
 )
 from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.gfx import get_block
-from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.gfx.drawable.Block import get_tile, get_worldmap_tile
 from foundry.game.gfx.objects import LevelObject, MapTile
 from foundry.game.gfx.objects.world_map.map_object import MapObject
+from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.settings import Settings
 from foundry.gui.visualization.MainView import (
     MODE_DRAG,
     MODE_FREE,
@@ -29,7 +30,6 @@ from foundry.gui.visualization.MainView import (
     MainView,
 )
 from foundry.gui.visualization.world.WorldDrawer import WorldDrawer
-from foundry.gui.settings import Settings
 from scribe.gui.commands import (
     MoveMapObject,
     MoveTile,

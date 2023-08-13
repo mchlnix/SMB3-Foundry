@@ -9,10 +9,10 @@ from foundry.conftest import compare_images
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import LevelContextMenu
+from foundry.gui.settings import Settings
 from foundry.gui.visualization.level.LevelView import LevelView
 from foundry.gui.visualization.MainView import MainView
 from foundry.gui.visualization.world.WorldView import WorldView
-from foundry.gui.settings import Settings
 from scribe.gui.world_view_context_menu import WorldContextMenu
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET

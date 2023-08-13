@@ -7,8 +7,8 @@ from PySide6.QtGui import (
     QDragEnterEvent,
     QDragMoveEvent,
     QMouseEvent,
-    QPaintEvent,
     QPainter,
+    QPaintEvent,
     Qt,
 )
 from PySide6.QtWidgets import QSizePolicy, QWidget
@@ -21,8 +21,9 @@ from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import ContextMenu
 from foundry.gui.settings import Settings
 from smb3parse.data_points import Position
-from .SelectionSquare import SelectionSquare
+
 from .level.LevelDrawer import LevelDrawer
+from .SelectionSquare import SelectionSquare
 from .world.WorldDrawer import WorldDrawer
 
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least

@@ -2,10 +2,8 @@ from functools import lru_cache
 
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import ObjectDefinition, load_object_definitions
-from smb3parse.objects.object_set import (
-    ENEMY_ITEM_OBJECT_SET,
-    ObjectSet as SMB3ObjectSet,
-)
+from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
+from smb3parse.objects.object_set import ObjectSet as SMB3ObjectSet
 
 ENDING_OBJECT_BASE_OFFSET = 0x1C8F9
 """

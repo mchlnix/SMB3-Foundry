@@ -3,7 +3,7 @@ import subprocess
 from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication
-from PySide6.QtGui import QCloseEvent, QUndoStack, Qt
+from PySide6.QtGui import QCloseEvent, Qt, QUndoStack
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QPushButton
 
 from foundry import (

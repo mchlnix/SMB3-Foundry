@@ -3,7 +3,7 @@ from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
 from pathlib import Path
 
-from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset, WORLD_MAP_TSA_INDEX
+from smb3parse.constants import BASE_OFFSET, WORLD_MAP_TSA_INDEX, PAGE_A000_ByTileset
 from smb3parse.types import AnyAddress, NormalizedAddress
 from smb3parse.util import little_endian
 

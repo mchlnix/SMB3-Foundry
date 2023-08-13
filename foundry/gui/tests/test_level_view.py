@@ -1,10 +1,10 @@
 import pytest
 from PySide6.QtCore import QPoint
-from PySide6.QtGui import QWheelEvent, Qt
+from PySide6.QtGui import Qt, QWheelEvent
 
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from foundry.gui.visualization.level.LevelView import LevelView
 from foundry.gui.dialogs.HeaderEditor import HeaderEditor
+from foundry.gui.visualization.level.LevelView import LevelView
 from smb3parse.data_points import Position
 from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, PLAINS_OBJECT_SET
 

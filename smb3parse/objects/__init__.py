@@ -4,7 +4,6 @@ Describes all objects, that are part of a level, i. e. platforms, enemies, items
 from abc import ABC
 from typing import Optional
 
-
 MIN_DOMAIN = 0
 MAX_DOMAIN = 7
 DOMAIN_COUNT = 8

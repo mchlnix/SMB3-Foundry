@@ -5,7 +5,11 @@ from PySide6.QtCore import QObject, Signal, SignalInstance
 from foundry.game.level import EnemyItemAddress, LevelAddress
 from foundry.game.level.Level import Level
 from foundry.game.level.WorldMap import WorldMap
-from smb3parse.objects.object_set import MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET, WORLD_MAP_OBJECT_SET
+from smb3parse.objects.object_set import (
+    MUSHROOM_OBJECT_SET,
+    SPADE_BONUS_OBJECT_SET,
+    WORLD_MAP_OBJECT_SET,
+)
 
 
 class LevelRef(QObject):

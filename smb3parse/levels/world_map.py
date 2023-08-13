@@ -2,12 +2,12 @@ from typing import Generator, Optional
 from warnings import warn
 
 from smb3parse.constants import (
-    Map_Y_Starts,
     OFFSET_SIZE,
     SPRITE_COUNT,
     TILE_LEVEL_1,
     TILE_LEVEL_10,
     TILE_NAMES,
+    Map_Y_Starts,
 )
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.levels import (
@@ -15,9 +15,8 @@ from smb3parse.levels import (
     COMPLETABLE_TILES_LIST,
     FIRST_VALID_ROW,
     LAYOUT_LIST_OFFSET,
-    LevelBase,
-    SPECIAL_ENTERABLE_TILES_LIST,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
+    SPECIAL_ENTERABLE_TILES_LIST,
     TILE_ATTRIBUTES_TS0_OFFSET,
     VALID_COLUMNS,
     VALID_ROWS,
@@ -26,9 +25,10 @@ from smb3parse.levels import (
     WORLD_MAP_HEIGHT,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
+    LevelBase,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.objects.object_set import ObjectSet, WORLD_MAP_OBJECT_SET
+from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET, ObjectSet
 from smb3parse.util.rom import Rom
 
 Y_START_POS_LIST = Map_Y_Starts

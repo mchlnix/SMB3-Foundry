@@ -2,10 +2,10 @@ from functools import lru_cache
 
 from foundry.game.File import ROM
 from smb3parse.constants import (
-    Level_BG_Pages1,
-    Level_BG_Pages2,
     STOCK_LEVEL_BG_PAGES1_BYTES,
     STOCK_LEVEL_BG_PAGES2_BYTES,
+    Level_BG_Pages1,
+    Level_BG_Pages2,
 )
 
 CHR_ROM_OFFSET = 0x40010

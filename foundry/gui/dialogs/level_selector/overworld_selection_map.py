@@ -2,17 +2,12 @@ from contextlib import suppress
 
 from PySide6.QtCore import QMargins, QSize, Signal, SignalInstance
 from PySide6.QtGui import QMouseEvent
-from PySide6.QtWidgets import (
-    QMessageBox,
-    QScrollArea,
-    QScrollBar,
-    QSizePolicy,
-)
+from PySide6.QtWidgets import QMessageBox, QScrollArea, QScrollBar, QSizePolicy
 
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.visualization.world.WorldView import WorldView
 from foundry.gui.settings import Settings
+from foundry.gui.visualization.world.WorldView import WorldView
 from smb3parse.data_points import LevelPointerData, Position
 from smb3parse.objects.object_set import (
     MUSHROOM_OBJECT_SET,

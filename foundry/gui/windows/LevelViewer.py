@@ -3,8 +3,22 @@ from dataclasses import dataclass
 from random import randint, seed
 
 from PySide6.QtCore import QPoint, QRect, QSize
-from PySide6.QtGui import QBrush, QColor, QColorConstants, QMouseEvent, QPaintEvent, QPainter
-from PySide6.QtWidgets import QScrollArea, QSizePolicy, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget
+from PySide6.QtGui import (
+    QBrush,
+    QColor,
+    QColorConstants,
+    QMouseEvent,
+    QPainter,
+    QPaintEvent,
+)
+from PySide6.QtWidgets import (
+    QScrollArea,
+    QSizePolicy,
+    QTabWidget,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QWidget,
+)
 
 from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.File import ROM

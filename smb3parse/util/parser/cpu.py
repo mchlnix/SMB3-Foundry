@@ -9,16 +9,16 @@ from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
 from smb3parse.util import apply
 from smb3parse.util.parser.constants import (
     MEM_ADDRESS_LABELS,
+    MEM_PAGE_A000,
+    MEM_PAGE_C000,
     MEM_EnemiesStartA,
     MEM_EnemiesStartB,
     MEM_Enemy_Palette,
     MEM_Graphics_Set,
+    MEM_Level_TileSet,
     MEM_LevelStartA,
     MEM_LevelStartB,
-    MEM_Level_TileSet,
     MEM_Object_Palette,
-    MEM_PAGE_A000,
-    MEM_PAGE_C000,
     MEM_Player_Current,
     MEM_Player_Screen,
     MEM_Player_X,
@@ -29,8 +29,8 @@ from smb3parse.util.parser.constants import (
     MEM_Screen_Memory_Start,
     MEM_World_Num,
     ROM_EndObjectParsing,
-    ROM_LevelLoad_By_TileSet,
     ROM_Level_Load_Entry,
+    ROM_LevelLoad_By_TileSet,
 )
 from smb3parse.util.parser.level import ParsedLevel
 from smb3parse.util.parser.memory import NESMemory

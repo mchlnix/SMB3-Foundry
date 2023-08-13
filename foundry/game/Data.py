@@ -1,6 +1,5 @@
 from typing import NamedTuple
 
-
 VANILLA_SMB3_LEVEL_COUNT = 298
 
 

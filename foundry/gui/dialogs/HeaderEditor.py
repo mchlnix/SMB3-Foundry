@@ -1,6 +1,6 @@
 from typing import Optional
 
-from PySide6.QtGui import QUndoStack, Qt
+from PySide6.QtGui import Qt, QUndoStack
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -18,7 +18,6 @@ from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui import OBJECT_SET_ITEMS
-from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
 from foundry.gui.commands import (
     SetLevelAttribute,
     SetNextAreaEnemyAddress,
@@ -26,6 +25,7 @@ from foundry.gui.commands import (
     SetNextAreaObjectSet,
 )
 from foundry.gui.dialogs.CustomDialog import CustomDialog
+from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.levels import ENEMY_BASE_OFFSET
 from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS

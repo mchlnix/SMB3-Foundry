@@ -1,7 +1,6 @@
 from functools import partial
 from typing import Callable, Iterable, Optional
 
-
 # nn - actual number to be used
 # ll - short for 00ll, 2 byte address in the zero page, basically RAM
 # hhll - full address, 2 bytes high, 2 bytes low
