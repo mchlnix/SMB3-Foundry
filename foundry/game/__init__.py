@@ -36,6 +36,9 @@ def should_be_placeable(object_or_enemy_item: "LevelObject | Jump | EnemyItem") 
         if object_or_enemy_item.name in _EXCLUDED_LEVEL_OBJECT_NAMES:
             return False
 
+        elif "smas only" in object_or_enemy_item.name.lower():
+            return False
+
     if isinstance(object_or_enemy_item, EnemyItem):
         if object_or_enemy_item.name in _EXCLUDED_ENEMY_ITEMS_NAMES:
             return False
