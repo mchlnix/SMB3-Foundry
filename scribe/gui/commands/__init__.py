@@ -203,9 +203,11 @@ class WorldMusicIndex(QUndoCommand):
 
     def undo(self):
         self.world.data.music_index = self.old_index
+        self.world.data.music_arrival_index = self.old_index
 
     def redo(self):
         self.world.data.music_index = self.new_index
+        self.world.data.music_arrival_index = self.new_index
 
 
 class WorldBottomTile(QUndoCommand):

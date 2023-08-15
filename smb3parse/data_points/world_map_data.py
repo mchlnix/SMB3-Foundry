@@ -29,6 +29,7 @@ from smb3parse.constants import (
     ToadShop_Layouts,
     ToadShop_Objects,
     World_BGM,
+    World_BGM_Arrival,
     World_Map_Max_PanR,
 )
 from smb3parse.data_points import FortressFXData
@@ -268,7 +269,14 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.music_index_address = 0x0
         self.music_index = 0x0
         """
-        The index of the music theme, that is played in the overworld.
+        The index of the music theme, that is played in the overworld, when it is first entered.
+        """
+
+        self.music_arrival_index_address = 0x0
+        self.music_arrival_index = 0x0
+        """
+        The index of the music theme, that is played in the overworld, after reentering the level, e.g. after dying. Not
+        sure why it is called Arrival in the disassembly.
         """
 
         super(WorldMapData, self).__init__(rom)
@@ -321,6 +329,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.toad_warp_item_address = ToadShop_Objects + OFFSET_SIZE * self.index
 
         self.music_index_address = World_BGM + self.index
+        self.music_arrival_index_address = World_BGM_Arrival + self.index
 
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
@@ -397,6 +406,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.toad_warp_item = self._rom.little_endian(self.toad_warp_item_address)
 
         self.music_index = self._rom.int(self.music_index_address)
+        self.music_arrival_index = self._rom.int(self.music_arrival_index_address)
 
     def write_back(self, rom: Optional[Rom] = None):
         if rom is None:
@@ -496,6 +506,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         rom.write_little_endian(self.toad_warp_item_address, self.toad_warp_item)
 
         rom.write(self.music_index_address, self.music_index)
+        rom.write(self.music_arrival_index_address, self.music_arrival_index)
 
     @property
     def fortress_fx_indexes_start_address(self):
