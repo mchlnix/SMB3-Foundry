@@ -1,17 +1,15 @@
+from itertools import product
+
 from PySide6.QtCore import Qt, Signal, SignalInstance
 from PySide6.QtGui import QIcon, QImage, QPixmap
 from PySide6.QtWidgets import QComboBox, QCompleter, QWidget
 
+from foundry.game import should_be_placeable
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects import (
-    EnemyItem,
-    EnemyItemFactory,
-    LevelObject,
-    LevelObjectFactory,
-    get_minimal_icon_object,
-)
+from foundry.game.gfx.objects import EnemyItem, EnemyItemFactory, Jump, LevelObject, LevelObjectFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE, MIN_DOMAIN
+from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
+from smb3parse.util import apply
 
 
 class ObjectDropdown(QComboBox):
@@ -91,43 +89,32 @@ class ObjectDropdown(QComboBox):
             return
 
         # adds level objects
-        for domain in range(MIN_DOMAIN, MAX_DOMAIN + 1):
-            for static_object_id in range(0, 0x10):
-                level_object = self._object_factory.from_properties(
-                    domain, static_object_id, x=0, y=0, length=1, index=0
-                )
+        domains = range(MAX_DOMAIN + 1)
+        object_ids = list(range(0x00, 0x10)) + list(range(0x10, MAX_ID_VALUE, 0x10))
 
-                if isinstance(
-                    level_object := get_minimal_icon_object(level_object),
-                    (LevelObject, EnemyItem),
-                ):
-                    self._add_item(level_object)
+        level_objects = [
+            self._object_factory.from_properties(domain, obj_index, 0, 0, None, 0)
+            for domain, obj_index in product(domains, object_ids)
+        ]
 
-            for expanding_object_id in range(0x10, MAX_ID_VALUE, 0x10):
-                level_object = self._object_factory.from_properties(
-                    domain, expanding_object_id, x=0, y=0, length=1, index=0
-                )
+        valid_level_objects = filter(should_be_placeable, level_objects)
 
-                level_object = get_minimal_icon_object(level_object)
-
-                self._add_item(level_object)
+        apply(self._add_item, valid_level_objects)
 
         # insert visual separator between level objects and enemies/items
         self.insertSeparator(self.count())
 
         # adds enemies and items
-        factory = EnemyItemFactory(object_factory.object_set, 0)
+        factory = EnemyItemFactory(object_factory.object_set)
 
-        for obj_index in range(MAX_ENEMY_ITEM_ID + 1):
-            enemy_item = factory.from_properties(obj_index, x=0, y=0)
+        enemy_items = map(factory.from_properties, range(MAX_ENEMY_ITEM_ID + 1))
 
-            self._add_item(enemy_item)
+        valid_enemy_items = filter(should_be_placeable, enemy_items)
 
-    def _add_item(self, level_object: InLevelObject):
-        if not isinstance(level_object, (LevelObject, EnemyItem)):
-            return
+        apply(self._add_item, valid_enemy_items)
 
-        if level_object.name in ["MSG_CRASH", "MSG_NOTHING", "MSG_POINTER"]:
+    def _add_item(self, level_object: Jump | LevelObject | EnemyItem):
+        if not should_be_placeable(level_object):
             return
 
         icon = QIcon(QPixmap(self._resize_bitmap(level_object.as_image())))
