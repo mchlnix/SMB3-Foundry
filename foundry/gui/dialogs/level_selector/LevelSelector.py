@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QDialog,
     QGridLayout,
     QLabel,
+    QMessageBox,
     QPushButton,
     QTabWidget,
     QVBoxLayout,
@@ -17,7 +18,11 @@ from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.data_points import LevelPointerData
 from smb3parse.levels import WORLD_COUNT
-from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.objects.object_set import (
+    MUSHROOM_OBJECT_SET,
+    SPADE_BONUS_OBJECT_SET,
+    WORLD_MAP_OBJECT_SET,
+)
 
 from .found_level_list import FoundLevelWidget
 from .overworld_selection_map import WorldMapLevelSelect
@@ -181,6 +186,14 @@ class LevelSelector(QDialog):
 
     def _on_ok(self, _=None):
         if self.object_set_dropdown.currentIndex() == WORLD_MAP_OBJECT_SET:
+            return
+
+        if self.object_set_dropdown.currentIndex() in (MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET):
+            QMessageBox.warning(
+                self,
+                "No can do",
+                "Spade and mushroom house levels are currently not supported, and can't be edited.",
+            )
             return
 
         self.object_set = self.object_set_dropdown.currentIndex()

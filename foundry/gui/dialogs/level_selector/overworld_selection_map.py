@@ -2,18 +2,14 @@ from contextlib import suppress
 
 from PySide6.QtCore import QMargins, QSize, Signal, SignalInstance
 from PySide6.QtGui import QMouseEvent
-from PySide6.QtWidgets import QMessageBox, QScrollArea, QScrollBar, QSizePolicy
+from PySide6.QtWidgets import QScrollArea, QScrollBar, QSizePolicy
 
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.settings import Settings
 from foundry.gui.visualization.world.WorldView import WorldView
 from smb3parse.data_points import LevelPointerData, Position
-from smb3parse.objects.object_set import (
-    MUSHROOM_OBJECT_SET,
-    SPADE_BONUS_OBJECT_SET,
-    WORLD_MAP_OBJECT_SET,
-)
+from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
 class WorldMapLevelSelect(QScrollArea):
@@ -81,15 +77,6 @@ class WorldMapLevelSelect(QScrollArea):
 
         with suppress(ValueError):
             if (level_pointer := self.world.level_pointer_at(x, y)) is None:
-                return
-
-            if level_pointer.data.object_set in [MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
-                QMessageBox.warning(
-                    self,
-                    "No can do",
-                    "Spade and mushroom house levels are currently not supported, when getting a level address.",
-                )
-                event.accept()
                 return
 
             level_signal.emit(self.world.level_name_at_position(x, y), level_pointer.data)

@@ -41,15 +41,14 @@ from scribe.gui.commands import (
     SetSpriteType,
 )
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse.constants import (
-    TILE_MUSHROOM_HOUSE_1,
-    TILE_MUSHROOM_HOUSE_2,
-    TILE_NAMES,
-    TILE_SPADE_HOUSE,
-)
+from smb3parse.constants import TILE_NAMES
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_HEIGHT
-from smb3parse.objects.object_set import OBJECT_SET_NAMES
+from smb3parse.objects.object_set import (
+    MUSHROOM_OBJECT_SET,
+    OBJECT_SET_NAMES,
+    SPADE_BONUS_OBJECT_SET,
+)
 
 
 class WorldView(MainView):
@@ -241,18 +240,10 @@ class WorldView(MainView):
         if not self.world.point_in(x, y):
             return False
 
-        try:
-            # TODO make this check based on the object set of the level pointer, not the tile
-            if self.world.tile_at(x, y) in [
-                TILE_SPADE_HOUSE,
-                TILE_MUSHROOM_HOUSE_1,
-                TILE_MUSHROOM_HOUSE_2,
-            ]:
-                return False
-        except ValueError:
+        if (level_pointer := self.world.level_pointer_at(x, y)) is None:
             return False
 
-        if (level_pointer := self.world.level_pointer_at(x, y)) is None:
+        if level_pointer.data.object_set in (MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET):
             return False
 
         if self.read_only:
