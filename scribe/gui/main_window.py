@@ -202,7 +202,7 @@ class ScribeMainWindow(MainWindow):
 
     def _on_world_order_changed(self):
         """If the world order was changed through the world info dialog, change the selected world in the world menu."""
-        new_world_index = self.level_ref.level.world.internal_world_map.data.index
+        new_world_index = self.level_ref.level.internal_world_map.data.index
 
         self.world_menu.actions()[new_world_index].setChecked(True)
 
