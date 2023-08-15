@@ -58,6 +58,8 @@ class _FoundLevelTable(TableWidget):
         self.setSortingEnabled(True)
         self.setMouseTracking(True)
 
+        self.setEditTriggers(self.EditTrigger.NoEditTriggers)
+
         self._levels = levels
         self._last_checked_level_index = -1
         """The index of the last level we generated a thumbnail for."""
