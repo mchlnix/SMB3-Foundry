@@ -111,7 +111,7 @@ def settings():
 
 
 @pytest.mark.parametrize("world_info", world_data, ids=world_test_name)
-def test_world(world_info, settings, qtbot):
+def test_world(world_info, settings, rom, qtbot):
     level_ref = LevelRef()
 
     show_border = world_info[-1]
@@ -137,7 +137,7 @@ def test_world(world_info, settings, qtbot):
 
 
 @pytest.mark.parametrize("level_info", level_data, ids=level_test_name)
-def test_level(level_info, settings, qtbot):
+def test_level(level_info, settings, rom, qtbot):
     *level_info, transparent = level_info
     level_ref = LevelRef()
     level_ref.load_level(*level_info)
