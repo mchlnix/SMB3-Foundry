@@ -50,6 +50,10 @@ class FoundLevelWidget(QWidget):
     def object_set_number(self):
         return self._found_levels[self.level_table.level_index].object_set_number
 
+    @property
+    def world_number(self):
+        return self._found_levels[self.level_table.level_index].world_number
+
 
 class _FoundLevelTable(TableWidget):
     def __init__(self, parent, levels: list[FoundLevel]):

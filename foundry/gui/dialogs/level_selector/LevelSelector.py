@@ -181,6 +181,9 @@ class LevelSelector(QDialog):
             self._found_level_widget.level_address,
             self._found_level_widget.enemy_address,
         )
+
+        self.world_index = self._found_level_widget.world_number
+
         self.button_ok.setEnabled(True)
         self.button_ok.setFocus()
 
