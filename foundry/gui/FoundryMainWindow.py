@@ -352,7 +352,7 @@ class FoundryMainWindow(MainWindow):
 
         self.delete_shortcut = QShortcut(QKeySequence(Qt.Key.Key_Delete), self, self.remove_selected_objects)
 
-        QShortcut(QKeySequence(Qt.Key.Key_Control | Qt.Key.Key_X), self, self._cut_objects)
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_X), self, self._cut_objects)
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_C), self, self._copy_objects)
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_V), self, self._paste_objects)
 
