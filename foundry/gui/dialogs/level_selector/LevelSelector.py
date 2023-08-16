@@ -82,8 +82,8 @@ class LevelSelector(QDialog):
 
         if ROM.additional_data.found_levels:
             self._found_level_widget = FoundLevelWidget()
-            self._found_level_widget.level_table.itemDoubleClicked.connect(self._on_ok)
             self._found_level_widget.level_table.itemSelectionChanged.connect(self._on_found_level_selected)
+            self._found_level_widget.level_table.itemDoubleClicked.connect(self._on_ok)
 
             self.source_selector.addTab(self._found_level_widget, "Found Levels")
             self.source_selector.setTabIcon(tab_index, icon("list.svg"))
