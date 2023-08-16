@@ -2,6 +2,7 @@ import json
 import urllib.error
 import urllib.request
 from functools import lru_cache
+from http.client import IncompleteRead
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
@@ -82,7 +83,10 @@ def get_latest_version_name(timeout: int = 10) -> str:
     except urllib.error.URLError as ue:
         raise ValueError(f"Network error {ue}")
 
-    data = request.read()
+    try:
+        data = request.read()
+    except IncompleteRead as icr:
+        raise ValueError("Read corrupted data from the internet.") from icr
 
     try:
         json_data = json.loads(data)
