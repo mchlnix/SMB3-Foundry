@@ -29,7 +29,7 @@ def main(path_to_rom):
     if auto_save_rom_path.exists():
         result = AutoSaveDialog().exec()
 
-        if result == QMessageBox.AcceptRole:
+        if result == QMessageBox.DialogCode.Accepted:
             path_to_rom = auto_save_rom_path
 
             QMessageBox.information(
