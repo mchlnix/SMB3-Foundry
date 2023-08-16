@@ -91,6 +91,9 @@ class ObjectSet:
 
         return self._ending_graphic_index
 
+    def __repr__(self):
+        return f"ObjectSet({self.number}), {self.name}"
+
 
 # TODO this could be read out of the ROM see LoadLevel_EndGoalDecoSquare
 _object_set_to_ending_graphic_index = {

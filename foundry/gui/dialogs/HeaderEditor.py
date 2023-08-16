@@ -324,7 +324,9 @@ class HeaderEditor(CustomDialog):
             self._set_level_attr("enemy_palette_index", new_value)
 
         elif spinner == self.level_pointer_spinner and new_value != self.level.header.jump_level_offset:
-            self.undo_stack.push(SetNextAreaObjectAddress(self.level, self.level.object_set.level_offset + new_value))
+            self.undo_stack.push(
+                SetNextAreaObjectAddress(self.level, self.level.header.jump_object_set.level_offset + new_value)
+            )
 
         elif spinner == self.enemy_pointer_spinner and new_value != self.level.header.jump_enemy_offset:
             self.undo_stack.push(SetNextAreaEnemyAddress(self.level, ENEMY_BASE_OFFSET + new_value))
