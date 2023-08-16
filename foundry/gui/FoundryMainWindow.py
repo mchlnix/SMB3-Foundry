@@ -516,6 +516,8 @@ class FoundryMainWindow(MainWindow):
 
         insta_player.skip_title_screen()
 
+        insta_player.skip_world_info_box()
+
         save_all_palette_groups(temp_rom)
 
         temp_rom.save_to(path_to_temp_rom)

@@ -471,6 +471,7 @@ class ObjectRenderer:
 
                 left = fill_block
                 right = [BLANK]
+
             elif self._object.orientation == GeneratorType.DIAG_DOWN_LEFT:
                 fill_block = self._object.blocks[-1:]
                 slopes = self._object.blocks[0:-1]

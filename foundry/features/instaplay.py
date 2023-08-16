@@ -2,6 +2,7 @@ from foundry.game.level.Level import Level
 from foundry.gui.dialogs.SettingsDialog import PowerupEntry
 from smb3parse.constants import (
     BASE_OFFSET,
+    LT0,
     PAGE_A000_OFFSET,
     POWERUP_ADDITION_PWING,
     POWERUP_ADDITION_STARMAN,
@@ -9,6 +10,7 @@ from smb3parse.constants import (
     TILE_LEVEL_1,
     Title_DebugMenu,
     Title_PrepForWorldMap,
+    WorldIntro_BoxTimer_NoSym,
 )
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.levels.world_map import WorldMap
@@ -116,6 +118,13 @@ class InstaPlayer:
         self.rom.write(title_screen_state_injection_abs + 1, title_screen_state_after_player_selection)
         self.rom.write(title_screen_state_injection_abs + 2, STY_RAM)
         self.rom.write(title_screen_state_injection_abs + 3, ram_title_screen_address)
+
+    def skip_world_info_box(self):
+        world_info_popup_duration_address_1 = WorldIntro_BoxTimer_NoSym + 6
+        self.rom.write(world_info_popup_duration_address_1, 0x01)
+
+        world_info_popup_duration_address_2 = LT0 + 8
+        self.rom.write(world_info_popup_duration_address_2, 0x01)
 
 
 def _set_ram_value(value: int, ram_address) -> bytearray:
