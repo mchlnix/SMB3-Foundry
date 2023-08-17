@@ -14,6 +14,9 @@ from smb3parse.util import hex_int
 from smb3parse.util.parser.cpu import NesCPU
 from smb3parse.util.rom import Rom
 
+_DEFAULT_LEVEL_PARSING_MAX_STEPS = 1_000_000
+"""On average it takes 35k steps to parse a stock level, longest was ~160k steps."""
+
 
 @dataclass
 class FoundLevel:
@@ -92,8 +95,8 @@ class FoundLevelRecord:
 
 
 def gen_levels_in_rom(
-    rom: Rom,
-) -> Generator[tuple[int, int], bool, tuple[defaultdict, dict[int, FoundLevel]]]:
+    rom: Rom, max_steps=_DEFAULT_LEVEL_PARSING_MAX_STEPS
+) -> Generator[tuple[int, int], bool, tuple[dict, dict[int, FoundLevel]]]:
     levels_by_address: dict[int, FoundLevel] = {}
 
     start = time.time()
@@ -215,9 +218,13 @@ def gen_levels_in_rom(
                 if should_stop:
                     break
 
-                parsed_level = NesCPU(rom).load_from_address(
-                    record.object_set, record.level_address, record.enemy_address
-                )
+                try:
+                    parsed_level = NesCPU(rom).load_from_address(
+                        record.object_set, record.level_address, record.enemy_address, max_steps
+                    )
+                except ValueError as ve:
+                    print(ve)
+                    break
 
                 found_level = FoundLevel(
                     [record.level_address_offset],

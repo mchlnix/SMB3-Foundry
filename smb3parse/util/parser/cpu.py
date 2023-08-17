@@ -1,5 +1,4 @@
 """First draft of a parser, emulating the 6502 processor of the NES and letting the ROM generate the level."""
-
 from py65.devices import mpu6502
 from py65.disassembler import Disassembler
 
@@ -72,7 +71,7 @@ class NesCPU(mpu6502.MPU):
         if self.instruct[0xA9] != NesCPU.new_inst_0xa9:
             self.instruct[0xA9] = NesCPU.new_inst_0xa9
 
-    def load_from_world_map(self, world: int, pos: Position) -> ParsedLevel:
+    def load_from_world_map(self, world: int, pos: Position, max_steps=-1) -> ParsedLevel:
         self.start_pc = ROM_Level_Load_Entry
 
         self.memory[MEM_Player_Current] = 0  # Mario
@@ -82,9 +81,11 @@ class NesCPU(mpu6502.MPU):
         self.memory[MEM_Player_X] = pos.x << 4
         self.memory[MEM_Player_Y] = pos.y << 4
 
-        return self._load_level()
+        return self._load_level(max_steps)
 
-    def load_from_address(self, object_set_num: int, level_address: int, enemy_address: int) -> ParsedLevel:
+    def load_from_address(
+        self, object_set_num: int, level_address: int, enemy_address: int, max_steps=-1
+    ) -> ParsedLevel:
         self.start_pc = ROM_LevelLoad_By_TileSet
 
         object_set_offset = self.rom.int(PAGE_A000_ByTileset + object_set_num) * 0x2000 - 0xA000
@@ -102,7 +103,7 @@ class NesCPU(mpu6502.MPU):
         self.memory.load_a000_page(self.a000_bank)
         self.memory.load_c000_page(self.c000_bank)
 
-        level = self._load_level()
+        level = self._load_level(max_steps)
 
         enemy_address += 1
 
@@ -115,14 +116,14 @@ class NesCPU(mpu6502.MPU):
 
         return level
 
-    def _load_level(self) -> ParsedLevel:
+    def _load_level(self, max_steps=-1) -> ParsedLevel:
         self.memory.add_write_observer(
             range(MEM_Screen_Memory_Start, MEM_Screen_Memory_End),
             self._screen_memory_watcher,
         )
 
         self.reset()
-        self.run_until(ROM_EndObjectParsing)
+        self.run_until(ROM_EndObjectParsing, max_steps)
         self._maybe_finish_parsing_last_object()
 
         return ParsedLevel(
@@ -146,10 +147,15 @@ class NesCPU(mpu6502.MPU):
         self.objects[-1].tiles_in_level.append((address, value))
 
     def run_until(self, address: int, max_steps: int = -1):
-        while self.pc != address and self.step_count != max_steps:
+        while self.pc != address:
             self.step()
 
+            if self.step_count > max_steps:
+                raise ValueError(f"Overstepped max steps value of {max_steps}.")
+
     def step(self):
+        self.step_count += 1
+
         if self.pc == 0x98EE:
             self._maybe_finish_parsing_last_object()
             parsed_object = self._start_parsing_next_object()
@@ -185,8 +191,6 @@ class NesCPU(mpu6502.MPU):
             color = PINK
         else:
             color = YELLOW
-
-        self.step_count += 1
 
         ins_bytes = apply(hex, self.memory[self.pc : self.pc + ins_len])
         op = self._replace_address_with_label(self._replace_register_values(op), color)
