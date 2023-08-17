@@ -209,7 +209,7 @@ class HeaderEditor(CustomDialog):
         self.next_area_object_set_dropdown.addItems(OBJECT_SET_ITEMS)
         self.next_area_object_set_dropdown.activated.connect(self.on_combo)
 
-        level_select_button = QPushButton("Set from Level")
+        level_select_button = QPushButton("Set from Level Selector")
         level_select_button.clicked.connect(self._set_jump_destination)
 
         form = QFormLayout()
