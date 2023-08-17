@@ -307,8 +307,11 @@ class FoundryMainWindow(MainWindow):
 
         self.menu_toolbar.addSeparator()
 
-        self.menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out").triggered.connect(self.level_view.zoom_out)
-        self.menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In").triggered.connect(self.level_view.zoom_in)
+        self.zoom_out_action = self.menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
+        self.zoom_out_action.triggered.connect(self.level_view.zoom_out)
+
+        self.zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
+        self.zoom_in_action.triggered.connect(self.level_view.zoom_in)
 
         self.menu_toolbar.addSeparator()
 
@@ -1043,11 +1046,15 @@ class FoundryMainWindow(MainWindow):
             # entries in file menu
             self.file_menu.open_m3l_action,
             self.file_menu.open_level_asm_action,
+            self.file_menu.import_enemy_asm_action,
             self.file_menu.save_rom_action,
             self.file_menu.save_rom_as_action,
             # entry in level menu
             self.select_level_action,
+            self.new_level_action,
         ]
+
+        rom_elements.extend(self._rom_menu.actions())
 
         # actions and widgets, that depend on whether a level is loaded or not
         level_elements = [
@@ -1056,7 +1063,8 @@ class FoundryMainWindow(MainWindow):
             self.file_menu.save_level_asm_action,
             self.file_menu.export_enemy_asm_action,
             # top toolbar
-            self.menu_toolbar,
+            self.zoom_out_action,
+            self.zoom_in_action,
             # other gui elements
             self.level_view,
             self.level_toolbar,
@@ -1064,12 +1072,9 @@ class FoundryMainWindow(MainWindow):
         ]
 
         level_elements.extend(self.level_menu.actions())
-        level_elements.remove(self.undo_action)
-        level_elements.remove(self.redo_action)
         level_elements.remove(self.select_level_action)
         level_elements.remove(self.new_level_action)
 
-        level_elements.extend(self._rom_menu.actions())
         level_elements.extend(self.view_menu.actions())
 
         for gui_element in rom_elements:
@@ -1077,6 +1082,8 @@ class FoundryMainWindow(MainWindow):
 
         for gui_element in level_elements:
             gui_element.setEnabled(ROM.is_loaded() and self.level_ref.fully_loaded)
+
+        self.file_menu.import_enemy_asm_action.setEnabled(bool(self.level_ref))
 
         if self.level_ref:
             self.reload_action.setEnabled(self.level_ref.level.attached_to_rom)
