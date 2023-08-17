@@ -1,6 +1,7 @@
 import json
 from collections import defaultdict
 from operator import attrgetter
+from typing import TYPE_CHECKING
 
 from foundry.game.level import (
     EMPTY_ENEMY_DATA,
@@ -17,9 +18,13 @@ from smb3parse.constants import (
     OFFSET_SIZE,
     PAGE_A000_OFFSET,
 )
+from smb3parse.levels import HEADER_LENGTH
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
+
+if TYPE_CHECKING:
+    from foundry.game.level.Level import Level
 
 _ENEMY_BANK_START = ENEMY_DATA_BANK_INDEX * PRG_BANK_SIZE + BASE_OFFSET
 
@@ -147,6 +152,113 @@ class LevelOrganizer:
 
         self.old_level_address_to_new: dict[LevelAddress, LevelAddress] = {}
         self.old_enemy_address_to_new: dict[EnemyItemAddress, EnemyItemAddress] = {}
+
+    def update_level_info(self, level: "Level"):
+        """
+        Syncs changes made to a 'normal' Level to its Found Level and back, after rearranging Levels based on the
+        changes.
+        """
+        # 1. Update the level and enemy data sizes of the current level
+        self._update_level_sizes(level)
+
+        # 2. Rearrange all levels based on new sizes
+        self.rearrange_levels()
+        self.rearrange_enemies()
+
+        # 3. Update level and enemy addresses after rearranging
+        self._update_level_addresses(level)
+
+        # 4. Update jump destination addresses after rearranging
+        self._update_jump_destination(level)
+
+    def _get_found_level(self, level: "Level"):
+        if not level.attached_to_rom:
+            raise ValueError("This level is not attached to the ROM. Please place it somewhere on a world map.")
+
+        current_level = self._found_level_from_address(level.header_offset)
+
+        if current_level is None:
+            raise LookupError(f"Current Level {level.header_offset:x} could not be found in ROM. Attach it first.")
+
+        return current_level
+
+    def _found_level_from_address(self, level_address: int):
+        try:
+            return next(filter(lambda lvl: lvl.level_offset == level_address, self.levels))
+
+        except StopIteration:
+            return None
+
+    def _update_level_sizes(self, level: "Level"):
+        """
+        Given Level might have changed in size, so this needs to be synced with its Found Level, before rearranging.
+        """
+
+        found_level = self._get_found_level(level)
+
+        found_level.object_data_length = HEADER_LENGTH + level.current_object_size()
+        found_level.enemy_data_length = level.current_enemies_size()
+
+    def _update_level_addresses(self, level: "Level"):
+        """After rearranging levels, the addresses for this normal Level might have changed, so update them."""
+
+        found_level = self._get_found_level(level)
+
+        assert found_level.level_offset in self.old_level_address_to_new, (
+            hex(found_level.level_offset),
+            self.old_level_address_to_new,
+        )
+        assert found_level.enemy_offset in self.old_enemy_address_to_new
+
+        found_level.level_offset = self.old_level_address_to_new[found_level.level_offset]
+        found_level.enemy_offset = self.old_enemy_address_to_new[found_level.enemy_offset]
+
+        level.set_addresses(found_level.level_offset, found_level.enemy_offset)
+
+    def _update_jump_destination(self, level: "Level"):
+        self._disconnect_old_jump_destination(level)
+        self._connect_new_jump_destination_to_level(level)
+
+    def _disconnect_old_jump_destination(self, level: "Level"):
+        """Find whatever Found Levels think they are the given Levels Jump Destinations and disconnect them."""
+
+        jump_level_offset_address = level.header_offset
+        jump_enemy_offset_address = level.header_offset + OFFSET_SIZE
+
+        for found_level in self.levels:
+            if jump_level_offset_address in found_level.level_offset_positions:
+                found_level.level_offset_positions.remove(jump_level_offset_address)
+
+            if jump_enemy_offset_address in found_level.enemy_offset_positions:
+                found_level.enemy_offset_positions.remove(jump_enemy_offset_address)
+
+    def _connect_new_jump_destination_to_level(self, level: "Level"):
+        """Find the Found Level for the given Levels Jump Destination and connect them together."""
+
+        if level.header.jump_level_offset and level.header.jump_level_address not in self.old_level_address_to_new:
+            raise LookupError(
+                f"Jump Destination Level Address in Header '0x{level.header.jump_level_address:X}' does not point to"
+                " any known level"
+            )
+        if level.header.jump_enemy_offset and level.header.jump_enemy_address not in self.old_enemy_address_to_new:
+            raise LookupError(
+                f"Jump Destination Enemy Address in Header '0x{level.header.jump_enemy_address:X}' does not point to"
+                " any known enemy data group"
+            )
+
+        jump_destination_found_level = self._found_level_from_address(level.header.jump_level_address)
+
+        if jump_destination_found_level is None:
+            raise LookupError(f"Jump Level Destination {level.header.jump_level_address:x} could not be found in ROM.")
+
+        jump_destination_found_level.level_offset_positions.append(level.header_offset)
+        jump_destination_found_level.enemy_offset_positions.append(level.header_offset + OFFSET_SIZE)
+
+        if level.header.jump_level_offset != 0x0:
+            self.next_area_objects = self.old_level_address_to_new[level.header.jump_level_address]
+
+        if level.header.jump_enemy_offset != 0x0:
+            self.next_area_enemies = self.old_enemy_address_to_new[level.header.jump_enemy_address]
 
     def rearrange_levels(self):
         # 0.1 Sort Levels by bank
