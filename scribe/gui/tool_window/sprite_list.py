@@ -78,11 +78,19 @@ class SpriteList(TableWidget):
         self.blockSignals(True)
 
         for index, sprite in enumerate(self.world.sprites):
-            sprite_type = QTableWidgetItem(MAPOBJ_NAMES[sprite.data.type])
-            sprite_type.setIcon(QPixmap(MAP_OBJ_SPRITES[sprite.data.type].scaled(self.iconSize())))
+            sprite_name = MAPOBJ_NAMES[sprite.data.type] if sprite.data.type in MAPOBJ_NAMES else str(sprite.data.type)
+            sprite_type = QTableWidgetItem(sprite_name)
 
-            item_type = QTableWidgetItem(MAPITEM_NAMES[sprite.data.item])
-            item_type.setIcon(QPixmap(MAP_ITEM_SPRITES[sprite.data.item].scaled(self.iconSize())))
+            if sprite.data.type in MAP_OBJ_SPRITES:
+                sprite_type.setIcon(QPixmap(MAP_OBJ_SPRITES[sprite.data.type].scaled(self.iconSize())))
+
+            item_name = MAPITEM_NAMES[sprite.data.item] if sprite.data.item in MAPITEM_NAMES else str(sprite.data.item)
+
+            item_type = QTableWidgetItem(item_name)
+
+            if sprite.data.item in MAP_ITEM_SPRITES:
+                item_type.setIcon(QPixmap(MAP_ITEM_SPRITES[sprite.data.item].scaled(self.iconSize())))
+
             pos = QTableWidgetItem(f"Screen {sprite.data.screen}: x={sprite.data.x}, y={sprite.data.y}")
 
             self._set_map_tile_as_icon(pos, sprite.get_position())
