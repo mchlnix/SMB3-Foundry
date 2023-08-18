@@ -1,9 +1,12 @@
+from PySide6.QtCore import SignalInstance
 from PySide6.QtWidgets import QSpinBox
 
 SPINNER_MAX_VALUE = 0xFF_FF_FF  # arbitrary; 16,7 MB
 
 
 class Spinner(QSpinBox):
+    valueChanged: SignalInstance
+
     def __init__(self, parent=None, maximum=SPINNER_MAX_VALUE, base=16):
         super(Spinner, self).__init__(parent)
 

@@ -124,7 +124,7 @@ class HeaderEditor(CustomDialog):
         check_box_widget.setLayout(check_box_layout)
 
         form = QFormLayout()
-        form.setFormAlignment(Qt.AlignCenter)
+        form.setFormAlignment(Qt.AlignmentFlag.AlignCenter)
 
         form.addRow("Level Length: ", self.length_dropdown)
         form.addRow("Music: ", self.music_dropdown)
@@ -153,7 +153,7 @@ class HeaderEditor(CustomDialog):
         self.action_dropdown.activated.connect(self.on_combo)
 
         form = QFormLayout()
-        form.setFormAlignment(Qt.AlignCenter)
+        form.setFormAlignment(Qt.AlignmentFlag.AlignCenter)
 
         form.addRow("Starting X: ", self.x_position_dropdown)
         form.addRow("Starting Y: ", self.y_position_dropdown)
@@ -177,7 +177,7 @@ class HeaderEditor(CustomDialog):
         self.graphic_set_dropdown.activated.connect(self.on_combo)
 
         form = QFormLayout()
-        form.setFormAlignment(Qt.AlignCenter)
+        form.setFormAlignment(Qt.AlignmentFlag.AlignCenter)
 
         form.addRow("Object Palette: ", self.object_palette_spinner)
         form.addRow("Enemy Palette: ", self.enemy_palette_spinner)
@@ -213,7 +213,7 @@ class HeaderEditor(CustomDialog):
         level_select_button.clicked.connect(self._set_jump_destination)
 
         form = QFormLayout()
-        form.setFormAlignment(Qt.AlignCenter)
+        form.setFormAlignment(Qt.AlignmentFlag.AlignCenter)
 
         form.addRow("Offset of Level Objects: ", self.level_pointer_spinner)
         form.addRow("Address of Level Objects: ", self._level_address_label)
@@ -231,7 +231,7 @@ class HeaderEditor(CustomDialog):
 
         self.header_bytes_label = QLabel()
 
-        main_layout.addWidget(self.header_bytes_label, alignment=Qt.AlignCenter)
+        main_layout.addWidget(self.header_bytes_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.update()
 
@@ -282,7 +282,7 @@ class HeaderEditor(CustomDialog):
         if self.level:
             level_selector.goto_world(self.level.world)
 
-        level_was_selected = level_selector.exec() == QDialog.Accepted
+        level_was_selected = level_selector.exec() == QDialog.DialogCode.Accepted
 
         if not level_was_selected:
             return
