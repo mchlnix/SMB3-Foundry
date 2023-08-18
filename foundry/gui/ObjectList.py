@@ -76,19 +76,24 @@ class ObjectList(QListWidget):
     def update_content(self):
         level_objects = self.level_ref.get_all_objects()
 
-        labels = [obj.name for obj in level_objects]
-
         self.blockSignals(True)
 
-        self.clear()
-
-        self.addItems(labels)
-
         for index, level_object in enumerate(level_objects):
-            item = self.item(index)
+            # insert potentially new items
+            if (item := self.item(index)) is None:
+                self.insertItem(index, level_object.name)
+                item = self.item(index)
 
-            item.setData(Qt.ItemDataRole.UserRole, level_object)
+            # update level objects name and associated data, if it has changed (moved, deleted, added)
+            if level_object != item.data(Qt.ItemDataRole.UserRole):
+                item.setText(level_object.name)
+                item.setData(Qt.ItemDataRole.UserRole, level_object)
+
             item.setSelected(level_object.selected)
+
+        # in case of object deletion, remove all unnecessary objects
+        while self.count() > len(level_objects):
+            self.takeItem(self.count() - 1)
 
         self.blockSignals(False)
 
