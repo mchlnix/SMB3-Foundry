@@ -248,24 +248,39 @@ class LevelObject(InLevelObject):
         else:
             y = max(0, y)
 
-        x_diff = self.x_position - self.rendered_base_x
-        y_diff = self.y_position - self.rendered_base_y
+        # we move the rendered objects, so get the diff and apply it to the data position
+        dx = int(x) - self.rendered_base_x
+        dy = int(y) - self.rendered_base_y
 
-        self.rendered_base_x = int(x)
-        self.rendered_base_y = int(y)
-
-        self.x_position = self.rendered_base_x + x_diff
-        self.y_position = self.rendered_base_y + y_diff
+        self.x_position += dx
+        self.y_position += dy
 
         self._render()
+
+        if self.orientation in (GeneratorType.PYRAMID_TO_GROUND, GeneratorType.PYRAMID_2):
+            # rendered_base_x is dependent on the height, so after the initial render we need to adjust it based on that
+
+            dx = int(x) - self.rendered_base_x
+            self.x_position += dx
+
+            self._render()
 
     def move_by(self, dx: int, dy: int):
         new_x = self.rendered_base_x + dx
         new_y = self.rendered_base_y + dy
 
+        if dx == dy == 0:
+            return
+
         self.set_position(new_x, new_y)
 
     def get_position(self):
+        return self.rendered_base_x, self.rendered_base_y
+
+    def get_rendered_position(self):
+        return self.rendered_base_x, self.rendered_base_y
+
+    def get_data_position(self):
         return self.x_position, self.y_position
 
     def expands(self):

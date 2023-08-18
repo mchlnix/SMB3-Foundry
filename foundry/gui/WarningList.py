@@ -119,8 +119,8 @@ class WarningList(QWidget):
         for obj in level.objects:
             if obj.name == "MSG_CRASH" or "SMAS only" in obj.name:
                 self.warn(
-                    f"Object at {obj.get_position()} will likely cause the game to crash, when loading or on "
-                    f"screen.",
+                    f"Object at {obj.get_rendered_position()} will likely cause the game to crash, when loading "
+                    "or on screen.",
                     [obj],
                 )
 

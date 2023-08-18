@@ -51,7 +51,12 @@ class ObjectRenderer:
         self._object = level_object
 
         self.base_x: int = self._object.x_position
+        """
+        The left most point where blocks for this object are drawn. This is often the same as the x position, but in
+        pyramids for example, the x position describes the center, from which they grow outwards in both directions.
+        """
         self.base_y: int = self._object.y_position
+        """The upmost point where blocks for this object are drawn. This is often the same as the y position."""
 
         self._new_width: int = self._object.rendered_width
         self._new_height: int = self._object.rendered_height
@@ -59,9 +64,6 @@ class ObjectRenderer:
     def render(self):
         self._object.rendered_base_x = self.base_x
         self._object.rendered_base_y = self.base_y
-
-        self._object.rendered_width = self._new_width
-        self._object.rendered_height = self._new_height
 
         # if the object has not been added yet, stick with the one given in the constructor
         if self in self._object.objects_ref:
@@ -87,9 +89,6 @@ class ObjectRenderer:
             GeneratorType.PYRAMID_TO_GROUND,
             GeneratorType.PYRAMID_2,
         ]:
-            # since pyramids grow horizontally in both directions when extending
-            # we need to check for new ground every time it grows
-
             self._render_pyramids(blocks_to_draw)
 
         elif self._object.orientation == GeneratorType.ENDING:
@@ -414,8 +413,10 @@ class ObjectRenderer:
         # Mushroom/Fire flower/Star is categorized as an enemy
 
     def _render_pyramids(self, blocks_to_draw):
-        self.base_x += 1  # set the new base_x to the tip of the pyramid
+        # since pyramids grow horizontally in both directions when extending
+        # we need to check for new ground every time it grows
 
+        # base_x is set to the left block of the tip of the pyramid
         for y in range(self.base_y, self._object.ground_level):
             self._new_height = y - self.base_y
             self._new_width = 2 * self._new_height
@@ -428,8 +429,11 @@ class ObjectRenderer:
                     for obj in self._object.objects_ref[0 : self._object.index_in_level]
                 ]
             ):
+                print("Found object beneath", self._object.objects_ref[0 : self._object.index_in_level])
                 break
-        self.base_x -= self._new_width // 2
+
+        # the tip of a pyramid is 2 blocks, the x position is the left block, so subtract half the width minus 1
+        self.base_x = self._object.x_position - (self._new_width // 2 - 1)
 
         blank = self._object.blocks[0]
         left_slope = self._object.blocks[1]
