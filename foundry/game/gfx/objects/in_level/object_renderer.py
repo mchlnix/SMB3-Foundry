@@ -66,7 +66,7 @@ class ObjectRenderer:
         self._object.rendered_base_y = self.base_y
 
         # if the object has not been added yet, stick with the one given in the constructor
-        if self in self._object.objects_ref:
+        if self._object in self._object.objects_ref:
             self._object.index_in_level = self._object.objects_ref.index(self._object)
 
         blocks_to_draw: list[int] = []
@@ -416,20 +416,15 @@ class ObjectRenderer:
         # since pyramids grow horizontally in both directions when extending
         # we need to check for new ground every time it grows
 
-        # base_x is set to the left block of the tip of the pyramid
+        objects_before = self._object.objects_ref[0 : self._object.index_in_level]
+
         for y in range(self.base_y, self._object.ground_level):
             self._new_height = y - self.base_y
             self._new_width = 2 * self._new_height
 
             bottom_row = QRect(self.base_x, y, self._new_width, 1)
 
-            if any(
-                [
-                    bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
-                    for obj in self._object.objects_ref[0 : self._object.index_in_level]
-                ]
-            ):
-                print("Found object beneath", self._object.objects_ref[0 : self._object.index_in_level])
+            if any((bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top() for obj in objects_before)):
                 break
 
         # the tip of a pyramid is 2 blocks, the x position is the left block, so subtract half the width minus 1
