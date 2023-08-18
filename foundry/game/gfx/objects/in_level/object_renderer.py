@@ -53,8 +53,8 @@ class ObjectRenderer:
         self.base_x: int = self._object.x_position
         self.base_y: int = self._object.y_position
 
-        self._new_width: int = self._object.width
-        self._new_height: int = self._object.height
+        self._new_width: int = self._object.rendered_width
+        self._new_height: int = self._object.rendered_height
 
     def render(self):
         self._object.rendered_base_x = self.base_x

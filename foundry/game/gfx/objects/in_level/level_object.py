@@ -128,6 +128,9 @@ class LevelObject(InLevelObject):
         self.ending: EndType = EndType(object_data.ending)
         self.name = object_data.description
 
+        self.rendered_width = self.width
+        self.rendered_height = self.height
+
         self.blocks: list[int] = [int(block) for block in object_data.rom_object_design]
 
         self.block_cache = {}
