@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from foundry import icon
+from foundry import icon, make_macro
 from foundry.game.File import ROM
 from foundry.game.gfx.objects import EnemyItem
 from foundry.gui import label_and_widget
@@ -162,18 +162,16 @@ class PipePairMixin(SettingsMixin):
 
             self.level_ref.level.enemies.insert(0, self.original_pipe_item)
 
-            self.undo_stack.beginMacro("Disable Pipe Pair Exits")
-            self.undo_stack.push(RemoveObject(self.level_ref.level, self.original_pipe_item))
-            self.undo_stack.endMacro()
+            make_macro(
+                self.undo_stack, "Disable Pipe Pair Exits", RemoveObject(self.level_ref.level, self.original_pipe_item)
+            )
 
         elif pipe_was_enabled:
             assert current_pipe_item is not None
 
             self.level_ref.level.remove_object(current_pipe_item)
 
-            self.undo_stack.beginMacro("Enable Pipe Pair Exits")
-            self.undo_stack.push(AddObject(self.level_ref.level, current_pipe_item, 0))
-            self.undo_stack.endMacro()
+            make_macro(self.undo_stack, "Enable Pipe Pair Exits", AddObject(self.level_ref.level, current_pipe_item, 0))
 
         else:
             assert self.original_pipe_item is not None
@@ -190,12 +188,13 @@ class PipePairMixin(SettingsMixin):
                 assert self.original_pipe_item is not current_pipe_item
 
                 self.original_pipe_item.y_position = self.original_pipe_y_value
-                self.undo_stack.beginMacro(f"Pipe Pair Exits Index to {current_pipe_item.y_position:#x}")
 
-                self.undo_stack.push(RemoveObject(self.level_ref.level, self.original_pipe_item))
-                self.undo_stack.push(AddObject(self.level_ref.level, current_pipe_item))
-
-                self.undo_stack.endMacro()
+                make_macro(
+                    self.undo_stack,
+                    f"Pipe Pair Exits Index to {current_pipe_item.y_position:#x}",
+                    RemoveObject(self.level_ref.level, self.original_pipe_item),
+                    AddObject(self.level_ref.level, current_pipe_item),
+                )
 
         if self.pipe_data_changed:
             self.undo_stack.push(UpdatePipeData(self.pipe_datas))

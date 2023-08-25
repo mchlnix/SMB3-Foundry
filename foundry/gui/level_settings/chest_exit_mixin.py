@@ -3,6 +3,7 @@ from typing import Optional
 from PySide6.QtGui import QMouseEvent, QPixmap
 from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QVBoxLayout
 
+from foundry import make_macro
 from foundry.game.gfx.objects import EnemyItem
 from foundry.game.gfx.objects.world_map.sprite import MAP_ITEM_SPRITES
 from foundry.game.level.Level import Level
@@ -85,20 +86,17 @@ class ChestExitMixin(SettingsMixin):
 
         # was enabled
         if self.chest_end_checkbox.isChecked() and self.before.chest_exit is None:
-            self.undo_stack.beginMacro(f"Enable Chest Exit with '{chest_item_name}'")
-
             chest_exit_item = self.level.enemy_item_factory.from_properties(OBJ_CHEST_EXIT, 0, 0)
-            self.undo_stack.push(AddObject(self.level, chest_exit_item))
-            self.undo_stack.endMacro()
+
+            make_macro(
+                self.undo_stack, f"Enable Chest Exit with '{chest_item_name}'", AddObject(self.level, chest_exit_item)
+            )
 
         # was disabled
         elif self.before.chest_exit is not None and not self.chest_end_checkbox.isChecked():
             assert self.before.chest_exit is not None
 
-            self.undo_stack.beginMacro("Disabling Chest Exit")
-            self.undo_stack.push(RemoveObject(self.level, self.before.chest_exit))
-
-            self.undo_stack.endMacro()
+            make_macro(self.undo_stack, "Disabling Chest Exit", RemoveObject(self.level, self.before.chest_exit))
 
         # not item set
         elif item_index == 0:

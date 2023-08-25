@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from foundry import make_macro
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
@@ -299,15 +300,13 @@ class HeaderEditor(CustomDialog):
         enemy_address = level_selector.enemy_data_offset
         object_set_number = level_selector.object_set
 
-        self.undo_stack.beginMacro(
-            f"Set Next Area to {level_address:#x}/{enemy_address:#x}, {OBJECT_SET_NAMES[object_set_number]}"
+        make_macro(
+            self.undo_stack,
+            f"Set Next Area to {level_address:#x}/{enemy_address:#x}, {OBJECT_SET_NAMES[object_set_number]}",
+            SetNextAreaObjectSet(self.level, object_set_number),
+            SetNextAreaObjectAddress(self.level, level_address),
+            SetNextAreaEnemyAddress(self.level, enemy_address),
         )
-
-        self.undo_stack.push(SetNextAreaObjectSet(self.level, object_set_number))
-        self.undo_stack.push(SetNextAreaObjectAddress(self.level, level_address))
-        self.undo_stack.push(SetNextAreaEnemyAddress(self.level, enemy_address))
-
-        self.undo_stack.endMacro()
 
         self.update()
 
@@ -389,7 +388,7 @@ class HeaderEditor(CustomDialog):
             object_set_cmd = SetNextAreaObjectSet(self.level, new_index)
 
             # in case the level address changes based on the new object set, don't list that command separately
-            self.undo_stack.beginMacro(object_set_cmd.text())
+            make_macro(self.undo_stack, object_set_cmd.text())
             self.undo_stack.push(object_set_cmd)
 
             self.undo_stack.endMacro()

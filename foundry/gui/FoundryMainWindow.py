@@ -37,6 +37,7 @@ from foundry import (
     auto_save_m3l_path,
     auto_save_rom_path,
     icon,
+    make_macro,
 )
 from foundry.features.instaplay import CantFindFirstTile, InstaPlayer, LevelNotAttached
 from foundry.game.additional_data import LevelOrganizer
@@ -1116,14 +1117,14 @@ class FoundryMainWindow(MainWindow):
 
         old_jump = self.level_ref.level.jumps[index]
 
-        self.undo_stack.beginMacro(f"Editing {old_jump}")
-
-        self.undo_stack.push(RemoveJump(self.level_ref.level, index))
-        self.undo_stack.push(AddJump(self.level_ref.level, jump, index))
+        make_macro(
+            self.undo_stack,
+            f"Editing {old_jump}",
+            RemoveJump(self.level_ref.level, index),
+            AddJump(self.level_ref.level, jump, index),
+        )
 
         self.jump_list.item(index).setText(str(jump))
-
-        self.undo_stack.endMacro()
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.MiddleButton:

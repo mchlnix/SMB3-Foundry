@@ -3,6 +3,7 @@ from typing import Optional
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QVBoxLayout
 
+from foundry import make_macro
 from foundry.game.gfx.objects import EnemyItem
 from foundry.gui import label_and_widget
 from foundry.gui.commands import AddObject, RemoveObject
@@ -125,12 +126,12 @@ class AutoScrollMixin(SettingsMixin):
             if self.original_scroll_type != current_autoscroll_item.auto_scroll_type:
                 assert self.original_autoscroll_item is not current_autoscroll_item
 
-                self.undo_stack.beginMacro("Change Autoscroll Path")
-
-                self.undo_stack.push(RemoveObject(self.level_ref.level, self.original_autoscroll_item))
-                self.undo_stack.push(AddObject(self.level_ref.level, current_autoscroll_item, 0))
-
-                self.undo_stack.endMacro()
+                make_macro(
+                    self.undo_stack,
+                    "Change Autoscroll Path",
+                    RemoveObject(self.level_ref.level, self.original_autoscroll_item),
+                    AddObject(self.level_ref.level, current_autoscroll_item, 0),
+                )
 
         super(AutoScrollMixin, self).closeEvent(event)
 

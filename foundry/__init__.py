@@ -7,11 +7,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from PySide6.QtCore import QBuffer, QIODevice, QUrl
-from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, Qt
+from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, Qt, QUndoCommand, QUndoStack
 from PySide6.QtWidgets import QApplication, QMessageBox, QWidget
 
 from foundry.gui.settings import Settings
 from smb3parse.objects.object_set import DESERT_OBJECT_SET
+from smb3parse.util import apply
 
 if TYPE_CHECKING:
     from foundry.game.level import EnemyItemAddress, LevelAddress
@@ -148,3 +149,14 @@ def pixmap_to_base64(pixmap: QPixmap) -> str:
     image_data = bytes(buffer.data().toBase64()).decode()
 
     return image_data
+
+
+def make_macro(undo_stack: QUndoStack, title: str, *commands: QUndoCommand):
+    if not commands:
+        return
+
+    undo_stack.beginMacro(title)
+
+    apply(undo_stack.push, commands)
+
+    undo_stack.endMacro()
