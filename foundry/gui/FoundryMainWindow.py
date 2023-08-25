@@ -361,7 +361,9 @@ class FoundryMainWindow(MainWindow):
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_V), self, self._paste_objects)
 
         self.undo_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_Z)
-        self.redo_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_Z)
+        self.redo_action.setShortcuts(
+            [Qt.Modifier.CTRL | Qt.Key.Key_Y, Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_Z]
+        )
 
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_Plus), self, self.level_view.zoom_in)
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_Minus), self, self.level_view.zoom_out)
