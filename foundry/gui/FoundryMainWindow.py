@@ -1080,6 +1080,8 @@ class FoundryMainWindow(MainWindow):
         level_elements.extend(self.level_menu.actions())
         level_elements.remove(self.select_level_action)
         level_elements.remove(self.new_level_action)
+        level_elements.remove(self.undo_action)
+        level_elements.remove(self.redo_action)
 
         level_elements.extend(self.view_menu.actions())
 
