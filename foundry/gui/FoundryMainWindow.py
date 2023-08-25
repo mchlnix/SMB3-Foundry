@@ -781,7 +781,7 @@ class FoundryMainWindow(MainWindow):
 
             return
 
-        if not is_save_as and self._save_current_changes_to_file(pathname, set_new_path=True):
+        if self._save_current_changes_to_file(pathname, set_new_path=True) and not is_save_as:
             self.undo_stack.setClean()
 
         self.update_title()
