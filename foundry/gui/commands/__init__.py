@@ -199,6 +199,11 @@ class MoveObjects(QUndoCommand):
         self.level.data_changed.emit()
 
 
+class MoveObject(MoveObjects):
+    def __init__(self, level: Level, object_before: InLevelObject, object_after: InLevelObject):
+        super().__init__(level, [object_before], [object_after])
+
+
 class ResizeObjects(QUndoCommand):
     def __init__(
         self,
@@ -556,6 +561,11 @@ class RemoveObjects(QUndoCommand):
                 self.level.enemies.remove(obj)
 
         self.level.data_changed.emit()
+
+
+class RemoveObject(RemoveObjects):
+    def __init__(self, level: Level, in_level_object: InLevelObject):
+        super().__init__(level, [in_level_object])
 
 
 # Could maybe be replaced by a macro of remove and add object?

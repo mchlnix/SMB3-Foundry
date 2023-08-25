@@ -7,7 +7,7 @@ from foundry.game.gfx.objects import EnemyItem
 from foundry.game.gfx.objects.world_map.sprite import MAP_ITEM_SPRITES
 from foundry.game.level.Level import Level
 from foundry.gui import label_and_widget
-from foundry.gui.commands import AddObject, MoveObjects, RemoveObjects
+from foundry.gui.commands import AddObject, MoveObject, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from smb3parse.constants import (
     MAPITEM_MUSHROOM,
@@ -96,14 +96,14 @@ class ChestExitMixin(SettingsMixin):
             assert self.before.chest_exit is not None
 
             self.undo_stack.beginMacro("Disabling Chest Exit")
-            self.undo_stack.push(RemoveObjects(self.level, [self.before.chest_exit]))
+            self.undo_stack.push(RemoveObject(self.level, self.before.chest_exit))
 
             self.undo_stack.endMacro()
 
         # not item set
         elif item_index == 0:
             if self.before.chest_item is not None:
-                self.undo_stack.push(RemoveObjects(self.level, [self.before.chest_item]))
+                self.undo_stack.push(RemoveObject(self.level, self.before.chest_item))
 
         # item was changed/set
         elif self.before.item_index != item_index:
@@ -113,7 +113,7 @@ class ChestExitMixin(SettingsMixin):
                 before_move = self.before.chest_item.copy()
                 self.before.chest_item.y_position = item_index
 
-                self.undo_stack.push(MoveObjects(self.level, [before_move], [self.before.chest_item]))
+                self.undo_stack.push(MoveObject(self.level, before_move, self.before.chest_item))
 
             else:
                 item_set_obj = self.level.enemy_item_factory.from_properties(OBJ_CHEST_ITEM_SETTER, 0, item_index)

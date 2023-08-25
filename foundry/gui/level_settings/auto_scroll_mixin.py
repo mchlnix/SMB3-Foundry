@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QVBoxLayout
 
 from foundry.game.gfx.objects import EnemyItem
 from foundry.gui import label_and_widget
-from foundry.gui.commands import AddObject, RemoveObjects
+from foundry.gui.commands import AddObject, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_AUTOSCROLL
@@ -105,7 +105,7 @@ class AutoScrollMixin(SettingsMixin):
             assert self.original_autoscroll_item is not None
 
             self.level_ref.level.enemies.insert(0, self.original_autoscroll_item)
-            self.undo_stack.push(RemoveObjects(self.level_ref.level, [self.original_autoscroll_item]))
+            self.undo_stack.push(RemoveObject(self.level_ref.level, self.original_autoscroll_item))
         elif autoscroll_was_enabled:
             assert current_autoscroll_item is not None
             self.level_ref.level.remove_object(current_autoscroll_item)
@@ -127,7 +127,7 @@ class AutoScrollMixin(SettingsMixin):
 
                 self.undo_stack.beginMacro("Change Autoscroll Path")
 
-                self.undo_stack.push(RemoveObjects(self.level_ref.level, [self.original_autoscroll_item]))
+                self.undo_stack.push(RemoveObject(self.level_ref.level, self.original_autoscroll_item))
                 self.undo_stack.push(AddObject(self.level_ref.level, current_autoscroll_item, 0))
 
                 self.undo_stack.endMacro()

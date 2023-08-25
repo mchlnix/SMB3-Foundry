@@ -19,7 +19,7 @@ from foundry.gui.commands import (
     AddLevelObjectAt,
     AddObject,
     MoveObjects,
-    RemoveObjects,
+    RemoveObject,
     ResizeObjects,
 )
 from foundry.gui.ContextMenu import LevelContextMenu
@@ -233,7 +233,7 @@ class LevelView(MainView):
 
         copied_object = obj_under_cursor.copy()
 
-        self.undo_stack.push(RemoveObjects(self.level_ref.level, [obj_under_cursor]))
+        self.undo_stack.push(RemoveObject(self.level_ref.level, obj_under_cursor))
 
         if y_delta > 0:
             copied_object.increment_type()

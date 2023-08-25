@@ -15,7 +15,7 @@ from foundry import icon
 from foundry.game.File import ROM
 from foundry.game.gfx.objects import EnemyItem
 from foundry.gui import label_and_widget
-from foundry.gui.commands import AddObject, RemoveObjects, UpdatePipeData
+from foundry.gui.commands import AddObject, RemoveObject, UpdatePipeData
 from foundry.gui.dialogs.level_selector.LevelSelector import WorldMapLevelSelect
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.Spinner import Spinner
@@ -163,7 +163,7 @@ class PipePairMixin(SettingsMixin):
             self.level_ref.level.enemies.insert(0, self.original_pipe_item)
 
             self.undo_stack.beginMacro("Disable Pipe Pair Exits")
-            self.undo_stack.push(RemoveObjects(self.level_ref.level, [self.original_pipe_item]))
+            self.undo_stack.push(RemoveObject(self.level_ref.level, self.original_pipe_item))
             self.undo_stack.endMacro()
 
         elif pipe_was_enabled:
@@ -192,7 +192,7 @@ class PipePairMixin(SettingsMixin):
                 self.original_pipe_item.y_position = self.original_pipe_y_value
                 self.undo_stack.beginMacro(f"Pipe Pair Exits Index to {current_pipe_item.y_position:#x}")
 
-                self.undo_stack.push(RemoveObjects(self.level_ref.level, [self.original_pipe_item]))
+                self.undo_stack.push(RemoveObject(self.level_ref.level, self.original_pipe_item))
                 self.undo_stack.push(AddObject(self.level_ref.level, current_pipe_item))
 
                 self.undo_stack.endMacro()
