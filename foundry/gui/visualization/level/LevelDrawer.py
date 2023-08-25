@@ -23,6 +23,7 @@ from smb3parse.constants import (
     OBJ_CHEST_EXIT,
     OBJ_CHEST_ITEM_SETTER,
     OBJ_PIPE_EXITS,
+    OBJ_WHITE_MUSHROOM_HOUSE,
 )
 from smb3parse.levels import LEVEL_MAX_LENGTH, LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.objects.object_set import (
@@ -63,7 +64,7 @@ SPECIAL_BACKGROUND_OBJECTS = [
 ]
 
 
-OMITTED_ITEMS = [OBJ_PIPE_EXITS, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER]
+OMITTED_ITEMS = [OBJ_PIPE_EXITS, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER, OBJ_WHITE_MUSHROOM_HOUSE]
 """
 These configure things based on their y-position in the level. This is done in the editor directly now. So no need to
 actually render them in the level.

@@ -6,9 +6,12 @@ from foundry.gui.level_settings.auto_scroll_mixin import AutoScrollMixin
 from foundry.gui.level_settings.boom_boom_mixin import BoomBoomMixin
 from foundry.gui.level_settings.chest_exit_mixin import ChestExitMixin
 from foundry.gui.level_settings.pipe_pair_mixin import PipePairMixin
+from foundry.gui.level_settings.white_mushroom_mixin import WhiteMushroomHouseMixin
 
 
-class LevelSettingsDialog(PipePairMixin, ChestExitMixin, BoomBoomMixin, AutoScrollMixin, CustomDialog):
+class LevelSettingsDialog(
+    PipePairMixin, WhiteMushroomHouseMixin, ChestExitMixin, BoomBoomMixin, AutoScrollMixin, CustomDialog
+):
     def __init__(self, parent, level_ref: LevelRef):
         self.level_ref = level_ref
 

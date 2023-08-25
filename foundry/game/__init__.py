@@ -1,5 +1,12 @@
 from typing import TYPE_CHECKING
 
+from smb3parse.constants import (
+    OBJ_CHEST_EXIT,
+    OBJ_CHEST_ITEM_SETTER,
+    OBJ_PIPE_EXITS,
+    OBJ_WHITE_MUSHROOM_HOUSE,
+)
+
 SKY = 0
 GROUND = 27
 
@@ -13,9 +20,10 @@ if TYPE_CHECKING:
 
 
 _EXCLUDED_ENEMY_ITEMS_IDS = [
-    0x25,  # Changes where you return to on the map after exiting level
-    0xBA,  # Getting treasure chest exits the game
-    0xD6,  # Defines item in treasure chest
+    OBJ_PIPE_EXITS,
+    OBJ_CHEST_EXIT,
+    OBJ_WHITE_MUSHROOM_HOUSE,
+    OBJ_CHEST_ITEM_SETTER,
 ]
 
 _EXCLUDED_LEVEL_OBJECT_NAMES = ["MSG_NOTHING", "MSG_CRASH"]
