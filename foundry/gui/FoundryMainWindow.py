@@ -921,6 +921,9 @@ class FoundryMainWindow(MainWindow):
 
         copied_level_objects = cast(tuple[list[InLevelObject], Position], copied_objects)
 
+        # clear selection of copied/other previously selected objects, so only the pasted ones are selected
+        self.level_view.select_objects([], replace_selection=True)
+
         self.undo_stack.push(PasteObjectsAt(self.level_view, copied_level_objects, q_point))
 
     def remove_selected_objects(self):
