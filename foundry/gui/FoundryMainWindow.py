@@ -1006,7 +1006,6 @@ class FoundryMainWindow(MainWindow):
                 "Please confirm",
                 "Failed loading level. The level offsets don't match.",
             )
-            return
 
     def close_level(self):
         if not self.safe_to_change():
