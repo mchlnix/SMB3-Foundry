@@ -13,59 +13,39 @@ class ViewMenu(QMenu):
 
         self._level_view = level_view
 
-        self._grid_action = self.addAction("&Grid lines")
-        self._grid_action.setCheckable(True)
-        self._grid_action.setChecked(self.settings.value("level view/draw_grid"))
+        self._grid_action = self._make_action("&Grid lines", "level view/draw_grid")
+        self._coord_action = self._make_action("&Coordinates", "level view/draw_grid_coordinates")
 
         self.addSeparator()
 
-        self._mario_action = self.addAction("&Mario")
-        self._mario_action.setCheckable(True)
-        self._mario_action.setChecked(self.settings.value("level view/draw_mario"))
-
-        self._jumps_action = self.addAction("&Jumps on objects")
-        self._jumps_action.setCheckable(True)
-        self._jumps_action.setChecked(self.settings.value("level view/draw_jump_on_objects"))
-
-        self._items_action = self.addAction("&Items in blocks")
-        self._items_action.setCheckable(True)
-        self._items_action.setChecked(self.settings.value("level view/draw_items_in_blocks"))
-
-        self._invis_action = self.addAction("I&nvisible items")
-        self._invis_action.setCheckable(True)
-        self._invis_action.setChecked(self.settings.value("level view/draw_invisible_items"))
+        self._mario_action = self._make_action("&Mario", "level view/draw_mario")
+        self._jumps_action = self._make_action("&Jumps on objects", "level view/draw_jump_on_objects")
+        self._items_action = self._make_action("&Items in blocks", "level view/draw_items_in_blocks")
+        self._invis_action = self._make_action("I&nvisible items", "level view/draw_invisible_items")
 
         self.addSeparator()
 
-        self._auto_scroll_action = self.addAction("&Autoscroll Path")
-        self._auto_scroll_action.setCheckable(True)
-        self._auto_scroll_action.setChecked(self.settings.value("level view/draw_autoscroll"))
-
-        self._jump_zones_action = self.addAction("Jump &Zones")
-        self._jump_zones_action.setCheckable(True)
-        self._jump_zones_action.setChecked(self.settings.value("level view/draw_jumps"))
-
-        self._resize_action = self.addAction("&Resize Type")
-        self._resize_action.setCheckable(True)
-        self._resize_action.setChecked(self.settings.value("level view/draw_expansion"))
+        self._auto_scroll_action = self._make_action("&Autoscroll Path", "level view/draw_autoscroll")
+        self._jump_zones_action = self._make_action("Jump &Zones", "level view/draw_jumps")
+        self._resize_action = self._make_action("&Resize Type", "level view/draw_expansion")
 
         self.addSeparator()
 
-        self._anim_action = self.addAction("Show Block Animation")
-        self._anim_action.setCheckable(True)
-        self._anim_action.setChecked(self.settings.value("level view/block_animation"))
-
-        self._trans_action = self.addAction("&Block Transparency")
-        self._trans_action.setCheckable(True)
-        self._trans_action.setChecked(self.settings.value("level view/block_transparency"))
-
-        self._special_bg_action = self.addAction("Default Background Tiles")
-        self._special_bg_action.setCheckable(True)
-        self._special_bg_action.setChecked(self.settings.value("level view/special_background"))
+        self._anim_action = self._make_action("Show Block Animation", "level view/block_animation")
+        self._trans_action = self._make_action("&Block Transparency", "level view/block_transparency")
+        self._special_bg_action = self._make_action("Default Background Tiles", "level view/special_background")
 
         self.addSeparator()
+
         self._screen_shot_action = self.addAction("Save &Screenshot of Level")
         self._screen_shot_action.setIcon(icon("image.svg"))
+
+    def _make_action(self, title: str, setting_string: str):
+        checkable_action = self.addAction(title)
+        checkable_action.setCheckable(True)
+        checkable_action.setChecked(self.settings.value(setting_string))
+
+        return checkable_action
 
     @property
     def settings(self):
@@ -76,6 +56,8 @@ class ViewMenu(QMenu):
 
         if action is self._grid_action:
             self.settings.setValue("level view/draw_grid", checked)
+        elif action is self._coord_action:
+            self.settings.setValue("level view/draw_grid_coordinates", checked)
         elif action is self._anim_action:
             self.settings.setValue("level view/block_animation", checked)
             self._level_view.update_anim_timer()
