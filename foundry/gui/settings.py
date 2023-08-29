@@ -35,6 +35,7 @@ SETTINGS["editor/settings_version"] = 0
 SETTINGS["level view/draw_mario"] = True
 SETTINGS["level view/draw_jumps"] = False
 SETTINGS["level view/draw_grid"] = False
+SETTINGS["level view/draw_grid_coordinates"] = False
 SETTINGS["level view/draw_expansion"] = False
 SETTINGS["level view/draw_jump_on_objects"] = True
 SETTINGS["level view/draw_items_in_blocks"] = True

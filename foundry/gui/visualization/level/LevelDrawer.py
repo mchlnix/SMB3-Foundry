@@ -98,6 +98,7 @@ class LevelDrawer:
 
         self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), 1)
         self.screen_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 1)
+        self.coord_pen = QPen(QColor(0xFF, 0x00, 0x00, 0xC0), 1)
 
         self.settings = Settings("mchlnix", "level drawer")
         self.anim_frame = 0
@@ -123,6 +124,9 @@ class LevelDrawer:
 
         if self.settings.value("level view/draw_grid"):
             self._draw_grid(painter, level)
+
+        if self.settings.value("level view/draw_grid_coordinates"):
+            self._draw_grid_coordinates(painter, level)
 
         if self.settings.value("level view/draw_autoscroll"):
             self._draw_auto_scroll(painter, level)
@@ -466,21 +470,51 @@ class LevelDrawer:
     def _draw_grid(self, painter: QPainter, level: Level):
         panel_width, panel_height = level.get_rect(self.block_length).size().toTuple()
 
-        painter.setPen(self.grid_pen)
+        self._draw_grid_lines(painter, panel_height, panel_width)
+        self._draw_screen_lines(painter, panel_height, panel_width, level.is_vertical)
 
-        for x in range(0, panel_width, self.block_length):
-            painter.drawLine(x, 0, x, panel_height)
-        for y in range(0, panel_height, self.block_length):
-            painter.drawLine(0, y, panel_width, y)
+    def _draw_grid_coordinates(self, painter: QPainter, level: Level):
+        panel_width, panel_height = level.get_rect(self.block_length).size().toTuple()
+
+        font = painter.font()
+        font.setPointSize(self.block_length)
+
+        painter.setFont(font)
+
+        painter.setPen(self.coord_pen)
+
+        if level.is_vertical:
+            for y in range(0, panel_height, self.block_length * LEVEL_SCREEN_HEIGHT):
+                painter.drawText(QPoint(0, self.block_length + y), str(y // self.block_length))
+        else:
+            for x in range(0, panel_width, self.block_length * LEVEL_SCREEN_WIDTH):
+                painter.drawText(QPoint(x, self.block_length), str(x // self.block_length))
+
+    def _draw_screen_lines(self, painter: QPainter, panel_height, panel_width, vertical_level):
+        font = painter.font()
+        font.setPointSize(self.block_length)
+
+        painter.setFont(font)
 
         painter.setPen(self.screen_pen)
 
-        if level.is_vertical:
+        if vertical_level:
             for y in range(0, panel_height, self.block_length * LEVEL_SCREEN_HEIGHT):
                 painter.drawLine(0, self.block_length + y, panel_width, self.block_length + y)
         else:
             for x in range(0, panel_width, self.block_length * LEVEL_SCREEN_WIDTH):
                 painter.drawLine(x, 0, x, panel_height)
+
+    def _draw_grid_lines(self, painter, panel_height, panel_width):
+        painter.setPen(self.grid_pen)
+
+        # draw vertical grid lines
+        for x in range(0, panel_width, self.block_length):
+            painter.drawLine(x, 0, x, panel_height)
+
+        # draw horizontal grid lines
+        for y in range(0, panel_height, self.block_length):
+            painter.drawLine(0, y, panel_width, y)
 
     def _draw_auto_scroll(self, painter: QPainter, level: Level):
         for item in level.enemies:
