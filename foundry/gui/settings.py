@@ -1,4 +1,3 @@
-from functools import partial
 from typing import Callable
 
 import qdarkstyle
@@ -9,7 +8,7 @@ RESIZE_RIGHT_CLICK = "RMB"
 
 GUI_STYLE: dict[str, Callable] = {
     "RETRO": lambda: "",  # noqa
-    "DRACULA": partial(qdarkstyle.load_stylesheet, pyside=True),
+    "DRACULA": qdarkstyle.load_stylesheet_pyside6,
 }
 
 SETTINGS: dict[str, str | int | bool] = dict()
