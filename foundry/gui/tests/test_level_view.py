@@ -128,7 +128,7 @@ def test_select_one_of_same_block_on_click(level_view: LevelView, qtbot):
     obj_fg = level_view.level_ref.level.add_object(domain=0x01, object_index=0x04, pos=obj_pos, length=3, index=101)
 
     assert None not in [obj_bg, obj_fg]
-    assert level_view.get_selected_objects() == []
+    assert not level_view.get_selected_objects()
 
     qtbot.mouseClick(level_view, Qt.LeftButton, pos=level_view.from_level_point(obj_pos))
 

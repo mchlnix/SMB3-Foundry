@@ -1,5 +1,5 @@
 [tool.refurb]
-ignore = [109, 112, 113, 126, 129]
+ignore = [109, 112, 113, 126, 129, 184]
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::foundry.game.gfx.objects.in_level.object_renderer.LevelObjectRenderWarning"]

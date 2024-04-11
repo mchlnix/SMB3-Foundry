@@ -19,7 +19,7 @@ class MapTile(MapObject):
         if self.type in TILE_NAMES:
             name = TILE_NAMES[self.type]
         else:
-            name = str(hex(self.type))
+            name = hex(self.type)
 
         return name
 
@@ -58,7 +58,7 @@ class MapTile(MapObject):
         if self.type in TILE_NAMES:
             self.name = TILE_NAMES[self.type]
         else:
-            self.name = str(hex(self.type))
+            self.name = hex(self.type)
 
     def __lt__(self, other):
         screen = self.x_position // WORLD_MAP_SCREEN_WIDTH

@@ -160,7 +160,7 @@ def test_level(level_info, settings, rom, qtbot):
 
 @pytest.mark.parametrize("jump_test_name", ["jump_vertical_ref", "jump_horizontal_ref"])
 def test_draw_jumps(jump_test_name, level, settings, qtbot):
-    with open(str(Path(__file__).parent / f"{jump_test_name}.m3l"), "rb") as m3l_file:
+    with (Path(__file__).parent / f"{jump_test_name}.m3l").open("rb") as m3l_file:
         level.from_m3l(bytearray(m3l_file.read()))
 
         ref = LevelRef()

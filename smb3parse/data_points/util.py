@@ -57,7 +57,7 @@ class Position:
 
     @property
     def xy(self):
-        return int(self.screen) * WORLD_MAP_SCREEN_WIDTH + self.x, self.y
+        return self.screen * WORLD_MAP_SCREEN_WIDTH + self.x, self.y
 
     def copy(self):
         return Position.from_xy(*self.xy)
@@ -177,12 +177,10 @@ class _PositionMixin:
         self.x = value
 
     @overload
-    def is_at(self, position: Position) -> bool:
-        ...
+    def is_at(self, position: Position) -> bool: ...
 
     @overload
-    def is_at(self, screen: int, row: int, column: int) -> bool:
-        ...
+    def is_at(self, screen: int, row: int, column: int) -> bool: ...
 
     def is_at(self, *args):
         pos = self._pos_from_args(*args)
@@ -190,12 +188,10 @@ class _PositionMixin:
         return self.screen == pos.screen and self.column == pos.column and self.row == pos.row
 
     @overload
-    def set_pos(self, position: "Position") -> None:
-        ...
+    def set_pos(self, position: "Position") -> None: ...
 
     @overload
-    def set_pos(self, screen: int, row: int, column: int) -> None:
-        ...
+    def set_pos(self, screen: int, row: int, column: int) -> None: ...
 
     def set_pos(self, *args):
         if len(args) == 1:

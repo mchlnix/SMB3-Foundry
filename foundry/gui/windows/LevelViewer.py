@@ -398,7 +398,7 @@ class LevelBlockView(ByteView):
         name_pos = pos + QPoint(5, self.block_height // 3)
         size_pos = pos + QPoint(5, 2 * self.block_height // 3)
 
-        painter.drawText(name_pos, f"{block.name}")
+        painter.drawText(name_pos, block.name)
         painter.drawText(size_pos, f"Size: {block.size} Bytes ({round(100 / PRG_BANK_SIZE * block.size, 1)} %)")
 
     def paintEvent(self, event: QPaintEvent):

@@ -1,4 +1,5 @@
 """First draft of a parser, emulating the 6502 processor of the NES and letting the ROM generate the level."""
+
 from py65.devices import mpu6502
 from py65.disassembler import Disassembler
 

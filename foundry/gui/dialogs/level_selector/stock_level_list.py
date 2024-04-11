@@ -118,7 +118,7 @@ class StockLevelWidget(QWidget):
         else:
             level_name = f"World {self.world_number}, "
 
-        level_name += f"{self._level_def.name}"
+        level_name += str(self._level_def.name)
 
         return level_name
 

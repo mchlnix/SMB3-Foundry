@@ -63,7 +63,7 @@ class ManagedLevelsMixin(SettingsMixin):
         if was_enabled:
             levels_per_object_set: dict[int, set[int]] = defaultdict(set)
 
-            for found_level in ROM.additional_data.found_levels:
+            for found_level in ROM.additional_data.found_levels:  # noqa
                 levels_per_object_set[found_level.object_set_number].add(found_level.level_offset)
 
         else:

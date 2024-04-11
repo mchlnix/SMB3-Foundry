@@ -83,8 +83,8 @@ class WorldOverview(TableWidget):
             row = world_data.index
 
             name_item = QTableWidgetItem(f"World {world_number}")
-            screen_count_item = QTableWidgetItem(f"{world_data.screen_count}")
-            level_count_item = QTableWidgetItem(f"{world_data.level_count}")
+            screen_count_item = QTableWidgetItem(str(world_data.screen_count))
+            level_count_item = QTableWidgetItem(str(world_data.level_count))
 
             self.setItem(row, 0, name_item)
             self.setItem(row, 1, screen_count_item)

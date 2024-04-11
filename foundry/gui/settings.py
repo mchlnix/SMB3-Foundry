@@ -8,7 +8,7 @@ RESIZE_LEFT_CLICK = "LMB"
 RESIZE_RIGHT_CLICK = "RMB"
 
 GUI_STYLE: dict[str, Callable] = {
-    "RETRO": lambda: "",
+    "RETRO": lambda: "",  # noqa
     "DRACULA": partial(qdarkstyle.load_stylesheet, pyside=True),
 }
 

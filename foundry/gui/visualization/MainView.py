@@ -65,8 +65,8 @@ class MainView(QWidget):
         self.context_menu = context_menu
         self.last_mouse_position = Position.from_xy(0, 0)
 
-        self.zoom = 1
-        self.block_length = Block.SIDE_LENGTH * self.zoom
+        self.zoom = 1.0
+        self.block_length = int(Block.SIDE_LENGTH * self.zoom)
         self.selection_square = SelectionSquare()
 
         self.read_only = False

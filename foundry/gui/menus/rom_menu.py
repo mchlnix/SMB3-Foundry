@@ -101,7 +101,7 @@ class RomMenu(QMenu):
         levels_by_address = {}
 
         if ROM.additional_data.managed_level_positions:
-            for found_level in ROM.additional_data.found_levels:
+            for found_level in ROM.additional_data.found_levels:  # noqa
                 levels_per_object_set[found_level.object_set_number].add(found_level.level_offset)
 
             levels_by_address = {

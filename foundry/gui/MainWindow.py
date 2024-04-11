@@ -174,13 +174,13 @@ class MainWindow(QMainWindow):
             if self.level_ref:
                 self.level_ref.save_to_rom()
         except LookupError as lue:
-            QMessageBox.warning(self, f"{type(lue).__name__}", f"{lue}.")
+            QMessageBox.warning(self, type(lue).__name__, f"{lue}.")
             return False
 
         try:
             ROM.save_to_file(pathname, set_new_path)
         except IOError as exp:
-            QMessageBox.warning(self, f"{type(exp).__name__}", f"Cannot save ROM data to file '{pathname}'.")
+            QMessageBox.warning(self, type(exp).__name__, f"Cannot save ROM data to file '{pathname}'.")
             return False
 
         return True

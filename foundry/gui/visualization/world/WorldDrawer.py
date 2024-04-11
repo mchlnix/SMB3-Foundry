@@ -203,7 +203,7 @@ class WorldDrawer:
         painter.drawImage(x_right, y_last_row, border_br)
 
     def _draw_level_pointers(self, painter: QPainter, world: WorldMap):
-        for index, level_pointer in enumerate(world.level_pointers):
+        for level_pointer in world.level_pointers:
             level_pointer.draw(painter, self.block_length, False, level_pointer.selected)
 
     def _draw_sprites(self, painter: QPainter, world: WorldMap):
