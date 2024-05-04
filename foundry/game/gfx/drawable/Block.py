@@ -33,8 +33,8 @@ def get_block(
 
 
 @lru_cache(2**10)
-def get_tile(index, palette_group, palette_index, graphics_set, mirrored=False):
-    return Tile(index, palette_group, palette_index, graphics_set, mirrored)
+def get_tile(index, palette_group, palette_index, graphics_set):
+    return Tile(index, palette_group, palette_index, graphics_set)
 
 
 def get_worldmap_tile(block_index: int, palette_index=0):
@@ -66,7 +66,6 @@ class Block:
         palette_group: PaletteGroup,
         graphics_set: GraphicsSet,
         tsa_data: bytes,
-        mirrored: bool = False,
     ):
         self.index = block_index
 
@@ -75,8 +74,6 @@ class Block:
         self.palette_group = palette_group
 
         self.tsa_data = tsa_data
-
-        self.mirrored = mirrored
 
         self.images: dict[int, QImage] = {}
 
@@ -106,24 +103,8 @@ class Block:
         self.lu_tile = get_tile(lu, self.palette_group, self.palette_index, self.graphics_set)
         self.ld_tile = get_tile(ld, self.palette_group, self.palette_index, self.graphics_set)
 
-        if self.mirrored:
-            self.ru_tile = get_tile(
-                lu,
-                self.palette_group,
-                self.palette_index,
-                self.graphics_set,
-                mirrored=True,
-            )
-            self.rd_tile = get_tile(
-                ld,
-                self.palette_group,
-                self.palette_index,
-                self.graphics_set,
-                mirrored=True,
-            )
-        else:
-            self.ru_tile = get_tile(ru, self.palette_group, self.palette_index, self.graphics_set)
-            self.rd_tile = get_tile(rd, self.palette_group, self.palette_index, self.graphics_set)
+        self.ru_tile = get_tile(ru, self.palette_group, self.palette_index, self.graphics_set)
+        self.rd_tile = get_tile(rd, self.palette_group, self.palette_index, self.graphics_set)
 
         image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format_RGB888)
 

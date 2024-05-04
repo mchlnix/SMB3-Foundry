@@ -1,6 +1,6 @@
 from PySide6.QtGui import QImage
 
-from foundry.game.gfx.drawable import MASK_COLOR, bit_reverse
+from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, PaletteGroup
 from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET
@@ -24,7 +24,6 @@ class Tile:
         palette_group: PaletteGroup,
         palette_index: int,
         graphics_set: GraphicsSet,
-        mirrored=False,
     ):
         self.tile_index = object_index
 
@@ -44,9 +43,6 @@ class Tile:
             self.background_color_index = 2
         else:
             self.background_color_index = 0
-
-        if mirrored:
-            self._mirror()
 
         for i in range(Tile.PIXEL_COUNT):
             byte_index = i // Tile.HEIGHT
@@ -83,7 +79,3 @@ class Tile:
             self.cached_tiles[tile_length] = image
 
         return self.cached_tiles[tile_length]
-
-    def _mirror(self):
-        for byte in range(len(self.data)):
-            self.data[byte] = bit_reverse[self.data[byte]]
