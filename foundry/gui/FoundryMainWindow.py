@@ -98,7 +98,7 @@ TOOLBAR_ICON_SIZE = QSize(20, 20)
 
 
 class FoundryMainWindow(MainWindow):
-    def __init__(self, path_to_rom=""):
+    def __init__(self, path_to_rom="", m3l_path=""):
         super(FoundryMainWindow, self).__init__()
 
         self.settings = Settings("mchlnix", "foundry")
@@ -373,7 +373,7 @@ class FoundryMainWindow(MainWindow):
 
         self.check_for_update_on_startup()
 
-        self.on_open_rom(path_to_rom)
+        self.on_open_rom(path_to_rom, m3l_path)
 
         self.showMaximized()
 
@@ -544,7 +544,7 @@ class FoundryMainWindow(MainWindow):
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self, path_to_rom=""):
+    def on_open_rom(self, path_to_rom="", m3l_path=""):
         if not self.safe_to_change():
             return
 
@@ -576,7 +576,11 @@ class FoundryMainWindow(MainWindow):
                 self._load_auto_save()
             else:
                 self._save_auto_rom()
-                if not self.open_level_selector(None):
+
+                if m3l_path:
+                    self.load_m3l(m3l_path)
+
+                elif not self.open_level_selector(None):
                     self._on_new_level(dont_check=True)
 
         except IOError as exp:

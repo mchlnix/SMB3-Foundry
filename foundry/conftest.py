@@ -79,7 +79,7 @@ def main_window(qtbot, rom):
     return main_window
 
 
-def mocked_open_rom_and_level_select(self: FoundryMainWindow, _=""):
+def mocked_open_rom_and_level_select(self: FoundryMainWindow, *_, **__):
     self.update_level(
         "Level 1-1",
         level_1_1_object_address,

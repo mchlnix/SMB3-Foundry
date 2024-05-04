@@ -24,7 +24,8 @@ if hasattr(sys, "_MEIPASS"):
 from foundry.gui.FoundryMainWindow import FoundryMainWindow  # noqa
 
 
-def main(path_to_rom, check_auto_save=True):
+
+def main(path_to_rom, check_auto_save=True, m3l_path=""):
     app = QApplication()
 
     if check_auto_save and auto_save_rom_path.exists():
@@ -37,24 +38,43 @@ def main(path_to_rom, check_auto_save=True):
                 None, "Auto Save recovered", "Don't forget to save the loaded ROM under a new name!"
             )
 
-    FoundryMainWindow(path_to_rom)
+    FoundryMainWindow(path_to_rom, m3l_path)
     app.exec()
 
 
 if __name__ == "__main__":
     should_check_auto_save = True
     path = ""
+    m3l_path = ""
 
-    for arg in sys.argv[1:]:
-        if "--dont-check-auto-save" in arg:
-            should_check_auto_save = False
-            continue
-
-        if pathlib.Path(arg).exists():
-            path = arg
+    args = sys.argv[1:]
 
     try:
-        main(path, should_check_auto_save)
+        while args:
+            arg = args.pop(0)
+
+            if arg == "--dont-check-auto-save":
+                should_check_auto_save = False
+
+            elif arg == "--load-m3l":
+                if not args:
+                    raise ValueError("Did not provide a file path after --load-m3l")
+
+                m3l_path = args.pop(0)
+
+                if not pathlib.Path(m3l_path).exists():
+                    raise ValueError(f"M3L path '{m3l_path}' does not exist.")
+
+            elif pathlib.Path(arg).exists():
+                path = arg
+
+            else:
+                raise ValueError(f"Unknown command line argument '{arg}'")
+
+        print(f"{path=}, {should_check_auto_save=}, {m3l_path=}")
+
+        main(path, should_check_auto_save, m3l_path)
+
     except Exception as e:
         app = QApplication()
 
