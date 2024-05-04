@@ -292,16 +292,22 @@ class LevelObject(InLevelObject):
         if self.is_4byte:
             expands |= EXPANDS_BOTH
 
-        elif self.orientation in [
-            GeneratorType.HORIZONTAL,
-            GeneratorType.HORIZONTAL_2,
-            GeneratorType.HORIZ_TO_GROUND,
-        ] or self.orientation in [
-            GeneratorType.DIAG_DOWN_LEFT,
-            GeneratorType.DIAG_DOWN_RIGHT,
-            GeneratorType.DIAG_UP_RIGHT,
-            GeneratorType.DIAG_WEIRD,
-        ]:
+        elif (
+            self.orientation
+            in [
+                GeneratorType.HORIZONTAL,
+                GeneratorType.HORIZONTAL_2,
+                GeneratorType.HORIZ_TO_GROUND,
+            ]
+            or self.orientation
+            in [
+                GeneratorType.DIAG_DOWN_LEFT,
+                GeneratorType.DIAG_DOWN_RIGHT,
+                GeneratorType.DIAG_UP_RIGHT,
+                GeneratorType.DIAG_WEIRD,
+            ]
+            or self.orientation == GeneratorType.DESERT_PIPE_BOX
+        ):
             expands |= EXPANDS_HORIZ
 
         elif self.orientation in [GeneratorType.VERTICAL, GeneratorType.DIAG_WEIRD]:
@@ -310,16 +316,22 @@ class LevelObject(InLevelObject):
         return expands
 
     def primary_expansion(self):
-        if self.orientation in [
-            GeneratorType.HORIZONTAL,
-            GeneratorType.HORIZONTAL_2,
-            GeneratorType.HORIZ_TO_GROUND,
-        ] or self.orientation in [
-            GeneratorType.DIAG_DOWN_LEFT,
-            GeneratorType.DIAG_DOWN_RIGHT,
-            GeneratorType.DIAG_UP_RIGHT,
-            GeneratorType.DIAG_WEIRD,
-        ]:
+        if (
+            self.orientation
+            in [
+                GeneratorType.HORIZONTAL,
+                GeneratorType.HORIZONTAL_2,
+                GeneratorType.HORIZ_TO_GROUND,
+            ]
+            or self.orientation
+            in [
+                GeneratorType.DIAG_DOWN_LEFT,
+                GeneratorType.DIAG_DOWN_RIGHT,
+                GeneratorType.DIAG_UP_RIGHT,
+                GeneratorType.DIAG_WEIRD,
+            ]
+            or self.orientation == GeneratorType.DESERT_PIPE_BOX
+        ):
             if self.is_4byte:
                 return EXPANDS_VERT
             else:
