@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import logging
 import os
+import pathlib
 import sys
 import traceback
 import warnings
@@ -23,10 +24,10 @@ if hasattr(sys, "_MEIPASS"):
 from foundry.gui.FoundryMainWindow import FoundryMainWindow  # noqa
 
 
-def main(path_to_rom):
+def main(path_to_rom, check_auto_save=True):
     app = QApplication()
 
-    if auto_save_rom_path.exists():
+    if check_auto_save and auto_save_rom_path.exists():
         result = AutoSaveDialog().exec()
 
         if result == QMessageBox.DialogCode.Accepted:
@@ -41,13 +42,19 @@ def main(path_to_rom):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        path = sys.argv[1]
-    else:
-        path = ""
+    should_check_auto_save = True
+    path = ""
+
+    for arg in sys.argv[1:]:
+        if "--dont-check-auto-save" in arg:
+            should_check_auto_save = False
+            continue
+
+        if pathlib.Path(arg).exists():
+            path = arg
 
     try:
-        main(path)
+        main(path, should_check_auto_save)
     except Exception as e:
         box = QMessageBox()
         box.setWindowTitle("Crash report")
