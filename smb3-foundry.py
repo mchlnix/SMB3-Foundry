@@ -56,6 +56,8 @@ if __name__ == "__main__":
     try:
         main(path, should_check_auto_save)
     except Exception as e:
+        app = QApplication()
+
         box = QMessageBox()
         box.setWindowTitle("Crash report")
         box.setText(
@@ -63,4 +65,6 @@ if __name__ == "__main__":
             f"with the error below:\n\n{e}\n\n{traceback.format_exc()}"
         )
         box.exec()
+
+        app.exec()
         raise
