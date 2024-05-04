@@ -56,3 +56,7 @@ def lrange(a1: int, a2: Optional[int] = None, a3: Optional[int] = None, /):
 
 def apply(func: Callable, iterable: Iterable, *iterables: Iterable):
     return list(map(func, iterable, *iterables))
+
+
+def clamp(minimum, value, maximum):
+    return max(minimum, min(value, maximum))

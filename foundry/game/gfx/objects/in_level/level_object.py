@@ -16,6 +16,7 @@ from foundry.game.gfx.Palette import PaletteGroup, bg_color_for_object_set
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from foundry.game.ObjectSet import ObjectSet
 from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
+from smb3parse.util import clamp
 
 ENDING_STR = {
     EndType.UNIFORM: "Uniform",
@@ -351,17 +352,14 @@ class LevelObject(InLevelObject):
         if self.primary_expansion() == EXPANDS_HORIZ:
             length = x - self.x_position
 
-            length = max(0, length)
-            length = min(length, 0x0F)
+            length = clamp(0, length, 0x0F)
 
             base_index = (self.obj_index // 0x10) * 0x10
 
             self.obj_index = base_index + length
             self.data[2] = self.obj_index
         else:
-            length = x - self.x_position
-            length = max(0, length)
-            length = min(length, 0xFF)
+            length = clamp(0, x - self.x_position, 0xFF)
 
             if self.is_4byte:
                 self.data[3] = length
@@ -379,17 +377,14 @@ class LevelObject(InLevelObject):
         if self.primary_expansion() == EXPANDS_VERT:
             length = y - self.y_position
 
-            length = max(0, length)
-            length = min(length, 0x0F)
+            length = clamp(0, length, 0x0F)
 
             base_index = (self.obj_index // 0x10) * 0x10
 
             self.obj_index = base_index + length
             self.data[2] = self.obj_index
         else:
-            length = y - self.y_position
-            length = max(0, length)
-            length = min(length, 0xFF)
+            length = clamp(0, y - self.y_position, 0xFF)
 
             if self.is_4byte:
                 self.data[3] = length
@@ -432,8 +427,7 @@ class LevelObject(InLevelObject):
             new_domain = self.domain + 1
             new_type = 0x00
         else:
-            new_type = min(0xFF, new_type)
-            new_type = max(0, new_type)
+            new_type = clamp(0, new_type, 0xFF)
 
             new_domain = self.domain
 
