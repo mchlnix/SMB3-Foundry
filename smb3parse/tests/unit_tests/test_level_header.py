@@ -1,3 +1,4 @@
+from itertools import product
 from pathlib import Path
 
 import pytest
@@ -9,11 +10,16 @@ from smb3parse.levels import (
     HEADER_LENGTH,
     is_valid_level_length,
 )
-from smb3parse.levels.level_header import LevelHeader
+from smb3parse.levels.level_header import (
+    MARIO_X_POSITIONS,
+    MARIO_Y_POSITIONS,
+    LevelHeader,
+)
 from smb3parse.objects.object_set import (
     MAX_OBJECT_SET,
     MIN_OBJECT_SET,
     PIPE_OBJECT_SET,
+    PLAINS_OBJECT_SET,
     is_valid_object_set_number,
 )
 from smb3parse.tests.conftest import test_rom_path
@@ -141,3 +147,28 @@ def test_level_7_1():
 
     assert level_header.jump_enemy_address == 0xC25D
     assert level_header.jump_level_address == 0x1EA71
+
+
+def test_gen_mario_start_positions():
+    level_header_bytes = bytearray([0x82, 0xBB, 0x27, 0xC5, 0x81, 0x85, 0xC1, 0x01, 0x01])
+    horizontal_level_header = LevelHeader(rom, level_header_bytes, PLAINS_OBJECT_SET)
+
+    level_header_bytes = bytearray([0x61, 0xAA, 0x4D, 0xC2, 0x07, 0x80, 0xB1, 0x08, 0x01])
+    vertical_level_header = LevelHeader(rom, level_header_bytes, PIPE_OBJECT_SET)
+
+    for level_header in (horizontal_level_header, vertical_level_header):
+        for start_pos in level_header.gen_mario_start_positions():
+            assert level_header.start_indexes_from_position(*start_pos)
+
+
+def test_mario_start_indexes():
+    level_header_bytes = bytearray([0x82, 0xBB, 0x27, 0xC5, 0x81, 0x85, 0xC1, 0x01, 0x01])
+    horizontal_level_header = LevelHeader(rom, level_header_bytes, PLAINS_OBJECT_SET)
+
+    level_header_bytes = bytearray([0x61, 0xAA, 0x4D, 0xC2, 0x07, 0x80, 0xB1, 0x08, 0x01])
+    vertical_level_header = LevelHeader(rom, level_header_bytes, PIPE_OBJECT_SET)
+
+    for level_header in (horizontal_level_header, vertical_level_header):
+        for start_x, start_y in product(range(len(MARIO_X_POSITIONS)), range(len(MARIO_Y_POSITIONS))):
+            position = level_header.position_from_start_index(start_x, start_y)
+            assert (start_x, start_y) == level_header.start_indexes_from_position(*position)

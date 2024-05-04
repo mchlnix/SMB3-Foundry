@@ -26,7 +26,6 @@ from smb3parse.constants import (
     OBJ_WHITE_MUSHROOM_HOUSE,
 )
 from smb3parse.levels import LEVEL_MAX_LENGTH, LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
-from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
 from smb3parse.objects.object_set import (
     CLOUDY_OBJECT_SET,
     DESERT_OBJECT_SET,
@@ -460,15 +459,10 @@ class LevelDrawer:
         painter.setOpacity(0.5)
 
         # get all potential mario positions
-        potential_positions = []
-
-        for block_x, block_y in product(MARIO_X_POSITIONS, MARIO_Y_POSITIONS):
-            block_x >>= 4
-
-            if level.is_vertical:
-                block_y += (level.header.screens - 1) * 15  # TODO: Why?
-
-            potential_positions.append(QPoint(block_x * self.block_length, block_y * self.block_length))
+        potential_positions = [
+            QPoint(block_x, block_y) * self.block_length
+            for block_x, block_y in level.header.gen_mario_start_positions()
+        ]
 
         # loop through positions and draw transparent mario
         x_offset = 32 * level.start_action

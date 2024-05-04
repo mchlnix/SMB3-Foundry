@@ -1,3 +1,5 @@
+from itertools import product
+
 from smb3parse.levels import (
     DEFAULT_HORIZONTAL_HEIGHT,
     DEFAULT_VERTICAL_WIDTH,
@@ -70,14 +72,43 @@ class LevelHeader:
         self.jump_level_offset = (self.data[1] << 8) + self.data[0]
         self.jump_enemy_offset = (self.data[3] << 8) + self.data[2]
 
-    def mario_position(self):
-        x = MARIO_X_POSITIONS[self.start_x_index] >> 4
-        y = MARIO_Y_POSITIONS[self.start_y_index]
+    def position_from_start_index(self, start_x_index: int, start_y_index: int):
+        x = MARIO_X_POSITIONS[start_x_index] >> 4
+        y = MARIO_Y_POSITIONS[start_y_index]
 
         if self.is_vertical:
             y += (self.screens - 1) * 15  # TODO: Why?
 
         return x, y
+
+    def start_indexes_from_position(self, x, y):
+        for index, default_x in enumerate(MARIO_X_POSITIONS):
+            if default_x >> 4 == x:
+                start_x_index = index
+                break
+        else:
+            raise ValueError(f"No possible start indexes for {x} and {y}.")
+
+        if self.is_vertical:
+            y -= (self.screens - 1) * 15
+
+        try:
+            start_y_index = MARIO_Y_POSITIONS.index(y)
+        except ValueError:
+            raise ValueError(f"No possible start indexes for {x} and {y}.")
+
+        return start_x_index, start_y_index
+
+    def gen_mario_start_positions(self):
+        for x_index, y_index in product(range(len(MARIO_X_POSITIONS)), range(len(MARIO_Y_POSITIONS))):
+            yield self.position_from_start_index(x_index, y_index)
+
+    def mario_position(self):
+        return self.position_from_start_index(self.start_x_index, self.start_y_index)
+
+    @property
+    def mario_start_indexes(self):
+        return self.start_x_index, self.start_y_index
 
     @property
     def jump_level_address(self):
