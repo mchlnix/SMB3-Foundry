@@ -38,6 +38,8 @@ class WorldDrawer:
 
         self.anim_frame = 0
 
+        self.should_draw_potential_marios = False
+
     def draw(self, painter: QPainter, world: WorldMap):
         painter.save()
 

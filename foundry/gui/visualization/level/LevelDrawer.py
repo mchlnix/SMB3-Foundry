@@ -102,7 +102,7 @@ class LevelDrawer:
 
         self.settings = Settings("mchlnix", "level drawer")
         self.anim_frame = 0
-        self.should_draw_potential_marios = True
+        self.should_draw_potential_marios = False
 
     def draw(self, painter: QPainter, level: Level):
         self._draw_background(painter, level)

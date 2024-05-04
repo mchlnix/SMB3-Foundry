@@ -5,7 +5,7 @@ from PySide6.QtCore import QPoint, QSize, QTimer
 from PySide6.QtGui import QMouseEvent, Qt, QUndoStack, QWheelEvent
 from PySide6.QtWidgets import QScrollArea, QToolTip, QWidget
 
-from foundry import ctrl_is_pressed
+from foundry import ctrl_is_pressed, make_macro
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import get_tile
@@ -21,6 +21,7 @@ from foundry.gui.commands import (
     MoveObjects,
     RemoveObject,
     ResizeObjects,
+    SetLevelAttribute,
 )
 from foundry.gui.ContextMenu import LevelContextMenu
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, Settings
@@ -28,6 +29,7 @@ from foundry.gui.visualization.level.LevelDrawer import LevelDrawer
 from foundry.gui.visualization.MainView import (
     MODE_DRAG,
     MODE_FREE,
+    MODE_MOVE_MARIO,
     MODE_RESIZE_DIAG,
     MODE_RESIZE_HORIZ,
     MODE_RESIZE_VERT,
@@ -64,6 +66,8 @@ class LevelView(MainView):
 
         self.resize_obj_start_point = Position.from_xy(0, 0)
         self.drag_start_point = Position.from_xy(0, 0)
+
+        self._last_mario_indexes = 0, 0
 
         self.objects_before_resizing: list[InLevelObject] = []
         self.objects_before_moving: list[InLevelObject] = []
@@ -130,6 +134,9 @@ class LevelView(MainView):
             self._resizing(event)
 
             self.level_ref.selected_objects = previously_selected_objects
+
+        elif self.mouse_mode == MODE_MOVE_MARIO:
+            self._update_mario_move(event)
 
         elif self.selection_square.active:
             self._set_selection_end(event)
@@ -344,14 +351,18 @@ class LevelView(MainView):
         self.setCursor(Qt.CursorShape.ArrowCursor)
 
     def _on_left_mouse_button_down(self, event: QMouseEvent):
-        # 1 if clicking on background: deselect everything, start selection square
-        # 2 if clicking on background and ctrl: start selection_square
-        # 3 if clicking on selected object: deselect everything and select only this object
-        # 4 if clicking on selected object and ctrl: do nothing, deselect this object on release
-        # 5 if clicking on unselected object: deselect everything and select only this object
-        # 6 if clicking on unselected object and ctrl: select this object
+        # 1 If clicking on Mario: show potential Mario positions, when dragging
+        # 2 if clicking on background: deselect everything, start selection square
+        # 3 if clicking on background and ctrl: start selection_square
+        # 4 if clicking on selected object: deselect everything and select only this object
+        # 5 if clicking on selected object and ctrl: do nothing, deselect this object on release
+        # 6 if clicking on unselected object: deselect everything and select only this object
+        # 7 if clicking on unselected object and ctrl: select this object
 
-        if self._select_objects_on_click(event):
+        if self._is_over_mario_sprite(event.position().toPoint()):
+            self._start_move_mario()
+
+        elif self._select_objects_on_click(event):
             obj = self.object_at(event.position().toPoint())
 
             if not isinstance(obj, InLevelObject):
@@ -372,6 +383,64 @@ class LevelView(MainView):
                     self.objects_before_moving = [obj.copy() for obj in self.get_selected_objects()]
         else:
             self._start_selection_square(event.position().toPoint())
+
+    def _is_over_mario_sprite(self, mouse_point):
+        if not self.settings.value("level view/draw_mario"):
+            return False
+
+        return self.level_ref.level.header.mario_position() == self.to_level_point(mouse_point).xy
+
+    def _start_move_mario(self):
+        self.mouse_mode = MODE_MOVE_MARIO
+
+        self._last_mario_indexes = self.level_ref.level.header.mario_start_indexes
+
+        self.setCursor(Qt.CursorShape.ClosedHandCursor)
+
+        self.drawer.should_draw_potential_marios = True
+
+    def _update_mario_move(self, event: QMouseEvent):
+        # get current mouse position
+        # convert it to level position
+        current_level_position = self.to_level_point(event.position().toPoint())
+
+        # check if among valid mario positions
+        if current_level_position.xy not in self.level_ref.level.header.gen_mario_start_positions():
+            return
+
+        # if so, get the corresponding starting indexes
+        x_index, y_index = self.level_ref.level.header.start_indexes_from_position(*current_level_position.xy)
+
+        # write them to the level header temporarily
+        self.level_ref.level.header.start_x_index = x_index
+        self.level_ref.level.header.start_y_index = y_index
+
+    def _stop_mario_move(self):
+        cur_mario_indexes = self.level_ref.level.header.mario_start_indexes
+
+        if self._last_mario_indexes != cur_mario_indexes:
+            last_x, last_y = self._last_mario_indexes
+            cur_x, cur_y = cur_mario_indexes
+
+            self.level_ref.level.header.start_x_index = last_x
+            self.level_ref.level.header.start_y_index = last_y
+
+            x_command = SetLevelAttribute(self.level_ref.level, "start_x_index", cur_x)
+            y_command = SetLevelAttribute(self.level_ref.level, "start_y_index", cur_y)
+
+            make_macro(
+                self.undo_stack,
+                f"Set Mario Start Position to {self.level_ref.level.header.mario_position()}",
+                x_command,
+                y_command,
+            )
+        else:
+            start_x_index, start_y_index = self._last_mario_indexes
+
+            self.level_ref.level.header.start_x_index = start_x_index
+            self.level_ref.level.header.start_y_index = start_y_index
+
+        self.drawer.should_draw_potential_marios = False
 
     @staticmethod
     def _resize_mode_from_edge(edge: Qt.Edge):
@@ -414,8 +483,10 @@ class LevelView(MainView):
                 self._stop_drag(drag_end_point)
             else:
                 self.dragging_happened = False
+
         elif self.resizing_happened:
             self._stop_resize()
+
         elif self.selection_square.active:
             self._stop_selection_square()
 
@@ -430,6 +501,9 @@ class LevelView(MainView):
             else:
                 # replace selection with only selected object
                 self.select_objects([obj], replace_selection=True)
+
+        elif self.mouse_mode == MODE_MOVE_MARIO:
+            self._stop_mario_move()
 
         self.mouse_mode = MODE_FREE
         self._object_was_selected_on_last_click = False
