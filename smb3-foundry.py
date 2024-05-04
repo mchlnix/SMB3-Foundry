@@ -23,9 +23,11 @@ if hasattr(sys, "_MEIPASS"):
 
 from foundry.gui.FoundryMainWindow import FoundryMainWindow  # noqa
 
+app = None
 
 
 def main(path_to_rom, check_auto_save=True, m3l_path=""):
+    global app
     app = QApplication()
 
     if check_auto_save and auto_save_rom_path.exists():
@@ -76,7 +78,8 @@ if __name__ == "__main__":
         main(path, should_check_auto_save, m3l_path)
 
     except Exception as e:
-        app = QApplication()
+        if app is None:
+            app = QApplication()
 
         box = QMessageBox()
         box.setWindowTitle("Crash report")
