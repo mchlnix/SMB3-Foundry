@@ -87,6 +87,14 @@ class LevelView(MainView):
         )
 
     @property
+    def level(self) -> Level:
+        return self.level_ref.level
+
+    @property
+    def level_header(self):
+        return self.level.header
+
+    @property
     def undo_stack(self) -> QUndoStack:
         return cast(QUndoStack, self.window().findChild(QUndoStack, "undo_stack"))
 
@@ -113,10 +121,10 @@ class LevelView(MainView):
             self.redraw_timer.start()
 
     def sizeHint(self) -> QSize:
-        if self.level_ref.level is None:
+        if self.level is None:
             return super(LevelView, self).sizeHint()
 
-        w, h = self.level_ref.level.size
+        w, h = self.level.size
 
         w *= self.block_length
         h *= self.block_length
@@ -205,7 +213,7 @@ class LevelView(MainView):
             if obj_under_cursor is None:
                 return False
 
-            if isinstance(self.level_ref.level, WorldMap):
+            if isinstance(self.level, WorldMap):
                 return False
 
             # scrolling through the level could unintentionally change objects, if the cursor would wander onto them.
@@ -234,13 +242,13 @@ class LevelView(MainView):
         self.undo_stack.beginMacro(macro_name)
 
         if isinstance(obj_under_cursor, LevelObject):
-            index = self.level_ref.level.objects.index(obj_under_cursor)
+            index = self.level.objects.index(obj_under_cursor)
         else:
-            index = self.level_ref.level.enemies.index(obj_under_cursor)
+            index = self.level.enemies.index(cast(EnemyItem, obj_under_cursor))
 
         copied_object = obj_under_cursor.copy()
 
-        self.undo_stack.push(RemoveObject(self.level_ref.level, obj_under_cursor))
+        self.undo_stack.push(RemoveObject(self.level, obj_under_cursor))
 
         if y_delta > 0:
             copied_object.increment_type()
@@ -249,7 +257,7 @@ class LevelView(MainView):
 
         copied_object.selected = True
 
-        self.undo_stack.push(AddObject(self.level_ref.level, copied_object, index))
+        self.undo_stack.push(AddObject(self.level, copied_object, index))
 
         self.undo_stack.endMacro()
 
@@ -285,7 +293,7 @@ class LevelView(MainView):
     def _resizing(self, event: QMouseEvent):
         self.resizing_happened = True
 
-        if isinstance(self.level_ref.level, WorldMap):
+        if isinstance(self.level, WorldMap):
             return
 
         level_pos = self.to_level_point(event.position().toPoint())
@@ -338,7 +346,7 @@ class LevelView(MainView):
 
         self.undo_stack.push(
             ResizeObjects(
-                self.level_ref.level,
+                self.level,
                 self.objects_before_resizing,
                 self.get_selected_objects(),
             )
@@ -388,12 +396,12 @@ class LevelView(MainView):
         if not self.settings.value("level view/draw_mario"):
             return False
 
-        return self.level_ref.level.header.mario_position() == self.to_level_point(mouse_point).xy
+        return self.level_header.mario_position() == self.to_level_point(mouse_point).xy
 
     def _start_move_mario(self):
         self.mouse_mode = MODE_MOVE_MARIO
 
-        self._last_mario_indexes = self.level_ref.level.header.mario_start_indexes
+        self._last_mario_indexes = self.level_header.mario_start_indexes
 
         self.setCursor(Qt.CursorShape.ClosedHandCursor)
 
@@ -405,40 +413,40 @@ class LevelView(MainView):
         current_level_position = self.to_level_point(event.position().toPoint())
 
         # check if among valid mario positions
-        if current_level_position.xy not in self.level_ref.level.header.gen_mario_start_positions():
+        if current_level_position.xy not in self.level_header.gen_mario_start_positions():
             return
 
         # if so, get the corresponding starting indexes
-        x_index, y_index = self.level_ref.level.header.start_indexes_from_position(*current_level_position.xy)
+        x_index, y_index = self.level_header.start_indexes_from_position(*current_level_position.xy)
 
         # write them to the level header temporarily
-        self.level_ref.level.header.start_x_index = x_index
-        self.level_ref.level.header.start_y_index = y_index
+        self.level_header.start_x_index = x_index
+        self.level_header.start_y_index = y_index
 
     def _stop_mario_move(self):
-        cur_mario_indexes = self.level_ref.level.header.mario_start_indexes
+        cur_mario_indexes = self.level_header.mario_start_indexes
 
         if self._last_mario_indexes != cur_mario_indexes:
             last_x, last_y = self._last_mario_indexes
             cur_x, cur_y = cur_mario_indexes
 
-            self.level_ref.level.header.start_x_index = last_x
-            self.level_ref.level.header.start_y_index = last_y
+            self.level_header.start_x_index = last_x
+            self.level_header.start_y_index = last_y
 
-            x_command = SetLevelAttribute(self.level_ref.level, "start_x_index", cur_x)
-            y_command = SetLevelAttribute(self.level_ref.level, "start_y_index", cur_y)
+            x_command = SetLevelAttribute(self.level, "start_x_index", cur_x)
+            y_command = SetLevelAttribute(self.level, "start_y_index", cur_y)
 
             make_macro(
                 self.undo_stack,
-                f"Set Mario Start Position to {self.level_ref.level.header.mario_position()}",
+                f"Set Mario Start Position to {self.level_header.mario_position()}",
                 x_command,
                 y_command,
             )
         else:
             start_x_index, start_y_index = self._last_mario_indexes
 
-            self.level_ref.level.header.start_x_index = start_x_index
-            self.level_ref.level.header.start_y_index = start_y_index
+            self.level_header.start_x_index = start_x_index
+            self.level_header.start_y_index = start_y_index
 
         self.drawer.should_draw_potential_marios = False
 
@@ -520,7 +528,7 @@ class LevelView(MainView):
 
         self.undo_stack.push(
             MoveObjects(
-                self.level_ref.level,
+                self.level,
                 self.objects_before_moving,
                 self.get_selected_objects(),
             )
@@ -548,15 +556,11 @@ class LevelView(MainView):
             return is_safe, reason, additional_info
 
         if ROM.additional_data.managed_level_positions:
-            free_space_in_bank = ROM.additional_data.free_space_for_object_set(self.level_ref.level.object_set_number)
+            free_space_in_bank = ROM.additional_data.free_space_for_object_set(self.level.object_set_number)
             free_space_for_enemies = ROM.additional_data.free_space_for_enemies()
 
-            additional_level_data = (
-                self.level_ref.level.current_object_size() - self.level_ref.level.object_size_on_disk
-            )
-            additional_enemy_data = (
-                self.level_ref.level.current_enemies_size() - self.level_ref.level.enemy_size_on_disk
-            )
+            additional_level_data = self.level.current_object_size() - self.level.object_size_on_disk
+            additional_enemy_data = self.level.current_enemies_size() - self.level.enemy_size_on_disk
 
             if free_space_in_bank < additional_level_data:
                 is_safe = False
@@ -662,7 +666,7 @@ class LevelView(MainView):
         level_pos = self.to_level_point(q_point)
 
         if index == -1:
-            index = len(self.level_ref.level.enemies)
+            index = len(self.level.enemies)
 
         self.level_ref.add_enemy(enemy_index, level_pos, index)
 
