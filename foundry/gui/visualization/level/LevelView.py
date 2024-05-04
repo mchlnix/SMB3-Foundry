@@ -132,27 +132,29 @@ class LevelView(MainView):
         return QSize(w, h)
 
     def mouseMoveEvent(self, event: QMouseEvent):
+        mouse_point = event.position().toPoint()
+
         if self.mouse_mode == MODE_DRAG:
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
-            self._dragging(event)
+            self._dragging(mouse_point)
 
         elif self.mouse_mode in RESIZE_MODES:
             previously_selected_objects = self.level_ref.selected_objects
 
-            self._resizing(event)
+            self._resizing(mouse_point)
 
             self.level_ref.selected_objects = previously_selected_objects
 
         elif self.mouse_mode == MODE_MOVE_MARIO:
-            self._update_mario_move(event)
+            self._update_mario_move(mouse_point)
 
         elif self.selection_square.active:
             self._set_selection_end(event)
 
         elif self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK:
-            self._set_cursor_for_position(event)
+            self._set_cursor_for_position(mouse_point)
 
-        object_under_cursor = self.object_at(event.position().toPoint())
+        object_under_cursor = self.object_at(mouse_point)
 
         if self.settings.value("level view/object_tooltip_enabled") and object_under_cursor is not None:
             self.setToolTip(str(object_under_cursor))
@@ -162,13 +164,13 @@ class LevelView(MainView):
 
         return super(LevelView, self).mouseMoveEvent(event)
 
-    def _set_cursor_for_position(self, event: QMouseEvent):
-        level_object = self.object_at(event.position().toPoint())
+    def _set_cursor_for_position(self, mouse_point: QPoint):
+        level_object = self.object_at(mouse_point)
 
         if isinstance(level_object, (EnemyItem, LevelObject)):
             is_resizable = not level_object.is_fixed
 
-            edges = self._cursor_on_edge_of_object(level_object, event.position().toPoint())
+            edges = self._cursor_on_edge_of_object(level_object, mouse_point)
 
             if is_resizable and edges:
                 if edges == Qt.Edge.RightEdge and level_object.expands() & EXPANDS_HORIZ:
@@ -290,13 +292,13 @@ class LevelView(MainView):
 
         return True
 
-    def _resizing(self, event: QMouseEvent):
+    def _resizing(self, mouse_point: QPoint):
         self.resizing_happened = True
 
         if isinstance(self.level, WorldMap):
             return
 
-        level_pos = self.to_level_point(event.position().toPoint())
+        level_pos = self.to_level_point(mouse_point)
 
         dx, dy = (level_pos - self.resize_obj_start_point).xy
 
@@ -392,7 +394,10 @@ class LevelView(MainView):
         else:
             self._start_selection_square(event.position().toPoint())
 
-    def _is_over_mario_sprite(self, mouse_point):
+    def _is_over_mario_sprite(self, mouse_point: QPoint) -> bool:
+        # Mario Sprite is offset by half a block, so offset the cursor as well
+        mouse_point.setX(mouse_point.x() - self.block_length // 2)
+
         if not self.settings.value("level view/draw_mario"):
             return False
 
@@ -407,10 +412,13 @@ class LevelView(MainView):
 
         self.drawer.should_draw_potential_marios = True
 
-    def _update_mario_move(self, event: QMouseEvent):
+    def _update_mario_move(self, mouse_point: QPoint):
+        # Mario Sprite is offset by half a block, so offset the cursor as well
+        mouse_point.setX(mouse_point.x() - self.block_length // 2)
+
         # get current mouse position
         # convert it to level position
-        current_level_position = self.to_level_point(event.position().toPoint())
+        current_level_position = self.to_level_point(mouse_point)
 
         # check if among valid mario positions
         if current_level_position.xy not in self.level_header.gen_mario_start_positions():
@@ -462,10 +470,10 @@ class LevelView(MainView):
 
         return mode
 
-    def _dragging(self, event: QMouseEvent):
+    def _dragging(self, mouse_point: QPoint):
         self.dragging_happened = True
 
-        level_pos = self.to_level_point(event.position().toPoint())
+        level_pos = self.to_level_point(mouse_point)
 
         dx, dy = (level_pos - self.last_mouse_position).xy
 
