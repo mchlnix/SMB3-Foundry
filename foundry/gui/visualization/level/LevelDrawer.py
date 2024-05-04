@@ -26,6 +26,7 @@ from smb3parse.constants import (
     OBJ_WHITE_MUSHROOM_HOUSE,
 )
 from smb3parse.levels import LEVEL_MAX_LENGTH, LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
+from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
 from smb3parse.objects.object_set import (
     CLOUDY_OBJECT_SET,
     DESERT_OBJECT_SET,
@@ -102,6 +103,7 @@ class LevelDrawer:
 
         self.settings = Settings("mchlnix", "level drawer")
         self.anim_frame = 0
+        self.should_draw_potential_marios = True
 
     def draw(self, painter: QPainter, level: Level):
         self._draw_background(painter, level)
@@ -115,6 +117,9 @@ class LevelDrawer:
 
         if self.settings.value("level view/draw_expansion"):
             self._draw_expansions(painter, level)
+
+        if self.should_draw_potential_marios:
+            self._draw_potential_marios(painter, level)
 
         if self.settings.value("level view/draw_mario"):
             self._draw_mario(painter, level)
@@ -449,6 +454,33 @@ class LevelDrawer:
                 painter.drawRect(level_object.get_rect(self.block_length))
 
                 painter.restore()
+
+    def _draw_potential_marios(self, painter: QPainter, level: Level):
+        painter.save()
+        painter.setOpacity(0.5)
+
+        # get all potential mario positions
+        potential_positions = []
+
+        for block_x, block_y in product(MARIO_X_POSITIONS, MARIO_Y_POSITIONS):
+            block_x >>= 4
+
+            if level.is_vertical:
+                block_y += (level.header.screens - 1) * 15  # TODO: Why?
+
+            potential_positions.append(QPoint(block_x * self.block_length, block_y * self.block_length))
+
+        # loop through positions and draw transparent mario
+        x_offset = 32 * level.start_action
+
+        mario_cutout = mario_actions.copy(QRect(x_offset, 0, 32, 32)).scaled(
+            2 * self.block_length, 2 * self.block_length
+        )
+
+        for mario_position in potential_positions:
+            painter.drawImage(mario_position, mario_cutout)
+
+        painter.restore()
 
     def _draw_mario(self, painter: QPainter, level: Level):
         mario_position = QPoint(*level.header.mario_position()) * self.block_length
