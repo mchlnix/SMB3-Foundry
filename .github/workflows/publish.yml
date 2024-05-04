@@ -85,7 +85,7 @@ jobs:
       CAUTION: Nightlies are untested alpha releases. Most users should use ''$(git describe --tags --exclude=nightly --abbrev=0)''!
 
 
-      $(git log --format=''%an: %s (%h)'' origin/master..HEAD | grep -v ''Merge pull request'')"'
+      $(git log --format=''%an: %s (%h)'' --reverse origin/master..HEAD | grep -v ''Merge pull request'')"'
 
     - name: Show created tag
       run: |
