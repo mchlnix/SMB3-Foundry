@@ -456,7 +456,7 @@ class LevelDrawer:
 
     def _draw_potential_marios(self, painter: QPainter, level: Level):
         painter.save()
-        painter.setOpacity(0.5)
+        painter.setOpacity(0.2)
 
         # get all potential mario positions
         potential_positions = [
