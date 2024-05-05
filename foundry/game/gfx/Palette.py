@@ -1,3 +1,4 @@
+from contextlib import suppress
 from dataclasses import dataclass
 from typing import Optional
 
@@ -44,38 +45,43 @@ NESPalette = [QColor(r, g, b) for r, g, b, _ in grouper(color_data, 4, incomplet
 
 @dataclass(eq=False)
 class PaletteGroup:
-    object_set: int
-    index: int
-    offset: int
-    palettes: list[bytearray]
+    """
+    A PaletteGroup comprises four palettes of four color values.
+    These color values are indexes pointing into the palette of the NES, which consists of 64 hardcoded colors.
+    """
+
+    _object_set: int
+    index: int  # needed for cache keys outside
+    _offset: int
+    _palettes: list[bytearray]
 
     changed = False
 
     def restore(self):
-        new_palette_group = load_palette_group(self.object_set, self.index, use_cache=False)
+        new_palette_group = load_palette_group(self._object_set, self.index, use_cache=False)
 
-        self.palettes = new_palette_group.palettes
+        self._palettes = new_palette_group._palettes
 
     def __getitem__(self, item):
-        return self.palettes[item]
+        return self._palettes[item]
 
     def __setitem__(self, key, value):
-        self.palettes[key] = value
+        self._palettes[key] = value
 
     def __eq__(self, other):
         if not isinstance(other, PaletteGroup):
             raise TypeError(f"Cannot compare PaletteGroup with {type(other)}.")
 
-        return self.object_set == other.object_set and self.index == other.index
+        return hash(self) == hash(other)
 
     def __hash__(self):
-        return hash((self.object_set, self.index))
+        return hash((self._object_set, self.index))
 
     def save(self, rom: Optional[Rom] = None):
         if rom is None:
             rom = ROM()
 
-        palette_offset_position = self.offset + (self.object_set * PALETTE_OFFSET_SIZE)
+        palette_offset_position = self._offset + (self._object_set * PALETTE_OFFSET_SIZE)
         palette_offset = rom.little_endian(palette_offset_position)
 
         palette_address = PALETTE_BASE_ADDRESS + palette_offset
@@ -83,7 +89,7 @@ class PaletteGroup:
 
         palettes = []
 
-        for palette in self.palettes:
+        for palette in self._palettes:
             palettes.append(rom.write(palette_address, palette))
 
             palette_address += COLORS_PER_PALETTE
@@ -104,21 +110,19 @@ def load_palette_group(object_set: int, palette_group_index: int, use_cache=True
     """
     key = (object_set, palette_group_index)
 
-    if key not in _palette_group_cache or not use_cache:
-        # the data is in different locations for US and JP roms
-        for palette_offset_list in (PALETTE_OFFSET_LIST_US, PALETTE_OFFSET_LIST_JP):
-            try:
-                palettes = _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list)
+    if use_cache and key in _palette_group_cache:
+        return _palette_group_cache[key]
 
-                _palette_group_cache[key] = PaletteGroup(object_set, palette_group_index, palette_offset_list, palettes)
-            except ValueError:
-                continue
+    # the data is in different locations for US and JP roms
+    for palette_offset_list in (PALETTE_OFFSET_LIST_US, PALETTE_OFFSET_LIST_JP):
+        # ignore ValueError when we don't find valid palette data, might be the other version
+        with suppress(ValueError):
+            palettes = _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list)
+            _palette_group_cache[key] = PaletteGroup(object_set, palette_group_index, palette_offset_list, palettes)
 
-            break
-        else:
-            raise ValueError("Couldn't find valid Palette data at offsets for stock US or stock JP ROM.")
-
-    return _palette_group_cache[key]
+            return _palette_group_cache[key]
+    else:
+        raise ValueError("Couldn't find valid Palette data at offsets for stock US or stock JP ROM.")
 
 
 def _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list_address: int):

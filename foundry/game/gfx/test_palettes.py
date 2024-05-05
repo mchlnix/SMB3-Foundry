@@ -7,16 +7,16 @@ def test_restore_palettes():
     example_palette_group = load_palette_group(1, 1)
 
     # WHEN one of the palettes is changed and marked as such, then restored
-    old_palette = example_palette_group.palettes[0].copy()
-    assert example_palette_group.palettes[0] == old_palette
+    old_palette = example_palette_group._palettes[0].copy()
+    assert example_palette_group._palettes[0] == old_palette
 
-    example_palette_group.palettes[0][0] += 1
+    example_palette_group._palettes[0][0] += 1
     PaletteGroup.changed = True
 
-    assert example_palette_group.palettes[0] != old_palette
+    assert example_palette_group._palettes[0] != old_palette
 
     restore_all_palettes()
 
     # THEN the palette should be restored correctly and they are not marked as changed anymore
-    assert example_palette_group.palettes[0] == old_palette
+    assert example_palette_group._palettes[0] == old_palette
     assert not PaletteGroup.changed

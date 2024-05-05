@@ -24,7 +24,7 @@ def change_color(
 ):
     # colors at index 0 are shared among all palettes of a palette group
     if index_in_palette == 0:
-        for palette_ in palette_group.palettes:
+        for palette_ in palette_group._palettes:
             palette_[0] = new_color_index
     else:
         palette_group[index_in_group][index_in_palette] = new_color_index
