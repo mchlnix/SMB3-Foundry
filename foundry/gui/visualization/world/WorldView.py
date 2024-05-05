@@ -152,7 +152,7 @@ class WorldView(MainView):
 
     def update_palette(self):
         for map_tile in self.world.objects:
-            map_tile.block.palette_group = load_palette_group(
+            map_tile.block._palette_group = load_palette_group(
                 self.world.object_set.number, self.world.data.palette_index
             )
             map_tile.change_type(map_tile.block.index)

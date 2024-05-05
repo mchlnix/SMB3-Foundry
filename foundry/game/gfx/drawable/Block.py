@@ -10,10 +10,10 @@ from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, PaletteGroup, load_palette_group
 from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET, WORLD_MAP_OBJECT_SET
 
-TSA_BANK_0 = 0 * 256
-TSA_BANK_1 = 1 * 256
-TSA_BANK_2 = 2 * 256
-TSA_BANK_3 = 3 * 256
+TSA_BANK_0_START = 0 * 256
+TSA_BANK_1_START = 1 * 256
+TSA_BANK_2_START = 2 * 256
+TSA_BANK_3_START = 3 * 256
 
 
 @lru_cache(2**10)
@@ -50,13 +50,21 @@ BlockId = tuple[int, str, int]
 
 
 class Block:
+    """
+    A Block is 16 pixels high and wide and is the smallest drawable unit in the game.
+    Some objects are only one block (e.g. coin block), others are made up of many different blocks (e.g. bushes).
+
+    A Block consists of four tiles, that are selected by the tsa data, which contain indexes into the graphics set.
+    The graphics set has a color index for each pixel in the tile, which corresponds to a color in the block's palette.
+    """
+
     SIDE_LENGTH = 2 * Tile.SIDE_LENGTH
     WIDTH = SIDE_LENGTH
     HEIGHT = SIDE_LENGTH
 
     PIXEL_COUNT = WIDTH * HEIGHT
 
-    tsa_data = bytes()
+    _tsa_data = bytes()
 
     _block_cache: dict[tuple[BlockId, int, bool, bool, int], QImage] = {}
 
@@ -68,43 +76,43 @@ class Block:
         tsa_data: bytes,
     ):
         self.index = block_index
-
-        self.palette_index = (block_index & 0b1100_0000) >> 6
         self.graphics_set = graphics_set
-        self.palette_group = palette_group
 
-        self.tsa_data = tsa_data
+        self._palette_index = (block_index & 0b1100_0000) >> 6
+        self._palette_group = palette_group
 
-        self.images: dict[int, QImage] = {}
+        self._tsa_data = tsa_data
+
+        self._images: dict[int, QImage] = {}
 
         if graphics_set.number == CLOUDY_GRAPHICS_SET:
-            self.bg_color = NESPalette[palette_group[self.palette_index][2]]
+            self._bg_color = NESPalette[palette_group[self._palette_index][2]]
         else:
-            self.bg_color = NESPalette[palette_group[self.palette_index][0]]
+            self._bg_color = NESPalette[palette_group[self._palette_index][0]]
 
         self._render()
 
     def _render(self):
-        if self.graphics_set.anim_frame in self.images:
+        if self.graphics_set.anim_frame in self._images:
             return
 
         # can't hash list, so turn it into a string instead
         self._block_id: BlockId = (
             self.index,
-            str(self.palette_group),
+            str(self._palette_group),
             self.graphics_set.number,
         )
 
-        lu = self.tsa_data[TSA_BANK_0 + self.index]
-        ld = self.tsa_data[TSA_BANK_1 + self.index]
-        ru = self.tsa_data[TSA_BANK_2 + self.index]
-        rd = self.tsa_data[TSA_BANK_3 + self.index]
+        lu = self._tsa_data[TSA_BANK_0_START + self.index]
+        ld = self._tsa_data[TSA_BANK_1_START + self.index]
+        ru = self._tsa_data[TSA_BANK_2_START + self.index]
+        rd = self._tsa_data[TSA_BANK_3_START + self.index]
 
-        self.lu_tile = get_tile(lu, self.palette_group, self.palette_index, self.graphics_set)
-        self.ld_tile = get_tile(ld, self.palette_group, self.palette_index, self.graphics_set)
+        self.lu_tile = get_tile(lu, self._palette_group, self._palette_index, self.graphics_set)
+        self.ld_tile = get_tile(ld, self._palette_group, self._palette_index, self.graphics_set)
 
-        self.ru_tile = get_tile(ru, self.palette_group, self.palette_index, self.graphics_set)
-        self.rd_tile = get_tile(rd, self.palette_group, self.palette_index, self.graphics_set)
+        self.ru_tile = get_tile(ru, self._palette_group, self._palette_index, self.graphics_set)
+        self.rd_tile = get_tile(rd, self._palette_group, self._palette_index, self.graphics_set)
 
         image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format_RGB888)
 
@@ -117,12 +125,12 @@ class Block:
 
         painter.end()
 
-        if _image_only_one_color(image) and image.pixelColor(0, 0) == QColor(*MASK_COLOR):
+        if _is_image_only_one_color(image) and image.pixelColor(0, 0) == QColor(*MASK_COLOR):
             self._whole_block_is_transparent = True
         else:
             self._whole_block_is_transparent = False
 
-        self.images[self.graphics_set.anim_frame] = image
+        self._images[self.graphics_set.anim_frame] = image
 
     def rerender(self):
         self._render()
@@ -138,13 +146,13 @@ class Block:
 
         if block_attributes not in Block._block_cache:
             self.rerender()
-            image = self.images[self.graphics_set.anim_frame].copy()
+            image = self._images[self.graphics_set.anim_frame].copy()
 
             if block_length != Block.WIDTH:
                 image = image.scaled(block_length, block_length)
 
             # mask out the transparent pixels first
-            mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+            mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
             image.setAlphaChannel(mask)
 
             if not transparent:  # or self._whole_block_is_transparent:
@@ -160,7 +168,7 @@ class Block:
     def _replace_transparent_with_background(self, image):
         # draw image on background layer, to fill transparent pixels
         background = image.copy()
-        background.fill(self.bg_color)
+        background.fill(self._bg_color)
 
         _painter = QPainter(background)
         _painter.drawImage(QPoint(), image)
@@ -169,7 +177,7 @@ class Block:
         return background
 
 
-def _image_only_one_color(image):
+def _is_image_only_one_color(image):
     copy = image.copy()
 
     copy.convertTo(QImage.Format_Indexed8)
