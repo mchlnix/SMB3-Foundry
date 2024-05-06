@@ -18,10 +18,10 @@ from smb3parse.levels import (
     WORLD_MAP_WARP_WORLD_INDEX,
 )
 
-BORDER_UL = load_from_png(61, 3)
-BORDER_UR = BORDER_UL.mirrored(True, False)
-BORDER_BR = load_from_png(63, 3)
-BORDER_BL = BORDER_BR.mirrored(True, False)
+BORDER_CORNER_TL = load_from_png(61, 3)
+BORDER_CORNER_TR = BORDER_CORNER_TL.mirrored(True, False)
+BORDER_CORNER_BR = load_from_png(63, 3)
+BORDER_CORNER_BL = BORDER_CORNER_BR.mirrored(True, False)
 
 BORDER_SIDE_L = load_from_png(62, 3)
 BORDER_SIDE_R = BORDER_SIDE_L.mirrored(True, False)
@@ -182,19 +182,19 @@ class WorldDrawer:
             bottom_border.draw(painter, x * self.block_length, y_last_row, self.block_length)
 
         # border corners
-        border_ul = BORDER_UL.scaled(
+        border_ul = BORDER_CORNER_TL.scaled(
             QSize(self.block_length, self.block_length),
             Qt.AspectRatioMode.KeepAspectRatio,
         )
-        border_ur = BORDER_UR.scaled(
+        border_ur = BORDER_CORNER_TR.scaled(
             QSize(self.block_length, self.block_length),
             Qt.AspectRatioMode.KeepAspectRatio,
         )
-        border_bl = BORDER_BL.scaled(
+        border_bl = BORDER_CORNER_BL.scaled(
             QSize(self.block_length, self.block_length),
             Qt.AspectRatioMode.KeepAspectRatio,
         )
-        border_br = BORDER_BR.scaled(
+        border_br = BORDER_CORNER_BR.scaled(
             QSize(self.block_length, self.block_length),
             Qt.AspectRatioMode.KeepAspectRatio,
         )
