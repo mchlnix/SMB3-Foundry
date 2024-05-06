@@ -67,7 +67,7 @@ class FileMenu(QMenu):
         asm_menu.addSeparator()
 
         self.import_fns_action = asm_menu.addAction("Import FNS Addresses")
-        self.import_enemy_asm_action.setIcon(icon("upload.svg"))
+        self.import_fns_action.setIcon(icon("upload.svg"))
 
         self.addMenu(m3l_menu)
         self.addMenu(asm_menu)
