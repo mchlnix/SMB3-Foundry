@@ -386,6 +386,10 @@ POWERUP_ADDITION_STARMAN = 0x09
 STARTING_WORLD_INDEX_ADDRESS = 0x30CC3
 
 
+def reset_global_offsets():
+    globals().update(default_globals)
+
+
 def update_global_offsets(path_to_global_list: str | Path):
     path_to_global_list = Path(path_to_global_list)
 
@@ -393,6 +397,7 @@ def update_global_offsets(path_to_global_list: str | Path):
         return
 
     with path_to_global_list.open("r") as label_file:
+        reset_global_offsets()
         for line in label_file:
             label_name, hex_address = line.split(":")
 
@@ -4653,3 +4658,5 @@ Wrench_Patterns = 0xF4A2
 XUp_NumPats = 0x5D55
 XUp_Patterns = 0x5D4F
 XUp_XOff = 0x5D52
+
+default_globals = globals().copy()
