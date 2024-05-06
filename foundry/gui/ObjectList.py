@@ -1,4 +1,4 @@
-from PySide6.QtCore import QModelIndex
+from PySide6.QtCore import QModelIndex, Signal, SignalInstance
 from PySide6.QtGui import QMouseEvent, Qt
 from PySide6.QtWidgets import QListWidget, QSizePolicy, QWidget
 
@@ -7,6 +7,8 @@ from foundry.gui.ContextMenu import LevelContextMenu
 
 
 class ObjectList(QListWidget):
+    selection_changed: SignalInstance = Signal(list)
+
     def __init__(self, parent: QWidget, level_ref: LevelRef, context_menu: LevelContextMenu):
         super(ObjectList, self).__init__(parent=parent)
 
@@ -104,6 +106,7 @@ class ObjectList(QListWidget):
         return [self.item(index.row()).data(Qt.ItemDataRole.UserRole) for index in self.selectedIndexes()]
 
     def on_selection_changed(self):
+        # only called by ourselves
         selected_objects = self.selected_objects()
 
         selection_not_changed = selected_objects == self.level_ref.selected_objects
@@ -112,3 +115,4 @@ class ObjectList(QListWidget):
             return
         else:
             self.level_ref.selected_objects = selected_objects
+            self.selection_changed.emit(selected_objects)

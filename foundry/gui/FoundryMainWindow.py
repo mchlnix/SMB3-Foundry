@@ -206,6 +206,7 @@ class FoundryMainWindow(MainWindow):
         self.spinner_panel.object_change.connect(self.on_spin)
 
         self.object_list = ObjectList(self, self.level_ref, self.context_menu)
+        self.object_list.selection_changed.connect(self.level_view.scroll_to_objects)
 
         self.object_dropdown = ObjectDropdown(self)
         self.object_dropdown.object_selected.connect(self._on_placeable_object_selected)
