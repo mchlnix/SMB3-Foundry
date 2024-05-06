@@ -1,7 +1,7 @@
 from PySide6.QtGui import QAction, Qt
-from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QFileDialog, QMenu
 
-from foundry import icon
+from foundry import FNS_FILE_FILTER, icon
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.asm import (
     load_asm_filename,
@@ -11,6 +11,7 @@ from foundry.gui.asm import (
 )
 from foundry.gui.m3l import save_m3l, save_m3l_filename
 from foundry.gui.settings import Settings
+from smb3parse.constants import update_global_offsets
 
 
 class FileMenu(QMenu):
@@ -63,6 +64,11 @@ class FileMenu(QMenu):
         self.export_enemy_asm_action = asm_menu.addAction("Export Enemies")
         self.export_enemy_asm_action.setIcon(icon("download.svg"))
 
+        asm_menu.addSeparator()
+
+        self.import_fns_action = asm_menu.addAction("Import FNS Addresses")
+        self.import_enemy_asm_action.setIcon(icon("upload.svg"))
+
         self.addMenu(m3l_menu)
         self.addMenu(asm_menu)
 
@@ -85,6 +91,8 @@ class FileMenu(QMenu):
             self.on_open_level_asm()
         elif action is self.save_m3l_action:
             self.on_save_m3l()
+        elif action is self.import_fns_action:
+            self.on_fns_import()
 
     def on_open_level_asm(self):
         if not (pathname := load_asm_filename("Level ASM", self.settings.value("editor/default dir path"))):
@@ -121,3 +129,11 @@ class FileMenu(QMenu):
         m3l_bytes = self.level_ref.level.to_m3l()
 
         save_m3l(pathname, m3l_bytes)
+
+    def on_fns_import(self):
+        fns_file = QFileDialog.getOpenFileName(self, "Open FNS File", filter=FNS_FILE_FILTER)
+
+        if fns_file:
+            update_global_offsets(fns_file)
+
+            self.level_ref.data_changed.emit()
