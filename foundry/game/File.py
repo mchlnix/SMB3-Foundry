@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from foundry.game.additional_data import AdditionalData
+from smb3parse.constants import reset_global_offsets
 from smb3parse.util.rom import PRG_BANK_SIZE, INESHeader, Rom
 
 
@@ -44,6 +45,7 @@ class ROM(Rom):
         with open(path, "rb") as rom:
             data = bytearray(rom.read())
 
+        reset_global_offsets()
         ROM.header = INESHeader.from_buffer_copy(data)
         ROM.path = str(path)
         ROM.name = basename(path)
