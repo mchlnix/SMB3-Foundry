@@ -131,7 +131,7 @@ class FileMenu(QMenu):
         save_m3l(pathname, m3l_bytes)
 
     def on_fns_import(self):
-        fns_file = QFileDialog.getOpenFileName(self, "Open FNS File", filter=FNS_FILE_FILTER)
+        fns_file, _ = QFileDialog.getOpenFileName(self, "Open FNS File", filter=FNS_FILE_FILTER)
 
         if fns_file:
             update_global_offsets(fns_file)
