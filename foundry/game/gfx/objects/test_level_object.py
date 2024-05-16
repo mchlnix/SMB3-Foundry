@@ -3,8 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from foundry import root_dir
-from foundry.conftest import compare_images
+from foundry.conftest import compare_images, test_rom_path
 from foundry.game.File import ROM
 from foundry.game.gfx.objects import (
     LevelObject,
@@ -180,7 +179,7 @@ def test_change_attribute_to_bytes(attribute, increase):
 
 
 def gen_object_factories():
-    ROM(root_dir.joinpath("SMB3.nes"))
+    ROM(test_rom_path)
 
     for object_set in range(MAX_OBJECT_SET + 1):
         if object_set in [

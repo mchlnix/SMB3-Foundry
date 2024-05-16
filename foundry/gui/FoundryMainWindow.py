@@ -137,7 +137,7 @@ class FoundryMainWindow(MainWindow):
 
         self.new_level_action = self.level_menu.addAction("New Empty Level")
         self.new_level_action.setIcon(icon("file.svg"))
-        self.new_level_action.triggered.connect(self._on_new_level)
+        self.new_level_action.triggered.connect(self.on_new_level)
 
         self.select_level_action = self.level_menu.addAction("Select New Level")
         self.select_level_action.setIcon(icon("globe.svg"))
@@ -173,12 +173,12 @@ class FoundryMainWindow(MainWindow):
 
         self.close_level_action = self.level_menu.addAction("Close Level")
         self.close_level_action.setIcon(icon("x.svg"))
-        self.close_level_action.triggered.connect(self.close_level)
+        self.close_level_action.triggered.connect(self.close_current_level)
 
         self.menuBar().addMenu(self.level_menu)
 
         self._rom_menu = RomMenu(self.level_ref)
-        self._rom_menu.needs_gui_refresh.connect(self._enable_disable_gui_elements)
+        self._rom_menu.needs_gui_refresh.connect(self.enable_disable_gui_elements)
         self.menuBar().addMenu(self._rom_menu)
 
         self.context_menu = LevelContextMenu(self.level_ref)
@@ -374,11 +374,9 @@ class FoundryMainWindow(MainWindow):
 
         self.check_for_update_on_startup()
 
-        self.on_open_rom(path_to_rom, m3l_path)
-
         self.showMaximized()
 
-    def _on_new_level(self, dont_check=False):
+    def on_new_level(self, dont_check=False):
         if not dont_check and not self.safe_to_change():
             return
 
@@ -545,55 +543,56 @@ class FoundryMainWindow(MainWindow):
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self, path_to_rom="", m3l_path=""):
+    def on_open_rom(self, path_to_rom=""):
         if not self.safe_to_change():
             return
 
-        if not path_to_rom:
-            # otherwise ask the user what new file to open
-            path_to_rom, _ = QFileDialog.getOpenFileName(
-                self,
-                caption="Open ROM",
-                dir=self.settings.value("editor/default dir path"),
-                filter=ROM_FILE_FILTER,
-            )
+        if not path_to_rom and not (path_to_rom := self._ask_for_path_to_rom()):
+            self.enable_disable_gui_elements()
 
-            if not path_to_rom:
-                self._enable_disable_gui_elements()
+            return
 
-                return
-
-        # Proceed loading the file chosen by the user
+        # Proceed to load the file chosen by the user
         try:
             ROM.load_from_file(path_to_rom)
 
-            self.close_level()
+            self.close_current_level()
 
             self._ask_for_level_management()
 
             self._check_for_refresh()
 
-            if path_to_rom == auto_save_rom_path:
-                self._load_auto_save()
-            else:
-                self._save_auto_rom()
-
-                if m3l_path:
-                    self.load_m3l(m3l_path)
-
-                elif not self.open_level_selector(None):
-                    self._on_new_level(dont_check=True)
-
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
+            return
+
         finally:
-            self._enable_disable_gui_elements()
+            self.enable_disable_gui_elements()
+
+        if path_to_rom == auto_save_rom_path:
+            self._load_auto_save()
+
+        else:
+            self._save_auto_rom()
+
+        self.enable_disable_gui_elements()
+
+    def _ask_for_path_to_rom(self):
+        # otherwise, ask the user what new file to open
+        path_to_rom, _ = QFileDialog.getOpenFileName(
+            self,
+            caption="Open ROM",
+            dir=self.settings.value("editor/default dir path"),
+            filter=ROM_FILE_FILTER,
+        )
+
+        return path_to_rom
 
     def on_open_m3l(self, _):
         if not self.safe_to_change():
             return
 
-        # otherwise ask the user what new file to open
+        # otherwise, ask the user what new file to open
         if not (pathname := load_m3l_filename(self.settings.value("editor/default dir path"))):
             return
 
@@ -1012,19 +1011,19 @@ class FoundryMainWindow(MainWindow):
                 "Failed loading level. The level offsets don't match.",
             )
 
-    def close_level(self):
+    def close_current_level(self):
         if not self.safe_to_change():
             return
 
         self.level_ref.level = None
         self.undo_stack.clear()
-        self._enable_disable_gui_elements()
+        self.enable_disable_gui_elements()
 
     def update_gui_for_level(self):
         restore_all_palettes()
         self.undo_stack.clear()
 
-        self._enable_disable_gui_elements()
+        self.enable_disable_gui_elements()
 
         self.update_title()
         self.jump_list.update()
@@ -1050,7 +1049,7 @@ class FoundryMainWindow(MainWindow):
 
         self.level_view.update()
 
-    def _enable_disable_gui_elements(self):
+    def enable_disable_gui_elements(self):
         # actions and widgets, that depend on whether the ROM is loaded
         rom_elements = [
             # entries in file menu

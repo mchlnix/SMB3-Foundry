@@ -10,6 +10,13 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 from foundry import auto_save_rom_path, github_issue_link
 from foundry.gui.dialogs.AutoSaveDialog import AutoSaveDialog
+from smb3parse.constants import BASE_OFFSET
+
+LOAD_LEVEL = "--load-level"
+
+LOAD_M3L = "--load-m3l"
+
+CHECK_AUTO_SAVE = "--dont-check-auto-save"
 
 # compatibility for dark mode
 warnings.warning = warnings.warn
@@ -26,7 +33,7 @@ from foundry.gui.FoundryMainWindow import FoundryMainWindow  # noqa
 app = None
 
 
-def main(path_to_rom, check_auto_save=True, m3l_path=""):
+def main(path_to_rom, check_auto_save=True, level_data_tuple=(), m3l_path=""):
     global app
     app = QApplication()
 
@@ -40,7 +47,21 @@ def main(path_to_rom, check_auto_save=True, m3l_path=""):
                 None, "Auto Save recovered", "Don't forget to save the loaded ROM under a new name!"
             )
 
-    FoundryMainWindow(path_to_rom, m3l_path)
+    main_window = FoundryMainWindow(path_to_rom, m3l_path)
+
+    main_window.on_open_rom(path_to_rom)
+
+    if m3l_path:
+        main_window.load_m3l(m3l_path)
+
+    elif level_data_tuple:
+        main_window.update_level("", *level_data_tuple)
+
+    elif not main_window.open_level_selector(None):
+        main_window.on_new_level(dont_check=True)
+
+    main_window.enable_disable_gui_elements()
+
     app.exec()
 
 
@@ -48,6 +69,7 @@ if __name__ == "__main__":
     should_check_auto_save = True
     path = ""
     m3l_path = ""
+    level_data_tuple = tuple()
 
     args = sys.argv[1:]
 
@@ -55,10 +77,10 @@ if __name__ == "__main__":
         while args:
             arg = args.pop(0)
 
-            if arg == "--dont-check-auto-save":
+            if arg == CHECK_AUTO_SAVE:
                 should_check_auto_save = False
 
-            elif arg == "--load-m3l":
+            elif arg == LOAD_M3L:
                 if not args:
                     raise ValueError("Did not provide a file path after --load-m3l")
 
@@ -66,6 +88,19 @@ if __name__ == "__main__":
 
                 if not pathlib.Path(m3l_path).exists():
                     raise ValueError(f"M3L path '{m3l_path}' does not exist.")
+
+            elif arg == LOAD_LEVEL:
+                if len(args) < 3:
+                    raise ValueError("Needs level address, enemy address and object set number to load a level.")
+
+                try:
+                    level_address = int(args.pop(0), 16)
+                    enemy_address = int(args.pop(0), 16)
+                    object_set_number = int(args.pop(0), 16)
+                except ValueError:
+                    raise ValueError("Level address, enemy address and object set number must be hex integers.")
+
+                level_data_tuple = (level_address, enemy_address, object_set_number)
 
             elif pathlib.Path(arg).exists():
                 path = arg
@@ -75,7 +110,7 @@ if __name__ == "__main__":
 
         print(f"{path=}, {should_check_auto_save=}, {m3l_path=}")
 
-        main(path, should_check_auto_save, m3l_path)
+        main(path, should_check_auto_save, level_data_tuple, m3l_path)
 
     except Exception as e:
         if app is None:
