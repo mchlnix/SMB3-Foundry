@@ -9,8 +9,8 @@ import warnings
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from foundry import auto_save_rom_path, github_issue_link
+from foundry.game.File import ROM
 from foundry.gui.dialogs.AutoSaveDialog import AutoSaveDialog
-from smb3parse.constants import BASE_OFFSET
 
 LOAD_LEVEL = "--load-level"
 
@@ -51,14 +51,15 @@ def main(path_to_rom, check_auto_save=True, level_data_tuple=(), m3l_path=""):
 
     main_window.on_open_rom(path_to_rom)
 
-    if m3l_path:
-        main_window.load_m3l(m3l_path)
+    if ROM.is_loaded():
+        if m3l_path:
+            main_window.load_m3l(m3l_path)
 
-    elif level_data_tuple:
-        main_window.update_level("", *level_data_tuple)
+        elif level_data_tuple:
+            main_window.update_level("", *level_data_tuple)
 
-    elif not main_window.open_level_selector(None):
-        main_window.on_new_level(dont_check=True)
+        elif not main_window.open_level_selector(None):
+            main_window.on_new_level(dont_check=True)
 
     main_window.enable_disable_gui_elements()
 
