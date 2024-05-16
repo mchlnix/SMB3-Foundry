@@ -5,6 +5,7 @@ from foundry.game.ObjectDefinitions import ObjectDefinition, load_object_definit
 from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
 from smb3parse.objects.object_set import ObjectSet as SMB3ObjectSet
 
+# TODO: make relative to a label in Constants
 ENDING_OBJECT_BASE_OFFSET = 0x1C8F9
 """
 There are different Level Ending Objects. The design and necessary blocks to use are written into the ROM at this

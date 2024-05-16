@@ -7,14 +7,13 @@ from PySide6.QtGui import QColor
 from foundry import root_dir
 from foundry.game.File import ROM
 from foundry.gui.util import grouper
-from smb3parse.constants import Palette_By_Tileset
+from smb3parse.constants import Constants
 from smb3parse.levels import BASE_OFFSET
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
 PALETTE_PRG_NO = 22
 
 PALETTE_BASE_ADDRESS = BASE_OFFSET + PALETTE_PRG_NO * PRG_BANK_SIZE
-PALETTE_OFFSET_LIST_US = Palette_By_Tileset
 PALETTE_OFFSET_LIST_JP = 0x374AB  # found by searching through the JP ROM, calculating backwards to find the offset list
 PALETTE_OFFSET_SIZE = 2  # bytes
 
@@ -114,7 +113,7 @@ def load_palette_group(object_set: int, palette_group_index: int, use_cache=True
         return _palette_group_cache[key]
 
     # the data is in different locations for US and JP roms
-    for palette_offset_list in (PALETTE_OFFSET_LIST_US, PALETTE_OFFSET_LIST_JP):
+    for palette_offset_list in (Constants.Palette_By_Tileset, PALETTE_OFFSET_LIST_JP):
         # ignore ValueError when we don't find valid palette data, might be the other version
         with suppress(ValueError):
             palettes = _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list)

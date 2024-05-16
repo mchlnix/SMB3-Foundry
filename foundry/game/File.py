@@ -29,7 +29,7 @@ class ROM(Rom):
             if path is None:
                 raise ValueError("Rom was not loaded!")
 
-            ROM.load_from_file(path)
+            ROM.load_from_file(path, False)
 
         super(ROM, self).__init__(ROM.rom_data, ROM.header)
 
@@ -41,11 +41,13 @@ class ROM(Rom):
         return bytes(rom.tsa_data_for_object_set(object_set))
 
     @staticmethod
-    def load_from_file(path: Path | str):
+    def load_from_file(path: Path | str, reset_globals=True):
         with open(path, "rb") as rom:
             data = bytearray(rom.read())
 
-        reset_global_offsets()
+        if reset_globals:
+            reset_global_offsets()
+
         ROM.header = INESHeader.from_buffer_copy(data)
         ROM.path = str(path)
         ROM.name = basename(path)
@@ -81,7 +83,7 @@ class ROM(Rom):
         additional_data = ROM.additional_data
 
         if ROM.path:
-            ROM.load_from_file(ROM.path)
+            ROM.load_from_file(ROM.path, reset_globals=False)
 
         ROM.additional_data = additional_data
 

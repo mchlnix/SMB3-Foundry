@@ -1,11 +1,6 @@
 from typing import Optional
 
-from smb3parse.constants import (
-    PipewayCtlr_MapScrlXHi,
-    PipewayCtlr_MapX,
-    PipewayCtlr_MapXHi,
-    PipewayCtlr_MapY,
-)
+from smb3parse.constants import Constants
 from smb3parse.data_points import Position
 from smb3parse.data_points.util import DataPoint, _IndexedMixin
 from smb3parse.levels import WORLD_MAP_SCREEN_WIDTH
@@ -74,12 +69,12 @@ class PipeData(_IndexedMixin, DataPoint):
         super(PipeData, self).change_index(index)
 
     def calculate_addresses(self):
-        self.x_high_address = PipewayCtlr_MapXHi + self.index
-        self.x_low_address = PipewayCtlr_MapX + self.index
+        self.x_high_address = Constants.PipewayCtlr_MapXHi + self.index
+        self.x_low_address = Constants.PipewayCtlr_MapX + self.index
 
-        self.y_address = PipewayCtlr_MapY + self.index
+        self.y_address = Constants.PipewayCtlr_MapY + self.index
 
-        self.scroll_and_x_high_address = PipewayCtlr_MapScrlXHi + self.index
+        self.scroll_and_x_high_address = Constants.PipewayCtlr_MapScrlXHi + self.index
 
     def read_values(self):
         self.x_high_left, self.x_high_right = self._rom.nibbles(self.x_high_address)

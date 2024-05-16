@@ -4,8 +4,7 @@ from foundry.game.File import ROM
 from smb3parse.constants import (
     STOCK_LEVEL_BG_PAGES1_BYTES,
     STOCK_LEVEL_BG_PAGES2_BYTES,
-    Level_BG_Pages1,
-    Level_BG_Pages2,
+    Constants,
 )
 
 CHR_ROM_OFFSET = 0x40010
@@ -16,7 +15,8 @@ SPADE_ROULETTE = 16
 N_SPADE = 17
 VS_2P = 18
 
-BG_PAGE_COUNT = Level_BG_Pages2 - Level_BG_Pages1  # 23 in stock rom
+# TODO: Can that be changed, or are save to cache this value here?
+BG_PAGE_COUNT = Constants.Level_BG_Pages2 - Constants.Level_BG_Pages1  # 23 in stock rom
 
 GRAPHIC_SET_NAMES = [
     "Mario graphics (1)",
@@ -60,8 +60,12 @@ class GraphicsSet:
 
     def __init__(self, graphic_set_number):
         if not GraphicsSet.GRAPHIC_SET_BG_PAGE_1:
-            GraphicsSet.GRAPHIC_SET_BG_PAGE_1 = self._heuristic_bg_pages(STOCK_LEVEL_BG_PAGES1_BYTES, Level_BG_Pages1)
-            GraphicsSet.GRAPHIC_SET_BG_PAGE_2 = self._heuristic_bg_pages(STOCK_LEVEL_BG_PAGES2_BYTES, Level_BG_Pages2)
+            GraphicsSet.GRAPHIC_SET_BG_PAGE_1 = self._heuristic_bg_pages(
+                STOCK_LEVEL_BG_PAGES1_BYTES, Constants.Level_BG_Pages1
+            )
+            GraphicsSet.GRAPHIC_SET_BG_PAGE_2 = self._heuristic_bg_pages(
+                STOCK_LEVEL_BG_PAGES2_BYTES, Constants.Level_BG_Pages2
+            )
 
         self._data = bytearray()
         self._anim_data = []

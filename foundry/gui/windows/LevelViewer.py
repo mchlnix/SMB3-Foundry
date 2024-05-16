@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
 from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.File import ROM
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
-from smb3parse.constants import BASE_OFFSET, PAGE_A000_ByTileset
+from smb3parse.constants import BASE_OFFSET, Constants
 from smb3parse.data_points import WorldMapData
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.objects.object_set import (
@@ -82,7 +82,7 @@ class LevelViewer(CustomChildWindow):
         self.setCentralWidget(self._tab_widget)
 
         # get prg numbers for object sets and sort them
-        prg_banks_by_object_set = ROM().read(PAGE_A000_ByTileset, 16)
+        prg_banks_by_object_set = ROM().read(Constants.OFFSET_BY_OBJECT_SET_A000, 16)
         sorted_prg_bank_numbers = list(set(prg_banks_by_object_set[PLAINS_OBJECT_SET:SPADE_BONUS_OBJECT_SET]))
         sorted_prg_bank_numbers.sort()
 

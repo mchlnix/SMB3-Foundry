@@ -6,43 +6,13 @@ from smb3parse.constants import (
     AIRSHIP_TRAVEL_SET_SIZE,
     BASE_OFFSET,
     OFFSET_SIZE,
-    Airship_Layouts,
-    Airship_Objects,
-    CoinShip_Layouts,
-    CoinShip_Objects,
-    FortressFX_W1,
-    FortressFXBase_ByWorld,
-    LevelJctBQ_Layout,
-    LevelJctBQ_Objects,
-    LevelJctBQ_Tileset,
-    LevelJctGE_Layout,
-    LevelJctGE_Objects,
-    LevelJctGE_Tileset,
-    Map_Airship_Dest_XSets,
-    Map_Airship_Dest_YSets,
-    Map_Airship_Travel_BaseIdx,
-    Map_AnimSpeeds,
-    Map_Bottom_Tiles,
-    Map_Object_ColorSets,
-    Map_Tile_ColorSets,
-    Map_Y_Starts,
-    ToadShop_Layouts,
-    ToadShop_Objects,
-    World_BGM,
-    World_BGM_Arrival,
-    World_Map_Max_PanR,
+    Constants,
 )
 from smb3parse.data_points import FortressFXData
 from smb3parse.data_points.level_pointer_data import LevelPointerData
 from smb3parse.data_points.util import DataPoint, Position, _IndexedMixin
 from smb3parse.levels import (
-    LAYOUT_LIST_OFFSET,
-    LEVEL_ENEMY_LIST_OFFSET,
-    LEVEL_X_POS_LISTS,
-    LEVEL_Y_POS_LISTS,
-    LEVELS_IN_WORLD_LIST_OFFSET,
     MAX_SCREEN_COUNT,
-    STRUCTURE_DATA_OFFSETS,
     WORLD_MAP_BASE_OFFSET,
     WORLD_MAP_BLANK_TILE_ID,
     WORLD_MAP_LAYOUT_DELIMITER,
@@ -282,54 +252,58 @@ class WorldMapData(_IndexedMixin, DataPoint):
         super(WorldMapData, self).__init__(rom)
 
     def calculate_addresses(self):
-        self.tile_data_offset_address = LAYOUT_LIST_OFFSET + OFFSET_SIZE * self.index
+        self.tile_data_offset_address = Constants.LAYOUT_LIST_OFFSET + OFFSET_SIZE * self.index
 
-        self.palette_index_address = Map_Tile_ColorSets + self.index
-        self.obj_color_index_address = Map_Object_ColorSets + self.index
+        self.palette_index_address = Constants.Map_Tile_ColorSets + self.index
+        self.obj_color_index_address = Constants.Map_Object_ColorSets + self.index
 
-        self.bottom_border_tile_address = Map_Bottom_Tiles + self.index
+        self.bottom_border_tile_address = Constants.Map_Bottom_Tiles + self.index
         # TODO you can define a separate tick count for each anim frame, not used in game though
-        self.frame_tick_count_address = Map_AnimSpeeds + self.index * 4  # 4 animation frames
+        self.frame_tick_count_address = Constants.Map_AnimSpeeds + self.index * 4  # 4 animation frames
 
-        self.structure_data_offset_address = STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.index
+        self.structure_data_offset_address = Constants.STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.index
 
-        self.y_pos_list_start_address = LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index
-        self.x_pos_list_start_address = LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index
+        self.y_pos_list_start_address = Constants.LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index
+        self.x_pos_list_start_address = Constants.LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index
 
-        self.enemy_offset_list_offset_address = LEVEL_ENEMY_LIST_OFFSET + self.index * OFFSET_SIZE
-        self.level_offset_list_offset_address = LEVELS_IN_WORLD_LIST_OFFSET + self.index * OFFSET_SIZE
+        self.enemy_offset_list_offset_address = Constants.LEVEL_ENEMY_LIST_OFFSET + self.index * OFFSET_SIZE
+        self.level_offset_list_offset_address = Constants.LEVELS_IN_WORLD_LIST_OFFSET + self.index * OFFSET_SIZE
 
-        self.map_start_y_address = Map_Y_Starts + self.index
-        self.map_scroll_address = World_Map_Max_PanR + self.index
+        self.map_start_y_address = Constants.Map_Y_Starts + self.index
+        self.map_scroll_address = Constants.World_Map_Max_PanR + self.index
 
         # unused, because the value is always 0x03 * world_index
-        self.airship_travel_base_index_address = Map_Airship_Travel_BaseIdx + self.index
+        self.airship_travel_base_index_address = Constants.Map_Airship_Travel_BaseIdx + self.index
 
-        self.airship_travel_x_set_address = Map_Airship_Dest_XSets + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
-        self.airship_travel_y_set_address = Map_Airship_Dest_YSets + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
+        self.airship_travel_x_set_address = (
+            Constants.Map_Airship_Dest_XSets + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
+        )
+        self.airship_travel_y_set_address = (
+            Constants.Map_Airship_Dest_YSets + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
+        )
 
-        self.fortress_fx_base_index_address = FortressFXBase_ByWorld + self.index
+        self.fortress_fx_base_index_address = Constants.FortressFXBase_ByWorld + self.index
         self.fortress_fx_base_index = self._rom.int(self.fortress_fx_base_index_address)
 
-        self.airship_level_offset_address = Airship_Layouts + OFFSET_SIZE * self.index
-        self.airship_enemy_offset_address = Airship_Objects + OFFSET_SIZE * self.index
+        self.airship_level_offset_address = Constants.Airship_Layouts + OFFSET_SIZE * self.index
+        self.airship_enemy_offset_address = Constants.Airship_Objects + OFFSET_SIZE * self.index
 
-        self.coin_ship_level_offset_address = CoinShip_Layouts + OFFSET_SIZE * self.index
-        self.coin_ship_enemy_offset_address = CoinShip_Objects + OFFSET_SIZE * self.index
+        self.coin_ship_level_offset_address = Constants.CoinShip_Layouts + OFFSET_SIZE * self.index
+        self.coin_ship_enemy_offset_address = Constants.CoinShip_Objects + OFFSET_SIZE * self.index
 
-        self.generic_exit_level_offset_address = LevelJctGE_Layout + OFFSET_SIZE * self.index
-        self.generic_exit_enemy_offset_address = LevelJctGE_Objects + OFFSET_SIZE * self.index
-        self.generic_exit_object_set_address = LevelJctGE_Tileset + self.index
+        self.generic_exit_level_offset_address = Constants.LevelJctGE_Layout + OFFSET_SIZE * self.index
+        self.generic_exit_enemy_offset_address = Constants.LevelJctGE_Objects + OFFSET_SIZE * self.index
+        self.generic_exit_object_set_address = Constants.LevelJctGE_Tileset + self.index
 
-        self.big_q_block_level_offset_address = LevelJctBQ_Layout + OFFSET_SIZE * self.index
-        self.big_q_block_enemy_offset_address = LevelJctBQ_Objects + OFFSET_SIZE * self.index
-        self.big_q_block_object_set_address = LevelJctBQ_Tileset + self.index
+        self.big_q_block_level_offset_address = Constants.LevelJctBQ_Layout + OFFSET_SIZE * self.index
+        self.big_q_block_enemy_offset_address = Constants.LevelJctBQ_Objects + OFFSET_SIZE * self.index
+        self.big_q_block_object_set_address = Constants.LevelJctBQ_Tileset + self.index
 
-        self.toad_warp_level_offset_address = ToadShop_Layouts + OFFSET_SIZE * self.index
-        self.toad_warp_item_address = ToadShop_Objects + OFFSET_SIZE * self.index
+        self.toad_warp_level_offset_address = Constants.ToadShop_Layouts + OFFSET_SIZE * self.index
+        self.toad_warp_item_address = Constants.ToadShop_Objects + OFFSET_SIZE * self.index
 
-        self.music_index_address = World_BGM + self.index
-        self.music_arrival_index_address = World_BGM_Arrival + self.index
+        self.music_index_address = Constants.World_BGM + self.index
+        self.music_arrival_index_address = Constants.World_BGM_Arrival + self.index
 
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
@@ -446,13 +420,13 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         # y_pos_list_start
         rom.write_little_endian(
-            LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index,
+            Constants.LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index,
             self.y_pos_list_start - WORLD_MAP_BASE_OFFSET,
         )
 
         # x_pos_list_start
         rom.write_little_endian(
-            LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index,
+            Constants.LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index,
             self.x_pos_list_start - WORLD_MAP_BASE_OFFSET,
         )
 
@@ -510,7 +484,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
     @property
     def fortress_fx_indexes_start_address(self):
-        return FortressFX_W1 + self.fortress_fx_base_index
+        return Constants.FortressFX_W1 + self.fortress_fx_base_index
 
     @property
     def structure_block_address(self):

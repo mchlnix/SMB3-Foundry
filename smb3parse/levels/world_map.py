@@ -7,17 +7,13 @@ from smb3parse.constants import (
     TILE_LEVEL_1,
     TILE_LEVEL_10,
     TILE_NAMES,
-    Map_Y_Starts,
+    Constants,
 )
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.levels import (
     COMPLETABLE_LIST_END_MARKER,
-    COMPLETABLE_TILES_LIST,
     FIRST_VALID_ROW,
-    LAYOUT_LIST_OFFSET,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
-    SPECIAL_ENTERABLE_TILES_LIST,
-    TILE_ATTRIBUTES_TS0_OFFSET,
     VALID_COLUMNS,
     VALID_ROWS,
     WORLD_COUNT,
@@ -31,12 +27,10 @@ from smb3parse.levels.WorldMapPosition import WorldMapPosition
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET, ObjectSet
 from smb3parse.util.rom import Rom
 
-Y_START_POS_LIST = Map_Y_Starts
-
 
 def list_world_map_addresses(rom: Rom) -> list[int]:
     addresses = [
-        WORLD_MAP_BASE_OFFSET + rom.little_endian(LAYOUT_LIST_OFFSET + OFFSET_SIZE * world)
+        WORLD_MAP_BASE_OFFSET + rom.little_endian(Constants.LAYOUT_LIST_OFFSET + OFFSET_SIZE * world)
         for world in range(WORLD_COUNT)
     ]
 
@@ -65,23 +59,23 @@ def level_name(data: Optional[LevelPointerData]) -> str:
 
 
 def _get_normal_enterable_tiles(rom: Rom) -> bytes:
-    return rom.read(TILE_ATTRIBUTES_TS0_OFFSET, 4)
+    return rom.read(Constants.TILE_ATTRIBUTES_TS0_OFFSET, 4)
 
 
 def _get_special_enterable_tiles(rom: Rom) -> bytes:
-    return rom.read(SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
+    return rom.read(Constants.SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
 
 
 def _get_completable_tiles(rom: Rom) -> bytearray:
     completable_tile_amount = (
         rom.find(
             COMPLETABLE_LIST_END_MARKER.to_bytes(1, byteorder="big"),
-            COMPLETABLE_TILES_LIST,
+            Constants.COMPLETABLE_TILES_LIST,
         )
-        - COMPLETABLE_TILES_LIST
+        - Constants.COMPLETABLE_TILES_LIST
     )
 
-    return rom.read(COMPLETABLE_TILES_LIST, completable_tile_amount)
+    return rom.read(Constants.COMPLETABLE_TILES_LIST, completable_tile_amount)
 
 
 def tile_is_enterable(tile_index: int, rom: Rom) -> bool:

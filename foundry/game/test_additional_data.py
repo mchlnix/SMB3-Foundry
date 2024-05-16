@@ -9,13 +9,13 @@ from foundry.game.additional_data import (
     LevelOrganizer,
 )
 from foundry.game.level import EMPTY_OBJECT_DATA, EnemyItemAddress, LevelAddress
-from smb3parse import PAGE_A000_ByTileset
 from smb3parse.constants import (
     BASE_OFFSET,
     ENEMY_DATA_BANK_INDEX,
     OFFSET_SIZE,
     PLAINS_LEVEL_DATA_BANK_INDEX,
     VANILLA_PRG_BANK_COUNT,
+    Constants,
 )
 from smb3parse.objects.object_set import DESERT_OBJECT_SET, PLAINS_OBJECT_SET
 from smb3parse.util import apply
@@ -43,7 +43,7 @@ def mock_rom(rom):
         def __init__(self):
             super().__init__(bytearray(VANILLA_PRG_BANK_COUNT * PRG_BANK_SIZE))
 
-            super().write(PAGE_A000_ByTileset, rom.read(PAGE_A000_ByTileset, 16))
+            super().write(Constants.PAGE_A000_ByTileset, rom.read(Constants.PAGE_A000_ByTileset, 16))
 
             self.level_sizes = [24, 36, 48]
             self.level_bytes = [randbytes(level_size_) + bytes([0xFF]) for level_size_ in self.level_sizes]

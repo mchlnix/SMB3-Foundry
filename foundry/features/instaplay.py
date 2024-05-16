@@ -2,15 +2,12 @@ from foundry.game.level.Level import Level
 from foundry.gui.dialogs.SettingsDialog import PowerupEntry
 from smb3parse.constants import (
     BASE_OFFSET,
-    LT0,
     PAGE_A000_OFFSET,
     POWERUP_ADDITION_PWING,
     POWERUP_ADDITION_STARMAN,
     STARTING_WORLD_INDEX_ADDRESS,
     TILE_LEVEL_1,
-    Title_DebugMenu,
-    Title_PrepForWorldMap,
-    WorldIntro_BoxTimer_NoSym,
+    Constants,
 )
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.levels.world_map import WorldMap
@@ -39,7 +36,7 @@ class InstaPlayer:
         ram_map_power_disp = 0x03F3
 
         # set default powerup when starting a world
-        self.rom.write(Title_PrepForWorldMap + 0x1, bytes([powerup.power_up_code]))
+        self.rom.write(Constants.Title_PrepForWorldMap + 0x1, bytes([powerup.power_up_code]))
 
         if not powerup.has_p_wing or with_starman:
             return
@@ -57,6 +54,7 @@ class InstaPlayer:
             # Otherwise this code would copy the value of the normal powerup here
             # (So if the powerup would be Raccoon Mario, Map_Power_Disp would also be
             # set as Raccoon Mario instead of P-wing
+            # TODO: make relative to a label in Constants
             map_power_disp_reset_address = 0x3C5A2
             self.rom.write(map_power_disp_reset_address, bytes([NOP] * 3))
 
@@ -65,7 +63,7 @@ class InstaPlayer:
 
         # We need to start one byte before Title_DebugMenu to remove the RTS of Title_PrepForWorldMap
         # The assembly code below reads as follows:
-        self.rom.write(Title_DebugMenu - 0x1, debug_bytes)
+        self.rom.write(Constants.Title_DebugMenu - 0x1, debug_bytes)
 
     def put_current_level_to_level_1_1(self, level: Level) -> bool:
         if not level.attached_to_rom:
@@ -104,6 +102,7 @@ class InstaPlayer:
         # skip rendering the title screen by jumping to the code after selecting player count (1P or 2P)
         prg_24_offset = BASE_OFFSET + 24 * PRG_BANK_SIZE - PAGE_A000_OFFSET
 
+        # TODO: make relative to a label in Constants
         after_player_init = prg_24_offset + 0xA8FC
         title_screen_state_injection_rel = 0xACAE
 
@@ -120,10 +119,10 @@ class InstaPlayer:
         self.rom.write(title_screen_state_injection_abs + 3, ram_title_screen_address)
 
     def skip_world_info_box(self):
-        world_info_popup_duration_address_1 = WorldIntro_BoxTimer_NoSym + 6
+        world_info_popup_duration_address_1 = Constants.WorldIntro_BoxTimer_NoSym + 6
         self.rom.write(world_info_popup_duration_address_1, 0x01)
 
-        world_info_popup_duration_address_2 = LT0 + 8
+        world_info_popup_duration_address_2 = Constants.LT0 + 8
         self.rom.write(world_info_popup_duration_address_2, 0x01)
 
 

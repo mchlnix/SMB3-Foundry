@@ -1,5 +1,4 @@
-from smb3parse import OFFSET_BY_OBJECT_SET_A000
-from smb3parse.constants import BASE_OFFSET, PAGE_A000_OFFSET
+from smb3parse.constants import BASE_OFFSET, PAGE_A000_OFFSET, Constants
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
 WORLD_MAP_OBJECT_SET = 0x00
@@ -73,7 +72,7 @@ class ObjectSet:
         self.level_offset = BASE_OFFSET
 
         if self.number != ENEMY_ITEM_OBJECT_SET:
-            object_set_offset = self.rom.int(OFFSET_BY_OBJECT_SET_A000 + self.number) * PRG_BANK_SIZE
+            object_set_offset = self.rom.int(Constants.OFFSET_BY_OBJECT_SET_A000 + self.number) * PRG_BANK_SIZE
 
             self.level_offset += object_set_offset - PAGE_A000_OFFSET
 

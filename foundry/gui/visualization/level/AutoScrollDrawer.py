@@ -5,15 +5,7 @@ from foundry.game import GROUND
 from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.Level import Level
-from smb3parse.constants import (
-    AScroll_HorizontalInitMove,
-    AScroll_Movement,
-    AScroll_MovementLoop,
-    AScroll_MovementLoopStart,
-    AScroll_MovementLoopTicks,
-    AScroll_MovementRepeat,
-    AScroll_VelAccel,
-)
+from smb3parse.constants import Constants
 from smb3parse.levels import LEVEL_SCREEN_WIDTH
 
 HORIZONTAL_SCROLL_0 = 0
@@ -74,8 +66,12 @@ class AutoScrollDrawer:
             # illegal value, those appear in the vanilla ROM, though; so error out
             return
 
-        first_movement_command_index = (self.rom.int(AScroll_HorizontalInitMove + auto_scroll_routine_index) + 1) % 256
-        last_movement_command_index = (self.rom.int(AScroll_HorizontalInitMove + auto_scroll_routine_index + 1)) % 256
+        first_movement_command_index = (
+            self.rom.int(Constants.AScroll_HorizontalInitMove + auto_scroll_routine_index) + 1
+        ) % 256
+        last_movement_command_index = (
+            self.rom.int(Constants.AScroll_HorizontalInitMove + auto_scroll_routine_index + 1)
+        ) % 256
 
         self.horizontal_speed = 0
         self.vertical_speed = 0
@@ -83,8 +79,8 @@ class AutoScrollDrawer:
         self.current_pos = self._determine_auto_scroll_start(block_length)
 
         for movement_command_index in range(first_movement_command_index, last_movement_command_index + 1):
-            movement_command = self.rom.int(AScroll_Movement + movement_command_index)
-            movement_repeat = self.rom.int(AScroll_MovementRepeat + movement_command_index)
+            movement_command = self.rom.int(Constants.AScroll_Movement + movement_command_index)
+            movement_repeat = self.rom.int(Constants.AScroll_MovementRepeat + movement_command_index)
 
             self._execute_movement_command(painter, movement_command, movement_repeat)
 
@@ -114,8 +110,8 @@ class AutoScrollDrawer:
             assert h_acceleration_index != 3
             assert v_acceleration_index != 3
 
-            h_acceleration = self.rom.int(AScroll_VelAccel + h_acceleration_index)
-            v_acceleration = self.rom.int(AScroll_VelAccel + v_acceleration_index)
+            h_acceleration = self.rom.int(Constants.AScroll_VelAccel + h_acceleration_index)
+            v_acceleration = self.rom.int(Constants.AScroll_VelAccel + v_acceleration_index)
 
             if h_acceleration == 0xFF:
                 h_acceleration = -0x01
@@ -131,7 +127,7 @@ class AutoScrollDrawer:
         else:
             auto_scroll_loop_selector = command >> 4
 
-            loop_start_offset = AScroll_MovementLoopStart - 2 + auto_scroll_loop_selector
+            loop_start_offset = Constants.AScroll_MovementLoopStart - 2 + auto_scroll_loop_selector
 
             if auto_scroll_loop_selector in [0, 1]:
                 # normal movement command
@@ -147,10 +143,10 @@ class AutoScrollDrawer:
                 number_of_commands = movement_loop_end_index - movement_loop_start_index
 
                 movement_loop_commands = self.rom.read(
-                    AScroll_MovementLoop + movement_loop_start_index, number_of_commands
+                    Constants.AScroll_MovementLoop + movement_loop_start_index, number_of_commands
                 )
                 movement_loop_repeats = self.rom.read(
-                    AScroll_MovementLoopTicks + movement_loop_start_index,
+                    Constants.AScroll_MovementLoopTicks + movement_loop_start_index,
                     number_of_commands,
                 )
 

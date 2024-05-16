@@ -11,12 +11,12 @@ from foundry.game.level import (
     LevelAddress,
     ObjectData,
 )
-from smb3parse import PAGE_A000_ByTileset
 from smb3parse.constants import (
     BASE_OFFSET,
     ENEMY_DATA_BANK_INDEX,
     OFFSET_SIZE,
     PAGE_A000_OFFSET,
+    Constants,
 )
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.levels.level_header import LevelHeader
@@ -77,7 +77,7 @@ class AdditionalData:
         return bool(self.managed_level_positions is not None or self.found_levels)
 
     def free_space_for_object_set(self, object_set_number: int):
-        prg_banks_by_object_set = self.rom.read(PAGE_A000_ByTileset, 16)
+        prg_banks_by_object_set = self.rom.read(Constants.OFFSET_BY_OBJECT_SET_A000, 16)
 
         levels_by_bank: dict[int, list[FoundLevel]] = defaultdict(list)
 
@@ -386,7 +386,7 @@ class LevelOrganizer:
         return None
 
     def _separate_levels_by_banks(self):
-        prg_banks_by_object_set = self.rom.read(PAGE_A000_ByTileset, 16)
+        prg_banks_by_object_set = self.rom.read(Constants.OFFSET_BY_OBJECT_SET_A000, 16)
         self.levels_by_bank = defaultdict(list)
 
         for level in self.levels:

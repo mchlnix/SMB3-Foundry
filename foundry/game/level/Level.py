@@ -22,8 +22,7 @@ from foundry.game.level import (
 from foundry.game.level.LevelLike import LevelLike
 from foundry.game.ObjectSet import ObjectSet
 from foundry.gui.asm import bytes_to_asm
-from smb3parse import OFFSET_BY_OBJECT_SET_A000
-from smb3parse.constants import BASE_OFFSET, ENEMY_SIZE, OFFSET_SIZE
+from smb3parse.constants import BASE_OFFSET, ENEMY_SIZE, OFFSET_SIZE, Constants
 from smb3parse.data_points import Position
 from smb3parse.levels import ENEMY_BASE_OFFSET, HEADER_LENGTH
 from smb3parse.levels.level_header import LevelHeader
@@ -718,7 +717,9 @@ class Level(LevelLike):
     def _level_asm(self):
         ret_lines: list[str] = []
 
-        object_set_offset = (ROM().int(OFFSET_BY_OBJECT_SET_A000 + self.object_set.number) * OFFSET_SIZE - 10) * 0x1000
+        object_set_offset = (
+            ROM().int(Constants.OFFSET_BY_OBJECT_SET_A000 + self.object_set.number) * OFFSET_SIZE - 10
+        ) * 0x1000
 
         level_offset = (self.layout_address - BASE_OFFSET - object_set_offset) & 0xFFFF
 

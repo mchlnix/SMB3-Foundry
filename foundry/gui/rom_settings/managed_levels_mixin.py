@@ -11,7 +11,7 @@ from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialo
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.HorizontalLine import HorizontalLine
 from foundry.gui.widgets.Spinner import Spinner
-from smb3parse import PAGE_A000_ByTileset
+from smb3parse.constants import Constants
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
 from smb3parse.util.rom import PRG_BANK_SIZE
 
@@ -80,7 +80,7 @@ class ManagedLevelsMixin(SettingsMixin):
             ]
 
         # get prg numbers for object sets and sort them
-        prg_banks_by_object_set = ROM().read(PAGE_A000_ByTileset, 16)
+        prg_banks_by_object_set = ROM().read(Constants.OFFSET_BY_OBJECT_SET_A000, 16)
 
         object_set_by_prg_banks = defaultdict(list)
 

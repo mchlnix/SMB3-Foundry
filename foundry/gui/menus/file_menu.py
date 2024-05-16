@@ -2,6 +2,7 @@ from PySide6.QtGui import QAction, Qt
 from PySide6.QtWidgets import QFileDialog, QMenu
 
 from foundry import FNS_FILE_FILTER, icon
+from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.asm import (
     load_asm_filename,
@@ -136,4 +137,7 @@ class FileMenu(QMenu):
         if fns_file:
             update_global_offsets(fns_file)
 
-            self.level_ref.data_changed.emit()
+            ROM.reset_graphics()
+
+            if self.level_ref:
+                self.level_ref.data_changed.emit()

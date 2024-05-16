@@ -6,18 +6,12 @@ from smb3parse.constants import (
     MAPOBJ_EMPTY,
     OFFSET_SIZE,
     PAGE_C000_OFFSET,
-    Map_List_Object_Ys,
+    Constants,
 )
 from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
 from smb3parse.data_points.world_map_data import WorldMapData
 from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.util.rom import Rom
-
-MAP_SPRITE_Y_POS_LIST = Map_List_Object_Ys
-MAP_SPRITE_SCREEN_LIST = MAP_SPRITE_Y_POS_LIST + 8 * OFFSET_SIZE  # 8 for all non-warp world maps
-MAP_SPRITE_X_POS_LIST = MAP_SPRITE_SCREEN_LIST + 8 * OFFSET_SIZE
-MAP_SPRITE_TYPES_LIST = MAP_SPRITE_X_POS_LIST + 8 * OFFSET_SIZE
-MAP_SPRITE_ITEMS_LIST = MAP_SPRITE_TYPES_LIST + 8 * OFFSET_SIZE
 
 
 class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
@@ -49,15 +43,21 @@ class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
         super(SpriteData, self).__init__(self.world._rom)
 
     def calculate_addresses(self):
-        self._y_pos_address = self._get_address_from_list(MAP_SPRITE_Y_POS_LIST)
+        map_sprite_y_pos_list = Constants.Map_List_Object_Ys
+        map_sprite_screen_list = map_sprite_y_pos_list + 8 * OFFSET_SIZE  # 8 for all non-warp world maps
+        map_sprite_x_pos_list = map_sprite_screen_list + 8 * OFFSET_SIZE
+        map_sprite_types_list = map_sprite_x_pos_list + 8 * OFFSET_SIZE
+        map_sprite_items_list = map_sprite_types_list + 8 * OFFSET_SIZE
 
-        self.screen_address = self._get_address_from_list(MAP_SPRITE_SCREEN_LIST)
+        self._y_pos_address = self._get_address_from_list(map_sprite_y_pos_list)
 
-        self._x_pos_address = self._get_address_from_list(MAP_SPRITE_X_POS_LIST)
+        self.screen_address = self._get_address_from_list(map_sprite_screen_list)
 
-        self._type_address = self._get_address_from_list(MAP_SPRITE_TYPES_LIST)
+        self._x_pos_address = self._get_address_from_list(map_sprite_x_pos_list)
 
-        self._item_address = self._get_address_from_list(MAP_SPRITE_ITEMS_LIST)
+        self._type_address = self._get_address_from_list(map_sprite_types_list)
+
+        self._item_address = self._get_address_from_list(map_sprite_items_list)
 
     def _get_address_from_list(self, list_of_list_address: int) -> int:
         """

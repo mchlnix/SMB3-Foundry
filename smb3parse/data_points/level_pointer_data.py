@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Optional
 
-from smb3parse import OFFSET_BY_OBJECT_SET_A000
-from smb3parse.constants import BASE_OFFSET, OFFSET_SIZE
+from smb3parse.constants import BASE_OFFSET, OFFSET_SIZE, Constants
 from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
 from smb3parse.levels import (
     FIRST_VALID_ROW,
@@ -88,7 +87,7 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
         Returns the offset, based on the level pointers object set, that needs to be added to its level header offset in
         order to get the actual memory location of the level in the ROM.
         """
-        return self._rom.int(OFFSET_BY_OBJECT_SET_A000 + self.object_set) * PRG_BANK_SIZE - 0xA000
+        return self._rom.int(Constants.OFFSET_BY_OBJECT_SET_A000 + self.object_set) * PRG_BANK_SIZE - 0xA000
 
     def read_values(self):
         self.screen, self.x = self._rom.nibbles(self.screen_address)

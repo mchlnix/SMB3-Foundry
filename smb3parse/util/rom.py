@@ -3,11 +3,10 @@ from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
 from pathlib import Path
 
-from smb3parse.constants import BASE_OFFSET, WORLD_MAP_TSA_INDEX, PAGE_A000_ByTileset
+from smb3parse.constants import BASE_OFFSET, WORLD_MAP_TSA_INDEX, Constants
 from smb3parse.types import AnyAddress, NormalizedAddress
 from smb3parse.util import little_endian
 
-TSA_OS_LIST = PAGE_A000_ByTileset
 TSA_TABLE_SIZE = 0x400
 
 PRG_BANK_SIZE = 0x2000
@@ -74,7 +73,7 @@ class Rom:
     def tsa_data_for_object_set(self, object_set: int) -> bytearray:
         # TSA_OS_LIST offset value assumes vanilla ROM size, so normalize it
 
-        tsa_index = self.int(TSA_OS_LIST + object_set)
+        tsa_index = self.int(Constants.TSA_OS_LIST + object_set)
 
         if object_set == 0:
             # Note that for the World Map, PAGE_A000 is set to bank 11, but

@@ -29,6 +29,7 @@ MEM_Graphics_Set = 0x7EBD
 MEM_Screen_Start_AddressL = 0x8000
 MEM_Screen_Start_AddressH = 0x8001
 
+# TODO: make relative to a label in Constants, if these are absolute values, if not... get creative (FNS)
 ROM_Level_Load_Entry = 0x891A  # From World Map Position
 ROM_EndObjectParsing = 0x9934
 ROM_LevelLoad_By_TileSet = 0x9A1D  # Directly By Address

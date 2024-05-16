@@ -10,7 +10,7 @@ from smb3parse.util.rom import INESHeader, Rom
 
 root_dir = Path(__file__).parent.parent.parent
 
-test_rom_path = root_dir / Path("SMB3.nes")
+test_rom_path = root_dir / Path("roms/SMB3.nes")
 assert test_rom_path.exists(), f"The test suite needs a SMB3(U) Rom at '{test_rom_path}' to run."
 
 

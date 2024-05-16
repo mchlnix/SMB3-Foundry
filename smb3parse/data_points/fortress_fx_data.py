@@ -1,14 +1,6 @@
 from typing import Optional
 
-from smb3parse.constants import (
-    FortressFX_MapCompIdx,
-    FortressFX_MapLocation,
-    FortressFX_MapLocationRow,
-    FortressFX_MapTileReplace,
-    FortressFX_Patterns,
-    FortressFX_VAddrH,
-    FortressFX_VAddrL,
-)
+from smb3parse.constants import Constants
 from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
 from smb3parse.levels import FIRST_VALID_ROW
 from smb3parse.util.rom import Rom
@@ -77,17 +69,17 @@ class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):
         super(FortressFXData, self).__init__(rom)
 
     def calculate_addresses(self):
-        self.row_address = FortressFX_MapLocationRow + self.index
-        self.col_and_screen_address = FortressFX_MapLocation + self.index
+        self.row_address = Constants.FortressFX_MapLocationRow + self.index
+        self.col_and_screen_address = Constants.FortressFX_MapLocation + self.index
 
-        self.tile_indexes_address = FortressFX_Patterns + self.index * 4  # tiles in block
-        self.replacement_block_address = FortressFX_MapTileReplace + self.index
+        self.tile_indexes_address = Constants.FortressFX_Patterns + self.index * 4  # tiles in block
+        self.replacement_block_address = Constants.FortressFX_MapTileReplace + self.index
 
         # ignore the column value of the map completion data, because it is the same as the screen and column position
-        self.map_completion_data_address = FortressFX_MapCompIdx + self.index * 2
+        self.map_completion_data_address = Constants.FortressFX_MapCompIdx + self.index * 2
 
-        self.v_addr_high_address = FortressFX_VAddrH + self.index
-        self.v_addr_low_address = FortressFX_VAddrL + self.index
+        self.v_addr_high_address = Constants.FortressFX_VAddrH + self.index
+        self.v_addr_low_address = Constants.FortressFX_VAddrL + self.index
 
     def read_values(self):
         self.row, _ = self._rom.nibbles(self.row_address)
