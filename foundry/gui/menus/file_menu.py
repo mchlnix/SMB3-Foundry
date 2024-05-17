@@ -136,8 +136,9 @@ class FileMenu(QMenu):
         save_m3l(pathname, m3l_bytes)
 
     def on_fns_import(self):
-        open_dialog = FnsAsmLoadDialog(NO_PARENT)
-        open_dialog.exec()
+        open_dialog = FnsAsmLoadDialog(NO_PARENT, ROM.fns_path, ROM.smb3_asm_path)
+        if open_dialog.exec() == FnsAsmLoadDialog.DialogCode.Rejected:
+            return
 
         try:
             QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -145,6 +146,9 @@ class FileMenu(QMenu):
             absolute_fns_path = make_fns_file_absolute(Path(open_dialog.fns_path), Path(open_dialog.asm_path))
 
             update_global_offsets(absolute_fns_path)
+
+            ROM.fns_path = open_dialog.fns_path
+            ROM.smb3_asm_path = open_dialog.asm_path
 
         except Exception as e:
             QMessageBox.critical(NO_PARENT, "Failed updating globals", str(e))
@@ -157,3 +161,5 @@ class FileMenu(QMenu):
 
         if self.level_ref:
             self.level_ref.data_changed.emit()
+
+        QMessageBox.information(NO_PARENT, "Update complete", "Successfully updated the ASM globals.")

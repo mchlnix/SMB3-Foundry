@@ -55,7 +55,6 @@ class FnsAsmLoadDialog(CustomDialog):
         self._fns_line_edit.textChanged.connect(self._check_fns_file)
 
         self._fns_line_edit.setPlaceholderText("Path to FNS file.")
-        self._fns_line_edit.setText(self.fns_path)
 
         self._fns_check_icon = QLabel()
         self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
@@ -74,7 +73,6 @@ class FnsAsmLoadDialog(CustomDialog):
         self._asm_line_edit.textChanged.connect(self._check_asm_file)
 
         self._asm_line_edit.setPlaceholderText("Path to smb3.asm file.")
-        self._asm_line_edit.setText(self.asm_path)
 
         self._asm_check_icon = QLabel()
         self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
@@ -92,18 +90,21 @@ class FnsAsmLoadDialog(CustomDialog):
         hbox = QHBoxLayout()
 
         cancel_button = QPushButton("Cancel")
-        cancel_button.pressed.connect(self.close)
+        cancel_button.pressed.connect(self.reject)
 
         self._ok_button = QPushButton("Ok")
+        self._ok_button.setEnabled(False)
         self._ok_button.pressed.connect(self._on_ok)
-
-        self._check_ok_button()
 
         hbox.addStretch(2)
         hbox.addWidget(cancel_button)
         hbox.addWidget(self._ok_button)
 
         vbox.addLayout(hbox)
+
+        # set current paths and update icon state
+        self._fns_line_edit.setText(self.fns_path)
+        self._asm_line_edit.setText(self.asm_path)
 
     def _check_fns_file(self, path: str):
         new_path = Path(path)
@@ -159,7 +160,7 @@ class FnsAsmLoadDialog(CustomDialog):
         self.fns_path = self._fns_line_edit.text()
         self.asm_path = self._asm_line_edit.text()
 
-        self.close()
+        self.accept()
 
     def _get_fns_file(self):
         fns_file, _ = QFileDialog.getOpenFileName(self, "Open FNS File", filter=FNS_FILE_FILTER)
