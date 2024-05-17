@@ -32,6 +32,7 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import (
+    NO_PARENT,
     ROM_FILE_FILTER,
     auto_save_level_data_path,
     auto_save_m3l_path,
@@ -624,7 +625,7 @@ class FoundryMainWindow(MainWindow):
             return
 
         answer = QMessageBox.question(
-            self,
+            NO_PARENT,
             "Automatic Level Management Feature",
             "Levels of the same type are stored in the same area of the ROM. If you add new objects to a Level, you "
             "might overwrite the Level, that comes right after it in memory.\n\n"
