@@ -107,14 +107,26 @@ class FnsAsmLoadDialog(CustomDialog):
         self._asm_line_edit.setText(self.asm_path)
 
     def _check_fns_file(self, path: str):
+        self._fns_is_good = False
+        self._check_ok_button()
+
         new_path = Path(path)
 
-        self._fns_is_good = new_path.is_file() and self._check_fns_content(new_path)
-
-        if self._fns_is_good:
-            self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_DialogYesButton))
-        else:
+        if not new_path.is_file():
             self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
+            self._fns_check_icon.setToolTip("Given path is not a file/does not exist.")
+            return
+
+        try:
+            self._check_fns_content(new_path)
+        except Exception as e:
+            self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxWarning))
+            self._fns_check_icon.setToolTip(str(e))
+            return
+
+        self._fns_is_good = True
+        self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_DialogYesButton))
+        self._fns_check_icon.setToolTip("")
 
         self._check_ok_button()
 
@@ -129,10 +141,14 @@ class FnsAsmLoadDialog(CustomDialog):
             if not line.strip():
                 continue
 
-            name, value = line.split("=")
+            try:
+                name, value = line.split("=")
 
-            if not value.strip().startswith("$"):
-                return False
+                if not value.strip().startswith("$"):
+                    raise ValueError()
+
+            except ValueError:
+                raise ValueError("Didn't find lines in the form of 'name = $1234'. File might be wrongly formatted.")
 
             lines_to_check -= 1
 
@@ -142,16 +158,36 @@ class FnsAsmLoadDialog(CustomDialog):
         return True
 
     def _check_asm_file(self, path: str):
+        self._asm_is_good = False
+        self._check_ok_button()
+
         new_path = Path(path)
 
-        self._asm_is_good = new_path.is_file()
-
-        if self._asm_is_good:
-            self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_DialogYesButton))
-        else:
+        if not new_path.is_file():
+            self._asm_check_icon.setToolTip("Given path is not a file/does not exist.")
             self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
+            return
+
+        try:
+            self._check_asm_location(new_path)
+        except Exception as e:
+            self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxWarning))
+            self._asm_check_icon.setToolTip(str(e))
+            return
+
+        self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_DialogYesButton))
+        self._asm_check_icon.setToolTip("")
+
+        self._asm_is_good = True
 
         self._check_ok_button()
+
+    @staticmethod
+    def _check_asm_location(path: Path):
+        prg_path = path.parent / "PRG" / "prg000.asm"
+
+        if not prg_path.exists():
+            raise ValueError(f"Couldn't find {prg_path}. Make sure your smb3.asm is in the assembly directory.")
 
     def _check_ok_button(self):
         self._ok_button.setEnabled(self._fns_is_good and self._asm_is_good)

@@ -297,7 +297,7 @@ def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
                 if ".bank" in line:
                     state = "reading"
 
-    prgs = []
+    prg_banks = []
 
     for i in range(VANILLA_PRG_BANK_COUNT):
         prg_name = f"prg{str(i).rjust(3, '0')}.asm"
@@ -307,7 +307,7 @@ def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
         if not path.exists():
             raise ValueError(f"Couldn't find {path}. Make sure your smb3.asm is in the assembly directory.")
 
-        prgs.append(path.read_text())
+        prg_banks.append(path.read_text())
 
     assert fns_file.exists()
 
@@ -327,8 +327,8 @@ def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
 
             relative_offset_int = int(relative_offset.strip()[1:], 16)
 
-            for prg_index, prg in enumerate(prgs):
-                if f"\n{label_name}:" in prg or prg.startswith(f"{label_name}:"):
+            for prg_index, prg_bank in enumerate(prg_banks):
+                if f"\n{label_name}:" in prg_bank or prg_bank.startswith(f"{label_name}:"):
                     relative_offset_int -= prg_offsets[prg_index]
 
                     if relative_offset_int < 0:
