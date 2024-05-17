@@ -6,7 +6,9 @@ from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from foundry import ASM_FILE_FILTER, NO_PARENT
 from foundry.gui.dialogs.ObjectSetSelector import ObjectSetSelector
+from smb3parse.constants import BASE_OFFSET, VANILLA_PRG_BANK_COUNT
 from smb3parse.util import hex_int
+from smb3parse.util.rom import PRG_BANK_SIZE
 
 if TYPE_CHECKING:
     from foundry.game.level.Level import Level
@@ -272,3 +274,75 @@ MACRO_DICT = {
     "LEVEL5_TIME_200": 0b10000000,  # Clock at 200,
     "LEVEL5_TIME_UNLIMITED": 0b11000000,  # Clock at 000, unlimited
 }
+
+
+def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
+    target_file = Path("/tmp/smb3.globals")
+
+    state = None
+
+    prg_offsets: list[int] = []
+
+    with asm_file.open() as file:
+        for line in file.readlines():
+            if state is not None:
+                if ".org" not in line:
+                    raise ValueError("Couldn't parse PRG offsets correctly.")
+
+                org, offset_str = line.strip().split(" ")
+                prg_offsets.append(int(offset_str[1:], 16))
+
+                state = None
+            else:
+                if ".bank" in line:
+                    state = "reading"
+
+    prgs = []
+
+    for i in range(VANILLA_PRG_BANK_COUNT):
+        prg_name = f"prg{str(i).rjust(3, '0')}.asm"
+
+        path = Path(asm_file.parent) / "PRG" / prg_name
+
+        if not path.exists():
+            raise ValueError(f"Couldn't find {path}. Make sure your smb3.asm is in the assembly directory.")
+
+        prgs.append(path.read_text())
+
+    assert fns_file.exists()
+
+    with fns_file.open() as source:
+        global_labels = []
+
+        for line in source.readlines():
+            if line.startswith(";"):
+                continue
+
+            label_name, relative_offset = line.strip().split("=")
+
+            label_name = label_name.strip()
+
+            if label_name.startswith(("PRG0", "_")):
+                continue
+
+            relative_offset_int = int(relative_offset.strip()[1:], 16)
+
+            for prg_index, prg in enumerate(prgs):
+                if f"\n{label_name}:" in prg or prg.startswith(f"{label_name}:"):
+                    relative_offset_int -= prg_offsets[prg_index]
+
+                    if relative_offset_int < 0:
+                        raise ValueError(
+                            f"Label {label_name} could not be found in ROM. Are the files from the same project?"
+                        )
+
+                    relative_offset_hex = hex(BASE_OFFSET + PRG_BANK_SIZE * prg_index + relative_offset_int)
+
+                    global_offset = relative_offset_hex.upper().replace("X", "x")
+                    global_labels.append(f"{label_name} = {global_offset}\n")
+
+    with target_file.open("w") as target:
+        global_labels.sort()
+        target.writelines(global_labels)
+
+    return target_file

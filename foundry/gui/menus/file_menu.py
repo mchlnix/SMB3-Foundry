@@ -1,15 +1,19 @@
-from PySide6.QtGui import QAction, Qt
-from PySide6.QtWidgets import QFileDialog, QMenu
+from pathlib import Path
 
-from foundry import FNS_FILE_FILTER, icon
+from PySide6.QtGui import QAction, QCursor, QGuiApplication, Qt
+from PySide6.QtWidgets import QMenu, QMessageBox
+
+from foundry import NO_PARENT, icon
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.asm import (
     load_asm_filename,
     load_asm_level,
+    make_fns_file_absolute,
     save_asm,
     save_asm_filename,
 )
+from foundry.gui.dialogs.fns_asm_load_dialog import FnsAsmLoadDialog
 from foundry.gui.m3l import save_m3l, save_m3l_filename
 from foundry.gui.settings import Settings
 from smb3parse.constants import update_global_offsets
@@ -132,12 +136,24 @@ class FileMenu(QMenu):
         save_m3l(pathname, m3l_bytes)
 
     def on_fns_import(self):
-        fns_file, _ = QFileDialog.getOpenFileName(self, "Open FNS File", filter=FNS_FILE_FILTER)
+        open_dialog = FnsAsmLoadDialog(NO_PARENT)
+        open_dialog.exec()
 
-        if fns_file:
-            update_global_offsets(fns_file)
+        try:
+            QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
 
-            ROM.reset_graphics()
+            absolute_fns_path = make_fns_file_absolute(Path(open_dialog.fns_path), Path(open_dialog.asm_path))
 
-            if self.level_ref:
-                self.level_ref.data_changed.emit()
+            update_global_offsets(absolute_fns_path)
+
+        except Exception as e:
+            QMessageBox.critical(NO_PARENT, "Failed updating globals", str(e))
+            return
+
+        finally:
+            QGuiApplication.restoreOverrideCursor()
+
+        ROM.reset_graphics()
+
+        if self.level_ref:
+            self.level_ref.data_changed.emit()
