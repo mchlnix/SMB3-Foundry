@@ -22,6 +22,9 @@ class ROM(Rom):
     path: str = ""
     name: str = ""
 
+    fns_path: str = ""
+    smb3_asm_path: str = ""
+
     W_INIT_OS_LIST: list[int] = []
 
     def __init__(self, path: Path | str | None = None):
@@ -46,6 +49,7 @@ class ROM(Rom):
             data = bytearray(rom.read())
 
         if reset_globals:
+            ROM.fns_path = ROM.smb3_asm_path = ""
             reset_global_offsets()
 
         ROM.header = INESHeader.from_buffer_copy(data)
