@@ -234,7 +234,7 @@ jobs:
           prerelease: ${{ steps.tag_name.outputs.SOURCE_TAG == 'nightly' }}
 
       - name: Download All Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           path: ./artifacts/
 
