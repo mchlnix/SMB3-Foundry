@@ -400,6 +400,9 @@ class FoundryMainWindow(MainWindow):
         level_is_not_attached = self.level_ref.level and not self.level_ref.level.attached_to_rom
         changes_were_made = not self.undo_stack.isClean() or PaletteGroup.changed
 
+        if self.level_ref:
+            self._update_block_graphics_in_ui()
+
         self.file_menu.save_rom_action.setEnabled(level_is_not_attached or changes_were_made)
 
         self.jump_destination_action.setEnabled(bool(self.level_ref.level and self.level_ref.level.has_next_area))
@@ -1034,7 +1037,7 @@ class FoundryMainWindow(MainWindow):
         self.file_menu.save_m3l_action.setEnabled(not is_a_world_map)
         self.edit_header_action.setEnabled(not is_a_world_map)
 
-        self.object_toolbar.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
+        self._update_block_graphics_in_ui()
 
         if is_a_world_map:
             self.object_dropdown.clear()
@@ -1049,6 +1052,11 @@ class FoundryMainWindow(MainWindow):
             self.jump_list.setEnabled(True)
 
         self.level_view.update()
+
+    def _update_block_graphics_in_ui(self):
+        """Updates the representations of objects in the UI, in case the object set or graphics set changes."""
+        self.object_toolbar.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
+        self.object_dropdown.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
 
     def enable_disable_gui_elements(self):
         # actions and widgets, that depend on whether the ROM is loaded
