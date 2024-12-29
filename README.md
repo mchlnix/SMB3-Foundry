@@ -5,9 +5,9 @@ YouTube Video of 1.0 Beta Version
 
 ## Downloads
 
-SMB3 Foundry Level Editor: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.3.1/linux-smb3-foundry">Linux</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.3.1/win64-smb3-foundry.exe">Windows</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.3.1/osx-smb3-foundry">OSX</a>  
-SMB3 Scribe Overworld Editor: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.3.1/linux-smb3-scribe">Linux</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.3.1/win64-smb3-scribe.exe">Windows</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.3.1/osx-smb3-scribe">OSX</a>  
-Manuals: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.3.1/manual-foundry.pdf">SMB3 Foundry</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.3.1/manual-scribe.pdf">SMB3 Scribe</a>
+SMB3 Foundry Level Editor: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.4/linux-smb3-foundry">Linux</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.4/win64-smb3-foundry.exe">Windows</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.4/osx-smb3-foundry">OSX</a>  
+SMB3 Scribe Overworld Editor: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.4/linux-smb3-scribe">Linux</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.4/win64-smb3-scribe.exe">Windows</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.4/osx-smb3-scribe">OSX</a>  
+Manuals: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.4/manual-foundry.pdf">SMB3 Foundry</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.4/manual-scribe.pdf">SMB3 Scribe</a>
 
 ## Features right now
 
