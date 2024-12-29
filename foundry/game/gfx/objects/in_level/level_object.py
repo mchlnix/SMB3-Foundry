@@ -396,6 +396,17 @@ class LevelObject(InLevelObject):
         self._render()
 
     def resize_by(self, dx: int, dy: int):
+        if self.orientation == GeneratorType.DESERT_PIPE_BOX:
+            # pipe boxes are really wide.
+            # if we use the normal code, for every one block the cursor moves, a whole segment is added.
+            # divide the movement by the width of a segment, so you need to move that many blocks, before one is added.
+            is_pipe_box_type_b = self.obj_index // 0x10 == 4
+
+            if is_pipe_box_type_b:
+                dx = (dx // 14) - 1
+            else:
+                dx = (dx // 16) - 1
+
         if dx:
             self.resize_x(self.x_position + dx)
 
