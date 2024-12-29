@@ -144,7 +144,7 @@ jobs:
           mv dist/${{ matrix.editor.name }}${{ matrix.cfg.suffix }} dist/${{ matrix.cfg.prefix }}-${{ matrix.editor.name }}${{ matrix.cfg.suffix }}
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.cfg.prefix }}-${{ matrix.editor.name }}${{ matrix.cfg.suffix }}
           path: dist/${{ matrix.cfg.prefix }}-${{ matrix.editor.name }}${{ matrix.cfg.suffix }}
@@ -175,13 +175,13 @@ jobs:
 
 
       - name: Upload Foundry Manual
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           path: manual/foundry/manual-foundry.pdf
           name: manual-foundry
 
       - name: Upload Scribe Manual
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           path: manual/scribe/manual-scribe.pdf
           name: manual-scribe
