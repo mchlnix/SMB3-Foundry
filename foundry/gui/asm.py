@@ -46,8 +46,6 @@ def asm_to_bytes(asm: str) -> bytearray:
 
         ret.extend(bytes_in_line)
 
-    ret.append(0xFF)
-
     return ret
 
 

@@ -106,5 +106,5 @@ def test_to_asm(level):
     level_asm, enemy_asm = level.to_asm()
     (_, level_bytes), (__, enemy_bytes) = level.to_bytes()
 
-    assert level_bytes + bytearray([0xFF]) == asm_to_bytes(level_asm)
+    assert level_bytes == asm_to_bytes(level_asm)
     assert enemy_bytes == asm_to_bytes(enemy_asm)
