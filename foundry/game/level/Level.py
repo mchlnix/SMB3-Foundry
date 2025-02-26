@@ -275,7 +275,7 @@ class Level(LevelLike):
 
     @property
     def enemies_end(self):
-        return self.enemy_offset + self.current_enemies_size() + len(b"\xFF\x00")  # the delimiter
+        return self.enemy_offset + self.current_enemies_size() + len(b"\xff\x00")  # the delimiter
 
     @property
     def next_area_objects(self):
@@ -711,6 +711,8 @@ class Level(LevelLike):
 
         for enemy in self.enemies:
             ret_lines.append(f"\t.byte {bytes_to_asm(enemy.to_bytes())}\t; {enemy.name} @ {enemy.get_position()}")
+
+        ret_lines.append(f"\t.byte {bytes_to_asm(0xFF)}\t; Enemy Data Delimiter")
 
         return "\n".join(ret_lines)
 

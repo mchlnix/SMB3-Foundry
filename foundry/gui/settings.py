@@ -87,7 +87,7 @@ class Settings(QSettings):
             return returned_value
         elif type_ is bool and isinstance(returned_value, str):
             # boolean values loaded from disk are returned as strings for some reason
-            return returned_value == "true"
+            return returned_value.lower() == "true"
         elif type_ is None:
             return returned_value
         else:
