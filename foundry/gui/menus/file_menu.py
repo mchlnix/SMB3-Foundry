@@ -119,7 +119,8 @@ class FileMenu(QMenu):
 
         self.save_asm(suggested_file, enemy_asm, "Enemy ASM")
 
-    def save_asm(self, suggested_file: str, asm: str, what: str):
+    @staticmethod
+    def save_asm(suggested_file: str, asm: str, what: str):
         if not (pathname := save_asm_filename(what, suggested_file)):
             return
 

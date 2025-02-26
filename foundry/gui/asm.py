@@ -123,7 +123,9 @@ def load_asm_enemy(pathname: PathLike, level: "Level"):
 
     _, (__, current_enemy_bytes) = level.to_bytes()
 
-    level._load_enemies(current_enemy_bytes[:-1] + asm_to_bytes(asm_enemy_data)[1:])
+    *enemy_data, _delimiter = current_enemy_bytes
+
+    level._load_enemies(bytearray(enemy_data) + asm_to_bytes(asm_enemy_data)[1:])
 
     level.data_changed.emit()
 

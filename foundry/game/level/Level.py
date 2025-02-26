@@ -712,7 +712,7 @@ class Level(LevelLike):
         for enemy in self.enemies:
             ret_lines.append(f"\t.byte {bytes_to_asm(enemy.to_bytes())}\t; {enemy.name} @ {enemy.get_position()}")
 
-        ret_lines.append(f"\t.byte {bytes_to_asm(0xFF)}\t; Enemy Data Delimiter")
+        ret_lines.append(f"\t.byte {bytes_to_asm(0xFF)}\t; Terminator")
 
         return "\n".join(ret_lines)
 
@@ -750,7 +750,7 @@ class Level(LevelLike):
 
             ret_lines.append(f"\t.byte {bytes_to_asm(obj.to_bytes())}{indent} ; {obj.name} @ {obj.get_position()}")
 
-        ret_lines.append("\t.byte $FF\t\t\t\t ; delimiter")
+        ret_lines.append("\t.byte $FF\t\t\t\t ; Terminator")
 
         return "\n".join(ret_lines)
 
@@ -793,7 +793,7 @@ class Level(LevelLike):
         self.object_set_number = object_set_number
         self.object_set = ObjectSet.from_number(object_set_number)
 
-        self.from_bytes((0, object_bytes[:-1]), (0, bytearray()), new_level=True)
+        self.from_bytes((0, object_bytes), (0, bytearray()), new_level=True)
 
         self.level_changed.emit()
 
