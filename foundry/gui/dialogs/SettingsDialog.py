@@ -271,6 +271,12 @@ class SettingsDialog(CustomDialog):
 
         command_layout.addLayout(powerup_layout)
 
+        self.skip_title_screen_cb = QCheckBox("Enabled")
+        self.skip_title_screen_cb.setChecked(self.settings.value("editor/instaplay_skip_title_screen"))
+        self.skip_title_screen_cb.stateChanged.connect(self._update_settings)
+
+        command_layout.addLayout(label_and_widget("Instaplay skips Title Screen", self.skip_title_screen_cb))
+
         # ----------------------
 
         layout = QVBoxLayout(self)
@@ -290,6 +296,7 @@ class SettingsDialog(CustomDialog):
     def _update_settings(self, _=None):
         self.settings.setValue("editor/instaplay_emulator", self.emulator_command_input.text())
         self.settings.setValue("editor/instaplay_arguments", self.command_arguments_input.text())
+        self.settings.setValue("editor/instaplay_skip_title_screen", self.skip_title_screen_cb.isChecked())
 
         if self.lmb_radio.isChecked():
             self.settings.setValue("editor/resize_mode", RESIZE_LEFT_CLICK)

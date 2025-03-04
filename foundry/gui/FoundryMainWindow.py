@@ -525,9 +525,9 @@ class FoundryMainWindow(MainWindow):
 
         insta_player.set_default_powerup(powerup, with_starman=starman)
 
-        insta_player.skip_title_screen()
-
-        insta_player.skip_world_info_box()
+        if self.settings.value("editor/instaplay_skip_title_screen"):
+            insta_player.skip_title_screen()
+            insta_player.skip_world_info_box()
 
         save_all_palette_groups(temp_rom)
 

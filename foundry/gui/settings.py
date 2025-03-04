@@ -14,6 +14,7 @@ GUI_STYLE: dict[str, Callable] = {
 SETTINGS: dict[str, str | int | bool] = dict()
 SETTINGS["editor/instaplay_emulator"] = "fceux"
 SETTINGS["editor/instaplay_arguments"] = "%f"
+SETTINGS["editor/instaplay_skip_title_screen"] = True
 SETTINGS["editor/object_scroll_enabled"] = False
 SETTINGS["editor/default_powerup"] = 0
 SETTINGS["editor/powerup_starman"] = False
