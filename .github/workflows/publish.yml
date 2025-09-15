@@ -107,7 +107,7 @@ jobs:
       matrix:
         cfg:
           - {os: ubuntu-22.04, prefix: 'linux', suffix: '', architecture: 'x64'}
-          - {os: windows-2019, prefix: 'win64', suffix: '.exe', architecture: 'x64'}
+          - {os: windows-2022, prefix: 'win64', suffix: '.exe', architecture: 'x64'}
           - {os: macos-latest, prefix: 'osx', suffix: '', architecture: 'x64'}
         editor:
           - {name: 'smb3-foundry'}
