@@ -13,6 +13,7 @@ from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import TILE_NAMES
+from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
 class BlockViewer(CustomChildWindow):
@@ -163,7 +164,12 @@ class BlockBank(QWidget):
         dec_index = row * self.sprites_horiz + column
         hex_index = hex(dec_index).upper().replace("X", "x")
 
-        status_message = f"{TILE_NAMES[dec_index]} – {hex_index} @ ({column}, {row})"
+        if self.object_set == WORLD_MAP_OBJECT_SET:
+            tile_name = " – " + TILE_NAMES[dec_index]
+        else:
+            tile_name = ""
+
+        status_message = f"{hex_index} @ ({column}, {row}){tile_name}"
 
         self.status_message_changed.emit(status_message)
 
