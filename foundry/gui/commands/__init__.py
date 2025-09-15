@@ -249,7 +249,7 @@ class ResizeObjects(QUndoCommand):
 
 
 def objects_to_indexed_objects(level: Level, objects: list[InLevelObject]) -> list[tuple[int, InLevelObject]]:
-    indexes = []
+    indexes: list[tuple[int, InLevelObject]] = []
 
     for obj in objects:
         if isinstance(obj, LevelObject):

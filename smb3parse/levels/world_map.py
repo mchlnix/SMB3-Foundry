@@ -118,8 +118,6 @@ class WorldMap(LevelBase):
 
         self.data = WorldMapData(self.rom, self.world_index)
 
-        self.height = WORLD_MAP_HEIGHT
-
         if len(self.layout_bytes) % WORLD_MAP_SCREEN_SIZE != 0:
             raise ValueError(
                 f"Invalid length of layout bytes for world map ({self.layout_bytes}). "
@@ -133,6 +131,10 @@ class WorldMap(LevelBase):
     @property
     def width(self):
         return int(self.screen_count * WORLD_MAP_SCREEN_WIDTH)
+
+    @property
+    def height(self):
+        return WORLD_MAP_HEIGHT
 
     @property
     def layout_bytes(self):

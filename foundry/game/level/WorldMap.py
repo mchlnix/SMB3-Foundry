@@ -70,6 +70,14 @@ class WorldMap(LevelLike):
     def data(self):
         return self.internal_world_map.data
 
+    @property
+    def width(self):
+        return len(self.objects) // WORLD_MAP_HEIGHT
+
+    @property
+    def height(self):
+        return WORLD_MAP_HEIGHT
+
     @staticmethod
     def from_world_number(world_index: int):
         """World number is 1-based. So the first world is World 1."""
@@ -123,9 +131,6 @@ class WorldMap(LevelLike):
 
     def _calc_size(self):
         old_size = self.size
-
-        self.width = len(self.objects) // WORLD_MAP_HEIGHT
-        self.height = WORLD_MAP_HEIGHT
 
         self.size = self.width, self.height
 
