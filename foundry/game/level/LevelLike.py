@@ -5,9 +5,6 @@ from smb3parse.levels import LevelBase
 
 
 class LevelLike(LevelBase, abc.ABC):
-    width: int
-    height: int
-
     def __init__(self, object_set: ObjectSet, layout_address):
         super(LevelLike, self).__init__(object_set, layout_address)
 
@@ -26,3 +23,11 @@ class LevelLike(LevelBase, abc.ABC):
     @abc.abstractmethod
     def draw(self, dc, block_length, transparency, show_expansion):
         pass
+
+    @property
+    def width(self) -> int:
+        raise NotImplementedError()
+
+    @property
+    def height(self) -> int:
+        raise NotImplementedError()

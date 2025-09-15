@@ -13,6 +13,7 @@ from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import TILE_NAMES
+from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
 class BlockViewer(CustomChildWindow):
@@ -20,9 +21,9 @@ class BlockViewer(CustomChildWindow):
         super(BlockViewer, self).__init__(parent, "Block Viewer")
 
         self._object_set = 0
-        self.sprite_bank = BlockBank(parent=self)
+        self.block_bank = BlockBank(parent=self)
 
-        self.setCentralWidget(self.sprite_bank)
+        self.setCentralWidget(self.block_bank)
 
         self.toolbar = QToolBar(self)
 
@@ -33,10 +34,10 @@ class BlockViewer(CustomChildWindow):
         self.next_os_action.triggered.connect(self.next_object_set)
 
         self.zoom_out_action = self.toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
-        self.zoom_out_action.triggered.connect(self.sprite_bank.zoom_out)
+        self.zoom_out_action.triggered.connect(self.block_bank.zoom_out)
 
         self.zoom_in_action = self.toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
-        self.zoom_in_action.triggered.connect(self.sprite_bank.zoom_in)
+        self.zoom_in_action.triggered.connect(self.block_bank.zoom_in)
 
         self.bank_dropdown = QComboBox(parent=self.toolbar)
         self.bank_dropdown.addItems(OBJECT_SET_ITEMS)
@@ -56,7 +57,7 @@ class BlockViewer(CustomChildWindow):
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
         self.setStatusBar(QStatusBar(self))
-        self.sprite_bank.status_message_changed.connect(self.statusBar().showMessage)
+        self.block_bank.status_message_changed.connect(self.statusBar().showMessage)
 
     @property
     def object_set(self):
@@ -83,22 +84,22 @@ class BlockViewer(CustomChildWindow):
         self.object_set = min(self.object_set + 1, 0xE)
 
     def _after_object_set(self):
-        self.sprite_bank.object_set = self.object_set
+        self.block_bank.object_set = self.object_set
 
         self.bank_dropdown.setCurrentIndex(self.object_set)
 
-        self.sprite_bank.update()
+        self.block_bank.update()
 
     def on_combo(self, _):
         self.object_set = self.bank_dropdown.currentIndex()
 
-        self.sprite_bank.object_set = self.object_set
+        self.block_bank.object_set = self.object_set
 
-        self.sprite_bank.update()
+        self.block_bank.update()
 
     def on_palette(self, value):
-        self.sprite_bank.palette_group_index = value
-        self.sprite_bank.update()
+        self.block_bank.palette_group_index = value
+        self.block_bank.update()
 
 
 class BlockBank(QWidget):
@@ -163,7 +164,12 @@ class BlockBank(QWidget):
         dec_index = row * self.sprites_horiz + column
         hex_index = hex(dec_index).upper().replace("X", "x")
 
-        status_message = f"{TILE_NAMES[dec_index]} – {hex_index} @ ({column}, {row})"
+        if self.object_set == WORLD_MAP_OBJECT_SET:
+            tile_name = " – " + TILE_NAMES[dec_index]
+        else:
+            tile_name = ""
+
+        status_message = f"{hex_index} @ ({column}, {row}){tile_name}"
 
         self.status_message_changed.emit(status_message)
 

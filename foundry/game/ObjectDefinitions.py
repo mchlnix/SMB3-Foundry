@@ -142,7 +142,7 @@ def load_object_definitions(object_set):
 
     data = Path(data_dir.joinpath(f"romobjs{object_definition}.dat")).read_bytes()
 
-    assert len(data) > 0
+    assert data
 
     object_count = data[0]
 

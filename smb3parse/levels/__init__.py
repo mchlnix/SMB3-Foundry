@@ -74,7 +74,7 @@ LEVEL_LENGTH_INTERVAL = 0x10
 DEFAULT_HORIZONTAL_HEIGHT = 27
 DEFAULT_VERTICAL_WIDTH = 16
 
-WORLD_MAP_LAYOUT_DELIMITER = b"\xFF"
+WORLD_MAP_LAYOUT_DELIMITER = b"\xff"
 
 
 def is_valid_level_length(level_length: int) -> bool:
@@ -82,14 +82,19 @@ def is_valid_level_length(level_length: int) -> bool:
 
 
 class LevelBase(ABC):
-    width: int
-    height: int
-
     def __init__(self, object_set: ObjectSet, layout_address: int):
         self.layout_address = layout_address
 
         self.object_set = object_set
         self.object_set_number = object_set.number
+
+    @property
+    def width(self) -> int:
+        raise NotImplementedError()
+
+    @property
+    def height(self) -> int:
+        raise NotImplementedError()
 
     def point_in(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
