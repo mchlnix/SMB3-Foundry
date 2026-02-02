@@ -1,3 +1,4 @@
+import tempfile
 from os import PathLike
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -7,7 +8,7 @@ from PySide6.QtWidgets import QFileDialog, QMessageBox
 from foundry import ASM_FILE_FILTER, NO_PARENT
 from foundry.gui.dialogs.ObjectSetSelector import ObjectSetSelector
 from smb3parse.constants import BASE_OFFSET, VANILLA_PRG_BANK_COUNT
-from smb3parse.util import hex_int
+from smb3parse.util import apply, hex_int
 from smb3parse.util.rom import PRG_BANK_SIZE
 
 if TYPE_CHECKING:
@@ -277,8 +278,66 @@ MACRO_DICT = {
 
 
 def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
-    target_file = Path("/tmp/smb3.globals")
+    target_file = tempfile.NamedTemporaryFile("r+")
 
+    prg_offsets = _get_prg_offset_values(asm_file)
+    prg_banks_code = _read_in_prg_banks(asm_file)
+
+    assert fns_file.exists()
+
+    with fns_file.open() as source:
+        global_labels = []
+
+        for line in source.readlines():
+            if line.startswith(";"):
+                continue
+
+            label_name, relative_offset = apply(str.strip, line.split("="))
+
+            if label_name.startswith(("PRG0", "_")):
+                continue
+
+            relative_offset_int = int(relative_offset[1:], 16)
+
+            for prg_index, prg_bank in enumerate(prg_banks_code):
+                if f"\n{label_name}:" not in prg_bank and not prg_bank.startswith(f"{label_name}:"):
+                    continue
+
+                relative_offset_int -= prg_offsets[prg_index]
+
+                if relative_offset_int < 0:
+                    raise ValueError(
+                        f"Label {label_name} could not be found in ROM. Are the files from the same project?"
+                    )
+
+                relative_offset_hex = hex(BASE_OFFSET + PRG_BANK_SIZE * prg_index + relative_offset_int)
+
+                global_offset = relative_offset_hex.upper().replace("X", "x")
+                global_labels.append(f"{label_name} = {global_offset}\n")
+
+    global_labels.sort()
+    target_file.writelines(global_labels)
+
+    return Path(target_file.name)
+
+
+def _read_in_prg_banks(asm_file: Path) -> list[str]:
+    prg_banks_code = []
+
+    for i in range(VANILLA_PRG_BANK_COUNT):
+        prg_name = f"prg{str(i).rjust(3, '0')}.asm"
+
+        path = Path(asm_file.parent) / "PRG" / prg_name
+
+        if not path.exists():
+            raise ValueError(f"Couldn't find {path}. Make sure your smb3.asm is in the assembly directory.")
+
+        prg_banks_code.append(path.read_text())
+
+    return prg_banks_code
+
+
+def _get_prg_offset_values(asm_file: Path) -> list[int]:
     state = None
 
     prg_offsets: list[int] = []
@@ -296,53 +355,4 @@ def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
             else:
                 if ".bank" in line:
                     state = "reading"
-
-    prg_banks = []
-
-    for i in range(VANILLA_PRG_BANK_COUNT):
-        prg_name = f"prg{str(i).rjust(3, '0')}.asm"
-
-        path = Path(asm_file.parent) / "PRG" / prg_name
-
-        if not path.exists():
-            raise ValueError(f"Couldn't find {path}. Make sure your smb3.asm is in the assembly directory.")
-
-        prg_banks.append(path.read_text())
-
-    assert fns_file.exists()
-
-    with fns_file.open() as source:
-        global_labels = []
-
-        for line in source.readlines():
-            if line.startswith(";"):
-                continue
-
-            label_name, relative_offset = line.strip().split("=")
-
-            label_name = label_name.strip()
-
-            if label_name.startswith(("PRG0", "_")):
-                continue
-
-            relative_offset_int = int(relative_offset.strip()[1:], 16)
-
-            for prg_index, prg_bank in enumerate(prg_banks):
-                if f"\n{label_name}:" in prg_bank or prg_bank.startswith(f"{label_name}:"):
-                    relative_offset_int -= prg_offsets[prg_index]
-
-                    if relative_offset_int < 0:
-                        raise ValueError(
-                            f"Label {label_name} could not be found in ROM. Are the files from the same project?"
-                        )
-
-                    relative_offset_hex = hex(BASE_OFFSET + PRG_BANK_SIZE * prg_index + relative_offset_int)
-
-                    global_offset = relative_offset_hex.upper().replace("X", "x")
-                    global_labels.append(f"{label_name} = {global_offset}\n")
-
-    with target_file.open("w") as target:
-        global_labels.sort()
-        target.writelines(global_labels)
-
-    return target_file
+    return prg_offsets
