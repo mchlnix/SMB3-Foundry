@@ -148,6 +148,8 @@ class FileMenu(QMenu):
 
             update_global_offsets(absolute_fns_path)
 
+            absolute_fns_path.unlink(missing_ok=True)
+
             ROM.fns_path = open_dialog.fns_path
             ROM.smb3_asm_path = open_dialog.asm_path
 

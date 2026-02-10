@@ -394,11 +394,13 @@ STARTING_WORLD_INDEX_ADDRESS = 0x30CC3
 
 class _ClassVarRedirect(type):
     """
-    A metaclass that allows a class to define class variables that wil get its value dynamically from another class
-    variable.
+    A metaclass that allows a class to define class variables that will get their values dynamically from other class
+    variables.
     The relation between those two class variables is described in a dictionary called _redirect.
     The keys are the names of class variables, without a name, the values are the names of variables to look up instead.
     """
+
+    _redirect: dict[str, str]
 
     def __init__(cls, name, bases, attrs):
         if not hasattr(cls, "_redirect") or not isinstance(cls._redirect, dict):
@@ -530,12 +532,8 @@ def reset_global_offsets():
         setattr(Constants, attr_name, getattr(Constants, backup_attr_name))
 
 
-def update_global_offsets(path_to_global_list: str | Path):
-    path_to_global_list = Path(path_to_global_list)
+def update_global_offsets(path_to_global_list: Path):
     warnings: list[str] = []
-
-    if not path_to_global_list.exists():
-        return
 
     with path_to_global_list.open("r") as label_file:
         reset_global_offsets()
@@ -556,3 +554,7 @@ def update_global_offsets(path_to_global_list: str | Path):
                 warnings.append(f"Unknown label: {label_name}")
 
             setattr(Constants, label_name, global_address)
+
+    for attr_name in Constants._redirect:
+        if attr_name.isupper():
+            print(f"{attr_name}: {getattr(Constants, attr_name):#x}")

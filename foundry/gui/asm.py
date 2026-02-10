@@ -278,7 +278,8 @@ MACRO_DICT = {
 
 
 def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
-    target_file = tempfile.NamedTemporaryFile("r+")
+    target_file = tempfile.NamedTemporaryFile("r+", delete=False)
+    assert Path(target_file.name).exists()
 
     prg_offsets = _get_prg_offset_values(asm_file)
     prg_banks_code = _read_in_prg_banks(asm_file)

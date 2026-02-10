@@ -76,7 +76,7 @@ class InstaPlayer:
 
         world_map = WorldMap.from_world_number(self.rom, world)
 
-        # find position of "level 1" tile in world map
+        # find the position of the "level 1" tile in the world map
         for position in world_map.gen_positions():
             if position.tile() == TILE_LEVEL_1:
                 break
