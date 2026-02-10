@@ -106,83 +106,12 @@ def gen_levels_in_rom(
 
         world = WorldMap.from_world_number(rom, world_num + 1)
 
-        found_level_records: list[FoundLevelRecord] = [
-            (FoundLevelRecord.from_level_pointer(lp, True, False, False)) for lp in world.level_pointers
-        ]
+        found_level_records = _add_static_levels_for_world(world)
 
-        # add airship
-        found_level_records.append(
-            FoundLevelRecord(
-                world.data.airship_level_address,
-                world.data.airship_level_offset_address,
-                world.data.airship_enemy_address,
-                world.data.airship_enemy_offset_address,
-                world.data.airship_level_object_set,
-                False,
-                False,
-                True,
-            )
-        )
+        was_cancelled = False
 
-        # add generic exit
-        found_level_records.append(
-            FoundLevelRecord(
-                world.data.generic_exit_level_address,
-                world.data.generic_exit_level_offset_address,
-                world.data.generic_exit_enemy_address,
-                world.data.generic_exit_enemy_offset_address,
-                world.data.generic_exit_object_set,
-                False,
-                False,
-                True,
-            )
-        )
-
-        # add big ? level
-        found_level_records.append(
-            FoundLevelRecord(
-                world.data.big_q_block_level_address,
-                world.data.big_q_block_level_offset_address,
-                world.data.big_q_block_enemy_address,
-                world.data.big_q_block_enemy_offset_address,
-                world.data.big_q_block_object_set,
-                False,
-                False,
-                True,
-            )
-        )
-
-        # add coin ship level
-        found_level_records.append(
-            FoundLevelRecord(
-                world.data.coin_ship_level_address,
-                world.data.coin_ship_level_offset_address,
-                world.data.coin_ship_enemy_address,
-                world.data.coin_ship_enemy_offset_address,
-                world.data.coin_ship_level_object_set,
-                False,
-                False,
-                True,
-            )
-        )
-
-        # add special/white toad house level
-        found_level_records.append(
-            FoundLevelRecord(
-                world.data.toad_warp_level_address,
-                world.data.toad_warp_level_offset_address,
-                0x0,  # enemy item data is used directly, not as an offset
-                world.data.toad_warp_item_address,
-                MUSHROOM_OBJECT_SET,
-                False,
-                False,
-                True,
-            ),
-        )
-
-        should_stop = False
         for record in found_level_records:
-            if should_stop:
+            if was_cancelled:
                 return defaultdict(list), levels_by_address
 
             if record.level_address in levels_by_address:
@@ -203,19 +132,14 @@ def gen_levels_in_rom(
             if record.object_set == SPADE_BONUS_OBJECT_SET:
                 continue
 
-            print(
-                f"W{world_num + 1}",
-                hex(record.level_address),
-                hex(record.enemy_address),
-                record.object_set,
-            )
+            print(f"W{world_num + 1}", hex(record.level_address), hex(record.enemy_address), record.object_set)
             # traverse Jump Destinations by following the offsets in the header
             while True:
                 levels_in_world += 1
 
-                should_stop = yield world.number, levels_in_world
+                was_cancelled = yield world.number, levels_in_world
 
-                if should_stop:
+                if was_cancelled:
                     break
 
                 try:
@@ -349,3 +273,91 @@ def gen_levels_in_rom(
         )
 
     return levels_per_object_set, levels_by_address
+
+
+def _add_static_levels_for_world(world: WorldMap) -> list[FoundLevelRecord]:
+    found_level_records: list[FoundLevelRecord] = [
+        (FoundLevelRecord.from_level_pointer(lp, True, False, False)) for lp in world.level_pointers
+    ]
+
+    # add airship
+    found_level_records.append(_airship_level_for_world(world))
+
+    # add generic exit
+    found_level_records.append(_generic_exit_level_for_world(world))
+
+    # add big ? level
+    found_level_records.append(_big_q_block_level_for_world(world))
+
+    # add coin ship level
+    found_level_records.append(_coin_ship_level_for_world(world))
+
+    # add special/white toad house level
+    found_level_records.append(_toad_warp_level_for_world(world))
+
+    return found_level_records
+
+
+def _toad_warp_level_for_world(world: WorldMap) -> FoundLevelRecord:
+    return FoundLevelRecord(
+        world.data.toad_warp_level_address,
+        world.data.toad_warp_level_offset_address,
+        0x0,  # enemy item data is used directly, not as an offset
+        world.data.toad_warp_item_address,
+        MUSHROOM_OBJECT_SET,
+        False,
+        False,
+        True,
+    )
+
+
+def _coin_ship_level_for_world(world: WorldMap) -> FoundLevelRecord:
+    return FoundLevelRecord(
+        world.data.coin_ship_level_address,
+        world.data.coin_ship_level_offset_address,
+        world.data.coin_ship_enemy_address,
+        world.data.coin_ship_enemy_offset_address,
+        world.data.coin_ship_level_object_set,
+        False,
+        False,
+        True,
+    )
+
+
+def _big_q_block_level_for_world(world: WorldMap) -> FoundLevelRecord:
+    return FoundLevelRecord(
+        world.data.big_q_block_level_address,
+        world.data.big_q_block_level_offset_address,
+        world.data.big_q_block_enemy_address,
+        world.data.big_q_block_enemy_offset_address,
+        world.data.big_q_block_object_set,
+        False,
+        False,
+        True,
+    )
+
+
+def _generic_exit_level_for_world(world: WorldMap) -> FoundLevelRecord:
+    return FoundLevelRecord(
+        world.data.generic_exit_level_address,
+        world.data.generic_exit_level_offset_address,
+        world.data.generic_exit_enemy_address,
+        world.data.generic_exit_enemy_offset_address,
+        world.data.generic_exit_object_set,
+        False,
+        False,
+        True,
+    )
+
+
+def _airship_level_for_world(world: WorldMap) -> FoundLevelRecord:
+    return FoundLevelRecord(
+        world.data.airship_level_address,
+        world.data.airship_level_offset_address,
+        world.data.airship_enemy_address,
+        world.data.airship_enemy_offset_address,
+        world.data.airship_level_object_set,
+        False,
+        False,
+        True,
+    )
