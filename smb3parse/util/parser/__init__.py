@@ -2,15 +2,21 @@ import pathlib
 import time
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Generator
+from typing import Any, Generator
 
 from smb3parse.constants import OFFSET_SIZE
 from smb3parse.data_points import LevelPointerData
-from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
+from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT, WORLD_MAP_WARP_WORLD_INDEX
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMap
-from smb3parse.objects.object_set import MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET
-from smb3parse.util import hex_int
+from smb3parse.objects.object_set import (
+    MUSHROOM_OBJECT_SET,
+    PLAINS_OBJECT_SET,
+    SPADE_BONUS_OBJECT_SET,
+    UNDERGROUND_OBJECT_SET,
+    WORLD_MAP_OBJECT_SET,
+)
+from smb3parse.util import apply, hex_int
 from smb3parse.util.parser.cpu import NesCPU
 from smb3parse.util.rom import Rom
 
@@ -58,6 +64,22 @@ class FoundLevel:
             data["found_in_world"],
             data["found_as_jump"],
             data.get("is_world_specific", data.get("is_generic", False)),  # backwards compatible
+        )
+
+    @staticmethod
+    def from_record(record: "FoundLevelRecord", world_num: int, object_data_len: int, enemy_data_len: int):
+        return FoundLevel(
+            [record.level_address_offset],
+            [record.enemy_address_offset],
+            world_num + 1,
+            record.level_address,
+            record.enemy_address,
+            record.object_set,
+            object_data_len,
+            enemy_data_len,
+            record.found_in_world,
+            record.found_as_jump,
+            record.is_world_specific,
         )
 
 
@@ -116,16 +138,7 @@ def gen_levels_in_rom(
 
             if record.level_address in levels_by_address:
                 found_level = levels_by_address[record.level_address]
-
-                assert record.level_address_offset not in found_level.level_offset_positions
-                found_level.level_offset_positions.append(record.level_address_offset)
-
-                assert record.enemy_address_offset not in found_level.enemy_offset_positions
-                found_level.enemy_offset_positions.append(record.enemy_address_offset)
-
-                found_level.found_in_world |= record.found_in_world
-                found_level.found_as_jump |= record.found_as_jump
-                found_level.is_world_specific |= record.is_world_specific
+                _add_new_origin_to_level(found_level, record)
 
                 continue
 
@@ -133,6 +146,7 @@ def gen_levels_in_rom(
                 continue
 
             print(f"W{world_num + 1}", hex(record.level_address), hex(record.enemy_address), record.object_set)
+
             # traverse Jump Destinations by following the offsets in the header
             while True:
                 levels_in_world += 1
@@ -150,18 +164,8 @@ def gen_levels_in_rom(
                     print(ve)
                     break
 
-                found_level = FoundLevel(
-                    [record.level_address_offset],
-                    [record.enemy_address_offset],
-                    world_num + 1,
-                    record.level_address,
-                    record.enemy_address,
-                    record.object_set,
-                    parsed_level.object_data_length,
-                    parsed_level.enemy_data_length,
-                    record.found_in_world,
-                    record.found_as_jump,
-                    record.is_world_specific,
+                found_level = FoundLevel.from_record(
+                    record, world_num, parsed_level.object_data_length, parsed_level.enemy_data_length
                 )
 
                 levels_by_address[record.level_address] = found_level
@@ -191,88 +195,105 @@ def gen_levels_in_rom(
                     object_set_number,
                 )
 
-                if 0 in [header_of_old_level.jump_level_offset, object_set_number]:
+                # no jump destination set
+                if header_of_old_level.jump_level_offset == 0x0 or object_set_number == WORLD_MAP_OBJECT_SET:
                     break
+
+                new_record.found_as_jump = True
 
                 if level_address in levels_by_address:
                     found_level = levels_by_address[level_address]
-                    assert level_address_position not in found_level.level_offset_positions
-                    found_level.level_offset_positions.append(level_address_position)
-                    found_level.enemy_offset_positions.append(enemy_address_position)
-                    found_level.found_as_jump = True
+
+                    _add_new_origin_to_level(found_level, new_record)
                     break
 
-                new_record.found_in_world = False
-                new_record.found_as_jump = True
-
+                # set new record to old one to go along the chain of jumps
                 record = new_record
 
                 print("    ", hex(level_address), object_set_number)
 
     print(time.time() - start)
 
-    level_count = 0
+    levels_by_object_set = _sort_levels_by_object_set(levels_by_address)
 
-    levels_per_object_set = defaultdict(list)
+    _print_levels_by_object_set(levels_by_address, levels_by_object_set)
+
+    _print_missing_stock_levels(levels_by_object_set)
+
+    return levels_by_object_set, levels_by_address
+
+
+def _sort_levels_by_object_set(levels_by_address: dict[int, FoundLevel]) -> defaultdict[Any, list]:
+    levels_by_object_set = defaultdict(list)
 
     for level_address in sorted(levels_by_address.keys()):
         found_level = levels_by_address[level_address]
-        levels_per_object_set[found_level.object_set_number].append(level_address)
+        levels_by_object_set[found_level.object_set_number].append(level_address)
+    return levels_by_object_set
 
-    for object_set, levels_addresses in sorted(levels_per_object_set.items()):
-        level_count += len(levels_addresses)
-        print(
-            object_set,
-            ": ",
-            len(levels_addresses),
-            ", ".join(
-                f"{hex(level_address).upper().replace('X', 'x')}/"
-                f"{len(levels_by_address[level_address].level_offset_positions)}"
-                for level_address in sorted(levels_addresses)
-            ),
-        )
 
-    print("---------------------", level_count, "------------------------")
+def _print_levels_by_object_set(levels_by_address: dict[int, FoundLevel], levels_by_object_set: defaultdict[int, list]):
+    total_level_count = 0
 
+    for object_set_num, levels_addresses in sorted(levels_by_object_set.items()):
+        total_level_count += len(levels_addresses)
+
+        address_and_sources = [
+            f"{hex(level_address).upper().replace('X', 'x')}/"
+            f"{len(levels_by_address[level_address].level_offset_positions)}"
+            for level_address in sorted(levels_addresses)
+        ]
+        print(object_set_num, ": ", len(levels_addresses), ", ".join(address_and_sources))
+
+    print("---------------------", total_level_count, "------------------------")
+
+
+def _print_missing_stock_levels(levels_by_object_set: defaultdict[Any, list]):
+    """
+    Check which of the known stock levels are missing in this particular ROM. Interesting with a stock ROM for testing.
+    """
     root_dir = pathlib.Path(__file__).parent.parent.parent.parent
 
     stock_level_file = root_dir / "data" / "levels.dat"
 
     missing = 0
-    levels: dict[int, set[int]] = defaultdict(set)
+    missing_levels: dict[int, set[int]] = defaultdict(set)
 
     for line in stock_level_file.open("r").readlines():
         if not line:
             continue
 
-        world_no, *_, level_address, _, object_set_no, _ = line.split(",")
+        world_no, *_, level_address_str, _, object_set_no, _ = line.split(",")
 
-        level_address = hex_int(level_address) - 9
+        level_address = hex_int(level_address_str) - HEADER_LENGTH
         object_set_num = hex_int(object_set_no)
 
-        if int(world_no) in [0, 9]:
+        if int(world_no) - 1 in [-1, WORLD_MAP_WARP_WORLD_INDEX]:
             continue
 
-        levels[object_set_num].add(level_address)
+        missing_levels[object_set_num].add(level_address)
 
-        if level_address not in levels_per_object_set[object_set_num]:
+        if level_address not in levels_by_object_set[object_set_num]:
             missing += 1
             print(world_no, object_set_num, hex(level_address))
 
-    print(missing, "levels")
+    print(missing, "stock levels are missing")
 
-    for object_set_num in range(1, 15):
-        print(
-            object_set_num,
-            list(
-                map(
-                    hex,
-                    set(levels_per_object_set[object_set_num]).difference(levels[object_set_num]),
-                )
-            ),
-        )
+    for object_set_num in range(PLAINS_OBJECT_SET, UNDERGROUND_OBJECT_SET + 1):
+        missing_by_object_set = set(levels_by_object_set[object_set_num]).difference(missing_levels[object_set_num])
+        print(object_set_num, apply(hex, missing_by_object_set))
 
-    return levels_per_object_set, levels_by_address
+
+def _add_new_origin_to_level(found_level: FoundLevel, record: FoundLevelRecord):
+    assert record.level_address_offset not in found_level.level_offset_positions
+    found_level.level_offset_positions.append(record.level_address_offset)
+
+    assert record.enemy_address_offset not in found_level.enemy_offset_positions
+    found_level.enemy_offset_positions.append(record.enemy_address_offset)
+
+    found_level.found_in_world |= record.found_in_world
+    found_level.found_as_jump |= record.found_as_jump
+    found_level.is_world_specific |= record.is_world_specific
 
 
 def _add_static_levels_for_world(world: WorldMap) -> list[FoundLevelRecord]:
