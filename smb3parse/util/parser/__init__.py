@@ -71,7 +71,7 @@ class FoundLevel:
         return FoundLevel(
             [record.level_address_offset],
             [record.enemy_address_offset],
-            world_num + 1,
+            world_num,
             record.level_address,
             record.enemy_address,
             record.object_set,
@@ -122,95 +122,47 @@ def gen_levels_in_rom(
     levels_by_address: dict[int, FoundLevel] = {}
 
     start = time.time()
+    was_cancelled = False  # whether this generator was cancelled by the user from the outside
 
-    for world_num in range(WORLD_COUNT - 1):
+    # go through all worlds, except the warp world, to search for levels
+    for world_num in range(1, WORLD_COUNT):
         levels_in_world = 0
 
-        world = WorldMap.from_world_number(rom, world_num + 1)
+        world = WorldMap.from_world_number(rom, world_num)
 
-        found_level_records = _add_static_levels_for_world(world)
+        # add all levels found in the world map via level pointers
+        found_level_records: list[FoundLevelRecord] = [
+            (FoundLevelRecord.from_level_pointer(lp, True, False, False)) for lp in world.level_pointers
+        ]
 
-        was_cancelled = False
+        # add all the static levels (airship, etc.)
+        _add_static_levels_for_world(world, found_level_records)
 
+        # go through all found levels and check their jump destinations for more levels
         for record in found_level_records:
             if was_cancelled:
-                return defaultdict(list), levels_by_address
+                break
 
+            # this level was already found on a different level pointer or as a jump destination, only update the info
             if record.level_address in levels_by_address:
                 found_level = levels_by_address[record.level_address]
                 _add_new_origin_to_level(found_level, record)
 
                 continue
 
+            # ignore the special bonus mini games
             if record.object_set == SPADE_BONUS_OBJECT_SET:
                 continue
 
-            print(f"W{world_num + 1}", hex(record.level_address), hex(record.enemy_address), record.object_set)
+            print(f"W{world.number}", hex(record.level_address), hex(record.enemy_address), record.object_set)
 
-            # traverse Jump Destinations by following the offsets in the header
-            while True:
-                levels_in_world += 1
+            # traverse Jump Destinations by following the offsets in the header, until finding a known level or dead end
+            was_cancelled, levels_in_world = yield from _follow_jump_destinations(
+                levels_by_address, levels_in_world, max_steps, record, rom, world
+            )
 
-                was_cancelled = yield world.number, levels_in_world
-
-                if was_cancelled:
-                    break
-
-                try:
-                    parsed_level = NesCPU(rom).load_from_address(
-                        record.object_set, record.level_address, record.enemy_address, max_steps
-                    )
-                except ValueError as ve:
-                    print(ve)
-                    break
-
-                found_level = FoundLevel.from_record(
-                    record, world_num, parsed_level.object_data_length, parsed_level.enemy_data_length
-                )
-
-                levels_by_address[record.level_address] = found_level
-
-                if not parsed_level.has_jump():
-                    break
-
-                header_of_old_level = LevelHeader(
-                    rom,
-                    rom.read(record.level_address, HEADER_LENGTH),
-                    record.object_set,
-                )
-
-                level_address_position = record.level_address
-                level_address = header_of_old_level.jump_level_address
-
-                enemy_address_position = record.level_address + OFFSET_SIZE
-                enemy_address = header_of_old_level.jump_enemy_address
-
-                object_set_number = header_of_old_level.jump_object_set_number
-
-                new_record = FoundLevelRecord(
-                    level_address,
-                    level_address_position,
-                    enemy_address,
-                    enemy_address_position,
-                    object_set_number,
-                )
-
-                # no jump destination set
-                if header_of_old_level.jump_level_offset == 0x0 or object_set_number == WORLD_MAP_OBJECT_SET:
-                    break
-
-                new_record.found_as_jump = True
-
-                if level_address in levels_by_address:
-                    found_level = levels_by_address[level_address]
-
-                    _add_new_origin_to_level(found_level, new_record)
-                    break
-
-                # set new record to old one to go along the chain of jumps
-                record = new_record
-
-                print("    ", hex(level_address), object_set_number)
+    if was_cancelled:
+        return defaultdict(list), dict()
 
     print(time.time() - start)
 
@@ -221,6 +173,85 @@ def gen_levels_in_rom(
     _print_missing_stock_levels(levels_by_object_set)
 
     return levels_by_object_set, levels_by_address
+
+
+def _follow_jump_destinations(
+    levels_by_address: dict[int, FoundLevel],
+    levels_in_world: int,
+    max_steps: int,
+    record: FoundLevelRecord,
+    rom: Rom,
+    world: WorldMap,
+):
+    while True:
+        levels_in_world += 1
+
+        was_cancelled = yield world.number, levels_in_world
+
+        if was_cancelled:
+            break
+
+        try:
+            # emulate the level loading of the ROM to let it parse the level objects
+            parsed_level = NesCPU(rom).load_from_address(
+                record.object_set, record.level_address, record.enemy_address, max_steps
+            )
+        except ValueError as ve:
+            print(ve)
+            break
+
+        found_level = FoundLevel.from_record(
+            record, world.number, parsed_level.object_data_length, parsed_level.enemy_data_length
+        )
+
+        # add the newly found level to the list of known levels
+        levels_by_address[record.level_address] = found_level
+
+        # if there is no jump object in this level, we've reached a dead end
+        if not parsed_level.has_jump():
+            break
+
+        cur_level_header = LevelHeader(
+            rom,
+            rom.read(record.level_address, HEADER_LENGTH),
+            record.object_set,
+        )
+
+        # no jump destination set, even though a jump object was found
+        if cur_level_header.jump_level_offset == 0x0 or cur_level_header.jump_object_set_number == WORLD_MAP_OBJECT_SET:
+            break
+
+        # build record for new jump destination
+        new_level_address_position = record.level_address
+        new_level_address = cur_level_header.jump_level_address
+
+        new_enemy_address_position = record.level_address + OFFSET_SIZE
+        new_enemy_address = cur_level_header.jump_enemy_address
+
+        object_set_number = cur_level_header.jump_object_set_number
+
+        new_record = FoundLevelRecord(
+            new_level_address,
+            new_level_address_position,
+            new_enemy_address,
+            new_enemy_address_position,
+            object_set_number,
+        )
+
+        new_record.found_as_jump = True
+
+        # if we already know about this level, simply add this reference to it
+        if new_level_address in levels_by_address:
+            found_level = levels_by_address[new_level_address]
+
+            _add_new_origin_to_level(found_level, new_record)
+            break
+
+        # replace the level record and start again
+        record = new_record
+
+        print("    ", hex(new_level_address), object_set_number)
+    return was_cancelled, levels_in_world
 
 
 def _sort_levels_by_object_set(levels_by_address: dict[int, FoundLevel]) -> defaultdict[Any, list]:
@@ -285,6 +316,13 @@ def _print_missing_stock_levels(levels_by_object_set: defaultdict[Any, list]):
 
 
 def _add_new_origin_to_level(found_level: FoundLevel, record: FoundLevelRecord):
+    """
+    We want the FoundLevel object to keep a record of all the places in the Rom it is referenced. For example if more
+    than one level uses it as their Jump Destination, or if more than one Level Pointer points to it.
+
+    Therefore, add that information from the FoundLevelRecord to the given FoundLevel, including the type of reference
+    it is.
+    """
     assert record.level_address_offset not in found_level.level_offset_positions
     found_level.level_offset_positions.append(record.level_address_offset)
 
@@ -296,27 +334,21 @@ def _add_new_origin_to_level(found_level: FoundLevel, record: FoundLevelRecord):
     found_level.is_world_specific |= record.is_world_specific
 
 
-def _add_static_levels_for_world(world: WorldMap) -> list[FoundLevelRecord]:
-    found_level_records: list[FoundLevelRecord] = [
-        (FoundLevelRecord.from_level_pointer(lp, True, False, False)) for lp in world.level_pointers
-    ]
-
+def _add_static_levels_for_world(world: WorldMap, level_records: list[FoundLevelRecord]):
     # add airship
-    found_level_records.append(_airship_level_for_world(world))
+    level_records.append(_airship_level_for_world(world))
 
     # add generic exit
-    found_level_records.append(_generic_exit_level_for_world(world))
+    level_records.append(_generic_exit_level_for_world(world))
 
     # add big ? level
-    found_level_records.append(_big_q_block_level_for_world(world))
+    level_records.append(_big_q_block_level_for_world(world))
 
     # add coin ship level
-    found_level_records.append(_coin_ship_level_for_world(world))
+    level_records.append(_coin_ship_level_for_world(world))
 
     # add special/white toad house level
-    found_level_records.append(_toad_warp_level_for_world(world))
-
-    return found_level_records
+    level_records.append(_toad_warp_level_for_world(world))
 
 
 def _toad_warp_level_for_world(world: WorldMap) -> FoundLevelRecord:

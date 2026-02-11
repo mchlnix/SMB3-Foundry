@@ -37,4 +37,5 @@ class LevelParseProgressDialog(QProgressDialog):
                 world_number, levels_in_world = level_gen.send(self.wasCanceled())
 
         except StopIteration as si:
+            # TODO: Check for wasCancelled()
             self.levels_per_object_set, self.levels_by_address = si.value

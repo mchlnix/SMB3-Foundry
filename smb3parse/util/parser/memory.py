@@ -62,6 +62,6 @@ class NESMemory(list):
         if address in [MEM_Screen_Start_AddressL, MEM_Screen_Start_AddressH]:
             # ignore these addresses, since they seem to access the Mapper, but actually overwrite a pointer to the
             # screen memory
-            return
+            return None
 
         return super(NESMemory, self).__setitem__(address, value)
