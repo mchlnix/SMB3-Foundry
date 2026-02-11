@@ -38,7 +38,7 @@ class InstaPlayer:
         # set default powerup when starting a world
         self.rom.write(Constants.Title_PrepForWorldMap + 0x1, bytes([powerup.power_up_code]))
 
-        if not powerup.has_p_wing or with_starman:
+        if not (powerup.has_p_wing or with_starman):
             return
 
         # If a P-wing powerup or starman is selected, another variable needs to be set with the P-wing/Star Man value
