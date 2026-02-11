@@ -149,8 +149,8 @@ class NesCPU(mpu6502.MPU):
 
         self.objects[-1].tiles_in_level.append((address, value))
 
-    def run_until(self, address: int, max_steps: int = -1):
-        while self.pc != address:
+    def run_until(self, target_address: int, max_steps: int = -1):
+        while self.pc != target_address:
             self.step()
 
             if self.step_count > max_steps:

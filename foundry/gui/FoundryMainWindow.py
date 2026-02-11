@@ -91,6 +91,7 @@ from foundry.gui.WarningList import WarningList
 from foundry.gui.widgets.object_toolbar.ObjectToolBar import ObjectToolBar
 from foundry.gui.widgets.size_bar.EnemySizeBar import EnemySizeBar
 from foundry.gui.widgets.size_bar.LevelSizeBar import LevelSizeBar
+from smb3parse.constants import Constants
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
@@ -644,10 +645,27 @@ class FoundryMainWindow(MainWindow):
         if answer == QMessageBox.StandardButton.Ignore:
             return
 
-        ROM.additional_data.managed_level_positions = answer == QMessageBox.StandardButton.Yes
+        if answer == QMessageBox.StandardButton.Yes:
+            if not self._found_level_load_code():
+                return
 
-        if ROM.additional_data.managed_level_positions:
+            ROM.additional_data.managed_level_positions = True
             self._parse_levels_in_rom()
+
+    def _found_level_load_code(self):
+        # TODO ask to put add the fns file instead
+        expected_data = bytearray([0xAD, 0x0A, 0x07, 0x20, 0x99, 0xFE])
+        found_data = ROM().read(Constants.LevelLoad_ByTileset, len(expected_data))
+
+        if found_data != expected_data:
+            QMessageBox.warning(
+                self,
+                "Automatic Level Management Feature",
+                "The ROM was changed in a way that makes this feature unavailable. "
+                "LevelLoad_ByTileset was not where we expected it.",
+            )
+
+        return found_data == expected_data
 
     @staticmethod
     def _parse_levels_in_rom():
