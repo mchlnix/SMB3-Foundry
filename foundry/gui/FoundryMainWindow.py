@@ -563,6 +563,37 @@ class FoundryMainWindow(MainWindow):
         try:
             ROM.load_from_file(path_to_rom)
 
+            wants_to_import = False
+
+            # check for changed ROM and or asm files in its path
+            if self._rom_has_asm_files_in_path(Path(path_to_rom)):
+                wants_to_import = (
+                    QMessageBox.question(
+                        self,
+                        "ASM files found",
+                        "There were files in your ROM directory, that look like ASM files.\n\n"
+                        "If you compiled your own ROM, perhaps you want to load those into the editor as well?",
+                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    )
+                    == QMessageBox.StandardButton.Yes
+                )
+
+            elif self._found_incompatibilities():
+                wants_to_import = (
+                    QMessageBox.question(
+                        self,
+                        "Incompatibilities found",
+                        "The data in your ROM differs from expected values. This is likely due to code changes.\n\n"
+                        "If you compiled your own ROM, supplying additional ASM files can solve this issue. Do you want"
+                        " to import them now?",
+                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    )
+                    == QMessageBox.StandardButton.Yes
+                )
+
+            if wants_to_import:
+                self.file_menu.on_fns_import()
+
             self.close_current_level()
 
             self._ask_for_level_management()
@@ -583,6 +614,39 @@ class FoundryMainWindow(MainWindow):
             self._save_auto_rom()
 
         self.enable_disable_gui_elements()
+
+    @staticmethod
+    def _found_incompatibilities():
+        address_and_expected_data = (
+            (Constants.COMPLETABLE_TILES_LIST, bytearray(b"P\xe8\xe6\xbd\xe0\x00\x01@A\x80")),
+            (Constants.LAYOUT_LIST_OFFSET, bytearray(b"\xaa\xa5;\xa6\\\xa7\r\xa9.\xaa")),
+            (Constants.LEVELS_IN_WORLD_LIST_OFFSET, bytearray(b"4\xb4\xfa\xb4,\xb6 \xb7\x10\xb8")),
+            (Constants.LEVEL_BASE_OFFSET, bytearray(b"\xff\x00\x01\x02\x03\x04\x05\x06\x07\x08")),
+            (Constants.LEVEL_ENEMY_LIST_OFFSET, bytearray(b".\xb4\x9c\xb4\xc4\xb5\xdc\xb6\xbc\xb7")),
+            (Constants.LEVEL_X_POS_LISTS, bytearray(b"+\xb4m\xb4\x90\xb5\xba\xb6\x92\xb7")),
+            (Constants.LEVEL_Y_POS_LISTS, bytearray(b"(\xb4>\xb4\\\xb5\x98\xb6h\xb7")),
+            (Constants.OFFSET_BY_OBJECT_SET_A000, bytearray(b"\x0b\x0f\x15\x10\x11\x13\x12\x12\x12\x14")),
+            (Constants.OFFSET_BY_OBJECT_SET_C000, bytearray(b"\n\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e")),
+            (Constants.SPECIAL_ENTERABLE_TILES_LIST, bytearray(b"P\xe8\xbc\xe0\xc9_\xdff\xbd\xe6")),
+            (Constants.STRUCTURE_DATA_OFFSETS, bytearray(b"$\xb4:\xb4X\xb5\x94\xb6d\xb7")),
+            (Constants.TILE_ATTRIBUTES_TS0_OFFSET, bytearray(b"\x03g\xbf\xe9\x03g\xbf\xe9 \x0e")),
+            (Constants.TSA_OS_LIST, bytearray(b"\x0b\x0f\x15\x10\x11\x13\x12\x12\x12\x14")),
+        )
+
+        for address, expected_data in address_and_expected_data:
+            if ROM().read(address, len(expected_data)) != expected_data:
+                return True
+        else:
+            return False
+
+    @staticmethod
+    def _rom_has_asm_files_in_path(rom_path: Path):
+        containing_dir = rom_path.parent
+
+        has_asm_file = bool(list(containing_dir.glob("*.asm")))
+        has_fns_file = bool(list(containing_dir.glob("*.fns")))
+
+        return has_asm_file and has_fns_file
 
     def _ask_for_path_to_rom(self):
         # otherwise, ask the user what new file to open
@@ -1079,24 +1143,24 @@ class FoundryMainWindow(MainWindow):
         self.object_dropdown.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
 
     def enable_disable_gui_elements(self):
-        # actions and widgets, that depend on whether the ROM is loaded
+        # actions and widgets that depend on whether the ROM is loaded
         rom_elements = [
-            # entries in file menu
+            # entries in the file menu
             self.file_menu.open_m3l_action,
             self.file_menu.open_level_asm_action,
             self.file_menu.import_enemy_asm_action,
             self.file_menu.save_rom_action,
             self.file_menu.save_rom_as_action,
-            # entry in level menu
+            # entry in the level menu
             self.select_level_action,
             self.new_level_action,
         ]
 
         rom_elements.extend(self._rom_menu.actions())
 
-        # actions and widgets, that depend on whether a level is loaded or not
+        # actions and widgets that depend on whether a level is loaded or not
         level_elements = [
-            # entry in file menu
+            # entry in the file menu
             self.file_menu.save_m3l_action,
             self.file_menu.save_level_asm_action,
             self.file_menu.export_enemy_asm_action,
