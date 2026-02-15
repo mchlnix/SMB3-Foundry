@@ -563,38 +563,9 @@ class FoundryMainWindow(MainWindow):
         try:
             ROM.load_from_file(path_to_rom)
 
-            wants_to_import = False
-
-            # check for changed ROM and or asm files in its path
-            if self._rom_has_asm_files_in_path(Path(path_to_rom)):
-                wants_to_import = (
-                    QMessageBox.question(
-                        self,
-                        "ASM files found",
-                        "There were files in your ROM directory, that look like ASM files.\n\n"
-                        "If you compiled your own ROM, perhaps you want to load those into the editor as well?",
-                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                    )
-                    == QMessageBox.StandardButton.Yes
-                )
-
-            elif self._found_incompatibilities():
-                wants_to_import = (
-                    QMessageBox.question(
-                        self,
-                        "Incompatibilities found",
-                        "The data in your ROM differs from expected values. This is likely due to code changes.\n\n"
-                        "If you compiled your own ROM, supplying additional ASM files can solve this issue. Do you want"
-                        " to import them now?",
-                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                    )
-                    == QMessageBox.StandardButton.Yes
-                )
-
-            if wants_to_import:
-                self.file_menu.on_fns_import()
-
             self.close_current_level()
+
+            self._check_for_asm_fns_imports(path_to_rom)
 
             self._ask_for_level_management()
 
@@ -615,8 +586,47 @@ class FoundryMainWindow(MainWindow):
 
         self.enable_disable_gui_elements()
 
+    def _check_for_asm_fns_imports(self, path_to_rom: str | Path):
+        wants_to_import = False
+
+        # check for changed ROM and or asm files in its path
+        if self._rom_has_asm_files_in_path(Path(path_to_rom)):
+            wants_to_import = (
+                QMessageBox.question(
+                    self,
+                    "ASM files found",
+                    "There were files in your ROM directory, that look like ASM files.\n\n"
+                    "If you compiled your own ROM, perhaps you want to load those into the editor as well?",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                )
+                == QMessageBox.StandardButton.Yes
+            )
+
+        elif self._has_found_incompatibilities():
+            wants_to_import = (
+                QMessageBox.question(
+                    self,
+                    "Incompatibilities found",
+                    "The data in your ROM differs from expected values. This is likely due to code changes.\n\n"
+                    "If you compiled your own ROM, supplying additional ASM files can solve this issue. Do you want"
+                    " to import them now?",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                )
+                == QMessageBox.StandardButton.Yes
+            )
+
+        if wants_to_import:
+            self.file_menu.on_fns_import()
+
     @staticmethod
-    def _found_incompatibilities():
+    def _has_found_incompatibilities():
+        """
+        Checks if code at certain addresses in the ROM has changed. Those addresses are important values and look up
+        tables used in drawing levels. If they don't match, it is likely, that code has been moved and the editor would
+        read in wrong data.
+
+        Expected data is taken from a vanilla US rom.
+        """
         address_and_expected_data = (
             (Constants.COMPLETABLE_TILES_LIST, bytearray(b"P\xe8\xe6\xbd\xe0\x00\x01@A\x80")),
             (Constants.LAYOUT_LIST_OFFSET, bytearray(b"\xaa\xa5;\xa6\\\xa7\r\xa9.\xaa")),
