@@ -500,6 +500,11 @@ class Constants(_DefaultConstants, metaclass=_ClassVarRedirect):
     A list of tile values, that are also enterable, like the castle and the toad house.
     """
 
+    LEVEL_LOAD_ROUTINE_BY_OBJECT_SET: int
+    """
+    A lookup table that holds the individual addresses of the level loading routines for each object set.
+    """
+
     _redirect = {
         "OFFSET_BY_OBJECT_SET_A000": "PAGE_A000_ByTileset",
         "TSA_OS_LIST": "PAGE_A000_ByTileset",
@@ -514,6 +519,7 @@ class Constants(_DefaultConstants, metaclass=_ClassVarRedirect):
         "LEVELS_IN_WORLD_LIST_OFFSET": "Map_LevelLayouts",
         "COMPLETABLE_TILES_LIST": "Map_Completable_Tiles",
         "SPECIAL_ENTERABLE_TILES_LIST": "Map_EnterSpecialTiles",
+        "LEVEL_LOAD_ROUTINE_BY_OBJECT_SET": "LevelLoad_ByTileset",
     }
 
 

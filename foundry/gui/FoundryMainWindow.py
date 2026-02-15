@@ -602,7 +602,7 @@ class FoundryMainWindow(MainWindow):
                 == QMessageBox.StandardButton.Yes
             )
 
-        elif self._has_found_incompatibilities():
+        if not wants_to_import and self._has_found_incompatibilities():
             wants_to_import = (
                 QMessageBox.question(
                     self,
@@ -627,23 +627,24 @@ class FoundryMainWindow(MainWindow):
 
         Expected data is taken from a vanilla US rom.
         """
-        address_and_expected_data = (
+        addresses_and_expected_data = (
             (Constants.COMPLETABLE_TILES_LIST, bytearray(b"P\xe8\xe6\xbd\xe0\x00\x01@A\x80")),
             (Constants.LAYOUT_LIST_OFFSET, bytearray(b"\xaa\xa5;\xa6\\\xa7\r\xa9.\xaa")),
-            (Constants.LEVELS_IN_WORLD_LIST_OFFSET, bytearray(b"4\xb4\xfa\xb4,\xb6 \xb7\x10\xb8")),
+            (Constants.LEVELS_IN_WORLD_LIST_OFFSET, bytearray(b"|\xb4f\xb5\x98\xb6\x8c\xb7|\xb8")),
             (Constants.LEVEL_BASE_OFFSET, bytearray(b"\xff\x00\x01\x02\x03\x04\x05\x06\x07\x08")),
-            (Constants.LEVEL_ENEMY_LIST_OFFSET, bytearray(b".\xb4\x9c\xb4\xc4\xb5\xdc\xb6\xbc\xb7")),
-            (Constants.LEVEL_X_POS_LISTS, bytearray(b"+\xb4m\xb4\x90\xb5\xba\xb6\x92\xb7")),
-            (Constants.LEVEL_Y_POS_LISTS, bytearray(b"(\xb4>\xb4\\\xb5\x98\xb6h\xb7")),
+            (Constants.LEVEL_ENEMY_LIST_OFFSET, bytearray(b"R\xb4\x08\xb50\xb6H\xb7(\xb8")),
+            (Constants.LEVEL_X_POS_LISTS, bytearray(b"=\xb4\xd9\xb4\xfc\xb5&\xb7\xfe\xb7")),
+            (Constants.LEVEL_Y_POS_LISTS, bytearray(b"(\xb4\xaa\xb4\xc8\xb5\x04\xb7\xd4\xb7")),
             (Constants.OFFSET_BY_OBJECT_SET_A000, bytearray(b"\x0b\x0f\x15\x10\x11\x13\x12\x12\x12\x14")),
             (Constants.OFFSET_BY_OBJECT_SET_C000, bytearray(b"\n\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e")),
             (Constants.SPECIAL_ENTERABLE_TILES_LIST, bytearray(b"P\xe8\xbc\xe0\xc9_\xdff\xbd\xe6")),
-            (Constants.STRUCTURE_DATA_OFFSETS, bytearray(b"$\xb4:\xb4X\xb5\x94\xb6d\xb7")),
+            (Constants.STRUCTURE_DATA_OFFSETS, bytearray(b"$\xb4\xa6\xb4\xc4\xb5\x00\xb7\xd0\xb7")),
             (Constants.TILE_ATTRIBUTES_TS0_OFFSET, bytearray(b"\x03g\xbf\xe9\x03g\xbf\xe9 \x0e")),
             (Constants.TSA_OS_LIST, bytearray(b"\x0b\x0f\x15\x10\x11\x13\x12\x12\x12\x14")),
+            (Constants.LEVEL_LOAD_ROUTINE_BY_OBJECT_SET, bytearray(b"\xad\n\x07 \x99\xfe\x08\xa4\x08\xa4")),
         )
 
-        for address, expected_data in address_and_expected_data:
+        for address, expected_data in addresses_and_expected_data:
             if ROM().read(address, len(expected_data)) != expected_data:
                 return True
         else:
@@ -728,8 +729,9 @@ class FoundryMainWindow(MainWindow):
 
     def _found_level_load_code(self):
         # TODO ask to put add the fns file instead
-        expected_data = bytearray([0xAD, 0x0A, 0x07, 0x20, 0x99, 0xFE])
-        found_data = ROM().read(Constants.LevelLoad_ByTileset, len(expected_data))
+        expected_data = bytearray(b"\xad\n\x07 \x99\xfe\x08\xa4\x08\xa4")
+
+        found_data = ROM().read(Constants.LEVEL_LOAD_ROUTINE_BY_OBJECT_SET, len(expected_data))
 
         if found_data != expected_data:
             QMessageBox.warning(
