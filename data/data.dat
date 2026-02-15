@@ -237,6 +237,7 @@
 0,0xEB,0xEB,1,1,<138>,9,0,0,Dungeon B
 0,0xEC,0xFF,1,1,<122>,9,0,0,Blank Square
 
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 0,0x00,0x00,5,4,<149,40,41,149,149,40,43,39,40,41,38,42,43,44,39,38,44,44,44,39>,9,0,0,Background Hills A
 0,0x01,0x01,4,3,<149,40,41,149,149,38,42,41,40,43,44,39>,9,0,0,Background Hills B
 0,0x02,0x02,6,8,<149,149,40,41,149,149,149,149,38,42,41,149,149,149,38,44,39,149,149,40,43,44,39,149,40,43,44,44,39,149,38,44,44,44,39,149,38,44,44,44,42,41,38,44,44,44,44,39>,9,0,0,Background Hills C
@@ -268,6 +269,7 @@
 0,0xD0,0xDF,3,2,<130,131,132,127,128,129>,0,3,1,Underwater Flat Ground
 0,0xE0,0xEF,3,2,<92,94,96,93,95,97>,0,3,0,Background Clouds
 0,0xF0,0xFF,3,1,<132,157,130>,0,3,0,Underwater gap
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with Flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with Leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with Star
@@ -299,6 +301,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -330,6 +333,7 @@
 2,0xD0,0xDF,1,2,<61,58>,0,0,1,Weird Orange Background
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -361,6 +365,7 @@
 3,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -392,6 +397,7 @@
 4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -423,6 +429,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -454,6 +461,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
@@ -486,6 +494,7 @@
 7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
 7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
 
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 0,0x00,0x00,1,1,<38>,9,0,0,Upper Left Hill Corner - UnderGround
 0,0x01,0x01,1,1,<39>,9,0,0,Upper Left Hill Corner - Hilly
 0,0x02,0x02,1,1,<40>,9,0,0,Upper Left Hill Corner - UnderWater
@@ -517,6 +526,7 @@
 0,0xD0,0xDF,1,1,<62>,1,0,0,Underground Wall - Left Side
 0,0xE0,0xEF,1,1,<63>,1,0,0,Hilly Wall - Left Side
 0,0xF0,0xFF,1,1,<64>,1,0,0,Dark Underground Wall - Left Side
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
@@ -548,6 +558,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -579,6 +590,7 @@
 2,0xD0,0xDF,1,2,<142,143>,0,0,1,Normal Quicksand
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,8,6,<41,90,90,90,38,76,76,76,162,73,73,73,64,56,56,56,162,73,73,73,64,56,56,56,162,73,73,73,55,56,56,56,56,49,73,73,73,55,56,56,56,56,49,73,73,73,55,56>,9,0,0,Underground Tunnel A
 3,0x01,0x01,8,6,<76,76,76,41,90,90,90,41,56,56,56,162,73,73,73,64,56,56,56,162,73,73,73,64,56,56,56,57,73,73,73,64,56,56,57,73,73,73,51,56,56,57,73,73,73,51,56,56>,9,0,0,Underground Tunnel B
 3,0x02,0x02,6,6,<73,73,73,51,56,57,73,73,51,56,57,73,73,51,56,57,73,73,51,56,57,73,73,73,56,57,73,73,73,73,57,73,73,73,73,73>,9,0,0,45 Degree Diagonal Hill Strip A
@@ -610,6 +622,7 @@
 3,0xD0,0xDF,1,1,<160>,1,0,0,Underground Wall - Right Side
 3,0xE0,0xEF,1,1,<161>,1,0,0,Hilly Wall - Right Side
 3,0xF0,0xFF,1,1,<162>,1,0,0,Dark Underground Wall - Right Side
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<81>,9,0,0,Small Background Cloud
 4,0x01,0x01,1,1,<148>,9,0,0,Weird
 4,0x02,0x02,1,1,<148>,9,0,0,Weird
@@ -641,6 +654,7 @@
 4,0xD0,0xDF,3,1,<83,82,84>,0,3,0,Small Background Hills
 4,0xE0,0xEF,2,2,<30,31,85,86>,1,2,0,Upward Pipe to End of Level
 4,0xF0,0xFF,1,1,<148>,9,0,0,Weird
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -672,6 +686,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -703,6 +718,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
@@ -735,6 +751,7 @@
 7,0xE0,0xEF,1,1,<150>,9,0,0,MSG_POINTER
 7,0xF0,0xFF,1,1,<150>,9,0,0,MSG_POINTER
 
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 0,0x00,0x00,1,1,<38>,9,0,0,Small Swirly Background Cloud
 0,0x01,0x01,2,1,<39,40>,9,0,0,Large Swirly Background Cloud
 0,0x02,0x02,1,2,<41,42>,13,0,0,Blue Background Pole A
@@ -766,6 +783,7 @@
 0,0xD0,0xDF,1,2,<67,68>,4,0,0,60 Degree Platform Wire - Down/Right
 0,0xE0,0xEF,1,2,<70,69>,2,0,0,60 Degree Platform Wire - Down/Left
 0,0xF0,0xFF,3,2,<71,72,73,74,75,76>,0,3,0,World 5-style Cloud Platform
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
@@ -797,6 +815,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -828,6 +847,7 @@
 2,0xD0,0xDF,1,1,<148>,0,0,1,Weird platform
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -859,6 +879,7 @@
 3,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xF0,0xFF,1,1,<146>,9,0,0,MSG_NOTHING
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -890,6 +911,7 @@
 4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -921,6 +943,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -952,6 +975,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
@@ -1015,6 +1039,7 @@
 0,0xD0,0xDF,1,1,<67>,0,0,0,Ceiling Spikes
 0,0xE0,0xEF,1,1,<68>,0,0,1,Horizontally oriented X-blocks
 0,0xF0,0xFF,1,1,<68>,1,0,1,Vertically oriented X-blocks
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
@@ -1046,6 +1071,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -1077,6 +1103,7 @@
 2,0xD0,0xDF,1,1,<148>,0,0,1,Weird Background
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1108,6 +1135,7 @@
 3,0xD0,0xDF,1,1,<89>,0,0,1,Red Bricks - found in Bowser's Castle
 3,0xE0,0xEF,1,1,<80>,0,0,0,Donut Blocks
 3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1139,6 +1167,7 @@
 4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1170,6 +1199,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1201,6 +1231,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
@@ -1264,6 +1295,7 @@
 0,0xD0,0xDF,1,1,<96>,1,0,0,1 Metal Bar B
 0,0xE0,0xEF,2,3,<97,153,121,153,122,153>,1,3,0,Thick Vertical Background Pillar
 0,0xF0,0xFF,1,3,<123,124,125>,1,3,0,1 Background Pillar
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
@@ -1295,6 +1327,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -1326,6 +1359,7 @@
 2,0xD0,0xDF,1,1,<148>,0,0,1,Weird Background
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,1,1,<158>,9,0,0,Rocky Wrench hole
 3,0x01,0x01,5,2,<149,149,158,149,39,41,71,72,71,73>,9,0,0,Ship Platform A
 3,0x02,0x02,5,3,<149,149,149,78,149,149,132,71,72,39,41,71,72,71,73>,9,0,0,Ship Platform B
@@ -1357,6 +1391,7 @@
 3,0xD0,0xDF,1,1,<146>,9,0,0,MSG_NOTHING
 3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1388,6 +1423,7 @@
 4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1419,6 +1455,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1450,6 +1487,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
@@ -1513,6 +1551,7 @@
 0,0xD0,0xDF,3,2,<55,56,57,52,53,54>,0,3,0,World 5-style Cloud Platform - White Background
 0,0xE0,0xEF,3,3,<77,78,79,61,62,63,0,0,0>,0,3,1,Clouds C
 0,0xF0,0xFF,3,1,<58,59,60>,0,3,0,World 6-style Cloud Platform
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
@@ -1544,6 +1583,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -1575,6 +1615,7 @@
 2,0xD0,0xDF,1,1,<148>,0,0,1,Weird Background
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1606,6 +1647,7 @@
 3,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xE0,0xEF,1,1,<146>,0,0,0,MSG_NOTHING
 3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1637,6 +1679,7 @@
 4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1668,6 +1711,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1699,6 +1743,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
@@ -1762,6 +1807,7 @@
 0,0xD0,0xDF,6,6,<41,42,42,42,42,43,48,49,49,49,49,50,44,46,46,46,46,47,42,42,43,41,42,42,49,49,50,48,49,49,46,46,47,44,46,46>,0,0,1,Large block platforms
 0,0xE0,0xEF,8,8,<41,42,42,42,42,42,42,43,48,49,49,49,49,49,49,50,48,49,49,49,49,49,49,50,44,46,46,46,46,46,46,47,42,42,42,43,41,42,42,42,49,49,49,50,48,49,49,49,49,49,49,50,48,49,49,49,46,46,46,47,44,46,46,46>,0,0,1,X-Large Block Platforms
 0,0xF0,0xFF,3,1,<83,84,85>,0,3,0,Ice blue platform
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
@@ -1793,6 +1839,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -1824,6 +1871,7 @@
 2,0xD0,0xDF,1,1,<148>,0,0,1,Weird Background
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1855,6 +1903,7 @@
 3,0xD0,0xDF,1,1,<148>,9,0,0,Weird
 3,0xE0,0xEF,1,1,<148>,9,0,0,Weird
 3,0xF0,0xFF,1,1,<147>,9,0,0,CAUTION: Screws Up Game
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1886,6 +1935,7 @@
 4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1917,6 +1967,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -1948,6 +1999,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
@@ -2011,6 +2063,7 @@
 0,0xD0,0xDF,1,2,<80,79>,1,1,0,Background Aquatic Plants
 0,0xE0,0xEF,1,1,<81>,1,0,0,Vertically Oriented Donut Blocks
 0,0xF0,0xFF,1,1,<82>,0,0,0,Ceiling Spikes
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with Flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with Leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with Star
@@ -2042,6 +2095,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -2073,6 +2127,7 @@
 2,0xD0,0xDF,1,1,<148>,0,0,1,Weird Background
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2104,6 +2159,7 @@
 3,0xD0,0xDF,1,2,<56,55>,0,0,1,Water
 3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2135,6 +2191,7 @@
 4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2166,6 +2223,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2197,6 +2255,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
@@ -2260,6 +2319,7 @@
 0,0xD0,0xDF,1,1,<148>,9,0,0,Weird
 0,0xE0,0xEF,1,1,<148>,9,0,1,Weird
 0,0xF0,0xFF,1,1,<148>,9,0,0,Weird
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
@@ -2291,6 +2351,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -2322,6 +2383,7 @@
 2,0xD0,0xDF,1,2,<94,96>,0,0,1,Weird Giant Bricks
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2353,6 +2415,7 @@
 3,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2384,6 +2447,7 @@
 4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2415,6 +2479,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2446,6 +2511,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
@@ -2509,6 +2575,7 @@
 0,0xD0,0xDF,1,2,<64,65>,4,0,0,60 Degree Platform Wire - Down/Right
 0,0xE0,0xEF,1,2,<66,67>,2,0,0,60 Degree Platform Wire - Down/Left
 0,0xF0,0xFF,1,1,<148>,9,0,0,Weird Ice Platform
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with Flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with Leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with Star
@@ -2540,6 +2607,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -2571,6 +2639,7 @@
 2,0xD0,0xDF,1,1,<148>,0,0,1,Weird background
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 3,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 3,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2602,6 +2671,7 @@
 3,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 3,0xF0,0xFF,1,1,<146>,9,0,0,MSG_NOTHING
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 4,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 4,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2633,6 +2703,7 @@
 4,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 4,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2664,6 +2735,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2695,6 +2767,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
@@ -2758,6 +2831,7 @@
 0,0xD0,0xDF,1,1,<62>,1,0,0,Underground Wall - Left Side
 0,0xE0,0xEF,1,1,<63>,1,0,0,Hilly Wall - Left Side
 0,0xF0,0xFF,1,1,<64>,1,0,0,Dark Underground Wall - Left Side
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 1,0x00,0x00,1,1,<0>,9,0,0,'?' with flower
 1,0x01,0x01,1,1,<1>,9,0,0,'?' with leaf
 1,0x02,0x02,1,1,<2>,9,0,0,'?' with star
@@ -2789,6 +2863,7 @@
 1,0xD0,0xDF,2,2,<30,31,26,27>,1,2,0,Upward Pipe (CAN'T go up)
 1,0xE0,0xEF,2,2,<34,36,35,37>,0,1,0,Rightward Pipe (CAN go in)
 1,0xF0,0xFF,2,2,<111,36,112,37>,0,1,0,Rightward Pipe (CAN'T go in)
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 2,0x00,0x00,1,1,<98>,9,0,0,Invisible Note Block
 2,0x01,0x01,1,1,<99>,9,0,0,Note Block with Flower
 2,0x02,0x02,1,1,<100>,9,0,0,Note Block with Leaf
@@ -2820,6 +2895,7 @@
 2,0xD0,0xDF,1,2,<142,143>,0,0,1,Normal Quicksand
 2,0xE0,0xEF,1,1,<118>,0,0,0,White Turtle Bricks
 2,0xF0,0xFF,2,3,<119,120,30,31,119,120>,1,3,0,Double-Ended Vertical Pipe
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 3,0x00,0x00,8,6,<41,90,90,90,38,76,76,76,162,73,73,73,64,56,56,56,162,73,73,73,64,56,56,56,162,73,73,73,55,56,56,56,56,52,73,73,73,55,56,56,56,56,52,73,73,73,55,56>,9,0,0,Underground Tunnel A
 3,0x01,0x01,8,6,<76,76,76,41,90,90,90,38,56,56,56,162,73,73,73,64,56,56,56,162,73,73,73,64,56,56,56,57,73,73,73,64,56,56,57,73,73,73,54,56,56,57,73,73,73,54,56,56>,9,0,0,Underground Tunnel B
 3,0x02,0x02,6,6,<73,73,73,51,56,57,73,73,51,56,57,73,73,51,56,57,73,73,51,56,57,73,73,73,56,57,73,73,73,73,57,73,73,73,73,73>,9,0,0,45 Degree Diagonal Hill Strip A
@@ -2851,6 +2927,7 @@
 3,0xD0,0xDF,1,1,<160>,1,0,0,Underground Wall - Right Side
 3,0xE0,0xEF,1,1,<161>,1,0,0,Hilly Wall - Right Side
 3,0xF0,0xFF,1,1,<162>,1,0,0,Dark Underground Wall - Right Side
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 4,0x00,0x00,1,1,<81>,9,0,0,Small Background Cloud
 4,0x01,0x01,1,1,<148>,9,0,0,Weird
 4,0x02,0x02,1,1,<148>,9,0,0,Weird
@@ -2882,6 +2959,7 @@
 4,0xD0,0xDF,3,1,<83,82,84>,0,3,0,Small Background Hills
 4,0xE0,0xEF,2,2,<30,31,85,86>,1,2,0,Upward Pipe to End of Level
 4,0xF0,0xFF,1,1,<148>,9,0,0,Weird
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 5,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 5,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 5,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2913,6 +2991,7 @@
 5,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 5,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 6,0x00,0x00,1,1,<145>,9,0,0,MSG_CRASH
 6,0x01,0x01,1,1,<145>,9,0,0,MSG_CRASH
 6,0x02,0x02,1,1,<145>,9,0,0,MSG_CRASH
@@ -2944,6 +3023,7 @@
 6,0xD0,0xDF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xE0,0xEF,1,1,<145>,9,0,0,MSG_CRASH
 6,0xF0,0xFF,1,1,<145>,9,0,0,MSG_CRASH
+; obj_domain, min_value, max_value, bmp_width, bmp_height, <obj_design[]>, orientation, ends, obj_flag, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2
 7,0x00,0x00,1,1,<150>,9,0,0,MSG_POINTER
 7,0x01,0x01,1,1,<150>,9,0,0,MSG_POINTER
 7,0x02,0x02,1,1,<150>,9,0,0,MSG_POINTER
