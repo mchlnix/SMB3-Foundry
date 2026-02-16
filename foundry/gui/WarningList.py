@@ -84,7 +84,7 @@ class WarningList(QWidget):
             if obj.object_info == (PLAINS_OBJECT_SET, 0, 0x06):
                 continue
 
-            if obj.orientation in [
+            if obj.generator_type in [
                 GeneratorType.HORIZ_TO_GROUND,
                 GeneratorType.PYRAMID_TO_GROUND,
             ]:

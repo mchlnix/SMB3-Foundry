@@ -25,7 +25,7 @@ ENDING_STR = {
     EndType.TWO_ENDS: "Top & Bottom/Left & Right",
 }
 
-ORIENTATION_TO_STR = {
+GENERATOR_TYPE_TO_STR = {
     GeneratorType.HORIZONTAL: "Horizontal",
     GeneratorType.VERTICAL: "Vertical",
     GeneratorType.DIAG_DOWN_LEFT: "Diagonal ↙",
@@ -126,7 +126,7 @@ class LevelObject(InLevelObject):
 
         self.width: int = object_data.bmp_width
         self.height: int = object_data.bmp_height
-        self.orientation: GeneratorType = GeneratorType(object_data.orientation)
+        self.generator_type: GeneratorType = GeneratorType(object_data.generator_type)
         self.ending: EndType = EndType(object_data.ending)
         self.name = object_data.description
 
@@ -245,7 +245,7 @@ class LevelObject(InLevelObject):
         # todo also check for the upper bounds
         x = max(0, x)
 
-        if self.orientation == GeneratorType.TO_THE_SKY:
+        if self.generator_type == GeneratorType.TO_THE_SKY:
             y = self.rendered_base_y + y
         else:
             y = max(0, y)
@@ -259,7 +259,7 @@ class LevelObject(InLevelObject):
 
         self._render()
 
-        if self.orientation in (GeneratorType.PYRAMID_TO_GROUND, GeneratorType.PYRAMID_2):
+        if self.generator_type in (GeneratorType.PYRAMID_TO_GROUND, GeneratorType.PYRAMID_2):
             # rendered_base_x is dependent on the height, so after the initial render we need to adjust it based on that
 
             dx = int(x) - self.rendered_base_x
@@ -295,50 +295,50 @@ class LevelObject(InLevelObject):
             expands |= EXPANDS_BOTH
 
         elif (
-            self.orientation
+            self.generator_type
             in [
                 GeneratorType.HORIZONTAL,
                 GeneratorType.HORIZONTAL_2,
                 GeneratorType.HORIZ_TO_GROUND,
             ]
-            or self.orientation
+            or self.generator_type
             in [
                 GeneratorType.DIAG_DOWN_LEFT,
                 GeneratorType.DIAG_DOWN_RIGHT,
                 GeneratorType.DIAG_UP_RIGHT,
                 GeneratorType.DIAG_WEIRD,
             ]
-            or self.orientation == GeneratorType.DESERT_PIPE_BOX
+            or self.generator_type == GeneratorType.DESERT_PIPE_BOX
         ):
             expands |= EXPANDS_HORIZ
 
-        elif self.orientation in [GeneratorType.VERTICAL, GeneratorType.DIAG_WEIRD]:
+        elif self.generator_type in [GeneratorType.VERTICAL, GeneratorType.DIAG_WEIRD]:
             expands |= EXPANDS_VERT
 
         return expands
 
     def primary_expansion(self):
         if (
-            self.orientation
+            self.generator_type
             in [
                 GeneratorType.HORIZONTAL,
                 GeneratorType.HORIZONTAL_2,
                 GeneratorType.HORIZ_TO_GROUND,
             ]
-            or self.orientation
+            or self.generator_type
             in [
                 GeneratorType.DIAG_DOWN_LEFT,
                 GeneratorType.DIAG_DOWN_RIGHT,
                 GeneratorType.DIAG_UP_RIGHT,
                 GeneratorType.DIAG_WEIRD,
             ]
-            or self.orientation == GeneratorType.DESERT_PIPE_BOX
+            or self.generator_type == GeneratorType.DESERT_PIPE_BOX
         ):
             if self.is_4byte:
                 return EXPANDS_VERT
             else:
                 return EXPANDS_HORIZ
-        elif self.orientation == GeneratorType.VERTICAL:
+        elif self.generator_type == GeneratorType.VERTICAL:
             if self.is_4byte:
                 return EXPANDS_HORIZ
             else:
@@ -397,7 +397,7 @@ class LevelObject(InLevelObject):
         self._render()
 
     def resize_by(self, dx: int, dy: int):
-        if self.orientation == GeneratorType.DESERT_PIPE_BOX:
+        if self.generator_type == GeneratorType.DESERT_PIPE_BOX:
             # pipe boxes are really wide.
             # if we use the normal code, for every one block the cursor moves, a whole segment is added.
             # divide the movement by the width of a segment, so you need to move that many blocks, before one is added.
@@ -459,7 +459,7 @@ class LevelObject(InLevelObject):
             ("y", self.rendered_base_y),
             ("Width", self.rendered_width),
             ("Height", self.rendered_height),
-            ("Orientation", ORIENTATION_TO_STR[self.orientation]),
+            ("GeneratorType", GENERATOR_TYPE_TO_STR[self.generator_type]),
             ("Ending", ENDING_STR[self.ending]),
         ]
 
@@ -501,7 +501,7 @@ class LevelObject(InLevelObject):
             x_position = self.x_position
             y_position = self.y_position
 
-        if self.orientation in [
+        if self.generator_type in [
             GeneratorType.PYRAMID_TO_GROUND,
             GeneratorType.PYRAMID_2,
         ]:

@@ -16,7 +16,7 @@ ENDING_STR = {
     EndType.TWO_ENDS: "Top & Bottom/Left & Right",
 }
 
-ORIENTATION_TO_STR = {
+GENERATOR_TYPE_TO_STR = {
     GeneratorType.HORIZONTAL: "Horizontal",
     GeneratorType.VERTICAL: "Vertical",
     GeneratorType.DIAG_DOWN_LEFT: "Diagonal ↙",
@@ -71,7 +71,7 @@ class ObjectRenderer:
 
         blocks_to_draw: list[int] = []
 
-        self._render_by_orientation(blocks_to_draw)
+        self._render_by_generator_type(blocks_to_draw)
 
         # for not yet implemented objects and single block objects
         if blocks_to_draw:
@@ -109,14 +109,14 @@ class ObjectRenderer:
             self._object.rendered_height,
         )
 
-    def _render_by_orientation(self, blocks_to_draw: list[int]):
-        if self._object.orientation == GeneratorType.TO_THE_SKY:
+    def _render_by_generator_type(self, blocks_to_draw: list[int]):
+        if self._object.generator_type == GeneratorType.TO_THE_SKY:
             self._render_to_sky(blocks_to_draw)
 
-        elif self._object.orientation == GeneratorType.DESERT_PIPE_BOX:
+        elif self._object.generator_type == GeneratorType.DESERT_PIPE_BOX:
             self._render_desert_pipe_box(blocks_to_draw)
 
-        elif self._object.orientation in [
+        elif self._object.generator_type in [
             GeneratorType.DIAG_DOWN_LEFT,
             GeneratorType.DIAG_DOWN_RIGHT,
             GeneratorType.DIAG_UP_RIGHT,
@@ -124,30 +124,30 @@ class ObjectRenderer:
         ]:
             self._render_diagonals(blocks_to_draw)
 
-        elif self._object.orientation in [
+        elif self._object.generator_type in [
             GeneratorType.PYRAMID_TO_GROUND,
             GeneratorType.PYRAMID_2,
         ]:
             self._render_pyramids(blocks_to_draw)
 
-        elif self._object.orientation == GeneratorType.ENDING:
+        elif self._object.generator_type == GeneratorType.ENDING:
             self._render_ending(blocks_to_draw)
 
-        elif self._object.orientation == GeneratorType.VERTICAL:
+        elif self._object.generator_type == GeneratorType.VERTICAL:
             self._render_vertical(blocks_to_draw)
 
-        elif self._object.orientation in [
+        elif self._object.generator_type in [
             GeneratorType.HORIZONTAL,
             GeneratorType.HORIZ_TO_GROUND,
             GeneratorType.HORIZONTAL_2,
         ]:
             self._render_horizontal(blocks_to_draw)
 
-        elif self._object.orientation == GeneratorType.BRICK_WALL:
+        elif self._object.generator_type == GeneratorType.BRICK_WALL:
             self._render_brick_wall(blocks_to_draw)
 
         else:
-            if not self._object.orientation == GeneratorType.SINGLE_BLOCK:
+            if not self._object.generator_type == GeneratorType.SINGLE_BLOCK:
                 warn(f"Didn't render {self._object.name}", LevelObjectRenderWarning)
                 # breakpoint()
 
@@ -215,10 +215,10 @@ class ObjectRenderer:
         if self._object.object_info in [downwards_extending_vine, wooden_sky_pole]:
             self._new_width -= 1
 
-        if self._object.orientation == GeneratorType.HORIZ_TO_GROUND:
+        if self._object.generator_type == GeneratorType.HORIZ_TO_GROUND:
             self._sub_render_horizontal_to_ground()
 
-        elif self._object.orientation == GeneratorType.HORIZONTAL_2 and self._object.ending == EndType.TWO_ENDS:
+        elif self._object.generator_type == GeneratorType.HORIZONTAL_2 and self._object.ending == EndType.TWO_ENDS:
             # floating platforms seem to just be one shorter for some reason
             self._new_width -= 1
         else:
@@ -252,7 +252,7 @@ class ObjectRenderer:
             self._sub_render_horizontal_two_ends(blocks_to_draw)
 
     def _sub_render_horizontal_two_ends(self, blocks_to_draw):
-        if self._object.orientation == GeneratorType.HORIZONTAL and self._object.is_4byte:
+        if self._object.generator_type == GeneratorType.HORIZONTAL and self._object.is_4byte:
             # flat ground objects have an artificial limit of 2 lines
             if (
                 self._object.object_set.number == PLAINS_OBJECT_SET
@@ -319,7 +319,7 @@ class ObjectRenderer:
         if self._object.height > self._object.width:
             self._new_height -= 1
 
-        if self._object.orientation == GeneratorType.HORIZONTAL_2:
+        if self._object.generator_type == GeneratorType.HORIZONTAL_2:
             for _ in range(0, self._new_height - 1):
                 blocks_to_draw.extend(self._new_width * top)
 
@@ -513,7 +513,7 @@ class ObjectRenderer:
             self._new_height = (self._object.length + 1) * self._object.height
             self._new_width = (self._object.length + 1) * (self._object.width - 1)  # without fill block
 
-            if self._object.orientation in [
+            if self._object.generator_type in [
                 GeneratorType.DIAG_DOWN_RIGHT,
                 GeneratorType.DIAG_UP_RIGHT,
             ]:
@@ -523,7 +523,7 @@ class ObjectRenderer:
                 left = fill_block
                 right = [BLANK]
 
-            elif self._object.orientation == GeneratorType.DIAG_DOWN_LEFT:
+            elif self._object.generator_type == GeneratorType.DIAG_DOWN_LEFT:
                 fill_block = self._object.blocks[-1:]
                 slopes = self._object.blocks[0:-1]
 
@@ -566,26 +566,26 @@ class ObjectRenderer:
 
             rows.append(amount_left * left + slopes[offset : offset + slope_width] + amount_right * right)
 
-        if self._object.orientation == GeneratorType.DIAG_UP_RIGHT:
+        if self._object.generator_type == GeneratorType.DIAG_UP_RIGHT:
             for row in rows:
                 row.reverse()
 
-        if self._object.orientation in [
+        if self._object.generator_type in [
             GeneratorType.DIAG_DOWN_RIGHT,
             GeneratorType.DIAG_UP_RIGHT,
         ]:
             if not self._object.height > self._object.width:
                 rows.reverse()
 
-        if self._object.orientation == GeneratorType.DIAG_DOWN_RIGHT and self._object.height > self._object.width:
+        if self._object.generator_type == GeneratorType.DIAG_DOWN_RIGHT and self._object.height > self._object.width:
             # special case for 60 degree platform wire down right
             for row in rows:
                 row.reverse()
 
-        if self._object.orientation == GeneratorType.DIAG_UP_RIGHT:
+        if self._object.generator_type == GeneratorType.DIAG_UP_RIGHT:
             self.base_y -= self._new_height - 1
 
-        if self._object.orientation == GeneratorType.DIAG_DOWN_LEFT:
+        if self._object.generator_type == GeneratorType.DIAG_DOWN_LEFT:
             self.base_x -= self._new_width - slope_width
 
         for row in rows:

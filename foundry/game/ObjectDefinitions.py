@@ -69,7 +69,7 @@ class ObjectDefinition:
             self.max_value,
             self.bmp_width,
             self.bmp_height,
-            self.orientation,
+            self.generator_type,
             self.ending,
             self.is_4byte,
             self.description,
@@ -78,7 +78,7 @@ class ObjectDefinition:
 
         self.bmp_width = int(self.bmp_width)
         self.bmp_height = int(self.bmp_height)
-        self.orientation = GeneratorType[self.orientation]
+        self.generator_type = GeneratorType[self.generator_type]
         self.ending = EndType[self.ending]
         self.is_4byte = self.is_4byte == "4byte"
         self.description = self.description.replace(";;", ",")
@@ -122,7 +122,7 @@ with open(data_dir.joinpath("objects.dat"), "r") as f:
 
         if first_index == ENEMY_OBJECT_DEFINITION and second_index <= 236:
             if line.find("|") >= 0:
-                x, y, x2 = line.split("|")[1].split(",<")[0].split(" ")
+                x, y, x2 = line.split("|")[1].split(", <")[0].split(" ")
             else:
                 x, y, x2 = "0 0 0".split(" ")
 
