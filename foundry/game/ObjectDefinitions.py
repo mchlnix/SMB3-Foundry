@@ -7,6 +7,7 @@ from smb3parse.objects.level_object import (
     ENEMY_OBJECT_DEFINITION,
     object_set_to_definition,
 )
+from smb3parse.util import apply
 
 
 class GeneratorType(Enum):
@@ -73,13 +74,13 @@ class ObjectDefinition:
             self.ending,
             self.is_4byte,
             self.description,
-        ) = string.split(",")
+        ) = apply(str.strip, string.split(","))
 
         self.bmp_width = int(self.bmp_width)
         self.bmp_height = int(self.bmp_height)
         self.orientation = int(self.orientation)
         self.ending = int(self.ending)
-        self.is_4byte = self.is_4byte == "1"
+        self.is_4byte = self.is_4byte == "4byte"
         self.description = self.description.replace(";;", ",")
 
         self.object_design2 = []
