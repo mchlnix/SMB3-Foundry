@@ -91,8 +91,8 @@ class SettingsDialog(CustomDialog):
 
         self.settings = settings
 
-        # -----------------------------------------------
         # Online Section
+        # -----------------------------------------------
 
         online_box = QGroupBox("Online", self)
         layout = QVBoxLayout()
@@ -110,8 +110,8 @@ class SettingsDialog(CustomDialog):
             )
         )
 
-        # -----------------------------------------------
         # Mouse Section
+        # -----------------------------------------------
 
         mouse_box = QGroupBox("Mouse", self)
         layout = QVBoxLayout()
@@ -157,12 +157,25 @@ class SettingsDialog(CustomDialog):
         resize_layout = label_and_widget("Object resize mode:", self.lmb_radio, rmb_radio)
         layout.addLayout(resize_layout)
 
-        # -----------------------------------------------
         # GUI Section
+        # -----------------------------------------------
 
         self.gui_box = QGroupBox("GUI", self)
         layout = QVBoxLayout()
         self.gui_box.setLayout(layout)
+
+        self.ask_for_level_management_check_box = QCheckBox("Enabled")
+        self.ask_for_level_management_check_box.setChecked(self.settings.value("editor/ask_for_level_management"))
+        self.ask_for_level_management_check_box.stateChanged.connect(self._update_settings)
+
+        self.gui_box.layout().addLayout(
+            label_and_widget(
+                "Ask for Automatic Level Management when opening a new ROM:",
+                self.ask_for_level_management_check_box,
+                tooltip="Should the editor ask to enable Automatic Level Management when opening a new ROM "
+                "that isn't managed yet?",
+            )
+        )
 
         self.level_highlight_check_box = QCheckBox("Enabled")
         self.level_highlight_check_box.setChecked(self.settings.value("world view/show level pointers"))
@@ -211,8 +224,8 @@ class SettingsDialog(CustomDialog):
 
         layout.addLayout(default_dir_layout)
 
-        # -----------------------------------------------
         # Emulator Command Section
+        # -----------------------------------------------
 
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText("Path to emulator")
@@ -277,7 +290,7 @@ class SettingsDialog(CustomDialog):
 
         command_layout.addLayout(label_and_widget("Instaplay skips Title Screen", self.skip_title_screen_cb))
 
-        # ----------------------
+        # -----------------------------------------------
 
         layout = QVBoxLayout(self)
         layout.addWidget(online_box)
@@ -303,9 +316,10 @@ class SettingsDialog(CustomDialog):
         else:
             self.settings.setValue("editor/resize_mode", RESIZE_RIGHT_CLICK)
 
+        self.settings.setValue("editor/ask_for_level_management", self.ask_for_level_management_check_box.isChecked())
         self.settings.setValue("world view/show level pointers", self.level_highlight_check_box.isChecked())
 
-        # setup style sheets
+        # set up style sheets
         for child_widget in self.gui_box.children():
             if isinstance(child_widget, QRadioButton):
                 if child_widget.isChecked():

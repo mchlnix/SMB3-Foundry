@@ -567,7 +567,8 @@ class FoundryMainWindow(MainWindow):
 
             self._check_for_asm_fns_imports(path_to_rom)
 
-            self._ask_for_level_management()
+            if self.settings.value("editor/ask_for_level_management"):
+                self._ask_for_level_management()
 
             self._check_for_refresh()
 

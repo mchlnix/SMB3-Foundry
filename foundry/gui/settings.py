@@ -25,6 +25,7 @@ SETTINGS["editor/default dir"] = "User"
 SETTINGS["editor/default dir path"] = ""
 SETTINGS["editor/custom default dir path"] = ""
 SETTINGS["editor/show_block_item_in_toolbar"] = True
+SETTINGS["editor/ask_for_level_management"] = True
 
 SETTINGS["editor/update_on_startup"] = False
 SETTINGS["editor/asked_for_startup"] = False
