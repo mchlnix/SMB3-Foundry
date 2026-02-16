@@ -35,7 +35,7 @@ ORIENTATION_TO_STR = {
     GeneratorType.HORIZ_TO_GROUND: "Horizontal to the Ground",
     GeneratorType.HORIZONTAL_2: "Horizontal Alternative",
     GeneratorType.DIAG_WEIRD: "Diagonal Weird",  # up left?
-    GeneratorType.SINGLE_BLOCK_OBJECT: "Single Block",
+    GeneratorType.SINGLE_BLOCK: "Single Block",
     GeneratorType.CENTERED: "Centered",
     GeneratorType.PYRAMID_TO_GROUND: "Pyramid to Ground",
     GeneratorType.PYRAMID_2: "Pyramid Alternative",

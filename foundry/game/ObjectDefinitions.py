@@ -26,10 +26,10 @@ class GeneratorType(Enum):
     HORIZ_TO_GROUND = 6
     HORIZONTAL_2 = 7  # special case of horizontal, floating boxes, ceilings
     DIAG_WEIRD = 8  #
-    SINGLE_BLOCK_OBJECT = 9
+    SINGLE_BLOCK = 9
     CENTERED = 10  # like spinning platforms
     PYRAMID_TO_GROUND = 11  # to the ground or next object
-    PYRAMID_2 = 12  # doesn't exist?
+    PYRAMID_2 = 12  # doesn't exist
     TO_THE_SKY = 13
     ENDING = 14
     BRICK_WALL = 15
@@ -78,7 +78,7 @@ class ObjectDefinition:
 
         self.bmp_width = int(self.bmp_width)
         self.bmp_height = int(self.bmp_height)
-        self.orientation = int(self.orientation)
+        self.orientation = GeneratorType[self.orientation]
         self.ending = EndType[self.ending]
         self.is_4byte = self.is_4byte == "4byte"
         self.description = self.description.replace(";;", ",")
