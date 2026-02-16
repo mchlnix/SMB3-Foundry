@@ -11,8 +11,8 @@ from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
 ENDING_STR = {
     EndType.UNIFORM: "Uniform",
-    EndType.END_ON_TOP_OR_LEFT: "Top or Left",
-    EndType.END_ON_BOTTOM_OR_RIGHT: "Bottom or Right",
+    EndType.TOP_OR_LEFT: "Top or Left",
+    EndType.BOTTOM_OR_RIGHT: "Bottom or Right",
     EndType.TWO_ENDS: "Top & Bottom/Left & Right",
 }
 
@@ -230,7 +230,7 @@ class ObjectRenderer:
         elif self._object.ending == EndType.UNIFORM and self._object.is_4byte:
             self._sub_render_4byte_uniform(blocks_to_draw)
 
-        elif self._object.ending == EndType.END_ON_TOP_OR_LEFT:
+        elif self._object.ending == EndType.TOP_OR_LEFT:
             for y in range(self._new_height):
                 offset = y * self._object.width
 
@@ -239,7 +239,7 @@ class ObjectRenderer:
                 for x in range(1, self._new_width):
                     blocks_to_draw.append(self._object.blocks[offset + 1])
 
-        elif self._object.ending == EndType.END_ON_BOTTOM_OR_RIGHT:
+        elif self._object.ending == EndType.BOTTOM_OR_RIGHT:
             for y in range(self._new_height):
                 offset = y * self._object.width
 
@@ -383,7 +383,7 @@ class ObjectRenderer:
             # adjust height for giant blocks, so that the rect is correct
             self._new_height *= self._object.height
 
-        elif self._object.ending == EndType.END_ON_TOP_OR_LEFT:
+        elif self._object.ending == EndType.TOP_OR_LEFT:
             # in case the drawn object is smaller than its actual size
             for y in range(min(self._object.height, self._new_height)):
                 offset = y * self._object.width
@@ -399,7 +399,7 @@ class ObjectRenderer:
                 for _ in range(additional_rows):
                     blocks_to_draw.extend(last_row)
 
-        elif self._object.ending == EndType.END_ON_BOTTOM_OR_RIGHT:
+        elif self._object.ending == EndType.BOTTOM_OR_RIGHT:
             additional_rows = self._new_height - self._object.height
 
             # assume only the first row needs to repeat
@@ -509,7 +509,7 @@ class ObjectRenderer:
             right = [BLANK]
             slopes = self._object.blocks
 
-        elif self._object.ending == EndType.END_ON_TOP_OR_LEFT:
+        elif self._object.ending == EndType.TOP_OR_LEFT:
             self._new_height = (self._object.length + 1) * self._object.height
             self._new_width = (self._object.length + 1) * (self._object.width - 1)  # without fill block
 
@@ -537,7 +537,7 @@ class ObjectRenderer:
                 right = [BLANK]
                 left = fill_block
 
-        elif self._object.ending == EndType.END_ON_BOTTOM_OR_RIGHT:
+        elif self._object.ending == EndType.BOTTOM_OR_RIGHT:
             self._new_height = (self._object.length + 1) * self._object.height
             self._new_width = (self._object.length + 1) * (self._object.width - 1)  # without fill block
 

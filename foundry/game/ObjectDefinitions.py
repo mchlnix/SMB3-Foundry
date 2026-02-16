@@ -37,15 +37,15 @@ class GeneratorType(Enum):
 
 class EndType(Enum):
     """
-    Some level objects have blocks designated to be used at their ends. For example pipes, which can be extended, but
+    Some level objects have blocks designated to be used at their ends. For example, pipes, which can be extended but
     always end at one side with the same couple of blocks. To keep track of where those special blocks are to be placed,
-    this enum is used. When the value is TWO_ENDS they are always on opposite sides and whether they are left and right
-    or top and bottom depends on the generator type of the object.
+    this enum is used. When the value is TWO_ENDS, they are always on opposite sides, and whether they are left and
+    right or top and bottom depends on the generator type of the object.
     """
 
     UNIFORM = 0
-    END_ON_TOP_OR_LEFT = 1
-    END_ON_BOTTOM_OR_RIGHT = 2
+    TOP_OR_LEFT = 1
+    BOTTOM_OR_RIGHT = 2
     TWO_ENDS = 3
 
 

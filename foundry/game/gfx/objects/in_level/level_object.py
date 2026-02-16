@@ -20,8 +20,8 @@ from smb3parse.util import clamp
 
 ENDING_STR = {
     EndType.UNIFORM: "Uniform",
-    EndType.END_ON_TOP_OR_LEFT: "Top or Left",
-    EndType.END_ON_BOTTOM_OR_RIGHT: "Bottom or Right",
+    EndType.TOP_OR_LEFT: "Top or Left",
+    EndType.BOTTOM_OR_RIGHT: "Bottom or Right",
     EndType.TWO_ENDS: "Top & Bottom/Left & Right",
 }
 
