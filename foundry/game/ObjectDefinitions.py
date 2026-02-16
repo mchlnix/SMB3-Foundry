@@ -51,11 +51,11 @@ class EndType(Enum):
 
 class ObjectDefinition:
     """
-    An object's data, like height, width and which blocks it uses are information, that is not stored in any look up
+    An object's data, like height, width, and which blocks it uses are information that is not stored in any look up
     tables in the ROM, rather it is the result of generator code, written for many dozen different objects.
 
-    To make this easier to emulate we have the data.dat file from Workshop, listing all objects and their
-    properties, which we can use to abstract away the drawing.
+    To make this easier to emulate, we have the objects.dat (formerly data.dat) file from Workshop, listing all objects
+    and their properties, which we can use to abstract away the drawing.
 
     The object definition is bundling this information.
     """
@@ -69,11 +69,11 @@ class ObjectDefinition:
             self.max_value,
             self.bmp_width,
             self.bmp_height,
-            *self.object_design,
             self.orientation,
             self.ending,
             self.is_4byte,
             self.description,
+            *self.object_design,
         ) = apply(str.strip, string.split(","))
 
         self.bmp_width = int(self.bmp_width)
@@ -103,7 +103,7 @@ enemy_handle_x = []
 enemy_handle_x2 = []
 enemy_handle_y = []
 
-with open(data_dir.joinpath("data.dat"), "r") as f:
+with open(data_dir.joinpath("objects.dat"), "r") as f:
     first_index = 0  # todo what are they symbolizing? object tables?
     second_index = 0
 
@@ -122,7 +122,7 @@ with open(data_dir.joinpath("data.dat"), "r") as f:
 
         if first_index == ENEMY_OBJECT_DEFINITION and second_index <= 236:
             if line.find("|") >= 0:
-                x, y, x2 = line.split("|")[1].split(" ")
+                x, y, x2 = line.split("|")[1].split(",<")[0].split(" ")
             else:
                 x, y, x2 = "0 0 0".split(" ")
 
