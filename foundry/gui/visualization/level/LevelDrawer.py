@@ -464,10 +464,12 @@ class LevelDrawer:
             for block_x, block_y in level.header.gen_mario_start_positions()
         ]
 
-        # loop through positions and draw transparent mario
-        x_offset = 32 * level.start_action
+        graphic_width = graphic_height = 32
 
-        mario_cutout = mario_actions.copy(QRect(x_offset, 0, 32, 32)).scaled(
+        # loop through positions and draw transparent mario
+        x_offset = graphic_width * level.start_action
+
+        mario_cutout = mario_actions.copy(QRect(x_offset, 0, graphic_width, graphic_height)).scaled(
             2 * self.block_length, 2 * self.block_length
         )
 
@@ -478,10 +480,11 @@ class LevelDrawer:
 
     def _draw_mario(self, painter: QPainter, level: Level):
         mario_position = QPoint(*level.header.mario_position()) * self.block_length
+        graphic_width = graphic_height = 32
 
-        x_offset = 32 * level.start_action
+        x_offset = graphic_width * level.start_action
 
-        mario_cutout = mario_actions.copy(QRect(x_offset, 0, 32, 32)).scaled(
+        mario_cutout = mario_actions.copy(QRect(x_offset, 0, graphic_width, graphic_height)).scaled(
             2 * self.block_length, 2 * self.block_length
         )
 
