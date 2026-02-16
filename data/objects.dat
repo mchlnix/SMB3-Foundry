@@ -1796,12 +1796,12 @@
 0, 0x20, 0x2F, 4, 2, HORIZONTAL        , UNIFORM         , 3byte, Medium block platforms, <41, 42, 42, 43, 44, 46, 46, 47>
 0, 0x30, 0x3F, 6, 3, HORIZONTAL        , UNIFORM         , 3byte, Large block platforms, <41, 42, 42, 42, 42, 43, 48, 49, 49, 49, 49, 50, 44, 46, 46, 46, 46, 47>
 0, 0x40, 0x4F, 8, 4, HORIZONTAL        , UNIFORM         , 3byte, X-Large block platforms, <41, 42, 42, 42, 42, 42, 42, 43, 48, 49, 49, 49, 49, 49, 49, 50, 48, 49, 49, 49, 49, 49, 49, 50, 44, 46, 46, 46, 46, 46, 46, 47>
-0, 0x50, 0x5F, 1, 2, DIAG_DOWN_LEFT    , BOTTOM_OR_RIGHT , 3byte, Diagonally oriented block platforms, <70, 71>
+0, 0x50, 0x5F, 1, 2, DIAG_STAGGERED    , TOP_OR_LEFT     , 3byte, Diagonally oriented block platforms, <70, 71>
 0, 0x60, 0x6F, 2, 1, HORIZONTAL        , UNIFORM         , 3byte, Small sandstone blocks, <158, 159>
 0, 0x70, 0x7F, 4, 2, HORIZONTAL        , UNIFORM         , 3byte, Medium sandstone blocks, <74, 75, 75, 77, 72, 76, 76, 73>
 0, 0x80, 0x8F, 6, 3, HORIZONTAL        , UNIFORM         , 3byte, Large sandstone blocks, <74, 75, 75, 75, 75, 77, 78, 79, 79, 79, 79, 80, 72, 76, 76, 76, 76, 73>
 0, 0x90, 0x9F, 8, 4, HORIZONTAL        , UNIFORM         , 3byte, X-Large sandstone blocks, <74, 75, 75, 75, 75, 75, 75, 77, 78, 79, 79, 79, 79, 79, 79, 80, 78, 79, 79, 79, 79, 79, 79, 80, 72, 76, 76, 76, 76, 76, 76, 73>
-0, 0xA0, 0xAF, 1, 2, DIAG_DOWN_LEFT    , BOTTOM_OR_RIGHT , 3byte, Diagonally oriented sandstone blocks, <81, 82>
+0, 0xA0, 0xAF, 1, 2, DIAG_STAGGERED    , TOP_OR_LEFT     , 3byte, Diagonally oriented sandstone blocks, <81, 82>
 0, 0xB0, 0xBF, 2, 1, BRICK_WALL        , UNIFORM         , 4byte, Small block platforms, <39, 40>
 0, 0xC0, 0xCF, 4, 2, BRICK_WALL        , UNIFORM         , 4byte, Medium block platforms, <41, 42, 42, 43, 44, 46, 46, 47>
 0, 0xD0, 0xDF, 6, 3, BRICK_WALL        , TWO_ENDS        , 4byte, Large block platforms, <41, 42, 42, 42, 42, 43, 48, 49, 49, 49, 49, 50, 44, 46, 46, 46, 46, 47>

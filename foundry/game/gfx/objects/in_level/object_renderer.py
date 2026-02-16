@@ -124,6 +124,9 @@ class ObjectRenderer:
         ]:
             self._render_diagonals(blocks_to_draw)
 
+        elif self._object.generator_type == GeneratorType.DIAG_STAGGERED:
+            self._render_diagonal_staggered(blocks_to_draw)
+
         elif self._object.generator_type in [
             GeneratorType.PYRAMID_TO_GROUND,
             GeneratorType.PYRAMID_2,
@@ -153,6 +156,40 @@ class ObjectRenderer:
 
             if self._object.name.lower() == "black boss room background":
                 self._render_black_boss_room_bg(blocks_to_draw)
+
+    def _render_diagonal_staggered(self, blocks_to_draw: list[int]):
+        """
+        ...#
+        ..##
+        .##.
+        ##..
+        #...
+        """
+        self._new_height = self._object.height + self._object.length
+        self._new_width = self._object.width + self._object.length
+
+        self.base_x = self._object.x_position - self._object.length
+
+        top = self._object.blocks[0 : self._object.width]
+        bottom = self._object.blocks[self._object.width * (self._object.height - 1) :]
+
+        assert len(top) == len(bottom) == 1
+
+        for row in range(self._new_height):
+            front_blanks = self._new_width - 1 - row
+            back_blanks = -1 + row
+
+            if front_blanks > 0:
+                blocks_to_draw.extend([BLANK] * front_blanks)
+
+            if row < self._new_height - len(top):
+                blocks_to_draw.extend(top)
+
+            if row > 0:
+                blocks_to_draw.extend(bottom)
+
+            if back_blanks > 0:
+                blocks_to_draw.extend([BLANK] * back_blanks)
 
     def _render_brick_wall(self, blocks_to_draw: list[int]):
         top = self._object.blocks[0 : self._object.width]

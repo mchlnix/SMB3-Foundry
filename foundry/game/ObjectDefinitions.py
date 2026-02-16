@@ -33,6 +33,7 @@ class GeneratorType(Enum):
     TO_THE_SKY = 13
     ENDING = 14
     BRICK_WALL = 15
+    DIAG_STAGGERED = 16
 
 
 class EndType(Enum):
