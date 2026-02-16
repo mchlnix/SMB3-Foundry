@@ -44,8 +44,8 @@ ACTIONS = [
     "Sliding",
     "Out of pipe ↑",
     "Out of pipe ↓",
-    "Out of pipe ←",
     "Out of pipe →",
+    "Out of pipe ←",
     "Running and climbing up ship",
     "Ship auto scrolling",
 ]
