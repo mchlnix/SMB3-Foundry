@@ -13,6 +13,8 @@ from foundry.game.gfx.objects import (
 from foundry.gui.windows.ObjectViewer import ObjectDrawArea
 from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
 from smb3parse.objects.object_set import (
+    DESERT_GRAPHICS_SET,
+    DESERT_OBJECT_SET,
     DUNGEON_GRAPHICS_SET,
     DUNGEON_OBJECT_SET,
     HILLY_GRAPHICS_SET,
@@ -122,6 +124,20 @@ def test_object_rendering_2_1(object_index, domain, object_set, graphic_set, qtb
     ],
 )
 def test_object_rendering_0_0(object_index, domain, object_set, graphic_set, qtbot):
+    object_factory = LevelObjectFactory(object_set, graphic_set, 0, [], False)
+
+    level_object = object_factory.from_properties(domain, object_index, 0, 0, 8, 0)
+
+    _test_object_against_reference(level_object, qtbot)
+
+
+@pytest.mark.parametrize(
+    "object_index, domain, object_set, graphic_set",
+    [
+        (0xD0, 0x00, DESERT_OBJECT_SET, DESERT_GRAPHICS_SET),
+    ],
+)
+def test_object_rendering_brick_wall(object_index, domain, object_set, graphic_set, qtbot):
     object_factory = LevelObjectFactory(object_set, graphic_set, 0, [], False)
 
     level_object = object_factory.from_properties(domain, object_index, 0, 0, 8, 0)
