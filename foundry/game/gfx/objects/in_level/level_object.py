@@ -41,6 +41,7 @@ ORIENTATION_TO_STR = {
     GeneratorType.PYRAMID_2: "Pyramid Alternative",
     GeneratorType.TO_THE_SKY: "To the Sky",
     GeneratorType.ENDING: "Ending",
+    GeneratorType.BRICK_WALL: "Brick Wall",
 }
 
 

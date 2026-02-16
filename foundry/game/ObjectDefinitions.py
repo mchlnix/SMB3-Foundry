@@ -31,6 +31,7 @@ class GeneratorType(Enum):
     PYRAMID_2 = 12  # doesn't exist?
     TO_THE_SKY = 13
     ENDING = 14
+    BRICK_WALL = 15
 
 
 class EndType(Enum):

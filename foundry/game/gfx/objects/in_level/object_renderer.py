@@ -71,53 +71,7 @@ class ObjectRenderer:
 
         blocks_to_draw: list[int] = []
 
-        if self._object.orientation == GeneratorType.TO_THE_SKY:
-            self._render_to_sky(blocks_to_draw)
-
-        elif self._object.orientation == GeneratorType.DESERT_PIPE_BOX:
-            self._render_desert_pipe_box(blocks_to_draw)
-
-        elif self._object.orientation in [
-            GeneratorType.DIAG_DOWN_LEFT,
-            GeneratorType.DIAG_DOWN_RIGHT,
-            GeneratorType.DIAG_UP_RIGHT,
-            GeneratorType.DIAG_WEIRD,
-        ]:
-            self._render_diagonals(blocks_to_draw)
-
-        elif self._object.orientation in [
-            GeneratorType.PYRAMID_TO_GROUND,
-            GeneratorType.PYRAMID_2,
-        ]:
-            self._render_pyramids(blocks_to_draw)
-
-        elif self._object.orientation == GeneratorType.ENDING:
-            self._render_ending(blocks_to_draw)
-
-        elif self._object.orientation == GeneratorType.VERTICAL:
-            self._render_vertical(blocks_to_draw)
-
-        elif self._object.orientation in [
-            GeneratorType.HORIZONTAL,
-            GeneratorType.HORIZ_TO_GROUND,
-            GeneratorType.HORIZONTAL_2,
-        ]:
-            self._render_horizontal(blocks_to_draw)
-
-        else:
-            if not self._object.orientation == GeneratorType.SINGLE_BLOCK_OBJECT:
-                warn(f"Didn't render {self._object.name}", LevelObjectRenderWarning)
-                # breakpoint()
-
-            if self._object.name.lower() == "black boss room background":
-                self._new_width = LEVEL_SCREEN_WIDTH
-                self._new_height = LEVEL_SCREEN_HEIGHT
-
-                self.base_x = self._object.x_position // LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_WIDTH
-                self.base_y = 0
-
-                blocks_to_draw.clear()
-                blocks_to_draw.extend(LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_HEIGHT * [self._object.blocks[0]])
+        self._render_by_orientation(blocks_to_draw)
 
         # for not yet implemented objects and single block objects
         if blocks_to_draw:
@@ -154,6 +108,104 @@ class ObjectRenderer:
             self._object.rendered_width,
             self._object.rendered_height,
         )
+
+    def _render_by_orientation(self, blocks_to_draw: list[int]):
+        if self._object.orientation == GeneratorType.TO_THE_SKY:
+            self._render_to_sky(blocks_to_draw)
+
+        elif self._object.orientation == GeneratorType.DESERT_PIPE_BOX:
+            self._render_desert_pipe_box(blocks_to_draw)
+
+        elif self._object.orientation in [
+            GeneratorType.DIAG_DOWN_LEFT,
+            GeneratorType.DIAG_DOWN_RIGHT,
+            GeneratorType.DIAG_UP_RIGHT,
+            GeneratorType.DIAG_WEIRD,
+        ]:
+            self._render_diagonals(blocks_to_draw)
+
+        elif self._object.orientation in [
+            GeneratorType.PYRAMID_TO_GROUND,
+            GeneratorType.PYRAMID_2,
+        ]:
+            self._render_pyramids(blocks_to_draw)
+
+        elif self._object.orientation == GeneratorType.ENDING:
+            self._render_ending(blocks_to_draw)
+
+        elif self._object.orientation == GeneratorType.VERTICAL:
+            self._render_vertical(blocks_to_draw)
+
+        elif self._object.orientation in [
+            GeneratorType.HORIZONTAL,
+            GeneratorType.HORIZ_TO_GROUND,
+            GeneratorType.HORIZONTAL_2,
+        ]:
+            self._render_horizontal(blocks_to_draw)
+
+        elif self._object.orientation == GeneratorType.BRICK_WALL:
+            self._render_brick_wall(blocks_to_draw)
+
+        else:
+            if not self._object.orientation == GeneratorType.SINGLE_BLOCK_OBJECT:
+                warn(f"Didn't render {self._object.name}", LevelObjectRenderWarning)
+                # breakpoint()
+
+            if self._object.name.lower() == "black boss room background":
+                self._render_black_boss_room_bg(blocks_to_draw)
+
+    def _render_brick_wall(self, blocks_to_draw: list[int]):
+        top = self._object.blocks[0 : self._object.width]
+        middle = self._object.blocks[self._object.width : 2 * self._object.width]
+        bottom = self._object.blocks[self._object.width * (self._object.height - 1) :]
+
+        no_of_rows = self._object.secondary_length + 1
+        no_of_columns = self._object.length + 1
+
+        needs_x_offset = no_of_rows > 1
+        x_offset = self._object.width // 2
+
+        self._new_height = self._object.height * no_of_rows
+        self._new_width = self._object.width * no_of_columns
+
+        self.base_x = self._object.x_position
+        if needs_x_offset:
+            self.base_x -= x_offset
+
+        if self._object.secondary_length > 0:
+            self._new_width += self._object.width // 2
+
+        def _insert_block_row(blocks: list[int]):
+            if not blocks:
+                return
+
+            if needs_x_offset and row % 2 == 0:
+                blocks_to_draw.extend([BLANK] * x_offset)
+
+            for column in range(no_of_columns):
+                blocks_to_draw.extend(blocks)
+
+            if needs_x_offset and row % 2 == 1:
+                blocks_to_draw.extend([BLANK] * x_offset)
+
+        for row in range(no_of_rows):
+            _insert_block_row(top)
+
+            for _ in range(self._object.height - 2):
+                _insert_block_row(middle)
+
+            if self._object.height > 1:
+                _insert_block_row(bottom)
+
+    def _render_black_boss_room_bg(self, blocks_to_draw: list[int]):
+        self._new_width = LEVEL_SCREEN_WIDTH
+        self._new_height = LEVEL_SCREEN_HEIGHT
+
+        self.base_x = self._object.x_position // LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_WIDTH
+        self.base_y = 0
+
+        blocks_to_draw.clear()
+        blocks_to_draw.extend(LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_HEIGHT * [self._object.blocks[0]])
 
     def _render_horizontal(self, blocks_to_draw):
         self._new_width = self._object.length + 1
