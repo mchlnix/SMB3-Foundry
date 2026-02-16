@@ -2800,6 +2800,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 0, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Upper Left Hill Corner - UnderGround, <38>
 0, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Upper Left Hill Corner - Hilly, <39>
 0, 0x02, 0x02, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Upper Left Hill Corner - UnderWater, <40>

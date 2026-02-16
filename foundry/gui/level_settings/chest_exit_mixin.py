@@ -86,7 +86,8 @@ class ChestExitMixin(SettingsMixin):
 
         # was enabled
         if self.chest_end_checkbox.isChecked() and self.before.chest_exit is None:
-            chest_exit_item = self.level.enemy_item_factory.from_properties(OBJ_CHEST_EXIT, 0, 0)
+            # when putting it at x=0 it doesn't work for some reason
+            chest_exit_item = self.level.enemy_item_factory.from_properties(OBJ_CHEST_EXIT, 1, 0)
 
             make_macro(
                 self.undo_stack, f"Enable Chest Exit with '{chest_item_name}'", AddObject(self.level, chest_exit_item)
