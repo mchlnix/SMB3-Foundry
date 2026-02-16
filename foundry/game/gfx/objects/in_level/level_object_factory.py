@@ -2,6 +2,7 @@ from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.objects import Jump, LevelObject
 from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
+from smb3parse.util import clamp
 
 
 class LevelObjectFactory:
@@ -76,7 +77,8 @@ class LevelObjectFactory:
         data = bytearray(3)
 
         data[0] = domain << 5 | y
-        data[1] = x
+        # TODO is this the right thing here, or does it break undo/redo
+        data[1] = clamp(0, x, 0xFF)
         data[2] = object_index
 
         if length is not None:
