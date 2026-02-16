@@ -79,7 +79,7 @@ class ObjectDefinition:
         self.bmp_width = int(self.bmp_width)
         self.bmp_height = int(self.bmp_height)
         self.orientation = int(self.orientation)
-        self.ending = int(self.ending)
+        self.ending = EndType[self.ending]
         self.is_4byte = self.is_4byte == "4byte"
         self.description = self.description.replace(";;", ",")
 
