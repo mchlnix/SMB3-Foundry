@@ -43,6 +43,14 @@ class JumpList(QListWidget):
 
         self.addItems([str(jump) for jump in jumps])
 
+    def delete_selected_jump(self):
+        index = self.currentRow()
+
+        if index < 0:
+            return
+
+        self.remove_jump.emit()
+
     def contextMenuEvent(self, event: QContextMenuEvent):
         item = self.itemAt(event.pos())
 

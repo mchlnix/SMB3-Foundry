@@ -357,7 +357,7 @@ class FoundryMainWindow(MainWindow):
         self.status_bar = ObjectStatusBar(self, self.level_ref)
         self.setStatusBar(self.status_bar)
 
-        self.delete_shortcut = QShortcut(QKeySequence(Qt.Key.Key_Delete), self, self.remove_selected_objects)
+        self.delete_shortcut = QShortcut(QKeySequence(Qt.Key.Key_Delete), self, self._on_delete_key)
 
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_X), self, self._cut_objects)
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_C), self, self._copy_objects)
@@ -1030,6 +1030,16 @@ class FoundryMainWindow(MainWindow):
         self.level_view.select_objects([], replace_selection=True)
 
         self.undo_stack.push(PasteObjectsAt(self.level_view, copied_level_objects, q_point))
+
+    def _on_delete_key(self):
+        # if the jump list is focused and a jump is selected, delete it
+        if self.focusWidget() is self.jump_list:
+            self.jump_list.delete_selected_jump()
+
+            return
+
+        # otherwise simply delete selected objects in the level view
+        self.remove_selected_objects()
 
     def remove_selected_objects(self):
         selected_objects = [obj for obj in self.level_ref.level.get_all_objects() if obj.selected]
