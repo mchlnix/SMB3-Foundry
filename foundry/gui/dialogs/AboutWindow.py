@@ -12,7 +12,8 @@ LINK_SOUTHBIRD = "https://github.com/captainsouthbird"
 LINK_DISASM = "https://github.com/captainsouthbird/smb3"
 LINK_BLUEFINCH = "https://www.twitch.tv/bluefinch3000"
 LINK_SKY = "https://www.youtube.com/channel/UCnI_HjFGbyRmfOBWzzxK6LA"
-LINK_PIJOKRA = "https://github.com/PiJoKra"
+LINK_LIRA = "https://github.com/LiraOnGithub"
+LINK_DARIO = "https://github.com/Dariosky-01"
 
 
 class AboutDialog(CustomDialog):
@@ -51,7 +52,7 @@ class AboutDialog(CustomDialog):
         text_layout.addWidget(
             LinkLabel(
                 self,
-                f'<a href="{LINK_PIJOKRA}">PiJoKra</a> for helping to parse the disassembly',
+                f'<a href="{LINK_LIRA}">Lira</a> for helping to parse the disassembly and working on AutoScrolling',
             )
         )
         text_layout.addWidget(
@@ -61,6 +62,7 @@ class AboutDialog(CustomDialog):
                 f'<a href="{LINK_SKY}">SKJyannick</a> for testing and sanity checking',
             )
         )
+        text_layout.addWidget(QLabel(f'<a href="{LINK_DARIO}">Dario</a> for reporting many bugs and problems', self))
         text_layout.addWidget(QLabel("Spinzig for compiling the enemy incompatibilities.", self))
 
         main_layout.addLayout(text_layout)
