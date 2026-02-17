@@ -1,5 +1,5 @@
 from itertools import product
-from typing import Optional
+from typing import cast
 
 from PySide6.QtCore import QSize, Qt, Signal, SignalInstance
 from PySide6.QtWidgets import QGridLayout, QSizePolicy, QWidget
@@ -16,11 +16,11 @@ COLUMN_COUNT = 2
 
 
 class ObjectToolBox(QWidget):
-    """A 2 column grid of Level Objects, Enemies or both. Clickable to select Item to place with the mouse."""
+    """A 2-column grid of Level Objects, Enemies, or both. Clickable to select Item to place with the mouse."""
 
     object_icon_clicked: SignalInstance = Signal(ObjectIcon)
 
-    def __init__(self, parent: Optional[QWidget] = None):
+    def __init__(self, parent: QWidget | None = None):
         super(ObjectToolBox, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
@@ -29,6 +29,8 @@ class ObjectToolBox(QWidget):
         self._layout.setAlignment(Qt.AlignCenter)
 
         self._layout.setAlignment(Qt.AlignHCenter)
+
+        self._object_set_index: int = -1
 
     def sizeHint(self):
         orig_size_hint: QSize = super().sizeHint()
@@ -49,6 +51,8 @@ class ObjectToolBox(QWidget):
         self._layout.addWidget(icon, index // COLUMN_COUNT, index % COLUMN_COUNT)
 
     def add_from_object_set(self, object_set_index: int, graphic_set_index: int = -1):
+        self._object_set_index = object_set_index
+
         if graphic_set_index == -1:
             graphic_set_index = object_set_index
 
@@ -82,6 +86,23 @@ class ObjectToolBox(QWidget):
 
         apply(self.add_object, valid_enemy_items)
 
+    def set_graphic_set(self, graphic_set_index: int):
+        print(graphic_set_index)
+        factory = LevelObjectFactory(
+            self._object_set_index,
+            graphic_set_index,
+            0,
+            [],
+            vertical_level=False,
+            size_minimal=True,
+        )
+
+        for object_icon in self._gen_icon_widgets():
+            old_object = object_icon.object
+            new_object = factory.from_properties(old_object.domain, old_object.obj_index, 0, 0, None, 0)
+
+            object_icon.set_object(new_object)
+
     def clear(self):
         self._extract_objects()
 
@@ -111,11 +132,15 @@ class ObjectToolBox(QWidget):
             return None
 
     def index_of_object(self, level_object):
-        for index in range(self._layout.count()):
-            if self._layout.itemAtPosition(index // COLUMN_COUNT, index % COLUMN_COUNT).widget().object == level_object:
+        for index, object_icon in enumerate(self._gen_icon_widgets()):
+            if object_icon.object == level_object:
                 return index
         else:
             return -1
+
+    def _gen_icon_widgets(self):
+        for index in range(self._layout.count()):
+            yield cast(ObjectIcon, self._layout.itemAtPosition(index // COLUMN_COUNT, index % COLUMN_COUNT).widget())
 
     def _extract_objects(self):
         objects = []

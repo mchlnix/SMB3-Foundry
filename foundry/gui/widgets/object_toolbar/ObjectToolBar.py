@@ -49,8 +49,18 @@ class ObjectToolBar(QWidget):
         layout.addWidget(self.tool_box, stretch=1)
         layout.addWidget(current_item_widget)
 
+        self._object_set_index = -1
+        self._graphic_set_index = -1
+
     def set_object_set(self, object_set_index: int, graphic_set_index: int = -1):
-        self.tool_box.set_object_set(object_set_index, graphic_set_index)
+        if self._object_set_index != object_set_index:
+            self.tool_box.set_object_set(object_set_index, graphic_set_index)
+
+        elif self._graphic_set_index != graphic_set_index:
+            self.tool_box.set_graphic_set(graphic_set_index)
+
+        self._object_set_index = object_set_index
+        self._graphic_set_index = graphic_set_index
 
     def _on_object_icon_selected(self, object_icon: ObjectIcon):
         if object_icon.object is not None:
