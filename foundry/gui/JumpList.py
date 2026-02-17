@@ -51,6 +51,10 @@ class JumpList(QListWidget):
 
         self.remove_jump.emit()
 
+    def focusOutEvent(self, event):
+        event.accept()
+        self.clearSelection()
+
     def contextMenuEvent(self, event: QContextMenuEvent):
         item = self.itemAt(event.pos())
 
