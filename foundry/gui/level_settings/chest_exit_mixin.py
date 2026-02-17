@@ -1,5 +1,3 @@
-from typing import Optional
-
 from PySide6.QtGui import QMouseEvent, QPixmap
 from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QVBoxLayout
 
@@ -33,14 +31,14 @@ class _ChestState:
         else:
             return -2
 
-    def _get_chest_exit(self) -> Optional[EnemyItem]:
+    def _get_chest_exit(self) -> EnemyItem | None:
         for item in self.level.enemies:
             if item.obj_index == OBJ_CHEST_EXIT:
                 return item
         else:
             return None
 
-    def _get_chest_item(self) -> Optional[EnemyItem]:
+    def _get_chest_item(self) -> EnemyItem | None:
         for item in self.level.enemies:
             if item.obj_index == OBJ_CHEST_ITEM_SETTER:
                 return item
@@ -81,26 +79,19 @@ class ChestExitMixin(SettingsMixin):
         return self.level_ref.level
 
     def closeEvent(self, event: QMouseEvent):
+        self._update_chest_exit_item()
+        self._update_chest_reward_item()
+
+        self.level.data_changed.emit()
+
+        super(ChestExitMixin, self).closeEvent(event)
+
+    def _update_chest_reward_item(self):
         item_index = self.chest_item_dropdown.currentIndex()
         chest_item_name = MAPITEM_NAMES[item_index]
 
-        # was enabled
-        if self.chest_end_checkbox.isChecked() and self.before.chest_exit is None:
-            # when putting it at x=0 it doesn't work for some reason
-            chest_exit_item = self.level.enemy_item_factory.from_properties(OBJ_CHEST_EXIT, 1, 0)
-
-            make_macro(
-                self.undo_stack, f"Enable Chest Exit with '{chest_item_name}'", AddObject(self.level, chest_exit_item)
-            )
-
-        # was disabled
-        elif self.before.chest_exit is not None and not self.chest_end_checkbox.isChecked():
-            assert self.before.chest_exit is not None
-
-            make_macro(self.undo_stack, "Disabling Chest Exit", RemoveObject(self.level, self.before.chest_exit))
-
         # not item set
-        elif item_index == 0:
+        if item_index == 0:
             if self.before.chest_item is not None:
                 self.undo_stack.push(RemoveObject(self.level, self.before.chest_item))
 
@@ -121,6 +112,16 @@ class ChestExitMixin(SettingsMixin):
 
             self.undo_stack.endMacro()
 
-        self.level.data_changed.emit()
+    def _update_chest_exit_item(self):
+        # was enabled
+        if self.chest_end_checkbox.isChecked() and self.before.chest_exit is None:
+            # when putting it at x=0 it doesn't work for some reason
+            chest_exit_item = self.level.enemy_item_factory.from_properties(OBJ_CHEST_EXIT, 1, 0)
 
-        super(ChestExitMixin, self).closeEvent(event)
+            make_macro(self.undo_stack, "Enable Chest Exit", AddObject(self.level, chest_exit_item))
+
+        # was disabled
+        elif self.before.chest_exit is not None and not self.chest_end_checkbox.isChecked():
+            assert self.before.chest_exit is not None
+
+            make_macro(self.undo_stack, "Disable Chest Exit", RemoveObject(self.level, self.before.chest_exit))
