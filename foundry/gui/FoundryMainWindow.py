@@ -1268,6 +1268,11 @@ class FoundryMainWindow(MainWindow):
     def closeEvent(self, event: QCloseEvent):
         super(FoundryMainWindow, self).closeEvent(event)
 
+        if not event.isAccepted():
+            return
+
+        self._rom_menu.close_everything()
+
         auto_save_rom_path.unlink(missing_ok=True)
         auto_save_m3l_path.unlink(missing_ok=True)
         auto_save_level_data_path.unlink(missing_ok=True)

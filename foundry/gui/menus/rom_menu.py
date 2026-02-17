@@ -146,3 +146,13 @@ class RomMenu(QMenu):
                     self._object_viewer.set_object(obj.domain, obj.obj_index, obj.length)
 
         self._object_viewer.show()
+
+    def close_everything(self):
+        if self._level_viewer:
+            self._level_viewer.close()
+
+        if self._block_viewer:
+            self._block_viewer.close()
+
+        if self._object_viewer:
+            self._object_viewer.close()
