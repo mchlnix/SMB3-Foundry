@@ -3243,7 +3243,7 @@
 0, 0xB7, 0xB7, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Infinite Para-Beetles, <73>
 0, 0xB8, 0xB8, 2, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Moving Background Clouds, <92, 93>
 0, 0xB9, 0xB9, 3, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Infinite leftward-moving falling platforms, <55, 127, 57>
-0, 0xBA, 0xBA, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Exit on get treasure chest, <146>
+0, 0xBA, 0xBA, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, (Hidden) Makes treasure chest end the level, <146>
 0, 0xBB, 0xBB, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Stops infinite flying or spiky Cheep-Cheeps, <146>
 0, 0xBC, 0xBC, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Bullet Bills, <166>
 0, 0xBD, 0xBD, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Missile Bills, <167>
@@ -3269,9 +3269,9 @@
 0, 0xD1, 0xD1, 3, 2, SINGLE_BLOCK      , UNIFORM         , 3byte, 3 Green Koopa Paratroopas, <140, 140, 140, 156, 156, 156>
 0, 0xD2, 0xD2, 1, 3, SINGLE_BLOCK      , UNIFORM         , 3byte, 3 Yellow Cheep-Cheeps, <205, 205, 205>
 0, 0xD3, 0xD3, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Autoscrolling, <147>
-0, 0xD4, 0xD4, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, White Mushroom House (X pos must be uneven;; Y pos=amount of coins required), <71>
+0, 0xD4, 0xD4, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, (Hidden) Enables White Mushroom House, <71>
 0, 0xD5, 0xD5, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, 'The king has been transformed' message, <148>
-0, 0xD6, 0xD6, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Puts item in treasure chest (Y pos. determines item; see docs/items.txt), <146>
+0, 0xD6, 0xD6, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, (Hidden) Sets reward item in treasure chests, <146>
 0, 0xD7, 0xD7, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <145>
 0, 0xD8, 0xD8, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <145>
 0, 0xD9, 0xD9, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <145>

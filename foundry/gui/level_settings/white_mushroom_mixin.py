@@ -73,6 +73,7 @@ class WhiteMushroomHouseMixin(SettingsMixin):
 
         # mushroom house added
         elif not self._had_mushroom_item and now_has_mushroom_item:
+            # x must be uneven
             new_mushroom_item = self.level.enemy_item_factory.from_properties(
                 OBJ_WHITE_MUSHROOM_HOUSE, 1, new_coins_required
             )
