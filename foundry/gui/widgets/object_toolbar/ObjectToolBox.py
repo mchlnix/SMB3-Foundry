@@ -87,7 +87,10 @@ class ObjectToolBox(QWidget):
         apply(self.add_object, valid_enemy_items)
 
     def set_graphic_set(self, graphic_set_index: int):
-        print(graphic_set_index)
+        if self._object_set_index == -1:
+            # no object was added yet, so the object set was not set yet either, nothing to update
+            return
+
         factory = LevelObjectFactory(
             self._object_set_index,
             graphic_set_index,

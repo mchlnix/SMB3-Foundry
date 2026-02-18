@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt, Signal, SignalInstance
 from PySide6.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
 
-from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects import EnemyItem, LevelObject, LevelObjectFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 
@@ -43,24 +43,48 @@ class ObjectToolBar(QWidget):
         current_item_layout.addWidget(self.current_object_icon, alignment=Qt.AlignCenter)
         current_item_layout.addWidget(self.current_object_name, alignment=Qt.AlignCenter)
 
-        self.tool_box = TabbedToolBox()
-        self.tool_box.object_icon_clicked.connect(self._on_object_icon_selected)
+        self.tabbed_tool_box = TabbedToolBox()
+        self.tabbed_tool_box.object_icon_clicked.connect(self._on_object_icon_selected)
 
-        layout.addWidget(self.tool_box, stretch=1)
+        layout.addWidget(self.tabbed_tool_box, stretch=1)
         layout.addWidget(current_item_widget)
 
         self._object_set_index = -1
         self._graphic_set_index = -1
 
     def set_object_set(self, object_set_index: int, graphic_set_index: int = -1):
-        if self._object_set_index != object_set_index:
-            self.tool_box.set_object_set(object_set_index, graphic_set_index)
-
-        elif self._graphic_set_index != graphic_set_index:
-            self.tool_box.set_graphic_set(graphic_set_index)
+        needs_full_update = self._object_set_index != object_set_index
+        needs_graphic_update_only = self._graphic_set_index != graphic_set_index
 
         self._object_set_index = object_set_index
         self._graphic_set_index = graphic_set_index
+
+        if needs_full_update:
+            self.tabbed_tool_box.set_object_set(object_set_index, graphic_set_index)
+
+        elif needs_graphic_update_only:
+            self.tabbed_tool_box.set_graphic_set(graphic_set_index)
+
+            self._update_currently_selected_object_icon(graphic_set_index, object_set_index)
+
+    def _update_currently_selected_object_icon(self, graphic_set_index: int, object_set_index: int):
+        # TODO Could this be put into the level icon class itself?
+        factory = LevelObjectFactory(
+            object_set_index,
+            graphic_set_index,
+            0,
+            [],
+            vertical_level=False,
+            size_minimal=True,
+        )
+
+        old_object = self.current_object_icon.object
+        if old_object is None:
+            return
+
+        new_object = factory.from_properties(old_object.domain, old_object.obj_index, 0, 0, None, 0)
+
+        self.current_object_icon.set_object(new_object)
 
     def _on_object_icon_selected(self, object_icon: ObjectIcon):
         if object_icon.object is not None:
@@ -72,14 +96,14 @@ class ObjectToolBar(QWidget):
         if not isinstance(level_object, (LevelObject, EnemyItem)):
             return
 
-        if (level_object := self.tool_box.get_equivalent(level_object)) is None:
+        if (level_object := self.tabbed_tool_box.get_equivalent(level_object)) is None:
             return
 
-        self.tool_box.select_object(level_object)
+        self.tabbed_tool_box.select_object(level_object)
 
         self.current_object_icon.set_object(level_object)
         self.current_object_name.setText(level_object.name)
         self.add_recent_object(level_object)
 
     def add_recent_object(self, level_object: InLevelObject):
-        self.tool_box.add_recent_object(level_object)
+        self.tabbed_tool_box.add_recent_object(level_object)

@@ -45,6 +45,9 @@ class ObjectDropdown(QComboBox):
             "an object, you can place it by clicking the middle mouse button anywhere in the level."
         )
 
+        self._object_set_index = -1
+        self._graphic_set_index = -1
+
     def setFocus(self):
         super(ObjectDropdown, self).setFocus()
 
@@ -60,7 +63,32 @@ class ObjectDropdown(QComboBox):
             size_minimal=True,
         )
 
-        self._on_object_factory_change(factory)
+        needs_full_update = self._object_set_index != object_set_index
+        needs_graphics_update_only = self._graphic_set_index != graphic_set_index
+
+        self._object_set_index = object_set_index
+        self._graphic_set_index = graphic_set_index
+
+        if needs_full_update:
+            self._on_object_factory_change(factory)
+
+        elif needs_graphics_update_only:
+            self.set_graphics_set(factory)
+
+    def set_graphics_set(self, factory: LevelObjectFactory) -> None:
+        for index in range(self.count()):
+            old_level_object = self.itemData(index)
+
+            if old_level_object is None:
+                # found the separator object, after which only enemies and items follow
+                break
+
+            new_level_object = factory.from_properties(
+                old_level_object.domain, old_level_object.obj_index, 0, 0, None, 0
+            )
+
+            self.setItemIcon(index, QIcon(QPixmap(self._resize_bitmap(new_level_object.as_image()))))
+            self.setItemData(index, new_level_object)
 
     def _on_object_selected(self, _):
         if self.currentIndex() == -1:
