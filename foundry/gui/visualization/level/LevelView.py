@@ -433,6 +433,8 @@ class LevelView(MainView):
         self.level_header.start_x_index = x_index
         self.level_header.start_y_index = y_index
 
+        self.update()
+
     def _stop_mario_move(self):
         cur_mario_indexes = self.level_header.mario_start_indexes
 
