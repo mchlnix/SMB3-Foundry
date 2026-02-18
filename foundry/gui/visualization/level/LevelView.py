@@ -412,6 +412,8 @@ class LevelView(MainView):
 
         self.drawer.should_draw_potential_marios = True
 
+        self.update()
+
     def _update_mario_move(self, mouse_point: QPoint):
         # Mario Sprite is offset by half a block, so offset the cursor as well
         mouse_point.setX(mouse_point.x() - self.block_length // 2)
