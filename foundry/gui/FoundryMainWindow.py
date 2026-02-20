@@ -16,6 +16,7 @@ from PySide6.QtGui import (
     QUndoStack,
 )
 from PySide6.QtWidgets import (
+    QApplication,
     QDialog,
     QFileDialog,
     QHBoxLayout,
@@ -40,6 +41,7 @@ from foundry import (
     make_macro,
 )
 from foundry.features.instaplay import CantFindFirstTile, InstaPlayer, LevelNotAttached
+from foundry.features.rom_reload import RomWatcherMixin
 from foundry.game.additional_data import LevelOrganizer
 from foundry.game.File import ROM
 from foundry.game.gfx import restore_all_palettes
@@ -98,7 +100,7 @@ from smb3parse.objects.object_set import OBJECT_SET_NAMES
 TOOLBAR_ICON_SIZE = QSize(20, 20)
 
 
-class FoundryMainWindow(MainWindow):
+class FoundryMainWindow(RomWatcherMixin, MainWindow):
     def __init__(self):
         super(FoundryMainWindow, self).__init__()
 
@@ -114,7 +116,7 @@ class FoundryMainWindow(MainWindow):
 
         self.file_menu = FileMenu(self.level_ref, self.settings)
 
-        self.file_menu.open_rom_action.triggered.connect(self.on_open_rom)
+        self.file_menu.open_rom_action.triggered.connect(lambda _: self.on_open_rom())
         self.file_menu.open_m3l_action.triggered.connect(self.on_open_m3l)
         self.file_menu.save_rom_action.triggered.connect(self.on_save_rom)
         self.file_menu.save_rom_as_action.triggered.connect(self.on_save_rom_as)
@@ -375,6 +377,8 @@ class FoundryMainWindow(MainWindow):
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_A), self, self.level_view.select_all)
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_L), self, self.object_dropdown.setFocus)
 
+        self.rom_content_changed.connect(self._on_rom_changed_externally)
+
         self.check_for_update_on_startup()
 
         self.showMaximized()
@@ -427,6 +431,20 @@ class FoundryMainWindow(MainWindow):
 
     def _on_show_settings(self):
         SettingsDialog(self.settings, self).exec()
+
+    def _on_rom_changed_externally(self):
+        self._rom_watcher_enabled = False
+
+        QMessageBox.information(
+            self,
+            "ROM Changed",
+            "The ROM has been changed externally. Apply changes or reset the external changes?",
+            QMessageBox.StandardButton.Reset | QMessageBox.StandardButton.Apply,
+        )
+
+        self._update_accepted_hash()
+
+        self._rom_watcher_enabled = True
 
     @staticmethod
     def _save_auto_rom():
@@ -565,11 +583,11 @@ class FoundryMainWindow(MainWindow):
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self, path_to_rom="", try_opening_level=True):
+    def on_open_rom(self, path_to_rom=Path(), try_opening_level=True):
         if not self.safe_to_change():
             return
 
-        if not path_to_rom and not (path_to_rom := self._ask_for_path_to_rom()):
+        if not path_to_rom.is_file() and not (path_to_rom := self._ask_for_path_to_rom()).is_file():
             self.enable_disable_gui_elements()
 
             return
@@ -577,6 +595,7 @@ class FoundryMainWindow(MainWindow):
         # Proceed to load the file chosen by the user
         try:
             ROM.load_from_file(path_to_rom)
+            self.set_rom_path_to_watch(path_to_rom)
 
             self.close_current_level()
 
@@ -725,7 +744,7 @@ class FoundryMainWindow(MainWindow):
             filter=ROM_FILE_FILTER,
         )
 
-        return path_to_rom
+        return Path(path_to_rom)
 
     def on_open_m3l(self, _):
         if not self.safe_to_change():
@@ -946,8 +965,15 @@ class FoundryMainWindow(MainWindow):
 
             return
 
+        self._rom_watcher_enabled = False
+
         if self._save_current_changes_to_file(pathname, set_new_path=True) and not is_save_as:
             self.undo_stack.setClean()
+
+            # Make sure the rom file watcher goes off right now, so it ignores the change
+            QApplication.processEvents()
+
+        self._rom_watcher_enabled = True
 
         self.update_title()
 

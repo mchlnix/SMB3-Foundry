@@ -19,7 +19,7 @@ LOAD_M3L = "--load-m3l"
 CHECK_AUTO_SAVE = "--dont-check-auto-save"
 
 # compatibility for dark mode
-warnings.warning = warnings.warn
+warnings.warning = warnings.warn  # type:ignore
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ from foundry.gui.FoundryMainWindow import FoundryMainWindow  # noqa
 app = None
 
 
-def main(path_to_rom, check_auto_save=True, level_data_tuple=(), m3l_path=""):
+def main(path_to_rom: Path, check_auto_save=True, level_data_tuple=(), m3l_path=""):
     global app
     app = QApplication()
 
@@ -80,9 +80,9 @@ def main(path_to_rom, check_auto_save=True, level_data_tuple=(), m3l_path=""):
 
 if __name__ == "__main__":
     should_check_auto_save = True
-    path = ""
+    path = Path()
     m3l_path = ""
-    level_data_tuple = tuple()
+    level_data_tuple: tuple[int, int, int] = (0, 0, 0)
 
     args = sys.argv[1:]
 
@@ -116,7 +116,7 @@ if __name__ == "__main__":
                 level_data_tuple = (level_address, enemy_address, object_set_number)
 
             elif Path(arg).exists():
-                path = arg
+                path = Path(arg)
 
             else:
                 raise ValueError(f"Unknown command line argument '{arg}'")
