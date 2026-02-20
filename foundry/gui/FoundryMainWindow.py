@@ -114,6 +114,12 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
         self.undo_stack = QUndoStack(self)
         self.undo_stack.setObjectName("undo_stack")
 
+        self._protect_undo_stack = False
+        """
+        Sometimes we protect the undo stack from being cleared by the usual GUI logic, to be able to reapply the
+        commands.
+        """
+
         self.file_menu = FileMenu(self.level_ref, self.settings)
 
         self.file_menu.open_rom_action.triggered.connect(lambda _: self.on_open_rom())
@@ -1216,12 +1222,15 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
             return
 
         self.level_ref.level = None
-        self.undo_stack.clear()
+        if not self._protect_undo_stack:
+            self.undo_stack.clear()
         self.enable_disable_gui_elements()
 
     def update_gui_for_level(self):
         restore_all_palettes()
-        self.undo_stack.clear()
+
+        if not self._protect_undo_stack:
+            self.undo_stack.clear()
 
         self.enable_disable_gui_elements()
 

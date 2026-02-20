@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from foundry.gui.visualization.level.LevelView import LevelView
 
 
+# TODO reference objects only by their index and don't keep references
 class SetLevelAddressData(QUndoCommand):
     def __init__(self, level: Level, header_offset: int, enemy_offset: int):
         super(SetLevelAddressData, self).__init__(None)
