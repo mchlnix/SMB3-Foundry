@@ -810,6 +810,8 @@ class FoundryMainWindow(MainWindow):
 
         if answer == QMessageBox.Save:
             save_all_palette_groups()
+            self._write_to_rom(ROM.path, False)
+
         elif answer == QMessageBox.RestoreDefaults:
             restore_all_palettes()
             self.level_ref.level.reload()
