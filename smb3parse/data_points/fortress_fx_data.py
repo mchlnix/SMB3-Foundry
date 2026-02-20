@@ -82,7 +82,7 @@ class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):
         self.v_addr_low_address = Constants.FortressFX_VAddrL + self.index
 
     def read_values(self):
-        self.row, _ = self._rom.nibbles(self.row_address)
+        self.row, __ = self._rom.nibbles(self.row_address)
         self.column, self.screen = self._rom.nibbles(self.col_and_screen_address)
 
         self.tile_indexes = self._rom.read(self.tile_indexes_address, 4)

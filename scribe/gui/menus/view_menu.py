@@ -9,43 +9,49 @@ from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
 
 class ViewMenu(QMenu):
     def __init__(self, parent, world_view: WorldView):
-        super(ViewMenu, self).__init__("&View", parent)
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        super(ViewMenu, self).__init__(_("&View"), parent)
 
         self.triggered.connect(self.on_menu)
 
         self.world_view = world_view
 
-        self.grid_action = self.addAction("&Grid")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.grid_action = self.addAction(_("&Grid"))
         self.grid_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_G)
         self.grid_action.setCheckable(True)
         self.grid_action.setChecked(self.settings.value("world view/show grid"))
 
-        self.border_action = self.addAction("Borders")
+        self.border_action = self.addAction(_("Borders"))
         self.border_action.setCheckable(True)
         self.border_action.setChecked(self.settings.value("world view/show border"))
 
-        self.animation_action = self.addAction("Animated Tiles")
+        self.animation_action = self.addAction(_("Animated Tiles"))
         self.animation_action.setCheckable(True)
         self.animation_action.setChecked(self.settings.value("world view/animated tiles"))
 
         self.addSeparator()
 
-        self.level_pointer_action = self.addAction("&Level Pointers")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.level_pointer_action = self.addAction(_("&Level Pointers"))
         self.level_pointer_action.setCheckable(True)
         self.level_pointer_action.setChecked(self.settings.value("world view/show level pointers"))
         self.level_pointer_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_L)
 
-        self.level_preview_action = self.addAction("&Tooltip with Level Preview")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.level_preview_action = self.addAction(_("&Tooltip with Level Preview"))
         self.level_preview_action.setCheckable(True)
         self.level_preview_action.setChecked(self.settings.value("world view/show level previews"))
         self.level_preview_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_T)
 
-        self.sprite_action = self.addAction("Overworld &Sprites")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.sprite_action = self.addAction(_("Overworld &Sprites"))
         self.sprite_action.setCheckable(True)
         self.sprite_action.setChecked(self.settings.value("world view/show sprites"))
         self.sprite_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_O)
 
-        self.starting_point_action = self.addAction("Starting &Point")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.starting_point_action = self.addAction(_("Starting &Point"))
         self.starting_point_action.setCheckable(True)
         self.starting_point_action.setChecked(self.settings.value("world view/show start position"))
         self.starting_point_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_P)
@@ -54,7 +60,8 @@ class ViewMenu(QMenu):
 
         self.airship_travel_actions = []
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
-            self.airship_travel_actions.append(self.addAction(f"&Airship Travel Path {i+1}"))
+            # TRANSLATORS: Ampersand designates keyboard shortcut key
+            self.airship_travel_actions.append(self.addAction(_("&Airship Travel Path %d") % (i + 1)))
             self.airship_travel_actions[-1].setCheckable(True)
             self.airship_travel_actions[-1].setChecked(
                 self.settings.value("world view/show airship paths") & 2**i == 2**i
@@ -62,17 +69,18 @@ class ViewMenu(QMenu):
 
         self.addSeparator()
 
-        self.lock_bridge_action = self.addAction("Lock and &Bridge Events")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.lock_bridge_action = self.addAction(_("Lock and &Bridge Events"))
         self.lock_bridge_action.setCheckable(True)
         self.lock_bridge_action.setChecked(self.settings.value("world view/show locks"))
         self.lock_bridge_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_B)
 
         self.addSeparator()
 
-        self.show_all_action = self.addAction("Show All")
+        self.show_all_action = self.addAction(_("Show All"))
         self.show_all_action.setIcon(icon("eye.svg"))
 
-        self.screen_shot_action = self.addAction("Save Screenshot")
+        self.screen_shot_action = self.addAction(_("Save Screenshot"))
         self.screen_shot_action.setIcon(icon("image.svg"))
 
     def on_menu(self, action: QAction):
@@ -118,9 +126,9 @@ class ViewMenu(QMenu):
             f"{self.settings.value('editor/default dir path')}/{ROM.name} - {self.world_view.level_ref.name}.png"
         )
 
-        pathname, _ = QFileDialog.getSaveFileName(
+        pathname, __ = QFileDialog.getSaveFileName(
             self,
-            caption="Save Screenshot",
+            caption=_("Save Screenshot"),
             dir=recommended_file,
             filter=IMG_FILE_FILTER,
         )

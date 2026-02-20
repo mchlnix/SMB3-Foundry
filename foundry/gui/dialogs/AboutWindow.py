@@ -18,7 +18,7 @@ LINK_DARIO = "https://github.com/Dariosky-01"
 
 class AboutDialog(CustomDialog):
     def __init__(self, parent):
-        super(AboutDialog, self).__init__(parent, title="About SMB3Foundry")
+        super(AboutDialog, self).__init__(parent, title=_("About SMB3Foundry"))
 
         main_layout = QBoxLayout(QBoxLayout.LeftToRight, self)
 
@@ -33,37 +33,50 @@ class AboutDialog(CustomDialog):
 
         text_layout.addWidget(QLabel(f"SMB3 Foundry v{get_current_version_name()}", self))
         text_layout.addWidget(HorizontalLine())
-        text_layout.addWidget(LinkLabel(self, f'By <a href="{LINK_SMB3F}">Michael</a>'))
+        text_layout.addWidget(LinkLabel(self, _('By <a href="%s">Michael</a>') % LINK_SMB3F))
         text_layout.addWidget((QLabel("", self)))
-        text_layout.addWidget(QLabel("With thanks to:", self))
+        text_layout.addWidget(QLabel(_("With thanks to:"), self))
         text_layout.addWidget(
             LinkLabel(
                 self,
-                f'<a href="{LINK_HUKKA}">Hukka</a> for <a href="{LINK_SMB3WS}">SMB3 Workshop</a>',
+                _('<a href="%(hukka)s">Hukka</a> for <a href="%(smb3ws)s">SMB3 Workshop</a>') % {
+                    "hukka": LINK_HUKKA,
+                    "smb3ws": LINK_SMB3WS
+                },
             )
         )
         text_layout.addWidget(
             LinkLabel(
                 self,
-                f'<a href="{LINK_SOUTHBIRD}">Captain Southbird</a> '
-                f'for the <a href="{LINK_DISASM}">SMB3 Disassembly</a>',
+                _(
+                    '<a href="%(southbird)s">Captain Southbird</a> '
+                    'for the <a href="%(disasm)s">SMB3 Disassembly</a>'
+                ) % {
+                    "southbird": LINK_SOUTHBIRD,
+                    "disasm": LINK_DISASM
+                },
             )
         )
         text_layout.addWidget(
             LinkLabel(
                 self,
-                f'<a href="{LINK_LIRA}">Lira</a> for helping to parse the disassembly and working on AutoScrolling',
+                _('<a href="%s">Lira</a> for helping to parse the disassembly and working on AutoScrolling') % LINK_LIRA,
             )
         )
         text_layout.addWidget(
             LinkLabel(
                 self,
-                f'<a href="{LINK_BLUEFINCH}">BlueFinch</a>, ZacMario and '
-                f'<a href="{LINK_SKY}">SKJyannick</a> for testing and sanity checking',
+                _(
+                    '<a href="%(bluefinch)s">BlueFinch</a>, ZacMario and '
+                    '<a href="%(sky)s">SKJyannick</a> for testing and sanity checking'
+                ) % {
+                    "bluefinch": LINK_BLUEFINCH,
+                    "sky": LINK_SKY
+                },
             )
         )
-        text_layout.addWidget(QLabel(f'<a href="{LINK_DARIO}">Dario</a> for reporting many bugs and problems', self))
-        text_layout.addWidget(QLabel("Spinzig for compiling the enemy incompatibilities.", self))
+        text_layout.addWidget(QLabel(_('<a href="%s">Dario</a> for reporting many bugs and problems') % LINK_DARIO, self))
+        text_layout.addWidget(QLabel(_("Spinzig for compiling the enemy incompatibilities."), self))
 
         main_layout.addLayout(text_layout)
 

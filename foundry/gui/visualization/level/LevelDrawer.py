@@ -57,10 +57,10 @@ ITEM_ARROW = load_from_png(53, 53)
 
 
 SPECIAL_BACKGROUND_OBJECTS = [
-    "blue background",
-    "starry background",
-    "underground background under this",
-    "sets background to actual background color",
+    _("blue background"),
+    _("starry background"),
+    _("underground background under this"),
+    _("sets background to actual background color"),
 ]
 
 
@@ -70,10 +70,10 @@ These configure things based on their y-position in the level. This is done in t
 actually render them in the level.
 """
 
-
-ENEMY_ITEMS_WITH_OVERLAYS = apply(
-    str.lower, ("Invisible door (appears when you hit a P-switch)", "Red Koopa Paratroopa")
-)
+ENEMY_ITEMS_WITH_OVERLAYS = apply(str.lower, (
+    _("Invisible door (appears when you hit a P-switch)"),
+    _("Red Koopa Paratroopa")
+))
 
 
 def _block_from_index(block_index: int, level: Level) -> Block:

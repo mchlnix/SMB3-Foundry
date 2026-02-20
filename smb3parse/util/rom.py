@@ -156,7 +156,10 @@ class Rom:
 
     def write_nibbles(self, offset: AnyAddress, high_nibble: int, low_nibble: int = 0):
         if any(nibble > 0x0F for nibble in [high_nibble, low_nibble]):
-            raise ValueError(f"{high_nibble=} or {low_nibble=} was larger than 0x0F.")
+            raise ValueError(_("%(highequals)s or %(lowequals)s was larger than 0x0F.") % {
+                "highequals": f"{high_nibble=}",
+                "lowequals": f"{low_nibble=}"
+            })
 
         byte = (high_nibble << 4) + low_nibble
 

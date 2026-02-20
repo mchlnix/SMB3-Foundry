@@ -44,4 +44,9 @@ class WorldMapPosition(Position):
         )
 
     def __repr__(self):
-        return f"WorldMapPosition({self.world}, screen={self.screen}, row={self.row}, column={self.column})"
+        return _("WorldMapPosition(%(world)s, screen=%(screen)s, row=%(row)d, column=%(column)d)") % {
+            "world": str(self.world),
+            "screen": self.screen,
+            "row": self.row,
+            "column": self.column
+        }

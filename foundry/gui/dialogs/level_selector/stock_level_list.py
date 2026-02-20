@@ -23,17 +23,17 @@ class StockLevelWidget(QWidget):
 
         description_label = QLabel()
         description_label.setWordWrap(True)
-        description_label.setText(
+        description_label.setText(_(
             "These are the Level and Enemy addresses of the US version of SMB3. If Levels are moved (e.g. by the "
             "automatic Level management) or overwritten by other Levels, then loading these might result in an error "
             "or broken Level."
-        )
+        ))
 
         if ROM.additional_data.found_levels:
             description_label.setStyleSheet("QLabel { color : red; }")
 
-        stock_level_layout.addWidget(QLabel("World"), 0, 0)
-        stock_level_layout.addWidget(QLabel("Level"), 0, 1)
+        stock_level_layout.addWidget(QLabel(_("World")), 0, 0)
+        stock_level_layout.addWidget(QLabel(_("Level")), 0, 1)
 
         stock_level_layout.addWidget(self.world_list, 1, 0)
         stock_level_layout.addWidget(self.level_list, 1, 1)
@@ -111,16 +111,17 @@ class StockLevelWidget(QWidget):
 
     @property
     def level_name(self):
+        level_name = str(self._level_def.name)
+
         if self.level_is_overworld:
-            level_name = ""
+            return level_name
         elif self.level_is_lost:
-            level_name = "Lost World, "
-        else:
-            level_name = f"World {self.world_number}, "
+            return _("Lost World, %s") % level_name
 
-        level_name += str(self._level_def.name)
-
-        return level_name
+        return _("World %(world)d, %(name)s") % {
+            "world": self.world_number,
+            "name": level_name
+        }
 
     @property
     def level_is_overworld(self):

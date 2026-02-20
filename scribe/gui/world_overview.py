@@ -45,7 +45,7 @@ class WorldOverview(TableWidget):
             world_data_point = WorldMapData(rom, world_index)
             self.world_data_points.append(WorldDataStandIn(world_data_point))
 
-        self.set_headers(["World Name", "Screen Count", "Level Count"])
+        self.set_headers([_("World Name"), _("Screen Count"), _("Level Count")])
 
         self.setItemDelegateForColumn(0, NoneDelegate(self))
         self.setItemDelegateForColumn(1, SpinBoxDelegate(self, minimum=1, maximum=4, base=10))
@@ -72,7 +72,7 @@ class WorldOverview(TableWidget):
             if world_data.index == world_index:
                 return world_data
         else:
-            raise LookupError(f"Couldn't find world with index {world_index}")
+            raise LookupError(_("Couldn't find world with index %d") % world_index)
 
     def update_content(self):
         self.setRowCount(len(self.world_data_points))
@@ -82,7 +82,7 @@ class WorldOverview(TableWidget):
         for world_number, world_data in enumerate(self.world_data_points, 1):
             row = world_data.index
 
-            name_item = QTableWidgetItem(f"World {world_number}")
+            name_item = QTableWidgetItem(_("World %d") % world_number)
             screen_count_item = QTableWidgetItem(str(world_data.screen_count))
             level_count_item = QTableWidgetItem(str(world_data.level_count))
 
@@ -124,10 +124,15 @@ class WorldOverview(TableWidget):
 
     @property
     def status_msg(self):
-        return (
-            f"Your worlds have {self.screen_count}/{GAME_SCREEN_COUNT - 1} screens and "
-            f"{self.level_count}/{GAME_LEVEL_POINTER_COUNT} level pointers."
-        )
+        return _(
+            "Your worlds have %(screens)d/%(maxscreens)d screens and "
+            "%(levels)d/%(maxlevels)d level pointers."
+        ) % {
+            "screens": self.screen_count,
+            "maxscreens": GAME_SCREEN_COUNT - 1,
+            "levels": self.level_count,
+            "maxlevels": GAME_LEVEL_POINTER_COUNT
+        }
 
     def valid(self):
         return self.screen_count <= GAME_SCREEN_COUNT - 1 and self.level_count <= GAME_LEVEL_POINTER_COUNT
@@ -138,7 +143,7 @@ class WorldOverview(TableWidget):
 
         # write tiles back into world map data object, so we can properly undo the screen count change
         self.world.write_tiles()
-        undo_stack.beginMacro("Reorganize World Maps")
+        undo_stack.beginMacro(_("Reorganize World Maps"))
 
         undo_stack.push(SaveWorldsOnUndo(self.world_data_points))
 
@@ -165,10 +170,10 @@ class WorldOverview(TableWidget):
                 pass
 
             elif diff > 0:
-                for _ in range(diff):
+                for __ in range(diff):
                     undo_stack.push(RemoveLevelPointer(world.data, world=world_map))
             else:
-                for _ in range(abs(diff)):
+                for __ in range(abs(diff)):
                     undo_stack.push(AddLevelPointer(world.data, world_map))
 
             undo_stack.push(SetStructureBlockAddress(world.data, structure_block_address))

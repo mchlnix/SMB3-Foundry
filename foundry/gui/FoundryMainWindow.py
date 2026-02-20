@@ -137,11 +137,11 @@ class FoundryMainWindow(MainWindow):
 
         self.level_menu.addSeparator()
 
-        self.new_level_action = self.level_menu.addAction("New Empty Level")
+        self.new_level_action = self.level_menu.addAction(_("New Empty Level"))
         self.new_level_action.setIcon(icon("file.svg"))
         self.new_level_action.triggered.connect(self.on_new_level)
 
-        self.select_level_action = self.level_menu.addAction("Select New Level")
+        self.select_level_action = self.level_menu.addAction(_("Select New Level"))
         self.select_level_action.setIcon(icon("globe.svg"))
         self.select_level_action.triggered.connect(self.open_level_selector)
 
@@ -149,31 +149,31 @@ class FoundryMainWindow(MainWindow):
 
         test_level_action = self.level_menu.addAction(icon("play-circle.svg"), "Test Level")
         test_level_action.triggered.connect(self.on_play)
-        test_level_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
+        test_level_action.setWhatsThis(_("Opens an emulator with the current Level set to 1-1.\nSee Settings."))
 
         self.level_menu.addSeparator()
 
-        self.place_level_action = self.level_menu.addAction("Place Level on Map")
+        self.place_level_action = self.level_menu.addAction(_("Place Level on Map"))
         self.place_level_action.setIcon(icon("map-pin.svg"))
         self.place_level_action.triggered.connect(self.on_place_level)
 
-        self.reload_action = self.level_menu.addAction("Reload Level")
+        self.reload_action = self.level_menu.addAction(_("Reload Level"))
         self.reload_action.setIcon(icon("refresh-cw.svg"))
         self.reload_action.triggered.connect(self.reload_level)
 
         self.level_menu.addSeparator()
 
-        self.edit_header_action = self.level_menu.addAction("Level Header")
+        self.edit_header_action = self.level_menu.addAction(_("Level Header"))
         self.edit_header_action.setIcon(icon("tool.svg"))
         self.edit_header_action.triggered.connect(self.on_header_editor)
 
-        self.edit_level_settings = self.level_menu.addAction("Other Level Settings")
+        self.edit_level_settings = self.level_menu.addAction(_("Other Level Settings"))
         self.edit_level_settings.setIcon(icon("settings.svg"))
         self.edit_level_settings.triggered.connect(self.on_edit_level_settings)
 
         self.level_menu.addSeparator()
 
-        self.close_level_action = self.level_menu.addAction("Close Level")
+        self.close_level_action = self.level_menu.addAction(_("Close Level"))
         self.close_level_action.setIcon(icon("x.svg"))
         self.close_level_action.triggered.connect(self.close_current_level)
 
@@ -236,10 +236,10 @@ class FoundryMainWindow(MainWindow):
         jump_buttons.setLayout(QHBoxLayout())
         jump_buttons.layout().setContentsMargins(0, 0, 0, 0)
 
-        add_jump_button = QPushButton("Add Jump")
+        add_jump_button = QPushButton(_("Add Jump"))
         add_jump_button.clicked.connect(self.on_jump_added)
 
-        set_jump_destination_button = QPushButton("Set Jump Destination")
+        set_jump_destination_button = QPushButton(_("Set Jump Destination"))
         set_jump_destination_button.clicked.connect(self._show_jump_dest)
 
         jump_buttons.layout().addWidget(add_jump_button)
@@ -255,7 +255,7 @@ class FoundryMainWindow(MainWindow):
 
         splitter.setChildrenCollapsible(False)
 
-        self.level_toolbar = QToolBar("Level Info Toolbar", self)
+        self.level_toolbar = QToolBar(_("Level Info Toolbar"), self)
         self.level_toolbar.setContextMenuPolicy(Qt.ContextMenuPolicy.PreventContextMenu)
         self.level_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.level_toolbar.setOrientation(Qt.Orientation.Horizontal)
@@ -273,7 +273,7 @@ class FoundryMainWindow(MainWindow):
         self.object_toolbar = ObjectToolBar(self)
         self.object_toolbar.object_selected.connect(self._on_placeable_object_selected)
 
-        object_toolbar = QToolBar("Object Toolbar", self)
+        object_toolbar = QToolBar(_("Object Toolbar"), self)
         object_toolbar.setContextMenuPolicy(Qt.ContextMenuPolicy.PreventContextMenu)
         object_toolbar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         object_toolbar.setFloatable(False)
@@ -283,7 +283,7 @@ class FoundryMainWindow(MainWindow):
 
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, object_toolbar)
 
-        self.menu_toolbar = QToolBar("Menu Toolbar", self)
+        self.menu_toolbar = QToolBar(_("Menu Toolbar"), self)
         self.menu_toolbar.setOrientation(Qt.Orientation.Horizontal)
         self.menu_toolbar.setIconSize(TOOLBAR_ICON_SIZE)
 
@@ -311,42 +311,42 @@ class FoundryMainWindow(MainWindow):
 
         self.menu_toolbar.addSeparator()
 
-        self.zoom_out_action = self.menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
+        self.zoom_out_action = self.menu_toolbar.addAction(icon("zoom-out.svg"), _("Zoom Out"))
         self.zoom_out_action.triggered.connect(self.level_view.zoom_out)
 
-        self.zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
+        self.zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), _("Zoom In"))
         self.zoom_in_action.triggered.connect(self.level_view.zoom_in)
 
         self.menu_toolbar.addSeparator()
 
         self.menu_toolbar.addAction(self.edit_header_action)
-        self.edit_header_action.setWhatsThis(
+        self.edit_header_action.setWhatsThis(_(
             "<b>Header Editor</b><br/>"
             "Many configurations regarding the level are done in its header, like the length of "
             "the timer, or where and how Mario enters the level.<br/>"
-        )
+        ))
 
         self.jump_destination_action = self.menu_toolbar.addAction(
-            icon("arrow-right-circle.svg"), "Go to Jump Destination"
+            icon("arrow-right-circle.svg"), _("Go to Jump Destination")
         )
         self.jump_destination_action.triggered.connect(self._go_to_jump_destination)
-        self.jump_destination_action.setWhatsThis(
+        self.jump_destination_action.setWhatsThis(_(
             "Opens the level, that can be reached from this one, e.g. by entering a pipe."
-        )
+        ))
 
         self.menu_toolbar.addSeparator()
 
         whats_this_action = QWhatsThis.createAction()
-        whats_this_action.setWhatsThis("Click on parts of the editor, to receive help information.")
+        whats_this_action.setWhatsThis(_("Click on parts of the editor, to receive help information."))
         whats_this_action.setIcon(icon("help-circle.svg"))
-        whats_this_action.setText("Starts 'What's this?' mode")
+        whats_this_action.setText(_("Starts 'What's this?' mode"))
         self.menu_toolbar.addAction(whats_this_action)
 
         self.menu_toolbar.addSeparator()
         self.warning_list = WarningList(self, self.level_ref, self.level_view, self.object_list)
 
-        warning_action = self.menu_toolbar.addAction(icon("alert-triangle.svg"), "Warning Panel")
-        warning_action.setWhatsThis("Shows a list of warnings.")
+        warning_action = self.menu_toolbar.addAction(icon("alert-triangle.svg"), _("Warning Panel"))
+        warning_action.setWhatsThis(_("Shows a list of warnings."))
         warning_action.triggered.connect(self.warning_list.show)
         warning_action.setDisabled(True)
 
@@ -382,7 +382,7 @@ class FoundryMainWindow(MainWindow):
         if not dont_check and not self.safe_to_change():
             return
 
-        object_set = ObjectSetSelector.get_object_set(self, alternative_title="Creating New Level")
+        object_set = ObjectSetSelector.get_object_set(self, alternative_title=_("Creating New Level"))
 
         if object_set == -1:
             # was cancelled
@@ -390,7 +390,7 @@ class FoundryMainWindow(MainWindow):
 
         ROM.reload_from_file()
 
-        self.level_ref.level = Level(f"New {OBJECT_SET_NAMES[object_set]} Level", object_set_number=object_set)
+        self.level_ref.level = Level(_("New %s Level") % OBJECT_SET_NAMES[object_set], object_set_number=object_set)
 
         minimal_level_header = bytearray([0, 0, 0, 0, 0, 0, 0x81, object_set, 0])
         self.level_ref.level.from_bytes(object_data=(0, minimal_level_header), enemy_data=(0, bytearray()))
@@ -456,8 +456,8 @@ class FoundryMainWindow(MainWindow):
             if not auto_save_m3l_path.exists():
                 QMessageBox.critical(
                     self,
-                    "Failed loading auto save",
-                    "Could not recover m3l file, that was edited, when the editor crashed.",
+                    _("Failed loading auto save"),
+                    _("Could not recover m3l file, that was edited, when the editor crashed."),
                 )
 
             self.load_m3l(auto_save_m3l_path)
@@ -478,7 +478,10 @@ class FoundryMainWindow(MainWindow):
 
         ROM.reload_from_file()
 
-        self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
+        self.update_level(_("Level %(world)d-%(level)d") % {
+            "world": world,
+            "level": level,
+        }, level_address, enemy_address, object_set)
 
         if world == -1:
             self.level_ref.level.world = old_world
@@ -506,16 +509,16 @@ class FoundryMainWindow(MainWindow):
             insta_player.put_current_level_to_level_1_1(self.level_ref.level)
 
         except CantFindFirstTile as e:
-            title = "Couldn't place level"
-            message = f"Could not find a level 1 tile in World {e.world} to put your level at."
+            title = _("Couldn't place level")
+            message = _("Could not find a level 1 tile in World %d to put your level at.") % e.world
 
             QMessageBox.critical(self, title, message)
 
             return False
 
         except LevelNotAttached:
-            title = "Couldn't place level"
-            message = "The Level is not part of the rom yet (M3L?). Try saving it into the ROM first."
+            title = _("Couldn't place level")
+            message = _("The Level is not part of the rom yet (M3L?). Try saving it into the ROM first.")
 
             QMessageBox.critical(self, title, message)
 
@@ -573,7 +576,7 @@ class FoundryMainWindow(MainWindow):
             self._check_for_refresh()
 
         except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
+            QMessageBox.warning(self, type(exp).__name__, _("Cannot open file '%s'.") % path_to_rom)
             return
 
         finally:
@@ -595,9 +598,11 @@ class FoundryMainWindow(MainWindow):
             wants_to_import = (
                 QMessageBox.question(
                     self,
-                    "ASM files found",
-                    "There were files in your ROM directory, that look like ASM files.\n\n"
-                    "If you compiled your own ROM, perhaps you want to load those into the editor as well?",
+                    _("ASM files found"),
+                    _(
+                        "There were files in your ROM directory, that look like ASM files.\n\n"
+                        "If you compiled your own ROM, perhaps you want to load those into the editor as well?"
+                    ),
                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 )
                 == QMessageBox.StandardButton.Yes
@@ -607,10 +612,12 @@ class FoundryMainWindow(MainWindow):
             wants_to_import = (
                 QMessageBox.question(
                     self,
-                    "Incompatibilities found",
-                    "The data in your ROM differs from expected values. This is likely due to code changes.\n\n"
-                    "If you compiled your own ROM, supplying additional ASM files can solve this issue. Do you want"
-                    " to import them now?",
+                    _("Incompatibilities found"),
+                    _(
+                        "The data in your ROM differs from expected values. This is likely due to code changes.\n\n"
+                        "If you compiled your own ROM, supplying additional ASM files can solve this issue. Do you want"
+                        " to import them now?"
+                    ),
                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 )
                 == QMessageBox.StandardButton.Yes
@@ -662,9 +669,9 @@ class FoundryMainWindow(MainWindow):
 
     def _ask_for_path_to_rom(self):
         # otherwise, ask the user what new file to open
-        path_to_rom, _ = QFileDialog.getOpenFileName(
+        path_to_rom, __ = QFileDialog.getOpenFileName(
             self,
-            caption="Open ROM",
+            caption=_("Open ROM"),
             dir=self.settings.value("editor/default dir path"),
             filter=ROM_FILE_FILTER,
         )
@@ -708,13 +715,15 @@ class FoundryMainWindow(MainWindow):
 
         answer = QMessageBox.question(
             NO_PARENT,
-            "Automatic Level Management Feature",
-            "Levels of the same type are stored in the same area of the ROM. If you add new objects to a Level, you "
-            "might overwrite the Level, that comes right after it in memory.\n\n"
-            "Foundry can parse your ROM and find all Levels accessible to the player (!). That way, when you extend a "
-            "Level, Foundry can automatically move the Levels, so that this doesn't happen and so that you can use as "
-            "much memory as is available for that type of Level.\n\n"
-            "This can also be (de-)activated under 'Rom Settings' later.",
+            _("Automatic Level Management Feature"),
+            _(
+                "Levels of the same type are stored in the same area of the ROM. If you add new objects to a Level, you "
+                "might overwrite the Level, that comes right after it in memory.\n\n"
+                "Foundry can parse your ROM and find all Levels accessible to the player (!). That way, when you extend a "
+                "Level, Foundry can automatically move the Levels, so that this doesn't happen and so that you can use as "
+                "much memory as is available for that type of Level.\n\n"
+                "This can also be (de-)activated under 'Rom Settings' later."
+            ),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Ignore,
         )
 
@@ -737,9 +746,11 @@ class FoundryMainWindow(MainWindow):
         if found_data != expected_data:
             QMessageBox.warning(
                 self,
-                "Automatic Level Management Feature",
-                "The ROM was changed in a way that makes this feature unavailable. "
-                "LevelLoad_ByTileset was not where we expected it.",
+                _("Automatic Level Management Feature"),
+                _(
+                    "The ROM was changed in a way that makes this feature unavailable. "
+                    "LevelLoad_ByTileset was not where we expected it."
+                ),
             )
 
         return found_data == expected_data
@@ -767,12 +778,14 @@ class FoundryMainWindow(MainWindow):
 
         answer = QMessageBox.question(
             self,
-            "External Changes to Levels detected",
-            "We detected changes to where Levels are saved from a different source (probably SMB3 Scribe). We need to "
-            "parse the ROM again to update the locations of the moved Levels.\n\n"
-            "If you choose 'No', then the Found Level information will be deleted, but you can still select Levels "
-            "through the world maps in the Level Selector, as before.\n\n"
-            "Reparse the Levels?",
+            _("External Changes to Levels detected"),
+            _(
+                "We detected changes to where Levels are saved from a different source (probably SMB3 Scribe). We need to "
+                "parse the ROM again to update the locations of the moved Levels.\n\n"
+                "If you choose 'No', then the Found Level information will be deleted, but you can still select Levels "
+                "through the world maps in the Level Selector, as before.\n\n"
+                "Reparse the Levels?"
+            ),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
 
@@ -798,9 +811,11 @@ class FoundryMainWindow(MainWindow):
 
         answer = QMessageBox.question(
             self,
-            "Please confirm",
-            "You changed some object palettes. This is a change, that potentially affects other levels in this ROM. Do "
-            "you want to save these changes, or restore the defaults and continue?",
+            _("Please confirm"),
+            _(
+                "You changed some object palettes. This is a change, that potentially affects other levels in this ROM. Do "
+                "you want to save these changes, or restore the defaults and continue?"
+            ),
             QMessageBox.Cancel | QMessageBox.RestoreDefaults | QMessageBox.Save,
             QMessageBox.Cancel,
         )
@@ -825,7 +840,7 @@ class FoundryMainWindow(MainWindow):
             answer = QMessageBox.warning(
                 self,
                 reason,
-                f"{additional_info}\n\nDo you want to proceed?",
+                _("%s\n\nDo you want to proceed?"),
                 QMessageBox.No | QMessageBox.Yes,
                 QMessageBox.No,
             )
@@ -836,9 +851,11 @@ class FoundryMainWindow(MainWindow):
         if self.level_ref and not self.level_ref.attached_to_rom:
             QMessageBox.information(
                 self,
-                "Importing M3L into ROM",
-                "You are currently editing a level stored in an m3l file outside of the ROM. Please select the "
-                "positions in the ROM you want the level objects and enemies/items to be stored.",
+                _("Importing M3L into ROM"),
+                _(
+                    "You are currently editing a level stored in an m3l file outside of the ROM. Please select the "
+                    "positions in the ROM you want the level objects and enemies/items to be stored."
+                ),
                 QMessageBox.Ok,
             )
 
@@ -869,9 +886,9 @@ class FoundryMainWindow(MainWindow):
             if not suggested_file.endswith(".nes"):
                 suggested_file += ".nes"
 
-            pathname, _ = QFileDialog.getSaveFileName(
+            pathname, __ = QFileDialog.getSaveFileName(
                 self,
-                caption="Save ROM as",
+                caption=_("Save ROM as"),
                 dir=f"{self.settings.value('editor/default dir path')}/{suggested_file}",
                 filter=ROM_FILE_FILTER,
             )
@@ -883,9 +900,11 @@ class FoundryMainWindow(MainWindow):
         if str(pathname) == str(auto_save_rom_path):
             QMessageBox.critical(
                 self,
-                "Cannot save to auto save ROM",
-                "You can't save to the auto save ROM, as it will be deleted, when exiting the editor. Please choose "
-                "another location, or your changes will be lost.",
+                _("Cannot save to auto save ROM"),
+                _(
+                    "You can't save to the auto save ROM, as it will be deleted, when exiting the editor. Please choose "
+                    "another location, or your changes will be lost."
+                ),
             )
 
             return
@@ -896,14 +915,14 @@ class FoundryMainWindow(MainWindow):
         self.update_title()
 
     def on_import_enemies_from_asm(self):
-        if not (pathname := load_asm_filename("Enemy ASM", self.settings.value("editor/default dir path"))):
+        if not (pathname := load_asm_filename(_("Enemy ASM"), self.settings.value("editor/default dir path"))):
             return
 
         self.undo_stack.push(ImportASMEnemies(self.level_ref.level, pathname))
 
     def _attach_to_rom(self, object_data_offset: int, enemy_data_offset: int):
         if 0x0 in [object_data_offset, enemy_data_offset]:
-            raise ValueError("You cannot save level or enemy data to the beginning of the ROM (address 0x0).")
+            raise ValueError(_("You cannot save level or enemy data to the beginning of the ROM (address 0x0)."))
 
         self.undo_stack.push(AttachLevelToRom(self.level_ref.level, object_data_offset, enemy_data_offset))
 
@@ -973,10 +992,12 @@ class FoundryMainWindow(MainWindow):
         if (level_pointer := level_selector.clicked_level_pointer) is None:
             QMessageBox.warning(
                 self,
-                "No Level on Map selected",
-                "You need to click a position on a World Map. "
-                "If the position you want to use is not clickable, you can save this level as an M3L, "
-                "add/move a level pointer to that position in Scribe and try again.",
+                _("No Level on Map selected"),
+                _(
+                    "You need to click a position on a World Map. "
+                    "If the position you want to use is not clickable, you can save this level as an M3L, "
+                    "add/move a level pointer to that position in Scribe and try again."
+                ),
             )
 
             return False
@@ -1120,8 +1141,8 @@ class FoundryMainWindow(MainWindow):
         except IndexError:
             QMessageBox.critical(
                 self,
-                "Please confirm",
-                "Failed loading level. The level offsets don't match.",
+                _("Please confirm"),
+                _("Failed loading level. The level offsets don't match."),
             )
 
     def close_current_level(self):
@@ -1247,7 +1268,7 @@ class FoundryMainWindow(MainWindow):
 
         make_macro(
             self.undo_stack,
-            f"Editing {old_jump}",
+            _("Editing %s") % old_jump,
             RemoveJump(self.level_ref.level, index),
             AddJump(self.level_ref.level, jump, index),
         )

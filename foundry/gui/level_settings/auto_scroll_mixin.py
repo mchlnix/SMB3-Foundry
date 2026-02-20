@@ -12,13 +12,13 @@ from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_AUTOSCROLL
 
 AUTOSCROLL_LABELS = {
-    -1: "No Autoscroll in Level.",
-    0: "Horizontal Autoscroll",
-    1: "Horizontal Autoscroll",
-    2: "Moves Level up and right; screen wraps, vertically",
-    3: "Moves ceiling down and up (Fortress Spike Levels)",
-    4: "Moves ground up, until a door hits the ground",
-    5: "Moves ground up and down, used for changes in over-water Levels",
+    -1: _("No Autoscroll in Level."),
+    0: _("Horizontal Autoscroll"),
+    1: _("Horizontal Autoscroll"),
+    2: _("Moves Level up and right; screen wraps, vertically"),
+    3: _("Moves ceiling down and up (Fortress Spike Levels)"),
+    4: _("Moves ground up, until a door hits the ground"),
+    5: _("Moves ground up and down, used for changes in over-water Levels"),
 }
 
 
@@ -32,10 +32,10 @@ class AutoScrollMixin(SettingsMixin):
         )
 
         # Autoscroll
-        auto_scroll_group = QGroupBox("Autoscrolling", self)
+        auto_scroll_group = QGroupBox(_("Autoscrolling"), self)
         QVBoxLayout(auto_scroll_group)
 
-        self.enabled_checkbox = QCheckBox("Enable Autoscroll in Level", self)
+        self.enabled_checkbox = QCheckBox(_("Enable Autoscroll in Level"), self)
         self.enabled_checkbox.toggled.connect(self._insert_autoscroll_object)
 
         self.auto_scroll_type_spinner = Spinner(self, maximum=0x60 - 1)
@@ -44,7 +44,7 @@ class AutoScrollMixin(SettingsMixin):
         self.auto_scroll_type_label = QLabel(self)
 
         auto_scroll_group.layout().addWidget(self.enabled_checkbox)
-        auto_scroll_group.layout().addLayout(label_and_widget("Scroll Type: ", self.auto_scroll_type_spinner))
+        auto_scroll_group.layout().addLayout(label_and_widget(_("Scroll Type:"), self.auto_scroll_type_spinner))
         auto_scroll_group.layout().addWidget(self.auto_scroll_type_label)
 
         self.layout().addWidget(auto_scroll_group)
@@ -128,7 +128,7 @@ class AutoScrollMixin(SettingsMixin):
 
                 make_macro(
                     self.undo_stack,
-                    "Change Autoscroll Path",
+                    _("Change Autoscroll Path"),
                     RemoveObject(self.level_ref.level, self.original_autoscroll_item),
                     AddObject(self.level_ref.level, current_autoscroll_item, 0),
                 )

@@ -52,7 +52,7 @@ def test_get_all_level_locations_in_world(world_number, stock_positions, rom):
 
     for world_map_position in world.gen_positions():
         if world_map_position.can_have_level():
-            _, screen, row, column = world_map_position.tuple()
+            __, screen, row, column = world_map_position.tuple()
             enterable_positions.append((screen, row, column))
 
     for stock, found in zip(stock_positions, enterable_positions):

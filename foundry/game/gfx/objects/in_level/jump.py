@@ -56,20 +56,21 @@ class Jump(InLevelObject):
         pass
 
     def as_image(self) -> QImage:
-        raise NotImplementedError("Jumps don't have any image to display.")
+        raise NotImplementedError(_("Jumps don't have any image to display."))
 
     def to_bytes(self):
         return self.data
 
     def __repr__(self):
-        return (
-            f"Jump: Screen #{self.screen_index}, "
-            + f"Exit ({self.exit_horizontal}, {self.exit_vertical}), "
-            + f"Action #{self.exit_action}"
-        )
+        return _("Jump: Screen #%(screen)d, Exit (%(x)d, %(y)d), Action #%(action)d") % {
+            "screen": self.screen_index,
+            "x": self.exit_horizontal,
+            "y": self.exit_vertical,
+            "action": self.exit_action
+        }
 
     def __str__(self):
-        return f"Jump on screen #{self.screen_index}"
+        return _("Jump on screen #%d") % self.screen_index
 
     @staticmethod
     def is_jump(data):

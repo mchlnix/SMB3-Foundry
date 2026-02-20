@@ -98,7 +98,7 @@ class Sprite(MapObject):
 
     @property
     def name(self):
-        return f"Sprite '{MAPOBJ_NAMES[self.data.type]}'"
+        return _("Sprite '%s'") % MAPOBJ_NAMES[self.data.type]
 
     @name.setter
     def name(self, value):

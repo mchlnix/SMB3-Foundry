@@ -22,10 +22,10 @@ class WhiteMushroomHouseMixin(SettingsMixin):
             self._had_mushroom_item = True
             self._old_coins_required = mushroom_item.y_position
 
-        mushroom_group = QGroupBox("White Mushroom House", self)
+        mushroom_group = QGroupBox(_("White Mushroom House"), self)
         QVBoxLayout(mushroom_group)
 
-        self._mushroom_checkbox = QCheckBox("Spawn White Mushroom House on Overworld", self)
+        self._mushroom_checkbox = QCheckBox(_("Spawn White Mushroom House on Overworld"), self)
         self._mushroom_checkbox.setChecked(self._had_mushroom_item)
 
         self._coins_required_spinner = Spinner(maximum=2**8 - 1, base=10)
@@ -37,7 +37,7 @@ class WhiteMushroomHouseMixin(SettingsMixin):
             self._coins_required_spinner.setValue(self._old_coins_required)
 
         mushroom_group.layout().addWidget(self._mushroom_checkbox)
-        mushroom_group.layout().addLayout(label_and_widget("Coins required to spawn:", self._coins_required_spinner))
+        mushroom_group.layout().addLayout(label_and_widget(_("Coins required to spawn:"), self._coins_required_spinner))
 
         self.layout().addWidget(mushroom_group)
 
@@ -69,7 +69,7 @@ class WhiteMushroomHouseMixin(SettingsMixin):
             old_mushroom_item = self._get_mushroom_item()
             assert old_mushroom_item is not None
 
-            make_macro(self.undo_stack, "Disable White Mushroom House", RemoveObject(self.level, old_mushroom_item))
+            make_macro(self.undo_stack, _("Disable White Mushroom House"), RemoveObject(self.level, old_mushroom_item))
 
         # mushroom house added
         elif not self._had_mushroom_item and now_has_mushroom_item:
@@ -78,7 +78,7 @@ class WhiteMushroomHouseMixin(SettingsMixin):
                 OBJ_WHITE_MUSHROOM_HOUSE, 1, new_coins_required
             )
 
-            make_macro(self.undo_stack, "Enable White Mushroom House", AddObject(self.level, new_mushroom_item))
+            make_macro(self.undo_stack, _("Enable White Mushroom House"), AddObject(self.level, new_mushroom_item))
 
         # coins requirement has changed
         elif self._old_coins_required != new_coins_required:
@@ -93,11 +93,11 @@ class WhiteMushroomHouseMixin(SettingsMixin):
 
             make_macro(
                 self.undo_stack,
-                f"Set White Mushroom House Coin Limit to {new_coins_required}",
+                _("Set White Mushroom House Coin Limit to %d") % new_coins_required,
                 MoveObject(self.level, old_mushroom_item, new_mushroom_item),
             )
 
         else:
-            warn("White Mushroom House Change was not covered")
+            warn(_("White Mushroom House Change was not covered"))
 
         super().closeEvent(event)

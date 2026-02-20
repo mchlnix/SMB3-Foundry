@@ -124,15 +124,16 @@ class LevelObject(InLevelObject):
         super(LevelObject, self).__init__(data)
 
         if len(data) not in [3, 4]:
-            raise ValueError(f"Length of the given data must be 3 or 4, was {len(data)}.")
+            raise ValueError(_("Length of the given data must be 3 or 4, was %d.") % len(data))
 
         self.domain = data[0] >> 5
         self.y = data[0] & 0b0001_1111
 
         if self.y > DEFAULT_HORIZONTAL_HEIGHT:
-            raise ValueError(
-                f"Data designating y value cannot be higher than {DEFAULT_HORIZONTAL_HEIGHT}, was {self.y}."
-            )
+            raise ValueError(_("Data designating y value cannot be higher than %(max)d, was %(y)d.") % {
+                "max": DEFAULT_HORIZONTAL_HEIGHT,
+                "y": self.y
+            })
 
         self.id = data[1]
         self.x = data[2]

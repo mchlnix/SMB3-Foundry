@@ -88,7 +88,12 @@ class Position:
         return Position(column, row + FIRST_VALID_ROW, screen)
 
     def __repr__(self):
-        return f"Position({self.x}, {self.y} | {self.screen}) @ {id(self)}"
+        return _("Position(%(x)d, %(y)d | %(screen)d @ %(id)d)") % {
+            "x": self.x,
+            "y": self.y,
+            "screen": self.screen,
+            "id": id(self)
+        }
 
     def __add__(self, other):
         x, y = self.xy

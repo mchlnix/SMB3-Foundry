@@ -23,10 +23,10 @@ class ManagedLevelsMixin(SettingsMixin):
     def __init__(self, parent):
         super().__init__(parent)
 
-        boom_boom_group = QGroupBox("Managed Level Positions")
+        boom_boom_group = QGroupBox(_("Managed Level Positions"))
         QVBoxLayout(boom_boom_group)
 
-        self.enabled_checkbox = QCheckBox("Enable Managed Level Positions")
+        self.enabled_checkbox = QCheckBox(_("Enable Managed Level Positions"))
         self.enabled_checkbox.setChecked(bool(ROM.additional_data.managed_level_positions))
 
         self.enabled_checkbox.toggled.connect(self.update_level_info)
@@ -35,7 +35,7 @@ class ManagedLevelsMixin(SettingsMixin):
 
         self.layout().addWidget(boom_boom_group)
 
-        self.level_info_box = QGroupBox("Level Range in Rom Banks")
+        self.level_info_box = QGroupBox(_("Level Range in Rom Banks"))
         QVBoxLayout(self.level_info_box)
         self.layout().addWidget(self.level_info_box)
 
@@ -98,9 +98,10 @@ class ManagedLevelsMixin(SettingsMixin):
                 prg_end = (prg_index + 1) * PRG_BANK_SIZE
 
                 self.level_info_box.layout().addWidget(
-                    QLabel(
-                        f"PRG Bank #{prg_index}, {', '.join([OBJECT_SET_NAMES[index] for index in object_set_indexes])}"
-                    )
+                    QLabel(_("PRG Bank #%(index)d, %(names)s") % {
+                        "index": prg_index,
+                        "names": ", ".join([OBJECT_SET_NAMES[index] for index in object_set_indexes])
+                    })
                 )
 
                 level_start_spinner = Spinner(None, maximum=prg_end - 1)
@@ -108,9 +109,10 @@ class ManagedLevelsMixin(SettingsMixin):
                 level_start_spinner.setValue(level_start)
 
                 level_start_layout = QHBoxLayout()
-                level_start_layout.addWidget(QLabel("Level data range:"))
+                level_start_layout.addWidget(QLabel(_("Level data range:")))
                 level_start_layout.addWidget(level_start_spinner)
-                level_start_layout.addWidget(QLabel(f" to 0x{prg_end - 1:x}"))
+                # TRANSLATORS: Continuation of a sentence
+                level_start_layout.addWidget(QLabel(_(" to 0x%s") % f"{prg_end - 1:x}"))
 
                 self.level_info_box.layout().addLayout(level_start_layout)
                 self.level_info_box.layout().addWidget(HorizontalLine())

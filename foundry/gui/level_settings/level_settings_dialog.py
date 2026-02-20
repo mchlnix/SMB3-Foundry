@@ -17,7 +17,7 @@ class LevelSettingsDialog(
 
         super(LevelSettingsDialog, self).__init__(parent)
 
-        self.setWindowTitle("Other Level Settings")
+        self.setWindowTitle(_("Other Level Settings"))
 
         self.update()
 

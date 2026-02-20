@@ -294,7 +294,7 @@ def _print_missing_stock_levels(levels_by_object_set: defaultdict[Any, list]):
         if not line:
             continue
 
-        world_no, *_, level_address_str, _, object_set_no, _ = line.split(",")
+        world_no, *__, level_address_str, __, object_set_no, __ = line.split(",")
 
         level_address = hex_int(level_address_str) - HEADER_LENGTH
         object_set_num = hex_int(object_set_no)

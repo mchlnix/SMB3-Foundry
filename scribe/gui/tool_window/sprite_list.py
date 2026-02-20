@@ -21,7 +21,7 @@ class SpriteList(TableWidget):
 
         self.cellChanged.connect(self._save_sprite)
 
-        self.set_headers(["Sprite Type", "Item Type", "Map Position"])
+        self.set_headers([_("Sprite Type"), _("Item Type"), _("Map Position")])
 
         self.setItemDelegateForColumn(
             0,
@@ -35,9 +35,11 @@ class SpriteList(TableWidget):
             2,
             DialogDelegate(
                 self,
-                "No can do",
-                "You can move sprites by dragging them around in the WorldView. "
-                "Make sure they are shown in the View Menu.",
+                _("No can do"),
+                _(
+                    "You can move sprites by dragging them around in the WorldView. "
+                    "Make sure they are shown in the View Menu."
+                ),
             ),
         )
 
@@ -91,7 +93,11 @@ class SpriteList(TableWidget):
             if sprite.data.item in MAP_ITEM_SPRITES:
                 item_type.setIcon(QPixmap(MAP_ITEM_SPRITES[sprite.data.item].scaled(self.iconSize())))
 
-            pos = QTableWidgetItem(f"Screen {sprite.data.screen}: x={sprite.data.x}, y={sprite.data.y}")
+            pos = QTableWidgetItem(_("Screen %(screen)d: x=%(x)d, y=%(y)d}") % {
+                "screen": sprite.data.screen,
+                "x": sprite.data.x,
+                "y": sprite.data.y
+            })
 
             self._set_map_tile_as_icon(pos, sprite.get_position())
 

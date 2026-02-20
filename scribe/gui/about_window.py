@@ -15,7 +15,7 @@ LINK_DISASM = "https://github.com/captainsouthbird/smb3"
 
 class AboutDialog(CustomDialog):
     def __init__(self, parent):
-        super(AboutDialog, self).__init__(parent, title="About SMB3 Scribe")
+        super(AboutDialog, self).__init__(parent, title=_("About SMB3 Scribe"))
 
         main_layout = QBoxLayout(QBoxLayout.LeftToRight, self)
 
@@ -33,19 +33,27 @@ class AboutDialog(CustomDialog):
         text_layout.addStretch(1)
         text_layout.addWidget(QLabel(f"SMB3 Scribe v{get_current_version_name()}", self))
         text_layout.addWidget(HorizontalLine())
-        text_layout.addWidget(LinkLabel(self, f'By <a href="{LINK_SMB3F}">Michael</a>'))
-        text_layout.addWidget(QLabel("With thanks to:", self))
+        text_layout.addWidget(LinkLabel(self, _('By <a href="%s">Michael</a>') % LINK_SMB3F))
+        text_layout.addWidget(QLabel(_("With thanks to:"), self))
         text_layout.addWidget(
             LinkLabel(
                 self,
-                f'<a href="{LINK_BEN}">Beneficii</a> for their <a href="{LINK_SMB3ME}">SMB3 Map Editor</a>',
+                _('<a href="%(ben)s">Beneficii</a> for their <a href="%(smb3me)s">SMB3 Map Editor</a>') % {
+                    "ben": LINK_BEN,
+                    "smb3me": LINK_SMB3ME
+                },
             )
         )
         text_layout.addWidget(
             LinkLabel(
                 self,
-                f'<a href="{LINK_SOUTHBIRD}">Captain Southbird</a> '
-                f'for the <a href="{LINK_DISASM}">SMB3 Disassembly</a>',
+                _(
+                    '<a href="%(southbird)s">Captain Southbird</a> '
+                    'for the <a href="%(disasm)s">SMB3 Disassembly</a>'
+                ) % {
+                    "southbird": LINK_SOUTHBIRD,
+                    "disasm": LINK_DISASM
+                },
             )
         )
         text_layout.addStretch(1)

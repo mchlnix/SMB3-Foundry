@@ -14,23 +14,23 @@ class ObjectSetSelector(QDialog):
     def __init__(self, parent=None):
         super(ObjectSetSelector, self).__init__(parent)
 
-        self.setWindowTitle("Object Set Selector")
+        self.setWindowTitle(_("Object Set Selector"))
         self.setModal(True)
 
         self.result = 1
 
         layout = QVBoxLayout(self)
 
-        description = QLabel("Choose the object set for this new level.\nThis cannot be changed afterwards.\n")
+        description = QLabel(_("Choose the object set for this new level.\nThis cannot be changed afterwards.\n"))
         layout.addWidget(description)
 
         self.object_set_dropdown = QComboBox()
         self.object_set_dropdown.addItems(OBJECT_SET_ITEMS[1:-1])
         layout.addWidget(self.object_set_dropdown)
 
-        self.ok_button = QPushButton("Ok")
+        self.ok_button = QPushButton(_("Ok"))
         self.ok_button.clicked.connect(self.on_button)
-        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button = QPushButton(_("Cancel"))
         self.cancel_button.clicked.connect(self.on_button)
 
         button_group = QHBoxLayout()

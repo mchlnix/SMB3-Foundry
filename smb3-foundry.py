@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import i18n
 import logging
 import os
 import pathlib
@@ -44,7 +45,7 @@ def main(path_to_rom, check_auto_save=True, level_data_tuple=(), m3l_path=""):
             path_to_rom = auto_save_rom_path
 
             QMessageBox.information(
-                None, "Auto Save recovered", "Don't forget to save the loaded ROM under a new name!"
+                None, _("Auto Save recovered"), _("Don't forget to save the loaded ROM under a new name!")
             )
 
     main_window = FoundryMainWindow(path_to_rom, m3l_path)
@@ -83,23 +84,23 @@ if __name__ == "__main__":
 
             elif arg == LOAD_M3L:
                 if not args:
-                    raise ValueError("Did not provide a file path after --load-m3l")
+                    raise ValueError(_("Did not provide a file path after --load-m3l"))
 
                 m3l_path = args.pop(0)
 
                 if not pathlib.Path(m3l_path).exists():
-                    raise ValueError(f"M3L path '{m3l_path}' does not exist.")
+                    raise ValueError(_("M3l path '%s' does not exist.") % m3l_path)
 
             elif arg == LOAD_LEVEL:
                 if len(args) < 3:
-                    raise ValueError("Needs level address, enemy address and object set number to load a level.")
+                    raise ValueError(_("Needs level address, enemy address and object set number to load a level."))
 
                 try:
                     level_address = int(args.pop(0), 16)
                     enemy_address = int(args.pop(0), 16)
                     object_set_number = int(args.pop(0), 16)
                 except ValueError:
-                    raise ValueError("Level address, enemy address and object set number must be hex integers.")
+                    raise ValueError(_("Level address, enemy address and object set number must be hex integers."))
 
                 level_data_tuple = (level_address, enemy_address, object_set_number)
 
@@ -107,7 +108,7 @@ if __name__ == "__main__":
                 path = arg
 
             else:
-                raise ValueError(f"Unknown command line argument '{arg}'")
+                raise ValueError(_("Unknown command line argument '%s'") % arg)
 
         print(f"{path=}, {should_check_auto_save=}, {m3l_path=}")
 
@@ -118,10 +119,10 @@ if __name__ == "__main__":
             app = QApplication()
 
         box = QMessageBox()
-        box.setWindowTitle("Crash report")
-        box.setText(
-            f"An unexpected error occurred! Please contact the developers at {github_issue_link} "
-            f"with the error below:\n\n{e}\n\n{traceback.format_exc()}"
+        box.setWindowTitle(_("Crash report"))
+        box.setText(_(
+            "An unexpected error occured! Please contact the developers at %s with the error below:") % github_issue_link
+            + f"\n\n{e}\n\n{traceback.format_exc()}"
         )
         box.exec()
 

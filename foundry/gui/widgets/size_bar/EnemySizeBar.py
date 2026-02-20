@@ -9,7 +9,7 @@ class EnemySizeBar(LevelSizeBar):
     def __init__(self, parent, level):
         super(EnemySizeBar, self).__init__(parent, level)
 
-        self.setWhatsThis(
+        self.setWhatsThis(_(
             "<b>Enemy Size Bar</b><br/>"
             "The enemies and items inside a level, like goombas or certain platforms, are stored as bytes in the "
             "ROM. This information is stored separately from the level objects, because multiple levels can share "
@@ -18,7 +18,7 @@ class EnemySizeBar(LevelSizeBar):
             "would enter a level with broken enemy data while playing.<br/>"
             "This bar shows, how much of the available space for enemies and items is currently taken up. It will turn "
             "red, when too many enemies have been placed."
-        )
+        ))
 
     @property
     def value_color(self):
@@ -26,7 +26,7 @@ class EnemySizeBar(LevelSizeBar):
 
     @property
     def value_description(self):
-        return "Enemies/Items"
+        return _("Enemies/Items")
 
     @property
     def current_value(self):

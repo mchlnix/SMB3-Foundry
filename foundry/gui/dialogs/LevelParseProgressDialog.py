@@ -10,13 +10,13 @@ from smb3parse.util.parser import FoundLevel, gen_levels_in_rom
 class LevelParseProgressDialog(QProgressDialog):
     def __init__(self):
         super(LevelParseProgressDialog, self).__init__(
-            "Parsing World Maps to find Levels.", "Cancel", 0, WORLD_COUNT - 1
+            _("Parsing World Maps to find Levels."), _("Cancel"), 0, WORLD_COUNT - 1
         )
 
         self.levels_per_object_set: dict[int, set[int]] = defaultdict(set)
         self.levels_by_address: dict[int, FoundLevel] = {}
 
-        self.setWindowTitle("Parsing World Maps to find Levels")
+        self.setWindowTitle(_("Parsing World Maps to find Levels"))
         self.setModal(True)
         self.forceShow()
 
@@ -30,7 +30,10 @@ class LevelParseProgressDialog(QProgressDialog):
         try:
             world_number, levels_in_world = next(level_gen)
             while True:
-                self.setLabelText(f"Parsing World {world_number}. Found Levels: {levels_in_world}")
+                set.setLabelText(_("Parsing World %(world)d. Found Levels: %(levels)d") % {
+                    "world": world_number,
+                    "levels": levels_in_world
+                })
                 self.setValue(world_number - 1)
 
                 QApplication.processEvents()

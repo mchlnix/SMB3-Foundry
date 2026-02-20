@@ -21,7 +21,8 @@ from foundry.gui.windows.ObjectViewer import ObjectViewer
 class RomMenu(QMenu):
     needs_gui_refresh: SignalInstance = Signal()
 
-    def __init__(self, level_ref: LevelRef, title="&Rom"):
+    # TRANSLATORS: Ampersand designates keyboard shortcut key
+    def __init__(self, level_ref: LevelRef, title=_("&Rom")):
         super(RomMenu, self).__init__(title)
 
         self._level_ref = level_ref
@@ -31,33 +32,33 @@ class RomMenu(QMenu):
 
         self.triggered.connect(self._on_trigger)
 
-        self._view_blocks_action = self.addAction("View Blocks")
+        self._view_blocks_action = self.addAction(_("View Blocks"))
         self._view_blocks_action.setIcon(icon("grid.svg"))
 
-        self._view_objects_action = self.addAction("View Objects")
+        self._view_objects_action = self.addAction(_("View Objects"))
         self._view_objects_action.setIcon(icon("star.svg"))
 
         self.addSeparator()
 
-        self._view_palettes_action = self.addAction("View Object Palettes")
+        self._view_palettes_action = self.addAction(_("View Object Palettes"))
         self._view_palettes_action.setIcon(icon("figma.svg"))
 
         self.addSeparator()
 
-        self._view_levels_in_memory_action = self.addAction("View Levels in Memory")
+        self._view_levels_in_memory_action = self.addAction(_("View Levels in Memory"))
         self._view_levels_in_memory_action.setIcon(icon("server.svg"))
 
         self.addSeparator()
 
-        self.game_properties_action = self.addAction("Game Properties")
+        self.game_properties_action = self.addAction(_("Game Properties"))
         self.game_properties_action.setIcon(icon("bar-chart-2.svg"))
 
         self.addSeparator()
 
-        self.rom_settings_action = self.addAction("ROM Settings")
+        self.rom_settings_action = self.addAction(_("ROM Settings"))
         self.rom_settings_action.setIcon(icon("settings.svg"))
 
-        self._clear_editor_data_action = self.addAction("Clear Editor Data in ROM")
+        self._clear_editor_data_action = self.addAction(_("Clear Editor Data in ROM"))
         self._clear_editor_data_action.setIcon(icon("loader.svg"))
 
     def _on_trigger(self, action: QAction):
@@ -88,7 +89,7 @@ class RomMenu(QMenu):
                 try:
                     prop_dialog = GamePropertiesDialog(self.parent(), ROM())
                 except ValueError as ve:
-                    QMessageBox.critical(self.parent(), "Error opening Game Properties", str(ve))
+                    QMessageBox.critical(self.parent(), _("Error opening Game Properties"), str(ve))
                     return
 
                 result = prop_dialog.exec()

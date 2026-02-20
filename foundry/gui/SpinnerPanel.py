@@ -46,7 +46,7 @@ class SpinnerPanel(QWidget):
 
         self.setLayout(spinner_layout)
 
-        self.setWhatsThis(
+        self.setWhatsThis(_(
             "<b>Spinner Panel</b><br/>"
             "The Spinner Panel gives raw byte access to objects for advanced users. The values are shown "
             "in hexadecimal notation.<br/>"
@@ -61,7 +61,7 @@ class SpinnerPanel(QWidget):
             "Some '4-byte' objects can expand in a second way, since they have an additional byte "
             "holding that information. For example a platform, which can be sized vertically using the "
             "index and horizontally using the 4th byte."
-        )
+        ))
 
     def update(self):
         if len(self.level_ref.selected_objects) == 1:

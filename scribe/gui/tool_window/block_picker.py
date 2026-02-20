@@ -62,7 +62,7 @@ class BlockList(QWidget):
         self.current_block = BlockIcon(0, palette_group, zoom_level=4)
         self.current_block.clicked.connect(self.set_current_block)
 
-        self.recent_blocks = [BlockIcon(WORLD_MAP_BLANK_TILE_ID) for _ in range(9)]
+        self.recent_blocks = [BlockIcon(WORLD_MAP_BLANK_TILE_ID) for __ in range(9)]
 
         self.layout().addWidget(self.current_block)
         self.layout().addSpacing(10)

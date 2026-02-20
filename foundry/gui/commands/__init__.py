@@ -34,7 +34,10 @@ class SetLevelAddressData(QUndoCommand):
         self.new_header_offset = header_offset
         self.new_enemy_offset = enemy_offset
 
-        self.setText(f"Save Level to {self.new_header_offset:#x} and {self.new_enemy_offset:#x}")
+        self.setText(_("Save Level to %(header)s and %(enemy)s") % {
+            "header": f"{self.new_header_offset:#x}",
+            "enemy": f"{self.new_enemy_offset:#x}"
+        })
 
     def undo(self):
         self.level.set_addresses(self.old_header_offset, self.old_enemy_offset)
@@ -47,14 +50,17 @@ class AttachLevelToRom(SetLevelAddressData):
     def __init__(self, level: Level, header_offset: int, enemy_offset: int):
         super(AttachLevelToRom, self).__init__(level, header_offset, enemy_offset)
 
-        self.setText(f"Attach Level to {self.new_header_offset:#x} and {self.new_enemy_offset:#x}")
+        self.setText(_("Attach level to %(header)s and %(enemy)s") % {
+            "header": f"{self.new_header_offset:#x}",
+            "enemy": f"{self.new_enemy_offset:#x}"
+        })
 
 
 class DetachLevelFromRom(SetLevelAddressData):
     def __init__(self, level: Level):
         super(DetachLevelFromRom, self).__init__(level, 0x0, 0x0)
 
-        self.setText("Detach Level from Rom")
+        self.setText(_("Detach Level from Rom"))
 
 
 class SetLevelAttribute(QUndoCommand):
@@ -68,12 +74,15 @@ class SetLevelAttribute(QUndoCommand):
         self.new_value = new_value
 
         if not display_name:
-            display_name = f"Level {' '.join(name.split('_')).capitalize()}"
+            display_name = _("Level %s") % ' '.join(name.split('_')).capitalize()
 
         if not display_value:
             display_value = str(new_value)
 
-        self.setText(f"{display_name} to {display_value}")
+        self.setText(_("%(name)s to %(value)s") % {
+            "name": display_name,
+            "value": display_value
+        })
 
     def undo(self):
         setattr(self.level, self.name, self.old_value)
@@ -86,21 +95,21 @@ class SetNextAreaObjectAddress(SetLevelAttribute):
     def __init__(self, level: Level, new_address: int):
         super(SetNextAreaObjectAddress, self).__init__(level, "next_area_objects", new_address)
 
-        self.setText(f"Object Address of Next Area to {new_address:#x}")
+        self.setText(_("Object Address of Next Area to %s") % f"{new_address:#x}")
 
 
 class SetNextAreaEnemyAddress(SetLevelAttribute):
     def __init__(self, level: Level, new_address: int):
         super(SetNextAreaEnemyAddress, self).__init__(level, "next_area_enemies", new_address)
 
-        self.setText(f"Enemy Address of Next Area to {new_address:#x}")
+        self.setText(_("Enemy Address of Next Area to %s") % f"{new_address:#x}")
 
 
 class SetNextAreaObjectSet(SetLevelAttribute):
     def __init__(self, level: Level, new_object_set: int):
         super(SetNextAreaObjectSet, self).__init__(level, "next_area_object_set_no", new_object_set)
 
-        self.setText(f"Object Set of Next Area to {OBJECT_SET_NAMES[new_object_set]}")
+        self.setText(_("Object Set of Next Area to %s") % f"{OBJECT_SET_NAMES[new_object_set]}")
 
 
 class ChangeLockIndex(QUndoCommand):
@@ -112,7 +121,10 @@ class ChangeLockIndex(QUndoCommand):
 
         self.new_index = new_lock_index
 
-        self.setText(f"Set {enemy.name} to break Lock #{new_lock_index}")
+        self.setText(_("Set %(name)s to break Lock #%(lock)d") % {
+            "name": enemy.name,
+            "lock": new_lock_index
+        })
 
     def undo(self):
         self.enemy.lock_index = self.old_index
@@ -130,7 +142,7 @@ class UpdatePalette(QUndoCommand):
         index_in_palette: int,
         new_color_index: int,
     ):
-        super(UpdatePalette, self).__init__("Change Palette Color", None)
+        super(UpdatePalette, self).__init__(_("Change Palette Color"), None)
 
         self.level = level
 
@@ -182,7 +194,7 @@ class MoveObjects(QUndoCommand):
         self.objects = objects_after
         self.positions_after = [obj.get_position() for obj in objects_after]
 
-        self.setText(f"Move {object_names(objects_after)}")
+        self.setText(_("Move %s") % object_names(objects_after))
 
         self.undo()
 
@@ -220,7 +232,7 @@ class ResizeObjects(QUndoCommand):
         self.object_data_before = [obj.to_bytes() for obj in objects_before]
         self.object_data_after = [obj.to_bytes() for obj in objects_after]
 
-        self.setText(f"Resize {object_names(objects_after)}")
+        self.setText(_("Resize %s") % object_names(objects_after))
 
         # # objects are already resized; undo so the undo stack can redo it, when pushed
         self.undo()
@@ -289,9 +301,9 @@ def object_names(objects: list[InLevelObject]) -> str:
         return f"'{objects[0].name}'"
 
     if objects and all(isinstance(obj, EnemyItem) for obj in objects):
-        return f"{amount} enemies"
+        return _("%d enemies") % amount
     else:
-        return f"{amount} objects"
+        return _("%d objects") % amount
 
 
 class ToForeground(QUndoCommand):
@@ -303,7 +315,7 @@ class ToForeground(QUndoCommand):
 
         self.indexes_before = objects_to_indexed_objects(level, objects)
 
-        self.setText(f"Bring {object_names(objects)} to the foreground")
+        self.setText(_("Bring %s to the foreground") % object_names(objects))
 
     def undo(self):
         move_objects(self.level, self.indexes_before)
@@ -322,7 +334,7 @@ class ToBackground(ToForeground):
 
         self.indexes_before.reverse()
 
-        self.setText(f"Put {object_names(objects)} in the background")
+        self.setText(_("Put %s in the background") % object_names(objects))
 
     def redo(self):
         self.level.bring_to_background(self.objects)
@@ -341,7 +353,7 @@ class ImportASMEnemies(QUndoCommand):
         self.enemies_before = level.enemies.copy()
         self.enemies_after: list[EnemyItem] = []
 
-        self.setText(f"Importing Enemies from {Path(path).name}")
+        self.setText(_("Importing Enemies from %s") % Path(path).name)
 
     def undo(self):
         self.level.enemies = self.enemies_before
@@ -366,7 +378,7 @@ class AddObject(QUndoCommand):
         self.level = level
         self.obj = obj
 
-        self.setText(f"Add {obj.name}")
+        self.setText(_("Add %s") % obj.name)
 
         if index == -1:
             if isinstance(obj, LevelObject):
@@ -436,7 +448,11 @@ class AddLevelObjectAt(QUndoCommand):
             self.level.objects.insert(self.index, self.added_object)
 
         # TODO use level coordinates, possibly by using level directly, instead of level view
-        self.setText(f"Add {self.added_object.name} at {self.added_object.x_position}, {self.added_object.y_position}")
+        self.setText(_("Add %(name)s at %(x)d, %(y)d") % {
+            "name": self.added_object.name,
+            "x": self.added_object.x_position,
+            "y": self.added_object.y_position
+        })
 
         self.level.data_changed.emit()
 
@@ -474,7 +490,11 @@ class AddEnemyAt(QUndoCommand):
         enemy = self.level.enemies[self.index]
 
         # TODO use level coordinates, possibly by using level directly, instead of level view
-        self.setText(f"Add {enemy.name} at {enemy.x_position}, {enemy.y_position}")
+        self.setText(_("Add %(name)s at %(x)d, %(y)d") % {
+            "name": enemy.name,
+            "x": enemy.x_position,
+            "y": enemy.y_position
+        })
 
         self.level.data_changed.emit()
 
@@ -491,7 +511,7 @@ class PasteObjectsAt(QUndoCommand):
         self.view = level_view
         self.paste_data = paste_data
 
-        objects, _ = paste_data
+        objects, __ = paste_data
 
         self.object_count = len(list(filter(lambda obj: isinstance(obj, LevelObject), objects)))
         self.enemy_count = len(objects) - self.object_count
@@ -502,13 +522,13 @@ class PasteObjectsAt(QUndoCommand):
         self.pos = pos
         self.last_mouse_position: Position = self.view.last_mouse_position.copy()
 
-        self.setText(f"Paste {object_names(objects)}")
+        self.setText(_("Paste %s") % object_names(objects))
 
     def undo(self):
-        for _ in range(self.object_count):
+        for __ in range(self.object_count):
             self.view.level_ref.level.objects.pop()
 
-        for _ in range(self.enemy_count):
+        for __ in range(self.enemy_count):
             self.view.level_ref.level.enemies.pop()
 
         self.view.level_ref.level.data_changed.emit()
@@ -543,7 +563,7 @@ class RemoveObjects(QUndoCommand):
 
         self.indexes_before_removal = objects_to_indexed_objects(self.level, self.objects)
 
-        self.setText(f"Remove {object_names(self.objects)}")
+        self.setText(_("Remove %s") % object_names(self.objects))
 
     def undo(self):
         self.level.clear_selection()
@@ -589,7 +609,7 @@ class ReplaceLevelObject(QUndoCommand):
         self.created_object: Optional[LevelObject] = None
         self.index = self.level.objects.index(self.to_replace)
 
-        self.setText(f"Replacing {self.to_replace.name}")
+        self.setText(_("Replacing %s") % self.to_replace.name)
 
     def undo(self):
         self.level.objects[self.index] = self.to_replace
@@ -629,7 +649,7 @@ class ReplaceEnemy(QUndoCommand):
         self.created_enemy: Optional[EnemyItem] = None
         self.index = self.level.enemies.index(self.to_replace)
 
-        self.setText(f"Replacing {self.to_replace.name}")
+        self.setText(_("Replacing %s") % self.to_replace.name)
 
     def undo(self):
         self.level.enemies[self.index] = self.to_replace
@@ -667,7 +687,7 @@ class AddJump(QUndoCommand):
         else:
             self.index = index
 
-        self.setText("Add Jump")
+        self.setText(_("Add Jump"))
 
     def undo(self):
         self.level.jumps.pop(self.index)
@@ -689,7 +709,7 @@ class RemoveJump(QUndoCommand):
         self.jump = self.level.jumps[index]
         self.index = index
 
-        self.setText(f"Remove {self.jump}")
+        self.setText(_("Remove %s") % self.jump)
 
     def undo(self):
         self.level.jumps.insert(self.index, self.jump)
@@ -709,7 +729,7 @@ class UpdatePipeData(QUndoCommand):
         self.pipe_data_before = [PipeData(ROM(), index) for index in range(PIPE_PAIR_COUNT)]
         self.pipe_data_after = pipe_data
 
-        self.setText("Updating Pipe Exit Pair Data")
+        self.setText(_("Updating Pipe Exit Pair Data"))
 
     def undo(self) -> None:
         for pipe_data in self.pipe_data_before:

@@ -35,7 +35,7 @@ from smb3parse.levels import NO_MAP_SCROLLING, WORLD_MAP_PALETTE_COUNT
 
 class EditWorldInfo(CustomDialog):
     def __init__(self, parent: QWidget, world_map: WorldMap):
-        super(EditWorldInfo, self).__init__(parent, "Edit World Info")
+        super(EditWorldInfo, self).__init__(parent, _("Edit World Info"))
 
         self.world_map = world_map
 
@@ -44,7 +44,7 @@ class EditWorldInfo(CustomDialog):
         # world data
         layout = QVBoxLayout()
 
-        self.scrolls_check_box = QCheckBox("Scrolls to next screen, when at the edge")
+        self.scrolls_check_box = QCheckBox(_("Scrolls to next screen, when at the edge"))
         self.scrolls_check_box.setChecked(self.world_map.data.map_scroll not in [0, NO_MAP_SCROLLING])
 
         layout.addWidget(self.scrolls_check_box)
@@ -53,22 +53,22 @@ class EditWorldInfo(CustomDialog):
         palette_spin_box.setValue(self.world_map.data.palette_index)
         palette_spin_box.valueChanged.connect(self._change_palette_index)
 
-        layout.addLayout(label_and_widget("Color Palette Index", palette_spin_box))
+        layout.addLayout(label_and_widget(_("Color Palette Index"), palette_spin_box))
 
         music_dropdown = QComboBox(self)
         music_dropdown.addItems([f"{name} ({value:#x})" for value, name in MUSIC_THEMES.items()])
         music_dropdown.currentIndexChanged.connect(self._change_music_index)
         music_dropdown.setCurrentIndex(list(MUSIC_THEMES.keys()).index(world_map.data.music_index))
 
-        layout.addLayout(label_and_widget("Music Theme", music_dropdown))
+        layout.addLayout(label_and_widget(_("Music Theme"), music_dropdown))
 
         self.icon_button = QPushButton("")
         self.icon_button.clicked.connect(self._on_button_press)
         self._update_button_icon()
 
-        layout.addLayout(label_and_widget("Bottom Border Tile", self.icon_button))
+        layout.addLayout(label_and_widget(_("Bottom Border Tile"), self.icon_button))
 
-        world_data_group = QGroupBox("World Data")
+        world_data_group = QGroupBox(_("World Data"))
         world_data_group.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         world_data_group.setLayout(layout)
 
@@ -78,7 +78,7 @@ class EditWorldInfo(CustomDialog):
         ticks_per_frame_spin_box.setValue(self.world_map.data.frame_tick_count)
         ticks_per_frame_spin_box.valueChanged.connect(self._change_anim_frame)
 
-        layout.addLayout(label_and_widget("Ticks between Animation Frames", ticks_per_frame_spin_box))
+        layout.addLayout(label_and_widget(_("Ticks between Animation Frames"), ticks_per_frame_spin_box))
 
         self.animation_hint_label = QLabel()
         layout.addWidget(self.animation_hint_label)
@@ -98,7 +98,7 @@ class EditWorldInfo(CustomDialog):
         self.layout().addWidget(self.error_label)
 
         # ok button
-        self.ok_button = QPushButton("OK")
+        self.ok_button = QPushButton(_("OK"))
         self.ok_button.clicked.connect(self.close)
 
         self.layout().addWidget(self.ok_button)
@@ -124,9 +124,9 @@ class EditWorldInfo(CustomDialog):
         world_number = self.world_map.data.index
 
         if world_number == 4:
-            self.animation_hint_label.setText("Note: World 5 cannot scroll and isn't animated")
+            self.animation_hint_label.setText(_("Note: World 5 cannot scroll and isn't animated"))
         elif world_number == 7:
-            self.animation_hint_label.setText("Note: World 8 cannot scroll and the last screen isn't animated")
+            self.animation_hint_label.setText(_("Note: World 8 cannot scroll and the last screen isn't animated"))
         else:
             self.animation_hint_label.setText("")
 

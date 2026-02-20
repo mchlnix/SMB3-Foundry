@@ -20,18 +20,18 @@ class FoundLevelWidget(QWidget):
         self._found_levels = ROM.additional_data.found_levels.copy()
         self._found_levels.sort(key=lambda x: (x.world_number, x.level_offset))
 
-        found_label = QLabel("Found Levels")
+        found_label = QLabel(_("Found Levels"))
         self.level_table = _FoundLevelTable(self, self._found_levels)
 
         description_label = QLabel()
 
         description_label.setWordWrap(True)
-        description_label.setText(
+        description_label.setText(_(
             "If the automatic Level management is active, the ROM is searched for all accessible Levels. Be it through "
             "an overworld, jumped to by another Level, or generic Levels, defined for every World (e.g. Coin Ship "
             "Levels). Inaccessible 'Lost' Levels cannot be found this way and are not listed here/have probably been "
             "overwritten to make space for more Levels."
-        )
+        ))
 
         found_level_layout = QVBoxLayout(self)
         found_level_layout.addWidget(found_label, 0)
@@ -68,7 +68,9 @@ class _FoundLevelTable(TableWidget):
         self._last_checked_level_index = -1
         """The index of the last level we generated a thumbnail for."""
 
-        self.set_headers(["World", "Object Set", "Level Addr.", "Enemy Addr.", "Jump Dest.", "World Specific"])
+        self.set_headers([
+            _("World"), _("Object Set"), _("Level Addr."), _("Enemy Addr."), _("Jump Dest."), _("World Specific")
+        ])
 
         self._update_content()
 

@@ -52,14 +52,14 @@ class ChestExitMixin(SettingsMixin):
 
         self.before = _ChestState(self.level_ref.level)
 
-        chest_group = QGroupBox("Treasure Chest", self)
+        chest_group = QGroupBox(_("Treasure Chest"), self)
         QVBoxLayout(chest_group)
 
-        self.chest_end_checkbox = QCheckBox("Getting Chest ends Level", self)
+        self.chest_end_checkbox = QCheckBox(_("Getting Chest ends Level"), self)
         self.chest_end_checkbox.setChecked(self.before.chest_exit is not None)
 
         self.chest_item_dropdown = QComboBox()
-        self.chest_item_dropdown.addItem("No Item (Hammer Bros Levels)")
+        self.chest_item_dropdown.addItem(_("No Item (Hammer Bros Levels)"))
 
         for item_id in range(MAPITEM_MUSHROOM, MAPITEM_MUSICBOX + 1):
             self.chest_item_dropdown.addItem(QPixmap(MAP_ITEM_SPRITES[item_id]), MAPITEM_NAMES[item_id])
@@ -70,7 +70,7 @@ class ChestExitMixin(SettingsMixin):
             self.chest_item_dropdown.setCurrentIndex(0)
 
         chest_group.layout().addWidget(self.chest_end_checkbox)
-        chest_group.layout().addLayout(label_and_widget("Item in Chest: ", self.chest_item_dropdown))
+        chest_group.layout().addLayout(label_and_widget(_("Item in Chest:"), self.chest_item_dropdown))
 
         self.layout().addWidget(chest_group)
 
@@ -97,7 +97,7 @@ class ChestExitMixin(SettingsMixin):
 
         # item was changed/set
         elif self.before.item_index != item_index:
-            self.undo_stack.beginMacro(f"Set Chest Item to '{chest_item_name}'")
+            self.undo_stack.beginMacro(_("Set Chest Item to '%s'") % chest_item_name)
 
             if self.before.chest_item is not None:
                 before_move = self.before.chest_item.copy()
@@ -118,10 +118,10 @@ class ChestExitMixin(SettingsMixin):
             # when putting it at x=0 it doesn't work for some reason
             chest_exit_item = self.level.enemy_item_factory.from_properties(OBJ_CHEST_EXIT, 1, 0)
 
-            make_macro(self.undo_stack, "Enable Chest Exit", AddObject(self.level, chest_exit_item))
+            make_macro(self.undo_stack, _("Enable Chest Exit"), AddObject(self.level, chest_exit_item))
 
         # was disabled
         elif self.before.chest_exit is not None and not self.chest_end_checkbox.isChecked():
             assert self.before.chest_exit is not None
 
-            make_macro(self.undo_stack, "Disable Chest Exit", RemoveObject(self.level, self.before.chest_exit))
+            make_macro(self.undo_stack, _("Disable Chest Exit"), RemoveObject(self.level, self.before.chest_exit))

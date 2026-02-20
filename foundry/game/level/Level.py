@@ -547,7 +547,7 @@ class Level(LevelLike):
             elif isinstance(obj, EnemyItem):
                 other_objects = cast("list[InLevelObject]", self.enemies)
             else:
-                raise TypeError(f"How did you select an object of type: {type(obj)}")
+                raise TypeError(_(f"How did you select an object of type: %s") % type(obj))
 
             other_objects.remove(obj)
 
@@ -649,7 +649,7 @@ class Level(LevelLike):
         elif isinstance(obj, EnemyItem):
             return len(self.objects) + self.enemies.index(obj)
         else:
-            raise TypeError("Given Object was not EnemyObject or LevelObject.")
+            raise TypeError(_("Given Object was not EnemyObject or LevelObject."))
 
     def get_object(self, index: int):
         if index < len(self.objects):

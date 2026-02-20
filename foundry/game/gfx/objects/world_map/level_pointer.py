@@ -14,7 +14,7 @@ class LevelPointer(MapObject):
 
     @property
     def name(self):
-        return f"Level Pointer '{level_name(self.data)}'"
+        return _("Level Pointer '%s'") % level_name(self.data)
 
     @name.setter
     def name(self, value):

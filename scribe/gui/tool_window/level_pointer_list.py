@@ -27,7 +27,7 @@ class LevelPointerList(TableWidget):
 
         self.cellChanged.connect(self._save_level_pointer)
 
-        self.set_headers(["Object Set", "Level Offset", "Enemy/Item Offset", "Map Position"])
+        self.set_headers([_("Object Set"), _("Level Offset"), _("Enemy/Item Offset"), _("Map Position")])
 
         self.setItemDelegateForColumn(0, DropdownDelegate(self, OBJECT_SET_NAMES))
         self.setItemDelegateForColumn(1, SpinBoxDelegate(self))
@@ -36,9 +36,11 @@ class LevelPointerList(TableWidget):
             3,
             DialogDelegate(
                 self,
-                "No can do",
-                "You can move level pointers by dragging them around in the WorldView. "
-                "Make sure they are shown in the View Menu.",
+                _("No can do"),
+                _(
+                    "You can move level pointers by dragging them around in the WorldView. "
+                    "Make sure they are shown in the View Menu."
+                ),
             ),
         )
 
@@ -94,7 +96,11 @@ class LevelPointerList(TableWidget):
 
             hex_level_address = QTableWidgetItem(hex(lp.data.level_address))
             hex_enemy_address = QTableWidgetItem(hex(lp.data.enemy_address))
-            pos = QTableWidgetItem(f"Screen {lp.data.screen}: x={lp.data.x}, y={lp.data.y}")
+            pos = QTableWidgetItem(_("Screen %(screen)d: x=%(x)d, y=%(y)d}") % {
+                "screen": lp.data.screen,
+                "x": lp.data.x,
+                "y": lp.data.y
+            })
 
             self._set_map_tile_as_icon(pos, lp.get_position())
 

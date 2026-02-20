@@ -173,12 +173,12 @@ class LevelOrganizer:
 
     def _get_found_level(self, level: "Level"):
         if not level.attached_to_rom:
-            raise ValueError("This level is not attached to the ROM. Please place it somewhere on a world map.")
+            raise ValueError(_("This level is not attached to the ROM. Please place it somewhere on a world map."))
 
         current_level = self._found_level_from_address(level.header_offset)
 
         if current_level is None:
-            raise LookupError(f"Current Level {level.header_offset:x} could not be found in ROM. Attach it first.")
+            raise LookupError(_("Current Level %s could not be found in ROM. Attach it first.") % f"{level.header_offset:x}")
 
         return current_level
 
@@ -240,20 +240,20 @@ class LevelOrganizer:
             return
 
         if level.header.jump_level_offset and level.header.jump_level_address not in self.old_level_address_to_new:
-            raise LookupError(
-                f"Jump Destination Level Address in Header '0x{level.header.jump_level_address:X}' does not point to"
+            raise LookupError(_(
+                "Jump Destination Level Address in Header '%s' does not point to"
                 " any known level"
-            )
+            ) % f"0x{level.header.jump_level_address:X}")
         if level.header.jump_enemy_offset and level.header.jump_enemy_address not in self.old_enemy_address_to_new:
-            raise LookupError(
-                f"Jump Destination Enemy Address in Header '0x{level.header.jump_enemy_address:X}' does not point to"
+            raise LookupError(_(
+                "Jump Destination Enemy Address in Header '%s' does not point to"
                 " any known enemy data group"
-            )
+            ) % f"0x{level.header.jump_enemy_address:X}")
 
         jump_destination_found_level = self._found_level_from_address(level.header.jump_level_address)
 
         if jump_destination_found_level is None:
-            raise LookupError(f"Jump Level Destination {level.header.jump_level_address:x} could not be found in ROM.")
+            raise LookupError(_("Jump Level Destination %s could not be found in ROM.") % f"{level.header.jump_level_address:x}")
 
         jump_destination_found_level.level_offset_positions.append(level.header_offset)
         jump_destination_found_level.enemy_offset_positions.append(level.header_offset + OFFSET_SIZE)

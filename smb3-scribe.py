@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import i18n
 import logging
 import os
 import sys

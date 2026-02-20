@@ -33,7 +33,7 @@ MAX_LENGTH = 0xFF
 
 class ObjectViewer(CustomChildWindow):
     def __init__(self, parent):
-        super(ObjectViewer, self).__init__(parent, title="Object Viewer")
+        super(ObjectViewer, self).__init__(parent, title=_("Object Viewer"))
 
         self.spin_domain = Spinner(self, MAX_DOMAIN)
         self.spin_domain.valueChanged.connect(self.on_spin)

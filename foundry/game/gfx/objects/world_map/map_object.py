@@ -48,4 +48,9 @@ class MapObject(ObjectLike, ABC):
         return x, y == self.get_position()
 
     def __repr__(self):
-        return f"MapObject #{self.type:#x}: '{self.name}' at {self.x_position}, {self.y_position}"
+        return _("MapObject #%(type)s: '%(name)s' at (%(x)d, %(y)d)") % {
+            "type": f"{self.type:#x}",
+            "name": self.name,
+            "x": self.x_position,
+            "y": self.y_position
+        }

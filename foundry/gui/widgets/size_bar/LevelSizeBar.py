@@ -18,7 +18,7 @@ class LevelSizeBar(QWidget):
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
 
-        self.setWhatsThis(
+        self.setWhatsThis(_(
             "<b>Level Size Bar</b><br/>"
             "The objects inside a level, like platforms and item blocks, are stored as bytes in the ROM. "
             "Since levels are stored one after another, saving a level with more objects, than it originally "
@@ -27,7 +27,7 @@ class LevelSizeBar(QWidget):
             "This bar shows, how much of the available space for level objects is currently taken up. It will turn "
             "red, when too many level objects have been placed (or if the level objects would result in more bytes, "
             "than the level originally had)."
-        )
+        ))
 
         self.size_bar = SizeBar(self.level_ref)
         self.size_bar.value_color = self.value_color
@@ -42,8 +42,11 @@ class LevelSizeBar(QWidget):
         layout.addWidget(self.info_label)
 
     def update(self):
-        original_value_string = "∞" if self.max_value == float("INF") else str(self.max_value)
-        self.info_label.setText(f"{self.value_description}: {self.current_value}/{original_value_string} Bytes")
+        self.info_label.setText(_("%(description)s: %(value)d/%(max)s Bytes") % {
+            "description": self.value_description,
+            "value": self.current_value,
+            "max": "∞" if self.max_value == float("INF") else str(self.max_value)
+        })
 
         self.size_bar.current_value = self.current_value
         self.size_bar.original_value = self.max_value
@@ -56,7 +59,7 @@ class LevelSizeBar(QWidget):
 
     @property
     def value_description(self):
-        return "Objects"
+        return _("Objects")
 
     @property
     def max_value(self) -> float:

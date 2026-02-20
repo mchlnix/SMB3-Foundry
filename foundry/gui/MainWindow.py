@@ -34,8 +34,8 @@ class MainWindow(QMainWindow):
         if not self.settings.value("editor/asked_for_startup"):
             answer = QMessageBox.question(
                 self,
-                "Automatic Update Checks",
-                "Do you want the editor to automatically check for updates on startup?",
+                _("Automatic Update Checks"),
+                _("Do you want the editor to automatically check for updates on startup?"),
             )
 
             self.settings.setValue("editor/asked_for_startup", True)
@@ -67,29 +67,31 @@ class MainWindow(QMainWindow):
         if update_available:
             latest_release_url = f"{releases_link}/tag/{latest_version}"
 
-            go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest release")
+            go_to_github_button = QPushButton(icon("external-link.svg"), _("Go to latest release"))
             go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
 
             info_box = QMessageBox(
                 QMessageBox.Information,
-                "New release available",
-                f"New Version '{latest_version}' is available.",
+                _("New release available"),
+                _("New Version '%s' is available.") % latest_version,
             )
         else:
             nightly_release_url = f"{releases_link}/tag/nightly"
 
-            go_to_github_button = QPushButton(icon("external-link.svg"), "Check for nightly release")
+            go_to_github_button = QPushButton(icon("external-link.svg"), _("Check for nightly release"))
             go_to_github_button.clicked.connect(lambda: open_url(nightly_release_url))
 
             info_box = QMessageBox(
                 QMessageBox.Information,
-                "No newer release",
-                f"Stable version '{current_version}' is up to date. But there might be a newer 'nightly' version "
-                f"available.",
+                _("No newer release"),
+                _(
+                    "Stable version '%s' is up to date. But there might be a newer 'nightly' version "
+                    "available."
+                ) % current_version,
             )
 
         if not version_is_ignored:
-            ignore_button = QPushButton(f"Don't ask again for '{latest_version}'")
+            ignore_button = QPushButton(_("Don't ask again for '%s'") % latest_version)
             ignore_button.clicked.connect(lambda: self._ignore_latest_version(latest_version))
             info_box.addButton(ignore_button, QMessageBox.ButtonRole.NoRole)
 
@@ -109,8 +111,8 @@ class MainWindow(QMainWindow):
     def confirm_changes(self):
         answer = QMessageBox.question(
             self,
-            "Please confirm",
-            "Current content has not been saved! Proceed?",
+            _("Please confirm"),
+            _("Current content has not been saved! Proceed?"),
             QMessageBox.No | QMessageBox.Yes,
             QMessageBox.No,
         )
@@ -122,7 +124,7 @@ class MainWindow(QMainWindow):
         Copies the ROM, including the current level, to a temporary directory and opens the rom in an emulator.
         """
         if not temp_dir.exists():
-            QMessageBox.critical(self, "File Error", "No temp directory found.")
+            QMessageBox.critical(self, _("File Error"), _("No temp directory found."))
             return
 
         path_to_temp_rom = temp_dir / "instaplay.nes"
@@ -130,7 +132,7 @@ class MainWindow(QMainWindow):
         ROM().save_to(path_to_temp_rom)
 
         if not self._save_changes_to_instaplay_rom(path_to_temp_rom):
-            QMessageBox.critical(self, "File Error", "Couldn't save changes to temporary Rom.")
+            QMessageBox.critical(self, _("File Error"), _("Couldn't save changes to temporary Rom."))
             return
 
         arguments = self.settings.value("editor/instaplay_arguments").replace("%f", str(path_to_temp_rom))
@@ -144,8 +146,8 @@ class MainWindow(QMainWindow):
             else:
                 QMessageBox.critical(
                     self,
-                    "Emulator not found",
-                    f"Check it under File > Settings.\nFile {emu_path} not found.",
+                    _("Emulator not found"),
+                    _("Check it under File > Settings.\nFile %s not found.") % emu_path,
                 )
                 return
         else:
@@ -158,8 +160,8 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(
                 self,
-                "Emulator command failed.",
-                f"Check it under File > Settings.\n{e}",
+                _("Emulator command failed."),
+                _("Check it under File > Settings.\n%s") % e,
             )
         finally:
             QCoreApplication.processEvents()
@@ -183,7 +185,7 @@ class MainWindow(QMainWindow):
         try:
             ROM.save_to_file(pathname, set_new_path)
         except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Cannot save ROM data to file '{pathname}'.")
+            QMessageBox.warning(self, type(exp).__name__, _("Cannot save ROM data to file '%s'.") % pathname)
 
             return False
 

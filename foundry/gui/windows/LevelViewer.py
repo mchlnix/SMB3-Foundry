@@ -48,21 +48,22 @@ def _gen_level_name(level_address: int, level: FoundLevel) -> str:
     world_data = WorldMapData(ROM(), level.world_number - 1)
 
     if world_data.big_q_block_level_address == level_address:
-        return "Big Question Mark Block Level"
+        return _("Big Question Mark Block Level")
 
     if world_data.airship_level_address == level_address:
-        return "Airship Level"
+        return _("Airship Level")
 
     if world_data.coin_ship_level_address == level_address:
-        return "Coin Ship Level"
+        return _("Coin Ship Level")
 
     if world_data.generic_exit_level_address == level_address:
-        return "Generic Exit Level"
+        return _("Generic Exit Level")
 
     if world_data.toad_warp_level_address == level_address:
-        return "Toad Warp Level"
+        return _("Toad Warp Level")
 
-    return f"{OBJECT_SET_NAMES[level.object_set_number]} Level"
+    # TRANSLATORS: Level description
+    return _("%s Level") % OBJECT_SET_NAMES[level.object_set_number]
 
 
 class LevelViewer(CustomChildWindow):
@@ -72,7 +73,7 @@ class LevelViewer(CustomChildWindow):
         addresses_by_object_set: dict[int, set[int]],
         levels_by_address: dict[int, FoundLevel],
     ):
-        super(LevelViewer, self).__init__(parent, "Level Viewer")
+        super(LevelViewer, self).__init__(parent, _("Level Viewer"))
 
         self.addresses_by_object_set = addresses_by_object_set
         self.levels_by_address = levels_by_address
@@ -92,7 +93,7 @@ class LevelViewer(CustomChildWindow):
             scroll_area.setWidgetResizable(True)
             scroll_area.setWidget(LevelBlockView([]))
 
-            self._tab_widget.addTab(scroll_area, f"PRG #{prg_number}")
+            self._tab_widget.addTab(scroll_area, _("PRG #%d") % prg_number)
 
         # got through all levels and assign them to their respective prg tab widget, based on their object set
         for address in sorted(levels_by_address.keys()):
@@ -103,7 +104,7 @@ class LevelViewer(CustomChildWindow):
             byte_view.levels_in_order.append((level.object_set_number, address, level.object_data_length))
 
         # insert tree view with all levels at the start of the tabs
-        self._tab_widget.insertTab(0, self._gen_tree_view(levels_by_address), "Levels")
+        self._tab_widget.insertTab(0, self._gen_tree_view(levels_by_address), _("Levels"))
 
     @staticmethod
     def _gen_tree_view(levels_by_address: dict[int, FoundLevel]) -> QTreeWidget:
@@ -137,7 +138,7 @@ class LevelViewer(CustomChildWindow):
         # Step 1: Make world tree items
         for world_num in range(WORLD_COUNT - 1):
             world_item = QTreeWidgetItem(tree_widget)
-            world_item.setText(0, f"World {world_num + 1}")
+            world_item.setText(0, _("World %d") % (world_num + 1))
 
             world_tree_items.append(world_item)
 
@@ -192,7 +193,7 @@ class ByteView(QWidget):
         self.levels_in_order = levels_in_order
         seed(0)
         self._random_colors = [
-            QColor(randint(0, 255), randint(0, 255), randint(0, 255)) for _ in range(ENEMY_ITEM_OBJECT_SET)
+            QColor(randint(0, 255), randint(0, 255), randint(0, 255)) for __ in range(ENEMY_ITEM_OBJECT_SET)
         ]
 
         self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
@@ -297,13 +298,13 @@ class LevelBlockView(ByteView):
 
         if self.first_level_start != prg_start:
             potential_blocks.append(
-                _Block(QColorConstants.Gray, f"0x{prg_start:x}: Code/Unknown", current_pos % PRG_BANK_SIZE)
+                _Block(QColorConstants.Gray, _("%s: Code/Unknown") % hex(prg_start), current_pos % PRG_BANK_SIZE)
             )
 
         for object_set, abs_level_start, level_length in self.levels_in_order:
             if current_pos != abs_level_start:
                 potential_blocks.append(
-                    _Block(QColorConstants.Red, f"0x{current_pos:x}: Unused Space", abs_level_start - current_pos)
+                    _Block(QColorConstants.Red, _("%s: Unused Space") % current_pos, abs_level_start - current_pos)
                 )
                 current_pos = abs_level_start
 
@@ -320,7 +321,7 @@ class LevelBlockView(ByteView):
         if current_pos % PRG_BANK_SIZE != 0:
             rest = PRG_BANK_SIZE - current_pos % PRG_BANK_SIZE
 
-            potential_blocks.append(_Block(QColorConstants.Red, "Unused Space", rest))
+            potential_blocks.append(_Block(QColorConstants.Red, _("Unused Space"), rest))
 
         return potential_blocks
 
@@ -380,12 +381,15 @@ class LevelBlockView(ByteView):
             0x0,
         )
 
-        self.setToolTip(
-            f"<b>{block.name}</b><br/>"
-            f"<u>Type:</u> {OBJECT_SET_NAMES[block.level[0]]} "
-            f"<u>Objects:</u> {block.level[1]:#x} "
-            f"<img src='data:image/png;base64,{pixmap_to_base64(image_data)}'>"
-        )
+        self.setToolTip(_(
+            "<b>%(name)s</b><br><u>Type:</u> %(type)s <u>Objects:</u> %(objects)s "
+            "<img src='data:image/png;base64,%(pixmap)s'>"
+        ) % {
+            "name": block.name,
+            "type": OBJECT_SET_NAMES[block.level[0]],
+            "objects": hex(block.level[1]),
+            "pixmap": pixmap_to_base64(image_data)
+        })
 
     def _paint_block(self, painter: QPainter, pos: QPoint, block: _Block):
         rect = QRect(pos, QSize(self.block_width, self.block_height))
@@ -399,7 +403,10 @@ class LevelBlockView(ByteView):
         size_pos = pos + QPoint(5, 2 * self.block_height // 3)
 
         painter.drawText(name_pos, block.name)
-        painter.drawText(size_pos, f"Size: {block.size} Bytes ({round(100 / PRG_BANK_SIZE * block.size, 1)} %)")
+        painter.drawText(size_pos, _("Size: %(size)d Bytes (%(percent)d%)") % {
+            "size": block.size,
+            "percent": round(100 / PRG_BANK_SIZE * block.size, 1)
+        })
 
     def paintEvent(self, event: QPaintEvent):
         p = QPainter(self)

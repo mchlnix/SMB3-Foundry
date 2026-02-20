@@ -39,7 +39,7 @@ assert len(color_data) == NES_COLOR_COUNT * BYTES_IN_COLOR, (
     NES_COLOR_COUNT * BYTES_IN_COLOR,
 )
 
-NESPalette = [QColor(r, g, b) for r, g, b, _ in grouper(color_data, 4, incomplete="strict")]
+NESPalette = [QColor(r, g, b) for r, g, b, __ in grouper(color_data, 4, incomplete="strict")]
 
 
 @dataclass(eq=False)
@@ -121,7 +121,7 @@ def load_palette_group(object_set: int, palette_group_index: int, use_cache=True
 
             return _palette_group_cache[key]
     else:
-        raise ValueError("Couldn't find valid Palette data at offsets for stock US or stock JP ROM.")
+        raise ValueError(_("Couldn't find valid Palette data at offsets for stock US or stock JP ROM."))
 
 
 def _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list_address: int):
@@ -135,14 +135,14 @@ def _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list
 
     palettes = []
 
-    for _ in range(PALETTES_PER_PALETTES_GROUP):
+    for __ in range(PALETTES_PER_PALETTES_GROUP):
         palettes.append(bytearray(rom.read(palette_address, COLORS_PER_PALETTE)))
 
         palette_address += COLORS_PER_PALETTE
 
     # There are 64 colors in the NES's palette. Any other value indicates, that we did not find the right palette data
     if not all(color_index in range(NES_COLOR_COUNT) for palette in palettes for color_index in palette):
-        raise ValueError("Found invalid Palette index value. Probably didn't find correct Palette Data in ROM.")
+        raise ValueError(_("Found invalid Palette index value. Probably didn't find correct Palette Data in ROM."))
 
     return palettes
 

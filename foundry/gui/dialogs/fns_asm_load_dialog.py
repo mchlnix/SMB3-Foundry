@@ -17,7 +17,7 @@ from foundry.gui.dialogs.CustomDialog import CustomDialog
 
 class FnsAsmLoadDialog(CustomDialog):
     def __init__(self, parent, cur_fns_file: str = "", current_asm_file: str = ""):
-        super().__init__(parent, title="Update Globals from files")
+        super().__init__(parent, title=_("Update Globals from files"))
 
         self.fns_path = cur_fns_file
         self._fns_is_good = False
@@ -29,13 +29,13 @@ class FnsAsmLoadDialog(CustomDialog):
 
         hbox = QHBoxLayout()
 
-        explanation = QLabel("Provide an FNS file and the smb3.asm file from your project.")
+        explanation = QLabel(_("Provide an FNS file and the smb3.asm file from your project."))
         explanation.setWordWrap(True)
         explanation.setMargin(5)
 
         question_label = QLabel()
         question_label.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxInformation))
-        question_label.setToolTip(
+        question_label.setToolTip(_(
             "A FNS file is a by-product of compiling a Rom file from assembly code.\n"
             "It has all the labels used in the code and their positions as they would be in the NES's memory.\n"
             "Some of these labels are used by the editor to find important data, like levels, palette colors, etc.\n"
@@ -44,7 +44,7 @@ class FnsAsmLoadDialog(CustomDialog):
             "made changes to the code, and things moved around, those addresses might not be valid anymore.\n"
             "For that purpose, the editor needs the FNS file and your smb3.asm file as well, to generate the location\n"
             "in the Rom for every label in the FNS file."
-        )
+        ))
 
         hbox.addWidget(explanation)
         hbox.addWidget(question_label)
@@ -54,7 +54,7 @@ class FnsAsmLoadDialog(CustomDialog):
         self._fns_line_edit = QLineEdit()
         self._fns_line_edit.textChanged.connect(self._check_fns_file)
 
-        self._fns_line_edit.setPlaceholderText("Path to FNS file.")
+        self._fns_line_edit.setPlaceholderText(_("Path to FNS file."))
 
         self._fns_check_icon = QLabel()
         self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
@@ -72,7 +72,7 @@ class FnsAsmLoadDialog(CustomDialog):
         self._asm_line_edit = QLineEdit()
         self._asm_line_edit.textChanged.connect(self._check_asm_file)
 
-        self._asm_line_edit.setPlaceholderText("Path to smb3.asm file.")
+        self._asm_line_edit.setPlaceholderText(_("Path to smb3.asm file."))
 
         self._asm_check_icon = QLabel()
         self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
@@ -89,10 +89,10 @@ class FnsAsmLoadDialog(CustomDialog):
 
         hbox = QHBoxLayout()
 
-        cancel_button = QPushButton("Cancel")
+        cancel_button = QPushButton(_("Cancel"))
         cancel_button.pressed.connect(self.reject)
 
-        self._ok_button = QPushButton("Ok")
+        self._ok_button = QPushButton(_("Ok"))
         self._ok_button.setEnabled(False)
         self._ok_button.pressed.connect(self._on_ok)
 
@@ -114,7 +114,7 @@ class FnsAsmLoadDialog(CustomDialog):
 
         if not new_path.is_file():
             self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
-            self._fns_check_icon.setToolTip("Given path is not a file/does not exist.")
+            self._fns_check_icon.setToolTip(_("Given path is not a file/does not exist."))
             return
 
         try:
@@ -148,7 +148,7 @@ class FnsAsmLoadDialog(CustomDialog):
                     raise ValueError()
 
             except ValueError:
-                raise ValueError("Didn't find lines in the form of 'name = $1234'. File might be wrongly formatted.")
+                raise ValueError(_("Didn't find lines in the form of 'name = $1234'. File might be wrongly formatted."))
 
             lines_to_check -= 1
 
@@ -164,7 +164,7 @@ class FnsAsmLoadDialog(CustomDialog):
         new_path = Path(path)
 
         if not new_path.is_file():
-            self._asm_check_icon.setToolTip("Given path is not a file/does not exist.")
+            self._asm_check_icon.setToolTip(_("Given path is not a file/does not exist."))
             self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
             return
 
@@ -187,7 +187,7 @@ class FnsAsmLoadDialog(CustomDialog):
         prg_path = path.parent / "PRG" / "prg000.asm"
 
         if not prg_path.exists():
-            raise ValueError(f"Couldn't find {prg_path}. Make sure your smb3.asm is in the assembly directory.")
+            raise ValueError(_("Couldn't find %s. Make sure your smb3.asm is in the assembly directory.") % prg_path)
 
     def _check_ok_button(self):
         self._ok_button.setEnabled(self._fns_is_good and self._asm_is_good)
@@ -199,7 +199,7 @@ class FnsAsmLoadDialog(CustomDialog):
         self.accept()
 
     def _get_fns_file(self):
-        fns_file, _ = QFileDialog.getOpenFileName(self, "Open FNS File", filter=FNS_FILE_FILTER)
+        fns_file, __ = QFileDialog.getOpenFileName(self, _("Open FNS File"), filter=FNS_FILE_FILTER)
 
         if not fns_file:
             return
@@ -207,7 +207,7 @@ class FnsAsmLoadDialog(CustomDialog):
         self._fns_line_edit.setText(fns_file)
 
     def _get_asm_file(self):
-        asm_file, _ = QFileDialog.getOpenFileName(self, "Open smb3.asm File", filter=SMB3_ASM_FILE_FILTER)
+        asm_file, __ = QFileDialog.getOpenFileName(self, _("Open smb3.asm File"), filter=SMB3_ASM_FILE_FILTER)
 
         if not asm_file:
             return

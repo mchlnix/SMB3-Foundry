@@ -33,49 +33,59 @@ from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
 from smb3parse.objects.object_set import OBJECT_SET_NAMES
 
 LEVEL_LENGTHS = [0x10 * (i + 1) for i in range(0, 2**4)]
-STR_LEVEL_LENGTHS = [f"{length - 1:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS]
 
-STR_X_POSITIONS = [f"{position >> 4}. Block ({position:0=#4X})".replace("X", "x") for position in MARIO_X_POSITIONS]
+STR_LEVEL_LENGTHS = [_("%(hex)s / %(length)d Blocks") % {
+    "hex": f"0x{length - 1:0=4X}",
+    "length": length
+} for length in LEVEL_LENGTHS]
 
-STR_Y_POSITIONS = [f"{position}. Block ({position:0=#4X})".replace("X", "x") for position in MARIO_Y_POSITIONS]
+STR_X_POSITIONS = [_("%(number)d. Block (%(hex)s)") % {
+    "number": position >> 4,
+    "hex": f"0x{position:0=2X}"
+} for position in MARIO_X_POSITIONS]
+
+STR_Y_POSITIONS = [_("%(number)d. Block (%(hex)s)") % {
+    "number": position,
+    "hex": f"0x{position:0=2X}"
+} for position in MARIO_Y_POSITIONS]
 
 ACTIONS = [
-    "None",
-    "Sliding",
-    "Out of pipe ↑",
-    "Out of pipe ↓",
-    "Out of pipe →",
-    "Out of pipe ←",
-    "Running and climbing up ship",
-    "Ship auto scrolling",
+    _("None"),
+    _("Sliding"),
+    _("Out of pipe ↑"),
+    _("Out of pipe ↓"),
+    _("Out of pipe →"),
+    _("Out of pipe ←"),
+    _("Running and climbing up ship"),
+    _("Ship auto scrolling"),
 ]
 
 MUSIC_ITEMS = [
-    "Plain level",
-    "Underground",
-    "Water level",
-    "Fortress",
-    "Boss",
-    "Ship",
-    "Battle",
-    "P-Switch/Mushroom house (1)",
-    "Hilly level",
-    "Castle room",
-    "Clouds/Sky",
-    "P-Switch/Mushroom house (2)",
-    "No music",
-    "P-Switch/Mushroom house (1)",
-    "No music",
-    "World 7 map",
+    _("Plain level"),
+    _("Underground"),
+    _("Water level"),
+    _("Fortress"),
+    _("Boss"),
+    _("Ship"),
+    _("Battle"),
+    _("P-Switch/Mushroom house (1)"),
+    _("Hilly level"),
+    _("Castle room"),
+    _("Clouds/Sky"),
+    _("P-Switch/Mushroom house (2)"),
+    _("No music"),
+    _("P-Switch/Mushroom house (1)"),
+    _("No music"),
+    _("World 7 map"),
 ]
 
-TIMES = ["300s", "400s", "200s", "Unlimited"]
+TIMES = [_("300 seconds"), _("400 seconds"), _("200 seconds"), _("Unlimited")]
 
 CAMERA_MOVEMENTS = [
-    "Locked, unless climbing/flying",
-    "Free vertical scrolling",
-    "Locked 'by start coordinates'?",
-    "Shouldn't appear in game, do not use.",
+    _("Locked, unless climbing/flying"),
+    _("Free vertical scrolling"),
+    _("Locked 'by start coordinates'?"),
+    _("Shouldn't appear in game, do not use."),
 ]
 
 
@@ -84,7 +94,7 @@ SPINNER_MAX_VALUE = 0x0F_FF_FF
 
 class HeaderEditor(CustomDialog):
     def __init__(self, parent: Optional[QWidget], level_ref: LevelRef):
-        super(HeaderEditor, self).__init__(parent, "Level Header Editor")
+        super(HeaderEditor, self).__init__(parent, _("Level Header Editor"))
 
         self.level: Level = level_ref.level
 
@@ -110,10 +120,10 @@ class HeaderEditor(CustomDialog):
         self.camera_movement_dropdown.addItems(CAMERA_MOVEMENTS)
         self.camera_movement_dropdown.activated.connect(self.on_combo)
 
-        self.level_is_vertical_cb = QCheckBox("Level is Vertical")
+        self.level_is_vertical_cb = QCheckBox(_("Level is Vertical"))
         self.level_is_vertical_cb.clicked.connect(self.on_check_box)
 
-        self.pipe_ends_level_cb = QCheckBox("Pipe ends Level")
+        self.pipe_ends_level_cb = QCheckBox(_("Pipe ends Level"))
         self.pipe_ends_level_cb.clicked.connect(self.on_check_box)
 
         check_box_layout = QHBoxLayout()
@@ -127,17 +137,17 @@ class HeaderEditor(CustomDialog):
         form = QFormLayout()
         form.setFormAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        form.addRow("Level Length: ", self.length_dropdown)
-        form.addRow("Music: ", self.music_dropdown)
-        form.addRow("Time: ", self.time_dropdown)
-        form.addRow("Vertical Camera Movement: ", self.camera_movement_dropdown)
+        form.addRow(_("Level Length: "), self.length_dropdown)
+        form.addRow(_("Music: "), self.music_dropdown)
+        form.addRow(_("Time: "), self.time_dropdown)
+        form.addRow(_("Vertical Camera Movement: "), self.camera_movement_dropdown)
 
         form.addWidget(check_box_widget)
 
         widget = QWidget()
         widget.setLayout(form)
 
-        self.tab_widget.addTab(widget, "Level")
+        self.tab_widget.addTab(widget, _("Level"))
 
         # player settings
 
@@ -156,14 +166,14 @@ class HeaderEditor(CustomDialog):
         form = QFormLayout()
         form.setFormAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        form.addRow("Starting X: ", self.x_position_dropdown)
-        form.addRow("Starting Y: ", self.y_position_dropdown)
-        form.addRow("Action: ", self.action_dropdown)
+        form.addRow(_("Starting X: "), self.x_position_dropdown)
+        form.addRow(_("Starting Y: "), self.y_position_dropdown)
+        form.addRow(_("Action: "), self.action_dropdown)
 
         widget = QWidget()
         widget.setLayout(form)
 
-        self.tab_widget.addTab(widget, "Mario")
+        self.tab_widget.addTab(widget, _("Mario"))
 
         # graphic settings
 
@@ -180,14 +190,14 @@ class HeaderEditor(CustomDialog):
         form = QFormLayout()
         form.setFormAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        form.addRow("Object Palette: ", self.object_palette_spinner)
-        form.addRow("Enemy Palette: ", self.enemy_palette_spinner)
-        form.addRow("Graphic Set: ", self.graphic_set_dropdown)
+        form.addRow(_("Object Palette: "), self.object_palette_spinner)
+        form.addRow(_("Enemy Palette: "), self.enemy_palette_spinner)
+        form.addRow(_("Graphic Set: "), self.graphic_set_dropdown)
 
         widget = QWidget()
         widget.setLayout(form)
 
-        self.tab_widget.addTab(widget, "Graphics")
+        self.tab_widget.addTab(widget, _("Graphics"))
 
         # next area settings
         self.level_pointer_spinner = Spinner(self)
@@ -210,17 +220,17 @@ class HeaderEditor(CustomDialog):
         self.next_area_object_set_dropdown.addItems(OBJECT_SET_ITEMS)
         self.next_area_object_set_dropdown.activated.connect(self.on_combo)
 
-        level_select_button = QPushButton("Set from Level Selector")
+        level_select_button = QPushButton(_("Set from Level Selector"))
         level_select_button.clicked.connect(self._set_jump_destination)
 
         form = QFormLayout()
         form.setFormAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        form.addRow("Offset of Level Objects: ", self.level_pointer_spinner)
-        form.addRow("Address of Level Objects: ", self._level_address_label)
-        form.addRow("Offset of Enemies: ", self.enemy_pointer_spinner)
-        form.addRow("Address of Enemies: ", self._enemy_address_label)
-        form.addRow("Object Set: ", self.next_area_object_set_dropdown)
+        form.addRow(_("Offset of Level Objects: "), self.level_pointer_spinner)
+        form.addRow(_("Address of Level Objects: "), self._level_address_label)
+        form.addRow(_("Offset of Enemies: "), self.enemy_pointer_spinner)
+        form.addRow(_("Address of Enemies: "), self._enemy_address_label)
+        form.addRow(_("Object Set: "), self.next_area_object_set_dropdown)
 
         form.addRow(QLabel(""))
         form.addRow(level_select_button)
@@ -228,7 +238,7 @@ class HeaderEditor(CustomDialog):
         widget = QWidget()
         widget.setLayout(form)
 
-        self.tab_widget.addTab(widget, "Jump Destination")
+        self.tab_widget.addTab(widget, _("Jump Destination"))
 
         self.header_bytes_label = QLabel()
 
@@ -302,7 +312,11 @@ class HeaderEditor(CustomDialog):
 
         make_macro(
             self.undo_stack,
-            f"Set Next Area to {level_address:#x}/{enemy_address:#x}, {OBJECT_SET_NAMES[object_set_number]}",
+            _("Set Next Area to %(level)s/%(enemy)s, %(object)s") % {
+                "level": f"{level_address:#x}",
+                "enemy": f"{enemy_address:#x}",
+                "object": OBJECT_SET_NAMES[object_set_number]
+            },
             SetNextAreaObjectSet(self.level, object_set_number),
             SetNextAreaObjectAddress(self.level, level_address),
             SetNextAreaEnemyAddress(self.level, enemy_address),
@@ -353,7 +367,7 @@ class HeaderEditor(CustomDialog):
             self._set_level_attr(
                 "scroll_type",
                 new_index,
-                display_name="Camera Movement",
+                display_name=_("Camera Movement"),
                 display_value=text,
             )
 
@@ -361,7 +375,7 @@ class HeaderEditor(CustomDialog):
             self._set_level_attr(
                 "start_x_index",
                 new_index,
-                display_name="Mario Start X",
+                display_name=_("Mario Start X"),
                 display_value=text,
             )
 
@@ -369,7 +383,7 @@ class HeaderEditor(CustomDialog):
             self._set_level_attr(
                 "start_y_index",
                 new_index,
-                display_name="Mario Start Y",
+                display_name=_("Mario Start Y"),
                 display_value=text,
             )
 
@@ -377,7 +391,7 @@ class HeaderEditor(CustomDialog):
             self._set_level_attr(
                 "start_action",
                 new_index,
-                display_name="Mario Start Action",
+                display_name=_("Mario Start Action"),
                 display_value=text,
             )
 
@@ -405,6 +419,6 @@ class HeaderEditor(CustomDialog):
         if checkbox == self.pipe_ends_level_cb:
             self._set_level_attr("pipe_ends_level", checked)
         elif checkbox == self.level_is_vertical_cb:
-            self._set_level_attr("is_vertical", checked, "Level is Vertical")
+            self._set_level_attr("is_vertical", checked, _("Level is Vertical"))
 
         self.update()

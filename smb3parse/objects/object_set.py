@@ -35,29 +35,29 @@ MAX_OBJECT_SET = 0x0F
 OBJECT_GROUP_SIZE = 16
 
 OBJECT_SET_NAMES = [
-    "Overworld",
-    "Plains",
-    "Dungeon",
-    "Hilly",
-    "Sky",
-    "Piranha Plant",
-    "Water",
-    "Mushroom",
-    "Pipe",
-    "Desert",
-    "Ship",
-    "Giant",
-    "Ice",
-    "Cloudy",
-    "Underground",
-    "Spade Bonus",
-    "Enemy/Item",
+    _("Overworld"),
+    _("Plains"),
+    _("Dungeon"),
+    _("Hilly"),
+    _("Sky"),
+    _("Piranha Plant"),
+    _("Water"),
+    _("Mushroom"),
+    _("Pipe"),
+    _("Desert"),
+    _("Ship"),
+    _("Giant"),
+    _("Ice"),
+    _("Cloudy"),
+    _("Underground"),
+    _("Spade Bonus"),
+    _("Enemy/Item"),
 ]
 
 
 def assert_valid_object_set_number(object_set_number: int):
     if not is_valid_object_set_number(object_set_number):
-        raise ValueError(f"Object set number {object_set_number} is invalid.")
+        raise ValueError(_("Object set number %d is invalid.") % object_set_number)
 
 
 def is_valid_object_set_number(object_set_number: int):
@@ -81,17 +81,20 @@ class ObjectSet:
         if self.number < len(OBJECT_SET_NAMES):
             self.name = OBJECT_SET_NAMES[self.number]
         else:
-            self.name = f"Object Set {self.number:#x}"
+            self.name = _("Object Set %s") % hex(self.number)
 
     @property
     def ending_graphic_index(self):
         if self.number == ENEMY_ITEM_OBJECT_SET:
-            raise ValueError(f"{self.name} is not a level object set and does not provide an ending graphic offset.")
+            raise ValueError(_("%s is not a level object set and does not provide an ending graphic offset.") % self.name)
 
         return self._ending_graphic_index
 
     def __repr__(self):
-        return f"ObjectSet({self.number}), {self.name}"
+        return _("ObjectSet(%(number)d), %(name)s") % {
+            "number": self.number,
+            "name": self.name
+        }
 
 
 # TODO this could be read out of the ROM see LoadLevel_EndGoalDecoSquare

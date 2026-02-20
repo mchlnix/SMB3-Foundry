@@ -60,16 +60,16 @@ class PowerupEntry:
 
 
 POWERUPS = [
-    PowerupEntry("Small Mario", 32, 53, 0, False),
-    PowerupEntry("Big Mario", 6, 48, POWERUP_MUSHROOM, False),
-    PowerupEntry("Raccoon Mario", 57, 53, POWERUP_RACCOON, False),
-    PowerupEntry("Fire Mario", 16, 53, POWERUP_FIREFLOWER, False),
-    PowerupEntry("Tanooki Mario", 54, 53, POWERUP_TANOOKI, False),
-    PowerupEntry("Frog Mario", 56, 53, POWERUP_FROG, False),
-    PowerupEntry("Hammer Mario", 58, 53, POWERUP_HAMMER, False),
+    PowerupEntry(_("Small Mario"), 32, 53, 0, False),
+    PowerupEntry(_("Big Mario"), 6, 48, POWERUP_MUSHROOM, False),
+    PowerupEntry(_("Raccoon Mario"), 57, 53, POWERUP_RACCOON, False),
+    PowerupEntry(_("Fire Mario"), 16, 53, POWERUP_FIREFLOWER, False),
+    PowerupEntry(_("Tanooki Mario"), 54, 53, POWERUP_TANOOKI, False),
+    PowerupEntry(_("Frog Mario"), 56, 53, POWERUP_FROG, False),
+    PowerupEntry(_("Hammer Mario"), 58, 53, POWERUP_HAMMER, False),
     # Even though P-Wing can *technically* be combined, it only really works with Raccoon and Tanooki suit
-    PowerupEntry("Raccoon Mario with P-Wing", 55, 53, POWERUP_RACCOON, True),
-    PowerupEntry("Tanooki Mario with P-Wing", 55, 53, POWERUP_TANOOKI, True),
+    PowerupEntry(_("Raccoon Mario with P-Wing"), 55, 53, POWERUP_RACCOON, True),
+    PowerupEntry(_("Tanooki Mario with P-Wing"), 55, 53, POWERUP_TANOOKI, True),
 ]
 
 png = QImage(str(data_dir / "gfx.png"))
@@ -87,63 +87,65 @@ default_dirs = {
 
 class SettingsDialog(CustomDialog):
     def __init__(self, settings: Settings, parent=None):
-        super(SettingsDialog, self).__init__(parent, "Settings")
+        super(SettingsDialog, self).__init__(parent, _("Settings"))
 
         self.settings = settings
 
         # Online Section
         # -----------------------------------------------
 
-        online_box = QGroupBox("Online", self)
+        online_box = QGroupBox(_("Online"), self)
         layout = QVBoxLayout()
         online_box.setLayout(layout)
 
-        self._update_check_box = QCheckBox("Enabled")
+        self._update_check_box = QCheckBox(_("Enabled"))
         self._update_check_box.setChecked(self.settings.value("editor/update_on_startup"))
         self._update_check_box.toggled.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
-                "Check for Updates on Startup:",
+                _("Check for Updates on Startup:"),
                 self._update_check_box,
-                tooltip="Checks the Repository for a new Version when the Editor is started.",
+                tooltip=_("Checks the Repository for a new Version when the Editor is started."),
             )
         )
 
         # Mouse Section
         # -----------------------------------------------
 
-        mouse_box = QGroupBox("Mouse", self)
+        mouse_box = QGroupBox(_("Mouse"), self)
         layout = QVBoxLayout()
         mouse_box.setLayout(layout)
 
-        self._scroll_check_box = QCheckBox("Enabled")
+        self._scroll_check_box = QCheckBox(_("Enabled"))
         self._scroll_check_box.setChecked(self.settings.value("editor/object_scroll_enabled"))
         self._scroll_check_box.toggled.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
-                "Scroll objects with mouse wheel:",
+                _("Scroll objects with mouse wheel:"),
                 self._scroll_check_box,
-                tooltip="Select an object and scroll up and down to change its type.",
+                tooltip=_("Select an object and scroll up and down to change its type."),
             )
         )
 
-        self._tooltip_check_box = QCheckBox("Enabled")
+        self._tooltip_check_box = QCheckBox(_("Enabled"))
         self._tooltip_check_box.setChecked(self.settings.value("level view/object_tooltip_enabled"))
         self._tooltip_check_box.toggled.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
-                "Show object names on hover:",
+                _("Show object names on hover:"),
                 self._tooltip_check_box,
-                tooltip="When hovering your cursor over an object in a level, "
-                "its name and position is shown in a tooltip.",
+                tooltip=_(
+                    "When hovering your cursor over an object in a level, "
+                    "its name and position is shown in a tooltip."
+                ),
             )
         )
 
-        self.lmb_radio = QRadioButton("Left Mouse Button")
-        rmb_radio = QRadioButton("Right Mouse Button")
+        self.lmb_radio = QRadioButton(_("Left Mouse Button"))
+        rmb_radio = QRadioButton(_("Right Mouse Button"))
 
         self.lmb_radio.setChecked(self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK)
         rmb_radio.setChecked(self.settings.value("editor/resize_mode") == RESIZE_RIGHT_CLICK)
@@ -154,35 +156,37 @@ class SettingsDialog(CustomDialog):
         radio_group.addButton(self.lmb_radio)
         radio_group.addButton(rmb_radio)
 
-        resize_layout = label_and_widget("Object resize mode:", self.lmb_radio, rmb_radio)
+        resize_layout = label_and_widget(_("Object resize mode:"), self.lmb_radio, rmb_radio)
         layout.addLayout(resize_layout)
 
         # GUI Section
         # -----------------------------------------------
 
-        self.gui_box = QGroupBox("GUI", self)
+        self.gui_box = QGroupBox(_("GUI"), self)
         layout = QVBoxLayout()
         self.gui_box.setLayout(layout)
 
-        self.ask_for_level_management_check_box = QCheckBox("Enabled")
+        self.ask_for_level_management_check_box = QCheckBox(_("Enabled"))
         self.ask_for_level_management_check_box.setChecked(self.settings.value("editor/ask_for_level_management"))
         self.ask_for_level_management_check_box.stateChanged.connect(self._update_settings)
 
         self.gui_box.layout().addLayout(
             label_and_widget(
-                "Ask for Automatic Level Management when opening a new ROM:",
+                _("Ask for Automatic Level Management when opening a new ROM:"),
                 self.ask_for_level_management_check_box,
-                tooltip="Should the editor ask to enable Automatic Level Management when opening a new ROM "
-                "that isn't managed yet?",
+                tooltip=_(
+                    "Should the editor ask to enable Automatic Level Management when opening a new ROM "
+                    "that isn't managed yet?"
+                ),
             )
         )
 
-        self.level_highlight_check_box = QCheckBox("Enabled")
+        self.level_highlight_check_box = QCheckBox(_("Enabled"))
         self.level_highlight_check_box.setChecked(self.settings.value("world view/show level pointers"))
         self.level_highlight_check_box.stateChanged.connect(self._update_settings)
 
         level_highlight_layout = label_and_widget(
-            "Highlight Levels in LevelSelector World Maps:", self.level_highlight_check_box
+            _("Highlight Levels in LevelSelector World Maps:"), self.level_highlight_check_box
         )
         self.gui_box.layout().addLayout(level_highlight_layout)
 
@@ -197,7 +201,7 @@ class SettingsDialog(CustomDialog):
 
             style_choices.append(style_radio_button)
 
-        style_layout = label_and_widget("Style:", *style_choices)
+        style_layout = label_and_widget(_("Style:"), *style_choices)
         layout.addLayout(style_layout)
 
         path_layout = QHBoxLayout()
@@ -207,7 +211,7 @@ class SettingsDialog(CustomDialog):
         path_dropdown.setCurrentText(self.settings.value("editor/default dir"))
         path_dropdown.currentTextChanged.connect(self.on_dropdown)
 
-        path_layout.addWidget(QLabel("Default path:"))
+        path_layout.addWidget(QLabel(_("Default path:")))
         path_layout.addWidget(path_dropdown)
 
         layout.addLayout(path_layout)
@@ -228,7 +232,7 @@ class SettingsDialog(CustomDialog):
         # -----------------------------------------------
 
         self.emulator_command_input = QLineEdit(self)
-        self.emulator_command_input.setPlaceholderText("Path to emulator")
+        self.emulator_command_input.setPlaceholderText(_("Path to emulator"))
         self.emulator_command_input.setText(self.settings.value("editor/instaplay_emulator"))
 
         self.emulator_command_input.textChanged.connect(self._update_settings)
@@ -244,24 +248,24 @@ class SettingsDialog(CustomDialog):
 
         self.command_label = QLabel()
 
-        command_box = QGroupBox("Emulator", self)
+        command_box = QGroupBox(_("Emulator"), self)
         command_layout = QVBoxLayout(command_box)
 
-        command_layout.addWidget(QLabel('Emulator command or "path to exe":'))
+        command_layout.addWidget(QLabel(_('Emulator command or "path to exe":')))
 
         command_input_layout = QHBoxLayout()
         command_input_layout.addWidget(self.emulator_command_input)
         command_input_layout.addWidget(self.emulator_path_button)
 
         command_layout.addLayout(command_input_layout)
-        command_layout.addWidget(QLabel("Command arguments (%f will be replaced with rom path):"))
+        command_layout.addWidget(QLabel(_("Command arguments (%f will be replaced with rom path):")))
         command_layout.addWidget(self.command_arguments_input)
-        command_layout.addWidget(QLabel("Command used to play the rom:"))
+        command_layout.addWidget(QLabel(_("Command used to play the rom:")))
         command_layout.addWidget(self.command_label)
 
         command_layout.addWidget(HorizontalLine())
 
-        command_layout.addWidget(QLabel("Power up of Mario when playing level:"))
+        command_layout.addWidget(QLabel(_("Power up of Mario when playing level:")))
         self.powerup_combo_box = QComboBox()
 
         for name, x, y, value, p_wing in POWERUPS:
@@ -284,11 +288,11 @@ class SettingsDialog(CustomDialog):
 
         command_layout.addLayout(powerup_layout)
 
-        self.skip_title_screen_cb = QCheckBox("Enabled")
+        self.skip_title_screen_cb = QCheckBox(_("Enabled"))
         self.skip_title_screen_cb.setChecked(self.settings.value("editor/instaplay_skip_title_screen"))
         self.skip_title_screen_cb.stateChanged.connect(self._update_settings)
 
-        command_layout.addLayout(label_and_widget("Instaplay skips Title Screen", self.skip_title_screen_cb))
+        command_layout.addLayout(label_and_widget(_("Instaplay skips Title Screen"), self.skip_title_screen_cb))
 
         # -----------------------------------------------
 
@@ -347,9 +351,9 @@ class SettingsDialog(CustomDialog):
         self.update()
 
     def _get_emulator_path(self):
-        path_to_emulator, _ = QFileDialog.getOpenFileName(
+        path_to_emulator, __ = QFileDialog.getOpenFileName(
             self,
-            caption="Select emulator executable",
+            caption=_("Select emulator executable"),
             dir=QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation),
         )
 
@@ -361,20 +365,20 @@ class SettingsDialog(CustomDialog):
     def _get_default_dir(self):
         path_to_roms = QFileDialog.getExistingDirectory(
             self,
-            caption="Select Rom directory",
+            caption=_("Select Rom directory"),
             dir=QStandardPaths.writableLocation(QStandardPaths.HomeLocation),
         )
 
         if not path_to_roms:
             return
 
-        self.path_dropdown.setCurrentText("Custom")
+        self.path_dropdown.setCurrentText(_("Custom"))
         self.default_dir_label.setText(path_to_roms)
 
         self._update_settings()
 
     def on_dropdown(self, new_text):
-        if new_text == "Custom":
+        if new_text == _("Custom"):
             self.default_dir_label.setText(self.settings.value("editor/custom default dir path"))
         elif new_text in default_dirs:
             self.default_dir_label.setText(default_dirs[new_text])

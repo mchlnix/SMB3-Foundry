@@ -69,30 +69,30 @@ class LevelContextMenu(ContextMenu):
     def __init__(self, level_ref: LevelRef):
         super(LevelContextMenu, self).__init__(level_ref)
 
-        self.add_object_action = self.addAction("Place Object")
+        self.add_object_action = self.addAction(_("Place Object"))
         self.add_object_action.setIcon(icon("plus.svg"))
-        self.grab_selected_object_action = self.addAction("Grab Object")
+        self.grab_selected_object_action = self.addAction(_("Grab Object"))
         self.grab_selected_object_action.setIcon(icon("crosshair.svg"))
 
         self.addSeparator()
 
-        self.cut_action = self.addAction("Cut")
+        self.cut_action = self.addAction(_("Cut"))
         self.cut_action.setIcon(icon("scissors.svg"))
-        self.copy_action = self.addAction("Copy")
+        self.copy_action = self.addAction(_("Copy"))
         self.copy_action.setIcon(icon("copy.svg"))
-        self.paste_action = self.addAction("Paste")
+        self.paste_action = self.addAction(_("Paste"))
         self.paste_action.setIcon(icon("clipboard.svg"))
 
         self.addSeparator()
 
-        self.into_foreground_action = self.addAction("To Foreground")
+        self.into_foreground_action = self.addAction(_("To Foreground"))
         self.into_foreground_action.setIcon(icon("upload.svg"))
-        self.into_background_action = self.addAction("To Background")
+        self.into_background_action = self.addAction(_("To Background"))
         self.into_background_action.setIcon(icon("download.svg"))
 
         self.addSeparator()
 
-        self.remove_action = self.addAction("Remove")
+        self.remove_action = self.addAction(_("Remove"))
         self.remove_action.setIcon(icon("minus.svg"))
 
         self.object_to_grab: LevelObject | EnemyItem | None = None
@@ -114,7 +114,7 @@ class LevelContextMenu(ContextMenu):
 
         self.grab_selected_object_action.setEnabled(object_under_cursor is not None)
         self.grab_selected_object_action.setText(
-            f"Grab '{object_under_cursor.name}'" if object_under_cursor else "Nothing to grab"
+            _("Grab '%s'") % object_under_cursor.name if object_under_cursor else _("Nothing to grab")
         )
 
         self.cut_action.setEnabled(not mode == CMMode.BG and objects_selected)

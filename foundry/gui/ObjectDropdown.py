@@ -37,13 +37,13 @@ class ObjectDropdown(QComboBox):
         # guard against overly long item descriptions
         self.setMaximumWidth(self.screen().availableSize().width() // 5)
 
-        self.setWhatsThis(
+        self.setWhatsThis(_(
             "<b>Object Dropdown</b><br/>"
             "Contains all objects and enemies/items, that can be placed in this type of level. Which are "
             "available depends on the object set, that is selected for this level.<br/>"
             "You can search, by typing in the name, or simply select it from the list. After selecting "
             "an object, you can place it by clicking the middle mouse button anywhere in the level."
-        )
+        ))
 
         self._object_set_index = -1
         self._graphic_set_index = -1
@@ -108,7 +108,7 @@ class ObjectDropdown(QComboBox):
         index_of_object = self.findText(level_object.name)
 
         if index_of_object == -1:
-            raise LookupError(f"Couldn't find {level_object} in object dropdown.")
+            raise LookupError(_("Couldn't find %s in object dropdown.") % level_object)
 
         was_blocked = self.blockSignals(True)
         self.setCurrentIndex(index_of_object)

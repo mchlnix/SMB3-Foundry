@@ -5,6 +5,8 @@ venv
 .idea
 .mypy_cache
 *.nes
+locale/*.pot
+locale/*/*.mo
 __pycache__
 build/
 dist/

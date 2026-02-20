@@ -84,7 +84,7 @@ class WorldView(MainView):
         self.dragging_happened = False
 
         # TODO: update
-        self.setWhatsThis(
+        self.setWhatsThis(_(
             "<b>Level View</b><br/>"
             "This renders the level as it would appear in game plus additional information, that can be "
             "toggled in the View menu.<br/>"
@@ -96,7 +96,7 @@ class WorldView(MainView):
             "<br/><br/>"
             ""
             "If all else fails, click the play button up top to see your level in game in seconds."
-        )
+        ))
 
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_A), self, self.select_all)
 
@@ -260,13 +260,16 @@ class WorldView(MainView):
                 level_pointer.data.enemy_address,
             )
 
-            self.setToolTip(
-                f"<b>{level_name}</b><br/>"
-                f"<u>Type:</u> {object_set_name} "
-                f"<u>Objects:</u> {level_pointer.data.level_address:#x} "
-                f"<u>Enemies:</u> {level_pointer.data.enemy_address:#x}<br/>"
-                f"<img src='data:image/png;base64,{pixmap_to_base64(image_data)}'>"
-            )
+            self.setToolTip(_(
+                "<b>%(name)s</b><br/><u>Type:</u> %(type)s <u>Objects:</u> %(objects)s <u>Enemies:</u> %(enemies)s<br/>"
+                "<img src='data:image/png;base64,%(pixmap)s'>"
+            ) % {
+                "name": level_name,
+                "type": object_set_name,
+                "objects": f"{level_pointer.data.level_address:#x}",
+                "enemies": f"{level_pointer.data.enemy_address:#x}",
+                "pixmap": pixmap_to_base64(image_data)
+            })
 
             return True
         except ValueError:
@@ -372,10 +375,13 @@ class WorldView(MainView):
             tile_to_put_name = TILE_NAMES[self._tile_to_put]
 
             if event.modifiers() & Qt.ShiftModifier:
-                self.undo_stack.beginMacro(f"Fill in '{tile.name}' with '{tile_to_put_name}'")
+                self.undo_stack.beginMacro(_("Fill in '%(tile)s' with '%(replacement)s'") % {
+                    "tile": tile.name,
+                    "replacement": tile_to_put_name
+                })
                 self._fill_tile(tile.type, x, y)
             else:
-                self.undo_stack.beginMacro(f"Place '{tile_to_put_name}'")
+                self.undo_stack.beginMacro(_("Place '%s'") % tile_to_put_name)
                 self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
 
             self.update()
@@ -485,7 +491,7 @@ class WorldView(MainView):
         self.select_objects([], replace_selection=True)
 
         if (no_of_sel_objects := len(sel_objects)) > 1:
-            self.undo_stack.beginMacro(f"Move {no_of_sel_objects} Tiles")
+            self.undo_stack.beginMacro(_("Move %d Tiles") % no_of_sel_objects)
 
         old_objects = self.world.objects.copy()
 
@@ -535,7 +541,7 @@ class WorldView(MainView):
         self.select_object_like(self.world.locks_and_bridges[index])
 
     def clear_tiles(self):
-        self.undo_stack.beginMacro("Clear Tiles")
+        self.undo_stack.beginMacro(_("Clear Tiles"))
 
         for map_tile in self.world.get_all_objects():
             self.undo_stack.push(PutTile(self.world, map_tile.pos, WORLD_MAP_BLANK_TILE_ID))
@@ -543,7 +549,7 @@ class WorldView(MainView):
         self.undo_stack.endMacro()
 
     def clear_sprites(self):
-        self.undo_stack.beginMacro("Clear Sprites")
+        self.undo_stack.beginMacro(_("Clear Sprites"))
 
         for sprite in self.world.sprites:
             self.undo_stack.push(SetSpriteType(sprite.data, 0))
@@ -553,7 +559,7 @@ class WorldView(MainView):
         self.undo_stack.endMacro()
 
     def clear_level_pointers(self):
-        self.undo_stack.beginMacro("Clear Level Pointers")
+        self.undo_stack.beginMacro(_("Clear Level Pointers"))
 
         for level_pointer in self.world.level_pointers:
             self.undo_stack.push(SetLevelAddress(level_pointer.data, 0))

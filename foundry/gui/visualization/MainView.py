@@ -293,7 +293,7 @@ class MainView(QWidget):
             try:
                 pasted_objects.append(self.level_ref.paste_object_at(paste_pos, obj))
             except ValueError:
-                warn("Tried pasting outside of level.", RuntimeWarning)
+                warn(_("Tried pasting outside of level."), RuntimeWarning)
 
         self.select_objects(pasted_objects)
 

@@ -18,7 +18,7 @@ from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 class BlockViewer(CustomChildWindow):
     def __init__(self, parent):
-        super(BlockViewer, self).__init__(parent, "Block Viewer")
+        super(BlockViewer, self).__init__(parent, _("Block Viewer"))
 
         self._object_set = 0
         self.block_bank = BlockBank(parent=self)
@@ -27,16 +27,18 @@ class BlockViewer(CustomChildWindow):
 
         self.toolbar = QToolBar(self)
 
-        self.prev_os_action = self.toolbar.addAction(icon("arrow-left.svg"), "Previous object set")
+        # TRANSLATORS: Object set refers to a collection of objects
+        self.prev_os_action = self.toolbar.addAction(icon("arrow-left.svg"), _("Previous object set"))
         self.prev_os_action.triggered.connect(self.prev_object_set)
 
-        self.next_os_action = self.toolbar.addAction(icon("arrow-right.svg"), "Next object set")
+        # TRANSLATORS: Object set refers to a collection of objects
+        self.next_os_action = self.toolbar.addAction(icon("arrow-right.svg"), _("Next object set"))
         self.next_os_action.triggered.connect(self.next_object_set)
 
-        self.zoom_out_action = self.toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
+        self.zoom_out_action = self.toolbar.addAction(icon("zoom-out.svg"), _("Zoom Out"))
         self.zoom_out_action.triggered.connect(self.block_bank.zoom_out)
 
-        self.zoom_in_action = self.toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
+        self.zoom_in_action = self.toolbar.addAction(icon("zoom-in.svg"), _("Zoom In"))
         self.zoom_in_action.triggered.connect(self.block_bank.zoom_in)
 
         self.bank_dropdown = QComboBox(parent=self.toolbar)
@@ -49,7 +51,8 @@ class BlockViewer(CustomChildWindow):
         self.palette_group_spinner.valueChanged.connect(self.on_palette)
 
         self.toolbar.addWidget(self.bank_dropdown)
-        self.toolbar.addWidget(QLabel(" Object Palette: "))
+        # TRANSLATORS: Keep spaces for padding
+        self.toolbar.addWidget(QLabel(_(" Object Palette: ")))
         self.toolbar.addWidget(self.palette_group_spinner)
 
         self.addToolBar(self.toolbar)

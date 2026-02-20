@@ -346,7 +346,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
             for index in range(AIRSHIP_TRAVEL_SET_SIZE):
                 x, screen = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_x + index)
-                y, _ = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_y + index)
+                y, __ = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_y + index)
 
                 self.airship_travel_sets[set_number].append(Position(x, y, screen))
 

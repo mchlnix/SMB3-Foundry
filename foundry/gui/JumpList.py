@@ -22,7 +22,7 @@ class JumpList(QListWidget):
         self._level_ref.data_changed.connect(self.update)
         self.itemDoubleClicked.connect(lambda _: self.edit_jump.emit())
 
-        self.setWhatsThis(
+        self.setWhatsThis(_(
             "<b>Jump List</b><br/>"
             "Every level can designate another level to jump to, in case a pipe or a door is entered. This is done in "
             "the header, which can be edited with the Header Editor. While only one such level can be defined, where "
@@ -34,7 +34,7 @@ class JumpList(QListWidget):
             "Tip: By having multiple jumps with different entry positions, you could make it look, like you are "
             "jumping to two different levels, when, in fact, you are jumping to two different sections of the same "
             "level."
-        )
+        ))
 
     def update(self):
         self.clear()
@@ -61,14 +61,14 @@ class JumpList(QListWidget):
         menu = QMenu()
 
         if item is None:
-            add_action = menu.addAction("Add Jump")
+            add_action = menu.addAction(_("Add Jump"))
             add_action.triggered.connect(self.add_jump.emit)
 
         else:
-            edit_action = menu.addAction("Edit Jump")
+            edit_action = menu.addAction(_("Edit Jump"))
             edit_action.triggered.connect(self.edit_jump.emit)
 
-            remove_action = menu.addAction("Remove Jump")
+            remove_action = menu.addAction(_("Remove Jump"))
             remove_action.triggered.connect(self.remove_jump.emit)
 
         menu.exec(event.globalPos())

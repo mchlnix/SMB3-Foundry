@@ -82,7 +82,7 @@ class WorldMap(LevelLike):
     def from_world_number(world_index: int):
         """World number is 1-based. So the first world is World 1."""
         if not 1 <= world_index <= 9:
-            raise ValueError(f"World Number of '{world_index} not allowed. Keep it between 1 and 9.")
+            raise ValueError(_("World Number of '%d' not allowed. Keep it between 1 and 9.") % world_index)
 
         return WorldMap(list_world_map_addresses(ROM())[world_index - 1])
 

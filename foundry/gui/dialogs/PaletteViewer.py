@@ -34,7 +34,7 @@ class PaletteViewer(CustomDialog):
     palettes_per_row = 4
 
     def __init__(self, parent, level_ref: LevelRef):
-        title = f"Palette Groups for Object Set {level_ref.level.object_set_number}"
+        title = _("Palette Groups for Object Set %d") % level_ref.level.object_set_number
 
         super(PaletteViewer, self).__init__(parent, title=title)
 
@@ -44,7 +44,7 @@ class PaletteViewer(CustomDialog):
 
         for palette_group_number in range(PALETTE_GROUPS_PER_OBJECT_SET):
             group_box = QGroupBox()
-            group_box.setTitle(f"Palette Group {palette_group_number}")
+            group_box.setTitle(_("Palette Group %d") % palette_group_number)
 
             group_box_layout = QVBoxLayout(group_box)
             group_box_layout.setSpacing(0)
@@ -180,7 +180,7 @@ class ColorTable(QDialog):
     def __init__(self):
         super(ColorTable, self).__init__()
 
-        self.setWindowTitle("NES Color Table")
+        self.setWindowTitle(_("NES Color Table"))
 
         self._currently_selected_square: ColorSquare = ColorSquare()
         self.selected_color_index = 0
@@ -246,14 +246,14 @@ class SidePalette(QWidget):
 
         self.update()
 
-        self.setWhatsThis(
+        self.setWhatsThis(_(
             "<b>Object Palettes</b><br/>"
             "This shows the current palette group of the level, which can be changed in the level header "
             "editor.<br/>"
             "By clicking on the individual colors, you can change them.<br/><br/>"
             ""
             "Note: The first color (the left most one) is always the same among all 4 palettes."
-        )
+        ))
 
     @property
     def palette_group(self):

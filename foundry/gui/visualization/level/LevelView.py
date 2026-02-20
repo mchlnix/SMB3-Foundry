@@ -72,7 +72,7 @@ class LevelView(MainView):
         self.objects_before_resizing: list[InLevelObject] = []
         self.objects_before_moving: list[InLevelObject] = []
 
-        self.setWhatsThis(
+        self.setWhatsThis(_(
             "<b>Level View</b><br/>"
             "This renders the level as it would appear in game plus additional information, that can be "
             "toggled in the View menu.<br/>"
@@ -84,7 +84,7 @@ class LevelView(MainView):
             "<br/><br/>"
             ""
             "If all else fails, click the play button up top to see your level in game in seconds."
-        )
+        ))
 
     @property
     def level(self) -> Level:
@@ -237,9 +237,9 @@ class LevelView(MainView):
             return
 
         if y_delta > 0:
-            macro_name = f"Increment Type of '{obj_under_cursor.name}'"
+            macro_name = _("Increment Type of %s") % obj_under_cursor.name
         else:
-            macro_name = f"Decrement Type of '{obj_under_cursor.name}'"
+            macro_name = _("Decrement Type of %s") % obj_under_cursor.name
 
         self.undo_stack.beginMacro(macro_name)
 
@@ -450,7 +450,7 @@ class LevelView(MainView):
 
             make_macro(
                 self.undo_stack,
-                f"Set Mario Start Position to {self.level_header.mario_position()}",
+                _("Set Mario Start Position to %s") % str(self.level_header.mario_position()),
                 x_command,
                 y_command,
             )
@@ -576,54 +576,50 @@ class LevelView(MainView):
 
             if free_space_in_bank < additional_level_data:
                 is_safe = False
-                reason = "Not enough space in ROM"
-                additional_info = "There is not enough space in the ROM for this level."
+                reason = _("Not enough space in ROM")
+                additional_info = _("There is not enough space in the ROM for this level.")
 
             elif free_space_for_enemies < additional_enemy_data:
                 is_safe = False
-                reason = "Not enough space in ROM"
-                additional_info = "There is not enough space in the ROM for the enemies/items in this Level."
+                reason = _("Not enough space in ROM")
+                additional_info = _("There is not enough space in the ROM for the enemies/items in this Level.")
 
         else:
             if self.level_ref.too_many_level_objects():
                 level = self._cuts_into_other_objects()
 
                 is_safe = False
-                reason = "Too many level objects."
+                reason = _("Too many level objects.")
 
                 if level:
-                    additional_info = f"Would overwrite data of original level '{level}'."
+                    additional_info = _("Would overwrite data of original level '%s'.") % level
                 else:
-                    additional_info = (
-                        "It wouldn't overwrite another level, but it might still overwrite other important data."
-                    )
+                    additional_info = _("It wouldn't overwrite another level, but it might still overwrite other important data.")
 
-                additional_info += (
-                    " If you deleted a bunch of objects and saved the level afterwards, this is probably a false alarm."
-                )
+                additional_info += " " + _("If you deleted a bunch of objects and saved the level afterwards, this is probably a false alarm.")
+
             elif self.level_ref.too_many_enemies_or_items():
                 level = self._cuts_into_other_enemies()
 
                 is_safe = False
-                reason = "Too many enemies or items."
+                reason = _("Too many enemies or items.")
 
                 if level:
-                    additional_info = f"Would probably overwrite enemy/item data of original level '{level}'."
+                    additional_info = _("Would probably overwrite enemy/item data of original level '%s'.") % level
                 else:
-                    additional_info = (
+                    additional_info = _(
                         "It wouldn't overwrite enemy/item data of another level, "
                         "but it might still overwrite other important data."
                     )
 
-                additional_info += (
-                    " If you deleted a bunch of enemies and saved the level afterwards, this is probably a false alarm."
-                )
+                additional_info += " " + _("If you deleted a bunch of enemies and saved the level afterwards, this is probably a false alarm.")
 
         return is_safe, reason, additional_info
 
     def _cuts_into_other_enemies(self) -> str:
         if self.level_ref is None:
-            raise ValueError("Level is None")
+            # TRANSLATORS: "None" is a Python object
+            raise ValueError(_("Level is None"))
 
         enemies_end = self.level_ref.enemies_end
 
@@ -636,11 +632,15 @@ class LevelView(MainView):
         if found_level.enemy_offset == self.level_ref.enemy_offset:
             return ""
         else:
-            return f"World {found_level.game_world} - {found_level.name}"
+            return _("World %(world)d - %(level)s") % {
+                "world": found_level.game_world,
+                "level": found_level.name
+            }
 
     def _cuts_into_other_objects(self) -> str:
         if self.level_ref is None:
-            raise ValueError("Level is None")
+            # TRANSLATORS: "None" is a Python object
+            raise ValueError(_("Level is None"))
 
         end_of_level_objects = self.level_ref.objects_end
 
@@ -657,7 +657,10 @@ class LevelView(MainView):
         if found_level.rom_level_offset == self.level_ref.object_offset:
             return ""
         else:
-            return f"World {found_level.game_world} - {found_level.name}"
+            return _("World %(world)d - %(level)s") % {
+                "world": found_level.game_world,
+                "level": found_level.name
+            }
 
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)

@@ -20,15 +20,15 @@ class TabbedToolBox(QTabWidget):
         self.setTabPosition(self.TabPosition.East)
 
         self._recent_toolbox = ObjectToolBox(self)
-        self._recent_toolbox.setObjectName("Recent")
+        self._recent_toolbox.setObjectName(_("Recent"))
         self._recent_toolbox.object_icon_clicked.connect(self.object_icon_clicked.emit)
 
         self._objects_toolbox = ObjectToolBox(self)
-        self._objects_toolbox.setObjectName("Level Objects")
+        self._objects_toolbox.setObjectName(_("Level Objects"))
         self._objects_toolbox.object_icon_clicked.connect(self.object_icon_clicked.emit)
 
         self._enemies_toolbox = ObjectToolBox(self)
-        self._enemies_toolbox.setObjectName("Enemies")
+        self._enemies_toolbox.setObjectName(_("Enemies"))
         self._enemies_toolbox.object_icon_clicked.connect(self.object_icon_clicked.emit)
 
         for toolbox in (self._recent_toolbox, self._objects_toolbox, self._enemies_toolbox):
@@ -40,7 +40,7 @@ class TabbedToolBox(QTabWidget):
 
         self.show_level_object_tab()
 
-        self.setWhatsThis(
+        self.setWhatsThis(_(
             "<b>Object Toolbox</b><br/>"
             "Contains all objects and enemies/items, that can be placed in this type of level. Which are "
             "available depends on the object set, that is selected for this level.<br/>"
@@ -50,7 +50,7 @@ class TabbedToolBox(QTabWidget):
             "Note: Some items, like blocks with items in them, are displayed as they appear in the ROM, "
             "mouse over them and check their names in the ToolTip, or use the object dropdown to find "
             "them directly."
-        )
+        ))
 
     def sizeHint(self):
         orig_size = super().sizeHint()

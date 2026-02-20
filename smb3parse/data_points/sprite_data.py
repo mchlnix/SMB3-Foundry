@@ -81,8 +81,8 @@ class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
         self.screen = self._rom.int(self.screen_address)
 
         # lower nibble is 0 and is unused
-        self.x, _ = self._rom.nibbles(self._x_pos_address)
-        self.y, _ = self._rom.nibbles(self._y_pos_address)
+        self.x, __ = self._rom.nibbles(self._x_pos_address)
+        self.y, __ = self._rom.nibbles(self._y_pos_address)
 
         self.type = self._rom.int(self._type_address)
         self.item = self._rom.int(self._item_address)

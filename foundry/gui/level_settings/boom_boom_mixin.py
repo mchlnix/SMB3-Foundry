@@ -12,7 +12,7 @@ class BoomBoomMixin(SettingsMixin):
     def __init__(self, parent):
         super(BoomBoomMixin, self).__init__(parent)
 
-        boom_boom_group = QGroupBox("Boom Boom Lock Destruction Index")
+        boom_boom_group = QGroupBox(_("Boom Boom Lock Destruction Index"))
         QVBoxLayout(boom_boom_group)
 
         boom_booms = _get_boom_booms(self.level_ref.enemies)
@@ -32,7 +32,7 @@ class BoomBoomMixin(SettingsMixin):
             self._on_boom_boom_dropdown(0)
 
         boom_boom_group.layout().addWidget(self.boom_boom_dropdown)
-        boom_boom_group.layout().addLayout(label_and_widget("Lock index", self.boom_boom_index_spinner))
+        boom_boom_group.layout().addLayout(label_and_widget(_("Lock index"), self.boom_boom_index_spinner))
 
         self.layout().addWidget(boom_boom_group)
 

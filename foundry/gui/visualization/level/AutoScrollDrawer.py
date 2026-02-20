@@ -150,7 +150,7 @@ class AutoScrollDrawer:
                     number_of_commands,
                 )
 
-                for _ in range(repeat):
+                for __ in range(repeat):
                     for sub_command, sub_repeat in zip(movement_loop_commands, movement_loop_repeats):
                         self._execute_movement_command(painter, sub_command, sub_repeat)
 
@@ -169,7 +169,7 @@ class AutoScrollDrawer:
         self._add_points_for_position(self.current_pos)
 
         if is_acceleration_command and (h_acceleration or v_acceleration):
-            for _ in range(movement_ticks):
+            for __ in range(movement_ticks):
                 self.horizontal_speed += h_acceleration
                 self.vertical_speed += v_acceleration
 
@@ -234,7 +234,7 @@ class AutoScrollDrawer:
 
     def _determine_auto_scroll_start(self, block_length: int) -> QPointF:
         # only support horizontal levels for now
-        _, mario_y = self.level.header.mario_position()
+        __, mario_y = self.level.header.mario_position()
 
         scroll_x, scroll_y = LEVEL_SCREEN_WIDTH // 2, min(mario_y + 2, GROUND - _ASCROLL_SCREEN_HEIGHT // 2)
 
