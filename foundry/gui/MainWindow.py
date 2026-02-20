@@ -177,10 +177,14 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, type(lue).__name__, f"{lue}.")
             return False
 
+        return self._write_to_rom(pathname, set_new_path)
+
+    def _write_to_rom(self, pathname: str, set_new_path: bool):
         try:
             ROM.save_to_file(pathname, set_new_path)
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot save ROM data to file '{pathname}'.")
+
             return False
 
         return True
