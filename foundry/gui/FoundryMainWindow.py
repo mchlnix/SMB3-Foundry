@@ -441,14 +441,53 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
     def _on_rom_changed_externally(self):
         self._rom_watcher_enabled = False
 
-        QMessageBox.information(
-            self,
-            "ROM Changed",
-            "The ROM has been changed externally. Apply changes or reset the external changes?",
-            QMessageBox.StandardButton.Reset | QMessageBox.StandardButton.Apply,
+        need_to_reload_level = (
+            QMessageBox.information(
+                self,
+                "ROM Changed",
+                "The ROM has been changed externally. You can have Foundry open the new ROM and try to apply your "
+                "current changes to it. Or you can ignore the external changes. Not that those will be lost, if you "
+                "save in Foundry afterwards.",
+                QMessageBox.StandardButton.Ignore | QMessageBox.StandardButton.Apply,
+            )
+            == QMessageBox.StandardButton.Apply
         )
 
         self._update_accepted_hash()
+
+        if need_to_reload_level:
+            # protect the undo stack
+            self._protect_undo_stack = True
+
+            # unwind undo stack to get original level data
+            self.undo_stack.setIndex(0)
+            original_level_data = self.level_ref.level.to_bytes()
+            original_object_set = self.level_ref.level.object_set_number
+
+            (lvl_address, lvl_data), (enemy_address, enemy_data) = original_level_data
+
+            # our level object reorders level objects, so get the original data from the ROM
+            original_lvl_bytes = ROM().read(lvl_address, len(lvl_data))
+
+            # reload the ROM
+            self.on_open_rom(Path(ROM.path))
+
+            # find the level data in the ROM again, since it might have moved
+            new_lvl_address = ROM.rom_data.find(original_lvl_bytes)
+            print(hex(lvl_address), "->", hex(new_lvl_address))
+
+            # do the same for the enemy data
+            new_enemy_address = ROM.rom_data.find(enemy_data)
+            print(hex(enemy_address), "->", hex(new_enemy_address))
+
+            # open the level again
+            self.update_level("", new_lvl_address, new_enemy_address, original_object_set)
+
+            # reapply all the undo commands
+            while self.undo_stack.canRedo():
+                self.undo_stack.redo()
+
+            self._protect_undo_stack = False
 
         self._rom_watcher_enabled = True
 
