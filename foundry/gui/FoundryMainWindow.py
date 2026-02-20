@@ -697,10 +697,10 @@ class FoundryMainWindow(MainWindow):
         return super(FoundryMainWindow, self).safe_to_change() and self._ask_for_palette_save()
 
     def on_save_rom(self, _):
-        self.save_rom(False)
+        self.try_saving_rom(False)
 
     def on_save_rom_as(self, _):
-        self.save_rom(True)
+        self.try_saving_rom(True)
 
     def _ask_for_level_management(self):
         if ROM.additional_data.managed_level_positions is not None:
@@ -816,7 +816,7 @@ class FoundryMainWindow(MainWindow):
 
         return True
 
-    def save_rom(self, is_save_as):
+    def try_saving_rom(self, is_save_as):
         safe_to_save, reason, additional_info = self.level_view.level_safe_to_save()
 
         if not safe_to_save:
