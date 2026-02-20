@@ -130,7 +130,7 @@ class UpdatePalette(QUndoCommand):
         index_in_palette: int,
         new_color_index: int,
     ):
-        super(UpdatePalette, self).__init__(None)
+        super(UpdatePalette, self).__init__("Change Palette Color", None)
 
         self.level = level
 
