@@ -547,18 +547,21 @@ class LevelView(MainView):
         if not self.dragging_happened:
             return
 
-        dx, dy = (drag_end_point - self.drag_start_point).xy
+        move_happened = False
 
-        if dx == dy == 0 or not self.get_selected_objects():
-            return
+        for old_obj, new_obj in zip(self.objects_before_moving, self.get_selected_objects()):
+            if old_obj.get_position() != new_obj.get_position():
+                move_happened = True
+                break
 
-        self.undo_stack.push(
-            MoveObjects(
-                self.level,
-                self.objects_before_moving,
-                self.get_selected_objects(),
+        if move_happened:
+            self.undo_stack.push(
+                MoveObjects(
+                    self.level,
+                    self.objects_before_moving,
+                    self.get_selected_objects(),
+                )
             )
-        )
 
         self.objects_before_moving.clear()
         self.dragging_happened = False
