@@ -704,7 +704,7 @@ class ReplaceLevelObject(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        self.level.objects.pop(self.index)
+        self.to_replace = self.level.objects.pop(self.index)
 
         x, y = self.to_replace.get_position()
 
@@ -744,7 +744,7 @@ class ReplaceEnemy(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        self.level.enemies.pop(self.index)
+        self.to_replace = self.level.enemies.pop(self.index)
 
         x, y = self.to_replace.get_position()
 
