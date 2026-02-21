@@ -458,6 +458,7 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
         if need_to_reload_level:
             # protect the undo stack
             self._protect_undo_stack = True
+            undo_stack_index_before_reload = self.undo_stack.index()
 
             # unwind undo stack to get original level data
             self.undo_stack.setIndex(0)
@@ -483,7 +484,7 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
             self.update_level("", new_lvl_address, new_enemy_address, original_object_set)
 
             # reapply all the undo commands
-            while self.undo_stack.canRedo():
+            while self.undo_stack.canRedo() and self.undo_stack.index() < undo_stack_index_before_reload:
                 self.undo_stack.redo()
 
             self._protect_undo_stack = False

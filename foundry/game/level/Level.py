@@ -654,8 +654,6 @@ class Level(LevelLike):
                     if other_enemy.x_position > new_enemy.x_position:
                         break
 
-            print("Enemy index found:", index)
-
         self.enemies.insert(index, new_enemy)
 
         return new_enemy
