@@ -476,27 +476,27 @@ class AddObject(QUndoCommand):
 
         if index == -1:
             if isinstance(obj, LevelObject):
-                self.index = len(self.level.objects)
+                self.index_to_add = len(self.level.objects)
             else:
                 assert isinstance(obj, EnemyItem)
-                self.index = len(self.level.enemies)
+                self.index_to_add = len(self.level.enemies)
         else:
-            self.index = index
+            self.index_to_add = index
 
     def undo(self):
         if isinstance(self.obj, LevelObject):
-            self.level.objects.pop(self.index)
+            self.level.objects.pop(self.index_to_add)
         else:
-            self.level.enemies.pop(self.index)
+            self.level.enemies.pop(self.index_to_add)
 
         self.level.data_changed.emit()
 
     def redo(self):
         if isinstance(self.obj, LevelObject):
-            self.level.objects.insert(self.index, self.obj)
+            self.level.objects.insert(self.index_to_add, self.obj)
         else:
             assert isinstance(self.obj, EnemyItem)
-            self.level.enemies.insert(self.index, self.obj)
+            self.level.enemies.insert(self.index_to_add, self.obj)
 
         self.level.data_changed.emit()
 
@@ -659,12 +659,12 @@ class RemoveObjects(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        for obj in self.objects:
+        for index, obj in reversed(self.indexes_before_removal):
             if isinstance(obj, LevelObject):
-                self.level.objects.remove(obj)
+                self.level.objects.pop(index)
             else:
                 assert isinstance(obj, EnemyItem)
-                self.level.enemies.remove(obj)
+                self.level.enemies.pop(index)
 
         self.level.data_changed.emit()
 
@@ -703,7 +703,7 @@ class ReplaceLevelObject(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        self.level.remove_object(self.to_replace)
+        self.level.objects.pop(self.index)
 
         x, y = self.to_replace.get_position()
 
@@ -743,7 +743,7 @@ class ReplaceEnemy(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        self.level.remove_object(self.to_replace)
+        self.level.enemies.pop(self.index)
 
         x, y = self.to_replace.get_position()
 
@@ -803,7 +803,7 @@ class RemoveJump(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        self.level.jumps.remove(self.jump)
+        self.level.jumps.pop(self.index)
 
         self.level.data_changed.emit()
 
