@@ -100,7 +100,7 @@ TOOLBAR_ICON_SIZE = QSize(20, 20)
 
 
 class FoundryMainWindow(MainWindow):
-    def __init__(self, path_to_rom="", m3l_path=""):
+    def __init__(self):
         super(FoundryMainWindow, self).__init__()
 
         self.settings = Settings("mchlnix", "foundry")
@@ -550,7 +550,7 @@ class FoundryMainWindow(MainWindow):
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self, path_to_rom=""):
+    def on_open_rom(self, path_to_rom="", try_opening_level=True):
         if not self.safe_to_change():
             return
 
@@ -586,6 +586,10 @@ class FoundryMainWindow(MainWindow):
             self._save_auto_rom()
 
         self.enable_disable_gui_elements()
+
+        if try_opening_level:
+            if not self.open_level_selector(None):
+                self.on_new_level(dont_check=True)
 
     def _check_for_asm_fns_imports(self, path_to_rom: str | Path):
         wants_to_import = False

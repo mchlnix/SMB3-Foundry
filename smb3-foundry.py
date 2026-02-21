@@ -47,9 +47,10 @@ def main(path_to_rom, check_auto_save=True, level_data_tuple=(), m3l_path=""):
                 None, "Auto Save recovered", "Don't forget to save the loaded ROM under a new name!"
             )
 
-    main_window = FoundryMainWindow(path_to_rom, m3l_path)
+    main_window = FoundryMainWindow()
 
-    main_window.on_open_rom(path_to_rom)
+    have_level_data = level_data_tuple or m3l_path
+    main_window.on_open_rom(path_to_rom, try_opening_level=not have_level_data)
 
     if ROM.is_loaded():
         if m3l_path:
@@ -57,9 +58,6 @@ def main(path_to_rom, check_auto_save=True, level_data_tuple=(), m3l_path=""):
 
         elif level_data_tuple:
             main_window.update_level("", *level_data_tuple)
-
-        elif not main_window.open_level_selector(None):
-            main_window.on_new_level(dont_check=True)
 
     main_window.enable_disable_gui_elements()
 
