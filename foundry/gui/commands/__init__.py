@@ -255,13 +255,13 @@ class MoveObjects(QUndoCommand):
 
     def _apply_positions(self, level_positions, enemy_positions):
         # get level object in level by index
-        for index, before_position in level_positions.items():
+        for index, position in level_positions.items():
             level_object = self.level.objects[index]
-            level_object.set_position(*before_position)
+            level_object.set_position(*position)
 
-        for index, before_position in enemy_positions.items():
+        for index, position in enemy_positions.items():
             enemy_item = self.level.enemies[index]
-            enemy_item.set_position(*before_position)
+            enemy_item.set_position(*position)
 
 
 class MoveObject(MoveObjects):
@@ -389,7 +389,7 @@ class ToForeground(QUndoCommand):
         self.level = level
         self.objects = objects
 
-        self.indexes_before = objects_to_indexed_objects(level, objects)
+        self.indexes_before: list[tuple[int, InLevelObject]] = objects_to_indexed_objects(level, objects)
 
         self.setText(f"Bring {object_names(objects)} to the foreground")
 
@@ -625,6 +625,7 @@ class PasteObjectsAt(QUndoCommand):
         # restore last mouse position, since it is used inside the method as a fallback
         self.view.last_mouse_position = self.last_mouse_position.copy()
 
+        # this will create clones of the cached objects, not paste them with their old graphics (in case of ROM reload)
         if not self.created_objects and not self.created_enemies:
             self.view.paste_objects_at(self.paste_data, self.pos)
 
