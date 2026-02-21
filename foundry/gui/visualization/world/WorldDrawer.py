@@ -93,7 +93,9 @@ class WorldDrawer:
             map_height += y_offset
 
         # rows
-        map_length = WORLD_MAP_SCREEN_WIDTH * self.block_length * world.data.screen_count
+        map_length = (
+            WORLD_MAP_SCREEN_WIDTH * self.block_length * world.data.screen_count
+        )
 
         for y in range(map_height):
             y += y_offset
@@ -105,7 +107,9 @@ class WorldDrawer:
         for x in range(WORLD_MAP_SCREEN_WIDTH * world.data.screen_count):
             x *= self.block_length
 
-            painter.drawLine(QPoint(x, y_offset), QPoint(x, map_height * self.block_length))
+            painter.drawLine(
+                QPoint(x, y_offset), QPoint(x, map_height * self.block_length)
+            )
 
         # TODO seems like map scroll could deactivate scrolling partly, so this could be more fine grained
         # make screen divider red for no scrolling and green for scrolling
@@ -123,7 +127,9 @@ class WorldDrawer:
         if not world.get_all_objects():
             return
 
-        not_selected, selected = partition(lambda tile_: tile_.selected, world.get_all_objects())
+        not_selected, selected = partition(
+            lambda tile_: tile_.selected, world.get_all_objects()
+        )
 
         for tile in not_selected:
             self._draw_tile(painter, world, tile)
@@ -166,20 +172,32 @@ class WorldDrawer:
         y_first_row = 0
         y_second_row = self.block_length
 
-        blank_tile = get_worldmap_tile(WORLD_MAP_BLANK_TILE_ID, world.data.palette_index)
-        border_top = get_worldmap_tile(WORLD_MAP_BORDER_TOP_TILE_ID, world.data.palette_index)
+        blank_tile = get_worldmap_tile(
+            WORLD_MAP_BLANK_TILE_ID, world.data.palette_index
+        )
+        border_top = get_worldmap_tile(
+            WORLD_MAP_BORDER_TOP_TILE_ID, world.data.palette_index
+        )
 
         for x in range(world.width):
-            blank_tile.draw(painter, x * self.block_length, y_first_row, self.block_length)
-            border_top.draw(painter, x * self.block_length, y_second_row, self.block_length)
+            blank_tile.draw(
+                painter, x * self.block_length, y_first_row, self.block_length
+            )
+            border_top.draw(
+                painter, x * self.block_length, y_second_row, self.block_length
+            )
 
         # bottom border
         y_last_row = (WORLD_MAP_HEIGHT + 3 - 1) * self.block_length
 
-        bottom_border = get_worldmap_tile(world.data.bottom_border_tile, world.data.palette_index)
+        bottom_border = get_worldmap_tile(
+            world.data.bottom_border_tile, world.data.palette_index
+        )
 
         for x in range(world.width):
-            bottom_border.draw(painter, x * self.block_length, y_last_row, self.block_length)
+            bottom_border.draw(
+                painter, x * self.block_length, y_last_row, self.block_length
+            )
 
         # border corners
         border_ul = BORDER_CORNER_TL.scaled(
@@ -206,7 +224,9 @@ class WorldDrawer:
 
     def _draw_level_pointers(self, painter: QPainter, world: WorldMap):
         for level_pointer in world.level_pointers:
-            level_pointer.draw(painter, self.block_length, False, level_pointer.selected)
+            level_pointer.draw(
+                painter, self.block_length, False, level_pointer.selected
+            )
 
     def _draw_sprites(self, painter: QPainter, world: WorldMap):
         for sprite in world.sprites:

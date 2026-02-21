@@ -37,7 +37,10 @@ class ObjectSet(SMB3ObjectSet):
         if self.number == ENEMY_ITEM_OBJECT_SET:
             raise ValueError(f"This method shouldn't be called for the {self.name}")
 
-        return ENDING_OBJECT_BASE_OFFSET + self.ending_graphic_index * ENDING_OBJECT_BLOCK_COUNT
+        return (
+            ENDING_OBJECT_BASE_OFFSET
+            + self.ending_graphic_index * ENDING_OBJECT_BLOCK_COUNT
+        )
 
     @staticmethod
     @lru_cache(16)

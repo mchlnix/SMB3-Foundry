@@ -60,7 +60,9 @@ class ScribeMainWindow(MainWindow):
         )
         self.context_menu.paste_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_V)
 
-        self.world_view = WorldView(self, self.level_ref, self.settings, self.context_menu)
+        self.world_view = WorldView(
+            self, self.level_ref, self.settings, self.context_menu
+        )
         self.world_view.zoom_in()
         self.world_view.zoom_in()
 
@@ -78,10 +80,14 @@ class ScribeMainWindow(MainWindow):
         self.tool_window = ToolWindow(self, self.level_ref)
         self.tool_window.tile_selected.connect(self.world_view.on_put_tile)
         self.tool_window.sprite_selection_changed.connect(self.world_view.select_sprite)
-        self.tool_window.level_pointer_selection_changed.connect(self.world_view.select_level_pointer)
-        self.tool_window.locks_selection_changed.connect(self.world_view.select_locks_and_bridges)
+        self.tool_window.level_pointer_selection_changed.connect(
+            self.world_view.select_level_pointer
+        )
+        self.tool_window.locks_selection_changed.connect(
+            self.world_view.select_locks_and_bridges
+        )
 
-        self.menu_toolbar = QToolBar("Menu Toolbar", self)
+        self.menu_toolbar = QToolBar(_("Menu Toolbar"), self)
         self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
@@ -97,16 +103,22 @@ class ScribeMainWindow(MainWindow):
 
         self.menu_toolbar.addSeparator()
 
-        play_action = self.menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
+        play_action = self.menu_toolbar.addAction(
+            icon("play-circle.svg"), _("Play Level")
+        )
         play_action.triggered.connect(self.on_play)
-        play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
+        play_action.setWhatsThis(
+            _("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
+        )
 
         self.menu_toolbar.addSeparator()
 
-        zoom_out_action = self.menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
+        zoom_out_action = self.menu_toolbar.addAction(
+            icon("zoom-out.svg"), _("Zoom Out")
+        )
         zoom_out_action.triggered.connect(self.world_view.zoom_out)
         zoom_out_action.triggered.connect(self._resize_for_level)
-        zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
+        zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), _("Zoom In"))
         zoom_in_action.triggered.connect(self.world_view.zoom_in)
         zoom_in_action.triggered.connect(self._resize_for_level)
 
@@ -116,9 +128,15 @@ class ScribeMainWindow(MainWindow):
 
         self.addToolBar(Qt.TopToolBarArea, self.menu_toolbar)
 
-        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_X), self, self._cut_objects)
-        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_C), self, self._copy_objects)
-        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_V), self, self._paste_objects)
+        QShortcut(
+            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_X), self, self._cut_objects
+        )
+        QShortcut(
+            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_C), self, self._copy_objects
+        )
+        QShortcut(
+            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_V), self, self._paste_objects
+        )
 
         self._resize_for_level()
 
@@ -126,34 +144,45 @@ class ScribeMainWindow(MainWindow):
         self.tool_window.show()
 
     def _setup_file_menu(self):
-        self.file_menu = QMenu("&File")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.file_menu = QMenu(_("&File"))
         self.file_menu.triggered.connect(self.on_file_menu)
 
-        self.open_rom_action = self.file_menu.addAction("&Open ROM...")
-        self.open_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_O)
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.open_rom_action = self.file_menu.addAction(_("&Open ROM..."))
+        self.open_rom_action.setShortcut(
+            Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_O
+        )
         self.open_rom_action.setIcon(icon("folder.svg"))
 
         self.file_menu.addSeparator()
 
-        self.save_rom_action = self.file_menu.addAction("&Save ROM")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.save_rom_action = self.file_menu.addAction(_("&Save ROM"))
         self.save_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_S)
         self.save_rom_action.setIcon(icon("save.svg"))
 
         self.save_rom_action.setEnabled(False)
-        self.undo_stack.cleanChanged.connect(lambda: self.save_rom_action.setEnabled(not self.undo_stack.isClean()))
+        self.undo_stack.cleanChanged.connect(
+            lambda: self.save_rom_action.setEnabled(not self.undo_stack.isClean())
+        )
 
-        self.save_as_rom_action = self.file_menu.addAction("Save ROM &As...")
-        self.save_as_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_S)
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.save_as_rom_action = self.file_menu.addAction(_("Save ROM &As..."))
+        self.save_as_rom_action.setShortcut(
+            Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_S
+        )
         self.save_as_rom_action.setIcon(icon("save.svg"))
         self.file_menu.addSeparator()
 
-        self.settings_action = self.file_menu.addAction("Editor Settings")
+        self.settings_action = self.file_menu.addAction(_("Editor Settings"))
         self.settings_action.setIcon(icon("sliders.svg"))
         self.settings_action.triggered.connect(self._on_show_settings)
 
         self.file_menu.addSeparator()
 
-        self.quit_rom_action = self.file_menu.addAction("&Quit")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.quit_rom_action = self.file_menu.addAction(_("&Quit"))
         self.quit_rom_action.setIcon(icon("power.svg"))
 
         self.menuBar().addMenu(self.file_menu)
@@ -174,20 +203,23 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.view_menu)
 
     def _setup_level_menu(self):
-        self.world_menu = QMenu("Change &World")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.world_menu = QMenu(_("Change &World"))
         self.world_menu.triggered.connect(self.on_level_menu)
 
         level_menu_action_group = QActionGroup(self)
 
         for level_index in range(WORLD_COUNT):
-            action = self.world_menu.addAction(f"World &{level_index + 1}")
+            # TRANSLATORS: Ampersand designates keyboard shortcut key
+            action = self.world_menu.addAction(_("World &%d") % (level_index + 1))
             action.setCheckable(True)
 
             level_menu_action_group.addAction(action)
 
         self.world_menu.addSeparator()
 
-        self.reload_world_action = self.world_menu.addAction("&Reload Current World")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.reload_world_action = self.world_menu.addAction(_("&Reload Current World"))
         self.reload_world_action.setIcon(icon("refresh-cw.svg"))
 
         # load world 1 on startup
@@ -216,15 +248,19 @@ class ScribeMainWindow(MainWindow):
         self.world_view.update()
 
     def remove_selected_objects(self):
-        selected_objects = [obj for obj in self.world_view.world.get_selected_tiles() if obj.selected]
+        selected_objects = [
+            obj for obj in self.world_view.world.get_selected_tiles() if obj.selected
+        ]
 
         if not selected_objects:
             return
 
-        self.undo_stack.beginMacro("Remove Selected Tiles")
+        self.undo_stack.beginMacro(_("Remove Selected Tiles"))
 
         for obj in selected_objects:
-            self.undo_stack.push(PutTile(self.level_ref.level, obj.pos, WORLD_MAP_BLANK_TILE_ID))
+            self.undo_stack.push(
+                PutTile(self.level_ref.level, obj.pos, WORLD_MAP_BLANK_TILE_ID)
+            )
 
         self.undo_stack.endMacro()
 
@@ -241,7 +277,9 @@ class ScribeMainWindow(MainWindow):
             return
 
         if q_point is not None:
-            paste_target = self.world_view.to_level_point(self.world_view.mapFromGlobal(q_point))
+            paste_target = self.world_view.to_level_point(
+                self.world_view.mapFromGlobal(q_point)
+            )
         else:
             paste_target = self.world_view.last_mouse_position
 
@@ -249,7 +287,7 @@ class ScribeMainWindow(MainWindow):
 
         diff = paste_target - copy_origin
 
-        self.undo_stack.beginMacro(f"Pasting {len(copied_objects)} Objects")
+        self.undo_stack.beginMacro(_("Pasting %d Objects") % len(copied_objects))
 
         for obj in copied_objects:
             target_pos = Position.from_xy(*obj.get_position()) + diff
@@ -292,9 +330,9 @@ class ScribeMainWindow(MainWindow):
 
         if not path_to_rom:
             # otherwise ask the user what new file to open
-            path_to_rom, _ = QFileDialog.getOpenFileName(
+            path_to_rom, __ = QFileDialog.getOpenFileName(
                 self,
-                caption="Open ROM",
+                caption=_("Open ROM"),
                 dir=self.settings.value("editor/default dir path"),
                 filter=ROM_FILE_FILTER,
             )
@@ -309,13 +347,17 @@ class ScribeMainWindow(MainWindow):
         try:
             ROM.load_from_file(path_to_rom)
         except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
+            QMessageBox.warning(
+                self, type(exp).__name__, _("Cannot open file '%s'.") % path_to_rom
+            )
             return
 
     def load_level(self, world_number: int):
         world = SMB3WorldMap.from_world_number(ROM(), world_number)
 
-        self.level_ref.load_level(f"World {world_number}", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+        self.level_ref.load_level(
+            f"World {world_number}", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET
+        )
         self.level_ref.level.dimensions_changed.connect(self._resize_for_level)
 
         self.setWindowTitle(f"{self.level_ref.level.name} - SMB3 Scribe")
@@ -329,9 +371,9 @@ class ScribeMainWindow(MainWindow):
             if not suggested_file.endswith(".nes"):
                 suggested_file += ".nes"
 
-            pathname, _ = QFileDialog.getSaveFileName(
+            pathname, __ = QFileDialog.getSaveFileName(
                 self,
-                caption="Save ROM as",
+                caption=_("Save ROM as"),
                 dir=f"{self.settings.value('editor/default dir path')}/{suggested_file}",
                 filter=ROM_FILE_FILTER,
             )
@@ -340,7 +382,9 @@ class ScribeMainWindow(MainWindow):
         else:
             pathname = ROM.path
 
-        saved_successfully = self._save_current_changes_to_file(pathname, set_new_path=True)
+        saved_successfully = self._save_current_changes_to_file(
+            pathname, set_new_path=True
+        )
 
         if saved_successfully and not is_save_as:
             self.undo_stack.setClean()
@@ -390,7 +434,11 @@ class ScribeMainWindow(MainWindow):
     def sizeHint(self) -> QSize:
         inner_width, inner_height = self.world_view.sizeHint().toTuple()
 
-        height = inner_height + self.scroll_area.horizontalScrollBar().height() + 2 * self.scroll_area.frameWidth()
+        height = (
+            inner_height
+            + self.scroll_area.horizontalScrollBar().height()
+            + 2 * self.scroll_area.frameWidth()
+        )
         height += self.menuBar().height()
 
         if self.menu_toolbar:
@@ -398,6 +446,8 @@ class ScribeMainWindow(MainWindow):
 
         width = inner_width + 2 * self.scroll_area.frameWidth()
 
-        size_hint = QSize(min(width, QApplication.primaryScreen().size().width()), height)
+        size_hint = QSize(
+            min(width, QApplication.primaryScreen().size().width()), height
+        )
 
         return size_hint

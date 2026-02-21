@@ -25,7 +25,9 @@ class Canvas(QWidget):
 
         self.timer.start()
 
-        self.palette_group = load_palette_group(level.object_set_num, level.object_palette_num)
+        self.palette_group = load_palette_group(
+            level.object_set_num, level.object_palette_num
+        )
         self.gfx_set = GraphicsSet.from_number(level.graphics_set_num)
         self.tsa_data = ROM.get_tsa_data(level.object_set_num)
 
@@ -49,9 +51,13 @@ class Canvas(QWidget):
             x = (i % LEVEL_SCREEN_WIDTH) + screen * LEVEL_SCREEN_WIDTH
             y = (i // LEVEL_SCREEN_WIDTH) % height
 
-            block = get_block(block_index, self.palette_group, self.gfx_set, self.tsa_data)
+            block = get_block(
+                block_index, self.palette_group, self.gfx_set, self.tsa_data
+            )
 
-            block.draw(painter, x * Block.SIDE_LENGTH, y * Block.SIDE_LENGTH, Block.SIDE_LENGTH)
+            block.draw(
+                painter, x * Block.SIDE_LENGTH, y * Block.SIDE_LENGTH, Block.SIDE_LENGTH
+            )
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self._find_object_at_pos(event.position().toPoint())

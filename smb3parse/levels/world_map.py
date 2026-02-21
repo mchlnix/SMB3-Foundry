@@ -30,7 +30,8 @@ from smb3parse.util.rom import Rom
 
 def list_world_map_addresses(rom: Rom) -> list[int]:
     addresses = [
-        WORLD_MAP_BASE_OFFSET + rom.little_endian(Constants.LAYOUT_LIST_OFFSET + OFFSET_SIZE * world)
+        WORLD_MAP_BASE_OFFSET
+        + rom.little_endian(Constants.LAYOUT_LIST_OFFSET + OFFSET_SIZE * world)
         for world in range(WORLD_COUNT)
     ]
 
@@ -50,12 +51,18 @@ def level_name(data: Optional[LevelPointerData]) -> str:
     tile = data.world.tile_data[data.pos.tile_data_index]
 
     if not tile_is_enterable(tile, data._rom):
-        return "Untitled Level"
+        return _("Untitled Level")
 
     if tile in range(TILE_LEVEL_1, TILE_LEVEL_10 + 1):
-        return f"Level {data.world.index + 1}-{tile - TILE_LEVEL_1 + 1}"
+        return _("Level %(world)d-%(level)d") % {
+            "world": data.world.index + 1,
+            "level": tile - TILE_LEVEL_1 + 1,
+        }
 
-    return f"Level {data.world.index + 1}-{TILE_NAMES[tile]}"
+    return _("Level %(world)d-%(level)s") % {
+        "world": data.world.index + 1,
+        "level": TILE_NAMES[tile],
+    }
 
 
 def _get_normal_enterable_tiles(rom: Rom) -> bytes:
@@ -63,7 +70,9 @@ def _get_normal_enterable_tiles(rom: Rom) -> bytes:
 
 
 def _get_special_enterable_tiles(rom: Rom) -> bytes:
-    return rom.read(Constants.SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
+    return rom.read(
+        Constants.SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT
+    )
 
 
 def _get_completable_tiles(rom: Rom) -> bytearray:
@@ -105,7 +114,9 @@ class WorldMap(LevelBase):
     """
 
     def __init__(self, layout_address: int, rom: Rom):
-        super(WorldMap, self).__init__(ObjectSet(rom, WORLD_MAP_OBJECT_SET), layout_address)
+        super(WorldMap, self).__init__(
+            ObjectSet(rom, WORLD_MAP_OBJECT_SET), layout_address
+        )
 
         self.rom = rom
 
@@ -114,14 +125,20 @@ class WorldMap(LevelBase):
         try:
             self.number = memory_addresses.index(layout_address) + 1
         except ValueError:
-            raise ValueError(f"World map was not found at given memory address {layout_address:x}.")
+            raise ValueError(
+                _("World map was not found at given memory address %s.")
+                % hex(layout_address)
+            )
 
         self.data = WorldMapData(self.rom, self.world_index)
 
         if len(self.layout_bytes) % WORLD_MAP_SCREEN_SIZE != 0:
             raise ValueError(
-                f"Invalid length of layout bytes for world map ({self.layout_bytes}). "
-                f"Should be divisible by {WORLD_MAP_SCREEN_SIZE}."
+                _(
+                    "Invalid length of layout bytes for world map (%(bytes)s). "
+                    "Should be divisible by %(size)d."
+                )
+                % {"bytes": self.layout_bytes, "size": WORLD_MAP_SCREEN_SIZE}
             )
 
     @property
@@ -175,7 +192,18 @@ class WorldMap(LevelBase):
 
         if not 0xA000 <= level_pointer.level_offset < 0xC000:
             # suppose that level layouts are only in this range?
-            warn(f"Level in {self}@{pos.screen=}, {pos.row=}, {pos.column=} has offset {level_pointer.level_offset}")
+            warn(
+                _(
+                    "Level in %(map)s@%(screenequals)s, %(rowequals)s, %(columnequals)s has offset %(offset)d"
+                )
+                % {
+                    "map": self,
+                    "screenequals": f"{pos.screen=}",
+                    "rowequals": f"{pos.row=}",
+                    "columnequals": f"{pos.column}",
+                    "offset": level_pointer.level_offset,
+                }
+            )
 
         return level_pointer
 
@@ -185,7 +213,7 @@ class WorldMap(LevelBase):
         level_pointer = self.level_for_position(position)
 
         if level_pointer is None:
-            raise LookupError("No existing level at position.")
+            raise LookupError(_("No existing level at position."))
 
         level_pointer.object_set = object_set_number
         level_pointer.level_address = level_address
@@ -244,16 +272,31 @@ class WorldMap(LevelBase):
         """
         if pos.row not in VALID_ROWS:
             raise ValueError(
-                f"Given row {pos.row} is outside the valid range for world maps. Allowed are: {VALID_ROWS}."
+                _(
+                    "Given row %(row)d is outside the valid range for world maps. Allowed are: %(valid)s."
+                )
+                % {"row": pos.row, "valid": str(VALID_ROWS)}
             )
 
         if pos.column not in VALID_COLUMNS:
             raise ValueError(
-                f"Given column {pos.column} is outside the valid range for world maps. Allowed are {VALID_COLUMNS}"
+                _(
+                    "Given column %(column)d is outside the valid range for world maps. Allowed are %(valid)s."
+                )
+                % {"column": pos.column, "valid": str(VALID_ROWS)}
             )
 
         if pos.screen not in range(self.screen_count):
-            raise ValueError(f"World {self.number} has {self.screen_count} screens. Given number {pos.screen} invalid.")
+            raise ValueError(
+                _(
+                    "World %(world)d has %(screens)d screens. Given number %(screen)d invalid."
+                )
+                % {
+                    "world": self.number,
+                    "screens": self.screen_count,
+                    "screen": pos.screen,
+                }
+            )
 
         return self.layout_bytes[pos.tile_data_index]
 
@@ -287,11 +330,14 @@ class WorldMap(LevelBase):
     @staticmethod
     def from_world_number(rom: Rom, world_number: int) -> "WorldMap":
         if world_number - 1 not in range(WORLD_COUNT):
-            raise ValueError(f"World number {world_number - 1} must be between 1 and {WORLD_COUNT}, including.")
+            raise ValueError(
+                _("World number %(world)d must be between 1 and %(count)d, including.")
+                % {"world": world_number - 1, "count": WORLD_COUNT}
+            )
 
         memory_address = list_world_map_addresses(rom)[world_number - 1]
 
         return WorldMap(memory_address, rom)
 
     def __repr__(self):
-        return f"World {self.number}"
+        return _("World %d") % self.number

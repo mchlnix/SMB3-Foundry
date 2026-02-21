@@ -19,29 +19,29 @@ from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.util import clamp
 
 ENDING_STR = {
-    EndType.UNIFORM: "Uniform",
-    EndType.TOP_OR_LEFT: "Top or Left",
-    EndType.BOTTOM_OR_RIGHT: "Bottom or Right",
-    EndType.TWO_ENDS: "Top & Bottom/Left & Right",
+    EndType.UNIFORM: _("Uniform"),
+    EndType.TOP_OR_LEFT: _("Top or Left"),
+    EndType.BOTTOM_OR_RIGHT: _("Bottom or Right"),
+    EndType.TWO_ENDS: _("Top & Bottom/Left & Right"),
 }
 
 GENERATOR_TYPE_TO_STR = {
-    GeneratorType.HORIZONTAL: "Horizontal",
-    GeneratorType.VERTICAL: "Vertical",
-    GeneratorType.DIAG_DOWN_LEFT: "Diagonal ↙",
-    GeneratorType.DESERT_PIPE_BOX: "Desert Pipe Box",
-    GeneratorType.DIAG_DOWN_RIGHT: "Diagonal ↘",
-    GeneratorType.DIAG_UP_RIGHT: "Diagonal ↗",
-    GeneratorType.HORIZ_TO_GROUND: "Horizontal to the Ground",
-    GeneratorType.HORIZONTAL_2: "Horizontal Alternative",
-    GeneratorType.DIAG_WEIRD: "Diagonal Weird",  # up left?
-    GeneratorType.SINGLE_BLOCK: "Single Block",
-    GeneratorType.CENTERED: "Centered",
-    GeneratorType.PYRAMID_TO_GROUND: "Pyramid to Ground",
-    GeneratorType.PYRAMID_2: "Pyramid Alternative",
-    GeneratorType.TO_THE_SKY: "To the Sky",
-    GeneratorType.ENDING: "Ending",
-    GeneratorType.BRICK_WALL: "Brick Wall",
+    GeneratorType.HORIZONTAL: _("Horizontal"),
+    GeneratorType.VERTICAL: _("Vertical"),
+    GeneratorType.DIAG_DOWN_LEFT: _("Diagonal ↙"),
+    GeneratorType.DESERT_PIPE_BOX: _("Desert Pipe Box"),
+    GeneratorType.DIAG_DOWN_RIGHT: _("Diagonal ↘"),
+    GeneratorType.DIAG_UP_RIGHT: _("Diagonal ↗"),
+    GeneratorType.HORIZ_TO_GROUND: _("Horizontal to the Ground"),
+    GeneratorType.HORIZONTAL_2: _("Horizontal Alternative"),
+    GeneratorType.DIAG_WEIRD: _("Diagonal Weird"),  # up left?
+    GeneratorType.SINGLE_BLOCK: _("Single Block"),
+    GeneratorType.CENTERED: _("Centered"),
+    GeneratorType.PYRAMID_TO_GROUND: _("Pyramid to Ground"),
+    GeneratorType.PYRAMID_2: _("Pyramid Alternative"),
+    GeneratorType.TO_THE_SKY: _("To the Sky"),
+    GeneratorType.ENDING: _("Ending"),
+    GeneratorType.BRICK_WALL: _("Brick Wall"),
 }
 
 
@@ -227,9 +227,13 @@ class LevelObject(InLevelObject):
 
             self._draw_block(painter, block_index, x, y, block_length, transparent)
 
-    def _draw_block(self, painter: QPainter, block_index, x, y, block_length, transparent):
+    def _draw_block(
+        self, painter: QPainter, block_index, x, y, block_length, transparent
+    ):
         if block_index not in self.block_cache:
-            self.block_cache[block_index] = get_block(block_index, self.palette_group, self.graphics_set, self.tsa_data)
+            self.block_cache[block_index] = get_block(
+                block_index, self.palette_group, self.graphics_set, self.tsa_data
+            )
 
         self.block_cache[block_index].graphics_set.anim_frame = self.anim_frame
         self.block_cache[block_index].draw(
@@ -259,7 +263,10 @@ class LevelObject(InLevelObject):
 
         self._render()
 
-        if self.generator_type in (GeneratorType.PYRAMID_TO_GROUND, GeneratorType.PYRAMID_2):
+        if self.generator_type in (
+            GeneratorType.PYRAMID_TO_GROUND,
+            GeneratorType.PYRAMID_2,
+        ):
             # rendered_base_x is dependent on the height, so after the initial render we need to adjust it based on that
 
             dx = int(x) - self.rendered_base_x
@@ -365,7 +372,7 @@ class LevelObject(InLevelObject):
             if self.is_4byte:
                 self.data[3] = length
             else:
-                raise ValueError("Resize impossible", self)
+                raise ValueError(_("Resize impossible"), self)
 
         self._calculate_lengths()
 
@@ -390,7 +397,7 @@ class LevelObject(InLevelObject):
             if self.is_4byte:
                 self.data[3] = length
             else:
-                raise ValueError("Resize impossible", self)
+                raise ValueError(_("Resize impossible"), self)
 
         self._calculate_lengths()
 
@@ -457,10 +464,10 @@ class LevelObject(InLevelObject):
         return [
             ("x", self.rendered_base_x),
             ("y", self.rendered_base_y),
-            ("Width", self.rendered_width),
-            ("Height", self.rendered_height),
-            ("GeneratorType", GENERATOR_TYPE_TO_STR[self.generator_type]),
-            ("Ending", ENDING_STR[self.ending]),
+            (_("Width"), self.rendered_width),
+            (_("Height"), self.rendered_height),
+            (_("GeneratorType"), GENERATOR_TYPE_TO_STR[self.generator_type]),
+            (_("Ending"), ENDING_STR[self.ending]),
         ]
 
     def as_image(self) -> QImage:
@@ -523,13 +530,21 @@ class LevelObject(InLevelObject):
         return data
 
     def __repr__(self) -> str:
-        return f"LevelObject '{self.name}'/0x{self.data.hex()} at ({self.x_position}, {self.y_position})"
+        return _("LevelObject '%(name)s'/0x%(hex)s at (%(x)d, %(y)d)") % {
+            "name": self.name,
+            "hex": self.data.hex(),
+            "x": self.x_position,
+            "y": self.y_position,
+        }
 
     def __eq__(self, other):
         if not isinstance(other, LevelObject):
             return False
         else:
-            return self.to_bytes() == other.to_bytes() and self.index_in_level == other.index_in_level
+            return (
+                self.to_bytes() == other.to_bytes()
+                and self.index_in_level == other.index_in_level
+            )
 
     def __lt__(self, other):
         return self.index_in_level < other.index_in_level

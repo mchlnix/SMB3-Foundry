@@ -37,7 +37,11 @@ class Position:
         The tile data for a World Map is stored in one long list in memory. Based on the Position data of this object
         this Property returns the index of the tile at this Position in the memory.
         """
-        return self.screen * WORLD_MAP_SCREEN_SIZE + (self.row - FIRST_VALID_ROW) * WORLD_MAP_SCREEN_WIDTH + self.column
+        return (
+            self.screen * WORLD_MAP_SCREEN_SIZE
+            + (self.row - FIRST_VALID_ROW) * WORLD_MAP_SCREEN_WIDTH
+            + self.column
+        )
 
     @property
     def row(self):
@@ -88,7 +92,12 @@ class Position:
         return Position(column, row + FIRST_VALID_ROW, screen)
 
     def __repr__(self):
-        return f"Position({self.x}, {self.y} | {self.screen}) @ {id(self)}"
+        return _("Position(%(x)d, %(y)d | %(screen)d @ %(id)d)") % {
+            "x": self.x,
+            "y": self.y,
+            "screen": self.screen,
+            "id": id(self),
+        }
 
     def __add__(self, other):
         x, y = self.xy
@@ -185,7 +194,11 @@ class _PositionMixin:
     def is_at(self, *args):
         pos = self._pos_from_args(*args)
 
-        return self.screen == pos.screen and self.column == pos.column and self.row == pos.row
+        return (
+            self.screen == pos.screen
+            and self.column == pos.column
+            and self.row == pos.row
+        )
 
     @overload
     def set_pos(self, position: "Position") -> None: ...
@@ -207,7 +220,9 @@ class _PositionMixin:
             self.screen, self.row, self.column = args
 
         else:
-            raise ValueError("Method takes one Position object or three integers as screen, row, column.")
+            raise ValueError(
+                "Method takes one Position object or three integers as screen, row, column."
+            )
 
     @staticmethod
     def _pos_from_args(*args):
@@ -225,7 +240,9 @@ class _PositionMixin:
             return Position(column, row, screen)
 
         else:
-            raise ValueError("Method takes one Position object or three integers as screen, row, column.")
+            raise ValueError(
+                "Method takes one Position object or three integers as screen, row, column."
+            )
 
 
 class _IndexedMixin:

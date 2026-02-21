@@ -23,7 +23,8 @@ class ToolWindow(QMainWindow):
         self.setWindowFlag(Qt.WindowCloseButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
 
-        self.setWindowTitle("Tool Window - SMB3 Scribe")
+        # TRANSLATORS: Leave "SMB3 Scribe" untranslated
+        self.setWindowTitle(_("Tool Window - SMB3 Scribe"))
 
         self.level_ref = level_ref
 
@@ -33,7 +34,9 @@ class ToolWindow(QMainWindow):
         self.tile_picker.tile_selected.connect(self.tile_selected.emit)
 
         self.level_pointer_list = LevelPointerList(self, level_ref)
-        self.level_pointer_list.selection_changed.connect(self.level_pointer_selection_changed.emit)
+        self.level_pointer_list.selection_changed.connect(
+            self.level_pointer_selection_changed.emit
+        )
 
         self.sprite_list = SpriteList(self, level_ref)
         self.sprite_list.selection_changed.connect(self.sprite_selection_changed.emit)
@@ -41,15 +44,21 @@ class ToolWindow(QMainWindow):
         self.locks_list = LocksList(self, level_ref)
         self.locks_list.selection_changed.connect(self.locks_selection_changed.emit)
 
-        self.tabbed_widget.addTab(self.tile_picker, "Tiles")
-        self.tabbed_widget.addTab(self.level_pointer_list, "Level Pointers")
-        self.tabbed_widget.addTab(self.sprite_list, "Sprites")
-        self.tabbed_widget.addTab(self.locks_list, "Locks and Bridges")
+        self.tabbed_widget.addTab(self.tile_picker, _("Tiles"))
+        self.tabbed_widget.addTab(self.level_pointer_list, _("Level Pointers"))
+        self.tabbed_widget.addTab(self.sprite_list, _("Sprites"))
+        self.tabbed_widget.addTab(self.locks_list, _("Locks and Bridges"))
 
         # clear selection if you change the tab
-        self.tabbed_widget.currentChanged.connect(lambda _: self.level_pointer_list.clearSelection())
-        self.tabbed_widget.currentChanged.connect(lambda _: self.sprite_list.clearSelection())
-        self.tabbed_widget.currentChanged.connect(lambda _: self.locks_list.clearSelection())
+        self.tabbed_widget.currentChanged.connect(
+            lambda _: self.level_pointer_list.clearSelection()
+        )
+        self.tabbed_widget.currentChanged.connect(
+            lambda _: self.sprite_list.clearSelection()
+        )
+        self.tabbed_widget.currentChanged.connect(
+            lambda _: self.locks_list.clearSelection()
+        )
 
         self.setCentralWidget(self.tabbed_widget)
 

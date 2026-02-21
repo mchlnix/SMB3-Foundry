@@ -5,10 +5,18 @@ class AutoSaveDialog(QMessageBox):
     def __init__(self):
         super(AutoSaveDialog, self).__init__()
 
-        self.setWindowTitle("Rom was recovered")
-        self.setText("We found an auto saved ROM from the last session. Do you want to open it?")
+        self.setWindowTitle(_("Rom was recovered"))
+        self.setText(
+            _(
+                "We found an auto saved ROM from the last session. Do you want to open it?"
+            )
+        )
         self.setIcon(QMessageBox.Icon.Warning)
 
-        self.discard_rom_button = self.addButton("Discard Auto Save", QMessageBox.ButtonRole.DestructiveRole)
-        self.use_auto_save_button = self.addButton("Load Auto Save", QMessageBox.ButtonRole.AcceptRole)
+        self.discard_rom_button = self.addButton(
+            _("Discard Auto Save"), QMessageBox.ButtonRole.DestructiveRole
+        )
+        self.use_auto_save_button = self.addButton(
+            _("Load Auto Save"), QMessageBox.ButtonRole.AcceptRole
+        )
         self.setDefaultButton(self.use_auto_save_button)

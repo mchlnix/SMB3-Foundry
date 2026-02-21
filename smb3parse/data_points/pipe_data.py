@@ -82,7 +82,9 @@ class PipeData(_IndexedMixin, DataPoint):
 
         self.y_left, self.y_right = self._rom.nibbles(self.y_address)
 
-        self.scroll_and_x_high_left, self.scroll_and_x_high_right = self._rom.nibbles(self.scroll_and_x_high_address)
+        self.scroll_and_x_high_left, self.scroll_and_x_high_right = self._rom.nibbles(
+            self.scroll_and_x_high_address
+        )
 
     def write_back(self, rom: Optional[Rom] = None):
         if rom is None:

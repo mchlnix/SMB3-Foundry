@@ -14,35 +14,36 @@ from foundry.gui.MainWindow import MainWindow
 
 
 class HelpMenu(QMenu):
-    def __init__(self, parent: MainWindow, title="&Help"):
+    # TRANSLATORS: Ampersand designates keyboard shortcut key
+    def __init__(self, parent: MainWindow, title=_("&Help")):
         super(HelpMenu, self).__init__(title)
 
         self._parent = parent
 
         self.triggered.connect(self._on_trigger)
 
-        self.check_updates_action = self.addAction("Check for Updates")
+        self.check_updates_action = self.addAction(_("Check for Updates"))
         self.check_updates_action.setIcon(icon("bell.svg"))
 
         self.addSeparator()
 
-        self._video_action = self.addAction("Feature Video on YouTube")
+        self._video_action = self.addAction(_("Feature Video on YouTube"))
         self._video_action.setIcon(icon("youtube.svg"))
 
-        self._repo_action = self.addAction("Github Repository")
+        self._repo_action = self.addAction(_("Github Repository"))
         self._repo_action.setIcon(icon("github.svg"))
 
-        self._discord_action = self.addAction("SMB3 Rom Hacking Discord")
+        self._discord_action = self.addAction(_("SMB3 Rom Hacking Discord"))
         self._discord_action.setIcon(icon("message-square.svg"))
 
         self.addSeparator()
 
-        self._enemy_compat_action = self.addAction("Enemy Compatibility")
+        self._enemy_compat_action = self.addAction(_("Enemy Compatibility"))
         self._enemy_compat_action.setIcon(icon("compass.svg"))
 
         self.addSeparator()
 
-        self._about_action = self.addAction("About")
+        self._about_action = self.addAction(_("About"))
         self._about_action.setIcon(icon("info.svg"))
 
     def _on_trigger(self, action: QAction):

@@ -26,7 +26,9 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
     reference to the World Map it is located in and the position it is at in said World Map.
     """
 
-    SIZE = 2 * OFFSET_SIZE + 2  # object offset, enemy offset, 2 bytes for position in map
+    SIZE = (
+        2 * OFFSET_SIZE + 2
+    )  # object offset, enemy offset, 2 bytes for position in map
 
     def __init__(self, world_map_data: "WorldMapData", index: int):
         self.world = world_map_data
@@ -52,7 +54,9 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
 
     def calculate_addresses(self):
         self.x_address = self.screen_address = self.world.x_pos_list_start + self.index
-        self.y_address = self.object_set_address = self.world.y_pos_list_start + self.index
+        self.y_address = self.object_set_address = (
+            self.world.y_pos_list_start + self.index
+        )
 
         self.level_offset_address = (
             WORLD_MAP_BASE_OFFSET
@@ -87,7 +91,11 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
         Returns the offset, based on the level pointers object set, that needs to be added to its level header offset in
         order to get the actual memory location of the level in the ROM.
         """
-        return self._rom.int(Constants.OFFSET_BY_OBJECT_SET_A000 + self.object_set) * PRG_BANK_SIZE - 0xA000
+        return (
+            self._rom.int(Constants.OFFSET_BY_OBJECT_SET_A000 + self.object_set)
+            * PRG_BANK_SIZE
+            - 0xA000
+        )
 
     def read_values(self):
         self.screen, self.x = self._rom.nibbles(self.screen_address)
@@ -147,7 +155,15 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
         return True
 
     def __lt__(self, other):
-        self_result = self.screen * WORLD_MAP_SCREEN_SIZE + self.y * WORLD_MAP_SCREEN_WIDTH + self.x
-        other_result = other.screen * WORLD_MAP_SCREEN_SIZE + other.y * WORLD_MAP_SCREEN_WIDTH + other.x
+        self_result = (
+            self.screen * WORLD_MAP_SCREEN_SIZE
+            + self.y * WORLD_MAP_SCREEN_WIDTH
+            + self.x
+        )
+        other_result = (
+            other.screen * WORLD_MAP_SCREEN_SIZE
+            + other.y * WORLD_MAP_SCREEN_WIDTH
+            + other.x
+        )
 
         return self_result < other_result

@@ -57,22 +57,27 @@ ITEM_ARROW = load_from_png(53, 53)
 
 
 SPECIAL_BACKGROUND_OBJECTS = [
-    "blue background",
-    "starry background",
-    "underground background under this",
-    "sets background to actual background color",
+    _("blue background"),
+    _("starry background"),
+    _("underground background under this"),
+    _("sets background to actual background color"),
 ]
 
 
-OMITTED_ITEMS = [OBJ_PIPE_EXITS, OBJ_CHEST_EXIT, OBJ_CHEST_ITEM_SETTER, OBJ_WHITE_MUSHROOM_HOUSE]
+OMITTED_ITEMS = [
+    OBJ_PIPE_EXITS,
+    OBJ_CHEST_EXIT,
+    OBJ_CHEST_ITEM_SETTER,
+    OBJ_WHITE_MUSHROOM_HOUSE,
+]
 """
 These configure things based on their y-position in the level. This is done in the editor directly now. So no need to
 actually render them in the level.
 """
 
-
 ENEMY_ITEMS_WITH_OVERLAYS = apply(
-    str.lower, ("Invisible door (appears when you hit a P-switch)", "Red Koopa Paratroopa")
+    str.lower,
+    (_("Invisible door (appears when you hit a P-switch)"), _("Red Koopa Paratroopa")),
 )
 
 
@@ -85,7 +90,9 @@ def _block_from_index(block_index: int, level: Level) -> Block:
     :return:
     """
 
-    palette_group = load_palette_group(level.object_set_number, level.header.object_palette_index)
+    palette_group = load_palette_group(
+        level.object_set_number, level.header.object_palette_index
+    )
     graphics_set = GraphicsSet.from_number(level.header.graphic_set_index)
     tsa_data = ROM.get_tsa_data(level.object_set_number)
 
@@ -139,9 +146,15 @@ class LevelDrawer:
         painter.save()
 
         if level.object_set.number == CLOUDY_OBJECT_SET:
-            bg_color = NESPalette[load_palette_group(level.object_set_number, level.header.object_palette_index)[3][2]]
+            bg_color = NESPalette[
+                load_palette_group(
+                    level.object_set_number, level.header.object_palette_index
+                )[3][2]
+            ]
         else:
-            bg_color = bg_color_for_object_set(level.object_set_number, level.header.object_palette_index)
+            bg_color = bg_color_for_object_set(
+                level.object_set_number, level.header.object_palette_index
+            )
 
         painter.fillRect(level.get_rect(self.block_length), bg_color)
 
@@ -167,7 +180,9 @@ class LevelDrawer:
 
         for x, y in product(range(level.width), range(level.height)):
             bg_block.graphics_set.anim_frame = self.anim_frame
-            bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
+            bg_block.draw(
+                painter, x * self.block_length, y * self.block_length, self.block_length
+            )
 
         # draw ceiling
         ceiling_block = _block_from_index(139, level)
@@ -192,9 +207,13 @@ class LevelDrawer:
         for block_x in range(level.width):
             pixel_x = block_x * self.block_length
 
-            upper_floor_blocks[block_x % 2].draw(painter, pixel_x, upper_y, self.block_length)
+            upper_floor_blocks[block_x % 2].draw(
+                painter, pixel_x, upper_y, self.block_length
+            )
             upper_floor_blocks[block_x % 2].graphics_set.anim_frame = self.anim_frame
-            lower_floor_blocks[block_x % 2].draw(painter, pixel_x, lower_y, self.block_length)
+            lower_floor_blocks[block_x % 2].draw(
+                painter, pixel_x, lower_y, self.block_length
+            )
             lower_floor_blocks[block_x % 2].graphics_set.anim_frame = self.anim_frame
 
     def _draw_desert_default_graphics(self, painter: QPainter, level: Level):
@@ -205,18 +224,25 @@ class LevelDrawer:
 
         for x in range(level.width):
             floor_block.graphics_set.anim_frame = self.anim_frame
-            floor_block.draw(painter, x * self.block_length, floor_level, self.block_length)
+            floor_block.draw(
+                painter, x * self.block_length, floor_level, self.block_length
+            )
 
     def _draw_ice_default_graphics(self, painter: QPainter, level: Level):
         bg_block = _block_from_index(0x80, level)
 
         for x, y in product(range(level.width), range(level.height)):
             bg_block.graphics_set.anim_frame = self.anim_frame
-            bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
+            bg_block.draw(
+                painter, x * self.block_length, y * self.block_length, self.block_length
+            )
 
     def _draw_objects(self, painter: QPainter, level: Level):
         for level_object in level.get_all_objects():
-            if isinstance(level_object, EnemyItem) and level_object.type in OMITTED_ITEMS:
+            if (
+                isinstance(level_object, EnemyItem)
+                and level_object.type in OMITTED_ITEMS
+            ):
                 continue
 
             level_object.render()
@@ -233,7 +259,9 @@ class LevelDrawer:
                     x = level_object.x_position + index % width
                     y = level_object.y_position + index // width
 
-                    level_object._draw_block(painter, block_index, x, y, self.block_length, False)
+                    level_object._draw_block(
+                        painter, block_index, x, y, self.block_length, False
+                    )
             else:
                 level_object.anim_frame = self.anim_frame
                 level_object.draw(
@@ -257,7 +285,10 @@ class LevelDrawer:
             name = level_object.name.lower()
 
             # only handle this specific enemy item for now
-            if isinstance(level_object, EnemyItem) and name not in ENEMY_ITEMS_WITH_OVERLAYS:
+            if (
+                isinstance(level_object, EnemyItem)
+                and name not in ENEMY_ITEMS_WITH_OVERLAYS
+            ):
                 continue
 
             pos = level_object.get_rect(self.block_length).topLeft()
@@ -315,7 +346,12 @@ class LevelDrawer:
                 if not self._object_in_jump_area(level, trigger_position):
                     image = NO_JUMP
 
-            elif "door" == name or "door (can go" in name or "invisible door" in name or "red invisible note" in name:
+            elif (
+                "door" == name
+                or "door (can go" in name
+                or "invisible door" in name
+                or "red invisible note" in name
+            ):
                 fill_object = False
 
                 if "note" in name:
@@ -333,7 +369,12 @@ class LevelDrawer:
                     image = NO_JUMP
 
             # "?" - blocks, note blocks, wooden blocks and bricks
-            elif "'?' with" in name or "brick with" in name or "bricks with" in name or "block with" in name:
+            elif (
+                "'?' with" in name
+                or "brick with" in name
+                or "bricks with" in name
+                or "block with" in name
+            ):
                 if not self.settings.value("level view/draw_items_in_blocks"):
                     continue
 
@@ -363,7 +404,9 @@ class LevelDrawer:
                 # draw little arrow for the offset item overlay
                 arrow_pos = QPoint(pos)
                 arrow_pos.setY(arrow_pos.y() + self.block_length / 4)
-                painter.drawImage(arrow_pos, ITEM_ARROW.scaled(self.block_length, self.block_length))
+                painter.drawImage(
+                    arrow_pos, ITEM_ARROW.scaled(self.block_length, self.block_length)
+                )
 
             elif "invisible" in name:
                 if not self.settings.value("level view/draw_invisible_items"):
@@ -401,7 +444,9 @@ class LevelDrawer:
 
                 koopa_trail_pen.setStyle(Qt.PenStyle.SolidLine)
                 painter.setPen(koopa_trail_pen)
-                painter.drawLine(pos.x(), end_pos.y(), pos.x() + self.block_length, end_pos.y())
+                painter.drawLine(
+                    pos.x(), end_pos.y(), pos.x() + self.block_length, end_pos.y()
+                )
 
                 painter.restore()
 
@@ -469,9 +514,9 @@ class LevelDrawer:
         # loop through positions and draw transparent mario
         x_offset = graphic_width * level.start_action
 
-        mario_cutout = mario_actions.copy(QRect(x_offset, 0, graphic_width, graphic_height)).scaled(
-            2 * self.block_length, 2 * self.block_length
-        )
+        mario_cutout = mario_actions.copy(
+            QRect(x_offset, 0, graphic_width, graphic_height)
+        ).scaled(2 * self.block_length, 2 * self.block_length)
 
         for mario_position in potential_positions:
             painter.drawImage(mario_position, mario_cutout)
@@ -484,15 +529,17 @@ class LevelDrawer:
 
         x_offset = graphic_width * level.start_action
 
-        mario_cutout = mario_actions.copy(QRect(x_offset, 0, graphic_width, graphic_height)).scaled(
-            2 * self.block_length, 2 * self.block_length
-        )
+        mario_cutout = mario_actions.copy(
+            QRect(x_offset, 0, graphic_width, graphic_height)
+        ).scaled(2 * self.block_length, 2 * self.block_length)
 
         painter.drawImage(mario_position, mario_cutout)
 
     def _draw_jumps(self, painter: QPainter, level: Level):
         for jump in level.jumps:
-            painter.setBrush(QBrush(QColor(0xFF, 0x00, 0x00), Qt.BrushStyle.FDiagPattern))
+            painter.setBrush(
+                QBrush(QColor(0xFF, 0x00, 0x00), Qt.BrushStyle.FDiagPattern)
+            )
 
             painter.drawRect(jump.get_rect(self.block_length, level.is_vertical))
 
@@ -514,12 +561,18 @@ class LevelDrawer:
 
         if level.is_vertical:
             for y in range(0, panel_height, self.block_length * LEVEL_SCREEN_HEIGHT):
-                painter.drawText(QPoint(0, self.block_length + y), str(y // self.block_length))
+                painter.drawText(
+                    QPoint(0, self.block_length + y), str(y // self.block_length)
+                )
         else:
             for x in range(0, panel_width, self.block_length * LEVEL_SCREEN_WIDTH):
-                painter.drawText(QPoint(x, self.block_length), str(x // self.block_length))
+                painter.drawText(
+                    QPoint(x, self.block_length), str(x // self.block_length)
+                )
 
-    def _draw_screen_lines(self, painter: QPainter, panel_height, panel_width, vertical_level):
+    def _draw_screen_lines(
+        self, painter: QPainter, panel_height, panel_width, vertical_level
+    ):
         font = painter.font()
         font.setPointSize(self.block_length)
 
@@ -529,7 +582,9 @@ class LevelDrawer:
 
         if vertical_level:
             for y in range(0, panel_height, self.block_length * LEVEL_SCREEN_HEIGHT):
-                painter.drawLine(0, self.block_length + y, panel_width, self.block_length + y)
+                painter.drawLine(
+                    0, self.block_length + y, panel_width, self.block_length + y
+                )
         else:
             for x in range(0, panel_width, self.block_length * LEVEL_SCREEN_WIDTH):
                 painter.drawLine(x, 0, x, panel_height)

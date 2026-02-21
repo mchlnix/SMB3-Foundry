@@ -7,7 +7,7 @@ class CustomChildWindow(QMainWindow):
     A customized Mainwindow replacement, allowing to set a central widget.
     """
 
-    def __init__(self, parent, title="Title"):
+    def __init__(self, parent, title=_("Title")):
         super(CustomChildWindow, self).__init__(parent)
 
         self.setWindowTitle(title)

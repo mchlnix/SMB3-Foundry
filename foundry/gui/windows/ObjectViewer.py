@@ -33,7 +33,7 @@ MAX_LENGTH = 0xFF
 
 class ObjectViewer(CustomChildWindow):
     def __init__(self, parent):
-        super(ObjectViewer, self).__init__(parent, title="Object Viewer")
+        super(ObjectViewer, self).__init__(parent, title=_("Object Viewer"))
 
         self.spin_domain = Spinner(self, MAX_DOMAIN)
         self.spin_domain.valueChanged.connect(self.on_spin)
@@ -146,7 +146,9 @@ class ObjectDrawArea(QWidget):
     def __init__(self, parent, object_set, graphic_set=1, palette_index=0):
         super(ObjectDrawArea, self).__init__(parent)
 
-        self.object_factory = LevelObjectFactory(object_set, graphic_set, palette_index, [], False, size_minimal=True)
+        self.object_factory = LevelObjectFactory(
+            object_set, graphic_set, palette_index, [], False, size_minimal=True
+        )
 
         self.current_object: LevelObject = cast(
             LevelObject, self.object_factory.from_data(bytearray([0x0, 0x0, 0x0]), 0)

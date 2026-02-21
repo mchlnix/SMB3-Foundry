@@ -65,9 +65,11 @@ class _InfoWidget(QWidget):
 
         decimal_label = QLabel()
 
-        self._spinner.valueChanged.connect(lambda x: decimal_label.setText(prop_info.value_str(x)))
+        self._spinner.valueChanged.connect(
+            lambda x: decimal_label.setText(prop_info.value_str(x))
+        )
 
-        edit_layout.addWidget(QLabel("Value:"))
+        edit_layout.addWidget(QLabel(_("Value:")))
         edit_layout.addStretch(1)
         edit_layout.addWidget(decimal_label)
         edit_layout.addWidget(self._spinner)
@@ -77,8 +79,11 @@ class _InfoWidget(QWidget):
         layout.addStretch(1)
         layout.addWidget(
             QLabel(
-                f"ROM Address: {prop_info.rom_address:#X} / "
-                f"PRG_{(prop_info.rom_address - BASE_OFFSET) // PRG_BANK_SIZE:0>3}"
+                _("ROM Address: %(address)s / PRG_%(prg)s")
+                % {
+                    "address": f"{prop_info.rom_address:#X}",
+                    "prg": f"{(prop_info.rom_address - BASE_OFFSET) // PRG_BANK_SIZE:0>3}",
+                }
             )
         )
 
@@ -93,7 +98,7 @@ class _InfoWidget(QWidget):
 
 class GamePropertiesDialog(CustomDialog):
     def __init__(self, parent, rom: Rom):
-        super(GamePropertiesDialog, self).__init__(parent, "Game Properties")
+        super(GamePropertiesDialog, self).__init__(parent, _("Game Properties"))
         self._rom = rom
 
         self.setMinimumSize(QSize(600, 600))
@@ -106,8 +111,12 @@ class GamePropertiesDialog(CustomDialog):
         self._details_switcher = QStackedWidget(self)
 
         button_group = QDialogButtonBox()
-        button_group.addButton(QDialogButtonBox.StandardButton.Cancel).clicked.connect(self.reject)
-        button_group.addButton(QDialogButtonBox.StandardButton.Save).clicked.connect(self.accept)
+        button_group.addButton(QDialogButtonBox.StandardButton.Cancel).clicked.connect(
+            self.reject
+        )
+        button_group.addButton(QDialogButtonBox.StandardButton.Save).clicked.connect(
+            self.accept
+        )
 
         details_and_buttons_layout = QVBoxLayout()
         details_and_buttons_layout.addWidget(self._details_switcher, stretch=1)
@@ -157,7 +166,9 @@ class GamePropertiesDialog(CustomDialog):
                 current_prop_item = self._parse_property(current_section_item, line)
 
             elif line.startswith("info "):
-                self._prop_item_to_data[current_prop_item].description = line.removeprefix("info ")
+                self._prop_item_to_data[current_prop_item].description = (
+                    line.removeprefix("info ")
+                )
 
             elif line.startswith("type "):
                 self._parse_property_values(current_prop_item, line)
@@ -183,7 +194,7 @@ class GamePropertiesDialog(CustomDialog):
 
     def _parse_property(self, current_section_item, line):
         if current_section_item is None:
-            raise ValueError("No section was found, before a caption was set.")
+            raise ValueError(_("No section was found, before a caption was set."))
 
         property_title = line.removeprefix("caption ")
 
@@ -196,7 +207,7 @@ class GamePropertiesDialog(CustomDialog):
 
     def _parse_property_values(self, current_prop_item, line):
         if current_prop_item not in self._prop_item_to_data:
-            raise ValueError("No caption was found, before type values were set.")
+            raise ValueError(_("No caption was found, before type values were set."))
 
         data = self._prop_item_to_data[current_prop_item]
 
@@ -216,11 +227,13 @@ class GamePropertiesDialog(CustomDialog):
             assert line.startswith("INT")
             line = line.removeprefix("INT")
 
-        data.rom_address, data.min_value, data.max_value = map(hex_int, line.strip().split(" "))
+        data.rom_address, data.min_value, data.max_value = map(
+            hex_int, line.strip().split(" ")
+        )
 
     def _parse_unit(self, current_prop_item, line):
         if current_prop_item not in self._prop_item_to_data:
-            raise ValueError("No caption was found, before type values were set.")
+            raise ValueError(_("No caption was found, before type values were set."))
 
         line = line.removeprefix("unit ")
 

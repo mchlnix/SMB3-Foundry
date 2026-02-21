@@ -10,7 +10,8 @@ class EditMenu(QMenu):
     world_order_maybe_changed: SignalInstance = Signal()
 
     def __init__(self, parent):
-        super(EditMenu, self).__init__("&Edit", parent)
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        super(EditMenu, self).__init__(_("&Edit"), parent)
 
         self.triggered.connect(self.on_menu)
 
@@ -19,7 +20,9 @@ class EditMenu(QMenu):
         self.undo_action.setIcon(icon("rotate-ccw.svg"))
 
         self.redo_action = self.undo_stack.createRedoAction(self)
-        self.redo_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_Z)
+        self.redo_action.setShortcut(
+            Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_Z
+        )
         self.redo_action.setIcon(icon("rotate-cw.svg"))
 
         self.addAction(self.undo_action)
@@ -27,16 +30,21 @@ class EditMenu(QMenu):
 
         self.addSeparator()
 
-        self.clear_tiles_action = self.addAction("Clear &Tiles")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.clear_tiles_action = self.addAction(_("Clear &Tiles"))
         self.clear_tiles_action.setIcon(icon("loader.svg"))
-        self.clear_level_pointers_action = self.addAction("Clear All &Level Pointers")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.clear_level_pointers_action = self.addAction(
+            _("Clear All &Level Pointers")
+        )
         self.clear_level_pointers_action.setIcon(icon("loader.svg"))
-        self.clear_sprites_action = self.addAction("Clear All &Sprites")
+        # TRANSLATORS: Ampersand designates keyboard shortcut key
+        self.clear_sprites_action = self.addAction(_("Clear All &Sprites"))
         self.clear_sprites_action.setIcon(icon("loader.svg"))
 
         self.addSeparator()
 
-        self.edit_world_info = self.addAction("Edit World Info")
+        self.edit_world_info = self.addAction(_("Edit World Info"))
         self.edit_world_info.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_E)
         self.edit_world_info.setIcon(icon("tool.svg"))
 

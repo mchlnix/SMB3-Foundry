@@ -24,18 +24,29 @@ class LocksList(TableWidget):
 
         self.cellChanged.connect(self._save_fortress_fx)
 
-        self.set_headers(["Replacement Tile", "Lock Index", "Boom Boom Y Positions", "Map Position"])
+        self.set_headers(
+            [
+                _("Replacement Tile"),
+                _("Lock Index"),
+                _("Boom Boom Y Positions"),
+                _("Map Position"),
+            ]
+        )
 
         self.setItemDelegateForColumn(0, BlockBankDelegate(self))
-        self.setItemDelegateForColumn(1, SpinBoxDelegate(self, maximum=FORTRESS_FX_COUNT - 1))
+        self.setItemDelegateForColumn(
+            1, SpinBoxDelegate(self, maximum=FORTRESS_FX_COUNT - 1)
+        )
         self.setItemDelegateForColumn(2, NoneDelegate(self))
         self.setItemDelegateForColumn(
             3,
             DialogDelegate(
                 self,
-                "No can do",
-                "You can move Fortress FX by dragging them around in the WorldView. "
-                "Make sure they are shown in the View Menu.",
+                _("No can do"),
+                _(
+                    "You can move Fortress FX by dragging them around in the WorldView. "
+                    "Make sure they are shown in the View Menu."
+                ),
             ),
         )
 
@@ -51,7 +62,9 @@ class LocksList(TableWidget):
             block_bank = typing.cast(BlockBank, self.cellWidget(row, column))
             data = block_bank.last_clicked_index
 
-            self.undo_stack.push(ChangeReplacementTile(self.world, lock.data.index, data))
+            self.undo_stack.push(
+                ChangeReplacementTile(self.world, lock.data.index, data)
+            )
 
         elif column == 1:
             spinner = typing.cast(Spinner, self.cellWidget(row, column))
@@ -70,19 +83,32 @@ class LocksList(TableWidget):
         self.blockSignals(True)
 
         for index, fortress_fx in enumerate(self.world.locks_and_bridges):
-            replacement_tile = QTableWidgetItem(hex(fortress_fx.data.replacement_block_index))
+            replacement_tile = QTableWidgetItem(
+                hex(fortress_fx.data.replacement_block_index)
+            )
 
             block_icon = QPixmap(self.iconSize())
             painter = QPainter(block_icon)
-            get_worldmap_tile(fortress_fx.data.replacement_block_index).draw(painter, 0, 0, self.iconSize().width())
+            get_worldmap_tile(fortress_fx.data.replacement_block_index).draw(
+                painter, 0, 0, self.iconSize().width()
+            )
             painter.end()
 
             replacement_tile.setIcon(block_icon)
 
             fortress_index = QTableWidgetItem(hex(fortress_fx.data.index))
 
-            boom_boom_pos = QTableWidgetItem(f"{0x10 + 0x10 * index:#x} - {0x20 + 0x10 * index - 1:#x}")
-            pos = QTableWidgetItem(f"Screen {fortress_fx.data.screen}: x={fortress_fx.data.x}, y={fortress_fx.data.y}")
+            boom_boom_pos = QTableWidgetItem(
+                f"{0x10 + 0x10 * index:#x} - {0x20 + 0x10 * index - 1:#x}"
+            )
+            pos = QTableWidgetItem(
+                _("Screen %(screen)d: x=%(x)d, y=%(y)d}")
+                % {
+                    "screen": fortress_fx.data.screen,
+                    "x": fortress_fx.data.x,
+                    "y": fortress_fx.data.y,
+                }
+            )
 
             self._set_map_tile_as_icon(pos, fortress_fx.get_position())
 

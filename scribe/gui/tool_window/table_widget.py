@@ -40,7 +40,9 @@ class TableWidget(FoundryTableWidget):
 
     @property
     def undo_stack(self) -> QUndoStack:
-        return cast(QUndoStack, self.window().parent().findChild(QUndoStack, "undo_stack"))
+        return cast(
+            QUndoStack, self.window().parent().findChild(QUndoStack, "undo_stack")
+        )
 
     def update_content(self):
         pass

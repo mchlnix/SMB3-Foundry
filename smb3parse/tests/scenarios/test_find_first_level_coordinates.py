@@ -21,7 +21,9 @@ def test_find_first_level_coordinates(rom: Rom):
 
     assert (lp := coordinate.level_pointer) is not None
 
-    world_1.replace_level_at_position((lp.level_address, lp.enemy_address, lp.object_set), coordinate)
+    world_1.replace_level_at_position(
+        (lp.level_address, lp.enemy_address, lp.object_set), coordinate
+    )
 
     for i in range(0, len(original_rom_data), 0x10):
         original_data = apply(hex, original_rom_data[i : i + 0x10])

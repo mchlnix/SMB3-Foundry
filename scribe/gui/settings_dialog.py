@@ -20,33 +20,37 @@ from foundry.gui.settings import Settings
 
 class SettingsDialog(CustomDialog):
     def __init__(self, settings: Settings, parent=None):
-        super(SettingsDialog, self).__init__(parent, "Settings")
+        super(SettingsDialog, self).__init__(parent, _("Settings"))
 
         self.settings = settings
 
         # -----------------------------------------------
         # Online Section
 
-        online_box = QGroupBox("Online", self)
+        online_box = QGroupBox(_("Online"), self)
         layout = QVBoxLayout()
         online_box.setLayout(layout)
 
-        self._update_check_box = QCheckBox("Enabled")
-        self._update_check_box.setChecked(self.settings.value("editor/update_on_startup"))
+        self._update_check_box = QCheckBox(_("Enabled"))
+        self._update_check_box.setChecked(
+            self.settings.value("editor/update_on_startup")
+        )
         self._update_check_box.toggled.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
-                "Check for Updates on Startup:",
+                _("Check for Updates on Startup:"),
                 self._update_check_box,
-                tooltip="Checks the Repository for a new Version when the Editor is started.",
+                tooltip=_(
+                    "Checks the Repository for a new Version when the Editor is started."
+                ),
             )
         )
 
         # -----------------------------------------------
         # GUI section
 
-        self.gui_box = QGroupBox("GUI", self)
+        self.gui_box = QGroupBox(_("GUI"), self)
         layout = QVBoxLayout()
         self.gui_box.setLayout(layout)
 
@@ -57,7 +61,7 @@ class SettingsDialog(CustomDialog):
         path_dropdown.setCurrentText(self.settings.value("editor/default dir"))
         path_dropdown.currentTextChanged.connect(self.on_dropdown)
 
-        path_layout.addWidget(QLabel("Default path:"))
+        path_layout.addWidget(QLabel(_("Default path:")))
         path_layout.addWidget(path_dropdown)
 
         layout.addLayout(path_layout)
@@ -78,8 +82,10 @@ class SettingsDialog(CustomDialog):
         # Emulator Command Section
 
         self.emulator_command_input = QLineEdit(self)
-        self.emulator_command_input.setPlaceholderText("Path to emulator")
-        self.emulator_command_input.setText(self.settings.value("editor/instaplay_emulator"))
+        self.emulator_command_input.setPlaceholderText(_("Path to emulator"))
+        self.emulator_command_input.setText(
+            self.settings.value("editor/instaplay_emulator")
+        )
 
         self.emulator_command_input.textChanged.connect(self._update_settings)
 
@@ -88,13 +94,15 @@ class SettingsDialog(CustomDialog):
 
         self.command_arguments_input = QLineEdit(self)
         self.command_arguments_input.setPlaceholderText("%f")
-        self.command_arguments_input.setText(self.settings.value("editor/instaplay_arguments"))
+        self.command_arguments_input.setText(
+            self.settings.value("editor/instaplay_arguments")
+        )
 
         self.command_arguments_input.textEdited.connect(self._update_settings)
 
         self.command_label = QLabel()
 
-        command_box = QGroupBox("Emulator", self)
+        command_box = QGroupBox(_("Emulator"), self)
         command_layout = QVBoxLayout(command_box)
 
         command_layout.addWidget(QLabel('Emulator command or "path to exe":'))
@@ -104,9 +112,11 @@ class SettingsDialog(CustomDialog):
         command_input_layout.addWidget(self.emulator_path_button)
 
         command_layout.addLayout(command_input_layout)
-        command_layout.addWidget(QLabel("Command arguments (%f will be replaced with rom path):"))
+        command_layout.addWidget(
+            QLabel(_("Command arguments (%f will be replaced with rom path):"))
+        )
         command_layout.addWidget(self.command_arguments_input)
-        command_layout.addWidget(QLabel("Command used to play the rom:"))
+        command_layout.addWidget(QLabel(_("Command used to play the rom:")))
         command_layout.addWidget(self.command_label)
 
         # -----------------------------------------------
@@ -125,23 +135,31 @@ class SettingsDialog(CustomDialog):
         )
 
     def _update_settings(self, _=None):
-        self.settings.setValue("editor/instaplay_emulator", self.emulator_command_input.text())
-        self.settings.setValue("editor/instaplay_arguments", self.command_arguments_input.text())
+        self.settings.setValue(
+            "editor/instaplay_emulator", self.emulator_command_input.text()
+        )
+        self.settings.setValue(
+            "editor/instaplay_arguments", self.command_arguments_input.text()
+        )
 
-        self.settings.setValue("editor/update_on_startup", self._update_check_box.isChecked())
+        self.settings.setValue(
+            "editor/update_on_startup", self._update_check_box.isChecked()
+        )
 
         self.settings.setValue("editor/default dir", self.path_dropdown.currentText())
         if self.path_dropdown.currentText() == "Custom":
-            self.settings.setValue("editor/custom default dir path", self.default_dir_label.text())
+            self.settings.setValue(
+                "editor/custom default dir path", self.default_dir_label.text()
+            )
 
         self.settings.setValue("editor/default dir path", self.default_dir_label.text())
 
         self.update()
 
     def _get_emulator_path(self):
-        path_to_emulator, _ = QFileDialog.getOpenFileName(
+        path_to_emulator, __ = QFileDialog.getOpenFileName(
             self,
-            caption="Select emulator executable",
+            caption=_("Select emulator executable"),
             dir=QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation),
         )
 
@@ -153,21 +171,23 @@ class SettingsDialog(CustomDialog):
     def _get_default_dir(self):
         path_to_roms = QFileDialog.getExistingDirectory(
             self,
-            caption="Select Rom directory",
+            caption=_("Select Rom directory"),
             dir=QStandardPaths.writableLocation(QStandardPaths.HomeLocation),
         )
 
         if not path_to_roms:
             return
 
-        self.path_dropdown.setCurrentText("Custom")
+        self.path_dropdown.setCurrentText(_("Custom"))
         self.default_dir_label.setText(path_to_roms)
 
         self._update_settings()
 
     def on_dropdown(self, new_text):
-        if new_text == "Custom":
-            self.default_dir_label.setText(self.settings.value("editor/custom default dir path"))
+        if new_text == _("Custom"):
+            self.default_dir_label.setText(
+                self.settings.value("editor/custom default dir path")
+            )
         elif new_text in default_dirs:
             self.default_dir_label.setText(default_dirs[new_text])
 

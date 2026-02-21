@@ -23,11 +23,13 @@ class ManagedLevelsMixin(SettingsMixin):
     def __init__(self, parent):
         super().__init__(parent)
 
-        boom_boom_group = QGroupBox("Managed Level Positions")
+        boom_boom_group = QGroupBox(_("Managed Level Positions"))
         QVBoxLayout(boom_boom_group)
 
-        self.enabled_checkbox = QCheckBox("Enable Managed Level Positions")
-        self.enabled_checkbox.setChecked(bool(ROM.additional_data.managed_level_positions))
+        self.enabled_checkbox = QCheckBox(_("Enable Managed Level Positions"))
+        self.enabled_checkbox.setChecked(
+            bool(ROM.additional_data.managed_level_positions)
+        )
 
         self.enabled_checkbox.toggled.connect(self.update_level_info)
 
@@ -35,7 +37,7 @@ class ManagedLevelsMixin(SettingsMixin):
 
         self.layout().addWidget(boom_boom_group)
 
-        self.level_info_box = QGroupBox("Level Range in Rom Banks")
+        self.level_info_box = QGroupBox(_("Level Range in Rom Banks"))
         QVBoxLayout(self.level_info_box)
         self.layout().addWidget(self.level_info_box)
 
@@ -64,7 +66,9 @@ class ManagedLevelsMixin(SettingsMixin):
             levels_per_object_set: dict[int, set[int]] = defaultdict(set)
 
             for found_level in ROM.additional_data.found_levels:  # noqa
-                levels_per_object_set[found_level.object_set_number].add(found_level.level_offset)
+                levels_per_object_set[found_level.object_set_number].add(
+                    found_level.level_offset
+                )
 
         else:
             pd = LevelParseProgressDialog()
@@ -88,18 +92,35 @@ class ManagedLevelsMixin(SettingsMixin):
             object_set_by_prg_banks[prg_index].append(object_set_index)
 
         if not self.level_info_box_initialized:
-            for prg_index, object_set_indexes in sorted(object_set_by_prg_banks.items()):
+            for prg_index, object_set_indexes in sorted(
+                object_set_by_prg_banks.items()
+            ):
                 prg_start = prg_index * PRG_BANK_SIZE
-                if any(not levels_per_object_set[object_set] for object_set in object_set_indexes):
+                if any(
+                    not levels_per_object_set[object_set]
+                    for object_set in object_set_indexes
+                ):
                     level_start = prg_start
                 else:
-                    level_start = min(list(levels_per_object_set[object_set])[0] for object_set in object_set_indexes)
+                    level_start = min(
+                        list(levels_per_object_set[object_set])[0]
+                        for object_set in object_set_indexes
+                    )
 
                 prg_end = (prg_index + 1) * PRG_BANK_SIZE
 
                 self.level_info_box.layout().addWidget(
                     QLabel(
-                        f"PRG Bank #{prg_index}, {', '.join([OBJECT_SET_NAMES[index] for index in object_set_indexes])}"
+                        _("PRG Bank #%(index)d, %(names)s")
+                        % {
+                            "index": prg_index,
+                            "names": ", ".join(
+                                [
+                                    OBJECT_SET_NAMES[index]
+                                    for index in object_set_indexes
+                                ]
+                            ),
+                        }
                     )
                 )
 
@@ -108,9 +129,10 @@ class ManagedLevelsMixin(SettingsMixin):
                 level_start_spinner.setValue(level_start)
 
                 level_start_layout = QHBoxLayout()
-                level_start_layout.addWidget(QLabel("Level data range:"))
+                level_start_layout.addWidget(QLabel(_("Level data range:")))
                 level_start_layout.addWidget(level_start_spinner)
-                level_start_layout.addWidget(QLabel(f" to 0x{prg_end - 1:x}"))
+                # TRANSLATORS: Continuation of a sentence
+                level_start_layout.addWidget(QLabel(_(" to 0x%s") % f"{prg_end - 1:x}"))
 
                 self.level_info_box.layout().addLayout(level_start_layout)
                 self.level_info_box.layout().addWidget(HorizontalLine())
@@ -138,16 +160,24 @@ class ManagedLevelsMixin(SettingsMixin):
             new_level_address = lo.old_level_address_to_new[self.level.header_offset]
             new_enemy_address = lo.old_enemy_address_to_new[self.level.enemy_offset]
 
-            new_jump_level_address = lo.old_level_address_to_new[self.level.header.jump_level_address]
-            new_jump_enemy_address = lo.old_enemy_address_to_new[self.level.header.jump_enemy_address]
+            new_jump_level_address = lo.old_level_address_to_new[
+                self.level.header.jump_level_address
+            ]
+            new_jump_enemy_address = lo.old_enemy_address_to_new[
+                self.level.header.jump_enemy_address
+            ]
 
             print(f"Level      {self.level.layout_address:x} -> {new_level_address:x}")
             print(f"Enemy      {self.level.enemy_offset:x} -> {new_enemy_address:x}")
 
             self.level.set_addresses(new_level_address, new_enemy_address)
 
-            print(f"Jump Level {self.level.header.jump_level_address:x} -> {new_jump_level_address:x}")
-            print(f"Jump Enemy {self.level.header.jump_enemy_address:x} -> {new_jump_enemy_address:x}")
+            print(
+                f"Jump Level {self.level.header.jump_level_address:x} -> {new_jump_level_address:x}"
+            )
+            print(
+                f"Jump Enemy {self.level.header.jump_enemy_address:x} -> {new_jump_enemy_address:x}"
+            )
 
             self.level.next_area_objects = new_jump_level_address
             self.level.next_area_enemies = new_jump_enemy_address

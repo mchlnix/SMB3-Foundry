@@ -24,7 +24,9 @@ def get_block(
     tsa_data: bytes,
 ):
     if block_index > 0xFF:
-        rom_block_index = ROM().int(block_index)  # block_index is an offset into the graphic memory
+        rom_block_index = ROM().int(
+            block_index
+        )  # block_index is an offset into the graphic memory
         block = Block(rom_block_index, palette_group, graphics_set, tsa_data)
     else:
         block = Block(block_index, palette_group, graphics_set, tsa_data)
@@ -108,11 +110,19 @@ class Block:
         ru = self._tsa_data[TSA_BANK_2_START + self.index]
         rd = self._tsa_data[TSA_BANK_3_START + self.index]
 
-        self.lu_tile = get_tile(lu, self._palette_group, self._palette_index, self.graphics_set)
-        self.ld_tile = get_tile(ld, self._palette_group, self._palette_index, self.graphics_set)
+        self.lu_tile = get_tile(
+            lu, self._palette_group, self._palette_index, self.graphics_set
+        )
+        self.ld_tile = get_tile(
+            ld, self._palette_group, self._palette_index, self.graphics_set
+        )
 
-        self.ru_tile = get_tile(ru, self._palette_group, self._palette_index, self.graphics_set)
-        self.rd_tile = get_tile(rd, self._palette_group, self._palette_index, self.graphics_set)
+        self.ru_tile = get_tile(
+            ru, self._palette_group, self._palette_index, self.graphics_set
+        )
+        self.rd_tile = get_tile(
+            rd, self._palette_group, self._palette_index, self.graphics_set
+        )
 
         image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format_RGB888)
 
@@ -125,7 +135,9 @@ class Block:
 
         painter.end()
 
-        if _is_image_only_one_color(image) and image.pixelColor(0, 0) == QColor(*MASK_COLOR):
+        if _is_image_only_one_color(image) and image.pixelColor(0, 0) == QColor(
+            *MASK_COLOR
+        ):
             self._whole_block_is_transparent = True
         else:
             self._whole_block_is_transparent = False
@@ -135,7 +147,9 @@ class Block:
     def rerender(self):
         self._render()
 
-    def draw(self, painter: QPainter, x, y, block_length, selected=False, transparent=False):
+    def draw(
+        self, painter: QPainter, x, y, block_length, selected=False, transparent=False
+    ):
         block_attributes = (
             self._block_id,
             block_length,
@@ -152,7 +166,9 @@ class Block:
                 image = image.scaled(block_length, block_length)
 
             # mask out the transparent pixels first
-            mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
+            mask = image.createMaskFromColor(
+                QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor
+            )
             image.setAlphaChannel(mask)
 
             if not transparent:  # or self._whole_block_is_transparent:

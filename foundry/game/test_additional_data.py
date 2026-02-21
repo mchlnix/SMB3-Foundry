@@ -43,17 +43,26 @@ def mock_rom(rom):
         def __init__(self):
             super().__init__(bytearray(VANILLA_PRG_BANK_COUNT * PRG_BANK_SIZE))
 
-            super().write(Constants.PAGE_A000_ByTileset, rom.read(Constants.PAGE_A000_ByTileset, 16))
+            super().write(
+                Constants.PAGE_A000_ByTileset,
+                rom.read(Constants.PAGE_A000_ByTileset, 16),
+            )
 
             self.level_sizes = [24, 36, 48]
-            self.level_bytes = [randbytes(level_size_) + bytes([0xFF]) for level_size_ in self.level_sizes]
+            self.level_bytes = [
+                randbytes(level_size_) + bytes([0xFF])
+                for level_size_ in self.level_sizes
+            ]
 
             self.enemy_sizes = [24, 36, 48]
             self.enemy_bytes = [
-                bytes([0x00]) + randbytes(enemy_size_) + bytes([0xFF]) for enemy_size_ in self.enemy_sizes
+                bytes([0x00]) + randbytes(enemy_size_) + bytes([0xFF])
+                for enemy_size_ in self.enemy_sizes
             ]
 
-            self.starting_level_offsets = [first_plains_level + offset for offset in [0, 188, 345]]
+            self.starting_level_offsets = [
+                first_plains_level + offset for offset in [0, 188, 345]
+            ]
             self.expected_level_offsets = [
                 first_plains_level + offset
                 for offset in [
@@ -62,7 +71,9 @@ def mock_rom(rom):
                     sum(self.level_sizes[:2]) + 2 * LEVEL_DATA_DELIMITER_COUNT,
                 ]
             ]
-            self.starting_enemy_offsets = [first_enemy_data + offset for offset in [0, 188, 345]]
+            self.starting_enemy_offsets = [
+                first_enemy_data + offset for offset in [0, 188, 345]
+            ]
             self.expected_enemy_offsets = [
                 enemy_bank_start + offset
                 for offset in [
@@ -72,10 +83,14 @@ def mock_rom(rom):
                 ]
             ]
 
-            for level_offset, level_data in zip(self.starting_level_offsets, self.level_bytes):
+            for level_offset, level_data in zip(
+                self.starting_level_offsets, self.level_bytes
+            ):
                 super().write(level_offset, level_data)
 
-            for enemy_offset, enemy_data in zip(self.starting_enemy_offsets, self.enemy_bytes):
+            for enemy_offset, enemy_data in zip(
+                self.starting_enemy_offsets, self.enemy_bytes
+            ):
                 super().write(enemy_offset, enemy_data)
 
         def initial_levels(self):
@@ -165,10 +180,16 @@ def test_rearrange_levels(mock_rom):
     # THEN the level data should be as expected
     assert new_level_offsets != mock_rom.starting_level_offsets, "Nothing happened"
 
-    for level, expected_level_offset in zip(level_organizer.levels, mock_rom.expected_level_offsets):
-        assert hex(level.level_offset) == hex(expected_level_offset), apply(hex, mock_rom.expected_level_offsets)
+    for level, expected_level_offset in zip(
+        level_organizer.levels, mock_rom.expected_level_offsets
+    ):
+        assert hex(level.level_offset) == hex(expected_level_offset), apply(
+            hex, mock_rom.expected_level_offsets
+        )
 
-    for expected_level_offset, level_bytes in zip(mock_rom.expected_level_offsets, mock_rom.level_bytes):
+    for expected_level_offset, level_bytes in zip(
+        mock_rom.expected_level_offsets, mock_rom.level_bytes
+    ):
         assert mock_rom.read(expected_level_offset, len(level_bytes)) == level_bytes
 
 
@@ -186,7 +207,8 @@ def test_rearrange_levels_consistency(level_organizer):
     # THEN the result will not change a second time
     assert first_result == second_result
     assert all(
-        old_address == new_address for old_address, new_address in level_organizer.old_level_address_to_new.items()
+        old_address == new_address
+        for old_address, new_address in level_organizer.old_level_address_to_new.items()
     )
 
 
@@ -195,7 +217,9 @@ def test_rearrange_levels_with_larger_data(mock_rom):
     larger_level = mock_rom.initial_levels()[1]
     new_size = larger_level.object_data_length + 0x50
 
-    mock_rom.expected_level_offsets[2] = mock_rom.expected_level_offsets[1] + new_size + LEVEL_DATA_DELIMITER_COUNT
+    mock_rom.expected_level_offsets[2] = (
+        mock_rom.expected_level_offsets[1] + new_size + LEVEL_DATA_DELIMITER_COUNT
+    )
     new_bytes = bytearray(randbytes(new_size) + bytes([0xFF]))
 
     level_organizer = LevelOrganizer(
@@ -213,10 +237,16 @@ def test_rearrange_levels_with_larger_data(mock_rom):
     # THEN the level data should be as expected
     assert new_level_offsets != mock_rom.starting_level_offsets, "Nothing happened"
 
-    for level, expected_level_offset in zip(level_organizer.levels, mock_rom.expected_level_offsets):
-        assert hex(level.level_offset) == hex(expected_level_offset), apply(hex, mock_rom.expected_level_offsets)
+    for level, expected_level_offset in zip(
+        level_organizer.levels, mock_rom.expected_level_offsets
+    ):
+        assert hex(level.level_offset) == hex(expected_level_offset), apply(
+            hex, mock_rom.expected_level_offsets
+        )
 
-    for expected_level_offset, level_bytes in zip(mock_rom.expected_level_offsets, mock_rom.level_bytes):
+    for expected_level_offset, level_bytes in zip(
+        mock_rom.expected_level_offsets, mock_rom.level_bytes
+    ):
         assert mock_rom.read(expected_level_offset, len(level_bytes)) == level_bytes
 
 
@@ -233,10 +263,14 @@ def test_separate_levels_by_banks(level_organizer):
 
     # THEN the 10 plain levels land in bank 15 and the added desert level in bank 20
     bank_for_plains = 15
-    assert len(level_organizer.levels_by_bank[bank_for_plains]) == len(level_organizer.levels[:10])
+    assert len(level_organizer.levels_by_bank[bank_for_plains]) == len(
+        level_organizer.levels[:10]
+    )
 
     bank_for_desert = 20
-    assert len(level_organizer.levels_by_bank[bank_for_desert]) == len(level_organizer.levels[10:])
+    assert len(level_organizer.levels_by_bank[bank_for_desert]) == len(
+        level_organizer.levels[10:]
+    )
 
     assert level_organizer.levels_by_bank.keys() == {15: [], 20: []}.keys()
 
@@ -276,10 +310,16 @@ def test_generate_new_level_addresses(level_organizer):
 
     level_organizer._generate_new_level_addresses()
 
-    assert all(initial_address in level_organizer.old_level_address_to_new for initial_address in starting_addresses)
+    assert all(
+        initial_address in level_organizer.old_level_address_to_new
+        for initial_address in starting_addresses
+    )
 
     # First one stays the same
-    assert level_organizer.old_level_address_to_new[starting_addresses[0]] == starting_addresses[0]
+    assert (
+        level_organizer.old_level_address_to_new[starting_addresses[0]]
+        == starting_addresses[0]
+    )
 
     for initial_address in starting_addresses[1:]:
         new_address = level_organizer.old_level_address_to_new[initial_address]
@@ -300,17 +340,17 @@ def test_generate_new_level_addresses_larger(level_organizer):
     level_organizer._sort_levels_by_level_address()
     level_organizer._generate_new_level_addresses()
 
-    for initial_address, new_address in list(level_organizer.old_level_address_to_new.items())[
-        : level_to_make_bigger_index + 1
-    ]:
+    for initial_address, new_address in list(
+        level_organizer.old_level_address_to_new.items()
+    )[: level_to_make_bigger_index + 1]:
         assert new_address == initial_address, (
             level_to_make_bigger_index,
             level_organizer.old_level_address_to_new,
         )
 
-    for initial_address, new_address in list(level_organizer.old_level_address_to_new.items())[
-        level_to_make_bigger_index + 1 :
-    ]:
+    for initial_address, new_address in list(
+        level_organizer.old_level_address_to_new.items()
+    )[level_to_make_bigger_index + 1 :]:
         assert new_address == initial_address + size_increase
 
 
@@ -332,26 +372,40 @@ def test_update_level_and_enemy_address_pointers(level_organizer):
     level_organizer._sort_levels_by_level_address()
     level_organizer._generate_new_level_addresses()
 
-    old_level_positions = {level.level_offset: level.level_offset_positions for level in level_organizer.levels}
-    old_enemy_positions = {level.level_offset: level.enemy_offset_positions for level in level_organizer.levels}
+    old_level_positions = {
+        level.level_offset: level.level_offset_positions
+        for level in level_organizer.levels
+    }
+    old_enemy_positions = {
+        level.level_offset: level.enemy_offset_positions
+        for level in level_organizer.levels
+    }
 
     level_organizer._update_level_and_enemy_pointers()
 
     for level in level_organizer.levels[: level_to_make_bigger_index + 1]:
-        for new_position, old_position in zip(level.level_offset_positions, old_level_positions[level.level_offset]):
+        for new_position, old_position in zip(
+            level.level_offset_positions, old_level_positions[level.level_offset]
+        ):
             assert new_position == old_position, (
                 level_to_make_bigger_index,
                 level_organizer.old_level_address_to_new,
             )
 
-        for new_position, old_position in zip(level.enemy_offset_positions, old_enemy_positions[level.level_offset]):
+        for new_position, old_position in zip(
+            level.enemy_offset_positions, old_enemy_positions[level.level_offset]
+        ):
             assert new_position == old_position
 
     for level in level_organizer.levels[level_to_make_bigger_index + 1 :]:
-        for new_position, old_position in zip(level.level_offset_positions, old_level_positions[level.level_offset]):
+        for new_position, old_position in zip(
+            level.level_offset_positions, old_level_positions[level.level_offset]
+        ):
             assert new_position == old_position + size_increase
 
-        for new_position, old_position in zip(level.enemy_offset_positions, old_enemy_positions[level.level_offset]):
+        for new_position, old_position in zip(
+            level.enemy_offset_positions, old_enemy_positions[level.level_offset]
+        ):
             assert new_position == old_position + size_increase
 
 
@@ -369,10 +423,17 @@ def test_rearrange_enemies(level_organizer):
     # THEN the enemy data should be contiguous
     assert before_rearrange != new_enemy_offsets, "Nothing happened"
 
-    assert new_enemy_offsets[0] == enemy_bank_start, "First Enemy Data doesn't start at bank start"
+    assert (
+        new_enemy_offsets[0] == enemy_bank_start
+    ), "First Enemy Data doesn't start at bank start"
 
     for level_1, level_2 in pairwise(level_organizer.levels):
-        assert level_2.enemy_offset == level_1.enemy_offset + level_1.enemy_data_length + ENEMY_DATA_DELIMITER_COUNT
+        assert (
+            level_2.enemy_offset
+            == level_1.enemy_offset
+            + level_1.enemy_data_length
+            + ENEMY_DATA_DELIMITER_COUNT
+        )
 
 
 def test_rearrange_enemies_dont_duplicate_data(level_organizer_with_duplicates):
@@ -381,7 +442,9 @@ def test_rearrange_enemies_dont_duplicate_data(level_organizer_with_duplicates):
 
     # WHEN the enemy data is rearranged
     level_organizer_with_duplicates.rearrange_enemies()
-    new_enemy_offsets = [level.enemy_offset for level in level_organizer_with_duplicates.levels]
+    new_enemy_offsets = [
+        level.enemy_offset for level in level_organizer_with_duplicates.levels
+    ]
 
     # THEN the duplicate enemy data should not have been placed at separate locations
     assert len(set(new_enemy_offsets)) == len(new_enemy_offsets) - 1
@@ -407,7 +470,9 @@ def test_rearrange_enemies_with_larger_data(mock_rom):
     larger_level = mock_rom.initial_levels()[1]
     new_size = larger_level.enemy_data_length + 0x50
 
-    mock_rom.expected_enemy_offsets[2] = mock_rom.expected_enemy_offsets[1] + new_size + ENEMY_DATA_DELIMITER_COUNT
+    mock_rom.expected_enemy_offsets[2] = (
+        mock_rom.expected_enemy_offsets[1] + new_size + ENEMY_DATA_DELIMITER_COUNT
+    )
     new_bytes = bytearray(bytes([0x00]) + randbytes(new_size) + bytes([0xFF]))
 
     level_organizer = LevelOrganizer(
@@ -425,10 +490,16 @@ def test_rearrange_enemies_with_larger_data(mock_rom):
     # THEN the level data should be as expected
     assert new_enemy_offsets != mock_rom.starting_enemy_offsets, "Nothing happened"
 
-    for level, expected_enemy_offset in zip(level_organizer.levels, mock_rom.expected_enemy_offsets):
-        assert hex(level.enemy_offset) == hex(expected_enemy_offset), apply(hex, mock_rom.expected_enemy_offsets)
+    for level, expected_enemy_offset in zip(
+        level_organizer.levels, mock_rom.expected_enemy_offsets
+    ):
+        assert hex(level.enemy_offset) == hex(expected_enemy_offset), apply(
+            hex, mock_rom.expected_enemy_offsets
+        )
 
-    for expected_enemy_offset, enemy_bytes in zip(mock_rom.expected_enemy_offsets, mock_rom.enemy_bytes):
+    for expected_enemy_offset, enemy_bytes in zip(
+        mock_rom.expected_enemy_offsets, mock_rom.enemy_bytes
+    ):
         assert mock_rom.read(expected_enemy_offset, len(enemy_bytes)) == enemy_bytes
 
 
@@ -454,7 +525,9 @@ def test_update_enemy_data_length_in_levels(level_organizer, size_change):
         bytearray(original_enemy_size + size_change + ENEMY_DATA_DELIMITER_COUNT),
     )
 
-    level_organizer._update_enemy_data_length_in_levels(level_organizer._sort_levels_by_enemy_address())
+    level_organizer._update_enemy_data_length_in_levels(
+        level_organizer._sort_levels_by_enemy_address()
+    )
 
     assert chosen_level.enemy_data_length == original_enemy_size + size_change
 
@@ -496,8 +569,16 @@ def test_collect_enemy_data_from_current_addresses(mock_rom):
 
     sorted_levels = level_organizer._sort_levels_by_enemy_address()
 
-    address_to_enemy_data = level_organizer._collect_enemy_data_from_current_addresses(sorted_levels)
+    address_to_enemy_data = level_organizer._collect_enemy_data_from_current_addresses(
+        sorted_levels
+    )
 
     assert len(mock_rom.enemy_bytes) == len(address_to_enemy_data.values())
-    assert all(enemy_offset in address_to_enemy_data for enemy_offset in mock_rom.starting_enemy_offsets)
-    assert all(enemy_data in address_to_enemy_data.values() for enemy_data in mock_rom.enemy_bytes)
+    assert all(
+        enemy_offset in address_to_enemy_data
+        for enemy_offset in mock_rom.starting_enemy_offsets
+    )
+    assert all(
+        enemy_data in address_to_enemy_data.values()
+        for enemy_data in mock_rom.enemy_bytes
+    )

@@ -76,4 +76,9 @@ class MapTile(MapObject):
         return result < other_result
 
     def __repr__(self):
-        return f"MapTile #{self.type:#x}: '{self.name}' at {self.x_position}, {self.y_position}"
+        return _("MapTile #%(type)s: '%(name)s' at (%(x)d, %(y)d)") % {
+            "type": f"{self.type:#x}",
+            "name": self.name,
+            "x": self.x_position,
+            "y": self.y_position,
+        }

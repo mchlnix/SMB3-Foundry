@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QDialog
 
 
 class CustomDialog(QDialog):
-    def __init__(self, parent, title="Title"):
+    def __init__(self, parent, title=_("Title")):
         super(CustomDialog, self).__init__(parent)
 
         self.setWindowTitle(title)

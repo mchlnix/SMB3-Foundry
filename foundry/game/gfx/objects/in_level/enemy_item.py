@@ -87,7 +87,9 @@ class EnemyItem(InLevelObject):
             x = (block_id % 64) * Block.WIDTH
             y = (block_id // 64) * Block.WIDTH
 
-            self.blocks.append(self.png_data.copy(QRect(x, y, Block.WIDTH, Block.HEIGHT)))
+            self.blocks.append(
+                self.png_data.copy(QRect(x, y, Block.WIDTH, Block.HEIGHT))
+            )
 
     def copy(self):
         return EnemyItem(self.to_bytes(), self.png_data, self.palette_group)
@@ -96,7 +98,7 @@ class EnemyItem(InLevelObject):
         # nothing to re-render since enemies are just copied over
         pass
 
-    def draw(self, painter: QPainter, block_length: int, _, use_offsets=True):
+    def draw(self, painter: QPainter, block_length: int, __, use_offsets=True):
         """
         :param painter:
         :param block_length:
@@ -132,7 +134,7 @@ class EnemyItem(InLevelObject):
             painter.drawImage(x * block_length, y * block_length, block)
 
     def get_status_info(self):
-        return [("Name", self.name), ("X", self.x_position), ("Y", self.y_position)]
+        return [(_("Name"), self.name), ("X", self.x_position), ("Y", self.y_position)]
 
     def set_position(self, x, y):
         # todo also check for the upper bounds (difficult, since we don't have the level size here)
@@ -215,7 +217,11 @@ class EnemyItem(InLevelObject):
         return image
 
     def __str__(self):
-        return f"{self.name} at {self.x_position}, {self.y_position}"
+        return _("%(name)s at %(x)d, %(y)d") % {
+            "name": self.name,
+            "x": self.x_position,
+            "y": self.y_position,
+        }
 
     def __repr__(self):
         return f"EnemyObject: {self}"

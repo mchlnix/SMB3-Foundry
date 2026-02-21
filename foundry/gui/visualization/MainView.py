@@ -268,13 +268,19 @@ class MainView(QWidget):
             domain = object_bytes[0] >> 5
             object_index = object_bytes[2]
 
-            return self.level_ref.level.object_factory.from_properties(domain, object_index, 0, 0, None, 999)
+            return self.level_ref.level.object_factory.from_properties(
+                domain, object_index, 0, 0, None, 999
+            )
         else:
             enemy_id = object_bytes[0]
 
-            return self.level_ref.level.enemy_item_factory.from_properties(enemy_id, 0, 0)
+            return self.level_ref.level.enemy_item_factory.from_properties(
+                enemy_id, 0, 0
+            )
 
-    def paste_objects_at(self, paste_data: tuple[Sequence[ObjectLike], Position], q_point: QPoint | None):
+    def paste_objects_at(
+        self, paste_data: tuple[Sequence[ObjectLike], Position], q_point: QPoint | None
+    ):
         if q_point is None:
             # when keyboard shortcut was used
             pos = self.last_mouse_position
@@ -293,7 +299,7 @@ class MainView(QWidget):
             try:
                 pasted_objects.append(self.level_ref.paste_object_at(paste_pos, obj))
             except ValueError:
-                warn("Tried pasting outside of level.", RuntimeWarning)
+                warn(_("Tried pasting outside of level."), RuntimeWarning)
 
         self.select_objects(pasted_objects)
 
@@ -321,9 +327,15 @@ class MainView(QWidget):
 
         self.selection_square.set_current_end(event.position().toPoint())
 
-        sel_rect = self.selection_square.get_adjusted_rect(self.block_length, self.block_length)
+        sel_rect = self.selection_square.get_adjusted_rect(
+            self.block_length, self.block_length
+        )
 
-        touched_objects = [obj for obj in self.level_ref.get_all_objects() if sel_rect.intersects(obj.get_rect())]
+        touched_objects = [
+            obj
+            for obj in self.level_ref.get_all_objects()
+            if sel_rect.intersects(obj.get_rect())
+        ]
 
         if touched_objects != self.level_ref.selected_objects:
             self._set_selected_objects(

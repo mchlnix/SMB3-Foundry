@@ -27,7 +27,12 @@ MARIO_Y_POSITIONS = [
 class LevelHeader:
     def __init__(self, rom: Rom, header_bytes: bytearray, object_set_number: int):
         if len(header_bytes) != HEADER_LENGTH:
-            raise ValueError(f"A level header is made up of {HEADER_LENGTH} bytes, but {len(header_bytes)} were given.")
+            raise ValueError(
+                _(
+                    "A level header is made up of %(length)d bytes, but %(given)d were given."
+                )
+                % {"length": HEADER_LENGTH, "given": len(header_bytes)}
+            )
 
         self._rom = rom
 
@@ -58,7 +63,9 @@ class LevelHeader:
             self.height = self.length
             self.width = DEFAULT_VERTICAL_WIDTH
 
-        self._jump_object_set_number = self.data[6] & 0b0000_1111  # for indexing purposes
+        self._jump_object_set_number = (
+            self.data[6] & 0b0000_1111
+        )  # for indexing purposes
         self._jump_object_set = ObjectSet(rom, self.jump_object_set_number)
 
         self.start_action = (self.data[7] & 0b1110_0000) >> 5
@@ -87,7 +94,9 @@ class LevelHeader:
                 start_x_index = index
                 break
         else:
-            raise ValueError(f"No possible start indexes for {x} and {y}.")
+            raise ValueError(
+                _("No possible start indexes for %(x)d and %(y)d.") % {"x": x, "y": y}
+            )
 
         if self.is_vertical:
             y -= (self.screens - 1) * 15
@@ -95,12 +104,16 @@ class LevelHeader:
         try:
             start_y_index = MARIO_Y_POSITIONS.index(y)
         except ValueError:
-            raise ValueError(f"No possible start indexes for {x} and {y}.")
+            raise ValueError(
+                _("No possible start indexes for %(x)d and %(y)d.") % {"x": x, "y": y}
+            )
 
         return start_x_index, start_y_index
 
     def gen_mario_start_positions(self):
-        for x_index, y_index in product(range(len(MARIO_X_POSITIONS)), range(len(MARIO_Y_POSITIONS))):
+        for x_index, y_index in product(
+            range(len(MARIO_X_POSITIONS)), range(len(MARIO_Y_POSITIONS))
+        ):
             yield self.position_from_start_index(x_index, y_index)
 
     def mario_position(self):

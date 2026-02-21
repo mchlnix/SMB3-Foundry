@@ -30,7 +30,7 @@ class ROM(Rom):
     def __init__(self, path: Path | str | None = None):
         if not ROM.rom_data:
             if path is None:
-                raise ValueError("Rom was not loaded!")
+                raise ValueError(_("Rom was not loaded!"))
 
             ROM.load_from_file(path, False)
 
@@ -66,7 +66,9 @@ class ROM(Rom):
 
             additional_data_start += len(ROM.MARKER_VALUE)
 
-            ROM.additional_data = AdditionalData.from_str(data[additional_data_start:].decode("utf-8"), ROM())
+            ROM.additional_data = AdditionalData.from_str(
+                data[additional_data_start:].decode("utf-8"), ROM()
+            )
 
         ROM.reset_graphics()
 

@@ -13,7 +13,9 @@ def header_editor(main_window):
     return HeaderEditor(main_window, level)
 
 
-def _test_dropdown(dropdown: QComboBox, level: Level, level_attr: str, expected_change, index_change=+1):
+def _test_dropdown(
+    dropdown: QComboBox, level: Level, level_attr: str, expected_change, index_change=+1
+):
     # WHEN the combobox has been changed using the header editor
     old_index = dropdown.currentIndex()
     old_attr_value = getattr(level, level_attr)
@@ -31,7 +33,9 @@ def _test_dropdown(dropdown: QComboBox, level: Level, level_attr: str, expected_
     assert new_attr_value == old_attr_value + expected_change
 
 
-def _test_check_box(check_box: QCheckBox, level: Level, level_attr: str, expected_value):
+def _test_check_box(
+    check_box: QCheckBox, level: Level, level_attr: str, expected_value
+):
     old_checked_status = check_box.isChecked()
     old_attr_value = getattr(level, level_attr)
 

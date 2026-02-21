@@ -44,7 +44,9 @@ class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
 
     def calculate_addresses(self):
         map_sprite_y_pos_list = Constants.Map_List_Object_Ys
-        map_sprite_screen_list = map_sprite_y_pos_list + 8 * OFFSET_SIZE  # 8 for all non-warp world maps
+        map_sprite_screen_list = (
+            map_sprite_y_pos_list + 8 * OFFSET_SIZE
+        )  # 8 for all non-warp world maps
         map_sprite_x_pos_list = map_sprite_screen_list + 8 * OFFSET_SIZE
         map_sprite_types_list = map_sprite_x_pos_list + 8 * OFFSET_SIZE
         map_sprite_items_list = map_sprite_types_list + 8 * OFFSET_SIZE
@@ -72,7 +74,9 @@ class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
         :param list_of_list_address:
         :return:
         """
-        list_offset = self._rom.little_endian(list_of_list_address + self.world.index * OFFSET_SIZE)
+        list_offset = self._rom.little_endian(
+            list_of_list_address + self.world.index * OFFSET_SIZE
+        )
         list_address = BASE_OFFSET + PAGE_C000_OFFSET + list_offset
 
         return list_address + self.index
@@ -81,8 +85,8 @@ class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
         self.screen = self._rom.int(self.screen_address)
 
         # lower nibble is 0 and is unused
-        self.x, _ = self._rom.nibbles(self._x_pos_address)
-        self.y, _ = self._rom.nibbles(self._y_pos_address)
+        self.x, __ = self._rom.nibbles(self._x_pos_address)
+        self.y, __ = self._rom.nibbles(self._y_pos_address)
 
         self.type = self._rom.int(self._type_address)
         self.item = self._rom.int(self._item_address)

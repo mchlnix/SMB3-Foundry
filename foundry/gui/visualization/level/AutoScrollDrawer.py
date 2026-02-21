@@ -67,10 +67,15 @@ class AutoScrollDrawer:
             return
 
         first_movement_command_index = (
-            self.rom.int(Constants.AScroll_HorizontalInitMove + auto_scroll_routine_index) + 1
+            self.rom.int(
+                Constants.AScroll_HorizontalInitMove + auto_scroll_routine_index
+            )
+            + 1
         ) % 256
         last_movement_command_index = (
-            self.rom.int(Constants.AScroll_HorizontalInitMove + auto_scroll_routine_index + 1)
+            self.rom.int(
+                Constants.AScroll_HorizontalInitMove + auto_scroll_routine_index + 1
+            )
         ) % 256
 
         self.horizontal_speed = 0
@@ -78,9 +83,15 @@ class AutoScrollDrawer:
 
         self.current_pos = self._determine_auto_scroll_start(block_length)
 
-        for movement_command_index in range(first_movement_command_index, last_movement_command_index + 1):
-            movement_command = self.rom.int(Constants.AScroll_Movement + movement_command_index)
-            movement_repeat = self.rom.int(Constants.AScroll_MovementRepeat + movement_command_index)
+        for movement_command_index in range(
+            first_movement_command_index, last_movement_command_index + 1
+        ):
+            movement_command = self.rom.int(
+                Constants.AScroll_Movement + movement_command_index
+            )
+            movement_repeat = self.rom.int(
+                Constants.AScroll_MovementRepeat + movement_command_index
+            )
 
             self._execute_movement_command(painter, movement_command, movement_repeat)
 
@@ -110,8 +121,12 @@ class AutoScrollDrawer:
             assert h_acceleration_index != 3
             assert v_acceleration_index != 3
 
-            h_acceleration = self.rom.int(Constants.AScroll_VelAccel + h_acceleration_index)
-            v_acceleration = self.rom.int(Constants.AScroll_VelAccel + v_acceleration_index)
+            h_acceleration = self.rom.int(
+                Constants.AScroll_VelAccel + h_acceleration_index
+            )
+            v_acceleration = self.rom.int(
+                Constants.AScroll_VelAccel + v_acceleration_index
+            )
 
             if h_acceleration == 0xFF:
                 h_acceleration = -0x01
@@ -127,7 +142,9 @@ class AutoScrollDrawer:
         else:
             auto_scroll_loop_selector = command >> 4
 
-            loop_start_offset = Constants.AScroll_MovementLoopStart - 2 + auto_scroll_loop_selector
+            loop_start_offset = (
+                Constants.AScroll_MovementLoopStart - 2 + auto_scroll_loop_selector
+            )
 
             if auto_scroll_loop_selector in [0, 1]:
                 # normal movement command
@@ -143,15 +160,18 @@ class AutoScrollDrawer:
                 number_of_commands = movement_loop_end_index - movement_loop_start_index
 
                 movement_loop_commands = self.rom.read(
-                    Constants.AScroll_MovementLoop + movement_loop_start_index, number_of_commands
+                    Constants.AScroll_MovementLoop + movement_loop_start_index,
+                    number_of_commands,
                 )
                 movement_loop_repeats = self.rom.read(
                     Constants.AScroll_MovementLoopTicks + movement_loop_start_index,
                     number_of_commands,
                 )
 
-                for _ in range(repeat):
-                    for sub_command, sub_repeat in zip(movement_loop_commands, movement_loop_repeats):
+                for __ in range(repeat):
+                    for sub_command, sub_repeat in zip(
+                        movement_loop_commands, movement_loop_repeats
+                    ):
                         self._execute_movement_command(painter, sub_command, sub_repeat)
 
                 return
@@ -164,12 +184,14 @@ class AutoScrollDrawer:
             painter.setBrush(self.scroll_brush)
 
         # circle at start of new command
-        painter.drawEllipse(self.current_pos, 4 * self.pixel_length, 4 * self.pixel_length)
+        painter.drawEllipse(
+            self.current_pos, 4 * self.pixel_length, 4 * self.pixel_length
+        )
 
         self._add_points_for_position(self.current_pos)
 
         if is_acceleration_command and (h_acceleration or v_acceleration):
-            for _ in range(movement_ticks):
+            for __ in range(movement_ticks):
                 self.horizontal_speed += h_acceleration
                 self.vertical_speed += v_acceleration
 
@@ -188,8 +210,16 @@ class AutoScrollDrawer:
         else:
             old_pos = QPointF(self.current_pos)
 
-            h_movement = h_updates_per_tick * self.horizontal_speed / 256 * movement_ticks * repeat
-            v_movement = v_updates_per_tick * self.vertical_speed / 256 * movement_ticks * repeat
+            h_movement = (
+                h_updates_per_tick
+                * self.horizontal_speed
+                / 256
+                * movement_ticks
+                * repeat
+            )
+            v_movement = (
+                v_updates_per_tick * self.vertical_speed / 256 * movement_ticks * repeat
+            )
 
             self.current_pos += QPointF(h_movement, v_movement) * self.pixel_length
 
@@ -198,7 +228,9 @@ class AutoScrollDrawer:
             self._add_points_for_line(old_pos, self.current_pos)
 
     def _add_points_for_position(self, pos: QPointF):
-        self.screen_polygon = self.screen_polygon.united(QPolygonF.fromList(self._rect_for_point(pos)))
+        self.screen_polygon = self.screen_polygon.united(
+            QPolygonF.fromList(self._rect_for_point(pos))
+        )
 
     def _add_points_for_line(self, start: QPointF, stop: QPointF):
         start_points = self._rect_for_point(start)
@@ -207,7 +239,9 @@ class AutoScrollDrawer:
         point_list = []
 
         if start.y() == stop.y():
-            point_list.extend([start_points[0], stop_points[1], stop_points[2], start_points[3]])
+            point_list.extend(
+                [start_points[0], stop_points[1], stop_points[2], start_points[3]]
+            )
         elif start.y() < stop.y():
             point_list.extend(start_points[0:2])
             point_list.extend(stop_points[1:4])
@@ -221,21 +255,34 @@ class AutoScrollDrawer:
 
     def _rect_for_point(self, pos: QPointF):
         top_right = (
-            pos + QPointF(LEVEL_SCREEN_WIDTH // 2, -_ASCROLL_SCREEN_HEIGHT // 2) * self.pixel_length * Block.WIDTH
+            pos
+            + QPointF(LEVEL_SCREEN_WIDTH // 2, -_ASCROLL_SCREEN_HEIGHT // 2)
+            * self.pixel_length
+            * Block.WIDTH
         )
         bottom_right = (
-            pos + QPoint(LEVEL_SCREEN_WIDTH // 2, _ASCROLL_SCREEN_HEIGHT // 2) * self.pixel_length * Block.WIDTH
+            pos
+            + QPoint(LEVEL_SCREEN_WIDTH // 2, _ASCROLL_SCREEN_HEIGHT // 2)
+            * self.pixel_length
+            * Block.WIDTH
         )
 
-        top_left = top_right - QPointF(LEVEL_SCREEN_WIDTH, 0) * self.pixel_length * Block.WIDTH
-        bottom_left = bottom_right - QPointF(LEVEL_SCREEN_WIDTH, 0) * self.pixel_length * Block.WIDTH
+        top_left = (
+            top_right - QPointF(LEVEL_SCREEN_WIDTH, 0) * self.pixel_length * Block.WIDTH
+        )
+        bottom_left = (
+            bottom_right
+            - QPointF(LEVEL_SCREEN_WIDTH, 0) * self.pixel_length * Block.WIDTH
+        )
 
         return top_left, top_right, bottom_right, bottom_left
 
     def _determine_auto_scroll_start(self, block_length: int) -> QPointF:
         # only support horizontal levels for now
-        _, mario_y = self.level.header.mario_position()
+        __, mario_y = self.level.header.mario_position()
 
-        scroll_x, scroll_y = LEVEL_SCREEN_WIDTH // 2, min(mario_y + 2, GROUND - _ASCROLL_SCREEN_HEIGHT // 2)
+        scroll_x, scroll_y = LEVEL_SCREEN_WIDTH // 2, min(
+            mario_y + 2, GROUND - _ASCROLL_SCREEN_HEIGHT // 2
+        )
 
         return QPointF(scroll_x, scroll_y) * block_length

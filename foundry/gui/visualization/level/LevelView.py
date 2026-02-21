@@ -73,17 +73,19 @@ class LevelView(MainView):
         self.objects_before_moving: list[InLevelObject] = []
 
         self.setWhatsThis(
-            "<b>Level View</b><br/>"
-            "This renders the level as it would appear in game plus additional information, that can be "
-            "toggled in the View menu.<br/>"
-            "It supports selecting multiple objects, moving, copy/pasting and resizing them using the "
-            "mouse or the usual keyboard shortcuts.<br/>"
-            "There are still occasional rendering errors, or small inconsistencies. If you find them, "
-            "please report the kind of object (name or values in the SpinnerPanel) and the level or "
-            "object set they appear in, in the discord and @Michael or on the github page under Help."
-            "<br/><br/>"
-            ""
-            "If all else fails, click the play button up top to see your level in game in seconds."
+            _(
+                "<b>Level View</b><br/>"
+                "This renders the level as it would appear in game plus additional information, that can be "
+                "toggled in the View menu.<br/>"
+                "It supports selecting multiple objects, moving, copy/pasting and resizing them using the "
+                "mouse or the usual keyboard shortcuts.<br/>"
+                "There are still occasional rendering errors, or small inconsistencies. If you find them, "
+                "please report the kind of object (name or values in the SpinnerPanel) and the level or "
+                "object set they appear in, in the discord and @Michael or on the github page under Help."
+                "<br/><br/>"
+                ""
+                "If all else fails, click the play button up top to see your level in game in seconds."
+            )
         )
 
     @property
@@ -156,7 +158,10 @@ class LevelView(MainView):
 
         object_under_cursor = self.object_at(mouse_point)
 
-        if self.settings.value("level view/object_tooltip_enabled") and object_under_cursor is not None:
+        if (
+            self.settings.value("level view/object_tooltip_enabled")
+            and object_under_cursor is not None
+        ):
             self.setToolTip(str(object_under_cursor))
         else:
             self.setToolTip("")
@@ -173,9 +178,15 @@ class LevelView(MainView):
             edges = self._cursor_on_edge_of_object(level_object, mouse_point)
 
             if is_resizable and edges:
-                if edges == Qt.Edge.RightEdge and level_object.expands() & EXPANDS_HORIZ:
+                if (
+                    edges == Qt.Edge.RightEdge
+                    and level_object.expands() & EXPANDS_HORIZ
+                ):
                     cursor = Qt.CursorShape.SizeHorCursor
-                elif edges == Qt.Edge.BottomEdge and level_object.expands() & EXPANDS_VERT:
+                elif (
+                    edges == Qt.Edge.BottomEdge
+                    and level_object.expands() & EXPANDS_VERT
+                ):
                     cursor = Qt.CursorShape.SizeVerCursor
                 elif (level_object.expands() & EXPANDS_BOTH) == EXPANDS_BOTH:
                     cursor = Qt.CursorShape.SizeFDiagCursor
@@ -190,9 +201,15 @@ class LevelView(MainView):
         if self.mouse_mode not in RESIZE_MODES:
             self.setCursor(Qt.CursorShape.ArrowCursor)
 
-    def _cursor_on_edge_of_object(self, level_object: InLevelObject, pos: QPoint, edge_width: int = 4) -> Qt.Edge:
-        right = (level_object.get_rect().left() + level_object.get_rect().width()) * self.block_length
-        bottom = (level_object.get_rect().top() + level_object.get_rect().height()) * self.block_length
+    def _cursor_on_edge_of_object(
+        self, level_object: InLevelObject, pos: QPoint, edge_width: int = 4
+    ) -> Qt.Edge:
+        right = (
+            level_object.get_rect().left() + level_object.get_rect().width()
+        ) * self.block_length
+        bottom = (
+            level_object.get_rect().top() + level_object.get_rect().height()
+        ) * self.block_length
 
         on_right_edge = pos.x() in range(right - edge_width, right)
         on_bottom_edge = pos.y() in range(bottom - edge_width, bottom)
@@ -237,9 +254,9 @@ class LevelView(MainView):
             return
 
         if y_delta > 0:
-            macro_name = f"Increment Type of '{obj_under_cursor.name}'"
+            macro_name = _("Increment Type of %s") % obj_under_cursor.name
         else:
-            macro_name = f"Decrement Type of '{obj_under_cursor.name}'"
+            macro_name = _("Decrement Type of %s") % obj_under_cursor.name
 
         self.undo_stack.beginMacro(macro_name)
 
@@ -271,7 +288,10 @@ class LevelView(MainView):
 
         self.last_mouse_position = level_pos
 
-        if self._select_objects_on_click(event) and self.settings.value("editor/resize_mode") == RESIZE_RIGHT_CLICK:
+        if (
+            self._select_objects_on_click(event)
+            and self.settings.value("editor/resize_mode") == RESIZE_RIGHT_CLICK
+        ):
             self._try_start_resize(MODE_RESIZE_DIAG, event)
 
     def _try_start_resize(self, resize_mode: int, event: QMouseEvent):
@@ -288,7 +308,9 @@ class LevelView(MainView):
 
         self.resize_obj_start_point = Position.from_xy(*obj.get_position())
 
-        self.objects_before_resizing = [obj.copy() for obj in self.get_selected_objects()]
+        self.objects_before_resizing = [
+            obj.copy() for obj in self.get_selected_objects()
+        ]
 
         return True
 
@@ -390,7 +412,9 @@ class LevelView(MainView):
                     pass
                 else:
                     self.drag_start_point = Position.from_xy(*obj.get_position())
-                    self.objects_before_moving = [obj.copy() for obj in self.get_selected_objects()]
+                    self.objects_before_moving = [
+                        obj.copy() for obj in self.get_selected_objects()
+                    ]
         else:
             self._start_selection_square(event.position().toPoint())
 
@@ -423,11 +447,16 @@ class LevelView(MainView):
         current_level_position = self.to_level_point(mouse_point)
 
         # check if among valid mario positions
-        if current_level_position.xy not in self.level_header.gen_mario_start_positions():
+        if (
+            current_level_position.xy
+            not in self.level_header.gen_mario_start_positions()
+        ):
             return
 
         # if so, get the corresponding starting indexes
-        x_index, y_index = self.level_header.start_indexes_from_position(*current_level_position.xy)
+        x_index, y_index = self.level_header.start_indexes_from_position(
+            *current_level_position.xy
+        )
 
         # write them to the level header temporarily
         self.level_header.start_x_index = x_index
@@ -450,7 +479,8 @@ class LevelView(MainView):
 
             make_macro(
                 self.undo_stack,
-                f"Set Mario Start Position to {self.level_header.mario_position()}",
+                _("Set Mario Start Position to %s")
+                % str(self.level_header.mario_position()),
                 x_command,
                 y_command,
             )
@@ -568,85 +598,118 @@ class LevelView(MainView):
             return is_safe, reason, additional_info
 
         if ROM.additional_data.managed_level_positions:
-            free_space_in_bank = ROM.additional_data.free_space_for_object_set(self.level.object_set_number)
+            free_space_in_bank = ROM.additional_data.free_space_for_object_set(
+                self.level.object_set_number
+            )
             free_space_for_enemies = ROM.additional_data.free_space_for_enemies()
 
-            additional_level_data = self.level.current_object_size() - self.level.object_size_on_disk
-            additional_enemy_data = self.level.current_enemies_size() - self.level.enemy_size_on_disk
+            additional_level_data = (
+                self.level.current_object_size() - self.level.object_size_on_disk
+            )
+            additional_enemy_data = (
+                self.level.current_enemies_size() - self.level.enemy_size_on_disk
+            )
 
             if free_space_in_bank < additional_level_data:
                 is_safe = False
-                reason = "Not enough space in ROM"
-                additional_info = "There is not enough space in the ROM for this level."
+                reason = _("Not enough space in ROM")
+                additional_info = _(
+                    "There is not enough space in the ROM for this level."
+                )
 
             elif free_space_for_enemies < additional_enemy_data:
                 is_safe = False
-                reason = "Not enough space in ROM"
-                additional_info = "There is not enough space in the ROM for the enemies/items in this Level."
+                reason = _("Not enough space in ROM")
+                additional_info = _(
+                    "There is not enough space in the ROM for the enemies/items in this Level."
+                )
 
         else:
             if self.level_ref.too_many_level_objects():
                 level = self._cuts_into_other_objects()
 
                 is_safe = False
-                reason = "Too many level objects."
+                reason = _("Too many level objects.")
 
                 if level:
-                    additional_info = f"Would overwrite data of original level '{level}'."
-                else:
                     additional_info = (
+                        _("Would overwrite data of original level '%s'.") % level
+                    )
+                else:
+                    additional_info = _(
                         "It wouldn't overwrite another level, but it might still overwrite other important data."
                     )
 
-                additional_info += (
-                    " If you deleted a bunch of objects and saved the level afterwards, this is probably a false alarm."
+                additional_info += " " + _(
+                    "If you deleted a bunch of objects and saved the level afterwards, this is probably a false alarm."
                 )
+
             elif self.level_ref.too_many_enemies_or_items():
                 level = self._cuts_into_other_enemies()
 
                 is_safe = False
-                reason = "Too many enemies or items."
+                reason = _("Too many enemies or items.")
 
                 if level:
-                    additional_info = f"Would probably overwrite enemy/item data of original level '{level}'."
-                else:
                     additional_info = (
+                        _(
+                            "Would probably overwrite enemy/item data of original level '%s'."
+                        )
+                        % level
+                    )
+                else:
+                    additional_info = _(
                         "It wouldn't overwrite enemy/item data of another level, "
                         "but it might still overwrite other important data."
                     )
 
-                additional_info += (
-                    " If you deleted a bunch of enemies and saved the level afterwards, this is probably a false alarm."
+                additional_info += " " + _(
+                    "If you deleted a bunch of enemies and saved the level afterwards, this is probably a false alarm."
                 )
 
         return is_safe, reason, additional_info
 
     def _cuts_into_other_enemies(self) -> str:
         if self.level_ref is None:
-            raise ValueError("Level is None")
+            # TRANSLATORS: "None" is a Python object
+            raise ValueError(_("Level is None"))
 
         enemies_end = self.level_ref.enemies_end
 
-        levels_by_enemy_offset = sorted(Level.offsets, key=lambda level: level.enemy_offset)
+        levels_by_enemy_offset = sorted(
+            Level.offsets, key=lambda level: level.enemy_offset
+        )
 
-        level_index = bisect_right([level.enemy_offset for level in levels_by_enemy_offset], enemies_end) - 1
+        level_index = (
+            bisect_right(
+                [level.enemy_offset for level in levels_by_enemy_offset], enemies_end
+            )
+            - 1
+        )
 
         found_level = levels_by_enemy_offset[level_index]
 
         if found_level.enemy_offset == self.level_ref.enemy_offset:
             return ""
         else:
-            return f"World {found_level.game_world} - {found_level.name}"
+            return _("World %(world)d - %(level)s") % {
+                "world": found_level.game_world,
+                "level": found_level.name,
+            }
 
     def _cuts_into_other_objects(self) -> str:
         if self.level_ref is None:
-            raise ValueError("Level is None")
+            # TRANSLATORS: "None" is a Python object
+            raise ValueError(_("Level is None"))
 
         end_of_level_objects = self.level_ref.objects_end
 
         level_index = (
             bisect_right(
-                [level.rom_level_offset - HEADER_LENGTH for level in Level.sorted_offsets],
+                [
+                    level.rom_level_offset - HEADER_LENGTH
+                    for level in Level.sorted_offsets
+                ],
                 end_of_level_objects,
             )
             - 1
@@ -657,7 +720,10 @@ class LevelView(MainView):
         if found_level.rom_level_offset == self.level_ref.object_offset:
             return ""
         else:
-            return f"World {found_level.game_world} - {found_level.name}"
+            return _("World %(world)d - %(level)s") % {
+                "world": found_level.game_world,
+                "level": found_level.name,
+            }
 
     def from_m3l(self, data: bytearray):
         self.level_ref.from_m3l(data)
@@ -695,7 +761,9 @@ class LevelView(MainView):
                 )
             )
         else:
-            self.undo_stack.push(AddEnemyAt(self, event.position().toPoint(), level_object.obj_index))
+            self.undo_stack.push(
+                AddEnemyAt(self, event.position().toPoint(), level_object.obj_index)
+            )
 
         event.accept()
 

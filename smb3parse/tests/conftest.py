@@ -11,7 +11,9 @@ from smb3parse.util.rom import INESHeader, Rom
 root_dir = Path(__file__).parent.parent.parent
 
 test_rom_path = root_dir / Path("roms/SMB3.nes")
-assert test_rom_path.exists(), f"The test suite needs a SMB3(U) Rom at '{test_rom_path}' to run."
+assert (
+    test_rom_path.exists()
+), f"The test suite needs a SMB3(U) Rom at '{test_rom_path}' to run."
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -38,14 +40,21 @@ def expanded_rom(rom) -> Generator[Rom, None, None]:
     insertion_point_for_additional_data = BASE_OFFSET + 15 * INESHeader.PRG_UNIT_SIZE
 
     ines_header_data = data[: INESHeader.LENGTH]
-    data_before_insertion_point = data[INESHeader.LENGTH : insertion_point_for_additional_data]
+    data_before_insertion_point = data[
+        INESHeader.LENGTH : insertion_point_for_additional_data
+    ]
     data_after_insertion_point = data[insertion_point_for_additional_data:]
 
     ines_header_data[4] += 1
     additional_data = bytearray(1 * INESHeader.PRG_UNIT_SIZE)
 
     # change amount of PRGs to simulate expanded rom
-    expanded_data = ines_header_data + data_before_insertion_point + additional_data + data_after_insertion_point
+    expanded_data = (
+        ines_header_data
+        + data_before_insertion_point
+        + additional_data
+        + data_after_insertion_point
+    )
     yield Rom(expanded_data, INESHeader.from_buffer_copy(expanded_data))
 
 

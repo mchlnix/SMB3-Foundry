@@ -19,38 +19,38 @@ VS_2P = 18
 BG_PAGE_COUNT = Constants.Level_BG_Pages2 - Constants.Level_BG_Pages1  # 23 in stock rom
 
 GRAPHIC_SET_NAMES = [
-    "Mario graphics (1)",
-    "Plain",
-    "Dungeon",
-    "Underground (1)",
-    "Sky",
-    "Pipe/Water (1, Piranha Plant)",
-    "Pipe/Water (2, Water)",
-    "Mushroom house (1)",
-    "Pipe/Water (3, Pipe)",
-    "Desert",
-    "Ship",
-    "Giant",
-    "Ice",
-    "Clouds",
-    "Underground (2)",
-    "Spade bonus room",
-    "Spade bonus",
-    "Mushroom house (2)",
-    "Pipe/Water (4)",
-    "Hills",
-    "Plain 2",
-    "Tank",
-    "Castle",
-    "Mario graphics (2)",
-    "Animated graphics (1)",
-    "Animated graphics (2)",
-    "Animated graphics (3)",
-    "Animated graphics (4)",
-    "Animated graphics (P-Switch)",
-    "Game font/Course Clear graphics",
-    "Animated graphics (5)",
-    "Animated graphics (6)",
+    _("Mario graphics (1)"),
+    _("Plain"),
+    _("Dungeon"),
+    _("Underground (1)"),
+    _("Sky"),
+    _("Pipe/Water (1, Piranha Plant)"),
+    _("Pipe/Water (2, Water)"),
+    _("Mushroom house (1)"),
+    _("Pipe/Water (3, Pipe)"),
+    _("Desert"),
+    _("Ship"),
+    _("Giant"),
+    _("Ice"),
+    _("Clouds"),
+    _("Underground (2)"),
+    _("Spade bonus room"),
+    _("Spade bonus"),
+    _("Mushroom house (2)"),
+    _("Pipe/Water (4)"),
+    _("Hills"),
+    _("Plain 2"),
+    _("Tank"),
+    _("Castle"),
+    _("Mario graphics (2)"),
+    _("Animated graphics (1)"),
+    _("Animated graphics (2)"),
+    _("Animated graphics (3)"),
+    _("Animated graphics (4)"),
+    _("Animated graphics (P-Switch)"),
+    _("Game font/Course Clear graphics"),
+    _("Animated graphics (5)"),
+    _("Animated graphics (6)"),
 ]
 
 
@@ -117,7 +117,9 @@ class GraphicsSet:
             # cycle through the second page containing the animated tiles for level objects
             page_1 = self._data[0 : 2 * CHR_ROM_SEGMENT_SIZE]
 
-            start = 2 * CHR_ROM_SEGMENT_SIZE + self.anim_frame * 2 * CHR_ROM_SEGMENT_SIZE
+            start = (
+                2 * CHR_ROM_SEGMENT_SIZE + self.anim_frame * 2 * CHR_ROM_SEGMENT_SIZE
+            )
             end = 2 * CHR_ROM_SEGMENT_SIZE + start + 2 * CHR_ROM_SEGMENT_SIZE
 
             page_2 = self._data[start:end]
@@ -128,7 +130,9 @@ class GraphicsSet:
         for segment in segments:
             self._read_in_chr_rom_segment(segment, self._data)
 
-    def _heuristic_bg_pages(self, bg_page_bytes: bytes, fallback_addr: int) -> bytearray:
+    def _heuristic_bg_pages(
+        self, bg_page_bytes: bytes, fallback_addr: int
+    ) -> bytearray:
         """Searches through the ROM's PRG030 bank (second-to-last bank) for the main array responsible
         for rendering the correct graphics. Currently the heuristics in order of precedence are:
 

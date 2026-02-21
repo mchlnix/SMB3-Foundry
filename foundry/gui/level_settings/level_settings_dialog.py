@@ -10,14 +10,19 @@ from foundry.gui.level_settings.white_mushroom_mixin import WhiteMushroomHouseMi
 
 
 class LevelSettingsDialog(
-    PipePairMixin, WhiteMushroomHouseMixin, ChestExitMixin, BoomBoomMixin, AutoScrollMixin, CustomDialog
+    PipePairMixin,
+    WhiteMushroomHouseMixin,
+    ChestExitMixin,
+    BoomBoomMixin,
+    AutoScrollMixin,
+    CustomDialog,
 ):
     def __init__(self, parent, level_ref: LevelRef):
         self.level_ref = level_ref
 
         super(LevelSettingsDialog, self).__init__(parent)
 
-        self.setWindowTitle("Other Level Settings")
+        self.setWindowTitle(_("Other Level Settings"))
 
         self.update()
 

@@ -5,8 +5,8 @@ YouTube Video of 1.0 Beta Version
 
 ## Downloads
 
-SMB3 Foundry Level Editor: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/linux-smb3-foundry">Linux</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/win64-smb3-foundry.exe">Windows</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/osx-smb3-foundry">OSX</a>  
-SMB3 Scribe Overworld Editor: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/linux-smb3-scribe">Linux</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/win64-smb3-scribe.exe">Windows</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/osx-smb3-scribe">OSX</a>  
+SMB3 Foundry Level Editor: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/linux-smb3-foundry">Linux</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/win64-smb3-foundry.exe">Windows</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/osx-smb3-foundry">OSX</a>
+SMB3 Scribe Overworld Editor: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/linux-smb3-scribe">Linux</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/win64-smb3-scribe.exe">Windows</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/osx-smb3-scribe">OSX</a>
 Manuals: <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/manual-foundry.pdf">SMB3 Foundry</a>, <a href="https://github.com/mchlnix/SMB3-Foundry/releases/download/1.5/manual-scribe.pdf">SMB3 Scribe</a>
 
 ## Features right now
@@ -61,3 +61,16 @@ based on it.
 2. Install `python3-pip` using the package manager as well.
 3. Install the dependencies, using `pip3 install -r requirements.txt`.
 4. You can start the level editor using `python3 smb3-foundry.py` using the terminal.
+
+## Internationalization (i18n)
+
+This project uses `gettext` for translations.
+
+### For Developers
+
+```bash
+python i18n.py extract      # Update smb3.pot from source
+python i18n.py merge        # Merge new smb3.pot entries with existing .po files
+python i18n.py compile      # Compile to .mo
+python i18n.py update       # Do all three of these steps
+```

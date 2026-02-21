@@ -14,7 +14,7 @@ class RomSettingsDialog(ManagedLevelsMixin, CustomDialog):
 
         super(RomSettingsDialog, self).__init__(parent)
 
-        self.setWindowTitle("ROM Settings")
+        self.setWindowTitle(_("ROM Settings"))
 
         self.update()
 

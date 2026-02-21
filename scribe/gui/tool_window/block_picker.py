@@ -62,7 +62,7 @@ class BlockList(QWidget):
         self.current_block = BlockIcon(0, palette_group, zoom_level=4)
         self.current_block.clicked.connect(self.set_current_block)
 
-        self.recent_blocks = [BlockIcon(WORLD_MAP_BLANK_TILE_ID) for _ in range(9)]
+        self.recent_blocks = [BlockIcon(WORLD_MAP_BLANK_TILE_ID) for __ in range(9)]
 
         self.layout().addWidget(self.current_block)
         self.layout().addSpacing(10)
@@ -105,8 +105,12 @@ class BlockPicker(QWidget):
 
         self.level_ref = level_ref
 
-        self.block_bank = BlockBank(self, palette_group_index=level_ref.level.data.palette_index)
-        self.block_bank.status_message_changed.connect(self.window().statusBar().showMessage)
+        self.block_bank = BlockBank(
+            self, palette_group_index=level_ref.level.data.palette_index
+        )
+        self.block_bank.status_message_changed.connect(
+            self.window().statusBar().showMessage
+        )
         self.level_ref.palette_changed.connect(self._update_palette_group)
         self.level_ref.level_changed.connect(self._update_palette_group)
 

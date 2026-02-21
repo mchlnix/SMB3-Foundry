@@ -24,5 +24,9 @@ def test_get_castle_map_positions(rom):
                 found_castle_locations.append(world_map_position)
                 break
 
-    for stock_location, found_location in zip(stock_castle_locations, found_castle_locations):
-        assert found_location.tuple() == stock_location, f"Failed at {found_location.world}"
+    for stock_location, found_location in zip(
+        stock_castle_locations, found_castle_locations
+    ):
+        assert (
+            found_location.tuple() == stock_location
+        ), f"Failed at {found_location.world}"

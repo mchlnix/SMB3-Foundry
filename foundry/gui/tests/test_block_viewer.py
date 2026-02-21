@@ -52,25 +52,33 @@ def test_next_object_set(block_viewer, qtbot):
 
 def test_zoom_out(block_viewer, qtbot):
     # GIVEN the block viewer at the default zoom level
-    current_zoom_level = block_viewer.block_bank.size().height() / block_viewer.block_bank.zoom_step
+    current_zoom_level = (
+        block_viewer.block_bank.size().height() / block_viewer.block_bank.zoom_step
+    )
 
     # WHEN the zoom out action is called
     block_viewer.zoom_out_action.trigger()
 
     # THEN the new zoom level is 1 lower and the size of the bank is accordingly smaller
-    new_zoom_level = block_viewer.block_bank.size().height() / block_viewer.block_bank.zoom_step
+    new_zoom_level = (
+        block_viewer.block_bank.size().height() / block_viewer.block_bank.zoom_step
+    )
 
     assert new_zoom_level == current_zoom_level - 1
 
 
 def test_zoom_in(block_viewer, qtbot):
     # GIVEN the block viewer at the default zoom level
-    current_zoom_level = block_viewer.block_bank.size().height() / block_viewer.block_bank.zoom_step
+    current_zoom_level = (
+        block_viewer.block_bank.size().height() / block_viewer.block_bank.zoom_step
+    )
 
     # WHEN the zoom in action is called
     block_viewer.zoom_in_action.trigger()
 
     # THEN the new zoom level is 1 higher and the size of the bank is accordingly larger
-    new_zoom_level = block_viewer.block_bank.size().height() / block_viewer.block_bank.zoom_step
+    new_zoom_level = (
+        block_viewer.block_bank.size().height() / block_viewer.block_bank.zoom_step
+    )
 
     assert new_zoom_level == current_zoom_level + 1

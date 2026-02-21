@@ -54,7 +54,9 @@ def test_list_world_map_addresses(rom):
 
 
 def test_list_all_world_maps_address(rom):
-    for world_map, world_map_address in zip(get_all_world_maps(rom), world_map_addresses):
+    for world_map, world_map_address in zip(
+        get_all_world_maps(rom), world_map_addresses
+    ):
         assert world_map.layout_address == world_map_address
 
 
@@ -69,12 +71,16 @@ def test_list_all_world_maps_height(rom):
 
 
 def test_list_all_world_maps_screen_counts(rom):
-    for world_map, screen_count in zip(get_all_world_maps(rom), world_map_screen_counts):
+    for world_map, screen_count in zip(
+        get_all_world_maps(rom), world_map_screen_counts
+    ):
         assert world_map.screen_count == screen_count
 
 
 def test_list_all_world_maps_width(rom):
-    for world_map, screen_count in zip(get_all_world_maps(rom), world_map_screen_counts):
+    for world_map, screen_count in zip(
+        get_all_world_maps(rom), world_map_screen_counts
+    ):
         assert world_map.width == screen_count * WORLD_MAP_SCREEN_WIDTH
 
 
@@ -88,7 +94,9 @@ def test_list_all_world_maps_width(rom):
         (10, 4, 0xE, 0x1AA51, 0xC93B),
     ],
 )
-def test_get_level_at_position(world_1, row, column, object_set, level_address, enemy_address):
+def test_get_level_at_position(
+    world_1, row, column, object_set, level_address, enemy_address
+):
     level_pointer = world_1.level_for_position(Position(column, row, 0))
 
     assert level_pointer.x == column
@@ -188,4 +196,7 @@ def test_special_enterable_tiles(rom):
     special_enterable_tiles = _get_special_enterable_tiles(rom)
 
     assert special_enterable_tiles.find(first_special_tile) == 0
-    assert special_enterable_tiles.rfind(last_special_tile) == len(special_enterable_tiles) - 1
+    assert (
+        special_enterable_tiles.rfind(last_special_tile)
+        == len(special_enterable_tiles) - 1
+    )

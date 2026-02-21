@@ -107,7 +107,9 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.airship_travel_x_set_address = 0x0
         self.airship_travel_y_set_address = 0x0
 
-        self.airship_travel_sets: tuple[list[Position], list[Position], list[Position]] = ([], [], [])
+        self.airship_travel_sets: tuple[
+            list[Position], list[Position], list[Position]
+        ] = ([], [], [])
         """
         Each World Map has 3 possible Airship routes, one of which is chosen at random, when the World Map is initially
         loaded.
@@ -252,62 +254,104 @@ class WorldMapData(_IndexedMixin, DataPoint):
         super(WorldMapData, self).__init__(rom)
 
     def calculate_addresses(self):
-        self.tile_data_offset_address = Constants.LAYOUT_LIST_OFFSET + OFFSET_SIZE * self.index
+        self.tile_data_offset_address = (
+            Constants.LAYOUT_LIST_OFFSET + OFFSET_SIZE * self.index
+        )
 
         self.palette_index_address = Constants.Map_Tile_ColorSets + self.index
         self.obj_color_index_address = Constants.Map_Object_ColorSets + self.index
 
         self.bottom_border_tile_address = Constants.Map_Bottom_Tiles + self.index
         # TODO you can define a separate tick count for each anim frame, not used in game though
-        self.frame_tick_count_address = Constants.Map_AnimSpeeds + self.index * 4  # 4 animation frames
+        self.frame_tick_count_address = (
+            Constants.Map_AnimSpeeds + self.index * 4
+        )  # 4 animation frames
 
-        self.structure_data_offset_address = Constants.STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.index
+        self.structure_data_offset_address = (
+            Constants.STRUCTURE_DATA_OFFSETS + OFFSET_SIZE * self.index
+        )
 
-        self.y_pos_list_start_address = Constants.LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index
-        self.x_pos_list_start_address = Constants.LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index
+        self.y_pos_list_start_address = (
+            Constants.LEVEL_Y_POS_LISTS + OFFSET_SIZE * self.index
+        )
+        self.x_pos_list_start_address = (
+            Constants.LEVEL_X_POS_LISTS + OFFSET_SIZE * self.index
+        )
 
-        self.enemy_offset_list_offset_address = Constants.LEVEL_ENEMY_LIST_OFFSET + self.index * OFFSET_SIZE
-        self.level_offset_list_offset_address = Constants.LEVELS_IN_WORLD_LIST_OFFSET + self.index * OFFSET_SIZE
+        self.enemy_offset_list_offset_address = (
+            Constants.LEVEL_ENEMY_LIST_OFFSET + self.index * OFFSET_SIZE
+        )
+        self.level_offset_list_offset_address = (
+            Constants.LEVELS_IN_WORLD_LIST_OFFSET + self.index * OFFSET_SIZE
+        )
 
         self.map_start_y_address = Constants.Map_Y_Starts + self.index
         self.map_scroll_address = Constants.World_Map_Max_PanR + self.index
 
         # unused, because the value is always 0x03 * world_index
-        self.airship_travel_base_index_address = Constants.Map_Airship_Travel_BaseIdx + self.index
+        self.airship_travel_base_index_address = (
+            Constants.Map_Airship_Travel_BaseIdx + self.index
+        )
 
         self.airship_travel_x_set_address = (
-            Constants.Map_Airship_Dest_XSets + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
+            Constants.Map_Airship_Dest_XSets
+            + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
         )
         self.airship_travel_y_set_address = (
-            Constants.Map_Airship_Dest_YSets + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
+            Constants.Map_Airship_Dest_YSets
+            + AIRSHIP_TRAVEL_SET_COUNT * OFFSET_SIZE * self.index
         )
 
-        self.fortress_fx_base_index_address = Constants.FortressFXBase_ByWorld + self.index
+        self.fortress_fx_base_index_address = (
+            Constants.FortressFXBase_ByWorld + self.index
+        )
         self.fortress_fx_base_index = self._rom.int(self.fortress_fx_base_index_address)
 
-        self.airship_level_offset_address = Constants.Airship_Layouts + OFFSET_SIZE * self.index
-        self.airship_enemy_offset_address = Constants.Airship_Objects + OFFSET_SIZE * self.index
+        self.airship_level_offset_address = (
+            Constants.Airship_Layouts + OFFSET_SIZE * self.index
+        )
+        self.airship_enemy_offset_address = (
+            Constants.Airship_Objects + OFFSET_SIZE * self.index
+        )
 
-        self.coin_ship_level_offset_address = Constants.CoinShip_Layouts + OFFSET_SIZE * self.index
-        self.coin_ship_enemy_offset_address = Constants.CoinShip_Objects + OFFSET_SIZE * self.index
+        self.coin_ship_level_offset_address = (
+            Constants.CoinShip_Layouts + OFFSET_SIZE * self.index
+        )
+        self.coin_ship_enemy_offset_address = (
+            Constants.CoinShip_Objects + OFFSET_SIZE * self.index
+        )
 
-        self.generic_exit_level_offset_address = Constants.LevelJctGE_Layout + OFFSET_SIZE * self.index
-        self.generic_exit_enemy_offset_address = Constants.LevelJctGE_Objects + OFFSET_SIZE * self.index
+        self.generic_exit_level_offset_address = (
+            Constants.LevelJctGE_Layout + OFFSET_SIZE * self.index
+        )
+        self.generic_exit_enemy_offset_address = (
+            Constants.LevelJctGE_Objects + OFFSET_SIZE * self.index
+        )
         self.generic_exit_object_set_address = Constants.LevelJctGE_Tileset + self.index
 
-        self.big_q_block_level_offset_address = Constants.LevelJctBQ_Layout + OFFSET_SIZE * self.index
-        self.big_q_block_enemy_offset_address = Constants.LevelJctBQ_Objects + OFFSET_SIZE * self.index
+        self.big_q_block_level_offset_address = (
+            Constants.LevelJctBQ_Layout + OFFSET_SIZE * self.index
+        )
+        self.big_q_block_enemy_offset_address = (
+            Constants.LevelJctBQ_Objects + OFFSET_SIZE * self.index
+        )
         self.big_q_block_object_set_address = Constants.LevelJctBQ_Tileset + self.index
 
-        self.toad_warp_level_offset_address = Constants.ToadShop_Layouts + OFFSET_SIZE * self.index
-        self.toad_warp_item_address = Constants.ToadShop_Objects + OFFSET_SIZE * self.index
+        self.toad_warp_level_offset_address = (
+            Constants.ToadShop_Layouts + OFFSET_SIZE * self.index
+        )
+        self.toad_warp_item_address = (
+            Constants.ToadShop_Objects + OFFSET_SIZE * self.index
+        )
 
         self.music_index_address = Constants.World_BGM + self.index
         self.music_arrival_index_address = Constants.World_BGM_Arrival + self.index
 
     def read_values(self):
         self.tile_data_offset = self._rom.little_endian(self.tile_data_offset_address)
-        self.tile_data = self._rom.read_until(self.layout_address, WORLD_MAP_LAYOUT_DELIMITER)
+        self.tile_data = self._rom.read_until(
+            self.layout_address, WORLD_MAP_LAYOUT_DELIMITER
+        )
 
         self.palette_index = self._rom.int(self.palette_index_address)
         self.obj_color_index = self._rom.int(self.obj_color_index_address)
@@ -315,20 +359,37 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.bottom_border_tile = self._rom.int(self.bottom_border_tile_address)
         self.frame_tick_count = self._rom.int(self.frame_tick_count_address)
 
-        self.structure_data_offset = self._rom.little_endian(self.structure_data_offset_address)
+        self.structure_data_offset = self._rom.little_endian(
+            self.structure_data_offset_address
+        )
 
-        self.pos_offsets_for_screen = self._rom.read(self.structure_block_address, MAX_SCREEN_COUNT)
+        self.pos_offsets_for_screen = self._rom.read(
+            self.structure_block_address, MAX_SCREEN_COUNT
+        )
 
-        self.y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(self.y_pos_list_start_address)
-        self.x_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(self.x_pos_list_start_address)
+        self.y_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
+            self.y_pos_list_start_address
+        )
+        self.x_pos_list_start = WORLD_MAP_BASE_OFFSET + self._rom.little_endian(
+            self.x_pos_list_start_address
+        )
 
-        self.level_pointers = [LevelPointerData(self, index) for index in range(self.level_count)]
+        self.level_pointers = [
+            LevelPointerData(self, index) for index in range(self.level_count)
+        ]
 
-        self.enemy_offset_list_offset = self._rom.little_endian(self.enemy_offset_list_offset_address)
-        self.level_offset_list_offset = self._rom.little_endian(self.level_offset_list_offset_address)
+        self.enemy_offset_list_offset = self._rom.little_endian(
+            self.enemy_offset_list_offset_address
+        )
+        self.level_offset_list_offset = self._rom.little_endian(
+            self.level_offset_list_offset_address
+        )
 
         if self.index != WORLD_MAP_WARP_WORLD_INDEX:
-            assert self.level_offset_list_offset == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE, (
+            assert (
+                self.level_offset_list_offset
+                == self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+            ), (
                 hex(self.level_offset_list_offset - self.enemy_offset_list_offset),
                 self.level_count,
             )
@@ -336,22 +397,31 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.map_start_y = self._rom.int(self.map_start_y_address)
         self.map_scroll = self._rom.int(self.map_scroll_address)
 
-        self.airship_travel_base_index = self._rom.int(self.airship_travel_base_index_address)
+        self.airship_travel_base_index = self._rom.int(
+            self.airship_travel_base_index_address
+        )
 
         for set_number in range(AIRSHIP_TRAVEL_SET_COUNT):
             self.airship_travel_sets[set_number].clear()
 
-            offset_x = self._rom.little_endian(self.airship_travel_x_set_address + set_number * OFFSET_SIZE)
-            offset_y = self._rom.little_endian(self.airship_travel_y_set_address + set_number * OFFSET_SIZE)
+            offset_x = self._rom.little_endian(
+                self.airship_travel_x_set_address + set_number * OFFSET_SIZE
+            )
+            offset_y = self._rom.little_endian(
+                self.airship_travel_y_set_address + set_number * OFFSET_SIZE
+            )
 
             for index in range(AIRSHIP_TRAVEL_SET_SIZE):
                 x, screen = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_x + index)
-                y, _ = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_y + index)
+                y, __ = self._rom.nibbles(BASE_OFFSET + 0xC000 + offset_y + index)
 
                 self.airship_travel_sets[set_number].append(Position(x, y, screen))
 
         self.fortress_fx_base_index = self._rom.int(self.fortress_fx_base_index_address)
-        self.fortress_fx_count = self._rom.int(self.fortress_fx_base_index_address + 1) - self.fortress_fx_base_index
+        self.fortress_fx_count = (
+            self._rom.int(self.fortress_fx_base_index_address + 1)
+            - self.fortress_fx_base_index
+        )
 
         self.fortress_fx.clear()
         self.fortress_fx_indexes.clear()
@@ -362,21 +432,41 @@ class WorldMapData(_IndexedMixin, DataPoint):
             self.fortress_fx.append(FortressFXData(self._rom, index))
             self.fortress_fx_indexes.append(index)
 
-        self.airship_level_offset = self._rom.little_endian(self.airship_level_offset_address)
-        self.airship_enemy_offset = self._rom.little_endian(self.airship_enemy_offset_address)
+        self.airship_level_offset = self._rom.little_endian(
+            self.airship_level_offset_address
+        )
+        self.airship_enemy_offset = self._rom.little_endian(
+            self.airship_enemy_offset_address
+        )
 
-        self.coin_ship_level_offset = self._rom.little_endian(self.coin_ship_level_offset_address)
-        self.coin_ship_enemy_offset = self._rom.little_endian(self.coin_ship_enemy_offset_address)
+        self.coin_ship_level_offset = self._rom.little_endian(
+            self.coin_ship_level_offset_address
+        )
+        self.coin_ship_enemy_offset = self._rom.little_endian(
+            self.coin_ship_enemy_offset_address
+        )
 
-        self.generic_exit_level_offset = self._rom.little_endian(self.generic_exit_level_offset_address)
-        self.generic_exit_enemy_offset = self._rom.little_endian(self.generic_exit_enemy_offset_address)
-        self.generic_exit_object_set = self._rom.int(self.generic_exit_object_set_address)
+        self.generic_exit_level_offset = self._rom.little_endian(
+            self.generic_exit_level_offset_address
+        )
+        self.generic_exit_enemy_offset = self._rom.little_endian(
+            self.generic_exit_enemy_offset_address
+        )
+        self.generic_exit_object_set = self._rom.int(
+            self.generic_exit_object_set_address
+        )
 
-        self.big_q_block_level_offset = self._rom.little_endian(self.big_q_block_level_offset_address)
-        self.big_q_block_enemy_offset = self._rom.little_endian(self.big_q_block_enemy_offset_address)
+        self.big_q_block_level_offset = self._rom.little_endian(
+            self.big_q_block_level_offset_address
+        )
+        self.big_q_block_enemy_offset = self._rom.little_endian(
+            self.big_q_block_enemy_offset_address
+        )
         self.big_q_block_object_set = self._rom.int(self.big_q_block_object_set_address)
 
-        self.toad_warp_level_offset = self._rom.little_endian(self.toad_warp_level_offset_address)
+        self.toad_warp_level_offset = self._rom.little_endian(
+            self.toad_warp_level_offset_address
+        )
         self.toad_warp_item = self._rom.little_endian(self.toad_warp_item_address)
 
         self.music_index = self._rom.int(self.music_index_address)
@@ -399,7 +489,9 @@ class WorldMapData(_IndexedMixin, DataPoint):
         rom.write(self.frame_tick_count_address, bytearray([self.frame_tick_count] * 4))
 
         # structure_data_offset
-        rom.write_little_endian(self.structure_data_offset_address, self.structure_data_offset)
+        rom.write_little_endian(
+            self.structure_data_offset_address, self.structure_data_offset
+        )
 
         # values depending on amount of level pointers per screen
         self.level_pointers.sort()
@@ -430,7 +522,9 @@ class WorldMapData(_IndexedMixin, DataPoint):
             self.x_pos_list_start - WORLD_MAP_BASE_OFFSET,
         )
 
-        rom.write_little_endian(self.enemy_offset_list_offset_address, self.enemy_offset_list_offset)
+        rom.write_little_endian(
+            self.enemy_offset_list_offset_address, self.enemy_offset_list_offset
+        )
         rom.write_little_endian(
             self.level_offset_list_offset_address,
             self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE,
@@ -443,40 +537,68 @@ class WorldMapData(_IndexedMixin, DataPoint):
         rom.write(self.map_start_y_address, self.map_start_y)
         rom.write(self.map_scroll_address, self.map_scroll)
 
-        rom.write(self.airship_travel_base_index_address, self.airship_travel_base_index)
+        rom.write(
+            self.airship_travel_base_index_address, self.airship_travel_base_index
+        )
 
         for set_number in range(AIRSHIP_TRAVEL_SET_COUNT):
-            offset_x = rom.little_endian(self.airship_travel_x_set_address + set_number * OFFSET_SIZE)
-            offset_y = rom.little_endian(self.airship_travel_y_set_address + set_number * OFFSET_SIZE)
+            offset_x = rom.little_endian(
+                self.airship_travel_x_set_address + set_number * OFFSET_SIZE
+            )
+            offset_y = rom.little_endian(
+                self.airship_travel_y_set_address + set_number * OFFSET_SIZE
+            )
 
             for index in range(AIRSHIP_TRAVEL_SET_SIZE):
                 pos: Position = self.airship_travel_sets[set_number][index]
 
-                rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_x + index, pos.x, pos.screen)
+                rom.write_nibbles(
+                    BASE_OFFSET + 0xC000 + offset_x + index, pos.x, pos.screen
+                )
                 rom.write_nibbles(BASE_OFFSET + 0xC000 + offset_y + index, pos.y)
 
         rom.write(self.fortress_fx_base_index_address, self.fortress_fx_base_index)
 
         for offset, fortress_fx_data in enumerate(self.fortress_fx):
-            rom.write(self.fortress_fx_indexes_start_address + offset, fortress_fx_data.index)
+            rom.write(
+                self.fortress_fx_indexes_start_address + offset, fortress_fx_data.index
+            )
 
             fortress_fx_data.write_back(rom)
 
-        rom.write_little_endian(self.airship_level_offset_address, self.airship_level_offset)
-        rom.write_little_endian(self.airship_enemy_offset_address, self.airship_enemy_offset)
+        rom.write_little_endian(
+            self.airship_level_offset_address, self.airship_level_offset
+        )
+        rom.write_little_endian(
+            self.airship_enemy_offset_address, self.airship_enemy_offset
+        )
 
-        rom.write_little_endian(self.coin_ship_level_offset_address, self.coin_ship_level_offset)
-        rom.write_little_endian(self.coin_ship_enemy_offset_address, self.coin_ship_enemy_offset)
+        rom.write_little_endian(
+            self.coin_ship_level_offset_address, self.coin_ship_level_offset
+        )
+        rom.write_little_endian(
+            self.coin_ship_enemy_offset_address, self.coin_ship_enemy_offset
+        )
 
-        rom.write_little_endian(self.generic_exit_level_offset_address, self.generic_exit_level_offset)
-        rom.write_little_endian(self.generic_exit_enemy_offset_address, self.generic_exit_enemy_offset)
+        rom.write_little_endian(
+            self.generic_exit_level_offset_address, self.generic_exit_level_offset
+        )
+        rom.write_little_endian(
+            self.generic_exit_enemy_offset_address, self.generic_exit_enemy_offset
+        )
         rom.write(self.generic_exit_object_set_address, self.generic_exit_object_set)
 
-        rom.write_little_endian(self.big_q_block_level_offset_address, self.big_q_block_level_offset)
-        rom.write_little_endian(self.big_q_block_enemy_offset_address, self.big_q_block_enemy_offset)
+        rom.write_little_endian(
+            self.big_q_block_level_offset_address, self.big_q_block_level_offset
+        )
+        rom.write_little_endian(
+            self.big_q_block_enemy_offset_address, self.big_q_block_enemy_offset
+        )
         rom.write(self.big_q_block_object_set_address, self.big_q_block_object_set)
 
-        rom.write_little_endian(self.toad_warp_level_offset_address, self.toad_warp_level_offset)
+        rom.write_little_endian(
+            self.toad_warp_level_offset_address, self.toad_warp_level_offset
+        )
         rom.write_little_endian(self.toad_warp_item_address, self.toad_warp_item)
 
         rom.write(self.music_index_address, self.music_index)
@@ -500,12 +622,18 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.y_pos_list_start = self.structure_block_address + MAX_SCREEN_COUNT
         self.x_pos_list_start = self.y_pos_list_start + level_count
 
-        self.enemy_offset_list_offset = self.x_pos_list_start + self.level_count - WORLD_MAP_BASE_OFFSET
-        self.level_offset_list_offset = self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+        self.enemy_offset_list_offset = (
+            self.x_pos_list_start + self.level_count - WORLD_MAP_BASE_OFFSET
+        )
+        self.level_offset_list_offset = (
+            self.enemy_offset_list_offset + self.level_count * OFFSET_SIZE
+        )
 
     @property
     def structure_block_size(self):
-        return self.level_count * LevelPointerData.SIZE + len(self.pos_offsets_for_screen)
+        return self.level_count * LevelPointerData.SIZE + len(
+            self.pos_offsets_for_screen
+        )
 
     @property
     def layout_address(self):
@@ -517,7 +645,10 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
     @property
     def airship_level_address(self):
-        return ObjectSet(self._rom, self.airship_level_object_set).level_offset + self.airship_level_offset
+        return (
+            ObjectSet(self._rom, self.airship_level_object_set).level_offset
+            + self.airship_level_offset
+        )
 
     @airship_level_address.setter
     def airship_level_address(self, value):
@@ -537,11 +668,16 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
     @property
     def coin_ship_level_address(self):
-        return ObjectSet(self._rom, self.coin_ship_level_object_set).level_offset + self.coin_ship_level_offset
+        return (
+            ObjectSet(self._rom, self.coin_ship_level_object_set).level_offset
+            + self.coin_ship_level_offset
+        )
 
     @coin_ship_level_address.setter
     def coin_ship_level_address(self, value):
-        self.coin_ship_level_offset = value - ObjectSet(self._rom, self.coin_ship_level_object_set).level_offset
+        self.coin_ship_level_offset = (
+            value - ObjectSet(self._rom, self.coin_ship_level_object_set).level_offset
+        )
 
     @property
     def coin_ship_level_object_set(self):
@@ -557,11 +693,16 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
     @property
     def generic_exit_level_address(self):
-        return ObjectSet(self._rom, self.generic_exit_object_set).level_offset + self.generic_exit_level_offset
+        return (
+            ObjectSet(self._rom, self.generic_exit_object_set).level_offset
+            + self.generic_exit_level_offset
+        )
 
     @generic_exit_level_address.setter
     def generic_exit_level_address(self, value):
-        self.generic_exit_level_offset = value - ObjectSet(self._rom, self.generic_exit_object_set).level_offset
+        self.generic_exit_level_offset = (
+            value - ObjectSet(self._rom, self.generic_exit_object_set).level_offset
+        )
 
     @property
     def generic_exit_enemy_address(self):
@@ -573,11 +714,16 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
     @property
     def big_q_block_level_address(self):
-        return ObjectSet(self._rom, self.big_q_block_object_set).level_offset + self.big_q_block_level_offset
+        return (
+            ObjectSet(self._rom, self.big_q_block_object_set).level_offset
+            + self.big_q_block_level_offset
+        )
 
     @big_q_block_level_address.setter
     def big_q_block_level_address(self, value):
-        self.big_q_block_level_offset = value - ObjectSet(self._rom, self.big_q_block_object_set).level_offset
+        self.big_q_block_level_offset = (
+            value - ObjectSet(self._rom, self.big_q_block_object_set).level_offset
+        )
 
     @property
     def big_q_block_enemy_address(self):
@@ -589,11 +735,16 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
     @property
     def toad_warp_level_address(self):
-        return ObjectSet(self._rom, self.toad_warp_object_set).level_offset + self.toad_warp_level_offset
+        return (
+            ObjectSet(self._rom, self.toad_warp_object_set).level_offset
+            + self.toad_warp_level_offset
+        )
 
     @toad_warp_level_address.setter
     def toad_warp_level_address(self, value):
-        self.toad_warp_level_offset = value - ObjectSet(self._rom, self.toad_warp_object_set).level_offset
+        self.toad_warp_level_offset = (
+            value - ObjectSet(self._rom, self.toad_warp_object_set).level_offset
+        )
 
     @property
     def toad_warp_object_set(self):
@@ -612,7 +763,11 @@ class WorldMapData(_IndexedMixin, DataPoint):
         diff = new_screen_count - self.screen_count
 
         if new_screen_count > self.screen_count:
-            new_tile_data = WORLD_MAP_BLANK_TILE_ID.to_bytes(1, byteorder="big") * diff * WORLD_MAP_SCREEN_SIZE
+            new_tile_data = (
+                WORLD_MAP_BLANK_TILE_ID.to_bytes(1, byteorder="big")
+                * diff
+                * WORLD_MAP_SCREEN_SIZE
+            )
             self.tile_data.extend(new_tile_data)
 
         elif new_screen_count < self.screen_count:

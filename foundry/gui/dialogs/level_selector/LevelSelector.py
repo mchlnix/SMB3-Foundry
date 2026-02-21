@@ -33,7 +33,7 @@ class LevelSelector(QDialog):
     def __init__(self, parent):
         super(LevelSelector, self).__init__(parent)
 
-        self.setWindowTitle("Level Selector")
+        self.setWindowTitle(_("Level Selector"))
         self.setModal(True)
 
         self.level_name = ""
@@ -45,22 +45,22 @@ class LevelSelector(QDialog):
 
         self.clicked_level_pointer: Optional[LevelPointerData] = None
 
-        self.enemy_data_label = QLabel(parent=self, text="Enemy Data")
+        self.enemy_data_label = QLabel(parent=self, text=_("Enemy Data"))
         self.enemy_data_spinner = Spinner(parent=self)
 
-        self.object_data_label = QLabel(parent=self, text="Object Data")
+        self.object_data_label = QLabel(parent=self, text=_("Object Data"))
         self.object_data_spinner = Spinner(self)
 
-        self.object_set_label = QLabel(parent=self, text="Object Set")
+        self.object_set_label = QLabel(parent=self, text=_("Object Set"))
         self.object_set_dropdown = QComboBox(self)
         self.object_set_dropdown.addItems(OBJECT_SET_ITEMS)
 
-        self.button_ok = QPushButton("Ok", self)
+        self.button_ok = QPushButton(_("Ok"), self)
         self.button_ok.setEnabled(False)
         self.button_ok.clicked.connect(self._on_ok)
         self.button_ok.setFocus()
 
-        self.button_cancel = QPushButton("Cancel", self)
+        self.button_cancel = QPushButton(_("Cancel"), self)
         self.button_cancel.clicked.connect(self.close)
 
         # adding the tabs
@@ -73,30 +73,40 @@ class LevelSelector(QDialog):
         self._stock_level_widget.world_list.itemDoubleClicked.connect(self._on_ok)
         self._stock_level_widget.level_list.itemDoubleClicked.connect(self._on_ok)
 
-        self._stock_level_widget.level_list.itemClicked.connect(self._on_stock_level_selected)
+        self._stock_level_widget.level_list.itemClicked.connect(
+            self._on_stock_level_selected
+        )
 
-        self.source_selector.addTab(self._stock_level_widget, "Stock Levels")
+        self.source_selector.addTab(self._stock_level_widget, _("Stock Levels"))
         self.source_selector.setTabIcon(tab_index, icon("list.svg"))
 
         tab_index += 1
 
         if ROM.additional_data.found_levels:
             self._found_level_widget = FoundLevelWidget()
-            self._found_level_widget.level_table.itemSelectionChanged.connect(self._on_found_level_selected)
+            self._found_level_widget.level_table.itemSelectionChanged.connect(
+                self._on_found_level_selected
+            )
             self._found_level_widget.level_table.itemDoubleClicked.connect(self._on_ok)
 
-            self.source_selector.addTab(self._found_level_widget, "Found Levels")
+            self.source_selector.addTab(self._found_level_widget, _("Found Levels"))
             self.source_selector.setTabIcon(tab_index, icon("list.svg"))
             tab_index += 1
 
         for world_number in range(1, WORLD_COUNT):
             world_map_select = WorldMapLevelSelect(world_number)
-            world_map_select.level_clicked.connect(self._on_level_selected_via_world_map)
-            world_map_select.level_selected.connect(self._on_level_selected_via_world_map)
+            world_map_select.level_clicked.connect(
+                self._on_level_selected_via_world_map
+            )
+            world_map_select.level_selected.connect(
+                self._on_level_selected_via_world_map
+            )
             world_map_select.level_selected.connect(self._on_ok)
 
-            self.source_selector.addTab(world_map_select, f"World {world_number}")
-            self.source_selector.setTabIcon(tab_index + world_number - 1, icon("globe.svg"))
+            self.source_selector.addTab(world_map_select, _("World %d") % world_number)
+            self.source_selector.setTabIcon(
+                tab_index + world_number - 1, icon("globe.svg")
+            )
 
         # show world 1 by default
         if self.source_selector.count() > tab_index:
@@ -155,7 +165,9 @@ class LevelSelector(QDialog):
         self.object_data_spinner.setValue(layout_address)
         self.enemy_data_spinner.setValue(enemy_address)
 
-    def _on_level_selected_via_world_map(self, level_name: str, level_pointer: LevelPointerData):
+    def _on_level_selected_via_world_map(
+        self, level_name: str, level_pointer: LevelPointerData
+    ):
         self.level_name = level_name
 
         if self.clicked_level_pointer == level_pointer:
@@ -191,11 +203,17 @@ class LevelSelector(QDialog):
         if self.object_set_dropdown.currentIndex() == WORLD_MAP_OBJECT_SET:
             return
 
-        if self.object_set_dropdown.currentIndex() in (MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET):
+        if self.object_set_dropdown.currentIndex() in (
+            MUSHROOM_OBJECT_SET,
+            SPADE_BONUS_OBJECT_SET,
+        ):
+            # These translations probably won't last long
             QMessageBox.warning(
                 self,
-                "No can do",
-                "Spade and mushroom house levels are currently not supported, and can't be edited.",
+                _("No can do"),
+                _(
+                    "Spade and mushroom house levels are currently not supported, and can't be edited."
+                ),
             )
             return
 

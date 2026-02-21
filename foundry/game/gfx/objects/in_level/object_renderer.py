@@ -10,28 +10,28 @@ from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
 ENDING_STR = {
-    EndType.UNIFORM: "Uniform",
-    EndType.TOP_OR_LEFT: "Top or Left",
-    EndType.BOTTOM_OR_RIGHT: "Bottom or Right",
-    EndType.TWO_ENDS: "Top & Bottom/Left & Right",
+    EndType.UNIFORM: _("Uniform"),
+    EndType.TOP_OR_LEFT: _("Top or Left"),
+    EndType.BOTTOM_OR_RIGHT: _("Bottom or Right"),
+    EndType.TWO_ENDS: _("Top & Bottom/Left & Right"),
 }
 
 GENERATOR_TYPE_TO_STR = {
-    GeneratorType.HORIZONTAL: "Horizontal",
-    GeneratorType.VERTICAL: "Vertical",
-    GeneratorType.DIAG_DOWN_LEFT: "Diagonal ↙",
-    GeneratorType.DESERT_PIPE_BOX: "Desert Pipe Box",
-    GeneratorType.DIAG_DOWN_RIGHT: "Diagonal ↘",
-    GeneratorType.DIAG_UP_RIGHT: "Diagonal ↗",
-    GeneratorType.HORIZ_TO_GROUND: "Horizontal to the Ground",
-    GeneratorType.HORIZONTAL_2: "Horizontal Alternative",
-    GeneratorType.DIAG_WEIRD: "Diagonal Weird",  # up left?
-    GeneratorType.SINGLE_BLOCK: "Single Block",
-    GeneratorType.CENTERED: "Centered",
-    GeneratorType.PYRAMID_TO_GROUND: "Pyramid to Ground",
-    GeneratorType.PYRAMID_2: "Pyramid Alternative",
-    GeneratorType.TO_THE_SKY: "To the Sky",
-    GeneratorType.ENDING: "Ending",
+    GeneratorType.HORIZONTAL: _("Horizontal"),
+    GeneratorType.VERTICAL: _("Vertical"),
+    GeneratorType.DIAG_DOWN_LEFT: _("Diagonal ↙"),
+    GeneratorType.DESERT_PIPE_BOX: _("Desert Pipe Box"),
+    GeneratorType.DIAG_DOWN_RIGHT: _("Diagonal ↘"),
+    GeneratorType.DIAG_UP_RIGHT: _("Diagonal ↗"),
+    GeneratorType.HORIZ_TO_GROUND: _("Horizontal to the Ground"),
+    GeneratorType.HORIZONTAL_2: _("Horizontal Alternative"),
+    GeneratorType.DIAG_WEIRD: _("Diagonal Weird"),  # up left?
+    GeneratorType.SINGLE_BLOCK: _("Single Block"),
+    GeneratorType.CENTERED: _("Centered"),
+    GeneratorType.PYRAMID_TO_GROUND: _("Pyramid to Ground"),
+    GeneratorType.PYRAMID_2: _("Pyramid Alternative"),
+    GeneratorType.TO_THE_SKY: _("To the Sky"),
+    GeneratorType.ENDING: _("Ending"),
 }
 
 
@@ -84,19 +84,36 @@ class ObjectRenderer:
         self._object.rendered_base_x = self.base_x
         self._object.rendered_base_y = self.base_y
 
-        if self._new_width and not self._object.rendered_height == len(self._object.rendered_blocks) / self._new_width:
+        if (
+            self._new_width
+            and not self._object.rendered_height
+            == len(self._object.rendered_blocks) / self._new_width
+        ):
             warn(
-                f"Not enough Blocks for calculated height: {self._object.name}. "
-                f"Blocks for height: {len(self._object.rendered_blocks) / self._new_width}. "
-                f"Rendered height: {self._object.rendered_height}",
+                _(
+                    "Not enough blocks for calculated height: %(name)s. Blocks for height: %(blocks)d. Rendered height: %(height)d."
+                )
+                % {
+                    "name": self._object.name,
+                    "blocks": len(self._object.rendered_blocks) / self._new_width,
+                    "height": self._object.rendered_height,
+                },
                 LevelObjectRenderWarning,
             )
 
-            self._object.rendered_height = len(self._object.rendered_blocks) // self._new_width
+            self._object.rendered_height = (
+                len(self._object.rendered_blocks) // self._new_width
+            )
         elif self._new_width == 0:
             warn(
-                f"Calculated Width is 0, setting to 1: {self._object.name}. "
-                f"Blocks to draw: {len(self._object.rendered_blocks)}. Rendered height: {self._object.rendered_height}",
+                _(
+                    "Calculated Width is 0, setting to 1: %(name)s. Blocks to draw: %(blocks)d. Rendered height: %(height)d."
+                )
+                % {
+                    "name": self._object.name,
+                    "blocks": len(self._object.rendered_blocks),
+                    "height": self._object.rendered_height,
+                },
                 LevelObjectRenderWarning,
             )
 
@@ -151,7 +168,9 @@ class ObjectRenderer:
 
         else:
             if not self._object.generator_type == GeneratorType.SINGLE_BLOCK:
-                warn(f"Didn't render {self._object.name}", LevelObjectRenderWarning)
+                warn(
+                    _("Didn't render %s") % self._object.name, LevelObjectRenderWarning
+                )
                 # breakpoint()
 
             if self._object.name.lower() == "black boss room background":
@@ -228,7 +247,7 @@ class ObjectRenderer:
         for row in range(no_of_rows):
             _insert_block_row(top)
 
-            for _ in range(self._object.height - 2):
+            for __ in range(self._object.height - 2):
                 _insert_block_row(middle)
 
             if self._object.height > 1:
@@ -242,7 +261,9 @@ class ObjectRenderer:
         self.base_y = 0
 
         blocks_to_draw.clear()
-        blocks_to_draw.extend(LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_HEIGHT * [self._object.blocks[0]])
+        blocks_to_draw.extend(
+            LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_HEIGHT * [self._object.blocks[0]]
+        )
 
     def _render_horizontal(self, blocks_to_draw):
         self._new_width = self._object.length + 1
@@ -255,7 +276,10 @@ class ObjectRenderer:
         if self._object.generator_type == GeneratorType.HORIZ_TO_GROUND:
             self._sub_render_horizontal_to_ground()
 
-        elif self._object.generator_type == GeneratorType.HORIZONTAL_2 and self._object.ending == EndType.TWO_ENDS:
+        elif (
+            self._object.generator_type == GeneratorType.HORIZONTAL_2
+            and self._object.ending == EndType.TWO_ENDS
+        ):
             # floating platforms seem to just be one shorter for some reason
             self._new_width -= 1
         else:
@@ -283,26 +307,35 @@ class ObjectRenderer:
                 for x in range(self._new_width - 1):
                     blocks_to_draw.append(self._object.blocks[offset])
 
-                blocks_to_draw.append(self._object.blocks[offset + self._object.width - 1])
+                blocks_to_draw.append(
+                    self._object.blocks[offset + self._object.width - 1]
+                )
 
         elif self._object.ending == EndType.TWO_ENDS:
             self._sub_render_horizontal_two_ends(blocks_to_draw)
 
     def _sub_render_horizontal_two_ends(self, blocks_to_draw):
-        if self._object.generator_type == GeneratorType.HORIZONTAL and self._object.is_4byte:
+        if (
+            self._object.generator_type == GeneratorType.HORIZONTAL
+            and self._object.is_4byte
+        ):
             # flat ground objects have an artificial limit of 2 lines
             if (
                 self._object.object_set.number == PLAINS_OBJECT_SET
                 and self._object.domain == 0
                 and self._object.obj_index in range(0xC0, 0xE0)
             ):
-                self._object.height = self._new_height = min(2, self._object.secondary_length + 1)
+                self._object.height = self._new_height = min(
+                    2, self._object.secondary_length + 1
+                )
 
             else:
                 self._new_height = self._object.secondary_length + 1
 
         if self._object.width > len(self._object.blocks):
-            raise ValueError(f"{self} does not provide enough blocks to fill a row.")
+            raise ValueError(
+                _("%s does not provide enough blocks to fill a row.") % self
+            )
 
         else:
             start = 0
@@ -328,7 +361,7 @@ class ObjectRenderer:
 
         if not len(blocks_to_draw) % self._object.height == 0:
             warn(
-                f"Blocks to draw are not divisible by height. {self}",
+                _("Blocks to draw are not divisible by height. %s") % self,
                 LevelObjectRenderWarning,
             )
 
@@ -357,7 +390,7 @@ class ObjectRenderer:
             self._new_height -= 1
 
         if self._object.generator_type == GeneratorType.HORIZONTAL_2:
-            for _ in range(0, self._new_height - 1):
+            for __ in range(0, self._new_height - 1):
                 blocks_to_draw.extend(self._new_width * top)
 
             blocks_to_draw.extend(self._new_width * bottom)
@@ -365,15 +398,17 @@ class ObjectRenderer:
         else:
             blocks_to_draw.extend(self._new_width * top)
 
-            for _ in range(1, self._new_height):
+            for __ in range(1, self._new_height):
                 blocks_to_draw.extend(self._new_width * bottom)
 
     def _sub_render_horizontal_uniform_3byte(self, blocks_to_draw):
         for y in range(self._new_height):
             offset = (y % self._object.height) * self._object.width
 
-            for _ in range(0, self._new_width):
-                blocks_to_draw.extend(self._object.blocks[offset : offset + self._object.width])
+            for __ in range(0, self._new_width):
+                blocks_to_draw.extend(
+                    self._object.blocks[offset : offset + self._object.width]
+                )
 
         # in case of giant blocks
         self._new_width *= self._object.width
@@ -412,10 +447,14 @@ class ObjectRenderer:
                 # the width is the primary expansion
                 self._new_width = (self._object.obj_index & 0x0F) + 1
 
-            for _ in range(self._new_height):
+            for __ in range(self._new_height):
                 for y in range(self._object.height):
                     for x in range(self._new_width):
-                        blocks_to_draw.append(self._object.blocks[y * self._object.height + x % self._object.width])
+                        blocks_to_draw.append(
+                            self._object.blocks[
+                                y * self._object.height + x % self._object.width
+                            ]
+                        )
 
             # adjust height for giant blocks, so that the rect is correct
             self._new_height *= self._object.height
@@ -424,7 +463,9 @@ class ObjectRenderer:
             # in case the drawn object is smaller than its actual size
             for y in range(min(self._object.height, self._new_height)):
                 offset = y * self._object.width
-                blocks_to_draw.extend(self._object.blocks[offset : offset + self._object.width])
+                blocks_to_draw.extend(
+                    self._object.blocks[offset : offset + self._object.width]
+                )
 
             additional_rows = self._new_height - self._object.height
 
@@ -433,7 +474,7 @@ class ObjectRenderer:
             if additional_rows > 0:
                 last_row = self._object.blocks[-self._object.width :]
 
-                for _ in range(additional_rows):
+                for __ in range(additional_rows):
                     blocks_to_draw.extend(last_row)
 
         elif self._object.ending == EndType.BOTTOM_OR_RIGHT:
@@ -444,13 +485,15 @@ class ObjectRenderer:
             if additional_rows > 0:
                 last_row = self._object.blocks[0 : self._object.width]
 
-                for _ in range(additional_rows):
+                for __ in range(additional_rows):
                     blocks_to_draw.extend(last_row)
 
             # in case the drawn object is smaller than its actual size
             for y in range(min(self._object.height, self._new_height)):
                 offset = y * self._object.width
-                blocks_to_draw.extend(self._object.blocks[offset : offset + self._object.width])
+                blocks_to_draw.extend(
+                    self._object.blocks[offset : offset + self._object.width]
+                )
 
         elif self._object.ending == EndType.TWO_ENDS:
             # object exists on ships
@@ -463,8 +506,12 @@ class ObjectRenderer:
 
             # repeat second to last row
             if additional_rows > 0:
-                for _ in range(additional_rows):
-                    blocks_to_draw.extend(self._object.blocks[-2 * self._object.width : -self._object.width])
+                for __ in range(additional_rows):
+                    blocks_to_draw.extend(
+                        self._object.blocks[
+                            -2 * self._object.width : -self._object.width
+                        ]
+                    )
 
             if self._new_height > 1:
                 blocks_to_draw.extend(bottom_row)
@@ -513,7 +560,12 @@ class ObjectRenderer:
 
             bottom_row = QRect(self.base_x, y, self._new_width, 1)
 
-            if any((bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top() for obj in objects_before)):
+            if any(
+                (
+                    bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top()
+                    for obj in objects_before
+                )
+            ):
                 break
 
         # the tip of a pyramid is 2 blocks, the x position is the left block, so subtract half the width minus 1
@@ -532,7 +584,9 @@ class ObjectRenderer:
             blocks_to_draw.extend(blank_blocks * [blank])
 
             blocks_to_draw.append(left_slope)
-            blocks_to_draw.extend(middle_blocks * [left_fill] + middle_blocks * [right_fill])
+            blocks_to_draw.extend(
+                middle_blocks * [left_fill] + middle_blocks * [right_fill]
+            )
             blocks_to_draw.append(right_slope)
 
             blocks_to_draw.extend(blank_blocks * [blank])
@@ -548,7 +602,9 @@ class ObjectRenderer:
 
         elif self._object.ending == EndType.TOP_OR_LEFT:
             self._new_height = (self._object.length + 1) * self._object.height
-            self._new_width = (self._object.length + 1) * (self._object.width - 1)  # without fill block
+            self._new_width = (self._object.length + 1) * (
+                self._object.width - 1
+            )  # without fill block
 
             if self._object.generator_type in [
                 GeneratorType.DIAG_DOWN_RIGHT,
@@ -576,7 +632,9 @@ class ObjectRenderer:
 
         elif self._object.ending == EndType.BOTTOM_OR_RIGHT:
             self._new_height = (self._object.length + 1) * self._object.height
-            self._new_width = (self._object.length + 1) * (self._object.width - 1)  # without fill block
+            self._new_width = (self._object.length + 1) * (
+                self._object.width - 1
+            )  # without fill block
 
             fill_block = self._object.blocks[-1:]
             slopes = self._object.blocks[0:-1]
@@ -587,7 +645,9 @@ class ObjectRenderer:
         else:
             # todo other two ends not used with diagonals?
             self._object.rendered_blocks = []
-            raise LevelObjectRenderWarning(f"{self._object.name} was not rendered.")
+            raise LevelObjectRenderWarning(
+                _("%s was not rendered.") % self._object.name
+            )
 
         rows = []
         if self._object.height > self._object.width:
@@ -601,7 +661,11 @@ class ObjectRenderer:
 
             offset = y % self._object.height
 
-            rows.append(amount_left * left + slopes[offset : offset + slope_width] + amount_right * right)
+            rows.append(
+                amount_left * left
+                + slopes[offset : offset + slope_width]
+                + amount_right * right
+            )
 
         if self._object.generator_type == GeneratorType.DIAG_UP_RIGHT:
             for row in rows:
@@ -614,7 +678,10 @@ class ObjectRenderer:
             if not self._object.height > self._object.width:
                 rows.reverse()
 
-        if self._object.generator_type == GeneratorType.DIAG_DOWN_RIGHT and self._object.height > self._object.width:
+        if (
+            self._object.generator_type == GeneratorType.DIAG_DOWN_RIGHT
+            and self._object.height > self._object.width
+        ):
             # special case for 60 degree platform wire down right
             for row in rows:
                 row.reverse()
@@ -678,7 +745,7 @@ class ObjectRenderer:
         self.base_x = self._object.x_position
         self.base_y = SKY
 
-        for _ in range(self._object.y_position):
+        for __ in range(self._object.y_position):
             blocks_to_draw.extend(self._object.blocks[0 : self._object.width])
 
         blocks_to_draw.extend(self._object.blocks[-self._object.width :])
