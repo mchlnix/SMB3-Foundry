@@ -250,7 +250,7 @@ class LevelView(MainView):
 
         copied_object = obj_under_cursor.copy()
 
-        self.undo_stack.push(RemoveObject(self.level, obj_under_cursor))
+        self.undo_stack.push(RemoveObject(self.level_ref, obj_under_cursor))
 
         if y_delta > 0:
             copied_object.increment_type()
@@ -259,7 +259,7 @@ class LevelView(MainView):
 
         copied_object.selected = True
 
-        self.undo_stack.push(AddObject(self.level, copied_object, index))
+        self.undo_stack.push(AddObject(self.level_ref, copied_object, index))
 
         self.undo_stack.endMacro()
 
@@ -362,7 +362,7 @@ class LevelView(MainView):
 
         self.undo_stack.push(
             ResizeObjects(
-                self.level,
+                self.level_ref,
                 self.objects_before_resizing,
                 self.get_selected_objects(),
             )
@@ -459,8 +459,8 @@ class LevelView(MainView):
             self.level_header.start_x_index = last_x
             self.level_header.start_y_index = last_y
 
-            x_command = SetLevelAttribute(self.level, "start_x_index", cur_x)
-            y_command = SetLevelAttribute(self.level, "start_y_index", cur_y)
+            x_command = SetLevelAttribute(self.level_ref, "start_x_index", cur_x)
+            y_command = SetLevelAttribute(self.level_ref, "start_y_index", cur_y)
 
             make_macro(
                 self.undo_stack,
@@ -557,7 +557,7 @@ class LevelView(MainView):
         if move_happened:
             self.undo_stack.push(
                 MoveObjects(
-                    self.level,
+                    self.level_ref,
                     self.objects_before_moving,
                     self.get_selected_objects(),
                 )

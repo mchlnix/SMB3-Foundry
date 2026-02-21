@@ -161,7 +161,7 @@ class PipePairMixin(SettingsMixin):
             self.level_ref.level.enemies.insert(0, self.original_pipe_item)
 
             make_macro(
-                self.undo_stack, "Disable Pipe Pair Exits", RemoveObject(self.level_ref.level, self.original_pipe_item)
+                self.undo_stack, "Disable Pipe Pair Exits", RemoveObject(self.level_ref, self.original_pipe_item)
             )
 
         elif pipe_was_enabled:
@@ -169,7 +169,7 @@ class PipePairMixin(SettingsMixin):
 
             self.level_ref.level.remove_object(current_pipe_item)
 
-            make_macro(self.undo_stack, "Enable Pipe Pair Exits", AddObject(self.level_ref.level, current_pipe_item, 0))
+            make_macro(self.undo_stack, "Enable Pipe Pair Exits", AddObject(self.level_ref, current_pipe_item, 0))
 
         else:
             assert self.original_pipe_item is not None
@@ -190,8 +190,8 @@ class PipePairMixin(SettingsMixin):
                 make_macro(
                     self.undo_stack,
                     f"Pipe Pair Exits Index to {current_pipe_item.y_position:#x}",
-                    RemoveObject(self.level_ref.level, self.original_pipe_item),
-                    AddObject(self.level_ref.level, current_pipe_item),
+                    RemoveObject(self.level_ref, self.original_pipe_item),
+                    AddObject(self.level_ref, current_pipe_item),
                 )
 
         if self.pipe_data_changed:

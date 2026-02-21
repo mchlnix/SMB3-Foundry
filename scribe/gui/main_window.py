@@ -237,7 +237,7 @@ class ScribeMainWindow(MainWindow):
         self.undo_stack.beginMacro("Remove Selected Tiles")
 
         for obj in selected_objects:
-            self.undo_stack.push(PutTile(self.level_ref.level, obj.pos, WORLD_MAP_BLANK_TILE_ID))
+            self.undo_stack.push(PutTile(self.level_ref, obj.pos, WORLD_MAP_BLANK_TILE_ID))
 
         self.undo_stack.endMacro()
 
@@ -270,7 +270,7 @@ class ScribeMainWindow(MainWindow):
             if not self.world_view.world.point_in(*target_pos.xy):
                 continue
 
-            self.undo_stack.push(PutTile(self.level_ref.level, target_pos, obj.type))
+            self.undo_stack.push(PutTile(self.level_ref, target_pos, obj.type))
 
         self.undo_stack.endMacro()
 

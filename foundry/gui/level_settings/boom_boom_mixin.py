@@ -55,7 +55,7 @@ class BoomBoomMixin(SettingsMixin):
             boom_boom.lock_index, new_index = old_index, boom_boom.lock_index
 
             if boom_boom.lock_index != new_index:
-                self.undo_stack.push(ChangeLockIndex(self.level_ref.level, boom_boom, new_index))
+                self.undo_stack.push(ChangeLockIndex(self.level_ref, boom_boom, new_index))
 
 
 def _get_boom_booms(enemy_items: list[EnemyItem]) -> list[EnemyItem]:

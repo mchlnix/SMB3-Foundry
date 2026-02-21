@@ -1026,13 +1026,13 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
         if not (pathname := load_asm_filename("Enemy ASM", self.settings.value("editor/default_dir_path"))):
             return
 
-        self.undo_stack.push(ImportASMEnemies(self.level_ref.level, pathname))
+        self.undo_stack.push(ImportASMEnemies(self.level_ref, pathname))
 
     def _attach_to_rom(self, object_data_offset: int, enemy_data_offset: int):
         if 0x0 in [object_data_offset, enemy_data_offset]:
             raise ValueError("You cannot save level or enemy data to the beginning of the ROM (address 0x0).")
 
-        self.undo_stack.push(AttachLevelToRom(self.level_ref.level, object_data_offset, enemy_data_offset))
+        self.undo_stack.push(AttachLevelToRom(self.level_ref, object_data_offset, enemy_data_offset))
 
     def _save_current_changes_to_file(self, pathname: str, set_new_path: bool):
         try:
@@ -1128,10 +1128,10 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
             self.object_toolbar.select_object(level_object)
 
     def bring_objects_to_foreground(self):
-        self.undo_stack.push(ToForeground(self.level_ref.level, self.level_ref.selected_objects))
+        self.undo_stack.push(ToForeground(self.level_ref, self.level_ref.selected_objects))
 
     def bring_objects_to_background(self):
-        self.undo_stack.push(ToBackground(self.level_ref.level, self.level_ref.selected_objects))
+        self.undo_stack.push(ToBackground(self.level_ref, self.level_ref.selected_objects))
 
     def add_object_at(self, q_point: QPoint, domain=0, obj_type=0):
         self.undo_stack.push(AddLevelObjectAt(self.level_view, q_point, domain, obj_type))
@@ -1176,7 +1176,7 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
         if not selected_objects:
             return
 
-        self.undo_stack.push(RemoveObjects(self.level_ref.level, selected_objects))
+        self.undo_stack.push(RemoveObjects(self.level_ref, selected_objects))
 
     def on_spin(self, _):
         selected_objects = self.level_ref.selected_objects
@@ -1197,9 +1197,9 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
             else:
                 length = None
 
-            self.undo_stack.push(ReplaceLevelObject(self.level_ref.level, selected_object, domain, obj_type, length))
+            self.undo_stack.push(ReplaceLevelObject(self.level_ref, selected_object, domain, obj_type, length))
         else:
-            self.undo_stack.push(ReplaceEnemy(self.level_ref.level, selected_object, obj_type))
+            self.undo_stack.push(ReplaceEnemy(self.level_ref, selected_object, obj_type))
 
         self.level_ref.data_changed.emit()
 
@@ -1365,10 +1365,10 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
         self.on_jump_edited(updated_jump)
 
     def on_jump_added(self):
-        self.undo_stack.push(AddJump(self.level_ref.level))
+        self.undo_stack.push(AddJump(self.level_ref))
 
     def on_jump_removed(self):
-        self.undo_stack.push(RemoveJump(self.level_ref.level, self.jump_list.currentIndex().row()))
+        self.undo_stack.push(RemoveJump(self.level_ref, self.jump_list.currentIndex().row()))
 
     def on_jump_edited(self, new_jump: Jump):
         index = self.jump_list.currentIndex().row()
@@ -1386,8 +1386,8 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
         make_macro(
             self.undo_stack,
             f"Editing {old_jump}",
-            RemoveJump(self.level_ref.level, index),
-            AddJump(self.level_ref.level, new_jump, index),
+            RemoveJump(self.level_ref, index),
+            AddJump(self.level_ref, new_jump, index),
         )
 
         self.jump_list.item(index).setText(str(new_jump))

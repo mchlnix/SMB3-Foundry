@@ -84,7 +84,7 @@ class HeaderEditor(CustomDialog):
     def __init__(self, parent: QWidget | None, level_ref: LevelRef):
         super(HeaderEditor, self).__init__(parent, "Level Header Editor")
 
-        self.level: Level = level_ref.level
+        self.level: Level = level_ref
 
         main_layout = QVBoxLayout(self)
 
@@ -309,7 +309,7 @@ class HeaderEditor(CustomDialog):
         self.update()
 
     def on_spin(self, new_value):
-        if self.level is None or self.signalsBlocked():
+        if not self.level or self.signalsBlocked():
             return
 
         spinner = self.sender()
@@ -331,7 +331,7 @@ class HeaderEditor(CustomDialog):
         self.update()
 
     def on_combo(self, new_index):
-        if self.level is None or self.signalsBlocked():
+        if not self.level or self.signalsBlocked():
             return
 
         dropdown = self.sender()
@@ -394,7 +394,7 @@ class HeaderEditor(CustomDialog):
         self.update()
 
     def on_check_box(self, checked):
-        if self.level is None or self.signalsBlocked():
+        if not self.level or self.signalsBlocked():
             return
 
         checkbox = self.sender()

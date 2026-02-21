@@ -93,7 +93,7 @@ class ChestExitMixin(SettingsMixin):
         # not item set
         if item_index == 0:
             if self.before.chest_item is not None:
-                self.undo_stack.push(RemoveObject(self.level, self.before.chest_item))
+                self.undo_stack.push(RemoveObject(self.level_ref, self.before.chest_item))
 
         # item was changed/set
         elif self.before.item_index != item_index:
@@ -103,12 +103,12 @@ class ChestExitMixin(SettingsMixin):
                 before_move = self.before.chest_item.copy()
                 self.before.chest_item.y_position = item_index
 
-                self.undo_stack.push(MoveObject(self.level, before_move, self.before.chest_item))
+                self.undo_stack.push(MoveObject(self.level_ref, before_move, self.before.chest_item))
 
             else:
                 item_set_obj = self.level.enemy_item_factory.from_properties(OBJ_CHEST_ITEM_SETTER, 0, item_index)
 
-                self.undo_stack.push(AddObject(self.level, item_set_obj))
+                self.undo_stack.push(AddObject(self.level_ref, item_set_obj))
 
             self.undo_stack.endMacro()
 
@@ -118,10 +118,10 @@ class ChestExitMixin(SettingsMixin):
             # when putting it at x=0 it doesn't work for some reason
             chest_exit_item = self.level.enemy_item_factory.from_properties(OBJ_CHEST_EXIT, 1, 0)
 
-            make_macro(self.undo_stack, "Enable Chest Exit", AddObject(self.level, chest_exit_item))
+            make_macro(self.undo_stack, "Enable Chest Exit", AddObject(self.level_ref, chest_exit_item))
 
         # was disabled
         elif self.before.chest_exit is not None and not self.chest_end_checkbox.isChecked():
             assert self.before.chest_exit is not None
 
-            make_macro(self.undo_stack, "Disable Chest Exit", RemoveObject(self.level, self.before.chest_exit))
+            make_macro(self.undo_stack, "Disable Chest Exit", RemoveObject(self.level_ref, self.before.chest_exit))

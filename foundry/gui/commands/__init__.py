@@ -514,7 +514,7 @@ class AddLevelObjectAt(QUndoCommand):
         super(AddLevelObjectAt, self).__init__(None)
 
         self.view = level_view
-        self.level = level_view.level_ref.level
+        self.level = level_view.level_ref
 
         self.pos = pos
 
@@ -552,7 +552,7 @@ class AddEnemyAt(QUndoCommand):
         super(AddEnemyAt, self).__init__(None)
 
         self.view = level_view
-        self.level = level_view.level_ref.level
+        self.level = level_view.level_ref
 
         self.pos = pos
 

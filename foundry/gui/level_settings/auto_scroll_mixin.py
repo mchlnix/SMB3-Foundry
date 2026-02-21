@@ -118,11 +118,11 @@ class AutoScrollMixin(SettingsMixin):
             assert self.original_autoscroll_item is not None
 
             self.level_ref.level.enemies.insert(0, self.original_autoscroll_item)
-            self.undo_stack.push(RemoveObject(self.level_ref.level, self.original_autoscroll_item))
+            self.undo_stack.push(RemoveObject(self.level_ref, self.original_autoscroll_item))
         elif autoscroll_was_enabled:
             assert current_autoscroll_item is not None
             self.level_ref.level.remove_object(current_autoscroll_item)
-            self.undo_stack.push(AddObject(self.level_ref.level, current_autoscroll_item, 0))
+            self.undo_stack.push(AddObject(self.level_ref, current_autoscroll_item, 0))
         else:
             # autoscroll object might have been changed, first reset state from the start
             assert self.original_autoscroll_item is not None
@@ -141,8 +141,8 @@ class AutoScrollMixin(SettingsMixin):
                 make_macro(
                     self.undo_stack,
                     "Change Autoscroll Path",
-                    RemoveObject(self.level_ref.level, self.original_autoscroll_item),
-                    AddObject(self.level_ref.level, current_autoscroll_item, 0),
+                    RemoveObject(self.level_ref, self.original_autoscroll_item),
+                    AddObject(self.level_ref, current_autoscroll_item, 0),
                 )
 
         super(AutoScrollMixin, self).closeEvent(event)

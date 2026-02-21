@@ -69,7 +69,7 @@ class WhiteMushroomHouseMixin(SettingsMixin):
             old_mushroom_item = self._get_mushroom_item()
             assert old_mushroom_item is not None
 
-            make_macro(self.undo_stack, "Disable White Mushroom House", RemoveObject(self.level, old_mushroom_item))
+            make_macro(self.undo_stack, "Disable White Mushroom House", RemoveObject(self.level_ref, old_mushroom_item))
 
         # mushroom house added
         elif not self._had_mushroom_item and now_has_mushroom_item:
@@ -78,7 +78,7 @@ class WhiteMushroomHouseMixin(SettingsMixin):
                 OBJ_WHITE_MUSHROOM_HOUSE, 1, new_coins_required
             )
 
-            make_macro(self.undo_stack, "Enable White Mushroom House", AddObject(self.level, new_mushroom_item))
+            make_macro(self.undo_stack, "Enable White Mushroom House", AddObject(self.level_ref, new_mushroom_item))
 
         # coins requirement has changed
         elif self._old_coins_required != new_coins_required:
@@ -94,7 +94,7 @@ class WhiteMushroomHouseMixin(SettingsMixin):
             make_macro(
                 self.undo_stack,
                 f"Set White Mushroom House Coin Limit to {new_coins_required}",
-                MoveObject(self.level, old_mushroom_item, new_mushroom_item),
+                MoveObject(self.level_ref, old_mushroom_item, new_mushroom_item),
             )
 
         else:
