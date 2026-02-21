@@ -570,8 +570,7 @@ class AddEnemyAt(QUndoCommand):
 
     def redo(self):
         if self.added_enemy is None:
-            self.view.add_enemy(self.enemy_type, self.pos, self.index)
-            self.added_enemy = self.level.enemies[self.index]
+            self.added_enemy = self.view.add_enemy(self.enemy_type, self.pos, self.index)
 
             # in case the index was just -1
             self.index = self.level.enemies.index(self.added_enemy)

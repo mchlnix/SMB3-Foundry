@@ -691,13 +691,10 @@ class LevelView(MainView):
 
         self.level_ref.add_object(domain, obj_index, level_pos, length, index)
 
-    def add_enemy(self, enemy_index: int, q_point: QPoint, index=-1):
+    def add_enemy(self, enemy_type: int, q_point: QPoint, index=-1):
         level_pos = self.to_level_point(q_point)
 
-        if index == -1:
-            index = len(self.level.enemies)
-
-        self.level_ref.add_enemy(enemy_index, level_pos, index)
+        return self.level_ref.add_enemy(enemy_type, level_pos, index)
 
     def dropEvent(self, event):
         level_object = self._object_from_mime_data(event.mimeData())
