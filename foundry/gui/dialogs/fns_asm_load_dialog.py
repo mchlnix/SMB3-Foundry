@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import FNS_FILE_FILTER, SMB3_ASM_FILE_FILTER
+from foundry.game.File import ROM
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 
 
@@ -102,7 +103,19 @@ class FnsAsmLoadDialog(CustomDialog):
 
         vbox.addLayout(hbox)
 
-        # set current paths and update icon state
+        # set current paths
+        rom_base_path = Path(ROM.path).parent
+        rom_name = Path(ROM.path).name.removesuffix(".nes")
+
+        backup_fns_path = rom_base_path / f"{rom_name}.fns"
+        backup_asm_path = rom_base_path / f"{rom_name}.asm"
+
+        if not Path(self.fns_path).is_file() and backup_fns_path.is_file():
+            self.fns_path = str(backup_fns_path)
+
+        if not Path(self.asm_path).is_file() and backup_asm_path.is_file():
+            self.asm_path = str(rom_base_path / f"{rom_name}.asm")
+
         self._fns_line_edit.setText(self.fns_path)
         self._asm_line_edit.setText(self.asm_path)
 
