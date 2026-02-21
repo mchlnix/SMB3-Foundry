@@ -107,12 +107,10 @@ class LevelObject(InLevelObject):
         self.domain = (data[0] & 0b1110_0000) >> 5
 
         # position relative to the start of the level (top)
-        self.original_y = data[0] & 0b0001_1111
-        self.y_position = self.original_y
+        self.y_position = data[0] & 0b0001_1111
 
         # position relative to the start of the level (left)
-        self.original_x = data[1]
-        self.x_position = self.original_x
+        self.x_position = data[1]
 
         if self.vertical_level:
             offset = (self.x_position // LEVEL_SCREEN_WIDTH) * LEVEL_SCREEN_HEIGHT
