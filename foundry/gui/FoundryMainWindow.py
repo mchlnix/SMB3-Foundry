@@ -468,17 +468,16 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
 
             # our level object reorders level objects, so get the original data from the ROM
             original_lvl_bytes = ROM().read(lvl_address, len(lvl_data))
+            original_enemy_bytes = ROM().read(enemy_address, len(enemy_data))
 
             # reload the ROM
             self.on_open_rom(Path(ROM.path), try_opening_level=False)
 
             # find the level data in the ROM again, since it might have moved
             new_lvl_address = ROM.rom_data.find(original_lvl_bytes)
-            print(hex(lvl_address), "->", hex(new_lvl_address))
 
             # do the same for the enemy data
-            new_enemy_address = ROM.rom_data.find(enemy_data)
-            print(hex(enemy_address), "->", hex(new_enemy_address))
+            new_enemy_address = ROM.rom_data.find(original_enemy_bytes)
 
             # open the level again
             self.update_level("", new_lvl_address, new_enemy_address, original_object_set)

@@ -12,6 +12,7 @@ from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from foundry.game.level.Level import Level
+from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.asm import load_asm_enemy
 from smb3parse.constants import PIPE_PAIR_COUNT
 from smb3parse.data_points import Position
@@ -71,10 +72,10 @@ class DetachLevelFromRom(SetLevelAddressData):
 
 
 class SetLevelAttribute(QUndoCommand):
-    def __init__(self, level: Level, name: str, new_value, display_name="", display_value=""):
+    def __init__(self, level: LevelRef, name: str, new_value, display_name="", display_value=""):
         super(SetLevelAttribute, self).__init__(None)
 
-        self.level = level
+        self.level_ref = level
 
         self.name = name
         self.old_value = getattr(level, name)
@@ -89,30 +90,30 @@ class SetLevelAttribute(QUndoCommand):
         self.setText(f"{display_name} to {display_value}")
 
     def undo(self):
-        setattr(self.level, self.name, self.old_value)
+        setattr(self.level_ref.level, self.name, self.old_value)
 
     def redo(self):
-        self.old_value = getattr(self.level, self.name)
-        setattr(self.level, self.name, self.new_value)
+        self.old_value = getattr(self.level_ref.level, self.name)
+        setattr(self.level_ref.level, self.name, self.new_value)
 
 
 class SetNextAreaObjectAddress(SetLevelAttribute):
-    def __init__(self, level: Level, new_address: int):
-        super(SetNextAreaObjectAddress, self).__init__(level, "next_area_objects", new_address)
+    def __init__(self, level_ref: LevelRef, new_address: int):
+        super(SetNextAreaObjectAddress, self).__init__(level_ref, "next_area_objects", new_address)
 
         self.setText(f"Object Address of Next Area to {new_address:#x}")
 
 
 class SetNextAreaEnemyAddress(SetLevelAttribute):
-    def __init__(self, level: Level, new_address: int):
-        super(SetNextAreaEnemyAddress, self).__init__(level, "next_area_enemies", new_address)
+    def __init__(self, level_ref: LevelRef, new_address: int):
+        super(SetNextAreaEnemyAddress, self).__init__(level_ref, "next_area_enemies", new_address)
 
         self.setText(f"Enemy Address of Next Area to {new_address:#x}")
 
 
 class SetNextAreaObjectSet(SetLevelAttribute):
-    def __init__(self, level: Level, new_object_set: int):
-        super(SetNextAreaObjectSet, self).__init__(level, "next_area_object_set_no", new_object_set)
+    def __init__(self, level_ref: LevelRef, new_object_set: int):
+        super(SetNextAreaObjectSet, self).__init__(level_ref, "next_area_object_set_no", new_object_set)
 
         self.setText(f"Object Set of Next Area to {OBJECT_SET_NAMES[new_object_set]}")
 

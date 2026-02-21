@@ -633,15 +633,32 @@ class Level(LevelLike):
 
         return None
 
-    def add_enemy(self, object_index: int, pos: Position, index: int = -1) -> EnemyItem:
+    def add_enemy(self, enemy_type: int, pos: Position, index: int = -1) -> EnemyItem:
+        new_enemy = self.enemy_item_factory.from_data([enemy_type, *pos.xy], -1)
+
         if index == -1:
-            index = len(self.enemies)
+            index = 0
 
-        enemy = self.enemy_item_factory.from_data([object_index, *pos.xy], -1)
+            # find an index based on the position
+            if self.is_vertical:
+                for idx, other_enemy in enumerate(self.enemies):
+                    index = idx
 
-        self.enemies.insert(index, enemy)
+                    if other_enemy.y_position > new_enemy.y_position:
+                        break
 
-        return enemy
+            else:
+                for idx, other_enemy in enumerate(self.enemies):
+                    index = idx
+
+                    if other_enemy.x_position > new_enemy.x_position:
+                        break
+
+            print("Enemy index found:", index)
+
+        self.enemies.insert(index, new_enemy)
+
+        return new_enemy
 
     def index_of(self, obj: InLevelObject) -> int:
         if isinstance(obj, LevelObject):

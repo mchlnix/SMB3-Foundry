@@ -14,7 +14,6 @@ from PySide6.QtWidgets import (
 
 from foundry import make_macro
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
-from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.commands import (
@@ -84,7 +83,7 @@ class HeaderEditor(CustomDialog):
     def __init__(self, parent: QWidget | None, level_ref: LevelRef):
         super(HeaderEditor, self).__init__(parent, "Level Header Editor")
 
-        self.level: Level = level_ref
+        self.level = level_ref
 
         main_layout = QVBoxLayout(self)
 
