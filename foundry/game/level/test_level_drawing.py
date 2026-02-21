@@ -37,7 +37,11 @@ def _test_level_against_reference(main_view: MainView, qtbot):
 
 
 def current_test_name():
-    return os.environ.get("PYTEST_CURRENT_TEST", "no_test_name").split(":")[-1].replace("/", "_")
+    return (
+        os.environ.get("PYTEST_CURRENT_TEST", "no_test_name")
+        .split(":")[-1]
+        .replace("/", "_")
+    )
 
 
 level_data = []
@@ -55,8 +59,12 @@ with Path(data_dir / "levels.dat").open("r") as level_data_file:
         level_name = parts[-1]
 
         if object_set_number == WORLD_MAP_OBJECT_SET:
-            world_data.append((level_name, level_address, enemy_address, object_set_number, False))
-            world_data.append((level_name, level_address, enemy_address, object_set_number, True))
+            world_data.append(
+                (level_name, level_address, enemy_address, object_set_number, False)
+            )
+            world_data.append(
+                (level_name, level_address, enemy_address, object_set_number, True)
+            )
             world_test_name.append(f"Overworld {world_no} - {level_name}")
             world_test_name.append(f"Overworld {world_no} - {level_name} - Bordered")
             continue
@@ -80,7 +88,9 @@ with Path(data_dir / "levels.dat").open("r") as level_data_file:
             )
         )
 
-        level_test_name.append(f"Level {world_no}-{level_no} - {level_name}, no transparency")
+        level_test_name.append(
+            f"Level {world_no}-{level_no} - {level_name}, no transparency"
+        )
         level_test_name.append(f"Level {world_no}-{level_no} - {level_name}")
 
 
@@ -188,7 +198,9 @@ def _get_all_m3l_files(with_ending=True):
                 yield path.stem
 
 
-@pytest.mark.parametrize("m3l_file_name", _get_all_m3l_files(), ids=_get_all_m3l_files(False))
+@pytest.mark.parametrize(
+    "m3l_file_name", _get_all_m3l_files(), ids=_get_all_m3l_files(False)
+)
 def test_draw_m3ls(m3l_file_name, level, settings, qtbot):
     with open(m3l_file_name, "rb") as m3l_file:
         level.from_m3l(bytearray(m3l_file.read()))

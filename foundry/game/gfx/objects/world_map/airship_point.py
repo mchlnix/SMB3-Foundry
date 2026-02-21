@@ -32,7 +32,7 @@ class AirshipTravelPoint(MapObject):
 
         self.name = _("Airship Set #%(set)d Point %(point)d") % {
             "set": set_no + 1,
-            "point": index + 1
+            "point": index + 1,
         }
 
     def draw(self, painter: QPainter, block_length, transparent):

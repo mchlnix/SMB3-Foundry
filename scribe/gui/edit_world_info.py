@@ -44,8 +44,12 @@ class EditWorldInfo(CustomDialog):
         # world data
         layout = QVBoxLayout()
 
-        self.scrolls_check_box = QCheckBox(_("Scrolls to next screen, when at the edge"))
-        self.scrolls_check_box.setChecked(self.world_map.data.map_scroll not in [0, NO_MAP_SCROLLING])
+        self.scrolls_check_box = QCheckBox(
+            _("Scrolls to next screen, when at the edge")
+        )
+        self.scrolls_check_box.setChecked(
+            self.world_map.data.map_scroll not in [0, NO_MAP_SCROLLING]
+        )
 
         layout.addWidget(self.scrolls_check_box)
 
@@ -56,9 +60,13 @@ class EditWorldInfo(CustomDialog):
         layout.addLayout(label_and_widget(_("Color Palette Index"), palette_spin_box))
 
         music_dropdown = QComboBox(self)
-        music_dropdown.addItems([f"{name} ({value:#x})" for value, name in MUSIC_THEMES.items()])
+        music_dropdown.addItems(
+            [f"{name} ({value:#x})" for value, name in MUSIC_THEMES.items()]
+        )
         music_dropdown.currentIndexChanged.connect(self._change_music_index)
-        music_dropdown.setCurrentIndex(list(MUSIC_THEMES.keys()).index(world_map.data.music_index))
+        music_dropdown.setCurrentIndex(
+            list(MUSIC_THEMES.keys()).index(world_map.data.music_index)
+        )
 
         layout.addLayout(label_and_widget(_("Music Theme"), music_dropdown))
 
@@ -78,7 +86,11 @@ class EditWorldInfo(CustomDialog):
         ticks_per_frame_spin_box.setValue(self.world_map.data.frame_tick_count)
         ticks_per_frame_spin_box.valueChanged.connect(self._change_anim_frame)
 
-        layout.addLayout(label_and_widget(_("Ticks between Animation Frames"), ticks_per_frame_spin_box))
+        layout.addLayout(
+            label_and_widget(
+                _("Ticks between Animation Frames"), ticks_per_frame_spin_box
+            )
+        )
 
         self.animation_hint_label = QLabel()
         layout.addWidget(self.animation_hint_label)
@@ -90,7 +102,9 @@ class EditWorldInfo(CustomDialog):
 
         self.world_overview = WorldOverview(self, level_ref, ROM())
         self.world_overview.data_changed.connect(self._update_hint_labels)
-        self.world_overview.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.world_overview.setSizePolicy(
+            QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding
+        )
 
         self.layout().addWidget(self.world_overview)
 
@@ -107,10 +121,14 @@ class EditWorldInfo(CustomDialog):
 
     @property
     def undo_stack(self) -> QUndoStack:
-        return cast(QUndoStack, self.window().parent().findChild(QUndoStack, "undo_stack"))
+        return cast(
+            QUndoStack, self.window().parent().findChild(QUndoStack, "undo_stack")
+        )
 
     def _update_button_icon(self):
-        block = get_worldmap_tile(self.world_map.data.bottom_border_tile, self.world_map.data.palette_index)
+        block = get_worldmap_tile(
+            self.world_map.data.bottom_border_tile, self.world_map.data.palette_index
+        )
 
         block_icon = QPixmap(QSize(32, 32))
 
@@ -124,9 +142,13 @@ class EditWorldInfo(CustomDialog):
         world_number = self.world_map.data.index
 
         if world_number == 4:
-            self.animation_hint_label.setText(_("Note: World 5 cannot scroll and isn't animated"))
+            self.animation_hint_label.setText(
+                _("Note: World 5 cannot scroll and isn't animated")
+            )
         elif world_number == 7:
-            self.animation_hint_label.setText(_("Note: World 8 cannot scroll and the last screen isn't animated"))
+            self.animation_hint_label.setText(
+                _("Note: World 8 cannot scroll and the last screen isn't animated")
+            )
         else:
             self.animation_hint_label.setText("")
 
@@ -140,7 +162,9 @@ class EditWorldInfo(CustomDialog):
         self.ok_button.setEnabled(self.world_overview.valid())
 
     def _on_button_press(self):
-        block_bank = BlockBank(None, palette_group_index=self.world_map.data.palette_index)
+        block_bank = BlockBank(
+            None, palette_group_index=self.world_map.data.palette_index
+        )
         block_bank.setWindowModality(Qt.WindowModal)
 
         block_bank.last_clicked_index = self.world_map.data.bottom_border_tile
@@ -148,7 +172,9 @@ class EditWorldInfo(CustomDialog):
         def _callback():
             block_bank.hide()
 
-            self.undo_stack.push(WorldBottomTile(self.world_map, block_bank.last_clicked_index))
+            self.undo_stack.push(
+                WorldBottomTile(self.world_map, block_bank.last_clicked_index)
+            )
 
             self._update_button_icon()
 
@@ -181,7 +207,9 @@ class EditWorldInfo(CustomDialog):
 
         should_scroll = self.scrolls_check_box.isChecked()
 
-        if should_scroll != (self.world_map.data.map_scroll not in [0x00, NO_MAP_SCROLLING]):
+        if should_scroll != (
+            self.world_map.data.map_scroll not in [0x00, NO_MAP_SCROLLING]
+        ):
             self.undo_stack.push(SetWorldScroll(self.world_map.data, should_scroll))
 
         self.world_overview.finalize(self.undo_stack)

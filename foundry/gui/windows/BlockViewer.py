@@ -28,14 +28,20 @@ class BlockViewer(CustomChildWindow):
         self.toolbar = QToolBar(self)
 
         # TRANSLATORS: Object set refers to a collection of objects
-        self.prev_os_action = self.toolbar.addAction(icon("arrow-left.svg"), _("Previous object set"))
+        self.prev_os_action = self.toolbar.addAction(
+            icon("arrow-left.svg"), _("Previous object set")
+        )
         self.prev_os_action.triggered.connect(self.prev_object_set)
 
         # TRANSLATORS: Object set refers to a collection of objects
-        self.next_os_action = self.toolbar.addAction(icon("arrow-right.svg"), _("Next object set"))
+        self.next_os_action = self.toolbar.addAction(
+            icon("arrow-right.svg"), _("Next object set")
+        )
         self.next_os_action.triggered.connect(self.next_object_set)
 
-        self.zoom_out_action = self.toolbar.addAction(icon("zoom-out.svg"), _("Zoom Out"))
+        self.zoom_out_action = self.toolbar.addAction(
+            icon("zoom-out.svg"), _("Zoom Out")
+        )
         self.zoom_out_action.triggered.connect(self.block_bank.zoom_out)
 
         self.zoom_in_action = self.toolbar.addAction(icon("zoom-in.svg"), _("Zoom In"))
@@ -47,7 +53,9 @@ class BlockViewer(CustomChildWindow):
 
         self.bank_dropdown.currentIndexChanged.connect(self.on_combo)
 
-        self.palette_group_spinner = Spinner(self, maximum=PALETTE_GROUPS_PER_OBJECT_SET - 1, base=10)
+        self.palette_group_spinner = Spinner(
+            self, maximum=PALETTE_GROUPS_PER_OBJECT_SET - 1, base=10
+        )
         self.palette_group_spinner.valueChanged.connect(self.on_palette)
 
         self.toolbar.addWidget(self.bank_dropdown)

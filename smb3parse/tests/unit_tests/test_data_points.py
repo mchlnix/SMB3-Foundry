@@ -198,5 +198,13 @@ def test_write_back_world_map(rom):
     new_world_1 = WorldMapData(rom, 0)
 
     assert a_level_pointer.index != original_level_index
-    assert orig_world_1.level_count_screen_1 == original_level_count_screen_1 - 1 == new_world_1.level_count_screen_1
-    assert orig_world_1.level_count_screen_2 == original_level_count_screen_2 + 1 == new_world_1.level_count_screen_2
+    assert (
+        orig_world_1.level_count_screen_1
+        == original_level_count_screen_1 - 1
+        == new_world_1.level_count_screen_1
+    )
+    assert (
+        orig_world_1.level_count_screen_2
+        == original_level_count_screen_2 + 1
+        == new_world_1.level_count_screen_2
+    )

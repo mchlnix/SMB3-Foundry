@@ -27,7 +27,8 @@ def get_minimal_icon_object(level_object: Iconifiable) -> Iconifiable:
     level_object.ground_level = 3
 
     while (
-        any(block not in level_object.rendered_blocks for block in level_object.blocks) and level_object.length < 0x10
+        any(block not in level_object.rendered_blocks for block in level_object.blocks)
+        and level_object.length < 0x10
     ):
         level_object.length += 1
 

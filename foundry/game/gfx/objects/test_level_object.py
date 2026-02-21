@@ -65,7 +65,9 @@ def _test_object_against_reference(level_object: LevelObject, qtbot, minimal=Fal
     ],
 )
 def test_object_rendering_4_2(domain, object_index, qtbot):
-    object_factory = LevelObjectFactory(HILLY_OBJECT_SET, HILLY_GRAPHICS_SET, 0, [], False)
+    object_factory = LevelObjectFactory(
+        HILLY_OBJECT_SET, HILLY_GRAPHICS_SET, 0, [], False
+    )
 
     level_object = object_factory.from_properties(domain, object_index, 0, 0, None, 0)
 
@@ -74,10 +76,14 @@ def test_object_rendering_4_2(domain, object_index, qtbot):
 
 @pytest.mark.parametrize("object_index", [0x80, 0x8F])  # 45 Degree Hill - Up/Right
 def test_object_rendering_8_1(object_index, qtbot):
-    object_factory = LevelObjectFactory(UNDERGROUND_OBJECT_SET, UNDERGROUND_GRAPHICS_SET, 0, [], False)
+    object_factory = LevelObjectFactory(
+        UNDERGROUND_OBJECT_SET, UNDERGROUND_GRAPHICS_SET, 0, [], False
+    )
 
     object_domain = 0x00
-    level_object = object_factory.from_properties(object_domain, object_index, 0, 0, None, 0)
+    level_object = object_factory.from_properties(
+        object_domain, object_index, 0, 0, None, 0
+    )
 
     _test_object_against_reference(level_object, qtbot)
 
@@ -137,7 +143,9 @@ def test_object_rendering_0_0(object_index, domain, object_set, graphic_set, qtb
         (0xD0, 0x00, DESERT_OBJECT_SET, DESERT_GRAPHICS_SET),
     ],
 )
-def test_object_rendering_brick_wall(object_index, domain, object_set, graphic_set, qtbot):
+def test_object_rendering_brick_wall(
+    object_index, domain, object_set, graphic_set, qtbot
+):
     object_factory = LevelObjectFactory(object_set, graphic_set, 0, [], False)
 
     level_object = object_factory.from_properties(domain, object_index, 0, 0, 8, 0)
@@ -240,4 +248,6 @@ def test_all_minimal_objects(factory, domain, obj_id, qtbot):
     if level_object.name == "MSG_CRASH":
         pytest.skip("MSG_CRASH")
 
-    _test_object_against_reference(get_minimal_icon_object(level_object), qtbot, minimal=True)
+    _test_object_against_reference(
+        get_minimal_icon_object(level_object), qtbot, minimal=True
+    )

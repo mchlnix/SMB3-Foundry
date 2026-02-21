@@ -55,7 +55,9 @@ class Rom:
 
     def prg_normalize(self, offset: AnyAddress) -> NormalizedAddress:
         """Takes a vanilla ROM PRG offset and returns a new offset that is correct for the current ROM's PRG size."""
-        if type(offset) == NormalizedAddress:  # noqa: E721  isinstance doesn't work with type alias
+        if (
+            type(offset) == NormalizedAddress
+        ):  # noqa: E721  isinstance doesn't work with type alias
             return offset
 
         # data in expanded Roms is inserted between PRG29 and PRG30
@@ -143,7 +145,9 @@ class Rom:
 
         return self._find(needle, start, end)
 
-    def _find(self, needle: bytes, start: NormalizedAddress, end: NormalizedAddress) -> NormalizedAddress:
+    def _find(
+        self, needle: bytes, start: NormalizedAddress, end: NormalizedAddress
+    ) -> NormalizedAddress:
         return NormalizedAddress(self._data.find(needle, start, end))
 
     def nibbles(self, offset: AnyAddress) -> tuple[int, int]:
@@ -156,10 +160,10 @@ class Rom:
 
     def write_nibbles(self, offset: AnyAddress, high_nibble: int, low_nibble: int = 0):
         if any(nibble > 0x0F for nibble in [high_nibble, low_nibble]):
-            raise ValueError(_("%(highequals)s or %(lowequals)s was larger than 0x0F.") % {
-                "highequals": f"{high_nibble=}",
-                "lowequals": f"{low_nibble=}"
-            })
+            raise ValueError(
+                _("%(highequals)s or %(lowequals)s was larger than 0x0F.")
+                % {"highequals": f"{high_nibble=}", "lowequals": f"{low_nibble=}"}
+            )
 
         byte = (high_nibble << 4) + low_nibble
 

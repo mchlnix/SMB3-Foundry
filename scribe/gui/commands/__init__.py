@@ -199,10 +199,10 @@ class WorldMusicIndex(QUndoCommand):
         self.old_index = world.data.music_index
         self.new_index = new_index
 
-        self.setText(_("Setting Music Theme to '%(theme)s' (%(index)s)") % {
-            "theme": MUSIC_THEMES[new_index],
-            "index": f"{new_index:#X}"
-        })
+        self.setText(
+            _("Setting Music Theme to '%(theme)s' (%(index)s)")
+            % {"theme": MUSIC_THEMES[new_index], "index": f"{new_index:#X}"}
+        )
 
     def undo(self):
         self.world.data.music_index = self.old_index
@@ -239,10 +239,10 @@ class SetLevelAddress(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_address = data.level_address
         self.new_address = new_address
 
-        self.setText(_("Set LP #%(index)d Level Address to %(address)s") % {
-            "index": self.data.index + 1,
-            "address": f"{new_address:#x}"
-        })
+        self.setText(
+            _("Set LP #%(index)d Level Address to %(address)s")
+            % {"index": self.data.index + 1, "address": f"{new_address:#x}"}
+        )
 
     def undo(self):
         self.data.level_address = self.old_address
@@ -264,10 +264,10 @@ class SetEnemyAddress(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_address = data.enemy_address
         self.new_address = new_address
 
-        self.setText(_("Set LP #%(index)d Enemy Address to %(address)s") % {
-            "index": self.data.index + 1,
-            "address": f"{new_address:#x}"
-        })
+        self.setText(
+            _("Set LP #%(index)d Enemy Address to %(address)s")
+            % {"index": self.data.index + 1, "address": f"{new_address:#x}"}
+        )
 
     def undo(self):
         self.data.enemy_address = self.old_address
@@ -289,10 +289,13 @@ class SetObjectSet(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_object_set = data.object_set
         self.new_object_set = object_set_number
 
-        self.setText(_("Set LP #%(index)d Object Set to %(name)s") % {
-            "index": self.data.index + 1,
-            "name": OBJECT_SET_NAMES[object_set_number]
-        })
+        self.setText(
+            _("Set LP #%(index)d Object Set to %(name)s")
+            % {
+                "index": self.data.index + 1,
+                "name": OBJECT_SET_NAMES[object_set_number],
+            }
+        )
 
     def undo(self):
         self.data.object_set = self.old_object_set
@@ -314,10 +317,10 @@ class SetSpriteType(QUndoCommand):
         self.old_type = self.data.type
         self.new_type = new_type
 
-        self.setText(_("Set Sprite #%(index)d Type to %(name)s") % {
-            "index": self.data.index + 1,
-            "name": MAPOBJ_NAMES[new_type]
-        })
+        self.setText(
+            _("Set Sprite #%(index)d Type to %(name)s")
+            % {"index": self.data.index + 1, "name": MAPOBJ_NAMES[new_type]}
+        )
 
     def undo(self):
         self.data.type = self.old_type
@@ -335,10 +338,10 @@ class SetSpriteItem(QUndoCommand):
         self.old_item = self.data.item
         self.new_item = new_item
 
-        self.setText(_("Set Sprite #%(index)d Item to %(name)s") % {
-            "index": self.data.index + 1,
-            "name": MAPITEM_NAMES[new_item]
-        })
+        self.setText(
+            _("Set Sprite #%(index)d Item to %(name)s")
+            % {"index": self.data.index + 1, "name": MAPITEM_NAMES[new_item]}
+        )
 
     def undo(self):
         self.data.item = self.old_item
@@ -363,10 +366,10 @@ class SetScreenCount(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_world_data = world_data.tile_data.copy()
         self.new_screen_count = screen_count
 
-        self.setText(_("Set World %(world)d's screen count to %(screens)s") % {
-            "world": self.world_data.index + 1,
-            "screens": screen_count
-        })
+        self.setText(
+            _("Set World %(world)d's screen count to %(screens)s")
+            % {"world": self.world_data.index + 1, "screens": screen_count}
+        )
 
     def undo(self):
         self.world_data.screen_count = self.old_screen_count
@@ -455,7 +458,9 @@ class ChangeLockIndex(QUndoCommand):
 
             if lock.data.index == new_index:
                 self.lock.data.change_index(new_index)
-                self.lock.data.replacement_block_index = lock.data.replacement_block_index
+                self.lock.data.replacement_block_index = (
+                    lock.data.replacement_block_index
+                )
                 self.lock.data.set_pos(lock.data.pos)
 
                 break
@@ -471,7 +476,9 @@ class SetWorldScroll(QUndoCommand):
 
         self.world_data = world_data
         self.old_value = world_data.map_scroll
-        self.new_value = world_data.screen_count << 4 if should_scroll else NO_MAP_SCROLLING
+        self.new_value = (
+            world_data.screen_count << 4 if should_scroll else NO_MAP_SCROLLING
+        )
 
         if should_scroll:
             self.setText(_("Activate Map Scroll"))
@@ -503,10 +510,10 @@ class SetWorldIndex(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_index = world_data.index
         self.new_index = new_index
 
-        self.setText(_("Set World %(world)d's index to %(index)d") % {
-            "world": self.old_index + 1,
-            "index": new_index + 1
-        })
+        self.setText(
+            _("Set World %(world)d's index to %(index)d")
+            % {"world": self.old_index + 1, "index": new_index + 1}
+        )
 
     def undo(self):
         self._change_world_index(self.old_index)
@@ -571,10 +578,10 @@ class ChangeSpriteIndex(QUndoCommand):
         self.old_index = old_index
         self.new_index = new_index
 
-        self.setText(_("Change Sprite Index %(old)d -> %(new)d") % {
-            "old": self.old_index,
-            "new": self.new_index
-        })
+        self.setText(
+            _("Change Sprite Index %(old)d -> %(new)d")
+            % {"old": self.old_index, "new": self.new_index}
+        )
 
     def undo(self):
         self.world.move_sprites(self.new_index, self.old_index)
@@ -591,10 +598,10 @@ class ChangeLevelPointerIndex(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_index = old_index
         self.new_index = new_index
 
-        self.setText(_("Change Level Pointer Index %(old)d -> %(new)d") % {
-            "old": self.old_index,
-            "new": self.new_index
-        })
+        self.setText(
+            _("Change Level Pointer Index %(old)d -> %(new)d")
+            % {"old": self.old_index, "new": self.new_index}
+        )
 
     def undo(self):
         self.world.move_level_pointers(self.new_index, self.old_index)
@@ -614,7 +621,9 @@ class AddLevelPointer(DirtyAdditionalDataMixin, QUndoCommand):
         self.world = world
         self.world_data = world_data
 
-        self.level_pointer_data = LevelPointerData(self.world_data, self.world_data.level_count)
+        self.level_pointer_data = LevelPointerData(
+            self.world_data, self.world_data.level_count
+        )
         self.level_pointer_data.pos = Position(0, FIRST_VALID_ROW, 0)
         self.level_pointer_data.object_set = 1
         self.level_pointer_data.level_address = 0x0
@@ -645,7 +654,9 @@ class AddLevelPointer(DirtyAdditionalDataMixin, QUndoCommand):
 
 
 class RemoveLevelPointer(DirtyAdditionalDataMixin, QUndoCommand):
-    def __init__(self, world_data: WorldMapData, index=-1, world: WorldMap | None = None):
+    def __init__(
+        self, world_data: WorldMapData, index=-1, world: WorldMap | None = None
+    ):
         super(RemoveLevelPointer, self).__init__()
 
         self.world = world
@@ -673,7 +684,9 @@ class RemoveLevelPointer(DirtyAdditionalDataMixin, QUndoCommand):
 
         setattr(self.world_data, attr_name, lvls_on_screen + 1)
 
-        self.world_data.level_pointers.insert(self.index, self.removed_level_pointer_data)
+        self.world_data.level_pointers.insert(
+            self.index, self.removed_level_pointer_data
+        )
 
         if self.world is not None:
             self.world.level_pointers.insert(self.index, self.removed_level_pointer)

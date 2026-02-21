@@ -27,10 +27,14 @@ class ParsedLevel:
 
     def has_jump(self):
         return any(
-            goes_to_next_level(self.object_set_num, parsed_object.domain, parsed_object.obj_id)
+            goes_to_next_level(
+                self.object_set_num, parsed_object.domain, parsed_object.obj_id
+            )
             for parsed_object in self.parsed_objects
         ) or any(
-            goes_to_next_level(ENEMY_ITEM_OBJECT_SET, parsed_enemy.domain, parsed_enemy.obj_id)
+            goes_to_next_level(
+                ENEMY_ITEM_OBJECT_SET, parsed_enemy.domain, parsed_enemy.obj_id
+            )
             for parsed_enemy in self.parsed_enemies
         )
 
@@ -56,7 +60,8 @@ class ParsedLevel:
             return False
 
         return any(
-            parsed_object.domain == domain and parsed_object.obj_id in id_range for parsed_object in self.parsed_objects
+            parsed_object.domain == domain and parsed_object.obj_id in id_range
+            for parsed_object in self.parsed_objects
         )
 
     def has_big_q_level(self):
@@ -75,5 +80,6 @@ class ParsedLevel:
             return False
 
         return any(
-            parsed_object.domain == domain and parsed_object.obj_id in id_range for parsed_object in self.parsed_objects
+            parsed_object.domain == domain and parsed_object.obj_id in id_range
+            for parsed_object in self.parsed_objects
         )

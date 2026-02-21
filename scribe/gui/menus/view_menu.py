@@ -28,20 +28,26 @@ class ViewMenu(QMenu):
 
         self.animation_action = self.addAction(_("Animated Tiles"))
         self.animation_action.setCheckable(True)
-        self.animation_action.setChecked(self.settings.value("world view/animated tiles"))
+        self.animation_action.setChecked(
+            self.settings.value("world view/animated tiles")
+        )
 
         self.addSeparator()
 
         # TRANSLATORS: Ampersand designates keyboard shortcut key
         self.level_pointer_action = self.addAction(_("&Level Pointers"))
         self.level_pointer_action.setCheckable(True)
-        self.level_pointer_action.setChecked(self.settings.value("world view/show level pointers"))
+        self.level_pointer_action.setChecked(
+            self.settings.value("world view/show level pointers")
+        )
         self.level_pointer_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_L)
 
         # TRANSLATORS: Ampersand designates keyboard shortcut key
         self.level_preview_action = self.addAction(_("&Tooltip with Level Preview"))
         self.level_preview_action.setCheckable(True)
-        self.level_preview_action.setChecked(self.settings.value("world view/show level previews"))
+        self.level_preview_action.setChecked(
+            self.settings.value("world view/show level previews")
+        )
         self.level_preview_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_T)
 
         # TRANSLATORS: Ampersand designates keyboard shortcut key
@@ -53,7 +59,9 @@ class ViewMenu(QMenu):
         # TRANSLATORS: Ampersand designates keyboard shortcut key
         self.starting_point_action = self.addAction(_("Starting &Point"))
         self.starting_point_action.setCheckable(True)
-        self.starting_point_action.setChecked(self.settings.value("world view/show start position"))
+        self.starting_point_action.setChecked(
+            self.settings.value("world view/show start position")
+        )
         self.starting_point_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_P)
 
         self.addSeparator()
@@ -61,7 +69,9 @@ class ViewMenu(QMenu):
         self.airship_travel_actions = []
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
             # TRANSLATORS: Ampersand designates keyboard shortcut key
-            self.airship_travel_actions.append(self.addAction(_("&Airship Travel Path %d") % (i + 1)))
+            self.airship_travel_actions.append(
+                self.addAction(_("&Airship Travel Path %d") % (i + 1))
+            )
             self.airship_travel_actions[-1].setCheckable(True)
             self.airship_travel_actions[-1].setChecked(
                 self.settings.value("world view/show airship paths") & 2**i == 2**i
@@ -122,9 +132,7 @@ class ViewMenu(QMenu):
         return self.parent().settings
 
     def _on_screenshot(self):
-        recommended_file = (
-            f"{self.settings.value('editor/default dir path')}/{ROM.name} - {self.world_view.level_ref.name}.png"
-        )
+        recommended_file = f"{self.settings.value('editor/default dir path')}/{ROM.name} - {self.world_view.level_ref.name}.png"
 
         pathname, __ = QFileDialog.getSaveFileName(
             self,

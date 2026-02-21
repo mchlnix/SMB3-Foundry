@@ -8,7 +8,9 @@ from smb3parse.util.rom import Rom
 
 
 class Level(LevelBase):
-    def __init__(self, rom: Rom, object_set_number: int, layout_address: int, enemy_address: int):
+    def __init__(
+        self, rom: Rom, object_set_number: int, layout_address: int, enemy_address: int
+    ):
         super(Level, self).__init__(ObjectSet(rom, object_set_number), layout_address)
 
         self.enemy_address = enemy_address
@@ -37,7 +39,9 @@ class Level(LevelBase):
         )
 
     @staticmethod
-    def from_world_map(rom: Rom, world_map_position: WorldMapPosition) -> Optional["Level"]:
+    def from_world_map(
+        rom: Rom, world_map_position: WorldMapPosition
+    ) -> Optional["Level"]:
         lp = world_map_position.level_pointer
 
         if lp is None:
@@ -50,7 +54,9 @@ class Level(LevelBase):
         return level
 
     @staticmethod
-    def from_memory(rom: Rom, object_set_number: int, layout_address: int, enemy_address: int):
+    def from_memory(
+        rom: Rom, object_set_number: int, layout_address: int, enemy_address: int
+    ):
         assert_valid_object_set_number(object_set_number)
 
         level = Level(rom, object_set_number, layout_address, enemy_address)

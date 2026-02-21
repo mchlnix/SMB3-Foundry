@@ -66,7 +66,9 @@ class ROM(Rom):
 
             additional_data_start += len(ROM.MARKER_VALUE)
 
-            ROM.additional_data = AdditionalData.from_str(data[additional_data_start:].decode("utf-8"), ROM())
+            ROM.additional_data = AdditionalData.from_str(
+                data[additional_data_start:].decode("utf-8"), ROM()
+            )
 
         ROM.reset_graphics()
 

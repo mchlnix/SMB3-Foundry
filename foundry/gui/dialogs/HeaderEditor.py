@@ -34,20 +34,21 @@ from smb3parse.objects.object_set import OBJECT_SET_NAMES
 
 LEVEL_LENGTHS = [0x10 * (i + 1) for i in range(0, 2**4)]
 
-STR_LEVEL_LENGTHS = [_("%(hex)s / %(length)d Blocks") % {
-    "hex": f"0x{length - 1:0=4X}",
-    "length": length
-} for length in LEVEL_LENGTHS]
+STR_LEVEL_LENGTHS = [
+    _("%(hex)s / %(length)d Blocks") % {"hex": f"0x{length - 1:0=4X}", "length": length}
+    for length in LEVEL_LENGTHS
+]
 
-STR_X_POSITIONS = [_("%(number)d. Block (%(hex)s)") % {
-    "number": position >> 4,
-    "hex": f"0x{position:0=2X}"
-} for position in MARIO_X_POSITIONS]
+STR_X_POSITIONS = [
+    _("%(number)d. Block (%(hex)s)")
+    % {"number": position >> 4, "hex": f"0x{position:0=2X}"}
+    for position in MARIO_X_POSITIONS
+]
 
-STR_Y_POSITIONS = [_("%(number)d. Block (%(hex)s)") % {
-    "number": position,
-    "hex": f"0x{position:0=2X}"
-} for position in MARIO_Y_POSITIONS]
+STR_Y_POSITIONS = [
+    _("%(number)d. Block (%(hex)s)") % {"number": position, "hex": f"0x{position:0=2X}"}
+    for position in MARIO_Y_POSITIONS
+]
 
 ACTIONS = [
     _("None"),
@@ -242,7 +243,9 @@ class HeaderEditor(CustomDialog):
 
         self.header_bytes_label = QLabel()
 
-        main_layout.addWidget(self.header_bytes_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(
+            self.header_bytes_label, alignment=Qt.AlignmentFlag.AlignCenter
+        )
 
         self.update()
 
@@ -272,20 +275,31 @@ class HeaderEditor(CustomDialog):
 
         self.level_pointer_spinner.setValue(self.level.header.jump_level_offset)
         self._level_address_label.setText(
-            hex(self.level.header.jump_object_set.level_offset + self.level_pointer_spinner.value())
+            hex(
+                self.level.header.jump_object_set.level_offset
+                + self.level_pointer_spinner.value()
+            )
         )
         self.enemy_pointer_spinner.setValue(self.level.header.jump_enemy_offset)
-        self._enemy_address_label.setText(hex(ENEMY_BASE_OFFSET + self.enemy_pointer_spinner.value()))
-        self.next_area_object_set_dropdown.setCurrentIndex(self.level.next_area_object_set_no)
+        self._enemy_address_label.setText(
+            hex(ENEMY_BASE_OFFSET + self.enemy_pointer_spinner.value())
+        )
+        self.next_area_object_set_dropdown.setCurrentIndex(
+            self.level.next_area_object_set_no
+        )
 
         self.blockSignals(False)
 
-        self.header_bytes_label.setText(" ".join(f"{number:0=#4X}"[2:] for number in self.level.header_bytes))
+        self.header_bytes_label.setText(
+            " ".join(f"{number:0=#4X}"[2:] for number in self.level.header_bytes)
+        )
 
         self.level.data_changed.emit()
 
     def _set_level_attr(self, name: str, value, display_name="", display_value=""):
-        self.undo_stack.push(SetLevelAttribute(self.level, name, value, display_name, display_value))
+        self.undo_stack.push(
+            SetLevelAttribute(self.level, name, value, display_name, display_value)
+        )
 
     def _set_jump_destination(self):
         level_selector = LevelSelector(self)
@@ -312,10 +326,11 @@ class HeaderEditor(CustomDialog):
 
         make_macro(
             self.undo_stack,
-            _("Set Next Area to %(level)s/%(enemy)s, %(object)s") % {
+            _("Set Next Area to %(level)s/%(enemy)s, %(object)s")
+            % {
                 "level": f"{level_address:#x}",
                 "enemy": f"{enemy_address:#x}",
-                "object": OBJECT_SET_NAMES[object_set_number]
+                "object": OBJECT_SET_NAMES[object_set_number],
             },
             SetNextAreaObjectSet(self.level, object_set_number),
             SetNextAreaObjectAddress(self.level, level_address),
@@ -336,13 +351,24 @@ class HeaderEditor(CustomDialog):
         elif spinner == self.enemy_palette_spinner:
             self._set_level_attr("enemy_palette_index", new_value)
 
-        elif spinner == self.level_pointer_spinner and new_value != self.level.header.jump_level_offset:
+        elif (
+            spinner == self.level_pointer_spinner
+            and new_value != self.level.header.jump_level_offset
+        ):
             self.undo_stack.push(
-                SetNextAreaObjectAddress(self.level, self.level.header.jump_object_set.level_offset + new_value)
+                SetNextAreaObjectAddress(
+                    self.level,
+                    self.level.header.jump_object_set.level_offset + new_value,
+                )
             )
 
-        elif spinner == self.enemy_pointer_spinner and new_value != self.level.header.jump_enemy_offset:
-            self.undo_stack.push(SetNextAreaEnemyAddress(self.level, ENEMY_BASE_OFFSET + new_value))
+        elif (
+            spinner == self.enemy_pointer_spinner
+            and new_value != self.level.header.jump_enemy_offset
+        ):
+            self.undo_stack.push(
+                SetNextAreaEnemyAddress(self.level, ENEMY_BASE_OFFSET + new_value)
+            )
 
         self.update()
 
@@ -354,7 +380,10 @@ class HeaderEditor(CustomDialog):
         text = dropdown.currentText()
 
         # TODO do this via properties and get rid of the ifs?
-        if dropdown == self.length_dropdown and (new_length := LEVEL_LENGTHS[new_index]) != self.level.length:
+        if (
+            dropdown == self.length_dropdown
+            and (new_length := LEVEL_LENGTHS[new_index]) != self.level.length
+        ):
             self._set_level_attr("length", new_length, display_value=text)
 
         elif dropdown == self.music_dropdown and new_index != self.level.music_index:
@@ -398,7 +427,10 @@ class HeaderEditor(CustomDialog):
         elif dropdown == self.graphic_set_dropdown:
             self._set_level_attr("graphic_set", new_index, display_value=text)
 
-        elif dropdown == self.next_area_object_set_dropdown and new_index != self.level.next_area_object_set_no:
+        elif (
+            dropdown == self.next_area_object_set_dropdown
+            and new_index != self.level.next_area_object_set_no
+        ):
             object_set_cmd = SetNextAreaObjectSet(self.level, new_index)
 
             # in case the level address changes based on the new object set, don't list that command separately

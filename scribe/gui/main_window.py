@@ -60,7 +60,9 @@ class ScribeMainWindow(MainWindow):
         )
         self.context_menu.paste_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_V)
 
-        self.world_view = WorldView(self, self.level_ref, self.settings, self.context_menu)
+        self.world_view = WorldView(
+            self, self.level_ref, self.settings, self.context_menu
+        )
         self.world_view.zoom_in()
         self.world_view.zoom_in()
 
@@ -78,8 +80,12 @@ class ScribeMainWindow(MainWindow):
         self.tool_window = ToolWindow(self, self.level_ref)
         self.tool_window.tile_selected.connect(self.world_view.on_put_tile)
         self.tool_window.sprite_selection_changed.connect(self.world_view.select_sprite)
-        self.tool_window.level_pointer_selection_changed.connect(self.world_view.select_level_pointer)
-        self.tool_window.locks_selection_changed.connect(self.world_view.select_locks_and_bridges)
+        self.tool_window.level_pointer_selection_changed.connect(
+            self.world_view.select_level_pointer
+        )
+        self.tool_window.locks_selection_changed.connect(
+            self.world_view.select_locks_and_bridges
+        )
 
         self.menu_toolbar = QToolBar(_("Menu Toolbar"), self)
         self.menu_toolbar.setOrientation(Qt.Horizontal)
@@ -97,13 +103,19 @@ class ScribeMainWindow(MainWindow):
 
         self.menu_toolbar.addSeparator()
 
-        play_action = self.menu_toolbar.addAction(icon("play-circle.svg"), _("Play Level"))
+        play_action = self.menu_toolbar.addAction(
+            icon("play-circle.svg"), _("Play Level")
+        )
         play_action.triggered.connect(self.on_play)
-        play_action.setWhatsThis(_("Opens an emulator with the current Level set to 1-1.\nSee Settings."))
+        play_action.setWhatsThis(
+            _("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
+        )
 
         self.menu_toolbar.addSeparator()
 
-        zoom_out_action = self.menu_toolbar.addAction(icon("zoom-out.svg"), _("Zoom Out"))
+        zoom_out_action = self.menu_toolbar.addAction(
+            icon("zoom-out.svg"), _("Zoom Out")
+        )
         zoom_out_action.triggered.connect(self.world_view.zoom_out)
         zoom_out_action.triggered.connect(self._resize_for_level)
         zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), _("Zoom In"))
@@ -116,9 +128,15 @@ class ScribeMainWindow(MainWindow):
 
         self.addToolBar(Qt.TopToolBarArea, self.menu_toolbar)
 
-        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_X), self, self._cut_objects)
-        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_C), self, self._copy_objects)
-        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_V), self, self._paste_objects)
+        QShortcut(
+            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_X), self, self._cut_objects
+        )
+        QShortcut(
+            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_C), self, self._copy_objects
+        )
+        QShortcut(
+            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_V), self, self._paste_objects
+        )
 
         self._resize_for_level()
 
@@ -132,7 +150,9 @@ class ScribeMainWindow(MainWindow):
 
         # TRANSLATORS: Ampersand designates keyboard shortcut key
         self.open_rom_action = self.file_menu.addAction(_("&Open ROM..."))
-        self.open_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_O)
+        self.open_rom_action.setShortcut(
+            Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_O
+        )
         self.open_rom_action.setIcon(icon("folder.svg"))
 
         self.file_menu.addSeparator()
@@ -143,11 +163,15 @@ class ScribeMainWindow(MainWindow):
         self.save_rom_action.setIcon(icon("save.svg"))
 
         self.save_rom_action.setEnabled(False)
-        self.undo_stack.cleanChanged.connect(lambda: self.save_rom_action.setEnabled(not self.undo_stack.isClean()))
+        self.undo_stack.cleanChanged.connect(
+            lambda: self.save_rom_action.setEnabled(not self.undo_stack.isClean())
+        )
 
         # TRANSLATORS: Ampersand designates keyboard shortcut key
         self.save_as_rom_action = self.file_menu.addAction(_("Save ROM &As..."))
-        self.save_as_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_S)
+        self.save_as_rom_action.setShortcut(
+            Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_S
+        )
         self.save_as_rom_action.setIcon(icon("save.svg"))
         self.file_menu.addSeparator()
 
@@ -224,7 +248,9 @@ class ScribeMainWindow(MainWindow):
         self.world_view.update()
 
     def remove_selected_objects(self):
-        selected_objects = [obj for obj in self.world_view.world.get_selected_tiles() if obj.selected]
+        selected_objects = [
+            obj for obj in self.world_view.world.get_selected_tiles() if obj.selected
+        ]
 
         if not selected_objects:
             return
@@ -232,7 +258,9 @@ class ScribeMainWindow(MainWindow):
         self.undo_stack.beginMacro(_("Remove Selected Tiles"))
 
         for obj in selected_objects:
-            self.undo_stack.push(PutTile(self.level_ref.level, obj.pos, WORLD_MAP_BLANK_TILE_ID))
+            self.undo_stack.push(
+                PutTile(self.level_ref.level, obj.pos, WORLD_MAP_BLANK_TILE_ID)
+            )
 
         self.undo_stack.endMacro()
 
@@ -249,7 +277,9 @@ class ScribeMainWindow(MainWindow):
             return
 
         if q_point is not None:
-            paste_target = self.world_view.to_level_point(self.world_view.mapFromGlobal(q_point))
+            paste_target = self.world_view.to_level_point(
+                self.world_view.mapFromGlobal(q_point)
+            )
         else:
             paste_target = self.world_view.last_mouse_position
 
@@ -317,13 +347,17 @@ class ScribeMainWindow(MainWindow):
         try:
             ROM.load_from_file(path_to_rom)
         except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, _("Cannot open file '%s'.") % path_to_rom)
+            QMessageBox.warning(
+                self, type(exp).__name__, _("Cannot open file '%s'.") % path_to_rom
+            )
             return
 
     def load_level(self, world_number: int):
         world = SMB3WorldMap.from_world_number(ROM(), world_number)
 
-        self.level_ref.load_level(f"World {world_number}", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+        self.level_ref.load_level(
+            f"World {world_number}", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET
+        )
         self.level_ref.level.dimensions_changed.connect(self._resize_for_level)
 
         self.setWindowTitle(f"{self.level_ref.level.name} - SMB3 Scribe")
@@ -348,7 +382,9 @@ class ScribeMainWindow(MainWindow):
         else:
             pathname = ROM.path
 
-        saved_successfully = self._save_current_changes_to_file(pathname, set_new_path=True)
+        saved_successfully = self._save_current_changes_to_file(
+            pathname, set_new_path=True
+        )
 
         if saved_successfully and not is_save_as:
             self.undo_stack.setClean()
@@ -398,7 +434,11 @@ class ScribeMainWindow(MainWindow):
     def sizeHint(self) -> QSize:
         inner_width, inner_height = self.world_view.sizeHint().toTuple()
 
-        height = inner_height + self.scroll_area.horizontalScrollBar().height() + 2 * self.scroll_area.frameWidth()
+        height = (
+            inner_height
+            + self.scroll_area.horizontalScrollBar().height()
+            + 2 * self.scroll_area.frameWidth()
+        )
         height += self.menuBar().height()
 
         if self.menu_toolbar:
@@ -406,6 +446,8 @@ class ScribeMainWindow(MainWindow):
 
         width = inner_width + 2 * self.scroll_area.frameWidth()
 
-        size_hint = QSize(min(width, QApplication.primaryScreen().size().width()), height)
+        size_hint = QSize(
+            min(width, QApplication.primaryScreen().size().width()), height
+        )
 
         return size_hint

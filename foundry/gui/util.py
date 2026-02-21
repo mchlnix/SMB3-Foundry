@@ -13,7 +13,9 @@ def clear_layout(layout):
 def center_widget(widget: QWidget):
     center_offset = QPoint(widget.width() // 2, widget.height() // 2)
 
-    widget.move(QApplication.primaryScreen().availableGeometry().center() - center_offset)
+    widget.move(
+        QApplication.primaryScreen().availableGeometry().center() - center_offset
+    )
 
 
 # from https://docs.python.org/3/library/itertools.html

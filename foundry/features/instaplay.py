@@ -36,7 +36,9 @@ class InstaPlayer:
         ram_map_power_disp = 0x03F3
 
         # set default powerup when starting a world
-        self.rom.write(Constants.Title_PrepForWorldMap + 0x1, bytes([powerup.power_up_code]))
+        self.rom.write(
+            Constants.Title_PrepForWorldMap + 0x1, bytes([powerup.power_up_code])
+        )
 
         if not (powerup.has_p_wing or with_starman):
             return
@@ -45,10 +47,14 @@ class InstaPlayer:
         debug_bytes = bytearray()
 
         if with_starman:
-            debug_bytes.extend(_set_ram_value(POWERUP_ADDITION_STARMAN, ram_map_power_starman))
+            debug_bytes.extend(
+                _set_ram_value(POWERUP_ADDITION_STARMAN, ram_map_power_starman)
+            )
 
         if powerup.has_p_wing:
-            debug_bytes.extend(_set_ram_value(POWERUP_ADDITION_PWING, ram_address=ram_map_power_disp))
+            debug_bytes.extend(
+                _set_ram_value(POWERUP_ADDITION_PWING, ram_address=ram_map_power_disp)
+            )
 
             # Remove code that resets the powerup value by replacing it with no-operations
             # Otherwise this code would copy the value of the normal powerup here
@@ -91,7 +97,9 @@ class InstaPlayer:
         # replace level information with that of current level
         object_set_number = level.object_set_number
 
-        world_map.replace_level_at_position((layout_address, enemy_address, object_set_number), position)
+        world_map.replace_level_at_position(
+            (layout_address, enemy_address, object_set_number), position
+        )
 
         # replace the world the game loads into after the title screen
         self.rom.write(STARTING_WORLD_INDEX_ADDRESS, world - 1)
@@ -107,14 +115,21 @@ class InstaPlayer:
         title_screen_state_injection_rel = 0xACAE
 
         self.rom.write(after_player_init, JSR)
-        self.rom.write_little_endian(after_player_init + 1, title_screen_state_injection_rel)
+        self.rom.write_little_endian(
+            after_player_init + 1, title_screen_state_injection_rel
+        )
 
-        title_screen_state_injection_abs = prg_24_offset + title_screen_state_injection_rel
+        title_screen_state_injection_abs = (
+            prg_24_offset + title_screen_state_injection_rel
+        )
         title_screen_state_after_player_selection = 0x04
         ram_title_screen_address = 0xDE
 
         self.rom.write(title_screen_state_injection_abs, LDY_CONST)
-        self.rom.write(title_screen_state_injection_abs + 1, title_screen_state_after_player_selection)
+        self.rom.write(
+            title_screen_state_injection_abs + 1,
+            title_screen_state_after_player_selection,
+        )
         self.rom.write(title_screen_state_injection_abs + 2, STY_RAM)
         self.rom.write(title_screen_state_injection_abs + 3, ram_title_screen_address)
 

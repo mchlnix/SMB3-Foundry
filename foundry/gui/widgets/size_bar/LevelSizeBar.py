@@ -18,16 +18,18 @@ class LevelSizeBar(QWidget):
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
 
-        self.setWhatsThis(_(
-            "<b>Level Size Bar</b><br/>"
-            "The objects inside a level, like platforms and item blocks, are stored as bytes in the ROM. "
-            "Since levels are stored one after another, saving a level with more objects, than it originally "
-            "had, would overwrite another level and probably cause the game to crash, if you would enter it, "
-            "while playing.<br/>"
-            "This bar shows, how much of the available space for level objects is currently taken up. It will turn "
-            "red, when too many level objects have been placed (or if the level objects would result in more bytes, "
-            "than the level originally had)."
-        ))
+        self.setWhatsThis(
+            _(
+                "<b>Level Size Bar</b><br/>"
+                "The objects inside a level, like platforms and item blocks, are stored as bytes in the ROM. "
+                "Since levels are stored one after another, saving a level with more objects, than it originally "
+                "had, would overwrite another level and probably cause the game to crash, if you would enter it, "
+                "while playing.<br/>"
+                "This bar shows, how much of the available space for level objects is currently taken up. It will turn "
+                "red, when too many level objects have been placed (or if the level objects would result in more bytes, "
+                "than the level originally had)."
+            )
+        )
 
         self.size_bar = SizeBar(self.level_ref)
         self.size_bar.value_color = self.value_color
@@ -42,11 +44,14 @@ class LevelSizeBar(QWidget):
         layout.addWidget(self.info_label)
 
     def update(self):
-        self.info_label.setText(_("%(description)s: %(value)d/%(max)s Bytes") % {
-            "description": self.value_description,
-            "value": self.current_value,
-            "max": "∞" if self.max_value == float("INF") else str(self.max_value)
-        })
+        self.info_label.setText(
+            _("%(description)s: %(value)d/%(max)s Bytes")
+            % {
+                "description": self.value_description,
+                "value": self.current_value,
+                "max": "∞" if self.max_value == float("INF") else str(self.max_value),
+            }
+        )
 
         self.size_bar.current_value = self.current_value
         self.size_bar.original_value = self.max_value
@@ -69,7 +74,9 @@ class LevelSizeBar(QWidget):
             level_size = float("INF")
 
         elif ROM().additional_data.managed_level_positions:
-            free_space_in_bank = ROM().additional_data.free_space_for_object_set(self.level_ref.level.object_set_number)
+            free_space_in_bank = ROM().additional_data.free_space_for_object_set(
+                self.level_ref.level.object_set_number
+            )
             level_size += free_space_in_bank
 
         return level_size

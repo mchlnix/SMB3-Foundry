@@ -6,7 +6,9 @@ class EnemyItem(InLevelObject):
         super(EnemyItem, self).__init__(data)
 
         if not len(data) == 3:
-            raise ValueError(_("Length of the given data must be 3, was %d.") % len(data))
+            raise ValueError(
+                _("Length of the given data must be 3, was %d.") % len(data)
+            )
 
         self.domain = 0
 

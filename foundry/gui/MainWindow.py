@@ -35,11 +35,15 @@ class MainWindow(QMainWindow):
             answer = QMessageBox.question(
                 self,
                 _("Automatic Update Checks"),
-                _("Do you want the editor to automatically check for updates on startup?"),
+                _(
+                    "Do you want the editor to automatically check for updates on startup?"
+                ),
             )
 
             self.settings.setValue("editor/asked_for_startup", True)
-            self.settings.setValue("editor/update_on_startup", answer == QMessageBox.Yes)
+            self.settings.setValue(
+                "editor/update_on_startup", answer == QMessageBox.Yes
+            )
 
         if not self.settings.value("editor/update_on_startup"):
             return
@@ -54,7 +58,9 @@ class MainWindow(QMainWindow):
         current_version = get_current_version_name()
 
         error = not latest_version
-        version_is_ignored = latest_version == self.settings.value("editor/version_to_ignore")
+        version_is_ignored = latest_version == self.settings.value(
+            "editor/version_to_ignore"
+        )
         should_ignore = version_is_ignored and honor_ignore
 
         update_available = latest_version != current_version
@@ -67,7 +73,9 @@ class MainWindow(QMainWindow):
         if update_available:
             latest_release_url = f"{releases_link}/tag/{latest_version}"
 
-            go_to_github_button = QPushButton(icon("external-link.svg"), _("Go to latest release"))
+            go_to_github_button = QPushButton(
+                icon("external-link.svg"), _("Go to latest release")
+            )
             go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
 
             info_box = QMessageBox(
@@ -78,7 +86,9 @@ class MainWindow(QMainWindow):
         else:
             nightly_release_url = f"{releases_link}/tag/nightly"
 
-            go_to_github_button = QPushButton(icon("external-link.svg"), _("Check for nightly release"))
+            go_to_github_button = QPushButton(
+                icon("external-link.svg"), _("Check for nightly release")
+            )
             go_to_github_button.clicked.connect(lambda: open_url(nightly_release_url))
 
             info_box = QMessageBox(
@@ -87,12 +97,15 @@ class MainWindow(QMainWindow):
                 _(
                     "Stable version '%s' is up to date. But there might be a newer 'nightly' version "
                     "available."
-                ) % current_version,
+                )
+                % current_version,
             )
 
         if not version_is_ignored:
             ignore_button = QPushButton(_("Don't ask again for '%s'") % latest_version)
-            ignore_button.clicked.connect(lambda: self._ignore_latest_version(latest_version))
+            ignore_button.clicked.connect(
+                lambda: self._ignore_latest_version(latest_version)
+            )
             info_box.addButton(ignore_button, QMessageBox.ButtonRole.NoRole)
 
         info_box.addButton(QMessageBox.Cancel)
@@ -132,10 +145,14 @@ class MainWindow(QMainWindow):
         ROM().save_to(path_to_temp_rom)
 
         if not self._save_changes_to_instaplay_rom(path_to_temp_rom):
-            QMessageBox.critical(self, _("File Error"), _("Couldn't save changes to temporary Rom."))
+            QMessageBox.critical(
+                self, _("File Error"), _("Couldn't save changes to temporary Rom.")
+            )
             return
 
-        arguments = self.settings.value("editor/instaplay_arguments").replace("%f", str(path_to_temp_rom))
+        arguments = self.settings.value("editor/instaplay_arguments").replace(
+            "%f", str(path_to_temp_rom)
+        )
         arguments = shlex.split(arguments, posix=False)
 
         emu_path = Path(self.settings.value("editor/instaplay_emulator"))
@@ -185,7 +202,11 @@ class MainWindow(QMainWindow):
         try:
             ROM.save_to_file(pathname, set_new_path)
         except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, _("Cannot save ROM data to file '%s'.") % pathname)
+            QMessageBox.warning(
+                self,
+                type(exp).__name__,
+                _("Cannot save ROM data to file '%s'.") % pathname,
+            )
 
             return False
 

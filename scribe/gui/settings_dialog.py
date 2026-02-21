@@ -32,14 +32,18 @@ class SettingsDialog(CustomDialog):
         online_box.setLayout(layout)
 
         self._update_check_box = QCheckBox(_("Enabled"))
-        self._update_check_box.setChecked(self.settings.value("editor/update_on_startup"))
+        self._update_check_box.setChecked(
+            self.settings.value("editor/update_on_startup")
+        )
         self._update_check_box.toggled.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
                 _("Check for Updates on Startup:"),
                 self._update_check_box,
-                tooltip=_("Checks the Repository for a new Version when the Editor is started."),
+                tooltip=_(
+                    "Checks the Repository for a new Version when the Editor is started."
+                ),
             )
         )
 
@@ -79,7 +83,9 @@ class SettingsDialog(CustomDialog):
 
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText(_("Path to emulator"))
-        self.emulator_command_input.setText(self.settings.value("editor/instaplay_emulator"))
+        self.emulator_command_input.setText(
+            self.settings.value("editor/instaplay_emulator")
+        )
 
         self.emulator_command_input.textChanged.connect(self._update_settings)
 
@@ -88,7 +94,9 @@ class SettingsDialog(CustomDialog):
 
         self.command_arguments_input = QLineEdit(self)
         self.command_arguments_input.setPlaceholderText("%f")
-        self.command_arguments_input.setText(self.settings.value("editor/instaplay_arguments"))
+        self.command_arguments_input.setText(
+            self.settings.value("editor/instaplay_arguments")
+        )
 
         self.command_arguments_input.textEdited.connect(self._update_settings)
 
@@ -104,7 +112,9 @@ class SettingsDialog(CustomDialog):
         command_input_layout.addWidget(self.emulator_path_button)
 
         command_layout.addLayout(command_input_layout)
-        command_layout.addWidget(QLabel(_("Command arguments (%f will be replaced with rom path):")))
+        command_layout.addWidget(
+            QLabel(_("Command arguments (%f will be replaced with rom path):"))
+        )
         command_layout.addWidget(self.command_arguments_input)
         command_layout.addWidget(QLabel(_("Command used to play the rom:")))
         command_layout.addWidget(self.command_label)
@@ -125,14 +135,22 @@ class SettingsDialog(CustomDialog):
         )
 
     def _update_settings(self, _=None):
-        self.settings.setValue("editor/instaplay_emulator", self.emulator_command_input.text())
-        self.settings.setValue("editor/instaplay_arguments", self.command_arguments_input.text())
+        self.settings.setValue(
+            "editor/instaplay_emulator", self.emulator_command_input.text()
+        )
+        self.settings.setValue(
+            "editor/instaplay_arguments", self.command_arguments_input.text()
+        )
 
-        self.settings.setValue("editor/update_on_startup", self._update_check_box.isChecked())
+        self.settings.setValue(
+            "editor/update_on_startup", self._update_check_box.isChecked()
+        )
 
         self.settings.setValue("editor/default dir", self.path_dropdown.currentText())
         if self.path_dropdown.currentText() == "Custom":
-            self.settings.setValue("editor/custom default dir path", self.default_dir_label.text())
+            self.settings.setValue(
+                "editor/custom default dir path", self.default_dir_label.text()
+            )
 
         self.settings.setValue("editor/default dir path", self.default_dir_label.text())
 
@@ -167,7 +185,9 @@ class SettingsDialog(CustomDialog):
 
     def on_dropdown(self, new_text):
         if new_text == _("Custom"):
-            self.default_dir_label.setText(self.settings.value("editor/custom default dir path"))
+            self.default_dir_label.setText(
+                self.settings.value("editor/custom default dir path")
+            )
         elif new_text in default_dirs:
             self.default_dir_label.setText(default_dirs[new_text])
 

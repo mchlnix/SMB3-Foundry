@@ -69,7 +69,9 @@ class WarningList(QWidget):
 
         # jump set without a next area
         if level.jumps and not level.has_next_area:
-            self.warn(_("Level has jumps set, but no Jump Destination in Level Header."), [])
+            self.warn(
+                _("Level has jumps set, but no Jump Destination in Level Header."), []
+            )
 
         # level objects and enemies are inside the level
         for obj in level.get_all_objects():
@@ -90,7 +92,8 @@ class WarningList(QWidget):
             ]:
                 if obj.y_position + obj.rendered_height == GROUND:
                     self.warn(
-                        _("%s extends until the level bottom. This can crash the game.") % obj,
+                        _("%s extends until the level bottom. This can crash the game.")
+                        % obj,
                         [obj],
                     )
 
@@ -108,11 +111,14 @@ class WarningList(QWidget):
                         _(
                             "Level has auto scrolling enabled, but the scrolling type in the level header is not "
                             "'%s'. This might not work as expected."
-                        ) % CAMERA_MOVEMENTS[0],
+                        )
+                        % CAMERA_MOVEMENTS[0],
                         [],
                     )
 
-        autoscroll_items = [item for item in level.enemies if item.obj_index == OBJ_AUTOSCROLL]
+        autoscroll_items = [
+            item for item in level.enemies if item.obj_index == OBJ_AUTOSCROLL
+        ]
 
         if len(autoscroll_items) > 1:
             self.warn(
@@ -127,12 +133,15 @@ class WarningList(QWidget):
                     _(
                         "Object at %s will likely cause the game to crash, when loading "
                         "or on screen."
-                    ) % str(obj.get_rendered_position()),
+                    )
+                    % str(obj.get_rendered_position()),
                     [obj],
                 )
 
         # incompatible enemies
-        enemies_in_level = [enemy for enemy in level.enemies if enemy.name in self._enemy_dict]
+        enemies_in_level = [
+            enemy for enemy in level.enemies if enemy.name in self._enemy_dict
+        ]
 
         for enemy in enemies_in_level.copy():
             enemies_in_level.pop(0)
@@ -144,10 +153,10 @@ class WarningList(QWidget):
 
                 if clan == other_clan and group != other_group:
                     self.warn(
-                        _("'%(enemy)s incompatible with '%(other)s', when on same screen") % {
-                            "enemy": enemy,
-                            "other": other_enemy
-                        },
+                        _(
+                            "'%(enemy)s incompatible with '%(other)s', when on same screen"
+                        )
+                        % {"enemy": enemy, "other": other_enemy},
                         [enemy, other_enemy],
                     )
 
@@ -158,13 +167,17 @@ class WarningList(QWidget):
 
             if level.object_set_number != DUNGEON_OBJECT_SET:
                 self.warn(
-                    _("You should only use 'BoomBoom' enemies in levels of object set 'Dungeon'."),
+                    _(
+                        "You should only use 'BoomBoom' enemies in levels of object set 'Dungeon'."
+                    ),
                     [enemy],
                 )
 
             if enemy.y_position < 0x10:
                 self.warn(
-                    _("If your 'BoomBoom' has a lower y-position than 16, you need to add 1 to your Lock Index."),
+                    _(
+                        "If your 'BoomBoom' has a lower y-position than 16, you need to add 1 to your Lock Index."
+                    ),
                     [enemy],
                 )
 
@@ -176,7 +189,9 @@ class WarningList(QWidget):
 
             if not level.header.pipe_ends_level:
                 self.warn(
-                    _("You have a Pipe Pair Exit set (Level Settings), but Pipes don't end your Level (Lever Header)."),
+                    _(
+                        "You have a Pipe Pair Exit set (Level Settings), but Pipes don't end your Level (Lever Header)."
+                    ),
                     [],
                 )
 
@@ -200,7 +215,9 @@ class WarningList(QWidget):
         # level ends with chest, but no item set
         if not hammer_bro_objects and not chest_exit_items and chest_exit_objects:
             self.warn(
-                _("You've set the level to end with getting a Chest, but there is no item in the chest."),
+                _(
+                    "You've set the level to end with getting a Chest, but there is no item in the chest."
+                ),
                 chest_exit_objects,
             )
 
@@ -215,23 +232,38 @@ class WarningList(QWidget):
 
         if chest_exit_items and not chest_objects:
             self.warn(
-                _("You have %d Chest Item objects, but no chest in the level to set items for.") % len(chest_exit_items),
+                _(
+                    "You have %d Chest Item objects, but no chest in the level to set items for."
+                )
+                % len(chest_exit_items),
                 chest_exit_items,
             )
         elif chest_objects and not chest_exit_items:
             self.warn(
-                _("You have %d Chests, but no object that sets their items in the level.") % len(chest_objects),
+                _(
+                    "You have %d Chests, but no object that sets their items in the level."
+                )
+                % len(chest_objects),
                 chest_objects,
             )
 
-        if xor(self._is_object_in_level(*LVL_OBJ_LEVEL_END), any(self._find_enemies_in_level(OBJ_GOAL_CARD))):
-            self.warn(_("You shouldn't have a level ending object without a goal card item, but you can have neither."))
+        if xor(
+            self._is_object_in_level(*LVL_OBJ_LEVEL_END),
+            any(self._find_enemies_in_level(OBJ_GOAL_CARD)),
+        ):
+            self.warn(
+                _(
+                    "You shouldn't have a level ending object without a goal card item, but you can have neither."
+                )
+            )
 
         self.update()
         self.warnings_updated.emit(bool(self.warnings))
 
     def _find_enemies_in_level(self, enemy_id: int) -> list[EnemyItem]:
-        return [enemy for enemy in self.level_ref.level.enemies if enemy.type == enemy_id]
+        return [
+            enemy for enemy in self.level_ref.level.enemies if enemy.type == enemy_id
+        ]
 
     def _is_object_in_level(self, domain: int, object_index: int) -> bool:
         return any(

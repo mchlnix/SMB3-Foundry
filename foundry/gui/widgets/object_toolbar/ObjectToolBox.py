@@ -102,7 +102,9 @@ class ObjectToolBox(QWidget):
 
         for object_icon in self._gen_icon_widgets():
             old_object = object_icon.object
-            new_object = factory.from_properties(old_object.domain, old_object.obj_index, 0, 0, None, 0)
+            new_object = factory.from_properties(
+                old_object.domain, old_object.obj_index, 0, 0, None, 0
+            )
 
             object_icon.set_object(new_object)
 
@@ -126,9 +128,16 @@ class ObjectToolBox(QWidget):
 
     def get_equivalent(self, level_object):
         for index in range(self._layout.count()):
-            internal_object = self._layout.itemAtPosition(index // COLUMN_COUNT, index % COLUMN_COUNT).widget().object
+            internal_object = (
+                self._layout.itemAtPosition(index // COLUMN_COUNT, index % COLUMN_COUNT)
+                .widget()
+                .object
+            )
 
-            if internal_object.object_set == level_object.object_set and internal_object.type == level_object.type:
+            if (
+                internal_object.object_set == level_object.object_set
+                and internal_object.type == level_object.type
+            ):
                 return internal_object
 
         else:
@@ -143,7 +152,12 @@ class ObjectToolBox(QWidget):
 
     def _gen_icon_widgets(self):
         for index in range(self._layout.count()):
-            yield cast(ObjectIcon, self._layout.itemAtPosition(index // COLUMN_COUNT, index % COLUMN_COUNT).widget())
+            yield cast(
+                ObjectIcon,
+                self._layout.itemAtPosition(
+                    index // COLUMN_COUNT, index % COLUMN_COUNT
+                ).widget(),
+            )
 
     def _extract_objects(self):
         objects = []

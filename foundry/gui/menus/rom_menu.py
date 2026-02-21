@@ -89,7 +89,9 @@ class RomMenu(QMenu):
                 try:
                     prop_dialog = GamePropertiesDialog(self.parent(), ROM())
                 except ValueError as ve:
-                    QMessageBox.critical(self.parent(), _("Error opening Game Properties"), str(ve))
+                    QMessageBox.critical(
+                        self.parent(), _("Error opening Game Properties"), str(ve)
+                    )
                     return
 
                 result = prop_dialog.exec()
@@ -103,10 +105,13 @@ class RomMenu(QMenu):
 
         if ROM.additional_data.managed_level_positions:
             for found_level in ROM.additional_data.found_levels:  # noqa
-                levels_per_object_set[found_level.object_set_number].add(found_level.level_offset)
+                levels_per_object_set[found_level.object_set_number].add(
+                    found_level.level_offset
+                )
 
             levels_by_address = {
-                found_level.level_offset: found_level for found_level in ROM.additional_data.found_levels
+                found_level.level_offset: found_level
+                for found_level in ROM.additional_data.found_levels
             }
 
         else:
@@ -117,7 +122,9 @@ class RomMenu(QMenu):
                 levels_by_address = pd.levels_by_address
 
         if levels_per_object_set:
-            self._level_viewer = LevelViewer(self.parent(), levels_per_object_set, levels_by_address)
+            self._level_viewer = LevelViewer(
+                self.parent(), levels_per_object_set, levels_by_address
+            )
             self._level_viewer.show()
 
     def _show_block_viewer(self):
@@ -144,7 +151,9 @@ class RomMenu(QMenu):
                 obj = self._level_ref.selected_objects[0]
 
                 if isinstance(obj, LevelObject):
-                    self._object_viewer.set_object(obj.domain, obj.obj_index, obj.length)
+                    self._object_viewer.set_object(
+                        obj.domain, obj.obj_index, obj.length
+                    )
 
         self._object_viewer.show()
 

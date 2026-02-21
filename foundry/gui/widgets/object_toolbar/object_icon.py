@@ -95,7 +95,9 @@ class ObjectIcon(QWidget):
         if isinstance(level_object, Jump):
             return
 
-        elif level_object is not None and (obj := get_minimal_icon_object(level_object)):
+        elif level_object is not None and (
+            obj := get_minimal_icon_object(level_object)
+        ):
             self.object = obj
 
             if obj.name.lower() in objects_to_use_pngs_instead:
@@ -119,7 +121,9 @@ class ObjectIcon(QWidget):
         return height
 
     def sizeHint(self):
-        if self.object is not None and self.fits_inside(self.image.size() * 2, self.max_size):
+        if self.object is not None and self.fits_inside(
+            self.image.size() * 2, self.max_size
+        ):
             return self.image.size() * 2
         else:
             return self.max_size
@@ -129,7 +133,9 @@ class ObjectIcon(QWidget):
             painter = QPainter(self)
 
             if self.draw_background_color:
-                painter.fillRect(event.rect(), bg_color_for_palette_group(self.object.palette_group))
+                painter.fillRect(
+                    event.rect(), bg_color_for_palette_group(self.object.palette_group)
+                )
 
             scaled_image = self.image.scaled(self.size(), aspectMode=Qt.KeepAspectRatio)
 

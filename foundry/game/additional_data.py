@@ -56,7 +56,9 @@ class AdditionalData:
         return json.dumps(
             {
                 "managed_level_positions": self.managed_level_positions,
-                "found_levels": [found_level.to_dict() for found_level in self.found_levels],
+                "found_levels": [
+                    found_level.to_dict() for found_level in self.found_levels
+                ],
                 "needs_refresh": self.needs_refresh,
             }
         )
@@ -67,8 +69,12 @@ class AdditionalData:
 
         data_dict = json.loads(string_data)
 
-        data_obj.managed_level_positions = data_dict.get("managed_level_positions", None)
-        data_obj.found_levels = [FoundLevel.from_dict(data) for data in data_dict.get("found_levels", [])]
+        data_obj.managed_level_positions = data_dict.get(
+            "managed_level_positions", None
+        )
+        data_obj.found_levels = [
+            FoundLevel.from_dict(data) for data in data_dict.get("found_levels", [])
+        ]
         data_obj.needs_refresh = data_dict.get("needs_refresh", True)
 
         return data_obj
@@ -88,14 +94,20 @@ class AdditionalData:
 
         last_level = levels_by_bank[prg_banks_by_object_set[object_set_number]][-1]
 
-        free_space_start = last_level.level_offset + last_level.object_data_length + LEVEL_DATA_DELIMITER_COUNT
+        free_space_start = (
+            last_level.level_offset
+            + last_level.object_data_length
+            + LEVEL_DATA_DELIMITER_COUNT
+        )
 
         free_space_left = PRG_BANK_SIZE - (free_space_start % PRG_BANK_SIZE)
 
         return free_space_left
 
     def free_space_for_enemies(self):
-        level_with_last_enemy_data = max(self.found_levels, key=attrgetter("enemy_offset"))
+        level_with_last_enemy_data = max(
+            self.found_levels, key=attrgetter("enemy_offset")
+        )
 
         end_of_enemy_data = (
             level_with_last_enemy_data.enemy_offset
@@ -173,18 +185,27 @@ class LevelOrganizer:
 
     def _get_found_level(self, level: "Level"):
         if not level.attached_to_rom:
-            raise ValueError(_("This level is not attached to the ROM. Please place it somewhere on a world map."))
+            raise ValueError(
+                _(
+                    "This level is not attached to the ROM. Please place it somewhere on a world map."
+                )
+            )
 
         current_level = self._found_level_from_address(level.header_offset)
 
         if current_level is None:
-            raise LookupError(_("Current Level %s could not be found in ROM. Attach it first.") % f"{level.header_offset:x}")
+            raise LookupError(
+                _("Current Level %s could not be found in ROM. Attach it first.")
+                % f"{level.header_offset:x}"
+            )
 
         return current_level
 
     def _found_level_from_address(self, level_address: int):
         try:
-            return next(filter(lambda lvl: lvl.level_offset == level_address, self.levels))
+            return next(
+                filter(lambda lvl: lvl.level_offset == level_address, self.levels)
+            )
 
         except StopIteration:
             return None
@@ -210,8 +231,12 @@ class LevelOrganizer:
         )
         assert found_level.enemy_offset in self.old_enemy_address_to_new
 
-        found_level.level_offset = self.old_level_address_to_new[found_level.level_offset]
-        found_level.enemy_offset = self.old_enemy_address_to_new[found_level.enemy_offset]
+        found_level.level_offset = self.old_level_address_to_new[
+            found_level.level_offset
+        ]
+        found_level.enemy_offset = self.old_enemy_address_to_new[
+            found_level.enemy_offset
+        ]
 
         level.set_addresses(found_level.level_offset, found_level.enemy_offset)
 
@@ -239,30 +264,53 @@ class LevelOrganizer:
             # Level Jump Destination is explicitly not set, so don't bother keeping track
             return
 
-        if level.header.jump_level_offset and level.header.jump_level_address not in self.old_level_address_to_new:
-            raise LookupError(_(
-                "Jump Destination Level Address in Header '%s' does not point to"
-                " any known level"
-            ) % f"0x{level.header.jump_level_address:X}")
-        if level.header.jump_enemy_offset and level.header.jump_enemy_address not in self.old_enemy_address_to_new:
-            raise LookupError(_(
-                "Jump Destination Enemy Address in Header '%s' does not point to"
-                " any known enemy data group"
-            ) % f"0x{level.header.jump_enemy_address:X}")
+        if (
+            level.header.jump_level_offset
+            and level.header.jump_level_address not in self.old_level_address_to_new
+        ):
+            raise LookupError(
+                _(
+                    "Jump Destination Level Address in Header '%s' does not point to"
+                    " any known level"
+                )
+                % f"0x{level.header.jump_level_address:X}"
+            )
+        if (
+            level.header.jump_enemy_offset
+            and level.header.jump_enemy_address not in self.old_enemy_address_to_new
+        ):
+            raise LookupError(
+                _(
+                    "Jump Destination Enemy Address in Header '%s' does not point to"
+                    " any known enemy data group"
+                )
+                % f"0x{level.header.jump_enemy_address:X}"
+            )
 
-        jump_destination_found_level = self._found_level_from_address(level.header.jump_level_address)
+        jump_destination_found_level = self._found_level_from_address(
+            level.header.jump_level_address
+        )
 
         if jump_destination_found_level is None:
-            raise LookupError(_("Jump Level Destination %s could not be found in ROM.") % f"{level.header.jump_level_address:x}")
+            raise LookupError(
+                _("Jump Level Destination %s could not be found in ROM.")
+                % f"{level.header.jump_level_address:x}"
+            )
 
         jump_destination_found_level.level_offset_positions.append(level.header_offset)
-        jump_destination_found_level.enemy_offset_positions.append(level.header_offset + OFFSET_SIZE)
+        jump_destination_found_level.enemy_offset_positions.append(
+            level.header_offset + OFFSET_SIZE
+        )
 
         if level.header.jump_level_offset != 0x0:
-            self.next_area_objects = self.old_level_address_to_new[level.header.jump_level_address]
+            self.next_area_objects = self.old_level_address_to_new[
+                level.header.jump_level_address
+            ]
 
         if level.header.jump_enemy_offset != 0x0:
-            self.next_area_enemies = self.old_enemy_address_to_new[level.header.jump_enemy_address]
+            self.next_area_enemies = self.old_enemy_address_to_new[
+                level.header.jump_enemy_address
+            ]
 
     def rearrange_levels(self):
         # 0.1 Sort Levels by bank
@@ -314,15 +362,20 @@ class LevelOrganizer:
 
     def _update_level_and_enemy_address_pointers(self, level):
         level.level_base.level_offset_positions = [
-            self.old_level_address_to_new.get(position, position) for position in level.level_offset_positions
+            self.old_level_address_to_new.get(position, position)
+            for position in level.level_offset_positions
         ]
         level.level_base.enemy_offset_positions = [
-            self.old_level_address_to_new.get(position - OFFSET_SIZE, position - OFFSET_SIZE)
+            self.old_level_address_to_new.get(
+                position - OFFSET_SIZE, position - OFFSET_SIZE
+            )
             + ENEMY_DATA_DELIMITER_COUNT
             for position in level.enemy_offset_positions
         ]
 
-    def _update_jump_address_for_saved_level(self, found_save_level: MovableLevel | None):
+    def _update_jump_address_for_saved_level(
+        self, found_save_level: MovableLevel | None
+    ):
         if found_save_level is None:
             return
 
@@ -333,13 +386,17 @@ class LevelOrganizer:
         )
 
         if header.jump_level_address in self.old_level_address_to_new:
-            header.jump_level_address = self.old_level_address_to_new[header.jump_level_address]
+            header.jump_level_address = self.old_level_address_to_new[
+                header.jump_level_address
+            ]
 
         found_save_level.level_data[:9] = header.data
 
     def _update_level_and_enemy_pointers(self):
         for bank_index, levels in self.levels_by_bank.items():
-            object_set_offset = BASE_OFFSET + bank_index * PRG_BANK_SIZE - PAGE_A000_OFFSET
+            object_set_offset = (
+                BASE_OFFSET + bank_index * PRG_BANK_SIZE - PAGE_A000_OFFSET
+            )
 
             # 3.1. Write new addresses in old positions, before actually moving the levels to the new position
             for level in levels:
@@ -394,9 +451,9 @@ class LevelOrganizer:
         self.levels_by_bank = defaultdict(list)
 
         for level in self.levels:
-            self.levels_by_bank[prg_banks_by_object_set[level.object_set_number]].append(
-                MovableLevel.from_found_level(level)
-            )
+            self.levels_by_bank[
+                prg_banks_by_object_set[level.object_set_number]
+            ].append(MovableLevel.from_found_level(level))
 
     def rearrange_enemies(self):
         # 1. Sort levels based on their enemy offset (filter out enemy offsets, that aren't real/mean something else)
@@ -411,7 +468,9 @@ class LevelOrganizer:
 
         # 3. Finally, write the enemy data to their new positions
         # 3.1 Get enemy data from old position
-        old_enemy_data_sets = self._collect_enemy_data_from_current_addresses(sorted_levels)
+        old_enemy_data_sets = self._collect_enemy_data_from_current_addresses(
+            sorted_levels
+        )
 
         # 3.2 Save enemy data to new position
         self._update_enemy_address_and_copy_data(old_enemy_data_sets, sorted_levels)
@@ -428,9 +487,13 @@ class LevelOrganizer:
 
             self.rom.write(level.enemy_offset, old_enemy_data)
 
-    def _collect_enemy_data_from_current_addresses(self, sorted_levels) -> dict[EnemyItemAddress, bytearray]:
+    def _collect_enemy_data_from_current_addresses(
+        self, sorted_levels
+    ) -> dict[EnemyItemAddress, bytearray]:
         old_enemy_data_sets = {
-            level.enemy_offset: self.rom.read(level.enemy_offset, level.enemy_data_length + ENEMY_DATA_DELIMITER_COUNT)
+            level.enemy_offset: self.rom.read(
+                level.enemy_offset, level.enemy_data_length + ENEMY_DATA_DELIMITER_COUNT
+            )
             for level in sorted_levels
         }
 
@@ -466,7 +529,9 @@ class LevelOrganizer:
     def _update_enemy_data_length_in_levels(self, sorted_levels):
         save_enemy_address, save_enemy_data = self.enemies_to_save
 
-        for level in filter(lambda level_: level_.enemy_offset == save_enemy_address, sorted_levels):
+        for level in filter(
+            lambda level_: level_.enemy_offset == save_enemy_address, sorted_levels
+        ):
             level.enemy_data_length = (
                 len(save_enemy_data) - ENEMY_DATA_DELIMITER_COUNT
             )  # do not account for delimiters here

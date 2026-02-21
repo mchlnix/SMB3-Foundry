@@ -30,10 +30,10 @@ class LevelParseProgressDialog(QProgressDialog):
         try:
             world_number, levels_in_world = next(level_gen)
             while True:
-                set.setLabelText(_("Parsing World %(world)d. Found Levels: %(levels)d") % {
-                    "world": world_number,
-                    "levels": levels_in_world
-                })
+                set.setLabelText(
+                    _("Parsing World %(world)d. Found Levels: %(levels)d")
+                    % {"world": world_number, "levels": levels_in_world}
+                )
                 self.setValue(world_number - 1)
 
                 QApplication.processEvents()

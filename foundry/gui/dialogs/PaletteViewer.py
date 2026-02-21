@@ -34,7 +34,9 @@ class PaletteViewer(CustomDialog):
     palettes_per_row = 4
 
     def __init__(self, parent, level_ref: LevelRef):
-        title = _("Palette Groups for Object Set %d") % level_ref.level.object_set_number
+        title = (
+            _("Palette Groups for Object Set %d") % level_ref.level.object_set_number
+        )
 
         super(PaletteViewer, self).__init__(parent, title=title)
 
@@ -50,7 +52,9 @@ class PaletteViewer(CustomDialog):
             group_box_layout.setSpacing(0)
 
             for palette_no in range(PALETTES_PER_PALETTES_GROUP):
-                group_box_layout.addWidget(PaletteWidget(level_ref, palette_group_number, palette_no))
+                group_box_layout.addWidget(
+                    PaletteWidget(level_ref, palette_group_number, palette_no)
+                )
 
             row = palette_group_number // self.palettes_per_row
             col = palette_group_number % self.palettes_per_row
@@ -89,7 +93,9 @@ class PaletteWidget(QWidget):
 
     @property
     def _palette_group(self):
-        return load_palette_group(self.level_ref.level.object_set_number, self.group_number)
+        return load_palette_group(
+            self.level_ref.level.object_set_number, self.group_number
+        )
 
     def update(self):
         self._update_colors()
@@ -102,7 +108,9 @@ class PaletteWidget(QWidget):
         original_color_index = self.sender().color_index
 
         color_table = ColorTable()
-        color_table.color_clicked.connect(lambda x: self.color_changed.emit(index_in_palette, x))
+        color_table.color_clicked.connect(
+            lambda x: self.color_changed.emit(index_in_palette, x)
+        )
         color_table.color_clicked.connect(self._update_colors)
 
         answer = color_table.exec()
@@ -111,12 +119,16 @@ class PaletteWidget(QWidget):
 
         if answer == QDialog.Accepted:
             if color_table.selected_color_index != original_color_index:
-                self.color_committed.emit(index_in_palette, color_table.selected_color_index)
+                self.color_committed.emit(
+                    index_in_palette, color_table.selected_color_index
+                )
 
         self._update_colors()
 
     def _update_colors(self):
-        for color_index, color_square in zip(self._palette_group[self._palette_number], self._color_squares):
+        for color_index, color_square in zip(
+            self._palette_group[self._palette_number], self._color_squares
+        ):
             color_square.set_color(color_index)
 
 
@@ -155,9 +167,13 @@ class ColorSquare(QLabel):
     def select(self, selected):
         if selected:
             if self.color.lightnessF() < 0.25:
-                self.setStyleSheet("border-color: rgb(255, 255, 255); border-width: 2px; border-style: solid")
+                self.setStyleSheet(
+                    "border-color: rgb(255, 255, 255); border-width: 2px; border-style: solid"
+                )
             else:
-                self.setStyleSheet("border-color: rgb(0, 0, 0); border-width: 2px; border-style: solid")
+                self.setStyleSheet(
+                    "border-color: rgb(0, 0, 0); border-width: 2px; border-style: solid"
+                )
         else:
             rgb = self.color.getRgb()
             self.setStyleSheet(
@@ -223,7 +239,9 @@ class ColorTable(QDialog):
 
     def _on_button(self, button: QAbstractButton):
         if button is self.buttons.button(QDialogButtonBox.Ok):  # ok button
-            color_index = self.color_table_layout.indexOf(self._currently_selected_square)
+            color_index = self.color_table_layout.indexOf(
+                self._currently_selected_square
+            )
 
             self.selected_color_index = color_index
             self.accept()
@@ -246,18 +264,22 @@ class SidePalette(QWidget):
 
         self.update()
 
-        self.setWhatsThis(_(
-            "<b>Object Palettes</b><br/>"
-            "This shows the current palette group of the level, which can be changed in the level header "
-            "editor.<br/>"
-            "By clicking on the individual colors, you can change them.<br/><br/>"
-            ""
-            "Note: The first color (the left most one) is always the same among all 4 palettes."
-        ))
+        self.setWhatsThis(
+            _(
+                "<b>Object Palettes</b><br/>"
+                "This shows the current palette group of the level, which can be changed in the level header "
+                "editor.<br/>"
+                "By clicking on the individual colors, you can change them.<br/><br/>"
+                ""
+                "Note: The first color (the left most one) is always the same among all 4 palettes."
+            )
+        )
 
     @property
     def palette_group(self):
-        return load_palette_group(self.level_ref.object_set_number, self.level_ref.object_palette_index)
+        return load_palette_group(
+            self.level_ref.object_set_number, self.level_ref.object_palette_index
+        )
 
     @property
     def undo_stack(self) -> QUndoStack:
@@ -265,7 +287,9 @@ class SidePalette(QWidget):
 
     def _setup(self):
         for palette_no in range(PALETTES_PER_PALETTES_GROUP):
-            widget = PaletteWidget(self.level_ref, self.level_ref.object_palette_index, palette_no)
+            widget = PaletteWidget(
+                self.level_ref, self.level_ref.object_palette_index, palette_no
+            )
             widget.color_changed.connect(self.on_color_change(palette_no))
             widget.color_committed.connect(self.on_color_commit(palette_no))
             widget.clickable = True

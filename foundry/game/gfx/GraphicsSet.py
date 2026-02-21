@@ -117,7 +117,9 @@ class GraphicsSet:
             # cycle through the second page containing the animated tiles for level objects
             page_1 = self._data[0 : 2 * CHR_ROM_SEGMENT_SIZE]
 
-            start = 2 * CHR_ROM_SEGMENT_SIZE + self.anim_frame * 2 * CHR_ROM_SEGMENT_SIZE
+            start = (
+                2 * CHR_ROM_SEGMENT_SIZE + self.anim_frame * 2 * CHR_ROM_SEGMENT_SIZE
+            )
             end = 2 * CHR_ROM_SEGMENT_SIZE + start + 2 * CHR_ROM_SEGMENT_SIZE
 
             page_2 = self._data[start:end]
@@ -128,7 +130,9 @@ class GraphicsSet:
         for segment in segments:
             self._read_in_chr_rom_segment(segment, self._data)
 
-    def _heuristic_bg_pages(self, bg_page_bytes: bytes, fallback_addr: int) -> bytearray:
+    def _heuristic_bg_pages(
+        self, bg_page_bytes: bytes, fallback_addr: int
+    ) -> bytearray:
         """Searches through the ROM's PRG030 bank (second-to-last bank) for the main array responsible
         for rendering the correct graphics. Currently the heuristics in order of precedence are:
 

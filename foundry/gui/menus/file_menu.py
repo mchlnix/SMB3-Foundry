@@ -101,7 +101,11 @@ class FileMenu(QMenu):
             self.on_fns_import()
 
     def on_open_level_asm(self):
-        if not (pathname := load_asm_filename(_("Level ASM"), self.settings.value("editor/default dir path"))):
+        if not (
+            pathname := load_asm_filename(
+                _("Level ASM"), self.settings.value("editor/default dir path")
+            )
+        ):
             return
 
         load_asm_level(pathname, self.level_ref.level)
@@ -128,7 +132,12 @@ class FileMenu(QMenu):
         save_asm(what, pathname, asm)
 
     def on_save_m3l(self):
-        suggested_file = self.settings.value("editor/default dir path") + "/" + self.level_ref.name + ".m3l"
+        suggested_file = (
+            self.settings.value("editor/default dir path")
+            + "/"
+            + self.level_ref.name
+            + ".m3l"
+        )
 
         if not (pathname := save_m3l_filename(suggested_file)):
             return
@@ -145,7 +154,9 @@ class FileMenu(QMenu):
         try:
             QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
 
-            absolute_fns_path = make_fns_file_absolute(Path(open_dialog.fns_path), Path(open_dialog.asm_path))
+            absolute_fns_path = make_fns_file_absolute(
+                Path(open_dialog.fns_path), Path(open_dialog.asm_path)
+            )
 
             update_global_offsets(absolute_fns_path)
 
@@ -166,4 +177,6 @@ class FileMenu(QMenu):
         if self.level_ref:
             self.level_ref.data_changed.emit()
 
-        QMessageBox.information(NO_PARENT, _("Update complete"), _("Successfully updated the ASM globals."))
+        QMessageBox.information(
+            NO_PARENT, _("Update complete"), _("Successfully updated the ASM globals.")
+        )

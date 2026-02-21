@@ -39,7 +39,9 @@ assert len(color_data) == NES_COLOR_COUNT * BYTES_IN_COLOR, (
     NES_COLOR_COUNT * BYTES_IN_COLOR,
 )
 
-NESPalette = [QColor(r, g, b) for r, g, b, __ in grouper(color_data, 4, incomplete="strict")]
+NESPalette = [
+    QColor(r, g, b) for r, g, b, __ in grouper(color_data, 4, incomplete="strict")
+]
 
 
 @dataclass(eq=False)
@@ -57,7 +59,9 @@ class PaletteGroup:
     changed = False
 
     def restore(self):
-        new_palette_group = load_palette_group(self._object_set, self.index, use_cache=False)
+        new_palette_group = load_palette_group(
+            self._object_set, self.index, use_cache=False
+        )
 
         self._palettes = new_palette_group._palettes
 
@@ -80,7 +84,9 @@ class PaletteGroup:
         if rom is None:
             rom = ROM()
 
-        palette_offset_position = self._offset + (self._object_set * PALETTE_OFFSET_SIZE)
+        palette_offset_position = self._offset + (
+            self._object_set * PALETTE_OFFSET_SIZE
+        )
         palette_offset = rom.little_endian(palette_offset_position)
 
         palette_address = PALETTE_BASE_ADDRESS + palette_offset
@@ -97,7 +103,9 @@ class PaletteGroup:
 _palette_group_cache: dict[tuple[int, int], PaletteGroup] = {}
 
 
-def load_palette_group(object_set: int, palette_group_index: int, use_cache=True) -> PaletteGroup:
+def load_palette_group(
+    object_set: int, palette_group_index: int, use_cache=True
+) -> PaletteGroup:
     """
     Basically does, what the Setup_PalData routine does.
 
@@ -116,22 +124,36 @@ def load_palette_group(object_set: int, palette_group_index: int, use_cache=True
     for palette_offset_list in (Constants.Palette_By_Tileset, PALETTE_OFFSET_LIST_JP):
         # ignore ValueError when we don't find valid palette data, might be the other version
         with suppress(ValueError):
-            palettes = _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list)
-            _palette_group_cache[key] = PaletteGroup(object_set, palette_group_index, palette_offset_list, palettes)
+            palettes = _load_palettes_from_rom(
+                object_set, palette_group_index, palette_offset_list
+            )
+            _palette_group_cache[key] = PaletteGroup(
+                object_set, palette_group_index, palette_offset_list, palettes
+            )
 
             return _palette_group_cache[key]
     else:
-        raise ValueError(_("Couldn't find valid Palette data at offsets for stock US or stock JP ROM."))
+        raise ValueError(
+            _(
+                "Couldn't find valid Palette data at offsets for stock US or stock JP ROM."
+            )
+        )
 
 
-def _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list_address: int):
+def _load_palettes_from_rom(
+    object_set, palette_group_index, palette_offset_list_address: int
+):
     rom = ROM()
 
-    palette_offset_position = palette_offset_list_address + (object_set * PALETTE_OFFSET_SIZE)
+    palette_offset_position = palette_offset_list_address + (
+        object_set * PALETTE_OFFSET_SIZE
+    )
     palette_offset = rom.little_endian(palette_offset_position)
 
     palette_address = PALETTE_BASE_ADDRESS + palette_offset
-    palette_address += palette_group_index * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
+    palette_address += (
+        palette_group_index * PALETTES_PER_PALETTES_GROUP * COLORS_PER_PALETTE
+    )
 
     palettes = []
 
@@ -141,8 +163,16 @@ def _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list
         palette_address += COLORS_PER_PALETTE
 
     # There are 64 colors in the NES's palette. Any other value indicates, that we did not find the right palette data
-    if not all(color_index in range(NES_COLOR_COUNT) for palette in palettes for color_index in palette):
-        raise ValueError(_("Found invalid Palette index value. Probably didn't find correct Palette Data in ROM."))
+    if not all(
+        color_index in range(NES_COLOR_COUNT)
+        for palette in palettes
+        for color_index in palette
+    ):
+        raise ValueError(
+            _(
+                "Found invalid Palette index value. Probably didn't find correct Palette Data in ROM."
+            )
+        )
 
     return palettes
 

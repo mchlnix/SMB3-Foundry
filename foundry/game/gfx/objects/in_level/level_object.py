@@ -227,9 +227,13 @@ class LevelObject(InLevelObject):
 
             self._draw_block(painter, block_index, x, y, block_length, transparent)
 
-    def _draw_block(self, painter: QPainter, block_index, x, y, block_length, transparent):
+    def _draw_block(
+        self, painter: QPainter, block_index, x, y, block_length, transparent
+    ):
         if block_index not in self.block_cache:
-            self.block_cache[block_index] = get_block(block_index, self.palette_group, self.graphics_set, self.tsa_data)
+            self.block_cache[block_index] = get_block(
+                block_index, self.palette_group, self.graphics_set, self.tsa_data
+            )
 
         self.block_cache[block_index].graphics_set.anim_frame = self.anim_frame
         self.block_cache[block_index].draw(
@@ -259,7 +263,10 @@ class LevelObject(InLevelObject):
 
         self._render()
 
-        if self.generator_type in (GeneratorType.PYRAMID_TO_GROUND, GeneratorType.PYRAMID_2):
+        if self.generator_type in (
+            GeneratorType.PYRAMID_TO_GROUND,
+            GeneratorType.PYRAMID_2,
+        ):
             # rendered_base_x is dependent on the height, so after the initial render we need to adjust it based on that
 
             dx = int(x) - self.rendered_base_x
@@ -527,14 +534,17 @@ class LevelObject(InLevelObject):
             "name": self.name,
             "hex": self.data.hex(),
             "x": self.x_position,
-            "y": self.y_position
+            "y": self.y_position,
         }
 
     def __eq__(self, other):
         if not isinstance(other, LevelObject):
             return False
         else:
-            return self.to_bytes() == other.to_bytes() and self.index_in_level == other.index_in_level
+            return (
+                self.to_bytes() == other.to_bytes()
+                and self.index_in_level == other.index_in_level
+            )
 
     def __lt__(self, other):
         return self.index_in_level < other.index_in_level

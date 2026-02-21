@@ -34,7 +34,9 @@ class NESMemory(list):
     def _load_bank(self, prg_index: int, offset: int):
         prg_bank_position = BASE_OFFSET + prg_index * PRG_BANK_SIZE
 
-        self[offset : offset + PRG_BANK_SIZE] = self.rom.read(prg_bank_position, PRG_BANK_SIZE)
+        self[offset : offset + PRG_BANK_SIZE] = self.rom.read(
+            prg_bank_position, PRG_BANK_SIZE
+        )
 
     def add_read_observer(self, address_range: range, callback: Callable):
         self._read_observers[address_range] = callback

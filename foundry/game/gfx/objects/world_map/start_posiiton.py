@@ -23,7 +23,9 @@ class StartPosition(MapObject):
     def draw(self, painter: QPainter, block_length, transparent):
         x, y = self.get_position()
 
-        painter.drawImage(QPoint(x, y) * block_length, mario_png.scaled(block_length, block_length))
+        painter.drawImage(
+            QPoint(x, y) * block_length, mario_png.scaled(block_length, block_length)
+        )
 
     def change_type(self, new_type):
         pass

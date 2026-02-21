@@ -21,7 +21,11 @@ class ObjectSetSelector(QDialog):
 
         layout = QVBoxLayout(self)
 
-        description = QLabel(_("Choose the object set for this new level.\nThis cannot be changed afterwards.\n"))
+        description = QLabel(
+            _(
+                "Choose the object set for this new level.\nThis cannot be changed afterwards.\n"
+            )
+        )
         layout.addWidget(description)
 
         self.object_set_dropdown = QComboBox()

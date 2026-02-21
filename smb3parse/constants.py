@@ -31,10 +31,14 @@ PLAINS_LEVEL_DATA_BANK_INDEX = 15
 
 VANILLA_PRG_BANK_COUNT = 32
 
-STOCK_LEVEL_BG_PAGES1_BYTES = unhexlify(b"0008101c0c58585c5830346e18381c242c5c586c683428")
+STOCK_LEVEL_BG_PAGES1_BYTES = unhexlify(
+    b"0008101c0c58585c5830346e18381c242c5c586c683428"
+)
 """The Level_BG_Pages1 byte array from the stock ROM"""
 
-STOCK_LEVEL_BG_PAGES2_BYTES = unhexlify(b"00606060603e605e60606a606060605e2e5e6060607060")
+STOCK_LEVEL_BG_PAGES2_BYTES = unhexlify(
+    b"00606060603e605e60606a606060605e2e5e6060607060"
+)
 """The Level_BG_Pages2 byte array from the stock ROM"""
 
 TILE_LEVEL_1 = 0x03
@@ -404,16 +408,22 @@ class _ClassVarRedirect(type):
 
     def __init__(cls, name, bases, attrs):
         if not hasattr(cls, "_redirect") or not isinstance(cls._redirect, dict):
-            raise ValueError("Class must have a dictionary class variable named '_redirect'")
+            raise ValueError(
+                "Class must have a dictionary class variable named '_redirect'"
+            )
 
         for annotation in cls.__annotations__:
             if annotation not in cls._redirect:
-                raise ValueError(f"'{annotation}' must have an entry in its class's _redirect dictionary")
+                raise ValueError(
+                    f"'{annotation}' must have an entry in its class's _redirect dictionary"
+                )
 
             class_var = cls._redirect[annotation]
 
             if not hasattr(cls, class_var):
-                raise ValueError(f"Didn't find class variable '{class_var}' for annotation '{annotation}'")
+                raise ValueError(
+                    f"Didn't find class variable '{class_var}' for annotation '{annotation}'"
+                )
 
         super(_ClassVarRedirect, cls).__init__(name, bases, attrs)
 

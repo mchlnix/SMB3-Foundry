@@ -13,7 +13,9 @@ from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
 test_rom_path = root_dir / "roms" / "SMB3.nes"
 
-assert test_rom_path.exists(), f"The test suite needs a SMB3(U) Rom at '{test_rom_path}' to run."
+assert (
+    test_rom_path.exists()
+), f"The test suite needs a SMB3(U) Rom at '{test_rom_path}' to run."
 
 level_1_1_object_address = 0x1FB92
 level_1_1_enemy_address = 0xC537
@@ -54,7 +56,9 @@ def compare_images(image_name: str, ref_image_path: str, gen_image: QPixmap):
             # accepted and overwrite ref
             gen_image.toImage().save(ref_image_path)
         elif result == ApprovalDialog.Ignore:
-            pytest.skip(f"{image_name} did not look like the reference, but was ignored.")
+            pytest.skip(
+                f"{image_name} did not look like the reference, but was ignored."
+            )
         else:
             pass
 
@@ -68,9 +72,15 @@ def compare_images(image_name: str, ref_image_path: str, gen_image: QPixmap):
 def main_window(qtbot, rom):
     # mock the rom loading, since it is a modal dialog. the rom is loaded in conftest.py
     setattr(FoundryMainWindow, "on_open_rom", lambda *_: None)
-    setattr(FoundryMainWindow, "showMaximized", lambda _: None)  # don't open automatically
-    setattr(FoundryMainWindow, "safe_to_change", lambda _: True)  # don't ask for confirmation on changed level
-    setattr(FoundryMainWindow, "check_for_update_on_startup", lambda _: True)  # don't check for update
+    setattr(
+        FoundryMainWindow, "showMaximized", lambda _: None
+    )  # don't open automatically
+    setattr(
+        FoundryMainWindow, "safe_to_change", lambda _: True
+    )  # don't ask for confirmation on changed level
+    setattr(
+        FoundryMainWindow, "check_for_update_on_startup", lambda _: True
+    )  # don't check for update
 
     main_window = FoundryMainWindow()
     main_window.update_level(

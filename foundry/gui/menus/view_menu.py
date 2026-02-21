@@ -17,36 +17,56 @@ class ViewMenu(QMenu):
         # TRANSLATORS: Ampersand designates keyboard shortcut key
         self._grid_action = self._make_action(_("&Grid lines"), "level view/draw_grid")
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self._coord_action = self._make_action(_("&Coordinates"), "level view/draw_grid_coordinates")
+        self._coord_action = self._make_action(
+            _("&Coordinates"), "level view/draw_grid_coordinates"
+        )
 
         self.addSeparator()
 
         # TRANSLATORS: Ampersand designates keyboard shortcut key
         self._mario_action = self._make_action(_("&Mario"), "level view/draw_mario")
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self._jumps_action = self._make_action(_("&Jumps on objects"), "level view/draw_jump_on_objects")
+        self._jumps_action = self._make_action(
+            _("&Jumps on objects"), "level view/draw_jump_on_objects"
+        )
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self._items_action = self._make_action(_("&Items in blocks"), "level view/draw_items_in_blocks")
+        self._items_action = self._make_action(
+            _("&Items in blocks"), "level view/draw_items_in_blocks"
+        )
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self._invis_action = self._make_action(_("I&nvisible items"), "level view/draw_invisible_items")
+        self._invis_action = self._make_action(
+            _("I&nvisible items"), "level view/draw_invisible_items"
+        )
 
         self.addSeparator()
 
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self._auto_scroll_action = self._make_action(_("&Autoscroll Path"), "level view/draw_autoscroll")
+        self._auto_scroll_action = self._make_action(
+            _("&Autoscroll Path"), "level view/draw_autoscroll"
+        )
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self._jump_zones_action = self._make_action(_("Jump &Zones"), "level view/draw_jumps")
+        self._jump_zones_action = self._make_action(
+            _("Jump &Zones"), "level view/draw_jumps"
+        )
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self._resize_action = self._make_action(_("&Resize Type"), "level view/draw_expansion")
+        self._resize_action = self._make_action(
+            _("&Resize Type"), "level view/draw_expansion"
+        )
 
         self.addSeparator()
 
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self._anim_action = self._make_action(_("Show Block Animation"), "level view/block_animation")
+        self._anim_action = self._make_action(
+            _("Show Block Animation"), "level view/block_animation"
+        )
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self._trans_action = self._make_action(_("&Block Transparency"), "level view/block_transparency")
+        self._trans_action = self._make_action(
+            _("&Block Transparency"), "level view/block_transparency"
+        )
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self._special_bg_action = self._make_action(_("Default Background Tiles"), "level view/special_background")
+        self._special_bg_action = self._make_action(
+            _("Default Background Tiles"), "level view/special_background"
+        )
 
         self.addSeparator()
 
@@ -102,9 +122,7 @@ class ViewMenu(QMenu):
         self.exec_()
 
     def _on_screenshot(self):
-        recommended_file = (
-            f"{self.settings.value('editor/default dir path')}/{ROM.name} - {self._level_view.level_ref.name}.png"
-        )
+        recommended_file = f"{self.settings.value('editor/default dir path')}/{ROM.name} - {self._level_view.level_ref.name}.png"
 
         pathname, __ = QFileDialog.getSaveFileName(
             self,

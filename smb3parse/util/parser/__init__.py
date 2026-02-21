@@ -63,11 +63,18 @@ class FoundLevel:
             data["enemy_data_length"],
             data["found_in_world"],
             data["found_as_jump"],
-            data.get("is_world_specific", data.get("is_generic", False)),  # backwards compatible
+            data.get(
+                "is_world_specific", data.get("is_generic", False)
+            ),  # backwards compatible
         )
 
     @staticmethod
-    def from_record(record: "FoundLevelRecord", world_num: int, object_data_len: int, enemy_data_len: int):
+    def from_record(
+        record: "FoundLevelRecord",
+        world_num: int,
+        object_data_len: int,
+        enemy_data_len: int,
+    ):
         return FoundLevel(
             [record.level_address_offset],
             [record.enemy_address_offset],
@@ -122,7 +129,9 @@ def gen_levels_in_rom(
     levels_by_address: dict[int, FoundLevel] = {}
 
     start = time.time()
-    was_cancelled = False  # whether this generator was cancelled by the user from the outside
+    was_cancelled = (
+        False  # whether this generator was cancelled by the user from the outside
+    )
 
     # go through all worlds, except the warp world, to search for levels
     for world_num in range(1, WORLD_COUNT):
@@ -132,7 +141,8 @@ def gen_levels_in_rom(
 
         # add all levels found in the world map via level pointers
         found_level_records: list[FoundLevelRecord] = [
-            (FoundLevelRecord.from_level_pointer(lp, True, False, False)) for lp in world.level_pointers
+            (FoundLevelRecord.from_level_pointer(lp, True, False, False))
+            for lp in world.level_pointers
         ]
 
         # add all the static levels (airship, etc.)
@@ -154,7 +164,12 @@ def gen_levels_in_rom(
             if record.object_set == SPADE_BONUS_OBJECT_SET:
                 continue
 
-            print(f"W{world.number}", hex(record.level_address), hex(record.enemy_address), record.object_set)
+            print(
+                f"W{world.number}",
+                hex(record.level_address),
+                hex(record.enemy_address),
+                record.object_set,
+            )
 
             # traverse Jump Destinations by following the offsets in the header, until finding a known level or dead end
             was_cancelled, levels_in_world = yield from _follow_jump_destinations(
@@ -201,7 +216,10 @@ def _follow_jump_destinations(
             break
 
         found_level = FoundLevel.from_record(
-            record, world.number, parsed_level.object_data_length, parsed_level.enemy_data_length
+            record,
+            world.number,
+            parsed_level.object_data_length,
+            parsed_level.enemy_data_length,
         )
 
         # add the newly found level to the list of known levels
@@ -218,7 +236,10 @@ def _follow_jump_destinations(
         )
 
         # no jump destination set, even though a jump object was found
-        if cur_level_header.jump_level_offset == 0x0 or cur_level_header.jump_object_set_number == WORLD_MAP_OBJECT_SET:
+        if (
+            cur_level_header.jump_level_offset == 0x0
+            or cur_level_header.jump_object_set_number == WORLD_MAP_OBJECT_SET
+        ):
             break
 
         # build record for new jump destination
@@ -254,7 +275,9 @@ def _follow_jump_destinations(
     return was_cancelled, levels_in_world
 
 
-def _sort_levels_by_object_set(levels_by_address: dict[int, FoundLevel]) -> defaultdict[Any, list]:
+def _sort_levels_by_object_set(
+    levels_by_address: dict[int, FoundLevel]
+) -> defaultdict[Any, list]:
     levels_by_object_set = defaultdict(list)
 
     for level_address in sorted(levels_by_address.keys()):
@@ -263,7 +286,10 @@ def _sort_levels_by_object_set(levels_by_address: dict[int, FoundLevel]) -> defa
     return levels_by_object_set
 
 
-def _print_levels_by_object_set(levels_by_address: dict[int, FoundLevel], levels_by_object_set: defaultdict[int, list]):
+def _print_levels_by_object_set(
+    levels_by_address: dict[int, FoundLevel],
+    levels_by_object_set: defaultdict[int, list],
+):
     total_level_count = 0
 
     for object_set_num, levels_addresses in sorted(levels_by_object_set.items()):
@@ -274,7 +300,9 @@ def _print_levels_by_object_set(levels_by_address: dict[int, FoundLevel], levels
             f"{len(levels_by_address[level_address].level_offset_positions)}"
             for level_address in sorted(levels_addresses)
         ]
-        print(object_set_num, ": ", len(levels_addresses), ", ".join(address_and_sources))
+        print(
+            object_set_num, ": ", len(levels_addresses), ", ".join(address_and_sources)
+        )
 
     print("---------------------", total_level_count, "------------------------")
 
@@ -311,7 +339,9 @@ def _print_missing_stock_levels(levels_by_object_set: defaultdict[Any, list]):
     print(missing, "stock levels are missing")
 
     for object_set_num in range(PLAINS_OBJECT_SET, UNDERGROUND_OBJECT_SET + 1):
-        missing_by_object_set = set(levels_by_object_set[object_set_num]).difference(missing_levels[object_set_num])
+        missing_by_object_set = set(levels_by_object_set[object_set_num]).difference(
+            missing_levels[object_set_num]
+        )
         print(object_set_num, apply(hex, missing_by_object_set))
 
 
@@ -334,7 +364,9 @@ def _add_new_origin_to_level(found_level: FoundLevel, record: FoundLevelRecord):
     found_level.is_world_specific |= record.is_world_specific
 
 
-def _add_static_levels_for_world(world: WorldMap, level_records: list[FoundLevelRecord]):
+def _add_static_levels_for_world(
+    world: WorldMap, level_records: list[FoundLevelRecord]
+):
     # add airship
     level_records.append(_airship_level_for_world(world))
 

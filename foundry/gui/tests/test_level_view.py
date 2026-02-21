@@ -22,7 +22,9 @@ def level_view(main_window, qtbot):
         ((233, 409), 0x72, 0x00, ENEMY_ITEM_OBJECT_SET),  # goomba
     ],
 )
-def test_object_at(level_view: LevelView, qtbot, coordinates, obj_index, domain, object_set_number):
+def test_object_at(
+    level_view: LevelView, qtbot, coordinates, obj_index, domain, object_set_number
+):
     screen_coordinates = coordinates  # in pixels
 
     level_object = level_view.object_at(QPoint(*screen_coordinates))
@@ -79,8 +81,12 @@ def test_level_smaller(main_window, level_view):
         (233, 409),
     ],  # background symbols  # background cloud  # goomba
 )
-@pytest.mark.parametrize("wheel_delta, type_change", [(10, 1), (-10, -1)])  # scroll wheel up  # scroll wheel down
-def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_window, qtbot):
+@pytest.mark.parametrize(
+    "wheel_delta, type_change", [(10, 1), (-10, -1)]
+)  # scroll wheel up  # scroll wheel down
+def test_wheel_event(
+    scroll_amount, coordinates, wheel_delta, type_change, main_window, qtbot
+):
     # GIVEN a level view and a cursor position over an object
     x, y = coordinates
 
@@ -124,12 +130,18 @@ def test_select_one_of_same_block_on_click(level_view: LevelView, qtbot):
     obj_pos = Position(10, 10, 0)
 
     # 1,0x04,0x04,1,1,<4>,9,0,0,'?' with Single coin
-    obj_bg = level_view.level_ref.level.add_object(domain=0x01, object_index=0x04, pos=obj_pos, length=3, index=100)
-    obj_fg = level_view.level_ref.level.add_object(domain=0x01, object_index=0x04, pos=obj_pos, length=3, index=101)
+    obj_bg = level_view.level_ref.level.add_object(
+        domain=0x01, object_index=0x04, pos=obj_pos, length=3, index=100
+    )
+    obj_fg = level_view.level_ref.level.add_object(
+        domain=0x01, object_index=0x04, pos=obj_pos, length=3, index=101
+    )
 
     assert None not in [obj_bg, obj_fg]
     assert not level_view.get_selected_objects()
 
-    qtbot.mouseClick(level_view, Qt.LeftButton, pos=level_view.from_level_point(obj_pos))
+    qtbot.mouseClick(
+        level_view, Qt.LeftButton, pos=level_view.from_level_point(obj_pos)
+    )
 
     assert level_view.get_selected_objects() == [obj_fg]

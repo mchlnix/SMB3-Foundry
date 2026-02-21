@@ -53,7 +53,13 @@ class PowerupEntry:
     has_p_wing: bool
 
     def to_tuple(self):
-        return self.description, self.png_x, self.png_y, self.power_up_code, self.has_p_wing
+        return (
+            self.description,
+            self.png_x,
+            self.png_y,
+            self.power_up_code,
+            self.has_p_wing,
+        )
 
     def __iter__(self):
         return iter(self.to_tuple())
@@ -99,14 +105,18 @@ class SettingsDialog(CustomDialog):
         online_box.setLayout(layout)
 
         self._update_check_box = QCheckBox(_("Enabled"))
-        self._update_check_box.setChecked(self.settings.value("editor/update_on_startup"))
+        self._update_check_box.setChecked(
+            self.settings.value("editor/update_on_startup")
+        )
         self._update_check_box.toggled.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
                 _("Check for Updates on Startup:"),
                 self._update_check_box,
-                tooltip=_("Checks the Repository for a new Version when the Editor is started."),
+                tooltip=_(
+                    "Checks the Repository for a new Version when the Editor is started."
+                ),
             )
         )
 
@@ -118,19 +128,25 @@ class SettingsDialog(CustomDialog):
         mouse_box.setLayout(layout)
 
         self._scroll_check_box = QCheckBox(_("Enabled"))
-        self._scroll_check_box.setChecked(self.settings.value("editor/object_scroll_enabled"))
+        self._scroll_check_box.setChecked(
+            self.settings.value("editor/object_scroll_enabled")
+        )
         self._scroll_check_box.toggled.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
                 _("Scroll objects with mouse wheel:"),
                 self._scroll_check_box,
-                tooltip=_("Select an object and scroll up and down to change its type."),
+                tooltip=_(
+                    "Select an object and scroll up and down to change its type."
+                ),
             )
         )
 
         self._tooltip_check_box = QCheckBox(_("Enabled"))
-        self._tooltip_check_box.setChecked(self.settings.value("level view/object_tooltip_enabled"))
+        self._tooltip_check_box.setChecked(
+            self.settings.value("level view/object_tooltip_enabled")
+        )
         self._tooltip_check_box.toggled.connect(self._update_settings)
 
         layout.addLayout(
@@ -147,8 +163,12 @@ class SettingsDialog(CustomDialog):
         self.lmb_radio = QRadioButton(_("Left Mouse Button"))
         rmb_radio = QRadioButton(_("Right Mouse Button"))
 
-        self.lmb_radio.setChecked(self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK)
-        rmb_radio.setChecked(self.settings.value("editor/resize_mode") == RESIZE_RIGHT_CLICK)
+        self.lmb_radio.setChecked(
+            self.settings.value("editor/resize_mode") == RESIZE_LEFT_CLICK
+        )
+        rmb_radio.setChecked(
+            self.settings.value("editor/resize_mode") == RESIZE_RIGHT_CLICK
+        )
 
         self.lmb_radio.toggled.connect(self._update_settings)
 
@@ -156,7 +176,9 @@ class SettingsDialog(CustomDialog):
         radio_group.addButton(self.lmb_radio)
         radio_group.addButton(rmb_radio)
 
-        resize_layout = label_and_widget(_("Object resize mode:"), self.lmb_radio, rmb_radio)
+        resize_layout = label_and_widget(
+            _("Object resize mode:"), self.lmb_radio, rmb_radio
+        )
         layout.addLayout(resize_layout)
 
         # GUI Section
@@ -167,8 +189,12 @@ class SettingsDialog(CustomDialog):
         self.gui_box.setLayout(layout)
 
         self.ask_for_level_management_check_box = QCheckBox(_("Enabled"))
-        self.ask_for_level_management_check_box.setChecked(self.settings.value("editor/ask_for_level_management"))
-        self.ask_for_level_management_check_box.stateChanged.connect(self._update_settings)
+        self.ask_for_level_management_check_box.setChecked(
+            self.settings.value("editor/ask_for_level_management")
+        )
+        self.ask_for_level_management_check_box.stateChanged.connect(
+            self._update_settings
+        )
 
         self.gui_box.layout().addLayout(
             label_and_widget(
@@ -182,11 +208,14 @@ class SettingsDialog(CustomDialog):
         )
 
         self.level_highlight_check_box = QCheckBox(_("Enabled"))
-        self.level_highlight_check_box.setChecked(self.settings.value("world view/show level pointers"))
+        self.level_highlight_check_box.setChecked(
+            self.settings.value("world view/show level pointers")
+        )
         self.level_highlight_check_box.stateChanged.connect(self._update_settings)
 
         level_highlight_layout = label_and_widget(
-            _("Highlight Levels in LevelSelector World Maps:"), self.level_highlight_check_box
+            _("Highlight Levels in LevelSelector World Maps:"),
+            self.level_highlight_check_box,
         )
         self.gui_box.layout().addLayout(level_highlight_layout)
 
@@ -196,7 +225,10 @@ class SettingsDialog(CustomDialog):
             gui_style = gui_style.capitalize()
 
             style_radio_button = QRadioButton(gui_style)
-            style_radio_button.setChecked(self.settings.value("editor/gui_style") == GUI_STYLE[gui_style.upper()]())
+            style_radio_button.setChecked(
+                self.settings.value("editor/gui_style")
+                == GUI_STYLE[gui_style.upper()]()
+            )
             style_radio_button.toggled.connect(self._update_settings)
 
             style_choices.append(style_radio_button)
@@ -233,7 +265,9 @@ class SettingsDialog(CustomDialog):
 
         self.emulator_command_input = QLineEdit(self)
         self.emulator_command_input.setPlaceholderText(_("Path to emulator"))
-        self.emulator_command_input.setText(self.settings.value("editor/instaplay_emulator"))
+        self.emulator_command_input.setText(
+            self.settings.value("editor/instaplay_emulator")
+        )
 
         self.emulator_command_input.textChanged.connect(self._update_settings)
 
@@ -242,7 +276,9 @@ class SettingsDialog(CustomDialog):
 
         self.command_arguments_input = QLineEdit(self)
         self.command_arguments_input.setPlaceholderText("%f")
-        self.command_arguments_input.setText(self.settings.value("editor/instaplay_arguments"))
+        self.command_arguments_input.setText(
+            self.settings.value("editor/instaplay_arguments")
+        )
 
         self.command_arguments_input.textEdited.connect(self._update_settings)
 
@@ -258,7 +294,9 @@ class SettingsDialog(CustomDialog):
         command_input_layout.addWidget(self.emulator_path_button)
 
         command_layout.addLayout(command_input_layout)
-        command_layout.addWidget(QLabel(_("Command arguments (%f will be replaced with rom path):")))
+        command_layout.addWidget(
+            QLabel(_("Command arguments (%f will be replaced with rom path):"))
+        )
         command_layout.addWidget(self.command_arguments_input)
         command_layout.addWidget(QLabel(_("Command used to play the rom:")))
         command_layout.addWidget(self.command_label)
@@ -273,7 +311,9 @@ class SettingsDialog(CustomDialog):
 
             self.powerup_combo_box.addItem(powerup_icon, name)
 
-        self.powerup_combo_box.setCurrentIndex(self.settings.value("editor/default_powerup"))
+        self.powerup_combo_box.setCurrentIndex(
+            self.settings.value("editor/default_powerup")
+        )
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
 
         self.starman_checkbox = QCheckBox()
@@ -289,10 +329,16 @@ class SettingsDialog(CustomDialog):
         command_layout.addLayout(powerup_layout)
 
         self.skip_title_screen_cb = QCheckBox(_("Enabled"))
-        self.skip_title_screen_cb.setChecked(self.settings.value("editor/instaplay_skip_title_screen"))
+        self.skip_title_screen_cb.setChecked(
+            self.settings.value("editor/instaplay_skip_title_screen")
+        )
         self.skip_title_screen_cb.stateChanged.connect(self._update_settings)
 
-        command_layout.addLayout(label_and_widget(_("Instaplay skips Title Screen"), self.skip_title_screen_cb))
+        command_layout.addLayout(
+            label_and_widget(
+                _("Instaplay skips Title Screen"), self.skip_title_screen_cb
+            )
+        )
 
         # -----------------------------------------------
 
@@ -311,17 +357,28 @@ class SettingsDialog(CustomDialog):
         )
 
     def _update_settings(self, _=None):
-        self.settings.setValue("editor/instaplay_emulator", self.emulator_command_input.text())
-        self.settings.setValue("editor/instaplay_arguments", self.command_arguments_input.text())
-        self.settings.setValue("editor/instaplay_skip_title_screen", self.skip_title_screen_cb.isChecked())
+        self.settings.setValue(
+            "editor/instaplay_emulator", self.emulator_command_input.text()
+        )
+        self.settings.setValue(
+            "editor/instaplay_arguments", self.command_arguments_input.text()
+        )
+        self.settings.setValue(
+            "editor/instaplay_skip_title_screen", self.skip_title_screen_cb.isChecked()
+        )
 
         if self.lmb_radio.isChecked():
             self.settings.setValue("editor/resize_mode", RESIZE_LEFT_CLICK)
         else:
             self.settings.setValue("editor/resize_mode", RESIZE_RIGHT_CLICK)
 
-        self.settings.setValue("editor/ask_for_level_management", self.ask_for_level_management_check_box.isChecked())
-        self.settings.setValue("world view/show level pointers", self.level_highlight_check_box.isChecked())
+        self.settings.setValue(
+            "editor/ask_for_level_management",
+            self.ask_for_level_management_check_box.isChecked(),
+        )
+        self.settings.setValue(
+            "world view/show level pointers", self.level_highlight_check_box.isChecked()
+        )
 
         # set up style sheets
         for child_widget in self.gui_box.children():
@@ -337,16 +394,28 @@ class SettingsDialog(CustomDialog):
 
         self.settings.setValue("editor/default dir", self.path_dropdown.currentText())
         if self.path_dropdown.currentText() == "Custom":
-            self.settings.setValue("editor/custom default dir path", self.default_dir_label.text())
+            self.settings.setValue(
+                "editor/custom default dir path", self.default_dir_label.text()
+            )
 
         self.settings.setValue("editor/default dir path", self.default_dir_label.text())
 
-        self.settings.setValue("editor/update_on_startup", self._update_check_box.isChecked())
-        self.settings.setValue("editor/object_scroll_enabled", self._scroll_check_box.isChecked())
-        self.settings.setValue("level view/object_tooltip_enabled", self._tooltip_check_box.isChecked())
+        self.settings.setValue(
+            "editor/update_on_startup", self._update_check_box.isChecked()
+        )
+        self.settings.setValue(
+            "editor/object_scroll_enabled", self._scroll_check_box.isChecked()
+        )
+        self.settings.setValue(
+            "level view/object_tooltip_enabled", self._tooltip_check_box.isChecked()
+        )
 
-        self.settings.setValue("editor/default_powerup", self.powerup_combo_box.currentIndex())
-        self.settings.setValue("editor/powerup_starman", self.starman_checkbox.isChecked())
+        self.settings.setValue(
+            "editor/default_powerup", self.powerup_combo_box.currentIndex()
+        )
+        self.settings.setValue(
+            "editor/powerup_starman", self.starman_checkbox.isChecked()
+        )
 
         self.update()
 
@@ -379,7 +448,9 @@ class SettingsDialog(CustomDialog):
 
     def on_dropdown(self, new_text):
         if new_text == _("Custom"):
-            self.default_dir_label.setText(self.settings.value("editor/custom default dir path"))
+            self.default_dir_label.setText(
+                self.settings.value("editor/custom default dir path")
+            )
         elif new_text in default_dirs:
             self.default_dir_label.setText(default_dirs[new_text])
 
@@ -395,7 +466,9 @@ class SettingsDialog(CustomDialog):
                 Block.SIDE_LENGTH,
             )
         )
-        mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
+        mask = image.createMaskFromColor(
+            QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor
+        )
         image.setAlphaChannel(mask)
 
         pixmap = QPixmap.fromImage(image)

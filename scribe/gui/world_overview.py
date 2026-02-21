@@ -48,7 +48,9 @@ class WorldOverview(TableWidget):
         self.set_headers([_("World Name"), _("Screen Count"), _("Level Count")])
 
         self.setItemDelegateForColumn(0, NoneDelegate(self))
-        self.setItemDelegateForColumn(1, SpinBoxDelegate(self, minimum=1, maximum=4, base=10))
+        self.setItemDelegateForColumn(
+            1, SpinBoxDelegate(self, minimum=1, maximum=4, base=10)
+        )
         self.setItemDelegateForColumn(2, SpinBoxDelegate(self, base=10))
 
         self.update_content()
@@ -131,11 +133,14 @@ class WorldOverview(TableWidget):
             "screens": self.screen_count,
             "maxscreens": GAME_SCREEN_COUNT - 1,
             "levels": self.level_count,
-            "maxlevels": GAME_LEVEL_POINTER_COUNT
+            "maxlevels": GAME_LEVEL_POINTER_COUNT,
         }
 
     def valid(self):
-        return self.screen_count <= GAME_SCREEN_COUNT - 1 and self.level_count <= GAME_LEVEL_POINTER_COUNT
+        return (
+            self.screen_count <= GAME_SCREEN_COUNT - 1
+            and self.level_count <= GAME_LEVEL_POINTER_COUNT
+        )
 
     def finalize(self, undo_stack: QUndoStack):
         if all(not world.changed for world in self.world_data_points):
@@ -147,7 +152,9 @@ class WorldOverview(TableWidget):
 
         undo_stack.push(SaveWorldsOnUndo(self.world_data_points))
 
-        world_dict: dict[int, WorldDataStandIn] = {world.index: world for world in self.world_data_points}
+        world_dict: dict[int, WorldDataStandIn] = {
+            world.index: world for world in self.world_data_points
+        }
 
         first_world = WorldMapData(ROM(), 0)
 
@@ -176,10 +183,14 @@ class WorldOverview(TableWidget):
                 for __ in range(abs(diff)):
                     undo_stack.push(AddLevelPointer(world.data, world_map))
 
-            undo_stack.push(SetStructureBlockAddress(world.data, structure_block_address))
+            undo_stack.push(
+                SetStructureBlockAddress(world.data, structure_block_address)
+            )
             structure_block_address += world.data.structure_block_size
 
-            undo_stack.push(SetTileDataOffset(world.data, tile_data_offset_running_total))
+            undo_stack.push(
+                SetTileDataOffset(world.data, tile_data_offset_running_total)
+            )
             tile_data_offset_running_total += world.data.tile_data_size
 
         undo_stack.push(SaveWorldsOnRedo(self.world_data_points))

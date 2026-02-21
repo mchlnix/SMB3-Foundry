@@ -105,8 +105,12 @@ class BlockPicker(QWidget):
 
         self.level_ref = level_ref
 
-        self.block_bank = BlockBank(self, palette_group_index=level_ref.level.data.palette_index)
-        self.block_bank.status_message_changed.connect(self.window().statusBar().showMessage)
+        self.block_bank = BlockBank(
+            self, palette_group_index=level_ref.level.data.palette_index
+        )
+        self.block_bank.status_message_changed.connect(
+            self.window().statusBar().showMessage
+        )
         self.level_ref.palette_changed.connect(self._update_palette_group)
         self.level_ref.level_changed.connect(self._update_palette_group)
 

@@ -37,13 +37,15 @@ class ObjectDropdown(QComboBox):
         # guard against overly long item descriptions
         self.setMaximumWidth(self.screen().availableSize().width() // 5)
 
-        self.setWhatsThis(_(
-            "<b>Object Dropdown</b><br/>"
-            "Contains all objects and enemies/items, that can be placed in this type of level. Which are "
-            "available depends on the object set, that is selected for this level.<br/>"
-            "You can search, by typing in the name, or simply select it from the list. After selecting "
-            "an object, you can place it by clicking the middle mouse button anywhere in the level."
-        ))
+        self.setWhatsThis(
+            _(
+                "<b>Object Dropdown</b><br/>"
+                "Contains all objects and enemies/items, that can be placed in this type of level. Which are "
+                "available depends on the object set, that is selected for this level.<br/>"
+                "You can search, by typing in the name, or simply select it from the list. After selecting "
+                "an object, you can place it by clicking the middle mouse button anywhere in the level."
+            )
+        )
 
         self._object_set_index = -1
         self._graphic_set_index = -1
@@ -87,7 +89,9 @@ class ObjectDropdown(QComboBox):
                 old_level_object.domain, old_level_object.obj_index, 0, 0, None, 0
             )
 
-            self.setItemIcon(index, QIcon(QPixmap(self._resize_bitmap(new_level_object.as_image()))))
+            self.setItemIcon(
+                index, QIcon(QPixmap(self._resize_bitmap(new_level_object.as_image())))
+            )
             self.setItemData(index, new_level_object)
 
     def _on_object_selected(self, _):

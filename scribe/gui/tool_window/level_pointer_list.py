@@ -27,7 +27,14 @@ class LevelPointerList(TableWidget):
 
         self.cellChanged.connect(self._save_level_pointer)
 
-        self.set_headers([_("Object Set"), _("Level Offset"), _("Enemy/Item Offset"), _("Map Position")])
+        self.set_headers(
+            [
+                _("Object Set"),
+                _("Level Offset"),
+                _("Enemy/Item Offset"),
+                _("Map Position"),
+            ]
+        )
 
         self.setItemDelegateForColumn(0, DropdownDelegate(self, OBJECT_SET_NAMES))
         self.setItemDelegateForColumn(1, SpinBoxDelegate(self))
@@ -50,7 +57,9 @@ class LevelPointerList(TableWidget):
         source_index = self.selectedIndexes()[0].row()
         target_index = self.indexAt(event.position().toPoint()).row()
 
-        self.undo_stack.push(ChangeLevelPointerIndex(self.world, source_index, target_index))
+        self.undo_stack.push(
+            ChangeLevelPointerIndex(self.world, source_index, target_index)
+        )
 
         self.update_content()
 
@@ -76,7 +85,9 @@ class LevelPointerList(TableWidget):
             level_pointer.data.y = FIRST_VALID_ROW
 
         if column == 0:
-            self.undo_stack.push(SetObjectSet(level_pointer.data, OBJECT_SET_NAMES.index(str_data)))
+            self.undo_stack.push(
+                SetObjectSet(level_pointer.data, OBJECT_SET_NAMES.index(str_data))
+            )
         elif column == 1:
             self.undo_stack.push(SetLevelAddress(level_pointer.data, int_data))
         elif column == 2:
@@ -96,11 +107,10 @@ class LevelPointerList(TableWidget):
 
             hex_level_address = QTableWidgetItem(hex(lp.data.level_address))
             hex_enemy_address = QTableWidgetItem(hex(lp.data.enemy_address))
-            pos = QTableWidgetItem(_("Screen %(screen)d: x=%(x)d, y=%(y)d}") % {
-                "screen": lp.data.screen,
-                "x": lp.data.x,
-                "y": lp.data.y
-            })
+            pos = QTableWidgetItem(
+                _("Screen %(screen)d: x=%(x)d, y=%(y)d}")
+                % {"screen": lp.data.screen, "x": lp.data.x, "y": lp.data.y}
+            )
 
             self._set_map_tile_as_icon(pos, lp.get_position())
 

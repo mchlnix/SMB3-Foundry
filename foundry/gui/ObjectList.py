@@ -9,7 +9,9 @@ from foundry.gui.ContextMenu import LevelContextMenu
 class ObjectList(QListWidget):
     selection_changed: SignalInstance = Signal(list)
 
-    def __init__(self, parent: QWidget, level_ref: LevelRef, context_menu: LevelContextMenu):
+    def __init__(
+        self, parent: QWidget, level_ref: LevelRef, context_menu: LevelContextMenu
+    ):
         super(ObjectList, self).__init__(parent=parent)
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -23,16 +25,18 @@ class ObjectList(QListWidget):
 
         self.itemSelectionChanged.connect(self.on_selection_changed)
 
-        self.setWhatsThis(_(
-            "<b>Object List</b><br/>"
-            "This lists all the objects and enemies/items in the level. They appear in the order, "
-            "that they are stored in the ROM as, which also decides which objects get drawn "
-            "before/behind which.<br/>"
-            "Enemies/items are always listed last, since they are also stored separately from the level "
-            "objects.<br/><br/>"
-            "Note: While Jumps are technically level objects, they are omitted here, since they are "
-            "listed in a separate list below."
-        ))
+        self.setWhatsThis(
+            _(
+                "<b>Object List</b><br/>"
+                "This lists all the objects and enemies/items in the level. They appear in the order, "
+                "that they are stored in the ROM as, which also decides which objects get drawn "
+                "before/behind which.<br/>"
+                "Enemies/items are always listed last, since they are also stored separately from the level "
+                "objects.<br/><br/>"
+                "Note: While Jumps are technically level objects, they are omitted here, since they are "
+                "listed in a separate list below."
+            )
+        )
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.RightButton:
@@ -103,7 +107,10 @@ class ObjectList(QListWidget):
             self.scrollTo(self.selectedIndexes()[-1])
 
     def selected_objects(self):
-        return [self.item(index.row()).data(Qt.ItemDataRole.UserRole) for index in self.selectedIndexes()]
+        return [
+            self.item(index.row()).data(Qt.ItemDataRole.UserRole)
+            for index in self.selectedIndexes()
+        ]
 
     def on_selection_changed(self):
         # only called by ourselves

@@ -22,7 +22,9 @@ class Tile:
     HEIGHT = SIDE_LENGTH
 
     PIXEL_COUNT = WIDTH * HEIGHT
-    SIZE = 2 * PIXEL_COUNT // 8  # in bytes; 1 pixel needs 2 bits to represent one of 4 possible color indexes
+    SIZE = (
+        2 * PIXEL_COUNT // 8
+    )  # in bytes; 1 pixel needs 2 bits to represent one of 4 possible color indexes
 
     def __init__(
         self,

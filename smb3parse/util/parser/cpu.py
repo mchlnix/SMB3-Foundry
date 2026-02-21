@@ -51,7 +51,9 @@ class NesCPU(mpu6502.MPU):
 
         self.memory = NESMemory([0x0] * 0x10000, rom)
         self.memory[MEM_Random_Pool_Start] = 0x88  # as in the ROM
-        self.memory[MEM_Reset_Latch] = 0x5A  # prevents crash in LoadLevel_LittleCloudSolidRun
+        self.memory[MEM_Reset_Latch] = (
+            0x5A  # prevents crash in LoadLevel_LittleCloudSolidRun
+        )
 
         self.rom = rom
         self.should_log = should_log
@@ -72,7 +74,9 @@ class NesCPU(mpu6502.MPU):
         if self.instruct[0xA9] != NesCPU.new_inst_0xa9:
             self.instruct[0xA9] = NesCPU.new_inst_0xa9
 
-    def load_from_world_map(self, world: int, pos: Position, max_steps=-1) -> ParsedLevel:
+    def load_from_world_map(
+        self, world: int, pos: Position, max_steps=-1
+    ) -> ParsedLevel:
         self.start_pc = ROM_Level_Load_Entry
 
         self.memory[MEM_Player_Current] = 0  # Mario
@@ -90,7 +94,9 @@ class NesCPU(mpu6502.MPU):
         self.start_pc = ROM_LevelLoad_By_TileSet
 
         object_set_offset = (
-            self.rom.int(Constants.OFFSET_BY_OBJECT_SET_A000 + object_set_num) * PRG_BANK_SIZE - PAGE_A000_OFFSET
+            self.rom.int(Constants.OFFSET_BY_OBJECT_SET_A000 + object_set_num)
+            * PRG_BANK_SIZE
+            - PAGE_A000_OFFSET
         )
         level_offset = level_address - object_set_offset - BASE_OFFSET
 
@@ -100,8 +106,12 @@ class NesCPU(mpu6502.MPU):
         self.memory[MEM_EnemiesStartA] = enemy_address & 0xFF
         self.memory[MEM_EnemiesStartB] = enemy_address >> 8
 
-        self.memory[MEM_PAGE_A000] = self.a000_bank = self.rom.int(Constants.OFFSET_BY_OBJECT_SET_A000 + object_set_num)
-        self.memory[MEM_PAGE_C000] = self.c000_bank = self.rom.int(Constants.OFFSET_BY_OBJECT_SET_C000 + object_set_num)
+        self.memory[MEM_PAGE_A000] = self.a000_bank = self.rom.int(
+            Constants.OFFSET_BY_OBJECT_SET_A000 + object_set_num
+        )
+        self.memory[MEM_PAGE_C000] = self.c000_bank = self.rom.int(
+            Constants.OFFSET_BY_OBJECT_SET_C000 + object_set_num
+        )
 
         self.memory.load_a000_page(self.a000_bank)
         self.memory.load_c000_page(self.c000_bank)
@@ -113,7 +123,9 @@ class NesCPU(mpu6502.MPU):
         if enemy_address >= 0x0:
             while self.rom.int(enemy_address) != 0xFF:
                 enemy_bytes = apply(int, self.rom.read(enemy_address, 3))
-                level.parsed_enemies.append(ParsedEnemy(ENEMY_ITEM_OBJECT_SET, enemy_bytes, enemy_address))
+                level.parsed_enemies.append(
+                    ParsedEnemy(ENEMY_ITEM_OBJECT_SET, enemy_bytes, enemy_address)
+                )
 
                 enemy_address += 3
 
@@ -168,7 +180,9 @@ class NesCPU(mpu6502.MPU):
 
                 optional_byte = hex(self.memory[parsed_object.pos_in_mem + 3])
 
-                print(f"--> Parsing Object from {parsed_object.pos_in_mem:#x}, {object_bytes_text} ({optional_byte})")
+                print(
+                    f"--> Parsing Object from {parsed_object.pos_in_mem:#x}, {object_bytes_text} ({optional_byte})"
+                )
 
         elif self.pc == ROM_EndObjectParsing:
             self._maybe_finish_parsing_last_object()
@@ -202,7 +216,9 @@ class NesCPU(mpu6502.MPU):
 
         super(NesCPU, self).step()
 
-        print(f"           A={self.a:X}, X={self.x:X}, Y={self.y:X}, A000={self.a000_bank}, C000={self.c000_bank}")
+        print(
+            f"           A={self.a:X}, X={self.x:X}, Y={self.y:X}, A000={self.a000_bank}, C000={self.c000_bank}"
+        )
 
     def _start_parsing_next_object(self):
         level_pointer = (self.memory[0x62] << 8) + self.memory[0x61]
@@ -243,7 +259,9 @@ class NesCPU(mpu6502.MPU):
         address = address.split(",")[0].replace("(", "").replace(")", "")
 
         if address.upper() in MEM_ADDRESS_LABELS:
-            return op.replace(f"${address}", CYAN + MEM_ADDRESS_LABELS[address.upper()] + cur_color)
+            return op.replace(
+                f"${address}", CYAN + MEM_ADDRESS_LABELS[address.upper()] + cur_color
+            )
 
         return op
 

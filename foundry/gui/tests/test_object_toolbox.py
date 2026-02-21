@@ -8,7 +8,9 @@ from smb3parse.objects.object_set import PLAINS_GRAPHICS_SET, PLAINS_OBJECT_SET
 
 @pytest.mark.parametrize("domain, obj_index", [(0, 0xA0), (0, 0xA8)])
 def test_object_icon(domain, obj_index, qtbot):
-    factory = LevelObjectFactory(PLAINS_OBJECT_SET, PLAINS_GRAPHICS_SET, 0, [], False, True)
+    factory = LevelObjectFactory(
+        PLAINS_OBJECT_SET, PLAINS_GRAPHICS_SET, 0, [], False, True
+    )
 
     level_object = factory.from_properties(domain, obj_index, 0, 0, None, 0)
 

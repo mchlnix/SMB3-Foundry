@@ -52,5 +52,5 @@ class MapObject(ObjectLike, ABC):
             "type": f"{self.type:#x}",
             "name": self.name,
             "x": self.x_position,
-            "y": self.y_position
+            "y": self.y_position,
         }

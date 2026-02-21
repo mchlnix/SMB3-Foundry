@@ -14,10 +14,16 @@ from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_SCREEN_WIDTH
 def main_window(rom, qtbot):
     # mock the rom loading, since it is a modal dialog. the rom is loaded in conftest.py
     setattr(ScribeMainWindow, "on_open_rom", lambda *_: True)
-    setattr(ScribeMainWindow, "showMaximized", lambda _: None)  # don't open automatically
+    setattr(
+        ScribeMainWindow, "showMaximized", lambda _: None
+    )  # don't open automatically
     setattr(ScribeMainWindow, "show", lambda _: None)  # don't open automatically
-    setattr(ScribeMainWindow, "safe_to_change", lambda _: True)  # don't ask for confirmation on changed level
-    setattr(ScribeMainWindow, "check_for_update_on_startup", lambda _: True)  # don't check for updates
+    setattr(
+        ScribeMainWindow, "safe_to_change", lambda _: True
+    )  # don't ask for confirmation on changed level
+    setattr(
+        ScribeMainWindow, "check_for_update_on_startup", lambda _: True
+    )  # don't check for updates
     setattr(ToolWindow, "show", lambda _: None)
 
     main_window = ScribeMainWindow("")
@@ -61,13 +67,23 @@ def drag_from_to(
 
     for point in points + [end_point]:
         move_event = QMouseEvent(
-            QMouseEvent.MouseMove, point, worldview.mapToGlobal(point), Qt.NoButton, Qt.LeftButton, modifiers
+            QMouseEvent.MouseMove,
+            point,
+            worldview.mapToGlobal(point),
+            Qt.NoButton,
+            Qt.LeftButton,
+            modifiers,
         )
         worldview.mouseMoveEvent(move_event)
 
     # let go of button, while out of bounds
     release_event = QMouseEvent(
-        QMouseEvent.MouseButtonRelease, end_point, worldview.mapToGlobal(point), Qt.LeftButton, Qt.NoButton, modifiers
+        QMouseEvent.MouseButtonRelease,
+        end_point,
+        worldview.mapToGlobal(point),
+        Qt.LeftButton,
+        Qt.NoButton,
+        modifiers,
     )
     worldview.mouseReleaseEvent(release_event)
 
@@ -75,7 +91,9 @@ def drag_from_to(
 def test_moving_tiles_out_of_scene(worldview):
     # when moving tiles out of scene, they are simply set back from whence they came
     start_point = QPoint(100, 100)
-    end_point = QPoint(*worldview.world.size) * worldview.block_length + QPoint(100, 100)
+    end_point = QPoint(*worldview.world.size) * worldview.block_length + QPoint(
+        100, 100
+    )
 
     assert TILE_MUSHROOM_HOUSE_1 == worldview._visible_object_at(start_point).type
 
@@ -99,7 +117,11 @@ def test_moving_tiles_in_scene(worldview):
 
 def _move_cursor(widget, pos, button=Qt.NoButton, ctrl=True):
     mouse_event = QMouseEvent(
-        QMouseEvent.MouseMove if button == Qt.NoButton else QMouseEvent.MouseButtonPress,
+        (
+            QMouseEvent.MouseMove
+            if button == Qt.NoButton
+            else QMouseEvent.MouseButtonPress
+        ),
         pos,
         widget.mapToGlobal(pos),
         button,
@@ -124,7 +146,9 @@ def test_selecting_all_objects_via_selection_square(worldview, qtbot):
 
     # move the mouse, while holding down
     _move_cursor(worldview, end_point, Qt.NoButton, ctrl=True)
-    assert len(worldview.get_selected_objects()) == len(worldview.world.get_all_objects())
+    assert len(worldview.get_selected_objects()) == len(
+        worldview.world.get_all_objects()
+    )
 
     _move_cursor(worldview, start_point, Qt.NoButton, ctrl=True)
     assert len(worldview.get_selected_objects()) == 1
@@ -132,7 +156,9 @@ def test_selecting_all_objects_via_selection_square(worldview, qtbot):
 
 def test_moving_all_objects_partly_off_screen(worldview):
     start_point = QPoint(0, 0)
-    end_point = QPoint(worldview.world.size[0], 0) * worldview.block_length - QPoint(1, 0)
+    end_point = QPoint(worldview.world.size[0], 0) * worldview.block_length - QPoint(
+        1, 0
+    )
 
     # hide sprites, otherwise we drag it instead
     worldview.settings.setValue("world view/show sprites", False)
@@ -143,7 +169,9 @@ def test_moving_all_objects_partly_off_screen(worldview):
     )
 
     worldview.select_all()
-    assert len(worldview.get_selected_objects()) == len(worldview.world.get_all_objects())
+    assert len(worldview.get_selected_objects()) == len(
+        worldview.world.get_all_objects()
+    )
 
     drag_from_to(worldview, start_point, end_point)
 
@@ -176,7 +204,9 @@ def test_place_tiles_by_dragging(worldview):
 
     worldview.on_put_tile(tile_to_put)
 
-    points = [QPoint(x * worldview.block_length, 0) for x in range(WORLD_MAP_SCREEN_WIDTH)]
+    points = [
+        QPoint(x * worldview.block_length, 0) for x in range(WORLD_MAP_SCREEN_WIDTH)
+    ]
 
     drag_from_to(worldview, start_pos, end_pos, points)
 

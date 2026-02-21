@@ -26,12 +26,14 @@ class FoundLevelWidget(QWidget):
         description_label = QLabel()
 
         description_label.setWordWrap(True)
-        description_label.setText(_(
-            "If the automatic Level management is active, the ROM is searched for all accessible Levels. Be it through "
-            "an overworld, jumped to by another Level, or generic Levels, defined for every World (e.g. Coin Ship "
-            "Levels). Inaccessible 'Lost' Levels cannot be found this way and are not listed here/have probably been "
-            "overwritten to make space for more Levels."
-        ))
+        description_label.setText(
+            _(
+                "If the automatic Level management is active, the ROM is searched for all accessible Levels. Be it through "
+                "an overworld, jumped to by another Level, or generic Levels, defined for every World (e.g. Coin Ship "
+                "Levels). Inaccessible 'Lost' Levels cannot be found this way and are not listed here/have probably been "
+                "overwritten to make space for more Levels."
+            )
+        )
 
         found_level_layout = QVBoxLayout(self)
         found_level_layout.addWidget(found_label, 0)
@@ -68,9 +70,16 @@ class _FoundLevelTable(TableWidget):
         self._last_checked_level_index = -1
         """The index of the last level we generated a thumbnail for."""
 
-        self.set_headers([
-            _("World"), _("Object Set"), _("Level Addr."), _("Enemy Addr."), _("Jump Dest."), _("World Specific")
-        ])
+        self.set_headers(
+            [
+                _("World"),
+                _("Object Set"),
+                _("Level Addr."),
+                _("Enemy Addr."),
+                _("Jump Dest."),
+                _("World Specific"),
+            ]
+        )
 
         self._update_content()
 
@@ -91,7 +100,9 @@ class _FoundLevelTable(TableWidget):
             self.setToolTip("")
             return
 
-        pos_plus_header = event.globalPosition() - QPoint(0, self.horizontalHeader().height() + 1)
+        pos_plus_header = event.globalPosition() - QPoint(
+            0, self.horizontalHeader().height() + 1
+        )
 
         pos = self.mapFromGlobal(pos_plus_header.toPoint())
 
@@ -119,7 +130,9 @@ class _FoundLevelTable(TableWidget):
             level.enemy_offset,
         )
 
-        self.setToolTip(f"<img src='data:image/png;base64,{pixmap_to_base64(image_data)}'>")
+        self.setToolTip(
+            f"<img src='data:image/png;base64,{pixmap_to_base64(image_data)}'>"
+        )
 
     def _update_content(self):
         self.setRowCount(len(self._levels))
@@ -132,9 +145,15 @@ class _FoundLevelTable(TableWidget):
             world_table_item.setData(Qt.ItemDataRole.UserRole, index)
 
             self.setItem(index, 0, world_table_item)
-            self.setItem(index, 1, QTableWidgetItem(OBJECT_SET_NAMES[found_level.object_set_number]))
+            self.setItem(
+                index,
+                1,
+                QTableWidgetItem(OBJECT_SET_NAMES[found_level.object_set_number]),
+            )
             self.setItem(index, 2, QTableWidgetItem(f"0x{found_level.level_offset:x}"))
-            self.setItem(index, 3, QTableWidgetItem(f"0x{found_level.enemy_offset:0>4x}"))
+            self.setItem(
+                index, 3, QTableWidgetItem(f"0x{found_level.enemy_offset:0>4x}")
+            )
 
             if found_level.found_as_jump and not found_level.found_in_world:
                 cross_item = QTableWidgetItem("X")

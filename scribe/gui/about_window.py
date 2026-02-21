@@ -19,7 +19,9 @@ class AboutDialog(CustomDialog):
 
         main_layout = QBoxLayout(QBoxLayout.LeftToRight, self)
 
-        image = QPixmap(str(data_dir.joinpath("scribe_feather.png"))).scaled(200, 200, mode=Qt.SmoothTransformation)
+        image = QPixmap(str(data_dir.joinpath("scribe_feather.png"))).scaled(
+            200, 200, mode=Qt.SmoothTransformation
+        )
 
         icon = QLabel(self)
         icon.setPixmap(image)
@@ -31,17 +33,21 @@ class AboutDialog(CustomDialog):
         text_layout = QBoxLayout(QBoxLayout.TopToBottom)
 
         text_layout.addStretch(1)
-        text_layout.addWidget(QLabel(f"SMB3 Scribe v{get_current_version_name()}", self))
+        text_layout.addWidget(
+            QLabel(f"SMB3 Scribe v{get_current_version_name()}", self)
+        )
         text_layout.addWidget(HorizontalLine())
-        text_layout.addWidget(LinkLabel(self, _('By <a href="%s">Michael</a>') % LINK_SMB3F))
+        text_layout.addWidget(
+            LinkLabel(self, _('By <a href="%s">Michael</a>') % LINK_SMB3F)
+        )
         text_layout.addWidget(QLabel(_("With thanks to:"), self))
         text_layout.addWidget(
             LinkLabel(
                 self,
-                _('<a href="%(ben)s">Beneficii</a> for their <a href="%(smb3me)s">SMB3 Map Editor</a>') % {
-                    "ben": LINK_BEN,
-                    "smb3me": LINK_SMB3ME
-                },
+                _(
+                    '<a href="%(ben)s">Beneficii</a> for their <a href="%(smb3me)s">SMB3 Map Editor</a>'
+                )
+                % {"ben": LINK_BEN, "smb3me": LINK_SMB3ME},
             )
         )
         text_layout.addWidget(
@@ -50,10 +56,8 @@ class AboutDialog(CustomDialog):
                 _(
                     '<a href="%(southbird)s">Captain Southbird</a> '
                     'for the <a href="%(disasm)s">SMB3 Disassembly</a>'
-                ) % {
-                    "southbird": LINK_SOUTHBIRD,
-                    "disasm": LINK_DISASM
-                },
+                )
+                % {"southbird": LINK_SOUTHBIRD, "disasm": LINK_DISASM},
             )
         )
         text_layout.addStretch(1)

@@ -57,7 +57,11 @@ class Level(LevelLike):
     WORLDS = len(world_indexes)
 
     def __init__(
-        self, level_name: str = "", layout_address: int = 0, enemy_data_offset: int = 0, object_set_number: int = 1
+        self,
+        level_name: str = "",
+        layout_address: int = 0,
+        enemy_data_offset: int = 0,
+        object_set_number: int = 1,
     ):
         object_set = ObjectSet.from_number(object_set_number)
 
@@ -105,7 +109,9 @@ class Level(LevelLike):
 
         self._load_level_data(object_data, enemy_data)
 
-    def _load_level_data(self, object_data: bytearray, enemy_data: bytearray, new_level: bool = True):
+    def _load_level_data(
+        self, object_data: bytearray, enemy_data: bytearray, new_level: bool = True
+    ):
         self._load_objects(object_data)
         self._load_enemies(enemy_data)
 
@@ -117,7 +123,8 @@ class Level(LevelLike):
     @property
     def fully_loaded(self):
         """Whether this object represents a fully loaded Level, meaning it was either loaded from a ROM or from an m3l
-        file. If this is false, it is probably just a place holder to use either from_bytes or from_m3l later."""
+        file. If this is false, it is probably just a place holder to use either from_bytes or from_m3l later.
+        """
         # objects, enemies and jumps could be empty, but there are always 9 header bytes, when a level is loaded
         return bool(self.header_bytes)
 
@@ -191,7 +198,9 @@ class Level(LevelLike):
             self.objects,
             bool(self.header.is_vertical),
         )
-        self.enemy_item_factory = EnemyItemFactory(self.object_set_number, self.header.enemy_palette_index)
+        self.enemy_item_factory = EnemyItemFactory(
+            self.object_set_number, self.header.enemy_palette_index
+        )
 
         self.size = self.header.width, self.header.height
 
@@ -235,7 +244,9 @@ class Level(LevelLike):
         while True:
             potential_obj_data = data[0:4]
 
-            level_object = self.object_factory.from_data(potential_obj_data, len(self.objects))
+            level_object = self.object_factory.from_data(
+                potential_obj_data, len(self.objects)
+            )
 
             data = data[3:]
 
@@ -270,12 +281,17 @@ class Level(LevelLike):
     @property
     def objects_end(self):
         return (
-            self.header_offset + HEADER_LENGTH + self.current_object_size() + LEVEL_DATA_DELIMITER_COUNT
+            self.header_offset
+            + HEADER_LENGTH
+            + self.current_object_size()
+            + LEVEL_DATA_DELIMITER_COUNT
         )  # the delimiter
 
     @property
     def enemies_end(self):
-        return self.enemy_offset + self.current_enemies_size() + len(b"\xff\x00")  # the delimiter
+        return (
+            self.enemy_offset + self.current_enemies_size() + len(b"\xff\x00")
+        )  # the delimiter
 
     @property
     def next_area_objects(self):
@@ -524,7 +540,9 @@ class Level(LevelLike):
         return self.current_enemies_size() > self.enemy_size_on_disk
 
     def get_all_objects(self) -> list[InLevelObject]:
-        return cast("list[InLevelObject]", self.objects) + cast("list[InLevelObject]", self.enemies)
+        return cast("list[InLevelObject]", self.objects) + cast(
+            "list[InLevelObject]", self.enemies
+        )
 
     def object_at(self, x: int, y: int) -> Optional[InLevelObject]:
         for obj in reversed(self.get_all_objects()):
@@ -547,7 +565,9 @@ class Level(LevelLike):
             elif isinstance(obj, EnemyItem):
                 other_objects = cast("list[InLevelObject]", self.enemies)
             else:
-                raise TypeError(_(f"How did you select an object of type: %s") % type(obj))
+                raise TypeError(
+                    _(f"How did you select an object of type: %s") % type(obj)
+                )
 
             other_objects.remove(obj)
 
@@ -596,7 +616,9 @@ class Level(LevelLike):
             raise TypeError()
 
         intersecting_objects: list[InLevelObject] = [
-            other_object for other_object in objects_to_check if obj.get_rect().intersects(other_object.get_rect())
+            other_object
+            for other_object in objects_to_check
+            if obj.get_rect().intersects(other_object.get_rect())
         ]
 
         return intersecting_objects
@@ -619,14 +641,21 @@ class Level(LevelLike):
         return None
 
     def add_object(
-        self, domain: int, object_index: int, pos: Position, length: Optional[int], index: int = -1
+        self,
+        domain: int,
+        object_index: int,
+        pos: Position,
+        length: Optional[int],
+        index: int = -1,
     ) -> Optional[LevelObject]:
         if index == -1:
             index = len(self.objects)
 
         if self.object_factory:
             x, y = pos.xy
-            obj = self.object_factory.from_properties(domain, object_index, x, y, length, index)
+            obj = self.object_factory.from_properties(
+                domain, object_index, x, y, length, index
+            )
             self.objects.insert(index, obj)
 
             return obj
@@ -710,7 +739,9 @@ class Level(LevelLike):
         ret_lines.append(f"\t.byte {bytes_to_asm(0x01)}\t\t\t; Unused byte, set to $01")
 
         for enemy in self.enemies:
-            ret_lines.append(f"\t.byte {bytes_to_asm(enemy.to_bytes())}\t; {enemy.name} @ {enemy.get_position()}")
+            ret_lines.append(
+                f"\t.byte {bytes_to_asm(enemy.to_bytes())}\t; {enemy.name} @ {enemy.get_position()}"
+            )
 
         ret_lines.append(f"\t.byte {bytes_to_asm(0xFF)}\t; Terminator")
 
@@ -720,7 +751,9 @@ class Level(LevelLike):
         ret_lines: list[str] = []
 
         object_set_offset = (
-            ROM().int(Constants.OFFSET_BY_OBJECT_SET_A000 + self.object_set.number) * OFFSET_SIZE - 10
+            ROM().int(Constants.OFFSET_BY_OBJECT_SET_A000 + self.object_set.number)
+            * OFFSET_SIZE
+            - 10
         ) * 0x1000
 
         level_offset = (self.layout_address - BASE_OFFSET - object_set_offset) & 0xFFFF
@@ -728,9 +761,15 @@ class Level(LevelLike):
         ret_lines.append(f"; Original address was ${level_offset:04X}")
         ret_lines.append(f"; {self.name}'s layout data")
 
-        ret_lines.append(f"\t.byte {bytes_to_asm(self.header_bytes[0:2])}\t\t\t ; Next Area Layout Offset")
-        ret_lines.append(f"\t.byte {bytes_to_asm(self.header_bytes[2:4])}\t\t\t ; Next Area Enemy & Item Offset")
-        ret_lines.append(f"\t.byte {bytes_to_asm(self.header_bytes[4])}\t\t\t\t ; Level Size Index | Y-Start Index")
+        ret_lines.append(
+            f"\t.byte {bytes_to_asm(self.header_bytes[0:2])}\t\t\t ; Next Area Layout Offset"
+        )
+        ret_lines.append(
+            f"\t.byte {bytes_to_asm(self.header_bytes[2:4])}\t\t\t ; Next Area Enemy & Item Offset"
+        )
+        ret_lines.append(
+            f"\t.byte {bytes_to_asm(self.header_bytes[4])}\t\t\t\t ; Level Size Index | Y-Start Index"
+        )
         ret_lines.append(
             f"\t.byte {bytes_to_asm(self.header_bytes[5])}\t\t\t\t ; BG Pal | Enemy Pal | X-Start Index | Unused"
         )
@@ -738,8 +777,12 @@ class Level(LevelLike):
             f"\t.byte {bytes_to_asm(self.header_bytes[6])}"
             "\t\t\t\t ; Pipe Ends Level | VScroll Index | Vertical Flag | Next Area Object Set"
         )
-        ret_lines.append(f"\t.byte {bytes_to_asm(self.header_bytes[7])}\t\t\t\t ; Level Entry Action | Graphic Set")
-        ret_lines.append(f"\t.byte {bytes_to_asm(self.header_bytes[8])}\t\t\t\t ; Time Index | Unused | Music Index")
+        ret_lines.append(
+            f"\t.byte {bytes_to_asm(self.header_bytes[7])}\t\t\t\t ; Level Entry Action | Graphic Set"
+        )
+        ret_lines.append(
+            f"\t.byte {bytes_to_asm(self.header_bytes[8])}\t\t\t\t ; Time Index | Unused | Music Index"
+        )
         ret_lines.append("")
 
         for obj in self.objects + self.jumps:
@@ -748,7 +791,9 @@ class Level(LevelLike):
             else:
                 indent = "\t\t"
 
-            ret_lines.append(f"\t.byte {bytes_to_asm(obj.to_bytes())}{indent} ; {obj.name} @ {obj.get_position()}")
+            ret_lines.append(
+                f"\t.byte {bytes_to_asm(obj.to_bytes())}{indent} ; {obj.name} @ {obj.get_position()}"
+            )
 
         ret_lines.append("\t.byte $FF\t\t\t\t ; Terminator")
 
@@ -778,7 +823,9 @@ class Level(LevelLike):
 
         # figure out how many bytes are the objects
         self._load_objects(m3l_bytes)
-        object_size = self.current_object_size() + LEVEL_DATA_DELIMITER_COUNT  # delimiter
+        object_size = (
+            self.current_object_size() + LEVEL_DATA_DELIMITER_COUNT
+        )  # delimiter
 
         object_bytes = m3l_bytes[:object_size]
         enemy_bytes = m3l_bytes[object_size:]
@@ -837,7 +884,9 @@ class Level(LevelLike):
 
         return (self.header_offset, data), (self.enemy_offset, enemies)
 
-    def from_bytes(self, object_data: ObjectData, enemy_data: EnemyItemData, new_level=True):
+    def from_bytes(
+        self, object_data: ObjectData, enemy_data: EnemyItemData, new_level=True
+    ):
         self.header_offset, object_bytes = object_data
         self.enemy_offset, enemies = enemy_data
 

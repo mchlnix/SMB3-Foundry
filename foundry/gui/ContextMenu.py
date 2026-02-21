@@ -106,7 +106,9 @@ class LevelContextMenu(ContextMenu):
     def as_list_menu(self, level_object: LevelObject | EnemyItem | None) -> Self:
         return self._setup_items(CMMode.LIST, level_object)
 
-    def _setup_items(self, mode: CMMode | None, object_under_cursor: LevelObject | EnemyItem | None) -> Self:
+    def _setup_items(
+        self, mode: CMMode | None, object_under_cursor: LevelObject | EnemyItem | None
+    ) -> Self:
         self.object_to_grab = object_under_cursor
 
         objects_selected = bool(self.level_ref.selected_objects)
@@ -114,15 +116,21 @@ class LevelContextMenu(ContextMenu):
 
         self.grab_selected_object_action.setEnabled(object_under_cursor is not None)
         self.grab_selected_object_action.setText(
-            _("Grab '%s'") % object_under_cursor.name if object_under_cursor else _("Nothing to grab")
+            _("Grab '%s'") % object_under_cursor.name
+            if object_under_cursor
+            else _("Nothing to grab")
         )
 
         self.cut_action.setEnabled(not mode == CMMode.BG and objects_selected)
         self.copy_action.setEnabled(not mode == CMMode.BG and objects_selected)
         self.paste_action.setEnabled(not mode == CMMode.LIST and objects_copied)
 
-        self.into_background_action.setEnabled(not mode == CMMode.BG and objects_selected)
-        self.into_foreground_action.setEnabled(not mode == CMMode.BG and objects_selected)
+        self.into_background_action.setEnabled(
+            not mode == CMMode.BG and objects_selected
+        )
+        self.into_foreground_action.setEnabled(
+            not mode == CMMode.BG and objects_selected
+        )
 
         self.remove_action.setEnabled(not mode == CMMode.BG and objects_selected)
         self.add_object_action.setEnabled(not mode == CMMode.LIST)

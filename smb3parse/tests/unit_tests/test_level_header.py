@@ -30,7 +30,9 @@ rom = Rom.from_file(Path(test_rom_path))
 
 @given(
     header_bytes=strategies.binary(min_size=9, max_size=9),
-    object_set_number=strategies.integers(min_value=MIN_OBJECT_SET, max_value=MAX_OBJECT_SET),
+    object_set_number=strategies.integers(
+        min_value=MIN_OBJECT_SET, max_value=MAX_OBJECT_SET
+    ),
 )
 def test_construction(header_bytes, object_set_number):
     level_header = LevelHeader(rom, header_bytes, object_set_number)
@@ -67,7 +69,9 @@ def test_value_error():
 
 def test_level_1_1():
     object_set_number = 1
-    level_header_bytes = bytearray([0x93, 0xBC, 0x06, 0xC0, 0xEA, 0x80, 0x81, 0x01, 0x00])
+    level_header_bytes = bytearray(
+        [0x93, 0xBC, 0x06, 0xC0, 0xEA, 0x80, 0x81, 0x01, 0x00]
+    )
 
     level_header = LevelHeader(rom, level_header_bytes, object_set_number)
 
@@ -95,7 +99,9 @@ def test_level_1_1():
 
 def test_level_1_1_bonus():
     object_set_number = 1
-    level_header_bytes = bytearray([0x82, 0xBB, 0x27, 0xC5, 0x81, 0x85, 0xC1, 0x01, 0x01])
+    level_header_bytes = bytearray(
+        [0x82, 0xBB, 0x27, 0xC5, 0x81, 0x85, 0xC1, 0x01, 0x01]
+    )
 
     level_header = LevelHeader(rom, level_header_bytes, object_set_number)
 
@@ -123,7 +129,9 @@ def test_level_1_1_bonus():
 
 def test_level_7_1():
     object_set_number = PIPE_OBJECT_SET
-    level_header_bytes = bytearray([0x61, 0xAA, 0x4D, 0xC2, 0x07, 0x80, 0xB1, 0x08, 0x01])
+    level_header_bytes = bytearray(
+        [0x61, 0xAA, 0x4D, 0xC2, 0x07, 0x80, 0xB1, 0x08, 0x01]
+    )
 
     level_header = LevelHeader(rom, level_header_bytes, object_set_number)
 
@@ -150,10 +158,14 @@ def test_level_7_1():
 
 
 def test_gen_mario_start_positions():
-    level_header_bytes = bytearray([0x82, 0xBB, 0x27, 0xC5, 0x81, 0x85, 0xC1, 0x01, 0x01])
+    level_header_bytes = bytearray(
+        [0x82, 0xBB, 0x27, 0xC5, 0x81, 0x85, 0xC1, 0x01, 0x01]
+    )
     horizontal_level_header = LevelHeader(rom, level_header_bytes, PLAINS_OBJECT_SET)
 
-    level_header_bytes = bytearray([0x61, 0xAA, 0x4D, 0xC2, 0x07, 0x80, 0xB1, 0x08, 0x01])
+    level_header_bytes = bytearray(
+        [0x61, 0xAA, 0x4D, 0xC2, 0x07, 0x80, 0xB1, 0x08, 0x01]
+    )
     vertical_level_header = LevelHeader(rom, level_header_bytes, PIPE_OBJECT_SET)
 
     for level_header in (horizontal_level_header, vertical_level_header):
@@ -162,13 +174,21 @@ def test_gen_mario_start_positions():
 
 
 def test_mario_start_indexes():
-    level_header_bytes = bytearray([0x82, 0xBB, 0x27, 0xC5, 0x81, 0x85, 0xC1, 0x01, 0x01])
+    level_header_bytes = bytearray(
+        [0x82, 0xBB, 0x27, 0xC5, 0x81, 0x85, 0xC1, 0x01, 0x01]
+    )
     horizontal_level_header = LevelHeader(rom, level_header_bytes, PLAINS_OBJECT_SET)
 
-    level_header_bytes = bytearray([0x61, 0xAA, 0x4D, 0xC2, 0x07, 0x80, 0xB1, 0x08, 0x01])
+    level_header_bytes = bytearray(
+        [0x61, 0xAA, 0x4D, 0xC2, 0x07, 0x80, 0xB1, 0x08, 0x01]
+    )
     vertical_level_header = LevelHeader(rom, level_header_bytes, PIPE_OBJECT_SET)
 
     for level_header in (horizontal_level_header, vertical_level_header):
-        for start_x, start_y in product(range(len(MARIO_X_POSITIONS)), range(len(MARIO_Y_POSITIONS))):
+        for start_x, start_y in product(
+            range(len(MARIO_X_POSITIONS)), range(len(MARIO_Y_POSITIONS))
+        ):
             position = level_header.position_from_start_index(start_x, start_y)
-            assert (start_x, start_y) == level_header.start_indexes_from_position(*position)
+            assert (start_x, start_y) == level_header.start_indexes_from_position(
+                *position
+            )

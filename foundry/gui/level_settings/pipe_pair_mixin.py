@@ -41,24 +41,34 @@ class PipePairMixin(SettingsMixin):
         else:
             self.original_pipe_y_value = self.original_pipe_item.y_position
 
-        self.pipe_pair_check_box = QCheckBox(_("Enable exiting somewhere else on WorldMap"))
+        self.pipe_pair_check_box = QCheckBox(
+            _("Enable exiting somewhere else on WorldMap")
+        )
         self.pipe_pair_check_box.setChecked(self.original_pipe_item is not None)
         self.pipe_pair_check_box.clicked.connect(self._on_pipe_check_box)
         pipe_pair_group.layout().addWidget(self.pipe_pair_check_box)
 
-        self.sky_tower_check_box = QCheckBox(_("Like Sky Tower (Top and Bottom, instead of Left and Right)"))
+        self.sky_tower_check_box = QCheckBox(
+            _("Like Sky Tower (Top and Bottom, instead of Left and Right)")
+        )
         self.sky_tower_check_box.clicked.connect(self._on_update_y_position)
         pipe_pair_group.layout().addWidget(self.sky_tower_check_box)
 
         self.pipe_pair_spinner = Spinner(self, maximum=PIPE_PAIR_COUNT - 1)
         self.pipe_pair_spinner.valueChanged.connect(self._on_update_y_position)
-        pipe_pair_group.layout().addLayout(label_and_widget(_("Pipe Pair Index"), self.pipe_pair_spinner))
+        pipe_pair_group.layout().addLayout(
+            label_and_widget(_("Pipe Pair Index"), self.pipe_pair_spinner)
+        )
 
         self.left_pos_label = QLabel("-")
-        pipe_pair_group.layout().addLayout(label_and_widget(_("Left Exit"), self.left_pos_label))
+        pipe_pair_group.layout().addLayout(
+            label_and_widget(_("Left Exit"), self.left_pos_label)
+        )
 
         self.right_pos_label = QLabel("-")
-        pipe_pair_group.layout().addLayout(label_and_widget(_("Right Exit"), self.right_pos_label))
+        pipe_pair_group.layout().addLayout(
+            label_and_widget(_("Right Exit"), self.right_pos_label)
+        )
 
         self.set_new_button = QPushButton(_("Change Exit Locations"))
         self.set_new_button.clicked.connect(self._on_set_pipe_exits)
@@ -123,7 +133,9 @@ class PipePairMixin(SettingsMixin):
         pipe_item = _get_pipe_item(self.level_ref.enemies)
 
         self.sky_tower_check_box.setEnabled(pipe_item is not None)
-        self.sky_tower_check_box.setChecked(pipe_item is not None and pipe_item.y_position & 0x80 == 0x80)
+        self.sky_tower_check_box.setChecked(
+            pipe_item is not None and pipe_item.y_position & 0x80 == 0x80
+        )
         self.pipe_pair_spinner.setEnabled(pipe_item is not None)
         self.set_new_button.setEnabled(pipe_item is not None)
 
@@ -137,16 +149,22 @@ class PipePairMixin(SettingsMixin):
 
             pipe_data = self.pipe_datas[pipe_item.y_position]
 
-            self.left_pos_label.setText(_("Screen: %(screen)d, x: %(x)d, y: %(y)d") % {
-                "screen": pipe_data.screen_left,
-                "x": pipe_data.x_left,
-                "y": pipe_data.y_left
-            })
-            self.right_pos_label.setText(_("Screen: %(screen)d, x: %(x)d, y: %(y)d") % {
-                "screen": pipe_data.screen_right,
-                "x": pipe_data.x_right,
-                "y": pipe_data.y_right
-            })
+            self.left_pos_label.setText(
+                _("Screen: %(screen)d, x: %(x)d, y: %(y)d")
+                % {
+                    "screen": pipe_data.screen_left,
+                    "x": pipe_data.x_left,
+                    "y": pipe_data.y_left,
+                }
+            )
+            self.right_pos_label.setText(
+                _("Screen: %(screen)d, x: %(x)d, y: %(y)d")
+                % {
+                    "screen": pipe_data.screen_right,
+                    "x": pipe_data.x_right,
+                    "y": pipe_data.y_right,
+                }
+            )
 
         self.level_ref.data_changed.emit()
 
@@ -156,8 +174,12 @@ class PipePairMixin(SettingsMixin):
         current_pipe_item = _get_pipe_item(self.level_ref.enemies)
 
         pipe_kept_disabled = self.original_pipe_item is current_pipe_item is None
-        pipe_was_disabled = self.original_pipe_item is not None and current_pipe_item is None
-        pipe_was_enabled = self.original_pipe_item is None and current_pipe_item is not None
+        pipe_was_disabled = (
+            self.original_pipe_item is not None and current_pipe_item is None
+        )
+        pipe_was_enabled = (
+            self.original_pipe_item is None and current_pipe_item is not None
+        )
 
         if pipe_kept_disabled:
             pass
@@ -167,7 +189,9 @@ class PipePairMixin(SettingsMixin):
             self.level_ref.level.enemies.insert(0, self.original_pipe_item)
 
             make_macro(
-                self.undo_stack, _("Disable Pipe Pair Exits"), RemoveObject(self.level_ref.level, self.original_pipe_item)
+                self.undo_stack,
+                _("Disable Pipe Pair Exits"),
+                RemoveObject(self.level_ref.level, self.original_pipe_item),
             )
 
         elif pipe_was_enabled:
@@ -175,7 +199,11 @@ class PipePairMixin(SettingsMixin):
 
             self.level_ref.level.remove_object(current_pipe_item)
 
-            make_macro(self.undo_stack, _("Enable Pipe Pair Exits"), AddObject(self.level_ref.level, current_pipe_item, 0))
+            make_macro(
+                self.undo_stack,
+                _("Enable Pipe Pair Exits"),
+                AddObject(self.level_ref.level, current_pipe_item, 0),
+            )
 
         else:
             assert self.original_pipe_item is not None
@@ -195,7 +223,8 @@ class PipePairMixin(SettingsMixin):
 
                 make_macro(
                     self.undo_stack,
-                    _("Pipe Pair Exits Index to %s") % f"{current_pipe_item.y_position:#x}",
+                    _("Pipe Pair Exits Index to %s")
+                    % f"{current_pipe_item.y_position:#x}",
                     RemoveObject(self.level_ref.level, self.original_pipe_item),
                     AddObject(self.level_ref.level, current_pipe_item),
                 )

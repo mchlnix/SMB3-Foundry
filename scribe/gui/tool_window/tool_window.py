@@ -34,7 +34,9 @@ class ToolWindow(QMainWindow):
         self.tile_picker.tile_selected.connect(self.tile_selected.emit)
 
         self.level_pointer_list = LevelPointerList(self, level_ref)
-        self.level_pointer_list.selection_changed.connect(self.level_pointer_selection_changed.emit)
+        self.level_pointer_list.selection_changed.connect(
+            self.level_pointer_selection_changed.emit
+        )
 
         self.sprite_list = SpriteList(self, level_ref)
         self.sprite_list.selection_changed.connect(self.sprite_selection_changed.emit)
@@ -48,9 +50,15 @@ class ToolWindow(QMainWindow):
         self.tabbed_widget.addTab(self.locks_list, _("Locks and Bridges"))
 
         # clear selection if you change the tab
-        self.tabbed_widget.currentChanged.connect(lambda _: self.level_pointer_list.clearSelection())
-        self.tabbed_widget.currentChanged.connect(lambda _: self.sprite_list.clearSelection())
-        self.tabbed_widget.currentChanged.connect(lambda _: self.locks_list.clearSelection())
+        self.tabbed_widget.currentChanged.connect(
+            lambda _: self.level_pointer_list.clearSelection()
+        )
+        self.tabbed_widget.currentChanged.connect(
+            lambda _: self.sprite_list.clearSelection()
+        )
+        self.tabbed_widget.currentChanged.connect(
+            lambda _: self.locks_list.clearSelection()
+        )
 
         self.setCentralWidget(self.tabbed_widget)
 

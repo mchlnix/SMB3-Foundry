@@ -15,10 +15,14 @@ class TableWidget(QTableWidget):
         self.setSelectionBehavior(self.SelectionBehavior.SelectRows)
         self.setSelectionMode(self.SelectionMode.SingleSelection)
 
-        self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.ResizeToContents
+        )
         self.horizontalHeader().setStretchLastSection(True)
 
-        self.itemSelectionChanged.connect(lambda: self.selection_changed.emit(self.selected_row))
+        self.itemSelectionChanged.connect(
+            lambda: self.selection_changed.emit(self.selected_row)
+        )
 
     def set_headers(self, headers: list[str]):
         self.setColumnCount(len(headers))

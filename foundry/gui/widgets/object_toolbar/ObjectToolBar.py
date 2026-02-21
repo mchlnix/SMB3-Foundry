@@ -33,15 +33,21 @@ class ObjectToolBar(QWidget):
         current_item_widget.setContentsMargins(5, 10, 5, 5)
         current_item_widget.setFixedWidth(self.current_object_icon.MAX_SIZE.width() * 2)
 
-        current_item_widget.setWhatsThis(_(
-            "<b>Current Object</b><br/>"
-            "Shows the currently selected object and its name. It can be placed by "
-            "clicking the middle mouse button anywhere in the level."
-        ))
+        current_item_widget.setWhatsThis(
+            _(
+                "<b>Current Object</b><br/>"
+                "Shows the currently selected object and its name. It can be placed by "
+                "clicking the middle mouse button anywhere in the level."
+            )
+        )
 
         current_item_layout = QVBoxLayout(current_item_widget)
-        current_item_layout.addWidget(self.current_object_icon, alignment=Qt.AlignCenter)
-        current_item_layout.addWidget(self.current_object_name, alignment=Qt.AlignCenter)
+        current_item_layout.addWidget(
+            self.current_object_icon, alignment=Qt.AlignCenter
+        )
+        current_item_layout.addWidget(
+            self.current_object_name, alignment=Qt.AlignCenter
+        )
 
         self.tabbed_tool_box = TabbedToolBox()
         self.tabbed_tool_box.object_icon_clicked.connect(self._on_object_icon_selected)
@@ -65,9 +71,13 @@ class ObjectToolBar(QWidget):
         elif needs_graphic_update_only:
             self.tabbed_tool_box.set_graphic_set(graphic_set_index)
 
-            self._update_currently_selected_object_icon(graphic_set_index, object_set_index)
+            self._update_currently_selected_object_icon(
+                graphic_set_index, object_set_index
+            )
 
-    def _update_currently_selected_object_icon(self, graphic_set_index: int, object_set_index: int):
+    def _update_currently_selected_object_icon(
+        self, graphic_set_index: int, object_set_index: int
+    ):
         # TODO Could this be put into the level icon class itself?
         factory = LevelObjectFactory(
             object_set_index,
@@ -82,7 +92,9 @@ class ObjectToolBar(QWidget):
         if old_object is None:
             return
 
-        new_object = factory.from_properties(old_object.domain, old_object.obj_index, 0, 0, None, 0)
+        new_object = factory.from_properties(
+            old_object.domain, old_object.obj_index, 0, 0, None, 0
+        )
 
         self.current_object_icon.set_object(new_object)
 

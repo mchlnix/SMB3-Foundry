@@ -20,7 +20,9 @@ SETTINGS["editor/default_powerup"] = 0
 SETTINGS["editor/powerup_starman"] = False
 
 SETTINGS["editor/resize_mode"] = RESIZE_LEFT_CLICK
-SETTINGS["editor/gui_style"] = ""  # initially blank, since we can't call load_stylesheet until the app is started
+SETTINGS["editor/gui_style"] = (
+    ""  # initially blank, since we can't call load_stylesheet until the app is started
+)
 SETTINGS["editor/default dir"] = "User"
 SETTINGS["editor/default dir path"] = ""
 SETTINGS["editor/custom default dir path"] = ""
@@ -77,7 +79,9 @@ class Settings(QSettings):
 
     @property
     def is_default(self):
-        return self.organizationName() == "mchlnix" and self.applicationName() == "default"
+        return (
+            self.organizationName() == "mchlnix" and self.applicationName() == "default"
+        )
 
     def value(self, key: str, default_value=None, type_=None):
         if key in _settings and type_ is None:

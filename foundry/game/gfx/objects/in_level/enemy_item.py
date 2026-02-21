@@ -87,7 +87,9 @@ class EnemyItem(InLevelObject):
             x = (block_id % 64) * Block.WIDTH
             y = (block_id // 64) * Block.WIDTH
 
-            self.blocks.append(self.png_data.copy(QRect(x, y, Block.WIDTH, Block.HEIGHT)))
+            self.blocks.append(
+                self.png_data.copy(QRect(x, y, Block.WIDTH, Block.HEIGHT))
+            )
 
     def copy(self):
         return EnemyItem(self.to_bytes(), self.png_data, self.palette_group)
@@ -218,7 +220,7 @@ class EnemyItem(InLevelObject):
         return _("%(name)s at %(x)d, %(y)d") % {
             "name": self.name,
             "x": self.x_position,
-            "y": self.y_position
+            "y": self.y_position,
         }
 
     def __repr__(self):

@@ -62,7 +62,9 @@ class ChestExitMixin(SettingsMixin):
         self.chest_item_dropdown.addItem(_("No Item (Hammer Bros Levels)"))
 
         for item_id in range(MAPITEM_MUSHROOM, MAPITEM_MUSICBOX + 1):
-            self.chest_item_dropdown.addItem(QPixmap(MAP_ITEM_SPRITES[item_id]), MAPITEM_NAMES[item_id])
+            self.chest_item_dropdown.addItem(
+                QPixmap(MAP_ITEM_SPRITES[item_id]), MAPITEM_NAMES[item_id]
+            )
 
         if self.before.chest_item is not None:
             self.chest_item_dropdown.setCurrentIndex(self.before.item_index)
@@ -70,7 +72,9 @@ class ChestExitMixin(SettingsMixin):
             self.chest_item_dropdown.setCurrentIndex(0)
 
         chest_group.layout().addWidget(self.chest_end_checkbox)
-        chest_group.layout().addLayout(label_and_widget(_("Item in Chest:"), self.chest_item_dropdown))
+        chest_group.layout().addLayout(
+            label_and_widget(_("Item in Chest:"), self.chest_item_dropdown)
+        )
 
         self.layout().addWidget(chest_group)
 
@@ -103,10 +107,14 @@ class ChestExitMixin(SettingsMixin):
                 before_move = self.before.chest_item.copy()
                 self.before.chest_item.y_position = item_index
 
-                self.undo_stack.push(MoveObject(self.level, before_move, self.before.chest_item))
+                self.undo_stack.push(
+                    MoveObject(self.level, before_move, self.before.chest_item)
+                )
 
             else:
-                item_set_obj = self.level.enemy_item_factory.from_properties(OBJ_CHEST_ITEM_SETTER, 0, item_index)
+                item_set_obj = self.level.enemy_item_factory.from_properties(
+                    OBJ_CHEST_ITEM_SETTER, 0, item_index
+                )
 
                 self.undo_stack.push(AddObject(self.level, item_set_obj))
 
@@ -116,12 +124,25 @@ class ChestExitMixin(SettingsMixin):
         # was enabled
         if self.chest_end_checkbox.isChecked() and self.before.chest_exit is None:
             # when putting it at x=0 it doesn't work for some reason
-            chest_exit_item = self.level.enemy_item_factory.from_properties(OBJ_CHEST_EXIT, 1, 0)
+            chest_exit_item = self.level.enemy_item_factory.from_properties(
+                OBJ_CHEST_EXIT, 1, 0
+            )
 
-            make_macro(self.undo_stack, _("Enable Chest Exit"), AddObject(self.level, chest_exit_item))
+            make_macro(
+                self.undo_stack,
+                _("Enable Chest Exit"),
+                AddObject(self.level, chest_exit_item),
+            )
 
         # was disabled
-        elif self.before.chest_exit is not None and not self.chest_end_checkbox.isChecked():
+        elif (
+            self.before.chest_exit is not None
+            and not self.chest_end_checkbox.isChecked()
+        ):
             assert self.before.chest_exit is not None
 
-            make_macro(self.undo_stack, _("Disable Chest Exit"), RemoveObject(self.level, self.before.chest_exit))
+            make_macro(
+                self.undo_stack,
+                _("Disable Chest Exit"),
+                RemoveObject(self.level, self.before.chest_exit),
+            )

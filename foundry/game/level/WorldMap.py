@@ -43,13 +43,17 @@ class WorldMap(LevelLike):
 
         object_set = ObjectSet.from_number(WORLD_MAP_OBJECT_SET)
 
-        super(WorldMap, self).__init__(object_set, self.internal_world_map.layout_address)
+        super(WorldMap, self).__init__(
+            object_set, self.internal_world_map.layout_address
+        )
 
         self.name = f"World {self.data.index + 1} - Overworld"
         self._signal_emitter = WorldSignaller()
 
         self.graphics_set = GraphicsSet.from_number(OVERWORLD_GRAPHIC_SET)
-        self.palette_group = load_palette_group(WORLD_MAP_OBJECT_SET, self.data.palette_index)
+        self.palette_group = load_palette_group(
+            WORLD_MAP_OBJECT_SET, self.data.palette_index
+        )
 
         self.tsa_data = ROM.get_tsa_data(self.object_set.number)
 
@@ -82,7 +86,10 @@ class WorldMap(LevelLike):
     def from_world_number(world_index: int):
         """World number is 1-based. So the first world is World 1."""
         if not 1 <= world_index <= 9:
-            raise ValueError(_("World Number of '%d' not allowed. Keep it between 1 and 9.") % world_index)
+            raise ValueError(
+                _("World Number of '%d' not allowed. Keep it between 1 and 9.")
+                % world_index
+            )
 
         return WorldMap(list_world_map_addresses(ROM())[world_index - 1])
 
@@ -92,7 +99,9 @@ class WorldMap(LevelLike):
         for index, tile in enumerate(self.data.tile_data):
             pos = Position.from_tile_data_index(index)
 
-            block = get_block(tile, self.palette_group, self.graphics_set, self.tsa_data)
+            block = get_block(
+                tile, self.palette_group, self.graphics_set, self.tsa_data
+            )
 
             self.objects.append(MapTile(block, pos))
 
@@ -120,7 +129,10 @@ class WorldMap(LevelLike):
 
         for set_no, airship_travel_set in enumerate(self.data.airship_travel_sets):
             self.airship_travel_sets.append(
-                [AirshipTravelPoint(pos, set_no, index) for index, pos in enumerate(airship_travel_set)]
+                [
+                    AirshipTravelPoint(pos, set_no, index)
+                    for index, pos in enumerate(airship_travel_set)
+                ]
             )
 
     def _load_locks_and_bridges(self):
@@ -244,7 +256,9 @@ class WorldMap(LevelLike):
     def airship_point_at(self, x, y, airship_travel_set_visibility=0):
         pos = Position.from_xy(x, y)
 
-        for index, airship_travel_set in reversed(list(enumerate(self.airship_travel_sets))):
+        for index, airship_travel_set in reversed(
+            list(enumerate(self.airship_travel_sets))
+        ):
             if airship_travel_set_visibility & 2**index != 2**index:
                 continue
 

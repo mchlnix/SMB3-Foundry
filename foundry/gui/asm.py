@@ -32,7 +32,8 @@ def asm_to_bytes(asm: str) -> bytearray:
                 _(
                     "Cannot parse '%s'. Probably an unknown offset, you'll have to set in the level header."
                     "Using 0x0000 as value for now."
-                ) % stripped_line
+                )
+                % stripped_line,
             )
             bytes_in_line = bytearray(2)
 
@@ -45,7 +46,9 @@ def asm_to_bytes(asm: str) -> bytearray:
             bytes_in_line = bytearray([_parse_macros_in_line(stripped_line)])
 
         else:
-            bytes_in_line = bytearray(map(hex_int, stripped_line.replace(", ", "").split("$")[1:]))
+            bytes_in_line = bytearray(
+                map(hex_int, stripped_line.replace(", ", "").split("$")[1:])
+            )
 
         ret.extend(bytes_in_line)
 
@@ -78,7 +81,10 @@ def bytes_to_asm(data: bytearray | int) -> str:
 
 def load_asm_filename(what: str, default_path=""):
     pathname, __ = QFileDialog.getOpenFileName(
-        NO_PARENT, caption=_("Open %s file") % what, dir=default_path, filter=ASM_FILE_FILTER
+        NO_PARENT,
+        caption=_("Open %s file") % what,
+        dir=default_path,
+        filter=ASM_FILE_FILTER,
     )
 
     return pathname
@@ -99,7 +105,9 @@ def load_asm_level(pathname: PathLike, level: "Level"):
     try:
         asm_level_data = Path(pathname).read_text()
     except IOError as exp:
-        QMessageBox.critical(NO_PARENT, type(exp).__name__, _("Cannot open file '%s'.") % pathname)
+        QMessageBox.critical(
+            NO_PARENT, type(exp).__name__, _("Cannot open file '%s'.") % pathname
+        )
         return
 
     object_set = ObjectSetSelector.get_object_set()
@@ -121,7 +129,9 @@ def load_asm_enemy(pathname: PathLike, level: "Level"):
     try:
         asm_enemy_data = Path(pathname).read_text()
     except IOError as exp:
-        QMessageBox.warning(NO_PARENT, type(exp).__name__, _("Cannot open file '%s'.") % pathname)
+        QMessageBox.warning(
+            NO_PARENT, type(exp).__name__, _("Cannot open file '%s'.") % pathname
+        )
         return
 
     __, (__, current_enemy_bytes) = level.to_bytes()
@@ -137,10 +147,12 @@ def save_asm(what: str, pathname: PathLike, asm_data: str):
     try:
         Path(pathname).write_text(asm_data)
     except IOError as exp:
-        QMessageBox.warning(NO_PARENT, type(exp).__name__, _("Couldn't save %(what)s to '%(path)s'.") % {
-            "what": what,
-            "path": pathname
-        })
+        QMessageBox.warning(
+            NO_PARENT,
+            type(exp).__name__,
+            _("Couldn't save %(what)s to '%(path)s'.")
+            % {"what": what, "path": pathname},
+        )
 
 
 # taken from https://github.com/captainsouthbird/smb3/blob/b900ac59622f58a2266b30a32acc700e89415e83/smb3.asm#L3025
@@ -306,17 +318,24 @@ def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
             relative_offset_int = int(relative_offset[1:], 16)
 
             for prg_index, prg_bank in enumerate(prg_banks_code):
-                if f"\n{label_name}:" not in prg_bank and not prg_bank.startswith(f"{label_name}:"):
+                if f"\n{label_name}:" not in prg_bank and not prg_bank.startswith(
+                    f"{label_name}:"
+                ):
                     continue
 
                 relative_offset_int -= prg_offsets[prg_index]
 
                 if relative_offset_int < 0:
                     raise ValueError(
-                        _("Label %s could not be found in ROM. Are the files from the same project?") % label_name
+                        _(
+                            "Label %s could not be found in ROM. Are the files from the same project?"
+                        )
+                        % label_name
                     )
 
-                relative_offset_hex = hex(BASE_OFFSET + PRG_BANK_SIZE * prg_index + relative_offset_int)
+                relative_offset_hex = hex(
+                    BASE_OFFSET + PRG_BANK_SIZE * prg_index + relative_offset_int
+                )
 
                 global_offset = relative_offset_hex.upper().replace("X", "x")
                 global_labels.append(f"{label_name} = {global_offset}\n")
@@ -336,7 +355,12 @@ def _read_in_prg_banks(asm_file: Path) -> list[str]:
         path = Path(asm_file.parent) / "PRG" / prg_name
 
         if not path.exists():
-            raise ValueError(_("Couldn't find %s. Make sure your smb3.asm is in the assembly directory.") % path)
+            raise ValueError(
+                _(
+                    "Couldn't find %s. Make sure your smb3.asm is in the assembly directory."
+                )
+                % path
+            )
 
         prg_banks_code.append(path.read_text())
 

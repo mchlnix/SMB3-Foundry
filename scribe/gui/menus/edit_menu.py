@@ -20,7 +20,9 @@ class EditMenu(QMenu):
         self.undo_action.setIcon(icon("rotate-ccw.svg"))
 
         self.redo_action = self.undo_stack.createRedoAction(self)
-        self.redo_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_Z)
+        self.redo_action.setShortcut(
+            Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_Z
+        )
         self.redo_action.setIcon(icon("rotate-cw.svg"))
 
         self.addAction(self.undo_action)
@@ -32,7 +34,9 @@ class EditMenu(QMenu):
         self.clear_tiles_action = self.addAction(_("Clear &Tiles"))
         self.clear_tiles_action.setIcon(icon("loader.svg"))
         # TRANSLATORS: Ampersand designates keyboard shortcut key
-        self.clear_level_pointers_action = self.addAction(_("Clear All &Level Pointers"))
+        self.clear_level_pointers_action = self.addAction(
+            _("Clear All &Level Pointers")
+        )
         self.clear_level_pointers_action.setIcon(icon("loader.svg"))
         # TRANSLATORS: Ampersand designates keyboard shortcut key
         self.clear_sprites_action = self.addAction(_("Clear All &Sprites"))

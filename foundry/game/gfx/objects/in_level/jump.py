@@ -62,11 +62,13 @@ class Jump(InLevelObject):
         return self.data
 
     def __repr__(self):
-        return _("Jump: Screen #%(screen)d, Exit (%(x)d, %(y)d), Action #%(action)d") % {
+        return _(
+            "Jump: Screen #%(screen)d, Exit (%(x)d, %(y)d), Action #%(action)d"
+        ) % {
             "screen": self.screen_index,
             "x": self.exit_horizontal,
             "y": self.exit_vertical,
-            "action": self.exit_action
+            "action": self.exit_action,
         }
 
     def __str__(self):

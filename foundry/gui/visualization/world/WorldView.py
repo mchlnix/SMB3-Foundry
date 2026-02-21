@@ -84,19 +84,21 @@ class WorldView(MainView):
         self.dragging_happened = False
 
         # TODO: update
-        self.setWhatsThis(_(
-            "<b>Level View</b><br/>"
-            "This renders the level as it would appear in game plus additional information, that can be "
-            "toggled in the View menu.<br/>"
-            "It supports selecting multiple objects, moving, copy/pasting and resizing them using the "
-            "mouse or the usual keyboard shortcuts.<br/>"
-            "There are still occasional rendering errors, or small inconsistencies. If you find them, "
-            "please report the kind of object (name or values in the SpinnerPanel) and the level or "
-            "object set they appear in, in the discord and @Michael or on the github page under Help."
-            "<br/><br/>"
-            ""
-            "If all else fails, click the play button up top to see your level in game in seconds."
-        ))
+        self.setWhatsThis(
+            _(
+                "<b>Level View</b><br/>"
+                "This renders the level as it would appear in game plus additional information, that can be "
+                "toggled in the View menu.<br/>"
+                "It supports selecting multiple objects, moving, copy/pasting and resizing them using the "
+                "mouse or the usual keyboard shortcuts.<br/>"
+                "There are still occasional rendering errors, or small inconsistencies. If you find them, "
+                "please report the kind of object (name or values in the SpinnerPanel) and the level or "
+                "object set they appear in, in the discord and @Michael or on the github page under Help."
+                "<br/><br/>"
+                ""
+                "If all else fails, click the play button up top to see your level in game in seconds."
+            )
+        )
 
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_A), self, self.select_all)
 
@@ -120,7 +122,9 @@ class WorldView(MainView):
             # to get the tiles for the next animation step
             get_tile.cache_clear()
 
-        if self.world.data.frame_tick_count and self.settings.value("world view/animated tiles"):
+        if self.world.data.frame_tick_count and self.settings.value(
+            "world view/animated tiles"
+        ):
             self.redraw_timer = QTimer(self)
             self.redraw_timer.setInterval(1000 / 60 * self.world.data.frame_tick_count)
             self.redraw_timer.timeout.connect(self.next_anim_step)
@@ -165,7 +169,9 @@ class WorldView(MainView):
             tile_pixmap = QPixmap(QSize(self.block_length, self.block_length))
 
             painter = QPainter(tile_pixmap)
-            get_worldmap_tile(self._tile_to_put, self.world.data.palette_index).draw(painter, 0, 0, self.block_length)
+            get_worldmap_tile(self._tile_to_put, self.world.data.palette_index).draw(
+                painter, 0, 0, self.block_length
+            )
             painter.end()
 
             self.setCursor(QCursor(tile_pixmap))
@@ -202,7 +208,9 @@ class WorldView(MainView):
         self.set_mouse_mode(MODE_PUT_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        should_display_level = self.mouse_mode == MODE_FREE and self.settings.value("world view/show level previews")
+        should_display_level = self.mouse_mode == MODE_FREE and self.settings.value(
+            "world view/show level previews"
+        )
 
         if not should_display_level or not self._set_level_thumbnail(event):
             # clear tooltip if supposed to show one, but no level thumbnail was available (e.g. no level there)
@@ -243,7 +251,10 @@ class WorldView(MainView):
         if (level_pointer := self.world.level_pointer_at(x, y)) is None:
             return False
 
-        if level_pointer.data.object_set in (MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET):
+        if level_pointer.data.object_set in (
+            MUSHROOM_OBJECT_SET,
+            SPADE_BONUS_OBJECT_SET,
+        ):
             return False
 
         if self.read_only:
@@ -260,16 +271,19 @@ class WorldView(MainView):
                 level_pointer.data.enemy_address,
             )
 
-            self.setToolTip(_(
-                "<b>%(name)s</b><br/><u>Type:</u> %(type)s <u>Objects:</u> %(objects)s <u>Enemies:</u> %(enemies)s<br/>"
-                "<img src='data:image/png;base64,%(pixmap)s'>"
-            ) % {
-                "name": level_name,
-                "type": object_set_name,
-                "objects": f"{level_pointer.data.level_address:#x}",
-                "enemies": f"{level_pointer.data.enemy_address:#x}",
-                "pixmap": pixmap_to_base64(image_data)
-            })
+            self.setToolTip(
+                _(
+                    "<b>%(name)s</b><br/><u>Type:</u> %(type)s <u>Objects:</u> %(objects)s <u>Enemies:</u> %(enemies)s<br/>"
+                    "<img src='data:image/png;base64,%(pixmap)s'>"
+                )
+                % {
+                    "name": level_name,
+                    "type": object_set_name,
+                    "objects": f"{level_pointer.data.level_address:#x}",
+                    "enemies": f"{level_pointer.data.enemy_address:#x}",
+                    "pixmap": pixmap_to_base64(image_data),
+                }
+            )
 
             return True
         except ValueError:
@@ -293,8 +307,12 @@ class WorldView(MainView):
         if y < FIRST_VALID_ROW or y >= FIRST_VALID_ROW + WORLD_MAP_HEIGHT:
             return
 
-        if (tile := self.world.object_at(x, y)) is not None and tile.type == tile_to_fill_in:
-            self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
+        if (
+            tile := self.world.object_at(x, y)
+        ) is not None and tile.type == tile_to_fill_in:
+            self.undo_stack.push(
+                PutTile(self.world, Position.from_xy(x, y), self._tile_to_put)
+            )
         else:
             return
 
@@ -375,14 +393,16 @@ class WorldView(MainView):
             tile_to_put_name = TILE_NAMES[self._tile_to_put]
 
             if event.modifiers() & Qt.ShiftModifier:
-                self.undo_stack.beginMacro(_("Fill in '%(tile)s' with '%(replacement)s'") % {
-                    "tile": tile.name,
-                    "replacement": tile_to_put_name
-                })
+                self.undo_stack.beginMacro(
+                    _("Fill in '%(tile)s' with '%(replacement)s'")
+                    % {"tile": tile.name, "replacement": tile_to_put_name}
+                )
                 self._fill_tile(tile.type, x, y)
             else:
                 self.undo_stack.beginMacro(_("Place '%s'") % tile_to_put_name)
-                self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
+                self.undo_stack.push(
+                    PutTile(self.world, Position.from_xy(x, y), self._tile_to_put)
+                )
 
             self.update()
 
@@ -443,7 +463,10 @@ class WorldView(MainView):
 
             if self.selected_object and not isinstance(self.selected_object, MapTile):
                 move_command = MoveMapObject(
-                    self.world, self.selected_object, start=self.drag_start_point, end=drag_end_point
+                    self.world,
+                    self.selected_object,
+                    start=self.drag_start_point,
+                    end=drag_end_point,
                 )
 
                 x, y = self.to_level_point(event.position().toPoint()).xy
@@ -512,7 +535,9 @@ class WorldView(MainView):
 
             # if we are moving only one tile, then move it back, if more, reset them
             if no_of_sel_objects > 1 or self.world.point_in(*end.xy):
-                cmd = MoveTile(self.world, start, old_objects[start.tile_data_index].type, end)
+                cmd = MoveTile(
+                    self.world, start, old_objects[start.tile_data_index].type, end
+                )
 
                 self.undo_stack.push(cmd)
 
@@ -544,7 +569,9 @@ class WorldView(MainView):
         self.undo_stack.beginMacro(_("Clear Tiles"))
 
         for map_tile in self.world.get_all_objects():
-            self.undo_stack.push(PutTile(self.world, map_tile.pos, WORLD_MAP_BLANK_TILE_ID))
+            self.undo_stack.push(
+                PutTile(self.world, map_tile.pos, WORLD_MAP_BLANK_TILE_ID)
+            )
 
         self.undo_stack.endMacro()
 
@@ -554,7 +581,9 @@ class WorldView(MainView):
         for sprite in self.world.sprites:
             self.undo_stack.push(SetSpriteType(sprite.data, 0))
             self.undo_stack.push(SetSpriteItem(sprite.data, 0))
-            self.undo_stack.push(MoveMapObject(self.world, sprite, Position.from_xy(0, FIRST_VALID_ROW)))
+            self.undo_stack.push(
+                MoveMapObject(self.world, sprite, Position.from_xy(0, FIRST_VALID_ROW))
+            )
 
         self.undo_stack.endMacro()
 
@@ -565,7 +594,11 @@ class WorldView(MainView):
             self.undo_stack.push(SetLevelAddress(level_pointer.data, 0))
             self.undo_stack.push(SetEnemyAddress(level_pointer.data, 0))
             self.undo_stack.push(SetObjectSet(level_pointer.data, 0))
-            self.undo_stack.push(MoveMapObject(self.world, level_pointer, Position.from_xy(0, FIRST_VALID_ROW)))
+            self.undo_stack.push(
+                MoveMapObject(
+                    self.world, level_pointer, Position.from_xy(0, FIRST_VALID_ROW)
+                )
+            )
 
         self.undo_stack.endMacro()
 

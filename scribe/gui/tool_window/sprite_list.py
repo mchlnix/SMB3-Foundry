@@ -25,11 +25,15 @@ class SpriteList(TableWidget):
 
         self.setItemDelegateForColumn(
             0,
-            DropdownDelegate(self, list(MAPOBJ_NAMES.values()), list(MAP_OBJ_SPRITES.values())),
+            DropdownDelegate(
+                self, list(MAPOBJ_NAMES.values()), list(MAP_OBJ_SPRITES.values())
+            ),
         )
         self.setItemDelegateForColumn(
             1,
-            DropdownDelegate(self, list(MAPITEM_NAMES.values()), list(MAP_ITEM_SPRITES.values())),
+            DropdownDelegate(
+                self, list(MAPITEM_NAMES.values()), list(MAP_ITEM_SPRITES.values())
+            ),
         )
         self.setItemDelegateForColumn(
             2,
@@ -66,9 +70,13 @@ class SpriteList(TableWidget):
             sprite.data.y = FIRST_VALID_ROW
 
         if column == 0:
-            self.undo_stack.push(SetSpriteType(sprite.data, list(MAPOBJ_NAMES.values()).index(data)))
+            self.undo_stack.push(
+                SetSpriteType(sprite.data, list(MAPOBJ_NAMES.values()).index(data))
+            )
         elif column == 1:
-            self.undo_stack.push(SetSpriteItem(sprite.data, list(MAPITEM_NAMES.values()).index(data)))
+            self.undo_stack.push(
+                SetSpriteItem(sprite.data, list(MAPITEM_NAMES.values()).index(data))
+            )
         else:
             return
 
@@ -80,24 +88,35 @@ class SpriteList(TableWidget):
         self.blockSignals(True)
 
         for index, sprite in enumerate(self.world.sprites):
-            sprite_name = MAPOBJ_NAMES[sprite.data.type] if sprite.data.type in MAPOBJ_NAMES else str(sprite.data.type)
+            sprite_name = (
+                MAPOBJ_NAMES[sprite.data.type]
+                if sprite.data.type in MAPOBJ_NAMES
+                else str(sprite.data.type)
+            )
             sprite_type = QTableWidgetItem(sprite_name)
 
             if sprite.data.type in MAP_OBJ_SPRITES:
-                sprite_type.setIcon(QPixmap(MAP_OBJ_SPRITES[sprite.data.type].scaled(self.iconSize())))
+                sprite_type.setIcon(
+                    QPixmap(MAP_OBJ_SPRITES[sprite.data.type].scaled(self.iconSize()))
+                )
 
-            item_name = MAPITEM_NAMES[sprite.data.item] if sprite.data.item in MAPITEM_NAMES else str(sprite.data.item)
+            item_name = (
+                MAPITEM_NAMES[sprite.data.item]
+                if sprite.data.item in MAPITEM_NAMES
+                else str(sprite.data.item)
+            )
 
             item_type = QTableWidgetItem(item_name)
 
             if sprite.data.item in MAP_ITEM_SPRITES:
-                item_type.setIcon(QPixmap(MAP_ITEM_SPRITES[sprite.data.item].scaled(self.iconSize())))
+                item_type.setIcon(
+                    QPixmap(MAP_ITEM_SPRITES[sprite.data.item].scaled(self.iconSize()))
+                )
 
-            pos = QTableWidgetItem(_("Screen %(screen)d: x=%(x)d, y=%(y)d}") % {
-                "screen": sprite.data.screen,
-                "x": sprite.data.x,
-                "y": sprite.data.y
-            })
+            pos = QTableWidgetItem(
+                _("Screen %(screen)d: x=%(x)d, y=%(y)d}")
+                % {"screen": sprite.data.screen, "x": sprite.data.x, "y": sprite.data.y}
+            )
 
             self._set_map_tile_as_icon(pos, sprite.get_position())
 

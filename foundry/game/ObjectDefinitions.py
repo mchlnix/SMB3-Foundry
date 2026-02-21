@@ -89,7 +89,9 @@ class ObjectDefinition:
 
         for index, item in enumerate(self.object_design):
             self.object_design[index] = int(item)  # original data
-            self.object_design2.append(0)  # data after trimming through romobjset*.dat file?
+            self.object_design2.append(
+                0
+            )  # data after trimming through romobjset*.dat file?
             self.rom_object_design.append(self.object_design[index])
             self.object_design_length = index + 1  # todo necessary when we have len()?
 
@@ -159,7 +161,9 @@ def load_object_definitions(object_set):
     for object_index in range(object_count):
         object_design_length = data[position]
 
-        object_metadata[object_definition][object_index].object_design_length = object_design_length
+        object_metadata[object_definition][
+            object_index
+        ].object_design_length = object_design_length
 
         position += 1
 
@@ -167,11 +171,17 @@ def load_object_definitions(object_set):
             block_index = data[position]
 
             if block_index == 0xFF:
-                block_index = (data[position + 1] << 16) + (data[position + 2] << 8) + data[position + 3]
+                block_index = (
+                    (data[position + 1] << 16)
+                    + (data[position + 2] << 8)
+                    + data[position + 3]
+                )
 
                 position += 3
 
-            object_metadata[object_definition][object_index].rom_object_design[i] = block_index
+            object_metadata[object_definition][object_index].rom_object_design[
+                i
+            ] = block_index
 
             position += 1
 
@@ -180,13 +190,17 @@ def load_object_definitions(object_set):
         return
 
     for object_index in range(object_count):
-        object_design_length = object_metadata[object_definition][object_index].object_design_length
+        object_design_length = object_metadata[object_definition][
+            object_index
+        ].object_design_length
 
         object_metadata[object_definition][object_index].object_design2 = []
 
         for i in range(object_design_length):
             if i <= object_design_length:
-                object_metadata[object_definition][object_index].object_design2.append(data[position])
+                object_metadata[object_definition][object_index].object_design2.append(
+                    data[position]
+                )
                 position += 1
 
     return object_metadata[object_definition]

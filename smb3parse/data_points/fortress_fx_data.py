@@ -72,11 +72,17 @@ class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):
         self.row_address = Constants.FortressFX_MapLocationRow + self.index
         self.col_and_screen_address = Constants.FortressFX_MapLocation + self.index
 
-        self.tile_indexes_address = Constants.FortressFX_Patterns + self.index * 4  # tiles in block
-        self.replacement_block_address = Constants.FortressFX_MapTileReplace + self.index
+        self.tile_indexes_address = (
+            Constants.FortressFX_Patterns + self.index * 4
+        )  # tiles in block
+        self.replacement_block_address = (
+            Constants.FortressFX_MapTileReplace + self.index
+        )
 
         # ignore the column value of the map completion data, because it is the same as the screen and column position
-        self.map_completion_data_address = Constants.FortressFX_MapCompIdx + self.index * 2
+        self.map_completion_data_address = (
+            Constants.FortressFX_MapCompIdx + self.index * 2
+        )
 
         self.v_addr_high_address = Constants.FortressFX_VAddrH + self.index
         self.v_addr_low_address = Constants.FortressFX_VAddrL + self.index
@@ -89,7 +95,9 @@ class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):
         self.replacement_block_index = self._rom.int(self.replacement_block_address)
 
         # ignore the column value of the map completion data, because it is the same as the screen and column position
-        self.map_completion_bit_index = self._rom.int(self.map_completion_data_address + 1)
+        self.map_completion_bit_index = self._rom.int(
+            self.map_completion_data_address + 1
+        )
 
         self.v_addr_high = self._rom.int(self.v_addr_high_address)
         self.v_addr_low = self._rom.int(self.v_addr_low_address)

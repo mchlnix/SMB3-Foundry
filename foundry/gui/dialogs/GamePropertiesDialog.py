@@ -65,7 +65,9 @@ class _InfoWidget(QWidget):
 
         decimal_label = QLabel()
 
-        self._spinner.valueChanged.connect(lambda x: decimal_label.setText(prop_info.value_str(x)))
+        self._spinner.valueChanged.connect(
+            lambda x: decimal_label.setText(prop_info.value_str(x))
+        )
 
         edit_layout.addWidget(QLabel(_("Value:")))
         edit_layout.addStretch(1)
@@ -76,10 +78,13 @@ class _InfoWidget(QWidget):
         layout.addLayout(edit_layout)
         layout.addStretch(1)
         layout.addWidget(
-            QLabel(_("ROM Address: %(address)s / PRG_%(prg)s") % {
-                "address": f"{prop_info.rom_address:#X}",
-                "prg": f"{(prop_info.rom_address - BASE_OFFSET) // PRG_BANK_SIZE:0>3}"
-            })
+            QLabel(
+                _("ROM Address: %(address)s / PRG_%(prg)s")
+                % {
+                    "address": f"{prop_info.rom_address:#X}",
+                    "prg": f"{(prop_info.rom_address - BASE_OFFSET) // PRG_BANK_SIZE:0>3}",
+                }
+            )
         )
 
         self._read_current_value()
@@ -106,8 +111,12 @@ class GamePropertiesDialog(CustomDialog):
         self._details_switcher = QStackedWidget(self)
 
         button_group = QDialogButtonBox()
-        button_group.addButton(QDialogButtonBox.StandardButton.Cancel).clicked.connect(self.reject)
-        button_group.addButton(QDialogButtonBox.StandardButton.Save).clicked.connect(self.accept)
+        button_group.addButton(QDialogButtonBox.StandardButton.Cancel).clicked.connect(
+            self.reject
+        )
+        button_group.addButton(QDialogButtonBox.StandardButton.Save).clicked.connect(
+            self.accept
+        )
 
         details_and_buttons_layout = QVBoxLayout()
         details_and_buttons_layout.addWidget(self._details_switcher, stretch=1)
@@ -157,7 +166,9 @@ class GamePropertiesDialog(CustomDialog):
                 current_prop_item = self._parse_property(current_section_item, line)
 
             elif line.startswith("info "):
-                self._prop_item_to_data[current_prop_item].description = line.removeprefix("info ")
+                self._prop_item_to_data[current_prop_item].description = (
+                    line.removeprefix("info ")
+                )
 
             elif line.startswith("type "):
                 self._parse_property_values(current_prop_item, line)
@@ -216,7 +227,9 @@ class GamePropertiesDialog(CustomDialog):
             assert line.startswith("INT")
             line = line.removeprefix("INT")
 
-        data.rom_address, data.min_value, data.max_value = map(hex_int, line.strip().split(" "))
+        data.rom_address, data.min_value, data.max_value = map(
+            hex_int, line.strip().split(" ")
+        )
 
     def _parse_unit(self, current_prop_item, line):
         if current_prop_item not in self._prop_item_to_data:

@@ -23,11 +23,13 @@ class StockLevelWidget(QWidget):
 
         description_label = QLabel()
         description_label.setWordWrap(True)
-        description_label.setText(_(
-            "These are the Level and Enemy addresses of the US version of SMB3. If Levels are moved (e.g. by the "
-            "automatic Level management) or overwritten by other Levels, then loading these might result in an error "
-            "or broken Level."
-        ))
+        description_label.setText(
+            _(
+                "These are the Level and Enemy addresses of the US version of SMB3. If Levels are moved (e.g. by the "
+                "automatic Level management) or overwritten by other Levels, then loading these might result in an error "
+                "or broken Level."
+            )
+        )
 
         if ROM.additional_data.found_levels:
             description_label.setStyleSheet("QLabel { color : red; }")
@@ -120,7 +122,7 @@ class StockLevelWidget(QWidget):
 
         return _("World %(world)d, %(name)s") % {
             "world": self.world_number,
-            "name": level_name
+            "name": level_name,
         }
 
     @property

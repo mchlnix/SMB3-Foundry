@@ -26,11 +26,14 @@ class WorldMapLevelSelect(QScrollArea):
         self.world = WorldMap.from_world_number(world_number)
 
         level_ref = LevelRef()
-        level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+        level_ref.load_level(
+            "World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET
+        )
 
         world_settings = Settings()
         world_settings.setValue(
-            "world view/show level pointers", Settings("mchlnix", "foundry").value("world view/show level pointers")
+            "world view/show level pointers",
+            Settings("mchlnix", "foundry").value("world view/show level pointers"),
         )
         world_settings.setValue("world view/show level previews", True)
         world_settings.setValue("world view/animated tiles", True)
@@ -79,7 +82,9 @@ class WorldMapLevelSelect(QScrollArea):
             if (level_pointer := self.world.level_pointer_at(x, y)) is None:
                 return
 
-            level_signal.emit(self.world.level_name_at_position(x, y), level_pointer.data)
+            level_signal.emit(
+                self.world.level_name_at_position(x, y), level_pointer.data
+            )
 
     def sizeHint(self) -> QSize:
         orig_size: QSize = super(WorldMapLevelSelect, self).sizeHint()

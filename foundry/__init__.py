@@ -41,12 +41,16 @@ github_link = "https://github.com/mchlnix/SMB3-Foundry"
 github_issue_link = "https://github.com/mchlnix/SMB3-Foundry/issues"
 discord_link = "https://discord.gg/pm87gm7"
 
-enemy_compat_link = QUrl.fromLocalFile(str(doc_dir.joinpath("SMB3 enemy compatibility.html")))
+enemy_compat_link = QUrl.fromLocalFile(
+    str(doc_dir.joinpath("SMB3 enemy compatibility.html"))
+)
 
 ROM_FILE_FILTER = _("ROM files") + " (*.nes *.rom);;" + _("All files") + " (*)"
 M3L_FILE_FILTER = _("M3L files") + " (*.m3l);;" + _("All files") + " (*)"
 ASM_FILE_FILTER = _("ASM files") + " (*.asm);;" + _("All files") + " (*)"
-SMB3_ASM_FILE_FILTER = "smb3.asm (smb3.asm);;" + _("ASM files") + " (*.asm);;" + _("All files") + " (*)"
+SMB3_ASM_FILE_FILTER = (
+    "smb3.asm (smb3.asm);;" + _("ASM files") + " (*.asm);;" + _("All files") + " (*)"
+)
 FNS_FILE_FILTER = _("FNS files") + " (*.fns);;" + _("All files") + " (*)"
 IMG_FILE_FILTER = _("Screenshots") + " (*.png);;" + _("All files") + " (*)"
 
@@ -110,7 +114,9 @@ def check_for_update(parent: QWidget) -> str:
     try:
         return get_latest_version_name()
     except ValueError as ve:
-        QMessageBox.critical(parent, _("Error while checking for updates"), _("Error: %s") % ve)
+        QMessageBox.critical(
+            parent, _("Error while checking for updates"), _("Error: %s") % ve
+        )
         return ""
 
 
@@ -127,7 +133,9 @@ def icon(icon_name: str):
         raise FileNotFoundError(icon_path)
 
 
-def get_level_thumbnail(object_set, layout_address: "LevelAddress", enemy_address: "EnemyItemAddress"):
+def get_level_thumbnail(
+    object_set, layout_address: "LevelAddress", enemy_address: "EnemyItemAddress"
+):
     from foundry.game.level.LevelRef import LevelRef
     from foundry.gui.visualization.level.LevelView import LevelView
 
@@ -136,7 +144,9 @@ def get_level_thumbnail(object_set, layout_address: "LevelAddress", enemy_addres
 
     view = LevelView(None, level_ref, Settings("mchlnix", "throwaway"), None)
 
-    view.settings.setValue("level view/block_transparency", object_set != DESERT_OBJECT_SET)
+    view.settings.setValue(
+        "level view/block_transparency", object_set != DESERT_OBJECT_SET
+    )
 
     view.zoom_out()
     view.zoom_out()
