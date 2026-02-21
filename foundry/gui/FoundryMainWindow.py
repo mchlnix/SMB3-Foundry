@@ -41,7 +41,7 @@ from foundry import (
     make_macro,
 )
 from foundry.features.instaplay import CantFindFirstTile, InstaPlayer, LevelNotAttached
-from foundry.features.rom_reload import RomWatcherMixin
+from foundry.features.rom_reload import RomHotSwapMixin, RomWatcherMixin
 from foundry.game.additional_data import LevelOrganizer
 from foundry.game.File import ROM
 from foundry.game.gfx import restore_all_palettes
@@ -100,7 +100,7 @@ from smb3parse.objects.object_set import OBJECT_SET_NAMES
 TOOLBAR_ICON_SIZE = QSize(20, 20)
 
 
-class FoundryMainWindow(RomWatcherMixin, MainWindow):
+class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
     def __init__(self):
         super(FoundryMainWindow, self).__init__()
 
@@ -441,13 +441,13 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
     def _on_rom_changed_externally(self):
         self._rom_watcher_enabled = False
 
-        need_to_reload_level = (
+        wants_to_reload_rom = (
             QMessageBox.information(
                 self,
                 "ROM Changed",
-                "The ROM has been changed externally. You can have Foundry open the new ROM and try to apply your "
-                "current changes to it. Or you can ignore the external changes. Not that those will be lost, if you "
-                "save in Foundry afterwards.",
+                "The ROM has been changed externally.\n\n"
+                "You can have Foundry open the new ROM and try to apply your current changes to it. Or you can ignore "
+                "the external changes. NotE that those will be lost, if you save in Foundry afterwards.",
                 QMessageBox.StandardButton.Ignore | QMessageBox.StandardButton.Apply,
             )
             == QMessageBox.StandardButton.Apply
@@ -455,39 +455,8 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
 
         self._update_accepted_hash()
 
-        if need_to_reload_level:
-            # protect the undo stack
-            self._protect_undo_stack = True
-            undo_stack_index_before_reload = self.undo_stack.index()
-
-            # unwind undo stack to get original level data
-            self.undo_stack.setIndex(0)
-            original_level_data = self.level_ref.level.to_bytes()
-            original_object_set = self.level_ref.level.object_set_number
-
-            (lvl_address, lvl_data), (enemy_address, enemy_data) = original_level_data
-
-            # our level object reorders level objects, so get the original data from the ROM
-            original_lvl_bytes = ROM().read(lvl_address, len(lvl_data))
-            original_enemy_bytes = ROM().read(enemy_address, len(enemy_data))
-
-            # reload the ROM
-            self.on_open_rom(Path(ROM.path), try_opening_level=False)
-
-            # find the level data in the ROM again, since it might have moved
-            new_lvl_address = ROM.rom_data.find(original_lvl_bytes)
-
-            # do the same for the enemy data
-            new_enemy_address = ROM.rom_data.find(original_enemy_bytes)
-
-            # open the level again
-            self.update_level("", new_lvl_address, new_enemy_address, original_object_set)
-
-            # reapply all the undo commands
-            while self.undo_stack.canRedo() and self.undo_stack.index() < undo_stack_index_before_reload:
-                self.undo_stack.redo()
-
-            self._protect_undo_stack = False
+        if wants_to_reload_rom:
+            self.hotswap_roms()
 
         self._rom_watcher_enabled = True
 

@@ -1,7 +1,13 @@
 from hashlib import md5
 from pathlib import Path
+from typing import Callable
 
 from PySide6.QtCore import QFileSystemWatcher, Signal, SignalInstance
+from PySide6.QtGui import QUndoStack
+from PySide6.QtWidgets import QMessageBox
+
+from foundry.game.File import ROM
+from foundry.game.level.LevelRef import LevelRef
 
 
 class RomWatcherMixin:
@@ -56,3 +62,76 @@ class RomWatcherMixin:
     def _clear(self):
         for path in self._file_watcher.files():
             self._file_watcher.removePath(path)
+
+
+class RomHotSwapMixin:
+    # members of FoundryMainWindow
+    level_ref: LevelRef
+    undo_stack: QUndoStack
+    _protect_undo_stack: bool
+    _rom_watcher_enabled: bool
+    update_level: Callable
+    on_open_rom: Callable
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.__original_level_bytes = bytes()
+        self.__original_enemy_bytes = bytes()
+        self.__original_object_set = 0
+
+        self.__undo_stack_index_before_reload = 0
+
+    def prepare_level_reload(self):
+        self.__undo_stack_index_before_reload = self.undo_stack.index()
+
+        # unwind undo stack to get original level data
+        self.undo_stack.setIndex(0)
+        original_level_data = self.level_ref.level.to_bytes()
+
+        (lvl_address, lvl_data), (enemy_address, enemy_data) = original_level_data
+
+        # our level object reorders level objects, so get the original data from the ROM
+        self.__original_level_bytes = ROM().read(lvl_address, len(lvl_data))
+        self.__original_enemy_bytes = ROM().read(enemy_address, len(enemy_data))
+        self.__original_object_set = self.level_ref.level.object_set_number
+
+    def hotswap_roms(self):
+        self._protect_undo_stack = True
+
+        needs_level_reload = bool(self.level_ref) and self.level_ref.level.attached_to_rom
+
+        if needs_level_reload:
+            self.prepare_level_reload()
+
+        self.on_open_rom(Path(ROM.path), try_opening_level=False)
+
+        if needs_level_reload:
+            self.execute_level_reload()
+
+        self._protect_undo_stack = False
+
+    def execute_level_reload(self):
+        # find the level data in the ROM again, since it might have moved
+        new_lvl_address = ROM.rom_data.find(self.__original_level_bytes)
+
+        # do the same for the enemy data
+        new_enemy_address = ROM.rom_data.find(self.__original_enemy_bytes)
+
+        if -1 in (new_lvl_address, new_enemy_address):
+            QMessageBox.critical(
+                self,
+                "Problem after reloading the ROM",
+                "Could not find the original level data in the updated ROM.\n\n"
+                "Detaching the level for now, you can attach it again manually.",
+            )
+
+            self.level_ref.level.detach_from_rom()
+            return
+
+        # open the level again
+        self.update_level("", new_lvl_address, new_enemy_address, self.__original_object_set)
+
+        # reapply all the undo commands
+        while self.undo_stack.canRedo() and self.undo_stack.index() < self.__undo_stack_index_before_reload:
+            self.undo_stack.redo()
