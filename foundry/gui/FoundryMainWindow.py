@@ -126,6 +126,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         self.file_menu.open_m3l_action.triggered.connect(self.on_open_m3l)
         self.file_menu.save_rom_action.triggered.connect(self.on_save_rom)
         self.file_menu.save_rom_as_action.triggered.connect(self.on_save_rom_as)
+        self.file_menu.reload_rom_action.triggered.connect(self._on_want_to_reload_rom)
         self.file_menu.import_enemy_asm_action.triggered.connect(self.on_import_enemies_from_asm)
         self.file_menu.settings_action.triggered.connect(self._on_show_settings)
         self.file_menu.exit_action.triggered.connect(lambda _: self.close())
@@ -438,6 +439,10 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
     def _on_show_settings(self):
         SettingsDialog(self.settings, self).exec()
 
+    def _on_want_to_reload_rom(self):
+        self.hotswap_roms()
+        self._update_accepted_hash()
+
     def _on_rom_changed_externally(self):
         self._rom_watcher_enabled = False
 
@@ -453,11 +458,10 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
             == QMessageBox.StandardButton.Apply
         )
 
-        self._update_accepted_hash()
-
         if wants_to_reload_rom:
             self.hotswap_roms()
 
+        self._update_accepted_hash()
         self._rom_watcher_enabled = True
 
     @staticmethod
@@ -1280,6 +1284,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
             self.file_menu.import_enemy_asm_action,
             self.file_menu.save_rom_action,
             self.file_menu.save_rom_as_action,
+            self.file_menu.reload_rom_action,
             # entry in the level menu
             self.select_level_action,
             self.new_level_action,

@@ -42,6 +42,11 @@ class FileMenu(QMenu):
 
         self.addSeparator()
 
+        self.reload_rom_action = self.addAction("Reload ROM")
+        self.reload_rom_action.setIcon(icon("refresh-cw.svg"))
+
+        self.addSeparator()
+
         m3l_menu = QMenu("M3L")
         m3l_menu.setIcon(icon("file.svg"))
 
