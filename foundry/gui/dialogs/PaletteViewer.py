@@ -299,7 +299,6 @@ class SidePalette(QWidget):
             self.undo_stack.push(
                 UpdatePalette(
                     self.level_ref,
-                    self.palette_group,
                     palette_no,
                     index_in_palette,
                     index_in_nes_color_table,

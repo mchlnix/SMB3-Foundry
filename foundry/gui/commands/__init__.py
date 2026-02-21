@@ -10,7 +10,7 @@ from foundry.game.File import ROM
 from foundry.game.gfx import change_color
 from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from foundry.game.gfx.Palette import PaletteGroup
+from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from foundry.game.level.Level import Level
 from foundry.gui.asm import load_asm_enemy
 from smb3parse.constants import PIPE_PAIR_COUNT
@@ -21,8 +21,20 @@ from smb3parse.objects.object_set import OBJECT_SET_NAMES
 if TYPE_CHECKING:
     from foundry.gui.visualization.level.LevelView import LevelView
 
+# The idea here is that we give the UndoCommands a reference to the level and any primitive data it needs. If it needs
+# to change a LevelObject or EnemyItem, then it needs to reference those via an index into the respective lists inside
+# the given Level object.
+# This is because we want to support reloading a Level from the ROM while preserving the current UndoStack. But since
+# this invalidates all references in the UndoCommands, it's easier to simply swap out the underlying Level reference,
+# instead of the object references as well.
+# In addition, we do not fix the "old value" of whatever we want to change with the UndoCommand on creation of said
+# UndoCommand, but when we call redo(). This is, because whenever we add a UndoCommand to the UndoStack, this method is
+# called to actually do the work. So that is the perfect time to get the old value, and if we switch the level
+# reference, the perfect time to get the value again from the now updated level.
 
-# TODO reference objects only by their index and don't keep references
+
+# TODO reference objects only by their index and don't keep references to them
+# Only keep references to the level to be replaced?
 class SetLevelAddressData(QUndoCommand):
     def __init__(self, level: Level, header_offset: int, enemy_offset: int):
         super(SetLevelAddressData, self).__init__(None)
@@ -80,6 +92,7 @@ class SetLevelAttribute(QUndoCommand):
         setattr(self.level, self.name, self.old_value)
 
     def redo(self):
+        self.old_value = getattr(self.level, self.name)
         setattr(self.level, self.name, self.new_value)
 
 
@@ -105,28 +118,33 @@ class SetNextAreaObjectSet(SetLevelAttribute):
 
 
 class ChangeLockIndex(QUndoCommand):
-    def __init__(self, enemy: EnemyItem, new_lock_index: int):
+    def __init__(self, level: Level, enemy: EnemyItem, new_lock_index: int):
         super(ChangeLockIndex, self).__init__(None)
 
-        self.enemy = enemy
-        self.old_index = enemy.lock_index
+        self.level = level
+        self.enemy_index = level.enemies.index(enemy)
+        self.old_index = 0
 
         self.new_index = new_lock_index
 
+        enemy = self.level.enemies[self.enemy_index]
         self.setText(f"Set {enemy.name} to break Lock #{new_lock_index}")
 
     def undo(self):
-        self.enemy.lock_index = self.old_index
+        enemy = self.level.enemies[self.enemy_index]
+        enemy.lock_index = self.old_index
 
     def redo(self):
-        self.enemy.lock_index = self.new_index
+        enemy = self.level.enemies[self.enemy_index]
+        self.old_index = enemy.lock_index
+
+        enemy.lock_index = self.new_index
 
 
 class UpdatePalette(QUndoCommand):
     def __init__(
         self,
         level,
-        palette_group: PaletteGroup,
         index_in_group: int,
         index_in_palette: int,
         new_color_index: int,
@@ -135,14 +153,14 @@ class UpdatePalette(QUndoCommand):
 
         self.level = level
 
-        self.palette_group = palette_group
+        self.palette_group = load_palette_group(level.object_set_number, level.object_palette_index)
         self.index_in_group = index_in_group
 
         self.palette_was_changed = PaletteGroup.changed
 
         self.index_in_palette = index_in_palette
 
-        self.old_color_index = palette_group[index_in_group][index_in_palette]
+        self.old_color_index = 0
         self.new_color_index = new_color_index
 
     def undo(self):
@@ -157,6 +175,9 @@ class UpdatePalette(QUndoCommand):
         PaletteGroup.changed = self.palette_was_changed
 
     def redo(self):
+        self.palette_group = load_palette_group(self.level.object_set_number, self.level.object_palette_index)
+        self.old_color_index = self.palette_group[self.index_in_group][self.index_in_palette]
+
         change_color(
             self.palette_group,
             self.index_in_group,
@@ -169,6 +190,14 @@ class UpdatePalette(QUndoCommand):
 
 
 class MoveObjects(QUndoCommand):
+    """
+    We visually move the objects before calling this command, so we cannot rely on the level data being accurate at this
+    point. Instead, we get two lists of the moved objects before moving them and at the point where we want to solidify
+    the move.
+    We have to get the data to undo and redo from those lists and apply them to the level afterwards. Therefore, keeping
+    both a connection between the objects and their positions, but also from the object to its index in the level.
+    """
+
     def __init__(
         self,
         level: Level,
@@ -179,25 +208,60 @@ class MoveObjects(QUndoCommand):
 
         self.level = level
 
-        self.positions_before = [obj.get_position() for obj in objects_before]
-        self.objects = objects_after
-        self.positions_after = [obj.get_position() for obj in objects_after]
+        indexed_lo_before, indexed_lo_after, indexed_en_before, indexed_en_after = separate_and_index_objects(
+            level, objects_before, objects_after
+        )
+
+        # !!! remember old positions for each, this data does not exist in the current level, so we cannot get this
+        # !!! information in undo(), but it should not be affected by a level change
+        self.level_object_before_positions, self.enemy_item_before_positions = self._get_separate_indexed_positions(
+            indexed_lo_before, indexed_en_before
+        )
+
+        # remember new positions for each, index in level to old position
+        self.level_object_after_positions, self.enemy_item_after_positions = self._get_separate_indexed_positions(
+            indexed_lo_after, indexed_en_after
+        )
 
         self.setText(f"Move {object_names(objects_after)}")
 
+        # undo once, because we visually already moved them
         self.undo()
 
+    @staticmethod
+    def _get_separate_indexed_positions(
+        indexed_level_objects: list[tuple[int, InLevelObject]],
+        indexed_enemy_items: list[tuple[int, InLevelObject]],
+    ):
+        # make a dictionary of the indexes and positions of the given objects
+        indexed_level_object_positions: dict[int, tuple[int, int]] = {
+            index: old_level_object.get_position() for index, old_level_object in indexed_level_objects
+        }
+        indexed_enemy_item_positions: dict[int, tuple[int, int]] = {
+            index: old_enemy_item.get_position() for index, old_enemy_item in indexed_enemy_items
+        }
+
+        return indexed_level_object_positions, indexed_enemy_item_positions
+
     def undo(self):
-        for obj, orig_pos in zip(self.objects, self.positions_before):
-            obj.set_position(*orig_pos)
+        self._apply_positions(self.level_object_before_positions, self.enemy_item_before_positions)
 
         self.level.data_changed.emit()
 
     def redo(self):
-        for obj, pos_after in zip(self.objects, self.positions_after):
-            obj.set_position(*pos_after)
+        self._apply_positions(self.level_object_after_positions, self.enemy_item_after_positions)
 
         self.level.data_changed.emit()
+
+    def _apply_positions(self, level_positions, enemy_positions):
+        # get level object in level by index
+        for index, before_position in level_positions.items():
+            level_object = self.level.objects[index]
+            level_object.set_position(*before_position)
+
+        for index, before_position in enemy_positions.items():
+            enemy_item = self.level.enemies[index]
+            enemy_item.set_position(*before_position)
 
 
 class MoveObject(MoveObjects):
@@ -216,21 +280,22 @@ class ResizeObjects(QUndoCommand):
 
         self.level = level
 
+        # ignore enemies/items because they can't be resized
+        indexed_lo_before, indexed_lo_after, *_ = separate_and_index_objects(level, objects_before, objects_after)
+
         self.objects_after = objects_after
 
-        self.object_data_before = [obj.to_bytes() for obj in objects_before]
-        self.object_data_after = [obj.to_bytes() for obj in objects_after]
+        self.object_data_before: list[tuple[int, bytes]] = [(index, obj.to_bytes()) for index, obj in indexed_lo_before]
+        self.object_data_after: list[tuple[int, bytes]] = [(index, obj.to_bytes()) for index, obj in indexed_lo_after]
 
         self.setText(f"Resize {object_names(objects_after)}")
 
-        # # objects are already resized; undo so the undo stack can redo it, when pushed
+        # objects are already resized; undo so the undo stack can redo it, when pushed
         self.undo()
 
     def undo(self):
-        for obj, data in zip(self.objects_after, self.object_data_before):
-            if not isinstance(obj, LevelObject):
-                continue
-
+        for index, data in self.object_data_before:
+            obj = self.level.objects[index]
             obj.data = bytearray(data)  # copy to not pass by reference
 
             obj._setup()
@@ -238,11 +303,9 @@ class ResizeObjects(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        for obj, data_after in zip(self.objects_after, self.object_data_after):
-            if not isinstance(obj, LevelObject):
-                continue
-
-            obj.data = bytearray(data_after)  # copy to not pass by reference
+        for index, data in self.object_data_after:
+            obj = self.level.objects[index]
+            obj.data = bytearray(data)  # copy to not pass by reference
 
             obj._setup()
 
@@ -265,6 +328,30 @@ def objects_to_indexed_objects(level: Level, objects: list[InLevelObject]) -> li
     indexes.sort(key=itemgetter(0))
 
     return indexes
+
+
+def separate_and_index_objects(level: Level, objects_before: list[InLevelObject], objects_after: list[InLevelObject]):
+    indexed_lo_before = []
+    indexed_lo_after = []
+
+    indexed_en_before = []
+    indexed_en_after = []
+
+    for obj_before, obj_after in zip(objects_before, objects_after):
+        if isinstance(obj_before, LevelObject):
+            assert isinstance(obj_after, LevelObject)
+            index = level.objects.index(obj_after)
+
+            indexed_lo_before.append((index, obj_before))
+            indexed_lo_after.append((index, obj_after))
+        else:
+            assert isinstance(obj_after, EnemyItem)
+            index = level.enemies.index(obj_after)
+
+            indexed_en_before.append((index, obj_before))
+            indexed_en_after.append((index, obj_after))
+
+    return indexed_lo_before, indexed_lo_after, indexed_en_before, indexed_en_after
 
 
 def move_objects(level: Level, indexed_objects: list[tuple[int, InLevelObject]], restore_only=False):
@@ -312,9 +399,23 @@ class ToForeground(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
+        self._update_object_refs()
+
         self.level.bring_to_foreground(self.objects)
 
         self.level.data_changed.emit()
+
+    def _update_object_refs(self):
+        # update object references with indexes
+        self.objects.clear()
+
+        for index, obj in self.indexes_before:
+            if isinstance(obj, LevelObject):
+                self.objects.append(self.level.objects[index])
+            else:
+                self.objects.append(self.level.enemies[index])
+
+        self.indexes_before = objects_to_indexed_objects(self.level, self.objects)
 
 
 class ToBackground(ToForeground):
@@ -326,6 +427,8 @@ class ToBackground(ToForeground):
         self.setText(f"Put {object_names(objects)} in the background")
 
     def redo(self):
+        self._update_object_refs()
+
         self.level.bring_to_background(self.objects)
 
         self.level.data_changed.emit()
@@ -339,23 +442,25 @@ class ImportASMEnemies(QUndoCommand):
 
         self.path = path
 
-        self.enemies_before = level.enemies.copy()
-        self.enemies_after: list[EnemyItem] = []
+        self.enemy_data_before = bytearray()
+        self.enemy_data_after = bytearray()
 
         self.setText(f"Importing Enemies from {Path(path).name}")
 
     def undo(self):
-        self.level.enemies = self.enemies_before
+        self.level._load_enemies(self.enemy_data_before)
 
         self.level.data_changed.emit()
 
     def redo(self):
-        if not self.enemies_after:
+        _, (_, self.enemy_data_before) = self.level.to_bytes()
+
+        if not self.enemy_data_after:
             load_asm_enemy(self.path, self.level)
 
-            self.enemies_after = self.level.enemies.copy()
-        else:
-            self.level.enemies = self.enemies_after
+            _, (_, self.enemy_data_after) = self.level.to_bytes()
+
+        self.level._load_enemies(self.enemy_data_after)
 
         self.level.data_changed.emit()
 
