@@ -470,7 +470,7 @@ class FoundryMainWindow(RomWatcherMixin, MainWindow):
             original_lvl_bytes = ROM().read(lvl_address, len(lvl_data))
 
             # reload the ROM
-            self.on_open_rom(Path(ROM.path))
+            self.on_open_rom(Path(ROM.path), try_opening_level=False)
 
             # find the level data in the ROM again, since it might have moved
             new_lvl_address = ROM.rom_data.find(original_lvl_bytes)
