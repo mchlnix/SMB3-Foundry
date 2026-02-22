@@ -52,7 +52,7 @@ class StockLevelWidget(QWidget):
 
         self.level_list.clear()
 
-        # skip first meaningless item
+        # skip the first meaningless item
         for level in Level.offsets[1:]:
             if level.game_world == world_number and level.name:
                 self.level_list.addItem(level.name)
@@ -65,7 +65,10 @@ class StockLevelWidget(QWidget):
     def _level_index(self):
         level_array_offset = self.level_list.currentRow() + 1
 
-        if not self.level_is_overworld:
+        if self.level_is_lost:
+            level_array_offset += Level.world_indexes[9]
+
+        elif not self.level_is_overworld:
             level_array_offset += Level.world_indexes[self.world_number]
 
         return level_array_offset
