@@ -27,7 +27,6 @@ from PySide6.QtWidgets import (
     QSplitter,
     QToolBar,
     QVBoxLayout,
-    QWhatsThis,
     QWidget,
 )
 
@@ -191,7 +190,8 @@ class FoundryMainWindow(MainWindow):
         self.view_menu = ViewMenu(self.level_view)
 
         self.menuBar().addMenu(self.view_menu)
-        self.menuBar().addMenu(HelpMenu(self))
+        help_menu = HelpMenu(self)
+        self.menuBar().addMenu(help_menu)
 
         self.undo_stack.indexChanged.connect(self._on_level_data_changed)
         self.undo_stack.cleanChanged.connect(self._on_level_data_changed)
@@ -336,11 +336,7 @@ class FoundryMainWindow(MainWindow):
 
         self.menu_toolbar.addSeparator()
 
-        whats_this_action = QWhatsThis.createAction()
-        whats_this_action.setWhatsThis("Click on parts of the editor, to receive help information.")
-        whats_this_action.setIcon(icon("help-circle.svg"))
-        whats_this_action.setText("Starts 'What's this?' mode")
-        self.menu_toolbar.addAction(whats_this_action)
+        self.menu_toolbar.addAction(help_menu.whats_this_action)
 
         self.menu_toolbar.addSeparator()
         self.warning_list = WarningList(self, self.level_ref, self.level_view, self.object_list)

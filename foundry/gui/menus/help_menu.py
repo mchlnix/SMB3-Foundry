@@ -1,5 +1,5 @@
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QMenu, QWhatsThis
 
 from foundry import (
     discord_link,
@@ -23,6 +23,12 @@ class HelpMenu(QMenu):
 
         self.check_updates_action = self.addAction("Check for Updates")
         self.check_updates_action.setIcon(icon("bell.svg"))
+
+        self.whats_this_action = QWhatsThis.createAction()
+        self.whats_this_action.setWhatsThis("Click on parts of the editor, to receive help information.")
+        self.whats_this_action.setIcon(icon("help-circle.svg"))
+        self.whats_this_action.setText("Starts 'What's this?' mode")
+        self.addAction(self.whats_this_action)
 
         self.addSeparator()
 
