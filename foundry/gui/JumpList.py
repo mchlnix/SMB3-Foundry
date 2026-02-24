@@ -1,5 +1,5 @@
 from PySide6.QtCore import Signal, SignalInstance
-from PySide6.QtGui import QContextMenuEvent
+from PySide6.QtGui import QContextMenuEvent, QMouseEvent
 from PySide6.QtWidgets import QListWidget, QMenu, QWidget
 
 from foundry.game.level.LevelRef import LevelRef
@@ -54,6 +54,11 @@ class JumpList(QListWidget):
     def focusOutEvent(self, event):
         event.accept()
         self.clearSelection()
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        event.ignore()
+
+        return super().mouseReleaseEvent(event)
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         item = self.itemAt(event.pos())

@@ -1264,6 +1264,12 @@ class FoundryMainWindow(MainWindow):
 
             self.place_object_from_dropdown(pos)
 
+        if event.button() == Qt.MouseButton.BackButton:
+            self.undo_stack.undo()
+
+        if event.button() == Qt.MouseButton.ForwardButton:
+            self.undo_stack.redo()
+
     def place_object_from_dropdown(self, q_point: QPoint) -> None:
         # the dropdown is synchronized with the toolbar, so it doesn't matter where to take it from
         in_level_object = self.object_dropdown.currentData(Qt.ItemDataRole.UserRole)
