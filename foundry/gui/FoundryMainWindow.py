@@ -1235,7 +1235,7 @@ class FoundryMainWindow(MainWindow):
     def on_jump_removed(self):
         self.undo_stack.push(RemoveJump(self.level_ref.level, self.jump_list.currentIndex().row()))
 
-    def on_jump_edited(self, jump: Jump):
+    def on_jump_edited(self, new_jump: Jump):
         index = self.jump_list.currentIndex().row()
 
         assert index >= 0
@@ -1245,14 +1245,17 @@ class FoundryMainWindow(MainWindow):
 
         old_jump = self.level_ref.level.jumps[index]
 
+        if old_jump.to_bytes() == new_jump.to_bytes():
+            return
+
         make_macro(
             self.undo_stack,
             f"Editing {old_jump}",
             RemoveJump(self.level_ref.level, index),
-            AddJump(self.level_ref.level, jump, index),
+            AddJump(self.level_ref.level, new_jump, index),
         )
 
-        self.jump_list.item(index).setText(str(jump))
+        self.jump_list.item(index).setText(str(new_jump))
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.MiddleButton:
