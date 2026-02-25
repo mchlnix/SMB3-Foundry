@@ -133,7 +133,8 @@ class LevelObject(InLevelObject):
         self.rendered_width = self.width
         self.rendered_height = self.height
 
-        self.blocks: list[int] = [int(block) for block in object_data.rom_object_design]
+        # the building blocks, not necessarily all the blocks that need to be drawn
+        self.blocks: list[int] = object_data.rom_block_indexes.copy()
 
         self.block_cache = {}
 

@@ -52,7 +52,7 @@ class EndType(Enum):
 
 class ObjectDefinition:
     """
-    An object's data, like height, width, and which blocks it uses are information that is not stored in any look up
+    An object's data, like height, width, and which blocks it uses are information that is not stored in any look-up
     tables in the ROM, rather it is the result of generator code, written for many dozen different objects.
 
     To make this easier to emulate, we have the objects.dat (formerly data.dat) file from Workshop, listing all objects
@@ -66,32 +66,28 @@ class ObjectDefinition:
 
         (
             self.domain,
-            self.min_value,
-            self.max_value,
-            self.bmp_width,
-            self.bmp_height,
-            self.generator_type,
-            self.ending,
-            self.is_4byte,
-            self.description,
-            *self.object_design,
+            _min_value,  # unused
+            _max_value,  # unused
+            bmp_width,
+            bmp_height,
+            generator_name,
+            ending_name,
+            is_4byte_str,
+            description,
+            *png_block_indexes_str,
         ) = apply(str.strip, string.split(","))
 
-        self.bmp_width = int(self.bmp_width)
-        self.bmp_height = int(self.bmp_height)
-        self.generator_type = GeneratorType[self.generator_type]
-        self.ending = EndType[self.ending]
-        self.is_4byte = self.is_4byte == "4byte"
-        self.description = self.description.replace(";;", ",")
+        self.bmp_width = int(bmp_width)
+        self.bmp_height = int(bmp_height)
+        self.generator_type = GeneratorType[generator_name]
+        self.ending = EndType[ending_name]
+        self.is_4byte = is_4byte_str == "4byte"
+        self.description = description.replace(";;", ",")
 
-        self.object_design2 = []
-        self.rom_object_design = []
+        self.png_block_indexes = apply(int, png_block_indexes_str)
 
-        for index, item in enumerate(self.object_design):
-            self.object_design[index] = int(item)  # original data
-            self.object_design2.append(0)  # data after trimming through romobjset*.dat file?
-            self.rom_object_design.append(self.object_design[index])
-            self.object_design_length = index + 1  # todo necessary when we have len()?
+        self.object_design_length = len(self.png_block_indexes)
+        self.rom_block_indexes = [0] * self.object_design_length
 
         self.description = self.description.split("|")[0]
 
@@ -99,29 +95,30 @@ class ObjectDefinition:
         return f"ObjectDefinition: {self.description}"
 
 
-object_metadata: list[list[ObjectDefinition]] = [[]]
+object_def_tables: list[list[ObjectDefinition]] = [[]]
 enemy_handle_x = []
 enemy_handle_x2 = []
 enemy_handle_y = []
 
 with open(data_dir.joinpath("objects.dat"), "r") as f:
-    first_index = 0  # todo what are they symbolizing? object tables?
-    second_index = 0
+    bank_index = 0
+    obj_index = 0
 
     for line in f.readlines():
         if line.startswith(";"):  # is a comment
             continue
 
         if line.rstrip() == "":
-            object_metadata.append([])
+            # a new "bank" of objects starts
+            object_def_tables.append([])
 
-            first_index += 1
-            second_index = 0
+            bank_index += 1
+            obj_index = 0
             continue
 
-        object_metadata[first_index].append(ObjectDefinition(line))
+        object_def_tables[bank_index].append(ObjectDefinition(line))
 
-        if first_index == ENEMY_OBJECT_DEFINITION and second_index <= 236:
+        if bank_index == ENEMY_OBJECT_DEFINITION and obj_index <= 236:
             if line.find("|") >= 0:
                 x, y, x2 = line.split("|")[1].split(", <")[0].split(" ")
             else:
@@ -131,62 +128,50 @@ with open(data_dir.joinpath("objects.dat"), "r") as f:
             enemy_handle_x2.append(int(x2))
             enemy_handle_y.append(int(y))
 
-        second_index += 1
+        obj_index += 1
 
 
 @lru_cache(2**4)
 def load_object_definitions(object_set):
-    global object_metadata
+    global object_def_tables
 
-    object_definition = object_set_to_definition[object_set]
+    object_def_no = object_set_to_definition[object_set]
 
-    if object_definition == ENEMY_OBJECT_DEFINITION:
-        return object_metadata[object_definition]
+    object_def_table = object_def_tables[object_def_no]
 
-    data = Path(data_dir.joinpath(f"romobjs{object_definition}.dat")).read_bytes()
+    if object_def_no == ENEMY_OBJECT_DEFINITION:
+        # we can not yet render the enemies from ROM data, so no need to update what we read in from objects.dat
+        return object_def_table
+
+    data = Path(data_dir.joinpath(f"romobjs{object_def_no}.dat")).read_bytes()
 
     assert data
 
     object_count = data[0]
 
-    if object_definition != 0 and object_count < 0xF7:
-        # first byte did not represent the object_count
-        object_count = 0xFF
-        position = 0
-    else:
-        position = 1
+    position = 1  # skip the object count
 
     for object_index in range(object_count):
-        object_design_length = data[position]
+        object_design_length = data[position]  # the first byte is the number of block indexes
 
-        object_metadata[object_definition][object_index].object_design_length = object_design_length
+        object_def = object_def_table[object_index]
+
+        assert object_def.object_design_length == object_design_length, (object_def_no, object_def.description)
+        object_def.object_design_length = object_design_length
 
         position += 1
 
         for i in range(object_design_length):
             block_index = data[position]
 
+            # if the block index is 0xFF, it is a 24-bit address in the ROM
             if block_index == 0xFF:
                 block_index = (data[position + 1] << 16) + (data[position + 2] << 8) + data[position + 3]
 
                 position += 3
 
-            object_metadata[object_definition][object_index].rom_object_design[i] = block_index
+            object_def.rom_block_indexes[i] = block_index
 
             position += 1
 
-    # read overlay data
-    if position >= len(data):
-        return
-
-    for object_index in range(object_count):
-        object_design_length = object_metadata[object_definition][object_index].object_design_length
-
-        object_metadata[object_definition][object_index].object_design2 = []
-
-        for i in range(object_design_length):
-            if i <= object_design_length:
-                object_metadata[object_definition][object_index].object_design2.append(data[position])
-                position += 1
-
-    return object_metadata[object_definition]
+    return object_def_table
