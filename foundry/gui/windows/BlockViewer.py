@@ -54,7 +54,7 @@ class BlockViewer(CustomChildWindow):
 
         self.addToolBar(self.toolbar)
 
-        self.layout().setSizeConstraint(QLayout.SetFixedSize)
+        self.layout().setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
 
         self.setStatusBar(QStatusBar(self))
         self.block_bank.status_message_changed.connect(self.statusBar().showMessage)
@@ -169,7 +169,7 @@ class BlockBank(QWidget):
         else:
             tile_name = ""
 
-        status_message = f"{hex_index} @ ({column}, {row}){tile_name}"
+        status_message = f"{dec_index} / {hex_index} @ ({column}, {row}){tile_name}"
 
         self.status_message_changed.emit(status_message)
 
@@ -209,7 +209,7 @@ class BlockBank(QWidget):
 
             block.draw(painter, x, y, block_length)
 
-        painter.setPen(QPen(Qt.gray, 1))
+        painter.setPen(QPen(Qt.GlobalColor.gray, 1))
 
         # rows
         for y in range(16):
