@@ -1,3 +1,4 @@
+; Bank 0
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 0, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, White Mario Finished Stage, <0>
 0, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, White Luigi Finished Stage, <1>
@@ -237,6 +238,7 @@
 0, 0xEB, 0xEB, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Dungeon B, <138>
 0, 0xEC, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Blank Square, <122>
 
+; Bank 1
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 0, 0x00, 0x00, 5, 4, SINGLE_BLOCK      , UNIFORM         , 3byte, Background Hills A, <149, 40, 41, 149, 149, 40, 43, 39, 40, 41, 38, 42, 43, 44, 39, 38, 44, 44, 44, 39>
 0, 0x01, 0x01, 4, 3, SINGLE_BLOCK      , UNIFORM         , 3byte, Background Hills B, <149, 40, 41, 149, 149, 38, 42, 41, 40, 43, 44, 39>
@@ -494,6 +496,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 2
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 0, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Upper Left Hill Corner - UnderGround, <38>
 0, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Upper Left Hill Corner - Hilly, <39>
@@ -751,6 +754,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 3
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 0, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Small Swirly Background Cloud, <38>
 0, 0x01, 0x01, 2, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Large Swirly Background Cloud, <39, 40>
@@ -1008,6 +1012,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 4
 0, 0x00, 0x00, 1, 2, SINGLE_BLOCK      , UNIFORM         , 3byte, Door, <48, 151>
 0, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_NOTHING, <146>
 0, 0x02, 0x02, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Rotodisc block, <38>
@@ -1264,6 +1269,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 5
 0, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Right Screw Head, <38>
 0, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, 2-Way Bullet Shooter, <39>
 0, 0x02, 0x02, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Rocket Engine, <40>
@@ -1520,6 +1526,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 6
 0, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird, <148>
 0, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird, <148>
 0, 0x02, 0x02, 10, 7, SINGLE_BLOCK      , UNIFORM         , 3byte, Cloud Background A, <153, 153, 153, 153, 242, 241, 153, 153, 153, 153, 153, 153, 153, 243, 149, 149, 239, 153, 153, 153, 153, 153, 242, 149, 149, 149, 149, 241, 153, 153, 153, 243, 149, 149, 149, 149, 149, 149, 239, 153, 242, 149, 149, 149, 149, 149, 149, 149, 149, 239, 244, 149, 149, 149, 149, 149, 149, 149, 149, 238, 153, 245, 149, 149, 149, 149, 149, 149, 240, 153>
@@ -1776,6 +1783,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 7
 0, 0x00, 0x00, 4, 2, SINGLE_BLOCK      , UNIFORM         , 3byte, Small block pyramid - Extends to ground, <149, 39, 40, 149, 39, 40, 39, 40>
 0, 0x01, 0x01, 8, 4, SINGLE_BLOCK      , UNIFORM         , 3byte, Medium block pyramid - Extends to ground, <149, 149, 41, 42, 42, 43, 149, 149, 149, 149, 44, 46, 46, 47, 149, 149, 41, 42, 42, 43, 41, 42, 42, 43, 44, 46, 46, 47, 44, 46, 46, 47>
 0, 0x02, 0x02, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird block pyramid, <148>
@@ -2032,6 +2040,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 8
 0, 0x00, 0x00, 2, 2, SINGLE_BLOCK      , UNIFORM         , 3byte, Upper-left corner of curved pipe, <38, 39, 40, 41>
 0, 0x01, 0x01, 2, 2, SINGLE_BLOCK      , UNIFORM         , 3byte, Upper-right corner of curved pipe, <42, 43, 40, 41>
 0, 0x02, 0x02, 2, 2, SINGLE_BLOCK      , UNIFORM         , 3byte, Lower-left corner of curved pipe, <42, 39, 44, 41>
@@ -2288,6 +2297,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 9
 0, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Piranha Plant Muncher A, <38>
 0, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Piranha Plant Muncher B, <39>
 0, 0x02, 0x02, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird, <148>
@@ -2544,6 +2554,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 10
 0, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird, <148>
 0, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird, <148>
 0, 0x02, 0x02, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird, <148>
@@ -2800,6 +2811,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 11
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 0, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Upper Left Hill Corner - UnderGround, <38>
 0, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Upper Left Hill Corner - Hilly, <39>
@@ -3057,6 +3069,7 @@
 7, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 7, 0xF0, 0xFF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_POINTER, <150>
 
+; Bank 13 Enemies
 0, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_NOTHING, <146>
 0, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird thing;; can slip on, <148>
 0, 0x02, 0x02, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Makes you bounce at beginning of level, <148>
