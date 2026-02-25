@@ -330,7 +330,7 @@
 2, 0x80, 0x8F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (still), <137, 136>
 2, 0x90, 0x9F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (moves to right), <138, 136>
 2, 0xA0, 0xAF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Background used in Bowser's Castle, <139, 140>
-2, 0xB0, 0xBF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141, 141>
+2, 0xB0, 0xBF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141>
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <142, 143>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Orange Background, <61, 58>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <118>
@@ -588,7 +588,7 @@
 2, 0x80, 0x8F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (still), <137, 136>
 2, 0x90, 0x9F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (moves to right), <138, 136>
 2, 0xA0, 0xAF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Background used in Bowser's Castle, <139, 140>
-2, 0xB0, 0xBF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <72, 72>
+2, 0xB0, 0xBF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <72>
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <142, 143>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Normal Quicksand, <142, 143>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <118>
@@ -1360,7 +1360,7 @@
 2, 0x80, 0x8F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (still), <137, 136>
 2, 0x90, 0x9F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (moves to right), <138, 136>
 2, 0xA0, 0xAF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Background used in Bowser's Castle, <139, 140>
-2, 0xB0, 0xBF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141, 141>
+2, 0xB0, 0xBF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141>
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <142, 143>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird Background, <148>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <118>
@@ -1617,7 +1617,7 @@
 2, 0x80, 0x8F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (still), <137, 136>
 2, 0x90, 0x9F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (moves to right), <138, 136>
 2, 0xA0, 0xAF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Background used in Bowser's Castle, <139, 140>
-2, 0xB0, 0xBF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141, 141>
+2, 0xB0, 0xBF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141>
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <142, 143>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird Background, <148>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <118>
@@ -1874,7 +1874,7 @@
 2, 0x80, 0x8F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (still), <137, 136>
 2, 0x90, 0x9F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (moves to right), <138, 136>
 2, 0xA0, 0xAF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Background used in Bowser's Castle, <139, 140>
-2, 0xB0, 0xBF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141, 141>
+2, 0xB0, 0xBF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141>
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <142, 143>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird Background, <148>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <118>
@@ -2131,7 +2131,7 @@
 2, 0x80, 0x8F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (still), <137, 136>
 2, 0x90, 0x9F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (moves to right), <138, 136>
 2, 0xA0, 0xAF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Background used in Bowser's Castle, <139, 140>
-2, 0xB0, 0xBF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141, 141>
+2, 0xB0, 0xBF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141>
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <142, 143>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird Background, <148>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <118>
@@ -2388,7 +2388,7 @@
 2, 0x80, 0x8F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (still), <137, 136>
 2, 0x90, 0x9F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (moves to right), <138, 136>
 2, 0xA0, 0xAF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Background used in Bowser's Castle, <139, 140>
-2, 0xB0, 0xBF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141, 141>
+2, 0xB0, 0xBF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <141>
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <142, 143>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Giant Bricks, <94, 96>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <118>
@@ -2903,7 +2903,7 @@
 2, 0x80, 0x8F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (still), <137, 136>
 2, 0x90, 0x9F, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Water (moves to right), <138, 136>
 2, 0xA0, 0xAF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Background used in Bowser's Castle, <139, 140>
-2, 0xB0, 0xBF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <72, 72>
+2, 0xB0, 0xBF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Blue X-Blocks, <72>
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <142, 143>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Normal Quicksand, <142, 143>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <118>

@@ -576,30 +576,30 @@
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="82">
-      <start_offset>475</start_offset>
-      <end_offset>476</end_offset>
-      <tag_text>Weird Quicksand (doesn't act like it)</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="83">
-      <start_offset>478</start_offset>
-      <end_offset>478</end_offset>
+      <start_offset>477</start_offset>
+      <end_offset>477</end_offset>
       <tag_text>Weird Background</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="84">
-      <start_offset>480</start_offset>
-      <end_offset>480</end_offset>
+    <TAG id="83">
+      <start_offset>479</start_offset>
+      <end_offset>479</end_offset>
       <tag_text>White Turtle Bricks</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
-    <TAG id="85">
-      <start_offset>482</start_offset>
-      <end_offset>487</end_offset>
+    <TAG id="84">
+      <start_offset>481</start_offset>
+      <end_offset>486</end_offset>
       <tag_text>Double-Ended Vertical Pipe</tag_text>
+      <font_colour>#3C3C3C</font_colour>
+      <note_colour>#AE29CB</note_colour>
+    </TAG>
+    <TAG id="85">
+      <start_offset>487</start_offset>
+      <end_offset>487</end_offset>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
@@ -711,91 +711,91 @@
     <TAG id="101">
       <start_offset>519</start_offset>
       <end_offset>519</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
+      <tag_text>1 Background Pole</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="102">
       <start_offset>521</start_offset>
       <end_offset>521</end_offset>
-      <tag_text>1 Background Pole</tag_text>
+      <tag_text>Background Coconuts</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="103">
       <start_offset>523</start_offset>
       <end_offset>523</end_offset>
-      <tag_text>Background Coconuts</tag_text>
+      <tag_text>Floor Spikes</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="104">
       <start_offset>525</start_offset>
       <end_offset>525</end_offset>
-      <tag_text>Floor Spikes</tag_text>
+      <tag_text>Ceiling Spikes</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="105">
       <start_offset>527</start_offset>
       <end_offset>527</end_offset>
-      <tag_text>Ceiling Spikes</tag_text>
+      <tag_text>Square Sandstone Blocks</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="106">
       <start_offset>529</start_offset>
       <end_offset>529</end_offset>
-      <tag_text>Square Sandstone Blocks</tag_text>
+      <tag_text>Cloud Platform</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="107">
       <start_offset>531</start_offset>
       <end_offset>531</end_offset>
-      <tag_text>Cloud Platform</tag_text>
+      <tag_text>Background Chains A</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="108">
       <start_offset>533</start_offset>
       <end_offset>533</end_offset>
-      <tag_text>Background Chains A</tag_text>
+      <tag_text>Background Chains B</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="109">
       <start_offset>535</start_offset>
       <end_offset>535</end_offset>
-      <tag_text>Background Chains B</tag_text>
+      <tag_text>Horizontal Plain Background A (used to block out stuff)</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="110">
       <start_offset>537</start_offset>
-      <end_offset>537</end_offset>
-      <tag_text>Horizontal Plain Background A (used to block out stuff)</tag_text>
+      <end_offset>568</end_offset>
+      <tag_text>Pipe Boxes A</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="111">
-      <start_offset>539</start_offset>
+      <start_offset>570</start_offset>
       <end_offset>570</end_offset>
-      <tag_text>Pipe Boxes A</tag_text>
+      <tag_text>1 Plain Background (used to block out stuff)</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="112">
       <start_offset>572</start_offset>
       <end_offset>572</end_offset>
-      <tag_text>1 Plain Background (used to block out stuff)</tag_text>
+      <tag_text>Horizontal Plain Background B (used to block out stuff)</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="113">
       <start_offset>574</start_offset>
       <end_offset>574</end_offset>
-      <tag_text>Horizontal Plain Background B (used to block out stuff)</tag_text>
+      <tag_text>Weird</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
@@ -809,14 +809,14 @@
     <TAG id="115">
       <start_offset>578</start_offset>
       <end_offset>578</end_offset>
-      <tag_text>Weird</tag_text>
+      <tag_text>CAUTION: Screws Up Game</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="116">
       <start_offset>580</start_offset>
       <end_offset>580</end_offset>
-      <tag_text>CAUTION: Screws Up Game</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
@@ -948,15 +948,15 @@
     </TAG>
     <TAG id="135">
       <start_offset>618</start_offset>
-      <end_offset>618</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
+      <end_offset>652</end_offset>
+      <tag_text>Pipe Boxes B</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
     <TAG id="136">
-      <start_offset>620</start_offset>
+      <start_offset>654</start_offset>
       <end_offset>654</end_offset>
-      <tag_text>Pipe Boxes B</tag_text>
+      <tag_text>MSG_CRASH</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
@@ -1467,7 +1467,7 @@
     <TAG id="209">
       <start_offset>800</start_offset>
       <end_offset>800</end_offset>
-      <tag_text>MSG_CRASH</tag_text>
+      <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
     </TAG>
@@ -1677,13 +1677,6 @@
     <TAG id="239">
       <start_offset>860</start_offset>
       <end_offset>860</end_offset>
-      <tag_text>MSG_POINTER</tag_text>
-      <font_colour>#3C3C3C</font_colour>
-      <note_colour>#AE29CB</note_colour>
-    </TAG>
-    <TAG id="240">
-      <start_offset>862</start_offset>
-      <end_offset>862</end_offset>
       <tag_text>MSG_POINTER</tag_text>
       <font_colour>#3C3C3C</font_colour>
       <note_colour>#AE29CB</note_colour>
