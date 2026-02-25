@@ -1038,7 +1038,7 @@
 0, 0xC0, 0xCF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Floor Spikes, <66>
 0, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Ceiling Spikes, <67>
 0, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Horizontally oriented X-blocks, <68>
-0, 0xF0, 0xFF, 1, 1, VERTICAL          , UNIFORM         , 4byte, VERTICAL         ly oriented X-blocks, <68>
+0, 0xF0, 0xFF, 1, 1, VERTICAL          , UNIFORM         , 4byte, Vertically oriented X-blocks, <68>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 1, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, '?' with flower, <0>
 1, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, '?' with leaf, <1>
@@ -2061,7 +2061,7 @@
 0, 0xB0, 0xBF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird, <148>
 0, 0xC0, 0xCF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird, <148>
 0, 0xD0, 0xDF, 1, 2, VERTICAL          , TOP_OR_LEFT     , 3byte, Background Aquatic Plants, <80, 79>
-0, 0xE0, 0xEF, 1, 1, VERTICAL          , UNIFORM         , 3byte, VERTICAL         ly Oriented Donut Blocks, <81>
+0, 0xE0, 0xEF, 1, 1, VERTICAL          , UNIFORM         , 3byte, Vertically Oriented Donut Blocks, <81>
 0, 0xF0, 0xFF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Ceiling Spikes, <82>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 1, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, '?' with Flower, <0>
@@ -2150,7 +2150,7 @@
 3, 0x40, 0x4F, 3, 3, HORIZ_TO_GROUND   , TWO_ENDS        , 3byte, Gray platform, <83, 84, 85, 86, 87, 88, 86, 87, 88>
 3, 0x50, 0x5F, 3, 2, HORIZONTAL        , TWO_ENDS        , 4byte, Orange Block Platform, <89, 90, 91, 92, 93, 94>
 3, 0x60, 0x6F, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Water - Horizontally Oriented, <55>
-3, 0x70, 0x7F, 1, 1, VERTICAL          , UNIFORM         , 3byte, Water - VERTICAL         ly Oriented, <55>
+3, 0x70, 0x7F, 1, 1, VERTICAL          , UNIFORM         , 3byte, Water - Vertically Oriented, <55>
 3, 0x80, 0x8F, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Jelectros, <95>
 3, 0x90, 0x9F, 3, 1, HORIZONTAL        , TWO_ENDS        , 3byte, Double Ended Small Horizontal Pipe, <96, 97, 121>
 3, 0xA0, 0xAF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Horizontally Oriented Donut Blocks, <81>
