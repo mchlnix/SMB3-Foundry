@@ -2,10 +2,7 @@ from enum import Enum
 from functools import lru_cache
 
 from foundry import data_dir
-from smb3parse.objects.level_object import (
-    ENEMY_OBJECT_DEFINITION_NO,
-    object_set_to_definition,
-)
+from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
 from smb3parse.util import apply
 
 
@@ -112,6 +109,7 @@ enemy_handle_x = []
 enemy_handle_x2 = []
 enemy_handle_y = []
 
+# TODO make into a function and reloadable?
 with open(data_dir.joinpath("objects.dat"), "r") as f:
     bank_index = 0
     obj_index = 0
@@ -131,7 +129,7 @@ with open(data_dir.joinpath("objects.dat"), "r") as f:
         object_def_tables[bank_index].append(ObjectDefinition(line))
 
         # enemies can have additional offsets, so they are shown in the expected position in the editor
-        if bank_index == ENEMY_OBJECT_DEFINITION_NO:
+        if bank_index == ENEMY_ITEM_OBJECT_SET:
 
             if "|" in line:
                 after_bar = line.split("|")[1]
@@ -148,12 +146,11 @@ with open(data_dir.joinpath("objects.dat"), "r") as f:
         obj_index += 1
 
 
+# TODO: After deduplicating the definitions and the object sets, can probably be removed
 @lru_cache(2**4)
-def load_object_definitions(object_set):
+def load_object_definitions(object_set_number):
     global object_def_tables
 
-    object_def_no = object_set_to_definition[object_set]
-
-    object_def_table = object_def_tables[object_def_no]
+    object_def_table = object_def_tables[object_set_number]
 
     return object_def_table

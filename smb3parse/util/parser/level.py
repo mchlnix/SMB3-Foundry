@@ -2,8 +2,16 @@ from dataclasses import dataclass, field
 
 from smb3parse.constants import ENEMY_SIZE
 from smb3parse.levels import HEADER_LENGTH
-from smb3parse.objects.level_object import goes_to_next_level, object_set_to_definition
-from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
+from smb3parse.objects.level_object import goes_to_next_level
+from smb3parse.objects.object_set import (
+    CLOUDY_OBJECT_SET,
+    ENEMY_ITEM_OBJECT_SET,
+    GIANT_OBJECT_SET,
+    HILLY_OBJECT_SET,
+    PIRANHA_PLANT_OBJECT_SET,
+    PLAINS_OBJECT_SET,
+    UNDERGROUND_OBJECT_SET,
+)
 from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
 
 
@@ -41,15 +49,13 @@ class ParsedLevel:
 
         :return: Returns True, if this Level has such an object.
         """
-        definition = object_set_to_definition[self.object_set_num]
-
-        if definition in [2, 11]:
+        if self.object_set_num in [HILLY_OBJECT_SET, UNDERGROUND_OBJECT_SET]:
             domain = 4
             id_range = range(0xE0, 0xF0)
-        elif definition == 6:
+        elif self.object_set_num == CLOUDY_OBJECT_SET:
             domain = 3
             id_range = range(0x60, 0x70)
-        elif definition == 9:
+        elif self.object_set_num in [PIRANHA_PLANT_OBJECT_SET, GIANT_OBJECT_SET]:
             domain = 3
             id_range = range(0x50, 0x70)
         else:
@@ -64,11 +70,9 @@ class ParsedLevel:
         Certain objects jump not to the Destination marked in the level header, but a predefined Big Question Mark
         Level, that every world can set freely.
 
-        :return: Returns True, if this Level has such an object.
+        :return: Returns True if this Level has such an object.
         """
-        definition = object_set_to_definition[self.object_set_num]
-
-        if definition in range(1, 12):
+        if self.object_set_num in range(PLAINS_OBJECT_SET, ENEMY_ITEM_OBJECT_SET):
             domain = 1
             id_range = range(0xB0, 0xC0)
         else:
