@@ -1,6 +1,5 @@
 from enum import Enum
 from functools import lru_cache
-from pathlib import Path
 
 from foundry import data_dir
 from smb3parse.objects.level_object import (
@@ -108,6 +107,7 @@ class ObjectDefinition:
 
 
 object_def_tables: list[list[ObjectDefinition]] = [[]]
+# TODO Why x and x2?
 enemy_handle_x = []
 enemy_handle_x2 = []
 enemy_handle_y = []
@@ -130,15 +130,20 @@ with open(data_dir.joinpath("objects.dat"), "r") as f:
 
         object_def_tables[bank_index].append(ObjectDefinition(line))
 
-        if bank_index == ENEMY_OBJECT_DEFINITION and obj_index <= 236:
-            if line.find("|") >= 0:
-                x, y, x2 = line.split("|")[1].split(", <")[0].split(" ")
-            else:
-                x, y, x2 = "0 0 0".split(" ")
+        # enemies can have additional offsets, so they are shown in the expected position in the editor
+        if bank_index == ENEMY_OBJECT_DEFINITION:
 
-            enemy_handle_x.append(int(x))
-            enemy_handle_x2.append(int(x2))
-            enemy_handle_y.append(int(y))
+            if "|" in line:
+                after_bar = line.split("|")[1]
+                before_block_indexes = after_bar.split(", <")[0]
+                x, y, x2 = apply(int, before_block_indexes.split(" "))
+
+            else:
+                x = y = x2 = 0
+
+            enemy_handle_x.append(x)
+            enemy_handle_x2.append(x2)
+            enemy_handle_y.append(y)
 
         obj_index += 1
 
