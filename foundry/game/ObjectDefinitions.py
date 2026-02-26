@@ -10,6 +10,18 @@ from smb3parse.objects.level_object import (
 from smb3parse.util import apply
 
 
+# TODO put somewhere else
+def dollar_hex_to_int(hex_string: str):
+    hex_string = hex_string.strip()
+
+    if hex_string.startswith("$"):
+        hex_string = hex_string.removeprefix("$")
+
+        return int(hex_string, 16)
+    else:
+        return int(hex_string)
+
+
 class GeneratorType(Enum):
     """
     Level objects are generated using different methods, depending on their generator type. Some objects extend until
@@ -84,7 +96,7 @@ class ObjectDefinition:
         self.is_4byte = is_4byte_str == "4byte"
         self.description = description.replace(";;", ",")
 
-        self.png_block_indexes = apply(int, png_block_indexes_str)
+        self.png_block_indexes = apply(dollar_hex_to_int, png_block_indexes_str)
 
         self.object_design_length = len(self.png_block_indexes)
         self.rom_block_indexes = [0] * self.object_design_length
@@ -140,7 +152,7 @@ def load_object_definitions(object_set):
     object_def_table = object_def_tables[object_def_no]
 
     if object_def_no == ENEMY_OBJECT_DEFINITION:
-        # we can not yet render the enemies from ROM data, so no need to update what we read in from objects.dat
+        # we cannot yet render the enemies from ROM data, so no need to update what we read in from objects.dat
         return object_def_table
 
     data = Path(data_dir.joinpath(f"romobjs{object_def_no}.dat")).read_bytes()
