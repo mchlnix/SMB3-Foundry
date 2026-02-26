@@ -176,6 +176,10 @@ class Block:
 
         return background
 
+    @staticmethod
+    def clear_cache():
+        Block._block_cache.clear()
+
 
 def _is_image_only_one_color(image):
     copy = image.copy()
