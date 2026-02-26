@@ -134,7 +134,7 @@ class LevelObject(InLevelObject):
         self.rendered_height = self.height
 
         # the building blocks, not necessarily all the blocks that need to be drawn
-        self.blocks: list[int] = object_data.png_block_indexes.copy()
+        self.blocks: list[int] = object_data.block_indexes.copy()
 
         self.block_cache = {}
 

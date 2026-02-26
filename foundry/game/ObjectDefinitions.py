@@ -3,7 +3,7 @@ from functools import lru_cache
 
 from foundry import data_dir
 from smb3parse.objects.level_object import (
-    ENEMY_OBJECT_DEFINITION,
+    ENEMY_OBJECT_DEFINITION_NO,
     object_set_to_definition,
 )
 from smb3parse.util import apply
@@ -76,7 +76,7 @@ class ObjectDefinition:
         string = string.rstrip().replace("<", "").replace(">", "")
 
         (
-            self.domain,
+            _domain,  # unused
             _min_value,  # unused
             _max_value,  # unused
             bmp_width,
@@ -95,9 +95,9 @@ class ObjectDefinition:
         self.is_4byte = is_4byte_str == "4byte"
         self.description = description.replace(";;", ",")
 
-        self.png_block_indexes = apply(dollar_hex_to_int, png_block_indexes_str)
+        self.block_indexes = apply(dollar_hex_to_int, png_block_indexes_str)
 
-        self.object_design_length = len(self.png_block_indexes)
+        self.object_design_length = len(self.block_indexes)
         self.rom_block_indexes = [0] * self.object_design_length
 
         self.description = self.description.split("|")[0]
@@ -131,7 +131,7 @@ with open(data_dir.joinpath("objects.dat"), "r") as f:
         object_def_tables[bank_index].append(ObjectDefinition(line))
 
         # enemies can have additional offsets, so they are shown in the expected position in the editor
-        if bank_index == ENEMY_OBJECT_DEFINITION:
+        if bank_index == ENEMY_OBJECT_DEFINITION_NO:
 
             if "|" in line:
                 after_bar = line.split("|")[1]

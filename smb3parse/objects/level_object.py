@@ -21,7 +21,7 @@ from smb3parse.objects.object_set import (
 )
 from smb3parse.util import lrange
 
-ENEMY_OBJECT_DEFINITION = 12
+ENEMY_OBJECT_DEFINITION_NO = 12
 
 object_set_to_definition = {
     WORLD_MAP_OBJECT_SET: 0,
@@ -40,7 +40,7 @@ object_set_to_definition = {
     GIANT_OBJECT_SET: 9,
     ICE_OBJECT_SET: 10,
     UNDERGROUND_OBJECT_SET: 11,
-    ENEMY_ITEM_OBJECT_SET: ENEMY_OBJECT_DEFINITION,
+    ENEMY_ITEM_OBJECT_SET: ENEMY_OBJECT_DEFINITION_NO,
 }
 
 

@@ -81,7 +81,7 @@ class EnemyItem(InLevelObject):
     def _render(self, obj_def):
         self.blocks = []
 
-        block_ids = obj_def.png_block_indexes
+        block_ids = obj_def.block_indexes
 
         for block_id in block_ids:
             x = (block_id % 64) * Block.WIDTH
