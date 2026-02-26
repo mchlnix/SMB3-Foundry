@@ -11,6 +11,13 @@ GUI_STYLE: dict[str, Callable] = {
     "DRACULA": qdarkstyle.load_stylesheet_pyside6,
 }
 
+
+class ASMLoadingBehavior:
+    DONT_ASK = 0
+    ASK_IF_NEEDED = 1
+    LOAD_IF_AVAILABLE = 2
+
+
 SETTINGS: dict[str, str | int | bool] = dict()
 SETTINGS["editor/instaplay_emulator"] = "fceux"
 SETTINGS["editor/instaplay_arguments"] = "%f"
@@ -26,6 +33,7 @@ SETTINGS["editor/default dir path"] = ""
 SETTINGS["editor/custom default dir path"] = ""
 SETTINGS["editor/show_block_item_in_toolbar"] = True
 SETTINGS["editor/ask_for_level_management"] = True
+SETTINGS["editor/asm_loading_behavior"] = ASMLoadingBehavior.ASK_IF_NEEDED
 
 SETTINGS["editor/update_on_startup"] = False
 SETTINGS["editor/asked_for_startup"] = False

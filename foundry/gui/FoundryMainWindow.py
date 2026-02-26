@@ -49,7 +49,7 @@ from foundry.game.gfx.Palette import PaletteGroup, save_all_palette_groups
 from foundry.game.level import EnemyItemAddress, LevelAddress
 from foundry.game.level.Level import Level, world_and_level_for_level_address
 from foundry.game.level.WorldMap import WorldMap
-from foundry.gui.asm import load_asm_filename
+from foundry.gui.asm import asm_paths_from_rom_path, load_asm_filename
 from foundry.gui.commands import (
     AddEnemyAt,
     AddJump,
@@ -83,7 +83,7 @@ from foundry.gui.menus.view_menu import ViewMenu
 from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
-from foundry.gui.settings import Settings
+from foundry.gui.settings import ASMLoadingBehavior, Settings
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.visualization.level.LevelView import LevelView
 from foundry.gui.WarningList import WarningList
@@ -588,35 +588,67 @@ class FoundryMainWindow(MainWindow):
                 self.on_new_level(dont_check=True)
 
     def _check_for_asm_fns_imports(self, path_to_rom: str | Path):
-        wants_to_import = False
+        if self.settings.value("editor/asm_loading_behavior") == ASMLoadingBehavior.DONT_ASK:
+            return
 
-        # check for changed ROM and or asm files in its path
-        if self._rom_has_asm_files_in_path(Path(path_to_rom)):
-            wants_to_import = (
-                QMessageBox.question(
-                    self,
-                    "ASM files found",
-                    "There were files in your ROM directory, that look like ASM files.\n\n"
-                    "If you compiled your own ROM, perhaps you want to load those into the editor as well?",
-                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                )
-                == QMessageBox.StandardButton.Yes
+        asm_path, fns_path = asm_paths_from_rom_path(Path(path_to_rom).parent)
+
+        load_without_asking = self.settings.value("editor/asm_loading_behavior") == ASMLoadingBehavior.LOAD_IF_AVAILABLE
+        files_exist = asm_path.exists() and fns_path.exists()
+        incompatibility_found = self._has_found_incompatibilities()
+
+        # lwa fe inc
+        #   0  0   0  dont_load
+        #   0  0   1  ask_inc
+        #   0  1   0  ask_found
+        #   0  1   1  ask_inc
+        #   1  0   0  dont_load
+        #   1  0   1  ask_inc
+        #   1  1   0  just load
+        #   1  1   1  just load
+
+        dont_load = not files_exist and not incompatibility_found
+
+        if dont_load:
+            return
+
+        just_load = load_without_asking and files_exist
+
+        ask_inc = not just_load and incompatibility_found
+        ask_found = not load_without_asking and files_exist and not incompatibility_found
+
+        query_paths = False
+
+        if ask_inc:
+            answer = QMessageBox.question(
+                self,
+                "Incompatibilities found",
+                "The data in your ROM differs from expected values. This is likely due to code changes.\n\n"
+                "If you compiled your own ROM, supplying additional ASM files can solve this issue. Do you want "
+                "to import them now?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             )
 
-        if not wants_to_import and self._has_found_incompatibilities():
-            wants_to_import = (
-                QMessageBox.question(
-                    self,
-                    "Incompatibilities found",
-                    "The data in your ROM differs from expected values. This is likely due to code changes.\n\n"
-                    "If you compiled your own ROM, supplying additional ASM files can solve this issue. Do you want"
-                    " to import them now?",
-                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                )
-                == QMessageBox.StandardButton.Yes
+            query_paths = answer == QMessageBox.StandardButton.Yes
+
+        elif ask_found:
+            answer = QMessageBox.question(
+                self,
+                "ASM files found",
+                "There were files in your ROM directory, that look like ASM files.\n\n"
+                "If you compiled your own ROM, perhaps you want to load those into the editor as well?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             )
 
-        if wants_to_import:
+            query_paths = answer == QMessageBox.StandardButton.Yes
+
+        if not just_load and not query_paths:
+            return
+
+        if just_load:
+            self.file_menu.update_globals_from_fns(asm_path, fns_path)
+
+        elif query_paths:
             self.file_menu.on_fns_import()
 
     @staticmethod

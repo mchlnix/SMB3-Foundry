@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from foundry import ASM_FILE_FILTER, NO_PARENT
+from foundry.game.File import ROM
 from foundry.gui.dialogs.ObjectSetSelector import ObjectSetSelector
 from smb3parse.constants import BASE_OFFSET, VANILLA_PRG_BANK_COUNT
 from smb3parse.util import apply, hex_int
@@ -357,3 +358,13 @@ def _get_prg_offset_values(asm_file: Path) -> list[int]:
                 if ".bank" in line:
                     state = "reading"
     return prg_offsets
+
+
+def asm_paths_from_rom_path(rom_base_path: Path) -> tuple[Path, Path]:
+    assert rom_base_path.is_dir()
+    rom_name = Path(ROM.path).name.removesuffix(".nes")
+
+    backup_fns_path = rom_base_path / f"{rom_name}.fns"
+    backup_asm_path = rom_base_path / f"{rom_name}.asm"
+
+    return backup_asm_path, backup_fns_path

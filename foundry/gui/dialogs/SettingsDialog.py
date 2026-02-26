@@ -84,6 +84,8 @@ default_dirs = {
     "Custom": "",
 }
 
+asm_action_choices = ["Don't ask", "Ask if needed", "Load if available"]
+
 
 class SettingsDialog(CustomDialog):
     def __init__(self, settings: Settings, parent=None):
@@ -177,12 +179,24 @@ class SettingsDialog(CustomDialog):
             )
         )
 
+        self.asm_loading_dropdown = QComboBox()
+        self.asm_loading_dropdown.addItems(asm_action_choices)
+        self.asm_loading_dropdown.setCurrentIndex(self.settings.value("editor/asm_loading_behavior"))
+        self.asm_loading_dropdown.currentTextChanged.connect(self._update_settings)
+
+        self.gui_box.layout().addLayout(
+            label_and_widget(
+                "How to handle ASM files when opening a new ROM:",
+                self.asm_loading_dropdown,
+                tooltip="What should the editor do, when a ROM needs ASM files, or has them in its directory?",
+            )
+        )
         self.level_highlight_check_box = QCheckBox("Enabled")
         self.level_highlight_check_box.setChecked(self.settings.value("world view/show level pointers"))
         self.level_highlight_check_box.stateChanged.connect(self._update_settings)
 
         level_highlight_layout = label_and_widget(
-            "Highlight Levels in LevelSelector World Maps:", self.level_highlight_check_box
+            "Highlight LevelPointers in LevelSelector World Maps:", self.level_highlight_check_box
         )
         self.gui_box.layout().addLayout(level_highlight_layout)
 
@@ -317,6 +331,7 @@ class SettingsDialog(CustomDialog):
             self.settings.setValue("editor/resize_mode", RESIZE_RIGHT_CLICK)
 
         self.settings.setValue("editor/ask_for_level_management", self.ask_for_level_management_check_box.isChecked())
+        self.settings.setValue("editor/asm_loading_behavior", self.asm_loading_dropdown.currentIndex())
         self.settings.setValue("world view/show level pointers", self.level_highlight_check_box.isChecked())
 
         # set up style sheets

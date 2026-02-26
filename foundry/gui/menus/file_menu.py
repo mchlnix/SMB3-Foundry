@@ -141,21 +141,29 @@ class FileMenu(QMenu):
         if open_dialog.exec() == FnsAsmLoadDialog.DialogCode.Rejected:
             return
 
+        fns_path = Path(open_dialog.fns_path)
+        asm_path = Path(open_dialog.asm_path)
+
+        if self.update_globals_from_fns(asm_path, fns_path):
+            QMessageBox.information(NO_PARENT, "Update complete", "Successfully updated the ASM globals.")
+
+    # TODO kinda clunky that this is here
+    def update_globals_from_fns(self, asm_path: Path, fns_path: Path):
         try:
             QGuiApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
 
-            absolute_fns_path = make_fns_file_absolute(Path(open_dialog.fns_path), Path(open_dialog.asm_path))
+            absolute_fns_path = make_fns_file_absolute(fns_path, asm_path)
 
             update_global_offsets(absolute_fns_path)
 
             absolute_fns_path.unlink(missing_ok=True)
 
-            ROM.fns_path = open_dialog.fns_path
-            ROM.smb3_asm_path = open_dialog.asm_path
+            ROM.fns_path = str(fns_path)
+            ROM.smb3_asm_path = str(asm_path)
 
         except Exception as e:
             QMessageBox.critical(NO_PARENT, "Failed updating globals", str(e))
-            return
+            return False
 
         finally:
             QGuiApplication.restoreOverrideCursor()
@@ -165,4 +173,4 @@ class FileMenu(QMenu):
         if self.level_ref:
             self.level_ref.data_changed.emit()
 
-        QMessageBox.information(NO_PARENT, "Update complete", "Successfully updated the ASM globals.")
+        return True
