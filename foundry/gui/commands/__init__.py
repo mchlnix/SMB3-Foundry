@@ -524,7 +524,8 @@ class AddLevelObjectAt(QUndoCommand):
         self.view = level_view
         self.level = level_view.level_ref
 
-        self.pos = pos
+        # convert here, in case there's a zoom change happening between undo and redo
+        self.level_point = level_view.to_level_point(pos)
 
         self.domain = domain
         self.obj_type = obj_type
@@ -538,7 +539,7 @@ class AddLevelObjectAt(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        added_object = self.view.add_object(self.domain, self.obj_type, self.pos, self.length, self.index)
+        added_object = self.level.add_object(self.domain, self.obj_type, self.level_point, self.length, self.index)
 
         # in case the index was just -1
         self.index = self.level.objects.index(added_object)
@@ -556,7 +557,8 @@ class AddEnemyAt(QUndoCommand):
         self.view = level_view
         self.level = level_view.level_ref
 
-        self.pos = pos
+        # convert here, in case there's a zoom change happening between undo and redo
+        self.level_point = level_view.to_level_point(pos)
 
         self.enemy_type = enemy_type
 
@@ -568,7 +570,7 @@ class AddEnemyAt(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        added_enemy = self.view.add_enemy(self.enemy_type, self.pos, self.index)
+        added_enemy = self.level.add_enemy(self.enemy_type, self.level_point, self.index)
 
         # in case the index was just -1
         self.index = self.level.enemies.index(added_enemy)
@@ -599,7 +601,11 @@ class PasteObjectsAt(QUndoCommand):
         self.created_objects: list[LevelObject] = []
         self.created_enemies: list[EnemyItem] = []
 
-        self.pos = pos
+        if pos is None:
+            self.level_point = self.view.last_mouse_position
+        else:
+            self.level_point = self.view.to_level_point(pos)
+
         self.last_mouse_position: Position = self.view.last_mouse_position.copy()
 
         self.setText(f"Paste {object_names(objects)}")
@@ -614,14 +620,9 @@ class PasteObjectsAt(QUndoCommand):
         self.view.level_ref.level.data_changed.emit()
 
     def redo(self):
-        # TODO, replace with the level version, so we don't have to restore the last mouse position?
-        # maybe only use indexes into object list, instead of object refs themselves?
-        # restore last mouse position, since it is used inside the method as a fallback
-        self.view.last_mouse_position = self.last_mouse_position.copy()
-
         # this will create clones of the cached objects, not paste them with their old graphics (in case of ROM reload)
         if not self.created_objects and not self.created_enemies:
-            self.view.paste_objects_at(self.paste_data, self.pos)
+            self.view.paste_objects_at(self.paste_data, self.level_point)
 
             if self.object_count:
                 self.created_objects = self.view.level_ref.level.objects[-self.object_count :]

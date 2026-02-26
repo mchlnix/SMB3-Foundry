@@ -278,13 +278,7 @@ class MainView(QWidget):
 
             return self.level_ref.level.enemy_item_factory.from_properties(enemy_id, 0, 0)
 
-    def paste_objects_at(self, paste_data: tuple[Sequence[ObjectLike], Position], q_point: QPoint | None):
-        if q_point is None:
-            # when the keyboard shortcut was used
-            pos = self.last_mouse_position
-        else:
-            pos = self.to_level_point(q_point)
-
+    def paste_objects_at(self, paste_data: tuple[Sequence[ObjectLike], Position], pos: Position):
         objects, origin = paste_data
 
         pasted_objects = []
