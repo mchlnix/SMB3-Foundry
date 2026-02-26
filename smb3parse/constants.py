@@ -173,6 +173,7 @@ MAPITEM_NAMES = {
     MAPITEM_UNKNOWN2: "Broken 2",
 }
 
+# TODO get from objects.dat instead?
 TILE_NAMES: dict[int, str] = defaultdict(lambda: "Blank Square")
 TILE_NAMES.update(
     {
@@ -559,8 +560,10 @@ def update_global_offsets(path_to_global_list: Path):
             if not hasattr(Constants, label_name):
                 warnings.append(f"Unknown label: {label_name}")
 
+                # if this label is new, also set the backup value for it
+                setattr(Constants, f"_{label_name}", global_address)
+
             setattr(Constants, label_name, global_address)
 
-    for attr_name in Constants._redirect:
-        if attr_name.isupper():
-            print(f"{attr_name}: {getattr(Constants, attr_name):#x}")
+    for warning in warnings:
+        print(warning)
