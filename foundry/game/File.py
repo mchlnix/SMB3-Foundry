@@ -77,9 +77,8 @@ class ROM(Rom):
         :return:
         """
         # circular import with ROM
-        from foundry.game.gfx import restore_all_palettes, restore_graphics
+        from foundry.game.gfx import restore_graphics
 
-        restore_all_palettes()
         restore_graphics()
 
     @staticmethod
