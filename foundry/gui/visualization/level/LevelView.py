@@ -689,7 +689,7 @@ class LevelView(MainView):
     ):
         level_pos = self.to_level_point(q_point)
 
-        self.level_ref.add_object(domain, obj_index, level_pos, length, index)
+        return self.level_ref.add_object(domain, obj_index, level_pos, length, index)
 
     def add_enemy(self, enemy_type: int, q_point: QPoint, index=-1):
         level_pos = self.to_level_point(q_point)

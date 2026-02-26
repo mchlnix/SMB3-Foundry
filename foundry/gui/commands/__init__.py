@@ -493,11 +493,18 @@ class AddObject(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
+        # create a new object instead of using the cached one in case graphic data has changed in the meantime
         if isinstance(self.obj, LevelObject):
-            self.level.objects.insert(self.index_to_add, self.obj)
+            self.level.add_object(
+                self.obj.domain,
+                self.obj.obj_index,
+                Position.from_tuple(self.obj.get_position()),
+                self.obj.length,
+                self.index_to_add,
+            )
         else:
             assert isinstance(self.obj, EnemyItem)
-            self.level.enemies.insert(self.index_to_add, self.obj)
+            self.level.add_enemy(self.obj.obj_index, Position.from_tuple(self.obj.get_position()), self.index_to_add)
 
         self.level.data_changed.emit()
 
@@ -523,8 +530,6 @@ class AddLevelObjectAt(QUndoCommand):
         self.obj_type = obj_type
         self.length = length
 
-        self.added_object: LevelObject | None = None
-
         self.index = index
 
     def undo(self):
@@ -533,17 +538,13 @@ class AddLevelObjectAt(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        if self.added_object is None:
-            self.view.add_object(self.domain, self.obj_type, self.pos, self.length, self.index)
-            self.added_object = self.level.objects[self.index]
+        added_object = self.view.add_object(self.domain, self.obj_type, self.pos, self.length, self.index)
 
-            # in case the index was just -1
-            self.index = self.level.objects.index(self.added_object)
-        else:
-            self.level.objects.insert(self.index, self.added_object)
+        # in case the index was just -1
+        self.index = self.level.objects.index(added_object)
 
         # TODO use level coordinates, possibly by using level directly, instead of level view
-        self.setText(f"Add {self.added_object.name} at {self.added_object.x_position}, {self.added_object.y_position}")
+        self.setText(f"Add {added_object.name} at {added_object.x_position}, {added_object.y_position}")
 
         self.level.data_changed.emit()
 
@@ -559,8 +560,6 @@ class AddEnemyAt(QUndoCommand):
 
         self.enemy_type = enemy_type
 
-        self.added_enemy: EnemyItem | None = None
-
         self.index = index
 
     def undo(self):
@@ -569,18 +568,13 @@ class AddEnemyAt(QUndoCommand):
         self.level.data_changed.emit()
 
     def redo(self):
-        if self.added_enemy is None:
-            self.added_enemy = self.view.add_enemy(self.enemy_type, self.pos, self.index)
+        added_enemy = self.view.add_enemy(self.enemy_type, self.pos, self.index)
 
-            # in case the index was just -1
-            self.index = self.level.enemies.index(self.added_enemy)
-        else:
-            self.level.enemies.insert(self.index, self.added_enemy)
-
-        enemy = self.level.enemies[self.index]
+        # in case the index was just -1
+        self.index = self.level.enemies.index(added_enemy)
 
         # TODO use level coordinates, possibly by using level directly, instead of level view
-        self.setText(f"Add {enemy.name} at {enemy.x_position}, {enemy.y_position}")
+        self.setText(f"Add {added_enemy.name} at {added_enemy.x_position}, {added_enemy.y_position}")
 
         self.level.data_changed.emit()
 
