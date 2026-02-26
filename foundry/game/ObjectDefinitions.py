@@ -156,39 +156,4 @@ def load_object_definitions(object_set):
 
     object_def_table = object_def_tables[object_def_no]
 
-    if object_def_no == ENEMY_OBJECT_DEFINITION:
-        # we cannot yet render the enemies from ROM data, so no need to update what we read in from objects.dat
-        return object_def_table
-
-    data = Path(data_dir.joinpath(f"romobjs{object_def_no}.dat")).read_bytes()
-
-    assert data
-
-    object_count = data[0]
-
-    position = 1  # skip the object count
-
-    for object_index in range(object_count):
-        object_design_length = data[position]  # the first byte is the number of block indexes
-
-        object_def = object_def_table[object_index]
-
-        assert object_def.object_design_length == object_design_length, (object_def_no, object_def.description)
-        object_def.object_design_length = object_design_length
-
-        position += 1
-
-        for i in range(object_design_length):
-            block_index = data[position]
-
-            # if the block index is 0xFF, it is a 24-bit address in the ROM
-            if block_index == 0xFF:
-                block_index = (data[position + 1] << 16) + (data[position + 2] << 8) + data[position + 3]
-
-                position += 3
-
-            object_def.rom_block_indexes[i] = block_index
-
-            position += 1
-
     return object_def_table
