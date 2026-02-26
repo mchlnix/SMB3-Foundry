@@ -76,6 +76,15 @@ class Position:
         return Position(int(x), int(y), int(screen))
 
     @staticmethod
+    def from_tuple(tup):
+        if len(tup) == 2:
+            return Position.from_xy(*tup)
+        elif len(tup) == 3:
+            return Position(*tup)
+        else:
+            raise ValueError(f"Expected 2 or 3 values, got {len(tup)}")
+
+    @staticmethod
     def from_tile_data_index(index: int):
         screen = index // WORLD_MAP_SCREEN_SIZE
         index %= WORLD_MAP_SCREEN_SIZE
