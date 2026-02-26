@@ -37,19 +37,21 @@ def main(path_to_rom, check_auto_save=True, level_data_tuple=(), m3l_path=""):
     global app
     app = QApplication()
 
-    if check_auto_save and auto_save_rom_path.exists():
+    main_window = FoundryMainWindow()
+
+    have_level_data = level_data_tuple or m3l_path
+
+    if check_auto_save and main_window.settings.value("editor/auto_save_enabled") and auto_save_rom_path.exists():
         result = AutoSaveDialog().exec()
 
         if result == QMessageBox.DialogCode.Accepted:
             path_to_rom = auto_save_rom_path
+            have_level_data = True
 
             QMessageBox.information(
                 None, "Auto Save recovered", "Don't forget to save the loaded ROM under a new name!"
             )
 
-    main_window = FoundryMainWindow()
-
-    have_level_data = level_data_tuple or m3l_path
     main_window.on_open_rom(path_to_rom, try_opening_level=not have_level_data)
 
     if ROM.is_loaded():

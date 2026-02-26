@@ -33,6 +33,7 @@ SETTINGS["editor/default dir path"] = ""
 SETTINGS["editor/custom default dir path"] = ""
 SETTINGS["editor/show_block_item_in_toolbar"] = True
 SETTINGS["editor/ask_for_level_management"] = True
+SETTINGS["editor/auto_save_enabled"] = True
 SETTINGS["editor/asm_loading_behavior"] = ASMLoadingBehavior.ASK_IF_NEEDED
 
 SETTINGS["editor/update_on_startup"] = False

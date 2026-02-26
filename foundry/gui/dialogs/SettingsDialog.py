@@ -174,8 +174,21 @@ class SettingsDialog(CustomDialog):
             label_and_widget(
                 "Ask for Automatic Level Management when opening a new ROM:",
                 self.ask_for_level_management_check_box,
-                tooltip="Should the editor ask to enable Automatic Level Management when opening a new ROM "
-                "that isn't managed yet?",
+                tooltip="Should the editor ask to enable Automatic Level Management when opening a new ROM that isn't "
+                "managed yet?",
+            )
+        )
+
+        self.auto_save_check_box = QCheckBox("Enabled")
+        self.auto_save_check_box.setChecked(self.settings.value("editor/auto_save_enabled"))
+        self.auto_save_check_box.stateChanged.connect(self._update_settings)
+
+        self.gui_box.layout().addLayout(
+            label_and_widget(
+                "Keep a backup of the ROM, in case the Editor crashes:",
+                self.auto_save_check_box,
+                tooltip="Should the editor keep a copy of the current ROM with unsaved changes, so that if it crashes, "
+                "the ROM and changed level can be restored?",
             )
         )
 
@@ -331,6 +344,7 @@ class SettingsDialog(CustomDialog):
             self.settings.setValue("editor/resize_mode", RESIZE_RIGHT_CLICK)
 
         self.settings.setValue("editor/ask_for_level_management", self.ask_for_level_management_check_box.isChecked())
+        self.settings.setValue("editor/auto_save_enabled", self.auto_save_check_box.isChecked())
         self.settings.setValue("editor/asm_loading_behavior", self.asm_loading_dropdown.currentIndex())
         self.settings.setValue("world view/show level pointers", self.level_highlight_check_box.isChecked())
 
