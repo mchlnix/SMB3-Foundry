@@ -64,7 +64,6 @@ class ObjectDropdown(QComboBox):
         )
 
         needs_full_update = self._object_set_index != object_set_index
-        needs_graphics_update_only = self._graphic_set_index != graphic_set_index
 
         self._object_set_index = object_set_index
         self._graphic_set_index = graphic_set_index
@@ -72,7 +71,7 @@ class ObjectDropdown(QComboBox):
         if needs_full_update:
             self._on_object_factory_change(factory)
 
-        elif needs_graphics_update_only:
+        else:
             self.set_graphics_set(factory)
 
     def set_graphics_set(self, factory: LevelObjectFactory) -> None:
