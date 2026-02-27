@@ -2670,7 +2670,7 @@
 3, 0x0F, 0x0F, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 3, 0x10, 0x1F, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Wooden Ship Background Line, <$58>
 3, 0x20, 0x2F, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Railings, <$00>
-3, 0x30, 0x3F, 1, 2, HORIZONTAL        , UNIFORM         , 3byte, Ground (like on tank levels), <$35, $34>
+3, 0x30, 0x3F, 1, 2, HORIZONTAL        , UNIFORM         , 3byte, Ground (like on tank levels), <$34, $35>
 3, 0x40, 0x4F, 3, 3, HORIZONTAL        , TWO_ENDS        , 4byte, Metal box platform, <$A3, $A4, $A5, $8D, $86, $8E, $8F, $90, $91>
 3, 0x50, 0x5F, 3, 4, HORIZONTAL        , TWO_ENDS        , 3byte, Crate, <$5C, $5D, $5E, $49, $4A, $4B, $49, $4A, $4B, $4C, $4D, $4E>
 3, 0x60, 0x6F, 2, 1, HORIZONTAL        , UNIFORM         , 3byte, Portholes, <$C9, $00>
