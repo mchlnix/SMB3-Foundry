@@ -601,7 +601,9 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self, path_to_rom=Path(), close_current_level=True, try_opening_level=True):
+    def on_open_rom(
+        self, path_to_rom=Path(), check_for_asm_files=True, close_current_level=True, try_opening_level=True
+    ):
         if not self.safe_to_change():
             return
 
@@ -612,14 +614,15 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
         # Proceed to load the file chosen by the user
         try:
-            ROM.load_from_file(path_to_rom)
+            ROM.load_from_file(path_to_rom, reset_globals=False)
             self.set_rom_path_to_watch(path_to_rom)
 
             if close_current_level:
                 self.close_current_level()
 
-            # TODO check for file and input errors for this separately
-            self._check_for_asm_fns_imports(path_to_rom)
+            if check_for_asm_files:
+                # TODO check for file and input errors for this separately
+                self._check_for_asm_fns_imports(path_to_rom)
 
             if self.settings.value("editor/ask_for_level_management"):
                 self._ask_for_level_management()
@@ -651,6 +654,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
     def _check_for_asm_fns_imports(self, path_to_rom: str | Path):
         if self.settings.value("editor/asm_loading_behavior") == ASMLoadingBehavior.DONT_ASK:
+            ROM.reset_globals()
             return
 
         asm_path, fns_path = asm_paths_from_rom_path(Path(path_to_rom).parent)

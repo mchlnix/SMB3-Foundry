@@ -1,6 +1,6 @@
 from hashlib import md5
 from pathlib import Path
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 from PySide6.QtCore import QFileSystemWatcher, Signal, SignalInstance
 from PySide6.QtGui import QUndoStack
@@ -8,6 +8,9 @@ from PySide6.QtWidgets import QMessageBox
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
+
+if TYPE_CHECKING:
+    from foundry.gui.menus.file_menu import FileMenu
 
 
 class RomWatcherMixin:
@@ -72,6 +75,7 @@ class RomHotSwapMixin:
     _rom_watcher_enabled: bool
     update_level: Callable
     on_open_rom: Callable
+    file_menu: "FileMenu"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -112,7 +116,16 @@ class RomHotSwapMixin:
         if needs_level_reload:
             self.prepare_level_reload()
 
-        self.on_open_rom(Path(ROM.path), close_current_level=False, try_opening_level=False)
+        asm_path_before_reload = Path(ROM.smb3_asm_path)
+        fns_path_before_reload = Path(ROM.fns_path)
+
+        self.on_open_rom(Path(ROM.path), check_for_asm_files=False, close_current_level=False, try_opening_level=False)
+
+        if asm_path_before_reload.is_file() and fns_path_before_reload.is_file():
+            ROM.smb3_asm_path = str(asm_path_before_reload)
+            ROM.fns_path = str(fns_path_before_reload)
+
+            self.file_menu.update_globals_from_fns(asm_path_before_reload, fns_path_before_reload)
 
         if needs_level_reload:
             self.execute_level_reload()

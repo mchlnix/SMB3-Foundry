@@ -48,8 +48,7 @@ class ROM(Rom):
             data = bytearray(rom.read())
 
         if reset_globals:
-            ROM.fns_path = ROM.smb3_asm_path = ""
-            reset_global_offsets()
+            ROM.reset_globals()
 
         ROM.header = INESHeader.from_buffer_copy(data)
         ROM.path = str(path)
@@ -119,3 +118,8 @@ class ROM(Rom):
 
         start = bank * PRG_BANK_SIZE
         return self.find(needle, start, start + PRG_BANK_SIZE)
+
+    @classmethod
+    def reset_globals(cls):
+        ROM.fns_path = ROM.smb3_asm_path = ""
+        reset_global_offsets()
