@@ -601,7 +601,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
         self.setWindowTitle(title)
 
-    def on_open_rom(self, path_to_rom=Path(), try_opening_level=True):
+    def on_open_rom(self, path_to_rom=Path(), close_current_level=True, try_opening_level=True):
         if not self.safe_to_change():
             return
 
@@ -615,7 +615,8 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
             ROM.load_from_file(path_to_rom)
             self.set_rom_path_to_watch(path_to_rom)
 
-            self.close_current_level()
+            if close_current_level:
+                self.close_current_level()
 
             # TODO check for file and input errors for this separately
             self._check_for_asm_fns_imports(path_to_rom)

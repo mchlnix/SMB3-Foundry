@@ -112,7 +112,7 @@ class RomHotSwapMixin:
         if needs_level_reload:
             self.prepare_level_reload()
 
-        self.on_open_rom(Path(ROM.path), try_opening_level=False)
+        self.on_open_rom(Path(ROM.path), close_current_level=False, try_opening_level=False)
 
         if needs_level_reload:
             self.execute_level_reload()
