@@ -94,15 +94,15 @@ class RomHotSwapMixin:
         self.__original_object_set = self.level_ref.level.object_set_number
 
     def _unwind_undo_stack(self):
+        self.__undo_stack_index_before_reload = self.undo_stack.index()
+
         index_at_last_save = self.undo_stack.cleanIndex()
 
         if index_at_last_save == -1:
-            self.__undo_stack_index_before_reload = 0
-        else:
-            self.__undo_stack_index_before_reload = index_at_last_save
+            index_at_last_save = 0
 
         # unwind undo stack to get original level data
-        self.undo_stack.setIndex(self.__undo_stack_index_before_reload)
+        self.undo_stack.setIndex(index_at_last_save)
 
     def hotswap_roms(self):
         self._protect_undo_stack = True
@@ -139,6 +139,11 @@ class RomHotSwapMixin:
 
         # open the level again
         self.update_level("", new_lvl_address, new_enemy_address, self.__original_object_set)
+
+        self._rewind_undo_stack()
+
+    def _rewind_undo_stack(self):
+        self.undo_stack.setIndex(0)
 
         # reapply all the undo commands
         while self.undo_stack.canRedo() and self.undo_stack.index() < self.__undo_stack_index_before_reload:
