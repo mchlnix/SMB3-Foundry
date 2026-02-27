@@ -281,12 +281,26 @@ class LevelView(MainView):
         if all(isinstance(obj, EnemyItem) for obj in self.get_selected_objects()):
             return False
 
-        self.mouse_mode = resize_mode
+        # check if there is at least one selected object that can be resized with the given mode, otherwise, return
+        at_least_one = False
 
-        if (obj := self.object_at(event.position().toPoint())) is None:
+        for obj in self.get_selected_objects():
+            if obj.expands() & EXPANDS_VERT and resize_mode & MODE_RESIZE_VERT:
+                at_least_one = True
+                break
+            elif obj.expands() & EXPANDS_HORIZ and resize_mode & MODE_RESIZE_HORIZ:
+                at_least_one = True
+                break
+
+        if not at_least_one:
             return False
 
-        self.resize_obj_start_point = Position.from_xy(*obj.get_position())
+        self.mouse_mode = resize_mode
+
+        if (found_obj := self.object_at(event.position().toPoint())) is None:
+            return False
+
+        self.resize_obj_start_point = Position.from_xy(*found_obj.get_position())
 
         self.objects_before_resizing = [obj.copy() for obj in self.get_selected_objects()]
 
@@ -387,10 +401,10 @@ class LevelView(MainView):
                     and edge
                     and self._try_start_resize(self._resize_mode_from_edge(edge), event)
                 ):
-                    pass
-                else:
-                    self.drag_start_point = Position.from_xy(*obj.get_position())
-                    self.objects_before_moving = [obj.copy() for obj in self.get_selected_objects()]
+                    return
+
+                self.drag_start_point = Position.from_xy(*obj.get_position())
+                self.objects_before_moving = [obj.copy() for obj in self.get_selected_objects()]
         else:
             self._start_selection_square(event.position().toPoint())
 

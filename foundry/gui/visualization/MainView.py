@@ -133,11 +133,14 @@ class MainView(QWidget):
         pressed_button = event.button()
 
         if pressed_button == Qt.MouseButton.LeftButton:
-            self._on_left_mouse_button_down(event)
+            return self._on_left_mouse_button_down(event)
+
         elif pressed_button == Qt.MouseButton.MiddleButton:
-            self._on_middle_mouse_button_down(event)
+            return self._on_middle_mouse_button_down(event)
+
         elif pressed_button == Qt.MouseButton.RightButton:
-            self._on_right_mouse_button_down(event)
+            return self._on_right_mouse_button_down(event)
+
         else:
             return super(MainView, self).mousePressEvent(event)
 
@@ -157,9 +160,10 @@ class MainView(QWidget):
         released_button = event.button()
 
         if released_button == Qt.MouseButton.LeftButton:
-            self._on_left_mouse_button_up(event)
+            return self._on_left_mouse_button_up(event)
+
         elif released_button == Qt.MouseButton.RightButton:
-            self._on_right_mouse_button_up(event)
+            return self._on_right_mouse_button_up(event)
         else:
             return super(MainView, self).mouseReleaseEvent(event)
 
