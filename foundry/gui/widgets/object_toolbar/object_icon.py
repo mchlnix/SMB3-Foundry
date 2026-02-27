@@ -97,18 +97,26 @@ class ObjectIcon(QWidget):
         elif level_object is not None and (obj := get_minimal_icon_object(level_object)):
             self.object = obj
 
-            if obj.name.lower() in objects_to_use_pngs_instead:
-                self.image = objects_to_use_pngs_instead[obj.name.lower()]
-            else:
-                self.image = self.object.as_image()
-
             self.setToolTip(self.object.name)
 
         else:
             self.image = QImage()
-            self.setToolTip("")
 
+        self.update_image()
         self.update()
+
+    def update_image(self):
+        if isinstance(self.object, Jump):
+            return
+
+        elif self.object is None:
+            self.image = QImage()
+
+        elif self.object.name.lower() in objects_to_use_pngs_instead:
+            self.image = objects_to_use_pngs_instead[self.object.name.lower()]
+
+        else:
+            self.image = self.object.as_image()
 
     def heightForWidth(self, width: int) -> int:
         current_width, current_height = self.image.size().toTuple()

@@ -5,7 +5,13 @@ from PySide6.QtCore import QSize, Qt, Signal, SignalInstance
 from PySide6.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
 from foundry.game import should_be_placeable
-from foundry.game.gfx.objects import EnemyItemFactory, LevelObjectFactory
+from foundry.game.gfx import GraphicsSet
+from foundry.game.gfx.objects import (
+    EnemyItem,
+    EnemyItemFactory,
+    LevelObject,
+    LevelObjectFactory,
+)
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 from smb3parse.util import apply
@@ -87,24 +93,17 @@ class ObjectToolBox(QWidget):
         apply(self.add_object, valid_enemy_items)
 
     def set_graphic_set(self, graphic_set_index: int):
-        if self._object_set_index == -1:
-            # no object was added yet, so the object set was not set yet either, nothing to update
-            return
-
-        factory = LevelObjectFactory(
-            self._object_set_index,
-            graphic_set_index,
-            0,
-            [],
-            vertical_level=False,
-            size_minimal=True,
-        )
-
         for object_icon in self._gen_icon_widgets():
-            old_object = object_icon.object
-            new_object = factory.from_properties(old_object.domain, old_object.obj_index, 0, 0, None, 0)
+            obj = object_icon.object
 
-            object_icon.set_object(new_object)
+            if isinstance(obj, EnemyItem):
+                continue
+
+            assert isinstance(obj, LevelObject)
+
+            obj.graphics_set = GraphicsSet.from_number(graphic_set_index)
+            obj.block_cache.clear()
+            object_icon.set_object(obj)
 
     def clear(self):
         self._extract_objects()

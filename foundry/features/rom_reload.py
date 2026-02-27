@@ -75,6 +75,7 @@ class RomHotSwapMixin:
     _rom_watcher_enabled: bool
     update_level: Callable
     on_open_rom: Callable
+    _update_block_graphics_in_ui: Callable
     file_menu: "FileMenu"
 
     def __init__(self, *args, **kwargs):
@@ -129,6 +130,8 @@ class RomHotSwapMixin:
 
         if needs_level_reload:
             self.execute_level_reload()
+
+        self._update_block_graphics_in_ui()
 
         self._protect_undo_stack = False
 

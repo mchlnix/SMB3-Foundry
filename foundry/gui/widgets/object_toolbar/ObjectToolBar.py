@@ -54,7 +54,6 @@ class ObjectToolBar(QWidget):
 
     def set_object_set(self, object_set_index: int, graphic_set_index: int = -1):
         needs_full_update = self._object_set_index != object_set_index
-        needs_graphic_update_only = self._graphic_set_index != graphic_set_index
 
         self._object_set_index = object_set_index
         self._graphic_set_index = graphic_set_index
@@ -62,7 +61,7 @@ class ObjectToolBar(QWidget):
         if needs_full_update:
             self.tabbed_tool_box.set_object_set(object_set_index, graphic_set_index)
 
-        elif needs_graphic_update_only:
+        else:
             self.tabbed_tool_box.set_graphic_set(graphic_set_index)
 
             self._update_currently_selected_object_icon(graphic_set_index, object_set_index)
