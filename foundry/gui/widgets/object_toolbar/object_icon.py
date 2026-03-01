@@ -65,7 +65,7 @@ class ObjectIcon(QWidget):
         self.max_size = self.MIN_SIZE
 
     def mouseMoveEvent(self, event):
-        if not (event.buttons() & Qt.LeftButton):
+        if not (event.buttons() & Qt.MouseButton.LeftButton):
             return super(ObjectIcon, self).mouseMoveEvent(event)
 
         assert self.object is not None
@@ -87,9 +87,10 @@ class ObjectIcon(QWidget):
 
         drag.setMimeData(mime_data)
 
-        self.clicked.emit()
+        if drag.exec() != Qt.DropAction.IgnoreAction:
+            self.clicked.emit()
 
-        drag.exec()
+        return None
 
     def set_object(self, level_object: Optional[InLevelObject]):
         if isinstance(level_object, Jump):

@@ -87,10 +87,12 @@ class ObjectToolBar(QWidget):
         self.current_object_icon.set_object(new_object)
 
     def _on_object_icon_selected(self, object_icon: ObjectIcon):
-        if object_icon.object is not None:
-            self.select_object(object_icon.object)
+        if object_icon.object is None:
+            return
 
-            self.object_selected.emit(object_icon.object)
+        self.select_object(object_icon.object)
+
+        self.object_selected.emit(object_icon.object)
 
     def select_object(self, level_object: InLevelObject):
         if not isinstance(level_object, (LevelObject, EnemyItem)):

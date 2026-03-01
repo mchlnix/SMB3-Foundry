@@ -10,7 +10,7 @@ _INDEX_RECENTLY_USED = 0
 
 
 class TabbedToolBox(QTabWidget):
-    """Holds 3 ObjectToolboxes. One for Level Objects, one for enemies and one for recently used items."""
+    """Holds 3 ObjectToolboxes. One for Level Objects, one for enemies, and one for recently used items."""
 
     object_icon_clicked: SignalInstance = Signal(ObjectIcon)
 
@@ -81,7 +81,7 @@ class TabbedToolBox(QTabWidget):
 
     def set_object_set(self, object_set_index, graphic_set_index=-1):
         """
-        When we get a new object set, then we need to completely reload all objects, because they are not compatible
+        When we get a new object set, then we need to completely reload all objects because they are not compatible
         with each other.
 
         :param object_set_index:
