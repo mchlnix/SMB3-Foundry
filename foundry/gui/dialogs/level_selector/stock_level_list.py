@@ -118,6 +118,10 @@ class StockLevelWidget(QWidget):
 
         return world_number
 
+    @world_number.setter
+    def world_number(self, value):
+        self.world_list.setCurrentRow(value - 1)
+
     @property
     def level_name(self):
         if self.level_is_overworld:

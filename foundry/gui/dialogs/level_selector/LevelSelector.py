@@ -157,6 +157,8 @@ class LevelSelector(QDialog):
 
         self.source_selector.setCurrentIndex(world_number)
 
+        self._stock_level_widget.world_number = world_number
+
     def deactivate_level_list(self):
         self.source_selector.setTabEnabled(0, False)
 
