@@ -329,6 +329,8 @@ class FoundryMainWindow(MainWindow):
             "the timer, or where and how Mario enters the level.<br/>"
         )
 
+        self.menu_toolbar.addAction(self.edit_level_settings_action)
+
         self.jump_destination_action = self.menu_toolbar.addAction(
             icon("arrow-right-circle.svg"), "Go to Jump Destination"
         )
