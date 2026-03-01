@@ -166,9 +166,9 @@ class FoundryMainWindow(MainWindow):
         self.edit_header_action.setIcon(icon("tool.svg"))
         self.edit_header_action.triggered.connect(self.on_header_editor)
 
-        self.edit_level_settings = self.level_menu.addAction("Other Level Settings")
-        self.edit_level_settings.setIcon(icon("settings.svg"))
-        self.edit_level_settings.triggered.connect(self.on_edit_level_settings)
+        self.edit_level_settings_action = self.level_menu.addAction("Other Level Settings")
+        self.edit_level_settings_action.setIcon(icon("settings.svg"))
+        self.edit_level_settings_action.triggered.connect(self.on_edit_level_settings)
 
         self.level_menu.addSeparator()
 
@@ -298,6 +298,9 @@ class FoundryMainWindow(MainWindow):
 
         self.menu_toolbar.addAction(self._rom_menu.rom_settings_action)
         self.menu_toolbar.addAction(self._rom_menu.game_properties_action)
+
+        self.menu_toolbar.addSeparator()
+
         self.menu_toolbar.addAction(self.select_level_action)
 
         self.menu_toolbar.addSeparator()
