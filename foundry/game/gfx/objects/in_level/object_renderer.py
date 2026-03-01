@@ -6,7 +6,7 @@ from PySide6.QtCore import QRect
 from foundry.game import GROUND, SKY
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
-from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
+from smb3parse.levels import LEVEL_MAX_LENGTH, LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
 ENDING_STR = {
@@ -32,10 +32,13 @@ GENERATOR_TYPE_TO_STR = {
     GeneratorType.PYRAMID_2: "Pyramid Alternative",
     GeneratorType.TO_THE_SKY: "To the Sky",
     GeneratorType.ENDING: "Ending",
+    GeneratorType.BRICK_WALL: "Brick Wall",
+    GeneratorType.DIAG_STAGGERED: "Diagonal Staggered",
+    GeneratorType.WOODEN_TANK_BEAM: "Wooden Tank Beam",
 }
 
 
-# not all objects provide a block index for blank block
+# not all objects provide a block index for a blank block
 BLANK = -1
 
 if TYPE_CHECKING:
@@ -147,10 +150,12 @@ class ObjectRenderer:
 
         elif self._object.generator_type in [
             GeneratorType.HORIZONTAL,
-            GeneratorType.HORIZ_TO_GROUND,
             GeneratorType.HORIZONTAL_2,
+            GeneratorType.HORIZ_TO_GROUND,
         ]:
             self._render_horizontal(blocks_to_draw)
+        elif self._object.generator_type == GeneratorType.WOODEN_TANK_BEAM:
+            self._render_wooden_tank_beam(blocks_to_draw)
 
         elif self._object.generator_type == GeneratorType.BRICK_WALL:
             self._render_brick_wall(blocks_to_draw)
@@ -239,6 +244,30 @@ class ObjectRenderer:
 
             if self._object.height > 1:
                 _insert_block_row(bottom)
+
+    def _render_wooden_tank_beam(self, blocks_to_draw: list[int]):
+        # The block is always rendered as having a height of 1, no matter what the object data says
+        # It also expands it's width differently and alternates between two fill blocks, needing its own generator
+        self._new_height = 1
+
+        # length of 0 fills the screen, length of 1 means 2, 2 means 3 and so on
+        if self._object.length == 0:
+            # TODO Would need a level reference to know how many screens there are, to properly size this object
+            # Now it extends past most levels, unless they are at max size, causing a warning in the editor
+            self._new_width = LEVEL_MAX_LENGTH - self._base_x
+        else:
+            self._new_width = self._object.width + (self._object.length - 1)
+
+        left_end, right_end, *middles = self._object.blocks
+        blocks_to_draw.append(left_end)
+
+        middle_block_count = self._new_width - self._object.width
+
+        # any width larger than 2 is filled by alternating between the two fill blocks
+        for middle_index in range(middle_block_count):
+            blocks_to_draw.append(middles[middle_index % len(middles)])
+
+        blocks_to_draw.append(right_end)
 
     def _render_black_boss_room_bg(self, blocks_to_draw: list[int]):
         self._new_width = LEVEL_SCREEN_WIDTH

@@ -42,6 +42,7 @@ GENERATOR_TYPE_TO_STR = {
     GeneratorType.TO_THE_SKY: "To the Sky",
     GeneratorType.ENDING: "Ending",
     GeneratorType.BRICK_WALL: "Brick Wall",
+    GeneratorType.WOODEN_TANK_BEAM: "Wooden Tank Beam",
 }
 
 

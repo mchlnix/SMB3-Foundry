@@ -13,8 +13,12 @@ from foundry.game.gfx.objects.world_map.level_pointer import LevelPointer
 from foundry.game.gfx.objects.world_map.locks import Lock
 from foundry.game.gfx.objects.world_map.map_tile import MapTile
 from foundry.game.gfx.objects.world_map.sprite import Sprite
+from smb3parse.objects.object_set import AIR_SHIP_OBJECT_SET
 
 Iconifiable = TypeVar("Iconifiable", None, _InLevelObject)
+
+_wooden_tank_beam = (AIR_SHIP_OBJECT_SET, 0x03, 0x70)
+_special_cases = [_wooden_tank_beam]
 
 
 def get_minimal_icon_object(level_object: Iconifiable) -> Iconifiable:
@@ -25,6 +29,12 @@ def get_minimal_icon_object(level_object: Iconifiable) -> Iconifiable:
         return level_object
 
     level_object.ground_level = 3
+
+    if level_object.object_info in _special_cases:
+        if level_object.object_info == _wooden_tank_beam:
+            level_object.length = 1
+
+        level_object.render()
 
     while (
         any(block not in level_object.rendered_blocks for block in level_object.blocks) and level_object.length < 0x10

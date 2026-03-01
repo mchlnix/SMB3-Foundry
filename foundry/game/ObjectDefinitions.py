@@ -42,6 +42,7 @@ class GeneratorType(Enum):
     ENDING = 14
     BRICK_WALL = 15
     DIAG_STAGGERED = 16
+    WOODEN_TANK_BEAM = 17  # special expansion rules and infinite expansion when length 0
 
 
 class EndType(Enum):
