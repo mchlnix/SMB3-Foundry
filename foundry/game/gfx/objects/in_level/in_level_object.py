@@ -20,8 +20,10 @@ class InLevelObject(ObjectLike, abc.ABC):
 
     data: bytearray
 
-    rendered_height: int
     rendered_width: int
+    """Width after rendering the object. Only changes for expanding types."""
+    rendered_height: int
+    """Height after rendering the object. Only changes for expanding types."""
 
     anim_frame: int = 0
 

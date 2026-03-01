@@ -50,21 +50,30 @@ class ObjectRenderer:
     def __init__(self, level_object: "LevelObject"):
         self._object = level_object
 
-        self.base_x: int = self._object.x_position
+        self._base_x: int = self._object.x_position
         """
-        The left most point where blocks for this object are drawn. This is often the same as the x position, but in
-        pyramids for example, the x position describes the center, from which they grow outwards in both directions.
+        The left most point where blocks for this object are drawn from. This is often the same as the x position, but
+        in pyramids for example, the x position describes the center, from which they grow outwards in both directions.
+
+        B...O¤.... With B being the base x and base y and the O being the objects x and y in the data of the ROM
+        ...¤¤¤¤...
+        ..¤¤¤¤¤¤..
+        .¤¤¤¤¤¤¤¤.
+        ¤¤¤¤¤¤¤¤¤¤
         """
-        self.base_y: int = self._object.y_position
-        """The upmost point where blocks for this object are drawn. This is often the same as the y position."""
+        self._base_y: int = self._object.y_position
+        """See _base_x."""
 
         self._new_width: int = self._object.rendered_width
+        """
+        After rendering the object might be wider than originally thought. Keep track of it, while rendering here.
+        """
         self._new_height: int = self._object.rendered_height
+        """
+        After rendering the object might be taller than originally thought. Keep track of it, while rendering here.
+        """
 
     def render(self):
-        self._object.rendered_base_x = self.base_x
-        self._object.rendered_base_y = self.base_y
-
         # if the object has not been added yet, stick with the one given in the constructor
         if self._object in self._object.objects_ref:
             self._object.index_in_level = self._object.objects_ref.index(self._object)
@@ -79,35 +88,32 @@ class ObjectRenderer:
         else:
             self._object.rendered_blocks = self._object.blocks
 
-        self._object.rendered_width = self._new_width
-        self._object.rendered_height = self._new_height
-        self._object.rendered_base_x = self.base_x
-        self._object.rendered_base_y = self.base_y
-
-        if self._new_width and not self._object.rendered_height == len(self._object.rendered_blocks) / self._new_width:
-            warn(
-                f"Not enough Blocks for calculated height: {self._object.name}. "
-                f"Blocks for height: {len(self._object.rendered_blocks) / self._new_width}. "
-                f"Rendered height: {self._object.rendered_height}",
-                LevelObjectRenderWarning,
-            )
-
-            self._object.rendered_height = len(self._object.rendered_blocks) // self._new_width
-        elif self._new_width == 0:
+        if self._new_width == 0:
             warn(
                 f"Calculated Width is 0, setting to 1: {self._object.name}. "
-                f"Blocks to draw: {len(self._object.rendered_blocks)}. Rendered height: {self._object.rendered_height}",
+                f"Blocks to draw: {len(self._object.rendered_blocks)}. Height calculated: {self._new_height}",
                 LevelObjectRenderWarning,
             )
 
-            self._object.rendered_width = 1
+            self._new_width = 1
+        else:
+            expected_height_from_blocks = len(self._object.rendered_blocks) / self._new_width
 
-        self._object.rect = QRect(
-            self._object.rendered_base_x,
-            self._object.rendered_base_y,
-            self._object.rendered_width,
-            self._object.rendered_height,
-        )
+            if self._new_height != expected_height_from_blocks:
+                warn(
+                    f"Not enough Blocks for calculated height: {self._object.name}. "
+                    f"Height from Blocks: {expected_height_from_blocks}. Height calculated: {self._new_height}",
+                    LevelObjectRenderWarning,
+                )
+
+                self._new_height = int(expected_height_from_blocks)
+
+        self._object.rect = QRect(self._base_x, self._base_y, self._new_width, self._new_height)
+
+        self._object.rendered_width = self._new_width
+        self._object.rendered_height = self._new_height
+        self._object.rendered_base_x = self._base_x
+        self._object.rendered_base_y = self._base_y
 
     def _render_by_generator_type(self, blocks_to_draw: list[int]):
         if self._object.generator_type == GeneratorType.TO_THE_SKY:
@@ -168,7 +174,7 @@ class ObjectRenderer:
         self._new_height = self._object.height + self._object.length
         self._new_width = self._object.width + self._object.length
 
-        self.base_x = self._object.x_position - self._object.length
+        self._base_x = self._object.x_position - self._object.length
 
         top = self._object.blocks[0 : self._object.width]
         bottom = self._object.blocks[self._object.width * (self._object.height - 1) :]
@@ -205,9 +211,9 @@ class ObjectRenderer:
         self._new_height = self._object.height * no_of_rows
         self._new_width = self._object.width * no_of_columns
 
-        self.base_x = self._object.x_position
+        self._base_x = self._object.x_position
         if needs_x_offset:
-            self.base_x -= x_offset
+            self._base_x -= x_offset
 
         if self._object.secondary_length > 0:
             self._new_width += self._object.width // 2
@@ -238,8 +244,8 @@ class ObjectRenderer:
         self._new_width = LEVEL_SCREEN_WIDTH
         self._new_height = LEVEL_SCREEN_HEIGHT
 
-        self.base_x = self._object.x_position // LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_WIDTH
-        self.base_y = 0
+        self._base_x = self._object.x_position // LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_WIDTH
+        self._base_y = 0
 
         blocks_to_draw.clear()
         blocks_to_draw.extend(LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_HEIGHT * [self._object.blocks[0]])
@@ -380,8 +386,8 @@ class ObjectRenderer:
 
     def _sub_render_horizontal_to_ground(self):
         # to the ground only, until it hits something
-        for y in range(self.base_y, self._object.ground_level):
-            bottom_row = QRect(self.base_x, y, self._new_width, 1)
+        for y in range(self._base_y, self._object.ground_level):
+            bottom_row = QRect(self._base_x, y, self._new_width, 1)
 
             if any(
                 [
@@ -389,12 +395,12 @@ class ObjectRenderer:
                     for obj in self._object.objects_ref[0 : self._object.index_in_level]
                 ]
             ):
-                self._new_height = y - self.base_y
+                self._new_height = y - self._base_y
                 break
 
         else:
             # nothing underneath this object, extend to the ground
-            self._new_height = self._object.ground_level - self.base_y
+            self._new_height = self._object.ground_level - self._base_y
 
         if self._object.is_fixed:
             self._new_width = self._object.length
@@ -502,22 +508,21 @@ class ObjectRenderer:
         # Mushroom/Fire flower/Star is categorized as an enemy
 
     def _render_pyramids(self, blocks_to_draw):
-        # since pyramids grow horizontally in both directions when extending
-        # we need to check for new ground every time it grows
-
+        # since pyramids grow horizontally in both directions when expanding, we need to check for new ground every time
+        # it grows
         objects_before = self._object.objects_ref[0 : self._object.index_in_level]
 
-        for y in range(self.base_y, self._object.ground_level):
-            self._new_height = y - self.base_y
+        for y in range(self._base_y, self._object.ground_level):
+            self._new_height = y - self._base_y
             self._new_width = 2 * self._new_height
 
-            bottom_row = QRect(self.base_x, y, self._new_width, 1)
+            bottom_row = QRect(self._base_x, y, self._new_width, 1)
 
             if any((bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top() for obj in objects_before)):
                 break
 
         # the tip of a pyramid is 2 blocks, the x position is the left block, so subtract half the width minus 1
-        self.base_x = self._object.x_position - (self._new_width // 2 - 1)
+        self._base_x = self._object.x_position - (self._new_width // 2 - 1)
 
         blank = self._object.blocks[0]
         left_slope = self._object.blocks[1]
@@ -620,10 +625,10 @@ class ObjectRenderer:
                 row.reverse()
 
         if self._object.generator_type == GeneratorType.DIAG_UP_RIGHT:
-            self.base_y -= self._new_height - 1
+            self._base_y -= self._new_height - 1
 
         if self._object.generator_type == GeneratorType.DIAG_DOWN_LEFT:
-            self.base_x -= self._new_width - slope_width
+            self._base_x -= self._new_width - slope_width
 
         for row in rows:
             blocks_to_draw.extend(row)
@@ -675,8 +680,8 @@ class ObjectRenderer:
         self._new_width += 1
 
     def _render_to_sky(self, blocks_to_draw):
-        self.base_x = self._object.x_position
-        self.base_y = SKY
+        self._base_x = self._object.x_position
+        self._base_y = SKY
 
         for _ in range(self._object.y_position):
             blocks_to_draw.extend(self._object.blocks[0 : self._object.width])

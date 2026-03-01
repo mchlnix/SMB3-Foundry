@@ -69,7 +69,9 @@ class LevelObject(InLevelObject):
         self.tsa_data = ROM.get_tsa_data(object_set)
 
         self.rendered_base_x = 0
+        """Top left x position of the visual object after rendering. Might change for expanding types, like pyramids."""
         self.rendered_base_y = 0
+        """Top left y position of the visual object after rendering. Might change for expanding types, like pyramids."""
 
         self.rendered_blocks: list[int] = []
 
