@@ -334,7 +334,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Orange Background, <$49, $4A>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$B3, $B4, $BA, $BB, $B3, $B4>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$B3, $B4, $BA, $BB, $B3, $B4>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$00>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$00>
@@ -591,7 +591,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird Background, <$00>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$70>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
@@ -849,7 +849,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$49, $4A>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Normal Quicksand, <$7A, $7B>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 8, 6, SINGLE_BLOCK      , UNIFORM         , 3byte, Underground Tunnel A, <$A9, $80, $80, $5A, $A7, $9A, $9A, $9A, $AA, $80, $80, $80, $A8, $A6, $A6, $A6, $AA, $80, $80, $80, $A8, $A6, $A6, $A6, $AA, $80, $80, $80, $A0, $A6, $A6, $A6, $A6, $9B, $80, $80, $80, $A0, $A6, $A6, $A6, $A6, $9B, $80, $80, $80, $A0, $A6>
 3, 0x01, 0x01, 8, 6, SINGLE_BLOCK      , UNIFORM         , 3byte, Underground Tunnel B, <$9A, $9A, $9A, $A9, $5A, $5A, $5A, $A7, $A6, $A6, $A6, $F8, $80, $80, $80, $A8, $A6, $A6, $A6, $F8, $80, $80, $80, $A8, $A6, $A6, $A6, $A1, $80, $80, $80, $A8, $A6, $A6, $A1, $80, $80, $80, $99, $A6, $A6, $A1, $80, $80, $80, $99, $A6, $A6>
@@ -1107,7 +1107,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird platform, <$94>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
@@ -1364,7 +1364,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Giant Bricks, <$49, $4A>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
@@ -1547,7 +1547,7 @@
 0, 0x20, 0x2F, 2, 2, HORIZONTAL        , TOP_OR_LEFT     , 3byte, Rightward pipe, <$9B, $99, $9E, $9D>
 0, 0x30, 0x3F, 2, 2, HORIZONTAL        , BOTTOM_OR_RIGHT , 3byte, Leftward pipe, <$99, $9C, $B9, $9E>
 0, 0x40, 0x4F, 2, 2, VERTICAL          , TOP_OR_LEFT     , 3byte, Downward background pipe, <$C5, $C6, $C7, $C8>
-0, 0x50, 0x5F, 1, 3, VERTICAL          , TWO_ENDS        , 3byte, Small VERTICAL          background pipe, <$C9, $CA, $CB>
+0, 0x50, 0x5F, 1, 3, VERTICAL          , TWO_ENDS        , 3byte, Small vertical background pipe, <$C9, $CA, $CB>
 0, 0x60, 0x6F, 2, 2, HORIZONTAL        , TOP_OR_LEFT     , 3byte, Rightward background pipe, <$C2, $C0, $C4, $C3>
 0, 0x70, 0x7F, 2, 2, HORIZONTAL        , BOTTOM_OR_RIGHT , 3byte, Leftward background pipe, <$C0, $C2, $C3, $C4>
 0, 0x80, 0x8F, 3, 1, HORIZONTAL        , TWO_ENDS        , 3byte, Small Horizontal background pipe, <$CC, $CD, $CE>
@@ -1621,7 +1621,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird Background, <$00>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$B1, $B2, $BA, $BB, $B1, $B2>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$B1, $B2, $BA, $BB, $B1, $B2>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
@@ -1879,7 +1879,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Orange Background, <$49, $4A>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$B3, $B4, $BA, $BB, $B3, $B4>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$B3, $B4, $BA, $BB, $B3, $B4>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$00>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$00>
@@ -2062,7 +2062,7 @@
 0, 0x20, 0x2F, 2, 2, HORIZONTAL        , TOP_OR_LEFT     , 3byte, Rightward pipe, <$9B, $99, $9E, $9D>
 0, 0x30, 0x3F, 2, 2, HORIZONTAL        , BOTTOM_OR_RIGHT , 3byte, Leftward pipe, <$99, $9C, $B9, $9E>
 0, 0x40, 0x4F, 2, 2, VERTICAL          , TOP_OR_LEFT     , 3byte, Downward background pipe, <$C5, $C6, $C7, $C8>
-0, 0x50, 0x5F, 1, 3, VERTICAL          , TWO_ENDS        , 3byte, Small VERTICAL          background pipe, <$C9, $CA, $CB>
+0, 0x50, 0x5F, 1, 3, VERTICAL          , TWO_ENDS        , 3byte, Small vertical background pipe, <$C9, $CA, $CB>
 0, 0x60, 0x6F, 2, 2, HORIZONTAL        , TOP_OR_LEFT     , 3byte, Rightward background pipe, <$C2, $C0, $C4, $C3>
 0, 0x70, 0x7F, 2, 2, HORIZONTAL        , BOTTOM_OR_RIGHT , 3byte, Leftward background pipe, <$C0, $C2, $C3, $C4>
 0, 0x80, 0x8F, 3, 1, HORIZONTAL        , TWO_ENDS        , 3byte, Small Horizontal background pipe, <$CC, $CD, $CE>
@@ -2136,7 +2136,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird Background, <$00>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$B1, $B2, $BA, $BB, $B1, $B2>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$B1, $B2, $BA, $BB, $B1, $B2>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
@@ -2393,7 +2393,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird Background, <$00>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
@@ -2585,7 +2585,7 @@
 0, 0xB0, 0xBF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Metal platform, <$9E>
 0, 0xC0, 0xCF, 1, 1, VERTICAL          , UNIFORM         , 3byte, 1 Metal Bar A, <$87>
 0, 0xD0, 0xDF, 1, 1, VERTICAL          , UNIFORM         , 3byte, 1 Metal Bar B, <$8A>
-0, 0xE0, 0xEF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Thick VERTICAL          Background Pillar, <$57, $00, $59, $00, $59, $00>
+0, 0xE0, 0xEF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Thick vertical Background Pillar, <$57, $00, $59, $00, $59, $00>
 0, 0xF0, 0xFF, 1, 3, VERTICAL          , TWO_ENDS        , 3byte, 1 Background Pillar, <$5A, $5B, $5B>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 1, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, '?' with flower, <$60>
@@ -2650,7 +2650,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$DC, $DE>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird Background, <$94>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$5F>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$B3, $B4, $BA, $BB, $BA, $BB>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$B3, $B4, $BA, $BB, $BA, $BB>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Rocky Wrench hole, <$C3>
 3, 0x01, 0x01, 5, 2, SINGLE_BLOCK      , UNIFORM         , 3byte, Ship Platform A, <$00, $00, $C3, $00, $00, $F6, $E3, $E4, $E3, $E5>
@@ -2907,7 +2907,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Giant Bricks, <$49, $4A>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
@@ -3164,7 +3164,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird background, <$94>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
@@ -3421,7 +3421,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 1, HORIZONTAL        , UNIFORM         , 4byte, Weird Background, <$94>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
@@ -3679,7 +3679,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$C0, $C0>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Normal Quicksand, <$C0, $C0>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$AD, $AE, $BA, $BB, $AD, $AE>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 8, 6, SINGLE_BLOCK      , UNIFORM         , 3byte, Underground Tunnel A, <$35, $02, $02, $02, $33, $26, $26, $26, $AA, $80, $80, $80, $A8, $AB, $AB, $AB, $AA, $80, $80, $80, $A8, $AB, $AB, $AB, $AA, $80, $80, $80, $A0, $AB, $AB, $AB, $AB, $9B, $80, $80, $80, $A0, $AB, $AB, $AB, $AB, $9B, $80, $80, $80, $A0, $AB>
 3, 0x01, 0x01, 8, 6, SINGLE_BLOCK      , UNIFORM         , 3byte, Underground Tunnel B, <$26, $26, $26, $35, $02, $02, $02, $33, $AB, $AB, $AB, $AA, $80, $80, $80, $A8, $AB, $AB, $AB, $AA, $80, $80, $80, $A8, $AB, $AB, $AB, $A1, $80, $80, $80, $A8, $AB, $AB, $A1, $80, $80, $80, $99, $AB, $AB, $A1, $80, $80, $80, $99, $AB, $AB>
@@ -3937,7 +3937,7 @@
 2, 0xC0, 0xCF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Quicksand (doesn't act like it), <$7A, $7B>
 2, 0xD0, 0xDF, 1, 2, HORIZONTAL        , UNIFORM         , 4byte, Weird Orange Background, <$49, $4A>
 2, 0xE0, 0xEF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, White Turtle Bricks, <$32>
-2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended VERTICAL          Pipe, <$B3, $B4, $BA, $BB, $B3, $B4>
+2, 0xF0, 0xFF, 2, 3, VERTICAL          , TWO_ENDS        , 3byte, Double-Ended vertical Pipe, <$B3, $B4, $BA, $BB, $B3, $B4>
 ; obj_domain, min_value, max_value, bmp_width, bmp_height, generator type, end type, is_4bytes, obj_descript | enemy_handle_x enemy_handle_y, enemy_handle_x2, <obj_design[]>
 3, 0x00, 0x00, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$00>
 3, 0x01, 0x01, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$00>
