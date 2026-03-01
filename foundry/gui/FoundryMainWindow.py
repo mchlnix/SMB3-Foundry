@@ -384,7 +384,7 @@ class FoundryMainWindow(MainWindow):
             # was cancelled
             return
 
-        ROM.reload_from_file()
+        self._reload_rom()
 
         self.level_ref.level = Level(f"New {OBJECT_SET_NAMES[object_set]} Level", object_set_number=object_set)
 
@@ -392,6 +392,20 @@ class FoundryMainWindow(MainWindow):
         self.level_ref.level.from_bytes(object_data=(0, minimal_level_header), enemy_data=(0, bytearray()))
 
         self.level_ref.level_changed.emit()
+
+    def _reload_rom(self):
+        try:
+            ROM.reload_from_file()
+        except FileNotFoundError:
+            self._on_rom_not_found(ROM.path)
+            raise
+
+    def _on_rom_not_found(self, path: str):
+        QMessageBox.critical(
+            self,
+            "ROM not found",
+            f"Could not find ROM at '{path}'.\n\nIt was either deleted or never existed in the first place.",
+        )
 
     def _on_level_data_changed(self):
         level_is_not_attached = self.level_ref.level and not self.level_ref.level.attached_to_rom
@@ -472,7 +486,7 @@ class FoundryMainWindow(MainWindow):
 
         world, level = world_and_level_for_level_address(level_address + HEADER_LENGTH)
 
-        ROM.reload_from_file()
+        self._reload_rom()
 
         self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
 
@@ -561,12 +575,17 @@ class FoundryMainWindow(MainWindow):
 
             self.close_current_level()
 
+            # TODO check for file and input errors for this separately
             self._check_for_asm_fns_imports(path_to_rom)
 
             if self.settings.value("editor/ask_for_level_management"):
                 self._ask_for_level_management()
 
             self._check_for_refresh()
+
+        except FileNotFoundError:
+            self._on_rom_not_found(path_to_rom)
+            return
 
         except IOError as exp:
             QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
@@ -711,7 +730,7 @@ class FoundryMainWindow(MainWindow):
         if not (pathname := load_m3l_filename(self.settings.value("editor/default dir path"))):
             return
 
-        ROM.reload_from_file()
+        self._reload_rom()
 
         self.load_m3l(pathname)
         save_m3l(auto_save_m3l_path, self.level_ref.level.to_m3l())
@@ -985,7 +1004,7 @@ class FoundryMainWindow(MainWindow):
         object_set = self.level_ref.object_set_number
         world_index = self.level_ref.level.world
 
-        ROM.reload_from_file()
+        self._reload_rom()
 
         self.update_level(level_name, object_data, enemy_data, object_set)
 
@@ -1110,16 +1129,16 @@ class FoundryMainWindow(MainWindow):
 
     def open_level_selector(self, _):
         if not self.safe_to_change():
-            return
+            return False
 
         level_selector = LevelSelector(self)
         if self.level_ref:
             level_selector.goto_world(self.level_ref.level.world)
 
-        level_was_selected = level_selector.exec() == QDialog.Accepted
+        level_was_selected = level_selector.exec() == QDialog.DialogCode.Accepted
 
         if level_was_selected:
-            ROM.reload_from_file()
+            self._reload_rom()
 
             self.update_level(
                 level_selector.level_name,

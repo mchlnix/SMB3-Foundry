@@ -29,7 +29,7 @@ class ROM(Rom):
 
     def __init__(self, path: Path | str | None = None):
         if not ROM.rom_data:
-            if path is None:
+            if path is None or not Path(path).is_file():
                 raise ValueError("Rom was not loaded!")
 
             ROM.load_from_file(path, False)
