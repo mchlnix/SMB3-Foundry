@@ -54,8 +54,11 @@ class InstaPlayer:
             # Otherwise this code would copy the value of the normal powerup here
             # (So if the powerup would be Raccoon Mario, Map_Power_Disp would also be
             # set as Raccoon Mario instead of P-wing
-            # TODO: make relative to a label in Constants
-            map_power_disp_reset_address = 0x3C5A2
+
+            # there's no known label close to the point in the ROM we need, so this is the best we were able to do
+            map_power_disp_reset_address = Constants.WorldMap_Loop - 0x14C
+            # We want to delete the 3 byte long STA Map_Power_Disp instruction, which would reset the selected powerup
+            # So replace it with three 1-byte NOP instructions, instead
             self.rom.write(map_power_disp_reset_address, bytes([NOP] * 3))
 
         # add rts, to jump back out of the debug menu
