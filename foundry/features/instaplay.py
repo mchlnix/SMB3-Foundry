@@ -99,24 +99,30 @@ class InstaPlayer:
         return True
 
     def skip_title_screen(self):
-        # skip rendering the title screen by jumping to the code after selecting player count (1P or 2P)
-        prg_24_offset = BASE_OFFSET + 24 * PRG_BANK_SIZE - PAGE_A000_OFFSET
+        """skip rendering the title screen by jumping to the code after selecting player count (1P or 2P)"""
 
-        # TODO: make relative to a label in Constants
-        after_player_init = prg_24_offset + 0xA8FC
-        title_screen_state_injection_rel = 0xACAE
+        # we have to edit a subroutine, so grab the closest known label and count backwards to get the absolute address
+        title_screen_state_injection_abs = Constants.Title_PrepForWorldMap - 13
 
-        self.rom.write(after_player_init, JSR)
-        self.rom.write_little_endian(after_player_init + 1, title_screen_state_injection_rel)
-
-        title_screen_state_injection_abs = prg_24_offset + title_screen_state_injection_rel
         title_screen_state_after_player_selection = 0x04
         ram_title_screen_address = 0xDE
 
+        # patch setting the player selection, instead of needing user interaction
         self.rom.write(title_screen_state_injection_abs, LDY_CONST)
         self.rom.write(title_screen_state_injection_abs + 1, title_screen_state_after_player_selection)
         self.rom.write(title_screen_state_injection_abs + 2, STY_RAM)
         self.rom.write(title_screen_state_injection_abs + 3, ram_title_screen_address)
+
+        prg_24_offset = BASE_OFFSET + 24 * PRG_BANK_SIZE - PAGE_A000_OFFSET
+
+        # it's a jump address we need to change now, so make the address relative by subtracting the PRG offset
+        title_screen_state_injection_rel = title_screen_state_injection_abs - prg_24_offset
+
+        # we have to path again, so grab the closest known label and count forwards to get the absolute address
+        after_player_init = Constants.Do_Title_Screen + 0x4D
+
+        self.rom.write(after_player_init, JSR)
+        self.rom.write_little_endian(after_player_init + 1, title_screen_state_injection_rel)
 
     def skip_world_info_box(self):
         world_info_popup_duration_address_1 = Constants.WorldIntro_BoxTimer_NoSym + 6
