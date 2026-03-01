@@ -122,6 +122,8 @@ class LevelSelector(QDialog):
 
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_PageUp), self, self._one_tab_left)
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_PageDown), self, self._one_tab_right)
+        QShortcut(QKeySequence(Qt.Key.Key_Return), self, self._on_ok)
+        QShortcut(QKeySequence(Qt.Key.Key_Enter), self, self._on_ok)
 
     def _one_tab_left(self):
         current_index = self.source_selector.currentIndex()
