@@ -52,6 +52,7 @@ class LevelSelector(QDialog):
         self.object_set_label = QLabel(parent=self, text="Object Set")
         self.object_set_dropdown = QComboBox(self)
         self.object_set_dropdown.addItems(OBJECT_SET_ITEMS)
+        self.object_set_dropdown.currentTextChanged.connect(self._on_object_set_change)
 
         self.button_ok = QPushButton("Ok", self)
         self.button_ok.setEnabled(False)
@@ -137,6 +138,9 @@ class LevelSelector(QDialog):
         new_index = (current_index + 1) % tab_count
 
         self.source_selector.setCurrentIndex(new_index)
+
+    def _on_object_set_change(self, _):
+        self.button_ok.setEnabled(self.object_set_dropdown.currentIndex() != WORLD_MAP_OBJECT_SET)
 
     def keyPressEvent(self, key_event: QKeyEvent):
         if key_event.key() == Qt.Key.Key_Escape:
