@@ -1029,7 +1029,7 @@
 0, 0x0D, 0x0D, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_NOTHING, <$92>
 0, 0x0E, 0x0E, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_NOTHING, <$92>
 0, 0x0F, 0x0F, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_NOTHING, <$92>
-0, 0x10, 0x1F, 3, 2, HORIZONTAL        , TWO_ENDS        , 4byte, Wooden platform, <$4A, $4B, $4C, $99, $99, $99>
+0, 0x10, 0x1F, 2, 1, WOODEN_PLATFORM   , TWO_ENDS        , 4byte, Wooden platform, <$4A, $4C, $4B>
 0, 0x20, 0x2F, 3, 2, HORIZONTAL        , TWO_ENDS        , 3byte, Wooden block platform, <$4D, $4E, $4F, $50, $51, $52>
 0, 0x30, 0x3F, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Weird, <$94>
 0, 0x40, 0x4F, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Background Bushes, <$81>
