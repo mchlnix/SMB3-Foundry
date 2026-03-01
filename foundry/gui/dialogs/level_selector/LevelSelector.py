@@ -119,6 +119,25 @@ class LevelSelector(QDialog):
 
         self.setLayout(main_layout)
 
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_PageUp), self, self._one_tab_left)
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_PageDown), self, self._one_tab_right)
+
+    def _one_tab_left(self):
+        current_index = self.source_selector.currentIndex()
+        tab_count = self.source_selector.count()
+
+        new_index = (current_index - 1) % tab_count
+
+        self.source_selector.setCurrentIndex(new_index)
+
+    def _one_tab_right(self):
+        current_index = self.source_selector.currentIndex()
+        tab_count = self.source_selector.count()
+
+        new_index = (current_index + 1) % tab_count
+
+        self.source_selector.setCurrentIndex(new_index)
+
     def keyPressEvent(self, key_event: QKeyEvent):
         if key_event.key() == Qt.Key.Key_Escape:
             self.reject()
