@@ -15,7 +15,8 @@ class StockLevelWidget(QWidget):
 
         self.world_list = QListWidget(parent=self)
         self.world_list.addItems(WORLD_ITEMS)
-        self.world_list.itemClicked.connect(self._on_world_click)
+
+        self.world_list.itemSelectionChanged.connect(self._on_world_click)
 
         self.level_list = QListWidget(parent=self)
 
@@ -40,6 +41,12 @@ class StockLevelWidget(QWidget):
 
         stock_level_layout.addWidget(description_label, 2, 0, 1, 2)
 
+        # doing it here, when the level selector is not connected to our signals yet, will not populate the spinner
+        # widgets
+        # that is OK, though, because, otherwise a potentially out-of-date stock level would populate the spinners,
+        # while the level selector opens to the world map by default
+        self.world_list.setCurrentRow(0)
+
     def _on_world_click(self):
         index = self.world_list.currentRow()
 
@@ -59,7 +66,6 @@ class StockLevelWidget(QWidget):
 
         if self.level_list.count():
             self.level_list.setCurrentRow(0)
-            self.level_list.itemClicked.emit(self.level_list.currentItem())
 
     @property
     def _level_index(self):

@@ -1,6 +1,4 @@
-from typing import Optional
-
-from PySide6.QtGui import QCloseEvent, QKeyEvent, Qt
+from PySide6.QtGui import QCloseEvent, QKeyEvent, QKeySequence, QShortcut, Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -43,7 +41,7 @@ class LevelSelector(QDialog):
         self.object_data_offset = 0x0
         self.enemy_data_offset = 0x0
 
-        self.clicked_level_pointer: Optional[LevelPointerData] = None
+        self.clicked_level_pointer: LevelPointerData | None = None
 
         self.enemy_data_label = QLabel(parent=self, text="Enemy Data")
         self.enemy_data_spinner = Spinner(parent=self)
@@ -73,7 +71,7 @@ class LevelSelector(QDialog):
         self._stock_level_widget.world_list.itemDoubleClicked.connect(self._on_ok)
         self._stock_level_widget.level_list.itemDoubleClicked.connect(self._on_ok)
 
-        self._stock_level_widget.level_list.itemClicked.connect(self._on_stock_level_selected)
+        self._stock_level_widget.level_list.itemSelectionChanged.connect(self._on_stock_level_selected)
 
         self.source_selector.addTab(self._stock_level_widget, "Stock Levels")
         self.source_selector.setTabIcon(tab_index, icon("list.svg"))
