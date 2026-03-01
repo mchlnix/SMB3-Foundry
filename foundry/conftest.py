@@ -5,7 +5,7 @@ import pytest
 from PySide6.QtGui import QPixmap
 
 from approval_tests.gui import ApprovalDialog
-from foundry import root_dir
+from foundry import Settings, root_dir
 from foundry.game.File import ROM
 from foundry.game.level.Level import Level
 from foundry.gui.FoundryMainWindow import FoundryMainWindow
@@ -69,10 +69,13 @@ def main_window(qtbot, rom):
     # mock the rom loading, since it is a modal dialog. the rom is loaded in conftest.py
     setattr(FoundryMainWindow, "on_open_rom", lambda *_: None)
     setattr(FoundryMainWindow, "showMaximized", lambda _: None)  # don't open automatically
-    setattr(FoundryMainWindow, "safe_to_change", lambda _: True)  # don't ask for confirmation on changed level
+    setattr(FoundryMainWindow, "safe_to_change", lambda _: True)  # don't ask for confirmation on when changing levels
     setattr(FoundryMainWindow, "check_for_update_on_startup", lambda _: True)  # don't check for update
 
     main_window = FoundryMainWindow()
+    main_window.settings = Settings("mchlnix", "throwaway")
+    main_window.level_view.settings = main_window.settings
+
     main_window.update_level(
         "Level 1-1",
         level_1_1_object_address,
