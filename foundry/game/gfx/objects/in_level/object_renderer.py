@@ -125,7 +125,7 @@ class ObjectRenderer:
             GeneratorType.HORIZ_TO_GROUND,
         ]:
             self._render_horizontal(blocks_to_draw)
-        elif self._object.generator_type == GeneratorType.WOODEN_TANK_BEAM:
+        elif self._object.generator_type == GeneratorType.WOODEN_PLATFORM:
             self._render_wooden_tank_beam(blocks_to_draw)
 
         elif self._object.generator_type == GeneratorType.BRICK_WALL:

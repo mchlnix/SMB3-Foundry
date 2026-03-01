@@ -2674,7 +2674,7 @@
 3, 0x40, 0x4F, 3, 3, HORIZONTAL        , TWO_ENDS        , 4byte, Metal box platform, <$A3, $A4, $A5, $8D, $86, $8E, $8F, $90, $91>
 3, 0x50, 0x5F, 3, 4, HORIZONTAL        , TWO_ENDS        , 3byte, Crate, <$5C, $5D, $5E, $49, $4A, $4B, $49, $4A, $4B, $4C, $4D, $4E>
 3, 0x60, 0x6F, 2, 1, HORIZONTAL        , UNIFORM         , 3byte, Portholes, <$C9, $00>
-3, 0x70, 0x7F, 2, 1, WOODEN_TANK_BEAM  , TWO_ENDS        , 4byte, Wooden Tank Beam, <$F6, $FE, $E3, $E4>
+3, 0x70, 0x7F, 2, 1, WOODEN_PLATFORM   , TWO_ENDS        , 4byte, Wooden Tank Beam, <$F6, $FE, $E3, $E4>
 3, 0x80, 0x8F, 2, 2, HORIZONTAL        , TOP_OR_LEFT     , 3byte, Leftward Giant Bullet Shooter, <$B7, $B8, $B5, $B9>
 3, 0x90, 0x9F, 2, 2, HORIZONTAL        , BOTTOM_OR_RIGHT , 3byte, Rightward Giant Bullet Shooter, <$B8, $B7, $B9, $B5>
 3, 0xA0, 0xAF, 2, 1, HORIZONTAL        , TOP_OR_LEFT     , 3byte, Leftward Bullet Shooter, <$2C, $2D>
