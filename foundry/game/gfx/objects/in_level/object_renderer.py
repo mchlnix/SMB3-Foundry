@@ -9,35 +9,6 @@ from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from smb3parse.levels import LEVEL_MAX_LENGTH, LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 
-ENDING_STR = {
-    EndType.UNIFORM: "Uniform",
-    EndType.TOP_OR_LEFT: "Top or Left",
-    EndType.BOTTOM_OR_RIGHT: "Bottom or Right",
-    EndType.TWO_ENDS: "Top & Bottom/Left & Right",
-}
-
-GENERATOR_TYPE_TO_STR = {
-    GeneratorType.HORIZONTAL: "Horizontal",
-    GeneratorType.VERTICAL: "Vertical",
-    GeneratorType.DIAG_DOWN_LEFT: "Diagonal ↙",
-    GeneratorType.DESERT_PIPE_BOX: "Desert Pipe Box",
-    GeneratorType.DIAG_DOWN_RIGHT: "Diagonal ↘",
-    GeneratorType.DIAG_UP_RIGHT: "Diagonal ↗",
-    GeneratorType.HORIZ_TO_GROUND: "Horizontal to the Ground",
-    GeneratorType.HORIZONTAL_2: "Horizontal Alternative",
-    GeneratorType.DIAG_WEIRD: "Diagonal Weird",  # up left?
-    GeneratorType.SINGLE_BLOCK: "Single Block",
-    GeneratorType.CENTERED: "Centered",
-    GeneratorType.PYRAMID_TO_GROUND: "Pyramid to Ground",
-    GeneratorType.PYRAMID_2: "Pyramid Alternative",
-    GeneratorType.TO_THE_SKY: "To the Sky",
-    GeneratorType.ENDING: "Ending",
-    GeneratorType.BRICK_WALL: "Brick Wall",
-    GeneratorType.DIAG_STAGGERED: "Diagonal Staggered",
-    GeneratorType.WOODEN_TANK_BEAM: "Wooden Tank Beam",
-}
-
-
 # not all objects provide a block index for a blank block
 BLANK = -1
 
