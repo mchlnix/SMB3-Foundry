@@ -138,3 +138,6 @@ class StockLevelWidget(QWidget):
     @property
     def level_is_lost(self):
         return self.world_list.currentRow() == LOST_LEVELS_INDEX
+
+    def showEvent(self, event):
+        self.world_list.setFocus()
