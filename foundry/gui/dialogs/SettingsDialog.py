@@ -93,12 +93,12 @@ class SettingsDialog(CustomDialog):
 
         self.settings = settings
 
-        # Online Section
+        # On Start Up
         # -----------------------------------------------
 
-        online_box = QGroupBox("Online", self)
+        on_start_up_box = QGroupBox("Start Up", self)
         layout = QVBoxLayout()
-        online_box.setLayout(layout)
+        on_start_up_box.setLayout(layout)
 
         self._update_check_box = QCheckBox("Enabled")
         self._update_check_box.setChecked(self.settings.value("editor/update_on_startup"))
@@ -109,6 +109,19 @@ class SettingsDialog(CustomDialog):
                 "Check for Updates on Startup:",
                 self._update_check_box,
                 tooltip="Checks the Repository for a new Version when the Editor is started.",
+            )
+        )
+
+        self.auto_save_check_box = QCheckBox("Enabled")
+        self.auto_save_check_box.setChecked(self.settings.value("editor/auto_save_enabled"))
+        self.auto_save_check_box.stateChanged.connect(self._update_settings)
+
+        on_start_up_box.layout().addLayout(
+            label_and_widget(
+                "Ask if Backup should be restored, after crash:",
+                self.auto_save_check_box,
+                tooltip="Should the editor keep a copy of the current ROM with unsaved changes, so that if it crashes, "
+                "the ROM and changed level can be restored?",
             )
         )
 
@@ -139,8 +152,8 @@ class SettingsDialog(CustomDialog):
             label_and_widget(
                 "Show object names on hover:",
                 self._tooltip_check_box,
-                tooltip="When hovering your cursor over an object in a level, "
-                "its name and position is shown in a tooltip.",
+                tooltip="When hovering your cursor over an object in a level, its name and position is shown in a "
+                "tooltip.",
             )
         )
 
@@ -159,36 +172,22 @@ class SettingsDialog(CustomDialog):
         resize_layout = label_and_widget("Object resize mode:", self.lmb_radio, rmb_radio)
         layout.addLayout(resize_layout)
 
-        # GUI Section
+        # When Opening a ROM Section
         # -----------------------------------------------
-
-        self.gui_box = QGroupBox("GUI", self)
+        self._when_open_rom_box = QGroupBox("When opening a ROM", self)
         layout = QVBoxLayout()
-        self.gui_box.setLayout(layout)
+        self._when_open_rom_box.setLayout(layout)
 
         self.ask_for_level_management_check_box = QCheckBox("Enabled")
         self.ask_for_level_management_check_box.setChecked(self.settings.value("editor/ask_for_level_management"))
         self.ask_for_level_management_check_box.stateChanged.connect(self._update_settings)
 
-        self.gui_box.layout().addLayout(
+        self._when_open_rom_box.layout().addLayout(
             label_and_widget(
-                "Ask for Automatic Level Management when opening a new ROM:",
+                "Ask for Automatic Level Management:",
                 self.ask_for_level_management_check_box,
                 tooltip="Should the editor ask to enable Automatic Level Management when opening a new ROM that isn't "
                 "managed yet?",
-            )
-        )
-
-        self.auto_save_check_box = QCheckBox("Enabled")
-        self.auto_save_check_box.setChecked(self.settings.value("editor/auto_save_enabled"))
-        self.auto_save_check_box.stateChanged.connect(self._update_settings)
-
-        self.gui_box.layout().addLayout(
-            label_and_widget(
-                "Keep a backup of the ROM, in case the Editor crashes:",
-                self.auto_save_check_box,
-                tooltip="Should the editor keep a copy of the current ROM with unsaved changes, so that if it crashes, "
-                "the ROM and changed level can be restored?",
             )
         )
 
@@ -197,13 +196,21 @@ class SettingsDialog(CustomDialog):
         self.asm_loading_dropdown.setCurrentIndex(self.settings.value("editor/asm_loading_behavior"))
         self.asm_loading_dropdown.currentTextChanged.connect(self._update_settings)
 
-        self.gui_box.layout().addLayout(
+        self._when_open_rom_box.layout().addLayout(
             label_and_widget(
-                "How to handle ASM files when opening a new ROM:",
+                "How to handle ASM files:",
                 self.asm_loading_dropdown,
                 tooltip="What should the editor do, when a ROM needs ASM files, or has them in its directory?",
             )
         )
+
+        # GUI Section
+        # -----------------------------------------------
+
+        self.gui_box = QGroupBox("GUI", self)
+        layout = QVBoxLayout()
+        self.gui_box.setLayout(layout)
+
         self.level_highlight_check_box = QCheckBox("Enabled")
         self.level_highlight_check_box.setChecked(self.settings.value("world view/show level pointers"))
         self.level_highlight_check_box.stateChanged.connect(self._update_settings)
@@ -320,8 +327,9 @@ class SettingsDialog(CustomDialog):
         # -----------------------------------------------
 
         layout = QVBoxLayout(self)
-        layout.addWidget(online_box)
+        layout.addWidget(on_start_up_box)
         layout.addWidget(mouse_box)
+        layout.addWidget(self._when_open_rom_box)
         layout.addWidget(self.gui_box)
         layout.addWidget(command_box)
 
