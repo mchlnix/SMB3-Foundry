@@ -120,7 +120,7 @@ class WorldView(MainView):
             # to get the tiles for the next animation step
             get_tile.cache_clear()
 
-        if self.world.data.frame_tick_count and self.settings.value("world view/animated tiles"):
+        if self.world.data.frame_tick_count and self.settings.value("world_view/animated_tiles"):
             self.redraw_timer = QTimer(self)
             self.redraw_timer.setInterval(1000 / 60 * self.world.data.frame_tick_count)
             self.redraw_timer.timeout.connect(self.next_anim_step)
@@ -129,7 +129,7 @@ class WorldView(MainView):
     def sizeHint(self) -> QSize:
         size = super(WorldView, self).sizeHint()
 
-        if self.settings.value("world view/show border"):
+        if self.settings.value("world_view/show_border"):
             size += QSize(0, 3) * self.block_length
 
         return size
@@ -174,7 +174,7 @@ class WorldView(MainView):
             if event is None:
                 return
 
-            if self.settings.value("world view/show border"):
+            if self.settings.value("world_view/show_border"):
                 self.selection_square.set_offset(0, 0)
             else:
                 self.selection_square.set_offset(0, FIRST_VALID_ROW)
@@ -202,7 +202,7 @@ class WorldView(MainView):
         self.set_mouse_mode(MODE_PUT_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        should_display_level = self.mouse_mode == MODE_FREE and self.settings.value("world view/show level previews")
+        should_display_level = self.mouse_mode == MODE_FREE and self.settings.value("world_view/show_level_previews")
 
         if not should_display_level or not self._set_level_thumbnail(event):
             # clear tooltip if supposed to show one, but no level thumbnail was available (e.g. no level there)
@@ -303,7 +303,7 @@ class WorldView(MainView):
     def to_level_point(self, q_point) -> Position:
         pos = super(WorldView, self).to_level_point(q_point)
 
-        if not self.settings.value("world view/show border"):
+        if not self.settings.value("world_view/show_border"):
             pos += Position.from_xy(0, FIRST_VALID_ROW)
 
         return pos
@@ -328,27 +328,27 @@ class WorldView(MainView):
 
         obj = None
 
-        if self.drawer.settings.value("world view/show pipes"):
+        if self.drawer.settings.value("world_view/show_pipes"):
             obj = self.world.pipe_at(level_x, level_y)
 
-        if not obj and self.drawer.settings.value("world view/show locks"):
+        if not obj and self.drawer.settings.value("world_view/show_locks"):
             obj = self.world.locks_at(level_x, level_y)
 
-        if not obj and self.drawer.settings.value("world view/show airship paths"):
+        if not obj and self.drawer.settings.value("world_view/show_airship_paths"):
             obj = self.world.airship_point_at(
                 level_x,
                 level_y,
-                self.drawer.settings.value("world view/show airship paths"),
+                self.drawer.settings.value("world_view/show_airship_paths"),
             )
 
-        if not obj and self.drawer.settings.value("world view/show start position"):
+        if not obj and self.drawer.settings.value("world_view/show_start_position"):
             if self.world.start_pos.pos == Position.from_xy(level_x, level_y):
                 obj = self.world.start_pos
 
-        if not obj and self.drawer.settings.value("world view/show sprites"):
+        if not obj and self.drawer.settings.value("world_view/show_sprites"):
             obj = self.world.sprite_at(level_x, level_y)
 
-        if not obj and self.drawer.settings.value("world view/show level pointers"):
+        if not obj and self.drawer.settings.value("world_view/show_level_pointers"):
             obj = self.world.level_pointer_at(level_x, level_y)
 
         if not obj:

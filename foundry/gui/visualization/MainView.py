@@ -358,5 +358,5 @@ class MainView(QWidget):
             self.currently_dragged_object.draw(
                 painter,
                 self.block_length,
-                self.settings.value("level view/block_transparency"),
+                self.settings.value("level_view/block_transparency"),
             )

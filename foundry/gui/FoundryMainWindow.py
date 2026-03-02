@@ -721,7 +721,7 @@ class FoundryMainWindow(MainWindow):
         path_to_rom, _ = QFileDialog.getOpenFileName(
             self,
             caption="Open ROM",
-            dir=self.settings.value("editor/default dir path"),
+            dir=self.settings.value("editor/default_dir_path"),
             filter=ROM_FILE_FILTER,
         )
 
@@ -732,7 +732,7 @@ class FoundryMainWindow(MainWindow):
             return
 
         # otherwise, ask the user what new file to open
-        if not (pathname := load_m3l_filename(self.settings.value("editor/default dir path"))):
+        if not (pathname := load_m3l_filename(self.settings.value("editor/default_dir_path"))):
             return
 
         self._reload_rom()
@@ -928,7 +928,7 @@ class FoundryMainWindow(MainWindow):
             pathname, _ = QFileDialog.getSaveFileName(
                 self,
                 caption="Save ROM as",
-                dir=f"{self.settings.value('editor/default dir path')}/{suggested_file}",
+                dir=f"{self.settings.value('editor/default_dir_path')}/{suggested_file}",
                 filter=ROM_FILE_FILTER,
             )
             if not pathname:
@@ -952,7 +952,7 @@ class FoundryMainWindow(MainWindow):
         self.update_title()
 
     def on_import_enemies_from_asm(self):
-        if not (pathname := load_asm_filename("Enemy ASM", self.settings.value("editor/default dir path"))):
+        if not (pathname := load_asm_filename("Enemy ASM", self.settings.value("editor/default_dir_path"))):
             return
 
         self.undo_stack.push(ImportASMEnemies(self.level_ref.level, pathname))

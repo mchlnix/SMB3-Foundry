@@ -107,32 +107,32 @@ class LevelDrawer:
     def draw(self, painter: QPainter, level: Level):
         self._draw_background(painter, level)
 
-        if self.settings.value("level view/special_background"):
+        if self.settings.value("level_view/special_background"):
             self._draw_default_graphics(painter, level)
 
         self._draw_objects(painter, level)
 
         self._draw_overlays(painter, level)
 
-        if self.settings.value("level view/draw_expansion"):
+        if self.settings.value("level_view/draw_expansion"):
             self._draw_expansions(painter, level)
 
         if self.should_draw_potential_marios:
             self._draw_potential_marios(painter, level)
 
-        if self.settings.value("level view/draw_mario"):
+        if self.settings.value("level_view/draw_mario"):
             self._draw_mario(painter, level)
 
-        if self.settings.value("level view/draw_jumps"):
+        if self.settings.value("level_view/draw_jumps"):
             self._draw_jumps(painter, level)
 
-        if self.settings.value("level view/draw_grid"):
+        if self.settings.value("level_view/draw_grid"):
             self._draw_grid(painter, level)
 
-        if self.settings.value("level view/draw_grid_coordinates"):
+        if self.settings.value("level_view/draw_grid_coordinates"):
             self._draw_grid_coordinates(painter, level)
 
-        if self.settings.value("level view/draw_autoscroll"):
+        if self.settings.value("level_view/draw_autoscroll"):
             self._draw_auto_scroll(painter, level)
 
     def _draw_background(self, painter: QPainter, level: Level):
@@ -239,7 +239,7 @@ class LevelDrawer:
                 level_object.draw(
                     painter,
                     self.block_length,
-                    self.settings.value("level view/block_transparency"),
+                    self.settings.value("level_view/block_transparency"),
                 )
 
             if level_object.selected:
@@ -269,7 +269,7 @@ class LevelDrawer:
 
             # pipe entries
             if "pipe" in name and "can go" in name:
-                if not self.settings.value("level view/draw_jump_on_objects"):
+                if not self.settings.value("level_view/draw_jump_on_objects"):
                     continue
 
                 fill_object = False
@@ -334,7 +334,7 @@ class LevelDrawer:
 
             # "?" - blocks, note blocks, wooden blocks and bricks
             elif "'?' with" in name or "brick with" in name or "bricks with" in name or "block with" in name:
-                if not self.settings.value("level view/draw_items_in_blocks"):
+                if not self.settings.value("level_view/draw_items_in_blocks"):
                     continue
 
                 pos.setY(pos.y() - self.block_length)
@@ -366,7 +366,7 @@ class LevelDrawer:
                 painter.drawImage(arrow_pos, ITEM_ARROW.scaled(self.block_length, self.block_length))
 
             elif "invisible" in name:
-                if not self.settings.value("level view/draw_invisible_items"):
+                if not self.settings.value("level_view/draw_invisible_items"):
                     continue
 
                 if "coin" in name:
@@ -377,13 +377,13 @@ class LevelDrawer:
                     image = EMPTY_IMAGE
 
             elif "silver coins" in name:
-                if not self.settings.value("level view/draw_invisible_items"):
+                if not self.settings.value("level_view/draw_invisible_items"):
                     continue
 
                 image = SILVER_COIN
 
             elif "red koopa" in name:
-                if not self.settings.value("level view/draw_invisible_items"):
+                if not self.settings.value("level_view/draw_invisible_items"):
                     continue
 
                 painter.save()
@@ -438,7 +438,7 @@ class LevelDrawer:
 
     def _draw_expansions(self, painter: QPainter, level: Level):
         for level_object in level.get_all_objects():
-            if self.settings.value("level view/draw_expansion"):
+            if self.settings.value("level_view/draw_expansion"):
                 painter.save()
 
                 painter.setPen(Qt.PenStyle.NoPen)

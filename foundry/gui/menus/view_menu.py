@@ -13,27 +13,27 @@ class ViewMenu(QMenu):
 
         self._level_view = level_view
 
-        self._grid_action = self._make_action("&Grid lines", "level view/draw_grid")
-        self._coord_action = self._make_action("&Coordinates", "level view/draw_grid_coordinates")
+        self._grid_action = self._make_action("&Grid lines", "level_view/draw_grid")
+        self._coord_action = self._make_action("&Coordinates", "level_view/draw_grid_coordinates")
 
         self.addSeparator()
 
-        self._mario_action = self._make_action("&Mario", "level view/draw_mario")
-        self._jumps_action = self._make_action("&Jumps on objects", "level view/draw_jump_on_objects")
-        self._items_action = self._make_action("&Items in blocks", "level view/draw_items_in_blocks")
-        self._invis_action = self._make_action("I&nvisible items", "level view/draw_invisible_items")
+        self._mario_action = self._make_action("&Mario", "level_view/draw_mario")
+        self._jumps_action = self._make_action("&Jumps on objects", "level_view/draw_jump_on_objects")
+        self._items_action = self._make_action("&Items in blocks", "level_view/draw_items_in_blocks")
+        self._invis_action = self._make_action("I&nvisible items", "level_view/draw_invisible_items")
 
         self.addSeparator()
 
-        self._auto_scroll_action = self._make_action("&Autoscroll Path", "level view/draw_autoscroll")
-        self._jump_zones_action = self._make_action("Jump &Zones", "level view/draw_jumps")
-        self._resize_action = self._make_action("&Resize Type", "level view/draw_expansion")
+        self._auto_scroll_action = self._make_action("&Autoscroll Path", "level_view/draw_autoscroll")
+        self._jump_zones_action = self._make_action("Jump &Zones", "level_view/draw_jumps")
+        self._resize_action = self._make_action("&Resize Type", "level_view/draw_expansion")
 
         self.addSeparator()
 
-        self._anim_action = self._make_action("Show Block Animation", "level view/block_animation")
-        self._trans_action = self._make_action("&Block Transparency", "level view/block_transparency")
-        self._special_bg_action = self._make_action("Default Background Tiles", "level view/special_background")
+        self._anim_action = self._make_action("Show Block Animation", "level_view/block_animation")
+        self._trans_action = self._make_action("&Block Transparency", "level_view/block_transparency")
+        self._special_bg_action = self._make_action("Default Background Tiles", "level_view/special_background")
 
         self.addSeparator()
 
@@ -55,30 +55,30 @@ class ViewMenu(QMenu):
         checked = action.isChecked()
 
         if action is self._grid_action:
-            self.settings.setValue("level view/draw_grid", checked)
+            self.settings.setValue("level_view/draw_grid", checked)
         elif action is self._coord_action:
-            self.settings.setValue("level view/draw_grid_coordinates", checked)
+            self.settings.setValue("level_view/draw_grid_coordinates", checked)
         elif action is self._anim_action:
-            self.settings.setValue("level view/block_animation", checked)
+            self.settings.setValue("level_view/block_animation", checked)
             self._level_view.update_anim_timer()
         elif action is self._trans_action:
-            self.settings.setValue("level view/block_transparency", checked)
+            self.settings.setValue("level_view/block_transparency", checked)
         elif action is self._jump_zones_action:
-            self.settings.setValue("level view/draw_jumps", checked)
+            self.settings.setValue("level_view/draw_jumps", checked)
         elif action is self._mario_action:
-            self.settings.setValue("level view/draw_mario", checked)
+            self.settings.setValue("level_view/draw_mario", checked)
         elif action is self._resize_action:
-            self.settings.setValue("level view/draw_expansion", checked)
+            self.settings.setValue("level_view/draw_expansion", checked)
         elif action is self._jumps_action:
-            self.settings.setValue("level view/draw_jump_on_objects", checked)
+            self.settings.setValue("level_view/draw_jump_on_objects", checked)
         elif action is self._items_action:
-            self.settings.setValue("level view/draw_items_in_blocks", checked)
+            self.settings.setValue("level_view/draw_items_in_blocks", checked)
         elif action is self._invis_action:
-            self.settings.setValue("level view/draw_invisible_items", checked)
+            self.settings.setValue("level_view/draw_invisible_items", checked)
         elif action is self._auto_scroll_action:
-            self.settings.setValue("level view/draw_autoscroll", checked)
+            self.settings.setValue("level_view/draw_autoscroll", checked)
         elif action is self._special_bg_action:
-            self.settings.setValue("level view/special_background", checked)
+            self.settings.setValue("level_view/special_background", checked)
         elif action is self._screen_shot_action:
             self._on_screenshot()
             return
@@ -89,7 +89,7 @@ class ViewMenu(QMenu):
 
     def _on_screenshot(self):
         recommended_file = (
-            f"{self.settings.value('editor/default dir path')}/{ROM.name} - {self._level_view.level_ref.name}.png"
+            f"{self.settings.value('editor/default_dir_path')}/{ROM.name} - {self._level_view.level_ref.name}.png"
         )
 
         pathname, _ = QFileDialog.getSaveFileName(

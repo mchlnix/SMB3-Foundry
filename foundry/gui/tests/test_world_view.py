@@ -27,8 +27,8 @@ def main_window(rom, qtbot):
     main_window.world_view.zoom_out()
     main_window.world_view.zoom_out()
 
-    main_window.world_view.settings.setValue("world view/show level pointers", False)
-    main_window.world_view.settings.setValue("world view/show border", False)
+    main_window.world_view.settings.setValue("world_view/show_level_pointers", False)
+    main_window.world_view.settings.setValue("world_view/show_border", False)
 
     return main_window
 
@@ -135,7 +135,7 @@ def test_moving_all_objects_partly_off_screen(worldview):
     end_point = QPoint(worldview.world.size[0], 0) * worldview.block_length - QPoint(1, 0)
 
     # hide sprites, otherwise we drag it instead
-    worldview.settings.setValue("world view/show sprites", False)
+    worldview.settings.setValue("world_view/show_sprites", False)
 
     assert worldview.world.point_in(*worldview.to_level_point(end_point).xy), (
         end_point,
@@ -153,7 +153,7 @@ def test_moving_all_objects_partly_off_screen(worldview):
         else:
             assert map_object.type == WORLD_MAP_BLANK_TILE_ID, index
 
-    worldview.settings.setValue("world view/show sprites", True)
+    worldview.settings.setValue("world_view/show_sprites", True)
 
 
 def test_move_sprite(worldview):

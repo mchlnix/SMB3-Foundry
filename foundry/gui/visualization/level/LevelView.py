@@ -114,7 +114,7 @@ class LevelView(MainView):
             self.drawer.anim_frame = 0
             get_tile.cache_clear()
 
-        if self.settings.value("level view/block_animation"):
+        if self.settings.value("level_view/block_animation"):
             self.redraw_timer = QTimer(self)
             self.redraw_timer.setInterval(120)
             self.redraw_timer.timeout.connect(self.next_anim_step)
@@ -156,7 +156,7 @@ class LevelView(MainView):
 
         object_under_cursor = self.object_at(mouse_point)
 
-        if self.settings.value("level view/object_tooltip_enabled") and object_under_cursor is not None:
+        if self.settings.value("level_view/object_tooltip_enabled") and object_under_cursor is not None:
             self.setToolTip(str(object_under_cursor))
         else:
             self.setToolTip("")
@@ -412,7 +412,7 @@ class LevelView(MainView):
         # Mario Sprite is offset by half a block, so offset the cursor as well
         mouse_point.setX(mouse_point.x() - self.block_length // 2)
 
-        if not self.settings.value("level view/draw_mario"):
+        if not self.settings.value("level_view/draw_mario"):
             return False
 
         return self.level_header.mario_position() == self.to_level_point(mouse_point).xy

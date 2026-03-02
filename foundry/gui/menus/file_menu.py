@@ -100,20 +100,20 @@ class FileMenu(QMenu):
             self.on_fns_import()
 
     def on_open_level_asm(self):
-        if not (pathname := load_asm_filename("Level ASM", self.settings.value("editor/default dir path"))):
+        if not (pathname := load_asm_filename("Level ASM", self.settings.value("editor/default_dir_path"))):
             return
 
         load_asm_level(pathname, self.level_ref.level)
 
     def on_save_level_asm(self):
-        suggested_file = f"{self.settings.value('editor/default dir path')}/{self.level_ref.name}.asm"
+        suggested_file = f"{self.settings.value('editor/default_dir_path')}/{self.level_ref.name}.asm"
 
         level_asm, _ = self.level_ref.level.to_asm()
 
         self.save_asm(suggested_file, level_asm, "Level ASM")
 
     def on_save_enemy_asm(self):
-        suggested_file = f"{self.settings.value('editor/default dir path')}/{self.level_ref.name}_enemy.asm"
+        suggested_file = f"{self.settings.value('editor/default_dir_path')}/{self.level_ref.name}_enemy.asm"
 
         _, enemy_asm = self.level_ref.level.to_asm()
 
@@ -127,7 +127,7 @@ class FileMenu(QMenu):
         save_asm(what, pathname, asm)
 
     def on_save_m3l(self):
-        suggested_file = self.settings.value("editor/default dir path") + "/" + self.level_ref.name + ".m3l"
+        suggested_file = self.settings.value("editor/default_dir_path") + "/" + self.level_ref.name + ".m3l"
 
         if not (pathname := save_m3l_filename(suggested_file)):
             return

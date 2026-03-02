@@ -157,7 +157,7 @@ class SettingsDialog(CustomDialog):
         )
 
         self._tooltip_cb = QCheckBox("Enabled")
-        self._tooltip_cb.setChecked(self.settings.value("level view/object_tooltip_enabled"))
+        self._tooltip_cb.setChecked(self.settings.value("level_view/object_tooltip_enabled"))
         self._tooltip_cb.toggled.connect(self._update_settings)
 
         layout.addLayout(
@@ -224,7 +224,7 @@ class SettingsDialog(CustomDialog):
         self.gui_box.setLayout(layout)
 
         self.level_highlight_cb = QCheckBox("Enabled")
-        self.level_highlight_cb.setChecked(self.settings.value("world view/show level pointers"))
+        self.level_highlight_cb.setChecked(self.settings.value("world_view/show_level_pointers"))
         self.level_highlight_cb.stateChanged.connect(self._update_settings)
 
         level_highlight_layout = label_and_widget(
@@ -250,7 +250,7 @@ class SettingsDialog(CustomDialog):
 
         self.path_dropdown = path_dropdown = QComboBox(self)
         path_dropdown.addItems(default_dirs.keys())
-        path_dropdown.setCurrentText(self.settings.value("editor/default dir"))
+        path_dropdown.setCurrentText(self.settings.value("editor/default_dir"))
         path_dropdown.currentTextChanged.connect(self.on_dropdown)
 
         path_layout.addWidget(QLabel("Default path:"))
@@ -367,7 +367,7 @@ class SettingsDialog(CustomDialog):
         self.settings.setValue("editor/auto_save_enabled", self.auto_save_cb.isChecked())
         self.settings.setValue("editor/remember_last_level", self._restore_last_opened_level_cb.isChecked())
         self.settings.setValue("editor/asm_loading_behavior", self.asm_loading_dropdown.currentIndex())
-        self.settings.setValue("world view/show level pointers", self.level_highlight_cb.isChecked())
+        self.settings.setValue("world_view/show_level_pointers", self.level_highlight_cb.isChecked())
 
         # set up style sheets
         for child_widget in self.gui_box.children():
@@ -381,15 +381,15 @@ class SettingsDialog(CustomDialog):
                     self.parent().setStyleSheet(self.settings.value("editor/gui_style"))
                     break
 
-        self.settings.setValue("editor/default dir", self.path_dropdown.currentText())
+        self.settings.setValue("editor/default_dir", self.path_dropdown.currentText())
         if self.path_dropdown.currentText() == "Custom":
-            self.settings.setValue("editor/custom default dir path", self.default_dir_label.text())
+            self.settings.setValue("editor/custom_default_dir_path", self.default_dir_label.text())
 
-        self.settings.setValue("editor/default dir path", self.default_dir_label.text())
+        self.settings.setValue("editor/default_dir_path", self.default_dir_label.text())
 
         self.settings.setValue("editor/update_on_startup", self._update_cb.isChecked())
         self.settings.setValue("editor/object_scroll_enabled", self._scroll_cb.isChecked())
-        self.settings.setValue("level view/object_tooltip_enabled", self._tooltip_cb.isChecked())
+        self.settings.setValue("level_view/object_tooltip_enabled", self._tooltip_cb.isChecked())
 
         self.settings.setValue("editor/default_powerup", self.powerup_combo_box.currentIndex())
         self.settings.setValue("editor/powerup_starman", self.starman_checkbox.isChecked())
@@ -425,7 +425,7 @@ class SettingsDialog(CustomDialog):
 
     def on_dropdown(self, new_text):
         if new_text == "Custom":
-            self.default_dir_label.setText(self.settings.value("editor/custom default dir path"))
+            self.default_dir_label.setText(self.settings.value("editor/custom_default_dir_path"))
         elif new_text in default_dirs:
             self.default_dir_label.setText(default_dirs[new_text])
 

@@ -136,7 +136,7 @@ def get_level_thumbnail(object_set, layout_address: "LevelAddress", enemy_addres
 
     view = LevelView(None, level_ref, Settings("mchlnix", "throwaway"), None)
 
-    view.settings.setValue("level view/block_transparency", object_set != DESERT_OBJECT_SET)
+    view.settings.setValue("level_view/block_transparency", object_set != DESERT_OBJECT_SET)
 
     view.zoom_out()
     view.zoom_out()

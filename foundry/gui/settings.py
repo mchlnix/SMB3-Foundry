@@ -18,6 +18,7 @@ class ASMLoadingBehavior:
     LOAD_IF_AVAILABLE = 2
 
 
+# TODO Make into an enum?
 SETTINGS: dict[str, str | int | bool] = dict()
 SETTINGS["editor/instaplay_emulator"] = "fceux"
 SETTINGS["editor/instaplay_arguments"] = "%f"
@@ -28,9 +29,9 @@ SETTINGS["editor/powerup_starman"] = False
 
 SETTINGS["editor/resize_mode"] = RESIZE_LEFT_CLICK
 SETTINGS["editor/gui_style"] = ""  # initially blank, since we can't call load_stylesheet until the app is started
-SETTINGS["editor/default dir"] = "User"
-SETTINGS["editor/default dir path"] = ""
-SETTINGS["editor/custom default dir path"] = ""
+SETTINGS["editor/default_dir"] = "User"
+SETTINGS["editor/default_dir_path"] = ""
+SETTINGS["editor/custom_default_dir_path"] = ""
 SETTINGS["editor/show_block_item_in_toolbar"] = True
 SETTINGS["editor/ask_for_level_management"] = True
 SETTINGS["editor/auto_save_enabled"] = True
@@ -47,32 +48,32 @@ SETTINGS["editor/version_to_ignore"] = ""
 
 SETTINGS["editor/settings_version"] = 0
 
-SETTINGS["level view/draw_mario"] = True
-SETTINGS["level view/draw_jumps"] = False
-SETTINGS["level view/draw_grid"] = False
-SETTINGS["level view/draw_grid_coordinates"] = False
-SETTINGS["level view/draw_expansion"] = False
-SETTINGS["level view/draw_jump_on_objects"] = True
-SETTINGS["level view/draw_items_in_blocks"] = True
-SETTINGS["level view/draw_invisible_items"] = True
-SETTINGS["level view/draw_autoscroll"] = False
-SETTINGS["level view/block_transparency"] = True
-SETTINGS["level view/block_animation"] = True
-SETTINGS["level view/special_background"] = True
-SETTINGS["level view/object_tooltip_enabled"] = True
+SETTINGS["level_view/draw_mario"] = True
+SETTINGS["level_view/draw_jumps"] = False
+SETTINGS["level_view/draw_grid"] = False
+SETTINGS["level_view/draw_grid_coordinates"] = False
+SETTINGS["level_view/draw_expansion"] = False
+SETTINGS["level_view/draw_jump_on_objects"] = True
+SETTINGS["level_view/draw_items_in_blocks"] = True
+SETTINGS["level_view/draw_invisible_items"] = True
+SETTINGS["level_view/draw_autoscroll"] = False
+SETTINGS["level_view/block_transparency"] = True
+SETTINGS["level_view/block_animation"] = True
+SETTINGS["level_view/special_background"] = True
+SETTINGS["level_view/object_tooltip_enabled"] = True
 
 
 _settings: dict[str, str | int | bool] = {
-    "world view/show grid": False,
-    "world view/show border": False,
-    "world view/animated tiles": True,
-    "world view/show level pointers": True,
-    "world view/show level previews": False,
-    "world view/show sprites": True,
-    "world view/show start position": False,
-    "world view/show airship paths": 0,
-    "world view/show pipes": False,
-    "world view/show locks": False,
+    "world_view/show_grid": False,
+    "world_view/show_border": False,
+    "world_view/animated_tiles": True,
+    "world_view/show_level_pointers": True,
+    "world_view/show_level_previews": False,
+    "world_view/show_sprites": True,
+    "world_view/show_start_position": False,
+    "world_view/show_airship_paths": 0,
+    "world_view/show_pipes": False,
+    "world_view/show_locks": False,
 }
 _settings.update(SETTINGS)
 
@@ -127,9 +128,22 @@ class Settings(QSettings):
             settings_version = self.value("editor/settings_version")
 
             if settings_version == 0:
-                self.setValue("world view/show level pointers", True)
+                self.setValue("world_view/show_level_pointers", True)
 
                 self.setValue("editor/settings_version", settings_version + 1)
                 continue
 
+            if settings_version == 1:
+                self.setValue("editor/settings_version", settings_version + 1)
+
+                for key in self.allKeys():
+                    if " " not in key:
+                        continue
+
+                    underscore_key = key.replace(" ", "_")
+
+                    if underscore_key in _settings:
+                        self.setValue(underscore_key, self.value(key))
+
+                    self.remove(key)
             break

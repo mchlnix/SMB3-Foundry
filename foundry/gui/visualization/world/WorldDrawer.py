@@ -45,32 +45,32 @@ class WorldDrawer:
 
         self._draw_background(painter, world)
 
-        if not self.settings.value("world view/show border"):
+        if not self.settings.value("world_view/show_border"):
             painter.translate(0, -FIRST_VALID_ROW * self.block_length)
 
         self._draw_tiles(painter, world)
 
-        if self.settings.value("world view/show border"):
+        if self.settings.value("world_view/show_border"):
             self._draw_border(painter, world)
 
-        if self.settings.value("world view/show grid"):
+        if self.settings.value("world_view/show_grid"):
             self._draw_grid(painter, world)
 
-        if self.settings.value("world view/show level pointers"):
+        if self.settings.value("world_view/show_level_pointers"):
             self._draw_level_pointers(painter, world)
 
-        if self.settings.value("world view/show sprites"):
+        if self.settings.value("world_view/show_sprites"):
             self._draw_sprites(painter, world)
 
-        if self.settings.value("world view/show start position"):
+        if self.settings.value("world_view/show_start_position"):
             self._draw_start_position(painter, world)
 
-        if self.settings.value("world view/show airship paths"):
+        if self.settings.value("world_view/show_airship_paths"):
             self._draw_airship_travel_points(painter, world)
 
         # self.draw_pipes = True
 
-        if self.settings.value("world view/show locks"):
+        if self.settings.value("world_view/show_locks"):
             self._draw_locks_and_bridges(painter, world)
 
         painter.restore()
@@ -85,7 +85,7 @@ class WorldDrawer:
 
         map_height = WORLD_MAP_HEIGHT
 
-        if self.settings.value("world view/show border"):
+        if self.settings.value("world_view/show_border"):
             y_offset = 0
             map_height += 3
         else:
@@ -220,7 +220,7 @@ class WorldDrawer:
             return
 
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
-            if self.settings.value("world view/show airship paths") & 2**i != 2**i:
+            if self.settings.value("world_view/show_airship_paths") & 2**i != 2**i:
                 continue
 
             for airship_point in world.airship_travel_sets[i]:

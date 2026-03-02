@@ -54,7 +54,7 @@ class SettingsDialog(CustomDialog):
 
         self.path_dropdown = path_dropdown = QComboBox(self)
         path_dropdown.addItems(default_dirs.keys())
-        path_dropdown.setCurrentText(self.settings.value("editor/default dir"))
+        path_dropdown.setCurrentText(self.settings.value("editor/default_dir"))
         path_dropdown.currentTextChanged.connect(self.on_dropdown)
 
         path_layout.addWidget(QLabel("Default path:"))
@@ -130,11 +130,11 @@ class SettingsDialog(CustomDialog):
 
         self.settings.setValue("editor/update_on_startup", self._update_check_box.isChecked())
 
-        self.settings.setValue("editor/default dir", self.path_dropdown.currentText())
+        self.settings.setValue("editor/default_dir", self.path_dropdown.currentText())
         if self.path_dropdown.currentText() == "Custom":
-            self.settings.setValue("editor/custom default dir path", self.default_dir_label.text())
+            self.settings.setValue("editor/custom_default_dir_path", self.default_dir_label.text())
 
-        self.settings.setValue("editor/default dir path", self.default_dir_label.text())
+        self.settings.setValue("editor/default_dir_path", self.default_dir_label.text())
 
         self.update()
 
@@ -167,7 +167,7 @@ class SettingsDialog(CustomDialog):
 
     def on_dropdown(self, new_text):
         if new_text == "Custom":
-            self.default_dir_label.setText(self.settings.value("editor/custom default dir path"))
+            self.default_dir_label.setText(self.settings.value("editor/custom_default_dir_path"))
         elif new_text in default_dirs:
             self.default_dir_label.setText(default_dirs[new_text])
 

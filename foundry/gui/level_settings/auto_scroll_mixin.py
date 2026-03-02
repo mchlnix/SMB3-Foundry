@@ -54,7 +54,7 @@ class AutoScrollMixin(SettingsMixin):
 
         self.layout().addWidget(auto_scroll_group)
 
-        self._autoscroll_visual_setting_before = self._parent.settings.value("level view/draw_autoscroll")
+        self._autoscroll_visual_setting_before = self._parent.settings.value("level_view/draw_autoscroll")
 
     def update(self):
         # auto scroll
@@ -72,9 +72,9 @@ class AutoScrollMixin(SettingsMixin):
         super(AutoScrollMixin, self).update()
 
         if self.enabled_checkbox.isChecked():
-            self._parent.settings.setValue("level view/draw_autoscroll", True)
+            self._parent.settings.setValue("level_view/draw_autoscroll", True)
         else:
-            self._parent.settings.setValue("level view/draw_autoscroll", self._autoscroll_visual_setting_before)
+            self._parent.settings.setValue("level_view/draw_autoscroll", self._autoscroll_visual_setting_before)
 
     def _update_auto_scroll_type(self, _):
         autoscroll_item = _get_autoscroll(self.level_ref.enemies)
@@ -147,7 +147,7 @@ class AutoScrollMixin(SettingsMixin):
 
         super(AutoScrollMixin, self).closeEvent(event)
 
-        self._parent.settings.setValue("level view/draw_autoscroll", self._autoscroll_visual_setting_before)
+        self._parent.settings.setValue("level_view/draw_autoscroll", self._autoscroll_visual_setting_before)
 
 
 def _get_autoscroll(enemy_items: list[EnemyItem]) -> EnemyItem | None:

@@ -294,7 +294,7 @@ class ScribeMainWindow(MainWindow):
             path_to_rom, _ = QFileDialog.getOpenFileName(
                 self,
                 caption="Open ROM",
-                dir=self.settings.value("editor/default dir path"),
+                dir=self.settings.value("editor/default_dir_path"),
                 filter=ROM_FILE_FILTER,
             )
 
@@ -331,7 +331,7 @@ class ScribeMainWindow(MainWindow):
             pathname, _ = QFileDialog.getSaveFileName(
                 self,
                 caption="Save ROM as",
-                dir=f"{self.settings.value('editor/default dir path')}/{suggested_file}",
+                dir=f"{self.settings.value('editor/default_dir_path')}/{suggested_file}",
                 filter=ROM_FILE_FILTER,
             )
             if not pathname:

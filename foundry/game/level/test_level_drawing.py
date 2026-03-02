@@ -87,25 +87,25 @@ with Path(data_dir / "levels.dat").open("r") as level_data_file:
 @pytest.fixture
 def settings():
     settings = Settings()
-    settings.setValue("level view/block_transparency", True)
-    settings.setValue("level view/draw_jumps", True)
-    settings.setValue("level view/draw_mario", True)
-    settings.setValue("level view/draw_grid", True)
-    settings.setValue("level view/draw_expansion", True)
-    settings.setValue("level view/draw_jump_on_objects", True)
-    settings.setValue("level view/draw_items_in_blocks", True)
-    settings.setValue("level view/draw_invisible_items", True)
-    settings.setValue("level view/draw_autoscroll", True)
-    settings.setValue("level view/object_tooltip_enabled", False)
+    settings.setValue("level_view/block_transparency", True)
+    settings.setValue("level_view/draw_jumps", True)
+    settings.setValue("level_view/draw_mario", True)
+    settings.setValue("level_view/draw_grid", True)
+    settings.setValue("level_view/draw_expansion", True)
+    settings.setValue("level_view/draw_jump_on_objects", True)
+    settings.setValue("level_view/draw_items_in_blocks", True)
+    settings.setValue("level_view/draw_invisible_items", True)
+    settings.setValue("level_view/draw_autoscroll", True)
+    settings.setValue("level_view/object_tooltip_enabled", False)
 
-    settings.setValue("world view/show grid", True)
-    settings.setValue("world view/show border", False)
-    settings.setValue("world view/show level pointers", True)
-    settings.setValue("world view/show sprites", True)
-    settings.setValue("world view/show airship paths", 0b111)
-    settings.setValue("world view/show start position", True)
-    settings.setValue("world view/show locks", True)
-    settings.setValue("world view/show pipes", True)
+    settings.setValue("world_view/show_grid", True)
+    settings.setValue("world_view/show_border", False)
+    settings.setValue("world_view/show_level_pointers", True)
+    settings.setValue("world_view/show_sprites", True)
+    settings.setValue("world_view/show_airship_paths", 0b111)
+    settings.setValue("world_view/show_start_position", True)
+    settings.setValue("world_view/show_locks", True)
+    settings.setValue("world_view/show_pipes", True)
 
     return settings
 
@@ -123,7 +123,7 @@ def test_world(world_info, settings, rom, qtbot):
     # monkeypatch level names, since the level name data is broken atm
     level_ref.level.name = current_test_name()
 
-    settings.setValue("world view/show border", show_border)
+    settings.setValue("world_view/show_border", show_border)
 
     world_view = WorldView(None, level_ref, settings, WorldContextMenu(level_ref))
 
@@ -147,7 +147,7 @@ def test_level(level_info, settings, rom, qtbot):
     # monkeypatch level names, since the level name data is broken atm
     level_ref.level.name = current_test_name()
 
-    settings.setValue("level view/block_transparency", transparent)
+    settings.setValue("level_view/block_transparency", transparent)
 
     level_view = LevelView(None, level_ref, settings, LevelContextMenu(level_ref))
 
@@ -166,7 +166,7 @@ def test_draw_jumps(jump_test_name, level, settings, qtbot):
         ref = LevelRef()
         ref._internal_level = level
 
-        settings.setValue("level view/draw_grid", False)
+        settings.setValue("level_view/draw_grid", False)
 
         level_view = LevelView(None, ref, settings, LevelContextMenu(ref))
 
@@ -196,7 +196,7 @@ def test_draw_m3ls(m3l_file_name, level, settings, qtbot):
         ref = LevelRef()
         ref._internal_level = level
 
-        settings.setValue("level view/draw_grid", False)
+        settings.setValue("level_view/draw_grid", False)
 
         level_view = LevelView(None, ref, settings, LevelContextMenu(ref))
 

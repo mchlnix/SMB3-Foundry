@@ -18,36 +18,36 @@ class ViewMenu(QMenu):
         self.grid_action = self.addAction("&Grid")
         self.grid_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_G)
         self.grid_action.setCheckable(True)
-        self.grid_action.setChecked(self.settings.value("world view/show grid"))
+        self.grid_action.setChecked(self.settings.value("world_view/show_grid"))
 
         self.border_action = self.addAction("Borders")
         self.border_action.setCheckable(True)
-        self.border_action.setChecked(self.settings.value("world view/show border"))
+        self.border_action.setChecked(self.settings.value("world_view/show_border"))
 
         self.animation_action = self.addAction("Animated Tiles")
         self.animation_action.setCheckable(True)
-        self.animation_action.setChecked(self.settings.value("world view/animated tiles"))
+        self.animation_action.setChecked(self.settings.value("world_view/animated_tiles"))
 
         self.addSeparator()
 
         self.level_pointer_action = self.addAction("&Level Pointers")
         self.level_pointer_action.setCheckable(True)
-        self.level_pointer_action.setChecked(self.settings.value("world view/show level pointers"))
+        self.level_pointer_action.setChecked(self.settings.value("world_view/show_level_pointers"))
         self.level_pointer_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_L)
 
         self.level_preview_action = self.addAction("&Tooltip with Level Preview")
         self.level_preview_action.setCheckable(True)
-        self.level_preview_action.setChecked(self.settings.value("world view/show level previews"))
+        self.level_preview_action.setChecked(self.settings.value("world_view/show_level_previews"))
         self.level_preview_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_T)
 
         self.sprite_action = self.addAction("Overworld &Sprites")
         self.sprite_action.setCheckable(True)
-        self.sprite_action.setChecked(self.settings.value("world view/show sprites"))
+        self.sprite_action.setChecked(self.settings.value("world_view/show_sprites"))
         self.sprite_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_O)
 
         self.starting_point_action = self.addAction("Starting &Point")
         self.starting_point_action.setCheckable(True)
-        self.starting_point_action.setChecked(self.settings.value("world view/show start position"))
+        self.starting_point_action.setChecked(self.settings.value("world_view/show_start_position"))
         self.starting_point_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_P)
 
         self.addSeparator()
@@ -57,14 +57,14 @@ class ViewMenu(QMenu):
             self.airship_travel_actions.append(self.addAction(f"&Airship Travel Path {i+1}"))
             self.airship_travel_actions[-1].setCheckable(True)
             self.airship_travel_actions[-1].setChecked(
-                self.settings.value("world view/show airship paths") & 2**i == 2**i
+                self.settings.value("world_view/show_airship_paths") & 2**i == 2**i
             )
 
         self.addSeparator()
 
         self.lock_bridge_action = self.addAction("Lock and &Bridge Events")
         self.lock_bridge_action.setCheckable(True)
-        self.lock_bridge_action.setChecked(self.settings.value("world view/show locks"))
+        self.lock_bridge_action.setChecked(self.settings.value("world_view/show_locks"))
         self.lock_bridge_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_B)
 
         self.addSeparator()
@@ -77,20 +77,20 @@ class ViewMenu(QMenu):
 
     def on_menu(self, action: QAction):
         if action is self.grid_action:
-            self.settings.setValue("world view/show grid", action.isChecked())
+            self.settings.setValue("world_view/show_grid", action.isChecked())
         elif action is self.border_action:
-            self.settings.setValue("world view/show border", action.isChecked())
+            self.settings.setValue("world_view/show_border", action.isChecked())
         elif action is self.animation_action:
-            self.settings.setValue("world view/animated tiles", action.isChecked())
+            self.settings.setValue("world_view/animated_tiles", action.isChecked())
             self.world_view.update_anim_timer()
         elif action is self.level_pointer_action:
-            self.settings.setValue("world view/show level pointers", action.isChecked())
+            self.settings.setValue("world_view/show_level_pointers", action.isChecked())
         elif action is self.level_preview_action:
-            self.settings.setValue("world view/show level previews", action.isChecked())
+            self.settings.setValue("world_view/show_level_previews", action.isChecked())
         elif action is self.sprite_action:
-            self.settings.setValue("world view/show sprites", action.isChecked())
+            self.settings.setValue("world_view/show_sprites", action.isChecked())
         elif action is self.starting_point_action:
-            self.settings.setValue("world view/show start position", action.isChecked())
+            self.settings.setValue("world_view/show_start_position", action.isChecked())
         elif action in self.airship_travel_actions:
             value = 0
 
@@ -98,9 +98,9 @@ class ViewMenu(QMenu):
                 if action.isChecked():
                     value += 2**index
 
-            self.settings.setValue("world view/show airship paths", value)
+            self.settings.setValue("world_view/show_airship_paths", value)
         elif action is self.lock_bridge_action:
-            self.settings.setValue("world view/show locks", action.isChecked())
+            self.settings.setValue("world_view/show_locks", action.isChecked())
 
         elif action is self.show_all_action:
             for view_action in self.actions():
@@ -115,7 +115,7 @@ class ViewMenu(QMenu):
 
     def _on_screenshot(self):
         recommended_file = (
-            f"{self.settings.value('editor/default dir path')}/{ROM.name} - {self.world_view.level_ref.name}.png"
+            f"{self.settings.value('editor/default_dir_path')}/{ROM.name} - {self.world_view.level_ref.name}.png"
         )
 
         pathname, _ = QFileDialog.getSaveFileName(
