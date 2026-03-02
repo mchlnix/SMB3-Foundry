@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import logging
 import os
-import pathlib
 import sys
 import traceback
 import warnings
+from pathlib import Path
 
 from PySide6.QtWidgets import QApplication, QMessageBox
 
@@ -52,6 +52,18 @@ def main(path_to_rom, check_auto_save=True, level_data_tuple=(), m3l_path=""):
                 None, "Auto Save recovered", "Don't forget to save the loaded ROM under a new name!"
             )
 
+    if not have_level_data and main_window.settings.value("editor/remember_last_level"):
+        last_rom = Path(main_window.settings.value("editor/remember_last_level_path"))
+        object_set = int(main_window.settings.value("editor/remember_last_level_object_set"))
+        level_address = int(main_window.settings.value("editor/remember_last_level_lvl_address"))
+        enemy_address = int(main_window.settings.value("editor/remember_last_level_enemy_address"))
+
+        if last_rom.is_file() and 0 not in (level_address, enemy_address, object_set):
+            path_to_rom = last_rom
+            level_data_tuple = (level_address, enemy_address, object_set)
+
+            have_level_data = True
+
     main_window.on_open_rom(path_to_rom, try_opening_level=not have_level_data)
 
     if ROM.is_loaded():
@@ -87,7 +99,7 @@ if __name__ == "__main__":
 
                 m3l_path = args.pop(0)
 
-                if not pathlib.Path(m3l_path).exists():
+                if not Path(m3l_path).exists():
                     raise ValueError(f"M3L path '{m3l_path}' does not exist.")
 
             elif arg == LOAD_LEVEL:
@@ -103,7 +115,7 @@ if __name__ == "__main__":
 
                 level_data_tuple = (level_address, enemy_address, object_set_number)
 
-            elif pathlib.Path(arg).exists():
+            elif Path(arg).exists():
                 path = arg
 
             else:
