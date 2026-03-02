@@ -36,6 +36,10 @@ SETTINGS["editor/ask_for_level_management"] = True
 SETTINGS["editor/auto_save_enabled"] = True
 SETTINGS["editor/asm_loading_behavior"] = ASMLoadingBehavior.ASK_IF_NEEDED
 SETTINGS["editor/remember_last_level"] = False
+SETTINGS["editor/remember_last_level_path"] = ""
+SETTINGS["editor/remember_last_level_object_set"] = 0
+SETTINGS["editor/remember_last_level_lvl_address"] = 0
+SETTINGS["editor/remember_last_level_enemy_address"] = 0
 
 SETTINGS["editor/update_on_startup"] = False
 SETTINGS["editor/asked_for_startup"] = False
