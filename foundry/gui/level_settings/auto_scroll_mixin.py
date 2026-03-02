@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QVBoxLayout
@@ -10,6 +10,9 @@ from foundry.gui.commands import AddObject, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_AUTOSCROLL
+
+if TYPE_CHECKING:
+    from foundry.gui.MainWindow import MainWindow
 
 AUTOSCROLL_LABELS = {
     -1: "No Autoscroll in Level.",
@@ -23,8 +26,10 @@ AUTOSCROLL_LABELS = {
 
 
 class AutoScrollMixin(SettingsMixin):
-    def __init__(self, parent):
+    def __init__(self, parent: "MainWindow"):
         super(AutoScrollMixin, self).__init__(parent)
+
+        self._parent = parent
 
         self.original_autoscroll_item = _get_autoscroll(self.level_ref.enemies)
         self.original_scroll_type = (
@@ -49,6 +54,8 @@ class AutoScrollMixin(SettingsMixin):
 
         self.layout().addWidget(auto_scroll_group)
 
+        self._autoscroll_visual_setting_before = self._parent.settings.value("level view/draw_autoscroll")
+
     def update(self):
         # auto scroll
         autoscroll_item = _get_autoscroll(self.level_ref.enemies)
@@ -63,6 +70,11 @@ class AutoScrollMixin(SettingsMixin):
             self.auto_scroll_type_label.setText(AUTOSCROLL_LABELS[autoscroll_item.auto_scroll_type >> 4])
 
         super(AutoScrollMixin, self).update()
+
+        if self.enabled_checkbox.isChecked():
+            self._parent.settings.setValue("level view/draw_autoscroll", True)
+        else:
+            self._parent.settings.setValue("level view/draw_autoscroll", self._autoscroll_visual_setting_before)
 
     def _update_auto_scroll_type(self, _):
         autoscroll_item = _get_autoscroll(self.level_ref.enemies)
@@ -134,6 +146,8 @@ class AutoScrollMixin(SettingsMixin):
                 )
 
         super(AutoScrollMixin, self).closeEvent(event)
+
+        self._parent.settings.setValue("level view/draw_autoscroll", self._autoscroll_visual_setting_before)
 
 
 def _get_autoscroll(enemy_items: list[EnemyItem]) -> Optional[EnemyItem]:
