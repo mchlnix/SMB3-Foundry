@@ -100,26 +100,26 @@ class SettingsDialog(CustomDialog):
         layout = QVBoxLayout()
         on_start_up_box.setLayout(layout)
 
-        self._update_check_box = QCheckBox("Enabled")
-        self._update_check_box.setChecked(self.settings.value("editor/update_on_startup"))
-        self._update_check_box.toggled.connect(self._update_settings)
+        self._update_cb = QCheckBox("Enabled")
+        self._update_cb.setChecked(self.settings.value("editor/update_on_startup"))
+        self._update_cb.toggled.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
                 "Check for Updates on Startup:",
-                self._update_check_box,
+                self._update_cb,
                 tooltip="Checks the Repository for a new Version when the Editor is started.",
             )
         )
 
-        self.auto_save_check_box = QCheckBox("Enabled")
-        self.auto_save_check_box.setChecked(self.settings.value("editor/auto_save_enabled"))
-        self.auto_save_check_box.stateChanged.connect(self._update_settings)
+        self.auto_save_cb = QCheckBox("Enabled")
+        self.auto_save_cb.setChecked(self.settings.value("editor/auto_save_enabled"))
+        self.auto_save_cb.stateChanged.connect(self._update_settings)
 
         on_start_up_box.layout().addLayout(
             label_and_widget(
                 "Ask if Backup should be restored, after crash:",
-                self.auto_save_check_box,
+                self.auto_save_cb,
                 tooltip="Should the editor keep a copy of the current ROM with unsaved changes, so that if it crashes, "
                 "the ROM and changed level can be restored?",
             )
@@ -132,26 +132,26 @@ class SettingsDialog(CustomDialog):
         layout = QVBoxLayout()
         mouse_box.setLayout(layout)
 
-        self._scroll_check_box = QCheckBox("Enabled")
-        self._scroll_check_box.setChecked(self.settings.value("editor/object_scroll_enabled"))
-        self._scroll_check_box.toggled.connect(self._update_settings)
+        self._scroll_cb = QCheckBox("Enabled")
+        self._scroll_cb.setChecked(self.settings.value("editor/object_scroll_enabled"))
+        self._scroll_cb.toggled.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
                 "Scroll objects with mouse wheel:",
-                self._scroll_check_box,
+                self._scroll_cb,
                 tooltip="Select an object and scroll up and down to change its type.",
             )
         )
 
-        self._tooltip_check_box = QCheckBox("Enabled")
-        self._tooltip_check_box.setChecked(self.settings.value("level view/object_tooltip_enabled"))
-        self._tooltip_check_box.toggled.connect(self._update_settings)
+        self._tooltip_cb = QCheckBox("Enabled")
+        self._tooltip_cb.setChecked(self.settings.value("level view/object_tooltip_enabled"))
+        self._tooltip_cb.toggled.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
                 "Show object names on hover:",
-                self._tooltip_check_box,
+                self._tooltip_cb,
                 tooltip="When hovering your cursor over an object in a level, its name and position is shown in a "
                 "tooltip.",
             )
@@ -178,14 +178,14 @@ class SettingsDialog(CustomDialog):
         layout = QVBoxLayout()
         self._when_open_rom_box.setLayout(layout)
 
-        self.ask_for_level_management_check_box = QCheckBox("Enabled")
-        self.ask_for_level_management_check_box.setChecked(self.settings.value("editor/ask_for_level_management"))
-        self.ask_for_level_management_check_box.stateChanged.connect(self._update_settings)
+        self.ask_for_level_management_cb = QCheckBox("Enabled")
+        self.ask_for_level_management_cb.setChecked(self.settings.value("editor/ask_for_level_management"))
+        self.ask_for_level_management_cb.stateChanged.connect(self._update_settings)
 
         self._when_open_rom_box.layout().addLayout(
             label_and_widget(
                 "Ask for Automatic Level Management:",
-                self.ask_for_level_management_check_box,
+                self.ask_for_level_management_cb,
                 tooltip="Should the editor ask to enable Automatic Level Management when opening a new ROM that isn't "
                 "managed yet?",
             )
@@ -211,12 +211,12 @@ class SettingsDialog(CustomDialog):
         layout = QVBoxLayout()
         self.gui_box.setLayout(layout)
 
-        self.level_highlight_check_box = QCheckBox("Enabled")
-        self.level_highlight_check_box.setChecked(self.settings.value("world view/show level pointers"))
-        self.level_highlight_check_box.stateChanged.connect(self._update_settings)
+        self.level_highlight_cb = QCheckBox("Enabled")
+        self.level_highlight_cb.setChecked(self.settings.value("world view/show level pointers"))
+        self.level_highlight_cb.stateChanged.connect(self._update_settings)
 
         level_highlight_layout = label_and_widget(
-            "Highlight LevelPointers in LevelSelector World Maps:", self.level_highlight_check_box
+            "Highlight LevelPointers in LevelSelector World Maps:", self.level_highlight_cb
         )
         self.gui_box.layout().addLayout(level_highlight_layout)
 
@@ -351,10 +351,10 @@ class SettingsDialog(CustomDialog):
         else:
             self.settings.setValue("editor/resize_mode", RESIZE_RIGHT_CLICK)
 
-        self.settings.setValue("editor/ask_for_level_management", self.ask_for_level_management_check_box.isChecked())
-        self.settings.setValue("editor/auto_save_enabled", self.auto_save_check_box.isChecked())
+        self.settings.setValue("editor/ask_for_level_management", self.ask_for_level_management_cb.isChecked())
+        self.settings.setValue("editor/auto_save_enabled", self.auto_save_cb.isChecked())
         self.settings.setValue("editor/asm_loading_behavior", self.asm_loading_dropdown.currentIndex())
-        self.settings.setValue("world view/show level pointers", self.level_highlight_check_box.isChecked())
+        self.settings.setValue("world view/show level pointers", self.level_highlight_cb.isChecked())
 
         # set up style sheets
         for child_widget in self.gui_box.children():
@@ -374,9 +374,9 @@ class SettingsDialog(CustomDialog):
 
         self.settings.setValue("editor/default dir path", self.default_dir_label.text())
 
-        self.settings.setValue("editor/update_on_startup", self._update_check_box.isChecked())
-        self.settings.setValue("editor/object_scroll_enabled", self._scroll_check_box.isChecked())
-        self.settings.setValue("level view/object_tooltip_enabled", self._tooltip_check_box.isChecked())
+        self.settings.setValue("editor/update_on_startup", self._update_cb.isChecked())
+        self.settings.setValue("editor/object_scroll_enabled", self._scroll_cb.isChecked())
+        self.settings.setValue("level view/object_tooltip_enabled", self._tooltip_cb.isChecked())
 
         self.settings.setValue("editor/default_powerup", self.powerup_combo_box.currentIndex())
         self.settings.setValue("editor/powerup_starman", self.starman_checkbox.isChecked())
