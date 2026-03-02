@@ -125,6 +125,18 @@ class SettingsDialog(CustomDialog):
             )
         )
 
+        self._restore_last_opened_level_cb = QCheckBox("Enabled")
+        self._restore_last_opened_level_cb.setChecked(self.settings.value("editor/remember_last_level"))
+        self._restore_last_opened_level_cb.stateChanged.connect(self._update_settings)
+
+        on_start_up_box.layout().addLayout(
+            label_and_widget(
+                "Reopen last opened ROM and level:",
+                self._restore_last_opened_level_cb,
+                tooltip="Should Foundry remember the last opened ROM and level and open them automatically on startup?",
+            )
+        )
+
         # Mouse Section
         # -----------------------------------------------
 
@@ -353,6 +365,7 @@ class SettingsDialog(CustomDialog):
 
         self.settings.setValue("editor/ask_for_level_management", self.ask_for_level_management_cb.isChecked())
         self.settings.setValue("editor/auto_save_enabled", self.auto_save_cb.isChecked())
+        self.settings.setValue("editor/remember_last_level", self._restore_last_opened_level_cb.isChecked())
         self.settings.setValue("editor/asm_loading_behavior", self.asm_loading_dropdown.currentIndex())
         self.settings.setValue("world view/show level pointers", self.level_highlight_cb.isChecked())
 

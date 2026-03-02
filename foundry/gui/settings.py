@@ -35,6 +35,7 @@ SETTINGS["editor/show_block_item_in_toolbar"] = True
 SETTINGS["editor/ask_for_level_management"] = True
 SETTINGS["editor/auto_save_enabled"] = True
 SETTINGS["editor/asm_loading_behavior"] = ASMLoadingBehavior.ASK_IF_NEEDED
+SETTINGS["editor/remember_last_level"] = False
 
 SETTINGS["editor/update_on_startup"] = False
 SETTINGS["editor/asked_for_startup"] = False
@@ -109,9 +110,9 @@ class Settings(QSettings):
 
     def sync(self):
         if self.is_default:
-            return
-        else:
-            return super(Settings, self).sync()
+            return None
+
+        return super(Settings, self).sync()
 
     def update_by_version(self):
         if self.applicationName() == "foundry":
