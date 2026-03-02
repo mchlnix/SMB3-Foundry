@@ -1173,6 +1173,11 @@ class FoundryMainWindow(MainWindow):
             self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
             self.scroll_panel.horizontalScrollBar().setValue(0)
             self.scroll_panel.verticalScrollBar().setValue(0)
+
+            self.settings.setValue("editor/remember_last_level_path", ROM.path)
+            self.settings.setValue("editor/remember_last_level_object_set", object_set)
+            self.settings.setValue("editor/remember_last_level_lvl_address", object_data_offset)
+            self.settings.setValue("editor/remember_last_level_enemy_address", enemy_data_offset)
         except IndexError:
             QMessageBox.critical(
                 self,
