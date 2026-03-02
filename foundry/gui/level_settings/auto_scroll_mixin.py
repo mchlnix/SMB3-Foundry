@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QVBoxLayout
@@ -150,7 +150,7 @@ class AutoScrollMixin(SettingsMixin):
         self._parent.settings.setValue("level view/draw_autoscroll", self._autoscroll_visual_setting_before)
 
 
-def _get_autoscroll(enemy_items: list[EnemyItem]) -> Optional[EnemyItem]:
+def _get_autoscroll(enemy_items: list[EnemyItem]) -> EnemyItem | None:
     for item in enemy_items:
         if item.obj_index == OBJ_AUTOSCROLL:
             return item

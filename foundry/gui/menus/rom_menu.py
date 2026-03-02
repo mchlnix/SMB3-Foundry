@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Optional
 
 from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtGui import QAction
@@ -25,9 +24,9 @@ class RomMenu(QMenu):
         super(RomMenu, self).__init__(title)
 
         self._level_ref = level_ref
-        self._level_viewer: Optional[LevelViewer] = None
-        self._block_viewer: Optional[BlockViewer] = None
-        self._object_viewer: Optional[ObjectViewer] = None
+        self._level_viewer: LevelViewer | None = None
+        self._block_viewer: BlockViewer | None = None
+        self._object_viewer: ObjectViewer | None = None
 
         self.triggered.connect(self._on_trigger)
 

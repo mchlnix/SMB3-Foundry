@@ -1,5 +1,3 @@
-from typing import Optional
-
 from smb3parse.constants import (
     BASE_OFFSET,
     MAPITEM_NOITEM,
@@ -94,7 +92,7 @@ class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
         self.type = MAPOBJ_EMPTY
         self.item = MAPITEM_NOITEM
 
-    def write_back(self, rom: Optional[Rom] = None):
+    def write_back(self, rom: Rom | None = None):
         if rom is None:
             rom = self._rom
 

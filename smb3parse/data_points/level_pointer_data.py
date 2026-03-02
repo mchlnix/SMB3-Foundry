@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from smb3parse.constants import BASE_OFFSET, OFFSET_SIZE, Constants
 from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
@@ -106,7 +106,7 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
         self.level_offset = 0x0
         self.enemy_offset = 0x0
 
-    def write_back(self, rom: Optional[Rom] = None):
+    def write_back(self, rom: Rom | None = None):
         if rom is None:
             rom = self._rom
 

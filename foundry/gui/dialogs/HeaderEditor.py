@@ -1,5 +1,3 @@
-from typing import Optional
-
 from PySide6.QtGui import Qt, QUndoStack
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -83,7 +81,7 @@ SPINNER_MAX_VALUE = 0x0F_FF_FF
 
 
 class HeaderEditor(CustomDialog):
-    def __init__(self, parent: Optional[QWidget], level_ref: LevelRef):
+    def __init__(self, parent: QWidget | None, level_ref: LevelRef):
         super(HeaderEditor, self).__init__(parent, "Level Header Editor")
 
         self.level: Level = level_ref.level

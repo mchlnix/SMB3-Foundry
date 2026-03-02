@@ -1,4 +1,4 @@
-from typing import Generator, Optional
+from typing import Generator
 from warnings import warn
 
 from smb3parse.constants import (
@@ -43,7 +43,7 @@ def get_all_world_maps(rom: Rom) -> list["WorldMap"]:
     return [WorldMap(address, rom) for address in world_map_addresses]
 
 
-def level_name(data: Optional[LevelPointerData]) -> str:
+def level_name(data: LevelPointerData | None) -> str:
     if data is None:
         return ""
 
@@ -152,7 +152,7 @@ class WorldMap(LevelBase):
     def level_count(self):
         return self.data.level_count
 
-    def level_for_position(self, pos: Position) -> Optional[LevelPointerData]:
+    def level_for_position(self, pos: Position) -> LevelPointerData | None:
         """
         The rom takes the position of the current player, the world, the screen and the x and y coordinates, and
         operates on them. First it is checked, whether the player is located on a tile, that can be entered.
@@ -205,7 +205,7 @@ class WorldMap(LevelBase):
             sprite.clear()
             sprite.write_back()
 
-    def sprite_at(self, pos: Position) -> Optional[SpriteData]:
+    def sprite_at(self, pos: Position) -> SpriteData | None:
         """
         Returns the ID of the overworld sprite at the given location in this world. Or 0 if there is None.
         """
@@ -225,7 +225,7 @@ class WorldMap(LevelBase):
             level_pointer.clear()
             level_pointer.write_back()
 
-    def level_at(self, pos: Position) -> Optional[LevelPointerData]:
+    def level_at(self, pos: Position) -> LevelPointerData | None:
         """
         Returns the ID of the overworld sprite at the given location in this world. Or 0 if there is None.
         """

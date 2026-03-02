@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import cast
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
@@ -218,7 +218,7 @@ class WorldMap(LevelLike):
 
         self.data_changed.emit()
 
-    def level_pointer_at(self, x: int, y: int) -> Optional[LevelPointer]:
+    def level_pointer_at(self, x: int, y: int) -> LevelPointer | None:
         pos = Position.from_xy(x, y)
 
         for level_pointer in self.level_pointers:
@@ -232,7 +232,7 @@ class WorldMap(LevelLike):
 
         return self.internal_world_map.level_name_for_position(pos)
 
-    def sprite_at(self, x, y) -> Optional[Sprite]:
+    def sprite_at(self, x, y) -> Sprite | None:
         pos = Position.from_xy(x, y)
 
         for sprite in reversed(self.sprites):
@@ -291,7 +291,7 @@ class WorldMap(LevelLike):
     def fully_loaded(self):
         return True
 
-    def save_to_rom(self, rom: Optional[Rom] = None):
+    def save_to_rom(self, rom: Rom | None = None):
         self.write_tiles()
 
         self.data.map_start_y = self.start_pos.pos.y << 4

@@ -3,7 +3,6 @@ Describes all objects, that are part of a level, i. e. platforms, enemies, items
 """
 
 from abc import ABC
-from typing import Optional
 
 MIN_DOMAIN = 0
 MAX_DOMAIN = 7
@@ -32,7 +31,7 @@ class InLevelObject(ABC):
         self._id: int = 0
         self._x: int = 0
         self._y: int = 0
-        self._length: Optional[int] = None
+        self._length: int | None = None
 
     @property
     def id(self):

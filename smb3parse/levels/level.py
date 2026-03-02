@@ -1,5 +1,3 @@
-from typing import Optional
-
 from smb3parse.levels import HEADER_LENGTH, LevelBase
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMapPosition
@@ -13,7 +11,7 @@ class Level(LevelBase):
 
         self.enemy_address = enemy_address
 
-        self.world_map_position: Optional[WorldMapPosition] = None
+        self.world_map_position: WorldMapPosition | None = None
 
         self._rom = rom
 
@@ -37,7 +35,7 @@ class Level(LevelBase):
         )
 
     @staticmethod
-    def from_world_map(rom: Rom, world_map_position: WorldMapPosition) -> Optional["Level"]:
+    def from_world_map(rom: Rom, world_map_position: WorldMapPosition) -> "Level | None":
         lp = world_map_position.level_pointer
 
         if lp is None:

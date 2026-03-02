@@ -1,5 +1,4 @@
 import typing
-from typing import Optional
 
 from smb3parse.data_points import LevelPointerData, Position
 
@@ -13,7 +12,7 @@ class WorldMapPosition(Position):
         self.world: "WorldMap" = world
 
     @property
-    def level_pointer(self) -> Optional[LevelPointerData]:
+    def level_pointer(self) -> LevelPointerData | None:
         return self.world.level_for_position(self)
 
     def can_have_level(self):

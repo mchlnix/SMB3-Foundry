@@ -1,5 +1,3 @@
-from typing import Optional
-
 from PySide6.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
 from PySide6.QtGui import QDrag, QImage, QMouseEvent, QPainter, QPaintEvent
 from PySide6.QtWidgets import QSizePolicy, QWidget
@@ -43,7 +41,7 @@ class ObjectIcon(QWidget):
 
     clicked: SignalInstance = Signal()
 
-    def __init__(self, level_object: Optional[InLevelObject] = None):
+    def __init__(self, level_object: InLevelObject | None = None):
         super(ObjectIcon, self).__init__()
 
         size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -55,7 +53,7 @@ class ObjectIcon(QWidget):
 
         self.zoom = 1
 
-        self.object: Optional[InLevelObject] = None
+        self.object: InLevelObject | None = None
         self.image = QImage()
 
         self.set_object(level_object)
@@ -92,7 +90,7 @@ class ObjectIcon(QWidget):
 
         return None
 
-    def set_object(self, level_object: Optional[InLevelObject]):
+    def set_object(self, level_object: InLevelObject | None):
         if isinstance(level_object, Jump):
             return
 

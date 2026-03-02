@@ -1,5 +1,3 @@
-from typing import Optional
-
 from smb3parse.constants import Constants
 from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
 from smb3parse.levels import FIRST_VALID_ROW
@@ -94,7 +92,7 @@ class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):
         self.v_addr_high = self._rom.int(self.v_addr_high_address)
         self.v_addr_low = self._rom.int(self.v_addr_low_address)
 
-    def write_back(self, rom: Optional[Rom] = None):
+    def write_back(self, rom: Rom | None = None):
         if rom is None:
             rom = self._rom
 

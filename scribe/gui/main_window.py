@@ -1,6 +1,5 @@
 import tempfile
 from pathlib import Path
-from typing import Optional
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QAction, QActionGroup, QKeySequence, QShortcut, Qt, QUndoStack
@@ -236,7 +235,7 @@ class ScribeMainWindow(MainWindow):
 
         self.world_view.update()
 
-    def _paste_objects(self, q_point: Optional[QPoint] = None):
+    def _paste_objects(self, q_point: QPoint | None = None):
         if not (copy_data := self.context_menu.get_copied_objects())[0]:
             return
 

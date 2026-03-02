@@ -1,5 +1,5 @@
 from bisect import bisect_right
-from typing import Optional, cast
+from typing import cast
 
 from PySide6.QtCore import QPoint, QSize, QTimer
 from PySide6.QtGui import QMouseEvent, Qt, QUndoStack, QWheelEvent
@@ -43,13 +43,13 @@ from smb3parse.levels import HEADER_LENGTH
 class LevelView(MainView):
     def __init__(
         self,
-        parent: Optional[QWidget],
+        parent: QWidget | None,
         level: LevelRef,
         settings: Settings,
-        context_menu: Optional[LevelContextMenu],
+        context_menu: LevelContextMenu | None,
     ):
         self.drawer = LevelDrawer()
-        self.redraw_timer: Optional[QTimer] = None
+        self.redraw_timer: QTimer | None = None
 
         super(LevelView, self).__init__(parent, level, settings, context_menu)
 
@@ -504,8 +504,8 @@ class LevelView(MainView):
 
         self.update()
 
-    def object_at(self, q_point: QPoint) -> Optional[InLevelObject]:
-        return cast(Optional[InLevelObject], super(LevelView, self).object_at(q_point))
+    def object_at(self, q_point: QPoint) -> InLevelObject | None:
+        return cast(InLevelObject | None, super(LevelView, self).object_at(q_point))
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
         obj = self.object_at(event.position().toPoint())

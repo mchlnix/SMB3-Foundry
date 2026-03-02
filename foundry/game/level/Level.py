@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import cast
 
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
@@ -87,8 +87,8 @@ class Level(LevelLike):
             self.size = (0, 0)
             self.header_bytes = bytearray(9)
             self.header = LevelHeader(ROM(), self.header_bytes, self.object_set.number)
-            self.object_factory: Optional[LevelObjectFactory] = None
-            self.enemy_factory: Optional[EnemyItemFactory] = None
+            self.object_factory: LevelObjectFactory | None = None
+            self.enemy_factory: EnemyItemFactory | None = None
             return
 
         rom = ROM()
@@ -526,7 +526,7 @@ class Level(LevelLike):
     def get_all_objects(self) -> list[InLevelObject]:
         return cast("list[InLevelObject]", self.objects) + cast("list[InLevelObject]", self.enemies)
 
-    def object_at(self, x: int, y: int) -> Optional[InLevelObject]:
+    def object_at(self, x: int, y: int) -> InLevelObject | None:
         for obj in reversed(self.get_all_objects()):
             if obj.point_in(x, y):
                 return obj
@@ -604,13 +604,13 @@ class Level(LevelLike):
     def draw(self, *_):
         pass
 
-    def paste_object_at(self, pos: Position, obj: ObjectLike) -> Optional[ObjectLike]:
+    def paste_object_at(self, pos: Position, obj: ObjectLike) -> ObjectLike | None:
         if isinstance(obj, EnemyItem):
             return self.add_enemy(obj.obj_index, pos)
 
         elif isinstance(obj, LevelObject):
             if obj.is_4byte:
-                length: Optional[int] = obj.data[3]
+                length: int | None = obj.data[3]
             else:
                 length = None
 
@@ -619,8 +619,8 @@ class Level(LevelLike):
         return None
 
     def add_object(
-        self, domain: int, object_index: int, pos: Position, length: Optional[int], index: int = -1
-    ) -> Optional[LevelObject]:
+        self, domain: int, object_index: int, pos: Position, length: int | None, index: int = -1
+    ) -> LevelObject | None:
         if index == -1:
             index = len(self.objects)
 

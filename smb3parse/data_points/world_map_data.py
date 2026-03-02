@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Optional
 
 from smb3parse.constants import (
     AIRSHIP_TRAVEL_SET_COUNT,
@@ -382,7 +381,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
         self.music_index = self._rom.int(self.music_index_address)
         self.music_arrival_index = self._rom.int(self.music_arrival_index_address)
 
-    def write_back(self, rom: Optional[Rom] = None):
+    def write_back(self, rom: Rom | None = None):
         if rom is None:
             rom = self._rom
 

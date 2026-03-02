@@ -1,5 +1,3 @@
-from typing import Optional
-
 from PySide6.QtWidgets import (
     QCheckBox,
     QDialog,
@@ -238,7 +236,7 @@ class PipeExitSetScreen(QDialog):
         self.selected_position = pos.copy()
 
 
-def _get_pipe_item(enemy_items: list[EnemyItem]) -> Optional[EnemyItem]:
+def _get_pipe_item(enemy_items: list[EnemyItem]) -> EnemyItem | None:
     for item in enemy_items:
         if item.obj_index == OBJ_PIPE_EXITS:
             return item

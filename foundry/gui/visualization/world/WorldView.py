@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import cast
 
 from PySide6.QtCore import QPoint, QSize, QTimer
 from PySide6.QtGui import (
@@ -56,13 +56,13 @@ class WorldView(MainView):
 
     def __init__(
         self,
-        parent: Optional[QWidget],
+        parent: QWidget | None,
         level: LevelRef,
         settings: Settings,
-        context_menu: Optional[WorldContextMenu] = None,
+        context_menu: WorldContextMenu | None = None,
     ):
         self.drawer = WorldDrawer()
-        self.redraw_timer: Optional[QTimer] = None
+        self.redraw_timer: QTimer | None = None
 
         super(WorldView, self).__init__(parent, level, settings, context_menu)
 
@@ -79,7 +79,7 @@ class WorldView(MainView):
         self.drag_start_point = Position.from_xy(0, 0)
         self.last_mouse_position = Position.from_xy(0, 0)
 
-        self.selected_object: Optional[MapObject] = None
+        self.selected_object: MapObject | None = None
 
         self.dragging_happened = False
 
@@ -160,7 +160,7 @@ class WorldView(MainView):
         get_block.cache_clear()
         self.update()
 
-    def set_mouse_mode(self, new_mode: int, event: Optional[QMouseEvent]):
+    def set_mouse_mode(self, new_mode: int, event: QMouseEvent | None):
         if new_mode == MODE_PUT_TILE:
             tile_pixmap = QPixmap(QSize(self.block_length, self.block_length))
 

@@ -3,7 +3,7 @@ import json
 import logging
 import tempfile
 from pathlib import Path
-from typing import Optional, cast
+from typing import cast
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import (
@@ -1078,7 +1078,7 @@ class FoundryMainWindow(MainWindow):
         if selected_objects:
             self.context_menu.set_copied_objects(selected_objects)
 
-    def _paste_objects(self, q_point: Optional[QPoint] = None):
+    def _paste_objects(self, q_point: QPoint | None = None):
         if not (copied_objects := self.context_menu.get_copied_objects())[0]:
             return
 

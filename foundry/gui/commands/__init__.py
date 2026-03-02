@@ -1,7 +1,7 @@
 from operator import itemgetter
 from os import PathLike
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QUndoCommand
@@ -402,7 +402,7 @@ class AddLevelObjectAt(QUndoCommand):
         pos: QPoint,
         domain=0,
         obj_type=0,
-        length: Optional[int] = None,
+        length: int | None = None,
         index=-1,
     ):
         super(AddLevelObjectAt, self).__init__(None)
@@ -416,7 +416,7 @@ class AddLevelObjectAt(QUndoCommand):
         self.obj_type = obj_type
         self.length = length
 
-        self.added_object: Optional[LevelObject] = None
+        self.added_object: LevelObject | None = None
 
         self.index = index
 
@@ -452,7 +452,7 @@ class AddEnemyAt(QUndoCommand):
 
         self.enemy_type = enemy_type
 
-        self.added_enemy: Optional[EnemyItem] = None
+        self.added_enemy: EnemyItem | None = None
 
         self.index = index
 
@@ -586,7 +586,7 @@ class ReplaceLevelObject(QUndoCommand):
         self.length = length
 
         self.to_replace = to_replace
-        self.created_object: Optional[LevelObject] = None
+        self.created_object: LevelObject | None = None
         self.index = self.level.objects.index(self.to_replace)
 
         self.setText(f"Replacing {self.to_replace.name}")
@@ -626,7 +626,7 @@ class ReplaceEnemy(QUndoCommand):
         self.obj_type = obj_type
 
         self.to_replace = to_replace
-        self.created_enemy: Optional[EnemyItem] = None
+        self.created_enemy: EnemyItem | None = None
         self.index = self.level.enemies.index(self.to_replace)
 
         self.setText(f"Replacing {self.to_replace.name}")

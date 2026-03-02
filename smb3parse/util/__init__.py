@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Callable, Iterable, Optional
+from typing import Callable, Iterable
 
 # nn - actual number to be used
 # ll - short for 00ll, 2 byte address in the zero page, basically RAM
@@ -44,7 +44,7 @@ def compare_bytearrays(bytearray_1, bytearray_2, chunk_size=32):
             assert False
 
 
-def lrange(a1: int, a2: Optional[int] = None, a3: Optional[int] = None, /):
+def lrange(a1: int, a2: int | None = None, a3: int | None = None, /):
     if a2 is None:
         return list(range(a1))
 

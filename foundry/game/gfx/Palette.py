@@ -1,6 +1,5 @@
 from contextlib import suppress
 from dataclasses import dataclass
-from typing import Optional
 
 from PySide6.QtGui import QColor
 
@@ -76,7 +75,7 @@ class PaletteGroup:
     def __hash__(self):
         return hash((self._object_set, self.index))
 
-    def save(self, rom: Optional[Rom] = None):
+    def save(self, rom: Rom | None = None):
         if rom is None:
             rom = ROM()
 
@@ -147,7 +146,7 @@ def _load_palettes_from_rom(object_set, palette_group_index, palette_offset_list
     return palettes
 
 
-def save_all_palette_groups(rom: Optional[Rom] = None):
+def save_all_palette_groups(rom: Rom | None = None):
     for palette_group in _palette_group_cache.values():
         palette_group.save(rom)
 

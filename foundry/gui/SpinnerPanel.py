@@ -1,5 +1,3 @@
-from typing import Optional
-
 from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtWidgets import QFormLayout, QSizePolicy, QWidget
 
@@ -19,7 +17,7 @@ class SpinnerPanel(QWidget):
     zoom_in_triggered: SignalInstance = Signal()
     zoom_out_triggered: SignalInstance = Signal()
 
-    def __init__(self, parent: Optional[QWidget], level_ref: LevelRef):
+    def __init__(self, parent: QWidget | None, level_ref: LevelRef):
         super(SpinnerPanel, self).__init__(parent)
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)

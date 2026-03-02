@@ -1,6 +1,5 @@
 from os.path import basename
 from pathlib import Path
-from typing import Optional
 
 from foundry.game.additional_data import AdditionalData
 from smb3parse.constants import reset_global_offsets
@@ -15,7 +14,7 @@ class ROM(Rom):
     """The index passed to search_bank to search the vanilla prg031 bank, regardless of expanded ROM"""
 
     rom_data = bytearray()
-    header: Optional[INESHeader] = None
+    header: INESHeader | None = None
 
     additional_data: AdditionalData
 
