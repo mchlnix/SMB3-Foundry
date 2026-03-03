@@ -1,9 +1,8 @@
 import abc
 from abc import ABC
 
-from PySide6.QtCore import QRect
-
 from foundry.game.gfx.objects.object_like import ObjectLike
+from smb3parse.util.rect import Rect
 
 
 # TODO sort out x_position and y_position
@@ -39,7 +38,13 @@ class MapObject(ObjectLike, ABC):
 
     @property
     def rect(self):
-        return QRect(self.x_position, self.y_position, 1, 1)
+        return Rect(self.x_position, self.y_position, 1, 1)
+
+    @rect.setter
+    def rect(self, value):
+        self.set_position(value.x, value.y)
+        self.length = value.width
+        self.width = value.height
 
     def move_by(self, dx, dy):
         self.set_position(self.x_position + dx, self.y_position + dy)

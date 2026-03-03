@@ -2,7 +2,7 @@ from PySide6.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
 from PySide6.QtGui import QDrag, QImage, QMouseEvent, QPainter, QPaintEvent
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
-from foundry.game.gfx.drawable import load_from_png
+from foundry.game.gfx.drawable import load_from_png, object_to_image
 from foundry.game.gfx.objects import Jump, LevelObject, get_minimal_icon_object
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.Palette import bg_color_for_palette_group
@@ -96,6 +96,11 @@ class ObjectIcon(QWidget):
 
         elif level_object is not None and (obj := get_minimal_icon_object(level_object)):
             self.object = obj
+
+            if obj.name.lower() in objects_to_use_pngs_instead:
+                self.image = objects_to_use_pngs_instead[obj.name.lower()]
+            else:
+                self.image = object_to_image(self.object)
 
             self.setToolTip(self.object.name)
 

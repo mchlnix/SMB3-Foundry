@@ -191,8 +191,8 @@ class LevelView(MainView):
             self.setCursor(Qt.CursorShape.ArrowCursor)
 
     def _cursor_on_edge_of_object(self, level_object: InLevelObject, pos: QPoint, edge_width: int = 4) -> Qt.Edge:
-        right = (level_object.get_rect().left() + level_object.get_rect().width()) * self.block_length
-        bottom = (level_object.get_rect().top() + level_object.get_rect().height()) * self.block_length
+        right = (level_object.get_rect().left() + level_object.get_rect().width) * self.block_length
+        bottom = (level_object.get_rect().top() + level_object.get_rect().height) * self.block_length
 
         on_right_edge = pos.x() in range(right - edge_width, right)
         on_bottom_edge = pos.y() in range(bottom - edge_width, bottom)

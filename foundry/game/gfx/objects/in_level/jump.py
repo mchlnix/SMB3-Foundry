@@ -1,9 +1,9 @@
-from PySide6.QtCore import QRect
 from PySide6.QtGui import QImage, QPainter
 
 from foundry.game import GROUND
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
+from smb3parse.util.rect import Rect
 
 
 class Jump(InLevelObject):
@@ -89,16 +89,16 @@ class Jump(InLevelObject):
 
         return Jump(data)
 
-    def get_rect(self, block_length=1, vertical=False) -> QRect:
+    def get_rect(self, block_length=1, vertical=False) -> Rect:
         if vertical:
-            return QRect(
+            return Rect(
                 0,
                 block_length * (1 + LEVEL_SCREEN_HEIGHT * self.screen_index),
                 block_length * LEVEL_SCREEN_WIDTH,
                 block_length * LEVEL_SCREEN_HEIGHT,
             )
         else:
-            return QRect(
+            return Rect(
                 block_length * LEVEL_SCREEN_WIDTH * self.screen_index,
                 0,
                 block_length * LEVEL_SCREEN_WIDTH,

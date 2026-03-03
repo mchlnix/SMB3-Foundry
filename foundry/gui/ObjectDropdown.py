@@ -5,6 +5,7 @@ from PySide6.QtGui import QIcon, QImage, QPixmap
 from PySide6.QtWidgets import QComboBox, QCompleter, QWidget
 
 from foundry.game import should_be_placeable
+from foundry.game.gfx.drawable import object_to_image
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects import (
     EnemyItem,
@@ -86,7 +87,7 @@ class ObjectDropdown(QComboBox):
                 old_level_object.domain, old_level_object.obj_index, 0, 0, None, 0
             )
 
-            self.setItemIcon(index, QIcon(QPixmap(self._resize_bitmap(new_level_object.as_image()))))
+            self.setItemIcon(index, QIcon(QPixmap(self._resize_bitmap(object_to_image(new_level_object)))))
             self.setItemData(index, new_level_object)
 
     def _on_object_selected(self, _):
@@ -150,7 +151,7 @@ class ObjectDropdown(QComboBox):
         if not should_be_placeable(level_object):
             return
 
-        icon = QIcon(QPixmap(self._resize_bitmap(level_object.as_image())))
+        icon = QIcon(QPixmap(self._resize_bitmap(object_to_image(level_object))))
 
         self.addItem(icon, level_object.name, level_object)
 

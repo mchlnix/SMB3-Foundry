@@ -33,6 +33,7 @@ from smb3parse.objects.object_set import (
     ICE_OBJECT_SET,
 )
 from smb3parse.util import apply
+from smb3parse.util.rect import Point
 
 FIRE_FLOWER = load_from_png(16, 53)
 LEAF = load_from_png(17, 53)
@@ -143,7 +144,7 @@ class LevelDrawer:
         else:
             bg_color = bg_color_for_object_set(level.object_set_number, level.header.object_palette_index)
 
-        painter.fillRect(level.get_rect(self.block_length), bg_color)
+        painter.fillRect(QRect(*level.get_rect(self.block_length)), bg_color)
 
         painter.restore()
 
@@ -246,7 +247,7 @@ class LevelDrawer:
                 painter.save()
 
                 painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
-                painter.drawRect(level_object.get_rect(self.block_length))
+                painter.drawRect(QRect(*level_object.get_rect(self.block_length)))
 
                 painter.restore()
 
@@ -260,7 +261,7 @@ class LevelDrawer:
             if isinstance(level_object, EnemyItem) and name not in ENEMY_ITEMS_WITH_OVERLAYS:
                 continue
 
-            pos = level_object.get_rect(self.block_length).topLeft()
+            pos = level_object.get_rect(self.block_length).top_left()
             rect = level_object.get_rect(self.block_length)
 
             # invisible coins, for example, expand and need to have multiple overlays drawn onto them
@@ -275,41 +276,41 @@ class LevelDrawer:
                 fill_object = False
 
                 # center() is one pixel off for some reason
-                pos = rect.topLeft() + QPoint(rect.width() // 2, rect.height() // 2)
+                pos = rect.top_left() + Point(rect.width // 2, rect.height // 2)
 
                 trigger_position = level_object.get_position()
 
                 if "left" in name:
                     image = LEFT_ARROW
 
-                    pos.setX(rect.right())
-                    pos.setY(pos.y() - self._half_block)
+                    pos.x = rect.right()
+                    pos.y -= self._half_block
 
                     # leftward pipes trigger on the column to the left of the opening
-                    x = level_object.get_rect().bottomRight().x()
-                    y = level_object.get_rect().bottomRight().y()
+                    x = level_object.get_rect().bottom_right().x
+                    y = level_object.get_rect().bottom_right().y
                     trigger_position = (x - 1, y)
 
                 elif "right" in name:
                     image = RIGHT_ARROW
-                    pos.setX(rect.left() - self.block_length)
-                    pos.setY(pos.y() - self._half_block)
+                    pos.x = rect.left() - self.block_length
+                    pos.y -= self._half_block
 
                 elif "down" in name:
                     image = DOWN_ARROW
 
-                    pos.setX(pos.x() - self._half_block)
-                    pos.setY(rect.top() - self.block_length)
+                    pos.x -= self._half_block
+                    pos.y = rect.top() - self.block_length
                 else:
                     # upwards pipe
                     image = UP_ARROW
 
-                    pos.setX(pos.x() - self._half_block)
-                    pos.setY(rect.bottom())
+                    pos.x -= self._half_block
+                    pos.y = rect.bottom()
 
-                    # upwards pipes trigger on the second to last row
-                    x = level_object.get_rect().bottomLeft().x()
-                    y = level_object.get_rect().bottomLeft().y()
+                    # upwards pipes trigger on the second-to-last row
+                    x = level_object.get_rect().bottom_left().x
+                    y = level_object.get_rect().bottom_left().y
                     trigger_position = (x, y - 1)
 
                 if not self._object_in_jump_area(level, trigger_position):
@@ -324,7 +325,7 @@ class LevelDrawer:
                     # door
                     image = DOWN_ARROW
 
-                pos.setY(rect.top() - self.block_length)
+                pos.y = rect.top() - self.block_length
 
                 x, y = level_object.get_position()
 
@@ -337,7 +338,7 @@ class LevelDrawer:
                 if not self.settings.value("level_view/draw_items_in_blocks"):
                     continue
 
-                pos.setY(pos.y() - self.block_length)
+                pos.y -= self.block_length
 
                 if "flower" in name:
                     image = FIRE_FLOWER
@@ -360,10 +361,10 @@ class LevelDrawer:
                 else:
                     image = EMPTY_IMAGE
 
-                # draw little arrow for the offset item overlay
-                arrow_pos = QPoint(pos)
-                arrow_pos.setY(arrow_pos.y() + self.block_length / 4)
-                painter.drawImage(arrow_pos, ITEM_ARROW.scaled(self.block_length, self.block_length))
+                # draw a little arrow for the offset item overlay
+                arrow_pos = pos.copy()
+                arrow_pos.y += self.block_length // 4
+                painter.drawImage(QPoint(*arrow_pos), ITEM_ARROW.scaled(self.block_length, self.block_length))
 
             elif "invisible" in name:
                 if not self.settings.value("level_view/draw_invisible_items"):
@@ -392,16 +393,16 @@ class LevelDrawer:
                 koopa_trail_pen.setStyle(Qt.PenStyle.DotLine)
                 koopa_trail_pen.setWidth(self.block_length // 8)
 
-                start_pos = pos + QPoint(self._half_block, 2 * self.block_length)
-                end_pos = start_pos + QPoint(0, 7 * self.block_length)
+                start_pos = pos + Point(self._half_block, 2 * self.block_length)
+                end_pos = start_pos + Point(0, 7 * self.block_length)
 
                 painter.setPen(koopa_trail_pen)
 
-                painter.drawLine(start_pos, end_pos)
+                painter.drawLine(QPoint(*start_pos), QPoint(*end_pos))
 
                 koopa_trail_pen.setStyle(Qt.PenStyle.SolidLine)
                 painter.setPen(koopa_trail_pen)
-                painter.drawLine(pos.x(), end_pos.y(), pos.x() + self.block_length, end_pos.y())
+                painter.drawLine(pos.x, end_pos.y, pos.x + self.block_length, end_pos.y)
 
                 painter.restore()
 
@@ -411,18 +412,18 @@ class LevelDrawer:
 
             if fill_object:
                 for x in range(level_object.rendered_width):
-                    adapted_pos = QPoint(pos)
-                    adapted_pos.setX(pos.x() + x * self.block_length)
+                    adapted_pos = pos.copy()
+                    adapted_pos.x += x * self.block_length
 
                     image = image.scaled(self.block_length, self.block_length)
-                    painter.drawImage(adapted_pos, image)
+                    painter.drawImage(QPoint(*adapted_pos), image)
 
                     if level_object.selected:
-                        painter.drawImage(adapted_pos, make_image_selected(image))
+                        painter.drawImage(QPoint(*adapted_pos), make_image_selected(image))
 
             else:
                 image = image.scaled(self.block_length, self.block_length)
-                painter.drawImage(pos, image)
+                painter.drawImage(QPoint(*pos), image)
 
         painter.restore()
 
@@ -431,7 +432,7 @@ class LevelDrawer:
         for jump in level.jumps:
             jump_rect = jump.get_rect(1, level.is_vertical)
 
-            if jump_rect.contains(QPoint(*pos)):
+            if jump_rect.point_in(*pos):
                 return True
         else:
             return False
@@ -450,7 +451,7 @@ class LevelDrawer:
                 elif level_object.expands() == EXPANDS_VERT:
                     painter.setBrush(QColor(0, 0, 0xFF, 0x80))
 
-                painter.drawRect(level_object.get_rect(self.block_length))
+                painter.drawRect(QRect(*level_object.get_rect(self.block_length)))
 
                 painter.restore()
 
@@ -494,10 +495,10 @@ class LevelDrawer:
         for jump in level.jumps:
             painter.setBrush(QBrush(QColor(0xFF, 0x00, 0x00), Qt.BrushStyle.FDiagPattern))
 
-            painter.drawRect(jump.get_rect(self.block_length, level.is_vertical))
+            painter.drawRect(QRect(*jump.get_rect(self.block_length, level.is_vertical)))
 
     def _draw_grid(self, painter: QPainter, level: Level):
-        panel_width, panel_height = level.get_rect(self.block_length).size().toTuple()
+        panel_width, panel_height = level.get_rect(self.block_length).size()
 
         self._draw_grid_lines(painter, panel_height, panel_width)
         self._draw_screen_lines(painter, panel_height, panel_width, level.is_vertical)

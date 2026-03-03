@@ -1,6 +1,6 @@
 from typing import cast
 
-from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
+from PySide6.QtCore import QObject, Signal, SignalInstance
 
 from foundry.game.additional_data import LEVEL_DATA_DELIMITER_COUNT, LevelOrganizer
 from foundry.game.File import ROM
@@ -26,6 +26,7 @@ from smb3parse.constants import BASE_OFFSET, ENEMY_SIZE, OFFSET_SIZE, Constants
 from smb3parse.data_points import Position
 from smb3parse.levels import ENEMY_BASE_OFFSET, HEADER_LENGTH
 from smb3parse.levels.level_header import LevelHeader
+from smb3parse.util.rect import Rect
 
 TIME_INF = -1
 
@@ -257,7 +258,7 @@ class Level(LevelLike):
     def get_rect(self, block_length: int = 1):
         width, height = self.size
 
-        return QRect(QPoint(0, 0), QSize(width, height) * block_length)
+        return Rect(0, 0, width * block_length, height * block_length)
 
     def set_addresses(self, header_offset: int, enemy_item_offset: int):
         self.header_offset = header_offset

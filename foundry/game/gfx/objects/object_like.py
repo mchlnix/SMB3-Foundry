@@ -1,7 +1,8 @@
 import abc
 
-from PySide6.QtCore import QRect
 from PySide6.QtGui import QPainter
+
+from smb3parse.util.rect import Rect
 
 
 class ObjectLike(abc.ABC):
@@ -9,7 +10,7 @@ class ObjectLike(abc.ABC):
     # This whole thing with everything needing to be a property to be type consistent kinda blows...
     selected: bool
 
-    rect: QRect
+    rect: Rect
 
     def __init__(self):
         self.selected = False
@@ -73,21 +74,10 @@ class ObjectLike(abc.ABC):
         return self.x_position, self.y_position
 
     def point_in(self, x, y):
-        return self.rect.contains(x, y)
+        return self.rect.point_in(x, y)
 
-    def get_rect(self, block_length=1) -> QRect:
-        x = self.rect.topLeft().x()
-        y = self.rect.topLeft().y()
-
-        w = self.rect.size().width()
-        h = self.rect.size().height()
-
-        x *= block_length
-        w *= block_length
-        y *= block_length
-        h *= block_length
-
-        return QRect(x, y, w, h)
+    def get_rect(self, block_length=1) -> Rect:
+        return self.rect * block_length
 
     @abc.abstractmethod
     def change_type(self, new_type):

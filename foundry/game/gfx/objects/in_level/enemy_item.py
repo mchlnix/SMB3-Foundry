@@ -14,6 +14,7 @@ from foundry.game.ObjectDefinitions import (
 from foundry.game.ObjectSet import ObjectSet
 from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM
 from smb3parse.objects.object_set import ENEMY_ITEM_GRAPHICS_SET, ENEMY_ITEM_OBJECT_SET
+from smb3parse.util.rect import Rect
 
 
 class EnemyItem(InLevelObject):
@@ -61,12 +62,18 @@ class EnemyItem(InLevelObject):
 
     @property
     def rect(self):
-        return QRect(
+        return Rect(
             self.x_position + enemy_handle_x[self.obj_index],
             self.y_position + enemy_handle_y[self.obj_index],
             self.width,
             self.height,
         )
+
+    @rect.setter
+    def rect(self, value):
+        self.set_position(value.x, value.y)
+        self.length = value.width
+        self.width = value.height
 
     def _setup(self):
         obj_def = self.object_set.get_definition_of(self.obj_index)
@@ -120,7 +127,7 @@ class EnemyItem(InLevelObject):
 
             block = image.copy()
 
-            mask = block.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+            mask = block.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
             block.setAlphaChannel(mask)
 
             if self.selected:
@@ -203,7 +210,7 @@ class EnemyItem(InLevelObject):
     def as_image(self) -> QImage:
         image = QImage(
             QSize(self.width * Block.SIDE_LENGTH, self.height * Block.SIDE_LENGTH),
-            QImage.Format_RGBA8888,
+            QImage.Format.Format_RGBA8888,
         )
 
         image.fill(QColor(0, 0, 0, 0))

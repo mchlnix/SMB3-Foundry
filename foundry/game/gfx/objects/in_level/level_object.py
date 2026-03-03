@@ -1,22 +1,22 @@
 from warnings import warn
 
-from PySide6.QtCore import QRect, QSize
-from PySide6.QtGui import QImage, QPainter
+from PySide6.QtGui import QPainter
 
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, GROUND
 from foundry.game.File import ROM
-from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.game.gfx.drawable.Block import get_block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.object_renderer import (
     LevelObjectRenderWarning,
     ObjectRenderer,
 )
-from foundry.game.gfx.Palette import PaletteGroup, bg_color_for_object_set
+from foundry.game.gfx.Palette import PaletteGroup
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from foundry.game.ObjectSet import ObjectSet
 from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.util import clamp
+from smb3parse.util.rect import Rect
 
 ENDING_STR = {
     EndType.UNIFORM: "Uniform",
@@ -151,7 +151,7 @@ class LevelObject(InLevelObject):
 
         self._calculate_lengths()
 
-        self.rect = QRect()
+        self.rect = Rect()
 
         self._render()
 
@@ -453,7 +453,7 @@ class LevelObject(InLevelObject):
         self._setup()
 
     def point_in(self, x: int, y: int) -> bool:
-        return self.rect.contains(x, y)
+        return self.rect.point_in(x, y)
 
     def get_status_info(self) -> list[tuple]:
         return [
@@ -465,27 +465,8 @@ class LevelObject(InLevelObject):
             ("Ending", ENDING_STR[self.ending]),
         ]
 
-    def as_image(self) -> QImage:
-        self.rendered_base_x = 0
-        self.rendered_base_y = 0
-
-        image = QImage(
-            QSize(
-                self.rendered_width * Block.SIDE_LENGTH,
-                self.rendered_height * Block.SIDE_LENGTH,
-            ),
-            QImage.Format_RGB888,
-        )
-
-        bg_color = bg_color_for_object_set(self.object_set.number, 0)
-
-        image.fill(bg_color)
-
-        painter = QPainter(image)
-
-        self.draw(painter, Block.SIDE_LENGTH, True)
-
-        return image
+    def as_image(self):
+        raise NotImplementedError()
 
     def to_bytes(self) -> bytearray:
         data = bytearray()

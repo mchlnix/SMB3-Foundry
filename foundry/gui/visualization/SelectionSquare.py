@@ -1,6 +1,8 @@
 from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
+from smb3parse.util.rect import Rect
+
 STROKE_COLOR = QColor(0x00, 0x00, 0x00, 0x80)
 
 
@@ -46,7 +48,7 @@ class SelectionSquare:
     def get_rect(self):
         return self.rect
 
-    def get_adjusted_rect(self, horizontal_factor: int, vertical_factor: int) -> QRect:
+    def get_adjusted_rect(self, horizontal_factor: int, vertical_factor: int) -> Rect:
         x, y = self.get_rect().topLeft().toTuple()
         width, height = self.get_rect().size().toTuple()
 
@@ -56,7 +58,7 @@ class SelectionSquare:
         y //= vertical_factor
         height //= vertical_factor
 
-        return QRect(x + self.dx, y + self.dy, width + 1, height + 1)
+        return Rect(x + self.dx, y + self.dy, width + 1, height + 1)
 
     def draw(self, painter: QPainter):
         if self.should_draw:

@@ -23,6 +23,7 @@ from smb3parse.levels.world_map import WORLD_MAP_HEIGHT
 from smb3parse.levels.world_map import WorldMap as _WorldMap
 from smb3parse.levels.world_map import list_world_map_addresses
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.util.rect import Point
 from smb3parse.util.rom import Rom
 
 OVERWORLD_GRAPHIC_SET = 0
@@ -196,10 +197,10 @@ class WorldMap(LevelLike):
         return self.objects
 
     def object_at(self, x, y):
-        point = QPoint(x, y)
+        point = Point(x, y)
 
         for obj in reversed(self.objects):
-            if obj.get_rect().contains(point):
+            if obj.get_rect().point_in(*point):
                 return obj
 
         return None

@@ -1,13 +1,12 @@
 from typing import TYPE_CHECKING
 from warnings import warn
 
-from PySide6.QtCore import QRect
-
 from foundry.game import GROUND, SKY
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from smb3parse.levels import LEVEL_MAX_LENGTH, LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.objects.object_set import PLAINS_OBJECT_SET
+from smb3parse.util.rect import Rect
 
 # not all objects provide a block index for a blank block
 BLANK = -1
@@ -82,7 +81,7 @@ class ObjectRenderer:
 
                 self._new_height = int(expected_height_from_blocks)
 
-        self._object.rect = QRect(self._base_x, self._base_y, self._new_width, self._new_height)
+        self._object.rect = Rect(self._base_x, self._base_y, self._new_width, self._new_height)
 
         self._object.rendered_width = self._new_width
         self._object.rendered_height = self._new_height
@@ -385,9 +384,9 @@ class ObjectRenderer:
         self._new_width *= self._object.width
 
     def _sub_render_horizontal_to_ground(self):
-        # to the ground only, until it hits something
+        # to the ground only until it hits something
         for y in range(self._base_y, self._object.ground_level):
-            bottom_row = QRect(self._base_x, y, self._new_width, 1)
+            bottom_row = Rect(self._base_x, y, self._new_width, 1)
 
             if any(
                 [
@@ -516,7 +515,7 @@ class ObjectRenderer:
             self._new_height = y - self._base_y
             self._new_width = 2 * self._new_height
 
-            bottom_row = QRect(self._base_x, y, self._new_width, 1)
+            bottom_row = Rect(self._base_x, y, self._new_width, 1)
 
             if any((bottom_row.intersects(obj.get_rect()) and y == obj.get_rect().top() for obj in objects_before)):
                 break
