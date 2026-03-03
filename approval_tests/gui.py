@@ -1,6 +1,6 @@
 from typing import TypeAlias, cast
 
-from PySide6.QtGui import QGuiApplication, QPixmap, Qt
+from PySide6.QtGui import QGuiApplication, QImage, QPixmap, Qt
 from PySide6.QtWidgets import (
     QBoxLayout,
     QDialog,
@@ -34,6 +34,9 @@ class ApprovalDialog(QDialog):
         self.setWindowTitle(test_name)
 
         main_layout = QVBoxLayout(self)
+
+        self._reference_image = reference_image
+        self._generated_image = generated_image
 
         ref_image = QLabel()
         ref_image.setPixmap(reference_image)
@@ -90,6 +93,12 @@ class ApprovalDialog(QDialog):
         apply_button.clicked.connect(self._on_overwrite)
         apply_button.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_A)
 
+        diff_button = button_box.addButton("Show Diff", QDialogButtonBox.ButtonRole.HelpRole)
+        diff_button.clicked.connect(self._on_diff)
+
+        if self._reference_image.size() != self._generated_image.size():
+            diff_button.setEnabled(False)
+
         main_layout.addWidget(scroll_area)
         main_layout.addWidget(button_box, alignment=Qt.AlignmentFlag.AlignCenter)
 
@@ -98,6 +107,38 @@ class ApprovalDialog(QDialog):
 
     def _on_ignore(self):
         self.done(self.Ignore)
+
+    def _on_diff(self):
+        # get both images
+        ref_img = self._reference_image.toImage()
+        ref_bytes = ref_img.bits()
+        gen_img = self._generated_image.toImage()
+        gen_bytes = gen_img.bits()
+
+        # make a diff of it
+        diff_bytes = bytearray()
+
+        for ref_byte, gen_byte in zip(ref_bytes, gen_bytes):
+            diff_bytes.append(ref_byte ^ gen_byte)
+
+        # generate new image from it
+        diff_img = QImage(
+            diff_bytes,
+            self._reference_image.width(),
+            self._reference_image.height(),
+            self._reference_image.toImage().format(),
+        )
+
+        # display diff in dialog
+        dialog = QDialog()
+        dialog.setLayout(QVBoxLayout())
+
+        label = QLabel()
+        label.setPixmap(QPixmap.fromImage(diff_img))
+
+        dialog.layout().addWidget(label)
+
+        dialog.exec()
 
     @staticmethod
     def compare(test_name: str, reference_image: image_source, generated_image: image_source):
