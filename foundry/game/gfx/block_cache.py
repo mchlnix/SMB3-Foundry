@@ -140,9 +140,6 @@ def draw_block(
 ):
     block = BlockCache.block(block_index, object_set_no, palette_group_no, graphics_set_no)
 
-    if not block:
-        return
-
     block.draw(
         painter,
         x * block_length,
@@ -159,12 +156,7 @@ def get_block(
     graphics_set: "GraphicsSet",
     tsa_data: bytes,
 ) -> "Block":
-
-    if block_index > 0xFF:  # TODO Is this still necessary for enemies?
-        rom_block_index = ROM().int(block_index)  # block_index is an offset into the graphic memory
-        block = Block(rom_block_index, palette_group, graphics_set, tsa_data)
-    else:
-        block = Block(block_index, palette_group, graphics_set, tsa_data)
+    block = Block(block_index, palette_group, graphics_set, tsa_data)
 
     return block
 
