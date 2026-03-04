@@ -6,7 +6,9 @@ from PySide6.QtWidgets import QComboBox, QLabel, QLayout, QStatusBar, QToolBar, 
 
 from foundry import icon
 from foundry.game.File import ROM
-from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.game.gfx import BlockCache
+from foundry.game.gfx.block_cache import get_block
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET, load_palette_group
 from foundry.gui import OBJECT_SET_ITEMS

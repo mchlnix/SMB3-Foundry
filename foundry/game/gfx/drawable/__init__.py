@@ -4,6 +4,7 @@ from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QImage, QPainter, Qt
 
 from foundry import data_dir
+from foundry.game.gfx.block_cache import draw_level_object
 from foundry.game.gfx.Palette import bg_color_for_object_set
 
 if TYPE_CHECKING:
@@ -14,10 +15,10 @@ MASK_COLOR = [0xFF, 0x00, 0xFF]
 SELECTION_OVERLAY_COLOR = QColor(20, 87, 159, 80)
 
 png = QImage(str(data_dir / "gfx.png"))
-png.convertTo(QImage.Format_RGB888)
+png.convertTo(QImage.Format.Format_RGB888)
 
 mario_actions = QImage(str(data_dir / "mario.png"))
-mario_actions.convertTo(QImage.Format_RGBA8888)
+mario_actions.convertTo(QImage.Format.Format_RGBA8888)
 
 
 def make_image_selected(image: QImage) -> QImage:
@@ -33,7 +34,7 @@ def make_image_selected(image: QImage) -> QImage:
 
 def load_from_png(x: int, y: int):
     image = png.copy(QRect(x * 16, y * 16, 16, 16))
-    mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskOutColor)
+    mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
     image.setAlphaChannel(mask)
 
     return image
@@ -61,7 +62,7 @@ def object_to_image(obj: "InLevelObject"):
 
         painter = QPainter(image)
 
-        obj.draw(painter, Block.SIDE_LENGTH, True)
+        draw_level_object(obj, painter, Block.SIDE_LENGTH, True)
 
         return image
 

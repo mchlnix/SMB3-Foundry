@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QScrollArea, QToolTip, QWidget
 from foundry import ctrl_is_pressed, make_macro
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.File import ROM
+from foundry.game.gfx import BlockCache
 from foundry.game.gfx.drawable.Block import get_tile
 from foundry.game.gfx.objects import EnemyItem, LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
@@ -99,6 +100,7 @@ class LevelView(MainView):
         return cast(QUndoStack, self.window().findChild(QUndoStack, "undo_stack"))
 
     def next_anim_step(self):
+        BlockCache.next_frame()
         self.drawer.anim_frame += 1
         self.drawer.anim_frame %= 4
         get_tile.cache_clear()

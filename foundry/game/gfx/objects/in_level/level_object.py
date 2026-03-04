@@ -1,10 +1,8 @@
 from warnings import warn
 
-from PySide6.QtGui import QPainter
-
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_NOT, EXPANDS_VERT, GROUND
 from foundry.game.File import ROM
-from foundry.game.gfx.drawable.Block import get_block
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.object_renderer import (
@@ -44,10 +42,6 @@ GENERATOR_TYPE_TO_STR = {
     GeneratorType.BRICK_WALL: "Brick Wall",
     GeneratorType.WOODEN_PLATFORM: "Wooden Platform",
 }
-
-
-# not all objects provide a block index for blank block
-BLANK = -1
 
 
 class LevelObject(InLevelObject):
@@ -137,7 +131,7 @@ class LevelObject(InLevelObject):
         # the building blocks, not necessarily all the blocks that need to be drawn
         self.blocks: list[int] = object_data.block_indexes.copy()
 
-        self.block_cache = {}
+        self.block_cache: dict[int, Block] = {}
 
         self.is_4byte = object_data.is_4byte
 
@@ -218,30 +212,6 @@ class LevelObject(InLevelObject):
             ObjectRenderer(self).render()
         except LevelObjectRenderWarning as lorw:
             warn(lorw)
-
-    def draw(self, painter: QPainter, block_length, transparent):
-        for index, block_index in enumerate(self.rendered_blocks):
-            if block_index == BLANK:
-                continue
-
-            x = self.rendered_base_x + index % self.rendered_width
-            y = self.rendered_base_y + index // self.rendered_width
-
-            self._draw_block(painter, block_index, x, y, block_length, transparent)
-
-    def _draw_block(self, painter: QPainter, block_index, x, y, block_length, transparent):
-        if block_index not in self.block_cache:
-            self.block_cache[block_index] = get_block(block_index, self.palette_group, self.graphics_set, self.tsa_data)
-
-        self.block_cache[block_index].graphics_set.anim_frame = self.anim_frame
-        self.block_cache[block_index].draw(
-            painter,
-            x * block_length,
-            y * block_length,
-            block_length=block_length,
-            selected=self.selected,
-            transparent=transparent,
-        )
 
     def set_position(self, x, y):
         # todo also check for the upper bounds

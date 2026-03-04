@@ -5,6 +5,7 @@ from PySide6.QtGui import QBrush, QColor, QPainter, QPen, Qt
 
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT, GROUND
 from foundry.game.File import ROM
+from foundry.game.gfx.block_cache import draw_block, draw_level_object
 from foundry.game.gfx.drawable import load_from_png, make_image_selected, mario_actions
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
@@ -234,14 +235,30 @@ class LevelDrawer:
                     x = level_object.x_position + index % width
                     y = level_object.y_position + index // width
 
-                    level_object._draw_block(painter, block_index, x, y, self.block_length, False)
+                    draw_block(
+                        painter,
+                        block_index,
+                        level_object.object_set.number,
+                        level_object.palette_group.index,
+                        level_object.graphics_set.number,
+                        x,
+                        y,
+                        self.block_length,
+                        False,
+                        level_object.selected,
+                    )
             else:
-                level_object.anim_frame = self.anim_frame
-                level_object.draw(
-                    painter,
-                    self.block_length,
-                    self.settings.value("level_view/block_transparency"),
-                )
+                if isinstance(level_object, LevelObject):
+                    draw_level_object(
+                        level_object, painter, self.block_length, self.settings.value("level_view/block_transparency")
+                    )
+                else:
+                    level_object.anim_frame = self.anim_frame
+                    level_object.draw(
+                        painter,
+                        self.block_length,
+                        self.settings.value("level_view/block_transparency"),
+                    )
 
             if level_object.selected:
                 painter.save()

@@ -12,7 +12,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.game.gfx.block_cache import draw_level_object, get_block
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.gfx.objects import Jump, LevelObject, LevelObjectFactory
 from foundry.gui import OBJECT_SET_ITEMS
@@ -207,7 +208,7 @@ class ObjectDrawArea(QWidget):
             )
         )
 
-        self.current_object.draw(painter, Block.WIDTH, transparent=True)
+        draw_level_object(self.current_object, painter, Block.WIDTH, transparent=True)
 
 
 class BlockArray(QWidget):

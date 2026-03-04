@@ -3,7 +3,8 @@ from typing import cast
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
-from foundry.game.gfx.drawable.Block import Block, get_block
+from foundry.game.gfx.block_cache import get_block
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.objects import (
     AirshipTravelPoint,

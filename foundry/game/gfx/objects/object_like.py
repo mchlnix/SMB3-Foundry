@@ -52,10 +52,6 @@ class ObjectLike(abc.ABC):
     def type(self, value):
         self._type = value
 
-    @abc.abstractmethod
-    def draw(self, painter: QPainter, block_length, transparent):
-        pass
-
     def copy(self):
         pass
 

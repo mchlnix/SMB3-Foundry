@@ -4,6 +4,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QColor, QImage, QPainter, Qt
 
 from foundry.game.File import ROM
+from foundry.game.gfx.block_cache import get_block
 from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Tile import Tile
 from foundry.game.gfx.GraphicsSet import GraphicsSet
@@ -17,27 +18,11 @@ TSA_BANK_3_START = 3 * 256
 
 
 @lru_cache(2**10)
-def get_block(
-    block_index: int,
-    palette_group: PaletteGroup,
-    graphics_set: GraphicsSet,
-    tsa_data: bytes,
-):
-    if block_index > 0xFF:
-        rom_block_index = ROM().int(block_index)  # block_index is an offset into the graphic memory
-        block = Block(rom_block_index, palette_group, graphics_set, tsa_data)
-    else:
-        block = Block(block_index, palette_group, graphics_set, tsa_data)
-
-    return block
-
-
-@lru_cache(2**10)
 def get_tile(index, palette_group, palette_index, graphics_set):
     return Tile(index, palette_group, palette_index, graphics_set)
 
 
-def get_worldmap_tile(block_index: int, palette_index=0):
+def get_worldmap_tile(block_index: int, palette_index=0) -> "Block":
     return get_block(
         block_index,
         load_palette_group(WORLD_MAP_OBJECT_SET, palette_index),
