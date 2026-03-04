@@ -29,7 +29,7 @@ rom = Rom.from_file(Path(test_rom_path))
 
 
 @given(
-    header_bytes=strategies.binary(min_size=9, max_size=9),
+    header_bytes=strategies.binary(min_size=HEADER_LENGTH, max_size=HEADER_LENGTH),
     object_set_number=strategies.integers(min_value=MIN_OBJECT_SET, max_value=MAX_OBJECT_SET),
 )
 def test_construction(header_bytes, object_set_number):

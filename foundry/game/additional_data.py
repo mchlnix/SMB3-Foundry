@@ -328,14 +328,14 @@ class LevelOrganizer:
 
         header = LevelHeader(
             self.rom,
-            found_save_level.level_data[:9],
+            found_save_level.level_data[:HEADER_LENGTH],
             found_save_level.object_set_number,
         )
 
         if header.jump_level_address in self.old_level_address_to_new:
             header.jump_level_address = self.old_level_address_to_new[header.jump_level_address]
 
-        found_save_level.level_data[:9] = header.data
+        found_save_level.level_data[:HEADER_LENGTH] = header.data
 
     def _update_level_and_enemy_pointers(self):
         for bank_index, levels in self.levels_by_bank.items():

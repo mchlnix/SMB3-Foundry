@@ -1,5 +1,6 @@
 import tempfile
 from pathlib import Path
+from typing import cast
 
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QAction, QActionGroup, QKeySequence, QShortcut, Qt, QUndoStack
@@ -12,8 +13,9 @@ from PySide6.QtWidgets import (
     QToolBar,
 )
 
-from foundry import ROM_FILE_FILTER, icon
+from foundry import ASM_FILE_FILTER, ROM_FILE_FILTER, icon
 from foundry.game.File import ROM
+from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.MainWindow import MainWindow
 from foundry.gui.settings import Settings
 from foundry.gui.visualization.world.WorldView import WorldView
@@ -24,9 +26,15 @@ from scribe.gui.menus.view_menu import ViewMenu
 from scribe.gui.settings_dialog import SettingsDialog
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse.constants import STARTING_WORLD_INDEX_ADDRESS
+from smb3parse.constants import MAPOBJ_ASM_SYMBOLS, STARTING_WORLD_INDEX_ADDRESS
 from smb3parse.data_points import Position
-from smb3parse.levels import WORLD_COUNT, WORLD_MAP_BLANK_TILE_ID
+from smb3parse.levels import (
+    MAX_SCREEN_COUNT,
+    WORLD_COUNT,
+    WORLD_MAP_BLANK_TILE_ID,
+    WORLD_MAP_HEIGHT,
+    WORLD_MAP_SCREEN_WIDTH,
+)
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
@@ -144,6 +152,12 @@ class ScribeMainWindow(MainWindow):
         self.save_as_rom_action = self.file_menu.addAction("Save ROM &As...")
         self.save_as_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_S)
         self.save_as_rom_action.setIcon(icon("save.svg"))
+
+        self.file_menu.addSeparator()
+
+        self.export_map_action = self.file_menu.addAction("Export Map ASM files...")
+        self.export_map_action.setIcon(icon("save.svg"))
+
         self.file_menu.addSeparator()
 
         self.settings_action = self.file_menu.addAction("Editor Settings")
@@ -345,6 +359,195 @@ class ScribeMainWindow(MainWindow):
             self.undo_stack.setClean()
             self.level_ref.data_changed.emit()
 
+    def on_export_map(self):
+        level = cast(WorldMap, self.level_ref.level)
+
+        if True:
+            # get file basename
+            pathname, _ = QFileDialog.getSaveFileName(
+                self,
+                caption="Export Map as ASM",
+                dir=self.settings.value("editor/default_dir_path"),
+                filter=ASM_FILE_FILTER,
+            )
+
+            if not pathname:
+                return
+
+            path = Path(pathname)
+
+            base_name = self._harmonize_base_name(path)
+
+        # L - Tile indexes that visually make up the World Map
+        layout_text = self._make_layout_asm(level)
+
+        # O - The ID of each Sprite on the World Map (Speech Bubbles, Hammer Bros, etc.), 9 for each map
+        object_text = "\t.byte "
+        object_text += ", ".join([MAPOBJ_ASM_SYMBOLS[obj.type] for obj in level.sprites])
+
+        # OH - The higher 4 bits of the x position of each Sprite. The screen number, since a screen is 16 columns wide.
+        screen_text = "\t.byte "
+        screen_text += ", ".join([f"${obj.data.screen:02X}" for obj in level.sprites])
+
+        # OX - THe lower 4 bits of the x position of each Sprite. It's the column number inside the screen.
+        x_pos_text = "\t.byte "
+        x_pos_text += ", ".join([f"${obj.data.pos.x<<4:02X}" for obj in level.sprites])
+
+        # OY - The y position of each Sprite. It's the row number inside the screen.
+        # for some reason shifted into the high nibble
+        y_pos_text = "\t.byte "
+        y_pos_text += ", ".join([f"${obj.data.pos.y<<4:02X}" for obj in level.sprites])
+
+        # OI - The index of the item the Sprite gives. No ASM labels available, so write the raw values.
+        item_text = "\t.byte "
+        item_text += ", ".join([f"${obj.data.item:02X}" for obj in level.sprites])
+
+        # S - Structure Block, containing a lot of offsets into miscellaneous world map information.
+        structure_text = self._make_structure_asm(level)
+
+        (path.parent / f"{base_name}L.asm").write_text(layout_text)
+        (path.parent / f"{base_name}O.asm").write_text(object_text.removesuffix(", "))
+        (path.parent / f"{base_name}OH.asm").write_text(screen_text.removesuffix(", "))
+        (path.parent / f"{base_name}OX.asm").write_text(x_pos_text.removesuffix(", "))
+        (path.parent / f"{base_name}OY.asm").write_text(y_pos_text.removesuffix(", "))
+        (path.parent / f"{base_name}OI.asm").write_text(item_text.removesuffix(", "))
+        (path.parent / f"{base_name}S.asm").write_text(structure_text.removesuffix(", "))
+
+    @staticmethod
+    def _make_structure_asm(level: WorldMap) -> str:
+        world_num = level.data.index + 1
+
+        template = (
+            "W1_InitIndex:\t.byte $00, (W1_ByRowType_S2 - W1_ByRowType), (W1_ByRowType_S3 - W1_ByRowType), "
+            "(W1_ByRowType_S4 - W1_ByRowType)\n"
+        )
+
+        # first line, outlining certain offsets
+        structure_text = template.replace("W1", f"W{world_num}")
+
+        # bytes outlining the y position and object set of each level, one line per screen
+        row_type_text = ""
+
+        # bytes outlining the screen and x position within the screen of each level, one line per screen
+        screen_column_text = ""
+
+        # words (2 bytes) being the offset of the enemy/item data of each level, one line per screen
+        enemy_item_offset_text = ""
+
+        # words (2 bytes) being the offset of the level object data of each level, one line per screen
+        level_layout_offset_text = ""
+
+        for screen_no in range(MAX_SCREEN_COUNT):
+            if screen_no == 0:
+                # the line for the first screen has no suffix
+                screen_no_suffix = ""
+            else:
+                screen_no_suffix = f"_S{screen_no + 1}"
+
+            row_type_text += f"W{world_num}_ByRowType{screen_no_suffix}:\t.byte "
+            screen_column_text += f"W{world_num}_ByScrCol{screen_no_suffix}:\t.byte "
+            enemy_item_offset_text += f"W{world_num}_ObjSets{screen_no_suffix}:\t.word "
+            level_layout_offset_text += f"W{world_num}_LevelLayout{screen_no_suffix}:\t.word "
+
+            for level_pointer in level.level_pointers:
+                if level_pointer.data.screen == screen_no:
+                    row_and_object_set = (level_pointer.data.y << 4) + level_pointer.data.object_set
+                    screen_and_column = (level_pointer.data.screen << 4) + level_pointer.data.x
+
+                    row_type_text += f"${row_and_object_set:02X}, "
+                    screen_column_text += f"${screen_and_column:02X}, "
+
+                    # TODO In the original ASM these are (mostly) labels to values, find a way to match them?
+                    enemy_item_offset_text += f"${level_pointer.data.enemy_offset:04X}, "
+                    level_layout_offset_text += f"${level_pointer.data.level_offset:04X}, "
+
+            for suffix in (", ", "\t.byte ", "\t.word "):
+                row_type_text = row_type_text.removesuffix(suffix)
+                screen_column_text = screen_column_text.removesuffix(suffix)
+                enemy_item_offset_text = enemy_item_offset_text.removesuffix(suffix)
+                level_layout_offset_text = level_layout_offset_text.removesuffix(suffix)
+
+            row_type_text += "\n"
+            screen_column_text += "\n"
+            enemy_item_offset_text += "\n"
+            level_layout_offset_text += "\n"
+
+        structure_text += "".join((row_type_text, screen_column_text, enemy_item_offset_text, level_layout_offset_text))
+
+        return structure_text
+
+    @staticmethod
+    def _make_layout_asm(level: WorldMap) -> str:
+        layout_text = ""
+
+        for index, tile in enumerate(level.objects):
+
+            if index > 0 and index % (WORLD_MAP_HEIGHT * WORLD_MAP_SCREEN_WIDTH) == 0:
+                layout_text = layout_text.removesuffix(", ")
+
+                layout_text += "\n"
+
+            if index % WORLD_MAP_SCREEN_WIDTH == 0:
+                layout_text = layout_text.removesuffix(", ")
+
+                layout_text += "\n\t.byte "
+
+            layout_text += f"${tile.type:02X}, "
+
+        layout_text = layout_text.removesuffix(", ")
+        layout_text = layout_text.rstrip() + "\n\n" + "\t.byte $FF"
+
+        return layout_text
+
+    def _harmonize_base_name(self, path: Path):
+        potential_base_name = self._base_name_from_world_asm(path)
+
+        if (path.parent / f"{potential_base_name}L.asm").is_file():
+            should_change_base_name = (
+                QMessageBox.question(
+                    self,
+                    "Export Map as ASM",
+                    "It seems like you clicked on an ASM file of an existing World Map.\n\n"
+                    f"Should we overwrite {potential_base_name}L.asm etc, instead of saving under "
+                    f"{path.stem}L.asm, {path.stem}O.asm etc?",
+                )
+                == QMessageBox.StandardButton.Yes
+            )
+
+            if should_change_base_name:
+                return potential_base_name
+
+        return path.stem
+
+    @staticmethod
+    def _base_name_from_world_asm(path: Path):
+        """
+        A world map is split across 7 different asm files, so if the user selects one of those, get the actual World
+        name instead.
+        """
+        asm_name_suffixes = ["OH", "OI", "OX", "OY", "L", "O", "S"]
+
+        base_name = path.stem
+
+        if path.is_file():
+            for asm_suffix in asm_name_suffixes:
+                if not base_name.endswith(asm_suffix):
+                    continue
+
+                real_base_name = base_name.removesuffix(asm_suffix)
+
+                for other_suffixes in asm_name_suffixes:
+                    if asm_suffix == other_suffixes:
+                        continue
+
+                    if not Path(path.parent / f"{real_base_name}{other_suffixes}.asm").is_file():
+                        break
+                else:
+                    base_name = real_base_name
+                    break
+
+        return base_name
+
     def on_file_menu(self, action: QAction):
         if action is self.open_rom_action:
             self.on_open_rom()
@@ -353,6 +556,8 @@ class ScribeMainWindow(MainWindow):
             self.on_save_rom(False)
         elif action is self.save_as_rom_action:
             self.on_save_rom(True)
+        elif action is self.export_map_action:
+            self.on_export_map()
         elif action is self.quit_rom_action:
             self.close()
 

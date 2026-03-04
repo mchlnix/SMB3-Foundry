@@ -85,7 +85,7 @@ class Level(LevelLike):
         if self.layout_address == self.enemy_offset == 0:
             # probably loaded to become an m3l
             self.size = (0, 0)
-            self.header_bytes = bytearray(9)
+            self.header_bytes = bytearray(HEADER_LENGTH)
             self.header = LevelHeader(ROM(), self.header_bytes, self.object_set.number)
             self.object_factory: LevelObjectFactory | None = None
             self.enemy_factory: EnemyItemFactory | None = None

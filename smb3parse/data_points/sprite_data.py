@@ -42,7 +42,7 @@ class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):
 
     def calculate_addresses(self):
         map_sprite_y_pos_list = Constants.Map_List_Object_Ys
-        map_sprite_screen_list = map_sprite_y_pos_list + 8 * OFFSET_SIZE  # 8 for all non-warp world maps
+        map_sprite_screen_list = map_sprite_y_pos_list + 8 * OFFSET_SIZE  # 8 for the eight non-warp world maps
         map_sprite_x_pos_list = map_sprite_screen_list + 8 * OFFSET_SIZE
         map_sprite_types_list = map_sprite_x_pos_list + 8 * OFFSET_SIZE
         map_sprite_items_list = map_sprite_types_list + 8 * OFFSET_SIZE

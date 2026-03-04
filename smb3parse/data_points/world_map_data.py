@@ -140,8 +140,8 @@ class WorldMapData(_IndexedMixin, DataPoint):
         # level pointer data
         self.pos_offsets_for_screen = bytearray(MAX_SCREEN_COUNT)
         """
-        When entering a Level, a list of level positions is searched through. Once the players current position is found
-        that Positions index is used to look up the Level information in another list.
+        When entering a Level, a list of level positions is combed through. Once the player's current position is found
+        that Position's index is used to look up the Level information in another list.
 
         Since these positions are ordered by screen and to make searching faster, the game saves the first position of
         each screen in this list.
