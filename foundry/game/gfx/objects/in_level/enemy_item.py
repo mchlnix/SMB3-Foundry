@@ -1,7 +1,5 @@
-from PySide6.QtCore import QRect, QSize
-from PySide6.QtGui import QColor, QImage, QPainter
+from PySide6.QtCore import QRect
 
-from foundry.game.gfx.block_cache import draw_enemy_item
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
@@ -103,9 +101,6 @@ class EnemyItem(InLevelObject):
         # nothing to re-render since enemies are just copied over
         pass
 
-    def draw(self, painter: QPainter, block_length: int, _, use_offsets=True):
-        raise ValueError()
-
     def get_status_info(self):
         return [("Name", self.name), ("X", self.x_position), ("Y", self.y_position)]
 
@@ -174,21 +169,6 @@ class EnemyItem(InLevelObject):
                 y_position,
             ]
         )
-
-    def as_image(self) -> QImage:
-        # TODO make into function and take it out of here to resolve circular import
-        image = QImage(
-            QSize(self.width * Block.SIDE_LENGTH, self.height * Block.SIDE_LENGTH),
-            QImage.Format.Format_RGBA8888,
-        )
-
-        image.fill(QColor(0, 0, 0, 0))
-
-        painter = QPainter(image)
-
-        draw_enemy_item(self, painter, Block.SIDE_LENGTH, False)
-
-        return image
 
     def __str__(self):
         return f"{self.name} at {self.x_position}, {self.y_position}"

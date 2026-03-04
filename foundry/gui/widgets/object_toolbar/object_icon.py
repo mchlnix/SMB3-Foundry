@@ -124,7 +124,7 @@ class ObjectIcon(QWidget):
             self.image = objects_to_use_pngs_instead[self.object.name.lower()]
 
         else:
-            self.image = self.object.as_image()
+            self.image = object_to_image(self.object)
 
     def heightForWidth(self, width: int) -> int:
         current_width, current_height = self.image.size().toTuple()

@@ -435,9 +435,6 @@ class LevelObject(InLevelObject):
             ("Ending", ENDING_STR[self.ending]),
         ]
 
-    def as_image(self):
-        raise NotImplementedError()
-
     def to_bytes(self) -> bytearray:
         data = bytearray()
 

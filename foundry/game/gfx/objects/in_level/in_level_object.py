@@ -1,8 +1,5 @@
 import abc
 
-from PySide6.QtCore import QSize
-from PySide6.QtGui import QImage
-
 from foundry.game import EXPANDS_NOT
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.object_like import ObjectLike
@@ -36,11 +33,8 @@ class InLevelObject(ObjectLike, abc.ABC):
 
     def display_size(self, zoom_factor: int = 1):
         return (
-            QSize(
-                self.rendered_width * Block.SIDE_LENGTH,
-                self.rendered_height * Block.SIDE_LENGTH,
-            )
-            * zoom_factor
+            self.rendered_width * Block.SIDE_LENGTH * zoom_factor,
+            self.rendered_height * Block.SIDE_LENGTH * zoom_factor,
         )
 
     @property
@@ -61,10 +55,6 @@ class InLevelObject(ObjectLike, abc.ABC):
 
     @abc.abstractmethod
     def resize_by(self, dx, dy):
-        pass
-
-    @abc.abstractmethod
-    def as_image(self) -> QImage:
         pass
 
     @abc.abstractmethod

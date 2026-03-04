@@ -1,9 +1,10 @@
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QImage, QPainter
+from PySide6.QtGui import QColor, QImage, QPainter
 
-from foundry.game.gfx.block_cache import BlockCache, draw_level_object
+from foundry.game.gfx.block_cache import BlockCache, draw_enemy_item, draw_level_object
 from foundry.game.gfx.drawable.Block import Block, get_tile
 from foundry.game.gfx.GraphicsSet import GraphicsSet
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.Palette import (
@@ -68,4 +69,18 @@ def object_to_image(obj: "InLevelObject"):
 
         return image
 
-    return obj.as_image()
+    else:
+        assert isinstance(obj, EnemyItem)
+
+        image = QImage(
+            QSize(obj.width * Block.SIDE_LENGTH, obj.height * Block.SIDE_LENGTH),
+            QImage.Format.Format_RGBA8888,
+        )
+
+        image.fill(QColor(0, 0, 0, 0))
+
+        painter = QPainter(image)
+
+        draw_enemy_item(obj, painter, Block.SIDE_LENGTH, False)
+
+        return image

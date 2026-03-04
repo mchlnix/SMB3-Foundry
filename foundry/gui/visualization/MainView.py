@@ -14,7 +14,7 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from foundry import ctrl_is_pressed
-from foundry.game.gfx.block_cache import draw_level_object
+from foundry.game.gfx.block_cache import draw_enemy_item, draw_level_object
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
@@ -340,6 +340,7 @@ class MainView(QWidget):
         self.update()
 
     def paintEvent(self, event: QPaintEvent):
+        # !!! Don't put breakpoints here, the cursor will get stuck and you'll have to pkill pycharm.
         painter = self.get_painter()
 
         if not self.level_ref:
@@ -362,8 +363,8 @@ class MainView(QWidget):
             else:
                 assert isinstance(self.currently_dragged_object, EnemyItem)
 
-                self.currently_dragged_object.draw(
+                draw_enemy_item(
+                    self.currently_dragged_object,
                     painter,
                     self.block_length,
-                    self.settings.value("level_view/block_transparency"),
                 )

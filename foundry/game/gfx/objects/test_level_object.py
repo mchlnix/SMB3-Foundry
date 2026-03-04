@@ -37,7 +37,7 @@ def _test_object_against_reference(level_object: LevelObject, qtbot, minimal=Fal
 
     view.update_object(level_object)
 
-    view.setGeometry(0, 0, *level_object.display_size().toTuple())
+    view.setGeometry(0, 0, *level_object.display_size())
 
     image_name = f"object_set_{object_set_number}_domain_{level_object.domain}_index_{level_object.obj_index:#x}.png"
 
