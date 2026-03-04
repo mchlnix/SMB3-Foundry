@@ -3,13 +3,11 @@ from functools import lru_cache
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QColor, QImage, QPainter, Qt
 
-from foundry.game.File import ROM
-from foundry.game.gfx.block_cache import get_block
 from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Tile import Tile
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import NESPalette, PaletteGroup, load_palette_group
-from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET, WORLD_MAP_OBJECT_SET
+from foundry.game.gfx.Palette import NESPalette, PaletteGroup
+from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET
 
 TSA_BANK_0_START = 0 * 256
 TSA_BANK_1_START = 1 * 256
@@ -20,15 +18,6 @@ TSA_BANK_3_START = 3 * 256
 @lru_cache(2**10)
 def get_tile(index, palette_group, palette_index, graphics_set):
     return Tile(index, palette_group, palette_index, graphics_set)
-
-
-def get_worldmap_tile(block_index: int, palette_index=0) -> "Block":
-    return get_block(
-        block_index,
-        load_palette_group(WORLD_MAP_OBJECT_SET, palette_index),
-        GraphicsSet.from_number(0),
-        ROM.get_tsa_data(WORLD_MAP_OBJECT_SET),
-    )
 
 
 BlockId = tuple[int, str, int]

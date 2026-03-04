@@ -5,7 +5,7 @@ from PySide6.QtGui import QIcon, QImage, QPixmap
 from PySide6.QtWidgets import QComboBox, QCompleter, QWidget
 
 from foundry.game import should_be_placeable
-from foundry.game.gfx.drawable import object_to_image
+from foundry.game.gfx import object_to_image
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects import (
     EnemyItem,

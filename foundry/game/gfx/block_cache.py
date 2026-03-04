@@ -3,12 +3,13 @@ from typing import TYPE_CHECKING
 from PySide6.QtGui import QPainter
 
 from foundry.game.File import ROM
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import load_palette_group
+from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
+from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 if TYPE_CHECKING:
-    from foundry.game import LevelObject
-    from foundry.game.gfx import Block, GraphicsSet, PaletteGroup
+    from foundry.game.gfx.objects.in_level.level_object import LevelObject
 
 ANIMATION_FRAME_COUNT = 4
 
@@ -17,13 +18,15 @@ GraphicsSetNo = int
 ObjectSetNo = int
 PaletteGroupNo = int
 
+BlockCacheKey = tuple[BlockId, ObjectSetNo, PaletteGroupNo, GraphicsSetNo]
 
-# not all objects provide a block index for blank block
+
+# not all objects provide a block index for a blank block
 BLANK_BLOCK_ID: BlockId = -1
 
 
 class BlockCache:
-    _block_cache: dict[BlockId, "Block"] = {}
+    _block_cache: dict[BlockCacheKey, "Block"] = {}
     _palette_group_cache: dict[tuple[ObjectSetNo, PaletteGroupNo], "PaletteGroup"] = {}
     _graphics_set_cache: dict[GraphicsSetNo, "GraphicsSet"] = {}
     _tsa_data_cache: dict[ObjectSetNo, bytes] = {}
@@ -43,7 +46,6 @@ class BlockCache:
 
     @classmethod
     def update(cls, object_set_no: int, palette_group_no: int, graphics_set_no: int):
-        print(f"Updating BlockCache for object set {object_set_no}, {palette_group_no=}, {graphics_set_no=}")
         from foundry.game.gfx import GraphicsSet
 
         if not ROM.is_loaded():
@@ -102,7 +104,7 @@ class BlockCache:
         return cls._tsa_data_cache[object_set_no]
 
 
-def draw_level_object(obj: "LevelObject", painter: QPainter, block_length: int, transparent):
+def draw_level_object(obj: "LevelObject", painter: QPainter, block_length: int, transparent: bool):
     for index, block_index in enumerate(obj.rendered_blocks):
         if block_index == BLANK_BLOCK_ID:
             continue
@@ -157,8 +159,6 @@ def get_block(
     graphics_set: "GraphicsSet",
     tsa_data: bytes,
 ) -> "Block":
-    # TODO Check if still necessary after restructure
-    from foundry.game.gfx import Block
 
     if block_index > 0xFF:  # TODO Is this still necessary for enemies?
         rom_block_index = ROM().int(block_index)  # block_index is an offset into the graphic memory
@@ -167,3 +167,12 @@ def get_block(
         block = Block(block_index, palette_group, graphics_set, tsa_data)
 
     return block
+
+
+def get_worldmap_tile(block_index: int, palette_index=0) -> "Block":
+    return get_block(
+        block_index,
+        load_palette_group(WORLD_MAP_OBJECT_SET, palette_index),
+        GraphicsSet.from_number(0),
+        ROM.get_tsa_data(WORLD_MAP_OBJECT_SET),
+    )

@@ -14,8 +14,11 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from foundry import ctrl_is_pressed
+from foundry.game.gfx.block_cache import draw_level_object
 from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.ContextMenu import ContextMenu
@@ -349,8 +352,18 @@ class MainView(QWidget):
         self.selection_square.draw(painter)
 
         if self.currently_dragged_object is not None:
-            self.currently_dragged_object.draw(
-                painter,
-                self.block_length,
-                self.settings.value("level_view/block_transparency"),
-            )
+            if isinstance(self.currently_dragged_object, LevelObject):
+                draw_level_object(
+                    self.currently_dragged_object,
+                    painter,
+                    self.block_length,
+                    self.settings.value("level_view/block_transparency"),
+                )
+            else:
+                assert isinstance(self.currently_dragged_object, EnemyItem)
+
+                self.currently_dragged_object.draw(
+                    painter,
+                    self.block_length,
+                    self.settings.value("level_view/block_transparency"),
+                )

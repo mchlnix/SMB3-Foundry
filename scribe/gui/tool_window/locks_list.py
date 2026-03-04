@@ -3,7 +3,7 @@ import typing
 from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtWidgets import QStyledItemDelegate, QTableWidgetItem, QWidget
 
-from foundry.game.gfx.drawable.Block import get_worldmap_tile
+from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.BlockViewer import BlockBank

@@ -253,6 +253,8 @@ class LevelDrawer:
                         level_object, painter, self.block_length, self.settings.value("level_view/block_transparency")
                     )
                 else:
+                    assert isinstance(level_object, EnemyItem)
+
                     level_object.anim_frame = self.anim_frame
                     level_object.draw(
                         painter,

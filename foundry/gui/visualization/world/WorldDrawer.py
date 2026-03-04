@@ -1,8 +1,9 @@
 from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
+from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.gfx.drawable import load_from_png
-from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects import MapTile
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.settings import Settings

@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from foundry.game.gfx.drawable.Block import get_worldmap_tile
+from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.widgets.Spinner import SPINNER_MAX_VALUE, Spinner

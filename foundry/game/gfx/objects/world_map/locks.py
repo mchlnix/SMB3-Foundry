@@ -1,8 +1,8 @@
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter
 
+from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.gfx.drawable import load_from_png
-from foundry.game.gfx.drawable.Block import get_worldmap_tile
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.data_points import FortressFXData, Position
 

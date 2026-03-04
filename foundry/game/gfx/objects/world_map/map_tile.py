@@ -1,4 +1,5 @@
-from foundry.game.gfx.drawable.Block import Block, get_worldmap_tile
+from foundry.game.gfx.block_cache import get_worldmap_tile
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.constants import TILE_NAMES
 from smb3parse.data_points import Position

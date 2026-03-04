@@ -1,7 +1,7 @@
 from PySide6.QtGui import QUndoCommand
 
 from foundry.game.File import ROM
-from foundry.game.gfx.drawable.Block import get_worldmap_tile
+from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.gfx.objects import LevelPointer, Lock
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
