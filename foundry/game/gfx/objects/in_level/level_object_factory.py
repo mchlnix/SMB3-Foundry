@@ -1,5 +1,6 @@
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.objects import Jump, LevelObject
+from foundry.game.gfx.objects.in_level.jump import Jump
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.util import clamp

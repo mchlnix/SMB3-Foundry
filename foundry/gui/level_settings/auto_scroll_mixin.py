@@ -4,7 +4,7 @@ from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QVBoxLayout
 
 from foundry import make_macro
-from foundry.game.gfx.objects import EnemyItem
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.gui import label_and_widget
 from foundry.gui.commands import AddObject, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin

@@ -16,8 +16,9 @@ from PySide6.QtWidgets import QToolTip, QWidget
 from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.gfx.drawable.Block import get_tile
-from foundry.game.gfx.objects import LevelObject, MapTile
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.world_map.map_object import MapObject
+from foundry.game.gfx.objects.world_map.map_tile import MapTile
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap

@@ -5,14 +5,12 @@ from PySide6.QtCore import QObject, Signal, SignalInstance
 from foundry.game.additional_data import LEVEL_DATA_DELIMITER_COUNT, LevelOrganizer
 from foundry.game.File import ROM
 from foundry.game.gfx import BlockCache
-from foundry.game.gfx.objects import (
-    EnemyItem,
-    EnemyItemFactory,
-    Jump,
-    LevelObject,
-    LevelObjectFactory,
-)
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
+from foundry.game.gfx.objects.in_level.enemy_item_factory import EnemyItemFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.in_level.jump import Jump
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
+from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level import (
     EnemyItemData,

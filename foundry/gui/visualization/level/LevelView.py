@@ -10,8 +10,9 @@ from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.File import ROM
 from foundry.game.gfx import BlockCache
 from foundry.game.gfx.drawable.Block import get_tile
-from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap

@@ -8,8 +8,10 @@ from PySide6.QtGui import QUndoCommand
 
 from foundry.game.File import ROM
 from foundry.game.gfx import change_color
-from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.in_level.jump import Jump
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef

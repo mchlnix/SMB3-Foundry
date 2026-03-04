@@ -2,7 +2,7 @@ from PySide6.QtGui import QMouseEvent, QPixmap
 from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QVBoxLayout
 
 from foundry import make_macro
-from foundry.game.gfx.objects import EnemyItem
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.world_map.sprite import MAP_ITEM_SPRITES
 from foundry.game.level.Level import Level
 from foundry.gui import label_and_widget

@@ -3,7 +3,7 @@ from PySide6.QtGui import QImage
 
 from foundry import data_dir
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects import EnemyItem
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.Palette import load_palette_group
 
 ENEMY_ITEM_SPRITE_SHEET = QImage(str(data_dir.joinpath("gfx.png")))

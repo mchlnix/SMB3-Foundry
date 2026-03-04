@@ -44,9 +44,11 @@ from foundry.features.instaplay import CantFindFirstTile, InstaPlayer, LevelNotA
 from foundry.features.rom_reload import RomHotSwapMixin, RomWatcherMixin
 from foundry.game.additional_data import LevelOrganizer
 from foundry.game.File import ROM
-from foundry.game.gfx import BlockCache, restore_all_palettes
-from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
+from foundry.game.gfx import restore_all_palettes
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.in_level.jump import Jump
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.Palette import PaletteGroup, save_all_palette_groups
 from foundry.game.level import EnemyItemAddress, LevelAddress
 from foundry.game.level.Level import Level, world_and_level_for_level_address

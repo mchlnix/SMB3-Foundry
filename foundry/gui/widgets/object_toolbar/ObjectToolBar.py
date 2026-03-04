@@ -1,8 +1,10 @@
 from PySide6.QtCore import Qt, Signal, SignalInstance
 from PySide6.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
 
-from foundry.game.gfx.objects import EnemyItem, LevelObject, LevelObjectFactory
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
+from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from foundry.game.gfx.objects.object_like import ObjectLike
 
 from .ObjectToolBox import ObjectIcon

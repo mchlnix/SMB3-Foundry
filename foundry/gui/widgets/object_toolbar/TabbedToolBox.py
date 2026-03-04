@@ -1,8 +1,9 @@
 from PySide6.QtCore import Qt, Signal, SignalInstance
 from PySide6.QtWidgets import QScrollArea, QScrollBar, QTabWidget
 
-from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 
 from .ObjectToolBox import ObjectIcon, ObjectToolBox
 

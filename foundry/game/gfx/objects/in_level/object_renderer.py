@@ -12,7 +12,7 @@ from smb3parse.util.rect import Rect
 BLANK = -1
 
 if TYPE_CHECKING:
-    from foundry.game import LevelObject
+    from foundry.game.gfx.objects.in_level.level_object import LevelObject
 
 
 class LevelObjectRenderWarning(UserWarning):

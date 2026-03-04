@@ -15,7 +15,9 @@ from PySide6.QtWidgets import (
 from foundry.game.gfx.block_cache import draw_level_object, get_block
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
-from foundry.game.gfx.objects import Jump, LevelObject, LevelObjectFactory
+from foundry.game.gfx.objects.in_level.jump import Jump
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
+from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.util import clear_layout
 from foundry.gui.widgets.Spinner import Spinner

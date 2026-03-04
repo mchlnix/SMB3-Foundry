@@ -5,11 +5,12 @@ from PySide6.QtGui import QBrush, QColor, QPainter, QPen, Qt
 
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT, GROUND
 from foundry.game.File import ROM
-from foundry.game.gfx.block_cache import draw_block, draw_level_object
+from foundry.game.gfx.block_cache import draw_block, draw_enemy_item, draw_level_object
 from foundry.game.gfx.drawable import load_from_png, make_image_selected, mario_actions
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.world_map.sprite import EMPTY_IMAGE
 from foundry.game.gfx.Palette import (
     NESPalette,
@@ -256,11 +257,8 @@ class LevelDrawer:
                     assert isinstance(level_object, EnemyItem)
 
                     level_object.anim_frame = self.anim_frame
-                    level_object.draw(
-                        painter,
-                        self.block_length,
-                        self.settings.value("level_view/block_transparency"),
-                    )
+
+                    draw_enemy_item(level_object, painter, self.block_length)
 
             if level_object.selected:
                 painter.save()

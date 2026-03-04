@@ -5,11 +5,9 @@ import pytest
 
 from foundry.conftest import compare_images, test_rom_path
 from foundry.game.File import ROM
-from foundry.game.gfx.objects import (
-    LevelObject,
-    LevelObjectFactory,
-    get_minimal_icon_object,
-)
+from foundry.game.gfx.objects import get_minimal_icon_object
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
+from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from foundry.gui.windows.ObjectViewer import ObjectDrawArea
 from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
 from smb3parse.objects.object_set import (

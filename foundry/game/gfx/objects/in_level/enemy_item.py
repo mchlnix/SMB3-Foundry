@@ -1,7 +1,7 @@
 from PySide6.QtCore import QRect, QSize
-from PySide6.QtGui import QColor, QImage, QPainter, Qt
+from PySide6.QtGui import QColor, QImage, QPainter
 
-from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
+from foundry.game.gfx.block_cache import draw_enemy_item
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
@@ -104,39 +104,7 @@ class EnemyItem(InLevelObject):
         pass
 
     def draw(self, painter: QPainter, block_length: int, _, use_offsets=True):
-        """
-        :param painter:
-        :param block_length:
-        :param _: ignored for enemies
-        :param bool use_offsets: Whether to use the additional offsets. Necessary when drawing in level, but not when
-            rendering in the object toolbar, or in the object dropdown.
-        """
-        for i, image in enumerate(self.blocks):
-            x = self.x_position + (i % self.width)
-            y = self.y_position + (i // self.width)
-
-            if use_offsets:
-                x_offset = enemy_handle_x[self.obj_index]
-                y_offset = enemy_handle_y[self.obj_index]
-            else:
-                x_offset = enemy_handle_x2[self.obj_index]
-                y_offset = 0
-
-            x += x_offset
-            y += y_offset
-
-            block = image.copy()
-
-            mask = block.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
-            block.setAlphaChannel(mask)
-
-            if self.selected:
-                apply_selection_overlay(block, mask)
-
-            if block_length != Block.SIDE_LENGTH:
-                block = block.scaled(block_length, block_length)
-
-            painter.drawImage(x * block_length, y * block_length, block)
+        raise ValueError()
 
     def get_status_info(self):
         return [("Name", self.name), ("X", self.x_position), ("Y", self.y_position)]
@@ -208,6 +176,7 @@ class EnemyItem(InLevelObject):
         )
 
     def as_image(self) -> QImage:
+        # TODO make into function and take it out of here to resolve circular import
         image = QImage(
             QSize(self.width * Block.SIDE_LENGTH, self.height * Block.SIDE_LENGTH),
             QImage.Format.Format_RGBA8888,
@@ -217,7 +186,7 @@ class EnemyItem(InLevelObject):
 
         painter = QPainter(image)
 
-        self.draw(painter, Block.SIDE_LENGTH, True, use_offsets=False)
+        draw_enemy_item(self, painter, Block.SIDE_LENGTH, False)
 
         return image
 

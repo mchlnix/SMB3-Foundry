@@ -6,13 +6,11 @@ from PySide6.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
 from foundry.game import should_be_placeable
 from foundry.game.gfx import GraphicsSet
-from foundry.game.gfx.objects import (
-    EnemyItem,
-    EnemyItemFactory,
-    LevelObject,
-    LevelObjectFactory,
-)
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
+from foundry.game.gfx.objects.in_level.enemy_item_factory import EnemyItemFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
+from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 from smb3parse.util import apply
 

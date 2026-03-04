@@ -4,8 +4,10 @@ from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from foundry.game.gfx import object_to_image
 from foundry.game.gfx.drawable import load_from_png
-from foundry.game.gfx.objects import Jump, LevelObject, get_minimal_icon_object
+from foundry.game.gfx.objects import get_minimal_icon_object
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
+from foundry.game.gfx.objects.in_level.jump import Jump
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.Palette import bg_color_for_palette_group
 
 objects_to_use_pngs_instead = {

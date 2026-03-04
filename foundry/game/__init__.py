@@ -16,7 +16,9 @@ EXPANDS_VERT = 0b10
 EXPANDS_BOTH = EXPANDS_HORIZ | EXPANDS_VERT
 
 if TYPE_CHECKING:
-    from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
+    from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
+    from foundry.game.gfx.objects.in_level.jump import Jump
+    from foundry.game.gfx.objects.in_level.level_object import LevelObject
 
 
 _EXCLUDED_ENEMY_ITEMS_IDS = [
@@ -35,7 +37,9 @@ def should_be_placeable(object_or_enemy_item: "LevelObject | Jump | EnemyItem") 
     Returns whether the user should be able to place this object into a level manually. Is false for objects, that would
     crash the game, or determine properties, that can be better set using settings dialogues.
     """
-    from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
+    from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
+    from foundry.game.gfx.objects.in_level.jump import Jump
+    from foundry.game.gfx.objects.in_level.level_object import LevelObject
 
     if isinstance(object_or_enemy_item, Jump):
         return False

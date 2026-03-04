@@ -6,7 +6,8 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu
 
 from foundry import icon
-from foundry.game.gfx.objects import EnemyItem, LevelObject
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
 from smb3parse.data_points import Position

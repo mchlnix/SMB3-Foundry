@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 
 from foundry import icon, make_macro
 from foundry.game.File import ROM
-from foundry.game.gfx.objects import EnemyItem
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.gui import label_and_widget
 from foundry.gui.commands import AddObject, RemoveObject, UpdatePipeData
 from foundry.gui.dialogs.level_selector.LevelSelector import WorldMapLevelSelect

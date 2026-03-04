@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QComboBox, QGroupBox, QVBoxLayout
 
-from foundry.game.gfx.objects import EnemyItem
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.gui import label_and_widget
 from foundry.gui.commands import ChangeLockIndex
 from foundry.gui.level_settings.settings_mixin import SettingsMixin

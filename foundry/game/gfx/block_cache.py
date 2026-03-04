@@ -1,14 +1,21 @@
 from typing import TYPE_CHECKING
 
-from PySide6.QtGui import QPainter
+from PySide6.QtGui import QColor, QPainter, Qt
 
 from foundry.game.File import ROM
+from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
+from foundry.game.ObjectDefinitions import (
+    enemy_handle_x,
+    enemy_handle_x2,
+    enemy_handle_y,
+)
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 if TYPE_CHECKING:
+    from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
     from foundry.game.gfx.objects.in_level.level_object import LevelObject
 
 ANIMATION_FRAME_COUNT = 4
@@ -124,6 +131,43 @@ def draw_level_object(obj: "LevelObject", painter: QPainter, block_length: int, 
             transparent,
             obj.selected,
         )
+
+
+def draw_enemy_item(enemy_item: "EnemyItem", painter: QPainter, block_length: int, use_offsets: bool = True):
+    """
+
+    :param enemy_item:
+    :param painter:
+    :param block_length:
+    :param bool use_offsets: Whether to use the additional offsets. Necessary when drawing in level, but not when
+        rendering in the object toolbar, or in the object dropdown.
+    """
+    for i, image in enumerate(enemy_item.blocks):
+        x = enemy_item.x_position + (i % enemy_item.width)
+        y = enemy_item.y_position + (i // enemy_item.width)
+
+        if use_offsets:
+            x_offset = enemy_handle_x[enemy_item.obj_index]
+            y_offset = enemy_handle_y[enemy_item.obj_index]
+        else:
+            x_offset = enemy_handle_x2[enemy_item.obj_index]
+            y_offset = 0
+
+        x += x_offset
+        y += y_offset
+
+        block = image.copy()
+
+        mask = block.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
+        block.setAlphaChannel(mask)
+
+        if enemy_item.selected:
+            apply_selection_overlay(block, mask)
+
+        if block_length != Block.SIDE_LENGTH:
+            block = block.scaled(block_length, block_length)
+
+        painter.drawImage(x * block_length, y * block_length, block)
 
 
 def draw_block(

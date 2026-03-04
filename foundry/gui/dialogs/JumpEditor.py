@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from foundry.game.gfx.objects import Jump
+from foundry.game.gfx.objects.in_level.jump import Jump
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.widgets.Spinner import Spinner
 

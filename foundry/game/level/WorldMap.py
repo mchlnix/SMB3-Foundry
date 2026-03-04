@@ -6,13 +6,11 @@ from foundry.game.File import ROM
 from foundry.game.gfx.block_cache import get_block
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.objects import (
-    AirshipTravelPoint,
-    LevelPointer,
-    Lock,
-    MapTile,
-    Sprite,
-)
+from foundry.game.gfx.objects.world_map.airship_point import AirshipTravelPoint
+from foundry.game.gfx.objects.world_map.level_pointer import LevelPointer
+from foundry.game.gfx.objects.world_map.locks import Lock
+from foundry.game.gfx.objects.world_map.map_tile import MapTile
+from foundry.game.gfx.objects.world_map.sprite import Sprite
 from foundry.game.gfx.objects.world_map.start_posiiton import StartPosition
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.level.LevelLike import LevelLike

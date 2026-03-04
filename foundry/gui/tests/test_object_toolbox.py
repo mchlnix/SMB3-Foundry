@@ -1,7 +1,7 @@
 import pytest
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
-from foundry.game.gfx.objects import LevelObjectFactory
+from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from foundry.gui.widgets.object_toolbar.ObjectToolBox import ObjectIcon, ObjectToolBox
 from smb3parse.objects.object_set import PLAINS_GRAPHICS_SET, PLAINS_OBJECT_SET
 

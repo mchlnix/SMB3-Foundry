@@ -1,4 +1,4 @@
-from foundry.game.gfx.objects import Jump
+from foundry.game.gfx.objects.in_level.jump import Jump
 
 
 def test_add_jump(main_window):

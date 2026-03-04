@@ -4,7 +4,7 @@ from PySide6.QtGui import QColor, QPainter, QPen, Qt
 from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.gfx.drawable import load_from_png
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.objects import MapTile
+from foundry.game.gfx.objects.world_map.map_tile import MapTile
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.settings import Settings
 from foundry.gui.util import partition

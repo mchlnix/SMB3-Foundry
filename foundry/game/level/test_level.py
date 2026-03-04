@@ -1,7 +1,9 @@
 import pytest
 from PySide6.QtCore import QPoint
 
-from foundry.game.gfx.objects import EnemyItem, Jump, LevelObject
+from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
+from foundry.game.gfx.objects.in_level.jump import Jump
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.level.Level import LEVEL_DEFAULT_HEIGHT
 from foundry.gui.asm import asm_to_bytes
 from smb3parse.data_points import Position
