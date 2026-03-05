@@ -1,7 +1,5 @@
 import abc
 
-from PySide6.QtGui import QPainter
-
 from smb3parse.util.rect import Rect
 
 
