@@ -36,7 +36,7 @@ class Tile:
         self._palette = palette_group[palette_index]
 
         self._data = bytearray()
-        self._pixels = bytearray()
+        self.pixels = bytearray()
         self._mask_pixels = bytearray()
 
         self._data = graphics_set.data[start : start + Tile.SIZE]
@@ -64,21 +64,8 @@ class Tile:
 
             # add alpha values
             if color_index == self._background_color_index:
-                self._pixels.extend(MASK_COLOR)
+                self.pixels.extend(MASK_COLOR)
             else:
-                self._pixels.extend(NESPalette[color].toTuple()[:3])
+                self.pixels.extend(NESPalette[color].toTuple()[:3])
 
-        assert len(self._pixels) == 3 * Tile.PIXEL_COUNT
-
-    def as_image(self, tile_length=8):
-        # why did we put a True here, foregoing the cache? Doesn't slow the test suite down, though.
-        if True or tile_length not in self._cached_tiles:
-            width = height = tile_length
-
-            image = QImage(self._pixels, self.WIDTH, self.HEIGHT, QImage.Format_RGB888)
-
-            image = image.scaled(width, height)
-
-            self._cached_tiles[tile_length] = image
-
-        return self._cached_tiles[tile_length]
+        assert len(self.pixels) == 3 * Tile.PIXEL_COUNT

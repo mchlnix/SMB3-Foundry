@@ -89,10 +89,10 @@ class Block:
 
         painter = QPainter(image)
 
-        painter.drawImage(QPoint(0, 0), self.lu_tile.as_image())
-        painter.drawImage(QPoint(Tile.WIDTH, 0), self.ru_tile.as_image())
-        painter.drawImage(QPoint(0, Tile.HEIGHT), self.ld_tile.as_image())
-        painter.drawImage(QPoint(Tile.WIDTH, Tile.HEIGHT), self.rd_tile.as_image())
+        painter.drawImage(QPoint(0, 0), tile_as_image(self.lu_tile))
+        painter.drawImage(QPoint(Tile.WIDTH, 0), tile_as_image(self.ru_tile))
+        painter.drawImage(QPoint(0, Tile.HEIGHT), tile_as_image(self.ld_tile))
+        painter.drawImage(QPoint(Tile.WIDTH, Tile.HEIGHT), tile_as_image(self.rd_tile))
 
         painter.end()
 
@@ -158,3 +158,13 @@ def _is_image_only_one_color(image):
     copy.convertTo(QImage.Format.Format_Indexed8)
 
     return copy.colorCount() == 1
+
+
+def tile_as_image(tile: Tile, tile_length=8):
+    width = height = tile_length
+
+    image = QImage(tile.pixels, tile.WIDTH, tile.HEIGHT, QImage.Format.Format_RGB888)
+
+    image = image.scaled(width, height)
+
+    return image
