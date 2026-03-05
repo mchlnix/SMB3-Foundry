@@ -50,6 +50,8 @@ class BlockCache:
     def clear_cache(cls):
         cls._block_cache.clear()
         cls._palette_group_cache.clear()
+        cls._graphics_set_cache.clear()
+        cls._tsa_data_cache.clear()
 
     @classmethod
     def update(cls, object_set_no: int, palette_group_no: int, graphics_set_no: int):

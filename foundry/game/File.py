@@ -75,9 +75,11 @@ class ROM(Rom):
         :return:
         """
         # circular import with ROM
-        from foundry.game.gfx import restore_graphics
+        from foundry.game.gfx import BlockCache, restore_graphics
 
         restore_graphics()
+
+        BlockCache.clear_cache()
 
     @staticmethod
     def reload_from_file():
