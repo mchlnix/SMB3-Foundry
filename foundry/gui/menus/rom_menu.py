@@ -99,24 +99,28 @@ class RomMenu(QMenu):
         levels_per_object_set: dict[int, set[int]] = defaultdict(set)
         levels_by_address = {}
 
-        if ROM.additional_data.managed_level_positions:
-            for found_level in ROM.additional_data.found_levels:  # noqa
-                levels_per_object_set[found_level.object_set_number].add(found_level.level_offset)
+        if not self._level_viewer:
+            if ROM.additional_data.managed_level_positions:
+                for found_level in ROM.additional_data.found_levels:  # noqa
+                    levels_per_object_set[found_level.object_set_number].add(found_level.level_offset)
 
-            levels_by_address = {
-                found_level.level_offset: found_level for found_level in ROM.additional_data.found_levels
-            }
+                levels_by_address = {
+                    found_level.level_offset: found_level for found_level in ROM.additional_data.found_levels
+                }
 
-        else:
-            pd = LevelParseProgressDialog()
+            else:
+                pd = LevelParseProgressDialog()
 
-            if not pd.wasCanceled():
-                levels_per_object_set = pd.levels_per_object_set
-                levels_by_address = pd.levels_by_address
+                if not pd.wasCanceled():
+                    levels_per_object_set = pd.levels_per_object_set
+                    levels_by_address = pd.levels_by_address
 
-        if levels_per_object_set:
-            self._level_viewer = LevelViewer(self.parent(), levels_per_object_set, levels_by_address)
+            if levels_per_object_set:
+                self._level_viewer = LevelViewer(self.parent(), levels_per_object_set, levels_by_address)
+
+        if self._level_viewer:
             self._level_viewer.show()
+            self._level_viewer.showNormal()
 
     def _show_block_viewer(self):
         if self._block_viewer is None:
@@ -127,6 +131,7 @@ class RomMenu(QMenu):
             self._block_viewer.palette_group = self._level_ref.object_palette_index
 
         self._block_viewer.show()
+        self._block_viewer.showNormal()
 
     def _show_object_viewer(self):
         if self._object_viewer is None:
@@ -145,6 +150,7 @@ class RomMenu(QMenu):
                     self._object_viewer.set_object(obj.domain, obj.obj_index, obj.length)
 
         self._object_viewer.show()
+        self._object_viewer.showNormal()
 
     def close_everything(self):
         if self._level_viewer:
