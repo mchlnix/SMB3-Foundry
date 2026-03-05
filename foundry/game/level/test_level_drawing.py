@@ -88,6 +88,7 @@ with Path(data_dir / "levels.dat").open("r") as level_data_file:
 def settings():
     settings = Settings()
     settings.setValue("level_view/block_transparency", True)
+    settings.setValue("level_view/block_animation", False)
     settings.setValue("level_view/draw_jumps", True)
     settings.setValue("level_view/draw_mario", True)
     settings.setValue("level_view/draw_grid", True)
