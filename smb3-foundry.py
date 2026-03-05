@@ -16,7 +16,7 @@ LOAD_LEVEL = "--load-level"
 
 LOAD_M3L = "--load-m3l"
 
-CHECK_AUTO_SAVE = "--dont-check-auto-save"
+SKIP_AUTO_SAVE = "--dont-check-auto-save"
 
 # compatibility for dark mode
 warnings.warning = warnings.warn  # type:ignore
@@ -33,13 +33,13 @@ from foundry.gui.FoundryMainWindow import FoundryMainWindow  # noqa
 app = None
 
 
-def main(path_to_rom: Path, check_auto_save=True, level_data_tuple=(), m3l_path=""):
+def main(path_to_rom: Path, check_auto_save=True, level_data_tuple_=(0, 0, 0), m3l_path_=""):
     global app
     app = QApplication()
 
     main_window = FoundryMainWindow()
 
-    have_level_data = level_data_tuple or m3l_path
+    have_level_data = level_data_tuple_ and 0 not in level_data_tuple_ or m3l_path_
 
     if check_auto_save and main_window.settings.value("editor/auto_save_enabled") and auto_save_rom_path.exists():
         result = AutoSaveDialog().exec()
@@ -55,23 +55,23 @@ def main(path_to_rom: Path, check_auto_save=True, level_data_tuple=(), m3l_path=
     if not have_level_data and main_window.settings.value("editor/remember_last_level"):
         last_rom = Path(main_window.settings.value("editor/remember_last_level_path"))
         object_set = int(main_window.settings.value("editor/remember_last_level_object_set"))
-        level_address = int(main_window.settings.value("editor/remember_last_level_lvl_address"))
-        enemy_address = int(main_window.settings.value("editor/remember_last_level_enemy_address"))
+        level_address_ = int(main_window.settings.value("editor/remember_last_level_lvl_address"))
+        enemy_address_ = int(main_window.settings.value("editor/remember_last_level_enemy_address"))
 
-        if last_rom.is_file() and 0 not in (level_address, enemy_address, object_set):
+        if last_rom.is_file() and 0 not in (level_address_, enemy_address_, object_set):
             path_to_rom = last_rom
-            level_data_tuple = (level_address, enemy_address, object_set)
+            level_data_tuple_ = (level_address_, enemy_address_, object_set)
 
             have_level_data = True
 
     main_window.on_open_rom(path_to_rom, try_opening_level=not have_level_data)
 
     if ROM.is_loaded():
-        if m3l_path:
-            main_window.load_m3l(m3l_path)
+        if m3l_path_:
+            main_window.load_m3l(m3l_path_)
 
-        elif level_data_tuple:
-            main_window.update_level("", *level_data_tuple)
+        elif level_data_tuple_:
+            main_window.update_level("", *level_data_tuple_)
 
     main_window.enable_disable_gui_elements()
 
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         while args:
             arg = args.pop(0)
 
-            if arg == CHECK_AUTO_SAVE:
+            if arg == SKIP_AUTO_SAVE:
                 should_check_auto_save = False
 
             elif arg == LOAD_M3L:
