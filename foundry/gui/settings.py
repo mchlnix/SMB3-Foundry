@@ -41,6 +41,7 @@ SETTINGS["editor/remember_last_level_path"] = ""
 SETTINGS["editor/remember_last_level_object_set"] = 0
 SETTINGS["editor/remember_last_level_lvl_address"] = 0
 SETTINGS["editor/remember_last_level_enemy_address"] = 0
+SETTINGS["editor/monitor_rom_for_changes"] = True
 
 SETTINGS["editor/update_on_startup"] = False
 SETTINGS["editor/asked_for_startup"] = False

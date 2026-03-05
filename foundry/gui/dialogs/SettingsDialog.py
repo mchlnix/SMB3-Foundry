@@ -216,6 +216,24 @@ class SettingsDialog(CustomDialog):
             )
         )
 
+        # Other Section
+        # -----------------------------------------------
+        self._other_settings_box = QGroupBox("Miscellaneous", self)
+        layout = QVBoxLayout()
+        self._other_settings_box.setLayout(layout)
+
+        self.monitor_rom_cb = QCheckBox("Enabled")
+        self.monitor_rom_cb.setChecked(self.settings.value("editor/monitor_rom_for_changes"))
+        self.monitor_rom_cb.stateChanged.connect(self._update_settings)
+
+        self._other_settings_box.layout().addLayout(
+            label_and_widget(
+                "Offer to reload the ROM, if an outside change is detected:",
+                self.monitor_rom_cb,
+                tooltip="Should the editor prompt you to reload the ROM, if it is changed by an external program?",
+            )
+        )
+
         # GUI Section
         # -----------------------------------------------
 
@@ -342,6 +360,7 @@ class SettingsDialog(CustomDialog):
         layout.addWidget(on_start_up_box)
         layout.addWidget(mouse_box)
         layout.addWidget(self._when_open_rom_box)
+        layout.addWidget(self._other_settings_box)
         layout.addWidget(self.gui_box)
         layout.addWidget(command_box)
 
@@ -363,6 +382,7 @@ class SettingsDialog(CustomDialog):
         else:
             self.settings.setValue("editor/resize_mode", RESIZE_RIGHT_CLICK)
 
+        self.settings.setValue("editor/monitor_rom_for_changes", self.monitor_rom_cb.isChecked())
         self.settings.setValue("editor/ask_for_level_management", self.ask_for_level_management_cb.isChecked())
         self.settings.setValue("editor/auto_save_enabled", self.auto_save_cb.isChecked())
         self.settings.setValue("editor/remember_last_level", self._restore_last_opened_level_cb.isChecked())

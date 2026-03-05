@@ -449,7 +449,8 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         self._rom_watcher_enabled = False
 
         wants_to_reload_rom = (
-            QMessageBox.information(
+            self.settings.value("editor/monitor_rom_for_changes")
+            and QMessageBox.information(
                 self,
                 "ROM Changed",
                 "The ROM has been changed externally.\n\n"
