@@ -12,16 +12,16 @@ from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID
 class BlockIcon(QWidget):
     clicked: SignalInstance = Signal(int)
 
-    def __init__(self, block_id, palette_group=0, zoom_level=2):
+    def __init__(self, block_id, palette_group_no=0, zoom_level=2):
         super(BlockIcon, self).__init__()
 
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
-        self.palette_group = palette_group
+        self.palette_group_no = palette_group_no
 
         self.block_id = block_id
 
-        self.block = get_worldmap_tile(block_id, palette_group)
+        self.block = get_worldmap_tile(block_id, palette_group_no)
 
         self.zoom_level = zoom_level
 
@@ -29,7 +29,7 @@ class BlockIcon(QWidget):
         old_block_id = self.block_id
         self.block_id = block_id
 
-        self.block = get_worldmap_tile(block_id, self.palette_group)
+        self.block = get_worldmap_tile(block_id, self.palette_group_no)
 
         self.update()
 
@@ -91,7 +91,7 @@ class BlockList(QWidget):
 
     def update_palette_group(self, palette_group: int):
         for block_icon in [self.current_block] + self.recent_blocks:
-            block_icon.palette_group = palette_group
+            block_icon.palette_group_no = palette_group
 
             block_icon.set_block_id(block_icon.block_id)
 

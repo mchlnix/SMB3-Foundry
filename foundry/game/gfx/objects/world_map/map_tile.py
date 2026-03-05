@@ -12,6 +12,8 @@ class MapTile(MapObject):
 
         self.pos = pos
 
+        # TODO MapTile should not save it's block and definitely not get one supplied from the outside.
+        # TODO Use BlockCache for animation
         self.block = block
         self.type = self.block.index
 
@@ -32,7 +34,7 @@ class MapTile(MapObject):
         return MapTile(self.block, self.pos.copy())
 
     def draw(self, dc, block_length, _=None, anim_frame=0):
-        self.block.graphics_set.anim_frame = anim_frame
+        self.block.frame = anim_frame
 
         self.block.rerender()
 

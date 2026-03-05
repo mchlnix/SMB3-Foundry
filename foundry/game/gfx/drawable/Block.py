@@ -45,6 +45,7 @@ class Block:
         palette_group: PaletteGroup,
         graphics_set: GraphicsSet,
         tsa_data: bytes,
+        frame: int = 0,
     ):
         self.index = block_index
         self.graphics_set = graphics_set
@@ -61,13 +62,16 @@ class Block:
         else:
             self._bg_color = NESPalette[palette_group[self._palette_index][0]]
 
+        self.frame = frame
+
         self._render()
 
     def _render(self):
-        if self.graphics_set.anim_frame in self._images:
+        if self.frame in self._images:
             return
 
-        # can't hash list, so turn it into a string instead
+        # can't hash a list, so turn it into a string instead
+        # TODO can't use a tuple?
         self._block_id: BlockId = (
             self.index,
             str(self._palette_group),
@@ -78,6 +82,8 @@ class Block:
         ld = self._tsa_data[TSA_BANK_1_START + self.index]
         ru = self._tsa_data[TSA_BANK_2_START + self.index]
         rd = self._tsa_data[TSA_BANK_3_START + self.index]
+
+        self.graphics_set.anim_frame = self.frame
 
         self.lu_tile = get_tile(lu, self._palette_group, self._palette_index, self.graphics_set)
         self.ld_tile = get_tile(ld, self._palette_group, self._palette_index, self.graphics_set)
@@ -101,7 +107,7 @@ class Block:
         else:
             self._whole_block_is_transparent = False
 
-        self._images[self.graphics_set.anim_frame] = image
+        self._images[self.frame] = image
 
     def rerender(self):
         self._render()
@@ -112,12 +118,12 @@ class Block:
             block_length,
             selected,
             transparent,
-            self.graphics_set.anim_frame,
+            self.frame,
         )
 
         if block_attributes not in Block._block_cache:
             self.rerender()
-            image = self._images[self.graphics_set.anim_frame].copy()
+            image = self._images[self.frame].copy()
 
             if block_length != Block.WIDTH:
                 image = image.scaled(block_length, block_length)

@@ -359,6 +359,7 @@ class MainView(QWidget):
                     painter,
                     self.block_length,
                     self.settings.value("level_view/block_transparency"),
+                    self.settings.value("level_view/block_animation"),
                 )
             else:
                 assert isinstance(self.currently_dragged_object, EnemyItem)

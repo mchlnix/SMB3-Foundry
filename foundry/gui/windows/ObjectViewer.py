@@ -210,7 +210,9 @@ class ObjectDrawArea(QWidget):
             )
         )
 
-        draw_level_object(self.current_object, painter, Block.WIDTH, transparent=True)
+        # !!! Can't animate here, because we'd have to redraw the object in sync with the level
+        # Could be done but eh...
+        draw_level_object(self.current_object, painter, Block.WIDTH, True, False)
 
 
 class BlockArray(QWidget):

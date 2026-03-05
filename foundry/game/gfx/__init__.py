@@ -63,7 +63,7 @@ def object_to_image(obj: "InLevelObject"):
 
         painter = QPainter(image)
 
-        draw_level_object(obj, painter, Block.SIDE_LENGTH, True)
+        draw_level_object(obj, painter, Block.SIDE_LENGTH, True, False)
 
         return image
 

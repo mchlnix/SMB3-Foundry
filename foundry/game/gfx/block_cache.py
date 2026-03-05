@@ -24,8 +24,9 @@ BlockId = int
 GraphicsSetNo = int
 ObjectSetNo = int
 PaletteGroupNo = int
+AnimationFrame = int
 
-BlockCacheKey = tuple[BlockId, ObjectSetNo, PaletteGroupNo, GraphicsSetNo]
+BlockCacheKey = tuple[BlockId, ObjectSetNo, PaletteGroupNo, GraphicsSetNo, AnimationFrame]
 
 
 # not all objects provide a block index for a blank block
@@ -69,12 +70,22 @@ class BlockCache:
         object_set_no: ObjectSetNo,
         palette_group_no: PaletteGroupNo,
         graphics_set_no: GraphicsSetNo,
+        animated=False,
     ) -> "Block":
-        key = (block_id, object_set_no, palette_group_no, graphics_set_no)
+        if animated:
+            frame = cls.animation_frame
+        else:
+            frame = 0
+
+        key = (block_id, object_set_no, palette_group_no, graphics_set_no, frame)
 
         if key not in cls._block_cache:
             cls._block_cache[key] = get_block(
-                block_id, cls._pg(object_set_no, palette_group_no), cls._gs(graphics_set_no), cls._tsa(object_set_no)
+                block_id,
+                cls._pg(object_set_no, palette_group_no),
+                cls._gs(graphics_set_no),
+                cls._tsa(object_set_no),
+                frame,
             )
 
         return cls._block_cache[key]
@@ -103,7 +114,7 @@ class BlockCache:
         return cls._tsa_data_cache[object_set_no]
 
 
-def draw_level_object(obj: "LevelObject", painter: QPainter, block_length: int, transparent: bool):
+def draw_level_object(obj: "LevelObject", painter: QPainter, block_length: int, transparent: bool, animated: bool):
     for index, block_index in enumerate(obj.rendered_blocks):
         if block_index == BLANK_BLOCK_ID:
             continue
@@ -122,6 +133,7 @@ def draw_level_object(obj: "LevelObject", painter: QPainter, block_length: int, 
             block_length,
             transparent,
             obj.selected,
+            animated,
         )
 
 
@@ -173,8 +185,9 @@ def draw_block(
     block_length: int,
     transparent: bool,
     selected: bool,
+    animated=False,
 ):
-    block = BlockCache.block(block_index, object_set_no, palette_group_no, graphics_set_no)
+    block = BlockCache.block(block_index, object_set_no, palette_group_no, graphics_set_no, animated)
 
     block.draw(
         painter,
@@ -191,16 +204,18 @@ def get_block(
     palette_group: "PaletteGroup",
     graphics_set: "GraphicsSet",
     tsa_data: bytes,
+    frame: int = 0,
 ) -> "Block":
-    block = Block(block_index, palette_group, graphics_set, tsa_data)
+    block = Block(block_index, palette_group, graphics_set, tsa_data, frame)
 
     return block
 
 
-def get_worldmap_tile(block_index: int, palette_index=0) -> "Block":
+def get_worldmap_tile(block_index: int, palette_index=0, frame=0) -> "Block":
     return get_block(
         block_index,
         load_palette_group(WORLD_MAP_OBJECT_SET, palette_index),
         GraphicsSet.from_number(0),
         ROM.get_tsa_data(WORLD_MAP_OBJECT_SET),
+        frame,
     )

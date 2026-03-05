@@ -4,11 +4,10 @@ from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QBrush, QColor, QPainter, QPen, Qt
 
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT, GROUND
-from foundry.game.File import ROM
+from foundry.game.gfx import BlockCache
 from foundry.game.gfx.block_cache import draw_block, draw_enemy_item, draw_level_object
 from foundry.game.gfx.drawable import load_from_png, make_image_selected, mario_actions
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.world_map.sprite import EMPTY_IMAGE
@@ -79,7 +78,7 @@ ENEMY_ITEMS_WITH_OVERLAYS = apply(
 )
 
 
-def _block_from_index(block_index: int, level: Level) -> Block:
+def _block_from_index(block_index: int, level: Level, animated: bool) -> Block:
     """
     Returns the block at the given index, from the TSA table for the given level.
 
@@ -88,11 +87,13 @@ def _block_from_index(block_index: int, level: Level) -> Block:
     :return:
     """
 
-    palette_group = load_palette_group(level.object_set_number, level.header.object_palette_index)
-    graphics_set = GraphicsSet.from_number(level.header.graphic_set_index)
-    tsa_data = ROM.get_tsa_data(level.object_set_number)
-
-    return Block(block_index, palette_group, graphics_set, tsa_data)
+    return BlockCache.block(
+        block_index,
+        level.object_set_number,
+        level.header.object_palette_index,
+        level.header.graphic_set_index,
+        animated,
+    )
 
 
 class LevelDrawer:
@@ -165,15 +166,18 @@ class LevelDrawer:
         painter.restore()
 
     def _draw_dungeon_default_graphics(self, painter: QPainter, level: Level):
+        # TODO Fix magic numbers
+        animated = self.settings.value("level_view/block_animation")
+
         # draw_background
-        bg_block = _block_from_index(140, level)
+        bg_block = _block_from_index(140, level, animated)
 
         for x, y in product(range(level.width), range(level.height)):
             bg_block.graphics_set.anim_frame = self.anim_frame
             bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
 
         # draw ceiling
-        ceiling_block = _block_from_index(139, level)
+        ceiling_block = _block_from_index(139, level, animated)
 
         for x in range(level.width):
             ceiling_block.graphics_set.anim_frame = self.anim_frame
@@ -181,12 +185,12 @@ class LevelDrawer:
 
         # draw floor
         upper_floor_blocks = [
-            _block_from_index(20, level),
-            _block_from_index(21, level),
+            _block_from_index(20, level, animated),
+            _block_from_index(21, level, animated),
         ]
         lower_floor_blocks = [
-            _block_from_index(22, level),
-            _block_from_index(23, level),
+            _block_from_index(22, level, animated),
+            _block_from_index(23, level, animated),
         ]
 
         upper_y = (GROUND - 2) * self.block_length
@@ -201,23 +205,29 @@ class LevelDrawer:
             lower_floor_blocks[block_x % 2].graphics_set.anim_frame = self.anim_frame
 
     def _draw_desert_default_graphics(self, painter: QPainter, level: Level):
+        animated = self.settings.value("level_view/block_animation")
+
         floor_level = (GROUND - 1) * self.block_length
         floor_block_index = 86
 
-        floor_block = _block_from_index(floor_block_index, level)
+        floor_block = _block_from_index(floor_block_index, level, animated)
 
         for x in range(level.width):
             floor_block.graphics_set.anim_frame = self.anim_frame
             floor_block.draw(painter, x * self.block_length, floor_level, self.block_length)
 
     def _draw_ice_default_graphics(self, painter: QPainter, level: Level):
-        bg_block = _block_from_index(0x80, level)
+        animated = self.settings.value("level_view/block_animation")
+
+        bg_block = _block_from_index(0x80, level, animated)
 
         for x, y in product(range(level.width), range(level.height)):
             bg_block.graphics_set.anim_frame = self.anim_frame
             bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
 
     def _draw_objects(self, painter: QPainter, level: Level):
+        animated = self.settings.value("level_view/block_animation")
+
         for level_object in level.get_all_objects():
             if isinstance(level_object, EnemyItem) and level_object.type in OMITTED_ITEMS:
                 continue
@@ -247,11 +257,16 @@ class LevelDrawer:
                         self.block_length,
                         False,
                         level_object.selected,
+                        animated,
                     )
             else:
                 if isinstance(level_object, LevelObject):
                     draw_level_object(
-                        level_object, painter, self.block_length, self.settings.value("level_view/block_transparency")
+                        level_object,
+                        painter,
+                        self.block_length,
+                        self.settings.value("level_view/block_transparency"),
+                        self.settings.value("level_view/block_animation"),
                     )
                 else:
                     assert isinstance(level_object, EnemyItem)
