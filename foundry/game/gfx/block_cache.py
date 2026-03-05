@@ -32,15 +32,13 @@ BlockCacheKey = tuple[BlockId, ObjectSetNo, PaletteGroupNo, GraphicsSetNo]
 BLANK_BLOCK_ID: BlockId = -1
 
 
+# TODO animated sprites in level view doesn't work
+# TODO what to do about tiles? Can they be separated from QT code?
 class BlockCache:
     _block_cache: dict[BlockCacheKey, "Block"] = {}
     _palette_group_cache: dict[tuple[ObjectSetNo, PaletteGroupNo], "PaletteGroup"] = {}
     _graphics_set_cache: dict[GraphicsSetNo, "GraphicsSet"] = {}
     _tsa_data_cache: dict[ObjectSetNo, bytes] = {}
-
-    palette_group: "PaletteGroup"
-    graphics_set: "GraphicsSet"
-    tsa_data: bytes
 
     animation_frame: int = 0
 
@@ -54,18 +52,10 @@ class BlockCache:
         cls._tsa_data_cache.clear()
 
     @classmethod
-    def update(cls, object_set_no: int, palette_group_no: int, graphics_set_no: int):
-        from foundry.game.gfx import GraphicsSet
-
+    def update(cls):
         if not ROM.is_loaded():
             cls.initialized = False
             return
-
-        cls.palette_group = load_palette_group(object_set_no, palette_group_no)
-        cls.graphics_set = GraphicsSet.from_number(graphics_set_no)
-        cls.tsa_data = ROM.get_tsa_data(object_set_no)
-
-        BlockCache.clear_cache()
 
     @classmethod
     def next_frame(cls):

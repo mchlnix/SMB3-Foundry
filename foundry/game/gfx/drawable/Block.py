@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QColor, QImage, QPainter, Qt
 
@@ -15,7 +13,6 @@ TSA_BANK_2_START = 2 * 256
 TSA_BANK_3_START = 3 * 256
 
 
-@lru_cache(2**10)
 def get_tile(index, palette_group, palette_index, graphics_set):
     return Tile(index, palette_group, palette_index, graphics_set)
 
@@ -88,7 +85,7 @@ class Block:
         self.ru_tile = get_tile(ru, self._palette_group, self._palette_index, self.graphics_set)
         self.rd_tile = get_tile(rd, self._palette_group, self._palette_index, self.graphics_set)
 
-        image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format_RGB888)
+        image = QImage(Block.WIDTH, Block.HEIGHT, QImage.Format.Format_RGB888)
 
         painter = QPainter(image)
 
@@ -158,6 +155,6 @@ class Block:
 def _is_image_only_one_color(image):
     copy = image.copy()
 
-    copy.convertTo(QImage.Format_Indexed8)
+    copy.convertTo(QImage.Format.Format_Indexed8)
 
     return copy.colorCount() == 1

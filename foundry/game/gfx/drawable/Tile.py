@@ -1,5 +1,3 @@
-from PySide6.QtGui import QImage
-
 from foundry.game.gfx.drawable import MASK_COLOR
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, PaletteGroup
@@ -34,8 +32,6 @@ class Tile:
         self.tile_index = tile_index
 
         start = tile_index * Tile.SIZE
-
-        self._cached_tiles: dict[int, QImage] = dict()
 
         self._palette = palette_group[palette_index]
 

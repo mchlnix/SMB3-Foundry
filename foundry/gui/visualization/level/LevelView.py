@@ -9,7 +9,6 @@ from foundry import ctrl_is_pressed, make_macro
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT
 from foundry.game.File import ROM
 from foundry.game.gfx import BlockCache
-from foundry.game.gfx.drawable.Block import get_tile
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
@@ -104,7 +103,6 @@ class LevelView(MainView):
         BlockCache.next_frame()
         self.drawer.anim_frame += 1
         self.drawer.anim_frame %= 4
-        get_tile.cache_clear()
 
         self.repaint()
 
@@ -115,7 +113,6 @@ class LevelView(MainView):
         if self.redraw_timer is not None:
             self.redraw_timer.stop()
             self.drawer.anim_frame = 0
-            get_tile.cache_clear()
 
         if self.settings.value("level_view/block_animation"):
             self.redraw_timer = QTimer(self)

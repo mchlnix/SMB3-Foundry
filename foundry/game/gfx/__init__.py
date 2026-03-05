@@ -2,7 +2,7 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QColor, QImage, QPainter
 
 from foundry.game.gfx.block_cache import BlockCache, draw_enemy_item, draw_level_object
-from foundry.game.gfx.drawable.Block import Block, get_tile
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
@@ -18,7 +18,6 @@ def restore_all_palettes():
     for palette_group in _palette_group_cache.values():
         palette_group.restore()
 
-    get_tile.cache_clear()
     BlockCache.clear_cache()
     Block.clear_cache()
     PaletteGroup.changed = False
@@ -42,7 +41,6 @@ def change_color(
     else:
         palette_group[index_in_group][index_in_palette] = new_color_index
 
-    get_tile.cache_clear()
     BlockCache.clear_cache()
 
 

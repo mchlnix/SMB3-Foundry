@@ -15,7 +15,6 @@ from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.gfx.block_cache import get_worldmap_tile
-from foundry.game.gfx.drawable.Block import get_tile
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.gfx.objects.world_map.map_tile import MapTile
@@ -105,9 +104,6 @@ class WorldView(MainView):
         self.drawer.anim_frame += 1
         self.drawer.anim_frame %= 4
 
-        # to get the tiles for the next animation step
-        get_tile.cache_clear()
-
         self.repaint()
 
     def update_anim_timer(self):
@@ -117,9 +113,6 @@ class WorldView(MainView):
         if self.redraw_timer is not None:
             self.redraw_timer.stop()
             self.drawer.anim_frame = 0
-
-            # to get the tiles for the next animation step
-            get_tile.cache_clear()
 
         if self.world.data.frame_tick_count and self.settings.value("world_view/animated_tiles"):
             self.redraw_timer = QTimer(self)

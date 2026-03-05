@@ -4,7 +4,6 @@ from PySide6.QtCore import QObject, Signal, SignalInstance
 
 from foundry.game.additional_data import LEVEL_DATA_DELIMITER_COUNT, LevelOrganizer
 from foundry.game.File import ROM
-from foundry.game.gfx import BlockCache
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.enemy_item_factory import EnemyItemFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
@@ -183,8 +182,6 @@ class Level(LevelLike):
 
     def _parse_header(self, should_emit=True):
         self.header = LevelHeader(ROM(), self.header_bytes, self.object_set_number)
-
-        BlockCache.update(self.object_set_number, self.header.object_palette_index, self.header.graphic_set_index)
 
         self.object_factory = LevelObjectFactory(
             self.object_set_number,

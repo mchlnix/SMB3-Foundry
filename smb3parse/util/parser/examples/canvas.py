@@ -3,7 +3,8 @@ from PySide6.QtGui import QMouseEvent, QPainter
 from PySide6.QtWidgets import QWidget
 
 from foundry.game.File import ROM
-from foundry.game.gfx.drawable.Block import Block, get_tile
+from foundry.game.gfx.block_cache import get_block
+from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
 from smb3parse.levels import LEVEL_SCREEN_WIDTH
@@ -36,7 +37,6 @@ class Canvas(QWidget):
     def anim_timer(self):
         self.gfx_set.anim_frame += 1
         self.gfx_set.anim_frame %= 4
-        get_tile.cache_clear()
 
         self.repaint()
 
