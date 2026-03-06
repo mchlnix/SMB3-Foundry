@@ -54,26 +54,29 @@ class ObjectToolBar(QWidget):
         self._object_set_index = -1
         self._graphic_set_index = -1
 
-    def set_object_set(self, object_set_index: int, graphic_set_index: int = -1):
+    # TODO: Just give level reference?
+    def set_object_set(self, object_set_index: int, graphic_set_index: int, palette_group_index: int):
         needs_full_update = self._object_set_index != object_set_index
 
         self._object_set_index = object_set_index
         self._graphic_set_index = graphic_set_index
 
         if needs_full_update:
-            self.tabbed_tool_box.set_object_set(object_set_index, graphic_set_index)
+            self.tabbed_tool_box.set_object_set(object_set_index, graphic_set_index, palette_group_index)
 
         else:
-            self.tabbed_tool_box.set_graphic_set(graphic_set_index)
+            self.tabbed_tool_box.set_graphic_set(graphic_set_index, palette_group_index)
 
-            self._update_currently_selected_object_icon(graphic_set_index, object_set_index)
+            self._update_currently_selected_object_icon(object_set_index, graphic_set_index, palette_group_index)
 
-    def _update_currently_selected_object_icon(self, graphic_set_index: int, object_set_index: int):
+    def _update_currently_selected_object_icon(
+        self, object_set_index: int, graphic_set_index: int, palette_group_index: int
+    ):
         # TODO Could this be put into the level icon class itself?
         factory = LevelObjectFactory(
             object_set_index,
             graphic_set_index,
-            0,
+            palette_group_index,
             [],
             vertical_level=False,
             size_minimal=True,

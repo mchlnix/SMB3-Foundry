@@ -11,6 +11,7 @@ from foundry.game.gfx.objects.in_level.enemy_item_factory import EnemyItemFactor
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
+from foundry.game.gfx.Palette import load_palette_group
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 from smb3parse.util import apply
 
@@ -54,7 +55,7 @@ class ObjectToolBox(QWidget):
 
         self._layout.addWidget(icon, index // COLUMN_COUNT, index % COLUMN_COUNT)
 
-    def add_from_object_set(self, object_set_index: int, graphic_set_index: int = -1):
+    def add_from_object_set(self, object_set_index: int, graphic_set_index: int, palette_group_index: int):
         self._object_set_index = object_set_index
 
         if graphic_set_index == -1:
@@ -63,7 +64,7 @@ class ObjectToolBox(QWidget):
         factory = LevelObjectFactory(
             object_set_index,
             graphic_set_index,
-            0,
+            palette_group_index,
             [],
             vertical_level=False,
             size_minimal=True,
@@ -90,7 +91,7 @@ class ObjectToolBox(QWidget):
 
         apply(self.add_object, valid_enemy_items)
 
-    def set_graphic_set(self, graphic_set_index: int):
+    def set_graphic_set(self, graphic_set_index: int, palette_group_index: int):
         for object_icon in self._gen_icon_widgets():
             obj = object_icon.object
 
@@ -100,6 +101,7 @@ class ObjectToolBox(QWidget):
             assert isinstance(obj, LevelObject)
 
             obj.graphics_set = GraphicsSet.from_number(graphic_set_index)
+            obj.palette_group = load_palette_group(obj.object_set.number, palette_group_index, use_cache=False)
             obj.block_cache.clear()
             object_icon.set_object(obj)
 

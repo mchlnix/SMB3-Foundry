@@ -27,9 +27,9 @@ class ObjectDropdown(QComboBox):
         self.setMaxVisibleItems(30)
 
         self.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-        self.completer().setFilterMode(Qt.MatchContains)
+        self.completer().setFilterMode(Qt.MatchFlag.MatchContains)
 
-        self.setInsertPolicy(QComboBox.NoInsert)
+        self.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
 
         self.currentIndexChanged.connect(self._on_object_selected)
 
@@ -52,11 +52,11 @@ class ObjectDropdown(QComboBox):
 
         self.lineEdit().selectAll()
 
-    def set_object_set(self, object_set_index: int, graphic_set_index: int) -> None:
+    def set_object_set(self, object_set_index: int, graphic_set_index: int, palette_group_index: int) -> None:
         factory = LevelObjectFactory(
             object_set_index,
             graphic_set_index,
-            0,
+            palette_group_index,
             [],
             vertical_level=False,
             size_minimal=True,
@@ -92,7 +92,7 @@ class ObjectDropdown(QComboBox):
         if self.currentIndex() == -1:
             return
 
-        level_object = self.currentData(Qt.UserRole)
+        level_object = self.currentData(Qt.ItemDataRole.UserRole)
 
         self.object_selected.emit(level_object)
 

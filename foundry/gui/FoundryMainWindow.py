@@ -109,6 +109,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         self.settings = Settings("mchlnix", "foundry")
 
         self.level_ref.level_changed.connect(self.update_gui_for_level)
+        self.level_ref.palette_changed.connect(self._update_block_graphics_in_ui)
 
         self.setWindowIcon(icon("foundry.ico"))
         self.setStyleSheet(self.settings.value("editor/gui_style"))
@@ -1272,7 +1273,9 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
             self.jump_list.clear()
         else:
             self.object_dropdown.setEnabled(True)
-            self.object_dropdown.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
+            self.object_dropdown.set_object_set(
+                self.level_ref.object_set_number, self.level_ref.graphic_set, self.level_ref.object_palette_index
+            )
 
             self.jump_list.setEnabled(True)
 
@@ -1280,8 +1283,12 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
     def _update_block_graphics_in_ui(self):
         """Updates the representations of objects in the UI, in case the object set or graphics set changes."""
-        self.object_toolbar.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
-        self.object_dropdown.set_object_set(self.level_ref.object_set_number, self.level_ref.graphic_set)
+        self.object_toolbar.set_object_set(
+            self.level_ref.object_set_number, self.level_ref.graphic_set, self.level_ref.object_palette_index
+        )
+        self.object_dropdown.set_object_set(
+            self.level_ref.object_set_number, self.level_ref.graphic_set, self.level_ref.object_palette_index
+        )
 
     def enable_disable_gui_elements(self):
         # actions and widgets that depend on whether the ROM is loaded

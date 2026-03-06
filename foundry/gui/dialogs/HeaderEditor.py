@@ -269,6 +269,7 @@ class HeaderEditor(CustomDialog):
 
         self.header_bytes_label.setText(" ".join(f"{number:0=#4X}"[2:] for number in self.level.header_bytes))
 
+        self.level.palette_changed.emit()
         self.level.data_changed.emit()
 
     def _set_level_attr(self, name: str, value, display_name="", display_value=""):

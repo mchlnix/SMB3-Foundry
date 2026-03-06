@@ -80,32 +80,25 @@ class TabbedToolBox(QTabWidget):
         elif isinstance(level_object, EnemyItem):
             self.show_enemy_item_tab()
 
-    def set_object_set(self, object_set_index, graphic_set_index=-1):
+    def set_object_set(self, object_set_index: int, graphic_set_index: int, palette_group_index: int):
         """
         When we get a new object set, then we need to completely reload all objects because they are not compatible
         with each other.
-
-        :param object_set_index:
-        :param graphic_set_index:
-        :return:
         """
         self._recent_toolbox.clear()
         self._objects_toolbox.clear()
-        self._objects_toolbox.add_from_object_set(object_set_index, graphic_set_index)
+        self._objects_toolbox.add_from_object_set(object_set_index, graphic_set_index, palette_group_index)
 
         self._enemies_toolbox.clear()
         self._enemies_toolbox.add_from_enemy_set(object_set_index)
 
-    def set_graphic_set(self, graphic_set_index: int):
+    def set_graphic_set(self, graphic_set_index: int, palette_group_index: int):
         """
         If only the graphic set changes, it is probably incompatible, but the level objects can still be used. So go
         through them and update the graphics only.
-
-        :param graphic_set_index:
-        :return:
         """
-        self._recent_toolbox.set_graphic_set(graphic_set_index)
-        self._objects_toolbox.set_graphic_set(graphic_set_index)
+        self._recent_toolbox.set_graphic_set(graphic_set_index, palette_group_index)
+        self._objects_toolbox.set_graphic_set(graphic_set_index, palette_group_index)
 
     def add_recent_object(self, level_object: InLevelObject):
         self._recent_toolbox.place_at_front(level_object)
