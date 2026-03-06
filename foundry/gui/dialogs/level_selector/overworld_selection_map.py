@@ -4,11 +4,12 @@ from PySide6.QtCore import QMargins, QSize, Signal, SignalInstance
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QScrollArea, QScrollBar, QSizePolicy
 
+from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
-from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.settings import Settings
 from foundry.gui.visualization.world.WorldView import WorldView
 from smb3parse.data_points import LevelPointerData, Position
+from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 
@@ -18,15 +19,18 @@ class WorldMapLevelSelect(QScrollArea):
     map_position_clicked: SignalInstance = Signal(Position)
 
     def __init__(self, world_number: int):
+        # TODO Respect block animation setting in Foundry
         super(WorldMapLevelSelect, self).__init__()
 
         self.ignore_levels = False
         """Set to True, if you only care about Position in the Map, not a level at the position."""
 
-        self.world = WorldMap.from_world_number(world_number)
+        world = SMB3WorldMap.from_world_number(ROM(), world_number)
 
         level_ref = LevelRef()
-        level_ref.load_level("World", self.world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+        level_ref.load_level("World", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
+
+        self.world = level_ref.level
 
         world_settings = Settings()
         world_settings.setValue(

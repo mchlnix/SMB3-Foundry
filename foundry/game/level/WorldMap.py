@@ -3,7 +3,7 @@ from typing import cast
 from PySide6.QtCore import QObject, QPoint, QRect, QSize, Signal, SignalInstance
 
 from foundry.game.File import ROM
-from foundry.game.gfx.block_cache import get_block
+from foundry.game.gfx import BlockCache
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.objects.world_map.airship_point import AirshipTravelPoint
@@ -92,7 +92,7 @@ class WorldMap(LevelLike):
         for index, tile in enumerate(self.data.tile_data):
             pos = Position.from_tile_data_index(index)
 
-            block = get_block(tile, self.palette_group, self.graphics_set, self.tsa_data)
+            block = BlockCache.block(tile, WORLD_MAP_OBJECT_SET, self.palette_group.index, self.graphics_set.number)
 
             self.objects.append(MapTile(block, pos))
 

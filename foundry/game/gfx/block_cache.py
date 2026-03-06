@@ -199,6 +199,7 @@ def draw_block(
     )
 
 
+# TODO Can I get rid of this as a public function?
 def get_block(
     block_index: BlockId,
     palette_group: "PaletteGroup",
@@ -211,11 +212,5 @@ def get_block(
     return block
 
 
-def get_worldmap_tile(block_index: int, palette_index=0, frame=0) -> "Block":
-    return get_block(
-        block_index,
-        load_palette_group(WORLD_MAP_OBJECT_SET, palette_index),
-        GraphicsSet.from_number(0),
-        ROM.get_tsa_data(WORLD_MAP_OBJECT_SET),
-        frame,
-    )
+def get_worldmap_tile(block_index: int, palette_index=0, animated=False) -> "Block":
+    return BlockCache.block(block_index, WORLD_MAP_OBJECT_SET, palette_index, 0, animated)
