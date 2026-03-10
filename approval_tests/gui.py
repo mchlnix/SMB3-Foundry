@@ -57,6 +57,7 @@ class ApprovalDialog(QDialog):
 
         self.image_layout.addStretch()
         self.image_layout.addWidget(ref_image)
+        self.image_layout.addWidget(QLabel(">>>"))
         self.image_layout.addWidget(gen_image)
         self.image_layout.addStretch()
 
