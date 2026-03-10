@@ -1,8 +1,8 @@
 from itertools import product
-from pathlib import Path
 
 import pytest
 
+from foundry import root_dir
 from foundry.conftest import compare_images, test_rom_path
 from foundry.game.File import ROM
 from foundry.game.gfx.objects import get_minimal_icon_object
@@ -25,7 +25,7 @@ from smb3parse.objects.object_set import (
     WORLD_MAP_OBJECT_SET,
 )
 
-reference_image_dir = Path(__file__).parent.joinpath("test_refs")
+reference_image_dir = root_dir / "test_refs"
 reference_image_dir.mkdir(parents=True, exist_ok=True)
 
 

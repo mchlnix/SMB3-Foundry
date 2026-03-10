@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from PySide6.QtCore import QPoint, QRect, QSize
 
-from foundry import data_dir
+from foundry import data_dir, root_dir
 from foundry.conftest import compare_images
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.LevelRef import LevelRef
@@ -18,10 +18,10 @@ from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util import hex_int
 
-reference_image_dir = Path(__file__).parent.joinpath("test_refs")
+reference_image_dir = root_dir / "test_refs"
 reference_image_dir.mkdir(parents=True, exist_ok=True)
 
-m3l_dir = Path(__file__).parent.joinpath("test_m3ls")
+m3l_dir = Path(__file__).parent / "test_m3ls"
 m3l_dir.mkdir(parents=True, exist_ok=True)
 
 
