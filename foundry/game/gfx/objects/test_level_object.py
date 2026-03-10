@@ -46,7 +46,7 @@ def _test_object_against_reference(level_object: LevelObject, qtbot, minimal=Fal
 
     ref_image_path = str(reference_image_dir.joinpath(image_name))
 
-    compare_images(image_name, ref_image_path, view.grab())
+    compare_images(image_name, ref_image_path, view.grab(), level_object.name)
 
 
 @pytest.mark.parametrize(

@@ -44,17 +44,17 @@ def rom():
     yield ROM()
 
 
-def compare_images(image_name: str, ref_image_path: str, gen_image: QPixmap):
+def compare_images(image_name: str, ref_image_path: str, gen_image: QPixmap, object_name: str):
     if Path(ref_image_path).exists():
         result = ApprovalDialog.compare(image_name, QPixmap(ref_image_path), gen_image)
 
         if result == ApprovalDialog.DialogCode.Rejected:
-            pytest.fail(f"{image_name} did not look like the reference.")
+            pytest.fail(f"{image_name}, '{object_name}' did not look like the reference.")
         elif result == ApprovalDialog.Overwrite:
             # accepted and overwrite ref
             gen_image.toImage().save(ref_image_path)
         elif result == ApprovalDialog.Ignore:
-            pytest.skip(f"{image_name} did not look like the reference, but was ignored.")
+            pytest.skip(f"{image_name}, '{object_name}' did not look like the reference, but was ignored.")
         else:
             pass
 

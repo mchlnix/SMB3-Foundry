@@ -33,7 +33,7 @@ def _test_level_against_reference(main_view: MainView, qtbot):
 
     main_view.repaint()
 
-    compare_images(image_name, ref_image_path, main_view.grab())
+    compare_images(image_name, ref_image_path, main_view.grab(), main_view.level_ref.level.name)
 
 
 def current_test_name():
@@ -174,9 +174,7 @@ def test_draw_jumps(jump_test_name, level, settings, qtbot):
         level_view.resize(level_view.sizeHint())
 
         compare_images(
-            jump_test_name,
-            str(Path(__file__).parent / f"{jump_test_name}.png"),
-            level_view.grab(),
+            jump_test_name, str(Path(__file__).parent / f"{jump_test_name}.png"), level_view.grab(), "Jump Test Level"
         )
 
 
@@ -205,4 +203,5 @@ def test_draw_m3ls(m3l_file_name, level, settings, qtbot):
             m3l_file_name.stem,
             str(reference_image_dir / f"{m3l_file_name.stem}.png"),
             level_view.grab(),
+            "M3L Test Level",
         )
