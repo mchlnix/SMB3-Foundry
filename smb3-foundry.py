@@ -11,6 +11,8 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 from foundry import auto_save_rom_path, github_issue_link
 from foundry.game.File import ROM
 from foundry.gui.dialogs.AutoSaveDialog import AutoSaveDialog
+from smb3parse.levels import WORLD_COUNT
+from smb3parse.util import clamp
 
 LOAD_LEVEL = "--load-level"
 
@@ -33,13 +35,13 @@ from foundry.gui.FoundryMainWindow import FoundryMainWindow  # noqa
 app = None
 
 
-def main(path_to_rom: Path, check_auto_save=True, level_data_tuple_=(0, 0, 0), m3l_path_=""):
+def main(path_to_rom: Path, check_auto_save=True, level_data_tuple_=(0, 0, 0, 0), m3l_path_=""):
     global app
     app = QApplication()
 
     main_window = FoundryMainWindow()
 
-    have_level_data = level_data_tuple_ and 0 not in level_data_tuple_ or m3l_path_
+    have_level_data = m3l_path or level_data_tuple_ and 0 not in level_data_tuple_
 
     if check_auto_save and main_window.settings.value("editor/auto_save_enabled") and auto_save_rom_path.exists():
         result = AutoSaveDialog().exec()
@@ -54,13 +56,15 @@ def main(path_to_rom: Path, check_auto_save=True, level_data_tuple_=(0, 0, 0), m
 
     if not have_level_data and main_window.settings.value("editor/remember_last_level"):
         last_rom = Path(main_window.settings.value("editor/remember_last_level_path"))
-        object_set = int(main_window.settings.value("editor/remember_last_level_object_set"))
-        level_address_ = int(main_window.settings.value("editor/remember_last_level_lvl_address"))
-        enemy_address_ = int(main_window.settings.value("editor/remember_last_level_enemy_address"))
+        object_set = main_window.settings.value("editor/remember_last_level_object_set")
+        level_address_ = main_window.settings.value("editor/remember_last_level_lvl_address")
+        enemy_address_ = main_window.settings.value("editor/remember_last_level_enemy_address")
+        world_number = main_window.settings.value("editor/remember_last_level_world_number")
+        world_number = clamp(1, world_number, WORLD_COUNT - 1)
 
         if last_rom.is_file() and 0 not in (level_address_, enemy_address_, object_set):
             path_to_rom = last_rom
-            level_data_tuple_ = (level_address_, enemy_address_, object_set)
+            level_data_tuple_ = (level_address_, enemy_address_, object_set, world_number)
 
             have_level_data = True
 
@@ -82,7 +86,7 @@ if __name__ == "__main__":
     should_check_auto_save = True
     path = Path()
     m3l_path = ""
-    level_data_tuple: tuple[int, int, int] = (0, 0, 0)
+    level_data_tuple: tuple[int, int, int, int] = (0, 0, 0, 0)
 
     args = sys.argv[1:]
 
@@ -110,6 +114,8 @@ if __name__ == "__main__":
                     level_address = int(args.pop(0), 16)
                     enemy_address = int(args.pop(0), 16)
                     object_set_number = int(args.pop(0), 16)
+                    # add proper command line support for worlds
+                    world_number = 1
                 except ValueError:
                     raise ValueError("Level address, enemy address and object set number must be hex integers.")
 

@@ -56,7 +56,12 @@ class Level(LevelLike):
     WORLDS = len(world_indexes)
 
     def __init__(
-        self, level_name: str = "", layout_address: int = 0, enemy_data_offset: int = 0, object_set_number: int = 1
+        self,
+        level_name: str = "",
+        layout_address: int = 0,
+        enemy_data_offset: int = 0,
+        object_set_number: int = 1,
+        world_number: int = -1,
     ):
         object_set = ObjectSet.from_number(object_set_number)
 
@@ -65,7 +70,7 @@ class Level(LevelLike):
         self._signal_emitter = LevelSignaller()
 
         self.name = level_name
-        self.world = 0
+        self.world = world_number
         """
         In which world map this level is situated. 0 means don't know. Might not always be known or level might be
         accessible from multiple worlds, so we only set it, if we know.

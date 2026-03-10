@@ -29,13 +29,15 @@ class LevelRef(QObject):
         object_data_offset: LevelAddress,
         enemy_data_offset: EnemyItemAddress,
         object_set_number: int,
+        world_number=-1,
     ):
         if object_set_number == WORLD_MAP_OBJECT_SET:
             self.level = WorldMap(object_data_offset)
-        elif object_set_number in (MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET):
-            self.level = Level(level_name, object_data_offset, 0x0, object_set_number)
         else:
-            self.level = Level(level_name, object_data_offset, enemy_data_offset, object_set_number)
+            if object_set_number in (MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET):
+                enemy_data_offset = 0x0
+
+            self.level = Level(level_name, object_data_offset, enemy_data_offset, object_set_number, world_number)
 
         # actively emit, because we weren't connected yet, when the level sent it out
         self.level_changed.emit()

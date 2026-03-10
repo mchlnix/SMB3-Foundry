@@ -508,6 +508,8 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         enemy_address = data_dict["enemy_address"]
         enemy_data = bytearray(base64.b64decode(data_dict["enemy_data"]))
         object_set_number = data_dict["object_set_number"]
+        # TODO add world number here
+        # TODO since we know the addresses of the level, why not automatically attach it, if we still can?
 
         # load level from ROM, or from m3l file
         if object_address == enemy_address == 0:
@@ -536,12 +538,12 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
         self._reload_rom()
 
-        self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set)
-
         if world == -1:
-            self.level_ref.level.world = old_world
+            new_world = old_world
         else:
-            self.level_ref.level.world = world
+            new_world = world
+
+        self.update_level(f"Level {world}-{level}", level_address, enemy_address, object_set, new_world)
 
     def on_play(self, temp_dir=Path()):
         """
@@ -1067,9 +1069,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
         self._reload_rom()
 
-        self.update_level(level_name, object_data, enemy_data, object_set)
-
-        self.level_ref.level.world = world_index
+        self.update_level(level_name, object_data, enemy_data, object_set, world_index)
 
     def on_place_level(self) -> bool:
         if not self.level_ref:
@@ -1206,9 +1206,8 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
                 level_selector.object_data_offset,
                 level_selector.enemy_data_offset,
                 level_selector.object_set,
+                level_selector.world_index,
             )
-
-            self.level_ref.level.world = level_selector.world_index
 
         return level_was_selected
 
@@ -1224,9 +1223,10 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         object_data_offset: LevelAddress,
         enemy_data_offset: EnemyItemAddress,
         object_set: int,
+        world_number=-1,
     ):
         try:
-            self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set)
+            self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set, world_number)
             self.scroll_panel.horizontalScrollBar().setValue(0)
             self.scroll_panel.verticalScrollBar().setValue(0)
 
@@ -1234,6 +1234,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
             self.settings.setValue("editor/remember_last_level_object_set", object_set)
             self.settings.setValue("editor/remember_last_level_lvl_address", object_data_offset)
             self.settings.setValue("editor/remember_last_level_enemy_address", enemy_data_offset)
+            self.settings.setValue("editor/remember_last_level_world_number", self.level_ref.level.world)
         except IndexError:
             QMessageBox.critical(
                 self,
