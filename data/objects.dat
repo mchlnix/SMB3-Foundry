@@ -2629,7 +2629,7 @@
 2, 0x06, 0x06, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Wooden Block with Star, <$5F>
 2, 0x07, 0x07, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Red Invisible Note Block, <$5F>
 2, 0x08, 0x08, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, P-Switch, <$5F>
-2, 0x09, 0x09, 2, 1, ENDING            , UNIFORM         , 3byte, Level Ending, <$6B, $6C>
+2, 0x09, 0x09, 2, 1, ENDING            , UNIFORM         , 3byte, Level Ending, <$00, $01>
 2, 0x0A, 0x0A, 2, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Wooden ship beam terminus B, <$F7, $F8>
 2, 0x0B, 0x0B, 2, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Background wooden ship beam terminus, <$C0, $C2>
 2, 0x0C, 0x0C, 6, 4, SINGLE_BLOCK      , UNIFORM         , 3byte, Tank A, <$00, $00, $00, $C3, $00, $00, $00, $00, $FD, $E4, $E5, $00, $2C, $2D, $E2, $E4, $FE, $00, $00, $FD, $E4, $E3, $E4, $E5>
