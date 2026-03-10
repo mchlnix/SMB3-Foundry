@@ -506,7 +506,11 @@ class AddObject(QUndoCommand):
             )
         else:
             assert isinstance(self.obj, EnemyItem)
-            self.level.add_enemy(self.obj.obj_index, Position.from_tuple(self.obj.get_position()), self.index_to_add)
+            added_enemy = self.level.add_enemy(
+                self.obj.obj_index, Position.from_tuple(self.obj.get_position()), self.index_to_add
+            )
+            added_enemy.auto_scroll_type = self.obj.auto_scroll_type
+            added_enemy.lock_index = self.obj.lock_index
 
         self.level.data_changed.emit()
 
