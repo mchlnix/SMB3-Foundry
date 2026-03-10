@@ -272,6 +272,7 @@ class LevelObject(InLevelObject):
                 GeneratorType.HORIZONTAL,
                 GeneratorType.HORIZONTAL_2,
                 GeneratorType.HORIZ_TO_GROUND,
+                GeneratorType.WOODEN_PLATFORM,
             ]
             or self.generator_type
             in [
@@ -296,6 +297,7 @@ class LevelObject(InLevelObject):
                 GeneratorType.HORIZONTAL,
                 GeneratorType.HORIZONTAL_2,
                 GeneratorType.HORIZ_TO_GROUND,
+                GeneratorType.WOODEN_PLATFORM,
             ]
             or self.generator_type
             in [

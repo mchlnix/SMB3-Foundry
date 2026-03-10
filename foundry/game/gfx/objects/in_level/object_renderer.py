@@ -228,16 +228,32 @@ class ObjectRenderer:
         else:
             self._new_width = self._object.width + (self._object.length - 1)
 
-        left_end, right_end, *middles = self._object.blocks
-        blocks_to_draw.append(left_end)
+        if self._object.ending == EndType.TWO_ENDS:
+            left_end, right_end, *middles = self._object.blocks
+            blocks_to_draw.append(left_end)
 
-        middle_block_count = self._new_width - self._object.width
+            middle_block_count = self._new_width - self._object.width
 
-        # any width larger than 2 is filled by alternating between the two fill blocks
-        for middle_index in range(middle_block_count):
-            blocks_to_draw.append(middles[middle_index % len(middles)])
+            # any width larger than 2 is filled by alternating between the two fill blocks
+            for middle_index in range(middle_block_count):
+                blocks_to_draw.append(middles[middle_index % len(middles)])
 
-        blocks_to_draw.append(right_end)
+            blocks_to_draw.append(right_end)
+
+        elif self._object.ending == EndType.BOTTOM_OR_RIGHT:
+            left_end, right_end, *middles = self._object.blocks
+            blocks_to_draw.append(left_end)
+
+            if not middles:
+                middles = [left_end]
+
+            middle_block_count = self._new_width - self._object.width
+
+            # any width larger than 2 is filled by alternating between the two fill blocks
+            for middle_index in range(middle_block_count):
+                blocks_to_draw.append(middles[middle_index % len(middles)])
+
+            blocks_to_draw.append(right_end)
 
     def _render_black_boss_room_bg(self, blocks_to_draw: list[int]):
         self._new_width = LEVEL_SCREEN_WIDTH
