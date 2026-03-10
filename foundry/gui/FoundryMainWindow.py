@@ -199,6 +199,9 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
         self.level_view = LevelView(self, self.level_ref, self.settings, self.context_menu)
 
+        # TODO: make into an editor setting
+        self.level_view.zoom_in()
+
         self.view_menu = ViewMenu(self.level_view)
 
         self.menuBar().addMenu(self.view_menu)
