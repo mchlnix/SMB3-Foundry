@@ -14,8 +14,17 @@ class Rect:
             self.height *= -1
             self.y -= self.height
 
-    def point_in(self, x, y):
-        return self.x <= x <= self.x + self.width and self.y <= y <= self.y + self.height
+    def point_in(self, x: int, y: int, include_borders=True) -> bool:
+        """
+
+        :param x: X coordinate of the point to check.
+        :param y: Y coordinate of the point to check.
+        :param include_borders: Whether a point on the right or bottom border of the rect is considered inside.
+        """
+        if not include_borders:
+            return self.x <= x < self.x + self.width and self.y <= y < self.y + self.height
+        else:
+            return self.x <= x <= self.x + self.width and self.y <= y <= self.y + self.height
 
     def intersects(self, other: "Rect"):
         if other.x + other.width <= self.x:

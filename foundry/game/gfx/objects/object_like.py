@@ -68,7 +68,7 @@ class ObjectLike(abc.ABC):
         return self.x_position, self.y_position
 
     def point_in(self, x, y):
-        return self.rect.point_in(x, y)
+        return self.rect.point_in(x, y, include_borders=False)
 
     def get_rect(self, block_length=1) -> Rect:
         return self.rect * block_length

@@ -422,9 +422,6 @@ class LevelObject(InLevelObject):
 
         self._setup()
 
-    def point_in(self, x: int, y: int) -> bool:
-        return self.rect.point_in(x, y)
-
     def get_status_info(self) -> list[tuple]:
         return [
             ("x", self.rendered_base_x),
