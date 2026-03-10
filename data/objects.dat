@@ -2632,8 +2632,8 @@
 2, 0x09, 0x09, 2, 1, ENDING            , UNIFORM         , 3byte, Level Ending, <$00, $01>
 2, 0x0A, 0x0A, 2, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Wooden ship beam terminus B, <$F7, $F8>
 2, 0x0B, 0x0B, 2, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Background wooden ship beam terminus, <$C0, $C2>
-2, 0x0C, 0x0C, 6, 4, SINGLE_BLOCK      , UNIFORM         , 3byte, Tank A, <$00, $00, $00, $C3, $00, $00, $00, $00, $FD, $E4, $E5, $00, $2C, $2D, $E2, $E4, $FE, $00, $00, $FD, $E4, $E3, $E4, $E5>
-2, 0x0D, 0x0D, 11, 4, SINGLE_BLOCK      , UNIFORM         , 3byte, Tank B, <$00, $00, $00, $00, $00, $C3, $00, $BD, $00, $00, $00, $00, $00, $00, $FD, $E4, $E4, $E3, $E5, $00, $00, $00, $2C, $2D, $2D, $E2, $E3, $E4, $E3, $FE, $00, $00, $00, $00, $FD, $E3, $E4, $E3, $E4, $E3, $E4, $E3, $E4, $FE>
+2, 0x0C, 0x0C, 6, 5, SINGLE_BLOCK      , UNIFORM         , 3byte, Tank A, <$00, $00, $00, $C3, $00, $00, $00, $00, $FD, $E4, $E5, $00, $2C, $2D, $E2, $E4, $FE, $00, $00, $FD, $E4, $E3, $E4, $E5, $00, $AC, $A3, $A3, $A3, $BE>
+2, 0x0D, 0x0D, 11, 5, SINGLE_BLOCK     , UNIFORM         , 3byte, Tank B, <$00, $00, $00, $00, $00, $C3, $00, $BD, $00, $00, $00, $00, $00, $00, $FD, $E4, $E4, $E3, $E5, $00, $00, $00, $2C, $2D, $2D, $E2, $E3, $E4, $E3, $FE, $00, $00, $00, $00, $FD, $E3, $E4, $E3, $E4, $E3, $E4, $E3, $E4, $FE, $00, $AC, $A3, $A3, $A3, $A3, $A3, $A3, $A3, $BE, $00>
 2, 0x0E, 0x0E, 7, 5, SINGLE_BLOCK      , UNIFORM         , 3byte, Corner of Airship - Lasts 32 Blocks, <$F6, $E3, $E4, $E3, $E4, $E3, $E4, $00, $F6, $E3, $E4, $E3, $E4, $E3, $00, $00, $F6, $E4, $E3, $E4, $E3, $00, $00, $00, $F7, $E4, $E3, $E4, $00, $00, $00, $00, $00, $80, $81>
 2, 0x0F, 0x0F, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, Left terminus of wooden tank beam, <$FD>
 2, 0x10, 0x1F, 2, 2, HORIZONTAL        , BOTTOM_OR_RIGHT , 3byte, Leftward Pipe (CAN go in), <$B8, $B7, $B9, $B5>
@@ -2678,7 +2678,7 @@
 3, 0x80, 0x8F, 2, 2, HORIZONTAL        , TOP_OR_LEFT     , 3byte, Leftward Giant Bullet Shooter, <$B7, $B8, $B5, $B9>
 3, 0x90, 0x9F, 2, 2, HORIZONTAL        , BOTTOM_OR_RIGHT , 3byte, Rightward Giant Bullet Shooter, <$B8, $B7, $B9, $B5>
 3, 0xA0, 0xAF, 2, 1, HORIZONTAL        , TOP_OR_LEFT     , 3byte, Leftward Bullet Shooter, <$2C, $2D>
-3, 0xB0, 0xBF, 3, 1, HORIZONTAL        , TWO_ENDS        , 3byte, Tank Wheels, <$AC, $A3, $BE>
+3, 0xB0, 0xBF, 2, 1, WOODEN_PLATFORM   , TWO_ENDS        , 3byte, Tank Wheels, <$AC, $BE, $A3>
 3, 0xC0, 0xCF, 1, 1, HORIZONTAL        , UNIFORM         , 3byte, Invisible Platform, <$00>
 3, 0xD0, 0xDF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_NOTHING, <$00>
 3, 0xE0, 0xEF, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$00>
