@@ -2701,7 +2701,7 @@
 4, 0x0E, 0x0E, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 4, 0x0F, 0x0F, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 4, 0x10, 0x1F, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
-4, 0x20, 0x2F, 6, 4, SINGLE_BLOCK      , UNIFORM         , 3byte, Tank C, <$00, $00, $00, $C3, $00, $00, $00, $00, $FD, $E3, $E5, $00, $2C, $2D, $E2, $E3, $FE, $00, $00, $FD, $E3, $E3, $E4, $E5>
+4, 0x20, 0x2F, 6, 5, SINGLE_BLOCK      , UNIFORM         , 3byte, Tank C, <$00, $00, $00, $C3, $00, $00, $00, $00, $FD, $E3, $E5, $00, $2C, $2D, $E2, $E3, $FE, $00, $00, $FD, $E3, $E3, $E4, $E5, $00, $AC, $A3, $A3, $A3, $BE>
 4, 0x30, 0x3F, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 4, 0x40, 0x4F, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
 4, 0x50, 0x5F, 1, 1, SINGLE_BLOCK      , UNIFORM         , 3byte, MSG_CRASH, <$91>
