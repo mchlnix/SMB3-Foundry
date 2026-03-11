@@ -125,7 +125,7 @@ class ObjectRenderer:
         ]:
             self._render_horizontal(blocks_to_draw)
         elif self._object.generator_type == GeneratorType.WOODEN_PLATFORM:
-            self._render_wooden_tank_beam(blocks_to_draw)
+            self._render_wooden_platform(blocks_to_draw)
 
         elif self._object.generator_type == GeneratorType.BRICK_WALL:
             self._render_brick_wall(blocks_to_draw)
@@ -215,10 +215,14 @@ class ObjectRenderer:
             if self._object.height > 1:
                 _insert_block_row(bottom)
 
-    def _render_wooden_tank_beam(self, blocks_to_draw: list[int]):
-        # The block is always rendered as having a height of 1, no matter what the object data says
-        # It also expands it's width differently and alternates between two fill blocks, needing its own generator
-        self._new_height = 1
+    def _render_wooden_platform(self, blocks_to_draw: list[int]):
+        if self._object.is_4byte:
+            # Seemingly the max for the few objects that do grow vertically
+            self._new_height = min(self._object.secondary_length + 1, self._object.height)
+        else:
+            # The block is almost always rendered as having a height of 1, no matter what the object data says
+            # It also expands its width differently and alternates between two fill blocks, needing its own generator
+            self._new_height = 1
 
         # length of 0 fills the screen, length of 1 means 2, 2 means 3 and so on
         if self._object.length == 0:
@@ -229,16 +233,20 @@ class ObjectRenderer:
             self._new_width = self._object.width + (self._object.length - 1)
 
         if self._object.ending == EndType.TWO_ENDS:
-            left_end, right_end, *middles = self._object.blocks
-            blocks_to_draw.append(left_end)
+            for row in range(self._new_height):
+                start = (len(self._object.blocks) // self._object.height) * (row % self._object.height)
+                end = start + (len(self._object.blocks) // self._object.height)
 
-            middle_block_count = self._new_width - self._object.width
+                left_end, right_end, *middles = self._object.blocks[start:end]
+                blocks_to_draw.append(left_end)
 
-            # any width larger than 2 is filled by alternating between the two fill blocks
-            for middle_index in range(middle_block_count):
-                blocks_to_draw.append(middles[middle_index % len(middles)])
+                middle_block_count = self._new_width - self._object.width
 
-            blocks_to_draw.append(right_end)
+                # any width larger than 2 is filled by alternating between the two fill blocks
+                for middle_index in range(middle_block_count):
+                    blocks_to_draw.append(middles[middle_index % len(middles)])
+
+                blocks_to_draw.append(right_end)
 
         elif self._object.ending == EndType.BOTTOM_OR_RIGHT:
             left_end, right_end, *middles = self._object.blocks
