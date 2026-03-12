@@ -28,12 +28,12 @@ class ObjectToolBox(QWidget):
     def __init__(self, parent: QWidget | None = None):
         super(ObjectToolBox, self).__init__(parent)
 
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
 
         self._layout = QGridLayout(self)
-        self._layout.setAlignment(Qt.AlignCenter)
+        self._layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self._layout.setAlignment(Qt.AlignHCenter)
+        self._layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         self._object_set_index: int = -1
 
@@ -74,7 +74,7 @@ class ObjectToolBox(QWidget):
         object_ids = list(range(0x00, 0x10)) + list(range(0x10, MAX_ID_VALUE, 0x10))
 
         level_objects = [
-            factory.from_properties(domain, obj_index, 0, 0, None, 0)
+            factory.from_properties(domain, obj_index, 0, 0, None, -1)
             for domain, obj_index in product(domains, object_ids)
         ]
 

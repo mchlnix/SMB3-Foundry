@@ -47,8 +47,8 @@ class ObjectRenderer:
         """
 
     def render(self):
-        # if the object has not been added yet, stick with the one given in the constructor
-        if self._object in self._object.objects_ref:
+        # if the object is not part of a level (yet), stick with the index given in the constructor
+        if self._object.index_in_level == -1 and self._object in self._object.objects_ref:
             self._object.index_in_level = self._object.objects_ref.index(self._object)
 
         blocks_to_draw: list[int] = []
