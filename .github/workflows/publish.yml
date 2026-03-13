@@ -45,7 +45,7 @@ jobs:
     - name: Download packages
       run: |
         python3.11 -m pip install --upgrade pip
-        python3.11 -m pip install refurb mypy
+        python3.11 -m pip install -r dev-requirements.txt
 
     - name: mypy
       run: python3.11 -m mypy foundry scribe smb3parse

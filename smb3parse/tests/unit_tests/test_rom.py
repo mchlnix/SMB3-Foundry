@@ -34,7 +34,7 @@ def test_int():
 
 
 def test_header(rom):
-    assert rom._header.magic == b"NES\x1A"
+    assert rom._header.magic == b"NES\x1a"
     assert rom._header.prg_units == 0x10
     assert rom._header.chr_units == 0x10
     assert rom._header.flags6 == b"\x40"
