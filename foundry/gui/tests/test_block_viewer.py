@@ -16,7 +16,7 @@ def test_prev_object_set(block_viewer, qtbot):
     # GIVEN the block viewer at a specific object set, which is not the first
     block_viewer.next_os_action.trigger()
 
-    current_object_set = block_viewer.bank_dropdown.currentIndex()
+    current_object_set = block_viewer.object_set_dropdown.currentIndex()
     first_object_set = 0
 
     assert current_object_set != first_object_set
@@ -28,14 +28,14 @@ def test_prev_object_set(block_viewer, qtbot):
     block_viewer.prev_os_action.trigger()
 
     # THEN the dropdown is updated and a different graphic is shown
-    assert block_viewer.bank_dropdown.currentIndex() == current_object_set - 1
+    assert block_viewer.object_set_dropdown.currentIndex() == current_object_set - 1
     assert block_viewer.block_bank.grab() != current_blocks_shown
 
 
 def test_next_object_set(block_viewer, qtbot):
     # GIVEN the block viewer at a specific object set, which is not the last
-    current_object_set = block_viewer.bank_dropdown.currentIndex()
-    last_object_set = block_viewer.bank_dropdown.count() - 1
+    current_object_set = block_viewer.object_set_dropdown.currentIndex()
+    last_object_set = block_viewer.object_set_dropdown.count() - 1
 
     assert current_object_set != last_object_set
 
@@ -46,7 +46,7 @@ def test_next_object_set(block_viewer, qtbot):
     block_viewer.next_os_action.trigger()
 
     # THEN the dropdown is updated and a different graphic is shown
-    assert block_viewer.bank_dropdown.currentIndex() == current_object_set + 1
+    assert block_viewer.object_set_dropdown.currentIndex() == current_object_set + 1
     assert block_viewer.block_bank.grab() != current_blocks_shown
 
 

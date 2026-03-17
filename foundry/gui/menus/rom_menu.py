@@ -129,6 +129,7 @@ class RomMenu(QMenu):
         if self._level_ref.level is not None:
             self._block_viewer.object_set = self._level_ref.object_set.number
             self._block_viewer.palette_group = self._level_ref.object_palette_index
+            self._block_viewer.graphics_set_number = self._level_ref.graphic_set
 
         self._block_viewer.show()
         self._block_viewer.showNormal()

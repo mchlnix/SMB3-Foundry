@@ -5,16 +5,15 @@ from PySide6.QtGui import QMouseEvent, QPainter, QPaintEvent, QPen, QResizeEvent
 from PySide6.QtWidgets import QComboBox, QLabel, QLayout, QStatusBar, QToolBar, QWidget
 
 from foundry import icon
-from foundry.game.File import ROM
-from foundry.game.gfx.block_cache import get_block
+from foundry.game.gfx import BlockCache
 from foundry.game.gfx.drawable.Block import Block
-from foundry.game.gfx.GraphicsSet import GraphicsSet
-from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET, load_palette_group
+from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
+from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import TILE_NAMES
-from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.objects.object_set import UNDERGROUND_OBJECT_SET, WORLD_MAP_OBJECT_SET
 
 
 class BlockViewer(CustomChildWindow):
@@ -22,38 +21,47 @@ class BlockViewer(CustomChildWindow):
         super(BlockViewer, self).__init__(parent, "Block Viewer")
 
         self._object_set = 0
+        self._graphics_set_number = 0
         self.block_bank = BlockBank(parent=self)
 
         self.setCentralWidget(self.block_bank)
 
-        self.toolbar = QToolBar(self)
+        self.object_set_toolbar = QToolBar(self)
 
-        self.prev_os_action = self.toolbar.addAction(icon("arrow-left.svg"), "Previous object set")
+        self.prev_os_action = self.object_set_toolbar.addAction(icon("arrow-left.svg"), "Previous object set")
         self.prev_os_action.triggered.connect(self.prev_object_set)
 
-        self.next_os_action = self.toolbar.addAction(icon("arrow-right.svg"), "Next object set")
+        self.next_os_action = self.object_set_toolbar.addAction(icon("arrow-right.svg"), "Next object set")
         self.next_os_action.triggered.connect(self.next_object_set)
 
-        self.zoom_out_action = self.toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
+        self.zoom_out_action = self.object_set_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
         self.zoom_out_action.triggered.connect(self.block_bank.zoom_out)
 
-        self.zoom_in_action = self.toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
+        self.zoom_in_action = self.object_set_toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
         self.zoom_in_action.triggered.connect(self.block_bank.zoom_in)
 
-        self.bank_dropdown = QComboBox(parent=self.toolbar)
-        self.bank_dropdown.addItems(OBJECT_SET_ITEMS)
-        self.bank_dropdown.setCurrentIndex(0)
+        self.object_set_dropdown = QComboBox(parent=self.object_set_toolbar)
+        self.object_set_dropdown.addItems(OBJECT_SET_ITEMS[WORLD_MAP_OBJECT_SET : UNDERGROUND_OBJECT_SET + 1])
+        self.object_set_dropdown.setCurrentIndex(0)
 
-        self.bank_dropdown.currentIndexChanged.connect(self.on_combo)
+        self.object_set_dropdown.currentIndexChanged.connect(self.set_object_set)
+
+        self.graphics_set_dropdown = QComboBox(parent=self.object_set_toolbar)
+        self.graphics_set_dropdown.addItems(GRAPHIC_SET_NAMES)
+        self.graphics_set_dropdown.setCurrentIndex(0)
+
+        self.graphics_set_dropdown.currentIndexChanged.connect(self.set_graphics_set)
 
         self.palette_group_spinner = Spinner(self, maximum=PALETTE_GROUPS_PER_OBJECT_SET - 1, base=10)
         self.palette_group_spinner.valueChanged.connect(self.on_palette)
 
-        self.toolbar.addWidget(self.bank_dropdown)
-        self.toolbar.addWidget(QLabel(" Object Palette: "))
-        self.toolbar.addWidget(self.palette_group_spinner)
+        self.object_set_toolbar.addWidget(self.object_set_dropdown)
+        self.object_set_toolbar.addWidget(self.graphics_set_dropdown)
 
-        self.addToolBar(self.toolbar)
+        self.object_set_toolbar.addWidget(QLabel(" Palette: "))
+        self.object_set_toolbar.addWidget(self.palette_group_spinner)
+
+        self.addToolBar(self.object_set_toolbar)
 
         self.layout().setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
 
@@ -67,8 +75,27 @@ class BlockViewer(CustomChildWindow):
     @object_set.setter
     def object_set(self, value):
         self._object_set = value
+        self.object_set_dropdown.setCurrentIndex(self.object_set)
+        self.graphics_set_number = value
 
         self._after_object_set()
+
+    def set_object_set(self, object_set: int):
+        self.object_set = object_set
+
+    @property
+    def graphics_set_number(self):
+        return self._graphics_set_number
+
+    @graphics_set_number.setter
+    def graphics_set_number(self, value):
+        self._graphics_set_number = value
+        self.graphics_set_dropdown.setCurrentIndex(self.graphics_set_number)
+
+        self._after_object_set()
+
+    def set_graphics_set(self, graphics_set: int):
+        self.graphics_set_number = graphics_set
 
     @property
     def palette_group(self):
@@ -79,22 +106,15 @@ class BlockViewer(CustomChildWindow):
         self.palette_group_spinner.setValue(value)
 
     def prev_object_set(self):
-        self.object_set = max(self.object_set - 1, 0)
+        self.object_set = max(self.object_set - 1, WORLD_MAP_OBJECT_SET)
 
     def next_object_set(self):
-        self.object_set = min(self.object_set + 1, 0xE)
+        self.object_set = min(self.object_set + 1, UNDERGROUND_OBJECT_SET)
 
     def _after_object_set(self):
         self.block_bank.object_set = self.object_set
-
-        self.bank_dropdown.setCurrentIndex(self.object_set)
-
-        self.block_bank.update()
-
-    def on_combo(self, _):
-        self.object_set = self.bank_dropdown.currentIndex()
-
-        self.block_bank.object_set = self.object_set
+        self.block_bank.palette_group_index = self.palette_group
+        self.block_bank.graphics_set = self.graphics_set_number
 
         self.block_bank.update()
 
@@ -118,6 +138,7 @@ class BlockBank(QWidget):
 
         self.object_set = object_set
         self.palette_group_index = palette_group_index
+        self.graphics_set = 0
         self.zoom = zoom
 
         self._size = QSize(
@@ -193,20 +214,20 @@ class BlockBank(QWidget):
 
         painter.drawRect(QRect(QPoint(0, 0), self.size()))
 
-        graphics_set = GraphicsSet.from_number(self.object_set)
-
-        palette = load_palette_group(self.object_set, self.palette_group_index)
-        tsa_data = ROM.get_tsa_data(self.object_set)
-
         horizontal = self.sprites_horiz
 
         block_length = Block.WIDTH * self.zoom
 
-        for i in range(self.sprites):
-            block = get_block(i, palette, graphics_set, tsa_data)
+        for block_index in range(self.sprites):
+            block = BlockCache.block(
+                block_index,
+                self.object_set,
+                self.palette_group_index,
+                self.graphics_set,
+            )
 
-            x = (i % horizontal) * block_length
-            y = (i // horizontal) * block_length
+            x = (block_index % horizontal) * block_length
+            y = (block_index // horizontal) * block_length
 
             block.draw(painter, x, y, block_length)
 
