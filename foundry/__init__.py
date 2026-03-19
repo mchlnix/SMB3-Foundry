@@ -1,4 +1,5 @@
 import json
+import sys
 import urllib.error
 import urllib.request
 from functools import lru_cache
@@ -64,6 +65,10 @@ def shift_is_pressed():
 
 def open_url(url: str | QUrl):
     QDesktopServices.openUrl(QUrl(url))
+
+
+def is_pyinstalled() -> bool:
+    return hasattr(sys, "_MEIPASS")
 
 
 def get_current_version_name() -> str:

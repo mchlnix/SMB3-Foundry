@@ -8,7 +8,7 @@ from pathlib import Path
 
 from PySide6.QtWidgets import QApplication, QMessageBox
 
-from foundry import auto_save_rom_path, github_issue_link
+from foundry import auto_save_rom_path, github_issue_link, is_pyinstalled
 from foundry.game.File import ROM
 from foundry.gui.dialogs.AutoSaveDialog import AutoSaveDialog
 from smb3parse.levels import WORLD_COUNT
@@ -21,12 +21,13 @@ LOAD_M3L = "--load-m3l"
 SKIP_AUTO_SAVE = "--dont-check-auto-save"
 
 # compatibility for dark mode
-warnings.warning = warnings.warn  # type:ignore
+warnings.warning = warnings.warn  # type: ignore
 
 logger = logging.getLogger(__name__)
 
+
 # change into the tmp directory pyinstaller uses for the data
-if hasattr(sys, "_MEIPASS"):
+if is_pyinstalled():
     logger.info(f"Changing current dir to {getattr(sys, '_MEIPASS')}")
     os.chdir(getattr(sys, "_MEIPASS"))
 
@@ -35,7 +36,12 @@ from foundry.gui.FoundryMainWindow import FoundryMainWindow  # noqa
 app = None
 
 
-def main(path_to_rom: Path, check_auto_save=True, level_data_tuple_=(0, 0, 0, 0), m3l_path_=""):
+def main(
+    path_to_rom: Path,
+    check_auto_save=True,
+    level_data_tuple_=(0, 0, 0, 0),
+    m3l_path_="",
+):
     global app
     app = QApplication()
 
@@ -51,7 +57,9 @@ def main(path_to_rom: Path, check_auto_save=True, level_data_tuple_=(0, 0, 0, 0)
             have_level_data = True
 
             QMessageBox.information(
-                None, "Auto Save recovered", "Don't forget to save the loaded ROM under a new name!"
+                None,
+                "Auto Save recovered",
+                "Don't forget to save the loaded ROM under a new name!",
             )
 
     if not have_level_data and main_window.settings.value("editor/remember_last_level"):
@@ -64,7 +72,12 @@ def main(path_to_rom: Path, check_auto_save=True, level_data_tuple_=(0, 0, 0, 0)
 
         if last_rom.is_file() and 0 not in (level_address_, enemy_address_, object_set):
             path_to_rom = last_rom
-            level_data_tuple_ = (level_address_, enemy_address_, object_set, world_number)
+            level_data_tuple_ = (
+                level_address_,
+                enemy_address_,
+                object_set,
+                world_number,
+            )
 
             have_level_data = True
 
