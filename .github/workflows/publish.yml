@@ -106,9 +106,9 @@ jobs:
     strategy:
       matrix:
         cfg:
-          - {os: ubuntu-22.04, prefix: 'linux', suffix: '', architecture: 'x64'}
-          - {os: windows-2022, prefix: 'win64', suffix: '.exe', architecture: 'x64'}
-          - {os: macos-latest, prefix: 'osx', suffix: '', architecture: 'x64'}
+          - {os: ubuntu-22.04, prefix: 'linux', suffix: '', architecture: 'x64', python: 'python3.11'}
+          - {os: windows-2022, prefix: 'win64', suffix: '.exe', architecture: 'x64', python: 'python3.exe'}
+          - {os: macos-latest, prefix: 'osx', suffix: '', architecture: 'x64', python: 'python3.11'}
         editor:
           - {name: 'smb3-foundry'}
           - {name: 'smb3-scribe'}
@@ -125,6 +125,12 @@ jobs:
 
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
+
+      - name: Update Version File to nightly
+        if: ${{ github.ref_name }}
+        run: ${{ matrix.cfg.python }} .ci-nightly-version.py
+        env:
+          TAG_NAME: ${{ github.ref_name }}
 
       - name: Get Dependencies
         run: |

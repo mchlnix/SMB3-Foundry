@@ -2,8 +2,8 @@
 If there is a tag set at the current commit, then check if it is the same as in the version file.
 If not, error out.
 
-This is done, so that the VERSION is always up to date, when a new release is build by the Travis CI,
-which in turn only happens on tagged commits.
+This is done so that the VERSION is always up to date when a new release is built by the CI, which
+in turn only happens on tagged commits.
 """
 
 import os
