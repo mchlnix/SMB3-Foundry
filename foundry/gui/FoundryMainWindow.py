@@ -37,6 +37,7 @@ from foundry import (
     auto_save_level_data_path,
     auto_save_m3l_path,
     auto_save_rom_path,
+    get_current_version_name,
     icon,
     make_macro,
 )
@@ -603,12 +604,27 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         header_editor.exec()
 
     def update_title(self):
-        if self.level_view.level_ref is not None and ROM is not None:
-            title = f"{self.level_view.level_ref.name} - {ROM.name}"
-        else:
-            title = "SMB3Foundry"
 
-        self.setWindowTitle(title)
+        level_name = ""
+        rom_name = ""
+        app_name = "SMB3Foundry "
+        version_name = get_current_version_name()
+
+        if not version_name.startswith("nightly"):
+            version_name = f"v{version_name}"
+
+        if ROM.is_loaded():
+            rom_name = f"{ROM.name} — "
+
+        if self.level_ref:
+            if self.level_ref.level.name:
+                level_name = self.level_view.level_ref.name
+            else:
+                level_name = f"{OBJECT_SET_NAMES[self.level_ref.object_set_number]} Level"
+
+            level_name += " — "
+
+        self.setWindowTitle(level_name + rom_name + f"{app_name} {version_name}")
 
     def on_open_rom(
         self, path_to_rom=Path(), check_for_asm_files=True, close_current_level=True, try_opening_level=True
