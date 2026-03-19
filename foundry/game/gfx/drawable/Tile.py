@@ -3,6 +3,10 @@ from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, PaletteGroup
 from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET
 
+BITS_IN_BYTE = 8
+
+BITS_PER_COLOR = 2  # 1 pixel needs 2 bits to represent one of 4 possible color indexes
+
 PIXEL_OFFSET = 8  # both bits describing the color of a pixel are in separate 8 byte chunks at the same index
 
 BACKGROUND_COLOR_INDEX = 0
@@ -20,7 +24,7 @@ class Tile:
     HEIGHT = SIDE_LENGTH
 
     PIXEL_COUNT = WIDTH * HEIGHT
-    SIZE = 2 * PIXEL_COUNT // 8  # in bytes; 1 pixel needs 2 bits to represent one of 4 possible color indexes
+    SIZE = BITS_PER_COLOR * PIXEL_COUNT // BITS_IN_BYTE  # in bytes
 
     def __init__(
         self,

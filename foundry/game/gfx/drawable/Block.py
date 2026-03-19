@@ -23,9 +23,9 @@ BlockId = tuple[int, str, int]
 class Block:
     """
     A Block is 16 pixels high and wide and is the smallest drawable unit in the game.
-    Some objects are only one block (e.g. coin block), others are made up of many different blocks (e.g. bushes).
+    Some objects are only one block (e.g., coin block), others are made up of many different blocks (e.g., bushes).
 
-    A Block consists of four tiles, that are selected by the tsa data, which contain indexes into the graphics set.
+    A Block consists of four tiles that are selected by the tsa data, which contain indexes into the graphics set.
     The graphics set has a color index for each pixel in the tile, which corresponds to a color in the block's palette.
     """
 
