@@ -52,15 +52,15 @@ FNS_FILE_FILTER = "FNS files (*.fns);;All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
 
-NO_PARENT = cast(QWidget, None)
+NO_PARENT = cast(QWidget, cast(object, None))
 
 
 def ctrl_is_pressed():
-    return bool(QApplication.keyboardModifiers() & Qt.ControlModifier)
+    return bool(QApplication.keyboardModifiers() & Qt.KeyboardModifier.ControlModifier)
 
 
 def shift_is_pressed():
-    return bool(QApplication.keyboardModifiers() & Qt.ShiftModifier)
+    return bool(QApplication.keyboardModifiers() & Qt.KeyboardModifier.ShiftModifier)
 
 
 def open_url(url: str | QUrl):
@@ -69,6 +69,10 @@ def open_url(url: str | QUrl):
 
 def is_pyinstalled() -> bool:
     return hasattr(sys, "_MEIPASS")
+
+
+def is_nightly_version():
+    return get_current_version_name().startswith("nightly")
 
 
 def get_current_version_name() -> str:
@@ -151,7 +155,7 @@ def get_level_thumbnail(object_set, layout_address: "LevelAddress", enemy_addres
 
 def pixmap_to_base64(pixmap: QPixmap) -> str:
     buffer = QBuffer()
-    buffer.open(QIODevice.WriteOnly)
+    buffer.open(QIODevice.OpenModeFlag.WriteOnly)
     pixmap.save(buffer, "PNG", quality=100)
     image_data = bytes(buffer.data().toBase64()).decode()
 

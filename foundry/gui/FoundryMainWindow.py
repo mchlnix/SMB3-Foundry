@@ -39,6 +39,8 @@ from foundry import (
     auto_save_rom_path,
     get_current_version_name,
     icon,
+    is_nightly_version,
+    is_pyinstalled,
     make_macro,
 )
 from foundry.features.instaplay import CantFindFirstTile, InstaPlayer, LevelNotAttached
@@ -81,6 +83,7 @@ from foundry.gui.JumpList import JumpList
 from foundry.gui.level_settings.level_settings_dialog import LevelSettingsDialog
 from foundry.gui.m3l import load_m3l, load_m3l_filename, save_m3l
 from foundry.gui.MainWindow import MainWindow
+from foundry.gui.menus.debug_menu import DebugMenu
 from foundry.gui.menus.file_menu import FileMenu
 from foundry.gui.menus.help_menu import HelpMenu
 from foundry.gui.menus.rom_menu import RomMenu
@@ -206,8 +209,18 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         self.view_menu = ViewMenu(self.level_view)
 
         self.menuBar().addMenu(self.view_menu)
+
         help_menu = HelpMenu(self)
         self.menuBar().addMenu(help_menu)
+
+        self.debug_menu = None
+
+        if is_nightly_version() or not is_pyinstalled():
+            self._add_debug_menu()
+
+        #
+        # Other widgets
+        #
 
         self.undo_stack.indexChanged.connect(self._on_level_data_changed)
         self.undo_stack.cleanChanged.connect(self._on_level_data_changed)
@@ -376,6 +389,8 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
         self.delete_shortcut = QShortcut(QKeySequence(Qt.Key.Key_Delete), self, self._on_delete_key)
 
+        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_D), self, self._add_debug_menu)
+
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_X), self, self._cut_objects)
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_C), self, self._copy_objects)
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_V), self, self._paste_objects)
@@ -396,6 +411,13 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         self.check_for_update_on_startup()
 
         self.showMaximized()
+
+    def _add_debug_menu(self):
+        if self.debug_menu:
+            return
+
+        self.debug_menu = DebugMenu()
+        self.menuBar().addMenu(self.debug_menu)
 
     def on_new_level(self, dont_check=False):
         if not dont_check and not self.safe_to_change():
