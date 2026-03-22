@@ -40,11 +40,11 @@ class UndoCommand(QUndoCommand):
     MAGIC_VALUE_LEVEL = "LEVEL"
     MAGIC_VALUE_LEVEL_VIEW = "LEVEL_VIEW"
 
-    def to_data(self):
+    def to_data(self) -> list:
         raise NotImplementedError("UndoCommand.export() is not implemented")
 
     @classmethod
-    def from_data(cls, *args, **kwargs):
+    def from_data(cls, *args, **kwargs) -> "UndoCommand":
         raise NotImplementedError("UndoCommand.import_data() is not implemented")
 
 
@@ -481,51 +481,6 @@ class ImportASMEnemies(UndoCommand):
 
 
 
-class AddObject(UndoCommand):
-    def __init__(self, level: Level, obj: InLevelObject, index=-1):
-        super(AddObject, self).__init__(None)
-
-        self.level = level
-        self.obj = obj
-
-        self.setText(f"Add {obj.name}")
-
-        if index == -1:
-            if isinstance(obj, LevelObject):
-                self.index_to_add = len(self.level.objects)
-            else:
-                assert isinstance(obj, EnemyItem)
-                self.index_to_add = len(self.level.enemies)
-        else:
-            self.index_to_add = index
-
-    def undo(self):
-        if isinstance(self.obj, LevelObject):
-            self.level.objects.pop(self.index_to_add)
-        else:
-            self.level.enemies.pop(self.index_to_add)
-
-        self.level.data_changed.emit()
-
-    def redo(self):
-        # create a new object instead of using the cached one in case graphic data has changed in the meantime
-        if isinstance(self.obj, LevelObject):
-            self.level.add_object(
-                self.obj.domain,
-                self.obj.obj_index,
-                Position.from_tuple(self.obj.get_position()),
-                self.obj.length,
-                self.index_to_add,
-            )
-        else:
-            assert isinstance(self.obj, EnemyItem)
-            added_enemy = self.level.add_enemy(
-                self.obj.obj_index, Position.from_tuple(self.obj.get_position()), self.index_to_add
-            )
-            added_enemy.auto_scroll_type = self.obj.auto_scroll_type
-            added_enemy.lock_index = self.obj.lock_index
-
-        self.level.data_changed.emit()
 
 
 class AddLevelObjectAt(UndoCommand):

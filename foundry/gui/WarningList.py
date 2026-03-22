@@ -169,7 +169,7 @@ class WarningList(QWidget):
 
             if not level.header.pipe_ends_level:
                 self.warn(
-                    "You have a Pipe Pair Exit set (Level Settings), " "but Pipes don't end your Level (Lever Header).",
+                    "You have a Pipe Pair Exit set (Level Settings), " "but Pipes don't end your Level (Level Header).",
                     [],
                 )
 
