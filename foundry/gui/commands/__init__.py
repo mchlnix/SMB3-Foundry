@@ -36,9 +36,21 @@ if TYPE_CHECKING:
 # reference, the perfect time to get the value again from the now updated level.
 
 
+class UndoCommand(QUndoCommand):
+    MAGIC_VALUE_LEVEL = "LEVEL"
+    MAGIC_VALUE_LEVEL_VIEW = "LEVEL_VIEW"
+
+    def to_data(self):
+        raise NotImplementedError("UndoCommand.export() is not implemented")
+
+    @classmethod
+    def from_data(cls, *args, **kwargs):
+        raise NotImplementedError("UndoCommand.import_data() is not implemented")
+
+
 # TODO reference objects only by their index and don't keep references to them
 # Only keep references to the level to be replaced?
-class SetLevelAddressData(QUndoCommand):
+class SetLevelAddressData(UndoCommand):
     def __init__(self, level: Level, header_offset: int, enemy_offset: int):
         super(SetLevelAddressData, self).__init__(None)
 
@@ -73,7 +85,7 @@ class DetachLevelFromRom(SetLevelAddressData):
         self.setText("Detach Level from Rom")
 
 
-class SetLevelAttribute(QUndoCommand):
+class SetLevelAttribute(UndoCommand):
     def __init__(self, level: LevelRef, name: str, new_value, display_name="", display_value=""):
         super(SetLevelAttribute, self).__init__(None)
 
@@ -120,7 +132,7 @@ class SetNextAreaObjectSet(SetLevelAttribute):
         self.setText(f"Object Set of Next Area to {OBJECT_SET_NAMES[new_object_set]}")
 
 
-class ChangeLockIndex(QUndoCommand):
+class ChangeLockIndex(UndoCommand):
     def __init__(self, level: Level, enemy: EnemyItem, new_lock_index: int):
         super(ChangeLockIndex, self).__init__(None)
 
@@ -144,7 +156,7 @@ class ChangeLockIndex(QUndoCommand):
         enemy.lock_index = self.new_index
 
 
-class UpdatePalette(QUndoCommand):
+class UpdatePalette(UndoCommand):
     def __init__(
         self,
         level,
@@ -192,7 +204,7 @@ class UpdatePalette(QUndoCommand):
         PaletteGroup.changed = True
 
 
-class MoveObjects(QUndoCommand):
+class MoveObjects(UndoCommand):
     """
     We visually move the objects before calling this command, so we cannot rely on the level data being accurate at this
     point. Instead, we get two lists of the moved objects before moving them and at the point where we want to solidify
@@ -272,7 +284,7 @@ class MoveObject(MoveObjects):
         super().__init__(level, [object_before], [object_after])
 
 
-class ResizeObjects(QUndoCommand):
+class ResizeObjects(UndoCommand):
     def __init__(
         self,
         level: Level,
@@ -385,7 +397,7 @@ def object_names(objects: list[InLevelObject]) -> str:
         return f"{amount} objects"
 
 
-class ToForeground(QUndoCommand):
+class ToForeground(UndoCommand):
     def __init__(self, level: Level, objects: list[InLevelObject]):
         super(ToForeground, self).__init__(None)
 
@@ -437,7 +449,7 @@ class ToBackground(ToForeground):
         self.level.data_changed.emit()
 
 
-class ImportASMEnemies(QUndoCommand):
+class ImportASMEnemies(UndoCommand):
     def __init__(self, level: Level, path: PathLike):
         super(ImportASMEnemies, self).__init__(None)
 
@@ -468,7 +480,8 @@ class ImportASMEnemies(QUndoCommand):
         self.level.data_changed.emit()
 
 
-class AddObject(QUndoCommand):
+
+class AddObject(UndoCommand):
     def __init__(self, level: Level, obj: InLevelObject, index=-1):
         super(AddObject, self).__init__(None)
 
@@ -515,7 +528,7 @@ class AddObject(QUndoCommand):
         self.level.data_changed.emit()
 
 
-class AddLevelObjectAt(QUndoCommand):
+class AddLevelObjectAt(UndoCommand):
     def __init__(
         self,
         level_view: "LevelView",
@@ -556,7 +569,7 @@ class AddLevelObjectAt(QUndoCommand):
         self.level.data_changed.emit()
 
 
-class AddEnemyAt(QUndoCommand):
+class AddEnemyAt(UndoCommand):
     def __init__(self, level_view: "LevelView", pos: QPoint, enemy_type=0, index=-1):
         super(AddEnemyAt, self).__init__(None)
 
@@ -587,7 +600,7 @@ class AddEnemyAt(QUndoCommand):
         self.level.data_changed.emit()
 
 
-class PasteObjectsAt(QUndoCommand):
+class PasteObjectsAt(UndoCommand):
     def __init__(
         self,
         level_view: "LevelView",
@@ -642,7 +655,7 @@ class PasteObjectsAt(QUndoCommand):
         self.view.level_ref.level.data_changed.emit()
 
 
-class RemoveObjects(QUndoCommand):
+class RemoveObjects(UndoCommand):
     def __init__(self, level: Level, objects: list[InLevelObject]):
         super(RemoveObjects, self).__init__(None)
 
@@ -677,7 +690,7 @@ class RemoveObject(RemoveObjects):
 
 
 # Could maybe be replaced by a macro of remove and add object?
-class ReplaceLevelObject(QUndoCommand):
+class ReplaceLevelObject(UndoCommand):
     def __init__(
         self,
         level: Level,
@@ -726,7 +739,7 @@ class ReplaceLevelObject(QUndoCommand):
         self.level.data_changed.emit()
 
 
-class ReplaceEnemy(QUndoCommand):
+class ReplaceEnemy(UndoCommand):
     def __init__(self, level: Level, to_replace: EnemyItem, obj_type: int):
         super(ReplaceEnemy, self).__init__(None)
 
@@ -759,7 +772,7 @@ class ReplaceEnemy(QUndoCommand):
         self.level.data_changed.emit()
 
 
-class AddJump(QUndoCommand):
+class AddJump(UndoCommand):
     def __init__(self, level: Level, jump: Jump | None = None, index: int = -1):
         super(AddJump, self).__init__(None)
 
@@ -788,7 +801,7 @@ class AddJump(QUndoCommand):
         self.level.data_changed.emit()
 
 
-class RemoveJump(QUndoCommand):
+class RemoveJump(UndoCommand):
     def __init__(self, level: Level, index: int):
         super(RemoveJump, self).__init__(None)
 
@@ -810,7 +823,7 @@ class RemoveJump(QUndoCommand):
         self.level.data_changed.emit()
 
 
-class UpdatePipeData(QUndoCommand):
+class UpdatePipeData(UndoCommand):
     def __init__(self, pipe_data: list[PipeData]):
         super(UpdatePipeData, self).__init__(None)
 
