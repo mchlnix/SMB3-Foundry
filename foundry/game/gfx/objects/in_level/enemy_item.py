@@ -1,4 +1,5 @@
 from PySide6.QtCore import QRect
+from PySide6.QtGui import QImage
 
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
@@ -15,8 +16,9 @@ from smb3parse.objects.object_set import ENEMY_ITEM_GRAPHICS_SET, ENEMY_ITEM_OBJ
 from smb3parse.util.rect import Rect
 
 
+# TODO Get Qt code out of here
 class EnemyItem(InLevelObject):
-    def __init__(self, data, png_data, palette_group: PaletteGroup):
+    def __init__(self, data, png_data: QImage, palette_group: PaletteGroup):
         super(EnemyItem, self).__init__()
 
         self.data = data

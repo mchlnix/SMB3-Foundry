@@ -96,7 +96,7 @@ class PipePairMixin(SettingsMixin):
         pipe_item = _get_pipe_item(self.level_ref.enemies)
         assert pipe_item is not None
 
-        pipe_data = self.pipe_datas[pipe_item.y_position]
+        pipe_data = self.pipe_datas[pipe_item.y_position % 0x80]
 
         pipe_data.left_pos = left_pair_screen.selected_position
         pipe_data.right_pos = right_pair_screen.selected_position
@@ -133,7 +133,7 @@ class PipePairMixin(SettingsMixin):
         else:
             self.pipe_pair_spinner.setValue(pipe_item.y_position % 0x80)
 
-            pipe_data = self.pipe_datas[pipe_item.y_position]
+            pipe_data = self.pipe_datas[pipe_item.y_position % 0x80]
 
             self.left_pos_label.setText(
                 f"Screen: {pipe_data.screen_left}, x: {pipe_data.x_left}, y: {pipe_data.y_left}"
