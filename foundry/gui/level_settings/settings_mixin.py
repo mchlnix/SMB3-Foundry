@@ -17,5 +17,7 @@ class SettingsMixin:
     def __init__(self, *args, **kwargs):
         super(SettingsMixin, self).__init__(*args, **kwargs)
 
+        self._parent = args[0]  # parent
+
         if self.layout() is None:
             QVBoxLayout(self)

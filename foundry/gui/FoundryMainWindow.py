@@ -416,7 +416,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         if self.debug_menu:
             return
 
-        self.debug_menu = DebugMenu()
+        self.debug_menu = DebugMenu(self)
         self.menuBar().addMenu(self.debug_menu)
 
     def on_new_level(self, dont_check=False):

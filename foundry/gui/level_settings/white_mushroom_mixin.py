@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QCheckBox, QGroupBox, QVBoxLayout
 from foundry import make_macro
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.gui import label_and_widget
-from foundry.gui.commands import AddObject, MoveObject, RemoveObject
+from foundry.gui.commands import AddEnemyAt, MoveObject, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_WHITE_MUSHROOM_HOUSE
@@ -73,12 +73,14 @@ class WhiteMushroomHouseMixin(SettingsMixin):
 
         # mushroom house added
         elif not self._had_mushroom_item and now_has_mushroom_item:
-            # x must be uneven
-            new_mushroom_item = self.level.enemy_item_factory.from_properties(
-                OBJ_WHITE_MUSHROOM_HOUSE, 1, new_coins_required
-            )
+            level_view = self._parent.level_view
 
-            make_macro(self.undo_stack, "Enable White Mushroom House", AddObject(self.level_ref, new_mushroom_item))
+            make_macro(
+                self.undo_stack,
+                "Enable White Mushroom House",
+                # x must be uneven
+                AddEnemyAt(level_view, level_view.from_level_point(1, y=new_coins_required), OBJ_WHITE_MUSHROOM_HOUSE),
+            )
 
         # coins requirement has changed
         elif self._old_coins_required != new_coins_required:

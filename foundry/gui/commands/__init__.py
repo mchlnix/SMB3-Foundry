@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QPoint
-from PySide6.QtGui import QUndoCommand
+from PySide6.QtGui import QImage, QUndoCommand
 
 from foundry.game.File import ROM
-from foundry.game.gfx import change_color
+from foundry.game.gfx import GraphicsSet, change_color
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.jump import Jump
@@ -70,6 +70,13 @@ class SetLevelAddressData(UndoCommand):
     def redo(self):
         self.level.set_addresses(self.new_header_offset, self.new_enemy_offset)
 
+    def to_data(self) -> list:
+        return [UndoCommand.MAGIC_VALUE_LEVEL, self.new_header_offset, self.new_enemy_offset]
+
+    @classmethod
+    def from_data(cls, level: Level, header_offset: int, enemy_offset: int) -> "UndoCommand":
+        return cls(level, header_offset, enemy_offset)
+
 
 class AttachLevelToRom(SetLevelAddressData):
     def __init__(self, level: Level, header_offset: int, enemy_offset: int):
@@ -126,6 +133,17 @@ class SetLevelAttribute(UndoCommand):
 
         return True
 
+    def to_data(self) -> list:
+        return [UndoCommand.MAGIC_VALUE_LEVEL, self.name, self.new_value, self.text()]
+
+    @classmethod
+    def from_data(cls, level: LevelRef, attr_name: str, new_value, text: str) -> "UndoCommand":
+        command = cls(level, attr_name, new_value)
+
+        command.setText(text)
+
+        return command
+
 
 class SetNextAreaObjectAddress(SetLevelAttribute):
     def __init__(self, level_ref: LevelRef, new_address: int):
@@ -149,14 +167,14 @@ class SetNextAreaObjectSet(SetLevelAttribute):
 
 
 class ChangeLockIndex(UndoCommand):
-    def __init__(self, level: Level, enemy: EnemyItem, new_lock_index: int):
+    def __init__(self, level: Level, enemy_index: int, new_lock_index: int):
         super(ChangeLockIndex, self).__init__(None)
 
         self.level = level
-        self.enemy_index = level.enemies.index(enemy)
+        self.enemy_index = enemy_index
         self.old_index = 0
 
-        self.new_index = new_lock_index
+        self.new_lock_index = new_lock_index
 
         enemy = self.level.enemies[self.enemy_index]
         self.setText(f"Set {enemy.name} to break Lock #{new_lock_index}")
@@ -169,7 +187,14 @@ class ChangeLockIndex(UndoCommand):
         enemy = self.level.enemies[self.enemy_index]
         self.old_index = enemy.lock_index
 
-        enemy.lock_index = self.new_index
+        enemy.lock_index = self.new_lock_index
+
+    def to_data(self) -> list:
+        return [UndoCommand.MAGIC_VALUE_LEVEL, self.enemy_index, self.new_lock_index]
+
+    @classmethod
+    def from_data(cls, level: Level, enemy_index: int, new_lock_index: int) -> "UndoCommand":
+        return cls(level, enemy_index, new_lock_index)
 
 
 class UpdatePalette(UndoCommand):
@@ -218,6 +243,13 @@ class UpdatePalette(UndoCommand):
 
         self.level.reload()
         PaletteGroup.changed = True
+
+    def to_data(self) -> list:
+        return [UndoCommand.MAGIC_VALUE_LEVEL, self.index_in_group, self.index_in_palette, self.new_color_index]
+
+    @classmethod
+    def from_data(cls, level: Level, index_in_group: int, index_in_palette: int, new_color_index: int) -> "UndoCommand":
+        return cls(level, index_in_group, index_in_palette, new_color_index)
 
 
 class MoveObjects(UndoCommand):
@@ -284,6 +316,27 @@ class MoveObjects(UndoCommand):
 
         self.level.data_changed.emit()
 
+    def to_data(self):
+        return [
+            UndoCommand.MAGIC_VALUE_LEVEL,
+            self.level_object_before_positions,
+            self.level_object_after_positions,
+            self.enemy_item_before_positions,
+            self.enemy_item_after_positions,
+        ]
+
+    @classmethod
+    def from_data(cls, level, objects_before, objects_after, enemies_before, enemies_after):
+        command = cls(level, [], [])
+
+        command.level_object_before_positions = objects_before
+        command.level_object_after_positions = objects_after
+
+        command.enemy_item_before_positions = enemies_before
+        command.enemy_item_after_positions = enemies_after
+
+        return command
+
     def _apply_positions(self, level_positions, enemy_positions):
         # get level object in level by index
         for index, position in level_positions.items():
@@ -314,10 +367,12 @@ class ResizeObjects(UndoCommand):
         # ignore enemies/items because they can't be resized
         indexed_lo_before, indexed_lo_after, *_ = separate_and_index_objects(level, objects_before, objects_after)
 
-        self.objects_after = objects_after
-
-        self.object_data_before: list[tuple[int, bytes]] = [(index, obj.to_bytes()) for index, obj in indexed_lo_before]
-        self.object_data_after: list[tuple[int, bytes]] = [(index, obj.to_bytes()) for index, obj in indexed_lo_after]
+        self.object_data_before: list[tuple[int, bytes]] = [
+            (index, bytes(obj.to_bytes())) for index, obj in indexed_lo_before
+        ]
+        self.object_data_after: list[tuple[int, bytes]] = [
+            (index, bytes(obj.to_bytes())) for index, obj in indexed_lo_after
+        ]
 
         self.setText(f"Resize {object_names(objects_after)}")
 
@@ -341,6 +396,18 @@ class ResizeObjects(UndoCommand):
             obj._setup()
 
         self.level.data_changed.emit()
+
+    def to_data(self):
+        return [UndoCommand.MAGIC_VALUE_LEVEL, self.object_data_before, self.object_data_after]
+
+    @classmethod
+    def from_data(cls, level, objects_before, objects_after):
+        new_command = cls(level, [], [])
+
+        new_command.object_data_before = objects_before
+        new_command.object_data_after = objects_after
+
+        return new_command
 
 
 def objects_to_indexed_objects(level: Level, objects: list[InLevelObject]) -> list[tuple[int, InLevelObject]]:
@@ -448,6 +515,17 @@ class ToForeground(UndoCommand):
 
         self.indexes_before = objects_to_indexed_objects(self.level, self.objects)
 
+    def to_data(self):
+        return [UndoCommand.MAGIC_VALUE_LEVEL, self.indexes_before]
+
+    @classmethod
+    def from_data(cls, level, objects_before):
+        command = cls(level, [])
+
+        command.indexes_before = objects_before
+
+        return command
+
 
 class ToBackground(ToForeground):
     def __init__(self, level: Level, objects: list[InLevelObject]):
@@ -495,8 +573,14 @@ class ImportASMEnemies(UndoCommand):
 
         self.level.data_changed.emit()
 
+    def to_data(self):
+        return [UndoCommand.MAGIC_VALUE_LEVEL, str(self.path)]
 
+    @classmethod
+    def from_data(cls, level, path_str):
+        command = cls(level, Path(path_str))
 
+        return command
 
 
 class AddLevelObjectAt(UndoCommand):
@@ -508,6 +592,7 @@ class AddLevelObjectAt(UndoCommand):
         obj_type=0,
         length: int | None = None,
         index=-1,
+        selected=False,
     ):
         super(AddLevelObjectAt, self).__init__(None)
 
@@ -515,6 +600,7 @@ class AddLevelObjectAt(UndoCommand):
         self.level = level_view.level_ref
 
         # convert here, in case there's a zoom change happening between undo and redo
+        # TODO why not just take the level point as an argument?
         self.level_point = level_view.to_level_point(pos)
 
         self.domain = domain
@@ -522,6 +608,8 @@ class AddLevelObjectAt(UndoCommand):
         self.length = length
 
         self.index = index
+
+        self.was_selected = selected
 
     def undo(self):
         self.level.objects.pop(self.index)
@@ -531,6 +619,8 @@ class AddLevelObjectAt(UndoCommand):
     def redo(self):
         added_object = self.level.add_object(self.domain, self.obj_type, self.level_point, self.length, self.index)
 
+        added_object.selected = self.was_selected
+
         # in case the index was just -1
         self.index = self.level.objects.index(added_object)
 
@@ -539,13 +629,45 @@ class AddLevelObjectAt(UndoCommand):
 
         self.level.data_changed.emit()
 
+    def to_data(self) -> list:
+        return [
+            UndoCommand.MAGIC_VALUE_LEVEL_VIEW,
+            self.level_point.xy,
+            self.domain,
+            self.obj_type,
+            self.length,
+            self.index,
+            self.was_selected,
+        ]
+
+    @classmethod
+    def from_data(
+        cls,
+        level_view: "LevelView",
+        xy: tuple[int, int],
+        domain: int,
+        obj_type: int,
+        length: int | None,
+        index: int,
+        was_selected: bool,
+    ):
+        command = cls(level_view, QPoint(0, 0), domain, obj_type, length, index, selected=was_selected)
+        command.level_point = Position.from_tuple(xy)
+
+        return command
+
 
 class AddEnemyAt(UndoCommand):
-    def __init__(self, level_view: "LevelView", pos: QPoint, enemy_type=0, index=-1):
+    # TODO doesn't need to be a QPoint, I think?
+    def __init__(
+        self, level_view: "LevelView", pos: QPoint, enemy_type=0, index=-1, /, selected=False, auto_scroll_type=0
+    ):
         super(AddEnemyAt, self).__init__(None)
 
         self.view = level_view
         self.level = level_view.level_ref
+
+        self.auto_scroll_type = auto_scroll_type
 
         # convert here, in case there's a zoom change happening between undo and redo
         self.level_point = level_view.to_level_point(pos)
@@ -553,6 +675,7 @@ class AddEnemyAt(UndoCommand):
         self.enemy_type = enemy_type
 
         self.index = index
+        self.was_selected = selected
 
     def undo(self):
         self.level.enemies.pop(self.index)
@@ -561,6 +684,8 @@ class AddEnemyAt(UndoCommand):
 
     def redo(self):
         added_enemy = self.level.add_enemy(self.enemy_type, self.level_point, self.index)
+        added_enemy.auto_scroll_type = self.auto_scroll_type
+        added_enemy.selected = self.was_selected
 
         # in case the index was just -1
         self.index = self.level.enemies.index(added_enemy)
@@ -570,13 +695,40 @@ class AddEnemyAt(UndoCommand):
 
         self.level.data_changed.emit()
 
+    def to_data(self) -> list:
+        return [
+            UndoCommand.MAGIC_VALUE_LEVEL_VIEW,
+            self.level_point.xy,
+            self.enemy_type,
+            self.index,
+            self.was_selected,
+            self.auto_scroll_type,
+        ]
+
+    @classmethod
+    def from_data(
+        cls,
+        level_view: "LevelView",
+        xy: tuple[int, int],
+        enemy_type: int,
+        index: int,
+        was_selected: bool,
+        auto_scroll_type: int,
+    ) -> "UndoCommand":
+        command = cls(
+            level_view, QPoint(0, 0), enemy_type, index, selected=was_selected, auto_scroll_type=auto_scroll_type
+        )
+        command.level_point = Position.from_tuple(xy)
+
+        return command
+
 
 class PasteObjectsAt(UndoCommand):
     def __init__(
         self,
         level_view: "LevelView",
         paste_data: tuple[list[InLevelObject], Position],
-        pos: QPoint = None,
+        pos: QPoint,
     ):
         super(PasteObjectsAt, self).__init__(None)
 
@@ -588,15 +740,7 @@ class PasteObjectsAt(UndoCommand):
         self.object_count = len(list(filter(lambda obj: isinstance(obj, LevelObject), objects)))
         self.enemy_count = len(objects) - self.object_count
 
-        self.created_objects: list[LevelObject] = []
-        self.created_enemies: list[EnemyItem] = []
-
-        if pos is None:
-            self.level_point = self.view.last_mouse_position
-        else:
-            self.level_point = self.view.to_level_point(pos)
-
-        self.last_mouse_position: Position = self.view.last_mouse_position.copy()
+        self.level_point = self.view.to_level_point(pos)
 
         self.setText(f"Paste {object_names(objects)}")
 
@@ -611,19 +755,76 @@ class PasteObjectsAt(UndoCommand):
 
     def redo(self):
         # this will create clones of the cached objects, not paste them with their old graphics (in case of ROM reload)
-        if not self.created_objects and not self.created_enemies:
-            self.view.paste_objects_at(self.paste_data, self.level_point)
-
-            if self.object_count:
-                self.created_objects = self.view.level_ref.level.objects[-self.object_count :]
-
-            if self.enemy_count:
-                self.created_enemies = self.view.level_ref.level.enemies[-self.enemy_count :]
-        else:
-            self.view.level_ref.level.objects.extend(self.created_objects)
-            self.view.level_ref.level.enemies.extend(self.created_enemies)
+        self.view.paste_objects_at(self.paste_data, self.level_point)
 
         self.view.level_ref.level.data_changed.emit()
+
+    def to_data(self) -> list:
+        in_between_data: list[tuple] = []
+
+        for obj in self.paste_data[0]:
+            if isinstance(obj, LevelObject):
+                in_between_data.append((obj.domain, obj.obj_index, obj.length, obj.is_4byte, obj.get_data_position()))
+            else:
+                in_between_data.append((obj.obj_index, obj.get_position()))
+
+        return [UndoCommand.MAGIC_VALUE_LEVEL_VIEW, in_between_data, self.paste_data[1].xy, self.level_point.xy]
+
+    @classmethod
+    def from_data(
+        cls,
+        level_view: "LevelView",
+        in_between_data: list,
+        paste_position: tuple[int, int],
+        level_point: tuple[int, int],
+    ) -> "UndoCommand":
+        object_count = 0
+        enemy_count = 0
+
+        objects: list[InLevelObject] = []
+
+        dummy_data = bytearray([0, 0, 0])
+        dummy_palette_group = PaletteGroup(0, 0, 0, [])
+        dummy_graphics_set = GraphicsSet.from_number(1)
+
+        for obj_data in in_between_data:
+            if len(obj_data) == 2:
+                obj_type, (x, y) = obj_data
+
+                enemy = EnemyItem(dummy_data, QImage(), dummy_palette_group)
+                enemy.obj_index = obj_type
+                enemy.x_position = x
+                enemy.y_position = y
+
+                objects.append(enemy)
+
+                enemy_count += 1
+
+            elif len(obj_data) == 5:
+                domain, obj_index, length, is_4_byte, (x, y) = obj_data
+
+                level_object = LevelObject(dummy_data, 1, dummy_palette_group, dummy_graphics_set, [], False, 0)
+                level_object.domain = domain
+                level_object.obj_index = obj_index
+                level_object.length = length
+                level_object.is_4byte = is_4_byte
+                level_object.rendered_base_x = x
+                level_object.rendered_base_y = y
+
+                objects.append(level_object)
+
+                object_count += 1
+
+            else:
+                raise ValueError(f"Invalid data length: {len(obj_data)}, '{obj_data}'")
+
+        paste_data = (objects, Position.from_tuple(paste_position))
+
+        command = cls(level_view, paste_data, QPoint(0, 0))
+
+        command.level_point = Position.from_tuple(level_point)
+
+        return command
 
 
 class RemoveObjects(UndoCommand):
@@ -653,6 +854,22 @@ class RemoveObjects(UndoCommand):
                 self.level.enemies.pop(index)
 
         self.level.data_changed.emit()
+
+    def to_data(self):
+        level_object_indexes = [index for index, obj in self.indexes_before_removal if isinstance(obj, LevelObject)]
+        enemy_indexes = [index for index, obj in self.indexes_before_removal if isinstance(obj, EnemyItem)]
+
+        return [UndoCommand.MAGIC_VALUE_LEVEL, level_object_indexes, enemy_indexes]
+
+    @classmethod
+    def from_data(cls, level: Level, level_object_indexes: list[int], enemy_indexes):
+        level_objects = [level.objects[index] for index in level_object_indexes]
+        enemy_items = [level.enemies[index] for index in enemy_indexes]
+
+        # explicitly use RemoveObjects here, so inheriting classes don't crash
+        command = RemoveObjects(level, level_objects + enemy_items)
+
+        return command
 
 
 class RemoveObject(RemoveObjects):
@@ -722,6 +939,15 @@ class ReplaceLevelObject(UndoCommand):
 
         return True
 
+    def to_data(self) -> list:
+        return [UndoCommand.MAGIC_VALUE_LEVEL, self.to_replace_index, self.domain, self.obj_type, self.length]
+
+    @classmethod
+    def from_data(cls, level, object_index: int, domain: int, obj_type: int, length: int) -> "UndoCommand":
+        level_object = level.objects[object_index]
+
+        return cls(level, level_object, domain, obj_type, length)
+
 
 class ReplaceEnemy(UndoCommand):
     def __init__(self, level: Level, to_replace: EnemyItem, new_enemy_type: int):
@@ -765,6 +991,15 @@ class ReplaceEnemy(UndoCommand):
 
         return True
 
+    def to_data(self) -> list:
+        return [UndoCommand.MAGIC_VALUE_LEVEL, self.to_replace_index, self.new_enemy_type]
+
+    @classmethod
+    def from_data(cls, level, enemy_index: int, new_enemy_type: int) -> "UndoCommand":
+        enemy = level.enemies[enemy_index]
+
+        return cls(level, enemy, new_enemy_type)
+
 
 class AddJump(UndoCommand):
     def __init__(self, level: Level, jump: Jump | None = None, index: int = -1):
@@ -794,6 +1029,15 @@ class AddJump(UndoCommand):
 
         self.level.data_changed.emit()
 
+    def to_data(self) -> list:
+        return [UndoCommand.MAGIC_VALUE_LEVEL, self.index, self.jump.data]
+
+    @classmethod
+    def from_data(cls, level, index: int, jump_data: bytes) -> "UndoCommand":
+        jump = Jump(jump_data)
+
+        return cls(level, jump, index=index)
+
 
 class RemoveJump(UndoCommand):
     def __init__(self, level: Level, index: int):
@@ -816,6 +1060,13 @@ class RemoveJump(UndoCommand):
 
         self.level.data_changed.emit()
 
+    def to_data(self) -> list:
+        return [UndoCommand.MAGIC_VALUE_LEVEL, self.index]
+
+    @classmethod
+    def from_data(cls, level: Level, index: int) -> "UndoCommand":
+        return cls(level, index=index)
+
 
 class UpdatePipeData(UndoCommand):
     def __init__(self, pipe_data: list[PipeData]):
@@ -833,3 +1084,34 @@ class UpdatePipeData(UndoCommand):
     def redo(self) -> None:
         for pipe_data in self.pipe_data_after:
             pipe_data.write_back()
+
+    def to_data(self):
+        return [[_pipe_data_to_dict(pipe_data) for pipe_data in self.pipe_data_after]]
+
+    @classmethod
+    def from_data(cls, pipe_data_list) -> "UndoCommand":
+        current_pipe_data = [PipeData(ROM(), index) for index in range(PIPE_PAIR_COUNT)]
+
+        for pipe_data, pipe_data_dict in zip(current_pipe_data, pipe_data_list):
+            for attr, value in pipe_data_dict.items():
+                setattr(pipe_data, attr, value)
+
+        return cls(current_pipe_data)
+
+
+def _pipe_data_to_dict(pipe_data: PipeData) -> dict:
+    pipe_dict = {}
+
+    for attr in dir(pipe_data):
+        if attr.startswith("_"):
+            continue
+
+        if attr == "rom":
+            continue
+
+        if callable(getattr(pipe_data, attr)):
+            continue
+
+        pipe_dict[attr] = getattr(pipe_data, attr)
+
+    return pipe_dict

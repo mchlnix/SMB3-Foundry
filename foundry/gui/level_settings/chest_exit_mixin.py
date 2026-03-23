@@ -6,7 +6,7 @@ from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.world_map.sprite import MAP_ITEM_SPRITES
 from foundry.game.level.Level import Level
 from foundry.gui import label_and_widget
-from foundry.gui.commands import AddObject, MoveObject, RemoveObject
+from foundry.gui.commands import AddEnemyAt, MoveObject, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from smb3parse.constants import (
     MAPITEM_MUSHROOM,
@@ -106,19 +106,29 @@ class ChestExitMixin(SettingsMixin):
                 self.undo_stack.push(MoveObject(self.level_ref, before_move, self.before.chest_item))
 
             else:
-                item_set_obj = self.level.enemy_item_factory.from_properties(OBJ_CHEST_ITEM_SETTER, 0, item_index)
-
-                self.undo_stack.push(AddObject(self.level_ref, item_set_obj))
+                self.undo_stack.push(
+                    AddEnemyAt(
+                        self._parent.level_view,
+                        self._parent.level_view.from_level_point(0, y=item_index),
+                        OBJ_CHEST_ITEM_SETTER,
+                    )
+                )
 
             self.undo_stack.endMacro()
 
     def _update_chest_exit_item(self):
         # was enabled
         if self.chest_end_checkbox.isChecked() and self.before.chest_exit is None:
-            # when putting it at x=0 it doesn't work for some reason
-            chest_exit_item = self.level.enemy_item_factory.from_properties(OBJ_CHEST_EXIT, 1, 0)
-
-            make_macro(self.undo_stack, "Enable Chest Exit", AddObject(self.level_ref, chest_exit_item))
+            # when putting it at x=0, it doesn't work for some reason
+            make_macro(
+                self.undo_stack,
+                "Enable Chest Exit",
+                AddEnemyAt(
+                    self._parent.level_view,
+                    self._parent.level_view.from_level_point(1, 0),
+                    OBJ_CHEST_EXIT,
+                ),
+            )
 
         # was disabled
         elif self.before.chest_exit is not None and not self.chest_end_checkbox.isChecked():

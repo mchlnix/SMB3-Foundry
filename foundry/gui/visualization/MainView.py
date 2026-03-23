@@ -223,9 +223,9 @@ class MainView(QWidget):
 
         return Position.from_xy(level_x, level_y)
 
-    def from_level_point(self, pos: Position):
-        screen_x = pos.x * self.block_length + self.block_length // 2
-        screen_y = pos.y * self.block_length + self.block_length // 2
+    def from_level_point(self, x, y):
+        screen_x = x * self.block_length + self.block_length // 2
+        screen_y = y * self.block_length + self.block_length // 2
 
         return QPoint(screen_x, screen_y)
 

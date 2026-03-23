@@ -6,13 +6,13 @@ from PySide6.QtWidgets import QCheckBox, QGroupBox, QLabel, QVBoxLayout
 from foundry import make_macro
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.gui import label_and_widget
-from foundry.gui.commands import AddObject, RemoveObject
+from foundry.gui.commands import AddEnemyAt, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_AUTOSCROLL
 
 if TYPE_CHECKING:
-    from foundry.gui.MainWindow import MainWindow
+    from foundry.gui.FoundryMainWindow import FoundryMainWindow
 
 AUTOSCROLL_LABELS = {
     -1: "No Autoscroll in Level.",
@@ -26,7 +26,7 @@ AUTOSCROLL_LABELS = {
 
 
 class AutoScrollMixin(SettingsMixin):
-    def __init__(self, parent: "MainWindow"):
+    def __init__(self, parent: "FoundryMainWindow"):
         super(AutoScrollMixin, self).__init__(parent)
 
         self._parent = parent
@@ -122,7 +122,14 @@ class AutoScrollMixin(SettingsMixin):
         elif autoscroll_was_enabled:
             assert current_autoscroll_item is not None
             self.level_ref.level.remove_object(current_autoscroll_item)
-            self.undo_stack.push(AddObject(self.level_ref, current_autoscroll_item, 0))
+            self.undo_stack.push(
+                AddEnemyAt(
+                    self._parent.level_view,
+                    self._parent.level_view.from_level_point(*current_autoscroll_item.get_position()),
+                    OBJ_AUTOSCROLL,
+                    auto_scroll_type=current_autoscroll_item.auto_scroll_type,
+                )
+            )
         else:
             # autoscroll object might have been changed, first reset state from the start
             assert self.original_autoscroll_item is not None
@@ -142,7 +149,12 @@ class AutoScrollMixin(SettingsMixin):
                     self.undo_stack,
                     "Change Autoscroll Path",
                     RemoveObject(self.level_ref, self.original_autoscroll_item),
-                    AddObject(self.level_ref, current_autoscroll_item, 0),
+                    AddEnemyAt(
+                        self._parent.level_view,
+                        self._parent.level_view.from_level_point(*current_autoscroll_item.get_position()),
+                        OBJ_AUTOSCROLL,
+                        auto_scroll_type=current_autoscroll_item.auto_scroll_type,
+                    ),
                 )
 
         super(AutoScrollMixin, self).closeEvent(event)

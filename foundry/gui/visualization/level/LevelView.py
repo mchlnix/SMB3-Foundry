@@ -18,7 +18,6 @@ from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.commands import (
     AddEnemyAt,
     AddLevelObjectAt,
-    AddObject,
     MoveObjects,
     RemoveObject,
     ResizeObjects,
@@ -257,9 +256,28 @@ class LevelView(MainView):
         else:
             copied_object.decrement_type()
 
-        copied_object.selected = True
-
-        self.undo_stack.push(AddObject(self.level_ref, copied_object, index))
+        if isinstance(copied_object, LevelObject):
+            self.undo_stack.push(
+                AddLevelObjectAt(
+                    self,
+                    self.from_level_point(*copied_object.get_position()),
+                    copied_object.domain,
+                    copied_object.obj_index,
+                    copied_object.length,
+                    index=index,
+                    selected=True,
+                )
+            )
+        else:
+            self.undo_stack.push(
+                AddEnemyAt(
+                    self,
+                    self.from_level_point(*copied_object.get_position()),
+                    copied_object.obj_index,
+                    index,
+                    selected=True,
+                ),
+            )
 
         self.undo_stack.endMacro()
 
