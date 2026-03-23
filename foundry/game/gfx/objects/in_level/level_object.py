@@ -44,6 +44,7 @@ GENERATOR_TYPE_TO_STR = {
 }
 
 
+# TODO: Get all the graphic information out of here. It makes testing and pickling these objects a pain
 class LevelObject(InLevelObject):
     def __init__(
         self,

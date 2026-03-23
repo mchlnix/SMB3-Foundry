@@ -614,7 +614,7 @@ class Level(LevelLike):
 
         elif isinstance(obj, LevelObject):
             if obj.is_4byte:
-                length: int | None = obj.data[3]
+                length: int | None = obj.length
             else:
                 length = None
 
