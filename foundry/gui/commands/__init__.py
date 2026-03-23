@@ -662,69 +662,92 @@ class ReplaceLevelObject(UndoCommand):
         self.length = length
 
         self.to_replace = to_replace
-        self.created_object: LevelObject | None = None
-        self.index = self.level.objects.index(self.to_replace)
+        self.to_replace_index = self.level.objects.index(self.to_replace)
 
         self.setText(f"Replacing {self.to_replace.name}")
 
     def undo(self):
-        self.level.objects[self.index] = self.to_replace
+        self.level.objects[self.to_replace_index] = self.to_replace
 
         self.level.data_changed.emit()
 
     def redo(self):
-        self.to_replace = self.level.objects.pop(self.index)
+        self.to_replace = self.level.objects.pop(self.to_replace_index)
 
         x, y = self.to_replace.get_position()
 
-        if self.created_object is None:
-            self.created_object = self.level.add_object(
-                self.domain,
-                self.obj_type,
-                Position.from_xy(x, y),
-                self.length,
-                self.index,
-            )
-        else:
-            self.level.objects.insert(self.index, self.created_object)
+        created_object = self.level.add_object(
+            self.domain,
+            self.obj_type,
+            Position.from_xy(x, y),
+            self.length,
+            self.to_replace_index,
+        )
 
-        assert self.created_object is not None
-        self.created_object.selected = self.to_replace.selected
+        assert created_object is not None
+
+        created_object.selected = self.to_replace.selected
 
         self.level.data_changed.emit()
+
+    def id(self):
+        return 123
+
+    def mergeWith(self, other):
+        if not isinstance(other, ReplaceLevelObject):
+            return False
+
+        if self.to_replace_index != other.to_replace_index:
+            return False
+
+        self.domain = other.domain
+        self.obj_type = other.obj_type
+        self.length = other.length
+
+        return True
 
 
 class ReplaceEnemy(UndoCommand):
-    def __init__(self, level: Level, to_replace: EnemyItem, obj_type: int):
+    def __init__(self, level: Level, to_replace: EnemyItem, new_enemy_type: int):
         super(ReplaceEnemy, self).__init__(None)
 
         self.level = level
-        self.obj_type = obj_type
+        self.new_enemy_type = new_enemy_type
 
         self.to_replace = to_replace
-        self.created_enemy: EnemyItem | None = None
-        self.index = self.level.enemies.index(self.to_replace)
+        self.to_replace_index = self.level.enemies.index(self.to_replace)
 
         self.setText(f"Replacing {self.to_replace.name}")
 
     def undo(self):
-        self.level.enemies[self.index] = self.to_replace
+        self.level.enemies[self.to_replace_index] = self.to_replace
 
         self.level.data_changed.emit()
 
     def redo(self):
-        self.to_replace = self.level.enemies.pop(self.index)
+        self.to_replace = self.level.enemies.pop(self.to_replace_index)
 
         x, y = self.to_replace.get_position()
 
-        if self.created_enemy is None:
-            self.created_enemy = self.level.add_enemy(self.obj_type, Position.from_xy(x, y), self.index)
-        else:
-            self.level.enemies.insert(self.index, self.created_enemy)
+        created_enemy = self.level.add_enemy(self.new_enemy_type, Position.from_xy(x, y), self.to_replace_index)
 
-        self.created_enemy.selected = self.to_replace.selected
+        created_enemy.selected = self.to_replace.selected
 
         self.level.data_changed.emit()
+
+    def id(self):
+        return 122
+
+    def mergeWith(self, other):
+        if not isinstance(other, ReplaceEnemy):
+            return False
+
+        if self.to_replace_index != other.to_replace_index:
+            return False
+
+        self.new_enemy_type = other.new_enemy_type
+
+        return True
 
 
 class AddJump(UndoCommand):
