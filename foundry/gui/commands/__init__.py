@@ -110,6 +110,22 @@ class SetLevelAttribute(UndoCommand):
         self.old_value = getattr(self.level_ref.level, self.name)
         setattr(self.level_ref.level, self.name, self.new_value)
 
+    def id(self):
+        return 121
+
+    def mergeWith(self, other):
+        if not isinstance(other, SetLevelAttribute):
+            return False
+
+        if self.name != other.name:
+            return False
+
+        self.new_value = other.new_value
+
+        self.setText(other.text())
+
+        return True
+
 
 class SetNextAreaObjectAddress(SetLevelAttribute):
     def __init__(self, level_ref: LevelRef, new_address: int):
