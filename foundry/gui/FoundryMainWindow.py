@@ -204,7 +204,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         self.level_view = LevelView(self, self.level_ref, self.settings, self.context_menu)
 
         # TODO: make into an editor setting
-        self.level_view.zoom_in()
+        self.level_view.set_zoom(self.settings.value("level_view/last_zoom_factor"))
 
         self.view_menu = ViewMenu(self.level_view)
 

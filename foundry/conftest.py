@@ -75,7 +75,7 @@ def main_window(qtbot, rom):
     main_window = FoundryMainWindow()
     main_window.settings = Settings("mchlnix", "throwaway")
     main_window.level_view.settings = main_window.settings
-    main_window.level_view._set_zoom(1.0)
+    main_window.level_view.set_zoom(1.0)
 
     main_window.update_level(
         "Level 1-1",

@@ -19,7 +19,7 @@ class ASMLoadingBehavior:
 
 
 # TODO Make into an enum?
-SETTINGS: dict[str, str | int | bool] = dict()
+SETTINGS: dict[str, str | int | float | bool] = dict()
 SETTINGS["editor/instaplay_emulator"] = "fceux"
 SETTINGS["editor/instaplay_arguments"] = "%f"
 SETTINGS["editor/instaplay_skip_title_screen"] = True
@@ -63,9 +63,10 @@ SETTINGS["level_view/block_transparency"] = True
 SETTINGS["level_view/block_animation"] = True
 SETTINGS["level_view/special_background"] = True
 SETTINGS["level_view/object_tooltip_enabled"] = True
+SETTINGS["level_view/last_zoom_factor"] = 1.0
 
 
-_settings: dict[str, str | int | bool] = {
+_settings: dict[str, str | int | float | bool] = {
     "world_view/show_grid": False,
     "world_view/show_border": False,
     "world_view/animated_tiles": True,

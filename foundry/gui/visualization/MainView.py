@@ -298,7 +298,7 @@ class MainView(QWidget):
 
         self.select_objects(pasted_objects)
 
-    def _set_zoom(self, zoom):
+    def set_zoom(self, zoom):
         if not (LOWEST_ZOOM_LEVEL <= zoom <= HIGHEST_ZOOM_LEVEL):
             return
 
@@ -308,10 +308,10 @@ class MainView(QWidget):
         self.update()
 
     def zoom_out(self):
-        self._set_zoom(self.zoom / 2)
+        self.set_zoom(self.zoom / 2)
 
     def zoom_in(self):
-        self._set_zoom(self.zoom * 2)
+        self.set_zoom(self.zoom * 2)
 
     def _start_selection_square(self, point: QPoint):
         self.selection_square.start(point)

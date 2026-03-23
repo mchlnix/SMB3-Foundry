@@ -119,6 +119,10 @@ class LevelView(MainView):
             self.redraw_timer.timeout.connect(self.next_anim_step)
             self.redraw_timer.start()
 
+    def set_zoom(self, zoom):
+        self.settings.setValue("level_view/last_zoom_factor", zoom)
+        super().set_zoom(zoom)
+
     def sizeHint(self) -> QSize:
         if self.level is None:
             return super(LevelView, self).sizeHint()
