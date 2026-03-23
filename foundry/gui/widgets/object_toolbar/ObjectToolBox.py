@@ -158,13 +158,20 @@ class ObjectToolBox(QWidget):
 
         return objects
 
-    def place_at_front(self, level_object):
+    def place_at_front(self, new_object):
         objects = self._extract_objects()
 
-        if level_object in objects:
-            objects.remove(level_object)
+        for obj in objects.copy():
+            same_level_object = (
+                isinstance(obj, LevelObject) and obj.domain == new_object.domain and obj.type == new_object.type
+            )
 
-        objects.insert(0, level_object)
+            same_enemy = isinstance(obj, EnemyItem) and obj.obj_index == new_object.obj_index
+
+            if same_level_object or same_enemy:
+                objects.remove(obj)
+
+        objects.insert(0, new_object)
 
         assert self._layout.count() == 0
 

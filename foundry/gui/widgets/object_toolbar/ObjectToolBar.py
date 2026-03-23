@@ -90,12 +90,12 @@ class ObjectToolBar(QWidget):
                 size_minimal=True,
             )
 
-            new_object = factory.from_properties(current_object.domain, current_object.obj_index, 0, 0, None, 0)
+            new_object = lvl_factory.from_properties(current_object.domain, current_object.obj_index, 0, 0, None, 0)
 
         elif isinstance(current_object, EnemyItem):
-            factory = EnemyItemFactory(object_set_index, palette_group_index)
+            enemy_factory = EnemyItemFactory(object_set_index, palette_group_index)
 
-            new_object = factory.from_properties(current_object.obj_index, 0, 0)
+            new_object = enemy_factory.from_properties(current_object.obj_index, 0, 0)
 
         else:
             raise ValueError(f"Unknown object type: {type(current_object)}")
