@@ -101,7 +101,7 @@ class ObjectToolBox(QWidget):
             assert isinstance(obj, LevelObject)
 
             obj.graphics_set = GraphicsSet.from_number(graphic_set_index)
-            obj.palette_group = load_palette_group(obj.object_set.number, palette_group_index, use_cache=False)
+            obj.palette_group = load_palette_group(obj.object_set.number, palette_group_index)
             obj.block_cache.clear()
             object_icon.set_object(obj)
 
