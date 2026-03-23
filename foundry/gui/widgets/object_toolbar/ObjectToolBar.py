@@ -2,6 +2,7 @@ from PySide6.QtCore import Qt, Signal, SignalInstance
 from PySide6.QtWidgets import QGroupBox, QLabel, QVBoxLayout, QWidget
 
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
+from foundry.game.gfx.objects.in_level.enemy_item_factory import EnemyItemFactory
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
@@ -73,20 +74,31 @@ class ObjectToolBar(QWidget):
         self, object_set_index: int, graphic_set_index: int, palette_group_index: int
     ):
         # TODO Could this be put into the level icon class itself?
-        factory = LevelObjectFactory(
-            object_set_index,
-            graphic_set_index,
-            palette_group_index,
-            [],
-            vertical_level=False,
-            size_minimal=True,
-        )
 
-        old_object = self.current_object_icon.object
-        if old_object is None:
+        current_object = self.current_object_icon.object
+
+        if current_object is None:
             return
 
-        new_object = factory.from_properties(old_object.domain, old_object.obj_index, 0, 0, None, 0)
+        if isinstance(current_object, LevelObject):
+            lvl_factory = LevelObjectFactory(
+                object_set_index,
+                graphic_set_index,
+                palette_group_index,
+                [],
+                vertical_level=False,
+                size_minimal=True,
+            )
+
+            new_object = factory.from_properties(current_object.domain, current_object.obj_index, 0, 0, None, 0)
+
+        elif isinstance(current_object, EnemyItem):
+            factory = EnemyItemFactory(object_set_index, palette_group_index)
+
+            new_object = factory.from_properties(current_object.obj_index, 0, 0)
+
+        else:
+            raise ValueError(f"Unknown object type: {type(current_object)}")
 
         self.current_object_icon.set_object(new_object)
 
