@@ -1176,6 +1176,9 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         if not (copied_objects := self.context_menu.get_copied_objects())[0]:
             return
 
+        if q_point is None:
+            q_point = self.level_view.from_level_point(*self.level_view.last_mouse_position.xy)
+
         copied_level_objects = cast(tuple[list[InLevelObject], Position], copied_objects)
 
         # clear selection of copied/other previously selected objects, so only the pasted ones are selected
