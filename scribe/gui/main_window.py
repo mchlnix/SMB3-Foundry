@@ -68,8 +68,7 @@ class ScribeMainWindow(MainWindow):
         self.context_menu.paste_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_V)
 
         self.world_view = WorldView(self, self.level_ref, self.settings, self.context_menu)
-        self.world_view.zoom_in()
-        self.world_view.zoom_in()
+        self.world_view.set_zoom(3.0)
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.world_view)

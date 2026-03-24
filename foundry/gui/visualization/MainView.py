@@ -308,10 +308,10 @@ class MainView(QWidget):
         self.update()
 
     def zoom_out(self):
-        self.set_zoom(self.zoom / 2)
+        self.set_zoom(self.zoom - 0.25)
 
     def zoom_in(self):
-        self.set_zoom(self.zoom * 2)
+        self.set_zoom(self.zoom + 0.25)
 
     def _start_selection_square(self, point: QPoint):
         self.selection_square.start(point)
