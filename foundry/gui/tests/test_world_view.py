@@ -11,12 +11,12 @@ from smb3parse.levels import WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_SCREEN_WIDTH
 
 
 @pytest.fixture
-def main_window(rom, qtbot):
+def main_window(rom):
     # mock the rom loading, since it is a modal dialog. the rom is loaded in conftest.py
     setattr(ScribeMainWindow, "on_open_rom", lambda *_: True)
     setattr(ScribeMainWindow, "showMaximized", lambda _: None)  # don't open automatically
     setattr(ScribeMainWindow, "show", lambda _: None)  # don't open automatically
-    setattr(ScribeMainWindow, "safe_to_change", lambda _: True)  # don't ask for confirmation on changed level
+    setattr(ScribeMainWindow, "safe_to_change", lambda _: True)  # don't ask for confirmation on a changed level
     setattr(ScribeMainWindow, "check_for_update_on_startup", lambda _: True)  # don't check for updates
     setattr(ToolWindow, "show", lambda _: None)
 
@@ -42,37 +42,49 @@ def drag_from_to(
     start_point: QPoint,
     end_point: QPoint,
     points: list[QPoint] | None = None,
-    modifiers: Qt.KeyboardModifier = Qt.NoModifier,
+    modifiers: Qt.KeyboardModifier = Qt.KeyboardModifier.NoModifier,
 ):
     if points is None:
         points = []
 
     # click left on a tile
     click_event = QMouseEvent(
-        QMouseEvent.MouseButtonPress,
+        QMouseEvent.Type.MouseButtonPress,
         start_point,
         worldview.mapToGlobal(start_point),
-        Qt.LeftButton,
-        Qt.LeftButton,
+        Qt.MouseButton.LeftButton,
+        Qt.MouseButton.LeftButton,
         modifiers,
     )
     worldview.mousePressEvent(click_event)
 
+    point = QPoint(0, 0)
+
     for point in points + [end_point]:
         move_event = QMouseEvent(
-            QMouseEvent.MouseMove, point, worldview.mapToGlobal(point), Qt.NoButton, Qt.LeftButton, modifiers
+            QMouseEvent.Type.MouseMove,
+            point,
+            worldview.mapToGlobal(point),
+            Qt.MouseButton.NoButton,
+            Qt.MouseButton.LeftButton,
+            modifiers,
         )
         worldview.mouseMoveEvent(move_event)
 
-    # let go of button, while out of bounds
+    # let go of the button, while out of bounds
     release_event = QMouseEvent(
-        QMouseEvent.MouseButtonRelease, end_point, worldview.mapToGlobal(point), Qt.LeftButton, Qt.NoButton, modifiers
+        QMouseEvent.Type.MouseButtonRelease,
+        end_point,
+        worldview.mapToGlobal(point),
+        Qt.MouseButton.LeftButton,
+        Qt.MouseButton.NoButton,
+        modifiers,
     )
     worldview.mouseReleaseEvent(release_event)
 
 
 def test_moving_tiles_out_of_scene(worldview):
-    # when moving tiles out of scene, they are simply set back from whence they came
+    # when moving tiles out of the scene, they are simply set back from whence they came
     start_point = QPoint(100, 100)
     end_point = QPoint(*worldview.world.size) * worldview.block_length + QPoint(100, 100)
 
@@ -96,36 +108,36 @@ def test_moving_tiles_in_scene(worldview):
     assert TILE_MUSHROOM_HOUSE_1 == worldview._visible_object_at(end_point).type
 
 
-def _move_cursor(widget, pos, button=Qt.NoButton, ctrl=True):
+def _move_cursor(widget, pos, button=Qt.MouseButton.NoButton, ctrl=True):
     mouse_event = QMouseEvent(
-        QMouseEvent.MouseMove if button == Qt.NoButton else QMouseEvent.MouseButtonPress,
+        QMouseEvent.Type.MouseMove if button == Qt.MouseButton.NoButton else QMouseEvent.Type.MouseButtonPress,
         pos,
         widget.mapToGlobal(pos),
         button,
         button,
-        Qt.ControlModifier if ctrl else Qt.NoModifier,
+        Qt.KeyboardModifier.ControlModifier if ctrl else Qt.KeyboardModifier.NoModifier,
     )
 
-    if button == Qt.NoButton:
+    if button == Qt.MouseButton.NoButton:
         widget.mouseMoveEvent(mouse_event)
     else:
         widget.mousePressEvent(mouse_event)
 
 
-def test_selecting_all_objects_via_selection_square(worldview, qtbot):
+def test_selecting_all_objects_via_selection_square(worldview):
     foundry.ctrl_is_pressed = lambda: True
 
     start_point = QPoint(0, 0)
     end_point = QPoint(*worldview.world.size) * worldview.block_length
 
     assert not worldview.get_selected_objects()
-    _move_cursor(worldview, start_point, Qt.LeftButton, ctrl=True)
+    _move_cursor(worldview, start_point, Qt.MouseButton.LeftButton, ctrl=True)
 
-    # move the mouse, while holding down
-    _move_cursor(worldview, end_point, Qt.NoButton, ctrl=True)
+    # move the mouse while holding down
+    _move_cursor(worldview, end_point, Qt.MouseButton.NoButton, ctrl=True)
     assert len(worldview.get_selected_objects()) == len(worldview.world.get_all_objects())
 
-    _move_cursor(worldview, start_point, Qt.NoButton, ctrl=True)
+    _move_cursor(worldview, start_point, Qt.MouseButton.NoButton, ctrl=True)
     assert len(worldview.get_selected_objects()) == 1
 
 
@@ -199,12 +211,12 @@ def test_fill_tiles(worldview):
 
     worldview.mousePressEvent(
         QMouseEvent(
-            QMouseEvent.MouseButtonPress,
+            QMouseEvent.Type.MouseButtonPress,
             pos,
             worldview.mapToGlobal(pos),
-            Qt.LeftButton,
-            Qt.LeftButton,
-            Qt.ShiftModifier,
+            Qt.MouseButton.LeftButton,
+            Qt.MouseButton.LeftButton,
+            Qt.KeyboardModifier.ShiftModifier,
         )
     )
 

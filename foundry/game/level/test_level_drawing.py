@@ -160,7 +160,7 @@ def test_level(level_info, settings, rom, qtbot):
 
 
 @pytest.mark.parametrize("jump_test_name", ["jump_vertical_ref", "jump_horizontal_ref"])
-def test_draw_jumps(jump_test_name, level, settings, qtbot):
+def test_draw_jumps(jump_test_name, level, settings):
     with (Path(__file__).parent / f"{jump_test_name}.m3l").open("rb") as m3l_file:
         level.from_m3l(bytearray(m3l_file.read()))
 
@@ -188,7 +188,7 @@ def _get_all_m3l_files(with_ending=True):
 
 
 @pytest.mark.parametrize("m3l_file_name", _get_all_m3l_files(), ids=_get_all_m3l_files(False))
-def test_draw_m3ls(m3l_file_name, level, settings, qtbot):
+def test_draw_m3ls(m3l_file_name, level, settings):
     with open(m3l_file_name, "rb") as m3l_file:
         level.from_m3l(bytearray(m3l_file.read()))
 
