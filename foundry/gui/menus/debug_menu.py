@@ -7,6 +7,10 @@ from PySide6.QtWidgets import QMenu, QMessageBox
 from foundry import root_dir
 from foundry.gui.commands import UndoCommand
 
+DEBUG_M3L_PATH = "debug.m3l"
+
+EXPORTED_UNDO_STACK_PATH = "undo_stack_export.bin"
+
 
 class DebugMenu(QMenu):
     def __init__(self, main_window):
@@ -34,7 +38,7 @@ class DebugMenu(QMenu):
 
         command_data = []
 
-        with (root_dir / "undo_stack_export.bin").open("wb") as f:
+        with (root_dir / EXPORTED_UNDO_STACK_PATH).open("wb") as f:
             command_index = 0
 
             while command_index < undo_stack.count():
@@ -81,7 +85,7 @@ class DebugMenu(QMenu):
     def _on_replay_stack(self):
         undo_stack: QUndoStack = self._main_window.undo_stack
 
-        with (root_dir / "undo_stack_export.txt").open("rb") as f:
+        with (root_dir / EXPORTED_UNDO_STACK_PATH).open("rb") as f:
             command_data = pickle.loads(f.read())
 
         command_data_index = 0
@@ -139,13 +143,13 @@ class DebugMenu(QMenu):
         level = self._main_window.level_ref.level
         m3l_bytes = level.to_m3l()
 
-        (root_dir / "debug.m3l").write_bytes(m3l_bytes)
+        (root_dir / DEBUG_M3L_PATH).write_bytes(m3l_bytes)
 
     def _on_compare_with_m3l(self):
         level = self._main_window.level_ref.level
         m3l_bytes = level.to_m3l()
 
-        expected_m3l_bytes = (root_dir / "debug.m3l").read_bytes()
+        expected_m3l_bytes = (root_dir / DEBUG_M3L_PATH).read_bytes()
 
         if m3l_bytes != expected_m3l_bytes:
             for i in range(min(len(m3l_bytes), len(expected_m3l_bytes))):
