@@ -206,6 +206,10 @@ def gen_object_factories():
         yield LevelObjectFactory(object_set, object_set, 0, [], False)
 
 
+def _test_domains():
+    return range(TEST_MAX_DOMAIN + 1)
+
+
 def gen_object_ids():
     for id_ in range(0x10):
         yield id_
@@ -215,27 +219,40 @@ def gen_object_ids():
         yield id_ + 6
 
 
-@pytest.mark.parametrize(
-    "factory, domain, obj_id",
-    list(product(gen_object_factories(), range(0, MAX_DOMAIN), gen_object_ids())),
-)
-def test_all_objects(factory, domain, obj_id, qtbot):
-    level_object = factory.from_properties(domain, obj_id, 0, 0, 8, 0)
+TEST_OBJECT_LENGTH_MINI = 0
+TEST_OBJECT_LENGTH_NORMAL = 8
+TEST_MAX_DOMAIN = MAX_DOMAIN - 1  # remove the last domain because it only holds Jumps
 
-    if level_object.name == "MSG_CRASH":
-        pytest.skip("MSG_CRASH")
-
-    _test_object_against_reference(level_object, qtbot)
+TEST_OBJECT_CRASH_NAME = "MSG_CRASH"
 
 
 @pytest.mark.parametrize(
-    "factory, domain, obj_id",
-    list(product(gen_object_factories(), range(0, MAX_DOMAIN), gen_object_ids())),
+    "level_object",
+    list(
+        filter(
+            lambda level_object: level_object.name != TEST_OBJECT_CRASH_NAME,
+            [
+                factory.from_properties(domain, obj_id, 0, 0, TEST_OBJECT_LENGTH_NORMAL, 0)
+                for factory, domain, obj_id in product(gen_object_factories(), _test_domains(), gen_object_ids())
+            ],
+        )
+    ),
 )
-def test_all_minimal_objects(factory, domain, obj_id, qtbot):
-    level_object = factory.from_properties(domain, obj_id, 0, 0, 0, 0)
+def test_all_objects(level_object, qtbot):
+    _test_object_against_reference(level_object, qtbot, minimal=False)
 
-    if level_object.name == "MSG_CRASH":
-        pytest.skip("MSG_CRASH")
 
+@pytest.mark.parametrize(
+    "level_object",
+    list(
+        filter(
+            lambda level_object: level_object.name != TEST_OBJECT_CRASH_NAME,
+            [
+                factory.from_properties(domain, obj_id, 0, 0, TEST_OBJECT_LENGTH_MINI, 0)
+                for factory, domain, obj_id in product(gen_object_factories(), _test_domains(), gen_object_ids())
+            ],
+        )
+    ),
+)
+def test_all_minimal_objects(level_object, qtbot):
     _test_object_against_reference(get_minimal_icon_object(level_object), qtbot, minimal=True)
