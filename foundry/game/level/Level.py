@@ -239,7 +239,7 @@ class Level(LevelLike):
         while True:
             potential_obj_data = data[0:4]
 
-            level_object = self.object_factory.from_data(potential_obj_data, len(self.objects))
+            level_object = self.object_factory.from_data(potential_obj_data, -1)
 
             data = data[3:]
 

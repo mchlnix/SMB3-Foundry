@@ -152,7 +152,7 @@ class ObjectDrawArea(QWidget):
         self.object_factory = LevelObjectFactory(object_set, graphic_set, palette_index, [], False, size_minimal=True)
 
         self.current_object: LevelObject = cast(
-            LevelObject, self.object_factory.from_data(bytearray([0x0, 0x0, 0x0]), 0)
+            LevelObject, self.object_factory.from_data(bytearray([0x0, 0x0, 0x0]), -1)
         )
 
         self.update_object()
@@ -186,7 +186,7 @@ class ObjectDrawArea(QWidget):
         elif isinstance(object_data, (LevelObject, Jump)):
             object_data = object_data.data
 
-        obj = self.object_factory.from_data(object_data, 0)
+        obj = self.object_factory.from_data(object_data, -1)
 
         if isinstance(obj, Jump):
             # fixme display actual graphic

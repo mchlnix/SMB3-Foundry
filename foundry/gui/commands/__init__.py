@@ -803,7 +803,7 @@ class PasteObjectsAt(UndoCommand):
             elif len(obj_data) == 5:
                 domain, obj_index, length, is_4_byte, (x, y) = obj_data
 
-                level_object = LevelObject(dummy_data, 1, dummy_palette_group, dummy_graphics_set, [], False, 0)
+                level_object = LevelObject(dummy_data, 1, dummy_palette_group, dummy_graphics_set, [], False, -1)
                 level_object.domain = domain
                 level_object.obj_index = obj_index
                 level_object.length = length

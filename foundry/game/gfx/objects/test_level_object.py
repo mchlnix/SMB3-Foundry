@@ -168,7 +168,7 @@ def test_no_change_to_bytes():
 
     cloud_bytes = bytearray([0x00, 0x00, 0xE5])
 
-    cloud_object = object_factory.from_data(cloud_bytes, 0)
+    cloud_object = object_factory.from_data(cloud_bytes, -1)
 
     assert cloud_object.to_bytes() == cloud_bytes
 
