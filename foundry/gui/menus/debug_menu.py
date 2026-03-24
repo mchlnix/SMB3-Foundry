@@ -2,7 +2,7 @@ import pickle
 from typing import Any, cast
 
 from PySide6.QtGui import QUndoCommand, QUndoStack
-from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QMenu, QMessageBox
 
 from foundry import root_dir
 from foundry.gui.commands import UndoCommand
@@ -20,6 +20,14 @@ class DebugMenu(QMenu):
 
         self.replay_stack_action = self.addAction("Replay UndoStack")
         self.replay_stack_action.triggered.connect(self._on_replay_stack)
+
+        self.addSeparator()
+
+        self.save_as_m3l_action = self.addAction("Save as M3L")
+        self.save_as_m3l_action.triggered.connect(self._on_save_as_m3l)
+
+        self.compare_with_m3l_action = self.addAction("Compare with M3L")
+        self.compare_with_m3l_action.triggered.connect(self._on_compare_with_m3l)
 
     def _on_export_stack(self):
         undo_stack: QUndoStack = self._main_window.undo_stack
@@ -126,6 +134,34 @@ class DebugMenu(QMenu):
         print(class_name, args)
 
         undo_stack.push(command_class.from_data(*args))
+
+    def _on_save_as_m3l(self):
+        level = self._main_window.level_ref.level
+        m3l_bytes = level.to_m3l()
+
+        (root_dir / "debug.m3l").write_bytes(m3l_bytes)
+
+    def _on_compare_with_m3l(self):
+        level = self._main_window.level_ref.level
+        m3l_bytes = level.to_m3l()
+
+        expected_m3l_bytes = (root_dir / "debug.m3l").read_bytes()
+
+        if m3l_bytes != expected_m3l_bytes:
+            for i in range(min(len(m3l_bytes), len(expected_m3l_bytes))):
+                if m3l_bytes[i] != expected_m3l_bytes[i]:
+                    first_difference = (i, m3l_bytes[i], expected_m3l_bytes[i])
+                    break
+
+            else:
+                raise ValueError("M3L mismatch, but no differences found.")
+
+            QMessageBox.critical(
+                self._main_window,
+                "M3L mismatch",
+                f"First difference at offset {first_difference[0]}: "
+                f"{first_difference[1]:#x)} != {first_difference[2]:#x}",
+            )
 
 
 _command_classes = {}
