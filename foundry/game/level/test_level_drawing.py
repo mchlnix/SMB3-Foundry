@@ -128,7 +128,7 @@ def test_world(world_info, settings, rom, qtbot):
 
     world_view = WorldView(None, level_ref, settings, WorldContextMenu(level_ref))
 
-    world_view.zoom_in()
+    world_view.set_zoom(2.0)
 
     rect = QRect(QPoint(0, 0), QSize(world_view.sizeHint()))
 

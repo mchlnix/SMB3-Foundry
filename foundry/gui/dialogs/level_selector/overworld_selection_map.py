@@ -45,7 +45,7 @@ class WorldMapLevelSelect(QScrollArea):
         self.world_view.setMouseTracking(True)
         self.world_view.read_only = True
 
-        self.world_view.zoom_in()
+        self.world_view.set_zoom(2.0)
 
         self.setWidget(self.world_view)
 

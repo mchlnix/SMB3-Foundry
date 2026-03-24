@@ -1,3 +1,4 @@
+from contextlib import suppress
 from typing import Sequence
 from warnings import warn
 
@@ -305,8 +306,9 @@ class MainView(QWidget):
         self.zoom = zoom
         self.block_length = int(Block.SIDE_LENGTH * self.zoom)
 
-        # TODO Create a signal the main window can connect to instead? Seems a bit overkill for one interaction, though
-        self.parent().parent().parent().update()  # update the main window
+        # TODO Create a signal the main window can connect to instead? level selector throws attribute error
+        with suppress(AttributeError):
+            self.parent().parent().parent().update()  # update the main window
 
         self.update()
 

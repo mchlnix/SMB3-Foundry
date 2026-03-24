@@ -24,8 +24,7 @@ def main_window(rom, qtbot):
 
     main_window.world_menu.actions()[0].trigger()
 
-    main_window.world_view.zoom_out()
-    main_window.world_view.zoom_out()
+    main_window.world_view.set_zoom(1)
 
     main_window.world_view.settings.setValue("world_view/show_level_pointers", False)
     main_window.world_view.settings.setValue("world_view/show_border", False)
