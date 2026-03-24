@@ -536,7 +536,7 @@ class LevelDrawer:
         self._draw_screen_lines(painter, panel_height, panel_width, level.is_vertical)
 
     def _draw_grid_coordinates(self, painter: QPainter, level: Level):
-        panel_width, panel_height = level.get_rect(self.block_length).size().toTuple()
+        panel_width, panel_height = level.get_rect(self.block_length).size()
 
         font = painter.font()
         font.setPointSize(self.block_length)
