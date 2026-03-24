@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (
     QDialog,
     QFileDialog,
     QHBoxLayout,
+    QLabel,
     QMenu,
     QMessageBox,
     QPushButton,
@@ -203,9 +204,6 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
         self.level_view = LevelView(self, self.level_ref, self.settings, self.context_menu)
 
-        # TODO: make into an editor setting
-        self.level_view.set_zoom(self.settings.value("level_view/last_zoom_factor"))
-
         self.view_menu = ViewMenu(self.level_view)
 
         self.menuBar().addMenu(self.view_menu)
@@ -346,6 +344,14 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         self.zoom_out_action = self.menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
         self.zoom_out_action.triggered.connect(self.level_view.zoom_out)
 
+        self.zoom_label = QLabel("0.00x")
+        # make sure the label doesn't change sizes, when the label changes, causing the toolbar buttons to move around
+        self.zoom_label.setMinimumSize(self.zoom_label.sizeHint())
+
+        self.zoom_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.menu_toolbar.addWidget(self.zoom_label)
+
         self.zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
         self.zoom_in_action.triggered.connect(self.level_view.zoom_in)
 
@@ -409,6 +415,8 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         self.rom_content_changed.connect(self._on_rom_changed_externally)
 
         self.check_for_update_on_startup()
+
+        self.level_view.set_zoom(self.settings.value("level_view/last_zoom_factor"))
 
         self.showMaximized()
 
@@ -647,6 +655,10 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
             level_name += " — "
 
         self.setWindowTitle(level_name + rom_name + f"{app_name} {version_name}")
+
+    def update(self):
+        self.zoom_label.setText(f"{self.level_view.zoom}x")
+        return super().update()
 
     def on_open_rom(
         self, path_to_rom=Path(), check_for_asm_files=True, close_current_level=True, try_opening_level=True

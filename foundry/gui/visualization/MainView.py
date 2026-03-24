@@ -305,6 +305,9 @@ class MainView(QWidget):
         self.zoom = zoom
         self.block_length = int(Block.SIDE_LENGTH * self.zoom)
 
+        # TODO Create a signal the main window can connect to instead? Seems a bit overkill for one interaction, though
+        self.parent().parent().parent().update()  # update the main window
+
         self.update()
 
     def zoom_out(self):
