@@ -8,9 +8,10 @@ from pathlib import Path
 
 from PySide6.QtWidgets import QApplication, QMessageBox
 
-from foundry import auto_save_rom_path, github_issue_link, is_pyinstalled
+from foundry import auto_save_rom_path, is_pyinstalled
 from foundry.game.File import ROM
 from foundry.gui.dialogs.AutoSaveDialog import AutoSaveDialog
+from foundry.gui.dialogs.crash_dialog import popup_crash_dialog
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.util import clamp
 
@@ -144,17 +145,10 @@ if __name__ == "__main__":
 
         main(path, should_check_auto_save, level_data_tuple, m3l_path)
 
-    except Exception as e:
+    except Exception:
         if app is None:
             app = QApplication()
 
-        box = QMessageBox()
-        box.setWindowTitle("Crash report")
-        box.setText(
-            f"An unexpected error occurred! Please contact the developers at {github_issue_link} "
-            f"with the error below:\n\n{e}\n\n{traceback.format_exc()}"
-        )
-        box.exec()
+        popup_crash_dialog(traceback.format_exc())
 
-        app.exec()
         raise
