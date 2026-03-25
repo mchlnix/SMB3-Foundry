@@ -20,18 +20,26 @@ class AboutDialog(CustomDialog):
     def __init__(self, parent):
         super(AboutDialog, self).__init__(parent, title="About SMB3Foundry")
 
-        main_layout = QBoxLayout(QBoxLayout.LeftToRight, self)
+        main_layout = QBoxLayout(QBoxLayout.Direction.LeftToRight, self)
 
-        image = QPixmap(str(data_dir.joinpath("foundry.ico"))).scaled(200, 200, mode=Qt.SmoothTransformation)
+        image = QPixmap(str(data_dir.joinpath("foundry.ico"))).scaled(
+            200, 200, mode=Qt.TransformationMode.SmoothTransformation
+        )
 
         icon = QLabel(self)
         icon.setPixmap(image)
+        icon.setContentsMargins(0, 0, 10, 0)
 
         main_layout.addWidget(icon)
 
-        text_layout = QBoxLayout(QBoxLayout.TopToBottom)
+        text_layout = QBoxLayout(QBoxLayout.Direction.TopToBottom)
 
-        text_layout.addWidget(QLabel(f"SMB3 Foundry v{get_current_version_name()}", self))
+        version_name = get_current_version_name()
+
+        if not version_name.startswith("nightly"):
+            version_name = f"v{version_name}"
+
+        text_layout.addWidget(QLabel(f"SMB3 Foundry {version_name}", self))
         text_layout.addWidget(HorizontalLine())
         text_layout.addWidget(LinkLabel(self, f'By <a href="{LINK_SMB3F}">Michael</a>'))
         text_layout.addWidget((QLabel("", self)))
@@ -75,6 +83,6 @@ class LinkLabel(QLabel):
         super(LinkLabel, self).__init__(parent)
 
         self.setText(text)
-        self.setTextFormat(Qt.RichText)
-        self.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.setTextFormat(Qt.TextFormat.RichText)
+        self.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
         self.setOpenExternalLinks(True)
