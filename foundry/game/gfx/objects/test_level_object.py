@@ -26,7 +26,9 @@ from smb3parse.objects.object_set import (
 )
 
 reference_image_dir = root_dir / "test_refs"
-reference_image_dir.mkdir(parents=True, exist_ok=True)
+
+OBJECTS_REF_DIR = reference_image_dir / "objects"
+OBJECTS_REF_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def _test_object_against_reference(level_object: LevelObject, qtbot, minimal=False):
@@ -44,7 +46,7 @@ def _test_object_against_reference(level_object: LevelObject, qtbot, minimal=Fal
     if minimal:
         image_name = "minimal_" + image_name
 
-    ref_image_path = str(reference_image_dir.joinpath(image_name))
+    ref_image_path = str(OBJECTS_REF_DIR / image_name)
 
     compare_images(image_name, ref_image_path, view.grab(), level_object.name)
 

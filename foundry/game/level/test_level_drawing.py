@@ -19,18 +19,23 @@ from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util import hex_int
 
-reference_image_dir = root_dir / "test_refs"
-reference_image_dir.mkdir(parents=True, exist_ok=True)
-
 m3l_dir = Path(__file__).parent / "test_m3ls"
 m3l_dir.mkdir(parents=True, exist_ok=True)
+
+reference_image_dir = root_dir / "test_refs"
+
+M3L_REF_DIR = reference_image_dir / "m3ls"
+M3L_REF_DIR.mkdir(parents=True, exist_ok=True)
+
+LEVEL_REF_DIR = reference_image_dir / "levels"
+LEVEL_REF_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def _test_level_against_reference(main_view: MainView, qtbot):
     qtbot.addWidget(main_view)
 
     image_name = f"{main_view.level_ref.level.name}.png"
-    ref_image_path = str(reference_image_dir.joinpath(image_name))
+    ref_image_path = str(LEVEL_REF_DIR / image_name)
 
     main_view.repaint()
 
@@ -162,25 +167,6 @@ def test_level(level_info, settings, rom, qtbot):
     _test_level_against_reference(level_view, qtbot)
 
 
-@pytest.mark.parametrize("jump_test_name", ["jump_vertical_ref", "jump_horizontal_ref"])
-def test_draw_jumps(jump_test_name, level, settings):
-    with (Path(__file__).parent / f"{jump_test_name}.m3l").open("rb") as m3l_file:
-        level.from_m3l(bytearray(m3l_file.read()))
-
-        ref = LevelRef()
-        ref._internal_level = level
-
-        settings.setValue("level_view/draw_grid", False)
-
-        level_view = LevelView(None, ref, settings, LevelContextMenu(ref))
-
-        level_view.resize(level_view.sizeHint())
-
-        compare_images(
-            jump_test_name, str(Path(__file__).parent / f"{jump_test_name}.png"), level_view.grab(), "Jump Test Level"
-        )
-
-
 def _get_all_m3l_files(with_ending=True):
     for path in m3l_dir.iterdir():
         if path.match("*.m3l"):
@@ -204,7 +190,7 @@ def test_draw_m3ls(m3l_file_name, level, settings):
 
         compare_images(
             m3l_file_name.stem,
-            str(reference_image_dir / f"{m3l_file_name.stem}.png"),
+            str(M3L_REF_DIR / f"{m3l_file_name.stem}.png"),
             level_view.grab(),
             "M3L Test Level",
         )

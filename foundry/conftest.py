@@ -59,7 +59,7 @@ def compare_images(image_name: str, ref_image_path: str, gen_image: QPixmap, obj
             pass
 
     else:
-        gen_image.toImage().save(ref_image_path)
+        assert gen_image.toImage().save(ref_image_path), f"Couldn't save image to '{ref_image_path}'."
 
         pytest.skip(f"No ref image was found. Saved new ref under {ref_image_path}.")
 
