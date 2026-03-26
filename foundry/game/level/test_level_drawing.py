@@ -14,6 +14,7 @@ from foundry.gui.visualization.level.LevelView import LevelView
 from foundry.gui.visualization.MainView import MainView
 from foundry.gui.visualization.world.WorldView import WorldView
 from scribe.gui.world_view_context_menu import WorldContextMenu
+from smb3parse.constants import POWERUP_MUSHROOM
 from smb3parse.levels import HEADER_LENGTH
 from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 from smb3parse.util import hex_int
@@ -87,6 +88,8 @@ with Path(data_dir / "levels.dat").open("r") as level_data_file:
 @pytest.fixture
 def settings():
     settings = Settings()
+    settings.setValue("editor/default_powerup", POWERUP_MUSHROOM)
+
     settings.setValue("level_view/block_transparency", True)
     settings.setValue("level_view/block_animation", False)
     settings.setValue("level_view/draw_jumps", True)

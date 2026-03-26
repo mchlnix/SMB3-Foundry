@@ -21,6 +21,7 @@ from foundry.game.gfx.Palette import (
     load_palette_group,
 )
 from foundry.game.level.Level import Level
+from foundry.gui.dialogs.SettingsDialog import POWERUPS
 from foundry.gui.settings import Settings
 from foundry.gui.visualization.level.AutoScrollDrawer import AutoScrollDrawer
 from smb3parse.constants import (
@@ -40,26 +41,41 @@ from smb3parse.objects.object_set import (
 from smb3parse.util import apply
 from smb3parse.util.rect import Point
 
-FIRE_FLOWER = load_from_png(16, 53)
-LEAF = load_from_png(17, 53)
-NORMAL_STAR = load_from_png(18, 53)
-CONTINUOUS_STAR = load_from_png(19, 53)
-MULTI_COIN = load_from_png(20, 53)
-ONE_UP = load_from_png(21, 53)
-COIN = load_from_png(22, 53)
-VINE = load_from_png(23, 53)
-P_SWITCH = load_from_png(24, 53)
-SILVER_COIN = load_from_png(25, 53)
-INVISIBLE_COIN = load_from_png(26, 53)
-INVISIBLE_1_UP = load_from_png(27, 53)
+FIRE_FLOWER = load_from_object_sprite_sheet(16, 53)
+LEAF = load_from_object_sprite_sheet(17, 53)
+NORMAL_STAR = load_from_object_sprite_sheet(18, 53)
+CONTINUOUS_STAR = load_from_object_sprite_sheet(19, 53)
+MULTI_COIN = load_from_object_sprite_sheet(20, 53)
+ONE_UP = load_from_object_sprite_sheet(21, 53)
+COIN = load_from_object_sprite_sheet(22, 53)
+VINE = load_from_object_sprite_sheet(23, 53)
+P_SWITCH = load_from_object_sprite_sheet(24, 53)
+SILVER_COIN = load_from_object_sprite_sheet(25, 53)
+INVISIBLE_COIN = load_from_object_sprite_sheet(26, 53)
+INVISIBLE_1_UP = load_from_object_sprite_sheet(27, 53)
 
-NO_JUMP = load_from_png(32, 53)
-UP_ARROW = load_from_png(33, 53)
-DOWN_ARROW = load_from_png(34, 53)
-LEFT_ARROW = load_from_png(35, 53)
-RIGHT_ARROW = load_from_png(36, 53)
+NO_JUMP = load_from_object_sprite_sheet(32, 53)
+UP_ARROW = load_from_object_sprite_sheet(33, 53)
+DOWN_ARROW = load_from_object_sprite_sheet(34, 53)
+LEFT_ARROW = load_from_object_sprite_sheet(35, 53)
+RIGHT_ARROW = load_from_object_sprite_sheet(36, 53)
 
-ITEM_ARROW = load_from_png(53, 53)
+ITEM_ARROW = load_from_object_sprite_sheet(53, 53)
+
+
+MARIO_BLOCK_WIDTH = 2
+MARIO_BLOCK_HEIGHT = 2
+
+MARIO_SPRITE_OVER_HEIGHT = 4  # pixels
+
+MARIO_SPRITE_WIDTH = MARIO_BLOCK_WIDTH * Block.WIDTH
+MARIO_SPRITE_HEIGHT = MARIO_BLOCK_HEIGHT * Block.HEIGHT + MARIO_SPRITE_OVER_HEIGHT
+
+MARIO_WIDTH_SCALE_FACTOR = MARIO_SPRITE_WIDTH / (Block.WIDTH * 2)
+MARIO_HEIGHT_SCALE_FACTOR = MARIO_SPRITE_HEIGHT / (Block.HEIGHT * 2)
+
+MARIO_SPRITE_X_OFFSET = 0
+MARIO_SPRITE_Y_OFFSET = -MARIO_SPRITE_OVER_HEIGHT / Block.HEIGHT
 
 
 SPECIAL_BACKGROUND_OBJECTS = [
@@ -495,37 +511,46 @@ class LevelDrawer:
         painter.save()
         painter.setOpacity(0.2)
 
+        mario_sprite = self._mario_sprite_for_action(level.start_action)
+
+        # adjust it outside the list comprehension, otherwise we lose precision when the QPoint rounds down
+        adjusted_y_offset = MARIO_SPRITE_Y_OFFSET * self.block_length
+
         # get all potential mario positions
-        potential_positions = [
-            QPoint(block_x, block_y) * self.block_length
-            for block_x, block_y in level.header.gen_mario_start_positions()
-        ]
-
-        graphic_width = graphic_height = 32
-
-        # loop through positions and draw transparent mario
-        x_offset = graphic_width * level.start_action
-
-        mario_cutout = mario_actions.copy(QRect(x_offset, 0, graphic_width, graphic_height)).scaled(
-            2 * self.block_length, 2 * self.block_length
-        )
+        potential_positions = [QPoint(x, y) * self.block_length for x, y in level.header.gen_mario_start_positions()]
 
         for mario_position in potential_positions:
-            painter.drawImage(mario_position, mario_cutout)
+            mario_position.setY(mario_position.y() + adjusted_y_offset)
+            painter.drawImage(mario_position, mario_sprite)
 
         painter.restore()
 
     def _draw_mario(self, painter: QPainter, level: Level):
+        # get the part of Mario from the Mario sprite sheet
+        mario_sprite = self._mario_sprite_for_action(level.start_action)
+
+        adjusted_y_offset = MARIO_SPRITE_Y_OFFSET * self.block_length
+
         mario_position = QPoint(*level.header.mario_position()) * self.block_length
-        graphic_width = graphic_height = 32
+        mario_position.setY(mario_position.y() + adjusted_y_offset)
 
-        x_offset = graphic_width * level.start_action
+        painter.drawImage(mario_position, mario_sprite)
 
-        mario_cutout = mario_actions.copy(QRect(x_offset, 0, graphic_width, graphic_height)).scaled(
-            2 * self.block_length, 2 * self.block_length
+    def _mario_sprite_for_action(self, start_action_index: int) -> QImage:
+        # loop through positions and draw transparent mario
+        x_offset = MARIO_SPRITE_WIDTH * start_action_index
+
+        # TODO: The pipe sprites are off by one. Needs an additional offset to rectify
+        powerup_state = self.settings.value("editor/default_powerup")
+        mario_sprite_sheet = MARIO_SPRITE_SHEET_BY_POWERUP[POWERUPS[powerup_state].power_up_code]
+
+        mario_sprite = mario_sprite_sheet.copy(QRect(x_offset, 0, MARIO_SPRITE_WIDTH, MARIO_SPRITE_HEIGHT))
+
+        mario_sprite = mario_sprite.scaled(
+            MARIO_BLOCK_WIDTH * self.block_length * MARIO_WIDTH_SCALE_FACTOR,
+            MARIO_BLOCK_HEIGHT * self.block_length * MARIO_HEIGHT_SCALE_FACTOR,
         )
-
-        painter.drawImage(mario_position, mario_cutout)
+        return mario_sprite
 
     def _draw_jumps(self, painter: QPainter, level: Level):
         for jump in level.jumps:

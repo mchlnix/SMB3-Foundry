@@ -474,7 +474,11 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         self._save_auto_data()
 
     def _on_show_settings(self):
-        SettingsDialog(self.settings, self).exec()
+        settings_dialog = SettingsDialog(self.settings, self)
+
+        settings_dialog.needs_level_update.connect(self.level_view.update)
+
+        settings_dialog.exec()
 
     def _on_want_to_reload_rom(self):
         self.hotswap_roms()
