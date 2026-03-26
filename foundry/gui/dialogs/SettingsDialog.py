@@ -352,13 +352,20 @@ class SettingsDialog(CustomDialog):
 
         # -----------------------------------------------
 
-        layout = QVBoxLayout(self)
-        layout.addWidget(on_start_up_box)
-        layout.addWidget(mouse_box)
-        layout.addWidget(self._when_open_rom_box)
-        layout.addWidget(self._other_settings_box)
-        layout.addWidget(self.gui_box)
-        layout.addWidget(command_box)
+        left_layout = QVBoxLayout()
+        left_layout.addWidget(on_start_up_box)
+        left_layout.addWidget(mouse_box)
+        left_layout.addWidget(self._when_open_rom_box)
+        left_layout.addWidget(self._other_settings_box)
+
+        right_layout = QVBoxLayout()
+        right_layout.addWidget(self.gui_box)
+        right_layout.addWidget(command_box)
+
+        main_layout = QHBoxLayout(self)
+        main_layout.addLayout(left_layout, stretch=1)
+        main_layout.addSpacing(10)
+        main_layout.addLayout(right_layout, stretch=1)
 
         self.on_dropdown(self.path_dropdown.currentText())
         self.update()
@@ -418,7 +425,7 @@ class SettingsDialog(CustomDialog):
         path_to_emulator, _ = QFileDialog.getOpenFileName(
             self,
             caption="Select emulator executable",
-            dir=QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation),
+            dir=QStandardPaths.writableLocation(QStandardPaths.StandardLocation.ApplicationsLocation),
         )
 
         if not path_to_emulator:
@@ -430,7 +437,7 @@ class SettingsDialog(CustomDialog):
         path_to_roms = QFileDialog.getExistingDirectory(
             self,
             caption="Select Rom directory",
-            dir=QStandardPaths.writableLocation(QStandardPaths.HomeLocation),
+            dir=QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation),
         )
 
         if not path_to_roms:
