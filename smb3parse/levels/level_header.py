@@ -1,3 +1,4 @@
+from enum import IntEnum
 from itertools import product
 
 from smb3parse.levels import (
@@ -22,6 +23,17 @@ MARIO_Y_POSITIONS = [
     0x0F,
     0x18,
 ]  # 0x3D7A0 + 0x3D7A8
+
+
+class MarioStartAction(IntEnum):
+    Stand = 0
+    Sliding = 1
+    FromPipeUpwards = 2
+    FromPipeDownwards = 3
+    FromPipeRight = 4
+    FromPipeLeft = 5
+    ShipTransition = 6
+    ShipAutoScrolling = 7
 
 
 class LevelHeader:
@@ -61,7 +73,7 @@ class LevelHeader:
         self._jump_object_set_number = self.data[6] & 0b0000_1111  # for indexing purposes
         self._jump_object_set = ObjectSet(rom, self.jump_object_set_number)
 
-        self.start_action = (self.data[7] & 0b1110_0000) >> 5
+        self.start_action = MarioStartAction((self.data[7] & 0b1110_0000) >> 5)
 
         self.graphic_set_index = self.data[7] & 0b0001_1111
 

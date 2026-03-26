@@ -2,7 +2,7 @@ from PySide6.QtCore import QPoint, QSize
 from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
 from foundry.game.gfx.block_cache import get_worldmap_tile
-from foundry.game.gfx.drawable import load_from_png
+from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.world_map.map_tile import MapTile
 from foundry.game.level.WorldMap import WorldMap
@@ -19,12 +19,12 @@ from smb3parse.levels import (
     WORLD_MAP_WARP_WORLD_INDEX,
 )
 
-BORDER_CORNER_TL = load_from_png(61, 3)
+BORDER_CORNER_TL = load_from_object_sprite_sheet(61, 3)
 BORDER_CORNER_TR = BORDER_CORNER_TL.mirrored(True, False)
-BORDER_CORNER_BR = load_from_png(63, 3)
+BORDER_CORNER_BR = load_from_object_sprite_sheet(63, 3)
 BORDER_CORNER_BL = BORDER_CORNER_BR.mirrored(True, False)
 
-BORDER_SIDE_L = load_from_png(62, 3)
+BORDER_SIDE_L = load_from_object_sprite_sheet(62, 3)
 BORDER_SIDE_R = BORDER_SIDE_L.mirrored(True, False)
 
 

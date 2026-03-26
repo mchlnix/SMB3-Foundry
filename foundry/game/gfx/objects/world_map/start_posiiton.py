@@ -1,11 +1,11 @@
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QPainter
 
-from foundry.game.gfx.drawable import load_from_png
+from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.data_points import Position
 
-mario_png = load_from_png(59, 53)
+mario_png = load_from_object_sprite_sheet(59, 53)
 
 
 class StartPosition(MapObject):

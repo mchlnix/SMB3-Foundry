@@ -3,7 +3,7 @@ from PySide6.QtGui import QDrag, QImage, QMouseEvent, QPainter, QPaintEvent
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from foundry.game.gfx import object_to_image
-from foundry.game.gfx.drawable import load_from_png
+from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.game.gfx.objects import get_minimal_icon_object
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.jump import Jump
@@ -11,28 +11,28 @@ from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.Palette import bg_color_for_palette_group
 
 objects_to_use_pngs_instead = {
-    "'?' with flower": load_from_png(0, 4),
-    "'?' with leaf": load_from_png(1, 4),
-    "'?' with star": load_from_png(2, 4),
-    "'?' with continuous star": load_from_png(3, 4),
-    "brick with flower": load_from_png(6, 4),
-    "brick with leaf": load_from_png(7, 4),
-    "brick with star": load_from_png(8, 4),
-    "brick with continuous star": load_from_png(9, 4),
-    "brick with multi-coin": load_from_png(10, 4),
-    "brick with 1-up": load_from_png(11, 4),
-    "brick with vine": load_from_png(12, 4),
-    "brick with p-switch": load_from_png(13, 4),
-    "invisible coin": load_from_png(14, 4),
-    "invisible 1-up": load_from_png(15, 4),
-    "bricks with single coins": load_from_png(18, 4),
-    "note block with flower": load_from_png(35, 5),
-    "note block with leaf": load_from_png(36, 5),
-    "note block with star": load_from_png(37, 5),
-    "wooden block with flower": load_from_png(38, 5),
-    "wooden block with leaf": load_from_png(39, 5),
-    "wooden block with star": load_from_png(40, 5),
-    "silver coins (appear when you hit a p-switch)": load_from_png(53, 5),
+    "'?' with flower": load_from_object_sprite_sheet(0, 4),
+    "'?' with leaf": load_from_object_sprite_sheet(1, 4),
+    "'?' with star": load_from_object_sprite_sheet(2, 4),
+    "'?' with continuous star": load_from_object_sprite_sheet(3, 4),
+    "brick with flower": load_from_object_sprite_sheet(6, 4),
+    "brick with leaf": load_from_object_sprite_sheet(7, 4),
+    "brick with star": load_from_object_sprite_sheet(8, 4),
+    "brick with continuous star": load_from_object_sprite_sheet(9, 4),
+    "brick with multi-coin": load_from_object_sprite_sheet(10, 4),
+    "brick with 1-up": load_from_object_sprite_sheet(11, 4),
+    "brick with vine": load_from_object_sprite_sheet(12, 4),
+    "brick with p-switch": load_from_object_sprite_sheet(13, 4),
+    "invisible coin": load_from_object_sprite_sheet(14, 4),
+    "invisible 1-up": load_from_object_sprite_sheet(15, 4),
+    "bricks with single coins": load_from_object_sprite_sheet(18, 4),
+    "note block with flower": load_from_object_sprite_sheet(35, 5),
+    "note block with leaf": load_from_object_sprite_sheet(36, 5),
+    "note block with star": load_from_object_sprite_sheet(37, 5),
+    "wooden block with flower": load_from_object_sprite_sheet(38, 5),
+    "wooden block with leaf": load_from_object_sprite_sheet(39, 5),
+    "wooden block with star": load_from_object_sprite_sheet(40, 5),
+    "silver coins (appear when you hit a p-switch)": load_from_object_sprite_sheet(53, 5),
 }
 
 

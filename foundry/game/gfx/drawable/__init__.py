@@ -25,8 +25,12 @@ def make_image_selected(image: QImage) -> QImage:
     return selected_image
 
 
-def load_from_png(x: int, y: int):
-    image = png.copy(QRect(x * 16, y * 16, 16, 16))
+def load_from_object_sprite_sheet(x: int, y: int):
+    sprite_side_length = 16
+
+    cut_out_area = QRect(*(Rect(x, y, 1, 1) * sprite_side_length))
+    image = OBJECT_SPRITE_SHEET.copy(cut_out_area)
+
     mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
     image.setAlphaChannel(mask)
 

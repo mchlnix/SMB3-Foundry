@@ -1,12 +1,16 @@
 from itertools import product
 
 from PySide6.QtCore import QPoint, QRect
-from PySide6.QtGui import QBrush, QColor, QPainter, QPen, Qt
+from PySide6.QtGui import QBrush, QColor, QImage, QPainter, QPen, Qt
 
 from foundry.game import EXPANDS_BOTH, EXPANDS_HORIZ, EXPANDS_VERT, GROUND
 from foundry.game.gfx import BlockCache
 from foundry.game.gfx.block_cache import draw_block, draw_enemy_item, draw_level_object
-from foundry.game.gfx.drawable import load_from_png, make_image_selected, mario_actions
+from foundry.game.gfx.drawable import (
+    MARIO_SPRITE_SHEET_BY_POWERUP,
+    load_from_object_sprite_sheet,
+    make_image_selected,
+)
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.level_object import LevelObject

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from PySide6.QtCore import QRect, QStandardPaths
-from PySide6.QtGui import QColor, QIcon, QImage, QPixmap, Qt
+from PySide6.QtCore import QStandardPaths, Signal, SignalInstance
+from PySide6.QtGui import QIcon, QImage, QPixmap
 from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
@@ -17,8 +17,7 @@ from PySide6.QtWidgets import (
 )
 
 from foundry import data_dir, icon
-from foundry.game.gfx.drawable import MASK_COLOR
-from foundry.game.gfx.drawable.Block import Block
+from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.gui import label_and_widget
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.settings import (
@@ -33,15 +32,10 @@ from smb3parse.constants import (
     POWERUP_FROG,
     POWERUP_HAMMER,
     POWERUP_MUSHROOM,
+    POWERUP_NONE,
     POWERUP_RACCOON,
     POWERUP_TANOOKI,
 )
-
-POWERUPS_NAME = 0
-POWERUPS_X = 1
-POWERUPS_Y = 2
-POWERUPS_VALUE = 3
-POWERUPS_PWING = 4
 
 
 @dataclass
@@ -60,7 +54,7 @@ class PowerupEntry:
 
 
 POWERUPS = [
-    PowerupEntry("Small Mario", 32, 53, 0, False),
+    PowerupEntry("Small Mario", 32, 53, POWERUP_NONE, False),
     PowerupEntry("Big Mario", 6, 48, POWERUP_MUSHROOM, False),
     PowerupEntry("Raccoon Mario", 57, 53, POWERUP_RACCOON, False),
     PowerupEntry("Fire Mario", 16, 53, POWERUP_FIREFLOWER, False),
@@ -73,14 +67,14 @@ POWERUPS = [
 ]
 
 png = QImage(str(data_dir / "gfx.png"))
-png.convertTo(QImage.Format_RGB888)
+png.convertTo(QImage.Format.Format_RGB888)
 
 
 default_dirs = {
-    "User": QStandardPaths.writableLocation(QStandardPaths.HomeLocation),
-    "Desktop": QStandardPaths.writableLocation(QStandardPaths.DesktopLocation),
-    "Documents": QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation),
-    "Downloads": QStandardPaths.writableLocation(QStandardPaths.DownloadLocation),
+    "User": QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation),
+    "Desktop": QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DesktopLocation),
+    "Documents": QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DocumentsLocation),
+    "Downloads": QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DownloadLocation),
     "Custom": "",
 }
 
@@ -88,6 +82,8 @@ asm_action_choices = ["Don't ask", "Ask if needed", "Load if available"]
 
 
 class SettingsDialog(CustomDialog):
+    needs_level_update: SignalInstance = Signal()
+
     def __init__(self, settings: Settings, parent=None):
         super(SettingsDialog, self).__init__(parent, "Settings")
 
@@ -329,7 +325,7 @@ class SettingsDialog(CustomDialog):
         self.powerup_combo_box = QComboBox()
 
         for name, x, y, value, p_wing in POWERUPS:
-            powerup_icon = self._load_from_png(x, y)
+            powerup_icon = self._icon_from_png(x, y)
 
             self.powerup_combo_box.addItem(powerup_icon, name)
 
@@ -337,7 +333,7 @@ class SettingsDialog(CustomDialog):
         self.powerup_combo_box.currentIndexChanged.connect(self._update_settings)
 
         self.starman_checkbox = QCheckBox()
-        self.starman_checkbox.setIcon(self._load_from_png(18, 53))
+        self.starman_checkbox.setIcon(self._icon_from_png(18, 53))
         self.starman_checkbox.setChecked(self.settings.value("editor/powerup_starman"))
         self.starman_checkbox.stateChanged.connect(self._update_settings)
 
@@ -371,6 +367,8 @@ class SettingsDialog(CustomDialog):
         self.command_label.setText(
             f" > {self.settings.value('editor/instaplay_emulator')} {self.settings.value('editor/instaplay_arguments')}"
         )
+
+        self.needs_level_update.emit()
 
     def _update_settings(self, _=None):
         self.settings.setValue("editor/instaplay_emulator", self.emulator_command_input.text())
@@ -452,17 +450,8 @@ class SettingsDialog(CustomDialog):
         self._update_settings()
 
     @staticmethod
-    def _load_from_png(x: int, y: int) -> QIcon:
-        image = png.copy(
-            QRect(
-                x * Block.SIDE_LENGTH,
-                y * Block.SIDE_LENGTH,
-                Block.SIDE_LENGTH,
-                Block.SIDE_LENGTH,
-            )
-        )
-        mask = image.createMaskFromColor(QColor(*MASK_COLOR).rgb(), Qt.MaskMode.MaskOutColor)
-        image.setAlphaChannel(mask)
+    def _icon_from_png(x: int, y: int) -> QIcon:
+        image = load_from_object_sprite_sheet(x, y)
 
         pixmap = QPixmap.fromImage(image)
         icon_from_png = QIcon(pixmap)

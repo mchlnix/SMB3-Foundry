@@ -2,11 +2,11 @@ from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter
 
 from foundry.game.gfx.block_cache import get_worldmap_tile
-from foundry.game.gfx.drawable import load_from_png
+from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.data_points import FortressFXData, Position
 
-KEY_IMG = load_from_png(63, 2)
+KEY_IMG = load_from_object_sprite_sheet(63, 2)
 
 
 class Lock(MapObject):

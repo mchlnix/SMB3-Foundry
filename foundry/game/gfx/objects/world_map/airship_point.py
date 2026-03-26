@@ -1,16 +1,16 @@
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import QPainter
 
-from foundry.game.gfx.drawable import load_from_png
+from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.levels import WORLD_MAP_SCREEN_WIDTH
 
-AIRSHIP_TRAVEL_POINT_1 = load_from_png(59, 2)
-AIRSHIP_TRAVEL_POINT_2 = load_from_png(60, 2)
-AIRSHIP_TRAVEL_POINT_3 = load_from_png(61, 2)
-AIRSHIP_TRAVEL_POINT_4 = load_from_png(62, 2)
-AIRSHIP_TRAVEL_POINT_5 = load_from_png(59, 3)
-AIRSHIP_TRAVEL_POINT_6 = load_from_png(60, 3)
+AIRSHIP_TRAVEL_POINT_1 = load_from_object_sprite_sheet(59, 2)
+AIRSHIP_TRAVEL_POINT_2 = load_from_object_sprite_sheet(60, 2)
+AIRSHIP_TRAVEL_POINT_3 = load_from_object_sprite_sheet(61, 2)
+AIRSHIP_TRAVEL_POINT_4 = load_from_object_sprite_sheet(62, 2)
+AIRSHIP_TRAVEL_POINT_5 = load_from_object_sprite_sheet(59, 3)
+AIRSHIP_TRAVEL_POINT_6 = load_from_object_sprite_sheet(60, 3)
 
 AIRSHIP_TRAVEL_POINTS = [
     AIRSHIP_TRAVEL_POINT_1,
