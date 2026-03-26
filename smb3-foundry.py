@@ -84,7 +84,7 @@ def main(
 
     main_window.on_open_rom(path_to_rom, try_opening_level=not have_level_data)
 
-    if ROM.is_loaded():
+    if ROM.is_loaded() and have_level_data:
         if m3l_path_:
             main_window.load_m3l(m3l_path_)
 
