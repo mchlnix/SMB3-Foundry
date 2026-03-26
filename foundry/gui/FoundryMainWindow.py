@@ -77,7 +77,7 @@ from foundry.gui.dialogs.HeaderEditor import HeaderEditor
 from foundry.gui.dialogs.JumpEditor import JumpEditor
 from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
 from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialog
-from foundry.gui.dialogs.ObjectSetSelector import ObjectSetSelector
+from foundry.gui.dialogs.new_level_dialog import NewLevelDialog
 from foundry.gui.dialogs.PaletteViewer import SidePalette
 from foundry.gui.dialogs.SettingsDialog import POWERUPS, SettingsDialog
 from foundry.gui.JumpList import JumpList
@@ -431,11 +431,11 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         if not dont_check and not self.safe_to_change():
             return
 
-        object_set = ObjectSetSelector.get_object_set(self, alternative_title="Creating New Level")
-
-        if object_set == -1:
-            # was cancelled
+        new_level_dialog = NewLevelDialog(self)
+        if new_level_dialog.exec() == QDialog.DialogCode.Rejected:
             return
+
+        object_set = new_level_dialog.object_set_index
 
         self._reload_rom()
 

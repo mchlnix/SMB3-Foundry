@@ -34,8 +34,8 @@ ENEMY_DATA_DELIMITER_COUNT = 2
 
 class AdditionalData:
     """
-    Set of additional, foundry specific data, meant to persist between invocations of the editor. Can be used to keep
-    ROM specific decisions or settings, that have no place in the actual game data.
+    Set of additional, foundry-specific data, meant to persist between invocations of the editor.
+    Can be used to keep ROM specific decisions or settings, that have no place in the actual game data.
     """
 
     def __init__(self, rom: Rom):
