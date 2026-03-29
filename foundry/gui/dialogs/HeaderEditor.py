@@ -336,6 +336,8 @@ class HeaderEditor(CustomDialog):
             return
 
         dropdown = self.sender()
+        assert isinstance(dropdown, QComboBox)
+
         text = dropdown.currentText()
 
         # TODO do this via properties and get rid of the ifs?
@@ -387,10 +389,7 @@ class HeaderEditor(CustomDialog):
             object_set_cmd = SetNextAreaObjectSet(self.level, new_index)
 
             # in case the level address changes based on the new object set, don't list that command separately
-            make_macro(self.undo_stack, object_set_cmd.text())
-            self.undo_stack.push(object_set_cmd)
-
-            self.undo_stack.endMacro()
+            make_macro(self.undo_stack, object_set_cmd.text(), object_set_cmd)
 
         self.update()
 
