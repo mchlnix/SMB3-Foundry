@@ -716,10 +716,11 @@ class LevelView(MainView):
                     event.position().toPoint(),
                     level_object.domain,
                     level_object.obj_index,
+                    selected=True,
                 )
             )
         else:
-            self.undo_stack.push(AddEnemyAt(self, event.position().toPoint(), level_object.obj_index))
+            self.undo_stack.push(AddEnemyAt(self, event.position().toPoint(), level_object.obj_index, selected=True))
 
         event.accept()
 
