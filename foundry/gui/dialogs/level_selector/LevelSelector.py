@@ -125,6 +125,8 @@ class LevelSelector(QDialog):
         QShortcut(QKeySequence(Qt.Key.Key_Return), self, self._on_ok)
         QShortcut(QKeySequence(Qt.Key.Key_Enter), self, self._on_ok)
 
+        self._on_stock_level_selected()
+
     def _one_tab_left(self):
         current_index = self.source_selector.currentIndex()
         tab_count = self.source_selector.count()
