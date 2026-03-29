@@ -1,5 +1,5 @@
 from foundry.game.ObjectSet import ObjectSet
-from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
+from smb3parse.constants import ENEMY_ITEM_OBJECT_SET
 
 
 def test_enemy_names(main_window):

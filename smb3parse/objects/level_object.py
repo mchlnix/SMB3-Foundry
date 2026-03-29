@@ -1,10 +1,10 @@
-from smb3parse.levels import DEFAULT_HORIZONTAL_HEIGHT
-from smb3parse.objects import InLevelObject
-from smb3parse.objects.object_set import (
+from smb3parse.constants import (
     ENEMY_ITEM_OBJECT_SET,
     PLAINS_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
+from smb3parse.levels import DEFAULT_HORIZONTAL_HEIGHT
+from smb3parse.objects import InLevelObject
 from smb3parse.util import lrange
 
 Domain = int

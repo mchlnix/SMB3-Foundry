@@ -5,7 +5,7 @@ from foundry.game.gfx.drawable import MASK_COLOR, apply_selection_overlay
 from foundry.game.gfx.drawable.Tile import Tile
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import NESPalette, PaletteGroup
-from smb3parse.objects.object_set import CLOUDY_GRAPHICS_SET
+from smb3parse.constants import CLOUDY_GRAPHICS_SET
 
 TSA_BANK_0_START = 0 * 256
 TSA_BANK_1_START = 1 * 256

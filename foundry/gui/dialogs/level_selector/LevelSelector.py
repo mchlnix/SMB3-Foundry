@@ -14,13 +14,13 @@ from foundry import icon
 from foundry.game.File import ROM
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
-from smb3parse.data_points import LevelPointerData
-from smb3parse.levels import WORLD_COUNT
-from smb3parse.objects.object_set import (
+from smb3parse.constants import (
     MUSHROOM_OBJECT_SET,
     SPADE_BONUS_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
+from smb3parse.data_points import LevelPointerData
+from smb3parse.levels import WORLD_COUNT
 
 from .found_level_list import FoundLevelWidget
 from .overworld_selection_map import WorldMapLevelSelect

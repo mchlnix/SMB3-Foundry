@@ -4,8 +4,12 @@ from warnings import warn
 from foundry.game import GROUND, SKY
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
+from smb3parse.constants import (
+    LVL_OBJ_PLAINS_DOWNWARD_VINE,
+    LVL_OBJ_SKY_WOODEN_POLE,
+    PLAINS_OBJECT_SET,
+)
 from smb3parse.levels import LEVEL_MAX_LENGTH, LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
-from smb3parse.objects.object_set import PLAINS_OBJECT_SET
 from smb3parse.util.rect import Rect
 
 # not all objects provide a block index for a blank block
@@ -275,8 +279,8 @@ class ObjectRenderer:
 
     def _render_horizontal(self, blocks_to_draw):
         self._new_width = self._object.length + 1
-        downwards_extending_vine = 1, 0, 0x06
-        wooden_sky_pole = 4, 0, 0x04
+        downwards_extending_vine = LVL_OBJ_PLAINS_DOWNWARD_VINE
+        wooden_sky_pole = LVL_OBJ_SKY_WOODEN_POLE
 
         if self._object.object_info in [downwards_extending_vine, wooden_sky_pole]:
             self._new_width -= 1

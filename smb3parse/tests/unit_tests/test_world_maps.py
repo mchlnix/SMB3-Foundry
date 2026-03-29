@@ -1,6 +1,6 @@
 import pytest
 
-from smb3parse.constants import TILE_BOWSER_CASTLE
+from smb3parse.constants import TILE_BOWSER_CASTLE, WORLD_MAP_OBJECT_SET
 from smb3parse.data_points import Position
 from smb3parse.levels import WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
 from smb3parse.levels.world_map import (
@@ -9,7 +9,6 @@ from smb3parse.levels.world_map import (
     get_all_world_maps,
     list_world_map_addresses,
 )
-from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
 
 world_map_addresses = [
     0x185BA,

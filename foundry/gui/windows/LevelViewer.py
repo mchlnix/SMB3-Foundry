@@ -23,15 +23,16 @@ from PySide6.QtWidgets import (
 from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.File import ROM
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
-from smb3parse.constants import BASE_OFFSET, Constants
-from smb3parse.data_points import WorldMapData
-from smb3parse.levels import WORLD_COUNT
-from smb3parse.objects.object_set import (
+from smb3parse.constants import (
+    BASE_OFFSET,
     ENEMY_ITEM_OBJECT_SET,
     OBJECT_SET_NAMES,
     PLAINS_OBJECT_SET,
     SPADE_BONUS_OBJECT_SET,
+    Constants,
 )
+from smb3parse.data_points import WorldMapData
+from smb3parse.levels import WORLD_COUNT
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE
 

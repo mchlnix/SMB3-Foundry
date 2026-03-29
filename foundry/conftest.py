@@ -9,7 +9,7 @@ from foundry import Settings, root_dir
 from foundry.game.File import ROM
 from foundry.game.level.Level import Level
 from foundry.gui.FoundryMainWindow import FoundryMainWindow
-from smb3parse.objects.object_set import PLAINS_OBJECT_SET
+from smb3parse.constants import PLAINS_OBJECT_SET
 
 test_rom_path = root_dir / "roms" / "SMB3.nes"
 

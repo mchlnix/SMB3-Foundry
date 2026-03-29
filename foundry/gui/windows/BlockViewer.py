@@ -12,8 +12,7 @@ from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
-from smb3parse.constants import TILE_NAMES
-from smb3parse.objects.object_set import UNDERGROUND_OBJECT_SET, WORLD_MAP_OBJECT_SET
+from smb3parse.constants import TILE_NAMES, UNDERGROUND_OBJECT_SET, WORLD_MAP_OBJECT_SET
 
 
 class BlockViewer(CustomChildWindow):

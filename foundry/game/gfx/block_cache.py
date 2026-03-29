@@ -12,7 +12,7 @@ from foundry.game.ObjectDefinitions import (
     enemy_handle_x2,
     enemy_handle_y,
 )
-from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET
+from smb3parse.constants import WORLD_MAP_OBJECT_SET
 
 if TYPE_CHECKING:
     from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem

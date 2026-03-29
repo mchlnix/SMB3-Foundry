@@ -3,7 +3,7 @@
 from PySide6.QtWidgets import QApplication
 
 from foundry.game.File import ROM
-from smb3parse.objects.object_set import PLAINS_OBJECT_SET
+from smb3parse.constants import PLAINS_OBJECT_SET
 from smb3parse.util.parser.cpu import NesCPU
 from smb3parse.util.parser.examples.canvas import Canvas
 

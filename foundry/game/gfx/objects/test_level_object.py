@@ -9,8 +9,7 @@ from foundry.game.gfx.objects import get_minimal_icon_object
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from foundry.gui.windows.ObjectViewer import ObjectDrawArea
-from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
-from smb3parse.objects.object_set import (
+from smb3parse.constants import (
     DESERT_GRAPHICS_SET,
     DESERT_OBJECT_SET,
     DUNGEON_GRAPHICS_SET,
@@ -24,6 +23,7 @@ from smb3parse.objects.object_set import (
     UNDERGROUND_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
+from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
 
 reference_image_dir = root_dir / "test_refs"
 

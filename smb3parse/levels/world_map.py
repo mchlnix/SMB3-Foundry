@@ -7,6 +7,7 @@ from smb3parse.constants import (
     TILE_LEVEL_1,
     TILE_LEVEL_10,
     TILE_NAMES,
+    WORLD_MAP_OBJECT_SET,
     Constants,
 )
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
@@ -24,7 +25,7 @@ from smb3parse.levels import (
     LevelBase,
 )
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.objects.object_set import WORLD_MAP_OBJECT_SET, ObjectSet
+from smb3parse.objects.object_set import ObjectSet
 from smb3parse.util.rom import Rom
 
 

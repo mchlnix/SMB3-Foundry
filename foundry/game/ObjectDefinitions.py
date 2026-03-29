@@ -2,7 +2,7 @@ from enum import Enum
 from functools import lru_cache
 
 from foundry import data_dir
-from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET
+from smb3parse.constants import ENEMY_ITEM_OBJECT_SET
 from smb3parse.util import apply
 
 

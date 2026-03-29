@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from smb3parse.objects.object_set import ENEMY_ITEM_OBJECT_SET, ObjectSet
+from smb3parse.constants import ENEMY_ITEM_OBJECT_SET
+from smb3parse.objects.object_set import ObjectSet
 from smb3parse.tests.conftest import test_rom_path
 from smb3parse.util.rom import Rom
 

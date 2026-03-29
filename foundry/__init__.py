@@ -12,7 +12,7 @@ from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, Qt, QUndoCommand, QU
 from PySide6.QtWidgets import QApplication, QMessageBox, QWidget
 
 from foundry.gui.settings import Settings
-from smb3parse.objects.object_set import DESERT_OBJECT_SET
+from smb3parse.constants import DESERT_OBJECT_SET
 from smb3parse.util import apply
 
 if TYPE_CHECKING:

@@ -1,17 +1,17 @@
 from dataclasses import dataclass, field
 
-from smb3parse.constants import ENEMY_SIZE
-from smb3parse.levels import HEADER_LENGTH
-from smb3parse.objects.level_object import goes_to_next_level
-from smb3parse.objects.object_set import (
+from smb3parse.constants import (
     CLOUDY_OBJECT_SET,
     ENEMY_ITEM_OBJECT_SET,
+    ENEMY_SIZE,
     GIANT_OBJECT_SET,
     HILLY_OBJECT_SET,
     PIRANHA_PLANT_OBJECT_SET,
     PLAINS_OBJECT_SET,
     UNDERGROUND_OBJECT_SET,
 )
+from smb3parse.levels import HEADER_LENGTH
+from smb3parse.objects.level_object import goes_to_next_level
 from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
 
 

@@ -11,13 +11,14 @@ from foundry.game.additional_data import (
 from foundry.game.level import EMPTY_OBJECT_DATA, EnemyItemAddress, LevelAddress
 from smb3parse.constants import (
     BASE_OFFSET,
+    DESERT_OBJECT_SET,
     ENEMY_DATA_BANK_INDEX,
     OFFSET_SIZE,
     PLAINS_LEVEL_DATA_BANK_INDEX,
+    PLAINS_OBJECT_SET,
     VANILLA_PRG_BANK_COUNT,
     Constants,
 )
-from smb3parse.objects.object_set import DESERT_OBJECT_SET, PLAINS_OBJECT_SET
 from smb3parse.util import apply
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom

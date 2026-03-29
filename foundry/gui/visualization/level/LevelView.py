@@ -588,15 +588,15 @@ class LevelView(MainView):
         self.objects_before_moving.clear()
         self.dragging_happened = False
 
-    def scroll_to_objects(self, objects: list[LevelObject]):
+    def scroll_to_objects(self, objects: list[InLevelObject]):
         if not objects:
             return
 
         min_x = min([obj.x_position for obj in objects]) * self.block_length
         min_y = min([obj.y_position for obj in objects]) * self.block_length
 
-        # not great, not terrible
-        cast(QScrollArea, self.parent().parent()).ensureVisible(min_x, min_y)
+        # TODO not great, not terrible
+        cast(QScrollArea, cast(QWidget, self.parent().parent())).ensureVisible(min_x, min_y)
 
     def level_safe_to_save(self) -> tuple[bool, str, str]:
         is_safe = True

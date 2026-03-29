@@ -11,8 +11,13 @@ from foundry.game.ObjectDefinitions import (
     enemy_handle_y,
 )
 from foundry.game.ObjectSet import ObjectSet
-from smb3parse.constants import OBJ_AUTOSCROLL, OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM
-from smb3parse.objects.object_set import ENEMY_ITEM_GRAPHICS_SET, ENEMY_ITEM_OBJECT_SET
+from smb3parse.constants import (
+    ENEMY_ITEM_GRAPHICS_SET,
+    ENEMY_ITEM_OBJECT_SET,
+    OBJ_AUTOSCROLL,
+    OBJ_BOOMBOOM,
+    OBJ_FLYING_BOOMBOOM,
+)
 from smb3parse.util.rect import Rect
 
 

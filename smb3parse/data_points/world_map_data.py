@@ -1,9 +1,11 @@
 from collections import defaultdict
 
 from smb3parse.constants import (
+    AIR_SHIP_OBJECT_SET,
     AIRSHIP_TRAVEL_SET_COUNT,
     AIRSHIP_TRAVEL_SET_SIZE,
     BASE_OFFSET,
+    MUSHROOM_OBJECT_SET,
     OFFSET_SIZE,
     Constants,
 )
@@ -18,11 +20,7 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_WARP_WORLD_INDEX,
 )
-from smb3parse.objects.object_set import (
-    AIR_SHIP_OBJECT_SET,
-    MUSHROOM_OBJECT_SET,
-    ObjectSet,
-)
+from smb3parse.objects.object_set import ObjectSet
 from smb3parse.util.rom import Rom
 
 
