@@ -73,9 +73,9 @@ from foundry.gui.commands import (
     ToForeground,
 )
 from foundry.gui.ContextMenu import LevelContextMenu
-from foundry.gui.dialogs.HeaderEditor import HeaderEditor
 from foundry.gui.dialogs.JumpEditor import JumpEditor
 from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
+from foundry.gui.dialogs.LevelHeaderEditor import LevelHeaderEditor
 from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.dialogs.new_level_dialog import NewLevelDialog
 from foundry.gui.dialogs.PaletteViewer import SidePalette
@@ -631,7 +631,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         return True
 
     def _show_jump_dest(self):
-        header_editor = HeaderEditor(self, self.level_ref)
+        header_editor = LevelHeaderEditor(self, self.level_ref)
         header_editor.tab_widget.setCurrentIndex(3)
 
         header_editor.exec()
@@ -1271,7 +1271,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         LevelSettingsDialog(self, self.level_ref).exec()
 
     def on_header_editor(self, _):
-        HeaderEditor(self, self.level_ref).exec()
+        LevelHeaderEditor(self, self.level_ref).exec()
 
     def update_level(
         self,

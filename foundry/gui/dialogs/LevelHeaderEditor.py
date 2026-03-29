@@ -80,9 +80,9 @@ SPINNER_MAX_VALUE = 0x0F_FF_FF
 
 
 # change of object palette is always triggered for some reason
-class HeaderEditor(CustomDialog):
+class LevelHeaderEditor(CustomDialog):
     def __init__(self, parent: QWidget | None, level_ref: LevelRef):
-        super(HeaderEditor, self).__init__(parent, "Level Header Editor")
+        super(LevelHeaderEditor, self).__init__(parent, "Level Header Editor")
 
         self.level = level_ref
 
@@ -414,6 +414,7 @@ class HeaderEditor(CustomDialog):
             return
 
         checkbox = self.sender()
+        assert isinstance(checkbox, QCheckBox)
         assert checked == checkbox.isChecked()
 
         if checkbox == self.pipe_ends_level_cb:

@@ -3,7 +3,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import Qt, QWheelEvent
 
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from foundry.gui.dialogs.HeaderEditor import HeaderEditor
+from foundry.gui.dialogs.LevelHeaderEditor import LevelHeaderEditor
 from foundry.gui.visualization.level.LevelView import LevelView
 from smb3parse.constants import ENEMY_ITEM_OBJECT_SET, PLAINS_OBJECT_SET
 from smb3parse.data_points import Position
@@ -37,7 +37,7 @@ def test_object_at(level_view: LevelView, qtbot, coordinates, obj_index, domain,
 
 def test_level_larger(main_window, level_view):
     # GIVEN level_view and a header editor
-    header_editor = HeaderEditor(main_window, level_view.level_ref)
+    header_editor = LevelHeaderEditor(main_window, level_view.level_ref)
     length_dropdown = header_editor.length_dropdown
 
     original_size = level_view.size()
@@ -54,7 +54,7 @@ def test_level_larger(main_window, level_view):
 
 
 def test_level_smaller(main_window, level_view):
-    header_editor = HeaderEditor(main_window, level_view.level_ref)
+    header_editor = LevelHeaderEditor(main_window, level_view.level_ref)
     length_dropdown = header_editor.length_dropdown
 
     original_size = level_view.size()

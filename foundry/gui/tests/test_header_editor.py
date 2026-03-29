@@ -2,7 +2,7 @@ import pytest
 from PySide6.QtWidgets import QCheckBox, QComboBox
 
 from foundry.game.level.Level import Level
-from foundry.gui.dialogs.HeaderEditor import HeaderEditor
+from foundry.gui.dialogs.LevelHeaderEditor import LevelHeaderEditor
 from smb3parse.levels import LEVEL_SCREEN_WIDTH
 
 
@@ -10,7 +10,7 @@ from smb3parse.levels import LEVEL_SCREEN_WIDTH
 def header_editor(main_window):
     level = main_window.level_ref
 
-    return HeaderEditor(main_window, level)
+    return LevelHeaderEditor(main_window, level)
 
 
 def _test_dropdown(dropdown: QComboBox, level: Level, level_attr: str, expected_change, index_change=+1):
