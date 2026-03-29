@@ -211,6 +211,9 @@ class HeaderEditor(CustomDialog):
         level_select_button = QPushButton("Set from Level Selector")
         level_select_button.clicked.connect(self._set_jump_destination)
 
+        current_level_select_button = QPushButton("Use current Level")
+        current_level_select_button.clicked.connect(self._set_from_current_level)
+
         form = QFormLayout()
         form.setFormAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -222,6 +225,7 @@ class HeaderEditor(CustomDialog):
 
         form.addRow(QLabel(""))
         form.addRow(level_select_button)
+        form.addRow(current_level_select_button)
 
         widget = QWidget()
         widget.setLayout(form)
@@ -287,27 +291,39 @@ class HeaderEditor(CustomDialog):
         if not level_was_selected:
             return
 
-        self.blockSignals(True)
-
-        self.next_area_object_set_dropdown.setCurrentIndex(level_selector.object_set)
-        self.level_pointer_spinner.setValue(level_selector.object_data_offset)
-        self.enemy_pointer_spinner.setValue(level_selector.enemy_data_offset)
-
-        self.blockSignals(False)
-
         level_address = level_selector.object_data_offset
         enemy_address = level_selector.enemy_data_offset
         object_set_number = level_selector.object_set
 
-        make_macro(
-            self.undo_stack,
-            f"Set Next Area to {level_address:#x}/{enemy_address:#x}, {OBJECT_SET_NAMES[object_set_number]}",
-            SetNextAreaObjectSet(self.level, object_set_number),
-            SetNextAreaObjectAddress(self.level, level_address),
-            SetNextAreaEnemyAddress(self.level, enemy_address),
-        )
+        self._set_jump_destination_values(enemy_address, level_address, object_set_number)
 
         self.update()
+
+    def _set_from_current_level(self):
+        level_address = self.level.level.header_offset
+        enemy_address = self.level.level.enemy_offset
+        object_set_number = self.level.level.object_set.number
+
+        self._set_jump_destination_values(enemy_address, level_address, object_set_number)
+
+        self.update()
+
+    def _set_jump_destination_values(self, enemy_offset: int, level_offset: int, object_set_number: int):
+        self.blockSignals(True)
+
+        self.next_area_object_set_dropdown.setCurrentIndex(object_set_number)
+        self.level_pointer_spinner.setValue(level_offset)
+        self.enemy_pointer_spinner.setValue(enemy_offset)
+
+        self.blockSignals(False)
+
+        make_macro(
+            self.undo_stack,
+            f"Set Next Area to {level_offset:#x}/{enemy_offset:#x}, {OBJECT_SET_NAMES[object_set_number]}",
+            SetNextAreaObjectSet(self.level, object_set_number),
+            SetNextAreaObjectAddress(self.level, level_offset),
+            SetNextAreaEnemyAddress(self.level, enemy_offset),
+        )
 
     def on_spin(self, new_value):
         if not self.level or self.signalsBlocked():
