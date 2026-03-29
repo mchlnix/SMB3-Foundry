@@ -17,7 +17,9 @@ from foundry.gui.ObjectList import ObjectList
 from foundry.gui.util import clear_layout
 from foundry.gui.visualization.level.LevelView import LevelView
 from smb3parse.constants import (
+    DUNGEON_OBJECT_SET,
     LVL_OBJ_LEVEL_END,
+    LVL_OBJ_PLAINS_DOWNWARD_VINE,
     OBJ_AUTOSCROLL,
     OBJ_BOOMBOOM,
     OBJ_CHEST_EXIT,
@@ -27,7 +29,6 @@ from smb3parse.constants import (
     OBJ_PIPE_EXITS,
     OBJ_TREASURE_CHEST,
 )
-from smb3parse.objects.object_set import DUNGEON_OBJECT_SET, PLAINS_OBJECT_SET
 
 
 class WarningList(QWidget):
@@ -49,7 +50,7 @@ class WarningList(QWidget):
         self.object_list = object_list_ref
 
         self.setLayout(QVBoxLayout())
-        self.setWindowFlag(Qt.Popup)
+        self.setWindowFlag(Qt.WindowType.Popup)
         self.layout().setContentsMargins(5, 5, 5, 5)
 
         self._enemy_dict: dict[str, tuple[str, str]] = {}
@@ -62,16 +63,16 @@ class WarningList(QWidget):
 
         level = self.level_ref.level
 
-        # check, that all jumps are inside the level
+        # all jump objects should be inside the level
         for jump in level.jumps:
             if not level.get_rect(1).contains(jump.get_rect(1, level.is_vertical)):
                 self.warn(f"{jump} is outside of the level bounds.", [])
 
-        # jump set without a next area
+        # a jump should not be set without a next area also set
         if level.jumps and not level.has_next_area:
             self.warn("Level has jumps set, but no Jump Destination in Level Header.", [])
 
-        # level objects and enemies are inside the level
+        # level objects and enemies should be inside the level
         for obj in level.get_all_objects():
             if isinstance(obj, EnemyItem) and obj.obj_index == OBJ_AUTOSCROLL:
                 continue
@@ -79,9 +80,9 @@ class WarningList(QWidget):
             if not level.get_rect().contains(obj.get_rect()):
                 self.warn(f"{obj} is outside of level bounds.", [obj])
 
-        # level objects to ground hitting the level edge
+        # level objects that expand to the ground should not hit the level edge
         for obj in level.objects:
-            if obj.object_info == (PLAINS_OBJECT_SET, 0, 0x06):
+            if obj.object_info == LVL_OBJ_PLAINS_DOWNWARD_VINE:
                 continue
 
             if obj.generator_type in [
@@ -93,6 +94,20 @@ class WarningList(QWidget):
                         f"{obj} extends until the level bottom. This can crash the game.",
                         [obj],
                     )
+
+        # objects that expand to the ground cannot be in vertical levels
+        objects_that_extend_to_ground = [
+            obj
+            for obj in level.objects
+            if obj.generator_type in (GeneratorType.HORIZ_TO_GROUND, GeneratorType.PYRAMID_TO_GROUND)
+            and obj.object_info != LVL_OBJ_PLAINS_DOWNWARD_VINE
+        ]
+
+        if level.is_vertical and objects_that_extend_to_ground:
+            self.warn(
+                "You have objects that extend to the ground in a vertical level. This might crash the game.",
+                objects_that_extend_to_ground,
+            )
 
         # autoscroll objects
         for item in level.enemies:
@@ -118,7 +133,7 @@ class WarningList(QWidget):
                 autoscroll_items,
             )
 
-        # no items, that would crash the game
+        # no items that would crash the game
         for obj in level.objects:
             if obj.name == "MSG_CRASH" or "SMAS only" in obj.name:
                 self.warn(
@@ -180,7 +195,7 @@ class WarningList(QWidget):
         chest_objects = self._find_enemies_in_level(OBJ_TREASURE_CHEST)
         hammer_bro_objects = self._find_enemies_in_level(OBJ_HAMMER_BRO)
 
-        # hammer bro level, does not end with chest
+        # hammer bro level does not end with collecting the chest
         if hammer_bro_objects and not chest_exit_objects:
             self.warn(
                 "You have a Hammer Bro in your level, but it does not end by getting the chest. "
@@ -272,7 +287,10 @@ class WarningList(QWidget):
         super(WarningList, self).show()
 
     def _focus_objects(self):
-        objects = self.sender().related_objects
+        sender_widget = self.sender()
+
+        assert isinstance(sender_widget, WarningLabel)
+        objects = sender_widget.related_objects
 
         if objects:
             self.level_ref.blockSignals(True)
