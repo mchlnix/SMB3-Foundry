@@ -44,6 +44,7 @@ def get_minimal_icon_object(level_object: Iconifiable) -> Iconifiable:
         if level_object.is_4byte:
             level_object.secondary_length += 1
 
+        level_object.data = level_object.to_bytes()
         level_object.render()
 
     return level_object
