@@ -21,6 +21,12 @@ def get_minimal_icon_object(level_object: Iconifiable) -> Iconifiable:
     if level_object.generator_type == GeneratorType.WOODEN_PLATFORM:
         # make sure that when we don't want to render the level-filling, 0-length object that both lengths are the same
         # WOODEN_PLATFORM objects take the normal length or the 4-byte length, but seemingly never both
+        if level_object.length == 0:
+            level_object.length = 1
+
+        if level_object.secondary_length == 0:
+            level_object.secondary_length = 1
+
         if level_object.length > 0:
             level_object.secondary_length = level_object.length
 
@@ -28,6 +34,7 @@ def get_minimal_icon_object(level_object: Iconifiable) -> Iconifiable:
 
         # update the byte data
         level_object.data = level_object.to_bytes()
+        level_object.render()
 
     while (
         any(block not in level_object.rendered_blocks for block in level_object.blocks) and level_object.length < 0x10
