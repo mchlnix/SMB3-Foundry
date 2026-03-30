@@ -716,6 +716,7 @@ class LevelView(MainView):
                     event.position().toPoint(),
                     level_object.domain,
                     level_object.obj_index,
+                    length=level_object.length,
                     selected=True,
                 )
             )

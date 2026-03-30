@@ -16,6 +16,10 @@ STY_RAM = 0x84  # STY $ll
 hex_int = partial(int, base=16)
 
 
+def bytes_to_str(data: bytes | bytearray):
+    return ", ".join(apply(hex, data))
+
+
 def little_endian(two_bytes: bytearray) -> int:
     """
     Takes a byte array of length 2 and returns the integer it represents in little endian.

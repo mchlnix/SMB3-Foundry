@@ -33,6 +33,10 @@ from .world.WorldDrawer import WorldDrawer
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
 
+
+DROP_TYPE_LEVEL_OBJECT = 0
+DROP_TYPE_ENEMY = 1
+
 # mouse modes
 MODE_FREE = 0
 MODE_DRAG = 1
@@ -272,11 +276,17 @@ class MainView(QWidget):
     def _object_from_mime_data(self, mime_data: QMimeData) -> InLevelObject:
         object_type, *object_bytes = mime_data.data("application/level-object").data()
 
-        if object_type == 0:
+        if object_type == DROP_TYPE_LEVEL_OBJECT:
             domain = object_bytes[0] >> 5
             object_index = object_bytes[2]
 
-            return self.level_ref.level.object_factory.from_properties(domain, object_index, 0, 0, None, 999)
+            if len(object_bytes) > 3:
+                length: int | None = object_bytes[3]
+            else:
+                length = None
+
+            return self.level_ref.level.object_factory.from_properties(domain, object_index, 0, 0, length, 999)
+
         else:
             enemy_id = object_bytes[0]
 
