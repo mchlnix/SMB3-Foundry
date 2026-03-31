@@ -30,6 +30,8 @@ from .level.LevelDrawer import LevelDrawer
 from .SelectionSquare import SelectionSquare
 from .world.WorldDrawer import WorldDrawer
 
+MIME_DATA_DROP_OBJECT = "application/level-object"
+
 HIGHEST_ZOOM_LEVEL = 8  # on linux, at least
 LOWEST_ZOOM_LEVEL = 1 / 16  # on linux, but makes sense with 16x16 blocks
 
@@ -256,7 +258,7 @@ class MainView(QWidget):
             return super(MainView, self).contextMenuEvent(event)
 
     def dragEnterEvent(self, event: QDragEnterEvent):
-        if event.mimeData().hasFormat("application/level-object"):
+        if event.mimeData().hasFormat(MIME_DATA_DROP_OBJECT):
             event.acceptProposedAction()
 
     def dragMoveEvent(self, event: QDragMoveEvent):
@@ -274,7 +276,7 @@ class MainView(QWidget):
         self.repaint()
 
     def _object_from_mime_data(self, mime_data: QMimeData) -> InLevelObject:
-        object_type, *object_bytes = mime_data.data("application/level-object").data()
+        object_type, *object_bytes = mime_data.data(MIME_DATA_DROP_OBJECT).data()
 
         if object_type == DROP_TYPE_LEVEL_OBJECT:
             domain = object_bytes[0] >> 5
@@ -384,3 +386,20 @@ class MainView(QWidget):
                     painter,
                     self.block_length,
                 )
+
+
+def object_to_mime_data(in_level_object: InLevelObject) -> QMimeData:
+    mime_data = QMimeData()
+
+    object_bytes = bytearray()
+
+    if isinstance(in_level_object, LevelObject):
+        object_bytes.append(DROP_TYPE_LEVEL_OBJECT)
+    else:
+        object_bytes.append(DROP_TYPE_ENEMY)
+
+    object_bytes.extend(in_level_object.to_bytes())
+
+    mime_data.setData(MIME_DATA_DROP_OBJECT, object_bytes)
+
+    return mime_data

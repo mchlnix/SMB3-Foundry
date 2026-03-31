@@ -2,7 +2,7 @@ from bisect import bisect_right
 from typing import cast
 
 from PySide6.QtCore import QPoint, QSize, QTimer
-from PySide6.QtGui import QMouseEvent, Qt, QUndoStack, QWheelEvent
+from PySide6.QtGui import QDropEvent, QMouseEvent, Qt, QUndoStack, QWheelEvent
 from PySide6.QtWidgets import QScrollArea, QToolTip, QWidget
 
 from foundry import ctrl_is_pressed, make_macro
@@ -706,8 +706,10 @@ class LevelView(MainView):
 
         return self.level_ref.add_enemy(enemy_type, level_pos, index)
 
-    def dropEvent(self, event):
+    def dropEvent(self, event: QDropEvent):
         level_object = self._object_from_mime_data(event.mimeData())
+
+        self.level.clear_selection()
 
         if isinstance(level_object, LevelObject):
             self.undo_stack.push(

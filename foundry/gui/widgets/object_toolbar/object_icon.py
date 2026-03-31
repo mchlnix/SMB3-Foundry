@@ -1,4 +1,4 @@
-from PySide6.QtCore import QMimeData, QSize, Qt, Signal, SignalInstance
+from PySide6.QtCore import QSize, Qt, Signal, SignalInstance
 from PySide6.QtGui import QDrag, QImage, QMouseEvent, QPainter, QPaintEvent
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
@@ -7,8 +7,8 @@ from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.game.gfx.objects import get_minimal_icon_object
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.jump import Jump
-from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.Palette import bg_color_for_palette_group
+from foundry.gui.visualization.MainView import object_to_mime_data
 
 objects_to_use_pngs_instead = {
     "'?' with flower": load_from_object_sprite_sheet(0, 4),
@@ -47,7 +47,7 @@ class ObjectIcon(QWidget):
     def __init__(self, level_object: InLevelObject | None = None):
         super(ObjectIcon, self).__init__()
 
-        size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        size_policy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         # set to False so move event is only fired, when they are clicked and dragged
         self.setMouseTracking(False)
@@ -73,18 +73,7 @@ class ObjectIcon(QWidget):
 
         drag = QDrag(self)
 
-        mime_data = QMimeData()
-
-        object_bytes = bytearray()
-
-        if isinstance(self.object, LevelObject):
-            object_bytes.append(0)
-        else:
-            object_bytes.append(1)
-
-        object_bytes.extend(self.object.to_bytes())
-
-        mime_data.setData("application/level-object", object_bytes)
+        mime_data = object_to_mime_data(self.object)
 
         drag.setMimeData(mime_data)
 
@@ -146,7 +135,7 @@ class ObjectIcon(QWidget):
             if self.draw_background_color:
                 painter.fillRect(event.rect(), bg_color_for_palette_group(self.object.palette_group))
 
-            scaled_image = self.image.scaled(self.size(), aspectMode=Qt.KeepAspectRatio)
+            scaled_image = self.image.scaled(self.size(), aspectMode=Qt.AspectRatioMode.KeepAspectRatio)
 
             x = (self.width() - scaled_image.width()) // 2
             y = (self.height() - scaled_image.height()) // 2

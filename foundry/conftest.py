@@ -28,7 +28,7 @@ def seed_random():
 
 
 @pytest.fixture
-def level(rom, qtbot):
+def level(rom):
     return Level(
         "Level 1-1",
         level_1_1_object_address,

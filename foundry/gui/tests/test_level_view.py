@@ -1,16 +1,17 @@
 import pytest
 from PySide6.QtCore import QPoint
-from PySide6.QtGui import Qt, QWheelEvent
+from PySide6.QtGui import QDropEvent, Qt, QWheelEvent
 
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.gui.dialogs.LevelHeaderEditor import LevelHeaderEditor
 from foundry.gui.visualization.level.LevelView import LevelView
+from foundry.gui.visualization.MainView import object_to_mime_data
 from smb3parse.constants import ENEMY_ITEM_OBJECT_SET, PLAINS_OBJECT_SET
 from smb3parse.data_points import Position
 
 
 @pytest.fixture
-def level_view(main_window, qtbot):
+def level_view(main_window):
     return main_window.level_view
 
 
@@ -22,7 +23,7 @@ def level_view(main_window, qtbot):
         ((233, 409), 0x72, 0x00, ENEMY_ITEM_OBJECT_SET),  # goomba
     ],
 )
-def test_object_at(level_view: LevelView, qtbot, coordinates, obj_index, domain, object_set_number):
+def test_object_at(level_view: LevelView, coordinates, obj_index, domain, object_set_number):
     screen_coordinates = coordinates  # in pixels
 
     level_object = level_view.object_at(QPoint(*screen_coordinates))
@@ -74,10 +75,10 @@ def test_level_smaller(main_window, level_view):
 @pytest.mark.parametrize(
     "coordinates",
     [
-        (2, 2),
-        (334, 265),
-        (233, 409),
-    ],  # background symbols  # background cloud  # goomba
+        (2, 2),  # background symbols
+        (334, 265),  # background cloud
+        (233, 409),  # goomba
+    ],
 )
 @pytest.mark.parametrize("wheel_delta, type_change", [(10, 1), (-10, -1)])  # scroll wheel up  # scroll wheel down
 def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_window, qtbot):
@@ -98,7 +99,7 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
 
     main_window.hide()
 
-    qtbot.mouseClick(level_view, Qt.LeftButton, pos=pos)
+    qtbot.mouseClick(level_view, Qt.MouseButton.LeftButton, pos=pos)
     assert object_under_cursor.selected
 
     event = QWheelEvent(
@@ -106,9 +107,9 @@ def test_wheel_event(scroll_amount, coordinates, wheel_delta, type_change, main_
         QPoint(-1, -1),
         QPoint(0, wheel_delta),
         QPoint(0, wheel_delta),
-        Qt.LeftButton,
-        Qt.NoModifier,
-        Qt.ScrollEnd,
+        Qt.MouseButton.LeftButton,
+        Qt.KeyboardModifier.NoModifier,
+        Qt.ScrollPhase.ScrollEnd,
         False,
     )
 
@@ -130,6 +131,34 @@ def test_select_one_of_same_block_on_click(level_view: LevelView, qtbot):
     assert None not in [obj_bg, obj_fg]
     assert not level_view.get_selected_objects()
 
-    qtbot.mouseClick(level_view, Qt.LeftButton, pos=level_view.from_level_point(*obj_pos.xy))
+    qtbot.mouseClick(level_view, Qt.MouseButton.LeftButton, pos=level_view.from_level_point(*obj_pos.xy))
 
     assert level_view.get_selected_objects() == [obj_fg]
+
+
+def test_only_added_item_is_selected(level_view: LevelView):
+    # GIVEN a level view and a level object dragged into the view
+    level_object = level_view.level_ref.level.object_factory.from_properties(0, 0, 0, 0, None, -1)
+
+    # WHEN all other objects are selected
+    level_view.select_all()
+    assert all(obj.selected for obj in level_view.level.objects + level_view.level.enemies)
+
+    # AND the new object is dropped into the view
+    mime_data = object_to_mime_data(level_object)
+    fake_drop_event = QDropEvent(
+        QPoint(0, 0),
+        Qt.DropAction.MoveAction,
+        mime_data,
+        Qt.MouseButton.LeftButton,
+        Qt.KeyboardModifier.NoModifier,
+    )
+
+    level_view.dropEvent(fake_drop_event)
+
+    # THEN the added object is the only one selected
+    added_object = level_view.level.objects[-1]
+
+    for obj in level_view.level.objects + level_view.level.enemies:
+        if obj.selected and obj is not added_object:
+            pytest.fail(f"Only {added_object} should be selected, but {obj} is")
