@@ -7,6 +7,7 @@ from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.game.gfx.objects import get_minimal_icon_object
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.jump import Jump
+from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.Palette import bg_color_for_palette_group
 from foundry.gui.visualization.MainView import object_to_mime_data
 
@@ -92,9 +93,14 @@ class ObjectIcon(QWidget):
             if obj.name.lower() in objects_to_use_pngs_instead:
                 self.image = objects_to_use_pngs_instead[obj.name.lower()]
             else:
-                self.image = object_to_image(self.object)
+                self.image = object_to_image(obj)
 
-            self.setToolTip(self.object.name)
+            if isinstance(obj, LevelObject):
+                additional_data = f"{obj.domain:#x} {obj.obj_index:#x}"
+            else:
+                additional_data = f"{obj.obj_index:#x}"
+
+            self.setToolTip(f"{obj.name}, {additional_data}")
 
         else:
             self.image = QImage()
