@@ -242,12 +242,12 @@ class LevelOrganizer:
         if level.header.jump_level_offset and level.header.jump_level_address not in self.old_level_address_to_new:
             raise LookupError(
                 f"Jump Destination Level Address in Header '0x{level.header.jump_level_address:X}' does not point to"
-                " any known level"
+                " any known level. Set both to 0x0000 to disable this check."
             )
         if level.header.jump_enemy_offset and level.header.jump_enemy_address not in self.old_enemy_address_to_new:
             raise LookupError(
                 f"Jump Destination Enemy Address in Header '0x{level.header.jump_enemy_address:X}' does not point to"
-                " any known enemy data group"
+                " any known enemy data group. Set both to 0x0000 to disable this check."
             )
 
         jump_destination_found_level = self._found_level_from_address(level.header.jump_level_address)

@@ -121,7 +121,7 @@ class DataPoint:
     """
 
     def __init__(self, rom: Rom):
-        self._rom = rom
+        self._rom: Rom = rom
 
         self.calculate_addresses()
         self.read_values()

@@ -84,8 +84,8 @@ class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
     @property
     def object_set_offset(self):
         """
-        Returns the offset, based on the level pointers object set, that needs to be added to its level header offset in
-        order to get the actual memory location of the level in the ROM.
+        Returns the offset, based on the level pointers object set, that needs to be added to its level header offset to
+        get the actual memory location of the level in the ROM.
         """
         return self._rom.int(Constants.OFFSET_BY_OBJECT_SET_A000 + self.object_set) * PRG_BANK_SIZE - 0xA000
 

@@ -84,9 +84,9 @@ class JumpEditor(CustomDialog):
         exit_group_box.setLayout(exit_layout)
 
         button_box = QDialogButtonBox()
-        self.ok_button = button_box.addButton(QDialogButtonBox.Ok)
+        self.ok_button = button_box.addButton(QDialogButtonBox.StandardButton.Ok)
         self.ok_button.clicked.connect(self.on_ok)
-        button_box.addButton(QDialogButtonBox.Cancel).clicked.connect(self.close)
+        button_box.addButton(QDialogButtonBox.StandardButton.Cancel).clicked.connect(self.close)
 
         main_layout = QVBoxLayout()
         main_layout.addWidget(level_group_box)
