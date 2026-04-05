@@ -1348,6 +1348,9 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
     def _update_block_graphics_in_ui(self):
         """Updates the representations of objects in the UI, in case the object set or graphics set changes."""
+        if not self.level_ref:
+            return
+
         self.object_toolbar.set_object_set(
             self.level_ref.object_set_number, self.level_ref.graphic_set, self.level_ref.object_palette_index
         )
