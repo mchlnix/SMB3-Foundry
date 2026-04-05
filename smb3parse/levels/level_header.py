@@ -9,7 +9,7 @@ from smb3parse.levels import (
     LEVEL_LENGTH_INTERVAL,
     LEVEL_MIN_LENGTH,
 )
-from smb3parse.objects.object_set import ObjectSet, assert_valid_object_set_number
+from smb3parse.objects.object_set import ObjectSet
 from smb3parse.util.rom import Rom
 
 MARIO_X_POSITIONS = [0x18, 0x70, 0xD8, 0x80]  # 0x10249
@@ -37,16 +37,11 @@ class MarioStartAction(IntEnum):
 
 
 class LevelHeader:
-    def __init__(self, rom: Rom, header_bytes: bytearray, object_set_number: int):
+    def __init__(self, rom: Rom, header_bytes: bytearray):
         if len(header_bytes) != HEADER_LENGTH:
             raise ValueError(f"A level header is made up of {HEADER_LENGTH} bytes, but {len(header_bytes)} were given.")
 
         self._rom = rom
-
-        assert_valid_object_set_number(object_set_number)
-
-        self._object_set_number = object_set_number
-        self._object_set = ObjectSet(rom, self._object_set_number)
 
         self.data = header_bytes
 
@@ -64,7 +59,7 @@ class LevelHeader:
 
         self.pipe_ends_level = not (self.data[6] & 0b1000_0000)
         self.scroll_type_index = (self.data[6] & 0b0110_0000) >> 5
-        self.is_vertical = self.data[6] & 0b0001_0000
+        self.is_vertical = bool(self.data[6] & 0b0001_0000)
 
         if self.is_vertical:
             self.height = self.length

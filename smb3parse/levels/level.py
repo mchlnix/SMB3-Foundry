@@ -19,7 +19,7 @@ class Level(LevelBase):
 
         self.header_bytes = self._rom.read(self.header_address, HEADER_LENGTH)
 
-        self.header = LevelHeader(rom, self.header_bytes, self.object_set_number)
+        self.header = LevelHeader(rom, self.header_bytes)
 
     def set_world_map_position(self, position: WorldMapPosition):
         self.world_map_position = position

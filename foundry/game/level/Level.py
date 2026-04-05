@@ -90,7 +90,7 @@ class Level(LevelLike):
             # probably loaded to become an m3l
             self.size = (0, 0)
             self.header_bytes = bytearray(HEADER_LENGTH)
-            self.header = LevelHeader(ROM(), self.header_bytes, self.object_set.number)
+            self.header = LevelHeader(ROM(), self.header_bytes)
             self.object_factory: LevelObjectFactory | None = None
             self.enemy_factory: EnemyItemFactory | None = None
             return
@@ -186,14 +186,14 @@ class Level(LevelLike):
         return len(self.enemies) * ENEMY_SIZE
 
     def _parse_header(self, should_emit=True):
-        self.header = LevelHeader(ROM(), self.header_bytes, self.object_set_number)
+        self.header = LevelHeader(ROM(), self.header_bytes)
 
         self.object_factory = LevelObjectFactory(
             self.object_set_number,
             self.header.graphic_set_index,
             self.header.object_palette_index,
             self.objects,
-            bool(self.header.is_vertical),
+            self.header.is_vertical,
         )
         self.enemy_item_factory = EnemyItemFactory(self.object_set_number, self.header.enemy_palette_index)
 
@@ -432,7 +432,7 @@ class Level(LevelLike):
 
     @property
     def is_vertical(self):
-        return bool(self.header.is_vertical)
+        return self.header.is_vertical
 
     @is_vertical.setter
     def is_vertical(self, truth_value):

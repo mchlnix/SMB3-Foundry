@@ -211,11 +211,7 @@ def _follow_jump_destinations(
         if not parsed_level.has_jump():
             break
 
-        cur_level_header = LevelHeader(
-            rom,
-            rom.read(record.level_address, HEADER_LENGTH),
-            record.object_set,
-        )
+        cur_level_header = LevelHeader(rom, rom.read(record.level_address, HEADER_LENGTH))
 
         # no jump destination set, even though a jump object was found
         if cur_level_header.jump_level_offset == 0x0 or cur_level_header.jump_object_set_number == WORLD_MAP_OBJECT_SET:

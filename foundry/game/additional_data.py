@@ -326,11 +326,7 @@ class LevelOrganizer:
         if found_save_level is None:
             return
 
-        header = LevelHeader(
-            self.rom,
-            found_save_level.level_data[:HEADER_LENGTH],
-            found_save_level.object_set_number,
-        )
+        header = LevelHeader(self.rom, found_save_level.level_data[:HEADER_LENGTH])
 
         if header.jump_level_address in self.old_level_address_to_new:
             header.jump_level_address = self.old_level_address_to_new[header.jump_level_address]
