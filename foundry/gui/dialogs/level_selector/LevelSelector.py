@@ -175,7 +175,15 @@ class LevelSelector(QDialog):
         QShortcut(QKeySequence(Qt.Key.Key_Return), self, self._on_ok)
         QShortcut(QKeySequence(Qt.Key.Key_Enter), self, self._on_ok)
 
-        self._on_stock_level_selected()
+        if ROM.additional_data.found_levels:
+            self._on_found_level_selected()
+        else:
+            self._on_stock_level_selected()
+
+        # connect here, so we don't trigger the level preview on the automatically selected levels
+        self.enemy_data_spinner.valueChanged.connect(self._update_level_preview)
+        self.object_data_spinner.valueChanged.connect(self._update_level_preview)
+        self.object_set_dropdown.currentTextChanged.connect(self._update_level_preview)
 
     def _one_tab_left(self):
         current_index = self.source_selector.currentIndex()
@@ -237,8 +245,13 @@ class LevelSelector(QDialog):
         self.object_data_spinner.setValue(layout_address)
         self.enemy_data_spinner.setValue(enemy_address)
 
+    def _update_level_preview(self):
         self._horizontal_level_preview.hide()
         self._vertical_level_preview.hide()
+
+        object_set = self.object_set_dropdown.currentIndex()
+        layout_address = self.object_data_spinner.value()
+        enemy_address = self.enemy_data_spinner.value()
 
         if object_set in [WORLD_MAP_OBJECT_SET, MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
             return

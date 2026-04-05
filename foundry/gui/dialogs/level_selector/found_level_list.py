@@ -72,6 +72,8 @@ class _FoundLevelTable(TableWidget):
 
         self._update_content()
 
+        self.selectRow(0)
+
     def _level_index_for_row(self, row):
         return self.item(row, 0).data(Qt.ItemDataRole.UserRole)
 
