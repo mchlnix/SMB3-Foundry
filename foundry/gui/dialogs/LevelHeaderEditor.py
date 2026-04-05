@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QHBoxLayout,
     QLabel,
+    QMessageBox,
     QPushButton,
     QTabWidget,
     QVBoxLayout,
@@ -300,6 +301,14 @@ class LevelHeaderEditor(CustomDialog):
         self.update()
 
     def _set_from_current_level(self):
+        if not self.level.level.attached_to_rom:
+            QMessageBox.warning(
+                self,
+                "Warning",
+                "The current level is not attached to the ROM and does not have a level or enemy address yet.\n\n"
+                "That's why you can't set it as a Jump Destination yet.",
+            )
+
         level_address = self.level.level.header_offset
         enemy_address = self.level.level.enemy_offset
         object_set_number = self.level.level.object_set.number

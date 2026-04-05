@@ -438,7 +438,9 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
         self._reload_rom()
 
-        self.level_ref.level = Level(f"New {OBJECT_SET_NAMES[object_set]} Level", object_set_number=object_set)
+        self.level_ref.level = Level(
+            f"New {OBJECT_SET_NAMES[object_set]} Level", object_set_number=object_set, world_number=1
+        )
 
         minimal_level_header = bytearray([0, 0, 0, 0, 0, 0, 0x81, object_set, 0])
         self.level_ref.level.from_bytes(object_data=(0, minimal_level_header), enemy_data=(0, bytearray()))
