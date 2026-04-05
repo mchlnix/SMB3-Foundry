@@ -182,7 +182,7 @@ class LevelOrganizer:
 
         return current_level
 
-    def _found_level_from_address(self, level_address: int):
+    def _found_level_from_address(self, level_address: int) -> FoundLevel | None:
         try:
             return next(filter(lambda lvl: lvl.level_offset == level_address, self.levels))
 

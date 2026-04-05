@@ -961,18 +961,20 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
             "Please confirm",
             "You changed some object palettes. This is a change, that potentially affects other levels in this ROM. Do "
             "you want to save these changes, or restore the defaults and continue?",
-            QMessageBox.Cancel | QMessageBox.RestoreDefaults | QMessageBox.Save,
-            QMessageBox.Cancel,
+            QMessageBox.StandardButton.Cancel
+            | QMessageBox.StandardButton.RestoreDefaults
+            | QMessageBox.StandardButton.Save,
+            QMessageBox.StandardButton.Cancel,
         )
 
-        if answer == QMessageBox.Cancel:
+        if answer == QMessageBox.StandardButton.Cancel:
             return False
 
-        if answer == QMessageBox.Save:
+        if answer == QMessageBox.StandardButton.Save:
             save_all_palette_groups()
             self._write_to_rom(ROM.path, False)
 
-        elif answer == QMessageBox.RestoreDefaults:
+        elif answer == QMessageBox.StandardButton.RestoreDefaults:
             restore_all_palettes()
             self.level_ref.level.reload()
 
@@ -986,11 +988,11 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
                 self,
                 reason,
                 f"{additional_info}\n\nDo you want to proceed?",
-                QMessageBox.No | QMessageBox.Yes,
-                QMessageBox.No,
+                QMessageBox.StandardButton.DialogCode.No | QMessageBox.StandardButton.Yes,
+                QMessageBox.StandardButton.No,
             )
 
-            if answer == QMessageBox.No:
+            if answer == QMessageBox.StandardButton.No:
                 return
 
         if self.level_ref and not self.level_ref.attached_to_rom:
@@ -999,7 +1001,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
                 "Importing M3L into ROM",
                 "You are currently editing a level stored in an m3l file outside of the ROM. Please select the "
                 "positions in the ROM you want the level objects and enemies/items to be stored.",
-                QMessageBox.Ok,
+                QMessageBox.StandardButton.Ok,
             )
 
             if not self._ask_for_palette_save():
@@ -1132,7 +1134,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         level_selector.goto_world(self.level_ref.level.world)
         level_selector.deactivate_level_list()
 
-        if level_selector.exec() != QMessageBox.Accepted:
+        if level_selector.exec() != QMessageBox.DialogCode.Accepted:
             return False
 
         if (level_pointer := level_selector.clicked_level_pointer) is None:
@@ -1291,6 +1293,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
             self.settings.setValue("editor/remember_last_level_lvl_address", object_data_offset)
             self.settings.setValue("editor/remember_last_level_enemy_address", enemy_data_offset)
             self.settings.setValue("editor/remember_last_level_world_number", self.level_ref.level.world)
+
         except IndexError:
             QMessageBox.critical(
                 self,

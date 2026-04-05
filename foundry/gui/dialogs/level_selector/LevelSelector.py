@@ -151,13 +151,18 @@ class LevelSelector(QDialog):
             self.reject()
 
     def goto_world(self, world_number: int):
-        if world_number not in range(1, WORLD_COUNT + 1):
-            world_number = 1
+        # default to world 1's tab
+        tab_index = 1
+
+        # if we got a valid world number, navigate to its tab
+        if world_number in range(1, WORLD_COUNT + 1):
+            tab_index = world_number
 
         if ROM.additional_data.found_levels:
-            world_number += 1
+            # if found levels are present, we added another tab in front of the world tabs
+            tab_index += 1
 
-        self.source_selector.setCurrentIndex(world_number)
+        self.source_selector.setCurrentIndex(tab_index)
 
         self._stock_level_widget.world_number = world_number
 
