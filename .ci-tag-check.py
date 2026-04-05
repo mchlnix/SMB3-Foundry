@@ -7,17 +7,18 @@ in turn only happens on tagged commits.
 """
 
 import os
+import sys
 from pathlib import Path
 
 current_tag = os.environ["TAG_NAME"].strip()
 
 if not current_tag:
     print("No tag set. Proceed.")
-    quit(0)
+    sys.exit(0)
 
 current_release_version = Path("VERSION").read_text().strip()
 nightly_version = "nightly"
 
 if current_tag not in [current_release_version, nightly_version]:
     print(f"VERSION: '{current_release_version}', TAG: '{current_tag}'")
-    quit(1)
+    sys.exit(1)

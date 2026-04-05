@@ -1,16 +1,17 @@
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 current_tag = os.environ["TAG_NAME"].strip()
 
 if not current_tag:
     print("No tag set. Proceed.")
-    quit(0)
+    sys.exit(0)
 
 if current_tag != "nightly":
     print("Not a nightly build. Proceed.")
-    quit(0)
+    sys.exit(0)
 
 # the current commit is tagged as a nightly
 # change the VERSION file to "nightly-commit" as well

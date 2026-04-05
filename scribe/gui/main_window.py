@@ -1,3 +1,4 @@
+import sys
 import tempfile
 from pathlib import Path
 from typing import cast
@@ -316,7 +317,7 @@ class ScribeMainWindow(MainWindow):
 
             if not path_to_rom:
                 if not ROM.is_loaded():
-                    quit()
+                    sys.exit(0)
                 else:
                     return
 
