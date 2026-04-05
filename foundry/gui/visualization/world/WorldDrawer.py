@@ -1,4 +1,4 @@
-from PySide6.QtCore import QPoint, QSize
+from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
 from foundry.game.gfx.block_cache import get_worldmap_tile
@@ -133,7 +133,7 @@ class WorldDrawer:
             self._draw_tile(painter, world, tile)
 
             painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
-            painter.drawRect(tile.get_rect(self.block_length))
+            painter.drawRect(QRect(*tile.get_rect(self.block_length)))
 
         # TODO make anim frame a parameter to draw and Tile()
         tile.block.graphics_set.anim_frame = self.anim_frame
