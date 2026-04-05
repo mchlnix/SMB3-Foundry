@@ -3,14 +3,16 @@ from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
     QGridLayout,
+    QHBoxLayout,
     QLabel,
     QMessageBox,
     QPushButton,
+    QScrollArea,
     QTabWidget,
     QVBoxLayout,
 )
 
-from foundry import icon
+from foundry import get_level_thumbnail, icon
 from foundry.game.File import ROM
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
@@ -20,11 +22,47 @@ from smb3parse.constants import (
     WORLD_MAP_OBJECT_SET,
 )
 from smb3parse.data_points import LevelPointerData
-from smb3parse.levels import WORLD_COUNT
+from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
+from smb3parse.levels.level_header import LevelHeader
 
 from .found_level_list import FoundLevelWidget
 from .overworld_selection_map import WorldMapLevelSelect
 from .stock_level_list import StockLevelWidget
+
+
+def _vertical_flag_from_level_address(level_address: int) -> bool:
+    level_header_bytes = ROM().read(level_address, HEADER_LENGTH)
+
+    level_header = LevelHeader(ROM(), level_header_bytes)
+
+    return level_header.is_vertical
+
+
+class _LevelPreviewWidget(QScrollArea):
+    def __init__(self, vertical=False):
+        super().__init__()
+
+        if vertical:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        else:
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+
+        self._is_vertical = vertical
+
+        self._preview_label = QLabel()
+
+        self.setWidget(self._preview_label)
+        self.setWidgetResizable(True)
+
+    def set_level_preview(self, object_set_number: int, level_address: int, enemy_address: int):
+        level_preview_pixmap = get_level_thumbnail(object_set_number, level_address, enemy_address)
+
+        self._preview_label.setPixmap(level_preview_pixmap)
+
+        if self._is_vertical:
+            self.setMinimumWidth(level_preview_pixmap.width())
+        else:
+            self.setMinimumHeight(level_preview_pixmap.height())
 
 
 class LevelSelector(QDialog):
@@ -101,6 +139,13 @@ class LevelSelector(QDialog):
         if self.source_selector.count() > tab_index:
             self.source_selector.setCurrentIndex(tab_index)
 
+        # level previews
+        self._horizontal_level_preview = _LevelPreviewWidget()
+        self._horizontal_level_preview.hide()
+
+        self._vertical_level_preview = _LevelPreviewWidget(vertical=True)
+        self._vertical_level_preview.hide()
+
         data_layout = QGridLayout()
 
         data_layout.addWidget(self.enemy_data_label, 0, 0)
@@ -114,9 +159,14 @@ class LevelSelector(QDialog):
         data_layout.addWidget(self.button_ok, 3, 0)
         data_layout.addWidget(self.button_cancel, 3, 1)
 
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(self.source_selector)
-        main_layout.addLayout(data_layout)
+        selection_layout = QVBoxLayout()
+        selection_layout.addWidget(self.source_selector)
+        selection_layout.addWidget(self._horizontal_level_preview)
+        selection_layout.addLayout(data_layout)
+
+        main_layout = QHBoxLayout()
+        main_layout.addLayout(selection_layout)
+        main_layout.addWidget(self._vertical_level_preview)
 
         self.setLayout(main_layout)
 
@@ -186,6 +236,20 @@ class LevelSelector(QDialog):
         self.object_set_dropdown.setCurrentIndex(object_set)
         self.object_data_spinner.setValue(layout_address)
         self.enemy_data_spinner.setValue(enemy_address)
+
+        self._horizontal_level_preview.hide()
+        self._vertical_level_preview.hide()
+
+        if object_set in [WORLD_MAP_OBJECT_SET, MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
+            return
+
+        if _vertical_flag_from_level_address(layout_address):
+            preview_widget = self._vertical_level_preview
+        else:
+            preview_widget = self._horizontal_level_preview
+
+        preview_widget.set_level_preview(object_set, layout_address, enemy_address)
+        preview_widget.show()
 
     def _on_level_selected_via_world_map(self, level_name: str, level_pointer: LevelPointerData):
         self.level_name = level_name

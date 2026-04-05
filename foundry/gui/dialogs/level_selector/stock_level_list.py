@@ -50,7 +50,8 @@ class StockLevelWidget(QWidget):
     def _on_world_click(self):
         index = self.world_list.currentRow()
 
-        assert index >= 0
+        if index < 0:
+            index = 0
 
         if index == OVERWORLD_MAPS_INDEX:
             world_number = 0  # world maps
