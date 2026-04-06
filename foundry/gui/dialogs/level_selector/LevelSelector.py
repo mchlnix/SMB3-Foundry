@@ -30,22 +30,17 @@ from .overworld_selection_map import WorldMapLevelSelect
 from .stock_level_list import StockLevelWidget
 
 
-def _vertical_flag_from_level_address(level_address: int) -> bool:
+def _should_use_vertical_preview(level_address: int) -> bool:
     level_header_bytes = ROM().read(level_address, HEADER_LENGTH)
 
     level_header = LevelHeader(ROM(), level_header_bytes)
 
-    return level_header.is_vertical
+    return level_header.is_vertical or level_header.screens < 1
 
 
 class _LevelPreviewWidget(QScrollArea):
     def __init__(self, vertical=False):
         super().__init__()
-
-        if vertical:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
 
         self._is_vertical = vertical
 
@@ -54,15 +49,47 @@ class _LevelPreviewWidget(QScrollArea):
         self.setWidget(self._preview_label)
         self.setWidgetResizable(True)
 
+        # the scrollbars start with a default size of 100, 100, so adjust the size to get the real size here
+        # see _push_out_scrollbars()
+        self.verticalScrollBar().adjustSize()
+        self.horizontalScrollBar().adjustSize()
+
     def set_level_preview(self, object_set_number: int, level_address: int, enemy_address: int):
         level_preview_pixmap = get_level_thumbnail(object_set_number, level_address, enemy_address)
 
         self._preview_label.setPixmap(level_preview_pixmap)
+        self._preview_label.setFixedSize(level_preview_pixmap.size())
 
+        self._push_out_scrollbars()
+
+    def _push_out_scrollbars(self):
+        """
+        When the widget of a scroll area becomes to large, scrollbars are shown. Those are shown over the widget,
+        however, without increasing the size of the scroll area. So if one scrollbar becomes necessary, its existence
+        makes the other scrollbar also necessary. We forego that by extending the size of the widget by as many pixels
+        as are needed for both the frame of the scroll area (linewidth) and the size of the scrollbar.
+        """
         if self._is_vertical:
-            self.setMinimumWidth(level_preview_pixmap.width())
-        else:
-            self.setMinimumHeight(level_preview_pixmap.height())
+            self._push_out_vertical_scrollbar()
+
+        if not self._is_vertical:
+            self._push_out_horizontal_scrollbar()
+
+    def _push_out_horizontal_scrollbar(self):
+        new_height = self._preview_label.height() + self.lineWidth() * 2
+
+        if self._preview_label.width() > self.width():
+            new_height += self.horizontalScrollBar().height()
+
+        self.setFixedHeight(new_height)
+
+    def _push_out_vertical_scrollbar(self):
+        new_width = self._preview_label.width() + self.lineWidth() * 2
+
+        if self._preview_label.height() > self.height():
+            new_width += self.verticalScrollBar().width()
+
+        self.setFixedWidth(new_width)
 
 
 class LevelSelector(QDialog):
@@ -256,7 +283,7 @@ class LevelSelector(QDialog):
         if object_set in [WORLD_MAP_OBJECT_SET, MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
             return
 
-        if _vertical_flag_from_level_address(layout_address):
+        if _should_use_vertical_preview(layout_address):
             preview_widget = self._vertical_level_preview
         else:
             preview_widget = self._horizontal_level_preview
