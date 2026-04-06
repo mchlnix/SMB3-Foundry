@@ -225,6 +225,7 @@ class BlockBank(QWidget):
                 self.object_set,
                 self.palette_group_index,
                 self.graphics_set,
+                animated=True,
             )
 
             x = (block_index % horizontal) * block_length

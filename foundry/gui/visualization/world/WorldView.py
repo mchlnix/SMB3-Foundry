@@ -14,6 +14,7 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QToolTip, QWidget
 
 from foundry import get_level_thumbnail, pixmap_to_base64
+from foundry.game.gfx import BlockCache
 from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.world_map.map_object import MapObject
@@ -101,6 +102,7 @@ class WorldView(MainView):
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_A), self, self.select_all)
 
     def next_anim_step(self):
+        BlockCache.next_frame()
         self.drawer.anim_frame += 1
         self.drawer.anim_frame %= 4
 
@@ -115,10 +117,12 @@ class WorldView(MainView):
             self.drawer.anim_frame = 0
 
         if self.world.data.frame_tick_count and self.settings.value("world_view/animated_tiles"):
-            self.redraw_timer = QTimer(self)
-            self.redraw_timer.setInterval(1000 / 60 * self.world.data.frame_tick_count)
-            self.redraw_timer.timeout.connect(self.next_anim_step)
-            self.redraw_timer.start()
+            redraw_timer = QTimer(self)
+            redraw_timer.setInterval(1000 / 60 * self.world.data.frame_tick_count)
+            redraw_timer.timeout.connect(self.next_anim_step)
+            redraw_timer.start()
+
+            self.redraw_timer = redraw_timer
 
     def sizeHint(self) -> QSize:
         size = super(WorldView, self).sizeHint()
