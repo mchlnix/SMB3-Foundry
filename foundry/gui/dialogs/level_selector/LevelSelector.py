@@ -268,9 +268,19 @@ class LevelSelector(QDialog):
         )
 
     def _fill_in_data(self, object_set: int, layout_address: int, enemy_address: int):
+        self.object_set_dropdown.blockSignals(True)
+        self.object_data_spinner.blockSignals(True)
+        self.enemy_data_spinner.blockSignals(True)
+
         self.object_set_dropdown.setCurrentIndex(object_set)
         self.object_data_spinner.setValue(layout_address)
         self.enemy_data_spinner.setValue(enemy_address)
+
+        self.object_set_dropdown.blockSignals(False)
+        self.object_data_spinner.blockSignals(False)
+        self.enemy_data_spinner.blockSignals(False)
+
+        self._update_level_preview()
 
     def _update_level_preview(self):
         self._horizontal_level_preview.hide()
