@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QMessageBox
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
+from smb3parse.levels import HEADER_LENGTH
 
 if TYPE_CHECKING:
     from foundry.gui.menus.file_menu import FileMenu
@@ -136,11 +137,8 @@ class RomHotSwapMixin:
         self._protect_undo_stack = False
 
     def execute_level_reload(self):
-        # find the level data in the ROM again, since it might have moved
-        new_lvl_address = ROM.rom_data.find(self.__original_level_bytes)
-
-        # do the same for the enemy data
-        new_enemy_address = ROM.rom_data.find(self.__original_enemy_bytes)
+        # find the level data in the ROM again, since it might have been moved
+        new_lvl_address, new_enemy_address = self._find_current_level_in_new_rom()
 
         if -1 in (new_lvl_address, new_enemy_address):
             QMessageBox.critical(
@@ -157,6 +155,47 @@ class RomHotSwapMixin:
         self.update_level("", new_lvl_address, new_enemy_address, self.__original_object_set)
 
         self._rewind_undo_stack()
+
+    def _find_current_level_in_new_rom(self) -> tuple[int, int]:
+        new_lvl_address = -1
+
+        # split original data and look for the level objects first
+        original_header_bytes = self.__original_level_bytes[:HEADER_LENGTH]
+        original_level_object_bytes = self.__original_level_bytes[HEADER_LENGTH:]
+
+        # in case there are multiple levels with the same level objects, we continue looking if the header doesn't match
+        search_start = 0
+
+        while True:
+            new_level_object_address = ROM().find(original_level_object_bytes, start=search_start)
+
+            # did not find the level object data at all, so we have to detach it
+            if new_level_object_address == -1:
+                return -1, -1
+
+            search_start = new_level_object_address + 1
+
+            new_level_header_address = new_level_object_address - HEADER_LENGTH
+            new_header_bytes = ROM().read(new_level_header_address, HEADER_LENGTH)
+
+            # we can only compare data unrelated to the jump destination because it might have also changed,
+            # so we zero out the addresses in the first two bytes and the object set in byte #6
+            header_comparison_mask = 0x00_00_00_00_FF_FF_F0_FF_FF
+
+            original_header_comp_value = int.from_bytes(original_header_bytes, "big") & header_comparison_mask
+            new_header_comp_value = int.from_bytes(new_header_bytes, "big") & header_comparison_mask
+
+            # if the header values don't match, we found a different level with the same level objects (hammer bros?)
+            if original_header_comp_value != new_header_comp_value:
+                continue
+            else:
+                new_lvl_address = new_level_header_address
+                break
+
+        # do the same for the enemy data
+        new_enemy_address = ROM().find(self.__original_enemy_bytes)
+
+        return new_lvl_address, new_enemy_address
 
     def _rewind_undo_stack(self):
         self.undo_stack.setIndex(0)
