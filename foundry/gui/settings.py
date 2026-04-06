@@ -18,6 +18,12 @@ class ASMLoadingBehavior:
     LOAD_IF_AVAILABLE = 2
 
 
+class ReleaseChannel:
+    NONE = 0
+    STABLE = 1
+    NIGHTLY = 2
+
+
 # TODO Make into an enum?
 SETTINGS: dict[str, str | int | float | bool] = dict()
 SETTINGS["editor/instaplay_emulator"] = "fceux"
@@ -46,6 +52,7 @@ SETTINGS["editor/monitor_rom_for_changes"] = True
 
 SETTINGS["editor/update_on_startup"] = False
 SETTINGS["editor/asked_for_startup"] = False
+SETTINGS["editor/release_channel"] = ReleaseChannel.NIGHTLY
 SETTINGS["editor/version_to_ignore"] = ""
 
 SETTINGS["editor/settings_version"] = 0

@@ -53,7 +53,7 @@ class HelpMenu(QMenu):
 
     def _on_trigger(self, action: QAction):
         if action is self.check_updates_action:
-            self._parent.check_for_update(ask_for_nightly=True, honor_ignore=False)
+            self._parent.check_for_update(honor_ignore=False)
 
         elif action is self._video_action:
             open_url(feature_video_link)

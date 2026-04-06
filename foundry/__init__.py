@@ -1,15 +1,11 @@
-import json
 import sys
-import urllib.error
-import urllib.request
 from functools import lru_cache
-from http.client import IncompleteRead
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from PySide6.QtCore import QBuffer, QIODevice, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, Qt, QUndoCommand, QUndoStack
-from PySide6.QtWidgets import QApplication, QMessageBox, QWidget
+from PySide6.QtWidgets import QApplication, QWidget
 
 from foundry.gui.settings import Settings
 from smb3parse.constants import DESERT_OBJECT_SET
@@ -51,7 +47,6 @@ SMB3_ASM_FILE_FILTER = "smb3.asm (smb3.asm);;ASM files (*.asm);;All files (*)"
 FNS_FILE_FILTER = "FNS files (*.fns);;All files (*)"
 IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 
-
 NO_PARENT = cast(QWidget, cast(object, None))
 
 
@@ -82,45 +77,6 @@ def get_current_version_name() -> str:
         raise LookupError("Version file not found.")
 
     return version_file.read_text().strip()
-
-
-def get_latest_version_name(timeout: int = 10) -> str:
-    owner = "mchlnix"
-    repo = "SMB3-Foundry"
-
-    api_call = f"https://api.github.com/repos/{owner}/{repo}/releases"
-
-    try:
-        request = urllib.request.urlopen(api_call, timeout=timeout)
-    except urllib.error.URLError as ue:
-        raise ValueError(f"Network error {ue}")
-
-    try:
-        data = request.read()
-    except IncompleteRead as icr:
-        raise ValueError("Read corrupted data from the internet.") from icr
-
-    try:
-        json_data = json.loads(data)
-
-        for release_info in json_data:
-            version_name = release_info["tag_name"].strip()
-
-            if version_name != "nightly":
-                return version_name
-        else:
-            raise LookupError("Couldn't find a non-nightly release.")
-
-    except (KeyError, IndexError, LookupError, json.JSONDecodeError):
-        raise ValueError("Parsing the received information failed.")
-
-
-def check_for_update(parent: QWidget) -> str:
-    try:
-        return get_latest_version_name()
-    except ValueError as ve:
-        QMessageBox.critical(parent, "Error while checking for updates", f"Error: {ve}")
-        return ""
 
 
 @lru_cache(256)

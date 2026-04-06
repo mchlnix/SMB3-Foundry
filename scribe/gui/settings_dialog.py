@@ -1,6 +1,5 @@
 from PySide6.QtCore import QStandardPaths
 from PySide6.QtWidgets import (
-    QCheckBox,
     QComboBox,
     QFileDialog,
     QGroupBox,
@@ -14,7 +13,7 @@ from PySide6.QtWidgets import (
 from foundry import icon
 from foundry.gui import label_and_widget
 from foundry.gui.dialogs.CustomDialog import CustomDialog
-from foundry.gui.dialogs.SettingsDialog import default_dirs
+from foundry.gui.dialogs.SettingsDialog import default_dirs, release_channel_choices
 from foundry.gui.settings import Settings
 
 
@@ -31,15 +30,17 @@ class SettingsDialog(CustomDialog):
         layout = QVBoxLayout()
         online_box.setLayout(layout)
 
-        self._update_check_box = QCheckBox("Enabled")
-        self._update_check_box.setChecked(self.settings.value("editor/update_on_startup"))
-        self._update_check_box.toggled.connect(self._update_settings)
+        self._release_channel_dropdown = QComboBox()
+        self._release_channel_dropdown.addItems(release_channel_choices)
+        self._release_channel_dropdown.setCurrentIndex(self.settings.value("editor/release_channel"))
+        self._release_channel_dropdown.currentTextChanged.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
                 "Check for Updates on Startup:",
-                self._update_check_box,
-                tooltip="Checks the Repository for a new Version when the Editor is started.",
+                self._release_channel_dropdown,
+                tooltip="Checks the Repository for a new version when the Editor is started. Nightly versions are"
+                "untested, but have the latest fixes.",
             )
         )
 
@@ -128,7 +129,9 @@ class SettingsDialog(CustomDialog):
         self.settings.setValue("editor/instaplay_emulator", self.emulator_command_input.text())
         self.settings.setValue("editor/instaplay_arguments", self.command_arguments_input.text())
 
-        self.settings.setValue("editor/update_on_startup", self._update_check_box.isChecked())
+        self.settings.setValue(
+            "editor/release_channel", release_channel_choices.index(self._release_channel_dropdown.currentText())
+        )
 
         self.settings.setValue("editor/default_dir", self.path_dropdown.currentText())
         if self.path_dropdown.currentText() == "Custom":
@@ -142,7 +145,7 @@ class SettingsDialog(CustomDialog):
         path_to_emulator, _ = QFileDialog.getOpenFileName(
             self,
             caption="Select emulator executable",
-            dir=QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation),
+            dir=QStandardPaths.writableLocation(QStandardPaths.StandardLocation.ApplicationsLocation),
         )
 
         if not path_to_emulator:
@@ -154,7 +157,7 @@ class SettingsDialog(CustomDialog):
         path_to_roms = QFileDialog.getExistingDirectory(
             self,
             caption="Select Rom directory",
-            dir=QStandardPaths.writableLocation(QStandardPaths.HomeLocation),
+            dir=QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation),
         )
 
         if not path_to_roms:

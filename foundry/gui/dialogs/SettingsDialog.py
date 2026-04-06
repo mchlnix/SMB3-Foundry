@@ -79,6 +79,7 @@ default_dirs = {
 }
 
 asm_action_choices = ["Don't ask", "Ask if needed", "Load if available"]
+release_channel_choices = ["Don't check", "Only stable versions", "Also nightly versions"]
 
 
 class SettingsDialog(CustomDialog):
@@ -89,22 +90,24 @@ class SettingsDialog(CustomDialog):
 
         self.settings = settings
 
-        # On Start Up
+        # On Startup
         # -----------------------------------------------
 
         on_start_up_box = QGroupBox("Start Up", self)
         layout = QVBoxLayout()
         on_start_up_box.setLayout(layout)
 
-        self._update_cb = QCheckBox("Enabled")
-        self._update_cb.setChecked(self.settings.value("editor/update_on_startup"))
-        self._update_cb.toggled.connect(self._update_settings)
+        self._release_channel_dropdown = QComboBox()
+        self._release_channel_dropdown.addItems(release_channel_choices)
+        self._release_channel_dropdown.setCurrentIndex(self.settings.value("editor/release_channel"))
+        self._release_channel_dropdown.currentTextChanged.connect(self._update_settings)
 
         layout.addLayout(
             label_and_widget(
                 "Check for Updates on Startup:",
-                self._update_cb,
-                tooltip="Checks the Repository for a new Version when the Editor is started.",
+                self._release_channel_dropdown,
+                tooltip="Checks the Repository for a new version when the Editor is started. Nightly versions are"
+                "untested, but have the latest fixes.",
             )
         )
 
@@ -112,7 +115,7 @@ class SettingsDialog(CustomDialog):
         self.auto_save_cb.setChecked(self.settings.value("editor/auto_save_enabled"))
         self.auto_save_cb.stateChanged.connect(self._update_settings)
 
-        on_start_up_box.layout().addLayout(
+        layout.addLayout(
             label_and_widget(
                 "Ask if Backup should be restored, after crash:",
                 self.auto_save_cb,
@@ -125,7 +128,7 @@ class SettingsDialog(CustomDialog):
         self._restore_last_opened_level_cb.setChecked(self.settings.value("editor/remember_last_level"))
         self._restore_last_opened_level_cb.stateChanged.connect(self._update_settings)
 
-        on_start_up_box.layout().addLayout(
+        layout.addLayout(
             label_and_widget(
                 "Reopen last opened ROM and level:",
                 self._restore_last_opened_level_cb,
@@ -190,7 +193,7 @@ class SettingsDialog(CustomDialog):
         self.ask_for_level_management_cb.setChecked(self.settings.value("editor/ask_for_level_management"))
         self.ask_for_level_management_cb.stateChanged.connect(self._update_settings)
 
-        self._when_open_rom_box.layout().addLayout(
+        layout.addLayout(
             label_and_widget(
                 "Ask for Automatic Level Management:",
                 self.ask_for_level_management_cb,
@@ -204,7 +207,7 @@ class SettingsDialog(CustomDialog):
         self.asm_loading_dropdown.setCurrentIndex(self.settings.value("editor/asm_loading_behavior"))
         self.asm_loading_dropdown.currentTextChanged.connect(self._update_settings)
 
-        self._when_open_rom_box.layout().addLayout(
+        layout.addLayout(
             label_and_widget(
                 "How to handle ASM files:",
                 self.asm_loading_dropdown,
@@ -222,7 +225,7 @@ class SettingsDialog(CustomDialog):
         self.monitor_rom_cb.setChecked(self.settings.value("editor/monitor_rom_for_changes"))
         self.monitor_rom_cb.stateChanged.connect(self._update_settings)
 
-        self._other_settings_box.layout().addLayout(
+        layout.addLayout(
             label_and_widget(
                 "Offer to reload the ROM, if an outside change is detected:",
                 self.monitor_rom_cb,
@@ -244,7 +247,7 @@ class SettingsDialog(CustomDialog):
         level_highlight_layout = label_and_widget(
             "Highlight LevelPointers in LevelSelector World Maps:", self.level_highlight_cb
         )
-        self.gui_box.layout().addLayout(level_highlight_layout)
+        layout.addLayout(level_highlight_layout)
 
         style_choices = []
 
@@ -412,7 +415,9 @@ class SettingsDialog(CustomDialog):
 
         self.settings.setValue("editor/default_dir_path", self.default_dir_label.text())
 
-        self.settings.setValue("editor/update_on_startup", self._update_cb.isChecked())
+        self.settings.setValue(
+            "editor/release_channel", release_channel_choices.index(self._release_channel_dropdown.currentText())
+        )
         self.settings.setValue("editor/object_scroll_enabled", self._scroll_cb.isChecked())
         self.settings.setValue("level_view/object_tooltip_enabled", self._tooltip_cb.isChecked())
 
