@@ -146,6 +146,11 @@ with open(data_dir.joinpath("objects.dat"), "r") as f:
 
         obj_index += 1
 
+    while len(enemy_handle_x) < 0xFF:
+        enemy_handle_x.append(0)
+        enemy_handle_x2.append(0)
+        enemy_handle_y.append(0)
+
 
 # TODO: After deduplicating the definitions and the object sets, can probably be removed
 @lru_cache(2**4)
