@@ -22,17 +22,17 @@ class ManagedLevelsMixin(SettingsMixin):
     def __init__(self, parent):
         super().__init__(parent)
 
-        boom_boom_group = QGroupBox("Managed Level Positions")
-        QVBoxLayout(boom_boom_group)
+        managed_level_positions_box = QGroupBox("Managed Level Positions")
+        QVBoxLayout(managed_level_positions_box)
 
         self.enabled_checkbox = QCheckBox("Enable Managed Level Positions")
         self.enabled_checkbox.setChecked(bool(ROM.additional_data.managed_level_positions))
 
         self.enabled_checkbox.toggled.connect(self.update_level_info)
 
-        boom_boom_group.layout().addWidget(self.enabled_checkbox)
+        managed_level_positions_box.layout().addWidget(self.enabled_checkbox)
 
-        self.layout().addWidget(boom_boom_group)
+        self.layout().addWidget(managed_level_positions_box)
 
         self.level_info_box = QGroupBox("Level Range in Rom Banks")
         QVBoxLayout(self.level_info_box)

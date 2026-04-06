@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QProgressDialog
 
 from foundry.game.File import ROM
@@ -18,6 +19,7 @@ class LevelParseProgressDialog(QProgressDialog):
 
         self.setWindowTitle("Parsing World Maps to find Levels")
         self.setModal(True)
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         self.forceShow()
 
         QApplication.processEvents()
