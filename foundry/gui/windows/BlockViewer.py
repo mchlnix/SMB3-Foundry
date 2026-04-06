@@ -14,6 +14,8 @@ from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import TILE_NAMES, UNDERGROUND_OBJECT_SET, WORLD_MAP_OBJECT_SET
 
+ANIMATION_FRAME_DURATION_MS = 125
+
 
 class BlockViewer(CustomChildWindow):
     def __init__(self, parent):
@@ -151,7 +153,7 @@ class BlockBank(QWidget):
 
         self.draw_timer = QTimer(self)
         self.draw_timer.timeout.connect(self.repaint)
-        self.draw_timer.setInterval(100)
+        self.draw_timer.setInterval(ANIMATION_FRAME_DURATION_MS)
 
         self.draw_timer.start()
 

@@ -56,7 +56,7 @@ class BlockList(QWidget):
     def __init__(self, palette_group):
         super(BlockList, self).__init__()
 
-        self.setLayout(QHBoxLayout())
+        self._layout = QHBoxLayout(self)
 
         self.palette_group = palette_group
 
@@ -65,8 +65,8 @@ class BlockList(QWidget):
 
         self.recent_blocks = [BlockIcon(WORLD_MAP_BLANK_TILE_ID) for _ in range(9)]
 
-        self.layout().addWidget(self.current_block)
-        self.layout().addSpacing(10)
+        self._layout.addWidget(self.current_block)
+        self._layout.addSpacing(10)
 
         for block_icon in self.recent_blocks:
             block_icon.clicked.connect(self.set_current_block)

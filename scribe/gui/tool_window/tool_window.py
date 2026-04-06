@@ -19,9 +19,9 @@ class ToolWindow(QMainWindow):
     def __init__(self, parent, level_ref):
         super(ToolWindow, self).__init__(parent)
 
-        self.setWindowFlag(Qt.Tool, True)
-        self.setWindowFlag(Qt.WindowCloseButtonHint, False)
-        self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
+        self.setWindowFlag(Qt.WindowType.Tool, True)
+        self.setWindowFlag(Qt.WindowType.WindowCloseButtonHint, False)
+        self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, False)
 
         self.setWindowTitle("Tool Window - SMB3 Scribe")
 

@@ -36,6 +36,7 @@ from foundry.gui.visualization.MainView import (
     RESIZE_MODES,
     MainView,
 )
+from foundry.gui.windows.BlockViewer import ANIMATION_FRAME_DURATION_MS
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH
 
@@ -114,10 +115,12 @@ class LevelView(MainView):
             self.drawer.anim_frame = 0
 
         if self.settings.value("level_view/block_animation"):
-            self.redraw_timer = QTimer(self)
-            self.redraw_timer.setInterval(120)
-            self.redraw_timer.timeout.connect(self.next_anim_step)
-            self.redraw_timer.start()
+            redraw_timer = QTimer(self)
+            redraw_timer.setInterval(ANIMATION_FRAME_DURATION_MS)
+            redraw_timer.timeout.connect(self.next_anim_step)
+            redraw_timer.start()
+
+            self.redraw_timer = redraw_timer
 
     def set_zoom(self, zoom):
         self.settings.setValue("level_view/last_zoom_factor", zoom)
@@ -200,7 +203,7 @@ class LevelView(MainView):
         on_right_edge = pos.x() in range(right - edge_width, right)
         on_bottom_edge = pos.y() in range(bottom - edge_width, bottom)
 
-        edges = Qt.Edge()
+        edges = Qt.Edge(0)
 
         if on_right_edge:
             edges |= Qt.Edge.RightEdge
