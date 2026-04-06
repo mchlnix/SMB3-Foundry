@@ -883,6 +883,10 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         if answer == QMessageBox.StandardButton.Ignore:
             return
 
+        if answer == QMessageBox.StandardButton.No:
+            ROM.additional_data.managed_level_positions = False
+            self.on_save_rom(None)
+
         if answer == QMessageBox.StandardButton.Yes:
             if not self._found_level_load_code():
                 return
