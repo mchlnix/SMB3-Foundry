@@ -25,7 +25,11 @@ class DirtyAdditionalDataMixin(object):
         super().__init__(*args, **kwargs)
 
     def undo(self):
-        ROM.additional_data.needs_refresh = self._dirty_before
+        # We introduced a ROM hotswapping feature in Foundry, that means after executing the redo of this command, the
+        # ROM in fonudry might be reloaded.
+        # Undoing this command would now be a new change, necessatating a reparsing of the levels again, so we have to
+        # "dirty" the data, so Foundry can realize this.
+        ROM.additional_data.needs_refresh = True
 
         super().undo()  # type: ignore
 

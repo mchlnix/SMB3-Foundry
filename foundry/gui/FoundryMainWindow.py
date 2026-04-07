@@ -485,27 +485,36 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         self.hotswap_roms()
         self._update_accepted_hash()
 
+    def hotswap_roms(self):
+        self._protect_undo_stack = True
+
+        super().hotswap_roms()
+
+        self._update_block_graphics_in_ui()
+
+        self._protect_undo_stack = False
+
     def _on_rom_changed_externally(self):
-        self._rom_watcher_enabled = False
-
-        wants_to_reload_rom = (
-            self.settings.value("editor/monitor_rom_for_changes")
-            and QMessageBox.information(
-                self,
-                "ROM Changed",
-                "The ROM has been changed externally.\n\n"
-                "You can have Foundry open the new ROM and try to apply your current changes to it. Or you can ignore "
-                "the external changes. NotE that those will be lost, if you save in Foundry afterwards.",
-                QMessageBox.StandardButton.Ignore | QMessageBox.StandardButton.Apply,
+        # need to disable it here to not run into multiple triggers of this
+        with self._rom_watcher_disabled():
+            wants_to_reload_rom = (
+                self.settings.value("editor/monitor_rom_for_changes")
+                and QMessageBox.information(
+                    self,
+                    "ROM Changed",
+                    "The ROM has been changed externally.\n\n"
+                    "You can have Foundry open the new ROM and try to apply your current changes to it. Or you can "
+                    "ignore the external changes.\n\n"
+                    "Note that those changes will be lost, if you save in Foundry afterwards.",
+                    QMessageBox.StandardButton.Ignore | QMessageBox.StandardButton.Apply,
+                )
+                == QMessageBox.StandardButton.Apply
             )
-            == QMessageBox.StandardButton.Apply
-        )
 
-        if wants_to_reload_rom:
-            self.hotswap_roms()
+            if wants_to_reload_rom:
+                self.hotswap_roms()
 
-        self._update_accepted_hash()
-        self._rom_watcher_enabled = True
+            self._update_accepted_hash()
 
     @staticmethod
     def _save_auto_rom():
@@ -684,14 +693,17 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
             if close_current_level:
                 self.close_current_level()
 
-            if check_for_asm_files:
-                # TODO check for file and input errors for this separately
-                self._check_for_asm_fns_imports(path_to_rom)
+            with self._rom_watcher_disabled():
+                if check_for_asm_files:
+                    # TODO check for file and input errors for this separately
+                    self._check_for_asm_fns_imports(path_to_rom)
 
-            if self.settings.value("editor/ask_for_level_management"):
-                self._ask_for_level_management()
+                if self.settings.value("editor/ask_for_level_management"):
+                    self._ask_for_level_management()
 
-            self._check_for_refresh()
+                self._check_for_refresh()
+
+                self._update_accepted_hash()
 
         except FileNotFoundError:
             self._on_rom_not_found(path_to_rom)
@@ -949,6 +961,9 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
         if ROM.additional_data.managed_level_positions:
             self._parse_levels_in_rom()
+        else:
+            # save the clearing of the level data as well
+            ROM.save_to_file(ROM.path)
 
     def _ask_for_palette_save(self) -> bool:
         """
@@ -994,7 +1009,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
                 self,
                 reason,
                 f"{additional_info}\n\nDo you want to proceed?",
-                QMessageBox.StandardButton.DialogCode.No | QMessageBox.StandardButton.Yes,
+                QMessageBox.StandardButton.No | QMessageBox.StandardButton.Yes,
                 QMessageBox.StandardButton.No,
             )
 
@@ -1058,15 +1073,12 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
 
             return
 
-        self._rom_watcher_enabled = False
-
         if self._save_current_changes_to_file(pathname, set_new_path=True) and not is_save_as:
-            self.undo_stack.setClean()
+            with self._rom_watcher_disabled():
+                self.undo_stack.setClean()
 
-            # Make sure the rom file watcher goes off right now, so it ignores the change
-            QApplication.processEvents()
-
-        self._rom_watcher_enabled = True
+                # Make sure the rom file watcher goes off right now, so it ignores the change
+                QApplication.processEvents()
 
         self.update_title()
 

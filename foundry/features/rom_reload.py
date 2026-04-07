@@ -1,10 +1,11 @@
+from contextlib import contextmanager
 from hashlib import md5
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable
 
 from PySide6.QtCore import QFileSystemWatcher, Signal, SignalInstance
 from PySide6.QtGui import QUndoStack
-from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QApplication, QMessageBox
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
@@ -55,6 +56,7 @@ class RomWatcherMixin:
         self._file_watcher.addPath(str(path))
 
     def _update_accepted_hash(self):
+
         self._last_accepted_hash = self._hash_current_file()
 
     def _hash_current_file(self) -> str:
@@ -67,16 +69,26 @@ class RomWatcherMixin:
         for path in self._file_watcher.files():
             self._file_watcher.removePath(path)
 
+    @contextmanager
+    def _rom_watcher_disabled(self):
+        status_before = self._rom_watcher_enabled
+
+        self._rom_watcher_enabled = False
+
+        try:
+            yield
+        finally:
+            # flush all events, including queued file changes, from before this was called, but ready to trigger after
+            QApplication.processEvents()
+            self._rom_watcher_enabled = status_before
+
 
 class RomHotSwapMixin:
     # members of FoundryMainWindow
     level_ref: LevelRef
     undo_stack: QUndoStack
-    _protect_undo_stack: bool
-    _rom_watcher_enabled: bool
     update_level: Callable
     on_open_rom: Callable
-    _update_block_graphics_in_ui: Callable
     file_menu: "FileMenu"
 
     def __init__(self, *args, **kwargs):
@@ -111,8 +123,6 @@ class RomHotSwapMixin:
         self.undo_stack.setIndex(index_at_last_save)
 
     def hotswap_roms(self):
-        self._protect_undo_stack = True
-
         needs_level_reload = bool(self.level_ref) and self.level_ref.level.attached_to_rom
 
         if needs_level_reload:
@@ -131,10 +141,6 @@ class RomHotSwapMixin:
 
         if needs_level_reload:
             self.execute_level_reload()
-
-        self._update_block_graphics_in_ui()
-
-        self._protect_undo_stack = False
 
     def execute_level_reload(self):
         # find the level data in the ROM again, since it might have been moved
