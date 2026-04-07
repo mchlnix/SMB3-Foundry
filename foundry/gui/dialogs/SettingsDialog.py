@@ -106,7 +106,7 @@ class SettingsDialog(CustomDialog):
             label_and_widget(
                 "Check for Updates on Startup:",
                 self._release_channel_dropdown,
-                tooltip="Checks the Repository for a new version when the Editor is started. Nightly versions are"
+                tooltip="Checks the Repository for a new version when the Editor is started. Nightly versions are "
                 "untested, but have the latest fixes.",
             )
         )

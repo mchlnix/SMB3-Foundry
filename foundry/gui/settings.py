@@ -50,7 +50,6 @@ SETTINGS["editor/remember_last_level_enemy_address"] = 0
 SETTINGS["editor/remember_last_level_world_number"] = 1
 SETTINGS["editor/monitor_rom_for_changes"] = True
 
-SETTINGS["editor/update_on_startup"] = False
 SETTINGS["editor/asked_for_startup"] = False
 SETTINGS["editor/release_channel"] = ReleaseChannel.NIGHTLY
 SETTINGS["editor/version_to_ignore"] = ""
@@ -156,4 +155,14 @@ class Settings(QSettings):
                         self.setValue(underscore_key, self.value(key))
 
                     self.remove(key)
+
+            if settings_version == 2:
+                self.setValue("editor/settings_version", settings_version + 1)
+
+                # preserve the setting to not check updates on startup
+                if not self.value("editor/update_on_startup", default_value=True):
+                    self.setValue("editor/release_channel", ReleaseChannel.NONE)
+
+                self.remove("editor/update_on_startup")
+                continue
             break

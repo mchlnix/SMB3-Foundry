@@ -250,7 +250,7 @@ def _follow_jump_destinations(
     return was_cancelled, levels_in_world
 
 
-def _sort_levels_by_object_set(levels_by_address: dict[int, FoundLevel]) -> defaultdict[Any, list]:
+def _sort_levels_by_object_set(levels_by_address: dict[int, FoundLevel]) -> defaultdict[int, list[int]]:
     levels_by_object_set = defaultdict(list)
 
     for level_address in sorted(levels_by_address.keys()):
