@@ -261,13 +261,13 @@ class LevelSelector(QDialog):
         self.enemy_data_spinner.setDisabled(self._stock_level_widget.level_is_overworld)
         self.button_ok.setDisabled(self._stock_level_widget.level_is_overworld)
 
-        self._fill_in_data(
+        self.fill_in_data(
             self._stock_level_widget.object_set_number,
             self._stock_level_widget.level_address,
             self._stock_level_widget.enemy_address,
         )
 
-    def _fill_in_data(self, object_set: int, layout_address: int, enemy_address: int):
+    def fill_in_data(self, object_set: int, layout_address: int, enemy_address: int):
         self.object_set_dropdown.blockSignals(True)
         self.object_data_spinner.blockSignals(True)
         self.enemy_data_spinner.blockSignals(True)
@@ -312,7 +312,7 @@ class LevelSelector(QDialog):
 
         self.world_index = level_pointer.world.index + 1
 
-        self._fill_in_data(
+        self.fill_in_data(
             level_pointer.object_set,
             level_pointer.level_address,
             level_pointer.enemy_address,
@@ -322,7 +322,7 @@ class LevelSelector(QDialog):
         self.button_ok.setFocus()
 
     def _on_found_level_selected(self):
-        self._fill_in_data(
+        self.fill_in_data(
             self._found_level_widget.object_set_number,
             self._found_level_widget.level_address,
             self._found_level_widget.enemy_address,

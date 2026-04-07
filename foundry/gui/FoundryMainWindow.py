@@ -1269,8 +1269,13 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
             return False
 
         level_selector = LevelSelector(self)
-        if self.level_ref:
+        if self.level_ref and self.level_ref.level.attached_to_rom:
             level_selector.goto_world(self.level_ref.level.world)
+            level_selector.fill_in_data(
+                self.level_ref.level.object_set_number,
+                self.level_ref.level.layout_address,
+                self.level_ref.level.enemy_offset,
+            )
 
         level_was_selected = level_selector.exec() == QDialog.DialogCode.Accepted
 
