@@ -1308,6 +1308,15 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         world_number=-1,
     ):
         try:
+            if 0 in (object_data_offset, enemy_data_offset, object_set, world_number):
+                QMessageBox.critical(
+                    self,
+                    "Invalid Level Data",
+                    f"Given level data was not loadable.\n\n{object_data_offset=}\n{enemy_data_offset=}\n"
+                    f"{object_set=}\n{world_number=}",
+                )
+                return
+
             self.level_ref.load_level(level_name, object_data_offset, enemy_data_offset, object_set, world_number)
             self.scroll_panel.horizontalScrollBar().setValue(0)
             self.scroll_panel.verticalScrollBar().setValue(0)
