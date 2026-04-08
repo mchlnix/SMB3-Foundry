@@ -184,13 +184,13 @@ class WorldView(MainView):
 
             self.drag_start_point = self.to_level_point(event.position().toPoint())
             self.last_mouse_position = self.drag_start_point
-            self.setCursor(Qt.ClosedHandCursor)
+            self.setCursor(Qt.CursorShape.ClosedHandCursor)
 
         elif new_mode == MODE_FREE:
             self._tile_to_put = WORLD_MAP_BLANK_TILE_ID
 
             self._object_was_selected_on_last_click = False
-            self.setCursor(Qt.ArrowCursor)
+            self.setCursor(Qt.CursorShape.ArrowCursor)
 
         self.mouse_mode = new_mode
 
@@ -199,20 +199,24 @@ class WorldView(MainView):
         self.set_mouse_mode(MODE_PUT_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        should_display_level = self.mouse_mode == MODE_FREE and self.settings.value("world_view/show_level_previews")
+        x, y = self.to_level_point(event.position().toPoint()).xy
+        level_under_cursor = self.world.level_pointer_at(x, y) is not None
 
-        if not should_display_level or not self._set_level_thumbnail(event):
-            # clear tooltip if supposed to show one, but no level thumbnail was available (e.g. no level there)
-            if self.cursor().shape() == Qt.PointingHandCursor:
-                self.setCursor(Qt.ArrowCursor)
+        if level_under_cursor:
+            self.setCursor(Qt.CursorShape.PointingHandCursor)
+        else:
+            self.setCursor(Qt.CursorShape.ArrowCursor)
 
+        show_level_preview = self.mouse_mode == MODE_FREE and self.settings.value("world_view/show_level_previews")
+
+        if not show_level_preview or not self._set_level_thumbnail(event):
             self.setToolTip("")
             QToolTip.hideText()
 
         if self.read_only:
             return super(WorldView, self).mouseMoveEvent(event)
 
-        if self.mouse_mode == MODE_PUT_TILE and event.buttons() & Qt.LeftButton:
+        if self.mouse_mode == MODE_PUT_TILE and event.buttons() & Qt.MouseButton.LeftButton:
             level_pos = self.to_level_point(event.position().toPoint())
 
             tile = self.world.object_at(*level_pos.xy)
@@ -244,7 +248,7 @@ class WorldView(MainView):
             return False
 
         if self.read_only:
-            self.setCursor(Qt.PointingHandCursor)
+            self.setCursor(Qt.CursorShape.PointingHandCursor)
 
         try:
             level_name = self.world.level_name_at_position(x, y)
@@ -368,7 +372,7 @@ class WorldView(MainView):
 
             tile_to_put_name = TILE_NAMES[self._tile_to_put]
 
-            if event.modifiers() & Qt.ShiftModifier:
+            if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
                 self.undo_stack.beginMacro(f"Fill in '{tile.name}' with '{tile_to_put_name}'")
                 self._fill_tile(tile.type, x, y)
             else:
@@ -379,7 +383,7 @@ class WorldView(MainView):
 
             return
 
-        if event.modifiers() & Qt.ControlModifier:
+        if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
             self.set_mouse_mode(MODE_SELECTION_SQUARE, event)
             return
 
@@ -388,7 +392,7 @@ class WorldView(MainView):
         # if shirt is pressed, toggle selection, while keeping current selection
         # if shift is not pressed, remove selection and only select obj under cursor
 
-        if not obj.selected and not event.modifiers() & Qt.ShiftModifier:
+        if not obj.selected and not event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
             self._select_object(None)
 
             self.select_object_like(obj)
@@ -455,7 +459,7 @@ class WorldView(MainView):
             # handle selected object on release to allow dragging
             selected_objects = self.get_selected_objects().copy()
 
-            if event.modifiers() & Qt.ShiftModifier:
+            if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
                 if obj.selected:
                     # take selected object under cursor out of current selection
                     selected_objects.remove(obj)

@@ -80,6 +80,7 @@ default_dirs = {
 
 asm_action_choices = ["Don't ask", "Ask if needed", "Load if available"]
 release_channel_choices = ["Don't check", "Only stable versions", "Also nightly versions"]
+level_preview_choices = ["Don't show", "Show on hover", "Show on click"]
 
 
 class SettingsDialog(CustomDialog):
@@ -245,9 +246,24 @@ class SettingsDialog(CustomDialog):
         self.level_highlight_cb.stateChanged.connect(self._update_settings)
 
         level_highlight_layout = label_and_widget(
-            "Highlight LevelPointers in LevelSelector World Maps:", self.level_highlight_cb
+            "Highlight LevelPointers in LevelSelector World Maps:",
+            self.level_highlight_cb,
+            tooltip="Should the Level Pointers be outlined by a red square in the Level Selector?",
         )
         layout.addLayout(level_highlight_layout)
+
+        self.level_preview_dropdown = QComboBox()
+        self.level_preview_dropdown.addItems(level_preview_choices)
+        self.level_preview_dropdown.setCurrentIndex(self.settings.value("editor/level_preview_type"))
+        self.level_preview_dropdown.currentTextChanged.connect(self._update_settings)
+
+        level_preview_layout = label_and_widget(
+            "Level preview in Level Selector:",
+            self.level_preview_dropdown,
+            tooltip="How the Level Selector should show the level preview. In a tooltip on hover, in the widget when "
+            "after clicking a level, or not at all.",
+        )
+        layout.addLayout(level_preview_layout)
 
         style_choices = []
 
@@ -265,13 +281,13 @@ class SettingsDialog(CustomDialog):
 
         path_layout = QHBoxLayout()
 
-        self.path_dropdown = path_dropdown = QComboBox(self)
-        path_dropdown.addItems(default_dirs.keys())
-        path_dropdown.setCurrentText(self.settings.value("editor/default_dir"))
-        path_dropdown.currentTextChanged.connect(self.on_dropdown)
+        self.path_dropdown = QComboBox(self)
+        self.path_dropdown.addItems(default_dirs.keys())
+        self.path_dropdown.setCurrentText(self.settings.value("editor/default_dir"))
+        self.path_dropdown.currentTextChanged.connect(self.on_dropdown)
 
         path_layout.addWidget(QLabel("Default path:"))
-        path_layout.addWidget(path_dropdown)
+        path_layout.addWidget(self.path_dropdown)
 
         layout.addLayout(path_layout)
 
@@ -396,6 +412,8 @@ class SettingsDialog(CustomDialog):
         self.settings.setValue("editor/remember_last_level", self._restore_last_opened_level_cb.isChecked())
         self.settings.setValue("editor/asm_loading_behavior", self.asm_loading_dropdown.currentIndex())
         self.settings.setValue("world_view/show_level_pointers", self.level_highlight_cb.isChecked())
+
+        self.settings.setValue("editor/level_preview_type", self.level_preview_dropdown.currentIndex())
 
         # set up style sheets
         for child_widget in self.gui_box.children():

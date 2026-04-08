@@ -24,30 +24,43 @@ class ReleaseChannel:
     NIGHTLY = 2
 
 
+class LevelPreviewType:
+    NONE = 0
+    TOOLTIP = 1
+    WIDGET = 2
+
+
 # TODO Make into an enum?
 SETTINGS: dict[str, str | int | float | bool] = dict()
 SETTINGS["editor/instaplay_emulator"] = "fceux"
 SETTINGS["editor/instaplay_arguments"] = "%f"
 SETTINGS["editor/instaplay_skip_title_screen"] = True
-SETTINGS["editor/object_scroll_enabled"] = False
+
 SETTINGS["editor/default_powerup"] = 0
 SETTINGS["editor/powerup_starman"] = False
 
+SETTINGS["editor/object_scroll_enabled"] = False
+
 SETTINGS["editor/resize_mode"] = RESIZE_LEFT_CLICK
 SETTINGS["editor/gui_style"] = ""  # initially blank, since we can't call load_stylesheet until the app is started
+SETTINGS["editor/level_preview_type"] = LevelPreviewType.WIDGET
+
 SETTINGS["editor/default_dir"] = "User"
 SETTINGS["editor/default_dir_path"] = ""
 SETTINGS["editor/custom_default_dir_path"] = ""
+
 SETTINGS["editor/show_block_item_in_toolbar"] = True
 SETTINGS["editor/ask_for_level_management"] = True
 SETTINGS["editor/auto_save_enabled"] = True
 SETTINGS["editor/asm_loading_behavior"] = ASMLoadingBehavior.ASK_IF_NEEDED
+
 SETTINGS["editor/remember_last_level"] = False
 SETTINGS["editor/remember_last_level_path"] = ""
 SETTINGS["editor/remember_last_level_object_set"] = 0
 SETTINGS["editor/remember_last_level_lvl_address"] = 0
 SETTINGS["editor/remember_last_level_enemy_address"] = 0
 SETTINGS["editor/remember_last_level_world_number"] = 1
+
 SETTINGS["editor/monitor_rom_for_changes"] = True
 
 SETTINGS["editor/asked_for_startup"] = False

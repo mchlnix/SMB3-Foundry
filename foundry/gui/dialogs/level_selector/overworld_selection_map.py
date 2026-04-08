@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QScrollArea, QScrollBar, QSizePolicy
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.settings import Settings
+from foundry.gui.settings import LevelPreviewType, Settings
 from foundry.gui.visualization.world.WorldView import WorldView
 from smb3parse.constants import WORLD_MAP_OBJECT_SET
 from smb3parse.data_points import LevelPointerData, Position
@@ -32,11 +32,14 @@ class WorldMapLevelSelect(QScrollArea):
 
         self.world = level_ref.level
 
+        app_settings = Settings("mchlnix", "foundry")
         world_settings = Settings()
+
+        world_settings.setValue("world_view/show_level_pointers", app_settings.value("world_view/show_level_pointers"))
         world_settings.setValue(
-            "world_view/show_level_pointers", Settings("mchlnix", "foundry").value("world_view/show_level_pointers")
+            "world_view/show_level_previews",
+            app_settings.value("editor/level_preview_type") == LevelPreviewType.TOOLTIP,
         )
-        world_settings.setValue("world_view/show_level_previews", True)
         world_settings.setValue("world_view/animated_tiles", True)
         world_settings.setValue("world_view/show_border", True)
 
