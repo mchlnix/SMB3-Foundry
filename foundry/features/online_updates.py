@@ -122,8 +122,12 @@ class UpdateChecker(QThread):
 
 
 class UpdateCheckMixin:
-    settings: Settings
+    # QWidget members
     setCursor: Callable
+
+    # MainWindow members
+    settings: Settings
+    _on_show_settings: Callable
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -195,6 +199,10 @@ class UpdateCheckMixin:
         go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest nightly")
         go_to_github_button.clicked.connect(lambda: open_url(releases_link))
 
+        goto_settings_button = QPushButton(icon("sliders.svg"), "Change release channel")
+        goto_settings_button.clicked.connect(self._on_show_settings)
+        info_box.addButton(goto_settings_button, QMessageBox.ButtonRole.NoRole)
+
         info_box.addButton(QMessageBox.StandardButton.Cancel)
         info_box.addButton(go_to_github_button, QMessageBox.ButtonRole.AcceptRole)
 
@@ -235,7 +243,8 @@ class UpdateCheckMixin:
         answer = QMessageBox.question(
             self,
             "Automatic Update Checks",
-            "Do you want the editor to automatically check for updates on startup?",
+            "Do you want the editor to automatically check for updates on startup? You can change this later in "
+            "the Editor settings.",
         )
 
         self.settings.setValue("editor/asked_for_startup", True)
