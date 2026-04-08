@@ -48,6 +48,7 @@ def main(
 
     main_window = FoundryMainWindow()
 
+    load_from_auto_save = False
     have_level_data = m3l_path or level_data_tuple_ and 0 not in level_data_tuple_
 
     if check_auto_save and main_window.settings.value("editor/auto_save_enabled") and auto_save_rom_path.exists():
@@ -55,7 +56,7 @@ def main(
 
         if result == QMessageBox.DialogCode.Accepted:
             path_to_rom = auto_save_rom_path
-            have_level_data = True
+            load_from_auto_save = True
 
             QMessageBox.information(
                 None,
@@ -63,7 +64,7 @@ def main(
                 "Don't forget to save the loaded ROM under a new name!",
             )
 
-    if not have_level_data and main_window.settings.value("editor/remember_last_level"):
+    if not load_from_auto_save and not have_level_data and main_window.settings.value("editor/remember_last_level"):
         last_rom = Path(main_window.settings.value("editor/remember_last_level_path"))
         object_set = main_window.settings.value("editor/remember_last_level_object_set")
         level_address_ = main_window.settings.value("editor/remember_last_level_lvl_address")
@@ -82,7 +83,7 @@ def main(
 
             have_level_data = True
 
-    main_window.on_open_rom(path_to_rom, try_opening_level=not have_level_data)
+    main_window.on_open_rom(path_to_rom, try_opening_level=not load_from_auto_save and not have_level_data)
 
     if ROM.is_loaded() and have_level_data:
         if m3l_path_:
