@@ -688,7 +688,8 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
         # Proceed to load the file chosen by the user
         try:
             ROM.load_from_file(path_to_rom, reset_globals=False)
-            self.set_rom_path_to_watch(path_to_rom)
+            if path_to_rom != auto_save_rom_path:
+                self.set_rom_path_to_watch(path_to_rom)
 
             if close_current_level:
                 self.close_current_level()
