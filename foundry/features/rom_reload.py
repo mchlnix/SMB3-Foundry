@@ -56,10 +56,12 @@ class RomWatcherMixin:
         self._file_watcher.addPath(str(path))
 
     def _update_accepted_hash(self):
-
         self._last_accepted_hash = self._hash_current_file()
 
     def _hash_current_file(self) -> str:
+        if self._current_path == Path():
+            return ""
+
         if not self._current_path.exists():
             raise FileNotFoundError(f"ROM file not found at {self._current_path}")
 
