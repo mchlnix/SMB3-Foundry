@@ -64,7 +64,7 @@ class LevelObject(InLevelObject):
         self.graphics_set = graphics_set
         self.tsa_data = ROM.get_tsa_data(object_set)
 
-        self.rendered_base_x = 0
+        self._rendered_base_x = 0
         """Top left x position of the visual object after rendering. Might change for expanding types, like pyramids."""
         self.rendered_base_y = 0
         """Top left y position of the visual object after rendering. Might change for expanding types, like pyramids."""
@@ -93,19 +93,23 @@ class LevelObject(InLevelObject):
         self._length = 0
         self.secondary_length = 0
 
+        self._bytes = bytearray()
+        self._bytes_dirty = True
+        """Whether the object data has changed and we need to re-calculate the bytes representation."""
+
         self._setup()
 
     def _setup(self):
         data = self.data
 
         # where to look for the graphic data?
-        self.domain = (data[0] & 0b1110_0000) >> 5
+        self._domain = (data[0] & 0b1110_0000) >> 5
 
         # position relative to the start of the level (top)
-        self.y_position = data[0] & 0b0001_1111
+        self._y_position = data[0] & 0b0001_1111
 
         # position relative to the start of the level (left)
-        self.x_position = data[1]
+        self._x_position = data[1]
 
         if self.vertical_level:
             offset = (self.x_position // LEVEL_SCREEN_WIDTH) * LEVEL_SCREEN_HEIGHT
@@ -126,7 +130,7 @@ class LevelObject(InLevelObject):
         self.ending: EndType = EndType(object_data.ending)
         self.name = object_data.description
 
-        self.rendered_width = self.width
+        self._rendered_width = self.width
         self.rendered_height = self.height
 
         # the building blocks, not necessarily all the blocks that need to be drawn
@@ -134,7 +138,7 @@ class LevelObject(InLevelObject):
 
         self.block_cache: dict[int, Block] = {}
 
-        self.is_4byte = object_data.is_4byte
+        self._is_4byte = object_data.is_4byte
 
         if self.is_4byte and len(self.data) == 3:
             self.data.append(0)
@@ -149,6 +153,61 @@ class LevelObject(InLevelObject):
         self.rect = Rect()
 
         self._render()
+
+    # Most of these properties enable us to cache the to_bytes result, since it gets called a lot
+    @property
+    def x_position(self):
+        return self._x_position
+
+    @x_position.setter
+    def x_position(self, value):
+        self._x_position = value
+        self._bytes_dirty = True
+
+    @property
+    def y_position(self):
+        return self._y_position
+
+    @y_position.setter
+    def y_position(self, value):
+        self._y_position = value
+        self._bytes_dirty = True
+
+    @property
+    def rendered_base_x(self):
+        return self._rendered_base_x
+
+    @rendered_base_x.setter
+    def rendered_base_x(self, value):
+        self._rendered_base_x = value
+        self._bytes_dirty = True
+
+    @property
+    def rendered_width(self):
+        return self._rendered_width
+
+    @rendered_width.setter
+    def rendered_width(self, value):
+        self._rendered_width = value
+        self._bytes_dirty = True
+
+    @property
+    def is_4byte(self):
+        return self._is_4byte
+
+    @is_4byte.setter
+    def is_4byte(self, value):
+        self._is_4byte = value
+        self._bytes_dirty = True
+
+    @property
+    def domain(self):
+        return self._domain
+
+    @domain.setter
+    def domain(self, value):
+        self._domain = value
+        self._bytes_dirty = True
 
     @property
     def obj_index(self):
@@ -167,6 +226,8 @@ class LevelObject(InLevelObject):
         else:
             self.type = (self.obj_index >> 4) + domain_offset + 16 - 1
 
+        self._bytes_dirty = True
+
     @property
     def object_info(self):
         return self.object_set.number, self.domain, self.obj_index
@@ -182,6 +243,8 @@ class LevelObject(InLevelObject):
             self._obj_index |= value & 0x0F
 
         self._length = value
+
+        self._bytes_dirty = True
 
     def copy(self):
         return LevelObject(
@@ -436,6 +499,12 @@ class LevelObject(InLevelObject):
         ]
 
     def to_bytes(self) -> bytearray:
+        if self._bytes_dirty:
+            self._update_bytes()
+
+        return self._bytes
+
+    def _update_bytes(self):
         data = bytearray()
 
         if self.vertical_level:
@@ -470,7 +539,8 @@ class LevelObject(InLevelObject):
         if self.is_4byte:
             data.append(self.length)
 
-        return data
+        self._bytes = data
+        self._bytes_dirty = False
 
     def __repr__(self) -> str:
         return f"LevelObject '{self.name}'/0x{self.data.hex()} at ({self.x_position}, {self.y_position})"
