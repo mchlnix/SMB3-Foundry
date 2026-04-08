@@ -3,24 +3,19 @@ import subprocess
 from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication
-from PySide6.QtGui import QCloseEvent, Qt, QUndoStack
-from PySide6.QtWidgets import QMainWindow, QMessageBox, QPushButton
+from PySide6.QtGui import QCloseEvent, QUndoStack
+from PySide6.QtWidgets import QMainWindow, QMessageBox
 
 from foundry import (
     Settings,
-    get_current_version_name,
-    icon,
-    open_url,
-    releases_link,
 )
-from foundry.features.online_updates import check_for_update, is_nightly_new
+from foundry.features.online_updates import UpdateCheckMixin
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
-from foundry.gui.settings import ReleaseChannel
 from foundry.gui.util import center_widget
 
 
-class MainWindow(QMainWindow):
+class MainWindow(UpdateCheckMixin, QMainWindow):
     undo_stack: QUndoStack
     settings: Settings
 
@@ -30,109 +25,6 @@ class MainWindow(QMainWindow):
         center_widget(self)
 
         self.level_ref = LevelRef()
-
-    def check_for_update_on_startup(self):
-        if not self._should_check():
-            return
-
-        self.check_for_update()
-
-    def _should_check(self) -> bool:
-        if not self.settings.value("editor/asked_for_startup"):
-            self._ask_for_release_channel()
-
-        return self.settings.value("editor/release_channel") != ReleaseChannel.NONE
-
-    def _ask_for_release_channel(self):
-        answer = QMessageBox.question(
-            self,
-            "Automatic Update Checks",
-            "Do you want the editor to automatically check for updates on startup?",
-        )
-
-        self.settings.setValue("editor/asked_for_startup", True)
-
-        if answer == QMessageBox.StandardButton.Yes:
-            # default to stable on first try
-            self.settings.setValue("editor/release_channel", ReleaseChannel.STABLE)
-        else:
-            self.settings.setValue("editor/release_channel", ReleaseChannel.NONE)
-
-    def check_for_update(self, honor_ignore=True):
-        self.setCursor(Qt.CursorShape.WaitCursor)
-
-        latest_version, nightly_commit_hash = check_for_update(self)
-
-        self._try_query_for_stable_update(latest_version, honor_ignore)
-        self._try_query_for_nightly_update(nightly_commit_hash)
-
-        self.setCursor(Qt.CursorShape.ArrowCursor)
-
-    def _try_query_for_stable_update(self, stable_release_name: str, honor_ignore=True):
-        if not stable_release_name:
-            # error occurred
-            return
-
-        assert not stable_release_name.startswith("nightly")
-
-        version_is_ignored = stable_release_name == self.settings.value("editor/version_to_ignore")
-        if version_is_ignored and honor_ignore:
-            # don't ask for this release again
-            return
-
-        if stable_release_name == get_current_version_name():
-            # already have that version
-            return
-
-        latest_release_url = f"{releases_link}/tag/{stable_release_name}"
-
-        go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest release")
-        go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
-
-        info_box = QMessageBox(
-            QMessageBox.Icon.Information,
-            "New release available",
-            f"New Version '{stable_release_name}' is available.",
-        )
-
-        ignore_button = QPushButton(f"Don't ask again for '{stable_release_name}'")
-        ignore_button.clicked.connect(lambda: self._ignore_latest_version(stable_release_name))
-        info_box.addButton(ignore_button, QMessageBox.ButtonRole.NoRole)
-
-        info_box.addButton(QMessageBox.StandardButton.Cancel)
-        info_box.addButton(go_to_github_button, QMessageBox.ButtonRole.AcceptRole)
-
-        info_box.exec()
-
-    def _try_query_for_nightly_update(self, nightly_commit_hash: str):
-        if not nightly_commit_hash:
-            # error occurred
-            return
-
-        if self.settings.value("editor/release_channel") != ReleaseChannel.NIGHTLY:
-            # not interested in nightly
-            return
-
-        if not is_nightly_new(nightly_commit_hash):
-            # already have that version
-            return
-
-        info_box = QMessageBox(
-            QMessageBox.Icon.Information,
-            "Newer nightly release available",
-            "A newer 'nightly' version is available for download.",
-        )
-
-        go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest nightly")
-        go_to_github_button.clicked.connect(lambda: open_url(releases_link))
-
-        info_box.addButton(QMessageBox.StandardButton.Cancel)
-        info_box.addButton(go_to_github_button, QMessageBox.ButtonRole.AcceptRole)
-
-        info_box.exec()
-
-    def _ignore_latest_version(self, latest_version: str):
-        self.settings.setValue("editor/version_to_ignore", latest_version)
 
     def safe_to_change(self) -> bool:
         return self.undo_stack.isClean() or self.confirm_changes()
