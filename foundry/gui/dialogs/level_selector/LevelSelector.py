@@ -308,6 +308,8 @@ class LevelSelector(QDialog):
         preview_widget.set_level_preview(object_set, layout_address, enemy_address)
         preview_widget.show()
 
+        self.adjustSize()
+
     def _on_level_selected_via_world_map(self, level_name: str, level_pointer: LevelPointerData):
         self.level_name = level_name
 
