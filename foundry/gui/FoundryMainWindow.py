@@ -35,6 +35,7 @@ from PySide6.QtWidgets import (
 from foundry import (
     NO_PARENT,
     ROM_FILE_FILTER,
+    app_settings_foundry,
     auto_save_level_data_path,
     auto_save_m3l_path,
     auto_save_rom_path,
@@ -92,7 +93,7 @@ from foundry.gui.menus.view_menu import ViewMenu
 from foundry.gui.ObjectDropdown import ObjectDropdown
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.ObjectStatusBar import ObjectStatusBar
-from foundry.gui.settings import ASMLoadingBehavior, Settings
+from foundry.gui.settings import ASMLoadingBehavior
 from foundry.gui.SpinnerPanel import SpinnerPanel
 from foundry.gui.visualization.level.LevelView import LevelView
 from foundry.gui.WarningList import WarningList
@@ -110,7 +111,7 @@ class FoundryMainWindow(RomWatcherMixin, RomHotSwapMixin, MainWindow):
     def __init__(self):
         super(FoundryMainWindow, self).__init__()
 
-        self.settings = Settings("mchlnix", "foundry")
+        self.settings = app_settings_foundry()
 
         self.level_ref.level_changed.connect(self.update_gui_for_level)
         self.level_ref.palette_changed.connect(self._update_block_graphics_in_ui)

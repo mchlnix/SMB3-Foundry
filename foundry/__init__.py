@@ -50,6 +50,10 @@ IMG_FILE_FILTER = "Screenshots (*.png);;All files (*)"
 NO_PARENT = cast(QWidget, cast(object, None))
 
 
+def app_settings_foundry():
+    return Settings("mchlnix", "foundry")
+
+
 def ctrl_is_pressed():
     return bool(QApplication.keyboardModifiers() & Qt.KeyboardModifier.ControlModifier)
 

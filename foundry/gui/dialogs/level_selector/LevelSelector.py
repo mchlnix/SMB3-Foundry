@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from foundry import Settings, get_level_thumbnail, icon
+from foundry import app_settings_foundry, get_level_thumbnail, icon
 from foundry.game.File import ROM
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
@@ -284,8 +284,7 @@ class LevelSelector(QDialog):
         self._update_level_preview()
 
     def _update_level_preview(self):
-        # make into a global helper function?
-        app_settings = Settings("mchlnix", "foundry")
+        app_settings = app_settings_foundry()
 
         if app_settings.value("editor/level_preview_type") != LevelPreviewType.WIDGET:
             return
