@@ -2,8 +2,9 @@ from PySide6.QtCore import QPoint
 from PySide6.QtGui import QMouseEvent, Qt
 from PySide6.QtWidgets import QLabel, QTableWidgetItem, QVBoxLayout, QWidget
 
-from foundry import get_level_thumbnail, pixmap_to_base64
+from foundry import app_settings_foundry, get_level_thumbnail, pixmap_to_base64
 from foundry.game.File import ROM
+from foundry.gui.settings import LevelPreviewType
 from foundry.gui.widgets.table_widget import TableWidget
 from smb3parse.constants import OBJECT_SET_NAMES
 from smb3parse.util.parser import FoundLevel
@@ -78,11 +79,12 @@ class _FoundLevelTable(TableWidget):
         return self.item(row, 0).data(Qt.ItemDataRole.UserRole)
 
     @property
-    def level_index(self):
+    def level_index(self) -> int:
         return self._level_index_for_row(self.currentRow())
 
     def mouseMoveEvent(self, event: QMouseEvent):
-        return self._set_thumbnail(event)
+        if app_settings_foundry().value("editor/level_preview_type") == LevelPreviewType.TOOLTIP:
+            self._set_thumbnail(event)
 
     def _set_thumbnail(self, event: QMouseEvent):
         if not self.isVisible():
