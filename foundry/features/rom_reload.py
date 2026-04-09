@@ -15,6 +15,16 @@ if TYPE_CHECKING:
     from foundry.gui.menus.file_menu import FileMenu
 
 
+def _rom_bytes_without_additional_data(rom_bytes: bytes) -> bytes:
+    additional_data_start = rom_bytes.find(ROM.MARKER_VALUE)
+
+    if additional_data_start == -1:
+        return rom_bytes
+
+    else:
+        return rom_bytes[:additional_data_start]
+
+
 class RomWatcherMixin:
     rom_content_changed: SignalInstance = Signal()
 
@@ -65,7 +75,8 @@ class RomWatcherMixin:
         if not self._current_path.exists():
             raise FileNotFoundError(f"ROM file not found at {self._current_path}")
 
-        return md5(self._current_path.read_bytes(), usedforsecurity=False).hexdigest()
+        sanitized_bytes = _rom_bytes_without_additional_data(self._current_path.read_bytes())
+        return md5(sanitized_bytes, usedforsecurity=False).hexdigest()
 
     def _clear(self):
         for path in self._file_watcher.files():
