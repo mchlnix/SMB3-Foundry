@@ -1,3 +1,19 @@
+"""Choose the object set for a brand-new level before creation begins.
+
+This module owns the modal chooser that runs at the start of new-level
+creation. It narrows the user to valid level object sets, explains why the
+choice matters, and shows representative preview art so the later creation
+workflow can proceed with one committed object-set decision.
+
+See Also
+--------
+foundry.gui.dialogs.ObjectSetSelector
+    Smaller object-set picker used by workflows that only need the numeric
+    choice and not the themed preview surface.
+foundry.gui.dialogs.LevelHeaderEditor
+    Dialog that edits the next-area object set after a level already exists.
+"""
+
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QComboBox,
@@ -17,7 +33,52 @@ _EXAMPLE_IMAGE_PATH = data_dir / "level_previews"
 
 
 class NewLevelDialog(CustomDialog):
+    """Pick the object set for a newly created level.
+
+    The dialog explains that object-set choice determines the level's theme and
+    object definitions, then previews a representative image for the selected
+    set so the user can make that choice with visual context.
+
+    Parameters
+    ----------
+    parent : QWidget | None
+        Parent Qt widget that owns this object.
+
+    Attributes
+    ----------
+    _EXAMPLE_IMAGES : list[QPixmap | None]
+        Example preview images keyed by object set index.
+    button_box : QDialogButtonBox
+        Dialog buttons used to accept or reject the choice.
+    icon_label : QLabel
+        Label that shows the selected object-set preview image.
+    object_set_dropdown : QComboBox
+        Dropdown containing selectable object sets.
+    object_set_index : int
+        Index of the selected object set in ``OBJECT_SET_ITEMS``.
+
+    Notes
+    -----
+    Several object sets are removed from the dropdown because they are not
+    valid choices for the new-level workflow.
+    """
+
     def __init__(self, parent):
+        """Build the new-level object-set chooser and preview.
+
+        Construction preloads the representative object-set preview images,
+        builds the explanatory text and filtered dropdown, wires the dialog
+        buttons, and then leaves the chooser ready for ``_on_object_set_change``
+        to keep the preview image synchronized with the selected object set.
+        That makes the dialog a short staging step at the front of level
+        creation: pick one valid object set with visual context, then let the
+        caller continue with actual level construction.
+
+        Parameters
+        ----------
+        parent : QWidget | None
+            Parent Qt widget that owns this object.
+        """
         super().__init__(parent, "New Level")
 
         self.object_set_index = 0
@@ -79,6 +140,13 @@ class NewLevelDialog(CustomDialog):
         main_layout.addLayout(text_layout)
 
     def _on_object_set_change(self, _):
+        """Update the preview image for the selected object set.
+
+        Parameters
+        ----------
+        _ : int
+            Dropdown index emitted by Qt.
+        """
         new_text = self.object_set_dropdown.currentText()
 
         self.object_set_index = OBJECT_SET_ITEMS.index(new_text)

@@ -1,3 +1,28 @@
+"""Discover SMB3 levels by walking ROM pointers and jump destinations.
+
+This module turns raw world-map level pointers, special per-world level slots,
+and jump-object destinations into normalized records that higher-level tools can
+inspect or persist. ``FoundLevelRecord`` captures one discovered reference
+before parsing, while ``FoundLevel`` stores the merged result after the parser
+has measured object and enemy data lengths and collected every origin that
+reaches the same level address.
+
+The main workflow starts in :func:`gen_levels_in_rom`, which enumerates worlds,
+seeds discovery from :class:`smb3parse.levels.world_map.WorldMap`, follows jump
+destinations through :class:`smb3parse.util.parser.cpu.NesCPU`, and finally
+groups the results by object set for callers that need editor-facing or
+validation-friendly summaries.
+
+See Also
+--------
+smb3parse.levels.world_map.WorldMap
+    Supplies world-map pointers and static world-specific level addresses.
+smb3parse.levels.level_header.LevelHeader
+    Decodes jump destinations from parsed level headers.
+smb3parse.util.parser.cpu.NesCPU
+    Emulates the ROM load path used to measure parsed level object data.
+"""
+
 import pathlib
 import time
 from collections import defaultdict
@@ -26,6 +51,56 @@ _DEFAULT_LEVEL_PARSING_MAX_STEPS = 1_000_000
 
 @dataclass
 class FoundLevel:
+    """Store one discovered level together with every ROM origin that reaches it.
+
+    The parser collapses repeated discoveries for the same level address into a
+    single ``FoundLevel`` so later tools can reason about one canonical level
+    entry while still preserving every pointer or jump that references it.
+    Object and enemy lengths are filled in only after the level bytes have been
+    parsed successfully, which lets callers distinguish between raw discovery
+    metadata and measured serialized payload size.
+
+    Attributes
+    ----------
+    level_offset_positions : list[int]
+        ROM addresses whose level pointer bytes resolve to ``level_offset``.
+    enemy_offset_positions : list[int]
+        ROM addresses whose enemy pointer bytes resolve to ``enemy_offset``.
+    world_number : int
+        World used when this canonical level entry was first parsed.
+    level_offset : int
+        Absolute ROM address of the level header and object stream.
+    enemy_offset : int
+        Absolute ROM address of the enemy stream associated with the level.
+    object_set_number : int
+        Object-set bank required to interpret the level object bytes.
+    object_data_length : int
+        Serialized object-data length including the level header but excluding
+        the trailing delimiter byte.
+    enemy_data_length : int
+        Serialized enemy-data length excluding its leading and trailing
+        delimiter bytes.
+    found_in_world : bool
+        Whether a world-map pointer reaches this level directly.
+    found_as_jump : bool
+        Whether any discovered origin reaches this level through a jump object.
+    is_world_specific : bool
+        Whether the level came from a per-world special slot such as airships,
+        toad houses, or coin ships.
+
+    Notes
+    -----
+    Instances begin as one :class:`FoundLevelRecord` plus parsed data lengths,
+    then accumulate extra pointer origins through :func:`_add_new_origin_to_level`.
+    That split keeps jump discovery free to revisit the same level address
+    without losing which ROM offsets still need to be rewritten together.
+
+    See Also
+    --------
+    FoundLevelRecord
+        Carries one unresolved origin before the level bytes have been parsed.
+    """
+
     level_offset_positions: list[int]
     enemy_offset_positions: list[int]
 
@@ -46,12 +121,43 @@ class FoundLevel:
     is_world_specific: bool
 
     def to_dict(self) -> dict[str, list[int] | int | bool]:
+        """Serialize the discovered level into the persistence payload shape.
+
+        The parser uses this payload shape as the stable handoff between a live
+        ROM scan and later cache, export, or rearrangement steps, so every
+        origin list and provenance flag is preserved verbatim.
+
+        Returns
+        -------
+        dict[str, list[int] | int | bool]
+            Dictionary whose keys mirror the dataclass fields so cached level
+            discovery results can be written without losing origin metadata.
+        """
         ret_dict = vars(self)
 
         return ret_dict
 
     @staticmethod
     def from_dict(data: dict) -> "FoundLevel":
+        """Rebuild a discovered level from persisted parser output.
+
+        This method restores the exact canonical record shape used after
+        discovery so later tooling can resume from cached parser output without
+        re-walking world maps or jump chains.
+
+        Parameters
+        ----------
+        data : dict
+            Mapping previously produced by :meth:`to_dict`. Older payloads may
+            still use ``is_generic``; this loader keeps those caches readable
+            by translating that legacy field into ``is_world_specific``.
+
+        Returns
+        -------
+        FoundLevel
+            Reconstructed canonical level record ready for grouping, display,
+            or further ROM updates.
+        """
         return FoundLevel(
             data["level_offset_positions"],
             data["enemy_offset_positions"],
@@ -68,6 +174,30 @@ class FoundLevel:
 
     @staticmethod
     def from_record(record: "FoundLevelRecord", world_num: int, object_data_len: int, enemy_data_len: int):
+        """Promote a discovery record into a fully measured level result.
+
+        This is the point where a raw pointer-origin record becomes a canonical
+        parsed level entry: one origin is preserved, the active world context is
+        attached, and the CPU-emulated load results become persistent length
+        metadata for downstream ROM-edit workflows.
+
+        Parameters
+        ----------
+        record : FoundLevelRecord
+            Discovery origin that identified the level and enemy pointer bytes.
+        world_num : int
+            World being scanned when the parser successfully loaded the level.
+        object_data_len : int
+            Parsed object-stream length reported by the CPU loader.
+        enemy_data_len : int
+            Parsed enemy-stream length reported by the CPU loader.
+
+        Returns
+        -------
+        FoundLevel
+            Canonical level entry seeded with one origin and the measured ROM
+            data lengths needed by later export and validation tools.
+        """
         return FoundLevel(
             [record.level_address_offset],
             [record.enemy_address_offset],
@@ -85,6 +215,47 @@ class FoundLevel:
 
 @dataclass
 class FoundLevelRecord:
+    """Describe one unresolved origin that points at a level in ROM.
+
+    ``FoundLevelRecord`` is the transient unit used while discovery is still
+    exploring the ROM graph. Each record carries just enough state to move from
+    one ROM reference to the next: where the level and enemy pointer bytes were
+    found, which object set must be used to parse the destination, and which
+    provenance flags the eventual merged :class:`FoundLevel` must preserve.
+
+    Attributes
+    ----------
+    level_address : int
+        Absolute ROM address of the discovered level header and object data.
+    level_address_offset : int
+        ROM location whose pointer bytes produced ``level_address``.
+    enemy_address : int
+        Absolute ROM address of the discovered enemy data.
+    enemy_address_offset : int
+        ROM location whose pointer bytes produced ``enemy_address``.
+    object_set : int
+        Object-set bank used when loading the destination level.
+    found_in_world : bool, default=False
+        Whether the origin came from a world-map level pointer.
+    found_as_jump : bool, default=False
+        Whether the origin came from a jump object in another parsed level.
+    is_world_specific : bool, default=False
+        Whether the origin came from a static per-world slot rather than a
+        level pointer shared across worlds.
+
+    Notes
+    -----
+    Records stay intentionally lightweight so discovery can create them from
+    world-map pointers, static special-level slots, and jump destinations
+    before the parser knows whether two origins eventually collapse onto the
+    same canonical :class:`FoundLevel`.
+
+    See Also
+    --------
+    FoundLevel
+        Merged result object produced after a record has been parsed.
+    """
+
     level_address: int
     level_address_offset: int
 
@@ -104,6 +275,43 @@ class FoundLevelRecord:
         from_jump: bool,
         world_specific: bool,
     ) -> "FoundLevelRecord":
+        """Build a discovery record from decoded world-map pointer data.
+
+        This adapter is the handoff between the world-map decoding layer and
+        the ROM-parser traversal loop. It strips the richer ``LevelPointerData``
+        object down to the exact address, object-set, and provenance fields
+        that later steps reuse when they either parse the destination level,
+        replace the record with a jump destination, or merge the origin into an
+        already-known canonical level.
+
+        Parameters
+        ----------
+        level_pointer : LevelPointerData
+            World-map pointer payload that already exposes absolute level and
+            enemy addresses together with the pointer-byte locations in ROM.
+        from_world : bool
+            Whether this origin should be marked as coming directly from a
+            world-map pointer.
+        from_jump : bool
+            Whether this origin should be marked as coming from a jump chain.
+        world_specific : bool
+            Whether the pointed-to level belongs to a per-world special slot.
+
+        Returns
+        -------
+        FoundLevelRecord
+            Transient discovery record ready to seed parsing or to merge into
+            an already-known :class:`FoundLevel`.
+
+        Notes
+        -----
+        Discovery calls this helper immediately after
+        :class:`LevelPointerData` has resolved one world-map slot into absolute
+        ROM addresses. The resulting record keeps the exact pointer-byte
+        origins together with the provenance flags that later jump-following
+        and merge steps must preserve when several origins collapse onto one
+        canonical :class:`FoundLevel`.
+        """
         return FoundLevelRecord(
             level_pointer.level_address,
             level_pointer.level_offset_address,

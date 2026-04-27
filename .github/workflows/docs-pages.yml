@@ -1,0 +1,90 @@
+name: Deploy Sphinx Docs
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Sphinx docs
+    runs-on: ubuntu-latest
+    outputs:
+      pages-enabled: ${{ steps.pages.outputs.enabled }}
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libegl1 libxcb-shape0 libqt5gui5
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install -r docs/requirements.txt
+
+      - name: Check Pages configuration
+        id: pages
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${GITHUB_REPOSITORY}/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::GitHub Pages is not enabled for this repository. Set Settings > Pages > Build and deployment > Source to GitHub Actions, then rerun this workflow to deploy."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Configure Pages
+        if: github.event_name != 'pull_request'
+          && steps.pages.outputs.enabled == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Build HTML
+        env:
+          FOUNDRY_DOCS_HOME: /tmp/foundry-docs-home
+        run: python -m sphinx -a -b html docs docs/_build/html
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+          && steps.pages.outputs.enabled == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/_build/html
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request'
+      && needs.build.outputs.pages-enabled == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -7,6 +7,15 @@ from foundry import github_issue_link, root_dir
 
 
 def popup_crash_dialog(traceback: str):
+    """Handle popup crash dialog.
+
+    It supports a focused editor dialog while keeping UI state synchronized with the model. The method delegates lower-level work while keeping the public workflow focused.
+
+    Parameters
+    ----------
+    traceback : str
+        Traceback used by the operation.
+    """
     crash_dialog = QMessageBox()
     crash_dialog.setWindowTitle("Crash Report")
 

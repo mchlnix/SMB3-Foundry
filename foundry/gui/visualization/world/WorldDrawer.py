@@ -1,3 +1,26 @@
+"""Paint SMB3 world-map model data into the editor's world view.
+
+This module owns :class:`WorldDrawer`, the Qt-facing renderer that converts a
+loaded :class:`foundry.game.level.WorldMap.WorldMap` into the layered preview
+shown by the world editor. It consumes world-map model objects, visibility
+flags from :class:`foundry.gui.settings.Settings`, and cached SMB3 graphics,
+then emits background, tile, and overlay passes into a supplied
+``QPainter``.
+
+The helper methods mirror the world-view paint order so maintainers can trace
+how map state becomes editor pixels, from the background clear through
+selection overlays and special-case travel objects. For interaction logic and
+viewport hosting, read
+:mod:`foundry.gui.visualization.world.WorldView` next.
+
+See Also
+--------
+foundry.gui.visualization.world.WorldView
+    Widget that hosts this drawer inside the world editor.
+foundry.game.level.WorldMap
+    World-map model consumed by the drawer.
+"""
+
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
@@ -29,7 +52,38 @@ BORDER_SIDE_R = BORDER_SIDE_L.mirrored(True, False)
 
 
 class WorldDrawer:
+    """Render SMB3 world-map layers into a Qt painter.
+
+    The drawer paints map tiles first, then optional editor overlays such as
+    borders, grid/screen dividers, level pointers, sprites, start positions,
+    airship paths, locks, and bridges. Layer visibility is read from settings.
+
+    Attributes
+    ----------
+    anim_frame : int
+        Current animation frame for animated map tiles.
+    block_length : int
+        Rendered pixel size of one world-map tile.
+    grid_pen : QPen
+        Pen used for grid lines.
+    screen_pen : QPen
+        Pen used for screen boundary overlays.
+    settings : Settings
+        Drawing settings for optional world-map layers.
+    should_draw_potential_marios : bool
+        Reserved flag for drawing possible start positions.
+    """
+
     def __init__(self):
+        """Create the world-map drawer with default pens and settings.
+
+        The drawer keeps all world-view paint configuration in one place so a
+        caller only needs to supply a painter and a loaded
+        :class:`~foundry.game.level.WorldMap.WorldMap`. The settings instance
+        controls which overlay passes are enabled, while the pens and block
+        size establish the shared coordinate system used by every helper draw
+        stage.
+        """
         self.block_length = Block.WIDTH
 
         self.grid_pen = QPen(QColor(0x80, 0x80, 0x80, 0x80), 1)
@@ -42,6 +96,23 @@ class WorldDrawer:
         self.should_draw_potential_marios = False
 
     def draw(self, painter: QPainter, world: WorldMap):
+        """Draw all enabled world-map layers.
+
+        This is the entry point used by the world view during repaint. It
+        stages the render as a stable pipeline: clear the viewport, align the
+        painter for optional border rows, paint base tiles, then add any
+        editor overlays that are enabled in settings. The method only mutates
+        painter state for the duration of the paint call, leaving the world
+        model untouched while turning ``WorldMap`` collections and settings
+        flags into one ordered screen image.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        """
         painter.save()
 
         self._draw_background(painter, world)
@@ -77,11 +148,46 @@ class WorldDrawer:
         painter.restore()
 
     def _draw_background(self, painter: QPainter, world: WorldMap):
+        """Fill the world-map bounds with the background color.
+
+        The background pass establishes a known black backing rectangle before
+        any tiles or overlays are drawn. Later passes rely on this fill to
+        keep partially transparent grid, border, and selection layers readable
+        against empty map space. The fill uses the world model's computed
+        bounds so every later helper paints into the same world-space rectangle
+        that this pass initializes on the painter, making the background the
+        first committed geometry in the world-view paint cycle.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        """
         bg_color = Qt.GlobalColor.black
 
         painter.fillRect(world.get_rect(self.block_length), bg_color)
 
     def _draw_grid(self, painter: QPainter, world: WorldMap):
+        """Draw tile grid lines and screen-scroll dividers.
+
+        This overlay translates world geometry into editor measurement cues.
+        It expands or shifts the row range to match whether the decorative
+        border rows are visible, then colors screen dividers to reflect whether
+        the loaded world allows horizontal scrolling between screens. The
+        resulting lines reuse world screen counts and tile size so selection
+        and placement tools can read the same visual grid the model uses, with
+        border visibility and scroll metadata both folded into the final
+        painter coordinates.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        """
         painter.setPen(QPen(Qt.GlobalColor.gray, 1))
 
         map_height = WORLD_MAP_HEIGHT
@@ -121,6 +227,21 @@ class WorldDrawer:
             painter.drawLine(QPoint(x, 0), QPoint(x, map_height * self.block_length))
 
     def _draw_tiles(self, painter: QPainter, world: WorldMap):
+        """Draw map tiles with selected tiles painted last.
+
+        The tile pass preserves editor feedback by painting unselected tiles
+        first and selected tiles last, then outlining those selected entries on
+        top of the finished tile image. It also updates the shared tile
+        animation frame after the pass so subsequent paint cycles reuse the
+        same timing state.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        """
         if not world.get_all_objects():
             return
 
@@ -140,6 +261,23 @@ class WorldDrawer:
 
     def _draw_tile(self, painter: QPainter, world: WorldMap, tile: MapTile):
         # both exceptions are hard coded and don't animate
+        """Draw one map tile with world-specific animation exceptions.
+
+        Most tiles use the drawer's active animation frame, but SMB3 has hard
+        coded world-specific exceptions that stay static. This helper keeps
+        those animation boundaries localized so the outer tile loop can treat
+        every map object the same way while still handing each ``MapTile`` the
+        exact animation frame that should be committed to the painter.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        tile : MapTile
+            Map tile to draw.
+        """
         if world.data.index == 4 or (world.data.index == 7 and tile.pos.screen == 3):
             tile.draw(painter, self.block_length, anim_frame=0)
         else:
@@ -147,6 +285,26 @@ class WorldDrawer:
 
     def _draw_border(self, painter: QPainter, world: WorldMap):
         # side borders
+        """Draw SMB3-style world-map border tiles.
+
+        The border pass reconstructs the decorative frame that SMB3 places
+        around visible world-map rows. It paints side rails, top and bottom
+        filler rows, and the four corners in separate stages so the editor can
+        show or hide the border independently from the logical map data while
+        keeping tile coordinates aligned with the main tile pass. Those stages
+        mirror the border assets SMB3 stores separately from map tiles: side
+        images first, row-filling tiles next, then corner caps that close the
+        frame without disturbing the world-space origin used by overlays. That
+        staging lets the view toggle the decorative frame on and off without
+        changing how later overlay helpers interpret map coordinates.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        """
         x_left = 0
         x_right = (world.width - 1) * self.block_length
 
@@ -206,17 +364,78 @@ class WorldDrawer:
         painter.drawImage(x_right, y_last_row, border_br)
 
     def _draw_level_pointers(self, painter: QPainter, world: WorldMap):
+        """Draw enterable level pointer objects.
+
+        Level pointers are painted after the base tiles so their interactive
+        markers remain visible above the map art. Selection state is forwarded
+        unchanged to preserve the same highlight semantics used elsewhere in
+        the world editor.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        """
         for level_pointer in world.level_pointers:
             level_pointer.draw(painter, self.block_length, False, level_pointer.selected)
 
     def _draw_sprites(self, painter: QPainter, world: WorldMap):
+        """Draw world-map sprite objects.
+
+        This overlay paints roaming or event-driven world sprites after tiles
+        and before other helper overlays so the editor reflects the sprite set
+        embedded in the loaded world model without changing sprite ordering in
+        the data itself. Each sprite is forwarded directly from
+        ``world.sprites`` into the painter, preserving the model's current
+        selection state and draw order for the frame.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        """
         for sprite in world.sprites:
             sprite.draw(painter, self.block_length, False, sprite.selected)
 
     def _draw_start_position(self, painter: QPainter, world: WorldMap):
+        """Draw the Mario start position marker.
+
+        The start marker is rendered as its own pass so settings can toggle it
+        independently from other overlays while still using the same world-map
+        coordinate system established by the base tile render.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        """
         world.start_pos.draw(painter, self.block_length, False)
 
     def _draw_airship_travel_points(self, painter: QPainter, world: WorldMap):
+        """Draw enabled airship travel paths for non-warp worlds.
+
+        Airship travel points are grouped into bitflag-controlled travel sets.
+        This pass skips the warp world entirely, then filters each set through
+        the user's visibility flags before drawing the corresponding path nodes
+        on top of the base map. That keeps the overlay synchronized with both
+        the loaded world data and the editor's per-travel-set visibility mask,
+        so the painter only receives nodes from enabled travel sets in worlds
+        that actually support airship routing, and it commits those nodes only
+        after tile rendering has established the map surface beneath them.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        """
         if world.data.index == WORLD_MAP_WARP_WORLD_INDEX:
             return
 
@@ -228,6 +447,20 @@ class WorldDrawer:
                 airship_point.draw(painter, self.block_length, False)
 
     def _draw_locks_and_bridges(self, painter: QPainter, world: WorldMap):
+        """Draw lock and bridge map objects for non-warp worlds.
+
+        Locks and bridge events are editor overlays rather than base tiles, so
+        they are painted late in the pipeline after the map surface is already
+        established. Warp world data is skipped because that map does not use
+        the same lock and bridge object workflow.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        world : WorldMap
+            World map or world number being processed.
+        """
         if world.data.index == WORLD_MAP_WARP_WORLD_INDEX:
             return
 

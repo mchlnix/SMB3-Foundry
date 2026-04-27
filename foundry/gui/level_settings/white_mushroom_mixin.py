@@ -1,3 +1,21 @@
+"""Configure the white mushroom house reward marker for a level.
+
+This mixin translates SMB3's encoded white mushroom house marker into dialog
+controls that level editors can reason about directly. It reads the reward
+marker from the enemy list, exposes the enable state and coin threshold as Qt
+controls, and turns the final dialog diff into undoable add, remove, or move
+commands when the settings window closes.
+
+See Also
+--------
+foundry.gui.level_settings.settings_mixin.SettingsMixin
+    Base dialog mixin that supplies shared level and undo-stack access.
+foundry.gui.commands
+    Undoable commands used to add, remove, or retarget the marker object.
+foundry.game.gfx.objects.in_level.enemy_item.EnemyItem
+    Enemy-item model that stores the reward marker and encoded threshold.
+"""
+
 from warnings import warn
 
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QVBoxLayout
@@ -12,7 +30,44 @@ from smb3parse.constants import OBJ_WHITE_MUSHROOM_HOUSE
 
 
 class WhiteMushroomHouseMixin(SettingsMixin):
+    """Edit the white mushroom house spawn condition.
+
+    SMB3 encodes the white mushroom house reward as a special enemy/item object
+    whose y-position stores the coin threshold. The mixin presents that as a
+    checkbox plus numeric threshold and commits the net change on close.
+
+    Parameters
+    ----------
+    parent : object
+        Parent window that owns the level view and undo stack.
+
+    Attributes
+    ----------
+    _coins_required_spinner : Spinner
+        Spinner for the coin threshold byte.
+    _had_mushroom_item : bool
+        Whether the level had a mushroom-house object when the dialog opened.
+    _mushroom_checkbox : QCheckBox
+        Toggle for enabling the white mushroom house reward.
+    _old_coins_required : int
+        Coin threshold captured when the dialog opened.
+    """
+
     def __init__(self, parent):
+        """Build the reward controls from the level's opening marker state.
+
+        The dialog snapshots whether a white mushroom house marker already
+        exists and, when present, captures its encoded coin threshold from the
+        marker's ``y_position``. That opening state drives the checkbox,
+        spinner enablement, and later close-event comparison that decides
+        whether the editor must add, remove, or move the marker through the
+        undo stack.
+
+        Parameters
+        ----------
+        parent : object
+            Parent window that owns the level view and undo stack.
+        """
         super().__init__(parent)
 
         self._had_mushroom_item = False
@@ -43,9 +98,33 @@ class WhiteMushroomHouseMixin(SettingsMixin):
 
     @property
     def level(self):
+        """Expose the level model that backs the settings widgets.
+
+        The mixin resolves the active level through ``level_ref`` so helper
+        methods can inspect and mutate the same model that undo commands and
+        the parent settings dialog already coordinate.
+
+        Returns
+        -------
+        Level
+            Current level model from ``level_ref``.
+        """
         return self.level_ref.level
 
     def _get_mushroom_item(self) -> EnemyItem | None:
+        """Locate the encoded reward marker inside the level enemy list.
+
+        SMB3 stores the white mushroom house configuration as a special
+        enemy-item entry. This helper feeds both setup and commit paths: the
+        constructor uses it to seed the checkbox and spinner from the opening
+        level state, and ``closeEvent`` uses the same lookup to resolve the
+        marker instance that undo commands will remove or retarget.
+
+        Returns
+        -------
+        EnemyItem | None
+            Marker object, or ``None`` when no white mushroom house is configured.
+        """
         for enemy_item in self.level.enemies:
             if enemy_item.type == OBJ_WHITE_MUSHROOM_HOUSE:
                 return enemy_item
@@ -53,6 +132,16 @@ class WhiteMushroomHouseMixin(SettingsMixin):
             return None
 
     def closeEvent(self, event):
+        """Commit white mushroom house edits on close.
+
+        The close handler compares the checkbox and threshold against the
+        opening state and pushes add, remove, or move commands as needed.
+
+        Parameters
+        ----------
+        event : object
+            Qt event delivered to the widget.
+        """
         new_coins_required = self._coins_required_spinner.value()
 
         now_has_mushroom_item = self._mushroom_checkbox.isChecked()

@@ -1,0 +1,3793 @@
+[
+  {
+    "enemy_id": 0,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-00-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 1,
+    "name": "Weird thing, can slip on",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-01-weird-thing-can-slip-on.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 2,
+    "name": "Makes you bounce at beginning of level",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-02-makes-you-bounce-at-beginning-of-level.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 3,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-03-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 4,
+    "name": "Weird enemy",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-04-weird-enemy.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 5,
+    "name": "Weird enemy",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-05-weird-enemy.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 6,
+    "name": "Colored note block",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      20
+    ],
+    "category": "Terrain and Environmental",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-06-colored-note-block.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 7,
+    "name": "Mushroom House with Warp Whistle entrance",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      70
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-07-mushroom-house-with-warp-whistle-entrance.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 8,
+    "name": "Invisible door (appears when you hit a P-switch)",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      42,
+      43
+    ],
+    "category": "Exits and Controls",
+    "clan": "clan 1",
+    "group": "group 1",
+    "image": "enemy_catalog/entries/enemy-08-invisible-door-appears-when-you-hit-a-p-switch.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 9,
+    "name": "Ship Anchor",
+    "width": 3,
+    "height": 2,
+    "block_ids": [
+      0,
+      262,
+      0,
+      259,
+      260,
+      261
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-09-ship-anchor.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 10,
+    "name": "Weird enemy",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-0a-weird-enemy.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 11,
+    "name": "Stray 1-up",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      4
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-0b-stray-1-up.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 12,
+    "name": "Stray Star",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      5
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-0c-stray-star.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 13,
+    "name": "Stray Mushroom",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      6
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-0d-stray-mushroom.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 14,
+    "name": "World x Boss (where x = world)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      7,
+      8,
+      23,
+      24
+    ],
+    "category": "Bosses",
+    "clan": "clan 2",
+    "group": "group 6",
+    "image": "enemy_catalog/entries/enemy-0e-world-x-boss-where-x-world.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 15,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-0f-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 16,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-10-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 17,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-11-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 18,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-12-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 19,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-13-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 20,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-14-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 21,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-15-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 22,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-16-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 23,
+    "name": "Spiky Cheep-Cheep",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      9
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 2",
+    "group": "group 8",
+    "image": "enemy_catalog/entries/enemy-17-spiky-cheep-cheep.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 24,
+    "name": "Bowser",
+    "width": 2,
+    "height": 3,
+    "block_ids": [
+      32,
+      33,
+      48,
+      49,
+      64,
+      65
+    ],
+    "category": "Bosses",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-18-bowser.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 25,
+    "name": "Stray Flower",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      19
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-19-stray-flower.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 26,
+    "name": "Weird",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-1a-weird.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 27,
+    "name": "Colored note block",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      20
+    ],
+    "category": "Terrain and Environmental",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-1b-colored-note-block.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 28,
+    "name": "Stray Mushroom",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      6
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-1c-stray-mushroom.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 29,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-1d-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 30,
+    "name": "Stray Leaf",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      21
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-1e-stray-leaf.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 31,
+    "name": "Stray Vine",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      25
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-1f-stray-vine.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 32,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-20-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 33,
+    "name": "Flashing Mushroom",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      10
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-21-flashing-mushroom.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 34,
+    "name": "Flashing Flower",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      11
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-22-flashing-flower.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 35,
+    "name": "Flashing Star",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      12
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-23-flashing-star.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 36,
+    "name": "Leftward-moving cloud platform (fast)",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      38,
+      39,
+      40
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-24-leftward-moving-cloud-platform-fast.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 37,
+    "name": "Changes exit location on map (works on warp pipe levels)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Exits and Controls",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-25-changes-exit-location-on-map-works-on-warp-pipe-levels.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 38,
+    "name": "Still wooden platform (moves right when stepped on)",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      55,
+      56,
+      57
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-26-still-wooden-platform-moves-right-when-stepped-on.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 39,
+    "name": "Wooden platform - moves back and forth (a lot)",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      55,
+      56,
+      57
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-27-wooden-platform-moves-back-and-forth-a-lot.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 40,
+    "name": "Wooden platform - moves up and down (a lot)",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      55,
+      56,
+      57
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-28-wooden-platform-moves-up-and-down-a-lot.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 41,
+    "name": "Spike",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      37
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 7",
+    "image": "enemy_catalog/entries/enemy-29-spike.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 42,
+    "name": "Ptooie",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      50,
+      66
+    ],
+    "category": "Other Entries",
+    "clan": "clan 2",
+    "group": "group 7",
+    "image": "enemy_catalog/entries/enemy-2a-ptooie.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 43,
+    "name": "Kuribo's Goomba",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      51,
+      67
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 4",
+    "image": "enemy_catalog/entries/enemy-2b-kuribo-s-goomba.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 44,
+    "name": "Leftward-moving cloud platform (slow)",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      38,
+      39,
+      40
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-2c-leftward-moving-cloud-platform-slow.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 45,
+    "name": "Boss Bass (surface)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      52,
+      53,
+      68,
+      69
+    ],
+    "category": "Bosses",
+    "clan": "clan 2",
+    "group": "group 8",
+    "image": "enemy_catalog/entries/enemy-2d-boss-bass-surface.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 46,
+    "name": "Upward-moving Circle Block platform",
+    "width": 2,
+    "height": 1,
+    "block_ids": [
+      54,
+      54
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-2e-upward-moving-circle-block-platform.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 47,
+    "name": "Boo Diddley",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      41
+    ],
+    "category": "Other Entries",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-2f-boo-diddley.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 48,
+    "name": "Hot Foot",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      88
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-30-hot-foot.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 49,
+    "name": "Top Stretch",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      45
+    ],
+    "category": "Other Entries",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-31-top-stretch.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 50,
+    "name": "Bottom Stretch",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      46
+    ],
+    "category": "Other Entries",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-32-bottom-stretch.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 51,
+    "name": "Nipper Plant",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      47
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 2",
+    "group": "group 7",
+    "image": "enemy_catalog/entries/enemy-33-nipper-plant.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 52,
+    "name": "Toad & Message",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-34-toad-message.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 53,
+    "name": "Automatically Clear Stage",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-35-automatically-clear-stage.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 54,
+    "name": "Wooden platform - moves left,falls when stepped on",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      55,
+      56,
+      57
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-36-wooden-platform-moves-left-falls-when-stepped-on.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 55,
+    "name": "Wooden platform - moves back and forth (a little)",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      55,
+      56,
+      57
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-37-wooden-platform-moves-back-and-forth-a-little.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 56,
+    "name": "Wooden platform - moves up and down (a little)",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      55,
+      56,
+      57
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-38-wooden-platform-moves-up-and-down-a-little.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 57,
+    "name": "Walking Nipper Plant",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      47
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 2",
+    "group": "group 7",
+    "image": "enemy_catalog/entries/enemy-39-walking-nipper-plant.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 58,
+    "name": "Falling Circle Block platform",
+    "width": 2,
+    "height": 1,
+    "block_ids": [
+      54,
+      54
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-3a-falling-circle-block-platform.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 59,
+    "name": "Surface Cheep-Cheep (swims along surface)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      72
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-3b-surface-cheep-cheep-swims-along-surface.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 60,
+    "name": "Wired platform (follows platform wires)",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      55,
+      56,
+      57
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 2",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-3c-wired-platform-follows-platform-wires.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 61,
+    "name": "Walking Ptooie (spits fireballs)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      47
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 7",
+    "image": "enemy_catalog/entries/enemy-3d-walking-ptooie-spits-fireballs.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 62,
+    "name": "Floating platform (floats in water)",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      55,
+      56,
+      57
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-3e-floating-platform-floats-in-water.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 63,
+    "name": "Dry Bones",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      80,
+      96
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 1",
+    "group": "group 1",
+    "image": "enemy_catalog/entries/enemy-3f-dry-bones.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 64,
+    "name": "Buster Beetle",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      81
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 7",
+    "image": "enemy_catalog/entries/enemy-40-buster-beetle.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 65,
+    "name": "Goal Card",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      82
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-41-goal-card.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 66,
+    "name": "Jumping Cheep-Cheep (3 jumps, up and right)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      72
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-42-jumping-cheep-cheep-3-jumps-up-and-right.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 67,
+    "name": "Jumping Cheep-Cheep (2 jumps, down and right)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      72
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-43-jumping-cheep-cheep-2-jumps-down-and-right.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 68,
+    "name": "Falling Platform (falls when stepped on)",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      55,
+      56,
+      57
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 2",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-44-falling-platform-falls-when-stepped-on.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 69,
+    "name": "Smart Hot Foot",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      88
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-45-smart-hot-foot.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 70,
+    "name": "Pipe Ptooie",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      279,
+      280,
+      281,
+      282
+    ],
+    "category": "Exits and Controls",
+    "clan": "clan 2",
+    "group": "group 7",
+    "image": "enemy_catalog/entries/enemy-46-pipe-ptooie.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 71,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-47-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 72,
+    "name": "Baby Cheep-Cheep",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      91
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 2",
+    "group": "group 8",
+    "image": "enemy_catalog/entries/enemy-48-baby-cheep-cheep.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 73,
+    "name": "Background Cloud",
+    "width": 2,
+    "height": 1,
+    "block_ids": [
+      92,
+      93
+    ],
+    "category": "Other Entries",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-49-background-cloud.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 74,
+    "name": "Magic Ball",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      94
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-4a-magic-ball.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 75,
+    "name": "Boom Boom",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      97,
+      98,
+      113,
+      114
+    ],
+    "category": "Bosses",
+    "clan": "clan 1",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-4b-boom-boom.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 76,
+    "name": "Flying Boom Boom",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      99,
+      115
+    ],
+    "category": "Bosses",
+    "clan": "clan 1",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-4c-flying-boom-boom.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 77,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-4d-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 78,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-4e-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 79,
+    "name": "Jumping Chomp",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      206
+    ],
+    "category": "Ground Enemies",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-4f-jumping-chomp.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 80,
+    "name": "Bob-Omb (about to blow up)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      104
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-50-bob-omb-about-to-blow-up.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 81,
+    "name": "Double Rotodisc (rotates counterclockwise)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      116
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-51-double-rotodisc-rotates-counterclockwise.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 82,
+    "name": "Treasure Chest",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      102
+    ],
+    "category": "Exits and Controls",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-52-treasure-chest.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 83,
+    "name": "Stray Podoboo",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      103
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-53-stray-podoboo.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 84,
+    "name": "Weird Block",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-54-weird-block.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 85,
+    "name": "Bob-Omb",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      104
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 4",
+    "image": "enemy_catalog/entries/enemy-55-bob-omb.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 86,
+    "name": "Leftward Piranha Plant",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      283,
+      284,
+      285,
+      286
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-56-leftward-piranha-plant.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 87,
+    "name": "Rightward Piranha Plant",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      287,
+      288,
+      289,
+      290
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-57-rightward-piranha-plant.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 88,
+    "name": "Fire Chomp",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      111
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 2",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-58-fire-chomp.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 89,
+    "name": "Fire Snake",
+    "width": 1,
+    "height": 3,
+    "block_ids": [
+      112,
+      128,
+      144
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 2",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-59-fire-snake.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 90,
+    "name": "Single Rotodisc (rotates clockwise)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      116
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-5a-single-rotodisc-rotates-clockwise.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 91,
+    "name": "Single Rotodisc (rotates counterclockwise)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      116
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-5b-single-rotodisc-rotates-counterclockwise.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 92,
+    "name": "Instantly broken brick",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-5c-instantly-broken-brick.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 93,
+    "name": "Tornado",
+    "width": 4,
+    "height": 8,
+    "block_ids": [
+      118,
+      118,
+      118,
+      118,
+      118,
+      118,
+      118,
+      118,
+      118,
+      118,
+      118,
+      0,
+      0,
+      118,
+      118,
+      118,
+      0,
+      118,
+      118,
+      0,
+      0,
+      118,
+      118,
+      0,
+      0,
+      0,
+      118,
+      0,
+      0,
+      118,
+      0,
+      0
+    ],
+    "category": "Platforms and Machinery",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-5d-tornado.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 94,
+    "name": "Double Rotodisc (rotates both ways, starting at sides)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      116
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-5e-double-rotodisc-rotates-both-ways-starting-at-sides.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 95,
+    "name": "Double Rotodisc (rotates both ways, starting at top)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      116
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-5f-double-rotodisc-rotates-both-ways-starting-at-top.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 96,
+    "name": "Double Rotodisc (rotates clockwise)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      116
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-60-double-rotodisc-rotates-clockwise.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 97,
+    "name": "Blooper (with babies)",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      123,
+      139
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 2",
+    "group": "group 8",
+    "image": "enemy_catalog/entries/enemy-61-blooper-with-babies.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 98,
+    "name": "Blooper",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      124
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 2",
+    "group": "group 8",
+    "image": "enemy_catalog/entries/enemy-62-blooper.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 99,
+    "name": "Big Bertha (underwater)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      52,
+      53,
+      68,
+      69
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 2",
+    "group": "group 8",
+    "image": "enemy_catalog/entries/enemy-63-big-bertha-underwater.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 100,
+    "name": "Surface Cheep-Cheep (jumps out of water)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      72
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-64-surface-cheep-cheep-jumps-out-of-water.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 101,
+    "name": "Upward Current",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      129
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-65-upward-current.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 102,
+    "name": "Downward Current",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      130
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-66-downward-current.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 103,
+    "name": "Lava Lotus",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      133,
+      134,
+      149,
+      150
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 4",
+    "image": "enemy_catalog/entries/enemy-67-lava-lotus.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 104,
+    "name": "Upside-down Buzzy Beetle",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      131
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 4",
+    "image": "enemy_catalog/entries/enemy-68-upside-down-buzzy-beetle.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 105,
+    "name": "Upside-down Spiny",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      132
+    ],
+    "category": "Ground Enemies",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-69-upside-down-spiny.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 106,
+    "name": "Blooper Nanny",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      135
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 2",
+    "group": "group 8",
+    "image": "enemy_catalog/entries/enemy-6a-blooper-nanny.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 107,
+    "name": "Pile Driver Micro-Goomba",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      136
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-6b-pile-driver-micro-goomba.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 108,
+    "name": "Green Koopa Troopa",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      137,
+      153
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-6c-green-koopa-troopa.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 109,
+    "name": "Red Koopa Troopa",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      138,
+      154
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-6d-red-koopa-troopa.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 110,
+    "name": "Green Koopa Paratroopa (bounces)",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      140,
+      156
+    ],
+    "category": "Flying Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-6e-green-koopa-paratroopa-bounces.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 111,
+    "name": "Red Koopa Paratroopa",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      143,
+      159
+    ],
+    "category": "Flying Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-6f-red-koopa-paratroopa.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 112,
+    "name": "Buzzy Beetle",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      157
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 4",
+    "image": "enemy_catalog/entries/enemy-70-buzzy-beetle.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 113,
+    "name": "Spiny",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      158
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 4",
+    "image": "enemy_catalog/entries/enemy-71-spiny.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 114,
+    "name": "Goomba",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      151
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-72-goomba.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 115,
+    "name": "Para-Goomba",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      160,
+      161,
+      176,
+      177
+    ],
+    "category": "Flying Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-73-para-goomba.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 116,
+    "name": "Para-Goomba with Micro-Goombas",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      162,
+      163,
+      178,
+      179
+    ],
+    "category": "Flying Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-74-para-goomba-with-micro-goombas.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 117,
+    "name": "Bowser's Fireballs",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      152
+    ],
+    "category": "Bosses",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-75-bowser-s-fireballs.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 118,
+    "name": "Falling Cheep-Cheep",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      72
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-76-falling-cheep-cheep.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 119,
+    "name": "Cheep-Cheep",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      165
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-77-cheep-cheep.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 120,
+    "name": "Still Bullet Bill",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      166
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-78-still-bullet-bill.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 121,
+    "name": "Stray Missile Bill",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      167
+    ],
+    "category": "Pickups and Items",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-79-stray-missile-bill.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 122,
+    "name": "Giant Green Koopa Troopa",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      168,
+      169,
+      184,
+      185
+    ],
+    "category": "Ground Enemies",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-7a-giant-green-koopa-troopa.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 123,
+    "name": "Giant Red Koopa Troopa",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      170,
+      171,
+      186,
+      187
+    ],
+    "category": "Ground Enemies",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-7b-giant-red-koopa-troopa.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 124,
+    "name": "Giant Goomba",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      172,
+      173,
+      188,
+      189
+    ],
+    "category": "Ground Enemies",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-7c-giant-goomba.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 125,
+    "name": "Giant Green Piranha Plant",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      174,
+      175,
+      190,
+      191
+    ],
+    "category": "Terrain and Environmental",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-7d-giant-green-piranha-plant.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 126,
+    "name": "Giant Green Koopa Paratroopa",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      180,
+      181,
+      196,
+      197
+    ],
+    "category": "Flying Enemies",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-7e-giant-green-koopa-paratroopa.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 127,
+    "name": "Giant Red Piranha Plant",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      182,
+      183,
+      198,
+      199
+    ],
+    "category": "Terrain and Environmental",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-7f-giant-red-piranha-plant.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 128,
+    "name": "Green Koopa Paratroopa (doesn't bounce)",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      140,
+      156
+    ],
+    "category": "Flying Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-80-green-koopa-paratroopa-doesn-t-bounce.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 129,
+    "name": "Hammer Brother",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      193,
+      209
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 1",
+    "image": "enemy_catalog/entries/enemy-81-hammer-brother.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 130,
+    "name": "Boomerang Brother",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      194,
+      210
+    ],
+    "category": "Flying Enemies",
+    "clan": "clan 2",
+    "group": "group 1",
+    "image": "enemy_catalog/entries/enemy-82-boomerang-brother.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 131,
+    "name": "Lakitu",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      195,
+      211
+    ],
+    "category": "Flying Enemies",
+    "clan": "clan 2",
+    "group": "group 4",
+    "image": "enemy_catalog/entries/enemy-83-lakitu.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 132,
+    "name": "Red Spiny Egg",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      200
+    ],
+    "category": "Ground Enemies",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-84-red-spiny-egg.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 133,
+    "name": "Green Spiny Egg",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      201
+    ],
+    "category": "Ground Enemies",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-85-green-spiny-egg.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 134,
+    "name": "Sledge Brother",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      202,
+      203,
+      218,
+      219
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 1",
+    "image": "enemy_catalog/entries/enemy-86-sledge-brother.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 135,
+    "name": "Fire Brother",
+    "width": 1,
+    "height": 2,
+    "block_ids": [
+      204,
+      220
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 2",
+    "group": "group 1",
+    "image": "enemy_catalog/entries/enemy-87-fire-brother.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 136,
+    "name": "Yellow Cheep-Cheep",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      205
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-88-yellow-cheep-cheep.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 137,
+    "name": "Chain Chomp",
+    "width": 2,
+    "height": 1,
+    "block_ids": [
+      222,
+      206
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 7",
+    "image": "enemy_catalog/entries/enemy-89-chain-chomp.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 138,
+    "name": "Thwomp (normal)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      83,
+      84,
+      16,
+      17
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-8a-thwomp-normal.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 139,
+    "name": "Thwomp (moves left)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      83,
+      84,
+      16,
+      17
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-8b-thwomp-moves-left.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 140,
+    "name": "Thwomp (moves right)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      83,
+      84,
+      16,
+      17
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-8c-thwomp-moves-right.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 141,
+    "name": "Thwomp (moves up)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      83,
+      84,
+      16,
+      17
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-8d-thwomp-moves-up.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 142,
+    "name": "Thwomp (moves diagonally up and left)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      83,
+      84,
+      16,
+      17
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-8e-thwomp-moves-diagonally-up-and-left.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 143,
+    "name": "Thwomp (moves diagonally down and left)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      83,
+      84,
+      16,
+      17
+    ],
+    "category": "Ground Enemies",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-8f-thwomp-moves-diagonally-down-and-left.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 144,
+    "name": "Spinning Platform (step-activated)",
+    "width": 4,
+    "height": 1,
+    "block_ids": [
+      246,
+      245,
+      244,
+      245
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-90-spinning-platform-step-activated.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 145,
+    "name": "Spinning Platform (constant)",
+    "width": 4,
+    "height": 1,
+    "block_ids": [
+      246,
+      245,
+      247,
+      245
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-91-spinning-platform-constant.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 146,
+    "name": "Spinning Platform (periodical clockwise)",
+    "width": 4,
+    "height": 1,
+    "block_ids": [
+      246,
+      245,
+      248,
+      245
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-92-spinning-platform-periodical-clockwise.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 147,
+    "name": "Spinning Platform (periodical counterclockwise)",
+    "width": 4,
+    "height": 1,
+    "block_ids": [
+      246,
+      245,
+      249,
+      245
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-93-spinning-platform-periodical-counterclockwise.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 148,
+    "name": "Giant '?' Block with 3 1-ups",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      236,
+      237,
+      252,
+      253
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-94-giant-block-with-3-1-ups.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 149,
+    "name": "Giant '?' Block with Mushroom",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      238,
+      239,
+      254,
+      255
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-95-giant-block-with-mushroom.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 150,
+    "name": "Giant '?' Block with Flower",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      234,
+      235,
+      250,
+      251
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-96-giant-block-with-flower.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 151,
+    "name": "Giant '?' Block with Leaf",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      216,
+      217,
+      232,
+      233
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-97-giant-block-with-leaf.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 152,
+    "name": "Giant '?' Block with Tanooki Suit",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      214,
+      215,
+      230,
+      231
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-98-giant-block-with-tanooki-suit.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 153,
+    "name": "Giant '?' Block with Frog Suit",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      226,
+      227,
+      242,
+      243
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-99-giant-block-with-frog-suit.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 154,
+    "name": "Giant '?' Block with Hammer Bros. Suit",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      224,
+      225,
+      240,
+      241
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-9a-giant-block-with-hammer-bros-suit.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 155,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-9b-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 156,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-9c-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 157,
+    "name": "Upward Rocket Engine",
+    "width": 1,
+    "height": 3,
+    "block_ids": [
+      28,
+      44,
+      60
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 1",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-9d-upward-rocket-engine.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 158,
+    "name": "Podoboo (comes out of lava)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      103
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-9e-podoboo-comes-out-of-lava.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 159,
+    "name": "Para-Beetle",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      221
+    ],
+    "category": "Flying Enemies",
+    "clan": "clan 2",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-9f-para-beetle.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 160,
+    "name": "Green Piranha Plant (upward)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      267,
+      268,
+      2,
+      3
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-a0-green-piranha-plant-upward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 161,
+    "name": "Green Piranha Plant (downward)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      62,
+      63,
+      273,
+      274
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-a1-green-piranha-plant-downward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 162,
+    "name": "Red Piranha Plant (upward)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      269,
+      270,
+      2,
+      3
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-a2-red-piranha-plant-upward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 163,
+    "name": "Red Piranha Plant (downward)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      62,
+      63,
+      271,
+      272
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-a3-red-piranha-plant-downward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 164,
+    "name": "Green Venus Fire Trap (upward)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      263,
+      264,
+      2,
+      3
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-a4-green-venus-fire-trap-upward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 165,
+    "name": "Green Venus Fire Trap (downward)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      62,
+      63,
+      275,
+      276
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-a5-green-venus-fire-trap-downward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 166,
+    "name": "Red Venus Fire Trap (upward)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      265,
+      266,
+      2,
+      3
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-a6-red-venus-fire-trap-upward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 167,
+    "name": "Red Venus Fire Trap (downward)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      62,
+      63,
+      277,
+      278
+    ],
+    "category": "Terrain and Environmental",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-a7-red-venus-fire-trap-downward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 168,
+    "name": "Auto-moving upward directional platform",
+    "width": 2,
+    "height": 1,
+    "block_ids": [
+      13,
+      14
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-a8-auto-moving-upward-directional-platform.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 169,
+    "name": "Auto-moving multi-directional platform",
+    "width": 2,
+    "height": 1,
+    "block_ids": [
+      29,
+      30
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 2",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-a9-auto-moving-multi-directional-platform.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 170,
+    "name": "Propeller",
+    "width": 1,
+    "height": 3,
+    "block_ids": [
+      256,
+      257,
+      258
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-aa-propeller.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 171,
+    "name": "MSG_NOTHING",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-ab-msg-nothing.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 172,
+    "name": "Leftward Rocket Engine",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      34,
+      35,
+      36
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 1",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-ac-leftward-rocket-engine.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 173,
+    "name": "Brown Rocky Wrench",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      27
+    ],
+    "category": "Other Entries",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-ad-brown-rocky-wrench.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 174,
+    "name": "Nut (use with corkscrew)",
+    "width": 2,
+    "height": 1,
+    "block_ids": [
+      85,
+      86
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-ae-nut-use-with-corkscrew.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 175,
+    "name": "The Angry Sun",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      125,
+      126,
+      141,
+      142
+    ],
+    "category": "Bosses",
+    "clan": "clan 2",
+    "group": "group 6",
+    "image": "enemy_catalog/entries/enemy-af-the-angry-sun.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 176,
+    "name": "Still Big Bullet",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      212,
+      213,
+      228,
+      229
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-b0-still-big-bullet.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 177,
+    "name": "Rightward Rocket Engine",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      120,
+      121,
+      122
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 1",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-b1-rightward-rocket-engine.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 178,
+    "name": "Downward Rocket Engine",
+    "width": 1,
+    "height": 3,
+    "block_ids": [
+      101,
+      117,
+      100
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 1",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-b2-downward-rocket-engine.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 179,
+    "name": "Weird flashing enemy",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Unknown and Placeholder Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-b3-weird-flashing-enemy.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 180,
+    "name": "Infinite flying Cheep-Cheeps",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      164
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-b4-infinite-flying-cheep-cheeps.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 181,
+    "name": "Infinite Spiky Cheep-Cheeps",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      26
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 8",
+    "image": "enemy_catalog/entries/enemy-b5-infinite-spiky-cheep-cheeps.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 182,
+    "name": "Lakitu boundary",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      61
+    ],
+    "category": "Flying Enemies",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-b6-lakitu-boundary.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 183,
+    "name": "Infinite Para-Beetles",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      73
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-b7-infinite-para-beetles.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 184,
+    "name": "Moving Background Clouds",
+    "width": 2,
+    "height": 1,
+    "block_ids": [
+      92,
+      93
+    ],
+    "category": "Other Entries",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-b8-moving-background-clouds.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 185,
+    "name": "Infinite leftward-moving falling platforms",
+    "width": 3,
+    "height": 1,
+    "block_ids": [
+      55,
+      127,
+      57
+    ],
+    "category": "Platforms and Machinery",
+    "clan": "clan 2",
+    "group": "group 2",
+    "image": "enemy_catalog/entries/enemy-b9-infinite-leftward-moving-falling-platforms.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 186,
+    "name": "(Hidden) Makes treasure chest end the level",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Exits and Controls",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-ba-hidden-makes-treasure-chest-end-the-level.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 187,
+    "name": "Stops infinite flying or spiky Cheep-Cheeps",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-bb-stops-infinite-flying-or-spiky-cheep-cheeps.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 188,
+    "name": "Bullet Bills",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      166
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-bc-bullet-bills.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 189,
+    "name": "Missile Bills",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      167
+    ],
+    "category": "Other Entries",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-bd-missile-bills.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 190,
+    "name": "Rocky Wrench",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      18
+    ],
+    "category": "Other Entries",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-be-rocky-wrench.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 191,
+    "name": "Cross-shaped bullet shots",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-bf-cross-shaped-bullet-shots.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 192,
+    "name": "Infinite Goombas (leftward)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      95
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-c0-infinite-goombas-leftward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 193,
+    "name": "Infinite Goombas (rightward)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      95
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-c1-infinite-goombas-rightward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 194,
+    "name": "Bullet Shots (leftward)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-c2-bullet-shots-leftward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 195,
+    "name": "Big Bullet Shots (leftward)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      212,
+      213,
+      228,
+      229
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-c3-big-bullet-shots-leftward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 196,
+    "name": "Bullet Shots (up/left)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-c4-bullet-shots-up-left.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 197,
+    "name": "Bullet Shots (up/right)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-c5-bullet-shots-up-right.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 198,
+    "name": "Bullet Shots (down/left)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-c6-bullet-shots-down-left.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 199,
+    "name": "Bullet Shots (down/right)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-c7-bullet-shots-down-right.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 200,
+    "name": "Bullet Shots (up/left)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-c8-bullet-shots-up-left.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 201,
+    "name": "Bullet Shots (up/right)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-c9-bullet-shots-up-right.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 202,
+    "name": "Bullet Shots (down/left)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-ca-bullet-shots-down-left.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 203,
+    "name": "Bullet Shots (down/right)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-cb-bullet-shots-down-right.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 204,
+    "name": "Bullet Shots (rightward)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      119
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-cc-bullet-shots-rightward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 205,
+    "name": "Big Bullet Shots (rightward)",
+    "width": 2,
+    "height": 2,
+    "block_ids": [
+      212,
+      213,
+      228,
+      229
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 5",
+    "image": "enemy_catalog/entries/enemy-cd-big-bullet-shots-rightward.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 206,
+    "name": "Infinite Bob-Ombs (leftward) (use with bullet shooters)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      22
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 4",
+    "image": "enemy_catalog/entries/enemy-ce-infinite-bob-ombs-leftward-use-with-bullet-shooters.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 207,
+    "name": "Infinite Bob-Ombs (rightward) (use with bullet shooters)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      22
+    ],
+    "category": "Hazards and Projectiles",
+    "clan": "clan 2",
+    "group": "group 4",
+    "image": "enemy_catalog/entries/enemy-cf-infinite-bob-ombs-rightward-use-with-bullet-shooters.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 208,
+    "name": "Lasers (use with Bowser statues)",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      76
+    ],
+    "category": "Bosses",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-d0-lasers-use-with-bowser-statues.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 209,
+    "name": "3 Green Koopa Paratroopas",
+    "width": 3,
+    "height": 2,
+    "block_ids": [
+      140,
+      140,
+      140,
+      156,
+      156,
+      156
+    ],
+    "category": "Flying Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-d1-3-green-koopa-paratroopas.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 210,
+    "name": "3 Yellow Cheep-Cheeps",
+    "width": 1,
+    "height": 3,
+    "block_ids": [
+      205,
+      205,
+      205
+    ],
+    "category": "Aquatic Enemies",
+    "clan": "clan 1",
+    "group": "group 3",
+    "image": "enemy_catalog/entries/enemy-d2-3-yellow-cheep-cheeps.png",
+    "notes": []
+  },
+  {
+    "enemy_id": 211,
+    "name": "Autoscrolling",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      147
+    ],
+    "category": "Exits and Controls",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-d3-autoscrolling.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 212,
+    "name": "(Hidden) Enables White Mushroom House",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      71
+    ],
+    "category": "Pickups and Items",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-d4-hidden-enables-white-mushroom-house.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 213,
+    "name": "'The king has been transformed' message",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      148
+    ],
+    "category": "Other Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-d5-the-king-has-been-transformed-message.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 214,
+    "name": "(Hidden) Sets reward item in treasure chests",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      146
+    ],
+    "category": "Exits and Controls",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-d6-hidden-sets-reward-item-in-treasure-chests.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 215,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-d7-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 216,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-d8-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 217,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-d9-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 218,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-da-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 219,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-db-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 220,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-dc-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 221,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-dd-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 222,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-de-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 223,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-df-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 224,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-e0-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 225,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-e1-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 226,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-e2-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 227,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-e3-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 228,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-e4-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 229,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-e5-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 230,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-e6-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 231,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-e7-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 232,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-e8-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 233,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-e9-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 234,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-ea-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 235,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-eb-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  },
+  {
+    "enemy_id": 236,
+    "name": "MSG_CRASH",
+    "width": 1,
+    "height": 1,
+    "block_ids": [
+      145
+    ],
+    "category": "Crash Entries",
+    "clan": null,
+    "group": null,
+    "image": "enemy_catalog/entries/enemy-ec-msg-crash.png",
+    "notes": [
+      "no-clan-group-match"
+    ]
+  }
+]

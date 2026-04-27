@@ -1,3 +1,25 @@
+"""Coordinate the Scribe main window and its world-map editing workflow.
+
+This module builds the top-level Qt window for SMB3 Scribe. It wires the ROM
+loading flow inherited from :mod:`foundry.gui.MainWindow` to Scribe-specific
+world-map editing surfaces such as :class:`scribe.gui.tool_window.tool_window.ToolWindow`,
+the world view, clipboard-style object actions, and ASM export helpers.
+
+The main window owns the user-facing workflow for opening a ROM, selecting a
+world map, mutating tiles and map objects through the undo stack, saving back
+to a ROM, and exporting the loaded map as the split ASM layout used
+by SMB3 disassembly projects.
+
+See Also
+--------
+foundry.gui.MainWindow.MainWindow
+    Base editor window that provides ROM save, update, and instaplay support.
+scribe.gui.tool_window.tool_window.ToolWindow
+    Companion tool palette that chooses which map entity the world view edits.
+foundry.gui.visualization.world.WorldView.WorldView
+    Canvas that renders and edits the active world map.
+"""
+
 import sys
 import tempfile
 from pathlib import Path
@@ -44,7 +66,102 @@ from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 
 
 class ScribeMainWindow(MainWindow):
+    """Own the Scribe editor shell for one loaded SMB3 ROM.
+
+    The window coordinates three persistent collaborators: the shared
+    :attr:`level_ref` model inherited from
+    :class:`foundry.gui.MainWindow.MainWindow`, a
+    :class:`PySide6.QtGui.QUndoStack` that gates destructive navigation and
+    save-state UI, and the Scribe-specific views that edit the active world
+    map. Menu actions, toolbar actions, keyboard shortcuts, and context-menu
+    actions all funnel through this class so they update the same active map
+    and undo history.
+
+    Parameters
+    ----------
+    path_to_rom : str
+        Startup ROM path. An empty string triggers the normal open-file dialog.
+
+    Attributes
+    ----------
+    undo_stack : QUndoStack
+        Undo history for tile, sprite, and world-map pointer edits.
+    level_ref : foundry.game.level.LevelRef.LevelRef
+        Shared level reference that swaps between loaded world maps and
+        notifies the view, menus, and tool window when the active map changes.
+    settings : Settings
+        Persistent editor settings used for startup behavior and file dialogs.
+    context_menu : WorldContextMenu
+        Context menu that stores copied objects and paste target positions.
+    world_view : WorldView
+        Scrollable editing surface for the active world map.
+    tool_window : ToolWindow
+        Floating tool palette for selecting tiles and map-object edit modes.
+    scroll_area : QScrollArea
+        Scroll container that keeps oversized world maps navigable at any zoom.
+    menu_toolbar : QToolBar | None
+        Toolbar mirror of the most common menu actions once setup completes.
+    file_menu : QMenu
+        Menu that owns ROM, export, settings, and quit actions.
+    edit_menu : EditMenu
+        Undo-aware edit surface for clipboard operations and world metadata
+        dialogs.
+    view_menu : ViewMenu
+        Zoom and rendering controls that stay synchronized with
+        :class:`WorldView`.
+    world_menu : QMenu
+        Menu that switches between SMB3 worlds or reloads the loaded one.
+    help_menu : HelpMenu
+        Shared help surface narrowed to Scribe-specific about and reference
+        actions.
+    open_rom_action : QAction
+        File-menu action that opens another ROM after the unsaved-changes gate.
+    save_rom_action : QAction
+        File-menu action that persists the loaded ROM in place.
+    save_as_rom_action : QAction
+        File-menu action that writes the loaded ROM to a newly chosen path.
+    export_map_action : QAction
+        File-menu action that emits the active world as the seven-file ASM
+        family used by SMB3 disassembly projects.
+    reload_world_action : QAction
+        World-menu action that reconstructs the active world from ROM bytes and
+        discards unsaved in-memory edits after confirmation.
+    settings_action : QAction
+        Shared action used by both the file menu and toolbar to open editor
+        preferences.
+    quit_rom_action : QAction
+        File-menu action that closes the editor window.
+    """
+
     def __init__(self, path_to_rom: str):
+        """Initialize the editor shell and optionally load the startup ROM.
+
+        The constructor stages the window in four phases: initialize shared
+        editor state from the base window; open or prompt for a ROM so
+        :class:`foundry.game.File.ROM` has backing data; attach Scribe menus,
+        tool windows, and shortcuts around :attr:`level_ref`; and then size and
+        show both windows. Toolbar actions, shortcuts, and context-menu
+        callbacks depend on that sequence because they all read from the same
+        loaded map and push commands into the same undo stack. That makes this
+        method the place where Scribe turns the generic Foundry main-window
+        shell into a world-map editor with one shared selection, one shared
+        undo history, and one shared ROM-backed save pipeline.
+
+        Parameters
+        ----------
+        path_to_rom : str
+            Startup ROM path to load before the main and tool windows are
+            shown. When empty, :meth:`on_open_rom` falls back to prompting the
+            user.
+
+        Notes
+        -----
+        The startup ROM is loaded before Scribe-specific widgets are created so
+        menus, the world view, and the tool window all bind to a populated
+        :attr:`level_ref`. The inverse order would require each surface to
+        defend against a missing world and would decouple undo, export, and
+        instaplay actions from the same active map.
+        """
         super(ScribeMainWindow, self).__init__()
 
         self.setWindowIcon(icon("scribe.ico"))
@@ -136,6 +253,18 @@ class ScribeMainWindow(MainWindow):
         self.tool_window.show()
 
     def _setup_file_menu(self):
+        """Create file actions for ROM loading, saving, export, and settings.
+
+        The file menu is the main entry point for switching ROMs, persisting
+        edits, exporting ASM, and opening editor preferences. The same actions
+        are later mirrored into the toolbar, so this setup establishes the
+        canonical action objects and their enabled state first.
+
+        Notes
+        -----
+        The save action tracks :attr:`undo_stack` cleanliness so the user only
+        sees it enabled when the loaded world has unsaved edits.
+        """
         self.file_menu = QMenu("&File")
         self.file_menu.triggered.connect(self.on_file_menu)
 
@@ -175,6 +304,7 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.file_menu)
 
     def _setup_edit_menu(self):
+        """Attach the edit menu and reconnect it to Scribe refresh hooks."""
         self.edit_menu = EditMenu(self)
         self.edit_menu.triggered.connect(self.world_view.update)
 
@@ -183,6 +313,7 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.edit_menu)
 
     def _setup_view_menu(self):
+        """Attach the view menu and resize the window after zoom changes."""
         self.view_menu = ViewMenu(self, self.world_view)
         self.view_menu.triggered.connect(self.world_view.update)
         self.view_menu.triggered.connect(self._resize_for_level)
@@ -190,6 +321,19 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.view_menu)
 
     def _setup_level_menu(self):
+        """Create world-selection actions and load world 1 on startup.
+
+        This menu is the top-level switch for replacing the map stored in
+        :attr:`level_ref`. It also keeps a reload action near the world list so
+        users can throw away in-memory edits and reconstruct the same world
+        directly from the loaded ROM.
+
+        Notes
+        -----
+        The level menu uses one checkable action per SMB3 world plus a reload
+        action. Triggering the first world action during setup ensures the rest
+        of the window starts with a loaded map before user interaction.
+        """
         self.world_menu = QMenu("Change &World")
         self.world_menu.triggered.connect(self.on_level_menu)
 
@@ -212,6 +356,7 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.world_menu)
 
     def _setup_help_menu(self):
+        """Attach the shared help menu to the main menu bar."""
         self.help_menu = HelpMenu(self)
 
         self.menuBar().addMenu(self.help_menu)
@@ -223,15 +368,25 @@ class ScribeMainWindow(MainWindow):
         self.world_menu.actions()[new_world_index].setChecked(True)
 
     def _on_show_settings(self):
+        """Open the modal settings dialog for editor-wide preferences."""
         SettingsDialog(self.settings, self).exec()
 
     def _cut_objects(self):
+        """Copy the active selection, then replace it with blank tiles."""
         self._copy_objects()
         self.remove_selected_objects()
 
         self.world_view.update()
 
     def remove_selected_objects(self):
+        """Blank every selected tile or object through one undo macro.
+
+        Notes
+        -----
+        Deletions are expressed as :class:`scribe.gui.commands.PutTile`
+        commands so removing objects participates in the same undo stack as
+        other world edits.
+        """
         selected_objects = [obj for obj in self.world_view.world.get_selected_tiles() if obj.selected]
 
         if not selected_objects:
@@ -245,6 +400,7 @@ class ScribeMainWindow(MainWindow):
         self.undo_stack.endMacro()
 
     def _copy_objects(self):
+        """Store the active selection in the context-menu clipboard cache."""
         selected_objects = self.world_view.get_selected_objects().copy()
 
         if selected_objects:
@@ -253,6 +409,25 @@ class ScribeMainWindow(MainWindow):
         self.world_view.update()
 
     def _paste_objects(self, q_point: QPoint | None = None):
+        """Paste copied objects relative to a chosen target position.
+
+        This method turns the clipboard snapshot stored on the context menu into
+        a batch of :class:`scribe.gui.commands.PutTile` commands. That keeps
+        paste behavior aligned with manual editing and lets one undo step revert
+        the whole placement.
+
+        Parameters
+        ----------
+        q_point : QPoint | None, optional
+            Global cursor position from the context menu. When omitted, the
+            paste operation uses the world view's last tracked mouse position.
+
+        Notes
+        -----
+        Pasted objects preserve their relative offsets from the original copy
+        origin. Objects that would fall outside the loaded world bounds are
+        skipped instead of clipped.
+        """
         if not (copy_data := self.context_menu.get_copied_objects())[0]:
             return
 
@@ -280,9 +455,18 @@ class ScribeMainWindow(MainWindow):
         self.world_view.update()
 
     def on_play(self, temp_dir=Path()):
-        """
-        Copies the ROM, including the current level, to a temporary directory, saves the current level as level 1-1 and
-        opens the rom in an emulator.
+        """Launch instaplay after serializing the active world into a temp ROM.
+
+        Parameters
+        ----------
+        temp_dir : Path, optional
+            Ignored caller-provided path placeholder kept for compatibility with
+            the base-class action signature.
+
+        Notes
+        -----
+        Scribe always stages instaplay files under the shared system temp
+        directory in ``smb3scribe`` so repeated launches reuse the same area.
         """
         temp_dir = Path(tempfile.gettempdir()) / "smb3scribe"
         temp_dir.mkdir(parents=True, exist_ok=True)
@@ -290,6 +474,33 @@ class ScribeMainWindow(MainWindow):
         super(ScribeMainWindow, self).on_play(temp_dir)
 
     def _save_changes_to_instaplay_rom(self, path_to_temp_rom) -> bool:
+        """Write the edited world map into the temporary instaplay ROM.
+
+        This hook completes the base-window instaplay pipeline by reading the
+        staged ROM copy, serializing Scribe's in-memory world edits into that
+        copy, updating SMB3's starting-world byte to match the loaded map, and
+        saving the modified bytes back to disk before the emulator launches it.
+        In other words, it is the bridge between Scribe's undoable world-map
+        editing state and the standalone ROM image that instaplay boots.
+
+        Parameters
+        ----------
+        path_to_temp_rom : str | Path
+            Temporary ROM path prepared by the base window.
+
+        Returns
+        -------
+        bool
+            ``True`` after the world data and starting-world byte have been
+            written successfully.
+
+        Notes
+        -----
+        The main ROM object stays untouched here. Instaplay always receives a
+        temporary copy so Scribe can serialize unsaved edits for playtesting
+        without mutating the user's working ROM path or resetting the undo
+        stack.
+        """
         temp_rom = ROM.from_file(path_to_temp_rom)
         self.world_view.world.save_to_rom(temp_rom)
 
@@ -303,6 +514,19 @@ class ScribeMainWindow(MainWindow):
         return True
 
     def on_open_rom(self, path_to_rom=""):
+        """Load a ROM from disk after confirming unsaved world-map changes.
+
+        Parameters
+        ----------
+        path_to_rom : str, optional
+            Explicit ROM path to open. When empty, the method prompts the user.
+
+        Notes
+        -----
+        Cancelling the chooser exits the application only when no ROM is
+        loaded yet. Once Scribe already has a ROM open, cancellation leaves the
+        current editing session intact.
+        """
         if not self.safe_to_change():
             return
 
@@ -329,6 +553,18 @@ class ScribeMainWindow(MainWindow):
             return
 
     def load_level(self, world_number: int):
+        """Load one SMB3 world map into the shared level reference.
+
+        Parameters
+        ----------
+        world_number : int
+            One-based SMB3 world number to deserialize from the loaded ROM.
+
+        Notes
+        -----
+        Loading a different world clears the undo stack because existing undo
+        commands target the previously loaded map's addresses and dimensions.
+        """
         world = SMB3WorldMap.from_world_number(ROM(), world_number)
 
         self.level_ref.load_level(f"World {world_number}", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
@@ -339,6 +575,20 @@ class ScribeMainWindow(MainWindow):
         self.undo_stack.clear()
 
     def on_save_rom(self, is_save_as=False):
+        """Persist the loaded ROM, optionally through Save As.
+
+        Parameters
+        ----------
+        is_save_as : bool, optional
+            When ``True``, prompt for a destination path instead of reusing the
+            ROM's loaded path.
+
+        Notes
+        -----
+        A normal save marks the undo stack clean and emits the shared
+        ``data_changed`` signal so other windows can refresh from the updated
+        ROM path.
+        """
         if is_save_as:
             suggested_file = ROM.name
 
@@ -363,6 +613,27 @@ class ScribeMainWindow(MainWindow):
             self.level_ref.data_changed.emit()
 
     def on_export_map(self):
+        """Export the active world map into the seven ASM companion files.
+
+        The export flow runs in three stages: choose a destination basename,
+        derive the layout, object, coordinate, item, and structure payloads
+        from the loaded :class:`foundry.game.level.WorldMap.WorldMap`, and then
+        write all sibling files into one directory. Keeping those stages in one
+        method makes the overwrite prompt, generated text, and emitted file set
+        stay consistent. It also keeps the exported filenames tied to the same
+        loaded world state, so a maintainer does not have to chase a split
+        between file-dialog choices, sprite serialization, and structure-table
+        generation.
+
+        Notes
+        -----
+        The export mirrors the layout expected by SMB3 disassembly projects:
+        separate files for layout tiles, sprite IDs, sprite coordinates, sprite
+        item payloads, and the structure table that points to level metadata.
+        The destination basename is resolved first because all seven output
+        files must either overwrite one existing family together or create one
+        new family together.
+        """
         level = cast(WorldMap, self.level_ref.level)
 
         if True:
@@ -418,6 +689,22 @@ class ScribeMainWindow(MainWindow):
 
     @staticmethod
     def _make_structure_asm(level: WorldMap) -> str:
+        """Build the ``S`` ASM file for one exported world map.
+
+        This serializer groups level-pointer metadata by screen so the emitted
+        labels match the split-table layout expected by SMB3 world-map ASM.
+
+        Parameters
+        ----------
+        level : WorldMap
+            Loaded editor world whose level pointers should be serialized.
+
+        Returns
+        -------
+        str
+            Assembly source containing per-screen tables for level row/object
+            bytes, screen/column bytes, enemy-item offsets, and layout offsets.
+        """
         world_num = level.data.index + 1
 
         template = (
@@ -481,6 +768,23 @@ class ScribeMainWindow(MainWindow):
 
     @staticmethod
     def _make_layout_asm(level: WorldMap) -> str:
+        """Build the ``L`` ASM file that stores visible world-map tiles.
+
+        The formatter inserts line breaks at row and screen boundaries so the
+        exported text remains aligned with the map's spatial layout when read by
+        maintainers.
+
+        Parameters
+        ----------
+        level : WorldMap
+            Loaded editor world whose tile objects should be serialized.
+
+        Returns
+        -------
+        str
+            Assembly source grouped into SMB3 row and screen boundaries and
+            terminated with the ``$FF`` end marker expected by the exporter.
+        """
         layout_text = ""
 
         for index, tile in enumerate(level.objects):
@@ -503,6 +807,28 @@ class ScribeMainWindow(MainWindow):
         return layout_text
 
     def _harmonize_base_name(self, path: Path):
+        """Choose the export basename that best matches the selected ASM path.
+
+        This is the user-facing bridge between a single save-dialog filename and
+        Scribe's seven-file export convention. It decides whether the export
+        should join an existing file family or create a new basename.
+
+        Parameters
+        ----------
+        path : Path
+            User-selected save path from the export dialog.
+
+        Returns
+        -------
+        str
+            Basename used for the seven exported ASM files.
+
+        Notes
+        -----
+        When the user clicks an existing member of a previously exported world
+        set, this method offers to overwrite that whole set instead of creating
+        a parallel basename from the clicked suffix file.
+        """
         potential_base_name = self._base_name_from_world_asm(path)
 
         if (path.parent / f"{potential_base_name}L.asm").is_file():
@@ -524,9 +850,29 @@ class ScribeMainWindow(MainWindow):
 
     @staticmethod
     def _base_name_from_world_asm(path: Path):
-        """
-        A world map is split across 7 different asm files, so if the user selects one of those, get the actual World
-        name instead.
+        """Collapse one exported ASM filename back to its shared world basename.
+
+        The helper recognizes Scribe's world-export naming scheme, probes the
+        neighboring sibling filenames, and yields a family root only when those
+        checks confirm that the selected file belongs to a complete export set.
+
+        Parameters
+        ----------
+        path : Path
+            Candidate path chosen in the export dialog.
+
+        Returns
+        -------
+        str
+            Family basename for a complete seven-file export set, otherwise
+            ``path.stem``.
+
+        Notes
+        -----
+        Scribe exports seven files per world map: ``L``, ``O``, ``OH``, ``OX``,
+        ``OY``, ``OI``, and ``S``. This helper only strips the suffix when the
+        neighboring files exist, which avoids collapsing unrelated filenames
+        such as ``TOOLS.asm`` to ``TO``.
         """
         asm_name_suffixes = ["OH", "OI", "OX", "OY", "L", "O", "S"]
 
@@ -552,6 +898,13 @@ class ScribeMainWindow(MainWindow):
         return base_name
 
     def on_file_menu(self, action: QAction):
+        """Dispatch file-menu actions to the matching ROM workflow.
+
+        Parameters
+        ----------
+        action : QAction
+            Triggered menu action from the file menu.
+        """
         if action is self.open_rom_action:
             self.on_open_rom()
             self.load_level(1)
@@ -567,6 +920,13 @@ class ScribeMainWindow(MainWindow):
         self.world_view.update()
 
     def on_level_menu(self, action: QAction):
+        """Switch or reload the active world after confirming unsaved edits.
+
+        Parameters
+        ----------
+        action : QAction
+            Triggered world-menu action, either a numbered world or reload.
+        """
         # get index of world to change to
         if action is self.reload_world_action:
             index = self.level_ref.data.index
@@ -588,13 +948,39 @@ class ScribeMainWindow(MainWindow):
         self._resize_for_level()
 
     def safe_to_change(self) -> bool:
+        """Report whether the window may discard the loaded world state.
+
+        This guard is used before ROM loads and world switches so every workflow
+        that would replace in-memory map data consults the same unsaved-changes
+        policy.
+
+        Returns
+        -------
+        bool
+            ``True`` when there are no unsaved edits or the user confirms that
+            those edits may be discarded.
+        """
         return self.undo_stack.isClean() or self.confirm_changes()
 
     def _resize_for_level(self):
+        """Resize the window to fit the loaded world view when not maximized."""
         if not self.isMaximized():
             self.resize(self.sizeHint())
 
     def sizeHint(self) -> QSize:
+        """Return a window size that fits the loaded map view and chrome.
+
+        The hint follows the world view's zoom-dependent size and then adds the
+        surrounding Qt chrome so switching worlds or zoom levels keeps the
+        editor framed without clipping the scroll area.
+
+        Returns
+        -------
+        QSize
+            Suggested size capped to the primary screen width and expanded to
+            include scroll bars, frame widths, the menu bar, and the optional
+            toolbar.
+        """
         inner_width, inner_height = self.world_view.sizeHint().toTuple()
 
         height = inner_height + self.scroll_area.horizontalScrollBar().height() + 2 * self.scroll_area.frameWidth()

@@ -10,8 +10,19 @@ Iconifiable = TypeVar("Iconifiable", None, _InLevelObject)
 
 
 def get_minimal_icon_object(level_object: Iconifiable) -> Iconifiable:
-    """
-    Returns the object with a length, so that every block is rendered. E.g. clouds with length 0 don't have a face.
+    """Returns the object with a length, so that every block is rendered. E.g. clouds with length 0 don't have a face.
+
+    It supports palette, graphics, and block data used by the editor rendering pipeline. The lookup centralizes coordinate or identifier handling for callers.
+
+    Parameters
+    ----------
+    level_object : Iconifiable
+        Level object being displayed or modified.
+
+    Returns
+    -------
+    Iconifiable
+        The requested minimal icon object.
     """
     if not isinstance(level_object, LevelObject):
         return level_object

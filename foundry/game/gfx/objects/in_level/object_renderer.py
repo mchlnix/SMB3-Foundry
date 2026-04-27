@@ -1,3 +1,19 @@
+"""Expand SMB3 terrain-object generators into rendered block layouts.
+
+This module contains the execution logic that turns decoded ``LevelObject``
+state into the block arrays, rendered bounds, and warning paths used by
+Foundry's level views. It is the render-phase bridge between symbolic object
+definitions and the rectangular block footprints that drawing, hit testing,
+and selection overlays consume.
+
+See Also
+--------
+foundry.game.gfx.objects.in_level.level_object
+    Supplies the decoded object state that the renderer expands.
+foundry.gui.visualization.level.LevelDrawer
+    Consumes the rendered block footprints produced here while painting levels.
+"""
+
 from typing import TYPE_CHECKING
 from warnings import warn
 
@@ -20,11 +36,109 @@ if TYPE_CHECKING:
 
 
 class LevelObjectRenderWarning(UserWarning):
+    """Warn when object expansion produces inconsistent preview geometry.
+
+    ``ObjectRenderer`` emits this warning at the boundary where compact SMB3
+    object bytes are expanded into concrete block layouts. A warning here means
+    Foundry could still decode enough information to keep the object editable,
+    but the rendered width, height, or block count no longer agree with one
+    another. That soft-failure path matters because object definitions evolve
+    over time and some legacy or partially understood generators are still more
+    useful when shown imperfectly than when they abort level rendering.
+
+    Notes
+    -----
+    This warning is part of Foundry's reverse-engineering safety net: it keeps
+    suspicious object-definition behavior visible to maintainers without taking
+    down the whole level view.
+    """
+
     pass
 
 
 class ObjectRenderer:
+    """Expand a ``LevelObject`` into rendered block geometry.
+
+    The renderer interprets the object's generator type, ending behavior,
+    encoded lengths, and sibling-object context to turn one compact SMB3
+    object record into a block list, rendered bounds, and a hit-test
+    rectangle. It is the execution step between parsed object metadata and the
+    block arrays used by level drawing and inspection tools.
+
+    Parameters
+    ----------
+    level_object : foundry.game.gfx.objects.in_level.level_object.LevelObject
+        Level object being displayed or modified.
+
+    Attributes
+    ----------
+    _base_x : int
+        Leftmost block coordinate after generator-specific offsets.
+    _base_y : int
+        Topmost block coordinate after generator-specific offsets.
+    _new_height : int
+        Rendered height accumulated during expansion.
+    _new_width : int
+        Rendered width accumulated during expansion.
+    _object : foundry.game.gfx.objects.in_level.level_object.LevelObject
+        Level object whose generator is being expanded.
+
+    Notes
+    -----
+    This class is effectively the executor for SMB3 object-generator behavior:
+    ``ObjectDefinition`` supplies the symbolic generator type and this class
+    applies the corresponding expansion rules to produce concrete block layout.
+
+    Examples
+    --------
+    Stage the minimal object state for a horizontal generator, run one render
+    pass, and inspect the footprint that level drawing will later consume::
+
+        from types import SimpleNamespace
+
+        from foundry.game.ObjectDefinitions import EndType, GeneratorType
+
+        obj = SimpleNamespace(
+            x_position=10,
+            y_position=5,
+            rendered_width=1,
+            rendered_height=1,
+            generator_type=GeneratorType.HORIZONTAL,
+            ending=EndType.UNIFORM,
+            length=2,
+            height=1,
+            secondary_length=0,
+            width=1,
+            blocks=[0x6A],
+            is_4byte=False,
+            object_info=None,
+            name="Example row",
+        )
+        obj.objects_ref = [obj]
+
+        renderer = ObjectRenderer(obj)
+        renderer.render()
+
+        (obj.rendered_base_x, obj.rendered_base_y)
+        (10, 5)
+        (obj.rendered_width, obj.rendered_height)
+        (3, 1)
+        obj.rendered_blocks
+        [106, 106, 106]
+    """
+
     def __init__(self, level_object: "LevelObject"):
+        """Capture the decoded object state needed for one render pass.
+
+        Initialization snapshots the object's current rendered origin and size
+        state so one render pass can update width, height, and block layout
+        without repeatedly re-reading mutable object properties.
+
+        Parameters
+        ----------
+        level_object : foundry.game.gfx.objects.in_level.level_object.LevelObject
+            Level object being displayed or modified.
+        """
         self._object = level_object
 
         self._base_x: int = self._object.x_position
@@ -51,6 +165,51 @@ class ObjectRenderer:
         """
 
     def render(self):
+        """Expand one SMB3 object record into rendered blocks and bounds.
+
+        The renderer chooses the generator-specific expansion path, builds the
+        block buffer, reconciles inferred width and height with the produced
+        block count, and stores the finished rectangle back on the level
+        object for later drawing and hit testing. This is the main render
+        workflow boundary where decoded object metadata becomes block-buffer
+        state reused by level drawing, selection, and inspector surfaces.
+
+        Examples
+        --------
+        Render a simple uniform horizontal object and inspect the fields that
+        the rest of the level view consumes afterward::
+
+            from types import SimpleNamespace
+
+            from foundry.game.ObjectDefinitions import EndType, GeneratorType
+
+            obj = SimpleNamespace(
+                x_position=10,
+                y_position=5,
+                rendered_width=1,
+                rendered_height=1,
+                generator_type=GeneratorType.HORIZONTAL,
+                ending=EndType.UNIFORM,
+                length=2,
+                height=1,
+                secondary_length=0,
+                width=1,
+                blocks=[0x6A],
+                is_4byte=False,
+                object_info=None,
+                name="Example row",
+            )
+            obj.objects_ref = [obj]
+
+            ObjectRenderer(obj).render()
+
+            (obj.rendered_base_x, obj.rendered_base_y)
+            (10, 5)
+            (obj.rendered_width, obj.rendered_height)
+            (3, 1)
+            obj.rendered_blocks
+            [106, 106, 106]
+        """
         if self._object in self._object.objects_ref:
             self._object.index_in_level = self._object.objects_ref.index(self._object)
 
@@ -92,6 +251,18 @@ class ObjectRenderer:
         self._object.rendered_base_y = self._base_y
 
     def _render_by_generator_type(self, blocks_to_draw: list[int]):
+        """Dispatch expansion to the generator-specific render path.
+
+        Generator type is the main branch point in SMB3 object rendering, so
+        this dispatcher routes one decoded object state into the correct
+        expansion workflow while keeping the surrounding render pass focused on
+        block-buffer assembly and bounds updates.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         if self._object.generator_type == GeneratorType.TO_THE_SKY:
             self._render_to_sky(blocks_to_draw)
 
@@ -143,12 +314,17 @@ class ObjectRenderer:
                 self._render_black_boss_room_bg(blocks_to_draw)
 
     def _render_diagonal_staggered(self, blocks_to_draw: list[int]):
-        """
-        ...#
-        ..##
-        .##.
-        ##..
-        #...
+        """Expand staggered diagonal generators into blank-padded rows.
+
+        These SMB3 generators advance one step per row while widening the
+        footprint, so the renderer grows width and height together, shifts the
+        rendered base x coordinate, and inserts blank padding that preserves
+        the intended diagonal data flow into the shared block buffer.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
         """
         self._new_height = self._object.height + self._object.length
         self._new_width = self._object.width + self._object.length
@@ -177,6 +353,15 @@ class ObjectRenderer:
                 blocks_to_draw.extend([BLANK] * back_blanks)
 
     def _render_brick_wall(self, blocks_to_draw: list[int]):
+        """Render brick wall.
+
+        It keeps SMB3 object bytes aligned with editor geometry, rendering, and serialization. The method updates stored state that later editor operations depend on.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         top = self._object.blocks[0 : self._object.width]
         middle = self._object.blocks[self._object.width : 2 * self._object.width]
         bottom = self._object.blocks[self._object.width * (self._object.height - 1) :]
@@ -220,6 +405,15 @@ class ObjectRenderer:
                 _insert_block_row(bottom)
 
     def _render_wooden_platform(self, blocks_to_draw: list[int]):
+        """Render wooden platform.
+
+        It keeps SMB3 object bytes aligned with editor geometry, rendering, and serialization. The method updates stored state that later editor operations depend on.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         if self._object.is_4byte:
             # Seemingly the max for the few objects that do grow vertically
             self._new_height = min(self._object.secondary_length + 1, self._object.height)
@@ -268,6 +462,15 @@ class ObjectRenderer:
             blocks_to_draw.append(right_end)
 
     def _render_black_boss_room_bg(self, blocks_to_draw: list[int]):
+        """Render black boss room bg.
+
+        It keeps SMB3 object bytes aligned with editor geometry, rendering, and serialization. The method updates stored state that later editor operations depend on.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         self._new_width = LEVEL_SCREEN_WIDTH
         self._new_height = LEVEL_SCREEN_HEIGHT
 
@@ -278,6 +481,13 @@ class ObjectRenderer:
         blocks_to_draw.extend(LEVEL_SCREEN_WIDTH * LEVEL_SCREEN_HEIGHT * [self._object.blocks[0]])
 
     def _render_horizontal(self, blocks_to_draw):
+        """Render one horizontally expanding object footprint.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         self._new_width = self._object.length + 1
         downwards_extending_vine = LVL_OBJ_PLAINS_DOWNWARD_VINE
         wooden_sky_pole = LVL_OBJ_SKY_WOODEN_POLE
@@ -322,6 +532,23 @@ class ObjectRenderer:
             self._sub_render_horizontal_two_ends(blocks_to_draw)
 
     def _sub_render_horizontal_two_ends(self, blocks_to_draw):
+        """Fill a horizontal generator using left cap, middle, and right cap.
+
+        SMB3 stores these objects as compact rows whose first and last blocks
+        differ from the repeatable middle section. The helper expands that row
+        data into the rectangular block buffer and then stretches the interior
+        rows to the final rendered height.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+
+        Raises
+        ------
+        ValueError
+            If the input data or current state is invalid.
+        """
         if self._object.generator_type == GeneratorType.HORIZONTAL and self._object.is_4byte:
             # flat ground objects have an artificial limit of 2 lines
             if (
@@ -381,6 +608,13 @@ class ObjectRenderer:
 
     def _sub_render_4byte_uniform(self, blocks_to_draw):
         # 4 byte objects
+        """Render a uniform four-byte horizontal object.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         top = self._object.blocks[0:1]
         bottom = self._object.blocks[-1:]
         self._new_height = self._object.height + self._object.secondary_length
@@ -402,6 +636,13 @@ class ObjectRenderer:
                 blocks_to_draw.extend(self._new_width * bottom)
 
     def _sub_render_horizontal_uniform_3byte(self, blocks_to_draw):
+        """Render a uniform three-byte horizontal object.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         for y in range(self._new_height):
             offset = (y % self._object.height) * self._object.width
 
@@ -413,6 +654,10 @@ class ObjectRenderer:
 
     def _sub_render_horizontal_to_ground(self):
         # to the ground only until it hits something
+        """Render render horizontal to ground.
+
+        It keeps SMB3 object bytes aligned with editor geometry, rendering, and serialization. The method updates stored state that later editor operations depend on.
+        """
         for y in range(self._base_y, self._object.ground_level):
             bottom_row = Rect(self._base_x, y, self._new_width, 1)
 
@@ -436,6 +681,13 @@ class ObjectRenderer:
         self._new_height = max(min_height, self._new_height)
 
     def _render_vertical(self, blocks_to_draw):
+        """Render one vertically expanding object footprint.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         self._new_height = self._object.length + 1
         self._new_width = self._object.width
 
@@ -503,6 +755,20 @@ class ObjectRenderer:
                 blocks_to_draw.extend(bottom_row)
 
     def _render_ending(self, blocks_to_draw):
+        """Expand the SMB3 ending strip and embedded goal graphics.
+
+        The ending object starts as a repeated backdrop fill, then patches in
+        the goal-card artwork read from ROM. That turns one compact ending
+        object into the full screen-edge footprint shown by Foundry's level
+        renderer. It is also the render boundary where object-definition
+        metadata has to pull additional ROM block data into the same block
+        buffer as the repeated background fill.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         page_width = 16
         page_limit = page_width - self._object.x_position % page_width
 
@@ -537,6 +803,19 @@ class ObjectRenderer:
     def _render_pyramids(self, blocks_to_draw):
         # since pyramids grow horizontally in both directions when expanding, we need to check for new ground every time
         # it grows
+        """Expand a pyramid generator around its centered SMB3 origin.
+
+        Pyramid objects grow outward while also searching for the ground or an
+        intersecting object below them. The renderer therefore updates width,
+        height, and base x together before writing the triangular block data
+        into the shared buffer, keeping collision-aware growth and final block
+        layout in one render workflow.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         objects_before = self._object.objects_ref[0 : self._object.index_in_level]
 
         for y in range(self._base_y, self._object.ground_level):
@@ -570,6 +849,20 @@ class ObjectRenderer:
             blocks_to_draw.extend(blank_blocks * [blank])
 
     def _render_diagonals(self, blocks_to_draw):
+        """Expand SMB3 diagonal slope generators into rectangular buffers.
+
+        Diagonal generators describe visible slope blocks plus the blank space
+        needed to place them at the proper step. This method converts that
+        compact slope definition into full rows so later rendering and hit
+        testing can treat the object like any other rectangular footprint,
+        while still preserving generator-specific reversals and base-coordinate
+        shifts inside one data-flow step.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         if self._object.ending == EndType.UNIFORM:
             self._new_height = (self._object.length + 1) * self._object.height
             self._new_width = (self._object.length + 1) * self._object.width
@@ -660,10 +953,24 @@ class ObjectRenderer:
         for row in rows:
             blocks_to_draw.extend(row)
 
-    def _render_desert_pipe_box(self, blocks_to_draw):
+    def _render_desert_pipe_box(self, blocks_to_draw: list[int]):
         # segments are the horizontal sections, which are 8 blocks long
         # two of those are drawn per length bit
         # rows are the 4 block high rows Mario can walk in
+        """Expand the desert pipe-box generator into a boxed walkable region.
+
+        Pipe-box objects repeat 8-block segments across several four-line
+        rows, then close the structure with one final line. The renderer
+        converts that compact length and height encoding into the full boxed
+        footprint stored in the shared block buffer, so the editor can treat
+        the result like normal rectangular render state even though the SMB3
+        generator logic grows in segment-sized steps.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         is_pipe_box_type_b = self._object.obj_index // 0x10 == 4
         rows_per_box = self._object.height
         lines_per_row = 4
@@ -706,7 +1013,19 @@ class ObjectRenderer:
 
         self._new_width += 1
 
-    def _render_to_sky(self, blocks_to_draw):
+    def _render_to_sky(self, blocks_to_draw: list[int]):
+        """Extend a vertical generator upward until it reaches the sky row.
+
+        SMB3 uses this generator for objects that repeat from the object's y
+        position up to the fixed sky boundary. The renderer moves the rendered
+        base to ``SKY`` and emits the repeated column so later drawing sees the
+        same vertical footprint.
+
+        Parameters
+        ----------
+        blocks_to_draw : list[int]
+            Block buffer populated by the renderer.
+        """
         self._base_x = self._object.x_position
         self._base_y = SKY
 

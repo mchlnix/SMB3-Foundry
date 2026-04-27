@@ -17,6 +17,20 @@ if TYPE_CHECKING:
 
 
 def asm_to_bytes(asm: str) -> bytearray:
+    """Convert assembly for to bytes.
+
+    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+
+    Parameters
+    ----------
+    asm : str
+        Assembly source text.
+
+    Returns
+    -------
+    bytearray
+        Machine-code bytes assembled from the source text.
+    """
     ret = bytearray()
 
     for line in asm.split("\n"):
@@ -52,6 +66,25 @@ def asm_to_bytes(asm: str) -> bytearray:
 
 
 def _parse_macros_in_line(line: str) -> int:
+    """Parse macros in line.
+
+    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+
+    Parameters
+    ----------
+    line : str
+        Assembly source line being parsed.
+
+    Returns
+    -------
+    int
+        Loaded or parsed data.
+
+    Raises
+    ------
+    ValueError
+        If the input data or current state is invalid.
+    """
     line = line.removeprefix(".byte ")
 
     byte = 0
@@ -66,6 +99,20 @@ def _parse_macros_in_line(line: str) -> int:
 
 
 def bytes_to_asm(data: bytearray | int) -> str:
+    """Convert bytes for to asm.
+
+    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+
+    Parameters
+    ----------
+    data : bytearray | int
+        Raw bytes or bytearray being parsed.
+
+    Returns
+    -------
+    str
+        Assembly source decoded from the bytes.
+    """
     if isinstance(data, int):
         hex_data = f"${data:02X}"
     else:
@@ -76,6 +123,22 @@ def bytes_to_asm(data: bytearray | int) -> str:
 
 
 def load_asm_filename(what: str, default_path=""):
+    """Load asm filename.
+
+    It connects Qt UI behavior with the editor model and command workflow. The data boundary keeps ROM/file operations explicit for callers.
+
+    Parameters
+    ----------
+    what : str
+        User-facing name for the data being loaded or saved.
+    default_path : Any, optional
+        Path to the default file or directory.
+
+    Returns
+    -------
+    Any
+        Loaded or parsed data.
+    """
     pathname, _ = QFileDialog.getOpenFileName(
         NO_PARENT, caption=f"Open {what} file", dir=default_path, filter=ASM_FILE_FILTER
     )
@@ -84,6 +147,22 @@ def load_asm_filename(what: str, default_path=""):
 
 
 def save_asm_filename(what: str, default_path=""):
+    """Save asm filename.
+
+    It connects Qt UI behavior with the editor model and command workflow. The data boundary keeps ROM/file operations explicit for callers.
+
+    Parameters
+    ----------
+    what : str
+        User-facing name for the data being loaded or saved.
+    default_path : Any, optional
+        Path to the default file or directory.
+
+    Returns
+    -------
+    Any
+        Assembly filename selected for saving, if one was chosen.
+    """
     pathname, _ = QFileDialog.getSaveFileName(
         NO_PARENT,
         caption=f"Save {what} as",
@@ -95,6 +174,17 @@ def save_asm_filename(what: str, default_path=""):
 
 
 def load_asm_level(pathname: PathLike, level: "Level"):
+    """Load asm level.
+
+    It connects Qt UI behavior with the editor model and command workflow. The data boundary keeps ROM/file operations explicit for callers.
+
+    Parameters
+    ----------
+    pathname : PathLike
+        Filesystem path used by the operation.
+    level : 'Level'
+        Level model or level reference used by the operation.
+    """
     try:
         asm_level_data = Path(pathname).read_text()
     except IOError as exp:
@@ -117,6 +207,17 @@ def load_asm_level(pathname: PathLike, level: "Level"):
 
 
 def load_asm_enemy(pathname: PathLike, level: "Level"):
+    """Load asm enemy.
+
+    It connects Qt UI behavior with the editor model and command workflow. The data boundary keeps ROM/file operations explicit for callers.
+
+    Parameters
+    ----------
+    pathname : PathLike
+        Filesystem path used by the operation.
+    level : 'Level'
+        Level model or level reference used by the operation.
+    """
     try:
         asm_enemy_data = Path(pathname).read_text()
     except IOError as exp:
@@ -133,6 +234,19 @@ def load_asm_enemy(pathname: PathLike, level: "Level"):
 
 
 def save_asm(what: str, pathname: PathLike, asm_data: str):
+    """Save asm.
+
+    It connects Qt UI behavior with the editor model and command workflow. The data boundary keeps ROM/file operations explicit for callers.
+
+    Parameters
+    ----------
+    what : str
+        User-facing name for the data being loaded or saved.
+    pathname : PathLike
+        Filesystem path used by the operation.
+    asm_data : str
+        Data for the asm value.
+    """
     try:
         Path(pathname).write_text(asm_data)
     except IOError as exp:
@@ -279,6 +393,27 @@ MACRO_DICT = {
 
 
 def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
+    """Create fns file absolute.
+
+    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+
+    Parameters
+    ----------
+    fns_file : Path
+        Path to the FNS metadata file.
+    asm_file : Path
+        Path to the assembly file.
+
+    Returns
+    -------
+    Path
+        The newly created fns file absolute.
+
+    Raises
+    ------
+    ValueError
+        If the input data or current state is invalid.
+    """
     target_file = tempfile.NamedTemporaryFile("r+", delete=False)
     assert Path(target_file.name).exists()
 
@@ -324,6 +459,25 @@ def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
 
 
 def _read_in_prg_banks(asm_file: Path) -> list[str]:
+    """Read in prg banks.
+
+    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+
+    Parameters
+    ----------
+    asm_file : Path
+        Path to the assembly file.
+
+    Returns
+    -------
+    list[str]
+        Loaded or parsed data.
+
+    Raises
+    ------
+    ValueError
+        If the input data or current state is invalid.
+    """
     prg_banks_code = []
 
     for i in range(VANILLA_PRG_BANK_COUNT):
@@ -340,6 +494,25 @@ def _read_in_prg_banks(asm_file: Path) -> list[str]:
 
 
 def _get_prg_offset_values(asm_file: Path) -> list[int]:
+    """Return prg offset values.
+
+    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+
+    Parameters
+    ----------
+    asm_file : Path
+        Path to the assembly file.
+
+    Returns
+    -------
+    list[int]
+        The requested prg offset values.
+
+    Raises
+    ------
+    ValueError
+        If the input data or current state is invalid.
+    """
     state = None
 
     prg_offsets: list[int] = []
@@ -361,6 +534,20 @@ def _get_prg_offset_values(asm_file: Path) -> list[int]:
 
 
 def asm_paths_from_rom_path(rom_base_path: Path) -> tuple[Path, Path]:
+    """Convert assembly for paths from rom path.
+
+    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+
+    Parameters
+    ----------
+    rom_base_path : Path
+        Path to the rom base file or directory.
+
+    Returns
+    -------
+    tuple[Path, Path]
+        Assembly and FNS paths associated with the ROM path.
+    """
     assert rom_base_path.is_dir()
     rom_name = Path(ROM.path).name.removesuffix(".nes")
 
