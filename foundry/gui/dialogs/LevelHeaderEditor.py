@@ -1,3 +1,21 @@
+"""Edit the encoded SMB3 level header through undo-aware dialog controls.
+
+This module owns the dialog that maps Qt controls onto the level header fields
+exposed by ``LevelRef``: gameplay flags, Mario start state, graphics and
+palette selections, and the next-area pointers that branch into another level.
+It is the dialog-layer bridge between human-readable header controls and the
+command objects that preserve undo, replay, and dirty-state behavior.
+
+See Also
+--------
+foundry.game.level.LevelRef
+    Header-backed level view edited by this dialog.
+foundry.gui.commands
+    Command layer that receives staged header changes from this dialog.
+foundry.gui.dialogs.level_selector.LevelSelector
+    Source of next-area destination data when the user picks another level.
+"""
+
 from PySide6.QtGui import Qt, QUndoStack
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -82,7 +100,95 @@ SPINNER_MAX_VALUE = 0x0F_FF_FF
 
 # change of object palette is always triggered for some reason
 class LevelHeaderEditor(CustomDialog):
+    """Edit the nine-byte SMB3 level header.
+
+    The dialog maps user-facing controls onto the encoded header fields exposed
+    by ``Level`` and ``LevelRef``: length, music, timer, scroll behavior, start
+    position, palette indexes, graphics set, and next-area pointers. Changes are
+    pushed as undo commands so header edits participate in the normal editor
+    history.
+
+    Parameters
+    ----------
+    parent : QWidget | None
+        Parent Qt widget that owns this object.
+    level_ref : LevelRef
+        Reference to the edited level.
+
+    Attributes
+    ----------
+    _enemy_address_label : QLabel
+        Resolved absolute enemy/item address for the next-area pointer.
+    _level_address_label : QLabel
+        Resolved absolute layout address for the next-area pointer.
+    action_dropdown : QComboBox
+        Player entry action selector.
+    camera_movement_dropdown : QComboBox
+        Scroll-type selector.
+    enemy_palette_spinner : Spinner
+        Enemy palette index editor.
+    enemy_pointer_spinner : Spinner
+        Next-area enemy offset editor.
+    graphic_set_dropdown : QComboBox
+        Graphics set selector.
+    header_bytes_label : QLabel
+        Raw header byte display.
+    length_dropdown : QComboBox
+        Level length selector.
+    level : LevelRef
+        Reference to the level being edited.
+    level_is_vertical_cb : QCheckBox
+        Vertical-level flag editor.
+    level_pointer_spinner : Spinner
+        Next-area layout offset editor.
+    music_dropdown : QComboBox
+        Music index selector.
+    next_area_object_set_dropdown : QComboBox
+        Object set selector for the next area.
+    object_palette_spinner : Spinner
+        Object palette index editor.
+    pipe_ends_level_cb : QCheckBox
+        Pipe-ends-level flag editor.
+    tab_widget : QTabWidget
+        Tab container for grouped header controls.
+    time_dropdown : QComboBox
+        Timer index selector.
+    x_position_dropdown : QComboBox
+        Player start x selector.
+    y_position_dropdown : QComboBox
+        Player start y selector.
+
+    Notes
+    -----
+    The dialog does not write header bytes directly on every widget change.
+    Instead it stages field edits through undo commands so header changes stay
+    mergeable, replayable, and visible to the rest of the editor through the
+    normal undo-stack workflow.
+
+    See Also
+    --------
+    SetLevelAttribute
+        Base command used for most header-field edits.
+    SetNextAreaObjectAddress, SetNextAreaEnemyAddress, SetNextAreaObjectSet
+        Commands used for next-area pointer updates.
+    """
+
     def __init__(self, parent: QWidget | None, level_ref: LevelRef):
+        """Create controls for editing a level header.
+
+        Widgets are grouped by gameplay concern: level behavior, player start,
+        graphics/palettes, and next-area destination. Signal handlers route
+        edits into undo commands rather than mutating header bytes directly from
+        the form widgets, so the dialog stays aligned with the editor's merge,
+        replay, and dirty-state workflow.
+
+        Parameters
+        ----------
+        parent : QWidget | None
+            Parent Qt widget that owns this object.
+        level_ref : LevelRef
+            Reference to the edited level.
+        """
         super(LevelHeaderEditor, self).__init__(parent, "Level Header Editor")
 
         self.level = level_ref
@@ -241,9 +347,33 @@ class LevelHeaderEditor(CustomDialog):
 
     @property
     def undo_stack(self) -> QUndoStack:
+        """Expose the shared undo stack used for header-field commands.
+
+        Header changes are pushed here as command objects rather than mutating
+        the level directly from callbacks, which keeps dialog edits merged into
+        the same history and dirty-state lifecycle as viewport commands.
+
+        Returns
+        -------
+        QUndoStack
+            Undo stack named ``undo_stack`` in the owning window.
+        """
         return self.parent().window().findChild(QUndoStack, "undo_stack")
 
     def update(self):
+        """Synchronize controls from the loaded level header.
+
+        The refresh happens in four phases. First the dialog mirrors the basic
+        header fields such as length, music, timer, start state, and graphics
+        directly from ``LevelRef``. Next it blocks signals while it converts
+        the ROM-backed next-area addresses back into the offset-based values
+        shown in the pointer controls, so programmatic synchronization does not
+        emit new undo commands. Finally it rebuilds the raw-byte preview and
+        emits palette and data-changed signals so dependent editor surfaces
+        repaint from the newly synchronized header state. This makes
+        ``update`` the central redraw path after header commands, destination
+        changes, and level reloads.
+        """
         length_index = LEVEL_LENGTHS.index(self.level.length)
 
         self.length_dropdown.setCurrentIndex(length_index)
@@ -279,9 +409,37 @@ class LevelHeaderEditor(CustomDialog):
         self.level.data_changed.emit()
 
     def _set_level_attr(self, name: str, value, display_name="", display_value=""):
+        """Push a command that changes one level header attribute.
+
+        ``display_name`` and ``display_value`` let the command present more
+        readable undo text than the raw property name or integer value. The
+        helper is the dialog's main bridge from form widgets to undoable header
+        mutations, including repeated combo-box cycling that can later merge on
+        the undo stack. Combo boxes, check boxes, and spinners all converge on
+        this helper so header edits share one command-construction path instead
+        of each widget deciding independently how to mutate ``LevelRef``. That
+        keeps undo text, command coalescing, and replay behavior aligned across
+        the whole dialog.
+
+        Parameters
+        ----------
+        name : str
+            ``LevelRef`` attribute to update.
+        value : object
+            New value for the attribute.
+        display_name : str, optional
+            Human-readable field name for undo text.
+        display_value : str, optional
+            Display text shown in the UI.
+        """
         self.undo_stack.push(SetLevelAttribute(self.level, name, value, display_name, display_value))
 
     def _set_jump_destination(self):
+        """Open the level selector and use its choice as next-area data.
+
+        The selected layout address, enemy address, and object set are committed
+        as one undo macro.
+        """
         level_selector = LevelSelector(self)
 
         if self.level:
@@ -301,6 +459,11 @@ class LevelHeaderEditor(CustomDialog):
         self.update()
 
     def _set_from_current_level(self):
+        """Use the loaded ROM-backed level as the next area.
+
+        Imported or detached levels do not have ROM addresses, so they cannot be
+        used as jump destinations.
+        """
         if not self.level.level.attached_to_rom:
             QMessageBox.warning(
                 self,
@@ -318,6 +481,20 @@ class LevelHeaderEditor(CustomDialog):
         self.update()
 
     def _set_jump_destination_values(self, enemy_offset: int, level_offset: int, object_set_number: int):
+        """Commit next-area destination values as one undo macro.
+
+        The three encoded fields are coupled: object set affects how the layout
+        pointer is resolved, while the enemy pointer uses a separate base.
+
+        Parameters
+        ----------
+        enemy_offset : int
+            ROM enemy offset.
+        level_offset : int
+            ROM level offset.
+        object_set_number : int
+            Object set number that selects graphics and object definitions.
+        """
         self.blockSignals(True)
 
         self.next_area_object_set_dropdown.setCurrentIndex(object_set_number)
@@ -335,6 +512,17 @@ class LevelHeaderEditor(CustomDialog):
         )
 
     def on_spin(self, new_value):
+        """Respond to spinner changes for palette and pointer fields.
+
+        Palette spinners map to ordinary header attributes. Pointer spinners are
+        stored as offsets in the UI and converted back to absolute addresses for
+        commands.
+
+        Parameters
+        ----------
+        new_value : int
+            Replacement setting value.
+        """
         if not self.level or self.signalsBlocked():
             return
 
@@ -357,6 +545,16 @@ class LevelHeaderEditor(CustomDialog):
         self.update()
 
     def on_combo(self, new_index):
+        """Respond to dropdown changes for encoded header fields.
+
+        Each dropdown maps its selected index to the corresponding ``LevelRef``
+        property and pushes an undo command when the value actually changes.
+
+        Parameters
+        ----------
+        new_index : int
+            Selected dropdown index.
+        """
         if not self.level or self.signalsBlocked():
             return
 
@@ -419,6 +617,14 @@ class LevelHeaderEditor(CustomDialog):
         self.update()
 
     def on_check_box(self, checked):
+        """Respond to checkbox changes for boolean header flags.
+
+
+        Parameters
+        ----------
+        checked : bool
+            New checked state emitted by Qt.
+        """
         if not self.level or self.signalsBlocked():
             return
 

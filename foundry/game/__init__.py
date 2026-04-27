@@ -33,9 +33,20 @@ _EXCLUDED_ENEMY_ITEMS_NAMES = ["MSG_NOTHING", "MSG_CRASH"]
 
 
 def should_be_placeable(object_or_enemy_item: "LevelObject | Jump | EnemyItem") -> bool:
-    """
-    Returns whether the user should be able to place this object into a level manually. Is false for objects, that would
+    """Returns whether the user should be able to place this object into a level manually. Is false for objects, that would
     crash the game, or determine properties, that can be better set using settings dialogues.
+
+    This protects editor placement workflows from object types that cannot be safely inserted.
+
+    Parameters
+    ----------
+    object_or_enemy_item : 'LevelObject | Jump | EnemyItem'
+        Object or enemy item used by the operation.
+
+    Returns
+    -------
+    bool
+        Whether be placeable is true.
     """
     from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
     from foundry.game.gfx.objects.in_level.jump import Jump

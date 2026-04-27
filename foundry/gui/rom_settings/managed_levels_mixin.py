@@ -1,3 +1,18 @@
+"""ROM-settings mixins for managed-level compaction controls.
+
+This module hosts the mixin that exposes Foundry's managed-level-position
+workflow inside the ROM settings dialog. It is the UI bridge between
+``LevelOrganizer`` and the ROM-scoped controls that let users inspect and
+trigger level compaction.
+
+See Also
+--------
+foundry.game.additional_data.LevelOrganizer
+    Performs the ROM rewrite and metadata update work described by this mixin.
+foundry.gui.rom_settings.rom_settings_dialog
+    Hosts the mixin inside the ROM-scoped settings dialog.
+"""
+
 from collections import defaultdict
 
 from PySide6.QtCore import SignalInstance
@@ -16,10 +31,54 @@ from smb3parse.util.rom import PRG_BANK_SIZE
 
 
 class ManagedLevelsMixin(SettingsMixin):
+    """Add managed-level-position controls to the ROM settings dialog.
+
+    This mixin exposes Foundry's automatic level-management feature: it lets
+    users enable managed level positions, inspect the per-bank level ranges
+    that will be compacted, and trigger a rearrangement pass that rewrites ROM
+    addresses through ``LevelOrganizer``.
+
+    Parameters
+    ----------
+    parent : object
+        Parent Qt widget that owns this object.
+
+    Attributes
+    ----------
+    enabled_checkbox : QCheckBox
+        Toggle controlling whether automatic level management is enabled.
+    level_info_box : QGroupBox
+        Container showing the per-bank level data ranges.
+    level_info_box_initialized : bool
+        Whether the range UI has already been built.
+    level_ref : LevelRef
+        Reference to the loaded level.
+    needs_gui_update : SignalInstance
+        Signal emitted when the surrounding dialog or main window should refresh.
+
+    Notes
+    -----
+    The mixin is the UI counterpart to ``LevelOrganizer``. It lets the ROM
+    settings surface present managed-level compaction as a reversible editor
+    workflow instead of a hidden ROM rewrite step. The data flow is checkbox
+    and spinner state -> ``AdditionalData`` and ``LevelOrganizer`` updates ->
+    ROM rewrite -> GUI refresh.
+    """
+
     needs_gui_update: SignalInstance
     level_ref: LevelRef
 
     def __init__(self, parent):
+        """Build the managed-level controls inside the ROM settings dialog.
+
+        Construction wires the enable toggle, creates the per-bank summary box,
+        and immediately derives the initial managed-level state from ROM data.
+
+        Parameters
+        ----------
+        parent : QWidget
+            Parent Qt widget that owns this object.
+        """
         super().__init__(parent)
 
         managed_level_positions_box = QGroupBox("Managed Level Positions")
@@ -44,6 +103,11 @@ class ManagedLevelsMixin(SettingsMixin):
         self.update_level_info()
 
     def update_level_info(self):
+        """Refresh or build the managed-level bank summary UI.
+
+        This method is the main bridge between the checkbox state, parsed level
+        discovery, and the bank ranges shown to the user.
+        """
         was_enabled = ROM.additional_data.managed_level_positions
 
         ROM.additional_data.managed_level_positions = self.enabled_checkbox.isChecked()
@@ -121,12 +185,23 @@ class ManagedLevelsMixin(SettingsMixin):
 
     @property
     def level(self) -> Level | None:
+        """Loaded level currently coordinated by the dialog.
+
+        Rearrangement needs access to the active level so it can update any
+        open level addresses after ROM compaction.
+
+        Returns
+        -------
+        Level | None
+            Active level from ``level_ref``, or ``None``.
+        """
         if self.level_ref is not None:
             return self.level_ref.level
         else:
             return None
 
     def on_rearrange(self):
+        """Repack managed levels in ROM and refresh the open level state."""
         lo = LevelOrganizer(ROM(), ROM().additional_data.found_levels)
         lo.rearrange_levels()
         lo.rearrange_enemies()
@@ -154,6 +229,13 @@ class ManagedLevelsMixin(SettingsMixin):
         self.needs_gui_update.emit()
 
     def closeEvent(self, event):
+        """Discard cached found levels when management is disabled on close.
+
+        Parameters
+        ----------
+        event : QCloseEvent
+            Qt event delivered to the widget.
+        """
         super().closeEvent(event)
 
         if not self.enabled_checkbox.isChecked():

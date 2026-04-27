@@ -1,3 +1,22 @@
+"""Edit persisted Foundry settings, emulator options, and instaplay defaults.
+
+This module owns the large settings dialog that maps Qt controls onto the
+persisted ``Settings`` keys used by startup behavior, mouse and GUI options,
+ROM-management prompts, emulator launch configuration, and instaplay defaults.
+It is the dialog-layer bridge between individual controls, the shared settings
+store, and the derived UI state that must update after each write.
+
+See Also
+--------
+foundry.gui.settings
+    Defines the persisted setting keys and related enums consumed here.
+foundry.gui.rom_settings.rom_settings_dialog
+    Separate ROM-specific settings dialog that complements these editor-wide
+    preferences.
+foundry.gui.dialogs.level_selector.LevelSelector
+    One of the editor surfaces affected by preview and highlight settings.
+"""
+
 from dataclasses import dataclass
 
 from PySide6.QtCore import QStandardPaths, Signal, SignalInstance
@@ -40,6 +59,26 @@ from smb3parse.constants import (
 
 @dataclass
 class PowerupEntry:
+    """Describe one instaplay Mario power-up option.
+
+    The settings dialog stores a display label, sprite-sheet coordinates, SMB3
+    power-up code, and whether the P-Wing flag should be applied when launching
+    a level through instaplay.
+
+    Attributes
+    ----------
+    description : str
+        Display text shown in the power-up dropdown.
+    has_p_wing : bool
+        Whether instaplay should set the P-Wing state.
+    png_x : int
+        Sprite-sheet tile x coordinate for the dropdown icon.
+    png_y : int
+        Sprite-sheet tile y coordinate for the dropdown icon.
+    power_up_code : int
+        SMB3 power-up code written to instaplay settings.
+    """
+
     description: str
     png_x: int
     png_y: int
@@ -47,9 +86,35 @@ class PowerupEntry:
     has_p_wing: bool
 
     def to_tuple(self):
+        """Expose the instaplay metadata in the legacy tuple contract.
+
+        Older dropdown-population and unpacking code still expects the
+        five-field tuple order used before ``PowerupEntry`` became a dataclass.
+        This helper preserves that boundary so the settings dialog can keep the
+        stronger named representation internally while still handing off sprite
+        coordinates, SMB3 power-up code, and the P-Wing flag in the order that
+        the instaplay UI helpers already consume.
+
+        Returns
+        -------
+        tuple[str, int, int, int, bool]
+            Description, icon x, icon y, power-up code, and P-Wing flag.
+        """
         return self.description, self.png_x, self.png_y, self.power_up_code, self.has_p_wing
 
     def __iter__(self):
+        """Iterate over the legacy tuple representation.
+
+        The settings dialog still has loops that unpack entries directly while
+        building the power-up dropdown and related icon state. Iteration keeps
+        those Qt UI-building paths compatible with the dataclass form without
+        forcing them to know about field names first.
+
+        Returns
+        -------
+        iterator
+            Iterator over ``to_tuple()``.
+        """
         return iter(self.to_tuple())
 
 
@@ -84,9 +149,106 @@ level_preview_choices = ["Don't show", "Show on hover", "Show on click"]
 
 
 class SettingsDialog(CustomDialog):
+    """Edit persisted application and editor preferences.
+
+    The dialog is a live view over ``Settings``. Most controls write their key
+    immediately through ``_update_settings``; derived UI, such as the instaplay
+    command preview and level-preview refresh signal, is updated after each
+    write.
+
+    Parameters
+    ----------
+    settings : Settings
+        Application settings used to configure the widget behavior.
+    parent : object, optional
+        Parent Qt widget that owns this object.
+
+    Attributes
+    ----------
+    _other_settings_box : QGroupBox
+        Miscellaneous settings section.
+    _release_channel_dropdown : QComboBox
+        Startup update-channel selector.
+    _restore_last_opened_level_cb : QCheckBox
+        Toggle for reopening the last ROM and level on startup.
+    _scroll_cb : QCheckBox
+        Toggle for mouse-wheel object type changes.
+    _tooltip_cb : QCheckBox
+        Toggle for level-view object-name tooltips.
+    _when_open_rom_box : QGroupBox
+        Settings section applied when opening ROMs.
+    ask_for_level_management_cb : QCheckBox
+        Toggle for prompting about automatic level management.
+    asm_loading_dropdown : QComboBox
+        Selector for ASM sidecar loading behavior.
+    auto_save_cb : QCheckBox
+        Toggle for crash-recovery autosave files.
+    command_arguments_input : QLineEdit
+        Instaplay command arguments template.
+    command_label : QLabel
+        Preview of the command used for instaplay.
+    default_dir_button : QPushButton
+        Button that chooses a custom default ROM directory.
+    default_dir_label : QLabel
+        Resolved default ROM directory path.
+    emulator_command_input : QLineEdit
+        Emulator executable or command field.
+    emulator_path_button : QPushButton
+        Button that chooses an emulator executable.
+    gui_box : QGroupBox
+        Visual style and selector-display settings section.
+    level_highlight_cb : QCheckBox
+        Toggle for highlighting level pointers in world-map selectors.
+    level_preview_dropdown : QComboBox
+        Selector for level preview behavior in the level selector.
+    lmb_radio : QRadioButton
+        Resize-mode radio button for left-click resizing.
+    monitor_rom_cb : QCheckBox
+        Toggle for external ROM-change monitoring.
+    needs_level_update : SignalInstance
+        Needs level update used for dialog UI state.
+    path_dropdown : QComboBox
+        Selector for predefined or custom default directories.
+    powerup_combo_box : QComboBox
+        Default Mario power-up selector for instaplay.
+    settings : Settings
+        Persisted application settings object.
+    skip_title_screen_cb : QCheckBox
+        Toggle for skipping the title screen during instaplay.
+    starman_checkbox : QCheckBox
+        Toggle for starting instaplay with Starman active.
+    """
+
     needs_level_update: SignalInstance = Signal()
 
     def __init__(self, settings: Settings, parent=None):
+        """Build controls from persisted settings.
+
+        Construction proceeds in five phases. It first builds the startup and
+        mouse controls, then the ROM-opening prompts, then the GUI and
+        directory controls, then the emulator and instaplay controls, and
+        finally resolves the default-directory display and derived preview state
+        by calling ``on_dropdown`` and ``update``. Within each phase the dialog
+        follows the same staging rule: create the widget, hydrate it from the
+        persisted ``Settings`` value, connect its Qt signal back to
+        ``_update_settings`` or a narrower helper, and then place it into the
+        section layout that groups related settings together. That setup order
+        matters because most controls are write-through editors; by the time
+        the dialog becomes visible, every widget already mirrors persisted
+        state, every signal path already knows how to persist follow-on edits,
+        and the final synchronization pass has rebuilt dependent UI such as the
+        emulator command preview and the level-refresh signal consumed by open
+        editor surfaces. This keeps one constructor responsible for both
+        bootstrapping the settings UI and reattaching all of the live update
+        paths that those settings trigger afterward.
+
+        Parameters
+        ----------
+        settings : Settings
+            Application settings used to configure the widget behavior.
+        parent : object, optional
+            Parent Qt widget that owns this object.
+        """
         super(SettingsDialog, self).__init__(parent, "Settings")
 
         self.settings = settings
@@ -390,6 +552,13 @@ class SettingsDialog(CustomDialog):
         self.update()
 
     def update(self):
+        """Refresh derived settings UI.
+
+        The command preview reflects the selected emulator path and argument
+        template. ``needs_level_update`` lets open level views react to staged
+        settings such as preview or tooltip behavior after the dialog writes
+        settings back to ``Settings``.
+        """
         self.command_label.setText(
             f" > {self.settings.value('editor/instaplay_emulator')} {self.settings.value('editor/instaplay_arguments')}"
         )
@@ -397,6 +566,17 @@ class SettingsDialog(CustomDialog):
         self.needs_level_update.emit()
 
     def _update_settings(self, _=None):
+        """Persist the staged widget state to ``Settings``.
+
+        The method is intentionally broad because many Qt signals share the same
+        handler. It writes all settings keys from their controls, applies the
+        selected style sheet immediately, and refreshes derived UI afterward.
+
+        Parameters
+        ----------
+        _ : object, optional
+            Ignored Qt signal payload.
+        """
         self.settings.setValue("editor/instaplay_emulator", self.emulator_command_input.text())
         self.settings.setValue("editor/instaplay_arguments", self.command_arguments_input.text())
         self.settings.setValue("editor/instaplay_skip_title_screen", self.skip_title_screen_cb.isChecked())
@@ -445,6 +625,11 @@ class SettingsDialog(CustomDialog):
         self.update()
 
     def _get_emulator_path(self):
+        """Prompt for an emulator executable and store it in the command field.
+
+        Selecting a file updates the line edit, which then flows through the
+        normal settings update path.
+        """
         path_to_emulator, _ = QFileDialog.getOpenFileName(
             self,
             caption="Select emulator executable",
@@ -457,6 +642,11 @@ class SettingsDialog(CustomDialog):
         self.emulator_command_input.setText(path_to_emulator)
 
     def _get_default_dir(self):
+        """Prompt for a custom default ROM directory.
+
+        Selecting a directory switches the path dropdown to ``Custom`` and
+        persists both the display label and resolved path.
+        """
         path_to_roms = QFileDialog.getExistingDirectory(
             self,
             caption="Select Rom directory",
@@ -472,6 +662,16 @@ class SettingsDialog(CustomDialog):
         self._update_settings()
 
     def on_dropdown(self, new_text):
+        """Resolve a default-directory dropdown choice.
+
+        Built-in choices map through ``default_dirs``. ``Custom`` reuses the
+        saved custom path so the user can switch away and back without losing it.
+
+        Parameters
+        ----------
+        new_text : str
+            Selected directory option label.
+        """
         if new_text == "Custom":
             self.default_dir_label.setText(self.settings.value("editor/custom_default_dir_path"))
         elif new_text in default_dirs:
@@ -481,6 +681,23 @@ class SettingsDialog(CustomDialog):
 
     @staticmethod
     def _icon_from_png(x: int, y: int) -> QIcon:
+        """Create a dropdown icon from the object sprite sheet.
+
+        The settings dialog uses this helper to turn sprite-sheet coordinates
+        into icons for instaplay power-up choices and the Starman toggle.
+
+        Parameters
+        ----------
+        x : int
+            Sprite-sheet tile column.
+        y : int
+            Sprite-sheet tile row.
+
+        Returns
+        -------
+        QIcon
+            Icon created from the PNG bytes.
+        """
         image = load_from_object_sprite_sheet(x, y)
 
         pixmap = QPixmap.fromImage(image)
@@ -489,6 +706,11 @@ class SettingsDialog(CustomDialog):
         return icon_from_png
 
     def on_exit(self):
+        """Flush settings and close the dialog.
+
+        Explicit sync keeps the underlying settings store current before the
+        dialog delegates to ``CustomDialog`` cleanup.
+        """
         self.settings.sync()
 
         super(SettingsDialog, self).on_exit()

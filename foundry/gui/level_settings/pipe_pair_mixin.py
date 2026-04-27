@@ -1,3 +1,20 @@
+"""Edit world-map pipe-pair exits from the level-settings dialog.
+
+This module owns the controls for SMB3 pipe exits that jump from a level back
+to two configurable world-map destinations. It coordinates the temporary pipe
+enemy record that lives inside the level with the ROM-backed ``PipeData``
+table entries that store the actual world-map destinations.
+
+See Also
+--------
+foundry.gui.level_settings.level_settings_dialog
+    Hosts this mixin alongside the other level-settings editors.
+foundry.gui.commands.UpdatePipeData
+    Undo command used when staged pipe-table edits are committed.
+foundry.gui.dialogs.level_selector.LevelSelector
+    Supplies the world-map selector widget reused for choosing destinations.
+"""
+
 from PySide6.QtWidgets import (
     QCheckBox,
     QDialog,
@@ -24,7 +41,84 @@ from smb3parse.levels import WORLD_COUNT
 
 
 class PipePairMixin(SettingsMixin):
+    """Edit the world-map destinations used by pipe-pair exits.
+
+    SMB3 represents world-map pipe exits as a special enemy/item object in the
+    level plus a ROM pipe-data table entry. The controls here stage both pieces:
+    the enemy item's y-position selects the pipe-pair index and orientation,
+    while ``PipeData`` stores the two world-map destinations.
+
+    Parameters
+    ----------
+    parent : object
+        Parent window that owns the level view and undo stack.
+
+    Attributes
+    ----------
+    left_pos_label : QLabel
+        Label displaying the first pipe destination.
+    original_pipe_item : EnemyItem | None
+        Pipe-exit object present when the dialog opened.
+    original_pipe_y_value : int
+        Original encoded pipe index and orientation byte.
+    pipe_data_changed : bool
+        Whether pipe table data was edited and needs an undo command.
+    pipe_datas : list[PipeData]
+        ROM pipe-pair table entries available to this dialog.
+    pipe_pair_check_box : QCheckBox
+        Toggle for adding or removing the special pipe-exit object.
+    pipe_pair_spinner : Spinner
+        Selector for the pipe-pair table index.
+    right_pos_label : QLabel
+        Label displaying the second pipe destination.
+    set_new_button : QPushButton
+        Button that opens world-map destination pickers.
+    sky_tower_check_box : QCheckBox
+        Toggle for the high-bit orientation used by Sky Tower-style exits.
+
+    Notes
+    -----
+    The dialog edits pipe-pair state in two layers while it is open: a
+    temporary in-level pipe-exit object keeps the UI interactive, and close-time
+    handling folds the net result into the appropriate undo commands and pipe
+    table updates.
+
+    See Also
+    --------
+    PipeExitSetScreen
+        World-map picker used for selecting pipe destinations.
+    UpdatePipeData
+        Undo command used when pipe table data is committed.
+    """
+
     def __init__(self, parent):
+        """Create pipe-pair controls from the loaded level state.
+
+        Construction runs in five stages. It first loads the ROM pipe table and
+        snapshots the original in-level pipe object plus its encoded y byte.
+        It then builds the enable/orientation/index controls that stage edits
+        on that temporary pipe object, creates the destination labels and
+        picker button that operate on the active ``PipeData`` slot, refreshes
+        those labels from the staged state, and finally attaches the whole
+        group to the shared level-settings layout. That order matters because
+        destination picking, label refreshes, and close-time undo generation
+        all depend on the constructor having already established both layers of
+        state: the temporary in-level object and the ROM-backed pipe table
+        entry it selects. After construction, every user action follows the
+        same staged route: the checkbox adds or removes the temporary pipe
+        object, the spinner rewrites that object's encoded y byte, destination
+        picking rewrites the selected ``PipeData`` entry, label refreshes mirror
+        both layers back into the UI, and ``closeEvent`` later turns the net
+        result into undo commands. The constructor is what wires those phases
+        together, so later handlers can assume the temporary object, pipe-data
+        table, labels, and buttons are already synchronized around one active
+        pipe-pair slot.
+
+        Parameters
+        ----------
+        parent : object
+            Parent window that owns the level view and undo stack.
+        """
         super(PipePairMixin, self).__init__(parent)
 
         pipe_pair_group = QGroupBox("Pipe Pair Exits")
@@ -67,6 +161,16 @@ class PipePairMixin(SettingsMixin):
         self.layout().addWidget(pipe_pair_group)
 
     def _on_pipe_check_box(self, checked):
+        """Add or remove the temporary pipe-exit object.
+
+        The undo command is not pushed immediately. The dialog keeps the model
+        interactive while open and commits the net change in ``closeEvent``.
+
+        Parameters
+        ----------
+        checked : bool
+            Whether pipe-pair exits should be enabled.
+        """
         if checked:
             self.level_ref.level.add_enemy(OBJ_PIPE_EXITS, Position.from_xy(0, 0))
         else:
@@ -75,6 +179,14 @@ class PipePairMixin(SettingsMixin):
         self._update_position_labels()
 
     def _on_set_pipe_exits(self):
+        """Prompt for both world-map pipe destinations.
+
+        The selected positions update the selected ``PipeData`` entry
+        and mark the pipe table dirty for close-time undo handling. The dialog
+        gathers the first exit, seeds the second picker with the chosen world,
+        and keeps the temporary pipe object as the source of the active pipe
+        table index.
+        """
         QMessageBox.information(
             self,
             "Select Pipe Pair Exit",
@@ -105,6 +217,11 @@ class PipePairMixin(SettingsMixin):
         self._update_position_labels()
 
     def _on_update_y_position(self):
+        """Update the pipe-exit object's encoded y-position byte.
+
+        The low seven bits select the pipe-pair index. The high bit switches
+        between left/right and top/bottom orientation.
+        """
         pipe_item = _get_pipe_item(self.level_ref.enemies)
 
         if pipe_item is not None:
@@ -118,6 +235,11 @@ class PipePairMixin(SettingsMixin):
         self._update_position_labels()
 
     def _update_position_labels(self):
+        """Synchronize pipe controls and destination labels from the model.
+
+        Disabled controls show a neutral ``-`` state when no pipe-exit object is
+        present. Enabled controls display the selected ROM pipe-data entry.
+        """
         pipe_item = _get_pipe_item(self.level_ref.enemies)
 
         self.sky_tower_check_box.setEnabled(pipe_item is not None)
@@ -145,6 +267,17 @@ class PipePairMixin(SettingsMixin):
         self.level_ref.data_changed.emit()
 
     def closeEvent(self, event):
+        """Commit staged pipe-pair changes as undoable commands.
+
+        During editing, the level may contain temporary pipe objects. Closing
+        restores the original model state and pushes commands that reproduce the
+        user's final choice through the normal undo stack.
+
+        Parameters
+        ----------
+        event : object
+            Qt event delivered to the widget.
+        """
         super(PipePairMixin, self).closeEvent(event)
 
         current_pipe_item = _get_pipe_item(self.level_ref.enemies)
@@ -209,7 +342,33 @@ class PipePairMixin(SettingsMixin):
 
 
 class PipeExitSetScreen(QDialog):
+    """Let the user choose a world-map tile for a pipe destination.
+
+    Each tab embeds a world-map selector. Clicking a map tile records the
+    selected position and accepts the dialog.
+
+    Parameters
+    ----------
+    parent : object
+        Parent settings dialog.
+
+    Attributes
+    ----------
+    selected_position : Position
+        World-map position chosen by the user.
+    world_tabs : QTabWidget
+        Tabs containing per-world map selectors.
+    """
+
     def __init__(self, parent):
+        """Build the per-world destination picker tabs.
+
+
+        Parameters
+        ----------
+        parent : object
+            Parent settings dialog.
+        """
         super(PipeExitSetScreen, self).__init__(parent)
 
         self.selected_position = Position.from_xy(0, 0)
@@ -233,20 +392,62 @@ class PipeExitSetScreen(QDialog):
 
     @property
     def current_world(self):
+        """Expose the one-based world number for the active destination tab.
+
+        The pipe-exit picker uses this property to keep the second destination
+        dialog on the same world that was chosen for the first destination, so
+        callers can carry staged selection context forward between the two map
+        picks. It is therefore part of the picker-to-picker workflow for
+        building one coherent pipe pair, not just a convenience wrapper around
+        the tab index. Reading it affects the next picker dialog because that
+        returned world number is fed directly into the second chooser's tab
+        selection before the user picks the matching destination.
+
+        Returns
+        -------
+        int
+            One-based world number for the active tab.
+        """
         return self.world_tabs.currentIndex() + 1
 
     @current_world.setter
     def current_world(self, value):
+        """Select a world tab by one-based world number.
+
+        Parameters
+        ----------
+        value : int
+            One-based world number to display.
+        """
         if value not in range(1, WORLD_COUNT + 1):
             return
 
         self.world_tabs.setCurrentIndex(value - 1)
 
     def _set_position(self, pos: Position):
+        """Store the clicked world-map position.
+
+        Parameters
+        ----------
+        pos : Position
+            World-map tile position selected by the user.
+        """
         self.selected_position = pos.copy()
 
 
 def _get_pipe_item(enemy_items: list[EnemyItem]) -> EnemyItem | None:
+    """Return the level's pipe-pair enemy item.
+
+    Parameters
+    ----------
+    enemy_items : list[EnemyItem]
+        Enemy and item objects in the level.
+
+    Returns
+    -------
+    EnemyItem | None
+        Pipe-pair object, or ``None`` when the level has no pipe-pair exits.
+    """
     for item in enemy_items:
         if item.obj_index == OBJ_PIPE_EXITS:
             return item

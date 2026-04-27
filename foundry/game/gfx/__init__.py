@@ -15,6 +15,10 @@ from foundry.game.gfx.Palette import (
 
 
 def restore_all_palettes():
+    """Restore all palettes.
+
+    It supports palette, graphics, and block data used by the editor rendering pipeline. The method updates stored state that later editor operations depend on.
+    """
     for palette_group in _palette_group_cache.values():
         palette_group.restore()
 
@@ -24,6 +28,10 @@ def restore_all_palettes():
 
 
 def restore_graphics():
+    """Restore graphics.
+
+    It supports palette, graphics, and block data used by the editor rendering pipeline. The method delegates lower-level work while keeping the public workflow focused.
+    """
     GraphicsSet.from_number.cache_clear()
     restore_all_palettes()
 
@@ -35,6 +43,21 @@ def change_color(
     new_color_index: int,
 ):
     # colors at index 0 are shared among all palettes of a palette group
+    """Change color.
+
+    It supports palette, graphics, and block data used by the editor rendering pipeline. The method delegates lower-level work while keeping the public workflow focused.
+
+    Parameters
+    ----------
+    palette_group : PaletteGroup
+        Palette group used for drawing the object.
+    index_in_group : int
+        Index in group used by the operation.
+    index_in_palette : int
+        Index in palette used by the operation.
+    new_color_index : int
+        Index of the new color.
+    """
     if index_in_palette == 0:
         for palette_ in palette_group._palettes:
             palette_[0] = new_color_index
@@ -45,6 +68,20 @@ def change_color(
 
 
 def object_to_image(obj: "InLevelObject"):
+    """Return to image.
+
+    It supports palette, graphics, and block data used by the editor rendering pipeline. The drawing path keeps rendering decisions close to the model state it displays.
+
+    Parameters
+    ----------
+    obj : 'InLevelObject'
+        Object being inspected or modified.
+
+    Returns
+    -------
+    Any
+        Rendered image for the object.
+    """
     if isinstance(obj, LevelObject):
         obj.rendered_base_x = 0
         obj.rendered_base_y = 0

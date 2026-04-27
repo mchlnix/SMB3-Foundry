@@ -1,3 +1,18 @@
+"""Inspection windows for parsed levels, PRG usage, and byte ownership.
+
+This module packages the level-inspection tooling that sits beside the editor
+proper. It lets maintainers and advanced users move from parsed level records
+to PRG-bank occupancy, byte-range ownership, and thumbnail-oriented browsing
+without stepping outside Foundry's live ROM context.
+
+See Also
+--------
+foundry.gui.windows.ObjectViewer
+    Inspects individual object encodings and decoded block output.
+foundry.game.level.Level
+    Supplies the ROM-backed level data that these viewers summarize.
+"""
+
 import math
 from dataclasses import dataclass
 from random import randint, seed
@@ -38,13 +53,22 @@ from smb3parse.util.rom import PRG_BANK_SIZE
 
 
 def _gen_level_name(level_address: int, level: FoundLevel) -> str:
-    """
-    Takes the given Level at the given address and tries to construct a meaningful level description from it.
+    """Generate a readable name for a found level.
 
-    :param level_address: The absolute address the level data can be found at.
-    :param level: A FoundLevel instance describing the level.
+    This gives byte-view and tree-view entries a stable label derived from ROM address, world-map
+    metadata, and parser-discovered level information.
 
-    :return: The constructed Level name.
+    Parameters
+    ----------
+    level_address : int
+        ROM address of the level layout data.
+    level : FoundLevel
+        Level model or level reference used by the operation.
+
+    Returns
+    -------
+    str
+        Generated level name.
     """
     world_data = WorldMapData(ROM(), level.world_number - 1)
 
@@ -67,12 +91,65 @@ def _gen_level_name(level_address: int, level: FoundLevel) -> str:
 
 
 class LevelViewer(CustomChildWindow):
+    """Inspect how parsed levels occupy ROM banks and world-map structure.
+
+    The viewer exposes two complementary perspectives over parsed level data:
+    a tree grouped by world and jump relationships, and PRG-bank tabs that show
+    where level data sits inside each bank. It is a debugging and reverse-
+    engineering aid rather than part of the main editing workflow.
+
+    Parameters
+    ----------
+    parent : QWidget | None
+        Parent Qt widget that owns this object.
+    addresses_by_object_set : dict[int, set[int]]
+        Level addresses grouped by object set.
+    levels_by_address : dict[int, FoundLevel]
+        Found levels keyed by ROM address.
+
+    Attributes
+    ----------
+    _tab_widget : QTabWidget
+        Tab widget containing the world tree and per-bank block views.
+    addresses_by_object_set : dict[int, set[int]]
+        Level addresses grouped by object set from the parser.
+    levels_by_address : dict[int, FoundLevel]
+        Parsed levels keyed by layout address.
+
+    See Also
+    --------
+    LevelBlockView
+        Draws the bank-occupancy view used on each PRG tab.
+    """
+
     def __init__(
         self,
         parent,
         addresses_by_object_set: dict[int, set[int]],
         levels_by_address: dict[int, FoundLevel],
     ):
+        """Build the tree and bank tabs for parsed level inspection.
+
+        The constructor turns one parser result into both inspection surfaces
+        used by the window. After caching the address maps on the instance, it
+        reads the ROM's object-set-to-PRG-bank table, allocates one empty
+        ``LevelBlockView`` tab for each referenced bank, appends each parsed
+        level range into the tab that owns that level's object set, and then
+        inserts a tree tab that groups the same ``FoundLevel`` records by world
+        and jump reachability. The rest of the window relies on that staged
+        setup: bank tabs inspect ROM occupancy while the tree tab preserves the
+        parser's world-map traversal relationships, and both views stay in sync
+        because they consume the same cached level data.
+
+        Parameters
+        ----------
+        parent : QWidget | None
+            Parent Qt widget that owns this object.
+        addresses_by_object_set : dict[int, set[int]]
+            Level addresses grouped by object set.
+        levels_by_address : dict[int, FoundLevel]
+            Found levels keyed by ROM address.
+        """
         super(LevelViewer, self).__init__(parent, "Level Viewer")
 
         self.addresses_by_object_set = addresses_by_object_set
@@ -108,12 +185,51 @@ class LevelViewer(CustomChildWindow):
 
     @staticmethod
     def _gen_tree_view(levels_by_address: dict[int, FoundLevel]) -> QTreeWidget:
+        """Build the world and jump-relationship tree for parsed levels.
+
+        Top-level entries are grouped by world, then jump-discovered levels are
+        attached beneath the levels that reference them so users can inspect
+        reachable level structure instead of a flat address list. The method
+        stages that tree in three passes: create world roots, attach levels
+        that are directly reachable from world or world-specific map entries,
+        then revisit jump destinations until every discovered parent item
+        exists. That preserves the same traversal relationships the parser
+        found in ROM data when the inspection UI renders them.
+
+        Parameters
+        ----------
+        levels_by_address : dict[int, FoundLevel]
+            Found levels keyed by ROM address.
+
+        Returns
+        -------
+        QTreeWidget
+            Tree widget populated with parsed level relationships.
+        """
         tree_widget = QTreeWidget()
 
         world_tree_items = []
         level_item_by_address: dict[int, QTreeWidgetItem] = {}
 
         def _get_level_item(address_: int, level_: FoundLevel, parent_: QTreeWidgetItem):
+            """Return the tree item for a level address.
+
+            It presents editor data in a dedicated inspection or utility window. The return value exposes the inspected data or widget calculation needed by the utility window.
+
+            Parameters
+            ----------
+            address_ : int
+                Level address used to look up an existing tree item.
+            level_ : FoundLevel
+                Found level used to populate a new tree item when needed.
+            parent_ : QTreeWidgetItem
+                Parent tree item that receives newly created level items.
+
+            Returns
+            -------
+            QTreeWidgetItem
+                Existing or newly created tree item for the level address.
+            """
             if address_ in level_item_by_address:
                 return level_item_by_address[address_]
 
@@ -187,7 +303,55 @@ class LevelViewer(CustomChildWindow):
 
 
 class ByteView(QWidget):
+    """Paint contiguous level data as colored byte regions inside one PRG bank.
+
+    Each entry in ``levels_in_order`` contributes a colored run sized by the
+    parsed level length. This gives maintainers a quick occupancy view for one
+    bank before the higher-level block view groups those runs into named
+    segments. ``LevelViewer`` feeds parsed level ranges into this widget, which
+    then becomes the low-level source for both occupancy painting and the more
+    human-readable block view layered on top of the same data. The range list
+    enters once through the constructor, then each paint pass turns those
+    ranges into a bank-relative byte heatmap. Nothing here understands level
+    relationships; it is purely the "address ranges to pixels" stage of the
+    viewer pipeline, and other classes build richer behavior on top of that
+    rendered occupancy data.
+
+    Notes
+    -----
+    This widget intentionally stops at occupancy. The broader level viewer adds
+    grouped regions and hover previews later, but they all start from the same
+    "bank ranges become painted bytes" transformation performed here. Its data
+    flow is simple and explicit: parsed level ranges enter once, paint events
+    read that stored state, and the widget emits a bank-occupancy picture that
+    richer viewer layers can build on.
+
+    Parameters
+    ----------
+    levels_in_order : list[tuple[int, int, int]]
+        Ordered list of ``(object_set, level_address, level_length)`` tuples.
+
+    Attributes
+    ----------
+    _random_colors : list[QColor]
+        Stable per-object-set colors used while drawing byte ranges.
+    levels_in_order : list[tuple[int, int, int]]
+        Tuples describing the bank layout currently being displayed.
+
+    See Also
+    --------
+    LevelBlockView
+        Groups the same ranges into larger labeled regions.
+    """
+
     def __init__(self, levels_in_order: list[tuple[int, int, int]]):
+        """Store level ranges and create stable colors for the bank view.
+
+        Parameters
+        ----------
+        levels_in_order : list[tuple[int, int, int]]
+            Levels ordered for display in the byte view.
+        """
         super(ByteView, self).__init__()
 
         self.levels_in_order = levels_in_order
@@ -201,16 +365,61 @@ class ByteView(QWidget):
         self.setMouseTracking(True)
 
     def sizeHint(self):
+        """Level-viewer bank size for one PRG occupancy surface.
+
+        Width is fixed to the viewer's expected ROM-bank layout, while the
+        height follows ``heightForWidth`` so subclasses can present either byte
+        cells or grouped regions from the same parsed level ranges.
+        That shared sizing contract is what lets the byte-level and grouped
+        region views swap into the same scroll area and keep bank-navigation
+        workflow stable.
+
+        Returns
+        -------
+        QSize
+            Recommended size for the parent width being laid out.
+        """
         return QSize(1000, self.heightForWidth(self.parentWidget().width()))
 
     @property
     def first_level_start(self):
+        """First level address used as this bank view's origin.
+
+        Both byte and grouped-region views measure their layout relative to
+        this bank-local origin instead of absolute ROM address zero.
+        That keeps one PRG bank visually compact even when the original ROM
+        addresses are large, and it keeps bank-level free-space accounting
+        consistent across both viewers during the same inspection workflow.
+
+        Returns
+        -------
+        int
+            Absolute ROM address used as the byte-view origin.
+        """
         if not self.levels_in_order:
             return PRG_BANK_SIZE
 
         return self.levels_in_order[0][1]
 
     def paintEvent(self, event: QPaintEvent):
+        """Render one PRG bank as colored byte occupancy cells.
+
+        Each level range is drawn in a stable object-set color, then the rest
+        of the bank is filled red to make unused space visually obvious.
+        This turns raw ROM bank occupancy into the byte-level free-space view
+        that the grouped region view later summarizes and annotates, so data
+        flows from raw ranges to grouped region inspection without changing
+        banks. The paint pass consumes ``levels_in_order`` exactly as
+        ``LevelViewer`` populated it, translates those absolute ROM addresses
+        into bank-relative byte positions, and then overlays the unused tail of
+        the bank so maintainers can see both occupied and free regions in the
+        same coordinate system.
+
+        Parameters
+        ----------
+        event : QPaintEvent
+            Qt event delivered to the widget.
+        """
         if not self.levels_in_order:
             return
 
@@ -264,6 +473,43 @@ class ByteView(QWidget):
 
 @dataclass
 class _Block:
+    """Describe one labeled region in the PRG-bank block view.
+
+    ``LevelBlockView`` builds these transient records before each paint pass so
+    layout, tooltip lookup, and drawing all refer to the same parsed bank
+    regions. They are not persistent model objects; they are short-lived view
+    records produced from the byte ranges currently visible in the bank view.
+    One parsed ``_Block`` can later supply its label to painting and its level
+    tuple to tooltip thumbnail generation. They are the intermediate structure
+    that lets ``LevelBlockView`` share one parsed result across layout,
+    painting, and hover handling, instead of recomputing separate structures for
+    each of those tasks.
+
+    Notes
+    -----
+    The dataclass keeps the block view's three concerns in sync: parsing,
+    labeling, and hover lookup all consume the same transient region record.
+    Its workflow value is shared state: once one region is parsed, painting and
+    hover handling can both consume that same record without rebuilding it.
+
+    Attributes
+    ----------
+    color : QColor
+        Fill color used for the region.
+    level : tuple[int, int, int] | None
+        Associated ``(object_set, address, length)`` tuple when the region
+        represents a level.
+    name : str
+        Label shown inside the region.
+    size : int
+        Region size in bytes.
+
+    See Also
+    --------
+    LevelBlockView
+        Creates and draws these region descriptors.
+    """
+
     color: QColor
     name: str
     size: int
@@ -271,13 +517,78 @@ class _Block:
 
 
 class LevelBlockView(ByteView):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    """Group bank bytes into named regions for level and free-space inspection.
+
+    Unlike ``ByteView``, which paints every byte position, this widget merges
+    contiguous runs into readable blocks such as code/unknown areas, level data,
+    and unused space. The class turns the raw range list into three maintainer-
+    facing behaviors at once: region layout, region painting, and hover-time
+    thumbnail lookup for level-backed regions. ``ByteView`` supplies the raw
+    ranges, ``_parse_levels_for_blocks`` groups them, and the rest of the class
+    reuses that parsed list for hit-testing and painting. This is the "grouped
+    regions and metadata affordances" stage of the same viewer
+    pipeline, sitting directly between parsed bank ranges and the user's visual
+    inspection of free space, level placement, and hover previews.
+
+    Notes
+    -----
+    The class exists because byte-level occupancy was not enough for people
+    trying to understand bank usage. Its job is to turn those same ranges into
+    named regions that can be scanned quickly and then inspected further
+    through tooltips and thumbnails. The data flow is raw ranges ->
+    ``_parse_levels_for_blocks`` -> transient ``_Block`` records -> painting
+    and hover inspection.
+
+    Parameters
+    ----------
+    levels_in_order : list[tuple[int, int, int]]
+        Ordered list of ``(object_set, level_address, level_length)`` tuples.
+
+    Attributes
+    ----------
+    block_height : int
+        Height in pixels for one rendered region block.
+    block_width : int
+        Width in pixels for one rendered region block.
+
+    See Also
+    --------
+    ByteView
+        Lower-level byte occupancy renderer for the same bank data.
+    """
+
+    def __init__(self, levels_in_order: list[tuple[int, int, int]]):
+        """Initialize region sizing for the bank block view.
+
+        Parameters
+        ----------
+        levels_in_order : list[tuple[int, int, int]]
+            Ordered list of ``(object_set, level_address, level_length)`` tuples.
+        """
+        super().__init__(levels_in_order)
 
         self.block_height = 100  # px
         self.block_width = 170  # px
 
     def heightForWidth(self, width):
+        """Height needed for the parsed PRG-bank regions at one width.
+
+        Region count depends on the bank parsing step, so this layout helper
+        asks ``_parse_levels_for_blocks`` for the parsed grouping before
+        sizing the widget.
+        The widget height therefore tracks the human-readable region model that
+        painting and hover handling will use, not just the raw byte list.
+
+        Parameters
+        ----------
+        width : int
+            Available widget width in pixels.
+
+        Returns
+        -------
+        int
+            Height required to lay out all parsed blocks.
+        """
         if not self.levels_in_order:
             return 600
 
@@ -290,6 +601,24 @@ class LevelBlockView(ByteView):
         return lines * self.block_height
 
     def _parse_levels_for_blocks(self):
+        """Parse PRG-bank byte ranges into labeled inspection regions.
+
+        Gaps between known levels become explicit unused-space blocks, while the
+        prefix before the first level is labeled as code or unknown ROM data.
+        The resulting transient records are then reused for layout, painting,
+        and tooltip lookup so all three behaviors agree on the same bank
+        parsing. The method walks the ordered ROM ranges once, tracks the next
+        unassigned byte position inside the bank, emits explicit gap records
+        before every level-backed block, and then appends one final unused
+        region if the bank does not end on a level boundary.
+        This is the parsing step that turns raw level ranges into the named
+        PRG-bank regions shown by the grouped inspection view.
+
+        Returns
+        -------
+        list[_Block]
+            Parsed regions in display order.
+        """
         potential_blocks: list[_Block] = []
 
         current_pos = self.first_level_start
@@ -326,6 +655,23 @@ class LevelBlockView(ByteView):
         return potential_blocks
 
     def _starting_point_by_index(self, index: int):
+        """Map one parsed region index onto the grouped bank-view grid.
+
+        The helper converts the parsed region index into the fixed-size tile
+        grid used by the grouped bank view.
+        That keeps hit testing, tooltips, and painting on the same coordinate
+        system used by the visual region layout.
+
+        Parameters
+        ----------
+        index : int
+            Zero-based index of the item to access.
+
+        Returns
+        -------
+        QPoint
+            Top-left pixel position for the indexed region.
+        """
         view_width = self.width() // self.block_width * self.block_width
 
         if view_width < self.block_width:
@@ -341,7 +687,32 @@ class LevelBlockView(ByteView):
 
         return QPoint(x * self.block_width, y * self.block_height)
 
-    def _get_block_at(self, x, y) -> _Block | None:
+    def _get_block_at(self, x: int, y: int) -> _Block | None:
+        """Resolve widget coordinates to one parsed PRG-bank region.
+
+        Hover handling uses this instead of reparsing tooltip state separately.
+        The method is the hit-test bridge between widget coordinates and the
+        parsed PRG-bank region metadata that drives labels and thumbnails for
+        one ROM bank.
+        Hover lookup uses this hit test instead of building a separate tooltip
+        model, so the same parsed region record drives both painting and hover
+        state. It converts the pointer position into the grouped-view grid,
+        rejects coordinates that fall outside the parsed bank layout, and then
+        looks up the `_Block` record that painting used for that same screen
+        cell.
+
+        Parameters
+        ----------
+        x : int
+            Horizontal coordinate in widget space.
+        y : int
+            Vertical coordinate in widget space.
+
+        Returns
+        -------
+        _Block | None
+            Region at the queried position, if any.
+        """
         blocks_per_line = max(1, self.width() // self.block_width)
 
         if blocks_per_line * self.block_width < x:
@@ -364,11 +735,30 @@ class LevelBlockView(ByteView):
         return blocks[index]
 
     def mouseMoveEvent(self, event: QMouseEvent):
+        """Refresh the hover thumbnail for the region under the cursor.
+
+        Parameters
+        ----------
+        event : QMouseEvent
+            Qt event delivered to the widget.
+        """
         self._set_thumbnail(event.x(), event.y())
 
         super().mouseMoveEvent(event)
 
-    def _set_thumbnail(self, x, y):
+    def _set_thumbnail(self, x: int, y: int):
+        """Update the tooltip preview for the region under the cursor.
+
+        Only level-backed regions show thumbnails; code and unused-space blocks
+        clear the tooltip instead.
+
+        Parameters
+        ----------
+        x : int
+            Horizontal coordinate.
+        y : int
+            Vertical coordinate.
+        """
         block = self._get_block_at(x, y)
 
         if block is None or block.level is None:
@@ -389,6 +779,26 @@ class LevelBlockView(ByteView):
         )
 
     def _paint_block(self, painter: QPainter, pos: QPoint, block: _Block):
+        """Draw one parsed PRG-bank region into the grouped view.
+
+        The region label and byte count come from the parsed ``_Block`` record
+        so painting stays aligned with tooltip lookup and block layout.
+        Each rectangle is therefore a direct visual projection of one parsed
+        bank region, not a separate view-specific computation.
+
+        The draw step consumes the same parsed region record used by layout and
+        hover lookup, keeping the grouped bank workflow on one shared set of
+        metadata.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter that renders the region.
+        pos : QPoint
+            Top-left widget position for the region.
+        block : _Block
+            Parsed region descriptor being drawn.
+        """
         rect = QRect(pos, QSize(self.block_width, self.block_height))
 
         painter.fillRect(rect, QBrush(block.color))
@@ -403,6 +813,13 @@ class LevelBlockView(ByteView):
         painter.drawText(size_pos, f"Size: {block.size} Bytes ({round(100 / PRG_BANK_SIZE * block.size, 1)} %)")
 
     def paintEvent(self, event: QPaintEvent):
+        """Paint the parsed PRG-bank regions as labeled blocks.
+
+        Parameters
+        ----------
+        event : QPaintEvent
+            Qt event delivered to the widget.
+        """
         p = QPainter(self)
 
         for index, block in enumerate(self._parse_levels_for_blocks()):

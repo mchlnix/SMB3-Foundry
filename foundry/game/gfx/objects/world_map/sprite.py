@@ -1,3 +1,18 @@
+"""World-map sprite wrappers for SMB3 moving overworld objects.
+
+This module adapts ROM-backed sprite records into selectable editor objects.
+The workflow is sprite record -> wrapper -> shared world-map draw and movement
+state, so wandering enemies, airships, and item icons can all reuse the same
+world-map tools.
+
+See Also
+--------
+foundry.game.gfx.objects.world_map.map_object
+    Defines the shared position and drawing contract for world-map objects.
+foundry.game.level.WorldMap
+    Owns the sprite records that feed these wrappers.
+"""
+
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QColor
 
@@ -88,7 +103,45 @@ MAP_ITEM_SPRITES = {
 
 
 class Sprite(MapObject):
+    """Model one movable overworld sprite.
+
+    These records cover Hammer Bros., airships, wandering item icons, and
+    other world-map sprites. The wrapper keeps the ROM-backed ``SpriteData`` in
+    sync with editor coordinates and type changes while reusing the generic
+    map-object selection and drawing workflow.
+
+    Parameters
+    ----------
+    sprite_data : SpriteData
+        Data for the sprite value.
+
+    Attributes
+    ----------
+    data : SpriteData
+        ROM-backed sprite record being edited and drawn.
+
+    Examples
+    --------
+    Wrap a ROM-backed world-map sprite record, then inspect the editor-facing
+    fields that stay synchronized with the underlying data::
+
+        sprite_data = SpriteData(Position.from_xy(7, 4), MAPOBJ_HAMMERBRO, 0)
+        sprite = Sprite(sprite_data)
+
+        sprite.get_position()
+        (7, 4)
+        sprite.name
+        "Sprite 'Hammer Brother'"
+    """
+
     def __init__(self, sprite_data: SpriteData):
+        """Wrap one ROM-backed overworld sprite record.
+
+        Parameters
+        ----------
+        sprite_data : SpriteData
+            Sprite record being edited and rendered.
+        """
         super(Sprite, self).__init__()
 
         self.data = sprite_data
@@ -98,21 +151,80 @@ class Sprite(MapObject):
 
     @property
     def name(self):
+        """Display name for the sprite type stored in the record.
+
+        World-map lists and status text derive the label directly from the
+        SMB3 sprite-name table, so changing ``type`` immediately changes the
+        label shown throughout the editor without maintaining a second name
+        field on the sprite object or desynchronizing it from ROM data.
+        The property therefore acts as the read-only UI view of the same type
+        field consumed by draw and change-type workflows.
+
+        Returns
+        -------
+        str
+            Editor-facing name derived from ``MAPOBJ_NAMES``.
+        """
         return f"Sprite '{MAPOBJ_NAMES[self.data.type]}'"
 
     @name.setter
     def name(self, value):
+        """Ignore external name assignments.
+
+        Parameters
+        ----------
+        value : str
+            Ignored because the name is derived from ``data.type``.
+        """
         pass
 
     @property
     def type(self):
+        """Overworld sprite type id stored in the record.
+
+        Changing this value swaps the icon and behavior represented by the
+        world-map sprite without changing its position or other record fields,
+        which keeps type cycling localized to the record field that the ROM
+        actually stores.
+        Draw, status-text, and serialization paths all read the same value, so
+        this property marks the central boundary between editor interactions
+        and the underlying ``SpriteData`` payload.
+
+        Returns
+        -------
+        int
+            Sprite type stored in ``data``.
+        """
         return self.data.type
 
     @type.setter
     def type(self, value):
+        """Change the overworld sprite type.
+
+        Parameters
+        ----------
+        value : int
+            Replacement sprite type id.
+        """
         self.change_type(value)
 
     def draw(self, painter, block_length, transparent, selected=False):
+        """Draw the sprite icon at its world-map position.
+
+        The map view uses the decoded sprite-sheet image rather than the raw
+        ROM record so moving sprites redraw immediately.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter receiving the sprite image.
+        block_length : int
+            Pixel size of one world-map tile.
+        transparent : bool
+            Unused compatibility flag for shared draw call sites.
+        selected : bool, optional
+            Whether to overlay the selection highlight.
+        """
         pos = QPoint(*self.data.pos.xy) * block_length
 
         rect = QRect(pos, QSize(block_length, block_length))
@@ -126,10 +238,58 @@ class Sprite(MapObject):
             painter.fillRect(rect, QColor(0x00, 0xFF, 0x00, 0x80))
 
     def set_position(self, x, y):
+        """Store a new world-map position for the sprite.
+
+        Dragging and keyboard movement update the underlying ``SpriteData``
+        through this shared position API.
+
+        Parameters
+        ----------
+        x : int
+            Horizontal tile coordinate.
+        y : int
+            Vertical tile coordinate.
+        """
         self.data.pos = Position.from_xy(x, y)
 
     def get_position(self) -> tuple[int, int]:
+        """World-map position for the sprite.
+
+        Shared map-object tools consume the tuple without depending on the
+        underlying ``SpriteData`` structure.
+
+        Returns
+        -------
+        tuple[int, int]
+            Horizontal and vertical tile coordinates.
+        """
         return self.data.pos.xy
 
     def change_type(self, new_type):
+        """Store a new sprite type in the ROM-backed record.
+
+        Parameters from selection widgets and keyboard cycling write through to
+        the stored ``SpriteData`` field here so redraw, labeling, and ROM-save
+        code all observe the same type change.
+
+        Parameters
+        ----------
+        new_type : int
+            Replacement sprite type id.
+
+        Examples
+        --------
+        Change the shared sprite type field and verify that the wrapped
+        ``SpriteData`` record reflects the same update::
+
+            sprite_data = SpriteData(Position.from_xy(3, 5), MAPOBJ_HELP, 0)
+            sprite = Sprite(sprite_data)
+
+            sprite.change_type(MAPOBJ_AIRSHIP)
+
+            sprite.type
+            MAPOBJ_AIRSHIP
+            sprite.data.type
+            MAPOBJ_AIRSHIP
+        """
         self.data.type = new_type

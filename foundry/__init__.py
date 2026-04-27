@@ -51,26 +51,85 @@ NO_PARENT = cast(QWidget, cast(object, None))
 
 
 def ctrl_is_pressed():
+    """Handle ctrl is pressed.
+
+    It provides shared behavior used by the editor runtime. The return value exposes the computed state expected by callers.
+
+    Returns
+    -------
+    Any
+        True when the Ctrl modifier is pressed.
+    """
     return bool(QApplication.keyboardModifiers() & Qt.KeyboardModifier.ControlModifier)
 
 
 def shift_is_pressed():
+    """Handle shift is pressed.
+
+    It provides shared behavior used by the editor runtime. The return value exposes the computed state expected by callers.
+
+    Returns
+    -------
+    Any
+        True when the Shift modifier is pressed.
+    """
     return bool(QApplication.keyboardModifiers() & Qt.KeyboardModifier.ShiftModifier)
 
 
 def open_url(url: str | QUrl):
+    """Open url.
+
+    It provides shared behavior used by the editor runtime. The method delegates lower-level work while keeping the public workflow focused.
+
+    Parameters
+    ----------
+    url : str | QUrl
+        Url used by the operation.
+    """
     QDesktopServices.openUrl(QUrl(url))
 
 
 def is_pyinstalled() -> bool:
+    """Return whether pyinstalled.
+
+    It provides shared behavior used by the editor runtime. The return value exposes the computed state expected by callers.
+
+    Returns
+    -------
+    bool
+        Whether the requested condition is true.
+    """
     return hasattr(sys, "_MEIPASS")
 
 
 def is_nightly_version():
+    """Return whether nightly version.
+
+    It provides shared behavior used by the editor runtime. The return value exposes the computed state expected by callers.
+
+    Returns
+    -------
+    Any
+        Whether the requested condition is true.
+    """
     return get_current_version_name().startswith("nightly")
 
 
 def get_current_version_name() -> str:
+    """Return current version name.
+
+    It provides shared behavior used by the editor runtime. The lookup centralizes coordinate or identifier handling for callers.
+
+    Returns
+    -------
+    str
+        The requested current version name.
+
+    Raises
+    ------
+    LookupError
+        If the requested data cannot be found.
+    """
     version_file = root_dir / "VERSION"
 
     if not version_file.exists():
@@ -81,6 +140,25 @@ def get_current_version_name() -> str:
 
 @lru_cache(256)
 def icon(icon_name: str):
+    """Handle icon.
+
+    It provides shared behavior used by the editor runtime. The return value exposes the computed state expected by callers.
+
+    Parameters
+    ----------
+    icon_name : str
+        Icon name used by the operation.
+
+    Returns
+    -------
+    Any
+        Icon loaded from the application resources.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the expected file cannot be found.
+    """
     icon_path = icon_dir / icon_name
     data_path = data_dir / icon_name
 
@@ -93,6 +171,24 @@ def icon(icon_name: str):
 
 
 def get_level_thumbnail(object_set, layout_address: "LevelAddress", enemy_address: "EnemyItemAddress"):
+    """Return level thumbnail.
+
+    It provides shared behavior used by the editor runtime. The lookup centralizes coordinate or identifier handling for callers.
+
+    Parameters
+    ----------
+    object_set : Any
+        Object set that controls tiles, graphics, or level object behavior.
+    layout_address : 'LevelAddress'
+        ROM address of the level or world map layout data.
+    enemy_address : 'EnemyItemAddress'
+        ROM enemy address.
+
+    Returns
+    -------
+    Any
+        The requested level thumbnail.
+    """
     from foundry.game.level.LevelRef import LevelRef
     from foundry.gui.visualization.level.LevelView import LevelView
 
@@ -110,6 +206,20 @@ def get_level_thumbnail(object_set, layout_address: "LevelAddress", enemy_addres
 
 
 def pixmap_to_base64(pixmap: QPixmap) -> str:
+    """Handle pixmap to base64.
+
+    It provides shared behavior used by the editor runtime. The return value exposes the computed state expected by callers.
+
+    Parameters
+    ----------
+    pixmap : QPixmap
+        Pixmap used by the operation.
+
+    Returns
+    -------
+    str
+        Computed pixmap to base64.
+    """
     buffer = QBuffer()
     buffer.open(QIODevice.OpenModeFlag.WriteOnly)
     pixmap.save(buffer, "PNG", quality=100)
@@ -119,6 +229,19 @@ def pixmap_to_base64(pixmap: QPixmap) -> str:
 
 
 def make_macro(undo_stack: QUndoStack, title: str, *commands: QUndoCommand):
+    """Create macro.
+
+    It provides shared behavior used by the editor runtime. The method delegates lower-level work while keeping the public workflow focused.
+
+    Parameters
+    ----------
+    undo_stack : QUndoStack
+        Undo stack that receives imported commands.
+    title : str
+        Window or menu title.
+    *commands : QUndoCommand
+        Commands used by the operation.
+    """
     if not commands:
         return
 
