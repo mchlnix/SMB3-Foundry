@@ -23,6 +23,7 @@ from PySide6.QtWidgets import QTableWidgetItem
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr
 from foundry.gui.widgets.Spinner import Spinner
 from scribe.gui.commands import (
     AddLevelPointer,
@@ -41,6 +42,8 @@ from smb3parse.constants import GAME_LEVEL_POINTER_COUNT, GAME_SCREEN_COUNT
 from smb3parse.data_points import WorldMapData
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.util.rom import Rom
+
+TR_CONTEXT = "ScribeWorldOverview"
 
 
 class WorldOverview(TableWidget):
@@ -129,12 +132,35 @@ class WorldOverview(TableWidget):
             world_data_point = WorldMapData(rom, world_index)
             self.world_data_points.append(WorldDataStandIn(world_data_point))
 
-        self.set_headers(["World Name", "Screen Count", "Level Count"])
+        self.set_headers(
+            [
+                tr(TR_CONTEXT, "world_name", "World Name"),
+                tr(TR_CONTEXT, "screen_count", "Screen Count"),
+                tr(TR_CONTEXT, "level_count", "Level Count"),
+            ]
+        )
 
         self.setItemDelegateForColumn(0, NoneDelegate(self))
         self.setItemDelegateForColumn(1, SpinBoxDelegate(self, minimum=1, maximum=4, base=10))
         self.setItemDelegateForColumn(2, SpinBoxDelegate(self, base=10))
 
+        self.update_content()
+
+    def retranslate_ui(self) -> None:
+        """Refresh table headers and generated row names after a language change.
+
+        The overview owns only display labels during retranslation. It
+        rewrites headers and regenerates row names from catalog text while the
+        staged ``WorldDataStandIn`` objects keep their encoded world indexes,
+        screen counts, and level counts untouched.
+        """
+        self.set_headers(
+            [
+                tr(TR_CONTEXT, "world_name", "World Name"),
+                tr(TR_CONTEXT, "screen_count", "Screen Count"),
+                tr(TR_CONTEXT, "level_count", "Level Count"),
+            ]
+        )
         self.update_content()
 
     def dropEvent(self, event: QDropEvent) -> None:
@@ -211,10 +237,12 @@ class WorldOverview(TableWidget):
 
         Notes
         -----
-        This method is used after initialization and after drag-reordering.
-        Signals are blocked so table repaints do not recurse into
-        :meth:`_change_data` while the staged values are being copied into the
-        visible cells.
+        This method is used after initialization, live retranslation, staged
+        count edits, and drag-reordering. Signals are blocked so table repaints
+        do not recurse into :meth:`_change_data` while the staged values are
+        copied into the visible cells. Row ownership comes from each stand-in's
+        current ``index`` value, so the table is a projection of staged data
+        rather than an independent owner of world ordering.
         """
         self.setRowCount(len(self.world_data_points))
 
@@ -223,7 +251,9 @@ class WorldOverview(TableWidget):
         for world_number, world_data in enumerate(self.world_data_points, 1):
             row = world_data.index
 
-            name_item = QTableWidgetItem(f"World {world_number}")
+            name_item = QTableWidgetItem(
+                tr(TR_CONTEXT, "world_world_number", "World {world_number}").format(world_number=world_number)
+            )
             screen_count_item = QTableWidgetItem(str(world_data.screen_count))
             level_count_item = QTableWidgetItem(str(world_data.level_count))
 
@@ -335,9 +365,15 @@ class WorldOverview(TableWidget):
         The message is derived from the staged aggregates, so it tracks drag
         reordering and per-cell edits before any undo command is created.
         """
-        return (
-            f"Your worlds have {self.screen_count}/{GAME_SCREEN_COUNT - 1} screens and "
-            f"{self.level_count}/{GAME_LEVEL_POINTER_COUNT} level pointers."
+        return tr(
+            TR_CONTEXT,
+            "status.world_capacity_summary",
+            "Your worlds have {screen_count}/{screen_limit} screens and {level_count}/{level_limit} level pointers.",
+        ).format(
+            screen_count=self.screen_count,
+            screen_limit=GAME_SCREEN_COUNT - 1,
+            level_count=self.level_count,
+            level_limit=GAME_LEVEL_POINTER_COUNT,
         )
 
     def valid(self):
@@ -354,8 +390,10 @@ class WorldOverview(TableWidget):
 
         Notes
         -----
-        Callers use this gate before enabling the final save path, which keeps
-        invalid world layouts from being translated into undo commands.
+        Validation is computed only from staged stand-ins. It does not mutate
+        ROM data or enqueue undo commands; callers use this gate before
+        enabling the final save path, which keeps invalid world layouts from
+        being translated into persistence commands.
         """
         return self.screen_count <= GAME_SCREEN_COUNT - 1 and self.level_count <= GAME_LEVEL_POINTER_COUNT
 
@@ -392,7 +430,7 @@ class WorldOverview(TableWidget):
 
         # write tiles back into world map data object, so we can properly undo the screen count change
         self.world.write_tiles()
-        undo_stack.beginMacro("Reorganize World Maps")
+        undo_stack.beginMacro(tr(TR_CONTEXT, "reorganize_world_maps", "Reorganize World Maps"))
 
         undo_stack.push(SaveWorldsOnUndo(self.world_data_points))
 

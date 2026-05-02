@@ -40,6 +40,7 @@ from foundry import ASM_FILE_FILTER, ROM_FILE_FILTER, icon
 from foundry.game.File import ROM
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.MainWindow import MainWindow
+from foundry.gui.localization import set_application_language, tr
 from foundry.gui.settings import Settings
 from foundry.gui.visualization.world.WorldView import WorldView
 from scribe.gui.commands import PutTile
@@ -63,6 +64,30 @@ from smb3parse.levels import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
+
+TR_KEY_CONTEXT = "scribe.main"
+
+
+def _tr(key: str) -> str:
+    """Translate a Scribe main-window label by stable catalog key.
+
+    Parameters
+    ----------
+    key : str
+        Key within the ``scribe.main`` catalog context.
+
+    Returns
+    -------
+    str
+        Localized display text for menus, actions, toolbars, or window titles.
+
+    Notes
+    -----
+    Main-window strings use semantic catalog keys so live retranslation can
+    refresh visible labels without letting English prose become persisted
+    settings, undo-command text identity, or ROM data.
+    """
+    return tr(TR_KEY_CONTEXT, key)
 
 
 class ScribeMainWindow(MainWindow):
@@ -131,6 +156,14 @@ class ScribeMainWindow(MainWindow):
         preferences.
     quit_rom_action : QAction
         File-menu action that closes the editor window.
+    play_action : QAction
+        Toolbar action that serializes the active world into a temporary ROM
+        and launches the configured emulator.
+    zoom_out_action : QAction
+        Toolbar zoom-out control wired to the world view and window resize
+        path.
+    zoom_in_action : QAction
+        Toolbar zoom-in control wired to the world view and window resize path.
     """
 
     def __init__(self, path_to_rom: str):
@@ -208,7 +241,7 @@ class ScribeMainWindow(MainWindow):
         self.tool_window.level_pointer_selection_changed.connect(self.world_view.select_level_pointer)
         self.tool_window.locks_selection_changed.connect(self.world_view.select_locks_and_bridges)
 
-        self.menu_toolbar = QToolBar("Menu Toolbar", self)
+        self.menu_toolbar = QToolBar(_tr("toolbar.menu"), self)
         self.menu_toolbar.setOrientation(Qt.Horizontal)
         self.menu_toolbar.setIconSize(QSize(20, 20))
 
@@ -224,18 +257,18 @@ class ScribeMainWindow(MainWindow):
 
         self.menu_toolbar.addSeparator()
 
-        play_action = self.menu_toolbar.addAction(icon("play-circle.svg"), "Play Level")
-        play_action.triggered.connect(self.on_play)
-        play_action.setWhatsThis("Opens an emulator with the current Level set to 1-1.\nSee Settings.")
+        self.play_action = self.menu_toolbar.addAction(icon("play-circle.svg"), _tr("action.play_level"))
+        self.play_action.triggered.connect(self.on_play)
+        self.play_action.setWhatsThis(_tr("whats_this.play_level"))
 
         self.menu_toolbar.addSeparator()
 
-        zoom_out_action = self.menu_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
-        zoom_out_action.triggered.connect(self.world_view.zoom_out)
-        zoom_out_action.triggered.connect(self._resize_for_level)
-        zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
-        zoom_in_action.triggered.connect(self.world_view.zoom_in)
-        zoom_in_action.triggered.connect(self._resize_for_level)
+        self.zoom_out_action = self.menu_toolbar.addAction(icon("zoom-out.svg"), _tr("action.zoom_out"))
+        self.zoom_out_action.triggered.connect(self.world_view.zoom_out)
+        self.zoom_out_action.triggered.connect(self._resize_for_level)
+        self.zoom_in_action = self.menu_toolbar.addAction(icon("zoom-in.svg"), _tr("action.zoom_in"))
+        self.zoom_in_action.triggered.connect(self.world_view.zoom_in)
+        self.zoom_in_action.triggered.connect(self._resize_for_level)
 
         self.menu_toolbar.addSeparator()
 
@@ -265,46 +298,52 @@ class ScribeMainWindow(MainWindow):
         The save action tracks :attr:`undo_stack` cleanliness so the user only
         sees it enabled when the loaded world has unsaved edits.
         """
-        self.file_menu = QMenu("&File")
+        self.file_menu = QMenu(_tr("menu.file"))
         self.file_menu.triggered.connect(self.on_file_menu)
 
-        self.open_rom_action = self.file_menu.addAction("&Open ROM...")
+        self.open_rom_action = self.file_menu.addAction(_tr("action.open_rom"))
         self.open_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_O)
         self.open_rom_action.setIcon(icon("folder.svg"))
 
         self.file_menu.addSeparator()
 
-        self.save_rom_action = self.file_menu.addAction("&Save ROM")
+        self.save_rom_action = self.file_menu.addAction(_tr("action.save_rom"))
         self.save_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_S)
         self.save_rom_action.setIcon(icon("save.svg"))
 
         self.save_rom_action.setEnabled(False)
         self.undo_stack.cleanChanged.connect(lambda: self.save_rom_action.setEnabled(not self.undo_stack.isClean()))
 
-        self.save_as_rom_action = self.file_menu.addAction("Save ROM &As...")
+        self.save_as_rom_action = self.file_menu.addAction(_tr("action.save_rom_as"))
         self.save_as_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Modifier.SHIFT | Qt.Key.Key_S)
         self.save_as_rom_action.setIcon(icon("save.svg"))
 
         self.file_menu.addSeparator()
 
-        self.export_map_action = self.file_menu.addAction("Export Map ASM files...")
+        self.export_map_action = self.file_menu.addAction(_tr("action.export_map_asm_files"))
         self.export_map_action.setIcon(icon("save.svg"))
 
         self.file_menu.addSeparator()
 
-        self.settings_action = self.file_menu.addAction("Editor Settings")
+        self.settings_action = self.file_menu.addAction(_tr("action.editor_settings"))
         self.settings_action.setIcon(icon("sliders.svg"))
         self.settings_action.triggered.connect(self._on_show_settings)
 
         self.file_menu.addSeparator()
 
-        self.quit_rom_action = self.file_menu.addAction("&Quit")
+        self.quit_rom_action = self.file_menu.addAction(_tr("action.quit"))
         self.quit_rom_action.setIcon(icon("power.svg"))
 
         self.menuBar().addMenu(self.file_menu)
 
     def _setup_edit_menu(self):
-        """Attach the edit menu and reconnect it to Scribe refresh hooks."""
+        """Attach the edit menu and reconnect it to Scribe refresh hooks.
+
+        The edit menu owns action dispatch for undo, redo, bulk deletion, and
+        world-info editing. This setup keeps those actions attached to the
+        shared world view and also listens for possible world-order changes so
+        the world selector can realign with the staged metadata dialog result.
+        """
         self.edit_menu = EditMenu(self)
         self.edit_menu.triggered.connect(self.world_view.update)
 
@@ -313,7 +352,13 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.edit_menu)
 
     def _setup_view_menu(self):
-        """Attach the view menu and resize the window after zoom changes."""
+        """Attach the view menu and resize the window after zoom changes.
+
+        View-menu actions persist overlay settings and can change the rendered
+        world size. Connecting both repaint and resize callbacks here keeps the
+        scroll area, saved settings, and world renderer synchronized whenever a
+        user toggles view state.
+        """
         self.view_menu = ViewMenu(self, self.world_view)
         self.view_menu.triggered.connect(self.world_view.update)
         self.view_menu.triggered.connect(self._resize_for_level)
@@ -334,20 +379,20 @@ class ScribeMainWindow(MainWindow):
         action. Triggering the first world action during setup ensures the rest
         of the window starts with a loaded map before user interaction.
         """
-        self.world_menu = QMenu("Change &World")
+        self.world_menu = QMenu(_tr("menu.change_world"))
         self.world_menu.triggered.connect(self.on_level_menu)
 
         level_menu_action_group = QActionGroup(self)
 
         for level_index in range(WORLD_COUNT):
-            action = self.world_menu.addAction(f"World &{level_index + 1}")
+            action = self.world_menu.addAction(_tr("action.world").format(index=level_index + 1))
             action.setCheckable(True)
 
             level_menu_action_group.addAction(action)
 
         self.world_menu.addSeparator()
 
-        self.reload_world_action = self.world_menu.addAction("&Reload Current World")
+        self.reload_world_action = self.world_menu.addAction(_tr("action.reload_current_world"))
         self.reload_world_action.setIcon(icon("refresh-cw.svg"))
 
         # load world 1 on startup
@@ -356,23 +401,102 @@ class ScribeMainWindow(MainWindow):
         self.menuBar().addMenu(self.world_menu)
 
     def _setup_help_menu(self):
-        """Attach the shared help menu to the main menu bar."""
+        """Attach the shared help menu to the main menu bar.
+
+        The Scribe help menu reuses Foundry's support workflow while swapping
+        in Scribe-specific labels and about-dialog behavior. The main window
+        only owns menu placement; the menu owns its own retranslation hook.
+        """
         self.help_menu = HelpMenu(self)
 
         self.menuBar().addMenu(self.help_menu)
 
     def _on_world_order_changed(self):
-        """If the world order was changed through the world info dialog, change the selected world in the world menu."""
+        """Realign the checked world action after world-info reordering.
+
+        The world-info dialog can change the staged world index through undo
+        commands. This slot reads the active world's encoded index from the
+        model and updates only the menu selection, keeping display state in
+        sync without changing the loaded world again.
+        """
         new_world_index = self.level_ref.level.internal_world_map.data.index
 
         self.world_menu.actions()[new_world_index].setChecked(True)
 
     def _on_show_settings(self):
-        """Open the modal settings dialog for editor-wide preferences."""
-        SettingsDialog(self.settings, self).exec()
+        """Open the modal settings dialog for editor-wide preferences.
+
+        The dialog writes through to the shared settings object while it is
+        open. Its language signal is connected to the main-window refresh path
+        so Scribe can retranslate menus, toolbars, world views, and tool
+        windows without requiring a restart.
+        """
+        settings_dialog = SettingsDialog(self.settings, self)
+        settings_dialog.language_changed.connect(self._on_language_changed)
+        settings_dialog.exec()
+
+    def _on_language_changed(self, language_code: str) -> None:
+        """Apply a settings language change through the app-wide refresh path.
+
+        Parameters
+        ----------
+        language_code : str
+            Locale code stored by the settings dialog.
+
+        Notes
+        -----
+        With an active QApplication, the localization layer installs the new
+        catalog and walks open widgets for ``retranslate_ui`` hooks. The direct
+        refresh is kept only for tests or unusual non-application callers.
+        """
+        app = QApplication.instance()
+        if app is not None:
+            set_application_language(app, language_code)
+        else:
+            self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh high-traffic labels after the active translator changes.
+
+        This is the live-language boundary for the main Scribe shell. It
+        rewrites menu titles, action text, toolbar titles, tooltips, context
+        menu labels, child menus, the tool window, the world view, and the
+        window title from catalog keys while preserving action identity,
+        checked states, shortcuts, selected world data, and undo history.
+        """
+        self.file_menu.setTitle(_tr("menu.file"))
+        self.open_rom_action.setText(_tr("action.open_rom"))
+        self.save_rom_action.setText(_tr("action.save_rom"))
+        self.save_as_rom_action.setText(_tr("action.save_rom_as"))
+        self.export_map_action.setText(_tr("action.export_map_asm_files"))
+        self.settings_action.setText(_tr("action.editor_settings"))
+        self.quit_rom_action.setText(_tr("action.quit"))
+        self.edit_menu.retranslate_ui()
+        self.view_menu.retranslate_ui()
+        self.world_menu.setTitle(_tr("menu.change_world"))
+        for index, action in enumerate(self.world_menu.actions()[:WORLD_COUNT], start=1):
+            action.setText(_tr("action.world").format(index=index))
+        self.reload_world_action.setText(_tr("action.reload_current_world"))
+        if self.menu_toolbar is not None:
+            self.menu_toolbar.setWindowTitle(_tr("toolbar.menu"))
+        self.play_action.setText(_tr("action.play_level"))
+        self.play_action.setWhatsThis(_tr("whats_this.play_level"))
+        self.zoom_out_action.setText(_tr("action.zoom_out"))
+        self.zoom_in_action.setText(_tr("action.zoom_in"))
+        self.context_menu.retranslate_ui()
+        self.help_menu.retranslate_ui()
+        self.tool_window.retranslate_ui()
+        self.world_view.retranslate_ui()
+        self.setWindowTitle(_tr("window.title").format(level_name=self.level_ref.level.name))
 
     def _cut_objects(self):
-        """Copy the active selection, then replace it with blank tiles."""
+        """Copy the active selection, then replace it with blank tiles.
+
+        The cut workflow delegates persistence to the same blanking commands
+        used by delete. Copy state stays on the context menu, while the
+        removal step enters the shared undo stack through
+        :meth:`remove_selected_objects`.
+        """
         self._copy_objects()
         self.remove_selected_objects()
 
@@ -392,7 +516,7 @@ class ScribeMainWindow(MainWindow):
         if not selected_objects:
             return
 
-        self.undo_stack.beginMacro("Remove Selected Tiles")
+        self.undo_stack.beginMacro(_tr("undo.remove_selected_tiles"))
 
         for obj in selected_objects:
             self.undo_stack.push(PutTile(self.level_ref, obj.pos, WORLD_MAP_BLANK_TILE_ID))
@@ -400,7 +524,12 @@ class ScribeMainWindow(MainWindow):
         self.undo_stack.endMacro()
 
     def _copy_objects(self):
-        """Store the active selection in the context-menu clipboard cache."""
+        """Store the active selection in the context-menu clipboard cache.
+
+        The copied payload remains an in-memory world-view selection snapshot.
+        It is not persisted to settings or ROM data; paste later converts that
+        snapshot into undoable tile-placement commands.
+        """
         selected_objects = self.world_view.get_selected_objects().copy()
 
         if selected_objects:
@@ -440,7 +569,7 @@ class ScribeMainWindow(MainWindow):
 
         diff = paste_target - copy_origin
 
-        self.undo_stack.beginMacro(f"Pasting {len(copied_objects)} Objects")
+        self.undo_stack.beginMacro(_tr("undo.pasting_objects").format(count=len(copied_objects)))
 
         for obj in copied_objects:
             target_pos = Position.from_xy(*obj.get_position()) + diff
@@ -534,7 +663,7 @@ class ScribeMainWindow(MainWindow):
             # otherwise ask the user what new file to open
             path_to_rom, _ = QFileDialog.getOpenFileName(
                 self,
-                caption="Open ROM",
+                caption=_tr("dialog.open_rom.title"),
                 dir=self.settings.value("editor/default_dir_path"),
                 filter=ROM_FILE_FILTER,
             )
@@ -549,7 +678,11 @@ class ScribeMainWindow(MainWindow):
         try:
             ROM.load_from_file(path_to_rom)
         except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Cannot open file '{path_to_rom}'.")
+            QMessageBox.warning(
+                self,
+                type(exp).__name__,
+                _tr("error.cannot_open_file").format(path=path_to_rom),
+            )
             return
 
     def load_level(self, world_number: int):
@@ -570,7 +703,7 @@ class ScribeMainWindow(MainWindow):
         self.level_ref.load_level(f"World {world_number}", world.layout_address, 0x0, WORLD_MAP_OBJECT_SET)
         self.level_ref.level.dimensions_changed.connect(self._resize_for_level)
 
-        self.setWindowTitle(f"{self.level_ref.level.name} - SMB3 Scribe")
+        self.setWindowTitle(_tr("window.title").format(level_name=self.level_ref.level.name))
 
         self.undo_stack.clear()
 
@@ -597,7 +730,7 @@ class ScribeMainWindow(MainWindow):
 
             pathname, _ = QFileDialog.getSaveFileName(
                 self,
-                caption="Save ROM as",
+                caption=_tr("dialog.save_rom_as.title"),
                 dir=f"{self.settings.value('editor/default_dir_path')}/{suggested_file}",
                 filter=ROM_FILE_FILTER,
             )
@@ -640,7 +773,7 @@ class ScribeMainWindow(MainWindow):
             # get file basename
             pathname, _ = QFileDialog.getSaveFileName(
                 self,
-                caption="Export Map as ASM",
+                caption=_tr("dialog.export_map_as_asm.title"),
                 dir=self.settings.value("editor/default_dir_path"),
                 filter=ASM_FILE_FILTER,
             )
@@ -747,7 +880,7 @@ class ScribeMainWindow(MainWindow):
                     row_type_text += f"${row_and_object_set:02X}, "
                     screen_column_text += f"${screen_and_column:02X}, "
 
-                    # TODO In the original ASM these are (mostly) labels to values, find a way to match them?
+                    # Label names are not preserved in parsed world data, so export stable numeric offsets.
                     enemy_item_offset_text += f"${level_pointer.data.enemy_offset:04X}, "
                     level_layout_offset_text += f"${level_pointer.data.level_offset:04X}, "
 
@@ -835,10 +968,11 @@ class ScribeMainWindow(MainWindow):
             should_change_base_name = (
                 QMessageBox.question(
                     self,
-                    "Export Map as ASM",
-                    "It seems like you clicked on an ASM file of an existing World Map.\n\n"
-                    f"Should we overwrite {potential_base_name}L.asm etc, instead of saving under "
-                    f"{path.stem}L.asm, {path.stem}O.asm etc?",
+                    _tr("dialog.export_map_as_asm.title"),
+                    _tr("dialog.export_existing_world_map.prompt").format(
+                        base_name=potential_base_name,
+                        selected_stem=path.stem,
+                    ),
                 )
                 == QMessageBox.StandardButton.Yes
             )

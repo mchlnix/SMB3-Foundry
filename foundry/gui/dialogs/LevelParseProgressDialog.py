@@ -22,6 +22,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QProgressDialog
 
 from foundry.game.File import ROM
+from foundry.gui.localization import tr
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.util.parser import FoundLevel, gen_levels_in_rom
 
@@ -45,13 +46,20 @@ class LevelParseProgressDialog(QProgressDialog):
         It supports a focused editor dialog while keeping UI state synchronized with the model. Initialization establishes the state later methods rely on instead of re-reading ROM data.
         """
         super(LevelParseProgressDialog, self).__init__(
-            "Parsing World Maps to find Levels.", "Cancel", 0, WORLD_COUNT - 1
+            tr(
+                "LevelParseProgressDialog",
+                "parsing_world_maps_to_find_levels_period",
+                "Parsing World Maps to find Levels.",
+            ),
+            tr("Common", "cancel", "Cancel"),
+            0,
+            WORLD_COUNT - 1,
         )
 
         self.levels_per_object_set: dict[int, set[int]] = defaultdict(set)
         self.levels_by_address: dict[int, FoundLevel] = {}
 
-        self.setWindowTitle("Parsing World Maps to find Levels")
+        self.retranslate_ui()
         self.setModal(True)
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         self.forceShow()
@@ -70,12 +78,41 @@ class LevelParseProgressDialog(QProgressDialog):
         try:
             world_number, levels_in_world = next(level_gen)
             while True:
-                self.setLabelText(f"Parsing World {world_number}. Found Levels: {levels_in_world}")
+                self.setLabelText(
+                    tr(
+                        "LevelParseProgressDialog",
+                        "progress.parse_world_levels",
+                        "Parsing World {world_number}. Found Levels: {levels_in_world}",
+                    ).format(
+                        world_number=world_number,
+                        levels_in_world=levels_in_world,
+                    )
+                )
                 self.setValue(world_number - 1)
 
                 QApplication.processEvents()
                 world_number, levels_in_world = level_gen.send(self.wasCanceled())
 
         except StopIteration as si:
-            # TODO: Check for wasCancelled()
             self.levels_per_object_set, self.levels_by_address = si.value
+
+    def retranslate_ui(self) -> None:
+        """Refresh progress-dialog text without restarting parsing.
+
+        The window title, cancel button, and initial status label are updated
+        from the active catalog. The current progress value, cancellation state,
+        and parsed level collections are preserved so the running ROM scan keeps
+        the same target data while only visible text changes.
+        """
+        self.setWindowTitle(
+            tr("LevelParseProgressDialog", "parsing_world_maps_to_find_levels", "Parsing World Maps to find Levels")
+        )
+        self.setCancelButtonText(tr("Common", "cancel", "Cancel"))
+        if self.value() <= self.minimum():
+            self.setLabelText(
+                tr(
+                    "LevelParseProgressDialog",
+                    "parsing_world_maps_to_find_levels_period",
+                    "Parsing World Maps to find Levels.",
+                )
+            )

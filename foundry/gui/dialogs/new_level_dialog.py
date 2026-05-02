@@ -26,10 +26,28 @@ from PySide6.QtWidgets import (
 from foundry import data_dir
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.dialogs.CustomDialog import CustomDialog
+from foundry.gui.localization import tr, tr_data_name
+from smb3parse.constants import OBJECT_SET_NAMES
 
 _PREVIEW_SIDE_LENGTH = 512
 
 _EXAMPLE_IMAGE_PATH = data_dir / "level_previews"
+
+
+def _object_set_item_text(object_set_index: int) -> str:
+    """Format a translated object-set dropdown row.
+
+    Parameters
+    ----------
+    object_set_index : int
+        Stable SMB3 object-set index stored as combo user data.
+
+    Returns
+    -------
+    str
+        Display text combining the hexadecimal object-set id and localized name.
+    """
+    return f"{object_set_index:X} {tr_data_name('ObjectSet', OBJECT_SET_NAMES[object_set_index])}"
 
 
 class NewLevelDialog(CustomDialog):
@@ -50,12 +68,16 @@ class NewLevelDialog(CustomDialog):
         Example preview images keyed by object set index.
     button_box : QDialogButtonBox
         Dialog buttons used to accept or reject the choice.
+    explanation_label : QLabel
+        Wrapped explanatory label describing why the choice is permanent.
     icon_label : QLabel
         Label that shows the selected object-set preview image.
     object_set_dropdown : QComboBox
         Dropdown containing selectable object sets.
     object_set_index : int
         Index of the selected object set in ``OBJECT_SET_ITEMS``.
+    prompt_label : QLabel
+        Short prompt label above the object-set explanation and dropdown.
 
     Notes
     -----
@@ -79,7 +101,7 @@ class NewLevelDialog(CustomDialog):
         parent : QWidget | None
             Parent Qt widget that owns this object.
         """
-        super().__init__(parent, "New Level")
+        super().__init__(parent, tr("Common", "new_level", "New Level"))
 
         self.object_set_index = 0
 
@@ -107,16 +129,14 @@ class NewLevelDialog(CustomDialog):
         self.icon_label = QLabel()
         text_layout = QVBoxLayout()
 
-        prompt_label = QLabel("To create a new level, first select the Object Set.")
+        self.prompt_label = QLabel()
 
-        explanation_label = QLabel(
-            "This will determine the level's theme, by selecting a specific set of objects, that follow a similar "
-            "style. This cannot be changed."
-        )
-        explanation_label.setWordWrap(True)
+        self.explanation_label = QLabel()
+        self.explanation_label.setWordWrap(True)
 
         self.object_set_dropdown = QComboBox()
-        self.object_set_dropdown.addItems(OBJECT_SET_ITEMS)
+        for object_set_index, _object_set_name in enumerate(OBJECT_SET_ITEMS):
+            self.object_set_dropdown.addItem(_object_set_item_text(object_set_index), object_set_index)
         self.object_set_dropdown.currentIndexChanged.connect(self._on_object_set_change)
 
         self.object_set_dropdown.removeItem(0xF)  # No Spade Object Set
@@ -128,8 +148,8 @@ class NewLevelDialog(CustomDialog):
         self.button_box.addButton(QDialogButtonBox.StandardButton.Cancel).clicked.connect(self.reject)
 
         text_layout.addStretch()
-        text_layout.addWidget(prompt_label)
-        text_layout.addWidget(explanation_label)
+        text_layout.addWidget(self.prompt_label)
+        text_layout.addWidget(self.explanation_label)
         text_layout.addSpacing(20)
         text_layout.addWidget(self.object_set_dropdown)
 
@@ -138,6 +158,29 @@ class NewLevelDialog(CustomDialog):
         text_layout.addWidget(self.button_box)
 
         main_layout.addLayout(text_layout)
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh new-level labels without changing the chosen object set.
+
+        The dialog title, prompt, explanatory copy, and object-set row text are
+        rebuilt from the active catalog. Combo-box ``itemData`` values and the
+        current selection remain stable so creating the level still uses the
+        same encoded object-set id after a language switch.
+        """
+        self.setWindowTitle(tr("Common", "new_level", "New Level"))
+        self.prompt_label.setText(
+            tr("Common", "help.select_object_set_first", "To create a new level, first select the Object Set.")
+        )
+        self.explanation_label.setText(
+            tr(
+                "Common",
+                "help.new_level_object_set",
+                "This will determine the level's theme, by selecting a specific set of objects, that follow a similar style. This cannot be changed.",
+            )
+        )
+        for index in range(self.object_set_dropdown.count()):
+            self.object_set_dropdown.setItemText(index, _object_set_item_text(self.object_set_dropdown.itemData(index)))
 
     def _on_object_set_change(self, _):
         """Update the preview image for the selected object set.
@@ -147,9 +190,7 @@ class NewLevelDialog(CustomDialog):
         _ : int
             Dropdown index emitted by Qt.
         """
-        new_text = self.object_set_dropdown.currentText()
-
-        self.object_set_index = OBJECT_SET_ITEMS.index(new_text)
+        self.object_set_index = self.object_set_dropdown.currentData()
 
         example_image = self._EXAMPLE_IMAGES[self.object_set_index]
         assert example_image is not None, "No example image for this object set"

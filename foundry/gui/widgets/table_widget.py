@@ -37,6 +37,8 @@ class TableWidget(QTableWidget):
     ----------
     selection_changed : SignalInstance
         Signal emitted with the selected row index after selection changes.
+        The row number is the stable callback payload for owning browser
+        widgets; translated header labels remain display-only.
     """
 
     selection_changed: SignalInstance = Signal(int)
@@ -89,7 +91,6 @@ class TableWidget(QTableWidget):
         """
         self.setColumnCount(len(headers))
 
-        # TODO doesn't do anything?
         self.setHorizontalHeaderLabels(headers)
         self.resizeColumnsToContents()
 

@@ -29,9 +29,12 @@ from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from foundry.game.gfx.objects.object_like import ObjectLike
+from foundry.gui.localization import tr, tr_object_name
 
 from .ObjectToolBox import ObjectIcon
 from .TabbedToolBox import TabbedToolBox
+
+TR_CONTEXT = "ObjectToolBar"
 
 
 class ObjectToolBar(QWidget):
@@ -57,10 +60,17 @@ class ObjectToolBar(QWidget):
         Object set now loaded into the palette tabs.
     current_object_icon : ObjectIcon
         Preview icon for the active placement object.
+    current_item_widget : QGroupBox
+        Framed preview surface that owns the active-object icon and label.
+        Its help text is display-only and is refreshed by
+        :meth:`retranslate_ui`.
     current_object_name : QLabel
-        Label showing the active placement object name.
+        Display-only label showing the active placement object name. It is
+        regenerated from the selected object payload during live retranslation
+        and never becomes placement identity.
     object_selected : SignalInstance
-        Signal emitted with the object selected for placement.
+        Signal emitted with the stable object selected for placement. The
+        payload is the toolbar object, not the localized preview label.
     tabbed_tool_box : TabbedToolBox
         Recent, object, and enemy palette tabs.
     """
@@ -98,17 +108,11 @@ class ObjectToolBar(QWidget):
         self.current_object_name.setAlignment(Qt.AlignCenter)
         self.current_object_name.setContentsMargins(0, 0, 0, 0)
 
-        current_item_widget = QGroupBox()
-        current_item_widget.setContentsMargins(5, 10, 5, 5)
-        current_item_widget.setFixedWidth(self.current_object_icon.MAX_SIZE.width() * 2)
+        self.current_item_widget = QGroupBox()
+        self.current_item_widget.setContentsMargins(5, 10, 5, 5)
+        self.current_item_widget.setFixedWidth(self.current_object_icon.MAX_SIZE.width() * 2)
 
-        current_item_widget.setWhatsThis(
-            "<b>Current Object</b><br/>"
-            "Shows the currently selected object and its name. It can be placed by "
-            "clicking the middle mouse button anywhere in the level."
-        )
-
-        current_item_layout = QVBoxLayout(current_item_widget)
+        current_item_layout = QVBoxLayout(self.current_item_widget)
         current_item_layout.addWidget(self.current_object_icon, alignment=Qt.AlignCenter)
         current_item_layout.addWidget(self.current_object_name, alignment=Qt.AlignCenter)
 
@@ -116,12 +120,12 @@ class ObjectToolBar(QWidget):
         self.tabbed_tool_box.object_icon_clicked.connect(self._on_object_icon_selected)
 
         layout.addWidget(self.tabbed_tool_box, stretch=1)
-        layout.addWidget(current_item_widget)
+        layout.addWidget(self.current_item_widget)
+        self.retranslate_ui()
 
         self._object_set_index = -1
         self._graphic_set_index = -1
 
-    # TODO: Just give level reference?
     def set_object_set(self, object_set_index: int, graphic_set_index: int, palette_group_index: int):
         """Reload toolbar catalogs from one level-header render context.
 
@@ -160,8 +164,6 @@ class ObjectToolBar(QWidget):
     def _update_currently_selected_object_icon(
         self, object_set_index: int, graphic_set_index: int, palette_group_index: int
     ):
-        # TODO Could this be put into the level icon class itself?
-
         """Rebuild the large placement preview from one render context.
 
         The active object preview is a cached placement object, so it must be
@@ -249,7 +251,7 @@ class ObjectToolBar(QWidget):
         self.tabbed_tool_box.select_object(level_object)
 
         self.current_object_icon.set_object(level_object)
-        self.current_object_name.setText(level_object.name)
+        self.current_object_name.setText(tr_object_name(level_object))
         self.add_recent_object(level_object)
 
     def add_recent_object(self, level_object: InLevelObject):
@@ -261,3 +263,23 @@ class ObjectToolBar(QWidget):
             Level object being displayed or modified.
         """
         self.tabbed_tool_box.add_recent_object(level_object)
+
+    def retranslate_ui(self) -> None:
+        """Refresh toolbar text without changing selected object payloads.
+
+        The active-object help text, tabbed toolbox captions, and icon tooltips
+        are rebuilt from the active catalog. Current object data, recent-object
+        entries, and toolbox selection state remain stable so translated labels
+        never become object identity.
+        """
+        self.current_item_widget.setWhatsThis(
+            tr(
+                TR_CONTEXT,
+                "help.current_object",
+                "<b>Current Object</b><br/>Shows the currently selected object and its name. It can be placed by clicking the middle mouse button anywhere in the level.",
+            )
+        )
+        self.tabbed_tool_box.retranslate_ui()
+        if isinstance(self.current_object_icon.object, (LevelObject, EnemyItem)):
+            self.current_object_name.setText(tr_object_name(self.current_object_icon.object))
+            self.current_object_icon.retranslate_ui()

@@ -346,6 +346,23 @@ open, from a folder in your temp directory, since that is where the editor lives
 but by setting this to either one of the predefined options, or by clicking the folder button and navigating to your Roms
 folder, for example, you don't have to search it out everytime you open the editor.
 
+The language option changes Foundry's display language. The button next to it opens the Translation Manager.
+
+The Translation Manager lets you search the catalog, filter by context or status, edit translations in a detail pane,
+import a JSON catalog, export the effective catalog, save user overrides, or revert your overrides. It edits only user
+overrides stored in your user data directory. The bundled translation files that ship with Foundry are not modified.
+
+Imported files use their filename as the locale code. For example, importing ``pirate.json`` creates a ``pirate`` user
+catalog. A catalog can include ``"_meta": {"display_name": "..."}`` to show a friendly name in language selectors.
+Exports write a complete effective catalog, including fallback strings, so they are useful as a starting point for
+translation. Saves from the table write only the values you changed. Revert removes the selected locale's user override
+and returns it to the bundled or English fallback text.
+
+Rows marked missing are falling back to English because the selected locale does not provide that string. Rows marked
+unchanged English currently display the same text as English; this can be intentional for technical terms such as ROM or
+ASM. Validation messages point out blank values or structural problems such as missing placeholders, HTML tags,
+accelerators, or ``%`` tokens.
+
 3 - Emulator Settings
 ~~~~~~~~~~~~~~~~~~~~~
 

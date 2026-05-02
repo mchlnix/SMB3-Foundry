@@ -18,6 +18,7 @@ from PySide6.QtWidgets import QBoxLayout, QLabel
 
 from foundry import data_dir, get_current_version_name
 from foundry.gui.dialogs.CustomDialog import CustomDialog
+from foundry.gui.localization import tr
 from foundry.gui.widgets.HorizontalLine import HorizontalLine
 
 LINK_SMB3F = "https://github.com/mchlnix/SMB3-Foundry"
@@ -48,6 +49,30 @@ class AboutDialog(CustomDialog):
     parent : QWidget | None
         Parent Qt widget that owns this object.
 
+    Attributes
+    ----------
+    _author_label : LinkLabel
+        Clickable project-author attribution label.
+    _dario_label : QLabel
+        Bug-reporting contributor attribution label.
+    _hukka_label : LinkLabel
+        Clickable SMB3 Workshop attribution label.
+    _lira_label : LinkLabel
+        Clickable disassembly-parsing and autoscroll attribution label.
+    _southbird_label : LinkLabel
+        Clickable SMB3 disassembly attribution label.
+    _spinzig_label : QLabel
+        Enemy-incompatibility contributor attribution label.
+    _testing_label : LinkLabel
+        Clickable testing and sanity-checking attribution label.
+    _thanks_label : QLabel
+        Static heading for the contributor-credit section.
+    _version_label : QLabel
+        Label showing the translated running Foundry version string.
+    _version_name : str
+        Version text resolved at construction and interpolated during
+        translation refresh.
+
     See Also
     --------
     LinkLabel
@@ -69,7 +94,7 @@ class AboutDialog(CustomDialog):
         parent : QWidget | None
             Parent Qt widget that owns this object.
         """
-        super(AboutDialog, self).__init__(parent, title="About SMB3Foundry")
+        super(AboutDialog, self).__init__(parent, title=tr("AboutDialog", "about_smb3foundry", "About SMB3Foundry"))
 
         main_layout = QBoxLayout(QBoxLayout.Direction.LeftToRight, self)
 
@@ -85,48 +110,95 @@ class AboutDialog(CustomDialog):
 
         text_layout = QBoxLayout(QBoxLayout.Direction.TopToBottom)
 
-        version_name = get_current_version_name()
+        self._version_name = get_current_version_name()
 
-        if not version_name.startswith("nightly"):
-            version_name = f"v{version_name}"
+        if not self._version_name.startswith("nightly"):
+            self._version_name = f"v{self._version_name}"
 
-        text_layout.addWidget(QLabel(f"SMB3 Foundry {version_name}", self))
+        self._version_label = QLabel(self)
+        text_layout.addWidget(self._version_label)
         text_layout.addWidget(HorizontalLine())
-        text_layout.addWidget(LinkLabel(self, f'By <a href="{LINK_SMB3F}">Michael</a>'))
+        self._author_label = LinkLabel(self, "")
+        text_layout.addWidget(self._author_label)
         text_layout.addWidget((QLabel("", self)))
-        text_layout.addWidget(QLabel("With thanks to:", self))
-        text_layout.addWidget(
-            LinkLabel(
-                self,
-                f'<a href="{LINK_HUKKA}">Hukka</a> for <a href="{LINK_SMB3WS}">SMB3 Workshop</a>',
-            )
-        )
-        text_layout.addWidget(
-            LinkLabel(
-                self,
-                f'<a href="{LINK_SOUTHBIRD}">Captain Southbird</a> '
-                f'for the <a href="{LINK_DISASM}">SMB3 Disassembly</a>',
-            )
-        )
-        text_layout.addWidget(
-            LinkLabel(
-                self,
-                f'<a href="{LINK_LIRA}">Lira</a> for helping to parse the disassembly and working on AutoScrolling',
-            )
-        )
-        text_layout.addWidget(
-            LinkLabel(
-                self,
-                f'<a href="{LINK_BLUEFINCH}">BlueFinch</a>, ZacMario and '
-                f'<a href="{LINK_SKY}">SKJyannick</a> for testing and sanity checking',
-            )
-        )
-        text_layout.addWidget(QLabel(f'<a href="{LINK_DARIO}">Dario</a> for reporting many bugs and problems', self))
-        text_layout.addWidget(QLabel("Spinzig for compiling the enemy incompatibilities.", self))
+        self._thanks_label = QLabel(self)
+        text_layout.addWidget(self._thanks_label)
+        self._hukka_label = LinkLabel(self, "")
+        text_layout.addWidget(self._hukka_label)
+        self._southbird_label = LinkLabel(self, "")
+        text_layout.addWidget(self._southbird_label)
+        self._lira_label = LinkLabel(self, "")
+        text_layout.addWidget(self._lira_label)
+        self._testing_label = LinkLabel(self, "")
+        text_layout.addWidget(self._testing_label)
+        self._dario_label = QLabel(self)
+        text_layout.addWidget(self._dario_label)
+        self._spinzig_label = QLabel(self)
+        text_layout.addWidget(self._spinzig_label)
 
         main_layout.addLayout(text_layout)
 
         self.setContentsMargins(10, 10, 10, 10)
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh translated About dialog text without rebuilding the layout.
+
+        Live language switching updates only Qt display text and rich-text link
+        labels. The method coordinates the dialog's display state from the
+        resolved Foundry build version and URL constants, so refreshes rebuild
+        visible labels without changing dialog identity or opening new widgets.
+        HTML anchors are part of the display boundary and their ``href`` values
+        remain project-support constants rather than translated payloads.
+        """
+        self.setWindowTitle(tr("AboutDialog", "about_smb3foundry", "About SMB3Foundry"))
+        self._version_label.setText(
+            tr("AboutDialog", "smb3_foundry_version_name", "SMB3 Foundry {version_name}").format(
+                version_name=self._version_name
+            )
+        )
+        self._author_label.setText(
+            tr("AboutDialog", "credit.author_michael", 'By <a href="{link}">Michael</a>').format(link=LINK_SMB3F)
+        )
+        self._thanks_label.setText(tr("AboutDialog", "with_thanks_to", "With thanks to:"))
+        self._hukka_label.setText(
+            tr(
+                "AboutDialog",
+                "credit.hukka_workshop",
+                '<a href="{hukka_link}">Hukka</a> for <a href="{workshop_link}">SMB3 Workshop</a>',
+            ).format(hukka_link=LINK_HUKKA, workshop_link=LINK_SMB3WS)
+        )
+        self._southbird_label.setText(
+            tr(
+                "AboutDialog",
+                "credit.southbird_disassembly",
+                '<a href="{southbird_link}">Captain Southbird</a> for the <a href="{disasm_link}">SMB3 Disassembly</a>',
+            ).format(southbird_link=LINK_SOUTHBIRD, disasm_link=LINK_DISASM)
+        )
+        self._lira_label.setText(
+            tr(
+                "AboutDialog",
+                "credit.lira_autoscroll",
+                '<a href="{lira_link}">Lira</a> for helping to parse the disassembly and working on AutoScrolling',
+            ).format(lira_link=LINK_LIRA)
+        )
+        self._testing_label.setText(
+            tr(
+                "AboutDialog",
+                "credit.bluefinch_testing",
+                '<a href="{bluefinch_link}">BlueFinch</a>, ZacMario and <a href="{sky_link}">SKJyannick</a> for testing and sanity checking',
+            ).format(bluefinch_link=LINK_BLUEFINCH, sky_link=LINK_SKY)
+        )
+        self._dario_label.setText(
+            tr(
+                "AboutDialog",
+                "credit.dario_bug_reports",
+                '<a href="{dario_link}">Dario</a> for reporting many bugs and problems',
+            ).format(dario_link=LINK_DARIO)
+        )
+        self._spinzig_label.setText(
+            tr("AboutDialog", "credit.spijzig_enemy_compat", "Spinzig for compiling the enemy incompatibilities.")
+        )
 
 
 class LinkLabel(QLabel):

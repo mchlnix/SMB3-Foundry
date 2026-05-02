@@ -29,6 +29,9 @@ from foundry import icon
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.ContextMenu import ContextMenu
+from foundry.gui.localization import tr
+
+TR_CONTEXT = "ScribeWorldContextMenu"
 
 
 class WorldContextMenu(ContextMenu):
@@ -83,17 +86,29 @@ class WorldContextMenu(ContextMenu):
 
         self.level_ref = level_ref
 
-        self.cut_action = self.addAction("Cut Tiles")
+        self.cut_action = self.addAction(tr(TR_CONTEXT, "cut_tiles", "Cut Tiles"))
         self.cut_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_X)
         self.cut_action.setIcon(icon("scissors.svg"))
 
-        self.copy_action = self.addAction("Copy Tiles")
+        self.copy_action = self.addAction(tr(TR_CONTEXT, "copy_tiles", "Copy Tiles"))
         self.copy_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_C)
         self.copy_action.setIcon(icon("copy.svg"))
 
-        self.paste_action = self.addAction("Paste Tiles")
+        self.paste_action = self.addAction(tr(TR_CONTEXT, "paste_tiles", "Paste Tiles"))
         self.paste_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_V)
         self.paste_action.setIcon(icon("clipboard.svg"))
+
+    def retranslate_ui(self) -> None:
+        """Refresh world context-menu labels without changing commands.
+
+        The cut, copy, and paste action text is rebuilt from the active catalog.
+        Existing ``QAction`` objects, shortcuts, icons, and connected tile
+        command handlers stay in place so translated labels never become command
+        identity.
+        """
+        self.cut_action.setText(tr(TR_CONTEXT, "cut_tiles", "Cut Tiles"))
+        self.copy_action.setText(tr(TR_CONTEXT, "copy_tiles", "Copy Tiles"))
+        self.paste_action.setText(tr(TR_CONTEXT, "paste_tiles", "Paste Tiles"))
 
     @property
     def world(self) -> WorldMap:

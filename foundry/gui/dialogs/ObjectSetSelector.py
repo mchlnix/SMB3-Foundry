@@ -23,6 +23,24 @@ from PySide6.QtWidgets import (
 )
 
 from foundry.gui import OBJECT_SET_ITEMS
+from foundry.gui.localization import tr, tr_data_name
+from smb3parse.constants import OBJECT_SET_NAMES
+
+
+def _object_set_item_text(object_set_index: int) -> str:
+    """Format a translated object-set dropdown row.
+
+    Parameters
+    ----------
+    object_set_index : int
+        Stable SMB3 object-set index stored as combo user data.
+
+    Returns
+    -------
+    str
+        Display text combining the hexadecimal object-set id and localized name.
+    """
+    return f"{object_set_index:X} {tr_data_name('ObjectSet', OBJECT_SET_NAMES[object_set_index])}"
 
 
 class ObjectSetSelector(QDialog):
@@ -41,6 +59,8 @@ class ObjectSetSelector(QDialog):
     ----------
     cancel_button : QPushButton
         Button that rejects the dialog.
+    description : QLabel
+        Explanatory label warning that the object-set choice is permanent.
     object_set_dropdown : QComboBox
         Dropdown containing selectable object sets.
     ok_button : QPushButton
@@ -71,23 +91,24 @@ class ObjectSetSelector(QDialog):
         """
         super(ObjectSetSelector, self).__init__(parent)
 
-        self.setWindowTitle("Object Set Selector")
+        self.setWindowTitle(tr("Common", "object_set_selector", "Object Set Selector"))
         self.setModal(True)
 
         self.result = 1
 
         layout = QVBoxLayout(self)
 
-        description = QLabel("Choose the object set for this new level.\nThis cannot be changed afterwards.\n")
-        layout.addWidget(description)
+        self.description = QLabel()
+        layout.addWidget(self.description)
 
         self.object_set_dropdown = QComboBox()
-        self.object_set_dropdown.addItems(OBJECT_SET_ITEMS[1:-1])
+        for object_set_index, _object_set_name in enumerate(OBJECT_SET_ITEMS[1:-1], start=1):
+            self.object_set_dropdown.addItem(_object_set_item_text(object_set_index), object_set_index)
         layout.addWidget(self.object_set_dropdown)
 
-        self.ok_button = QPushButton("Ok")
+        self.ok_button = QPushButton()
         self.ok_button.clicked.connect(self.on_button)
-        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button = QPushButton()
         self.cancel_button.clicked.connect(self.on_button)
 
         button_group = QHBoxLayout()
@@ -95,11 +116,33 @@ class ObjectSetSelector(QDialog):
         button_group.addWidget(self.cancel_button)
 
         layout.addLayout(button_group)
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh selector labels while preserving object-set identity.
+
+        The dialog title, prompt text, buttons, and dropdown row labels are
+        rebuilt from the active catalog. Existing ``itemData`` values and the
+        current combo-box selection stay stable, so callers still receive the
+        same object-set id rather than a translated display string.
+        """
+        self.setWindowTitle(tr("Common", "object_set_selector", "Object Set Selector"))
+        self.description.setText(
+            tr(
+                "Common",
+                "prompt.new_level_object_set",
+                "Choose the object set for this new level.\nThis cannot be changed afterwards.\n",
+            )
+        )
+        self.ok_button.setText(tr("Common", "ok_title", "Ok"))
+        self.cancel_button.setText(tr("Common", "cancel", "Cancel"))
+        for index in range(self.object_set_dropdown.count()):
+            self.object_set_dropdown.setItemText(index, _object_set_item_text(self.object_set_dropdown.itemData(index)))
 
     def on_button(self):
         """Accept or reject the dialog based on the clicked button."""
         if self.sender() is self.ok_button:
-            self.result = self.object_set_dropdown.currentIndex() + 1
+            self.result = self.object_set_dropdown.currentData()
             self.accept()
         elif self.sender() is self.cancel_button:
             self.reject()

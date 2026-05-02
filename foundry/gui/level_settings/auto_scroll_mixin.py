@@ -41,6 +41,7 @@ from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.gui import label_and_widget
 from foundry.gui.commands import AddEnemyAt, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
+from foundry.gui.localization import tr
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_AUTOSCROLL
 
@@ -48,13 +49,29 @@ if TYPE_CHECKING:
     from foundry.gui.FoundryMainWindow import FoundryMainWindow
 
 AUTOSCROLL_LABELS = {
-    -1: "No Autoscroll in Level.",
-    0: "Horizontal Autoscroll",
-    1: "Horizontal Autoscroll",
-    2: "Moves Level up and right; screen wraps, vertically",
-    3: "Moves ceiling down and up (Fortress Spike Levels)",
-    4: "Moves ground up, until a door hits the ground",
-    5: "Moves ground up and down, used for changes in over-water Levels",
+    -1: ("AutoScrollMixin", "no_autoscroll_in_level", "No Autoscroll in Level."),
+    0: ("AutoScrollMixin", "horizontal_autoscroll", "Horizontal Autoscroll"),
+    1: ("AutoScrollMixin", "horizontal_autoscroll", "Horizontal Autoscroll"),
+    2: (
+        "AutoScrollMixin",
+        "moves_level_up_and_right_screen_wraps_vertically",
+        "Moves Level up and right; screen wraps, vertically",
+    ),
+    3: (
+        "AutoScrollMixin",
+        "moves_ceiling_down_and_up_fortress_spike_levels",
+        "Moves ceiling down and up (Fortress Spike Levels)",
+    ),
+    4: (
+        "AutoScrollMixin",
+        "moves_ground_up_until_a_door_hits_the_ground",
+        "Moves ground up, until a door hits the ground",
+    ),
+    5: (
+        "AutoScrollMixin",
+        "moves_ground_up_and_down_used_for_changes_in_over_water_levels",
+        "Moves ground up and down, used for changes in over-water Levels",
+    ),
 }
 
 
@@ -109,10 +126,12 @@ class AutoScrollMixin(SettingsMixin):
         )
 
         # Autoscroll
-        auto_scroll_group = QGroupBox("Autoscrolling", self)
+        auto_scroll_group = QGroupBox(tr("AutoScrollMixin", "autoscrolling", "Autoscrolling"), self)
         QVBoxLayout(auto_scroll_group)
 
-        self.enabled_checkbox = QCheckBox("Enable Autoscroll in Level", self)
+        self.enabled_checkbox = QCheckBox(
+            tr("AutoScrollMixin", "enable_autoscroll_in_level", "Enable Autoscroll in Level"), self
+        )
         self.enabled_checkbox.toggled.connect(self._insert_autoscroll_object)
 
         self.auto_scroll_type_spinner = Spinner(self, maximum=0x60 - 1)
@@ -121,7 +140,9 @@ class AutoScrollMixin(SettingsMixin):
         self.auto_scroll_type_label = QLabel(self)
 
         auto_scroll_group.layout().addWidget(self.enabled_checkbox)
-        auto_scroll_group.layout().addLayout(label_and_widget("Scroll Type: ", self.auto_scroll_type_spinner))
+        auto_scroll_group.layout().addLayout(
+            label_and_widget(tr("AutoScrollMixin", "scroll_type", "Scroll Type: "), self.auto_scroll_type_spinner)
+        )
         auto_scroll_group.layout().addWidget(self.auto_scroll_type_label)
 
         self.layout().addWidget(auto_scroll_group)
@@ -141,10 +162,10 @@ class AutoScrollMixin(SettingsMixin):
         self.auto_scroll_type_spinner.setEnabled(autoscroll_item is not None)
 
         if autoscroll_item is None:
-            self.auto_scroll_type_label.setText(AUTOSCROLL_LABELS[-1])
+            self.auto_scroll_type_label.setText(tr(*AUTOSCROLL_LABELS[-1]))
         else:
             self.auto_scroll_type_spinner.setValue(autoscroll_item.auto_scroll_type)
-            self.auto_scroll_type_label.setText(AUTOSCROLL_LABELS[autoscroll_item.auto_scroll_type >> 4])
+            self.auto_scroll_type_label.setText(tr(*AUTOSCROLL_LABELS[autoscroll_item.auto_scroll_type >> 4]))
 
         super(AutoScrollMixin, self).update()
 
@@ -265,7 +286,7 @@ class AutoScrollMixin(SettingsMixin):
 
                 make_macro(
                     self.undo_stack,
-                    "Change Autoscroll Path",
+                    tr("AutoScrollMixin", "change_autoscroll_path", "Change Autoscroll Path"),
                     RemoveObject(self.level_ref, self.original_autoscroll_item),
                     AddEnemyAt(
                         self._parent.level_view,
@@ -281,7 +302,12 @@ class AutoScrollMixin(SettingsMixin):
 
 
 def _get_autoscroll(enemy_items: list[EnemyItem]) -> EnemyItem | None:
-    """Return the level's autoscroll enemy item.
+    """Find the special enemy item that stages autoscroll behavior.
+
+    The level-settings dialog treats autoscroll as an editable setting, but
+    SMB3 stores it as an enemy/item record. This helper is the lookup boundary
+    used by setup, preview updates, and close-time command reconstruction so
+    all three phases agree on which record represents autoscroll.
 
     Parameters
     ----------

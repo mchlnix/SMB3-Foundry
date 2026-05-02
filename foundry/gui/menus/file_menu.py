@@ -29,6 +29,7 @@ from foundry.gui.asm import (
     save_asm_filename,
 )
 from foundry.gui.dialogs.fns_asm_load_dialog import FnsAsmLoadDialog
+from foundry.gui.localization import tr
 from foundry.gui.m3l import save_m3l, save_m3l_filename
 from foundry.gui.settings import Settings
 from smb3parse.constants import update_global_offsets
@@ -55,6 +56,10 @@ class FileMenu(QMenu):
 
     Attributes
     ----------
+    asm_menu : QMenu
+        Submenu for level/enemy ASM import and export plus FNS address import.
+    m3l_menu : QMenu
+        Submenu for detached M3L level snapshot import and export.
     level_ref : LevelRef
         Active level reference used by import and export actions.
     settings : Settings
@@ -104,76 +109,100 @@ class FileMenu(QMenu):
         title : str, optional
             Menu title shown in the main window.
         """
-        super(FileMenu, self).__init__(title)
+        super(FileMenu, self).__init__(tr("Common", "file", title))
 
         self.level_ref = level_ref
         self.settings = settings
 
         self.triggered.connect(self._on_trigger)
 
-        self.open_rom_action = self.addAction("Open ROM")
+        self.open_rom_action = self.addAction(tr("Common", "open_rom", "Open ROM"))
         self.open_rom_action.setIcon(icon("folder.svg"))
 
         self.addSeparator()
 
-        self.save_rom_action = self.addAction("Save ROM")
+        self.save_rom_action = self.addAction(tr("Common", "save_rom", "Save ROM"))
         self.save_rom_action.setIcon(icon("save.svg"))
         self.save_rom_action.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_S)
 
-        self.save_rom_as_action = self.addAction("Save ROM as ...")
+        self.save_rom_as_action = self.addAction(tr("Common", "save_rom_as_spaced_ellipsis", "Save ROM as ..."))
         self.save_rom_as_action.setIcon(icon("save.svg"))
 
         self.addSeparator()
 
-        self.reload_rom_action = self.addAction("Reload ROM")
+        self.reload_rom_action = self.addAction(tr("Common", "reload_rom", "Reload ROM"))
         self.reload_rom_action.setIcon(icon("refresh-cw.svg"))
 
         self.addSeparator()
 
-        m3l_menu = QMenu("M3L")
-        m3l_menu.setIcon(icon("file.svg"))
+        self.m3l_menu = QMenu(tr("Common", "m3l", "M3L"))
+        self.m3l_menu.setIcon(icon("file.svg"))
 
-        self.open_m3l_action = m3l_menu.addAction("Open M3L")
+        self.open_m3l_action = self.m3l_menu.addAction(tr("Common", "open_m3l", "Open M3L"))
         self.open_m3l_action.setIcon(icon("folder.svg"))
 
-        self.save_m3l_action = m3l_menu.addAction("Save M3L")
+        self.save_m3l_action = self.m3l_menu.addAction(tr("Common", "save_m3l", "Save M3L"))
         self.save_m3l_action.setIcon(icon("save.svg"))
 
-        asm_menu = QMenu("ASM")
-        asm_menu.setIcon(icon("cpu.svg"))
+        self.asm_menu = QMenu(tr("Common", "asm", "ASM"))
+        self.asm_menu.setIcon(icon("cpu.svg"))
 
-        self.open_level_asm_action = asm_menu.addAction("Open Level")
+        self.open_level_asm_action = self.asm_menu.addAction(tr("Common", "open_level", "Open Level"))
         self.open_level_asm_action.setIcon(icon("folder.svg"))
         # open_level_asm.triggered.connect(self.on_open_asm)
 
-        self.save_level_asm_action = asm_menu.addAction("Save Level")
+        self.save_level_asm_action = self.asm_menu.addAction(tr("Common", "save_level", "Save Level"))
         self.save_level_asm_action.setIcon(icon("save.svg"))
 
-        asm_menu.addSeparator()
+        self.asm_menu.addSeparator()
 
-        self.import_enemy_asm_action = asm_menu.addAction("Import Enemies")
+        self.import_enemy_asm_action = self.asm_menu.addAction(tr("Common", "import_enemies", "Import Enemies"))
         self.import_enemy_asm_action.setIcon(icon("upload.svg"))
 
-        self.export_enemy_asm_action = asm_menu.addAction("Export Enemies")
+        self.export_enemy_asm_action = self.asm_menu.addAction(tr("Common", "export_enemies", "Export Enemies"))
         self.export_enemy_asm_action.setIcon(icon("download.svg"))
 
-        asm_menu.addSeparator()
+        self.asm_menu.addSeparator()
 
-        self.import_fns_action = asm_menu.addAction("Import FNS Addresses")
+        self.import_fns_action = self.asm_menu.addAction(tr("Common", "import_fns_addresses", "Import FNS Addresses"))
         self.import_fns_action.setIcon(icon("upload.svg"))
 
-        self.addMenu(m3l_menu)
-        self.addMenu(asm_menu)
+        self.addMenu(self.m3l_menu)
+        self.addMenu(self.asm_menu)
 
         self.addSeparator()
 
-        self.settings_action = self.addAction("Editor Settings")
+        self.settings_action = self.addAction(tr("Common", "editor_settings", "Editor Settings"))
         self.settings_action.setIcon(icon("sliders.svg"))
 
         self.addSeparator()
 
-        self.exit_action = self.addAction("Exit")
+        self.exit_action = self.addAction(tr("Common", "exit", "Exit"))
         self.exit_action.setIcon(icon("power.svg"))
+
+    def retranslate_ui(self) -> None:
+        """Refresh file-menu labels after a language change.
+
+        The menu rewrites only Qt action and submenu display text. File paths,
+        ROM state, M3L bytes, ASM text, FNS labels, and settings payloads stay
+        owned by their respective workflows.
+        """
+        self.setTitle(tr("Common", "file", "&File"))
+        self.open_rom_action.setText(tr("Common", "open_rom", "Open ROM"))
+        self.save_rom_action.setText(tr("Common", "save_rom", "Save ROM"))
+        self.save_rom_as_action.setText(tr("Common", "save_rom_as_spaced_ellipsis", "Save ROM as ..."))
+        self.reload_rom_action.setText(tr("Common", "reload_rom", "Reload ROM"))
+        self.m3l_menu.setTitle(tr("Common", "m3l", "M3L"))
+        self.open_m3l_action.setText(tr("Common", "open_m3l", "Open M3L"))
+        self.save_m3l_action.setText(tr("Common", "save_m3l", "Save M3L"))
+        self.asm_menu.setTitle(tr("Common", "asm", "ASM"))
+        self.open_level_asm_action.setText(tr("Common", "open_level", "Open Level"))
+        self.save_level_asm_action.setText(tr("Common", "save_level", "Save Level"))
+        self.import_enemy_asm_action.setText(tr("Common", "import_enemies", "Import Enemies"))
+        self.export_enemy_asm_action.setText(tr("Common", "export_enemies", "Export Enemies"))
+        self.import_fns_action.setText(tr("Common", "import_fns_addresses", "Import FNS Addresses"))
+        self.settings_action.setText(tr("Common", "editor_settings", "Editor Settings"))
+        self.exit_action.setText(tr("Common", "exit", "Exit"))
 
     def _on_trigger(self, action: QAction):
         """Dispatch handled submenu actions to their file workflow.
@@ -201,7 +230,11 @@ class FileMenu(QMenu):
         selects a file, the parsed ASM is applied directly to the level
         model.
         """
-        if not (pathname := load_asm_filename("Level ASM", self.settings.value("editor/default_dir_path"))):
+        if not (
+            pathname := load_asm_filename(
+                tr("Common", "level_asm", "Level ASM"), self.settings.value("editor/default_dir_path")
+            )
+        ):
             return
 
         load_asm_level(pathname, self.level_ref.level)
@@ -216,7 +249,7 @@ class FileMenu(QMenu):
 
         level_asm, _ = self.level_ref.level.to_asm()
 
-        self.save_asm(suggested_file, level_asm, "Level ASM")
+        self.save_asm(suggested_file, level_asm, tr("Common", "level_asm", "Level ASM"))
 
     def on_save_enemy_asm(self):
         """Export the loaded level's enemy data as ASM.
@@ -228,7 +261,7 @@ class FileMenu(QMenu):
 
         _, enemy_asm = self.level_ref.level.to_asm()
 
-        self.save_asm(suggested_file, enemy_asm, "Enemy ASM")
+        self.save_asm(suggested_file, enemy_asm, tr("Common", "enemy_asm", "Enemy ASM"))
 
     @staticmethod
     def save_asm(suggested_file: str, asm: str, what: str):
@@ -283,9 +316,12 @@ class FileMenu(QMenu):
         asm_path = Path(open_dialog.asm_path)
 
         if self.update_globals_from_fns(asm_path, fns_path):
-            QMessageBox.information(NO_PARENT, "Update complete", "Successfully updated the ASM globals.")
+            QMessageBox.information(
+                NO_PARENT,
+                tr("Common", "update_complete", "Update complete"),
+                tr("Common", "successfully_updated_the_asm_globals", "Successfully updated the ASM globals."),
+            )
 
-    # TODO kinda clunky that this is here
     def update_globals_from_fns(self, asm_path: Path, fns_path: Path):
         """Refresh global ASM offsets from an FNS file.
 
@@ -319,7 +355,7 @@ class FileMenu(QMenu):
             ROM.smb3_asm_path = str(asm_path)
 
         except Exception as e:
-            QMessageBox.critical(NO_PARENT, "Failed updating globals", str(e))
+            QMessageBox.critical(NO_PARENT, tr("Common", "failed_updating_globals", "Failed updating globals"), str(e))
             return False
 
         finally:

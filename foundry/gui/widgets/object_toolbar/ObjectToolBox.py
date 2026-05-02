@@ -66,7 +66,9 @@ class ObjectToolBox(QWidget):
     _object_set_index : int
         Object set used to build level-object icons on this page.
     object_icon_clicked : SignalInstance
-        Signal emitted with the clicked icon.
+        Signal emitted with the clicked ``ObjectIcon``. The icon owns the
+        stable object payload used for placement and drag data; translated
+        tooltips are display-only and are refreshed by :meth:`retranslate_ui`.
     """
 
     object_icon_clicked: SignalInstance = Signal(ObjectIcon)
@@ -370,6 +372,17 @@ class ObjectToolBox(QWidget):
                 return index
         else:
             return -1
+
+    def retranslate_ui(self) -> None:
+        """Refresh page icon tooltips without rebuilding the icon grid.
+
+        Each ``ObjectIcon`` receives a live-refresh pass from the active
+        catalog. Grid order, icon widgets, and their stored object payloads stay
+        stable so filtering or recent-object identity is not affected by
+        translated tooltip text.
+        """
+        for object_icon in self._gen_icon_widgets():
+            object_icon.retranslate_ui()
 
     def _gen_icon_widgets(self):
         """Yield icon widgets in grid order.

@@ -3,6 +3,13 @@ Foundry Dialog Modules
 
 These pages collect the editor dialogs that branch out from the main workflow.
 
+For localization workflows, start with
+:doc:`/subsystems/localization_architecture`, then use
+:class:`foundry.gui.dialogs.SettingsDialog.SettingsDialog` for the settings
+entry point and
+:class:`foundry.gui.dialogs.TranslationManagerDialog.TranslationManagerDialog`
+for the user-editable catalog overlay dialog.
+
 .. autosummary::
    :toctree: generated
 
@@ -22,3 +29,4 @@ These pages collect the editor dialogs that branch out from the main workflow.
    foundry.gui.dialogs.ObjectSetSelector
    foundry.gui.dialogs.PaletteViewer
    foundry.gui.dialogs.SettingsDialog
+   foundry.gui.dialogs.TranslationManagerDialog

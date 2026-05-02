@@ -44,6 +44,7 @@ from foundry.game.gfx.Palette import (
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.commands import UpdatePalette
 from foundry.gui.dialogs.CustomDialog import CustomDialog
+from foundry.gui.localization import tr
 
 
 class PaletteViewer(CustomDialog):
@@ -96,17 +97,16 @@ class PaletteViewer(CustomDialog):
         level_ref : LevelRef
             Reference to the edited level.
         """
-        title = f"Palette Groups for Object Set {level_ref.level.object_set_number}"
-
-        super(PaletteViewer, self).__init__(parent, title=title)
+        super(PaletteViewer, self).__init__(parent)
 
         self.level_ref = level_ref
+        self._palette_group_boxes: list[tuple[int, QGroupBox]] = []
 
         layout = QGridLayout(self)
 
         for palette_group_number in range(PALETTE_GROUPS_PER_OBJECT_SET):
             group_box = QGroupBox()
-            group_box.setTitle(f"Palette Group {palette_group_number}")
+            self._palette_group_boxes.append((palette_group_number, group_box))
 
             group_box_layout = QVBoxLayout(group_box)
             group_box_layout.setSpacing(0)
@@ -118,6 +118,28 @@ class PaletteViewer(CustomDialog):
             col = palette_group_number % self.palettes_per_row
 
             layout.addWidget(group_box, row, col)
+
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh palette-viewer chrome without changing palette data.
+
+        The window title is rebuilt from the active catalog while the level
+        reference, object-set number, palette widgets, and selected colors stay
+        bound to the same ROM palette data.
+        """
+        self.setWindowTitle(
+            tr("PaletteViewer", "label.palette_group_object_set", "Palette Groups for Object Set {object_set}").format(
+                object_set=self.level_ref.level.object_set_number
+            )
+        )
+
+        for palette_group_number, group_box in self._palette_group_boxes:
+            group_box.setTitle(
+                tr(
+                    "PaletteViewer", "palette_group_palette_group_number", "Palette Group {palette_group_number}"
+                ).format(palette_group_number=palette_group_number)
+            )
 
 
 class PaletteWidget(QWidget):
@@ -458,7 +480,7 @@ class ColorTable(QDialog):
         """
         super(ColorTable, self).__init__()
 
-        self.setWindowTitle("NES Color Table")
+        self.retranslate_ui()
 
         self._currently_selected_square: ColorSquare = ColorSquare()
         self.selected_color_index = 0
@@ -486,6 +508,15 @@ class ColorTable(QDialog):
         layout.addLayout(self.color_table_layout)
 
         layout.addWidget(self.buttons, alignment=Qt.AlignCenter)
+
+    def retranslate_ui(self) -> None:
+        """Refresh color-table labels without changing the active swatch.
+
+        The chooser window title is rebuilt from the active catalog. The NES
+        color grid, selected square, and candidate palette value remain the same
+        widget state so a language switch cannot alter the pending color edit.
+        """
+        self.setWindowTitle(tr("PaletteViewer", "nes_color_table", "NES Color Table"))
 
     def _on_click(self):
         """Preview one NES color choice without committing it yet.
@@ -596,13 +627,21 @@ class SidePalette(QWidget):
 
         self.update()
 
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh palette help text while preserving palette selection state.
+
+        The ``WhatsThis`` help copy is rebuilt from the active catalog. The
+        linked level reference, palette group, selected color widget, and undo
+        target remain stable so localization only changes explanatory text.
+        """
         self.setWhatsThis(
-            "<b>Object Palettes</b><br/>"
-            "This shows the current palette group of the level, which can be changed in the level header "
-            "editor.<br/>"
-            "By clicking on the individual colors, you can change them.<br/><br/>"
-            ""
-            "Note: The first color (the left most one) is always the same among all 4 palettes."
+            tr(
+                "PaletteViewer",
+                "help.object_palettes",
+                "<b>Object Palettes</b><br/>This shows the current palette group of the level, which can be changed in the level header editor.<br/>By clicking on the individual colors, you can change them.<br/><br/>Note: The first color (the left most one) is always the same among all 4 palettes.",
+            )
         )
 
     @property
@@ -673,6 +712,13 @@ class SidePalette(QWidget):
         """
 
         def actual_changer(index_in_palette, index_in_nes_color_table):
+            """Preview one NES color choice without recording undo state.
+
+            The color-table dialog calls this while the user is still choosing
+            a color. The callback writes to the active ROM-backed palette group
+            and reloads the level for display only; the accepted value is later
+            committed through ``on_color_commit``.
+            """
             change_color(
                 self.palette_group,
                 palette_no,
@@ -704,6 +750,12 @@ class SidePalette(QWidget):
         """
 
         def actual_commiter(index_in_palette, index_in_nes_color_table):
+            """Commit one accepted NES color choice to the undo stack.
+
+            Unlike the preview callback, this creates the stable editor command
+            that owns persistence, undo, redo, and dirty-state integration for
+            the selected palette cell.
+            """
             self.undo_stack.push(
                 UpdatePalette(
                     self.level_ref,

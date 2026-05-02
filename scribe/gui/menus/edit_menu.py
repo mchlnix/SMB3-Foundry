@@ -29,7 +29,10 @@ from PySide6.QtGui import QAction, Qt
 from PySide6.QtWidgets import QMenu
 
 from foundry import icon
+from foundry.gui.localization import tr
 from scribe.gui.edit_world_info import EditWorldInfo
+
+TR_CONTEXT = "ScribeEditMenu"
 
 
 class EditMenu(QMenu):
@@ -98,7 +101,7 @@ class EditMenu(QMenu):
             whose ``level_ref`` provides the world model consumed by the
             world-info dialog.
         """
-        super(EditMenu, self).__init__("&Edit", parent)
+        super(EditMenu, self).__init__(tr(TR_CONTEXT, "edit", "&Edit"), parent)
 
         self.triggered.connect(self.on_menu)
 
@@ -115,18 +118,36 @@ class EditMenu(QMenu):
 
         self.addSeparator()
 
-        self.clear_tiles_action = self.addAction("Clear &Tiles")
+        self.clear_tiles_action = self.addAction(tr(TR_CONTEXT, "clear_tiles", "Clear &Tiles"))
         self.clear_tiles_action.setIcon(icon("loader.svg"))
-        self.clear_level_pointers_action = self.addAction("Clear All &Level Pointers")
+        self.clear_level_pointers_action = self.addAction(
+            tr(TR_CONTEXT, "clear_all_level_pointers", "Clear All &Level Pointers")
+        )
         self.clear_level_pointers_action.setIcon(icon("loader.svg"))
-        self.clear_sprites_action = self.addAction("Clear All &Sprites")
+        self.clear_sprites_action = self.addAction(tr(TR_CONTEXT, "clear_all_sprites", "Clear All &Sprites"))
         self.clear_sprites_action.setIcon(icon("loader.svg"))
 
         self.addSeparator()
 
-        self.edit_world_info = self.addAction("Edit World Info")
+        self.edit_world_info = self.addAction(tr(TR_CONTEXT, "edit_world_info", "Edit World Info"))
         self.edit_world_info.setShortcut(Qt.Modifier.CTRL | Qt.Key.Key_E)
         self.edit_world_info.setIcon(icon("tool.svg"))
+
+    def retranslate_ui(self) -> None:
+        """Refresh edit-menu labels after a language change.
+
+        The menu updates only visible action text and the menu title. QAction
+        identity, shortcuts, undo-stack bindings, and world-view callbacks stay
+        intact so a live language change cannot disturb edit history, selected
+        world state, or undo ownership.
+        """
+        self.setTitle(tr(TR_CONTEXT, "edit", "&Edit"))
+        self.clear_tiles_action.setText(tr(TR_CONTEXT, "clear_tiles", "Clear &Tiles"))
+        self.clear_level_pointers_action.setText(
+            tr(TR_CONTEXT, "clear_all_level_pointers", "Clear All &Level Pointers")
+        )
+        self.clear_sprites_action.setText(tr(TR_CONTEXT, "clear_all_sprites", "Clear All &Sprites"))
+        self.edit_world_info.setText(tr(TR_CONTEXT, "edit_world_info", "Edit World Info"))
 
     def on_menu(self, action: QAction):
         """Dispatch a triggered menu action to the appropriate editor helper.

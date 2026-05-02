@@ -29,6 +29,7 @@ from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.jump import Jump
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.Palette import bg_color_for_palette_group
+from foundry.gui.localization import tr_object_name
 from foundry.gui.visualization.MainView import object_to_mime_data
 
 objects_to_use_pngs_instead = {
@@ -79,7 +80,9 @@ class ObjectIcon(QWidget):
     MIN_SIZE : QSize
         Standard toolbar icon size.
     clicked : SignalInstance
-        Signal emitted after click or accepted drag.
+        Signal emitted after click or accepted drag. Consumers read
+        :attr:`object` for the stable placement payload rather than tooltip
+        text.
     draw_background_color : bool
         Whether the icon paints the object palette background.
     image : QImage
@@ -87,9 +90,11 @@ class ObjectIcon(QWidget):
     max_size : QSize
         Maximum size used by ``sizeHint``.
     object : InLevelObject | None
-        Minimal object represented by this icon.
+        Minimal object represented by this icon and serialized into drag MIME
+        data. Localized tooltip text is display-only and is rebuilt by
+        :meth:`retranslate_ui`.
     zoom : int
-        Stored zoom factor used by callers when sizing icons.
+        Stored zoom factor applied by the icon when rendering its preview.
     """
 
     MIN_SIZE = QSize(32, 32)
@@ -194,13 +199,47 @@ class ObjectIcon(QWidget):
             else:
                 additional_data = f"{obj.obj_index:#x}"
 
-            self.setToolTip(f"{obj.name}, {additional_data}")
+            self._set_tooltip(additional_data)
 
         else:
             self.image = QImage()
 
         self.update_image()
         self.update()
+
+    def retranslate_ui(self) -> None:
+        """Refresh the represented object's tooltip text in place.
+
+        The tooltip is rebuilt from the active catalog and stable object data.
+        The icon image, stored ``LevelObject`` or jump payload, and grid widget
+        identity remain unchanged so the toolbar still places the same object.
+        """
+        if isinstance(self.object, Jump) or self.object is None:
+            return
+
+        if isinstance(self.object, LevelObject):
+            additional_data = f"{self.object.domain:#x} {self.object.obj_index:#x}"
+        else:
+            additional_data = f"{self.object.obj_index:#x}"
+
+        self._set_tooltip(additional_data)
+
+    def _set_tooltip(self, additional_data: str) -> None:
+        """Refresh the translated object tooltip while preserving raw ids.
+
+        The tooltip combines localized display text with raw SMB3 domain and
+        object identifiers. Those hex values are stable placement metadata for
+        maintainers inspecting toolbar entries; only the object name is
+        localized, and neither part is used as the drag payload identity.
+
+        Parameters
+        ----------
+        additional_data : str
+            Hex domain/object id suffix shown beside the translated object
+            name.
+        """
+        if self.object is not None:
+            self.setToolTip(f"{tr_object_name(self.object)}, {additional_data}")
 
     def update_image(self):
         """Refresh the cached image for the represented object."""

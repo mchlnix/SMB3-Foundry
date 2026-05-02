@@ -57,6 +57,8 @@ Read This Next
   :doc:`subsystems/rom_data_persistence`.
 - Working on rendering or object visuals: start with
   :doc:`subsystems/graphics_rendering`, then follow the graphics API pages.
+- Working on localization or language switching: start with
+  :doc:`subsystems/localization_architecture`.
 - Working on Scribe: start with :doc:`subsystems/scribe_gui_architecture`.
 - Working on parsers: start with :doc:`subsystems/smb3parse_parser_architecture`.
 

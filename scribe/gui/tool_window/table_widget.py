@@ -215,11 +215,17 @@ class DropdownDelegate(QStyledItemDelegate):
     icons : list[QImage] | None, optional
         Optional preview images aligned with ``items`` for tile or sprite
         driven selections.
+    data : list[object] | None, optional
+        Optional stable payloads aligned with ``items`` by index. When
+        supplied, delegate commits use these values rather than translated
+        display labels.
 
     Attributes
     ----------
     _items : list[str]
         Ordered labels inserted into each combo-box editor.
+    _data : list[object] | None
+        Stable row payloads aligned with ``_items``.
     _icons : list[QImage]
         Optional preview images aligned with ``_items`` by index.
 
@@ -229,7 +235,13 @@ class DropdownDelegate(QStyledItemDelegate):
         Host table base that installs delegates for concrete world editors.
     """
 
-    def __init__(self, parent, items: list[str], icons: list[QImage] | None = None):
+    def __init__(
+        self,
+        parent,
+        items: list[str],
+        icons: list[QImage] | None = None,
+        data: list[object] | None = None,
+    ):
         """Capture dropdown choices and optional preview art.
 
         The stored choices become the immutable editing contract for every cell
@@ -246,15 +258,21 @@ class DropdownDelegate(QStyledItemDelegate):
         icons : list[QImage] | None, optional
             Preview art matched by position to ``items``. When omitted, the
             delegate creates a plain text combo box.
+        data : list[object] | None, optional
+            Stable values stored in each combo-box row while ``items`` remains
+            the translated display label.
 
         Notes
         -----
-        The delegate stores the display payload once so each editor instance
-        can be rebuilt on demand as Qt enters edit mode for different cells.
+        ``items``, ``icons``, and ``data`` are parallel sequences. If stable
+        ``data`` is provided, it must use the same order as the visible labels
+        and optional icons so translated text can change without altering the
+        committed command value.
         """
         super(DropdownDelegate, self).__init__(parent)
 
         self._items = items
+        self._data = data
 
         if icons is None:
             self._icons = []
@@ -296,15 +314,39 @@ class DropdownDelegate(QStyledItemDelegate):
         combobox.currentTextChanged.connect(lambda _: combobox.clearFocus())
 
         if not self._icons:
-            for name in self._items:
-                combobox.addItem(name)
+            for index, name in enumerate(self._items):
+                combobox.addItem(name, self._item_data(index))
         else:
-            for icon, name in zip(self._icons, self._items):
-                combobox.addItem(QPixmap(icon.scaled(32, 32)), name)
+            for index, (icon, name) in enumerate(zip(self._icons, self._items)):
+                combobox.addItem(QPixmap(icon.scaled(32, 32)), name, self._item_data(index))
 
         combobox.setIconSize(QSize(32, 32))
 
         return combobox
+
+    def _item_data(self, index: int) -> object | None:
+        """Resolve stable payload data for one visible dropdown row.
+
+        This helper is the delegate's display/data boundary. Translated labels
+        may change during live retranslation, but command payloads come from
+        the parallel ``_data`` sequence so encoded sprite, item, object-set, or
+        tile ids remain stable through the commit workflow.
+
+        Parameters
+        ----------
+        index : int
+            Position of the visible dropdown row.
+
+        Returns
+        -------
+        object | None
+            Stable payload from ``_data`` when one was supplied, otherwise
+            ``None`` so Qt uses the display text only.
+
+        """
+        if self._data is None:
+            return None
+        return self._data[index]
 
     def setEditorData(self, editor, index):
         """Synchronize the combo-box editor with the cell's stored value.

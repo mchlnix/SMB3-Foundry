@@ -18,18 +18,10 @@ LOCAL_DOC_CONTEXT.md
 .codex
 .codex/
 .agents/
+.audit-check/
 AGENTS*.md
 *.local.md
 issues/
-doc/documentation_review.md
-
-# Local documentation audit, migration, and verification helpers.
-doc_quality_*.py
-generate_*doc*.py
-numpy_*.py
-numpydoc_*.py
-tests/docs/
-tools/generate_*catalog*.py
 
 # Generated documentation output.
 docs/_build*/

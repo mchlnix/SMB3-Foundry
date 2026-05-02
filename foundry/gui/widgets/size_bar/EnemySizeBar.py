@@ -18,8 +18,12 @@ foundry.gui.widgets.size_bar.size_bar.SizeBar
 from PySide6.QtGui import QColor
 
 from foundry.game.File import ROM
+from foundry.gui.localization import tr
 
 from .LevelSizeBar import LevelSizeBar
+
+TR_CONTEXT = "EnemySizeBar"
+TR_KEY_CONTEXT = "foundry.size_bar"
 
 
 class EnemySizeBar(LevelSizeBar):
@@ -57,15 +61,16 @@ class EnemySizeBar(LevelSizeBar):
         """
         super(EnemySizeBar, self).__init__(parent, level)
 
+        self._set_whats_this()
+
+    def _set_whats_this(self) -> None:
+        """Refresh translated help text for the enemy counter widget."""
         self.setWhatsThis(
-            "<b>Enemy Size Bar</b><br/>"
-            "The enemies and items inside a level, like goombas or certain platforms, are stored as bytes in the "
-            "ROM. This information is stored separately from the level objects, because multiple levels can share "
-            "enemy data. Since enemy data is stored one after another, saving a level with more enemies, than "
-            "it originally had, would overwrite another set of enemy data and probably cause the game to crash, if you "
-            "would enter a level with broken enemy data while playing.<br/>"
-            "This bar shows, how much of the available space for enemies and items is currently taken up. It will turn "
-            "red, when too many enemies have been placed."
+            tr(
+                TR_CONTEXT,
+                "help.enemy_size_bar",
+                "<b>Enemy Size Bar</b><br/>The enemies and items inside a level, like goombas or certain platforms, are stored as bytes in the ROM. This information is stored separately from the level objects, because multiple levels can share enemy data. Since enemy data is stored one after another, saving a level with more enemies, than it originally had, would overwrite another set of enemy data and probably cause the game to crash, if you would enter a level with broken enemy data while playing.<br/>This bar shows, how much of the available space for enemies and items is currently taken up. It will turn red, when too many enemies have been placed.",
+            )
         )
 
     @property
@@ -103,7 +108,7 @@ class EnemySizeBar(LevelSizeBar):
         str
             Description shown before the byte counts in the info label.
         """
-        return "Enemies/Items"
+        return tr(TR_KEY_CONTEXT, "enemies_items", "Enemies/Items")
 
     @property
     def current_value(self):

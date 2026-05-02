@@ -31,9 +31,31 @@ from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtWidgets import QMessageBox, QPushButton
 
 from foundry import Settings, get_current_version_name, icon, open_url, releases_link
+from foundry.gui.localization import tr
 from foundry.gui.settings import ReleaseChannel
 
 SHORT_COMMIT_LENGTH = 8  # characters
+TR_CONTEXT = "OnlineUpdates"
+TR_KEY_CONTEXT = "foundry.online_updates"
+
+
+def _online_text(key: str, fallback: str) -> str:
+    """Resolve online-update UI copy from stable catalog keys.
+
+    Parameters
+    ----------
+    key : str
+        ``foundry.online_updates`` catalog key.
+    fallback : str
+        English prompt text used when the selected locale has no value.
+
+    Returns
+    -------
+    str
+        Localized Qt dialog text. The release-channel setting and GitHub
+        version identity stay stored as stable values outside the catalog.
+    """
+    return tr(TR_KEY_CONTEXT, key, fallback)
 
 
 def get_release_data(timeout: int = 10) -> bytes:
@@ -74,10 +96,15 @@ def get_release_data(timeout: int = 10) -> bytes:
 
 
 def get_latest_version_name_from_data(data: bytes) -> str:
-    """Return the newest non-nightly release tag.
+    """Extract the stable Foundry release tag from GitHub release JSON.
 
-    GitHub returns releases newest first. Foundry treats the moving ``nightly``
-    tag separately, so this parser returns the first stable tag it finds.
+    The GitHub releases API returns a list ordered newest first. Foundry treats
+    the moving ``nightly`` release as a separate channel, so the stable-update
+    path scans that payload for the first tag whose name is not ``nightly`` and
+    returns it unchanged for settings comparisons and release-page links. This
+    helper is intentionally pure: it receives raw response bytes from
+    :func:`get_release_data`, performs JSON and schema validation, and leaves
+    all UI policy to :class:`UpdateCheckMixin`.
 
     Parameters
     ----------
@@ -94,7 +121,8 @@ def get_latest_version_name_from_data(data: bytes) -> str:
     LookupError
         If the requested data cannot be found.
     ValueError
-        If the input data or current state is invalid.
+        If the response is not valid release JSON, lacks expected tag fields,
+        or contains only the nightly channel.
 
     Examples
     --------
@@ -121,11 +149,15 @@ def get_latest_version_name_from_data(data: bytes) -> str:
 
 
 def get_latest_nightly_hash(data: bytes) -> str:
-    """Return the commit hash advertised by the nightly release.
+    """Extract the advertised nightly commit prefix from release JSON.
 
-    Nightly builds are represented by a single moving release. Foundry compares
-    the shortened target commit hash with the current ``nightly-...`` version
-    name.
+    Nightly builds are represented by one moving GitHub release whose
+    ``target_commitish`` field identifies the commit used to publish the
+    current nightly artifact. Foundry stores installed nightly versions as
+    ``nightly-<hash>``, so this parser shortens that target commit to the
+    comparison length used by :func:`is_nightly_new`. Missing or malformed
+    nightly metadata is treated as "no nightly available" by returning an empty
+    string because the stable update path can still proceed.
 
     Parameters
     ----------
@@ -135,7 +167,8 @@ def get_latest_nightly_hash(data: bytes) -> str:
     Returns
     -------
     str
-        Short target commit hash for the nightly release, or an empty string.
+        Short target commit hash for the nightly release, or an empty string
+        when the payload cannot provide one.
 
     Examples
     --------
@@ -163,10 +196,13 @@ def get_latest_nightly_hash(data: bytes) -> str:
 
 
 def is_nightly_new(new_nightly_hash: str):
-    """Return whether a nightly hash is newer than this build.
+    """Compare a release-channel nightly hash against the running build.
 
-    Stable builds always consider nightly builds newer. Nightly builds compare
-    the current version suffix with the advertised nightly commit prefix.
+    Stable builds are always allowed to see nightly prompts because switching
+    channels is an explicit user decision made later in the UI. Installed
+    nightly builds compare their ``nightly-...`` suffix against the advertised
+    commit prefix from GitHub; a mismatch means the moving nightly release has
+    advanced and should be eligible for the nightly-channel dialog.
 
     Parameters
     ----------
@@ -176,7 +212,8 @@ def is_nightly_new(new_nightly_hash: str):
     Returns
     -------
     bool
-        Whether the requested condition is true.
+        True when the advertised nightly should be treated as newer for update
+        policy, otherwise False.
     """
     current_version = get_current_version_name()
 
@@ -195,13 +232,15 @@ def is_nightly_new(new_nightly_hash: str):
 
 
 def check_for_update() -> tuple[str, str]:
-    """Fetch the latest stable and nightly release identifiers.
+    """Fetch one release snapshot and parse both Foundry update channels.
 
-    The update UI uses the stable tag and nightly commit hash to decide which,
-    if any, dialogs to show for the selected release channel. This helper is
-    the single fetch-and-parse step shared by startup checks and explicit user
-    checks, so both code paths compare the same release snapshot before
-    applying different UI policy.
+    Startup checks and manual checks both call this helper so they compare a
+    consistent GitHub response before applying different dialog policy. The
+    returned stable tag feeds the stable-channel ignore/current-version logic;
+    the nightly hash feeds the moving nightly comparison. Network errors and
+    malformed stable metadata propagate to the worker as failures, while
+    missing nightly metadata is represented by an empty hash from
+    :func:`get_latest_nightly_hash`.
 
     Returns
     -------
@@ -469,7 +508,7 @@ class UpdateCheckMixin:
         error_message : str
             Error message produced by the update worker.
         """
-        QMessageBox.critical(self, "Update Error", error_message)
+        QMessageBox.critical(self, _online_text("dialog.update_error", "Update Error"), error_message)
 
     def _on_update_finished(self, stable_version: str, nightly_commit_hash: str):
         """Process stable and nightly update results.
@@ -489,7 +528,11 @@ class UpdateCheckMixin:
 
         # only show this message if we were blocking, aka manually checked for an update
         if not stable_asked and not nightly_asked and self._update_checker.blocking:
-            QMessageBox.information(self, "Update", "Already up to date.")
+            QMessageBox.information(
+                self,
+                _online_text("dialog.update", "Update"),
+                _online_text("dialog.already_up_to_date", "Already up to date."),
+            )
 
     def _try_query_for_stable_update(self, stable_release_name: str, honor_ignore=True) -> bool:
         """Show the stable-release update dialog when applicable.
@@ -524,16 +567,24 @@ class UpdateCheckMixin:
 
         latest_release_url = f"{releases_link}/tag/{stable_release_name}"
 
-        go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest release")
+        go_to_github_button = QPushButton(
+            icon("external-link.svg"), _online_text("button.go_to_latest_release", "Go to latest release")
+        )
         go_to_github_button.clicked.connect(lambda: open_url(latest_release_url))
 
         info_box = QMessageBox(
             QMessageBox.Icon.Information,
-            "New release available",
-            f"New Version '{stable_release_name}' is available.",
+            _online_text("dialog.new_release_available", "New release available"),
+            _online_text("dialog.new_version_available", "New Version '{stable_release_name}' is available.").format(
+                stable_release_name=stable_release_name
+            ),
         )
 
-        ignore_button = QPushButton(f"Don't ask again for '{stable_release_name}'")
+        ignore_button = QPushButton(
+            _online_text("button.ignore_release", "Don't ask again for '{stable_release_name}'").format(
+                stable_release_name=stable_release_name
+            )
+        )
         ignore_button.clicked.connect(lambda: self._ignore_latest_version(stable_release_name))
         info_box.addButton(ignore_button, QMessageBox.ButtonRole.NoRole)
 
@@ -572,14 +623,18 @@ class UpdateCheckMixin:
 
         info_box = QMessageBox(
             QMessageBox.Icon.Information,
-            "Newer nightly release available",
-            "A newer 'nightly' version is available for download.",
+            _online_text("dialog.newer_nightly_release_available", "Newer nightly release available"),
+            _online_text("dialog.newer_nightly_available_body", "A newer 'nightly' version is available for download."),
         )
 
-        go_to_github_button = QPushButton(icon("external-link.svg"), "Go to latest nightly")
+        go_to_github_button = QPushButton(
+            icon("external-link.svg"), _online_text("button.go_to_latest_nightly", "Go to latest nightly")
+        )
         go_to_github_button.clicked.connect(lambda: open_url(releases_link))
 
-        goto_settings_button = QPushButton(icon("sliders.svg"), "Change release channel")
+        goto_settings_button = QPushButton(
+            icon("sliders.svg"), _online_text("button.change_release_channel", "Change release channel")
+        )
         goto_settings_button.clicked.connect(self._on_show_settings)
         info_box.addButton(goto_settings_button, QMessageBox.ButtonRole.NoRole)
 
@@ -643,7 +698,11 @@ class UpdateCheckMixin:
         self.setCursor(Qt.CursorShape.WaitCursor)
 
         if self._update_checker.isRunning():
-            QMessageBox.critical(self, "Update Error", "An update check is already running.")
+            QMessageBox.critical(
+                self,
+                _online_text("dialog.update_error", "Update Error"),
+                _online_text("dialog.update_check_running", "An update check is already running."),
+            )
 
         elif in_background:
             self._update_checker.run_in_background(honor_ignore)
@@ -687,9 +746,12 @@ class UpdateCheckMixin:
         """
         answer = QMessageBox.question(
             self,
-            "Automatic Update Checks",
-            "Do you want the editor to automatically check for updates on startup? You can change this later in "
-            "the Editor settings.",
+            _online_text("dialog.automatic_update_checks", "Automatic Update Checks"),
+            _online_text(
+                "dialog.automatic_update_checks_prompt",
+                "Do you want the editor to automatically check for updates on startup? You can change this later in "
+                "the Editor settings.",
+            ),
         )
 
         self.settings.setValue("editor/asked_for_startup", True)

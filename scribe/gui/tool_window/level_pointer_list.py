@@ -9,14 +9,23 @@ returns to the world model as repaintable state. Maintainers tracing pointer
 edits usually want to read next through ``scribe.gui.commands`` for the undo
 commands and ``scribe.gui.tool_window.table_widget`` for the shared table
 behaviors.
+
+See Also
+--------
+scribe.gui.commands
+    Undo command implementations that commit level-pointer edits.
+scribe.gui.tool_window.table_widget
+    Shared table and delegate infrastructure used by Scribe tool windows.
 """
 
 import typing
 
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QDropEvent
 from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr, tr_data_name
 from foundry.gui.widgets.Spinner import Spinner
 from scribe.gui.commands import (
     ChangeLevelPointerIndex,
@@ -32,6 +41,8 @@ from scribe.gui.tool_window.table_widget import (
 )
 from smb3parse.constants import OBJECT_SET_NAMES
 from smb3parse.levels import FIRST_VALID_ROW
+
+TR_CONTEXT = "ScribeLevelPointerList"
 
 
 class LevelPointerList(TableWidget):
@@ -90,22 +101,86 @@ class LevelPointerList(TableWidget):
 
         self.cellChanged.connect(self._save_level_pointer)
 
-        self.set_headers(["Object Set", "Level Offset", "Enemy/Item Offset", "Map Position"])
+        self.set_headers(
+            [
+                tr(TR_CONTEXT, "object_set", "Object Set"),
+                tr(TR_CONTEXT, "level_offset", "Level Offset"),
+                tr(TR_CONTEXT, "enemy_item_offset", "Enemy/Item Offset"),
+                tr(TR_CONTEXT, "map_position", "Map Position"),
+            ]
+        )
 
-        self.setItemDelegateForColumn(0, DropdownDelegate(self, OBJECT_SET_NAMES))
+        self.setItemDelegateForColumn(
+            0,
+            DropdownDelegate(
+                self,
+                [tr_data_name("ObjectSet", object_set_name) for object_set_name in OBJECT_SET_NAMES],
+                data=list(range(len(OBJECT_SET_NAMES))),
+            ),
+        )
         self.setItemDelegateForColumn(1, SpinBoxDelegate(self))
         self.setItemDelegateForColumn(2, SpinBoxDelegate(self))
         self.setItemDelegateForColumn(
             3,
-            DialogDelegate(
-                self,
-                "No can do",
-                "You can move level pointers by dragging them around in the WorldView. "
-                "Make sure they are shown in the View Menu.",
-            ),
+            self._make_position_dialog_delegate(),
         )
 
         self.update_content()
+
+    def retranslate_ui(self) -> None:
+        """Refresh headers and dropdown labels after a language change.
+
+        The refresh rebuilds display text, object-set dropdown labels, and the
+        read-only position delegate while preserving the selected row and the
+        stable object-set ids stored in ``Qt.UserRole``. Rebuilding rows after
+        delegate replacement keeps visible labels localized without changing
+        pointer identity or undo-stack state.
+        """
+        selected_row = self.selected_row
+        self.set_headers(
+            [
+                tr(TR_CONTEXT, "object_set", "Object Set"),
+                tr(TR_CONTEXT, "level_offset", "Level Offset"),
+                tr(TR_CONTEXT, "enemy_item_offset", "Enemy/Item Offset"),
+                tr(TR_CONTEXT, "map_position", "Map Position"),
+            ]
+        )
+        self.setItemDelegateForColumn(
+            0,
+            DropdownDelegate(
+                self,
+                [tr_data_name("ObjectSet", object_set_name) for object_set_name in OBJECT_SET_NAMES],
+                data=list(range(len(OBJECT_SET_NAMES))),
+            ),
+        )
+        self.setItemDelegateForColumn(3, self._make_position_dialog_delegate())
+        self.update_content()
+        if 0 <= selected_row < self.rowCount():
+            self.selectRow(selected_row)
+
+    def _make_position_dialog_delegate(self) -> DialogDelegate:
+        """Create the read-only map-position guidance delegate.
+
+        The delegate marks a deliberate workflow boundary between table
+        metadata edits and map-placement state. Position changes stay owned by
+        the world view so drag operations can commit through the undo stack and
+        preserve level-pointer identity.
+
+        Returns
+        -------
+        DialogDelegate
+            Informational delegate explaining that spatial pointer movement is
+            owned by the world view, not by direct table-cell editing.
+        """
+        return DialogDelegate(
+            self,
+            tr(TR_CONTEXT, "no_can_do", "No can do"),
+            tr(
+                TR_CONTEXT,
+                "help.level_pointer_dragging",
+                "You can move level pointers by dragging them around in the WorldView. Make sure they are shown in the View Menu.",
+            ),
+        )
 
     def dropEvent(self, event: QDropEvent) -> None:
         """Reorder level pointers through the undo stack after a drag drop.
@@ -161,14 +236,13 @@ class LevelPointerList(TableWidget):
         if column == 3 or self.cellWidget(row, column) is None:
             return
 
-        str_data = ""
         int_data = 0
 
         level_pointer = self.world.level_pointers[row]
 
         if column == 0:
             combo_box = typing.cast(QComboBox, self.cellWidget(row, column))
-            str_data = combo_box.currentText()
+            int_data = int(combo_box.currentData(Qt.ItemDataRole.UserRole))
         elif column in [1, 2]:
             spinner = typing.cast(Spinner, self.cellWidget(row, column))
             int_data = spinner.value()
@@ -179,7 +253,7 @@ class LevelPointerList(TableWidget):
             level_pointer.data.y = FIRST_VALID_ROW
 
         if column == 0:
-            self.undo_stack.push(SetObjectSet(level_pointer.data, OBJECT_SET_NAMES.index(str_data)))
+            self.undo_stack.push(SetObjectSet(level_pointer.data, int_data))
         elif column == 1:
             self.undo_stack.push(SetLevelAddress(level_pointer.data, int_data))
         elif column == 2:
@@ -204,11 +278,18 @@ class LevelPointerList(TableWidget):
         self.blockSignals(True)
 
         for row, lp in enumerate(self.world.level_pointers):
-            object_set_name = QTableWidgetItem(OBJECT_SET_NAMES[lp.data.object_set])
+            object_set_name = QTableWidgetItem(tr_data_name("ObjectSet", OBJECT_SET_NAMES[lp.data.object_set]))
+            object_set_name.setData(Qt.ItemDataRole.UserRole, lp.data.object_set)
 
             hex_level_address = QTableWidgetItem(hex(lp.data.level_address))
             hex_enemy_address = QTableWidgetItem(hex(lp.data.enemy_address))
-            pos = QTableWidgetItem(f"Screen {lp.data.screen}: x={lp.data.x}, y={lp.data.y}")
+            pos = QTableWidgetItem(
+                tr(TR_CONTEXT, "screen_screen_x_x_y_y", "Screen {screen}: x={x}, y={y}").format(
+                    screen=lp.data.screen,
+                    x=lp.data.x,
+                    y=lp.data.y,
+                )
+            )
 
             self._set_map_tile_as_icon(pos, lp.get_position())
 

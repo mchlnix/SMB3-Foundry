@@ -37,8 +37,11 @@ from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.jump import Jump
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
+from foundry.gui.localization import tr, tr_object_name
 from smb3parse.objects import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 from smb3parse.util import apply
+
+TR_CONTEXT = "ObjectDropdown"
 
 
 class ObjectDropdown(QComboBox):
@@ -57,10 +60,17 @@ class ObjectDropdown(QComboBox):
     ----------
     _graphic_set_index : int
         Graphics set currently used for level-object icons.
+    _object_factory : LevelObjectFactory
+        Factory for rebuilding level-object payloads when the active graphics
+        set changes. It owns decoded object identity; row text remains
+        display-only.
     _object_set_index : int
         Object set currently loaded into the dropdown.
     object_selected : SignalInstance
-        Signal emitted with the selected placeable object.
+        Signal emitted with the selected placeable object stored in the
+        current row's ``Qt.UserRole`` payload. The payload is the stable
+        placement object; localized row text is display-only and is refreshed
+        by :meth:`retranslate_ui` without changing selection identity.
     """
 
     object_selected: SignalInstance = Signal(InLevelObject)
@@ -97,11 +107,11 @@ class ObjectDropdown(QComboBox):
         self.setMaximumWidth(self.screen().availableSize().width() // 5)
 
         self.setWhatsThis(
-            "<b>Object Dropdown</b><br/>"
-            "Contains all objects and enemies/items, that can be placed in this type of level. Which are "
-            "available depends on the object set, that is selected for this level.<br/>"
-            "You can search, by typing in the name, or simply select it from the list. After selecting "
-            "an object, you can place it by clicking the middle mouse button anywhere in the level."
+            tr(
+                TR_CONTEXT,
+                "help.object_dropdown",
+                "<b>Object Dropdown</b><br/>Contains all objects and enemies/items, that can be placed in this type of level. Which are available depends on the object set, that is selected for this level.<br/>You can search, by typing in the name, or simply select it from the list. After selecting an object, you can place it by clicking the middle mouse button anywhere in the level.",
+            )
         )
 
         self._object_set_index = -1
@@ -161,6 +171,11 @@ class ObjectDropdown(QComboBox):
     def set_graphics_set(self, factory: LevelObjectFactory) -> None:
         """Refresh level-object icons for a new graphics set.
 
+        The row's logical placement identity is still domain/object-index data
+        from the active object set. This method refreshes the icon and decoded
+        ``Qt.UserRole`` object from those stable values; translated row text is
+        not used to identify or rebuild the placement entry.
+
         Parameters
         ----------
         factory : LevelObjectFactory
@@ -213,7 +228,11 @@ class ObjectDropdown(QComboBox):
         LookupError
             If no matching dropdown entry exists.
         """
-        index_of_object = self.findText(level_object.name)
+        index_of_object = -1
+        for index in range(self.count()):
+            if self._matches_placement_identity(self.itemData(index, Qt.ItemDataRole.UserRole), level_object):
+                index_of_object = index
+                break
 
         if index_of_object == -1:
             raise LookupError(f"Couldn't find {level_object} in object dropdown.")
@@ -221,6 +240,53 @@ class ObjectDropdown(QComboBox):
         was_blocked = self.blockSignals(True)
         self.setCurrentIndex(index_of_object)
         self.blockSignals(was_blocked)
+
+    @staticmethod
+    def _matches_placement_identity(candidate: object, level_object: InLevelObject) -> bool:
+        """Compare placement identity without using translated row text.
+
+        The dropdown uses this helper when another UI surface asks it to select
+        a placement entry. The state flow stays payload-driven: row data carries
+        object-set/domain/id fields, and localized names are ignored.
+
+        Parameters
+        ----------
+        candidate : object
+            Row payload read from ``Qt.UserRole``.
+        level_object : InLevelObject
+            Placement object requested by another UI surface.
+
+        Returns
+        -------
+        bool
+            ``True`` when both objects describe the same SMB3 palette entry.
+            Level objects compare object set, domain, and object id; enemy/item
+            rows compare object set and enemy/item id.
+        """
+        if isinstance(candidate, LevelObject) and isinstance(level_object, LevelObject):
+            return (
+                candidate.object_set == level_object.object_set
+                and candidate.domain == level_object.domain
+                and candidate.obj_index == level_object.obj_index
+            )
+
+        if isinstance(candidate, EnemyItem) and isinstance(level_object, EnemyItem):
+            return candidate.object_set == level_object.object_set and candidate.obj_index == level_object.obj_index
+
+        return False
+
+    def retranslate_ui(self) -> None:
+        """Refresh translated row labels without changing stored payloads.
+
+        Each row keeps the placeable object instance in ``Qt.UserRole``. Live
+        translation replaces only the visible combo-box text by re-reading that
+        payload through :func:`tr_object_name`, so search identity, placement
+        emissions, and object matching remain bound to stable object data.
+        """
+        for index in range(self.count()):
+            level_object = self.itemData(index, Qt.ItemDataRole.UserRole)
+            if isinstance(level_object, (LevelObject, EnemyItem)):
+                self.setItemText(index, tr_object_name(level_object))
 
     def _on_object_factory_change(self, object_factory: LevelObjectFactory) -> None:
         """Rebuild all entries for a new level-object factory.
@@ -279,6 +345,11 @@ class ObjectDropdown(QComboBox):
     def _add_item(self, level_object: Jump | LevelObject | EnemyItem):
         """Add one placeable object with a preview icon.
 
+        The visible row text is localized through :func:`tr_object_name`, while
+        the object itself is stored as item data. Selection, search matching,
+        and ``object_selected`` emissions therefore keep using stable placement
+        objects rather than translated labels.
+
         Parameters
         ----------
         level_object : Jump | LevelObject | EnemyItem
@@ -289,7 +360,7 @@ class ObjectDropdown(QComboBox):
 
         icon = QIcon(QPixmap(self._resize_bitmap(object_to_image(level_object))))
 
-        self.addItem(icon, level_object.name, level_object)
+        self.addItem(icon, tr_object_name(level_object), level_object)
 
     @staticmethod
     def _resize_bitmap(source_image: QImage) -> QImage:

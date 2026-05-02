@@ -37,6 +37,7 @@ from foundry.game.gfx.objects.in_level.jump import Jump
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from foundry.gui import OBJECT_SET_ITEMS
+from foundry.gui.localization import tr, tr_data_name, tr_object_name
 from foundry.gui.util import clear_layout
 from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
@@ -136,7 +137,7 @@ class ObjectViewer(CustomChildWindow):
         parent : QWidget | None
             Parent Qt widget that owns this object.
         """
-        super(ObjectViewer, self).__init__(parent, title="Object Viewer")
+        super(ObjectViewer, self).__init__(parent, title=tr("ObjectViewer", "object_viewer", "Object Viewer"))
 
         self.spin_domain = Spinner(self, MAX_DOMAIN)
         self.spin_domain.valueChanged.connect(self.on_spin)
@@ -155,11 +156,15 @@ class ObjectViewer(CustomChildWindow):
         _toolbar.addWidget(self.spin_length)
 
         self.object_set_dropdown = QComboBox(_toolbar)
-        self.object_set_dropdown.addItems(OBJECT_SET_ITEMS[1:])
+        self.object_set_dropdown.addItems(
+            [tr_data_name("ObjectSet", object_set_name) for object_set_name in OBJECT_SET_ITEMS[1:]]
+        )
         self.object_set_dropdown.setCurrentIndex(0)
 
         self.graphic_set_dropdown = QComboBox(_toolbar)
-        self.graphic_set_dropdown.addItems(GRAPHIC_SET_NAMES)
+        self.graphic_set_dropdown.addItems(
+            [tr_data_name("GraphicsSet", graphics_set) for graphics_set in GRAPHIC_SET_NAMES]
+        )
         self.graphic_set_dropdown.setCurrentIndex(1)
 
         self.object_set_dropdown.currentIndexChanged.connect(self.on_object_set)
@@ -173,7 +178,7 @@ class ObjectViewer(CustomChildWindow):
         self.drawing_area = ObjectDrawArea(self, 1)
 
         self.status_bar = QStatusBar(parent=self)
-        self.status_bar.showMessage(self.drawing_area.current_object.name)
+        self.status_bar.showMessage(tr_object_name(self.drawing_area.current_object))
 
         self.setStatusBar(self.status_bar)
 
@@ -189,6 +194,35 @@ class ObjectViewer(CustomChildWindow):
         self.setCentralWidget(central_widget)
 
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
+
+    def retranslate_ui(self) -> None:
+        """Refresh visible object-viewer labels without changing staged bytes.
+
+        During live language switching, the spinners and combo indexes remain
+        the stable decode inputs for the preview object. This method coordinates
+        viewer display state by blocking Qt dropdown signals while replacing
+        localized object-set and graphics-set names, then refreshes the status
+        text from the existing decoded object so translation refresh does not
+        trigger a new decode or alter the staged domain, type, length,
+        object-set, or graphics-set payload.
+        """
+        self.setWindowTitle(tr("ObjectViewer", "object_viewer", "Object Viewer"))
+
+        current_object_set = self.object_set_dropdown.currentIndex()
+        self.object_set_dropdown.blockSignals(True)
+        for index, object_set_name in enumerate(OBJECT_SET_ITEMS[1:]):
+            self.object_set_dropdown.setItemText(index, tr_data_name("ObjectSet", object_set_name))
+        self.object_set_dropdown.setCurrentIndex(current_object_set)
+        self.object_set_dropdown.blockSignals(False)
+
+        current_graphics_set = self.graphic_set_dropdown.currentIndex()
+        self.graphic_set_dropdown.blockSignals(True)
+        for index, graphics_set in enumerate(GRAPHIC_SET_NAMES):
+            self.graphic_set_dropdown.setItemText(index, tr_data_name("GraphicsSet", graphics_set))
+        self.graphic_set_dropdown.setCurrentIndex(current_graphics_set)
+        self.graphic_set_dropdown.blockSignals(False)
+
+        self.status_bar.showMessage(tr_object_name(self.drawing_area.current_object))
 
     def set_object_and_graphic_set(self, object_set: int, graphics_set: int):
         """Apply object and graphics set changes to the preview.
@@ -213,7 +247,7 @@ class ObjectViewer(CustomChildWindow):
         self.drawing_area.change_graphic_set(graphics_set)
 
         self.block_list.update_object(self.drawing_area.current_object)
-        self.status_bar.showMessage(self.drawing_area.current_object.name)
+        self.status_bar.showMessage(tr_object_name(self.drawing_area.current_object))
 
     def on_object_set(self):
         """Use the selected object set and matching graphics set."""
@@ -274,7 +308,7 @@ class ObjectViewer(CustomChildWindow):
 
         self.drawing_area.update()
 
-        self.status_bar.showMessage(self.drawing_area.current_object.name)
+        self.status_bar.showMessage(tr_object_name(self.drawing_area.current_object))
 
     def on_spin(self, _):
         """Refresh the preview from spinner values.

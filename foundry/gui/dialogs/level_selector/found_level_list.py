@@ -21,12 +21,37 @@ from PySide6.QtWidgets import QLabel, QTableWidgetItem, QVBoxLayout, QWidget
 
 from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.File import ROM
+from foundry.gui.localization import tr, tr_data_name
 from foundry.gui.widgets.table_widget import TableWidget
 from smb3parse.constants import OBJECT_SET_NAMES
 from smb3parse.util.parser import FoundLevel
 
 LOST_LEVELS_INDEX = 8
 OVERWORLD_MAPS_INDEX = 9
+
+
+def _translated_table_headers() -> list[str]:
+    """Build translated discovered-level table headers.
+
+    Returns
+    -------
+    list[str]
+        Header labels for parser-backed level metadata columns.
+
+    Notes
+    -----
+    Headers are display-only text; row lookup continues to use the found-level
+    index stored in ``Qt.UserRole`` so sorting and localization do not affect
+    selected ROM addresses.
+    """
+    return [
+        tr("LevelSelector", "world", "World"),
+        tr("LevelSelector", "object_set", "Object Set"),
+        tr("LevelSelector", "level_addr", "Level Addr."),
+        tr("LevelSelector", "enemy_addr", "Enemy Addr."),
+        tr("LevelSelector", "jump_dest", "Jump Dest."),
+        tr("LevelSelector", "world_specific", "World Specific"),
+    ]
 
 
 class FoundLevelWidget(QWidget):
@@ -43,6 +68,10 @@ class FoundLevelWidget(QWidget):
     ----------
     _found_levels : list[FoundLevel]
         Discovered levels sorted for display.
+    description_label : QLabel
+        Wrapped explanatory label describing automatic level discovery limits.
+    found_label : QLabel
+        Heading label for the discovered-level table.
     level_table : _FoundLevelTable
         Table used to select a discovered level.
 
@@ -107,23 +136,41 @@ class FoundLevelWidget(QWidget):
         self._found_levels = ROM.additional_data.found_levels.copy()
         self._found_levels.sort(key=lambda x: (x.world_number, x.level_offset))
 
-        found_label = QLabel("Found Levels")
+        self.found_label = QLabel(tr("LevelSelector", "found_levels", "Found Levels"))
         self.level_table = _FoundLevelTable(self, self._found_levels)
 
-        description_label = QLabel()
+        self.description_label = QLabel()
 
-        description_label.setWordWrap(True)
-        description_label.setText(
-            "If the automatic Level management is active, the ROM is searched for all accessible Levels. Be it through "
-            "an overworld, jumped to by another Level, or generic Levels, defined for every World (e.g. Coin Ship "
-            "Levels). Inaccessible 'Lost' Levels cannot be found this way and are not listed here/have probably been "
-            "overwritten to make space for more Levels."
+        self.description_label.setWordWrap(True)
+        self.description_label.setText(
+            tr(
+                "LevelSelector",
+                "help.found_levels",
+                "If the automatic Level management is active, the ROM is searched for all accessible Levels. Be it through an overworld, jumped to by another Level, or generic Levels, defined for every World (e.g. Coin Ship Levels). Inaccessible 'Lost' Levels cannot be found this way and are not listed here/have probably been overwritten to make space for more Levels.",
+            )
         )
 
         found_level_layout = QVBoxLayout(self)
-        found_level_layout.addWidget(found_label, 0)
+        found_level_layout.addWidget(self.found_label, 0)
         found_level_layout.addWidget(self.level_table, 1)
-        found_level_layout.addWidget(description_label, 0)
+        found_level_layout.addWidget(self.description_label, 0)
+
+    def retranslate_ui(self) -> None:
+        """Refresh visible labels and table text without changing selection.
+
+        The selected row is preserved through the table's stored found-level
+        indexes. Only headings, descriptive copy, table headers, and row
+        display text are rebuilt for the active language.
+        """
+        self.found_label.setText(tr("LevelSelector", "found_levels", "Found Levels"))
+        self.description_label.setText(
+            tr(
+                "LevelSelector",
+                "help.found_levels",
+                "If the automatic Level management is active, the ROM is searched for all accessible Levels. Be it through an overworld, jumped to by another Level, or generic Levels, defined for every World (e.g. Coin Ship Levels). Inaccessible 'Lost' Levels cannot be found this way and are not listed here/have probably been overwritten to make space for more Levels.",
+            )
+        )
+        self.level_table.retranslate_ui()
 
     @property
     def level_address(self):
@@ -261,11 +308,41 @@ class _FoundLevelTable(TableWidget):
         self._last_checked_level_index = -1
         """The index of the last level we generated a thumbnail for."""
 
-        self.set_headers(["World", "Object Set", "Level Addr.", "Enemy Addr.", "Jump Dest.", "World Specific"])
+        self.set_headers(_translated_table_headers())
 
         self._update_content()
 
         self.selectRow(0)
+
+    def retranslate_ui(self) -> None:
+        """Refresh discovered-level text while preserving parser row identity.
+
+        Live language switching rebuilds translated headers and data-backed
+        object-set or level-name cells, then restores the selected found-level
+        index through the ``Qt.UserRole`` payload. Sorting state is also
+        restored so translated display strings never become the source of truth
+        for selected ROM addresses, worlds, or object sets.
+        """
+        selected_level_index = self.level_index if self.currentRow() >= 0 else -1
+        sort_section = self.horizontalHeader().sortIndicatorSection()
+        sort_order = self.horizontalHeader().sortIndicatorOrder()
+        sorting_was_enabled = self.isSortingEnabled()
+
+        self.setSortingEnabled(False)
+        self.set_headers(_translated_table_headers())
+        self._update_content()
+
+        if sorting_was_enabled:
+            self.setSortingEnabled(True)
+            if sort_section >= 0:
+                self.sortItems(sort_section, sort_order)
+
+        if selected_level_index >= 0:
+            for row in range(self.rowCount()):
+                item = self.item(row, 0)
+                if item is not None and item.data(Qt.ItemDataRole.UserRole) == selected_level_index:
+                    self.selectRow(row)
+                    break
 
     def _level_index_for_row(self, row):
         """Resolve a visible row back to the backing found-level index.
@@ -399,11 +476,19 @@ class _FoundLevelTable(TableWidget):
 
         for index, found_level in enumerate(self._levels):
             # sorting messes up the indexes, so save the level_index in found level list in the table time for world no
-            world_table_item = QTableWidgetItem(f"World {found_level.world_number}")
+            world_table_item = QTableWidgetItem(
+                tr("LevelSelector", "world_world_number", "World {world_number}").format(
+                    world_number=found_level.world_number
+                )
+            )
             world_table_item.setData(Qt.ItemDataRole.UserRole, index)
 
             self.setItem(index, 0, world_table_item)
-            self.setItem(index, 1, QTableWidgetItem(OBJECT_SET_NAMES[found_level.object_set_number]))
+            self.setItem(
+                index,
+                1,
+                QTableWidgetItem(tr_data_name("ObjectSet", OBJECT_SET_NAMES[found_level.object_set_number])),
+            )
             self.setItem(index, 2, QTableWidgetItem(f"0x{found_level.level_offset:x}"))
             self.setItem(index, 3, QTableWidgetItem(f"0x{found_level.enemy_offset:0>4x}"))
 

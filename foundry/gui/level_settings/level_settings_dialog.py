@@ -25,10 +25,16 @@ from foundry.gui.level_settings.boom_boom_mixin import BoomBoomMixin
 from foundry.gui.level_settings.chest_exit_mixin import ChestExitMixin
 from foundry.gui.level_settings.pipe_pair_mixin import PipePairMixin
 from foundry.gui.level_settings.white_mushroom_mixin import WhiteMushroomHouseMixin
+from foundry.gui.localization import tr
 
 
 class LevelSettingsDialog(
-    PipePairMixin, WhiteMushroomHouseMixin, ChestExitMixin, BoomBoomMixin, AutoScrollMixin, CustomDialog
+    PipePairMixin,
+    WhiteMushroomHouseMixin,
+    ChestExitMixin,
+    BoomBoomMixin,
+    AutoScrollMixin,
+    CustomDialog,
 ):
     """Display the miscellaneous level-settings editor.
 
@@ -82,9 +88,18 @@ class LevelSettingsDialog(
 
         super(LevelSettingsDialog, self).__init__(parent)
 
-        self.setWindowTitle("Other Level Settings")
+        self.retranslate_ui()
 
         self.update()
+
+    def retranslate_ui(self) -> None:
+        """Refresh the settings-dialog title without changing staged options.
+
+        The dialog shell text is rebuilt from the active catalog. Mixins,
+        staged checkbox/dropdown values, and the shared undo-stack target remain
+        stable so localization cannot change pending level-setting edits.
+        """
+        self.setWindowTitle(tr("LevelSettingsDialog", "other_level_settings", "Other Level Settings"))
 
     @property
     def undo_stack(self) -> QUndoStack:

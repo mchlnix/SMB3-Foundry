@@ -18,10 +18,12 @@ scribe.gui.commands : Undoable command objects used to persist sprite edits.
 import typing
 
 from PySide6.QtGui import QDropEvent, QPixmap
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QComboBox, QTableWidgetItem
 
 from foundry.game.gfx.objects.world_map.sprite import MAP_ITEM_SPRITES, MAP_OBJ_SPRITES
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr, tr_data_name
 from scribe.gui.commands import ChangeSpriteIndex, SetSpriteItem, SetSpriteType
 from scribe.gui.tool_window.table_widget import (
     DialogDelegate,
@@ -30,6 +32,8 @@ from scribe.gui.tool_window.table_widget import (
 )
 from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES
 from smb3parse.levels import FIRST_VALID_ROW
+
+TR_CONTEXT = "ScribeSpriteList"
 
 
 class SpriteList(TableWidget):
@@ -77,27 +81,101 @@ class SpriteList(TableWidget):
 
         self.cellChanged.connect(self._save_sprite)
 
-        self.set_headers(["Sprite Type", "Item Type", "Map Position"])
+        self.set_headers(
+            [
+                tr(TR_CONTEXT, "sprite_type", "Sprite Type"),
+                tr(TR_CONTEXT, "item_type", "Item Type"),
+                tr(TR_CONTEXT, "map_position", "Map Position"),
+            ]
+        )
 
         self.setItemDelegateForColumn(
             0,
-            DropdownDelegate(self, list(MAPOBJ_NAMES.values()), list(MAP_OBJ_SPRITES.values())),
+            DropdownDelegate(
+                self,
+                [tr_data_name("MapObject", name) for name in MAPOBJ_NAMES.values()],
+                list(MAP_OBJ_SPRITES.values()),
+                list(MAPOBJ_NAMES.keys()),
+            ),
         )
         self.setItemDelegateForColumn(
             1,
-            DropdownDelegate(self, list(MAPITEM_NAMES.values()), list(MAP_ITEM_SPRITES.values())),
+            DropdownDelegate(
+                self,
+                [tr_data_name("MapItem", name) for name in MAPITEM_NAMES.values()],
+                list(MAP_ITEM_SPRITES.values()),
+                list(MAPITEM_NAMES.keys()),
+            ),
         )
         self.setItemDelegateForColumn(
             2,
-            DialogDelegate(
-                self,
-                "No can do",
-                "You can move sprites by dragging them around in the WorldView. "
-                "Make sure they are shown in the View Menu.",
-            ),
+            self._make_position_dialog_delegate(),
         )
 
         self.update_content()
+
+    def retranslate_ui(self) -> None:
+        """Refresh headers and dropdown labels after a language change.
+
+        The refresh rebuilds translated sprite and item labels while keeping
+        the encoded sprite and item ids in ``Qt.UserRole`` as the command
+        payload. The selected row is restored after the table rebuild so live
+        language switching does not change the user's current sprite focus.
+        """
+        selected_row = self.selected_row
+        self.set_headers(
+            [
+                tr(TR_CONTEXT, "sprite_type", "Sprite Type"),
+                tr(TR_CONTEXT, "item_type", "Item Type"),
+                tr(TR_CONTEXT, "map_position", "Map Position"),
+            ]
+        )
+        self.setItemDelegateForColumn(
+            0,
+            DropdownDelegate(
+                self,
+                [tr_data_name("MapObject", name) for name in MAPOBJ_NAMES.values()],
+                list(MAP_OBJ_SPRITES.values()),
+                list(MAPOBJ_NAMES.keys()),
+            ),
+        )
+        self.setItemDelegateForColumn(
+            1,
+            DropdownDelegate(
+                self,
+                [tr_data_name("MapItem", name) for name in MAPITEM_NAMES.values()],
+                list(MAP_ITEM_SPRITES.values()),
+                list(MAPITEM_NAMES.keys()),
+            ),
+        )
+        self.setItemDelegateForColumn(2, self._make_position_dialog_delegate())
+        self.update_content()
+        if 0 <= selected_row < self.rowCount():
+            self.selectRow(selected_row)
+
+    def _make_position_dialog_delegate(self) -> DialogDelegate:
+        """Create the read-only map-position guidance delegate.
+
+        The delegate keeps sprite placement state owned by the world view and
+        leaves this table responsible only for sprite type and item metadata.
+        That boundary preserves drag-based undo replay for map movement while
+        still explaining the workflow from the table cell.
+
+        Returns
+        -------
+        DialogDelegate
+            Informational delegate explaining that sprite position edits are
+            owned by drag operations in the world view.
+        """
+        return DialogDelegate(
+            self,
+            tr(TR_CONTEXT, "no_can_do", "No can do"),
+            tr(
+                TR_CONTEXT,
+                "help.sprite_dragging",
+                "You can move sprites by dragging them around in the WorldView. Make sure they are shown in the View Menu.",
+            ),
+        )
 
     def dropEvent(self, event: QDropEvent) -> None:
         """Reorder sprites after a drag-and-drop row move.
@@ -139,10 +217,10 @@ class SpriteList(TableWidget):
 
         Notes
         -----
-        The method reads the delegate-selected label back out of the cell
-        widget, maps that display value to the encoded sprite or item index
-        stored by the world model, and pushes the matching undoable command
-        onto the shared stack.
+        The method reads the delegate-selected ``Qt.UserRole`` value from the
+        cell widget, not the translated label. That preserves sprite and item
+        indexes as parser/world-model identity while still allowing localized
+        display text in the popup editor.
 
         It also normalizes invalid Y positions before dispatching
         commands so imported or reordered sprite rows still satisfy the
@@ -154,15 +232,15 @@ class SpriteList(TableWidget):
         sprite = self.world.sprites[row]
 
         widget = typing.cast(QComboBox, self.cellWidget(row, column))
-        data = widget.currentText()
+        data = widget.currentData(Qt.ItemDataRole.UserRole)
 
         if sprite.data.y < FIRST_VALID_ROW:
             sprite.data.y = FIRST_VALID_ROW
 
         if column == 0:
-            self.undo_stack.push(SetSpriteType(sprite.data, list(MAPOBJ_NAMES.values()).index(data)))
+            self.undo_stack.push(SetSpriteType(sprite.data, int(data)))
         elif column == 1:
-            self.undo_stack.push(SetSpriteItem(sprite.data, list(MAPITEM_NAMES.values()).index(data)))
+            self.undo_stack.push(SetSpriteItem(sprite.data, int(data)))
         else:
             return
 
@@ -186,20 +264,36 @@ class SpriteList(TableWidget):
         self.blockSignals(True)
 
         for index, sprite in enumerate(self.world.sprites):
-            sprite_name = MAPOBJ_NAMES[sprite.data.type] if sprite.data.type in MAPOBJ_NAMES else str(sprite.data.type)
+            sprite_name = (
+                tr_data_name("MapObject", MAPOBJ_NAMES[sprite.data.type])
+                if sprite.data.type in MAPOBJ_NAMES
+                else str(sprite.data.type)
+            )
             sprite_type = QTableWidgetItem(sprite_name)
+            sprite_type.setData(Qt.ItemDataRole.UserRole, sprite.data.type)
 
             if sprite.data.type in MAP_OBJ_SPRITES:
                 sprite_type.setIcon(QPixmap(MAP_OBJ_SPRITES[sprite.data.type].scaled(self.iconSize())))
 
-            item_name = MAPITEM_NAMES[sprite.data.item] if sprite.data.item in MAPITEM_NAMES else str(sprite.data.item)
+            item_name = (
+                tr_data_name("MapItem", MAPITEM_NAMES[sprite.data.item])
+                if sprite.data.item in MAPITEM_NAMES
+                else str(sprite.data.item)
+            )
 
             item_type = QTableWidgetItem(item_name)
+            item_type.setData(Qt.ItemDataRole.UserRole, sprite.data.item)
 
             if sprite.data.item in MAP_ITEM_SPRITES:
                 item_type.setIcon(QPixmap(MAP_ITEM_SPRITES[sprite.data.item].scaled(self.iconSize())))
 
-            pos = QTableWidgetItem(f"Screen {sprite.data.screen}: x={sprite.data.x}, y={sprite.data.y}")
+            pos = QTableWidgetItem(
+                tr(TR_CONTEXT, "screen_screen_x_x_y_y", "Screen {screen}: x={x}, y={y}").format(
+                    screen=sprite.data.screen,
+                    x=sprite.data.x,
+                    y=sprite.data.y,
+                )
+            )
 
             self._set_map_tile_as_icon(pos, sprite.get_position())
 

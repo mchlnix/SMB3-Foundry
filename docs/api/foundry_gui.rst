@@ -23,6 +23,9 @@ Architecture Guides
 - :doc:`/subsystems/gui_editor_workflow` maps the broader maintainer route from
   :class:`~foundry.gui.FoundryMainWindow` into dialogs, views, and tool
   surfaces.
+- :doc:`/subsystems/localization_architecture` documents runtime translation
+  APIs, live refresh hooks, catalog overlays, Translation Manager behavior,
+  and localization audit gates.
 
 .. autosummary::
    :toctree: generated
@@ -36,6 +39,7 @@ Architecture Guides
    foundry.gui.ObjectStatusBar
    foundry.gui.SpinnerPanel
    foundry.gui.WarningList
+   foundry.gui.localization
    foundry.gui.settings
    foundry.gui.dialogs.AboutWindow
    foundry.gui.dialogs.AutoSaveDialog

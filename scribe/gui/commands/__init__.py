@@ -33,6 +33,7 @@ from foundry.game.gfx.objects.world_map.level_pointer import LevelPointer
 from foundry.game.gfx.objects.world_map.locks import Lock
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.localization import tr, tr_data_name
 from smb3parse.constants import (
     MAPITEM_NAMES,
     MAPOBJ_NAMES,
@@ -43,6 +44,8 @@ from smb3parse.constants import (
 )
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 from smb3parse.levels import FIRST_VALID_ROW, NO_MAP_SCROLLING, WORLD_MAP_BLANK_TILE_ID
+
+TR_CONTEXT = "ScribeCommands"
 
 
 class DirtyAdditionalDataMixin(object):
@@ -93,6 +96,9 @@ class DirtyAdditionalDataMixin(object):
         Redoing one of these commands can trigger ROM hot swapping in Foundry.
         Undoing afterward is therefore a new parse-sensitive change, so the
         cache must be flagged for refresh again before the parent command runs.
+        The mixin does not perform command-specific mutation; it establishes
+        the reparsing boundary and then delegates to the next undo method in
+        the MRO so the concrete command can restore its own staged payload.
         """
         # We introduced a ROM hotswapping feature in Foundry, that means after executing the redo of this command, the
         # ROM in fonudry might be reloaded.
@@ -103,7 +109,13 @@ class DirtyAdditionalDataMixin(object):
         super().undo()  # type: ignore
 
     def redo(self):
-        """Mark additional data dirty before reapplying the wrapped command."""
+        """Mark additional data dirty before reapplying the wrapped command.
+
+        The redo side mirrors :meth:`undo`: it flags Foundry's additional-data
+        cache before the concrete command mutates ROM-backed structures. That
+        keeps hot-reload and lazy reparsing behavior aligned with the command
+        history without making this mixin own any world-edit payload.
+        """
         ROM.additional_data.needs_refresh = True
 
         super().redo()  # type: ignore
@@ -186,10 +198,20 @@ class MoveTile(QUndoCommand):
         else:
             self.tile_before = WORLD_MAP_BLANK_TILE_ID
 
-        self.setText(f"Move Tile '{TILE_NAMES[tile_after]}'")
+        self.setText(
+            tr(TR_CONTEXT, "move_tile_tile_name", "Move Tile '{tile_name}'").format(
+                tile_name=tr_data_name("Tile", TILE_NAMES[tile_after])
+            )
+        )
 
     def undo(self):
-        """Restore the source tile and destination tile selection state."""
+        """Restore the source tile and destination tile selection state.
+
+        Undo reconstructs the exact pre-drag arrangement from constructor
+        snapshots. Selection flags are restored alongside tile ids so the
+        world view can repaint focus consistently after the undo-stack cursor
+        moves backward.
+        """
         if 0 <= self.start.tile_data_index < len(self.world.objects):
             source_obj = self.world.objects[self.start.tile_data_index]
             source_obj.change_type(self.tile_after)
@@ -201,7 +223,12 @@ class MoveTile(QUndoCommand):
             target_obj.selected = False
 
     def redo(self):
-        """Blank the source tile and place the moved tile at the destination."""
+        """Blank the source tile and place the moved tile at the destination.
+
+        Redo applies the staged drag result without recalculating source or
+        destination identity. The command updates rendered tile objects only;
+        later save paths serialize the world model back to ROM data.
+        """
         if 0 <= self.start.tile_data_index < len(self.world.objects):
             source_obj = self.world.objects[self.start.tile_data_index]
             source_obj.change_type(WORLD_MAP_BLANK_TILE_ID)
@@ -290,7 +317,11 @@ class MoveMapObject(DirtyAdditionalDataMixin, QUndoCommand):
 
         self.end = end.xy
 
-        self.setText(f"Move {self.map_object.name}")
+        self.setText(
+            tr(TR_CONTEXT, "move_object_name", "Move {object_name}").format(
+                object_name=tr_data_name("MapObject", self.map_object.name)
+            )
+        )
 
     def undo(self):
         """Move the object back to its staged origin and refresh parse state."""
@@ -448,9 +479,13 @@ class WorldTickPerFrame(QUndoCommand):
         self.new_count = new_tick_count
 
         if self.new_count == 0:
-            self.setText("Deactivate Map Tile Animation")
+            self.setText(tr(TR_CONTEXT, "deactivate_map_tile_animation", "Deactivate Map Tile Animation"))
         else:
-            self.setText(f"Set Ticks per Tile Animation Frame to {self.new_count}")
+            self.setText(
+                tr(
+                    TR_CONTEXT, "command.set_tile_animation_ticks", "Set Ticks per Tile Animation Frame to {tick_count}"
+                ).format(tick_count=self.new_count)
+            )
 
     def undo(self):
         """Restore the previous animation cadence and repaint palette users."""
@@ -510,7 +545,11 @@ class WorldPaletteIndex(QUndoCommand):
         self.old_index = world.data.palette_index
         self.new_index = new_index
 
-        self.setText(f"Setting Palette Index to {new_index:#x}")
+        self.setText(
+            tr(
+                TR_CONTEXT, "setting_palette_index_to_palette_index_x", "Setting Palette Index to {palette_index:#x}"
+            ).format(palette_index=new_index)
+        )
 
     def undo(self):
         """Restore the previous world palette index and repaint the view."""
@@ -570,7 +609,14 @@ class WorldMusicIndex(QUndoCommand):
         self.old_index = world.data.music_index
         self.new_index = new_index
 
-        self.setText(f"Setting Music Theme to '{MUSIC_THEMES[new_index]}' ({new_index:#X})")
+        self.setText(
+            tr(
+                TR_CONTEXT, "command.set_music_theme", "Setting Music Theme to '{music_theme}' ({music_index:#X})"
+            ).format(
+                music_theme=tr_data_name("MusicTheme", MUSIC_THEMES[new_index]),
+                music_index=new_index,
+            )
+        )
 
     def undo(self):
         """Restore the previous world music theme in both playback fields."""
@@ -633,7 +679,11 @@ class WorldBottomTile(QUndoCommand):
         self.old_index = world.data.bottom_border_tile
         self.new_index = new_index
 
-        self.setText(f"Setting Bottom Tile to {new_index:#x}")
+        self.setText(
+            tr(TR_CONTEXT, "setting_bottom_tile_to_tile_index_x", "Setting Bottom Tile to {tile_index:#x}").format(
+                tile_index=new_index
+            )
+        )
 
     def undo(self):
         """Restore the previous bottom-border tile index."""
@@ -696,7 +746,16 @@ class SetLevelAddress(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_address = data.level_address
         self.new_address = new_address
 
-        self.setText(f"Set LP #{self.data.index + 1} Level Address to {new_address:#x}")
+        self.setText(
+            tr(
+                TR_CONTEXT,
+                "command.set_lp_level_address",
+                "Set LP #{pointer_index} Level Address to {level_address:#x}",
+            ).format(
+                pointer_index=self.data.index + 1,
+                level_address=new_address,
+            )
+        )
 
     def undo(self):
         """Restore the previous level-data address and mark caches dirty."""
@@ -761,7 +820,16 @@ class SetEnemyAddress(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_address = data.enemy_address
         self.new_address = new_address
 
-        self.setText(f"Set LP #{self.data.index + 1} Enemy Address to {new_address:#x}")
+        self.setText(
+            tr(
+                TR_CONTEXT,
+                "command.set_lp_enemy_address",
+                "Set LP #{pointer_index} Enemy Address to {enemy_address:#x}",
+            ).format(
+                pointer_index=self.data.index + 1,
+                enemy_address=new_address,
+            )
+        )
 
     def undo(self):
         """Restore the previous enemy-data address and mark caches dirty."""
@@ -827,7 +895,14 @@ class SetObjectSet(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_object_set = data.object_set
         self.new_object_set = object_set_number
 
-        self.setText(f"Set LP #{self.data.index + 1} Object Set to {OBJECT_SET_NAMES[object_set_number]}")
+        self.setText(
+            tr(
+                TR_CONTEXT, "command.set_lp_object_set", "Set LP #{pointer_index} Object Set to {object_set_name}"
+            ).format(
+                pointer_index=self.data.index + 1,
+                object_set_name=tr_data_name("ObjectSet", OBJECT_SET_NAMES[object_set_number]),
+            )
+        )
 
     def undo(self):
         """Restore the previous object-set selection and dirty parse caches."""
@@ -898,7 +973,12 @@ class SetSpriteType(QUndoCommand):
         self.old_type = self.data.type
         self.new_type = new_type
 
-        self.setText(f"Set Sprite #{self.data.index  +1} Type to {MAPOBJ_NAMES[new_type]}")
+        self.setText(
+            tr(TR_CONTEXT, "command.set_sprite_type", "Set Sprite #{sprite_index} Type to {object_name}").format(
+                sprite_index=self.data.index + 1,
+                object_name=tr_data_name("MapObject", MAPOBJ_NAMES[new_type]),
+            )
+        )
 
     def undo(self):
         """Restore the previous sprite type."""
@@ -964,7 +1044,12 @@ class SetSpriteItem(QUndoCommand):
         self.old_item = self.data.item
         self.new_item = new_item
 
-        self.setText(f"Set Sprite #{self.data.index + 1} Item to {MAPITEM_NAMES[new_item]}")
+        self.setText(
+            tr(TR_CONTEXT, "command.set_sprite_item", "Set Sprite #{sprite_index} Item to {item_name}").format(
+                sprite_index=self.data.index + 1,
+                item_name=tr_data_name("MapItem", MAPITEM_NAMES[new_item]),
+            )
+        )
 
     def undo(self):
         """Restore the previous sprite item value."""
@@ -1040,7 +1125,16 @@ class SetScreenCount(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_world_data = world_data.tile_data.copy()
         self.new_screen_count = screen_count
 
-        self.setText(f"Set World {self.world_data.index + 1}'s screen count to {screen_count}")
+        self.setText(
+            tr(
+                TR_CONTEXT,
+                "command.set_world_screen_count",
+                "Set World {world_number}'s screen count to {screen_count}",
+            ).format(
+                world_number=self.world_data.index + 1,
+                screen_count=screen_count,
+            )
+        )
 
     def undo(self):
         """Restore the previous screen span and tile buffer snapshot."""
@@ -1305,9 +1399,9 @@ class SetWorldScroll(QUndoCommand):
         self.new_value = world_data.screen_count << 4 if should_scroll else NO_MAP_SCROLLING
 
         if should_scroll:
-            self.setText("Activate Map Scroll")
+            self.setText(tr(TR_CONTEXT, "activate_map_scroll", "Activate Map Scroll"))
         else:
-            self.setText("Deactivate Map Scroll")
+            self.setText(tr(TR_CONTEXT, "deactivate_map_scroll", "Deactivate Map Scroll"))
 
     def undo(self):
         """Restore the previous scroll byte and flush it to the ROM record."""
@@ -1385,7 +1479,14 @@ class SetWorldIndex(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_index = world_data.index
         self.new_index = new_index
 
-        self.setText(f"Set World {self.old_index + 1}'s index to {new_index + 1}")
+        self.setText(
+            tr(
+                TR_CONTEXT, "command.set_world_index", "Set World {old_world_number}'s index to {new_world_number}"
+            ).format(
+                old_world_number=self.old_index + 1,
+                new_world_number=new_index + 1,
+            )
+        )
 
     def undo(self):
         """Restore the original world index and recalculate sprite addresses."""
@@ -1589,7 +1690,14 @@ class ChangeSpriteIndex(QUndoCommand):
         self.old_index = old_index
         self.new_index = new_index
 
-        self.setText(f"Change Sprite Index {self.old_index} -> {self.new_index}")
+        self.setText(
+            tr(
+                TR_CONTEXT, "change_sprite_index_old_index_new_index", "Change Sprite Index {old_index} -> {new_index}"
+            ).format(
+                old_index=self.old_index,
+                new_index=self.new_index,
+            )
+        )
 
     def undo(self):
         """Move the sprite back to its original list position."""
@@ -1653,7 +1761,16 @@ class ChangeLevelPointerIndex(DirtyAdditionalDataMixin, QUndoCommand):
         self.old_index = old_index
         self.new_index = new_index
 
-        self.setText(f"Change Level Pointer Index {self.old_index} -> {self.new_index}")
+        self.setText(
+            tr(
+                TR_CONTEXT,
+                "command.change_level_pointer_index",
+                "Change Level Pointer Index {old_index} -> {new_index}",
+            ).format(
+                old_index=self.old_index,
+                new_index=self.new_index,
+            )
+        )
 
     def undo(self):
         """Move the level pointer back to its original list position."""
@@ -1726,7 +1843,7 @@ class AddLevelPointer(DirtyAdditionalDataMixin, QUndoCommand):
 
         self.level_pointer = LevelPointer(self.level_pointer_data)
 
-        self.setText("Add Level Pointer")
+        self.setText(tr(TR_CONTEXT, "add_level_pointer", "Add Level Pointer"))
 
     def undo(self):
         """Remove the staged pointer from both parsed and rendered collections."""
@@ -1816,12 +1933,44 @@ class RemoveLevelPointer(DirtyAdditionalDataMixin, QUndoCommand):
         else:
             self.removed_level_pointer = None
 
-        self.setText(f"Remove Level Pointer #{index}")
+        self.setText(
+            tr(TR_CONTEXT, "remove_level_pointer_pointer_index", "Remove Level Pointer #{pointer_index}").format(
+                pointer_index=index
+            )
+        )
+
+    def _level_count_attr_name(self) -> str:
+        """Resolve the level-count field that owns the staged pointer.
+
+        This helper is the parser metadata boundary for pointer removal. It
+        derives the ``WorldMapData`` counter from the preserved pointer screen
+        so undo and redo replay against the original world state instead of any
+        later table selection or reordered row.
+
+        Returns
+        -------
+        str
+            Name of the ``WorldMapData`` counter that owns the removed
+            pointer's screen.
+
+        Notes
+        -----
+        Level-pointer removal must update both list membership and the parsed
+        per-screen count field. Deriving the field name from the staged pointer
+        keeps undo and redo aligned with the pointer's original screen rather
+        than whichever row happens to be selected later.
+        """
+        return f"level_count_screen_{self.removed_level_pointer_data.screen + 1}"
 
     def undo(self):
-        """Reinsert the removed pointer and repair per-screen level counts."""
-        # TODO not nice
-        attr_name = f"level_count_screen_{self.removed_level_pointer_data.screen + 1}"
+        """Reinsert the removed pointer and repair per-screen level counts.
+
+        Undo restores both the parsed pointer record and, when available, the
+        rendered pointer object at the original list index. The per-screen
+        counter is incremented first so parsed metadata and list membership are
+        consistent before any view refresh reads them.
+        """
+        attr_name = self._level_count_attr_name()
 
         lvls_on_screen = getattr(self.world_data, attr_name)
 
@@ -1844,8 +1993,7 @@ class RemoveLevelPointer(DirtyAdditionalDataMixin, QUndoCommand):
         and it ensures the replayed removal updates both pointer membership and
         the screen-level metadata that describes that membership.
         """
-        # TODO not nice
-        attr_name = f"level_count_screen_{self.removed_level_pointer_data.screen + 1}"
+        attr_name = self._level_count_attr_name()
 
         lvls_on_screen = getattr(self.world_data, attr_name)
 
@@ -1882,6 +2030,12 @@ class WorldDataStandIn:
         Editable staged screen count.
     index : int
         Editable staged world index.
+    _orig_level_count : int
+        Original level-pointer count captured for change detection.
+    _orig_screen_count : int
+        Original screen count captured for change detection.
+    _orig_index : int
+        Original world index captured for change detection.
     sprites : list[SpriteData]
         Sprite helper records staged alongside the world metadata.
     data : WorldMapData
@@ -1895,6 +2049,14 @@ class WorldDataStandIn:
         ----------
         world_data
             Parsed world-data record that will later receive staged changes.
+
+        Notes
+        -----
+        The stand-in snapshots original counts and index values separately
+        from the editable fields so the overview table can stage multiple
+        changes before any command writes back to parsed data. Sprite helpers
+        are materialized here as well because final save commands flush both
+        world metadata and sprite records together.
         """
         self.level_count = self._orig_level_count = world_data.level_count
         self.screen_count = self._orig_screen_count = world_data.screen_count
@@ -1958,7 +2120,13 @@ class SaveWorldsOnUndo(QUndoCommand):
         self.worlds = worlds
 
     def undo(self):
-        """Write back world and sprite records for every staged world."""
+        """Write back world and sprite records for every staged world.
+
+        Crossing this undo boundary persists the stand-in values into their
+        parsed ``WorldMapData`` records. The command does not decide which
+        worlds changed; it trusts the finalized macro to pass the staged set
+        that should be flushed during backward replay.
+        """
         for world in self.worlds:
             world.data.write_back()
 
@@ -1999,7 +2167,13 @@ class SaveWorldsOnRedo(QUndoCommand):
         self.worlds = worlds
 
     def redo(self):
-        """Write back world and sprite records for every staged world."""
+        """Write back world and sprite records for every staged world.
+
+        Crossing this redo boundary persists the stand-in values into their
+        parsed ``WorldMapData`` records. Mirroring the undo-side save command
+        keeps both directions of the macro replay synchronized with ROM-facing
+        data structures.
+        """
         for world in self.worlds:
             world.data.write_back()
 

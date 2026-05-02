@@ -28,8 +28,12 @@ from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr
 
 from .size_bar import SizeBar
+
+TR_CONTEXT = "LevelSizeBar"
+TR_KEY_CONTEXT = "foundry.size_bar"
 
 
 class LevelSizeBar(QWidget):
@@ -54,7 +58,9 @@ class LevelSizeBar(QWidget):
     size_bar : SizeBar
         Bar widget that visualizes relative size usage.
     info_label : QLabel
-        Label that shows the numeric size values in bytes.
+        Display-only label that shows localized byte-counter text. It is
+        rebuilt from numeric level state by :meth:`update` and
+        :meth:`retranslate_ui`; it is not used as persisted size data.
     """
 
     def __init__(self, parent, level: LevelRef):
@@ -79,16 +85,7 @@ class LevelSizeBar(QWidget):
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
 
-        self.setWhatsThis(
-            "<b>Level Size Bar</b><br/>"
-            "The objects inside a level, like platforms and item blocks, are stored as bytes in the ROM. "
-            "Since levels are stored one after another, saving a level with more objects, than it originally "
-            "had, would overwrite another level and probably cause the game to crash, if you would enter it, "
-            "while playing.<br/>"
-            "This bar shows, how much of the available space for level objects is currently taken up. It will turn "
-            "red, when too many level objects have been placed (or if the level objects would result in more bytes, "
-            "than the level originally had)."
-        )
+        self._set_whats_this()
 
         self.size_bar = SizeBar(self.level_ref)
         self.size_bar.value_color = self.value_color
@@ -118,12 +115,38 @@ class LevelSizeBar(QWidget):
             Result returned by the base Qt update chain.
         """
         original_value_string = "∞" if self.max_value == float("INF") else str(self.max_value)
-        self.info_label.setText(f"{self.value_description}: {self.current_value}/{original_value_string} Bytes")
+        self.info_label.setText(
+            tr(TR_KEY_CONTEXT, "summary.bytes", "{description}: {current}/{maximum} Bytes").format(
+                description=self.value_description,
+                current=self.current_value,
+                maximum=original_value_string,
+            )
+        )
 
         self.size_bar.current_value = self.current_value
         self.size_bar.original_value = self.max_value
 
         return super(LevelSizeBar, self).update()
+
+    def retranslate_ui(self) -> None:
+        """Refresh counter labels without changing byte counters.
+
+        The help text and painted object-byte summary are rebuilt from the
+        active catalog on the next update. Current and maximum byte values stay
+        unchanged so live localization cannot affect level size calculations.
+        """
+        self._set_whats_this()
+        self.update()
+
+    def _set_whats_this(self) -> None:
+        """Refresh translated help text for the counter widget."""
+        self.setWhatsThis(
+            tr(
+                TR_CONTEXT,
+                "help.level_size_bar",
+                "<b>Level Size Bar</b><br/>The objects inside a level, like platforms and item blocks, are stored as bytes in the ROM. Since levels are stored one after another, saving a level with more objects, than it originally had, would overwrite another level and probably cause the game to crash, if you would enter it, while playing.<br/>This bar shows, how much of the available space for level objects is currently taken up. It will turn red, when too many level objects have been placed (or if the level objects would result in more bytes, than the level originally had).",
+            )
+        )
 
     @property
     def value_color(self):
@@ -154,7 +177,7 @@ class LevelSizeBar(QWidget):
         str
             Description shown before the byte counts in the info label.
         """
-        return "Objects"
+        return tr(TR_KEY_CONTEXT, "objects", "Objects")
 
     @property
     def max_value(self) -> float:

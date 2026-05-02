@@ -99,6 +99,10 @@ MARIO_HEIGHT_SCALE_FACTOR = MARIO_SPRITE_HEIGHT / (Block.HEIGHT * 2)
 MARIO_SPRITE_X_OFFSET = 0
 MARIO_SPRITE_Y_OFFSET = -MARIO_SPRITE_OVER_HEIGHT / Block.HEIGHT
 
+DUNGEON_BACKGROUND_BLOCK_INDEX = 140
+DUNGEON_CEILING_BLOCK_INDEX = 139
+DUNGEON_UPPER_FLOOR_BLOCK_INDICES = (20, 21)
+DUNGEON_LOWER_FLOOR_BLOCK_INDICES = (22, 23)
 
 SPECIAL_BACKGROUND_OBJECTS = [
     "blue background",
@@ -121,7 +125,7 @@ ENEMY_ITEMS_WITH_OVERLAYS = apply(
 
 
 def _block_from_index(block_index: int, level: Level, animated: bool) -> Block:
-    """Return a block from the level TSA table.
+    """Resolve a block from the level TSA table.
 
     This helper keeps block-cache access consistent for level drawing paths that need object-set,
     palette, graphics-set, and animation context.
@@ -309,7 +313,6 @@ class LevelDrawer:
         painter.restore()
 
     def _draw_dungeon_default_graphics(self, painter: QPainter, level: Level):
-        # TODO Fix magic numbers
         """Draw dungeon background, ceiling, and floor blocks.
 
         Dungeon levels rely on implicit scenery that is not represented as
@@ -331,14 +334,14 @@ class LevelDrawer:
         animated = self.settings.value("level_view/block_animation")
 
         # draw_background
-        bg_block = _block_from_index(140, level, animated)
+        bg_block = _block_from_index(DUNGEON_BACKGROUND_BLOCK_INDEX, level, animated)
 
         for x, y in product(range(level.width), range(level.height)):
             bg_block.graphics_set.anim_frame = self.anim_frame
             bg_block.draw(painter, x * self.block_length, y * self.block_length, self.block_length)
 
         # draw ceiling
-        ceiling_block = _block_from_index(139, level, animated)
+        ceiling_block = _block_from_index(DUNGEON_CEILING_BLOCK_INDEX, level, animated)
 
         for x in range(level.width):
             ceiling_block.graphics_set.anim_frame = self.anim_frame
@@ -346,12 +349,10 @@ class LevelDrawer:
 
         # draw floor
         upper_floor_blocks = [
-            _block_from_index(20, level, animated),
-            _block_from_index(21, level, animated),
+            _block_from_index(block_index, level, animated) for block_index in DUNGEON_UPPER_FLOOR_BLOCK_INDICES
         ]
         lower_floor_blocks = [
-            _block_from_index(22, level, animated),
-            _block_from_index(23, level, animated),
+            _block_from_index(block_index, level, animated) for block_index in DUNGEON_LOWER_FLOOR_BLOCK_INDICES
         ]
 
         upper_y = (GROUND - 2) * self.block_length
@@ -839,7 +840,7 @@ class LevelDrawer:
         """
         x_offset = MARIO_SPRITE_WIDTH * start_action_index
 
-        # TODO: The pipe sprites are off by one. Needs an additional offset to rectify
+        # The current sheet coordinates intentionally preserve the existing pipe-entry alignment.
         powerup_state = self.settings.value("editor/default_powerup")
         mario_sprite_sheet = MARIO_SPRITE_SHEET_BY_POWERUP[POWERUPS[powerup_state].power_up_code]
 

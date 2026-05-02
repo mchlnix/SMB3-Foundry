@@ -44,6 +44,7 @@ from foundry.game.gfx.objects.world_map.map_tile import MapTile
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.localization import tr, tr_data_name
 from foundry.gui.settings import Settings
 from foundry.gui.visualization.MainView import (
     MODE_DRAG,
@@ -73,6 +74,8 @@ from smb3parse.constants import (
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_HEIGHT
 
+TR_CONTEXT = "WorldView"
+
 
 class WorldView(MainView):
     """Interactive editor view for SMB3 world maps.
@@ -98,6 +101,9 @@ class WorldView(MainView):
 
     Attributes
     ----------
+    _object_was_selected_on_last_click : bool
+        Gesture flag that distinguishes a click selecting an object from a
+        release that should toggle or replace selection.
     _tile_to_put : int
         Tile id staged for paint and flood-fill mode.
     context_menu : WorldContextMenu
@@ -114,8 +120,20 @@ class WorldView(MainView):
         Active interaction mode such as free, drag, paint-tile, or marquee select.
     redraw_timer : QTimer | None
         Timer that advances animated world-map tiles when enabled.
+    read_only : bool
+        Inherited editing guard that lets hover previews continue while
+        blocking undoable world-map mutations.
     selected_object : MapObject | None
         Selected non-tile map object moved independently of tile selection.
+    selection_square : object
+        Inherited marquee-selection helper used for tile-region selection.
+
+    Notes
+    -----
+    The class keeps transient Qt gesture state separate from committed
+    world-map data. Paint, fill, drag, and pointer edits are only persisted
+    through Scribe undo commands once the relevant mouse workflow reaches its
+    commit point.
     """
 
     context_menu: WorldContextMenu
@@ -168,22 +186,24 @@ class WorldView(MainView):
 
         self.dragging_happened = False
 
-        # TODO: update
-        self.setWhatsThis(
-            "<b>Level View</b><br/>"
-            "This renders the level as it would appear in game plus additional information, that can be "
-            "toggled in the View menu.<br/>"
-            "It supports selecting multiple objects, moving, copy/pasting and resizing them using the "
-            "mouse or the usual keyboard shortcuts.<br/>"
-            "There are still occasional rendering errors, or small inconsistencies. If you find them, "
-            "please report the kind of object (name or values in the SpinnerPanel) and the level or "
-            "object set they appear in, in the discord and @Michael or on the github page under Help."
-            "<br/><br/>"
-            ""
-            "If all else fails, click the play button up top to see your level in game in seconds."
-        )
+        self.retranslate_ui()
 
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_A), self, self.select_all)
+
+    def retranslate_ui(self) -> None:
+        """Refresh world-view help text without changing map selection state.
+
+        The ``WhatsThis`` copy is rebuilt from the active catalog. The world
+        model, selected tiles or sprites, drag state, and rendering payload stay
+        stable so localization only changes explanatory Qt text.
+        """
+        self.setWhatsThis(
+            tr(
+                TR_CONTEXT,
+                "help.level_view",
+                "<b>Level View</b><br/>This renders the level as it would appear in game plus additional information, that can be toggled in the View menu.<br/>It supports selecting multiple objects, moving, copy/pasting and resizing them using the mouse or the usual keyboard shortcuts.<br/>There are still occasional rendering errors, or small inconsistencies. If you find them, please report the kind of object (name or values in the SpinnerPanel) and the level or object set they appear in, in the discord and @Michael or on the github page under Help.<br/><br/>If all else fails, click the play button up top to see your level in game in seconds.",
+            )
+        )
 
     def next_anim_step(self):
         """Advance animated map tiles and repaint the view."""
@@ -442,7 +462,7 @@ class WorldView(MainView):
         try:
             level_name = self.world.level_name_at_position(x, y)
 
-            object_set_name = OBJECT_SET_NAMES[level_pointer.data.object_set]
+            object_set_name = tr_data_name("ObjectSet", OBJECT_SET_NAMES[level_pointer.data.object_set])
 
             image_data = get_level_thumbnail(
                 level_pointer.data.object_set,
@@ -452,9 +472,9 @@ class WorldView(MainView):
 
             self.setToolTip(
                 f"<b>{level_name}</b><br/>"
-                f"<u>Type:</u> {object_set_name} "
-                f"<u>Objects:</u> {level_pointer.data.level_address:#x} "
-                f"<u>Enemies:</u> {level_pointer.data.enemy_address:#x}<br/>"
+                f"<u>{tr(TR_CONTEXT, 'type', 'Type')}:</u> {object_set_name} "
+                f"<u>{tr(TR_CONTEXT, 'objects', 'Objects')}:</u> {level_pointer.data.level_address:#x} "
+                f"<u>{tr(TR_CONTEXT, 'enemies', 'Enemies')}:</u> {level_pointer.data.enemy_address:#x}<br/>"
                 f"<img src='data:image/png;base64,{pixmap_to_base64(image_data)}'>"
             )
 
@@ -633,13 +653,24 @@ class WorldView(MainView):
 
             assert tile is not None
 
-            tile_to_put_name = TILE_NAMES[self._tile_to_put]
+            tile_to_put_name = tr_data_name("Tile", TILE_NAMES[self._tile_to_put])
 
             if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
-                self.undo_stack.beginMacro(f"Fill in '{tile.name}' with '{tile_to_put_name}'")
+                self.undo_stack.beginMacro(
+                    tr(
+                        "ScribeWorldView",
+                        "fill_in_tile_name_with_replacement_name",
+                        "Fill in '{tile_name}' with '{replacement_name}'",
+                    ).format(
+                        tile_name=tr_data_name("Tile", tile.name),
+                        replacement_name=tile_to_put_name,
+                    )
+                )
                 self._fill_tile(tile.type, x, y)
             else:
-                self.undo_stack.beginMacro(f"Place '{tile_to_put_name}'")
+                self.undo_stack.beginMacro(
+                    tr("ScribeWorldView", "place_tile_name", "Place '{tile_name}'").format(tile_name=tile_to_put_name)
+                )
                 self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
 
             self.update()
@@ -776,7 +807,11 @@ class WorldView(MainView):
         self.select_objects([], replace_selection=True)
 
         if (no_of_sel_objects := len(sel_objects)) > 1:
-            self.undo_stack.beginMacro(f"Move {no_of_sel_objects} Tiles")
+            self.undo_stack.beginMacro(
+                tr("ScribeWorldView", "move_tile_count_tiles", "Move {tile_count} Tiles").format(
+                    tile_count=no_of_sel_objects
+                )
+            )
 
         old_objects = self.world.objects.copy()
 
@@ -805,12 +840,19 @@ class WorldView(MainView):
             self.undo_stack.endMacro()
 
     def select_object_like(self, obj: MapObject):
-        """Select one non-tile map object.
+        """Select one visible world-map object for later world-map edits.
+
+        Selection is transient UI state used by drag, context-menu, and table
+        synchronization workflows. The method clears the previous selected
+        ``MapObject`` flag before marking the newly hit-tested object, but it
+        does not commit any ROM or world-map command; movement and pointer
+        edits are still routed through release handlers and the undo stack.
 
         Parameters
         ----------
         obj : MapObject
-            Map object to select.
+            Map object or tile returned from hit-testing, or ``None`` to leave
+            the active selection unchanged after clearing the previous one.
         """
         if self.selected_object is not None:
             self.selected_object.selected = False
@@ -855,7 +897,7 @@ class WorldView(MainView):
 
     def clear_tiles(self):
         """Replace every map tile with a blank tile via undo commands."""
-        self.undo_stack.beginMacro("Clear Tiles")
+        self.undo_stack.beginMacro(tr("ScribeWorldView", "clear_tiles", "Clear Tiles"))
 
         for map_tile in self.world.get_all_objects():
             self.undo_stack.push(PutTile(self.world, map_tile.pos, WORLD_MAP_BLANK_TILE_ID))
@@ -864,7 +906,7 @@ class WorldView(MainView):
 
     def clear_sprites(self):
         """Clear all world-map sprites via undo commands."""
-        self.undo_stack.beginMacro("Clear Sprites")
+        self.undo_stack.beginMacro(tr("ScribeWorldView", "clear_sprites", "Clear Sprites"))
 
         for sprite in self.world.sprites:
             self.undo_stack.push(SetSpriteType(sprite.data, 0))
@@ -875,7 +917,7 @@ class WorldView(MainView):
 
     def clear_level_pointers(self):
         """Clear all level pointers via undo commands."""
-        self.undo_stack.beginMacro("Clear Level Pointers")
+        self.undo_stack.beginMacro(tr("ScribeWorldView", "clear_level_pointers", "Clear Level Pointers"))
 
         for level_pointer in self.world.level_pointers:
             self.undo_stack.push(SetLevelAddress(level_pointer.data, 0))

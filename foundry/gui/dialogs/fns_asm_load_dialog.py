@@ -31,6 +31,15 @@ from foundry import FNS_FILE_FILTER, SMB3_ASM_FILE_FILTER
 from foundry.game.File import ROM
 from foundry.gui.asm import asm_paths_from_rom_path
 from foundry.gui.dialogs.CustomDialog import CustomDialog
+from foundry.gui.localization import tr
+
+TR_CONTEXT = "FnsAsmLoadDialog"
+MISSING_FILE_MESSAGE = "Given path is not a file/does not exist."
+MISSING_FILE_KEY = "error.missing_file_path"
+BAD_FNS_FORMAT_MESSAGE = "Didn't find lines in the form of 'name = $1234'. File might be wrongly formatted."
+BAD_FNS_FORMAT_KEY = "error.bad_fns_format"
+MISSING_PRG_MESSAGE = "Couldn't find {prg_path}. Make sure your smb3.asm is in the assembly directory."
+MISSING_PRG_KEY = "error.missing_prg_asm"
 
 
 class FnsAsmLoadDialog(CustomDialog):
@@ -60,6 +69,16 @@ class FnsAsmLoadDialog(CustomDialog):
         Editable ASM path field.
     _asm_open_button : QPushButton
         Button that opens the ASM file picker.
+    _asm_status_tooltip_args : dict[str, object]
+        Format arguments for the active ASM validation tooltip.
+    _asm_status_tooltip_key : str
+        Stable catalog key for the active ASM validation tooltip.
+    _asm_status_tooltip_source : str
+        English ASM validation tooltip fallback text.
+    _cancel_button : QPushButton
+        Button that rejects the dialog without changing staged paths.
+    _explanation_label : QLabel
+        Wrapped label explaining why both FNS and ASM files are required.
     _fns_check_icon : QLabel
         Status icon for FNS validation.
     _fns_is_good : bool
@@ -68,8 +87,16 @@ class FnsAsmLoadDialog(CustomDialog):
         Editable FNS path field.
     _fns_open_button : QPushButton
         Button that opens the FNS file picker.
+    _fns_status_tooltip_args : dict[str, object]
+        Format arguments for the active FNS validation tooltip.
+    _fns_status_tooltip_key : str
+        Stable catalog key for the active FNS validation tooltip.
+    _fns_status_tooltip_source : str
+        English FNS validation tooltip fallback text.
     _ok_button : QPushButton
         Confirmation button enabled only when both files validate.
+    _question_label : QLabel
+        Information icon that owns the long explanatory tooltip.
     asm_path : str
         Selected ASM path.
     fns_path : str
@@ -106,44 +133,38 @@ class FnsAsmLoadDialog(CustomDialog):
         current_asm_file : str, optional
             Path to the existing ASM file, if one was already chosen.
         """
-        super().__init__(parent, title="Update Globals from files")
+        super().__init__(parent, title=tr(TR_CONTEXT, "update_globals_from_files", "Update Globals from files"))
 
         self.fns_path = cur_fns_file
         self._fns_is_good = False
+        self._fns_status_tooltip_key = ""
+        self._fns_status_tooltip_source = ""
+        self._fns_status_tooltip_args = {}
 
         self.asm_path = current_asm_file
         self._asm_is_good = False
+        self._asm_status_tooltip_key = ""
+        self._asm_status_tooltip_source = ""
+        self._asm_status_tooltip_args = {}
 
         vbox = QVBoxLayout(self)
 
         hbox = QHBoxLayout()
 
-        explanation = QLabel("Provide an FNS file and the smb3.asm file from your project.")
-        explanation.setWordWrap(True)
-        explanation.setMargin(5)
+        self._explanation_label = QLabel()
+        self._explanation_label.setWordWrap(True)
+        self._explanation_label.setMargin(5)
 
-        question_label = QLabel()
-        question_label.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxInformation))
-        question_label.setToolTip(
-            "A FNS file is a by-product of compiling a Rom file from assembly code.\n"
-            "It has all the labels used in the code and their positions as they would be in the NES's memory.\n"
-            "Some of these labels are used by the editor to find important data, like levels, palette colors, etc.\n"
-            "The editor, however, needs to know where the code these labels describe, is in the Rom file.\n"
-            "By default the editor ships with these addresses for the unaltered US SMB3 Rom, but if you have\n"
-            "made changes to the code, and things moved around, those addresses might not be valid anymore.\n"
-            "For that purpose, the editor needs the FNS file and your smb3.asm file as well, to generate the location\n"
-            "in the Rom for every label in the FNS file."
-        )
+        self._question_label = QLabel()
+        self._question_label.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxInformation))
 
-        hbox.addWidget(explanation)
-        hbox.addWidget(question_label)
+        hbox.addWidget(self._explanation_label)
+        hbox.addWidget(self._question_label)
 
         vbox.addLayout(hbox)
 
         self._fns_line_edit = QLineEdit()
         self._fns_line_edit.textChanged.connect(self._check_fns_file)
-
-        self._fns_line_edit.setPlaceholderText("Path to FNS file.")
 
         self._fns_check_icon = QLabel()
         self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
@@ -161,8 +182,6 @@ class FnsAsmLoadDialog(CustomDialog):
         self._asm_line_edit = QLineEdit()
         self._asm_line_edit.textChanged.connect(self._check_asm_file)
 
-        self._asm_line_edit.setPlaceholderText("Path to smb3.asm file.")
-
         self._asm_check_icon = QLabel()
         self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
 
@@ -178,15 +197,15 @@ class FnsAsmLoadDialog(CustomDialog):
 
         hbox = QHBoxLayout()
 
-        cancel_button = QPushButton("Cancel")
-        cancel_button.pressed.connect(self.reject)
+        self._cancel_button = QPushButton()
+        self._cancel_button.pressed.connect(self.reject)
 
-        self._ok_button = QPushButton("Ok")
+        self._ok_button = QPushButton()
         self._ok_button.setEnabled(False)
         self._ok_button.pressed.connect(self._on_ok)
 
         hbox.addStretch(2)
-        hbox.addWidget(cancel_button)
+        hbox.addWidget(self._cancel_button)
         hbox.addWidget(self._ok_button)
 
         vbox.addLayout(hbox)
@@ -204,6 +223,76 @@ class FnsAsmLoadDialog(CustomDialog):
 
         self._fns_line_edit.setText(self.fns_path)
         self._asm_line_edit.setText(self.asm_path)
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh translated ASM-loading text without changing staged files.
+
+        The line-edit contents, validation booleans, and accepted path fields
+        are stable workflow data for the later global remapping pass. This
+        method updates Qt labels, placeholders, buttons, and cached validation
+        tooltips so live language switching mirrors the same FNS/``smb3.asm``
+        file-validity state the user already sees, without reparsing the files
+        or changing the ROM-offset mapping inputs.
+        """
+        self.setWindowTitle(tr(TR_CONTEXT, "update_globals_from_files", "Update Globals from files"))
+        self._explanation_label.setText(
+            tr(TR_CONTEXT, "prompt.fns_asm_files", "Provide an FNS file and the smb3.asm file from your project.")
+        )
+        self._question_label.setToolTip(self._question_tooltip_text())
+        self._fns_line_edit.setPlaceholderText(tr(TR_CONTEXT, "path_to_fns_file", "Path to FNS file."))
+        self._asm_line_edit.setPlaceholderText(tr(TR_CONTEXT, "path_to_smb3_asm_file", "Path to smb3.asm file."))
+        self._cancel_button.setText(tr("Common", "cancel", "Cancel"))
+        self._ok_button.setText(tr("Common", "ok_title", "Ok"))
+        self._refresh_status_tooltips()
+
+    @staticmethod
+    def _question_tooltip_text() -> str:
+        """Build the translated help text for FNS/ASM remapping.
+
+        The tooltip is display-only guidance for the dialog's information icon.
+        It explains the SMB3 assembly boundary that motivates the file pair:
+        FNS labels describe NES memory addresses, while the matching
+        ``smb3.asm`` tree lets Foundry resolve those labels back to ROM file
+        offsets before global editor addresses are updated.
+
+        Returns
+        -------
+        str
+            Multi-line tooltip explaining why Foundry needs both the compiled
+            FNS label output and the source ASM tree to map labels to ROM
+            offsets.
+        """
+        return tr(
+            TR_CONTEXT,
+            "help.fns_asm_files",
+            "A FNS file is a by-product of compiling a Rom file from assembly code.\nIt has all the labels used in the code and their positions as they would be in the NES's memory.\nSome of these labels are used by the editor to find important data, like levels, palette colors, etc.\nThe editor, however, needs to know where the code these labels describe, is in the Rom file.\nBy default the editor ships with these addresses for the unaltered US SMB3 Rom, but if you have\nmade changes to the code, and things moved around, those addresses might not be valid anymore.\nFor that purpose, the editor needs the FNS file and your smb3.asm file as well, to generate the location\nin the Rom for every label in the FNS file.",
+        )
+
+    def _refresh_status_tooltips(self) -> None:
+        """Rebuild validation tooltips from cached validation state.
+
+        File checks store stable tooltip keys, English fallback text, and any
+        formatting arguments when FNS or ``smb3.asm`` validation changes. Live
+        language switching uses that cached state to retranslate the status
+        icons without touching the line edits, reparsing the selected files, or
+        changing the booleans that control the OK button. That keeps display
+        text in sync with the active catalog while preserving the already-staged
+        remapping inputs.
+        """
+        if self._fns_status_tooltip_key:
+            self._fns_check_icon.setToolTip(
+                tr(TR_CONTEXT, self._fns_status_tooltip_key, self._fns_status_tooltip_source).format(
+                    **self._fns_status_tooltip_args
+                )
+            )
+
+        if self._asm_status_tooltip_key:
+            self._asm_check_icon.setToolTip(
+                tr(TR_CONTEXT, self._asm_status_tooltip_key, self._asm_status_tooltip_source).format(
+                    **self._asm_status_tooltip_args
+                )
+            )
 
     def _check_fns_file(self, path: str):
         """Validate the chosen FNS file and update the status icon.
@@ -228,18 +317,28 @@ class FnsAsmLoadDialog(CustomDialog):
 
         if not new_path.is_file():
             self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
-            self._fns_check_icon.setToolTip("Given path is not a file/does not exist.")
+            self._fns_status_tooltip_key = MISSING_FILE_KEY
+            self._fns_status_tooltip_source = MISSING_FILE_MESSAGE
+            self._fns_status_tooltip_args = {}
+            self._refresh_status_tooltips()
             return
 
         try:
             self._check_fns_content(new_path)
         except Exception as e:
             self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxWarning))
+            self._fns_status_tooltip_key = BAD_FNS_FORMAT_KEY if isinstance(e, ValueError) else ""
+            self._fns_status_tooltip_source = BAD_FNS_FORMAT_MESSAGE if isinstance(e, ValueError) else ""
+            self._fns_status_tooltip_args = {}
             self._fns_check_icon.setToolTip(str(e))
+            self._refresh_status_tooltips()
             return
 
         self._fns_is_good = True
         self._fns_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_DialogYesButton))
+        self._fns_status_tooltip_key = ""
+        self._fns_status_tooltip_source = ""
+        self._fns_status_tooltip_args = {}
         self._fns_check_icon.setToolTip("")
 
         self._check_ok_button()
@@ -283,7 +382,7 @@ class FnsAsmLoadDialog(CustomDialog):
                     raise ValueError()
 
             except ValueError:
-                raise ValueError("Didn't find lines in the form of 'name = $1234'. File might be wrongly formatted.")
+                raise ValueError(tr(TR_CONTEXT, BAD_FNS_FORMAT_KEY, BAD_FNS_FORMAT_MESSAGE))
 
             lines_to_check -= 1
 
@@ -310,7 +409,10 @@ class FnsAsmLoadDialog(CustomDialog):
         new_path = Path(path)
 
         if not new_path.is_file():
-            self._asm_check_icon.setToolTip("Given path is not a file/does not exist.")
+            self._asm_status_tooltip_key = MISSING_FILE_KEY
+            self._asm_status_tooltip_source = MISSING_FILE_MESSAGE
+            self._asm_status_tooltip_args = {}
+            self._refresh_status_tooltips()
             self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxCritical))
             return
 
@@ -318,10 +420,17 @@ class FnsAsmLoadDialog(CustomDialog):
             self._check_asm_location(new_path)
         except Exception as e:
             self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_MessageBoxWarning))
+            self._asm_status_tooltip_key = MISSING_PRG_KEY if isinstance(e, ValueError) else ""
+            self._asm_status_tooltip_source = MISSING_PRG_MESSAGE if isinstance(e, ValueError) else ""
+            self._asm_status_tooltip_args = {"prg_path": new_path.parent / "PRG" / "prg000.asm"}
             self._asm_check_icon.setToolTip(str(e))
+            self._refresh_status_tooltips()
             return
 
         self._asm_check_icon.setPixmap(self.style().standardPixmap(QStyle.StandardPixmap.SP_DialogYesButton))
+        self._asm_status_tooltip_key = ""
+        self._asm_status_tooltip_source = ""
+        self._asm_status_tooltip_args = {}
         self._asm_check_icon.setToolTip("")
 
         self._asm_is_good = True
@@ -332,7 +441,10 @@ class FnsAsmLoadDialog(CustomDialog):
     def _check_asm_location(path: Path):
         """Verify that the ASM file lives inside a usable SMB3 source tree.
 
-        It supports a focused editor dialog while keeping UI state synchronized with the model. The method delegates lower-level work while keeping the public workflow focused.
+        The lightweight check looks for the neighboring ``PRG/prg000.asm`` file
+        that Foundry's later remapping code expects when translating label
+        addresses back into ROM offsets. It intentionally leaves full parsing
+        to the ASM loading workflow and only guards the dialog's OK state.
 
         Parameters
         ----------
@@ -347,7 +459,7 @@ class FnsAsmLoadDialog(CustomDialog):
         prg_path = path.parent / "PRG" / "prg000.asm"
 
         if not prg_path.exists():
-            raise ValueError(f"Couldn't find {prg_path}. Make sure your smb3.asm is in the assembly directory.")
+            raise ValueError(tr(TR_CONTEXT, MISSING_PRG_KEY, MISSING_PRG_MESSAGE).format(prg_path=prg_path))
 
     def _check_ok_button(self):
         """Enable confirmation only when both ASM inputs validate.
@@ -374,7 +486,9 @@ class FnsAsmLoadDialog(CustomDialog):
         Writing the chosen path into the line edit reuses the same validation
         flow as manual text entry.
         """
-        fns_file, _ = QFileDialog.getOpenFileName(self, "Open FNS File", filter=FNS_FILE_FILTER)
+        fns_file, _ = QFileDialog.getOpenFileName(
+            self, tr(TR_CONTEXT, "open_fns_file", "Open FNS File"), filter=FNS_FILE_FILTER
+        )
 
         if not fns_file:
             return
@@ -387,7 +501,9 @@ class FnsAsmLoadDialog(CustomDialog):
         Writing the chosen path into the line edit reuses the same validation
         flow as manual text entry.
         """
-        asm_file, _ = QFileDialog.getOpenFileName(self, "Open smb3.asm File", filter=SMB3_ASM_FILE_FILTER)
+        asm_file, _ = QFileDialog.getOpenFileName(
+            self, tr(TR_CONTEXT, "open_smb3_asm_file", "Open smb3.asm File"), filter=SMB3_ASM_FILE_FILTER
+        )
 
         if not asm_file:
             return

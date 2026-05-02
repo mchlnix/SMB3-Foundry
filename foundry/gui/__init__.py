@@ -19,6 +19,18 @@ WORLD_ITEMS = [
     "Lost Levels",
     "World Maps",
 ]
+WORLD_ITEM_KEYS = [
+    "world_1",
+    "world_2",
+    "world_3",
+    "world_4",
+    "world_5",
+    "world_6",
+    "world_7",
+    "world_8",
+    "lost_levels",
+    "world_maps",
+]
 
 OBJECT_SET_ITEMS = [
     "0 Overworld",
@@ -37,6 +49,24 @@ OBJECT_SET_ITEMS = [
     "D Cloudy",
     "E Underground",
     "F Spade Bonus",
+]
+OBJECT_SET_ITEM_KEYS = [
+    "object_set.0x0_overworld",
+    "object_set.0x1_plains",
+    "object_set.0x2_dungeon",
+    "object_set.0x3_hilly",
+    "object_set.0x4_sky",
+    "object_set.0x5_piranha_plant",
+    "object_set.0x6_water",
+    "object_set.0x7_mushroom",
+    "object_set.0x8_pipe",
+    "object_set.0x9_desert",
+    "object_set.0xa_ship",
+    "object_set.0xb_giant",
+    "object_set.0xc_ice",
+    "object_set.0xd_cloudy",
+    "object_set.0xe_underground",
+    "object_set.0xf_spade_bonus",
 ]
 
 

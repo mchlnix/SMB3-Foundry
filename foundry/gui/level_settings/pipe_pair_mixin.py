@@ -33,6 +33,7 @@ from foundry.gui import label_and_widget
 from foundry.gui.commands import AddEnemyAt, RemoveObject, UpdatePipeData
 from foundry.gui.dialogs.level_selector.LevelSelector import WorldMapLevelSelect
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
+from foundry.gui.localization import tr
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_PIPE_EXITS, PIPE_PAIR_COUNT
 from smb3parse.data_points import Position
@@ -121,7 +122,7 @@ class PipePairMixin(SettingsMixin):
         """
         super(PipePairMixin, self).__init__(parent)
 
-        pipe_pair_group = QGroupBox("Pipe Pair Exits")
+        pipe_pair_group = QGroupBox(tr("PipePairMixin", "pipe_pair_exits", "Pipe Pair Exits"))
         QVBoxLayout(pipe_pair_group)
 
         self.pipe_datas = [PipeData(ROM(), index) for index in range(PIPE_PAIR_COUNT)]
@@ -133,26 +134,44 @@ class PipePairMixin(SettingsMixin):
         else:
             self.original_pipe_y_value = self.original_pipe_item.y_position
 
-        self.pipe_pair_check_box = QCheckBox("Enable exiting somewhere else on WorldMap")
+        self.pipe_pair_check_box = QCheckBox(
+            tr(
+                "PipePairMixin",
+                "enable_exiting_somewhere_else_on_worldmap",
+                "Enable exiting somewhere else on WorldMap",
+            )
+        )
         self.pipe_pair_check_box.setChecked(self.original_pipe_item is not None)
         self.pipe_pair_check_box.clicked.connect(self._on_pipe_check_box)
         pipe_pair_group.layout().addWidget(self.pipe_pair_check_box)
 
-        self.sky_tower_check_box = QCheckBox("Like Sky Tower (Top and Bottom, instead of Left and Right)")
+        self.sky_tower_check_box = QCheckBox(
+            tr(
+                "PipePairMixin",
+                "hint.sky_tower_pipe_mode",
+                "Like Sky Tower (Top and Bottom, instead of Left and Right)",
+            )
+        )
         self.sky_tower_check_box.clicked.connect(self._on_update_y_position)
         pipe_pair_group.layout().addWidget(self.sky_tower_check_box)
 
         self.pipe_pair_spinner = Spinner(self, maximum=PIPE_PAIR_COUNT - 1)
         self.pipe_pair_spinner.valueChanged.connect(self._on_update_y_position)
-        pipe_pair_group.layout().addLayout(label_and_widget("Pipe Pair Index", self.pipe_pair_spinner))
+        pipe_pair_group.layout().addLayout(
+            label_and_widget(tr("PipePairMixin", "pipe_pair_index", "Pipe Pair Index"), self.pipe_pair_spinner)
+        )
 
         self.left_pos_label = QLabel("-")
-        pipe_pair_group.layout().addLayout(label_and_widget("Left Exit", self.left_pos_label))
+        pipe_pair_group.layout().addLayout(
+            label_and_widget(tr("PipePairMixin", "left_exit", "Left Exit"), self.left_pos_label)
+        )
 
         self.right_pos_label = QLabel("-")
-        pipe_pair_group.layout().addLayout(label_and_widget("Right Exit", self.right_pos_label))
+        pipe_pair_group.layout().addLayout(
+            label_and_widget(tr("PipePairMixin", "right_exit", "Right Exit"), self.right_pos_label)
+        )
 
-        self.set_new_button = QPushButton("Change Exit Locations")
+        self.set_new_button = QPushButton(tr("PipePairMixin", "change_exit_locations", "Change Exit Locations"))
         self.set_new_button.clicked.connect(self._on_set_pipe_exits)
         pipe_pair_group.layout().addWidget(self.set_new_button)
 
@@ -189,8 +208,12 @@ class PipePairMixin(SettingsMixin):
         """
         QMessageBox.information(
             self,
-            "Select Pipe Pair Exit",
-            "On the next screen, choose where the Left/Top Exit should lead to.",
+            tr("PipePairMixin", "select_pipe_pair_exit", "Select Pipe Pair Exit"),
+            tr(
+                "PipePairMixin",
+                "help.left_top_pipe_exit",
+                "On the next screen, choose where the Left/Top Exit should lead to.",
+            ),
         )
         left_pair_screen = PipeExitSetScreen(self)
         left_pair_screen.current_world = self.level_ref.level.world
@@ -198,8 +221,12 @@ class PipePairMixin(SettingsMixin):
 
         QMessageBox.information(
             self,
-            "Select Pipe Pair Exit",
-            "On the next screen, choose where the Right/Bottom Exit should lead to.",
+            tr("PipePairMixin", "select_pipe_pair_exit", "Select Pipe Pair Exit"),
+            tr(
+                "PipePairMixin",
+                "help.right_bottom_pipe_exit",
+                "On the next screen, choose where the Right/Bottom Exit should lead to.",
+            ),
         )
         right_pair_screen = PipeExitSetScreen(self)
         right_pair_screen.current_world = left_pair_screen.current_world
@@ -258,10 +285,18 @@ class PipePairMixin(SettingsMixin):
             pipe_data = self.pipe_datas[pipe_item.y_position % 0x80]
 
             self.left_pos_label.setText(
-                f"Screen: {pipe_data.screen_left}, x: {pipe_data.x_left}, y: {pipe_data.y_left}"
+                tr("PipePairMixin", "screen_screen_x_x_y_y", "Screen: {screen}, x: {x}, y: {y}").format(
+                    screen=pipe_data.screen_left,
+                    x=pipe_data.x_left,
+                    y=pipe_data.y_left,
+                )
             )
             self.right_pos_label.setText(
-                f"Screen: {pipe_data.screen_right}, x: {pipe_data.x_right}, y: {pipe_data.y_right}"
+                tr("PipePairMixin", "screen_screen_x_x_y_y", "Screen: {screen}, x: {x}, y: {y}").format(
+                    screen=pipe_data.screen_right,
+                    x=pipe_data.x_right,
+                    y=pipe_data.y_right,
+                )
             )
 
         self.level_ref.data_changed.emit()
@@ -294,7 +329,9 @@ class PipePairMixin(SettingsMixin):
             self.level_ref.level.enemies.insert(0, self.original_pipe_item)
 
             make_macro(
-                self.undo_stack, "Disable Pipe Pair Exits", RemoveObject(self.level_ref, self.original_pipe_item)
+                self.undo_stack,
+                tr("PipePairMixin", "disable_pipe_pair_exits", "Disable Pipe Pair Exits"),
+                RemoveObject(self.level_ref, self.original_pipe_item),
             )
 
         elif pipe_was_enabled:
@@ -305,9 +342,11 @@ class PipePairMixin(SettingsMixin):
             level_view = self._parent.level_view
 
             command = AddEnemyAt(
-                level_view, level_view.from_level_point(0, current_pipe_item.y_position), OBJ_PIPE_EXITS
+                level_view,
+                level_view.from_level_point(0, current_pipe_item.y_position),
+                OBJ_PIPE_EXITS,
             )
-            command.setText("Enable Pipe Pair Exits")
+            command.setText(tr("PipePairMixin", "enable_pipe_pair_exits", "Enable Pipe Pair Exits"))
 
             self.undo_stack.push(command)
 
@@ -330,10 +369,14 @@ class PipePairMixin(SettingsMixin):
                 level_view = self._parent.level_view
                 make_macro(
                     self.undo_stack,
-                    f"Pipe Pair Exits Index to {current_pipe_item.y_position:#x}",
+                    tr(
+                        "PipePairMixin", "command.set_pipe_pair_exit", "Pipe Pair Exits Index to {pipe_index:#x}"
+                    ).format(pipe_index=current_pipe_item.y_position),
                     RemoveObject(self.level_ref, self.original_pipe_item),
                     AddEnemyAt(
-                        level_view, level_view.from_level_point(0, current_pipe_item.y_position), OBJ_PIPE_EXITS
+                        level_view,
+                        level_view.from_level_point(0, current_pipe_item.y_position),
+                        OBJ_PIPE_EXITS,
                     ),
                 )
 
@@ -363,6 +406,11 @@ class PipeExitSetScreen(QDialog):
     def __init__(self, parent):
         """Build the per-world destination picker tabs.
 
+        Each tab owns a ``WorldMapLevelSelect`` configured to ignore level
+        entries and report raw map positions. Clicking a map tile copies the
+        position into ``selected_position`` and accepts the modal picker, which
+        lets the pipe-pair mixin collect two world-map destinations without
+        exposing selector internals to the settings dialog.
 
         Parameters
         ----------
@@ -383,12 +431,30 @@ class PipeExitSetScreen(QDialog):
             world_map_select.map_position_clicked.connect(self._set_position)
             world_map_select.map_position_clicked.connect(self.accept)
 
-            self.world_tabs.addTab(world_map_select, f"World {world_number}")
+            self.world_tabs.addTab(
+                world_map_select,
+                tr("PipeExitSetScreen", "world_world_number", "World {world_number}").format(world_number=world_number),
+            )
             self.world_tabs.setTabIcon(world_number, icon("globe.svg"))
 
         self.setLayout(QVBoxLayout())
 
         self.layout().addWidget(self.world_tabs)
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh world tab labels while preserving destination state.
+
+        Each tab caption is rebuilt from the active catalog. The tab order,
+        current world selection, and world-map destination payloads remain
+        stable so choosing a translated tab still targets the same encoded exit
+        destination.
+        """
+        for index in range(self.world_tabs.count()):
+            self.world_tabs.setTabText(
+                index,
+                tr("PipeExitSetScreen", "world_world_number", "World {world_number}").format(world_number=index + 1),
+            )
 
     @property
     def current_world(self):
@@ -436,7 +502,12 @@ class PipeExitSetScreen(QDialog):
 
 
 def _get_pipe_item(enemy_items: list[EnemyItem]) -> EnemyItem | None:
-    """Return the level's pipe-pair enemy item.
+    """Find the special enemy item that enables pipe-pair exits.
+
+    The mixin uses this lookup during setup, live control updates, and
+    close-time command reconstruction. Keeping the search in one helper ensures
+    the temporary in-level preview object and the undo-stack commit path target
+    the same encoded pipe-exit record.
 
     Parameters
     ----------

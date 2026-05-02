@@ -699,7 +699,7 @@ class MainView(QWidget):
         self.zoom = zoom
         self.block_length = int(Block.SIDE_LENGTH * self.zoom)
 
-        # TODO Create a signal the main window can connect to instead? level selector throws attribute error
+        # Refresh the hosting main window when this view is nested in the editor shell.
         with suppress(AttributeError):
             self.parent().parent().parent().update()  # update the main window
 

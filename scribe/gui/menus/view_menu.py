@@ -25,8 +25,33 @@ from PySide6.QtWidgets import QFileDialog, QMenu
 
 from foundry import IMG_FILE_FILTER, icon
 from foundry.game.File import ROM
+from foundry.gui.localization import tr
 from foundry.gui.visualization.world.WorldView import WorldView
 from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
+
+TR_KEY_CONTEXT = "scribe.view_menu"
+
+
+def _view_text(key: str) -> str:
+    """Translate Scribe view-menu text by stable catalog key.
+
+    Parameters
+    ----------
+    key : str
+        Key within the ``scribe.view_menu`` catalog context.
+
+    Returns
+    -------
+    str
+        Localized display text for a view-menu title or action.
+
+    Notes
+    -----
+    View-menu strings are display-only. The persisted overlay settings remain
+    stable keys such as ``world_view/show_grid`` and are never derived from
+    translated action text.
+    """
+    return tr(TR_KEY_CONTEXT, key)
 
 
 class ViewMenu(QMenu):
@@ -111,43 +136,43 @@ class ViewMenu(QMenu):
         That staging keeps the first paint, later user toggles, and screenshot
         export path all driven by the same menu-owned action state.
         """
-        super(ViewMenu, self).__init__("&View", parent)
+        super(ViewMenu, self).__init__(_view_text("menu.view"), parent)
 
         self.triggered.connect(self.on_menu)
 
         self.world_view = world_view
 
-        self.grid_action = self.addAction("&Grid")
+        self.grid_action = self.addAction(_view_text("action.grid"))
         self.grid_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_G)
         self.grid_action.setCheckable(True)
         self.grid_action.setChecked(self.settings.value("world_view/show_grid"))
 
-        self.border_action = self.addAction("Borders")
+        self.border_action = self.addAction(_view_text("action.borders"))
         self.border_action.setCheckable(True)
         self.border_action.setChecked(self.settings.value("world_view/show_border"))
 
-        self.animation_action = self.addAction("Animated Tiles")
+        self.animation_action = self.addAction(_view_text("action.animated_tiles"))
         self.animation_action.setCheckable(True)
         self.animation_action.setChecked(self.settings.value("world_view/animated_tiles"))
 
         self.addSeparator()
 
-        self.level_pointer_action = self.addAction("&Level Pointers")
+        self.level_pointer_action = self.addAction(_view_text("action.level_pointers"))
         self.level_pointer_action.setCheckable(True)
         self.level_pointer_action.setChecked(self.settings.value("world_view/show_level_pointers"))
         self.level_pointer_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_L)
 
-        self.level_preview_action = self.addAction("&Tooltip with Level Preview")
+        self.level_preview_action = self.addAction(_view_text("action.level_preview_tooltip"))
         self.level_preview_action.setCheckable(True)
         self.level_preview_action.setChecked(self.settings.value("world_view/show_level_previews"))
         self.level_preview_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_T)
 
-        self.sprite_action = self.addAction("Overworld &Sprites")
+        self.sprite_action = self.addAction(_view_text("action.overworld_sprites"))
         self.sprite_action.setCheckable(True)
         self.sprite_action.setChecked(self.settings.value("world_view/show_sprites"))
         self.sprite_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_O)
 
-        self.starting_point_action = self.addAction("Starting &Point")
+        self.starting_point_action = self.addAction(_view_text("action.starting_point"))
         self.starting_point_action.setCheckable(True)
         self.starting_point_action.setChecked(self.settings.value("world_view/show_start_position"))
         self.starting_point_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_P)
@@ -156,7 +181,9 @@ class ViewMenu(QMenu):
 
         self.airship_travel_actions = []
         for i in range(AIRSHIP_TRAVEL_SET_COUNT):
-            self.airship_travel_actions.append(self.addAction(f"&Airship Travel Path {i+1}"))
+            self.airship_travel_actions.append(
+                self.addAction(_view_text("action.airship_travel_path").format(index=i + 1))
+            )
             self.airship_travel_actions[-1].setCheckable(True)
             self.airship_travel_actions[-1].setChecked(
                 self.settings.value("world_view/show_airship_paths") & 2**i == 2**i
@@ -164,18 +191,40 @@ class ViewMenu(QMenu):
 
         self.addSeparator()
 
-        self.lock_bridge_action = self.addAction("Lock and &Bridge Events")
+        self.lock_bridge_action = self.addAction(_view_text("action.lock_bridge_events"))
         self.lock_bridge_action.setCheckable(True)
         self.lock_bridge_action.setChecked(self.settings.value("world_view/show_locks"))
         self.lock_bridge_action.setShortcut(Qt.Modifier.CTRL | Qt.Key_B)
 
         self.addSeparator()
 
-        self.show_all_action = self.addAction("Show All")
+        self.show_all_action = self.addAction(_view_text("action.show_all"))
         self.show_all_action.setIcon(icon("eye.svg"))
 
-        self.screen_shot_action = self.addAction("Save Screenshot")
+        self.screen_shot_action = self.addAction(_view_text("action.save_screenshot"))
         self.screen_shot_action.setIcon(icon("image.svg"))
+
+    def retranslate_ui(self) -> None:
+        """Refresh view-menu labels after a language change.
+
+        This method rewrites the menu title and action text while preserving
+        checked states, shortcuts, icons, and the settings keys each action
+        owns. Airship overlay actions are regenerated from the same action list
+        so the persisted bitfield remains independent from the active locale.
+        """
+        self.setTitle(_view_text("menu.view"))
+        self.grid_action.setText(_view_text("action.grid"))
+        self.border_action.setText(_view_text("action.borders"))
+        self.animation_action.setText(_view_text("action.animated_tiles"))
+        self.level_pointer_action.setText(_view_text("action.level_pointers"))
+        self.level_preview_action.setText(_view_text("action.level_preview_tooltip"))
+        self.sprite_action.setText(_view_text("action.overworld_sprites"))
+        self.starting_point_action.setText(_view_text("action.starting_point"))
+        for index, action in enumerate(self.airship_travel_actions, start=1):
+            action.setText(_view_text("action.airship_travel_path").format(index=index))
+        self.lock_bridge_action.setText(_view_text("action.lock_bridge_events"))
+        self.show_all_action.setText(_view_text("action.show_all"))
+        self.screen_shot_action.setText(_view_text("action.save_screenshot"))
 
     def on_menu(self, action: QAction):
         """Apply one triggered menu action to settings or export flow.
@@ -261,7 +310,7 @@ class ViewMenu(QMenu):
 
         pathname, _ = QFileDialog.getSaveFileName(
             self,
-            caption="Save Screenshot",
+            caption=_view_text("action.save_screenshot"),
             dir=recommended_file,
             filter=IMG_FILE_FILTER,
         )

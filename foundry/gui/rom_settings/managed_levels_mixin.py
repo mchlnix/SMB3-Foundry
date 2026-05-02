@@ -24,10 +24,13 @@ from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
+from foundry.gui.localization import tr_data_name, tr
 from foundry.gui.widgets.HorizontalLine import HorizontalLine
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJECT_SET_NAMES, Constants
 from smb3parse.util.rom import PRG_BANK_SIZE
+
+TR_KEY_CONTEXT = "foundry.managed_levels"
 
 
 class ManagedLevelsMixin(SettingsMixin):
@@ -81,10 +84,10 @@ class ManagedLevelsMixin(SettingsMixin):
         """
         super().__init__(parent)
 
-        managed_level_positions_box = QGroupBox("Managed Level Positions")
+        managed_level_positions_box = QGroupBox(tr(TR_KEY_CONTEXT, "group.title"))
         QVBoxLayout(managed_level_positions_box)
 
-        self.enabled_checkbox = QCheckBox("Enable Managed Level Positions")
+        self.enabled_checkbox = QCheckBox(tr(TR_KEY_CONTEXT, "checkbox.enable"))
         self.enabled_checkbox.setChecked(bool(ROM.additional_data.managed_level_positions))
 
         self.enabled_checkbox.toggled.connect(self.update_level_info)
@@ -93,7 +96,7 @@ class ManagedLevelsMixin(SettingsMixin):
 
         self.layout().addWidget(managed_level_positions_box)
 
-        self.level_info_box = QGroupBox("Level Range in Rom Banks")
+        self.level_info_box = QGroupBox(tr(TR_KEY_CONTEXT, "group.level_range"))
         QVBoxLayout(self.level_info_box)
         self.layout().addWidget(self.level_info_box)
 
@@ -162,7 +165,12 @@ class ManagedLevelsMixin(SettingsMixin):
 
                 self.level_info_box.layout().addWidget(
                     QLabel(
-                        f"PRG Bank #{prg_index}, {', '.join([OBJECT_SET_NAMES[index] for index in object_set_indexes])}"
+                        tr(TR_KEY_CONTEXT, "bank.title").format(
+                            prg_index=prg_index,
+                            object_sets=", ".join(
+                                tr_data_name("ObjectSet", OBJECT_SET_NAMES[index]) for index in object_set_indexes
+                            ),
+                        )
                     )
                 )
 
@@ -171,9 +179,9 @@ class ManagedLevelsMixin(SettingsMixin):
                 level_start_spinner.setValue(level_start)
 
                 level_start_layout = QHBoxLayout()
-                level_start_layout.addWidget(QLabel("Level data range:"))
+                level_start_layout.addWidget(QLabel(tr(TR_KEY_CONTEXT, "level_range.label")))
                 level_start_layout.addWidget(level_start_spinner)
-                level_start_layout.addWidget(QLabel(f" to 0x{prg_end - 1:x}"))
+                level_start_layout.addWidget(QLabel(tr(TR_KEY_CONTEXT, "level_range.end").format(prg_end=prg_end - 1)))
 
                 self.level_info_box.layout().addLayout(level_start_layout)
                 self.level_info_box.layout().addWidget(HorizontalLine())

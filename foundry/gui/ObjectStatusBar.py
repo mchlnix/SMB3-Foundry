@@ -16,6 +16,9 @@ from PySide6.QtWidgets import QMainWindow, QStatusBar
 
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr, tr_object_name
+
+TR_KEY_CONTEXT = "foundry.object_status"
 
 
 class ObjectStatusBar(QStatusBar):
@@ -36,6 +39,10 @@ class ObjectStatusBar(QStatusBar):
 
     Attributes
     ----------
+    _last_object : InLevelObject | None
+        Last object used to render the status message. Live retranslation uses
+        this object reference to rebuild display text without changing
+        selection or object data.
     level_ref : LevelRef
         Reference that owns the edited level and selection.
     """
@@ -59,10 +66,12 @@ class ObjectStatusBar(QStatusBar):
         super(ObjectStatusBar, self).__init__(parent=parent)
 
         self.level_ref = level_ref
+        self._last_object: InLevelObject | None = None
         self.level_ref.data_changed.connect(self.update)
 
     def clear(self):
         """Clear the displayed status message."""
+        self._last_object = None
         self.clearMessage()
 
     def update(self):
@@ -76,16 +85,39 @@ class ObjectStatusBar(QStatusBar):
         if selected_objects:
             self._fill(selected_objects[-1])
 
+    def retranslate_ui(self) -> None:
+        """Refresh the displayed status message after a language change.
+
+        The status payload remains the object's English ``get_status_info``
+        output. Only the rendered field labels and the visible object name are
+        localized, so status refreshes cannot change object identity or model
+        data.
+        """
+        if self._last_object is not None:
+            self._fill(self._last_object)
+        else:
+            self.update()
+
     def _fill(self, obj: InLevelObject):
-        """Display status fields for an object.
+        """Display localized status fields for an object.
+
+        ``Name`` is the only status value translated through
+        :func:`tr_object_name`; other values are numeric or technical status
+        data and are displayed unchanged. Field labels are translated through
+        stable ``foundry.object_status`` keys.
 
         Parameters
         ----------
         obj : InLevelObject
             Object being inspected or modified.
         """
+        self._last_object = obj
         info = obj.get_status_info()
 
-        message_parts = [f"{key}: {value}" for key, value in info]
+        message_parts = []
+        for key, value in info:
+            translated_key = tr(TR_KEY_CONTEXT, f"field.{str(key).casefold()}", str(key))
+            translated_value = tr_object_name(obj) if key == "Name" else value
+            message_parts.append(f"{translated_key}: {translated_value}")
 
         self.showMessage(" | ".join(message_parts))

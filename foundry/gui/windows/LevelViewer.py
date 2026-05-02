@@ -37,6 +37,7 @@ from PySide6.QtWidgets import (
 
 from foundry import get_level_thumbnail, pixmap_to_base64
 from foundry.game.File import ROM
+from foundry.gui.localization import tr, tr_data_name
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import (
     BASE_OFFSET,
@@ -56,7 +57,9 @@ def _gen_level_name(level_address: int, level: FoundLevel) -> str:
     """Generate a readable name for a found level.
 
     This gives byte-view and tree-view entries a stable label derived from ROM address, world-map
-    metadata, and parser-discovered level information.
+    metadata, and parser-discovered level information. The label is localized
+    display text only; the viewer still opens levels from the original ROM
+    address and parser metadata.
 
     Parameters
     ----------
@@ -73,21 +76,23 @@ def _gen_level_name(level_address: int, level: FoundLevel) -> str:
     world_data = WorldMapData(ROM(), level.world_number - 1)
 
     if world_data.big_q_block_level_address == level_address:
-        return "Big Question Mark Block Level"
+        return tr("LevelViewer", "big_question_mark_block_level", "Big Question Mark Block Level")
 
     if world_data.airship_level_address == level_address:
-        return "Airship Level"
+        return tr("LevelViewer", "airship_level", "Airship Level")
 
     if world_data.coin_ship_level_address == level_address:
-        return "Coin Ship Level"
+        return tr("LevelViewer", "coin_ship_level", "Coin Ship Level")
 
     if world_data.generic_exit_level_address == level_address:
-        return "Generic Exit Level"
+        return tr("LevelViewer", "generic_exit_level", "Generic Exit Level")
 
     if world_data.toad_warp_level_address == level_address:
-        return "Toad Warp Level"
+        return tr("LevelViewer", "toad_warp_level", "Toad Warp Level")
 
-    return f"{OBJECT_SET_NAMES[level.object_set_number]} Level"
+    return tr("LevelViewer", "object_set_level", "{object_set} Level").format(
+        object_set=tr_data_name("ObjectSet", OBJECT_SET_NAMES[level.object_set_number])
+    )
 
 
 class LevelViewer(CustomChildWindow):
@@ -150,10 +155,11 @@ class LevelViewer(CustomChildWindow):
         levels_by_address : dict[int, FoundLevel]
             Found levels keyed by ROM address.
         """
-        super(LevelViewer, self).__init__(parent, "Level Viewer")
+        super(LevelViewer, self).__init__(parent, tr("LevelViewer", "level_viewer", "Level Viewer"))
 
         self.addresses_by_object_set = addresses_by_object_set
         self.levels_by_address = levels_by_address
+        self._prg_bank_numbers: list[int] = []
 
         self._tab_widget = QTabWidget(self)
 
@@ -163,6 +169,7 @@ class LevelViewer(CustomChildWindow):
         prg_banks_by_object_set = ROM().read(Constants.OFFSET_BY_OBJECT_SET_A000, 16)
         sorted_prg_bank_numbers = list(set(prg_banks_by_object_set[PLAINS_OBJECT_SET:SPADE_BONUS_OBJECT_SET]))
         sorted_prg_bank_numbers.sort()
+        self._prg_bank_numbers = sorted_prg_bank_numbers
 
         # create tab widgets with PRG numbers in their titles
         for prg_number in sorted_prg_bank_numbers:
@@ -170,7 +177,10 @@ class LevelViewer(CustomChildWindow):
             scroll_area.setWidgetResizable(True)
             scroll_area.setWidget(LevelBlockView([]))
 
-            self._tab_widget.addTab(scroll_area, f"PRG #{prg_number}")
+            self._tab_widget.addTab(
+                scroll_area,
+                tr("LevelViewer", "prg_prg_number", "PRG #{prg_number}").format(prg_number=prg_number),
+            )
 
         # got through all levels and assign them to their respective prg tab widget, based on their object set
         for address in sorted(levels_by_address.keys()):
@@ -181,7 +191,28 @@ class LevelViewer(CustomChildWindow):
             byte_view.levels_in_order.append((level.object_set_number, address, level.object_data_length))
 
         # insert tree view with all levels at the start of the tabs
-        self._tab_widget.insertTab(0, self._gen_tree_view(levels_by_address), "Levels")
+        self._tab_widget.insertTab(0, self._gen_tree_view(levels_by_address), tr("LevelViewer", "levels", "Levels"))
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh level-viewer labels without rebuilding byte views.
+
+        The window title, levels tab, and PRG-bank tab captions are rebuilt from
+        the active catalog. Existing tab widgets, loaded level-byte rows, and
+        object-set/address payloads remain stable so localization does not
+        change the inspected ROM data.
+        """
+        self.setWindowTitle(tr("LevelViewer", "level_viewer", "Level Viewer"))
+
+        if self._tab_widget.count():
+            self._tab_widget.setTabText(0, tr("LevelViewer", "levels", "Levels"))
+
+        for tab_index, prg_number in enumerate(self._prg_bank_numbers, start=1):
+            if tab_index < self._tab_widget.count():
+                self._tab_widget.setTabText(
+                    tab_index,
+                    tr("LevelViewer", "prg_prg_number", "PRG #{prg_number}").format(prg_number=prg_number),
+                )
 
     @staticmethod
     def _gen_tree_view(levels_by_address: dict[int, FoundLevel]) -> QTreeWidget:
@@ -244,7 +275,10 @@ class LevelViewer(CustomChildWindow):
             )
 
             level_item = QTreeWidgetItem()
-            level_item.setText(0, _gen_level_name(address_, level_) + f" @ 0x{address_:x} / 0x{level.enemy_offset:x}")
+            level_item.setText(
+                0,
+                _gen_level_name(address_, level_) + f" @ 0x{address_:x} / 0x{level.enemy_offset:x}",
+            )
             parent_.addChild(level_item)
 
             level_item_by_address[address_] = level_item
@@ -254,7 +288,10 @@ class LevelViewer(CustomChildWindow):
         # Step 1: Make world tree items
         for world_num in range(WORLD_COUNT - 1):
             world_item = QTreeWidgetItem(tree_widget)
-            world_item.setText(0, f"World {world_num + 1}")
+            world_item.setText(
+                0,
+                tr("LevelViewer", "world_world_number", "World {world_number}").format(world_number=world_num + 1),
+            )
 
             world_tree_items.append(world_item)
 
@@ -627,20 +664,35 @@ class LevelBlockView(ByteView):
 
         if self.first_level_start != prg_start:
             potential_blocks.append(
-                _Block(QColorConstants.Gray, f"0x{prg_start:x}: Code/Unknown", current_pos % PRG_BANK_SIZE)
+                _Block(
+                    QColorConstants.Gray,
+                    tr("LevelViewer", "address_code_unknown", "{address}: Code/Unknown").format(
+                        address=f"0x{prg_start:x}"
+                    ),
+                    current_pos % PRG_BANK_SIZE,
+                )
             )
 
         for object_set, abs_level_start, level_length in self.levels_in_order:
             if current_pos != abs_level_start:
                 potential_blocks.append(
-                    _Block(QColorConstants.Red, f"0x{current_pos:x}: Unused Space", abs_level_start - current_pos)
+                    _Block(
+                        QColorConstants.Red,
+                        tr("LevelViewer", "address_unused_space", "{address}: Unused Space").format(
+                            address=f"0x{current_pos:x}"
+                        ),
+                        abs_level_start - current_pos,
+                    )
                 )
                 current_pos = abs_level_start
 
             potential_blocks.append(
                 _Block(
                     self._random_colors[object_set],
-                    f"0x{abs_level_start:x}: {OBJECT_SET_NAMES[object_set]}",
+                    tr("LevelViewer", "address_object_set", "{address}: {object_set}").format(
+                        address=f"0x{abs_level_start:x}",
+                        object_set=tr_data_name("ObjectSet", OBJECT_SET_NAMES[object_set]),
+                    ),
                     level_length,
                     (object_set, abs_level_start, level_length),
                 )
@@ -650,7 +702,9 @@ class LevelBlockView(ByteView):
         if current_pos % PRG_BANK_SIZE != 0:
             rest = PRG_BANK_SIZE - current_pos % PRG_BANK_SIZE
 
-            potential_blocks.append(_Block(QColorConstants.Red, "Unused Space", rest))
+            potential_blocks.append(
+                _Block(QColorConstants.Red, tr("LevelViewer", "unused_space", "Unused Space"), rest)
+            )
 
         return potential_blocks
 
@@ -773,8 +827,8 @@ class LevelBlockView(ByteView):
 
         self.setToolTip(
             f"<b>{block.name}</b><br/>"
-            f"<u>Type:</u> {OBJECT_SET_NAMES[block.level[0]]} "
-            f"<u>Objects:</u> {block.level[1]:#x} "
+            f"<u>{tr('LevelViewer', 'type', 'Type')}:</u> {tr_data_name('ObjectSet', OBJECT_SET_NAMES[block.level[0]])} "
+            f"<u>{tr('LevelViewer', 'objects', 'Objects')}:</u> {block.level[1]:#x} "
             f"<img src='data:image/png;base64,{pixmap_to_base64(image_data)}'>"
         )
 
@@ -810,7 +864,13 @@ class LevelBlockView(ByteView):
         size_pos = pos + QPoint(5, 2 * self.block_height // 3)
 
         painter.drawText(name_pos, block.name)
-        painter.drawText(size_pos, f"Size: {block.size} Bytes ({round(100 / PRG_BANK_SIZE * block.size, 1)} %)")
+        painter.drawText(
+            size_pos,
+            tr("LevelViewer", "size_size_bytes_percent", "Size: {size} Bytes ({percent} %)").format(
+                size=block.size,
+                percent=round(100 / PRG_BANK_SIZE * block.size, 1),
+            ),
+        )
 
     def paintEvent(self, event: QPaintEvent):
         """Paint the parsed PRG-bank regions as labeled blocks.

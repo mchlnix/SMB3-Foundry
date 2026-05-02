@@ -29,10 +29,13 @@ from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QMainWindow, QTabWidget, QWidget
 
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr
 from scribe.gui.tool_window.block_picker import BlockPicker
 from scribe.gui.tool_window.level_pointer_list import LevelPointerList
 from scribe.gui.tool_window.locks_list import LocksList
 from scribe.gui.tool_window.sprite_list import SpriteList
+
+TR_KEY_CONTEXT = "scribe.tool_window"
 
 
 class ToolWindow(QMainWindow):
@@ -125,7 +128,7 @@ class ToolWindow(QMainWindow):
         self.setWindowFlag(Qt.WindowType.WindowCloseButtonHint, False)
         self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, False)
 
-        self.setWindowTitle("Tool Window - SMB3 Scribe")
+        self.setWindowTitle(tr(TR_KEY_CONTEXT, "window.title"))
 
         self.level_ref = level_ref
 
@@ -143,10 +146,10 @@ class ToolWindow(QMainWindow):
         self.locks_list = LocksList(self, level_ref)
         self.locks_list.selection_changed.connect(self.locks_selection_changed.emit)
 
-        self.tabbed_widget.addTab(self.tile_picker, "Tiles")
-        self.tabbed_widget.addTab(self.level_pointer_list, "Level Pointers")
-        self.tabbed_widget.addTab(self.sprite_list, "Sprites")
-        self.tabbed_widget.addTab(self.locks_list, "Locks and Bridges")
+        self.tabbed_widget.addTab(self.tile_picker, tr(TR_KEY_CONTEXT, "tab.tiles"))
+        self.tabbed_widget.addTab(self.level_pointer_list, tr(TR_KEY_CONTEXT, "tab.level_pointers"))
+        self.tabbed_widget.addTab(self.sprite_list, tr(TR_KEY_CONTEXT, "tab.sprites"))
+        self.tabbed_widget.addTab(self.locks_list, tr(TR_KEY_CONTEXT, "tab.locks_bridges"))
 
         # clear selection if you change the tab
         self.tabbed_widget.currentChanged.connect(lambda _: self.level_pointer_list.clearSelection())
@@ -154,6 +157,24 @@ class ToolWindow(QMainWindow):
         self.tabbed_widget.currentChanged.connect(lambda _: self.locks_list.clearSelection())
 
         self.setCentralWidget(self.tabbed_widget)
+
+    def retranslate_ui(self) -> None:
+        """Refresh tool-window labels after a language change.
+
+        The tool window owns the live-translation workflow for tab titles and
+        delegates detailed refreshes to the table-based child widgets.
+        Selection signals, tab ordering, and the shared ``LevelRef`` remain
+        unchanged, so label updates stay at the display boundary without
+        disturbing selected rows, undo state, or the active editing mode.
+        """
+        self.setWindowTitle(tr(TR_KEY_CONTEXT, "window.title"))
+        self.tabbed_widget.setTabText(0, tr(TR_KEY_CONTEXT, "tab.tiles"))
+        self.tabbed_widget.setTabText(1, tr(TR_KEY_CONTEXT, "tab.level_pointers"))
+        self.tabbed_widget.setTabText(2, tr(TR_KEY_CONTEXT, "tab.sprites"))
+        self.tabbed_widget.setTabText(3, tr(TR_KEY_CONTEXT, "tab.locks_bridges"))
+        self.level_pointer_list.retranslate_ui()
+        self.sprite_list.retranslate_ui()
+        self.locks_list.retranslate_ui()
 
     def set_zoom(self, zoom_level: int = 2) -> None:
         """Forward a new block-picker zoom level to the tile tab.
@@ -164,5 +185,11 @@ class ToolWindow(QMainWindow):
             Zoom factor applied to the block bank shown by the tile picker.
             Other tabs ignore this value because only the tile workflow renders
             block graphics at a scalable size.
+
+        Notes
+        -----
+        Zoom is display state owned by the tile picker. Forwarding it here
+        keeps the main window from reaching into the picker internals and does
+        not affect undo, ROM persistence, or selected tool payloads.
         """
         self.tile_picker.set_zoom(zoom_level)

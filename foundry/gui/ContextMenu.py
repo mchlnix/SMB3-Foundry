@@ -27,6 +27,7 @@ from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.object_like import ObjectLike
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr, tr_object_name
 from smb3parse.data_points import Position
 
 
@@ -39,6 +40,11 @@ class CMMode(Enum):
     which actions should be visible or enabled for a given selection
     situation. In practice it is the state-machine input for one menu that
     serves multiple editing workflows.
+
+    ``CMMode`` has no ROM, persistence, or display-label owner. Its numeric
+    values are opaque implementation details, and callers should branch on
+    members rather than value order. User-visible action text is translated by
+    the menu setup code, not by this enum.
 
     Attributes
     ----------
@@ -260,33 +266,58 @@ class LevelContextMenu(ContextMenu):
         """
         super(LevelContextMenu, self).__init__(level_ref)
 
-        self.add_object_action = self.addAction("Place Object")
+        self.add_object_action = self.addAction(tr("LevelContextMenu", "place_object", "Place Object"))
         self.add_object_action.setIcon(icon("plus.svg"))
-        self.grab_selected_object_action = self.addAction("Grab Object")
+        self.grab_selected_object_action = self.addAction(tr("LevelContextMenu", "grab_object", "Grab Object"))
         self.grab_selected_object_action.setIcon(icon("crosshair.svg"))
 
         self.addSeparator()
 
-        self.cut_action = self.addAction("Cut")
+        self.cut_action = self.addAction(tr("Common", "cut", "Cut"))
         self.cut_action.setIcon(icon("scissors.svg"))
-        self.copy_action = self.addAction("Copy")
+        self.copy_action = self.addAction(tr("Common", "copy", "Copy"))
         self.copy_action.setIcon(icon("copy.svg"))
-        self.paste_action = self.addAction("Paste")
+        self.paste_action = self.addAction(tr("Common", "paste", "Paste"))
         self.paste_action.setIcon(icon("clipboard.svg"))
 
         self.addSeparator()
 
-        self.into_foreground_action = self.addAction("To Foreground")
+        self.into_foreground_action = self.addAction(tr("LevelContextMenu", "to_foreground", "To Foreground"))
         self.into_foreground_action.setIcon(icon("upload.svg"))
-        self.into_background_action = self.addAction("To Background")
+        self.into_background_action = self.addAction(tr("LevelContextMenu", "to_background", "To Background"))
         self.into_background_action.setIcon(icon("download.svg"))
 
         self.addSeparator()
 
-        self.remove_action = self.addAction("Remove")
+        self.remove_action = self.addAction(tr("Common", "remove", "Remove"))
         self.remove_action.setIcon(icon("minus.svg"))
 
         self.object_to_grab: LevelObject | EnemyItem | None = None
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh action labels for the active menu invocation state.
+
+        The menu keeps object identity and clipboard state in Python objects;
+        live language switching only rewrites QAction text. When an object is
+        staged for the grab workflow, its display name is translated at the UI
+        boundary without replacing the stored level object or enemy item.
+        """
+        self.add_object_action.setText(tr("LevelContextMenu", "place_object", "Place Object"))
+        if self.object_to_grab is not None:
+            self.grab_selected_object_action.setText(
+                tr("LevelContextMenu", "grab_object_name", "Grab '{object_name}'").format(
+                    object_name=tr_object_name(self.object_to_grab)
+                )
+            )
+        else:
+            self.grab_selected_object_action.setText(tr("LevelContextMenu", "grab_object", "Grab Object"))
+        self.cut_action.setText(tr("Common", "cut", "Cut"))
+        self.copy_action.setText(tr("Common", "copy", "Copy"))
+        self.paste_action.setText(tr("Common", "paste", "Paste"))
+        self.into_foreground_action.setText(tr("LevelContextMenu", "to_foreground", "To Foreground"))
+        self.into_background_action.setText(tr("LevelContextMenu", "to_background", "To Background"))
+        self.remove_action.setText(tr("Common", "remove", "Remove"))
 
     def as_object_menu(self, level_object: LevelObject | EnemyItem | None) -> Self:
         """Configure the menu for an object-view click.
@@ -370,7 +401,11 @@ class LevelContextMenu(ContextMenu):
 
         self.grab_selected_object_action.setEnabled(object_under_cursor is not None)
         self.grab_selected_object_action.setText(
-            f"Grab '{object_under_cursor.name}'" if object_under_cursor else "Nothing to grab"
+            tr("LevelContextMenu", "grab_object_name", "Grab '{object_name}'").format(
+                object_name=tr_object_name(object_under_cursor)
+            )
+            if object_under_cursor
+            else tr("LevelContextMenu", "nothing_to_grab", "Nothing to grab")
         )
 
         self.cut_action.setEnabled(not mode == CMMode.BG and objects_selected)

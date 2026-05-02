@@ -18,6 +18,7 @@ from PySide6.QtGui import QUndoStack
 
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.dialogs.CustomDialog import CustomDialog
+from foundry.gui.localization import tr
 from foundry.gui.rom_settings.managed_levels_mixin import ManagedLevelsMixin
 
 
@@ -71,9 +72,18 @@ class RomSettingsDialog(ManagedLevelsMixin, CustomDialog):
 
         super(RomSettingsDialog, self).__init__(parent)
 
-        self.setWindowTitle("ROM Settings")
+        self.retranslate_ui()
 
         self.update()
+
+    def retranslate_ui(self) -> None:
+        """Refresh the ROM-settings title without changing ROM edit state.
+
+        The dialog shell text is rebuilt from the active catalog. The level
+        reference, staged ROM-setting widgets, and shared undo-stack target stay
+        stable so localization only changes the visible title.
+        """
+        self.setWindowTitle(tr("RomSettingsDialog", "rom_settings", "ROM Settings"))
 
     @property
     def undo_stack(self) -> QUndoStack:

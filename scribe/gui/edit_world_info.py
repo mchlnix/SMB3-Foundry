@@ -46,6 +46,7 @@ from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui import label_and_widget
 from foundry.gui.dialogs.CustomDialog import CustomDialog
+from foundry.gui.localization import tr, tr_data_name
 from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.BlockViewer import BlockBank
 from scribe.gui.commands import (
@@ -58,6 +59,8 @@ from scribe.gui.commands import (
 from scribe.gui.world_overview import WorldOverview
 from smb3parse.constants import MUSIC_THEMES
 from smb3parse.levels import NO_MAP_SCROLLING, WORLD_MAP_PALETTE_COUNT
+
+TR_CONTEXT = "ScribeEditWorldInfo"
 
 
 class EditWorldInfo(CustomDialog):
@@ -91,9 +94,26 @@ class EditWorldInfo(CustomDialog):
     scrolls_check_box : QCheckBox
         Toggle that maps the world's scroll flag between SMB3's scrolling and
         non-scrolling encodings.
+    palette_layout : QLayout
+        Label/control row for the palette spinner; live retranslation owns the
+        label while the spinner retains the encoded palette value.
+    music_dropdown : QComboBox
+        Dropdown that displays localized music names while storing the stable
+        SMB3 music index as item data.
+    music_layout : QLayout
+        Label/control row for the music selector, refreshed without changing
+        the selected music index.
+    bottom_border_layout : QLayout
+        Label/control row for the bottom-border tile preview button.
+    world_data_group : QGroupBox
+        Container for per-world metadata controls separate from the staged
+        world-overview table.
     icon_button : QPushButton
         Button that previews and launches selection of the world's bottom
         border tile.
+    ticks_per_frame_layout : QLayout
+        Label/control row for animation timing. The spinner previews direct
+        world-data changes until close commits them through the undo stack.
     animation_hint_label : QLabel
         Label for world-specific scrolling and animation constraints.
     error_label : QLabel
@@ -143,7 +163,7 @@ class EditWorldInfo(CustomDialog):
             World map whose metadata and world-layout relationships are edited
             by this dialog.
         """
-        super(EditWorldInfo, self).__init__(parent, "Edit World Info")
+        super(EditWorldInfo, self).__init__(parent, tr(TR_CONTEXT, "edit_world_info", "Edit World Info"))
 
         self.world_map = world_map
 
@@ -152,7 +172,7 @@ class EditWorldInfo(CustomDialog):
         # world data
         layout = QVBoxLayout()
 
-        self.scrolls_check_box = QCheckBox("Scrolls to next screen, when at the edge")
+        self.scrolls_check_box = QCheckBox()
         self.scrolls_check_box.setChecked(self.world_map.data.map_scroll not in [0, NO_MAP_SCROLLING])
 
         layout.addWidget(self.scrolls_check_box)
@@ -161,24 +181,28 @@ class EditWorldInfo(CustomDialog):
         palette_spin_box.setValue(self.world_map.data.palette_index)
         palette_spin_box.valueChanged.connect(self._change_palette_index)
 
-        layout.addLayout(label_and_widget("Color Palette Index", palette_spin_box))
+        self.palette_layout = label_and_widget("", palette_spin_box)
+        layout.addLayout(self.palette_layout)
 
-        music_dropdown = QComboBox(self)
-        music_dropdown.addItems([f"{name} ({value:#x})" for value, name in MUSIC_THEMES.items()])
-        music_dropdown.currentIndexChanged.connect(self._change_music_index)
-        music_dropdown.setCurrentIndex(list(MUSIC_THEMES.keys()).index(world_map.data.music_index))
+        self.music_dropdown = QComboBox(self)
+        for value, name in MUSIC_THEMES.items():
+            self.music_dropdown.addItem(f"{tr_data_name('MusicTheme', name)} ({value:#x})", value)
+        self.music_dropdown.currentIndexChanged.connect(self._change_music_index)
+        self.music_dropdown.setCurrentIndex(max(0, self.music_dropdown.findData(world_map.data.music_index)))
 
-        layout.addLayout(label_and_widget("Music Theme", music_dropdown))
+        self.music_layout = label_and_widget("", self.music_dropdown)
+        layout.addLayout(self.music_layout)
 
         self.icon_button = QPushButton("")
         self.icon_button.clicked.connect(self._on_button_press)
         self._update_button_icon()
 
-        layout.addLayout(label_and_widget("Bottom Border Tile", self.icon_button))
+        self.bottom_border_layout = label_and_widget("", self.icon_button)
+        layout.addLayout(self.bottom_border_layout)
 
-        world_data_group = QGroupBox("World Data")
-        world_data_group.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
-        world_data_group.setLayout(layout)
+        self.world_data_group = QGroupBox()
+        self.world_data_group.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+        self.world_data_group.setLayout(layout)
 
         self.orig_tick_per_frame = self.world_map.data.frame_tick_count
 
@@ -186,12 +210,13 @@ class EditWorldInfo(CustomDialog):
         ticks_per_frame_spin_box.setValue(self.world_map.data.frame_tick_count)
         ticks_per_frame_spin_box.valueChanged.connect(self._change_anim_frame)
 
-        layout.addLayout(label_and_widget("Ticks between Animation Frames", ticks_per_frame_spin_box))
+        self.ticks_per_frame_layout = label_and_widget("", ticks_per_frame_spin_box)
+        layout.addLayout(self.ticks_per_frame_layout)
 
         self.animation_hint_label = QLabel()
         layout.addWidget(self.animation_hint_label)
 
-        self.layout().addWidget(world_data_group)
+        self.layout().addWidget(self.world_data_group)
 
         level_ref = LevelRef()
         level_ref.level = self.world_map
@@ -206,12 +231,12 @@ class EditWorldInfo(CustomDialog):
         self.layout().addWidget(self.error_label)
 
         # ok button
-        self.ok_button = QPushButton("OK")
+        self.ok_button = QPushButton(tr("Common", "ok", "OK"))
         self.ok_button.clicked.connect(self.close)
 
         self.layout().addWidget(self.ok_button)
 
-        self._update_hint_labels()
+        self.retranslate_ui()
 
     @property
     def undo_stack(self) -> QUndoStack:
@@ -260,9 +285,17 @@ class EditWorldInfo(CustomDialog):
         world_number = self.world_map.data.index
 
         if world_number == 4:
-            self.animation_hint_label.setText("Note: World 5 cannot scroll and isn't animated")
+            self.animation_hint_label.setText(
+                tr(TR_CONTEXT, "note.world_5_scroll_limit", "Note: World 5 cannot scroll and isn't animated")
+            )
         elif world_number == 7:
-            self.animation_hint_label.setText("Note: World 8 cannot scroll and the last screen isn't animated")
+            self.animation_hint_label.setText(
+                tr(
+                    TR_CONTEXT,
+                    "note.world_8_scroll_limit",
+                    "Note: World 8 cannot scroll and the last screen isn't animated",
+                )
+            )
         else:
             self.animation_hint_label.setText("")
 
@@ -275,15 +308,74 @@ class EditWorldInfo(CustomDialog):
 
         self.ok_button.setEnabled(self.world_overview.valid())
 
+    def retranslate_ui(self) -> None:
+        """Refresh all visible world-info labels after a language change.
+
+        The method owns the live-translation workflow for this dialog: the
+        title, group title, form labels, music choices, validation hints, child
+        overview widget, footer text, and OK button are rewritten from catalogs
+        while encoded combo-box data and staged world edits remain unchanged.
+        It preserves the dialog's edit state and uses the normal hint-label
+        path as a display boundary so validation text and world-specific notes
+        stay in the active language without committing metadata changes.
+        """
+        self.setWindowTitle(tr(TR_CONTEXT, "edit_world_info", "Edit World Info"))
+        self.world_data_group.setTitle(tr(TR_CONTEXT, "world_data", "World Data"))
+        self.scrolls_check_box.setText(
+            tr(TR_CONTEXT, "label.edge_scroll_enabled", "Scrolls to next screen, when at the edge")
+        )
+        self._set_layout_label_text(self.palette_layout, tr(TR_CONTEXT, "color_palette_index", "Color Palette Index"))
+        self._set_layout_label_text(self.music_layout, tr(TR_CONTEXT, "music_theme", "Music Theme"))
+        self._set_layout_label_text(
+            self.bottom_border_layout, tr(TR_CONTEXT, "bottom_border_tile", "Bottom Border Tile")
+        )
+        self._set_layout_label_text(
+            self.ticks_per_frame_layout,
+            tr(TR_CONTEXT, "ticks_between_animation_frames", "Ticks between Animation Frames"),
+        )
+        current_music_index = self.music_dropdown.currentData()
+        self.music_dropdown.blockSignals(True)
+        for index in range(self.music_dropdown.count()):
+            music_index = self.music_dropdown.itemData(index)
+            music_name = MUSIC_THEMES[music_index]
+            self.music_dropdown.setItemText(index, f"{tr_data_name('MusicTheme', music_name)} ({music_index:#x})")
+        self.music_dropdown.setCurrentIndex(max(0, self.music_dropdown.findData(current_music_index)))
+        self.music_dropdown.blockSignals(False)
+        self.world_overview.retranslate_ui()
+        self.ok_button.setText(tr("Common", "ok", "OK"))
+        self._update_hint_labels()
+
+    @staticmethod
+    def _set_layout_label_text(layout, text: str) -> None:
+        """Update the label created by ``label_and_widget``.
+
+        The helper is the small display boundary used by live retranslation for
+        row layouts that pair a translated label with a stateful editor widget.
+        Only the label text is replaced; palette, music, tile, and timing
+        widget state remains owned by the dialog controls.
+
+        Parameters
+        ----------
+        layout
+            Two-item row layout returned by :func:`foundry.gui.label_and_widget`.
+        text : str
+            Catalog-backed label text to apply to the row's first widget.
+
+        """
+        label = layout.itemAt(0).widget()
+        if isinstance(label, QLabel):
+            label.setText(text)
+
     def _on_button_press(self):
         """Open the block picker for the bottom-border tile.
 
         Notes
         -----
-        The selected tile is committed only after the user clicks a block in
-        the modal block bank. The callback hides the picker, pushes
-        :class:`~scribe.gui.commands.WorldBottomTile`, and then redraws the
-        preview icon from the updated world state.
+        The temporary :class:`BlockBank` is used only as a chooser. Once the
+        user picks a tile, the callback hides the picker, pushes
+        :class:`~scribe.gui.commands.WorldBottomTile` to the shared undo stack,
+        and redraws the preview icon from the updated world state. The chooser
+        never owns persistent bottom-border state.
         """
         block_bank = BlockBank(None, palette_group_index=self.world_map.data.palette_index)
         block_bank.setWindowModality(Qt.WindowModal)
@@ -311,10 +403,11 @@ class EditWorldInfo(CustomDialog):
 
         Notes
         -----
-        This method updates the live world directly so the dialog preview stays
-        in sync. ``closeEvent`` converts the final value into a
-        :class:`~scribe.gui.commands.WorldTickPerFrame` command before the
-        dialog closes.
+        Animation timing is the one metadata field previewed by direct
+        mutation. :meth:`closeEvent` restores the original value before
+        pushing the final :class:`~scribe.gui.commands.WorldTickPerFrame`
+        command, so undo history rather than this preview callback owns
+        persistence.
         """
         self.world_map.data.frame_tick_count = new_count
 
@@ -330,9 +423,10 @@ class EditWorldInfo(CustomDialog):
 
         Notes
         -----
-        This path uses an undo command immediately because both the world map
-        preview and the bottom-border tile icon should switch to the new
-        palette as soon as the spinner changes.
+        The palette index is an encoded world-data value. This path pushes an
+        undo command immediately because both the world-map preview and the
+        bottom-border tile icon should switch to the new palette as soon as the
+        spinner changes.
         """
         self.undo_stack.push(WorldPaletteIndex(self.world_map, new_index))
 
@@ -346,11 +440,13 @@ class EditWorldInfo(CustomDialog):
         Parameters
         ----------
         new_index : int
-            Index into the dialog's music-theme dropdown, which is translated
-            to the corresponding SMB3 music value before the undo command is
-            created.
+        Index into the dialog's music-theme dropdown. The displayed name may
+        be translated, but the command receives the stable SMB3 music value
+        stored in item data so localization never becomes ROM identity.
         """
-        music_index = list(MUSIC_THEMES.keys())[new_index]
+        music_index = self.music_dropdown.itemData(new_index)
+        if music_index is None:
+            return
 
         self.undo_stack.push(WorldMusicIndex(self.world_map, music_index))
 

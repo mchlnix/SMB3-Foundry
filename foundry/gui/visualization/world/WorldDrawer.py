@@ -109,9 +109,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         """
         painter.save()
 
@@ -161,9 +161,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         """
         bg_color = Qt.GlobalColor.black
 
@@ -184,9 +184,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         """
         painter.setPen(QPen(Qt.GlobalColor.gray, 1))
 
@@ -214,8 +214,7 @@ class WorldDrawer:
 
             painter.drawLine(QPoint(x, y_offset), QPoint(x, map_height * self.block_length))
 
-        # TODO seems like map scroll could deactivate scrolling partly, so this could be more fine grained
-        # make screen divider red for no scrolling and green for scrolling
+        # Make screen dividers red when scrolling is fully disabled and green otherwise.
         if world.data.map_scroll in [0x0, NO_MAP_SCROLLING]:
             painter.setPen(QPen(QColor(0xFF, 0x00, 0x00, 0xFF), 3))
         else:
@@ -238,9 +237,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         """
         if not world.get_all_objects():
             return
@@ -256,7 +255,7 @@ class WorldDrawer:
             painter.setPen(QPen(QColor(0x00, 0x00, 0x00, 0x80), 1))
             painter.drawRect(QRect(*tile.get_rect(self.block_length)))
 
-        # TODO make anim frame a parameter to draw and Tile()
+        # Keep the shared tile graphics cache on the drawer's active animation frame.
         tile.block.graphics_set.anim_frame = self.anim_frame
 
     def _draw_tile(self, painter: QPainter, world: WorldMap, tile: MapTile):
@@ -272,9 +271,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         tile : MapTile
             Map tile to draw.
         """
@@ -301,9 +300,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         """
         x_left = 0
         x_right = (world.width - 1) * self.block_length
@@ -374,9 +373,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         """
         for level_pointer in world.level_pointers:
             level_pointer.draw(painter, self.block_length, False, level_pointer.selected)
@@ -394,9 +393,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         """
         for sprite in world.sprites:
             sprite.draw(painter, self.block_length, False, sprite.selected)
@@ -411,9 +410,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         """
         world.start_pos.draw(painter, self.block_length, False)
 
@@ -432,9 +431,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         """
         if world.data.index == WORLD_MAP_WARP_WORLD_INDEX:
             return
@@ -457,9 +456,9 @@ class WorldDrawer:
         Parameters
         ----------
         painter : QPainter
-            Painter used to render the object or view.
+            Painter receiving the world-map paint commands.
         world : WorldMap
-            World map or world number being processed.
+            World-map model whose tiles, objects, and metadata are being rendered.
         """
         if world.data.index == WORLD_MAP_WARP_WORLD_INDEX:
             return

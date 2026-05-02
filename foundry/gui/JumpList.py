@@ -18,10 +18,35 @@ from PySide6.QtGui import QContextMenuEvent, QMouseEvent
 from PySide6.QtWidgets import QListWidget, QMenu, QWidget
 
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr
+
+TR_CONTEXT = "JumpList"
+TR_KEY_CONTEXT = "foundry.jump_list"
 
 ID_ADD_JUMP = 1
 ID_DEL_JUMP = 2
 ID_EDIT_JUMP = 3
+
+
+def jump_display_text(jump) -> str:
+    """Format display text for a jump-list pointer row.
+
+    The jump object remains the model identity. This helper formats only the
+    visible list text so ``Jump.__str__`` and serialized jump bytes stay stable
+    for developer output, undo, and ROM-facing behavior.
+
+    Parameters
+    ----------
+    jump : object
+        Jump-like model object with a stable ``screen_index`` attribute.
+
+    Returns
+    -------
+    str
+        Localized display text for the list row. The text is never used as
+        jump identity.
+    """
+    return tr(TR_KEY_CONTEXT, "row.screen", "Jump on screen #{screen_index}").format(screen_index=jump.screen_index)
 
 
 class JumpList(QListWidget):
@@ -74,18 +99,16 @@ class JumpList(QListWidget):
         self._level_ref.data_changed.connect(self.update)
         self.itemDoubleClicked.connect(lambda _: self.edit_jump.emit())
 
+        self._set_whats_this()
+
+    def _set_whats_this(self) -> None:
+        """Refresh translated help text for the jump list."""
         self.setWhatsThis(
-            "<b>Jump List</b><br/>"
-            "Every level can designate another level to jump to, in case a pipe or a door is entered. This is done in "
-            "the header, which can be edited with the Header Editor. While only one such level can be defined, where "
-            "and how to enter that level can be defined multiple times with multiple jumps.<br/>"
-            "A jump is valid for one screen, a 16-block wide/high section of the level, depending on if the level is "
-            "vertical or not, and all objects within that section, capable of handling a jump, will jump to the same "
-            "position in the same way. To see where these jump zones are, enable the Jump Zone option in the View menu."
-            "<br/><br/>"
-            "Tip: By having multiple jumps with different entry positions, you could make it look, like you are "
-            "jumping to two different levels, when, in fact, you are jumping to two different sections of the same "
-            "level."
+            tr(
+                TR_CONTEXT,
+                "help.jump_list",
+                "<b>Jump List</b><br/>Every level can designate another level to jump to, in case a pipe or a door is entered. This is done in the header, which can be edited with the Header Editor. While only one such level can be defined, where and how to enter that level can be defined multiple times with multiple jumps.<br/>A jump is valid for one screen, a 16-block wide/high section of the level, depending on if the level is vertical or not, and all objects within that section, capable of handling a jump, will jump to the same position in the same way. To see where these jump zones are, enable the Jump Zone option in the View menu.<br/><br/>Tip: By having multiple jumps with different entry positions, you could make it look, like you are jumping to two different levels, when, in fact, you are jumping to two different sections of the same level.",
+            )
         )
 
     def update(self):
@@ -93,13 +116,44 @@ class JumpList(QListWidget):
 
         ``LevelRef`` emits ``data_changed`` after jump edits, header changes,
         and level reloads, so the widget regenerates its rows from the live jump
-        objects instead of trying to keep incremental UI state in sync.
+        objects instead of trying to keep incremental UI state synchronized.
+        Translated row text is never used as jump identity; row position maps
+        back to the active ``LevelRef.jumps`` list.
         """
         self.clear()
 
         jumps = self._level_ref.jumps
 
-        self.addItems([str(jump) for jump in jumps])
+        self.addItems([jump_display_text(jump) for jump in jumps])
+
+    def retranslate_ui(self) -> None:
+        """Refresh jump rows after the active language changes.
+
+        Rows are rebuilt from ``LevelRef.jumps`` instead of translated list
+        text, which keeps the display language independent from the underlying
+        jump records.
+        """
+        self._set_whats_this()
+        self.update()
+
+    def set_jump_text(self, index: int, jump) -> None:
+        """Refresh one jump row from its stable jump payload.
+
+        FoundryMainWindow calls this after replacing a jump through the edit
+        dialog. Only the visible row text changes; the state flow for the
+        level's jump list and undo payload remains owned by ``LevelRef`` and
+        command objects.
+
+        Parameters
+        ----------
+        index : int
+            Row index to update.
+        jump : object
+            Stable jump model object whose ``screen_index`` is displayed.
+        """
+        item = self.item(index)
+        if item is not None:
+            item.setText(jump_display_text(jump))
 
     def delete_selected_jump(self):
         """Request removal of the selected jump row."""
@@ -159,14 +213,14 @@ class JumpList(QListWidget):
         menu = QMenu()
 
         if item is None:
-            add_action = menu.addAction("Add Jump")
+            add_action = menu.addAction(tr(TR_CONTEXT, "add_jump", "Add Jump"))
             add_action.triggered.connect(self.add_jump.emit)
 
         else:
-            edit_action = menu.addAction("Edit Jump")
+            edit_action = menu.addAction(tr(TR_CONTEXT, "edit_jump", "Edit Jump"))
             edit_action.triggered.connect(self.edit_jump.emit)
 
-            remove_action = menu.addAction("Remove Jump")
+            remove_action = menu.addAction(tr(TR_CONTEXT, "remove_jump", "Remove Jump"))
             remove_action.triggered.connect(self.remove_jump.emit)
 
         menu.exec(event.globalPos())

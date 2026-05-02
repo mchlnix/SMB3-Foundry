@@ -15,7 +15,10 @@ scribe.gui.about_window
 """
 
 from foundry.gui.menus.help_menu import HelpMenu as FoundryHelpMenu
+from foundry.gui.localization import tr
 from scribe.gui.about_window import AboutDialog
+
+TR_CONTEXT = "ScribeHelpMenu"
 
 
 class HelpMenu(FoundryHelpMenu):
@@ -51,9 +54,42 @@ class HelpMenu(FoundryHelpMenu):
         parent : QMainWindow
             Main window that owns the menu and later parents the about dialog.
         """
-        super(HelpMenu, self).__init__(parent)
+        super(HelpMenu, self).__init__(parent, tr(TR_CONTEXT, "help", "&Help"))
+
+        self.check_updates_action.setText(tr(TR_CONTEXT, "check_for_updates", "Check for Updates"))
+        self.whats_this_action.setWhatsThis(
+            tr(TR_CONTEXT, "help.whats_this_mode", "Click on parts of the editor, to receive help information.")
+        )
+        self.whats_this_action.setText(tr(TR_CONTEXT, "starts_what_s_this_mode", "Starts 'What's this?' mode"))
+        self._video_action.setText(tr(TR_CONTEXT, "feature_video_on_youtube", "Feature Video on YouTube"))
+        self._repo_action.setText(tr(TR_CONTEXT, "github_repository", "Github Repository"))
+        self._discord_action.setText(tr(TR_CONTEXT, "smb3_rom_hacking_discord", "SMB3 Rom Hacking Discord"))
+        self._enemy_compat_action.setText(tr(TR_CONTEXT, "enemy_compatibility", "Enemy Compatibility"))
+        self._about_action.setText(tr(TR_CONTEXT, "about", "About"))
 
         self.removeAction(self._enemy_compat_action)
+
+    def retranslate_ui(self) -> None:
+        """Refresh Scribe help-menu labels after a language change.
+
+        The refresh preserves the inherited action objects and trigger routing
+        while replacing their visible text and help tooltip from Scribe's
+        catalog context. The removed enemy-compatibility action remains hidden;
+        it is still updated here only because the inherited menu owns that
+        QAction instance.
+        """
+        super().retranslate_ui()
+        self.setTitle(tr(TR_CONTEXT, "help", "&Help"))
+        self.check_updates_action.setText(tr(TR_CONTEXT, "check_for_updates", "Check for Updates"))
+        self.whats_this_action.setWhatsThis(
+            tr(TR_CONTEXT, "help.whats_this_mode", "Click on parts of the editor, to receive help information.")
+        )
+        self.whats_this_action.setText(tr(TR_CONTEXT, "starts_what_s_this_mode", "Starts 'What's this?' mode"))
+        self._video_action.setText(tr(TR_CONTEXT, "feature_video_on_youtube", "Feature Video on YouTube"))
+        self._repo_action.setText(tr(TR_CONTEXT, "github_repository", "Github Repository"))
+        self._discord_action.setText(tr(TR_CONTEXT, "smb3_rom_hacking_discord", "SMB3 Rom Hacking Discord"))
+        self._enemy_compat_action.setText(tr(TR_CONTEXT, "enemy_compatibility", "Enemy Compatibility"))
+        self._about_action.setText(tr(TR_CONTEXT, "about", "About"))
 
     def on_about(self):
         """Show Scribe's about dialog from the inherited help workflow.

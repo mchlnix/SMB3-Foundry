@@ -41,6 +41,7 @@ from foundry.gui.commands import (
     SetLevelAttribute,
 )
 from foundry.gui.ContextMenu import LevelContextMenu
+from foundry.gui.localization import tr, tr_data_name
 from foundry.gui.settings import RESIZE_LEFT_CLICK, RESIZE_RIGHT_CLICK, Settings
 from foundry.gui.visualization.level.LevelDrawer import LevelDrawer
 from foundry.gui.visualization.MainView import (
@@ -56,6 +57,8 @@ from foundry.gui.visualization.MainView import (
 from foundry.gui.windows.BlockViewer import ANIMATION_FRAME_DURATION_MS
 from smb3parse.data_points import Position
 from smb3parse.levels import HEADER_LENGTH
+
+TR_CONTEXT = "LevelView"
 
 
 class LevelView(MainView):
@@ -158,18 +161,21 @@ class LevelView(MainView):
         self.objects_before_resizing: list[InLevelObject] = []
         self.objects_before_moving: list[InLevelObject] = []
 
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh level-view help text without touching editor selection.
+
+        The ``WhatsThis`` copy is rebuilt from the active catalog. The level
+        reference, selected objects, drag/resize state, and rendering payload
+        stay stable so live language switching cannot change edited ROM data.
+        """
         self.setWhatsThis(
-            "<b>Level View</b><br/>"
-            "This renders the level as it would appear in game plus additional information, that can be "
-            "toggled in the View menu.<br/>"
-            "It supports selecting multiple objects, moving, copy/pasting and resizing them using the "
-            "mouse or the usual keyboard shortcuts.<br/>"
-            "There are still occasional rendering errors, or small inconsistencies. If you find them, "
-            "please report the kind of object (name or values in the SpinnerPanel) and the level or "
-            "object set they appear in, in the discord and @Michael or on the github page under Help."
-            "<br/><br/>"
-            ""
-            "If all else fails, click the play button up top to see your level in game in seconds."
+            tr(
+                TR_CONTEXT,
+                "help.level_view",
+                "<b>Level View</b><br/>This renders the level as it would appear in game plus additional information, that can be toggled in the View menu.<br/>It supports selecting multiple objects, moving, copy/pasting and resizing them using the mouse or the usual keyboard shortcuts.<br/>There are still occasional rendering errors, or small inconsistencies. If you find them, please report the kind of object (name or values in the SpinnerPanel) and the level or object set they appear in, in the discord and @Michael or on the github page under Help.<br/><br/>If all else fails, click the play button up top to see your level in game in seconds.",
+            )
         )
 
     @property
@@ -319,7 +325,11 @@ class LevelView(MainView):
         object_under_cursor = self.object_at(mouse_point)
 
         if self.settings.value("level_view/object_tooltip_enabled") and object_under_cursor is not None:
-            self.setToolTip(str(object_under_cursor))
+            self.setToolTip(
+                tr_data_name("EnemyItem", object_under_cursor.name)
+                if isinstance(object_under_cursor, EnemyItem)
+                else tr_data_name("LevelObject", object_under_cursor.name)
+            )
         else:
             self.setToolTip("")
             QToolTip.hideText()
@@ -970,7 +980,6 @@ class LevelView(MainView):
         min_x = min([obj.x_position for obj in objects]) * self.block_length
         min_y = min([obj.y_position for obj in objects]) * self.block_length
 
-        # TODO not great, not terrible
         cast(QScrollArea, cast(QWidget, self.parent().parent())).ensureVisible(min_x, min_y)
 
     def level_safe_to_save(self) -> tuple[bool, str, str]:
@@ -1078,7 +1087,10 @@ class LevelView(MainView):
         if found_level.enemy_offset == self.level_ref.enemy_offset:
             return ""
         else:
-            return f"World {found_level.game_world} - {found_level.name}"
+            return tr("LevelView", "world_world_number_level_name", "World {world_number} - {level_name}").format(
+                world_number=found_level.game_world,
+                level_name=tr_data_name("StockLevel", found_level.name),
+            )
 
     def _cuts_into_other_objects(self) -> str:
         """Identify the original level whose object data would be overlapped.
@@ -1115,7 +1127,10 @@ class LevelView(MainView):
         if found_level.rom_level_offset == self.level_ref.object_offset:
             return ""
         else:
-            return f"World {found_level.game_world} - {found_level.name}"
+            return tr("LevelView", "world_world_number_level_name", "World {world_number} - {level_name}").format(
+                world_number=found_level.game_world,
+                level_name=tr_data_name("StockLevel", found_level.name),
+            )
 
     def from_m3l(self, data: bytearray):
         """Load level data from an M3L byte stream.

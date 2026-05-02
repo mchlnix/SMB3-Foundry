@@ -1,3 +1,12 @@
+"""Import and export SMB3 level data through assembly-sidecar files.
+
+The helpers in this module sit at the UI/file boundary for Foundry's ASM and
+FNS workflows. They parse the small subset of Captain Southbird-style level
+ASM that Foundry can round-trip, surface file errors through Qt dialogs, and
+translate FNS symbol offsets into ROM-global addresses without changing the
+stable ROM, level, or object identities used elsewhere in the editor.
+"""
+
 import tempfile
 from os import PathLike
 from pathlib import Path
@@ -8,6 +17,7 @@ from PySide6.QtWidgets import QFileDialog, QMessageBox
 from foundry import ASM_FILE_FILTER, NO_PARENT
 from foundry.game.File import ROM
 from foundry.gui.dialogs.ObjectSetSelector import ObjectSetSelector
+from foundry.gui.localization import tr
 from smb3parse.constants import BASE_OFFSET, VANILLA_PRG_BANK_COUNT
 from smb3parse.util import apply, hex_int
 from smb3parse.util.rom import PRG_BANK_SIZE
@@ -15,11 +25,17 @@ from smb3parse.util.rom import PRG_BANK_SIZE
 if TYPE_CHECKING:
     from foundry.game.level.Level import Level
 
+TR_CONTEXT = "ASM"
+
 
 def asm_to_bytes(asm: str) -> bytearray:
-    """Convert assembly for to bytes.
+    """Encode Foundry-supported ASM directives into level bytes.
 
-    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+    The parser accepts byte lists and the known header macros in
+    ``MACRO_DICT``. Unknown ``.word`` values are reported to the user and
+    replaced with zeroes so an import can continue far enough for manual
+    header repair. The state flow is ASM source text to decoded bytes; no
+    translated UI text enters the imported level data.
 
     Parameters
     ----------
@@ -43,9 +59,12 @@ def asm_to_bytes(asm: str) -> bytearray:
         if ".word" in stripped_line:
             QMessageBox.warning(
                 NO_PARENT,
-                "Parsing Error",
-                f"Cannot parse '{stripped_line}'. Probably an unknown offset, you'll have to set in the level header. "
-                f"Using 0x0000 as value for now.",
+                tr(TR_CONTEXT, "parsing_error", "Parsing Error"),
+                tr(
+                    TR_CONTEXT,
+                    "error.asm_unknown_offset",
+                    "Cannot parse '{line}'. Probably an unknown offset, you'll have to set in the level header. Using 0x0000 as value for now.",
+                ).format(line=stripped_line),
             )
             bytes_in_line = bytearray(2)
 
@@ -66,9 +85,11 @@ def asm_to_bytes(asm: str) -> bytearray:
 
 
 def _parse_macros_in_line(line: str) -> int:
-    """Parse macros in line.
+    """Collapse pipe-separated level-header macros into one byte.
 
-    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+    Macro names are assembly identifiers, not translated UI strings. The
+    returned byte is fed into level data import exactly as encoded SMB3 header
+    state.
 
     Parameters
     ----------
@@ -78,12 +99,12 @@ def _parse_macros_in_line(line: str) -> int:
     Returns
     -------
     int
-        Loaded or parsed data.
+        Encoded byte represented by all macros on the line.
 
     Raises
     ------
     ValueError
-        If the input data or current state is invalid.
+        If a macro name is not present in ``MACRO_DICT``.
     """
     line = line.removeprefix(".byte ")
 
@@ -99,9 +120,11 @@ def _parse_macros_in_line(line: str) -> int:
 
 
 def bytes_to_asm(data: bytearray | int) -> str:
-    """Convert bytes for to asm.
+    """Render one byte or bytearray as ASM ``$XX`` literals.
 
-    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+    Export callers use this formatter for user-visible ASM files while ROM and
+    level models continue to own the underlying bytes. The state flow is model
+    bytes to textual ASM literals.
 
     Parameters
     ----------
@@ -123,49 +146,54 @@ def bytes_to_asm(data: bytearray | int) -> str:
 
 
 def load_asm_filename(what: str, default_path=""):
-    """Load asm filename.
+    """Ask the user for an ASM file to import.
 
-    It connects Qt UI behavior with the editor model and command workflow. The data boundary keeps ROM/file operations explicit for callers.
+    The returned path is a filesystem choice only; parsing and mutation of the
+    active level happens in the caller.
 
     Parameters
     ----------
     what : str
         User-facing name for the data being loaded or saved.
-    default_path : Any, optional
+    default_path : str, optional
         Path to the default file or directory.
 
     Returns
     -------
-    Any
-        Loaded or parsed data.
+    str
+        Selected ASM path, or an empty string when the dialog is cancelled.
     """
     pathname, _ = QFileDialog.getOpenFileName(
-        NO_PARENT, caption=f"Open {what} file", dir=default_path, filter=ASM_FILE_FILTER
+        NO_PARENT,
+        caption=tr(TR_CONTEXT, "open_what_file", "Open {what} file").format(what=what),
+        dir=default_path,
+        filter=ASM_FILE_FILTER,
     )
 
     return pathname
 
 
 def save_asm_filename(what: str, default_path=""):
-    """Save asm filename.
+    """Ask the user where an ASM export should be written.
 
-    It connects Qt UI behavior with the editor model and command workflow. The data boundary keeps ROM/file operations explicit for callers.
+    The returned path is a filesystem choice only; the caller provides and
+    writes the export data.
 
     Parameters
     ----------
     what : str
         User-facing name for the data being loaded or saved.
-    default_path : Any, optional
+    default_path : str, optional
         Path to the default file or directory.
 
     Returns
     -------
-    Any
+    str
         Assembly filename selected for saving, if one was chosen.
     """
     pathname, _ = QFileDialog.getSaveFileName(
         NO_PARENT,
-        caption=f"Save {what} as",
+        caption=tr(TR_CONTEXT, "save_what_as", "Save {what} as").format(what=what),
         dir=default_path,
         filter=ASM_FILE_FILTER,
     )
@@ -174,21 +202,28 @@ def save_asm_filename(what: str, default_path=""):
 
 
 def load_asm_level(pathname: PathLike, level: "Level"):
-    """Load asm level.
+    """Import level-layout ASM into a level model.
 
-    It connects Qt UI behavior with the editor model and command workflow. The data boundary keeps ROM/file operations explicit for callers.
+    The user chooses the object set before parsed bytes are applied. File and
+    parse failures are shown through Qt dialogs; level identity remains owned
+    by the passed model. The state flow is file text to parsed bytes to
+    ``Level.from_asm``.
 
     Parameters
     ----------
     pathname : PathLike
-        Filesystem path used by the operation.
+        Filesystem path containing level-layout ASM.
     level : 'Level'
-        Level model or level reference used by the operation.
+        Level model that receives decoded layout bytes.
     """
     try:
         asm_level_data = Path(pathname).read_text()
     except IOError as exp:
-        QMessageBox.critical(NO_PARENT, type(exp).__name__, f"Cannot open file '{pathname}'.")
+        QMessageBox.critical(
+            NO_PARENT,
+            type(exp).__name__,
+            tr(TR_CONTEXT, "cannot_open_file_pathname", "Cannot open file '{pathname}'.").format(pathname=pathname),
+        )
         return
 
     object_set = ObjectSetSelector.get_object_set()
@@ -207,21 +242,27 @@ def load_asm_level(pathname: PathLike, level: "Level"):
 
 
 def load_asm_enemy(pathname: PathLike, level: "Level"):
-    """Load asm enemy.
+    """Import enemy ASM while preserving the terminator byte.
 
-    It connects Qt UI behavior with the editor model and command workflow. The data boundary keeps ROM/file operations explicit for callers.
+    Enemy data is patched into the existing level model and then emits
+    ``data_changed`` so open views refresh from model state rather than from
+    translated or filename-derived text.
 
     Parameters
     ----------
     pathname : PathLike
-        Filesystem path used by the operation.
+        Filesystem path containing enemy ASM.
     level : 'Level'
-        Level model or level reference used by the operation.
+        Level model that receives decoded enemy bytes.
     """
     try:
         asm_enemy_data = Path(pathname).read_text()
     except IOError as exp:
-        QMessageBox.warning(NO_PARENT, type(exp).__name__, f"Cannot open file '{pathname}'.")
+        QMessageBox.warning(
+            NO_PARENT,
+            type(exp).__name__,
+            tr(TR_CONTEXT, "cannot_open_file_pathname", "Cannot open file '{pathname}'.").format(pathname=pathname),
+        )
         return
 
     _, (__, current_enemy_bytes) = level.to_bytes()
@@ -234,23 +275,31 @@ def load_asm_enemy(pathname: PathLike, level: "Level"):
 
 
 def save_asm(what: str, pathname: PathLike, asm_data: str):
-    """Save asm.
+    """Write an ASM export and report filesystem failures through Qt.
 
-    It connects Qt UI behavior with the editor model and command workflow. The data boundary keeps ROM/file operations explicit for callers.
+    The caller supplies pre-rendered ASM text. This helper owns only the
+    file write and localized error message; it does not parse or mutate level
+    state.
 
     Parameters
     ----------
     what : str
-        User-facing name for the data being loaded or saved.
+        User-facing description of the exported data.
     pathname : PathLike
-        Filesystem path used by the operation.
+        Destination filesystem path for the ASM export.
     asm_data : str
-        Data for the asm value.
+        Assembly text to write.
     """
     try:
         Path(pathname).write_text(asm_data)
     except IOError as exp:
-        QMessageBox.warning(NO_PARENT, type(exp).__name__, f"Couldn't save {what} to '{pathname}'.")
+        QMessageBox.warning(
+            NO_PARENT,
+            type(exp).__name__,
+            tr(TR_CONTEXT, "couldn_t_save_what_to_pathname", "Couldn't save {what} to '{pathname}'.").format(
+                what=what, pathname=pathname
+            ),
+        )
 
 
 # taken from https://github.com/captainsouthbird/smb3/blob/b900ac59622f58a2266b30a32acc700e89415e83/smb3.asm#L3025
@@ -393,9 +442,11 @@ MACRO_DICT = {
 
 
 def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
-    """Create fns file absolute.
+    """Convert relative FNS labels into a temporary absolute-offset file.
 
-    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+    The conversion scans PRG bank source files to resolve labels from assembly
+    offsets to ROM-global addresses. It writes a temporary FNS file because the
+    parser expects absolute labels while bundled source files remain unchanged.
 
     Parameters
     ----------
@@ -407,7 +458,7 @@ def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
     Returns
     -------
     Path
-        The newly created fns file absolute.
+        Temporary FNS file containing sorted absolute labels.
 
     Raises
     ------
@@ -459,9 +510,10 @@ def make_fns_file_absolute(fns_file: Path, asm_file: Path) -> Path:
 
 
 def _read_in_prg_banks(asm_file: Path) -> list[str]:
-    """Read in prg banks.
+    """Load vanilla PRG bank source text beside ``smb3.asm``.
 
-    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+    ``make_fns_file_absolute`` uses the returned text to discover which bank
+    owns each FNS label.
 
     Parameters
     ----------
@@ -471,7 +523,7 @@ def _read_in_prg_banks(asm_file: Path) -> list[str]:
     Returns
     -------
     list[str]
-        Loaded or parsed data.
+        Source text for each vanilla PRG bank in bank order.
 
     Raises
     ------
@@ -494,9 +546,10 @@ def _read_in_prg_banks(asm_file: Path) -> list[str]:
 
 
 def _get_prg_offset_values(asm_file: Path) -> list[int]:
-    """Return prg offset values.
+    """Parse PRG ``.org`` offsets from the assembly driver.
 
-    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+    The offsets are used to translate FNS-relative labels back into ROM-global
+    addresses while preserving assembly label names as parser identifiers.
 
     Parameters
     ----------
@@ -506,7 +559,7 @@ def _get_prg_offset_values(asm_file: Path) -> list[int]:
     Returns
     -------
     list[int]
-        The requested prg offset values.
+        PRG bank origin offsets in assembly bank order.
 
     Raises
     ------
@@ -534,9 +587,11 @@ def _get_prg_offset_values(asm_file: Path) -> list[int]:
 
 
 def asm_paths_from_rom_path(rom_base_path: Path) -> tuple[Path, Path]:
-    """Convert assembly for paths from rom path.
+    """Derive ASM and FNS sidecar paths for the loaded ROM.
 
-    It connects Qt UI behavior with the editor model and command workflow. The return value exposes the Qt state or editor action result expected by the caller.
+    Foundry derives sidecar names from ``ROM.path`` so generated ASM and FNS
+    files remain adjacent to the ROM backup directory. The state flow is ROM
+    path to sibling sidecar paths, without changing the ROM object's identity.
 
     Parameters
     ----------

@@ -24,6 +24,7 @@ from foundry import (
     open_url,
 )
 from foundry.gui.dialogs.AboutWindow import AboutDialog
+from foundry.gui.localization import tr
 from foundry.gui.MainWindow import MainWindow
 
 
@@ -89,41 +90,62 @@ class HelpMenu(QMenu):
         title : str, optional
             Menu title shown in the main window.
         """
-        super(HelpMenu, self).__init__(title)
+        super(HelpMenu, self).__init__(tr("Common", "help", title))
 
         self._parent = parent
 
         self.triggered.connect(self._on_trigger)
 
-        self.check_updates_action = self.addAction("Check for Updates")
+        self.check_updates_action = self.addAction(tr("Common", "check_for_updates", "Check for Updates"))
         self.check_updates_action.setIcon(icon("bell.svg"))
 
         self.whats_this_action = QWhatsThis.createAction()
-        self.whats_this_action.setWhatsThis("Click on parts of the editor, to receive help information.")
+        self.whats_this_action.setWhatsThis(
+            tr("Common", "help.whats_this_mode", "Click on parts of the editor, to receive help information.")
+        )
         self.whats_this_action.setIcon(icon("help-circle.svg"))
-        self.whats_this_action.setText("Starts 'What's this?' mode")
+        self.whats_this_action.setText(tr("Common", "starts_what_s_this_mode", "Starts 'What's this?' mode"))
         self.addAction(self.whats_this_action)
 
         self.addSeparator()
 
-        self._video_action = self.addAction("Feature Video on YouTube")
+        self._video_action = self.addAction(tr("Common", "feature_video_on_youtube", "Feature Video on YouTube"))
         self._video_action.setIcon(icon("youtube.svg"))
 
-        self._repo_action = self.addAction("Github Repository")
+        self._repo_action = self.addAction(tr("Common", "github_repository", "Github Repository"))
         self._repo_action.setIcon(icon("github.svg"))
 
-        self._discord_action = self.addAction("SMB3 Rom Hacking Discord")
+        self._discord_action = self.addAction(tr("Common", "smb3_rom_hacking_discord", "SMB3 Rom Hacking Discord"))
         self._discord_action.setIcon(icon("message-square.svg"))
 
         self.addSeparator()
 
-        self._enemy_compat_action = self.addAction("Enemy Compatibility")
+        self._enemy_compat_action = self.addAction(tr("Common", "enemy_compatibility", "Enemy Compatibility"))
         self._enemy_compat_action.setIcon(icon("compass.svg"))
 
         self.addSeparator()
 
-        self._about_action = self.addAction("About")
+        self._about_action = self.addAction(tr("Common", "about", "About"))
         self._about_action.setIcon(icon("info.svg"))
+
+    def retranslate_ui(self) -> None:
+        """Refresh help-menu labels after a language change.
+
+        The refresh updates only Qt action text and help text. External URLs,
+        About dialog behavior, update-check state, and resource identities
+        remain unchanged.
+        """
+        self.setTitle(tr("Common", "help", "&Help"))
+        self.check_updates_action.setText(tr("Common", "check_for_updates", "Check for Updates"))
+        self.whats_this_action.setWhatsThis(
+            tr("Common", "help.whats_this_mode", "Click on parts of the editor, to receive help information.")
+        )
+        self.whats_this_action.setText(tr("Common", "starts_what_s_this_mode", "Starts 'What's this?' mode"))
+        self._video_action.setText(tr("Common", "feature_video_on_youtube", "Feature Video on YouTube"))
+        self._repo_action.setText(tr("Common", "github_repository", "Github Repository"))
+        self._discord_action.setText(tr("Common", "smb3_rom_hacking_discord", "SMB3 Rom Hacking Discord"))
+        self._enemy_compat_action.setText(tr("Common", "enemy_compatibility", "Enemy Compatibility"))
+        self._about_action.setText(tr("Common", "about", "About"))
 
     def _on_trigger(self, action: QAction):
         """Dispatch help-menu actions to the matching resource or dialog.

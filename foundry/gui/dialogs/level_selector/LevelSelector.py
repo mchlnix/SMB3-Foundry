@@ -31,7 +31,8 @@ from PySide6.QtWidgets import (
 
 from foundry import Settings, get_level_thumbnail, icon
 from foundry.game.File import ROM
-from foundry.gui import OBJECT_SET_ITEMS
+from foundry.gui import OBJECT_SET_ITEM_KEYS, OBJECT_SET_ITEMS
+from foundry.gui.localization import tr
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import (
     MUSHROOM_OBJECT_SET,
@@ -48,12 +49,35 @@ from .overworld_selection_map import WorldMapLevelSelect
 from .stock_level_list import StockLevelWidget
 
 
+def _retranslate_object_set_dropdown(dropdown: QComboBox) -> None:
+    """Refresh object-set labels without changing the selected encoded index.
+
+    Parameters
+    ----------
+    dropdown : QComboBox
+        Object-set selector whose row indexes are stable SMB3 object-set ids.
+        Only visible labels are rewritten during live language switching.
+    """
+    current_index = dropdown.currentIndex()
+    signals_were_blocked = dropdown.blockSignals(True)
+
+    for index, (object_set_item, object_set_key) in enumerate(zip(OBJECT_SET_ITEMS, OBJECT_SET_ITEM_KEYS)):
+        if index < dropdown.count():
+            dropdown.setItemText(index, tr("Common", object_set_key, object_set_item))
+
+    dropdown.setCurrentIndex(current_index)
+    dropdown.blockSignals(signals_were_blocked)
+
+
 def _should_use_vertical_preview(level_address: int) -> bool:
-    """Return whether the selected level should use the vertical preview.
+    """Classify preview orientation from the staged level header.
 
     The preview orientation is read from the level header stored at
     ``level_address``. Levels with fewer than one screen are also treated as
     vertical so the thumbnail widget uses the narrow preview area.
+    This check affects only preview layout. The state flow stays one-way from
+    the staged ROM address into the thumbnail widget; the address itself
+    remains the selection payload returned by the dialog.
 
     Parameters
     ----------
@@ -287,7 +311,7 @@ class LevelSelector(QDialog):
         """
         super(LevelSelector, self).__init__(parent)
 
-        self.setWindowTitle("Level Selector")
+        self.setWindowTitle(tr("LevelSelector", "level_selector", "Level Selector"))
         self.setModal(True)
 
         self.level_name = ""
@@ -299,23 +323,28 @@ class LevelSelector(QDialog):
 
         self.clicked_level_pointer: LevelPointerData | None = None
 
-        self.enemy_data_label = QLabel(parent=self, text="Enemy Data")
+        self.enemy_data_label = QLabel(parent=self, text=tr("LevelSelector", "enemy_data", "Enemy Data"))
         self.enemy_data_spinner = Spinner(parent=self)
 
-        self.object_data_label = QLabel(parent=self, text="Object Data")
+        self.object_data_label = QLabel(parent=self, text=tr("LevelSelector", "object_data", "Object Data"))
         self.object_data_spinner = Spinner(self)
 
-        self.object_set_label = QLabel(parent=self, text="Object Set")
+        self.object_set_label = QLabel(parent=self, text=tr("LevelSelector", "object_set", "Object Set"))
         self.object_set_dropdown = QComboBox(self)
-        self.object_set_dropdown.addItems(OBJECT_SET_ITEMS)
+        self.object_set_dropdown.addItems(
+            [
+                tr("Common", object_set_key, object_set_item)
+                for object_set_item, object_set_key in zip(OBJECT_SET_ITEMS, OBJECT_SET_ITEM_KEYS)
+            ]
+        )
         self.object_set_dropdown.currentTextChanged.connect(self._on_object_set_change)
 
-        self.button_ok = QPushButton("Ok", self)
+        self.button_ok = QPushButton(tr("Common", "ok_title", "Ok"), self)
         self.button_ok.setEnabled(False)
         self.button_ok.clicked.connect(self._on_ok)
         self.button_ok.setFocus()
 
-        self.button_cancel = QPushButton("Cancel", self)
+        self.button_cancel = QPushButton(tr("Common", "cancel", "Cancel"), self)
         self.button_cancel.clicked.connect(self.close)
 
         # adding the tabs
@@ -330,7 +359,7 @@ class LevelSelector(QDialog):
 
         self._stock_level_widget.level_list.itemSelectionChanged.connect(self._on_stock_level_selected)
 
-        self.source_selector.addTab(self._stock_level_widget, "Stock Levels")
+        self.source_selector.addTab(self._stock_level_widget, tr("LevelSelector", "stock_levels", "Stock Levels"))
         self.source_selector.setTabIcon(tab_index, icon("list.svg"))
 
         tab_index += 1
@@ -340,7 +369,7 @@ class LevelSelector(QDialog):
             self._found_level_widget.level_table.itemSelectionChanged.connect(self._on_found_level_selected)
             self._found_level_widget.level_table.itemDoubleClicked.connect(self._on_ok)
 
-            self.source_selector.addTab(self._found_level_widget, "Found Levels")
+            self.source_selector.addTab(self._found_level_widget, tr("LevelSelector", "found_levels", "Found Levels"))
             self.source_selector.setTabIcon(tab_index, icon("list.svg"))
             tab_index += 1
 
@@ -350,7 +379,10 @@ class LevelSelector(QDialog):
             world_map_select.level_selected.connect(self._on_level_selected_via_world_map)
             world_map_select.level_selected.connect(self._on_ok)
 
-            self.source_selector.addTab(world_map_select, f"World {world_number}")
+            self.source_selector.addTab(
+                world_map_select,
+                tr("LevelSelector", "world_world_number", "World {world_number}").format(world_number=world_number),
+            )
             self.source_selector.setTabIcon(tab_index + world_number - 1, icon("globe.svg"))
 
         # show world 1 by default
@@ -389,7 +421,11 @@ class LevelSelector(QDialog):
         self.setLayout(main_layout)
 
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_PageUp), self, self._one_tab_left)
-        QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_PageDown), self, self._one_tab_right)
+        QShortcut(
+            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_PageDown),
+            self,
+            self._one_tab_right,
+        )
         QShortcut(QKeySequence(Qt.Key.Key_Return), self, self._on_ok)
         QShortcut(QKeySequence(Qt.Key.Key_Enter), self, self._on_ok)
 
@@ -420,6 +456,42 @@ class LevelSelector(QDialog):
         new_index = (current_index + 1) % tab_count
 
         self.source_selector.setCurrentIndex(new_index)
+
+    def retranslate_ui(self) -> None:
+        """Refresh visible dialog text while preserving staged selection data.
+
+        The selector rewrites labels, source-tab titles, object-set display
+        names, and child widgets in place. The staged object set, level/enemy
+        addresses, selected source tab, and clicked world-map pointer remain
+        the same stable data payloads, so live language switching cannot alter
+        the level that would be returned from the dialog.
+        """
+        self.setWindowTitle(tr("LevelSelector", "level_selector", "Level Selector"))
+        self.enemy_data_label.setText(tr("LevelSelector", "enemy_data", "Enemy Data"))
+        self.object_data_label.setText(tr("LevelSelector", "object_data", "Object Data"))
+        self.object_set_label.setText(tr("LevelSelector", "object_set", "Object Set"))
+        self.button_ok.setText(tr("Common", "ok_title", "Ok"))
+        self.button_cancel.setText(tr("Common", "cancel", "Cancel"))
+        _retranslate_object_set_dropdown(self.object_set_dropdown)
+
+        for index in range(self.source_selector.count()):
+            widget = self.source_selector.widget(index)
+            if widget is self._stock_level_widget:
+                self.source_selector.setTabText(index, tr("LevelSelector", "stock_levels", "Stock Levels"))
+            elif hasattr(self, "_found_level_widget") and widget is self._found_level_widget:
+                self.source_selector.setTabText(index, tr("LevelSelector", "found_levels", "Found Levels"))
+            elif isinstance(widget, WorldMapLevelSelect):
+                world_number = index
+                if hasattr(self, "_found_level_widget"):
+                    world_number -= 1
+                self.source_selector.setTabText(
+                    index,
+                    tr("LevelSelector", "world_world_number", "World {world_number}").format(world_number=world_number),
+                )
+
+            retranslate = getattr(widget, "retranslate_ui", None)
+            if callable(retranslate):
+                retranslate()
 
     def _on_object_set_change(self, _):
         """Enable accepting only for editable object sets.
@@ -544,7 +616,11 @@ class LevelSelector(QDialog):
         layout_address = self.object_data_spinner.value()
         enemy_address = self.enemy_data_spinner.value()
 
-        if object_set in [WORLD_MAP_OBJECT_SET, MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET]:
+        if object_set in [
+            WORLD_MAP_OBJECT_SET,
+            MUSHROOM_OBJECT_SET,
+            SPADE_BONUS_OBJECT_SET,
+        ]:
             return
 
         if _should_use_vertical_preview(layout_address):
@@ -620,11 +696,18 @@ class LevelSelector(QDialog):
         if self.object_set_dropdown.currentIndex() == WORLD_MAP_OBJECT_SET:
             return
 
-        if self.object_set_dropdown.currentIndex() in (MUSHROOM_OBJECT_SET, SPADE_BONUS_OBJECT_SET):
+        if self.object_set_dropdown.currentIndex() in (
+            MUSHROOM_OBJECT_SET,
+            SPADE_BONUS_OBJECT_SET,
+        ):
             QMessageBox.warning(
                 self,
-                "No can do",
-                "Spade and mushroom house levels are currently not supported, and can't be edited.",
+                tr("LevelSelector", "no_can_do", "No can do"),
+                tr(
+                    "LevelSelector",
+                    "error.unsupported_bonus_level",
+                    "Spade and mushroom house levels are currently not supported, and can't be edited.",
+                ),
             )
             return
 

@@ -21,6 +21,7 @@ from PySide6.QtWidgets import QMenu, QMessageBox
 
 from foundry import root_dir
 from foundry.gui.commands import UndoCommand
+from foundry.gui.localization import tr
 
 DEBUG_M3L_PATH = "debug.m3l"
 
@@ -70,24 +71,38 @@ class DebugMenu(QMenu):
             Main editor window that owns the undo stack, level reference, and
             level view used by the debug workflows.
         """
-        super(DebugMenu, self).__init__("Debug")
+        super(DebugMenu, self).__init__(tr("Common", "debug", "Debug"))
 
         self._main_window = main_window
 
-        self.setTitle("Debug")
-        self.export_stack_action = self.addAction("Export UndoStack")
+        self.setTitle(tr("Common", "debug", "Debug"))
+        self.export_stack_action = self.addAction(tr("Common", "export_undostack", "Export UndoStack"))
         self.export_stack_action.triggered.connect(self._on_export_stack)
 
-        self.replay_stack_action = self.addAction("Replay UndoStack")
+        self.replay_stack_action = self.addAction(tr("Common", "replay_undostack", "Replay UndoStack"))
         self.replay_stack_action.triggered.connect(self._on_replay_stack)
 
         self.addSeparator()
 
-        self.save_as_m3l_action = self.addAction("Save as M3L")
+        self.save_as_m3l_action = self.addAction(tr("Common", "save_as_m3l", "Save as M3L"))
         self.save_as_m3l_action.triggered.connect(self._on_save_as_m3l)
 
-        self.compare_with_m3l_action = self.addAction("Compare with M3L")
+        self.compare_with_m3l_action = self.addAction(tr("Common", "compare_with_m3l", "Compare with M3L"))
         self.compare_with_m3l_action.triggered.connect(self._on_compare_with_m3l)
+
+    def retranslate_ui(self) -> None:
+        """Refresh debug-menu action labels without rewiring commands.
+
+        The menu title and action text are rebuilt from the active catalog.
+        Existing ``QAction`` objects, shortcuts, icons, and connected debug
+        command handlers stay in place so translated labels never become command
+        identity.
+        """
+        self.setTitle(tr("Common", "debug", "Debug"))
+        self.export_stack_action.setText(tr("Common", "export_undostack", "Export UndoStack"))
+        self.replay_stack_action.setText(tr("Common", "replay_undostack", "Replay UndoStack"))
+        self.save_as_m3l_action.setText(tr("Common", "save_as_m3l", "Save as M3L"))
+        self.compare_with_m3l_action.setText(tr("Common", "compare_with_m3l", "Compare with M3L"))
 
     def _on_export_stack(self):
         """Serialize the live undo stack to the debug export file.
@@ -317,9 +332,14 @@ class DebugMenu(QMenu):
 
             QMessageBox.critical(
                 self._main_window,
-                "M3L mismatch",
-                f"First difference at offset {first_difference[0]}: "
-                f"{first_difference[1]:#x)} != {first_difference[2]:#x}",
+                tr("Common", "m3l_mismatch", "M3L mismatch"),
+                tr(
+                    "Common", "diff.first_mismatch", "First difference at offset {offset}: {actual:#x} != {expected:#x}"
+                ).format(
+                    offset=first_difference[0],
+                    actual=first_difference[1],
+                    expected=first_difference[2],
+                ),
             )
 
 

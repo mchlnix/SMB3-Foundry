@@ -28,7 +28,8 @@ from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.ObjectDefinitions import GeneratorType
-from foundry.gui.dialogs.LevelHeaderEditor import CAMERA_MOVEMENTS
+from foundry.gui.dialogs.LevelHeaderEditor import CAMERA_MOVEMENT_LABELS, CameraMovement
+from foundry.gui.localization import tr
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.util import clear_layout
 from foundry.gui.visualization.level.LevelView import LevelView
@@ -203,9 +204,14 @@ class WarningList(QWidget):
                     )
 
                 if level.header.scroll_type_index != 0:
+                    expected_scroll_type = tr(
+                        "foundry.level_header_editor",
+                        "cameramovement.locked_unless_climbing_flying",
+                        CAMERA_MOVEMENT_LABELS[CameraMovement.LOCKED_UNLESS_CLIMBING_FLYING],
+                    )
                     self.warn(
                         f"Level has auto scrolling enabled, but the scrolling type in the level header is not "
-                        f"'{CAMERA_MOVEMENTS[0]}. This might not work as expected.",
+                        f"'{expected_scroll_type}'. This might not work as expected.",
                         [],
                     )
 

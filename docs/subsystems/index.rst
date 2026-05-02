@@ -13,6 +13,7 @@ point quickly.
    graphics_rendering
    enemy_sprite_catalog
    gui_editor_workflow
+   localization_architecture
    rom_data_persistence
    foundry_gui_architecture
    foundry_game_architecture

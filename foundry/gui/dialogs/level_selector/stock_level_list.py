@@ -17,7 +17,8 @@ from PySide6.QtWidgets import QGridLayout, QLabel, QListWidget, QWidget
 
 from foundry.game.File import ROM
 from foundry.game.level.Level import Level
-from foundry.gui import WORLD_ITEMS
+from foundry.gui import WORLD_ITEM_KEYS, WORLD_ITEMS
+from foundry.gui.localization import tr, tr_data_name
 from smb3parse.levels import HEADER_LENGTH
 
 LOST_LEVELS_INDEX = 8
@@ -33,8 +34,14 @@ class StockLevelWidget(QWidget):
 
     Attributes
     ----------
+    description_label : QLabel
+        Wrapped warning label explaining that stock addresses can be stale.
+    level_header_label : QLabel
+        Header label for the stock level list column.
     level_list : QListWidget
         Levels available for the selected world row.
+    world_header_label : QLabel
+        Header label for the world/category list column.
     world_list : QListWidget
         World, lost-level, and overworld-map categories.
     """
@@ -48,7 +55,9 @@ class StockLevelWidget(QWidget):
         super().__init__()
 
         self.world_list = QListWidget(parent=self)
-        self.world_list.addItems(WORLD_ITEMS)
+        self.world_list.addItems(
+            [tr("LevelSelector", world_key, world_item) for world_item, world_key in zip(WORLD_ITEMS, WORLD_ITEM_KEYS)]
+        )
 
         self.world_list.itemSelectionChanged.connect(self._on_world_click)
 
@@ -56,24 +65,29 @@ class StockLevelWidget(QWidget):
 
         stock_level_layout = QGridLayout(self)
 
-        description_label = QLabel()
-        description_label.setWordWrap(True)
-        description_label.setText(
-            "These are the Level and Enemy addresses of the US version of SMB3. If Levels are moved (e.g. by the "
-            "automatic Level management) or overwritten by other Levels, then loading these might result in an error "
-            "or broken Level."
+        self.description_label = QLabel()
+        self.description_label.setWordWrap(True)
+        self.description_label.setText(
+            tr(
+                "LevelSelector",
+                "help.stock_level_addresses",
+                "These are the Level and Enemy addresses of the US version of SMB3. If Levels are moved (e.g. by the automatic Level management) or overwritten by other Levels, then loading these might result in an error or broken Level.",
+            )
         )
 
         if ROM.additional_data.found_levels:
-            description_label.setStyleSheet("QLabel { color : red; }")
+            self.description_label.setStyleSheet("QLabel { color : red; }")
 
-        stock_level_layout.addWidget(QLabel("World"), 0, 0)
-        stock_level_layout.addWidget(QLabel("Level"), 0, 1)
+        self.world_header_label = QLabel(tr("LevelSelector", "world", "World"))
+        self.level_header_label = QLabel(tr("LevelSelector", "level", "Level"))
+
+        stock_level_layout.addWidget(self.world_header_label, 0, 0)
+        stock_level_layout.addWidget(self.level_header_label, 0, 1)
 
         stock_level_layout.addWidget(self.world_list, 1, 0)
         stock_level_layout.addWidget(self.level_list, 1, 1)
 
-        stock_level_layout.addWidget(description_label, 2, 0, 1, 2)
+        stock_level_layout.addWidget(self.description_label, 2, 0, 1, 2)
 
         # doing it here, when the level selector is not connected to our signals yet, will not populate the spinner
         # widgets
@@ -86,6 +100,32 @@ class StockLevelWidget(QWidget):
 
         The special overworld-map row maps to world number 0 because those
         entries use world-map layout data instead of normal level data.
+        """
+        self._populate_level_list()
+
+    def _populate_level_list(self, selected_row: int = 0) -> None:
+        """Populate translated level names for the selected world row.
+
+        The selected world/category row is converted into the stock metadata
+        world number used by ``Level.offsets``. Only the visible list entries
+        are rebuilt here; the stable selection identity remains the stock level
+        definition later resolved by ``_level_index`` when callers ask for ROM
+        addresses, object sets, or the combined display name. This is the
+        refresh point used both after user world selection and during live
+        language switching, so translated list text stays separate from the
+        stock address-table payload.
+
+        Parameters
+        ----------
+        selected_row : int, optional
+            Level-list row to restore after rebuilding translated entries.
+
+        Notes
+        -----
+        The list is rebuilt from stock ``Level.offsets`` metadata every time
+        the selected world changes or the UI is retranslated. Visible names are
+        localized at display time, while address and object-set lookups remain
+        tied to the stable stock level definition resolved by ``_level_index``.
         """
         index = self.world_list.currentRow()
 
@@ -102,10 +142,46 @@ class StockLevelWidget(QWidget):
         # skip the first meaningless item
         for level in Level.offsets[1:]:
             if level.game_world == world_number and level.name:
-                self.level_list.addItem(level.name)
+                self.level_list.addItem(tr_data_name("StockLevel", level.name))
 
         if self.level_list.count():
-            self.level_list.setCurrentRow(0)
+            self.level_list.setCurrentRow(min(max(selected_row, 0), self.level_list.count() - 1))
+
+    def retranslate_ui(self) -> None:
+        """Refresh visible labels and rows without changing the selected level.
+
+        The method blocks list signals while it replaces world/category labels
+        and repopulates level names, then restores the previous world and level
+        rows. That keeps live language switching from emitting selection
+        changes that would restage addresses in the parent selector.
+        """
+        world_row = self.world_list.currentRow()
+        level_row = self.level_list.currentRow()
+
+        world_signals_blocked = self.world_list.blockSignals(True)
+        level_signals_blocked = self.level_list.blockSignals(True)
+
+        for index, (world_item, world_key) in enumerate(zip(WORLD_ITEMS, WORLD_ITEM_KEYS)):
+            item = self.world_list.item(index)
+            if item is not None:
+                item.setText(tr("LevelSelector", world_key, world_item))
+
+        self.world_header_label.setText(tr("LevelSelector", "world", "World"))
+        self.level_header_label.setText(tr("LevelSelector", "level", "Level"))
+        self.description_label.setText(
+            tr(
+                "LevelSelector",
+                "help.stock_level_addresses",
+                "These are the Level and Enemy addresses of the US version of SMB3. If Levels are moved (e.g. by the automatic Level management) or overwritten by other Levels, then loading these might result in an error or broken Level.",
+            )
+        )
+
+        if world_row >= 0:
+            self.world_list.setCurrentRow(world_row)
+        self._populate_level_list(level_row)
+
+        self.level_list.blockSignals(level_signals_blocked)
+        self.world_list.blockSignals(world_signals_blocked)
 
     @property
     def _level_index(self):
@@ -253,11 +329,13 @@ class StockLevelWidget(QWidget):
         if self.level_is_overworld:
             level_name = ""
         elif self.level_is_lost:
-            level_name = "Lost World, "
+            level_name = tr("LevelSelector", "lost_world", "Lost World, ")
         else:
-            level_name = f"World {self.world_number}, "
+            level_name = tr("LevelSelector", "world_world_number_comma", "World {world_number}, ").format(
+                world_number=self.world_number
+            )
 
-        level_name += str(self._level_def.name)
+        level_name += tr_data_name("StockLevel", str(self._level_def.name))
 
         return level_name
 

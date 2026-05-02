@@ -40,7 +40,28 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr
 from smb3parse.levels import HEADER_LENGTH
+
+
+def _rom_reload_text(key: str, fallback: str) -> str:
+    """Resolve ROM-reload prompt text from stable catalog keys.
+
+    Parameters
+    ----------
+    key : str
+        ``foundry.rom_reload`` catalog key.
+    fallback : str
+        English prompt text used when the selected locale has no value.
+
+    Returns
+    -------
+    str
+        Localized Qt message text. Watched paths, ROM bytes, hashes, and reload
+        state remain stable runtime data and never use translated strings.
+    """
+    return tr("foundry.rom_reload", key, fallback)
+
 
 if TYPE_CHECKING:
     from foundry.gui.menus.file_menu import FileMenu
@@ -552,9 +573,12 @@ class RomHotSwapMixin:
         if -1 in (new_lvl_address, new_enemy_address):
             QMessageBox.critical(
                 self,
-                "Problem after reloading the ROM",
-                "Could not find the original level data in the updated ROM.\n\n"
-                "Detaching the level for now, you can attach it again manually.",
+                _rom_reload_text("dialog.problem_after_reloading_rom", "Problem after reloading the ROM"),
+                _rom_reload_text(
+                    "dialog.original_level_data_missing",
+                    "Could not find the original level data in the updated ROM.\n\n"
+                    "Detaching the level for now, you can attach it again manually.",
+                ),
             )
 
             self.level_ref.level.detach_from_rom()

@@ -28,6 +28,7 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GRAPHIC_SET_NAMES
 from foundry.game.gfx.Palette import PALETTE_GROUPS_PER_OBJECT_SET
 from foundry.gui import OBJECT_SET_ITEMS
+from foundry.gui.localization import tr, tr_data_name
 from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.CustomChildWindow import CustomChildWindow
 from smb3parse.constants import TILE_NAMES, UNDERGROUND_OBJECT_SET, WORLD_MAP_OBJECT_SET
@@ -67,6 +68,8 @@ class BlockViewer(CustomChildWindow):
         Object set selector.
     object_set_toolbar : QToolBar
         Toolbar containing navigation and render controls.
+    palette_label : QLabel
+        Localized label for the palette-group spinner.
     palette_group_spinner : Spinner
         Palette group selector.
     prev_os_action : QAction
@@ -108,7 +111,7 @@ class BlockViewer(CustomChildWindow):
         parent : object
             Parent Qt widget that owns this object.
         """
-        super(BlockViewer, self).__init__(parent, "Block Viewer")
+        super(BlockViewer, self).__init__(parent, tr("BlockViewer", "block_viewer", "Block Viewer"))
 
         self._object_set = 0
         self._graphics_set_number = 0
@@ -118,26 +121,39 @@ class BlockViewer(CustomChildWindow):
 
         self.object_set_toolbar = QToolBar(self)
 
-        self.prev_os_action = self.object_set_toolbar.addAction(icon("arrow-left.svg"), "Previous object set")
+        self.prev_os_action = self.object_set_toolbar.addAction(
+            icon("arrow-left.svg"), tr("BlockViewer", "previous_object_set", "Previous object set")
+        )
         self.prev_os_action.triggered.connect(self.prev_object_set)
 
-        self.next_os_action = self.object_set_toolbar.addAction(icon("arrow-right.svg"), "Next object set")
+        self.next_os_action = self.object_set_toolbar.addAction(
+            icon("arrow-right.svg"), tr("BlockViewer", "next_object_set", "Next object set")
+        )
         self.next_os_action.triggered.connect(self.next_object_set)
 
-        self.zoom_out_action = self.object_set_toolbar.addAction(icon("zoom-out.svg"), "Zoom Out")
+        self.zoom_out_action = self.object_set_toolbar.addAction(
+            icon("zoom-out.svg"), tr("Common", "zoom_out", "Zoom Out")
+        )
         self.zoom_out_action.triggered.connect(self.block_bank.zoom_out)
 
-        self.zoom_in_action = self.object_set_toolbar.addAction(icon("zoom-in.svg"), "Zoom In")
+        self.zoom_in_action = self.object_set_toolbar.addAction(icon("zoom-in.svg"), tr("Common", "zoom_in", "Zoom In"))
         self.zoom_in_action.triggered.connect(self.block_bank.zoom_in)
 
         self.object_set_dropdown = QComboBox(parent=self.object_set_toolbar)
-        self.object_set_dropdown.addItems(OBJECT_SET_ITEMS[WORLD_MAP_OBJECT_SET : UNDERGROUND_OBJECT_SET + 1])
+        self.object_set_dropdown.addItems(
+            [
+                tr_data_name("ObjectSet", object_set)
+                for object_set in OBJECT_SET_ITEMS[WORLD_MAP_OBJECT_SET : UNDERGROUND_OBJECT_SET + 1]
+            ]
+        )
         self.object_set_dropdown.setCurrentIndex(0)
 
         self.object_set_dropdown.currentIndexChanged.connect(self.set_object_set)
 
         self.graphics_set_dropdown = QComboBox(parent=self.object_set_toolbar)
-        self.graphics_set_dropdown.addItems(GRAPHIC_SET_NAMES)
+        self.graphics_set_dropdown.addItems(
+            [tr_data_name("GraphicsSet", graphics_set) for graphics_set in GRAPHIC_SET_NAMES]
+        )
         self.graphics_set_dropdown.setCurrentIndex(0)
 
         self.graphics_set_dropdown.currentIndexChanged.connect(self.set_graphics_set)
@@ -148,7 +164,8 @@ class BlockViewer(CustomChildWindow):
         self.object_set_toolbar.addWidget(self.object_set_dropdown)
         self.object_set_toolbar.addWidget(self.graphics_set_dropdown)
 
-        self.object_set_toolbar.addWidget(QLabel(" Palette: "))
+        self.palette_label = QLabel(tr("BlockViewer", "palette", " Palette: "))
+        self.object_set_toolbar.addWidget(self.palette_label)
         self.object_set_toolbar.addWidget(self.palette_group_spinner)
 
         self.addToolBar(self.object_set_toolbar)
@@ -157,6 +174,36 @@ class BlockViewer(CustomChildWindow):
 
         self.setStatusBar(QStatusBar(self))
         self.block_bank.status_message_changed.connect(self.statusBar().showMessage)
+
+    def retranslate_ui(self) -> None:
+        """Refresh visible block-viewer labels without changing render context.
+
+        Object-set and graphics-set combo text is display-only chrome over the
+        staged SMB3 decode context. This method blocks dropdown signals while
+        replacing localized labels so live language switching cannot change the
+        selected object set, graphics set, palette group, block-bank contents,
+        or hover/click block ids.
+        """
+        self.setWindowTitle(tr("BlockViewer", "block_viewer", "Block Viewer"))
+        self.prev_os_action.setText(tr("BlockViewer", "previous_object_set", "Previous object set"))
+        self.next_os_action.setText(tr("BlockViewer", "next_object_set", "Next object set"))
+        self.zoom_out_action.setText(tr("Common", "zoom_out", "Zoom Out"))
+        self.zoom_in_action.setText(tr("Common", "zoom_in", "Zoom In"))
+        self.palette_label.setText(tr("BlockViewer", "palette", " Palette: "))
+
+        current_object_set = self.object_set_dropdown.currentIndex()
+        self.object_set_dropdown.blockSignals(True)
+        for index, object_set in enumerate(OBJECT_SET_ITEMS[WORLD_MAP_OBJECT_SET : UNDERGROUND_OBJECT_SET + 1]):
+            self.object_set_dropdown.setItemText(index, tr_data_name("ObjectSet", object_set))
+        self.object_set_dropdown.setCurrentIndex(current_object_set)
+        self.object_set_dropdown.blockSignals(False)
+
+        current_graphics_set = self.graphics_set_dropdown.currentIndex()
+        self.graphics_set_dropdown.blockSignals(True)
+        for index, graphics_set in enumerate(GRAPHIC_SET_NAMES):
+            self.graphics_set_dropdown.setItemText(index, tr_data_name("GraphicsSet", graphics_set))
+        self.graphics_set_dropdown.setCurrentIndex(current_graphics_set)
+        self.graphics_set_dropdown.blockSignals(False)
 
     @property
     def object_set(self):
@@ -460,11 +507,21 @@ class BlockBank(QWidget):
         hex_index = hex(dec_index).upper().replace("X", "x")
 
         if self.object_set == WORLD_MAP_OBJECT_SET:
-            tile_name = " – " + TILE_NAMES[dec_index]
+            tile_name = tr("BlockBank", "tile_name", " - {tile_name}").format(
+                tile_name=tr_data_name("Tile", TILE_NAMES[dec_index])
+            )
         else:
             tile_name = ""
 
-        status_message = f"{dec_index} / {hex_index} @ ({column}, {row}){tile_name}"
+        status_message = tr(
+            "BlockBank", "status.tile_hover", "{decimal_index} / {hex_index} @ ({column}, {row}){tile_name}"
+        ).format(
+            decimal_index=dec_index,
+            hex_index=hex_index,
+            column=column,
+            row=row,
+            tile_name=tile_name,
+        )
 
         self.status_message_changed.emit(status_message)
 

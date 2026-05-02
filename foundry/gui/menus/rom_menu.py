@@ -31,6 +31,7 @@ from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.dialogs.GamePropertiesDialog import GamePropertiesDialog
 from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.dialogs.PaletteViewer import PaletteViewer
+from foundry.gui.localization import tr
 from foundry.gui.rom_settings.rom_settings_dialog import RomSettingsDialog
 from foundry.gui.windows.BlockViewer import BlockViewer
 from foundry.gui.windows.LevelViewer import LevelViewer
@@ -102,7 +103,7 @@ class RomMenu(QMenu):
         title : str, optional
             Menu title shown in the main window.
         """
-        super(RomMenu, self).__init__(title)
+        super(RomMenu, self).__init__(tr("Common", "rom", title))
 
         self._level_ref = level_ref
         self._level_viewer: LevelViewer | None = None
@@ -111,34 +112,55 @@ class RomMenu(QMenu):
 
         self.triggered.connect(self._on_trigger)
 
-        self._view_blocks_action = self.addAction("View Blocks")
+        self._view_blocks_action = self.addAction(tr("Common", "view_blocks", "View Blocks"))
         self._view_blocks_action.setIcon(icon("grid.svg"))
 
-        self._view_objects_action = self.addAction("View Objects")
+        self._view_objects_action = self.addAction(tr("Common", "view_objects", "View Objects"))
         self._view_objects_action.setIcon(icon("star.svg"))
 
         self.addSeparator()
 
-        self._view_palettes_action = self.addAction("View Object Palettes")
+        self._view_palettes_action = self.addAction(tr("Common", "view_object_palettes", "View Object Palettes"))
         self._view_palettes_action.setIcon(icon("figma.svg"))
 
         self.addSeparator()
 
-        self._view_levels_in_memory_action = self.addAction("View Levels in Memory")
+        self._view_levels_in_memory_action = self.addAction(
+            tr("Common", "view_levels_in_memory", "View Levels in Memory")
+        )
         self._view_levels_in_memory_action.setIcon(icon("server.svg"))
 
         self.addSeparator()
 
-        self.game_properties_action = self.addAction("Game Properties")
+        self.game_properties_action = self.addAction(tr("Common", "game_properties", "Game Properties"))
         self.game_properties_action.setIcon(icon("bar-chart-2.svg"))
 
         self.addSeparator()
 
-        self.rom_settings_action = self.addAction("ROM Settings")
+        self.rom_settings_action = self.addAction(tr("Common", "rom_settings", "ROM Settings"))
         self.rom_settings_action.setIcon(icon("settings.svg"))
 
-        self._clear_editor_data_action = self.addAction("Clear Editor Data in ROM")
+        self._clear_editor_data_action = self.addAction(
+            tr("Common", "clear_editor_data_in_rom", "Clear Editor Data in ROM")
+        )
         self._clear_editor_data_action.setIcon(icon("loader.svg"))
+
+    def retranslate_ui(self) -> None:
+        """Refresh ROM-menu labels after a language change.
+
+        The menu updates action text in place while preserving open ROM viewer
+        windows, managed-level metadata, game-property offsets, and editor data
+        commands as stable payloads. Live language switching therefore changes
+        only Qt display text and not ROM-wide state.
+        """
+        self.setTitle(tr("Common", "rom", "&Rom"))
+        self._view_blocks_action.setText(tr("Common", "view_blocks", "View Blocks"))
+        self._view_objects_action.setText(tr("Common", "view_objects", "View Objects"))
+        self._view_palettes_action.setText(tr("Common", "view_object_palettes", "View Object Palettes"))
+        self._view_levels_in_memory_action.setText(tr("Common", "view_levels_in_memory", "View Levels in Memory"))
+        self.game_properties_action.setText(tr("Common", "game_properties", "Game Properties"))
+        self.rom_settings_action.setText(tr("Common", "rom_settings", "ROM Settings"))
+        self._clear_editor_data_action.setText(tr("Common", "clear_editor_data_in_rom", "Clear Editor Data in ROM"))
 
     def _on_trigger(self, action: QAction):
         """Dispatch ROM-menu actions to the matching tool or dialog.
@@ -175,7 +197,11 @@ class RomMenu(QMenu):
                 try:
                     prop_dialog = GamePropertiesDialog(self.parent(), ROM())
                 except ValueError as ve:
-                    QMessageBox.critical(self.parent(), "Error opening Game Properties", str(ve))
+                    QMessageBox.critical(
+                        self.parent(),
+                        tr("Common", "error_opening_game_properties", "Error opening Game Properties"),
+                        str(ve),
+                    )
                     return
 
                 result = prop_dialog.exec()

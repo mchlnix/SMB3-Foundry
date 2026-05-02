@@ -30,6 +30,7 @@ from foundry.game.level.Level import Level
 from foundry.gui import label_and_widget
 from foundry.gui.commands import AddEnemyAt, MoveObject, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
+from foundry.gui.localization import tr, tr_data_name
 from smb3parse.constants import (
     MAPITEM_MUSHROOM,
     MAPITEM_MUSICBOX,
@@ -171,17 +172,24 @@ class ChestExitMixin(SettingsMixin):
 
         self.before = _ChestState(self.level_ref.level)
 
-        chest_group = QGroupBox("Treasure Chest", self)
+        chest_group = QGroupBox(tr("ChestExitMixin", "treasure_chest", "Treasure Chest"), self)
         QVBoxLayout(chest_group)
 
-        self.chest_end_checkbox = QCheckBox("Getting Chest ends Level", self)
+        self.chest_end_checkbox = QCheckBox(
+            tr("ChestExitMixin", "getting_chest_ends_level", "Getting Chest ends Level"), self
+        )
         self.chest_end_checkbox.setChecked(self.before.chest_exit is not None)
 
         self.chest_item_dropdown = QComboBox()
-        self.chest_item_dropdown.addItem("No Item (Hammer Bros Levels)")
+        self.chest_item_dropdown.addItem(
+            tr("ChestExitMixin", "no_item_hammer_bros_levels", "No Item (Hammer Bros Levels)")
+        )
 
         for item_id in range(MAPITEM_MUSHROOM, MAPITEM_MUSICBOX + 1):
-            self.chest_item_dropdown.addItem(QPixmap(MAP_ITEM_SPRITES[item_id]), MAPITEM_NAMES[item_id])
+            self.chest_item_dropdown.addItem(
+                QPixmap(MAP_ITEM_SPRITES[item_id]),
+                tr_data_name("MapItem", MAPITEM_NAMES[item_id]),
+            )
 
         if self.before.chest_item is not None:
             self.chest_item_dropdown.setCurrentIndex(self.before.item_index)
@@ -189,7 +197,9 @@ class ChestExitMixin(SettingsMixin):
             self.chest_item_dropdown.setCurrentIndex(0)
 
         chest_group.layout().addWidget(self.chest_end_checkbox)
-        chest_group.layout().addLayout(label_and_widget("Item in Chest: ", self.chest_item_dropdown))
+        chest_group.layout().addLayout(
+            label_and_widget(tr("ChestExitMixin", "item_in_chest", "Item in Chest: "), self.chest_item_dropdown)
+        )
 
         self.layout().addWidget(chest_group)
 
@@ -233,7 +243,7 @@ class ChestExitMixin(SettingsMixin):
         y-position to the new item index, or adds a new setter object.
         """
         item_index = self.chest_item_dropdown.currentIndex()
-        chest_item_name = MAPITEM_NAMES[item_index]
+        chest_item_name = tr_data_name("MapItem", MAPITEM_NAMES[item_index])
 
         # not item set
         if item_index == 0:
@@ -242,7 +252,11 @@ class ChestExitMixin(SettingsMixin):
 
         # item was changed/set
         elif self.before.item_index != item_index:
-            self.undo_stack.beginMacro(f"Set Chest Item to '{chest_item_name}'")
+            self.undo_stack.beginMacro(
+                tr("ChestExitMixin", "set_chest_item_to_item_name", "Set Chest Item to '{item_name}'").format(
+                    item_name=chest_item_name
+                )
+            )
 
             if self.before.chest_item is not None:
                 before_move = self.before.chest_item.copy()
@@ -271,7 +285,7 @@ class ChestExitMixin(SettingsMixin):
             # when putting it at x=0, it doesn't work for some reason
             make_macro(
                 self.undo_stack,
-                "Enable Chest Exit",
+                tr("ChestExitMixin", "enable_chest_exit", "Enable Chest Exit"),
                 AddEnemyAt(
                     self._parent.level_view,
                     self._parent.level_view.from_level_point(1, 0),
@@ -283,4 +297,8 @@ class ChestExitMixin(SettingsMixin):
         elif self.before.chest_exit is not None and not self.chest_end_checkbox.isChecked():
             assert self.before.chest_exit is not None
 
-            make_macro(self.undo_stack, "Disable Chest Exit", RemoveObject(self.level_ref, self.before.chest_exit))
+            make_macro(
+                self.undo_stack,
+                tr("ChestExitMixin", "disable_chest_exit", "Disable Chest Exit"),
+                RemoveObject(self.level_ref, self.before.chest_exit),
+            )

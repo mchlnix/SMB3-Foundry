@@ -25,6 +25,7 @@ from PySide6.QtWidgets import QStyledItemDelegate, QTableWidgetItem, QWidget
 
 from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr
 from foundry.gui.widgets.Spinner import Spinner
 from foundry.gui.windows.BlockViewer import BlockBank
 from scribe.gui.commands import ChangeLockIndex, ChangeReplacementTile
@@ -34,6 +35,8 @@ from scribe.gui.tool_window.table_widget import (
     TableWidget,
 )
 from smb3parse.constants import FORTRESS_FX_COUNT
+
+TR_CONTEXT = "ScribeLocksList"
 
 
 class LocksList(TableWidget):
@@ -95,22 +98,70 @@ class LocksList(TableWidget):
 
         self.cellChanged.connect(self._save_fortress_fx)
 
-        self.set_headers(["Replacement Tile", "Lock Index", "Boom Boom Y Positions", "Map Position"])
+        self.set_headers(
+            [
+                tr(TR_CONTEXT, "replacement_tile", "Replacement Tile"),
+                tr(TR_CONTEXT, "lock_index", "Lock Index"),
+                tr(TR_CONTEXT, "boom_boom_y_positions", "Boom Boom Y Positions"),
+                tr(TR_CONTEXT, "map_position", "Map Position"),
+            ]
+        )
 
         self.setItemDelegateForColumn(0, BlockBankDelegate(self))
         self.setItemDelegateForColumn(1, SpinBoxDelegate(self, maximum=FORTRESS_FX_COUNT - 1))
         self.setItemDelegateForColumn(2, NoneDelegate(self))
         self.setItemDelegateForColumn(
             3,
-            DialogDelegate(
-                self,
-                "No can do",
-                "You can move Fortress FX by dragging them around in the WorldView. "
-                "Make sure they are shown in the View Menu.",
-            ),
+            self._make_position_dialog_delegate(),
         )
 
         self.update_content()
+
+    def retranslate_ui(self) -> None:
+        """Refresh headers and position rows after a language change.
+
+        The refresh updates localized table headers and the informational
+        position delegate, then rebuilds rows from the world model while
+        restoring selection. Replacement-tile ids, lock indexes, and Boom Boom
+        slot ranges remain encoded data, not translated display state.
+        """
+        selected_row = self.selected_row
+        self.set_headers(
+            [
+                tr(TR_CONTEXT, "replacement_tile", "Replacement Tile"),
+                tr(TR_CONTEXT, "lock_index", "Lock Index"),
+                tr(TR_CONTEXT, "boom_boom_y_positions", "Boom Boom Y Positions"),
+                tr(TR_CONTEXT, "map_position", "Map Position"),
+            ]
+        )
+        self.setItemDelegateForColumn(3, self._make_position_dialog_delegate())
+        self.update_content()
+        if 0 <= selected_row < self.rowCount():
+            self.selectRow(selected_row)
+
+    def _make_position_dialog_delegate(self) -> DialogDelegate:
+        """Create the read-only map-position guidance delegate.
+
+        The delegate protects the state boundary between tabular fortress FX
+        metadata and map placement. Spatial movement stays in the world view
+        workflow, while this table commits only replacement-tile and lock-index
+        edits through undoable commands.
+
+        Returns
+        -------
+        DialogDelegate
+            Informational delegate explaining that fortress FX placement is
+            owned by drag operations in the world view.
+        """
+        return DialogDelegate(
+            self,
+            tr(TR_CONTEXT, "no_can_do", "No can do"),
+            tr(
+                TR_CONTEXT,
+                "help.fortress_fx_dragging",
+                "You can move Fortress FX by dragging them around in the WorldView. Make sure they are shown in the View Menu.",
+            ),
+        )
 
     def _save_fortress_fx(self, row: int, column: int):
         """Convert an edited cell into an undoable world-lock command.
@@ -187,7 +238,13 @@ class LocksList(TableWidget):
             fortress_index = QTableWidgetItem(hex(fortress_fx.data.index))
 
             boom_boom_pos = QTableWidgetItem(f"{0x10 + 0x10 * index:#x} - {0x20 + 0x10 * index - 1:#x}")
-            pos = QTableWidgetItem(f"Screen {fortress_fx.data.screen}: x={fortress_fx.data.x}, y={fortress_fx.data.y}")
+            pos = QTableWidgetItem(
+                tr(TR_CONTEXT, "screen_screen_x_x_y_y", "Screen {screen}: x={x}, y={y}").format(
+                    screen=fortress_fx.data.screen,
+                    x=fortress_fx.data.x,
+                    y=fortress_fx.data.y,
+                )
+            )
 
             self._set_map_tile_as_icon(pos, fortress_fx.get_position())
 

@@ -122,6 +122,7 @@ SETTINGS["editor/object_scroll_enabled"] = False
 SETTINGS["editor/resize_mode"] = RESIZE_LEFT_CLICK
 SETTINGS["editor/gui_style"] = ""  # initially blank, since we can't call load_stylesheet until the app is started
 SETTINGS["editor/level_preview_type"] = LevelPreviewType.WIDGET
+SETTINGS["editor/language"] = "en"
 
 SETTINGS["editor/default_dir"] = "User"
 SETTINGS["editor/default_dir_path"] = ""

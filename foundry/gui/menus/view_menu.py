@@ -21,6 +21,7 @@ from PySide6.QtWidgets import QFileDialog, QMenu
 
 from foundry import IMG_FILE_FILTER, icon
 from foundry.game.File import ROM
+from foundry.gui.localization import tr
 
 
 class ViewMenu(QMenu):
@@ -92,38 +93,78 @@ class ViewMenu(QMenu):
         title : str, optional
             Menu title shown in the main window.
         """
-        super(ViewMenu, self).__init__(title)
+        super(ViewMenu, self).__init__(tr("Common", "view", title))
 
         self.triggered.connect(self._on_trigger)
 
         self._level_view = level_view
 
-        self._grid_action = self._make_action("&Grid lines", "level_view/draw_grid")
-        self._coord_action = self._make_action("&Coordinates", "level_view/draw_grid_coordinates")
+        self._grid_action = self._make_action(tr("Common", "grid_lines", "&Grid lines"), "level_view/draw_grid")
+        self._coord_action = self._make_action(
+            tr("Common", "coordinates", "&Coordinates"), "level_view/draw_grid_coordinates"
+        )
 
         self.addSeparator()
 
-        self._mario_action = self._make_action("&Mario", "level_view/draw_mario")
-        self._jumps_action = self._make_action("&Jumps on objects", "level_view/draw_jump_on_objects")
-        self._items_action = self._make_action("&Items in blocks", "level_view/draw_items_in_blocks")
-        self._invis_action = self._make_action("I&nvisible items", "level_view/draw_invisible_items")
+        self._mario_action = self._make_action(tr("Common", "mario", "&Mario"), "level_view/draw_mario")
+        self._jumps_action = self._make_action(
+            tr("Common", "jumps_on_objects", "&Jumps on objects"), "level_view/draw_jump_on_objects"
+        )
+        self._items_action = self._make_action(
+            tr("Common", "items_in_blocks", "&Items in blocks"), "level_view/draw_items_in_blocks"
+        )
+        self._invis_action = self._make_action(
+            tr("Common", "i_nvisible_items", "I&nvisible items"), "level_view/draw_invisible_items"
+        )
 
         self.addSeparator()
 
-        self._auto_scroll_action = self._make_action("&Autoscroll Path", "level_view/draw_autoscroll")
-        self._jump_zones_action = self._make_action("Jump &Zones", "level_view/draw_jumps")
-        self._resize_action = self._make_action("&Resize Type", "level_view/draw_expansion")
+        self._auto_scroll_action = self._make_action(
+            tr("Common", "autoscroll_path", "&Autoscroll Path"), "level_view/draw_autoscroll"
+        )
+        self._jump_zones_action = self._make_action(tr("Common", "jump_zones", "Jump &Zones"), "level_view/draw_jumps")
+        self._resize_action = self._make_action(
+            tr("Common", "resize_type", "&Resize Type"), "level_view/draw_expansion"
+        )
 
         self.addSeparator()
 
-        self._anim_action = self._make_action("Show Block Animation", "level_view/block_animation")
-        self._trans_action = self._make_action("&Block Transparency", "level_view/block_transparency")
-        self._special_bg_action = self._make_action("Default Background Tiles", "level_view/special_background")
+        self._anim_action = self._make_action(
+            tr("Common", "show_block_animation", "Show Block Animation"), "level_view/block_animation"
+        )
+        self._trans_action = self._make_action(
+            tr("Common", "block_transparency", "&Block Transparency"), "level_view/block_transparency"
+        )
+        self._special_bg_action = self._make_action(
+            tr("Common", "default_background_tiles", "Default Background Tiles"), "level_view/special_background"
+        )
 
         self.addSeparator()
 
-        self._screen_shot_action = self.addAction("Save &Screenshot of Level")
+        self._screen_shot_action = self.addAction(tr("Common", "save_screenshot_of_level", "Save &Screenshot of Level"))
         self._screen_shot_action.setIcon(icon("image.svg"))
+
+    def retranslate_ui(self) -> None:
+        """Refresh view-menu labels after a language change.
+
+        The view menu rewrites only Qt action text. Toggle states and the
+        settings keys that drive level rendering remain stable so live
+        translation cannot change the active viewport configuration.
+        """
+        self.setTitle(tr("Common", "view", "&View"))
+        self._grid_action.setText(tr("Common", "grid_lines", "&Grid lines"))
+        self._coord_action.setText(tr("Common", "coordinates", "&Coordinates"))
+        self._mario_action.setText(tr("Common", "mario", "&Mario"))
+        self._jumps_action.setText(tr("Common", "jumps_on_objects", "&Jumps on objects"))
+        self._items_action.setText(tr("Common", "items_in_blocks", "&Items in blocks"))
+        self._invis_action.setText(tr("Common", "i_nvisible_items", "I&nvisible items"))
+        self._auto_scroll_action.setText(tr("Common", "autoscroll_path", "&Autoscroll Path"))
+        self._jump_zones_action.setText(tr("Common", "jump_zones", "Jump &Zones"))
+        self._resize_action.setText(tr("Common", "resize_type", "&Resize Type"))
+        self._anim_action.setText(tr("Common", "show_block_animation", "Show Block Animation"))
+        self._trans_action.setText(tr("Common", "block_transparency", "&Block Transparency"))
+        self._special_bg_action.setText(tr("Common", "default_background_tiles", "Default Background Tiles"))
+        self._screen_shot_action.setText(tr("Common", "save_screenshot_of_level", "Save &Screenshot of Level"))
 
     def _make_action(self, title: str, setting_string: str):
         """Create a checkable action backed by a stored view setting.
@@ -223,7 +264,7 @@ class ViewMenu(QMenu):
 
         pathname, _ = QFileDialog.getSaveFileName(
             self,
-            caption="Save Screenshot",
+            caption=tr("Common", "save_screenshot", "Save Screenshot"),
             dir=recommended_file,
             filter=IMG_FILE_FILTER,
         )

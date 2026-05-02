@@ -14,6 +14,7 @@ foundry.gui.widgets.Spinner
     Raw-value editor used by each property widget.
 """
 
+import re
 from dataclasses import dataclass
 
 from PySide6.QtCore import QSize
@@ -31,6 +32,7 @@ from PySide6.QtWidgets import (
 
 from foundry import data_dir
 from foundry.gui.dialogs.CustomDialog import CustomDialog
+from foundry.gui.localization import tr, translation_key
 from foundry.gui.util import center_widget
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import BASE_OFFSET
@@ -38,6 +40,76 @@ from smb3parse.util import hex_int
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
 _PROP_PATH = data_dir / "game_properties.ini"
+TR_KEY_CONTEXT = "foundry.game_properties"
+_KEY_PART_RE = re.compile(r"[^a-z0-9]+")
+
+
+def _game_property_key(prefix: str, source_text: str) -> str:
+    """Build a catalog key for display text loaded from ``game_properties.ini``.
+
+    Parameters
+    ----------
+    prefix : str
+        Short key namespace for the metadata field being translated.
+    source_text : str
+        English display text from the descriptor file.
+
+    Returns
+    -------
+    str
+        Stable dotted translation key capped for catalog readability.
+    """
+    max_body_length = 63 - len(prefix) - 1
+    key = translation_key(source_text)[:max_body_length].rstrip("_") or "blank"
+    return f"{prefix}.{key}"
+
+
+def _game_property_text(prefix: str, source_text: str, key_source: str | None = None) -> str:
+    """Translate descriptor text at the UI boundary.
+
+    ``game_properties.ini`` remains the English source record for ROM metadata;
+    this helper derives the display key and fallback text used by labels and
+    tree items without feeding translated text back into parsing or storage.
+
+    Parameters
+    ----------
+    prefix : str
+        Metadata field namespace, such as ``caption`` or ``section``.
+    source_text : str
+        English descriptor text to display.
+    key_source : str | None, optional
+        Stable descriptor text used to derive the catalog key. ``info`` lines
+        use the owning caption as their key source so long descriptions remain
+        reachable through short, collision-free ids.
+
+    Returns
+    -------
+    str
+        Localized UI text for the descriptor value.
+    """
+    return tr(TR_KEY_CONTEXT, _game_property_key(prefix, key_source or source_text), source_text)
+
+
+def _static_text(key: str, fallback: str) -> str:
+    """Translate static game-properties dialog chrome.
+
+    Static labels use the same stable-key catalog as parsed property metadata
+    so the dialog can refresh live without changing the ROM address, PRG bank,
+    or parsed descriptor identity attached to each tree row.
+
+    Parameters
+    ----------
+    key : str
+        Stable catalog key in the game-properties context.
+    fallback : str
+        English text used when the catalog has no value.
+
+    Returns
+    -------
+    str
+        Localized label, title, or footer text.
+    """
+    return tr(TR_KEY_CONTEXT, key, fallback)
 
 
 @dataclass
@@ -58,6 +130,8 @@ class _PropInfo:
         Base value used for subtractive display transforms.
     description : str
         Help text shown beside the property editor.
+    description_key_source : str
+        Stable text used to derive the description's catalog key.
     is_inverted : bool
         Whether displayed values are inverted from the stored byte.
     is_subtracted : bool
@@ -83,6 +157,7 @@ class _PropInfo:
 
     name: str = ""
     description: str = ""
+    description_key_source: str = ""
     rom_address: int = 0
     min_value: int = 0
     max_value: int = 0
@@ -117,6 +192,9 @@ class _PropInfo:
         elif self.is_subtracted:
             value = self.base_value - value
 
+        if self.unit:
+            return f"{value} {_game_property_text('unit', self.unit)}"
+
         return f"{value} {self.unit}"
 
 
@@ -140,12 +218,20 @@ class _InfoWidget(QWidget):
 
     Attributes
     ----------
+    _decimal_label : QLabel
+        Label showing the transformed display value for the staged byte.
+    _info_label : QLabel
+        Wrapped description label translated from property metadata.
     _prop_info : _PropInfo
         Parsed property metadata.
     _rom : Rom
         ROM object whose byte is edited.
+    _rom_address_label : QLabel
+        Footer label showing the ROM address and PRG bank for the edited byte.
     _spinner : Spinner
         Bounded editor for the raw stored value.
+    _value_label : QLabel
+        Static form label for the spinner/value row.
 
     See Also
     --------
@@ -187,34 +273,68 @@ class _InfoWidget(QWidget):
 
         layout = QVBoxLayout(self)
 
-        info_label = QLabel(prop_info.description)
-        info_label.setWordWrap(True)
+        self._info_label = QLabel(_game_property_text("info", prop_info.description, prop_info.description_key_source))
+        self._info_label.setWordWrap(True)
 
         edit_layout = QHBoxLayout()
 
         self._spinner = Spinner(maximum=prop_info.max_value)
         self._spinner.setMinimum(prop_info.min_value)
 
-        decimal_label = QLabel()
+        self._decimal_label = QLabel()
 
-        self._spinner.valueChanged.connect(lambda x: decimal_label.setText(prop_info.value_str(x)))
+        self._spinner.valueChanged.connect(lambda x: self._decimal_label.setText(prop_info.value_str(x)))
 
-        edit_layout.addWidget(QLabel("Value:"))
+        self._value_label = QLabel(_static_text("label.value", "Value:"))
+        edit_layout.addWidget(self._value_label)
         edit_layout.addStretch(1)
-        edit_layout.addWidget(decimal_label)
+        edit_layout.addWidget(self._decimal_label)
         edit_layout.addWidget(self._spinner)
 
-        layout.addWidget(info_label)
+        layout.addWidget(self._info_label)
         layout.addLayout(edit_layout)
         layout.addStretch(1)
-        layout.addWidget(
-            QLabel(
-                f"ROM Address: {prop_info.rom_address:#X} / "
-                f"PRG_{(prop_info.rom_address - BASE_OFFSET) // PRG_BANK_SIZE:0>3}"
-            )
-        )
+        self._rom_address_label = QLabel()
+        layout.addWidget(self._rom_address_label)
 
         self._read_current_value()
+        self.retranslate_ui()
+
+    def _rom_address_text(self) -> str:
+        """Format the translated ROM/PRG address footer for this property.
+
+        The ROM address is stable metadata from ``_PropInfo`` and the PRG bank
+        is derived from Foundry's base-offset constants. Only the label chrome
+        is translated; address values remain hexadecimal editor data. The text
+        is recalculated during construction and live retranslation so the
+        footer stays synchronized with the descriptor-backed property while the
+        underlying ROM address remains the byte-write target used by
+        ``save_value``.
+
+        Returns
+        -------
+        str
+            Display text for the property footer.
+        """
+        return _static_text("label.rom_address", "ROM Address: {rom_address} / {prg_bank}").format(
+            rom_address=f"{self._prop_info.rom_address:#X}",
+            prg_bank=f"PRG_{(self._prop_info.rom_address - BASE_OFFSET) // PRG_BANK_SIZE:0>3}",
+        )
+
+    def retranslate_ui(self) -> None:
+        """Refresh detail labels from the active translation catalog.
+
+        Live language switching rebuilds the property description, value label,
+        transformed decimal display, and ROM/PRG footer. The spinner byte,
+        ``_PropInfo`` metadata, and ROM address target are preserved so staged
+        edits still write the same game-property byte after the UI text changes.
+        """
+        self._info_label.setText(
+            _game_property_text("info", self._prop_info.description, self._prop_info.description_key_source)
+        )
+        self._value_label.setText(_static_text("label.value", "Value:"))
+        self._decimal_label.setText(self._prop_info.value_str(self._spinner.value()))
+        self._rom_address_label.setText(self._rom_address_text())
 
     def _read_current_value(self):
         """Load the stored ROM byte into the spinner.
@@ -278,7 +398,7 @@ class GamePropertiesDialog(CustomDialog):
         rom : Rom
             ROM data source used for game data lookups.
         """
-        super(GamePropertiesDialog, self).__init__(parent, "Game Properties")
+        super(GamePropertiesDialog, self).__init__(parent, _static_text("title", "Game Properties"))
         self._rom = rom
 
         self.setMinimumSize(QSize(600, 600))
@@ -303,6 +423,7 @@ class GamePropertiesDialog(CustomDialog):
 
         self._prop_item_to_data: dict[QTreeWidgetItem, _PropInfo] = {}
         self._prop_info_widgets: dict[QTreeWidgetItem, _InfoWidget] = {}
+        self._section_items: dict[QTreeWidgetItem, str] = {}
 
         with _PROP_PATH.open("r") as prop_file:
             self._build_items(prop_file)
@@ -311,6 +432,26 @@ class GamePropertiesDialog(CustomDialog):
             self._prop_tree.setCurrentItem(list(self._prop_item_to_data.keys())[0])
 
         center_widget(self)
+
+    def retranslate_ui(self) -> None:
+        """Refresh the translated tree and detail surfaces in place.
+
+        The dialog rebuilds the window title, section rows, property captions,
+        and per-property detail widgets while preserving each ``QTreeWidgetItem``
+        identity, the current selection, ``_PropInfo`` metadata, and staged
+        spinner values. ROM addresses and pending edits remain stable; only the
+        display text is replaced.
+        """
+        self.setWindowTitle(_static_text("title", "Game Properties"))
+
+        for section_item, section_title in self._section_items.items():
+            section_item.setText(0, _game_property_text("section", section_title))
+
+        for prop_item, prop_info in self._prop_item_to_data.items():
+            prop_item.setText(0, _game_property_text("caption", prop_info.name))
+
+        for info_widget in self._prop_info_widgets.values():
+            info_widget.retranslate_ui()
 
     def accept(self):
         """Save all property widgets before accepting the dialog.
@@ -372,6 +513,9 @@ class GamePropertiesDialog(CustomDialog):
 
             elif line.startswith("info "):
                 self._prop_item_to_data[current_prop_item].description = line.removeprefix("info ")
+                self._prop_item_to_data[current_prop_item].description_key_source = self._prop_item_to_data[
+                    current_prop_item
+                ].name
 
             elif line.startswith("type "):
                 self._parse_property_values(current_prop_item, line)
@@ -414,7 +558,8 @@ class GamePropertiesDialog(CustomDialog):
         """
         section_title = line.removeprefix("[").removesuffix("]")
         current_section_item = QTreeWidgetItem(self._prop_tree)
-        current_section_item.setText(0, section_title)
+        current_section_item.setText(0, _game_property_text("section", section_title))
+        self._section_items[current_section_item] = section_title
 
         return current_section_item
 
@@ -447,9 +592,11 @@ class GamePropertiesDialog(CustomDialog):
         property_title = line.removeprefix("caption ")
 
         current_prop_item = QTreeWidgetItem(current_section_item)
-        current_prop_item.setText(0, property_title)
+        current_prop_item.setText(0, _game_property_text("caption", property_title))
 
-        self._prop_item_to_data[current_prop_item] = _PropInfo(name=property_title)
+        self._prop_item_to_data[current_prop_item] = _PropInfo(
+            name=property_title, description_key_source=property_title
+        )
 
         return current_prop_item
 

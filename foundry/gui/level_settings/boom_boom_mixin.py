@@ -21,6 +21,7 @@ from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.gui import label_and_widget
 from foundry.gui.commands import ChangeLockIndex
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
+from foundry.gui.localization import tr, tr_object_name
 from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_BOOMBOOM, OBJ_FLYING_BOOMBOOM
 
@@ -65,7 +66,9 @@ class BoomBoomMixin(SettingsMixin):
         """
         super(BoomBoomMixin, self).__init__(parent)
 
-        boom_boom_group = QGroupBox("Boom Boom Lock Destruction Index")
+        boom_boom_group = QGroupBox(
+            tr("BoomBoomMixin", "boom_boom_lock_destruction_index", "Boom Boom Lock Destruction Index")
+        )
         QVBoxLayout(boom_boom_group)
 
         boom_booms = _get_boom_booms(self.level_ref.enemies)
@@ -73,7 +76,13 @@ class BoomBoomMixin(SettingsMixin):
 
         self.boom_boom_dropdown = QComboBox()
         self.boom_boom_dropdown.addItems(
-            [f"{boom_boom.name} at {boom_boom.get_position()}" for boom_boom in boom_booms]
+            [
+                tr("BoomBoomMixin", "object_name_at_position", "{object_name} at {position}").format(
+                    object_name=tr_object_name(boom_boom),
+                    position=boom_boom.get_position(),
+                )
+                for boom_boom in boom_booms
+            ]
         )
         self.boom_boom_dropdown.currentIndexChanged.connect(self._on_boom_boom_dropdown)
 
@@ -85,7 +94,9 @@ class BoomBoomMixin(SettingsMixin):
             self._on_boom_boom_dropdown(0)
 
         boom_boom_group.layout().addWidget(self.boom_boom_dropdown)
-        boom_boom_group.layout().addLayout(label_and_widget("Lock index", self.boom_boom_index_spinner))
+        boom_boom_group.layout().addLayout(
+            label_and_widget(tr("BoomBoomMixin", "lock_index", "Lock index"), self.boom_boom_index_spinner)
+        )
 
         self.layout().addWidget(boom_boom_group)
 
@@ -136,12 +147,21 @@ class BoomBoomMixin(SettingsMixin):
 
             if boom_boom.lock_index != new_index:
                 self.undo_stack.push(
-                    ChangeLockIndex(self.level_ref, self.level_ref.enemies.index(boom_boom), new_index)
+                    ChangeLockIndex(
+                        self.level_ref,
+                        self.level_ref.enemies.index(boom_boom),
+                        new_index,
+                    )
                 )
 
 
 def _get_boom_booms(enemy_items: list[EnemyItem]) -> list[EnemyItem]:
-    """Return Boom Boom enemy items in level order.
+    """Collect lock-index-capable Boom Boom enemy items in level order.
+
+    The dropdown and close-time comparison both rely on this stable ordering:
+    the opening snapshot stores lock indexes by position in the returned list,
+    and close handling zips the current list with that snapshot to build undo
+    commands for changed bosses.
 
     Parameters
     ----------

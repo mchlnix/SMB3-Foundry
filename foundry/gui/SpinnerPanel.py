@@ -14,16 +14,18 @@ foundry.gui.widgets.Spinner.Spinner : Hex-oriented spinner widget used for each 
 """
 
 from PySide6.QtCore import Signal, SignalInstance
-from PySide6.QtWidgets import QFormLayout, QSizePolicy, QWidget
+from PySide6.QtWidgets import QFormLayout, QLabel, QSizePolicy, QWidget
 
 from foundry.game.gfx.objects import LevelObject
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr
 from foundry.gui.widgets.Spinner import Spinner
 
 MAX_DOMAIN = 0x07
 MAX_TYPE = 0xFF
 MAX_LENGTH = 0xFF
+TR_CONTEXT = "SpinnerPanel"
 
 
 class SpinnerPanel(QWidget):
@@ -46,16 +48,27 @@ class SpinnerPanel(QWidget):
 
     Attributes
     ----------
+    domain_label : QLabel
+        Display-only label for the raw domain spinner. It is refreshed by
+        :meth:`retranslate_ui` and is not used as model data.
+    length_label : QLabel
+        Display-only label for the fourth-byte length spinner. It is refreshed
+        by :meth:`retranslate_ui` and is not used as model data.
     level_ref : LevelRef
         Reference that owns the edited level and selection.
     object_change : SignalInstance
-        Signal emitted when a spinner value changes.
+        Signal emitted when a user-visible spinner value changes. The emitted
+        integer is a raw SMB3 field value staged in the spinner, not localized
+        display text.
     spin_domain : Spinner
         Spinner for a level object's domain/bank field.
     spin_length : Spinner
         Spinner for a four-byte level object's length field.
     spin_type : Spinner
         Spinner for the object or enemy/item id.
+    type_label : QLabel
+        Display-only label for the raw object/enemy id spinner. It is refreshed
+        by :meth:`retranslate_ui` and is not used as model data.
     zoom_in_triggered : SignalInstance
         Signal reserved for zoom-in shortcuts.
     zoom_out_triggered : SignalInstance
@@ -112,28 +125,35 @@ class SpinnerPanel(QWidget):
         self.spin_length.setEnabled(False)
         self.spin_length.valueChanged.connect(self.object_change.emit)
 
+        self.domain_label = QLabel()
+        self.type_label = QLabel()
+        self.length_label = QLabel()
+
         spinner_layout = QFormLayout()
-        spinner_layout.addRow("Bank/Domain:", self.spin_domain)
-        spinner_layout.addRow("Index:", self.spin_type)
-        spinner_layout.addRow("Length:", self.spin_length)
+        spinner_layout.addRow(self.domain_label, self.spin_domain)
+        spinner_layout.addRow(self.type_label, self.spin_type)
+        spinner_layout.addRow(self.length_label, self.spin_length)
 
         self.setLayout(spinner_layout)
+        self.retranslate_ui()
 
+    def retranslate_ui(self) -> None:
+        """Refresh spinner labels and help text from the active catalog.
+
+        The bank/domain, index, and length captions plus the explanatory
+        ``WhatsThis`` text are rebuilt in place. The current spinner values,
+        enabled state, and selected object payload remain untouched so the raw
+        object bytes still describe the same ROM data after the language switch.
+        """
+        self.domain_label.setText(tr(TR_CONTEXT, "bank_domain", "Bank/Domain:"))
+        self.type_label.setText(tr(TR_CONTEXT, "index", "Index:"))
+        self.length_label.setText(tr(TR_CONTEXT, "length", "Length:"))
         self.setWhatsThis(
-            "<b>Spinner Panel</b><br/>"
-            "The Spinner Panel gives raw byte access to objects for advanced users. The values are shown "
-            "in hexadecimal notation.<br/>"
-            "Level objects and enemies/items are categorized using domains and indexes. Which domain an "
-            "object is in, doesn't hold much information about the object, if at all.<br/>"
-            "As for the index, the only important information is, that all objects from 0x00 - 0x0F can "
-            "not be resized. "
-            "They have fixed dimensions, like the background bushes in Level 1-1.<br/>"
-            "All other objects have 16 different iterations, meaning 0x10 - 0x1F, for example, is one "
-            "object, with 16 different sizes, going from smallest to largest. In what way these objects "
-            "expand, depends on their particular expansion type.<br/>"
-            "Some '4-byte' objects can expand in a second way, since they have an additional byte "
-            "holding that information. For example a platform, which can be sized vertically using the "
-            "index and horizontally using the 4th byte."
+            tr(
+                TR_CONTEXT,
+                "help.spinner_panel",
+                "<b>Spinner Panel</b><br/>The Spinner Panel gives raw byte access to objects for advanced users. The values are shown in hexadecimal notation.<br/>Level objects and enemies/items are categorized using domains and indexes. Which domain an object is in, doesn't hold much information about the object, if at all.<br/>As for the index, the only important information is, that all objects from 0x00 - 0x0F can not be resized. They have fixed dimensions, like the background bushes in Level 1-1.<br/>All other objects have 16 different iterations, meaning 0x10 - 0x1F, for example, is one object, with 16 different sizes, going from smallest to largest. In what way these objects expand, depends on their particular expansion type.<br/>Some '4-byte' objects can expand in a second way, since they have an additional byte holding that information. For example a platform, which can be sized vertically using the index and horizontally using the 4th byte.",
+            )
         )
 
     def update(self):

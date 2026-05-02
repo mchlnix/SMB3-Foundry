@@ -27,7 +27,10 @@ from foundry import (
 from foundry.features.online_updates import UpdateCheckMixin
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
+from foundry.gui.localization import tr
 from foundry.gui.util import center_widget
+
+TR_CONTEXT = "MainWindow"
 
 
 class MainWindow(UpdateCheckMixin, QMainWindow):
@@ -90,8 +93,10 @@ class MainWindow(UpdateCheckMixin, QMainWindow):
         """
         answer = QMessageBox.question(
             self,
-            "Please confirm",
-            "Current content has not been saved! Proceed?",
+            tr(TR_CONTEXT, "please_confirm", "Please confirm"),
+            tr(
+                TR_CONTEXT, "current_content_has_not_been_saved_proceed", "Current content has not been saved! Proceed?"
+            ),
             QMessageBox.StandardButton.No | QMessageBox.StandardButton.Yes,
             QMessageBox.StandardButton.No,
         )
@@ -113,7 +118,11 @@ class MainWindow(UpdateCheckMixin, QMainWindow):
             Temporary directory used while writing the ROM copy.
         """
         if not temp_dir.exists():
-            QMessageBox.critical(self, "File Error", "No temp directory found.")
+            QMessageBox.critical(
+                self,
+                tr(TR_CONTEXT, "file_error", "File Error"),
+                tr(TR_CONTEXT, "no_temp_directory_found", "No temp directory found."),
+            )
             return
 
         path_to_temp_rom = temp_dir / "instaplay.nes"
@@ -121,7 +130,11 @@ class MainWindow(UpdateCheckMixin, QMainWindow):
         ROM().save_to(path_to_temp_rom)
 
         if not self._save_changes_to_instaplay_rom(path_to_temp_rom):
-            QMessageBox.critical(self, "File Error", "Couldn't save changes to temporary Rom.")
+            QMessageBox.critical(
+                self,
+                tr(TR_CONTEXT, "file_error", "File Error"),
+                tr(TR_CONTEXT, "couldn_t_save_changes_to_temporary_rom", "Couldn't save changes to temporary Rom."),
+            )
             return
 
         arguments = self.settings.value("editor/instaplay_arguments").replace("%f", str(path_to_temp_rom))
@@ -135,8 +148,12 @@ class MainWindow(UpdateCheckMixin, QMainWindow):
             else:
                 QMessageBox.critical(
                     self,
-                    "Emulator not found",
-                    f"Check it under File > Settings.\nFile {emu_path} not found.",
+                    tr(TR_CONTEXT, "emulator_not_found", "Emulator not found"),
+                    tr(
+                        TR_CONTEXT,
+                        "error.settings_file_missing",
+                        "Check it under File > Settings.\nFile {path} not found.",
+                    ).format(path=emu_path),
                 )
                 return
         else:
@@ -149,8 +166,10 @@ class MainWindow(UpdateCheckMixin, QMainWindow):
         except Exception as e:
             QMessageBox.critical(
                 self,
-                "Emulator command failed.",
-                f"Check it under File > Settings.\n{e}",
+                tr(TR_CONTEXT, "emulator_command_failed", "Emulator command failed."),
+                tr(TR_CONTEXT, "check_it_under_file_settings_error", "Check it under File > Settings.\n{error}").format(
+                    error=e
+                ),
             )
         finally:
             QCoreApplication.processEvents()
@@ -199,7 +218,7 @@ class MainWindow(UpdateCheckMixin, QMainWindow):
             if self.level_ref:
                 self.level_ref.save_to_rom()
         except LookupError as lue:
-            QMessageBox.warning(self, type(lue).__name__, f"{lue}.")
+            QMessageBox.warning(self, type(lue).__name__, tr(TR_CONTEXT, "error", "{error}.").format(error=lue))
             return False
 
         return self._write_to_rom(pathname, set_new_path)
@@ -227,7 +246,13 @@ class MainWindow(UpdateCheckMixin, QMainWindow):
         try:
             ROM.save_to_file(pathname, set_new_path)
         except IOError as exp:
-            QMessageBox.warning(self, type(exp).__name__, f"Cannot save ROM data to file '{pathname}'.")
+            QMessageBox.warning(
+                self,
+                type(exp).__name__,
+                tr(
+                    TR_CONTEXT, "cannot_save_rom_data_to_file_pathname", "Cannot save ROM data to file '{pathname}'."
+                ).format(pathname=pathname),
+            )
 
             return False
 

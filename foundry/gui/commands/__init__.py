@@ -42,12 +42,15 @@ from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.asm import load_asm_enemy
+from foundry.gui.localization import tr, tr_data_name, tr_object_name
 from smb3parse.constants import OBJECT_SET_NAMES, PIPE_PAIR_COUNT
 from smb3parse.data_points import Position
 from smb3parse.data_points.pipe_data import PipeData
 
 if TYPE_CHECKING:
     from foundry.gui.visualization.level.LevelView import LevelView
+
+COMMAND_CONTEXT = "FoundryCommands"
 
 
 class UndoCommand(QUndoCommand):
@@ -176,7 +179,14 @@ class SetLevelAddressData(UndoCommand):
         self.new_header_offset = header_offset
         self.new_enemy_offset = enemy_offset
 
-        self.setText(f"Save Level to {self.new_header_offset:#x} and {self.new_enemy_offset:#x}")
+        self.setText(
+            tr(
+                COMMAND_CONTEXT, "command.save_level_offsets", "Save Level to {header_offset:#x} and {enemy_offset:#x}"
+            ).format(
+                header_offset=self.new_header_offset,
+                enemy_offset=self.new_enemy_offset,
+            )
+        )
 
     def undo(self):
         """Restore the previous level and enemy offsets."""
@@ -266,7 +276,16 @@ class AttachLevelToRom(SetLevelAddressData):
         """
         super(AttachLevelToRom, self).__init__(level, header_offset, enemy_offset)
 
-        self.setText(f"Attach Level to {self.new_header_offset:#x} and {self.new_enemy_offset:#x}")
+        self.setText(
+            tr(
+                COMMAND_CONTEXT,
+                "command.attach_level_offsets",
+                "Attach Level to {header_offset:#x} and {enemy_offset:#x}",
+            ).format(
+                header_offset=self.new_header_offset,
+                enemy_offset=self.new_enemy_offset,
+            )
+        )
 
 
 class DetachLevelFromRom(SetLevelAddressData):
@@ -294,7 +313,7 @@ class DetachLevelFromRom(SetLevelAddressData):
         """
         super(DetachLevelFromRom, self).__init__(level, 0x0, 0x0)
 
-        self.setText("Detach Level from Rom")
+        self.setText(tr(COMMAND_CONTEXT, "detach_level_from_rom", "Detach Level from Rom"))
 
 
 class SetLevelAttribute(UndoCommand):
@@ -391,7 +410,12 @@ class SetLevelAttribute(UndoCommand):
         if not display_value:
             display_value = str(new_value)
 
-        self.setText(f"{display_name} to {display_value}")
+        self.setText(
+            tr(COMMAND_CONTEXT, "display_name_to_display_value", "{display_name} to {display_value}").format(
+                display_name=display_name,
+                display_value=display_value,
+            )
+        )
 
     def undo(self):
         """Restore the previous attribute value."""
@@ -545,7 +569,11 @@ class SetNextAreaObjectAddress(SetLevelAttribute):
         """
         super(SetNextAreaObjectAddress, self).__init__(level_ref, "next_area_objects", new_address)
 
-        self.setText(f"Object Address of Next Area to {new_address:#x}")
+        self.setText(
+            tr(
+                COMMAND_CONTEXT, "command.set_next_area_object_addr", "Object Address of Next Area to {address:#x}"
+            ).format(address=new_address)
+        )
 
 
 class SetNextAreaEnemyAddress(SetLevelAttribute):
@@ -585,7 +613,11 @@ class SetNextAreaEnemyAddress(SetLevelAttribute):
         """
         super(SetNextAreaEnemyAddress, self).__init__(level_ref, "next_area_enemies", new_address)
 
-        self.setText(f"Enemy Address of Next Area to {new_address:#x}")
+        self.setText(
+            tr(
+                COMMAND_CONTEXT, "command.set_next_area_enemy_addr", "Enemy Address of Next Area to {address:#x}"
+            ).format(address=new_address)
+        )
 
 
 class SetNextAreaObjectSet(SetLevelAttribute):
@@ -642,7 +674,11 @@ class SetNextAreaObjectSet(SetLevelAttribute):
         """
         super(SetNextAreaObjectSet, self).__init__(level_ref, "next_area_object_set_no", new_object_set)
 
-        self.setText(f"Object Set of Next Area to {OBJECT_SET_NAMES[new_object_set]}")
+        self.setText(
+            tr(COMMAND_CONTEXT, "command.set_next_area_object_set", "Object Set of Next Area to {object_set}").format(
+                object_set=tr_data_name("ObjectSet", OBJECT_SET_NAMES[new_object_set])
+            )
+        )
 
 
 class ChangeLockIndex(UndoCommand):
@@ -710,7 +746,12 @@ class ChangeLockIndex(UndoCommand):
         self.new_lock_index = new_lock_index
 
         enemy = self.level.enemies[self.enemy_index]
-        self.setText(f"Set {enemy.name} to break Lock #{new_lock_index}")
+        self.setText(
+            tr(COMMAND_CONTEXT, "command.set_lock_break_enemy", "Set {enemy_name} to break Lock #{lock_index}").format(
+                enemy_name=tr_object_name(enemy),
+                lock_index=new_lock_index,
+            )
+        )
 
     def undo(self):
         """Restore the enemy's previous lock index."""
@@ -848,7 +889,7 @@ class UpdatePalette(UndoCommand):
         new_color_index : int
             Index of the new color.
         """
-        super(UpdatePalette, self).__init__("Change Palette Color", None)
+        super(UpdatePalette, self).__init__(tr(COMMAND_CONTEXT, "change_palette_color", "Change Palette Color"), None)
 
         self.level = level
 
@@ -1007,7 +1048,7 @@ class MoveObjects(UndoCommand):
             indexed_lo_after, indexed_en_after
         )
 
-        self.setText(f"Move {object_names(objects_after)}")
+        self.setText(tr(COMMAND_CONTEXT, "move_objects", "Move {objects}").format(objects=object_names(objects_after)))
 
         # undo once, because we visually already moved them
         self.undo()
@@ -1263,7 +1304,9 @@ class ResizeObjects(UndoCommand):
             (index, bytes(obj.to_bytes())) for index, obj in indexed_lo_after
         ]
 
-        self.setText(f"Resize {object_names(objects_after)}")
+        self.setText(
+            tr(COMMAND_CONTEXT, "resize_objects", "Resize {objects}").format(objects=object_names(objects_after))
+        )
 
         # objects are already resized; undo so the undo stack can redo it, when pushed
         self.undo()
@@ -1343,9 +1386,12 @@ class ResizeObjects(UndoCommand):
 
 
 def objects_to_indexed_objects(level: Level, objects: list[InLevelObject]) -> list[tuple[int, InLevelObject]]:
-    """Handle objects to indexed objects.
+    """Pair selected objects with their current level-list indexes.
 
-    It participates in the undo/redo command stream that keeps GUI edits reversible. The lookup centralizes coordinate or identifier handling for callers.
+    Undo and redo commands need stable numeric positions for both SMB3 level
+    objects and enemy/item objects. The helper reads the active model lists and
+    sorts the payload by index so later command replay can restore order without
+    depending on localized object names or transient selection text.
 
     Parameters
     ----------
@@ -1377,23 +1423,28 @@ def objects_to_indexed_objects(level: Level, objects: list[InLevelObject]) -> li
 
 
 def separate_and_index_objects(level: Level, objects_before: list[InLevelObject], objects_after: list[InLevelObject]):
-    """Separate and index objects.
+    """Split paired objects into level-object and enemy undo payloads.
 
-    It participates in the undo/redo command stream that keeps GUI edits reversible. The return value keeps undo serialization and command merging explicit for the command stack.
+    Move and resize commands need stable list indexes for both object families
+    before they replay a batch. This helper pairs each before/after object with
+    the index occupied by the after object in the live level so redo can apply
+    the grouped mutation without relying on localized names or object identity
+    outside the loaded model.
 
     Parameters
     ----------
     level : foundry.game.level.Level.Level
-        Level model or level reference used by the operation.
+        Level model whose object and enemy lists supply stable indexes.
     objects_before : list[InLevelObject]
-        Objects before consumed by the operation.
+        Object snapshots restored by undo.
     objects_after : list[InLevelObject]
-        Objects after consumed by the operation.
+        Object snapshots applied by redo.
 
     Returns
     -------
-    Any
-        Objects separated by domain and paired with indexes.
+    tuple[list[tuple[int, InLevelObject]], ...]
+        Level-object and enemy-item before/after payloads paired with list
+        indexes.
     """
     indexed_lo_before = []
     indexed_lo_after = []
@@ -1419,18 +1470,21 @@ def separate_and_index_objects(level: Level, objects_before: list[InLevelObject]
 
 
 def move_objects(level: Level, indexed_objects: list[tuple[int, InLevelObject]], restore_only=False):
-    """Move objects.
+    """Restore indexed objects into their level or enemy lists.
 
-    It participates in the undo/redo command stream that keeps GUI edits reversible. The mutating operation keeps model state and dependent editor views in sync.
+    Undo commands call this helper after they have already chosen whether the
+    objects should replace existing list entries or only be inserted back at
+    saved indexes. The payload is index-based so replay stays tied to stable
+    level ordering rather than translated display names.
 
     Parameters
     ----------
     level : foundry.game.level.Level.Level
-        Level model or level reference used by the operation.
+        Level model whose object and enemy lists receive the payload.
     indexed_objects : list[tuple[int, InLevelObject]]
-        Indexed objects consumed by the operation.
-    restore_only : Any, optional
-        Restore only used by the operation.
+        Objects paired with destination list indexes.
+    restore_only : bool, optional
+        Whether to insert objects without first removing matching live entries.
     """
     for index, obj in indexed_objects:
         if isinstance(obj, LevelObject):
@@ -1448,9 +1502,12 @@ def move_objects(level: Level, indexed_objects: list[tuple[int, InLevelObject]],
 
 
 def object_names(objects: list[InLevelObject]) -> str:
-    """Return names.
+    """Build localized display names for undo command summaries.
 
-    It participates in the undo/redo command stream that keeps GUI edits reversible. The lookup centralizes coordinate or identifier handling for callers.
+    The command stack can show translated object labels, but replay still uses
+    the original object instances and SMB3 payload fields. This helper keeps
+    that display boundary in one place so command descriptions never become
+    lookup keys.
 
     Parameters
     ----------
@@ -1465,12 +1522,12 @@ def object_names(objects: list[InLevelObject]) -> str:
     amount = len(objects)
 
     if amount == 1:
-        return f"'{objects[0].name}'"
+        return f"'{tr_object_name(objects[0])}'"
 
     if objects and all(isinstance(obj, EnemyItem) for obj in objects):
-        return f"{amount} enemies"
+        return tr(COMMAND_CONTEXT, "amount_enemies", "{amount} enemies").format(amount=amount)
     else:
-        return f"{amount} objects"
+        return tr(COMMAND_CONTEXT, "amount_objects", "{amount} objects").format(amount=amount)
 
 
 class ToForeground(UndoCommand):
@@ -1529,7 +1586,11 @@ class ToForeground(UndoCommand):
 
         self.indexes_before: list[tuple[int, InLevelObject]] = objects_to_indexed_objects(level, objects)
 
-        self.setText(f"Bring {object_names(objects)} to the foreground")
+        self.setText(
+            tr(COMMAND_CONTEXT, "bring_objects_to_the_foreground", "Bring {objects} to the foreground").format(
+                objects=object_names(objects)
+            )
+        )
 
     def undo(self):
         """Restore the original ordering for the moved objects."""
@@ -1645,7 +1706,11 @@ class ToBackground(ToForeground):
 
         self.indexes_before.reverse()
 
-        self.setText(f"Put {object_names(objects)} in the background")
+        self.setText(
+            tr(COMMAND_CONTEXT, "put_objects_in_the_background", "Put {objects} in the background").format(
+                objects=object_names(objects)
+            )
+        )
 
     def redo(self):
         """Move the recorded objects toward the back of their draw order."""
@@ -1715,7 +1780,11 @@ class ImportASMEnemies(UndoCommand):
         self.enemy_data_before = bytearray()
         self.enemy_data_after = bytearray()
 
-        self.setText(f"Importing Enemies from {Path(path).name}")
+        self.setText(
+            tr(COMMAND_CONTEXT, "importing_enemies_from_path_name", "Importing Enemies from {path_name}").format(
+                path_name=Path(path).name
+            )
+        )
 
     def undo(self):
         """Restore the enemy bytes that were present before import."""
@@ -1911,8 +1980,15 @@ class AddLevelObjectAt(UndoCommand):
         # in case the index was just -1
         self.index = self.level.objects.index(added_object)
 
-        # TODO use level coordinates, possibly by using level directly, instead of level view
-        self.setText(f"Add {added_object.name} at {added_object.x_position}, {added_object.y_position}")
+        self.setText(
+            tr(
+                COMMAND_CONTEXT, "command.add_object_at_position", "Add {object_name} at {x_position}, {y_position}"
+            ).format(
+                object_name=tr_object_name(added_object),
+                x_position=added_object.x_position,
+                y_position=added_object.y_position,
+            )
+        )
 
         self.level.data_changed.emit()
 
@@ -1997,7 +2073,6 @@ class AddLevelObjectAt(UndoCommand):
 
 
 class AddEnemyAt(UndoCommand):
-    # TODO doesn't need to be a QPoint, I think?
     """Add an enemy or item at a view position.
 
     Like object placement, this stores a level coordinate instead of a raw Qt
@@ -2107,8 +2182,15 @@ class AddEnemyAt(UndoCommand):
         # in case the index was just -1
         self.index = self.level.enemies.index(added_enemy)
 
-        # TODO use level coordinates, possibly by using level directly, instead of level view
-        self.setText(f"Add {added_enemy.name} at {added_enemy.x_position}, {added_enemy.y_position}")
+        self.setText(
+            tr(
+                COMMAND_CONTEXT, "command.add_enemy_at_position", "Add {enemy_name} at {x_position}, {y_position}"
+            ).format(
+                enemy_name=tr_object_name(added_enemy),
+                x_position=added_enemy.x_position,
+                y_position=added_enemy.y_position,
+            )
+        )
 
         self.level.data_changed.emit()
 
@@ -2268,7 +2350,7 @@ class PasteObjectsAt(UndoCommand):
 
         self.level_point = self.view.to_level_point(pos)
 
-        self.setText(f"Paste {object_names(objects)}")
+        self.setText(tr(COMMAND_CONTEXT, "paste_objects", "Paste {objects}").format(objects=object_names(objects)))
 
     def undo(self):
         """Remove the objects and enemies appended by the paste."""
@@ -2462,7 +2544,9 @@ class RemoveObjects(UndoCommand):
 
         self.indexes_before_removal = objects_to_indexed_objects(self.level, self.objects)
 
-        self.setText(f"Remove {object_names(self.objects)}")
+        self.setText(
+            tr(COMMAND_CONTEXT, "remove_objects", "Remove {objects}").format(objects=object_names(self.objects))
+        )
 
     def undo(self):
         """Reinsert removed objects at their original indexes."""
@@ -2668,7 +2752,11 @@ class ReplaceLevelObject(UndoCommand):
         self.to_replace = to_replace
         self.to_replace_index = self.level.objects.index(self.to_replace)
 
-        self.setText(f"Replacing {self.to_replace.name}")
+        self.setText(
+            tr(COMMAND_CONTEXT, "replacing_object_name", "Replacing {object_name}").format(
+                object_name=tr_object_name(self.to_replace)
+            )
+        )
 
     def undo(self):
         """Restore the original object at its recorded index."""
@@ -2864,7 +2952,11 @@ class ReplaceEnemy(UndoCommand):
         self.to_replace = to_replace
         self.to_replace_index = self.level.enemies.index(self.to_replace)
 
-        self.setText(f"Replacing {self.to_replace.name}")
+        self.setText(
+            tr(COMMAND_CONTEXT, "replacing_enemy_name", "Replacing {enemy_name}").format(
+                enemy_name=tr_object_name(self.to_replace)
+            )
+        )
 
     def undo(self):
         """Restore the original enemy at its recorded index."""
@@ -3051,7 +3143,7 @@ class AddJump(UndoCommand):
         else:
             self.index = index
 
-        self.setText("Add Jump")
+        self.setText(tr(COMMAND_CONTEXT, "add_jump", "Add Jump"))
 
     def undo(self):
         """Remove the inserted jump from the recorded index."""
@@ -3176,7 +3268,7 @@ class RemoveJump(UndoCommand):
         self.jump = self.level.jumps[index]
         self.index = index
 
-        self.setText(f"Remove {self.jump}")
+        self.setText(tr(COMMAND_CONTEXT, "remove_jump", "Remove {jump}").format(jump=self.jump))
 
     def undo(self):
         """Reinsert the removed jump at its original index."""
@@ -3278,7 +3370,7 @@ class UpdatePipeData(UndoCommand):
         self.pipe_data_before = [PipeData(ROM(), index) for index in range(PIPE_PAIR_COUNT)]
         self.pipe_data_after = pipe_data
 
-        self.setText("Updating Pipe Exit Pair Data")
+        self.setText(tr(COMMAND_CONTEXT, "updating_pipe_exit_pair_data", "Updating Pipe Exit Pair Data"))
 
     def undo(self) -> None:
         """Write the original pipe records back to ROM."""
@@ -3340,9 +3432,12 @@ class UpdatePipeData(UndoCommand):
 
 
 def _pipe_data_to_dict(pipe_data: PipeData) -> dict:
-    """Return data to dict.
+    """Serialize pipe-pair settings into an undo-command dictionary.
 
-    It participates in the undo/redo command stream that keeps GUI edits reversible. The return value keeps undo serialization and command merging explicit for the command stack.
+    Pipe-pair commands compare and replay staged field values rather than UI
+    labels. The helper copies public data attributes into a plain mapping so
+    command merging, undo, and redo can preserve pipe exits without retaining
+    widget objects.
 
     Parameters
     ----------

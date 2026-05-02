@@ -23,10 +23,12 @@ from PySide6.QtWidgets import QScrollArea, QScrollBar, QTabWidget
 from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
+from foundry.gui.localization import tr
 
 from .ObjectToolBox import ObjectIcon, ObjectToolBox
 
 _INDEX_RECENTLY_USED = 0
+TR_CONTEXT = "TabbedToolBox"
 
 
 class TabbedToolBox(QTabWidget):
@@ -52,7 +54,9 @@ class TabbedToolBox(QTabWidget):
     _recent_toolbox : ObjectToolBox
         Recently selected placement objects.
     object_icon_clicked : SignalInstance
-        Signal forwarded from all toolbox pages.
+        Signal forwarded from all toolbox pages with the clicked icon and its
+        stable object payload. Tab labels are localized display text refreshed
+        by :meth:`retranslate_ui`; they are not used to route placement data.
     """
 
     object_icon_clicked: SignalInstance = Signal(ObjectIcon)
@@ -79,15 +83,12 @@ class TabbedToolBox(QTabWidget):
         self.setTabPosition(self.TabPosition.East)
 
         self._recent_toolbox = ObjectToolBox(self)
-        self._recent_toolbox.setObjectName("Recent")
         self._recent_toolbox.object_icon_clicked.connect(self.object_icon_clicked.emit)
 
         self._objects_toolbox = ObjectToolBox(self)
-        self._objects_toolbox.setObjectName("Level Objects")
         self._objects_toolbox.object_icon_clicked.connect(self.object_icon_clicked.emit)
 
         self._enemies_toolbox = ObjectToolBox(self)
-        self._enemies_toolbox.setObjectName("Enemies")
         self._enemies_toolbox.object_icon_clicked.connect(self.object_icon_clicked.emit)
 
         for toolbox in (self._recent_toolbox, self._objects_toolbox, self._enemies_toolbox):
@@ -95,20 +96,37 @@ class TabbedToolBox(QTabWidget):
             scroll_area.setWidgetResizable(True)
             scroll_area.setWidget(toolbox)
 
-            self.addTab(scroll_area, toolbox.objectName())
+            self.addTab(scroll_area, "")
 
         self.show_level_object_tab()
+        self.retranslate_ui()
 
+    def retranslate_ui(self) -> None:
+        """Refresh tab labels, help text, and child icon tooltips.
+
+        During live language switching, Qt tab names and tooltips are
+        display-only surfaces over the toolbar's stable object payloads. This
+        method coordinates toolbar display state by updating those localized
+        strings and delegating to each page, while recent-object ordering,
+        level-object grids, enemy grids, and emitted placement data remain
+        unchanged.
+        """
+        self.setTabText(0, tr(TR_CONTEXT, "recent", "Recent"))
+        self.setTabText(1, tr(TR_CONTEXT, "level_objects", "Level Objects"))
+        self.setTabText(2, tr(TR_CONTEXT, "enemies", "Enemies"))
+        self._recent_toolbox.retranslate_ui()
+        self._objects_toolbox.retranslate_ui()
+        self._enemies_toolbox.retranslate_ui()
+        self._set_whats_this()
+
+    def _set_whats_this(self) -> None:
+        """Refresh translated toolbox help text."""
         self.setWhatsThis(
-            "<b>Object Toolbox</b><br/>"
-            "Contains all objects and enemies/items, that can be placed in this type of level. Which are "
-            "available depends on the object set, that is selected for this level.<br/>"
-            "You can drag and drop objects into the level or click to select them. After selecting "
-            "an object, you can place it by clicking the middle mouse button anywhere in the level."
-            "<br/><br/>"
-            "Note: Some items, like blocks with items in them, are displayed as they appear in the ROM, "
-            "mouse over them and check their names in the ToolTip, or use the object dropdown to find "
-            "them directly."
+            tr(
+                TR_CONTEXT,
+                "help.object_toolbox",
+                "<b>Object Toolbox</b><br/>Contains all objects and enemies/items, that can be placed in this type of level. Which are available depends on the object set, that is selected for this level.<br/>You can drag and drop objects into the level or click to select them. After selecting an object, you can place it by clicking the middle mouse button anywhere in the level.<br/><br/>Note: Some items, like blocks with items in them, are displayed as they appear in the ROM, mouse over them and check their names in the ToolTip, or use the object dropdown to find them directly.",
+            )
         )
 
     def sizeHint(self):

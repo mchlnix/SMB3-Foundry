@@ -9,6 +9,29 @@ autosave.
 
 from PySide6.QtWidgets import QMessageBox
 
+from foundry.gui.localization import tr
+
+TR_KEY_CONTEXT = "foundry.startup"
+
+
+def _startup_text(key: str, fallback: str) -> str:
+    """Resolve autosave recovery text from stable startup catalog keys.
+
+    Parameters
+    ----------
+    key : str
+        ``foundry.startup`` catalog key for the recovery dialog.
+    fallback : str
+        English text used when the selected locale has no value.
+
+    Returns
+    -------
+    str
+        Localized Qt display text. Autosave file paths and recovery choices
+        remain stable runtime state outside the translation catalog.
+    """
+    return tr(TR_KEY_CONTEXT, key, fallback)
+
 
 class AutoSaveDialog(QMessageBox):
     """Ask whether a recovered autosave ROM should be loaded.
@@ -40,10 +63,28 @@ class AutoSaveDialog(QMessageBox):
         """
         super(AutoSaveDialog, self).__init__()
 
-        self.setWindowTitle("Rom was recovered")
-        self.setText("We found an auto saved ROM from the last session. Do you want to open it?")
         self.setIcon(QMessageBox.Icon.Warning)
 
-        self.discard_rom_button = self.addButton("Discard Auto Save", QMessageBox.ButtonRole.DestructiveRole)
-        self.use_auto_save_button = self.addButton("Load Auto Save", QMessageBox.ButtonRole.AcceptRole)
+        self.discard_rom_button = self.addButton("", QMessageBox.ButtonRole.DestructiveRole)
+        self.use_auto_save_button = self.addButton("", QMessageBox.ButtonRole.AcceptRole)
         self.setDefaultButton(self.use_auto_save_button)
+        self.retranslate_ui()
+
+    def retranslate_ui(self) -> None:
+        """Refresh the recovery prompt from the active translation catalog.
+
+        Live language switching updates only display text: the window title,
+        prompt body, and the two existing button labels. The button objects are
+        deliberately preserved because startup recovery code compares the
+        clicked button with ``discard_rom_button`` and ``use_auto_save_button``
+        to decide whether to discard or load the recovered autosave.
+        """
+        self.setWindowTitle(_startup_text("autosave.restore.title", "Rom was recovered"))
+        self.setText(
+            _startup_text(
+                "autosave.restore.prompt",
+                "We found an auto saved ROM from the last session. Do you want to open it?",
+            )
+        )
+        self.discard_rom_button.setText(_startup_text("autosave.restore.discard", "Discard Auto Save"))
+        self.use_auto_save_button.setText(_startup_text("autosave.restore.load", "Load Auto Save"))
