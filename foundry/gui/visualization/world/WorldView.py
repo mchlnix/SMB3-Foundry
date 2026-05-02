@@ -1,3 +1,25 @@
+"""Interactive world-map editing view for SMB3 overworld data.
+
+This module owns the Qt view that turns world-map model state into an editable
+surface. :class:`WorldView` sits between
+:class:`~foundry.game.level.WorldMap.WorldMap` and
+:class:`~foundry.gui.visualization.world.WorldDrawer.WorldDrawer`: it converts
+mouse gestures into undoable world-map commands, manages hover and selection
+state, and keeps tooltip previews, drag staging, and tile-paint workflow
+aligned with the visible world-map layers.
+
+See Also
+--------
+foundry.game.level.WorldMap
+    World-map model mutated and queried by the view.
+foundry.gui.visualization.MainView
+    Shared visualization base class that provides selection and coordinate
+    conversion helpers.
+foundry.gui.visualization.world.WorldDrawer
+    Renderer that paints the world-map layers and animation frames owned by the
+    view workflow.
+"""
+
 from typing import cast
 
 from PySide6.QtCore import QPoint, QSize, QTimer
@@ -22,6 +44,7 @@ from foundry.game.gfx.objects.world_map.map_tile import MapTile
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.level.WorldMap import WorldMap
+from foundry.gui.localization import tr, tr_data_name
 from foundry.gui.settings import Settings
 from foundry.gui.visualization.MainView import (
     MODE_DRAG,
@@ -51,8 +74,68 @@ from smb3parse.constants import (
 from smb3parse.data_points import Position
 from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_HEIGHT
 
+TR_CONTEXT = "WorldView"
+
 
 class WorldView(MainView):
+    """Interactive editor view for SMB3 world maps.
+
+    The view converts Qt mouse input into world-map tile edits, object
+    selection, map-object movement, fill operations, and undo-stack commands.
+    Rendering is delegated to
+    :class:`~foundry.gui.visualization.world.WorldDrawer.WorldDrawer` while
+    this class owns hit testing, paint/fill mode, map-object selection,
+    level-preview tooltips, and the staging state used to turn drags and tile
+    painting into Scribe world-map commands.
+
+    Parameters
+    ----------
+    parent : QWidget | None
+        Parent Qt widget that owns this object.
+    level : LevelRef
+        Reference to the edited world map.
+    settings : Settings
+        Application settings used to configure the widget behavior.
+    context_menu : WorldContextMenu | None, optional
+        Context menu populated or displayed by the widget.
+
+    Attributes
+    ----------
+    _object_was_selected_on_last_click : bool
+        Gesture flag that distinguishes a click selecting an object from a
+        release that should toggle or replace selection.
+    _tile_to_put : int
+        Tile id staged for paint and flood-fill mode.
+    context_menu : WorldContextMenu
+        Context menu used for world-map editing actions.
+    drag_start_point : Position
+        World-map grid position where the active drag began.
+    dragging_happened : bool
+        Whether the active drag gesture moved a tile or map object.
+    drawer : WorldDrawer
+        Renderer for world-map layers, overlays, and animation state.
+    last_mouse_position : Position
+        Last world-map grid position seen during a drag gesture.
+    mouse_mode : int
+        Active interaction mode such as free, drag, paint-tile, or marquee select.
+    redraw_timer : QTimer | None
+        Timer that advances animated world-map tiles when enabled.
+    read_only : bool
+        Inherited editing guard that lets hover previews continue while
+        blocking undoable world-map mutations.
+    selected_object : MapObject | None
+        Selected non-tile map object moved independently of tile selection.
+    selection_square : object
+        Inherited marquee-selection helper used for tile-region selection.
+
+    Notes
+    -----
+    The class keeps transient Qt gesture state separate from committed
+    world-map data. Paint, fill, drag, and pointer edits are only persisted
+    through Scribe undo commands once the relevant mouse workflow reaches its
+    commit point.
+    """
+
     context_menu: WorldContextMenu
 
     def __init__(
@@ -62,6 +145,25 @@ class WorldView(MainView):
         settings: Settings,
         context_menu: WorldContextMenu | None = None,
     ):
+        """Create the world-map editor view.
+
+        The view installs a
+        :class:`~foundry.gui.visualization.world.WorldDrawer.WorldDrawer`,
+        hooks animation and palette refreshes to world-map changes,
+        initializes the tile-painting state, and prepares the transient drag
+        state later consumed by Scribe undo commands.
+
+        Parameters
+        ----------
+        parent : QWidget | None
+            Parent Qt widget that owns this object.
+        level : LevelRef
+            Reference to the edited world map.
+        settings : Settings
+            Application settings used to configure the widget behavior.
+        context_menu : WorldContextMenu | None, optional
+            Context menu populated or displayed by the widget.
+        """
         self.drawer = WorldDrawer()
         self.redraw_timer: QTimer | None = None
 
@@ -84,24 +186,27 @@ class WorldView(MainView):
 
         self.dragging_happened = False
 
-        # TODO: update
-        self.setWhatsThis(
-            "<b>Level View</b><br/>"
-            "This renders the level as it would appear in game plus additional information, that can be "
-            "toggled in the View menu.<br/>"
-            "It supports selecting multiple objects, moving, copy/pasting and resizing them using the "
-            "mouse or the usual keyboard shortcuts.<br/>"
-            "There are still occasional rendering errors, or small inconsistencies. If you find them, "
-            "please report the kind of object (name or values in the SpinnerPanel) and the level or "
-            "object set they appear in, in the discord and @Michael or on the github page under Help."
-            "<br/><br/>"
-            ""
-            "If all else fails, click the play button up top to see your level in game in seconds."
-        )
+        self.retranslate_ui()
 
         QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_A), self, self.select_all)
 
+    def retranslate_ui(self) -> None:
+        """Refresh world-view help text without changing map selection state.
+
+        The ``WhatsThis`` copy is rebuilt from the active catalog. The world
+        model, selected tiles or sprites, drag state, and rendering payload stay
+        stable so localization only changes explanatory Qt text.
+        """
+        self.setWhatsThis(
+            tr(
+                TR_CONTEXT,
+                "help.level_view",
+                "<b>Level View</b><br/>This renders the level as it would appear in game plus additional information, that can be toggled in the View menu.<br/>It supports selecting multiple objects, moving, copy/pasting and resizing them using the mouse or the usual keyboard shortcuts.<br/>There are still occasional rendering errors, or small inconsistencies. If you find them, please report the kind of object (name or values in the SpinnerPanel) and the level or object set they appear in, in the discord and @Michael or on the github page under Help.<br/><br/>If all else fails, click the play button up top to see your level in game in seconds.",
+            )
+        )
+
     def next_anim_step(self):
+        """Advance animated map tiles and repaint the view."""
         BlockCache.next_frame()
         self.drawer.anim_frame += 1
         self.drawer.anim_frame %= 4
@@ -109,6 +214,7 @@ class WorldView(MainView):
         self.repaint()
 
     def update_anim_timer(self):
+        """Start or stop the world-map animation timer."""
         if not self.level_ref:
             return
 
@@ -125,6 +231,19 @@ class WorldView(MainView):
             self.redraw_timer = redraw_timer
 
     def sizeHint(self) -> QSize:
+        """Report the drawable world-map extent to Qt layout code.
+
+        Scroll areas and parent layouts read this size before the widget paints
+        or translates cursor coordinates into overworld positions. Using the
+        edited map dimensions here keeps the optional border rows, drawer
+        output, hover previews, and drag-selection geometry aligned to the
+        same grid that later mouse handlers and undoable edit commands use.
+
+        Returns
+        -------
+        QSize
+            The recommended Qt size.
+        """
         size = super(WorldView, self).sizeHint()
 
         if self.settings.value("world_view/show_border"):
@@ -134,21 +253,60 @@ class WorldView(MainView):
 
     @property
     def settings(self):
+        """Drawer settings shared by world-map painting and hover workflow.
+
+        Border visibility, animation, and level-preview behavior all read this
+        same settings object while the view is rendering and handling input.
+
+        Returns
+        -------
+        Settings
+            Settings object used for world-map rendering and interaction options.
+        """
         return self.drawer.settings
 
     @settings.setter
     def settings(self, value):
+        """Store one settings object on the world-map drawer.
+
+        Parameters
+        ----------
+        value : Settings
+            Settings object used for world-map rendering and interaction options.
+        """
         self.drawer.settings = value
 
     @property
     def undo_stack(self) -> QUndoStack:
+        """Undo stack used for committed Scribe world-map commands.
+
+        Tile painting, pointer edits, sprite movement, and fill operations all
+        commit through this shared stack instead of mutating map state
+        invisibly.
+
+        Returns
+        -------
+        QUndoStack
+            Main-window undo stack used by committed world-map edits.
+        """
         return cast(QUndoStack, self.window().findChild(QUndoStack, "undo_stack"))
 
     @property
     def world(self) -> WorldMap:
+        """Edited world-map model behind the active view workflow.
+
+        Input handlers, hover previews, and drawing all route through this
+        typed accessor instead of repeatedly unpacking :attr:`level_ref`.
+
+        Returns
+        -------
+        foundry.game.level.WorldMap.WorldMap
+            World-map model referenced by :attr:`level_ref`.
+        """
         return self.level_ref.level
 
     def update_palette(self):
+        """Reload map-tile palette data after a palette change."""
         for map_tile in self.world.objects:
             map_tile.block._palette_group = load_palette_group(
                 self.world.object_set.number, self.world.data.palette_index
@@ -158,6 +316,19 @@ class WorldView(MainView):
         self.update()
 
     def set_mouse_mode(self, new_mode: int, event: QMouseEvent | None):
+        """Switch the world-map interaction mode.
+
+        Cursor state, drag anchors, and selection-square offsets all change
+        here so later mouse events can interpret the same shared world-view
+        mode consistently.
+
+        Parameters
+        ----------
+        new_mode : int
+            Interaction mode constant.
+        event : QMouseEvent | None
+            Qt event delivered to the widget.
+        """
         if new_mode == MODE_PUT_TILE:
             tile_pixmap = QPixmap(QSize(self.block_length, self.block_length))
 
@@ -195,10 +366,33 @@ class WorldView(MainView):
         self.mouse_mode = new_mode
 
     def on_put_tile(self, tile_id: int):
+        """Enter tile painting mode with a tile id.
+
+        Parameters
+        ----------
+        tile_id : int
+            Identifier of the tile.
+        """
         self._tile_to_put = tile_id
         self.set_mouse_mode(MODE_PUT_TILE, None)
 
     def mouseMoveEvent(self, event: QMouseEvent):
+        """Update hover previews, tile painting, dragging, or selection.
+
+        The method coordinates transient world-view state for tile painting,
+        drag previews, and level-entry tooltips before any undo command is
+        committed.
+
+        Parameters
+        ----------
+        event : QMouseEvent
+            Qt event delivered to the widget.
+
+        Returns
+        -------
+        object
+            Result returned by the base view handler, if any.
+        """
         x, y = self.to_level_point(event.position().toPoint()).xy
         level_under_cursor = self.world.level_pointer_at(x, y) is not None
 
@@ -233,6 +427,21 @@ class WorldView(MainView):
         return super(WorldView, self).mouseMoveEvent(event)
 
     def _set_level_thumbnail(self, event: QMouseEvent):
+        """Update the tooltip preview for the hovered level entry.
+
+        Pointer hit testing, thumbnail generation, and tooltip visibility all
+        flow through this helper so hover state stays coordinated.
+
+        Parameters
+        ----------
+        event : QMouseEvent
+            Qt event delivered to the widget.
+
+        Returns
+        -------
+        bool
+            ``True`` when a thumbnail tooltip was shown.
+        """
         if self.mouse_mode != MODE_FREE:
             return False
 
@@ -253,7 +462,7 @@ class WorldView(MainView):
         try:
             level_name = self.world.level_name_at_position(x, y)
 
-            object_set_name = OBJECT_SET_NAMES[level_pointer.data.object_set]
+            object_set_name = tr_data_name("ObjectSet", OBJECT_SET_NAMES[level_pointer.data.object_set])
 
             image_data = get_level_thumbnail(
                 level_pointer.data.object_set,
@@ -263,9 +472,9 @@ class WorldView(MainView):
 
             self.setToolTip(
                 f"<b>{level_name}</b><br/>"
-                f"<u>Type:</u> {object_set_name} "
-                f"<u>Objects:</u> {level_pointer.data.level_address:#x} "
-                f"<u>Enemies:</u> {level_pointer.data.enemy_address:#x}<br/>"
+                f"<u>{tr(TR_CONTEXT, 'type', 'Type')}:</u> {object_set_name} "
+                f"<u>{tr(TR_CONTEXT, 'objects', 'Objects')}:</u> {level_pointer.data.level_address:#x} "
+                f"<u>{tr(TR_CONTEXT, 'enemies', 'Enemies')}:</u> {level_pointer.data.enemy_address:#x}<br/>"
                 f"<img src='data:image/png;base64,{pixmap_to_base64(image_data)}'>"
             )
 
@@ -274,6 +483,13 @@ class WorldView(MainView):
             return False
 
     def _on_right_mouse_button_up(self, event):
+        """Cancel the active mode or open the world context menu.
+
+        Parameters
+        ----------
+        event : QMouseEvent
+            Qt event delivered to the widget.
+        """
         if not self.mouse_mode == MODE_FREE:
             self.set_mouse_mode(MODE_FREE, event)
         else:
@@ -282,6 +498,20 @@ class WorldView(MainView):
             self.context_menu.popup(menu_pos)
 
     def _fill_tile(self, tile_to_fill_in: int, x, y):
+        """Flood-fill matching map tiles from one starting coordinate.
+
+        Shift-fill uses this recursive helper to stage a connected tile-region
+        replacement before the enclosing undo macro is closed.
+
+        Parameters
+        ----------
+        tile_to_fill_in : int
+            Tile id being replaced.
+        x : int
+            Horizontal coordinate.
+        y : int
+            Vertical coordinate.
+        """
         if tile_to_fill_in == self._tile_to_put:
             return
 
@@ -302,6 +532,21 @@ class WorldView(MainView):
         self._fill_tile(tile_to_fill_in, x, y - 1)
 
     def to_level_point(self, q_point) -> Position:
+        """Convert widget coordinates to world-map tile coordinates.
+
+        The conversion also accounts for the optional border rows so hit
+        testing and paint operations land on the same world-map data cells.
+
+        Parameters
+        ----------
+        q_point : QPoint
+            Point in widget coordinates.
+
+        Returns
+        -------
+        Position
+            Point converted into level coordinates.
+        """
         pos = super(WorldView, self).to_level_point(q_point)
 
         if not self.settings.value("world_view/show_border"):
@@ -310,6 +555,13 @@ class WorldView(MainView):
         return pos
 
     def _on_middle_mouse_button_down(self, event: QMouseEvent):
+        """Pick the map tile under the cursor for painting.
+
+        Parameters
+        ----------
+        event : QMouseEvent
+            Qt event delivered to the widget.
+        """
         x, y = self.to_level_point(event.position().toPoint()).xy
 
         if not self.world.point_in(x, y):
@@ -325,6 +577,24 @@ class WorldView(MainView):
         self.on_put_tile(obj.type)
 
     def _visible_object_at(self, point: QPoint) -> MapObject:
+        """Resolve a view position to the topmost visible world-map object.
+
+        Visibility settings are checked in draw order so selection and dragging
+        operate on the same object layer stack the person can currently see,
+        and the resolved object can feed the left-click path that decides
+        whether the gesture should select tiles, pointers, sprites, or map
+        structures before the drag workflow captures that target.
+
+        Parameters
+        ----------
+        point : QPoint
+            Point being converted, tested, or applied.
+
+        Returns
+        -------
+        MapObject
+            Visible object at the queried position, if one exists.
+        """
         level_x, level_y = self.to_level_point(point).xy
 
         obj = None
@@ -360,6 +630,19 @@ class WorldView(MainView):
         return obj
 
     def _on_left_mouse_button_down(self, event: QMouseEvent):
+        """Start tile placement, selection, or dragging from a left click.
+
+        This method is the main world-map gesture entry point. It decides
+        whether the click begins painting, flood fill, marquee selection, or a
+        drag of tiles or map objects, and stages the mode and selection state
+        later consumed by drag and release handlers before any undo command is
+        finalized.
+
+        Parameters
+        ----------
+        event : QMouseEvent
+            Qt event delivered to the widget.
+        """
         x, y = self.to_level_point(event.position().toPoint()).xy
 
         if not self.world.point_in(x, y):
@@ -370,13 +653,24 @@ class WorldView(MainView):
 
             assert tile is not None
 
-            tile_to_put_name = TILE_NAMES[self._tile_to_put]
+            tile_to_put_name = tr_data_name("Tile", TILE_NAMES[self._tile_to_put])
 
             if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
-                self.undo_stack.beginMacro(f"Fill in '{tile.name}' with '{tile_to_put_name}'")
+                self.undo_stack.beginMacro(
+                    tr(
+                        "ScribeWorldView",
+                        "fill_in_tile_name_with_replacement_name",
+                        "Fill in '{tile_name}' with '{replacement_name}'",
+                    ).format(
+                        tile_name=tr_data_name("Tile", tile.name),
+                        replacement_name=tile_to_put_name,
+                    )
+                )
                 self._fill_tile(tile.type, x, y)
             else:
-                self.undo_stack.beginMacro(f"Place '{tile_to_put_name}'")
+                self.undo_stack.beginMacro(
+                    tr("ScribeWorldView", "place_tile_name", "Place '{tile_name}'").format(tile_name=tile_to_put_name)
+                )
                 self.undo_stack.push(PutTile(self.world, Position.from_xy(x, y), self._tile_to_put))
 
             self.update()
@@ -403,6 +697,16 @@ class WorldView(MainView):
         self.update()
 
     def _dragging(self, event: QMouseEvent):
+        """Advance a world-map drag gesture using the latest cursor position.
+
+        Dragging updates tile or map-object positions temporarily so release
+        handlers can later decide whether to commit an undo command.
+
+        Parameters
+        ----------
+        event : QMouseEvent
+            Qt event delivered to the widget.
+        """
         level_pos = self.to_level_point(event.position().toPoint())
 
         dx, dy = (level_pos - self.last_mouse_position).xy
@@ -424,6 +728,13 @@ class WorldView(MainView):
         self.update()
 
     def _on_left_mouse_button_up(self, event: QMouseEvent):
+        """Commit tile painting, movement, or selection changes.
+
+        Parameters
+        ----------
+        event : QMouseEvent
+            Qt event delivered to the widget.
+        """
         if self.mouse_mode == MODE_PUT_TILE:
             self.undo_stack.endMacro()
             return
@@ -476,6 +787,16 @@ class WorldView(MainView):
         self.set_mouse_mode(MODE_FREE, event)
 
     def _move_selected_tiles(self, drag_end_point: Position):
+        """Commit a dragged tile selection to the undo stack.
+
+        Multi-tile motion is replayed here as one macro so the moved rectangle
+        keeps its relative layout when the command is undone or redone.
+
+        Parameters
+        ----------
+        drag_end_point : Position
+            World-map position where the drag ended.
+        """
         dx, dy = (drag_end_point - self.drag_start_point).xy
 
         if dx == dy == 0:
@@ -486,7 +807,11 @@ class WorldView(MainView):
         self.select_objects([], replace_selection=True)
 
         if (no_of_sel_objects := len(sel_objects)) > 1:
-            self.undo_stack.beginMacro(f"Move {no_of_sel_objects} Tiles")
+            self.undo_stack.beginMacro(
+                tr("ScribeWorldView", "move_tile_count_tiles", "Move {tile_count} Tiles").format(
+                    tile_count=no_of_sel_objects
+                )
+            )
 
         old_objects = self.world.objects.copy()
 
@@ -515,6 +840,20 @@ class WorldView(MainView):
             self.undo_stack.endMacro()
 
     def select_object_like(self, obj: MapObject):
+        """Select one visible world-map object for later world-map edits.
+
+        Selection is transient UI state used by drag, context-menu, and table
+        synchronization workflows. The method clears the previous selected
+        ``MapObject`` flag before marking the newly hit-tested object, but it
+        does not commit any ROM or world-map command; movement and pointer
+        edits are still routed through release handlers and the undo stack.
+
+        Parameters
+        ----------
+        obj : MapObject
+            Map object or tile returned from hit-testing, or ``None`` to leave
+            the active selection unchanged after clearing the previous one.
+        """
         if self.selected_object is not None:
             self.selected_object.selected = False
 
@@ -527,16 +866,38 @@ class WorldView(MainView):
         self.update()
 
     def select_sprite(self, index: int):
+        """Select a sprite by index.
+
+        Parameters
+        ----------
+        index : int
+            Zero-based index of the item to access.
+        """
         self.select_object_like(self.world.sprites[index])
 
     def select_level_pointer(self, index: int):
+        """Select a level pointer by index.
+
+        Parameters
+        ----------
+        index : int
+            Zero-based index of the item to access.
+        """
         self.select_object_like(self.world.level_pointers[index])
 
     def select_locks_and_bridges(self, index: int):
+        """Select a lock or bridge object by index.
+
+        Parameters
+        ----------
+        index : int
+            Zero-based index of the item to access.
+        """
         self.select_object_like(self.world.locks_and_bridges[index])
 
     def clear_tiles(self):
-        self.undo_stack.beginMacro("Clear Tiles")
+        """Replace every map tile with a blank tile via undo commands."""
+        self.undo_stack.beginMacro(tr("ScribeWorldView", "clear_tiles", "Clear Tiles"))
 
         for map_tile in self.world.get_all_objects():
             self.undo_stack.push(PutTile(self.world, map_tile.pos, WORLD_MAP_BLANK_TILE_ID))
@@ -544,7 +905,8 @@ class WorldView(MainView):
         self.undo_stack.endMacro()
 
     def clear_sprites(self):
-        self.undo_stack.beginMacro("Clear Sprites")
+        """Clear all world-map sprites via undo commands."""
+        self.undo_stack.beginMacro(tr("ScribeWorldView", "clear_sprites", "Clear Sprites"))
 
         for sprite in self.world.sprites:
             self.undo_stack.push(SetSpriteType(sprite.data, 0))
@@ -554,7 +916,8 @@ class WorldView(MainView):
         self.undo_stack.endMacro()
 
     def clear_level_pointers(self):
-        self.undo_stack.beginMacro("Clear Level Pointers")
+        """Clear all level pointers via undo commands."""
+        self.undo_stack.beginMacro(tr("ScribeWorldView", "clear_level_pointers", "Clear Level Pointers"))
 
         for level_pointer in self.world.level_pointers:
             self.undo_stack.push(SetLevelAddress(level_pointer.data, 0))
@@ -565,6 +928,13 @@ class WorldView(MainView):
         self.undo_stack.endMacro()
 
     def scroll_to_objects(self, objects: list[LevelObject]):
+        """Scroll the containing view to the first related objects.
+
+        Parameters
+        ----------
+        objects : list[foundry.game.gfx.objects.in_level.level_object.LevelObject]
+            Objects whose positions should be made visible.
+        """
         if not objects:
             return
 

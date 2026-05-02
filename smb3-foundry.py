@@ -1,4 +1,19 @@
 #!/usr/bin/env python3
+"""Start the Foundry level editor and restore the requested editing context.
+
+This script is the packaged and source-tree entrypoint for the main editor. It
+normalizes PyInstaller's temporary data directory, installs the persisted UI
+language before any windows are shown, parses a small command-line surface for
+ROM, M3L, and direct level-loading workflows, and routes fatal startup errors
+through Foundry's crash dialog.
+
+The module is also the boundary between process-level startup state and the
+main-window orchestration layer. It may choose an autosave ROM, the remembered
+last level, an explicit M3L file, or a direct level tuple, but it does not own
+ROM parsing, undo state, reload behavior, or GUI command policy. Those remain
+with ``FoundryMainWindow`` and the feature mixins it composes.
+"""
+
 import logging
 import os
 import sys
@@ -12,6 +27,8 @@ from foundry import auto_save_rom_path, is_pyinstalled
 from foundry.game.File import ROM
 from foundry.gui.dialogs.AutoSaveDialog import AutoSaveDialog
 from foundry.gui.dialogs.crash_dialog import popup_crash_dialog
+from foundry.gui.localization import install_language_from_settings, tr
+from foundry.gui.settings import Settings
 from smb3parse.levels import WORLD_COUNT
 from smb3parse.util import clamp
 
@@ -43,8 +60,32 @@ def main(
     level_data_tuple_=(0, 0, 0, 0),
     m3l_path_="",
 ):
+    """Create the Qt app, open the chosen ROM, and restore editor context.
+
+    Startup chooses exactly one initial content source. Autosave recovery wins
+    when enabled and accepted, explicit M3L or level tuples win over remembered
+    state, and the remembered-last-level setting is used only when no explicit
+    level target was requested. Once the source is selected, the function hands
+    ROM loading and level restoration to ``FoundryMainWindow`` so parser state,
+    reload watchers, menus, and undo-aware UI setup all stay inside the main
+    editor orchestration layer.
+
+    Parameters
+    ----------
+    path_to_rom : Path
+        ROM path supplied by the command line or by remembered/autosave state.
+    check_auto_save : bool, optional
+        Whether startup should offer autosave recovery before opening the ROM.
+    level_data_tuple_ : tuple[int, int, int, int], optional
+        Direct level identity as level address, enemy address, object set, and
+        world number. These encoded values are stable parser identity and are
+        passed through without localization or display conversion.
+    m3l_path_ : str, optional
+        Optional M3L file path to load after the ROM is opened.
+    """
     global app
     app = QApplication()
+    install_language_from_settings(app, Settings("mchlnix", "foundry"))
 
     main_window = FoundryMainWindow()
 
@@ -60,8 +101,8 @@ def main(
 
             QMessageBox.information(
                 None,
-                "Auto Save recovered",
-                "Don't forget to save the loaded ROM under a new name!",
+                tr("foundry.startup", "autosave.recovered.title"),
+                tr("foundry.startup", "autosave.recovered.message"),
             )
 
     if not load_from_auto_save and not have_level_data and main_window.settings.value("editor/remember_last_level"):
@@ -149,6 +190,7 @@ if __name__ == "__main__":
     except Exception:
         if app is None:
             app = QApplication()
+            install_language_from_settings(app, Settings("mchlnix", "foundry"))
 
         popup_crash_dialog(traceback.format_exc())
 

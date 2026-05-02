@@ -1,3 +1,32 @@
+"""Shared SMB3 parsing constants and overridable ROM label addresses.
+
+This module is the handoff point between ROM-specific symbol addresses and the
+stable names used by the rest of :mod:`smb3parse`. The constants near the top
+of the file provide fixed lookup data such as object-set ids, map item names,
+and tile labels that parsing, rendering, and editor-facing code can consume
+without touching ROM metadata directly. The ``Constants`` class near the bottom
+exposes parser-facing address names that default to
+``smb3parse._default_constants`` and can be rebound when a ROM build exports a
+different symbol table.
+
+That workflow matters when parser entry points load data from either stock ROM
+addresses or a modified build. Parser code imports stable names such as
+``LEVEL_BASE_OFFSET`` or ``LEVELS_IN_WORLD_LIST_OFFSET`` from this module,
+while ROM-loading code calls ``update_global_offsets`` to replace the backing
+addresses before any pointer walking begins. ``reset_global_offsets`` restores
+the stock address set so later loads do not inherit overrides from an earlier
+ROM session.
+
+See Also
+--------
+smb3parse._default_constants._DefaultConstants
+    Default address table that supplies the backing values redirected by
+    ``Constants``.
+smb3parse.util.hex_int
+    Helper used when parsing hexadecimal label values from exported symbol
+    files.
+"""
+
 from binascii import unhexlify
 from collections import defaultdict
 from pathlib import Path
@@ -471,16 +500,89 @@ STARTING_WORLD_INDEX_ADDRESS = 0x30CC3
 
 
 class _ClassVarRedirect(type):
-    """
-    A metaclass that allows a class to define class variables that will get their values dynamically from other class
-    variables.
-    The relation between those two class variables is described in a dictionary called _redirect.
-    The keys are the names of class variables, without a name, the values are the names of variables to look up instead.
+    """Redirect annotated class attributes to existing backing attributes.
+
+    Classes using this metaclass declare public attribute names through type
+    annotations and provide a ``_redirect`` mapping from those public names to
+    real class attributes. Accessing an annotated name that has no class value
+    resolves through the mapped backing attribute instead. ``Constants`` uses
+    this to offer parser-facing names while storing the actual defaults on
+    :class:`~smb3parse._default_constants._DefaultConstants`. The metaclass
+    therefore preserves a stable parser vocabulary even when ROM bootstrap code
+    later rebases the backing labels to match a different exported symbol set.
+    Its job is not generic attribute indirection so much as protecting the
+    boundary between parser-facing names and ROM-build-specific label names.
+
+    Attributes
+    ----------
+    _redirect : dict[str, str]
+        Maps annotated public attribute names to existing class attributes that
+        hold the actual values.
+
+    Parameters
+    ----------
+    name : str
+        Name of the class being created.
+    bases : tuple[type, ...]
+        Base classes supplied to the metaclass.
+    attrs : dict[str, object]
+        Namespace used to build the class.
+
+    Raises
+    ------
+    ValueError
+        Raised during class creation when redirect metadata is missing or does
+        not match the annotated public names.
+
+    Notes
+    -----
+    The redirect contract is intentionally strict. Every annotated public name
+    must already map to an existing backing attribute at class-definition time,
+    because later parser code assumes that importing a public constant name is
+    enough to reach the active ROM address. Future changes should preserve that
+    lifecycle: symbol-loading code may replace backing values, but consumer
+    code should continue reading one stable set of public names without caring
+    whether those values came from the stock disassembly or a generated export.
+    If this metaclass were relaxed to tolerate missing mappings or lazy backing
+    attributes, configuration errors would move from import time into parsing
+    workflows that are much harder to diagnose.
+
+    See Also
+    --------
+    Constants
+        Public address facade that uses this metaclass.
     """
 
     _redirect: dict[str, str]
 
     def __init__(cls, name, bases, attrs):
+        """Validate redirect metadata when the class object is created.
+
+        This runs once when a class using the metaclass is defined and rejects
+        redirect tables that would leave parser-facing names dangling. That
+        upfront validation lets parser and editor code treat redirected class
+        attributes as stable configuration inputs instead of checking for
+        missing backing labels during every ROM load. The validation step
+        therefore front-loads bad symbol wiring into import time, before ROM
+        bootstrap code begins copying overrides into :class:`Constants` and
+        before parser modules cache any address lookups.
+
+        Parameters
+        ----------
+        name : str
+            Name of the class being created.
+        bases : tuple[type, ...]
+            Base classes supplied to the metaclass.
+        attrs : dict[str, object]
+            Namespace used to build the class.
+
+        Raises
+        ------
+        ValueError
+            Raised when the class omits ``_redirect``, uses a non-dictionary
+            redirect table, fails to provide a redirect entry for an annotated
+            attribute, or points that entry at a missing backing attribute.
+        """
         if not hasattr(cls, "_redirect") or not isinstance(cls._redirect, dict):
             raise ValueError("Class must have a dictionary class variable named '_redirect'")
 
@@ -496,10 +598,40 @@ class _ClassVarRedirect(type):
         super(_ClassVarRedirect, cls).__init__(name, bases, attrs)
 
     def __getattr__(cls, item):
-        """
-        Intercept class variable access.
-        If the attribute is an annotation without a value, instead of a class variable, consult the _redirect dict.
-        If an entry of that name is found there, return the value of whatever attribute is in that entry is returned.
+        """Resolve redirected class attributes on demand.
+
+        ``Constants`` relies on this fallback because its public names are
+        annotations only; the actual values live on inherited backing
+        attributes until callers ask for them. The lookup keeps parser code on
+        one stable naming scheme even after ``update_global_offsets`` swaps the
+        underlying disassembly-style labels to match a custom ROM export. That
+        means ROM bootstrap code can load or reset symbol overrides once, after
+        which parser code continues reading the same public attribute names.
+        This hook supplies that handoff by translating each later class
+        attribute access to the backing label that now reflects the active ROM
+        build.
+
+        Parameters
+        ----------
+        item : str
+            Attribute name being requested from the class.
+
+        Returns
+        -------
+        object
+            The value of the redirected backing attribute when ``item`` is an
+            annotated public constant, otherwise the attribute resolved through
+            normal class lookup.
+
+        Notes
+        -----
+        This hook only redirects names that are both annotated on the class and
+        present in ``_redirect``. Other names fall back to ``object`` attribute
+        lookup so ordinary metaclass behavior stays intact. The lifecycle is:
+        ROM bootstrap code may first update backing labels on
+        :class:`Constants`, then later parser code reads one stable public
+        constant name, and this hook translates that read to whichever backing
+        label now represents the active ROM build.
         """
         if item in cls.__annotations__ and item in cls._redirect:
             class_variable_to_return_instead = cls._redirect[item]
@@ -510,6 +642,81 @@ class _ClassVarRedirect(type):
 
 
 class Constants(_DefaultConstants, metaclass=_ClassVarRedirect):
+    """Public names for ROM-address constants used by the parser.
+
+    ``Constants`` inherits the disassembly-oriented label names from
+    :class:`~smb3parse._default_constants._DefaultConstants` and exposes a
+    second, parser-facing vocabulary through redirected annotated attributes.
+    The redirected names stay stable even when a custom symbol export updates
+    the backing label values at runtime. That gives higher-level parsing code
+    one place to read stock addresses while still letting ROM-loading paths
+    swap in project-specific labels before the parser starts walking world-map
+    tables, level pointers, or object-set bank lookups. In other words,
+    ``Constants`` is the parser's address contract: ROM bootstrap code updates
+    it once, and the rest of the package reads from it without needing to know
+    whether those values came from the stock disassembly or a generated export.
+    The class therefore sits between symbol ingestion and every later parse
+    step that turns raw addresses into world maps, level headers, or object
+    streams.
+
+    Attributes
+    ----------
+    OFFSET_BY_OBJECT_SET_A000 : int
+        Address table for the PRG bank mapped into CPU space ``0xA000`` to
+        ``0xBFFF`` for each object set.
+    OFFSET_BY_OBJECT_SET_C000 : int
+        Address table for the PRG bank mapped into CPU space ``0xC000`` to
+        ``0xFFFF`` for each object set.
+    TSA_OS_LIST : int
+        Address of the tileset lookup used for overworld TSA selection.
+    LEVEL_BASE_OFFSET : int
+        Address of the tileset index table used by level-header parsing.
+    LAYOUT_LIST_OFFSET : int
+        Address of the world-map tile layout pointer table.
+    TILE_ATTRIBUTES_TS0_OFFSET : int
+        Address of the tileset-0 tile-attribute table.
+    STRUCTURE_DATA_OFFSETS : int
+        Address of the world metadata block pointer table.
+    LEVEL_Y_POS_LISTS : int
+        Address of world-map row-position lists for level tiles.
+    LEVEL_X_POS_LISTS : int
+        Address of world-map column-position lists for level tiles.
+    LEVEL_ENEMY_LIST_OFFSET : int
+        Address of the world-map object-set list used when locating enemy data.
+    LEVELS_IN_WORLD_LIST_OFFSET : int
+        Address of per-world lists that point at level-layout entries.
+    COMPLETABLE_TILES_LIST : int
+        Address of the tile list treated as completable on the world map.
+    SPECIAL_ENTERABLE_TILES_LIST : int
+        Address of extra enterable world-map tiles such as castles or Toad
+        Houses.
+    LEVEL_LOAD_ROUTINE_BY_OBJECT_SET : int
+        Address of the per-object-set level-load routine lookup table.
+
+    Notes
+    -----
+    The annotated names in this class intentionally do not store values
+    directly. The metaclass resolves them through ``_redirect`` so callers can
+    use parser-facing names while ROM-specific overrides still update the
+    underlying disassembly labels. In practice, parser modules import these
+    redirected names as their address contract, and ROM bootstrap code decides
+    whether that contract points at the stock disassembly labels or a symbol
+    file loaded from the active build. That separation keeps the rest of the
+    parser pipeline focused on pointer math and decoded structures instead of
+    on which disassembly label or linker export produced each address.
+    The practical lifecycle is: load stock defaults from
+    :class:`_DefaultConstants`, optionally apply one ROM-specific override pass
+    during bootstrap, then let the rest of the parser read these redirected
+    names as its long-lived address contract for every later table lookup.
+
+    See Also
+    --------
+    reset_global_offsets
+        Restores redirected values from their backup copies.
+    update_global_offsets
+        Applies ROM-specific label overrides to this class.
+    """
+
     OFFSET_BY_OBJECT_SET_A000: int
     """
     A list of values, which specify which ROM page should be loaded into addresses 0xA000 - 0xBFFF for a given object
@@ -602,6 +809,13 @@ class Constants(_DefaultConstants, metaclass=_ClassVarRedirect):
 
 
 def reset_global_offsets():
+    """Restore redirected global offsets from their backup attributes.
+
+    Every public attribute on :class:`Constants` has a corresponding backup
+    attribute prefixed with ``_``. This function copies those backup values over
+    the public names, undoing any overrides previously loaded from a symbol
+    file.
+    """
     for attr_name in dir(Constants):
         if attr_name.startswith("__"):
             # internal attribute
@@ -617,6 +831,21 @@ def reset_global_offsets():
 
 
 def update_global_offsets(path_to_global_list: Path):
+    """Update ``Constants`` from an exported label file.
+
+    Parameters
+    ----------
+    path_to_global_list : pathlib.Path
+        Path to a text file containing ``LABEL=$ADDRESS`` pairs.
+
+    Notes
+    -----
+    The function resets all redirected values before applying the file, skips
+    comment lines beginning with ``;``, ignores labels for ``PRG0`` and private
+    names, and prints a warning for labels not already present on
+    :class:`Constants`. Unknown labels are still installed, along with a backup
+    attribute, so later resets preserve the new symbol.
+    """
     warnings: list[str] = []
 
     with path_to_global_list.open("r") as label_file:

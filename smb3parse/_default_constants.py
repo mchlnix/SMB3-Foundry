@@ -1,6 +1,108 @@
+"""Ship the baseline SMB3 symbol table used by the parser constant layer.
+
+This module provides the first stage of the constants bootstrap for
+`smb3parse`. `smb3parse.constants.Constants` imports `_DefaultConstants`,
+copies these vanilla-US label offsets into its mutable surface, and then
+optionally replaces selected values from an external label file. Parser, ROM,
+data-point, and world-model code therefore all flow through this table before
+they read custom symbol overrides. Read `smb3parse.constants` next to follow
+that bootstrap from immutable defaults into the package-wide lookup object.
+"""
+
+
 class _DefaultConstants:
-    """
-    A class holding all the default values of the FNS labels of Vanilla US SMB3.
+    """Provide fallback ROM addresses for the vanilla US SMB3 symbol set.
+
+    The class exists as a static namespace, not as runtime state. Each attribute
+    maps one FNS label name to the default byte offset used by the built-in SMB3
+    parser pipeline. `smb3parse.constants.Constants` copies from this namespace
+    before applying user-provided symbol overrides, so the values here define the
+    compatibility baseline that parser helpers, object decoders, and world-map
+    readers can rely on even when no external label file is available.
+
+    Attributes
+    ----------
+    AND7F : int
+        Default ROM offset for the `AND7F` helper label from the vanilla US
+        symbol map. It illustrates the baseline contract for single exported
+        helper labels.
+    ASFloat_VVelLimit : int
+        Default ROM offset for the floating autoscroll vertical-velocity limit.
+        `ASFloat_VVelLimit`, `ASFloat_VelAccel`, and `ASFloat_VertLimit`
+        demonstrate the scalar tuning-label family that parser-side analysis
+        tools resolve through this namespace.
+    ASFloat_VelAccel : int
+        Default ROM offset for the floating autoscroll velocity-acceleration
+        label copied into the mutable constants table during bootstrap.
+    ASFloat_VertLimit : int
+        Default ROM offset for the floating autoscroll vertical-range limit
+        label that ships with the built-in symbol baseline.
+    ASMLT_0 : int
+        Default ROM offset for one movement-loop tick program. `ASMLT_0`,
+        `ASMLT_3`, `ASMLT_4`, `ASMLT_5`, `ASMLT_6`, `ASMLT_Airship`, and
+        `ASMLT_Battleship` show the numbered and named movement-script labels
+        that must stay stable for autoscroll-aware tooling.
+    ASMLT_3 : int
+        Default ROM offset for an alternate movement-loop tick script in the
+        same autoscroll family as `ASMLT_0`.
+    ASMLT_4 : int
+        Default ROM offset for an alternate movement-loop tick script in the
+        same autoscroll family as `ASMLT_0`.
+    ASMLT_5 : int
+        Default ROM offset for an alternate movement-loop tick script in the
+        same autoscroll family as `ASMLT_0`.
+    ASMLT_6 : int
+        Default ROM offset for an alternate movement-loop tick script in the
+        same autoscroll family as `ASMLT_0`.
+    ASMLT_Airship : int
+        Default ROM offset for the named airship movement-loop tick script.
+    ASMLT_Battleship : int
+        Default ROM offset for the named battleship movement-loop tick script.
+    ASML_0 : int
+        Default ROM offset for the paired movement-loop program family.
+        `ASML_0` marks the next visible symbol tranche after the `ASMLT_*`
+        entries and shows that the namespace preserves FNS ordering, not a
+        curated subset of parser-specific labels.
+    _AND7F and underscored aliases : int
+        Each public label has a matching underscored alias with the same ROM
+        offset, such as `_AND7F`, `_ASFloat_VVelLimit`, and `_ASMLT_0`. The
+        duplicate names preserve compatibility with older generated consumers,
+        alternate label exporters, and code that still expects the legacy
+        underscored naming convention.
+    Remaining parser, object, and world-map labels : int
+        The rest of the class follows the same pattern for level pointer
+        tables, object-definition groups, tile and palette tables, autoscroll
+        scripts, and world-map metadata, including entries such as
+        `AutoScroll_Do`, `Background_Layout`, `Level_BG_Ptrs`,
+        `Level_Objects`, `Level_Enemies`, `Map_Completable_Tiles`,
+        `Music_Table`, `ObjectGroup00`, `ObjectGroup00_Attributes`,
+        `FortressFX_Pointers`, `PAGE_A000_ByTileset`, `Tile_Attributes_TS0`,
+        `WMap_ByRowType`, `WMap_LevelLayouts`, `WMap_LevelEnemies`,
+        `WorldMap_Loop`, and `WorldMap_Palettes`.
+
+    Notes
+    -----
+    This namespace is the immutable compatibility floor for
+    :class:`smb3parse.constants.Constants`. The mutable constants object copies
+    these names and values first, then overlays any user-supplied label file on
+    top. That bootstrap means maintainers cannot treat this file like a casual
+    cache of addresses: renaming a symbol, deleting an apparently redundant
+    alias, or reordering the leading families changes what downstream code can
+    discover even before custom overrides are applied.
+
+    The duplication between public and underscored names is deliberate. Some
+    consumers bind to the exported FNS-style label, while others still expect
+    the legacy underscored mirror. Both spellings therefore form part of the
+    long-lived parser contract and should change only alongside the constants
+    loader, compatibility policy, and any fixtures that assume vanilla US SMB3
+    label coverage.
+
+    The first visible symbols are documented individually because audit and
+    maintenance work both use them as anchors for the much larger table. The
+    rest of the file should still be read as one uniform dataset: every class
+    attribute is a ROM-offset constant, every public name should have a matching
+    underscored alias, and the absence of methods is intentional because this
+    class exists only to ship data into the higher-level constants bootstrap.
     """
 
     AND7F = 0x381BC

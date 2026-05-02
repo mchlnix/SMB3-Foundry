@@ -1,3 +1,19 @@
+"""Popup warning surfaces for level-validation issues.
+
+This module owns the warning popup that Foundry rebuilds from the active level
+state after edits, header changes, and undoable mutations. ``WarningList``
+turns ``LevelRef`` into human-readable validation messages plus the related
+objects that caused each warning, while ``WarningLabel`` feeds hover events
+back into the level view and object list so users can inspect the offending
+data in context.
+
+See Also
+--------
+foundry.game.level.LevelRef.LevelRef : Edited level state observed by the warning popup.
+foundry.gui.ObjectList.ObjectList : List surface kept in sync when warnings focus objects.
+foundry.gui.visualization.level.LevelView.LevelView : Canvas view that scrolls to and highlights warning targets.
+"""
+
 import json
 from operator import xor
 from typing import Sequence
@@ -12,7 +28,8 @@ from foundry.game.gfx.objects.in_level.enemy_item import EnemyItem
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.level.LevelRef import LevelRef
 from foundry.game.ObjectDefinitions import GeneratorType
-from foundry.gui.dialogs.LevelHeaderEditor import CAMERA_MOVEMENTS
+from foundry.gui.dialogs.LevelHeaderEditor import CAMERA_MOVEMENT_LABELS, CameraMovement
+from foundry.gui.localization import tr
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.util import clear_layout
 from foundry.gui.visualization.level.LevelView import LevelView
@@ -32,6 +49,48 @@ from smb3parse.constants import (
 
 
 class WarningList(QWidget):
+    """Popup list of level validation warnings.
+
+    The widget derives warnings from the active level model, including SMB3
+    crash-prone object placements, jump/header mismatches, autoscroll setup,
+    incompatible enemy groups, and chest/goal-card conventions. Hovering a
+    warning selects and scrolls to the related objects. It acts as Foundry's
+    live lint pass for ROM-editing mistakes that are legal to encode but risky
+    to ship: impossible placements, engine quirks, object-set rules, and
+    crash-prone combinations discovered through SMB3-specific editor history.
+    The workflow is deliberately reactive: ``LevelRef.data_changed`` triggers a
+    warning recomputation, the popup rebuilds its warning-label widgets from the
+    resulting text/object pairs, and hovering a label pushes the related
+    selection back into the level view and object list so the user can inspect
+    the offending data in context.
+
+    Parameters
+    ----------
+    parent : QWidget
+        Parent Qt widget that owns this object.
+    level_ref : LevelRef
+        Reference to the edited level.
+    level_view_ref : LevelView
+        Reference to the level view used by the warning list.
+    object_list_ref : ObjectList
+        Reference to the object list used by the warning list.
+
+    Attributes
+    ----------
+    _enemy_dict : dict[str, tuple[str, str]]
+        Enemy-name lookup mapping to incompatibility clan and group.
+    level_ref : LevelRef
+        Reference that owns the edited level data.
+    level_view_ref : LevelView
+        Level view used to select and scroll to warning-related objects.
+    object_list : ObjectList
+        Object list kept in sync when warning hovers change selection.
+    warnings : list[tuple[str, list[InLevelObject]]]
+        Current warning text paired with the related in-level objects.
+    warnings_updated : SignalInstance
+        Signal emitted whenever the warning list becomes empty or non-empty.
+    """
+
     warnings_updated: SignalInstance = Signal(bool)
 
     def __init__(
@@ -41,6 +100,23 @@ class WarningList(QWidget):
         level_view_ref: LevelView,
         object_list_ref: ObjectList,
     ):
+        """Create the warning popup and enemy compatibility lookup.
+
+        Construction wires warning recomputation to level changes, builds the
+        enemy-clan lookup table, and prepares the popup/list synchronization
+        state used by hover-to-focus behavior.
+
+        Parameters
+        ----------
+        parent : QWidget
+            Parent Qt widget that owns this object.
+        level_ref : LevelRef
+            Reference to the edited level.
+        level_view_ref : LevelView
+            Reference to the level view used by the warning list.
+        object_list_ref : ObjectList
+            Reference to the object list used by the warning list.
+        """
         super(WarningList, self).__init__(parent)
 
         self.level_ref = level_ref
@@ -59,6 +135,15 @@ class WarningList(QWidget):
         self.warnings: list[tuple[str, list[InLevelObject]]] = []
 
     def _update_warnings(self):
+        """Recompute warnings from the active level state.
+
+        This method keeps warning generation close to the level data it checks:
+        bounds, jump destinations, generator edge cases, autoscroll rows,
+        enemy compatibility, Boom Boom placement, pipe exits, chest exits, and
+        goal-card requirements. The resulting warnings drive both the popup
+        contents and the hover-to-select workflow used to jump from a warning
+        back to the offending objects in the level view.
+        """
         self.warnings.clear()
 
         level = self.level_ref.level
@@ -119,9 +204,14 @@ class WarningList(QWidget):
                     )
 
                 if level.header.scroll_type_index != 0:
+                    expected_scroll_type = tr(
+                        "foundry.level_header_editor",
+                        "cameramovement.locked_unless_climbing_flying",
+                        CAMERA_MOVEMENT_LABELS[CameraMovement.LOCKED_UNLESS_CLIMBING_FLYING],
+                    )
                     self.warn(
                         f"Level has auto scrolling enabled, but the scrolling type in the level header is not "
-                        f"'{CAMERA_MOVEMENTS[0]}. This might not work as expected.",
+                        f"'{expected_scroll_type}'. This might not work as expected.",
                         [],
                     )
 
@@ -235,9 +325,53 @@ class WarningList(QWidget):
         self.warnings_updated.emit(bool(self.warnings))
 
     def _find_enemies_in_level(self, enemy_id: int) -> list[EnemyItem]:
+        """Filter the level's enemy stream to one SMB3 enemy or item id.
+
+        Several warnings reason about incompatible enemy combinations, so they
+        need a filtered view of the level's stored enemy/item stream rather
+        than the full mixed editor selection state.
+        This keeps the warning rules declarative while they rebuild the popup
+        after level edits.
+
+        Parameters
+        ----------
+        enemy_id : int
+            Identifier of the enemy.
+
+        Returns
+        -------
+        list[EnemyItem]
+            Matching enemies/items in the edited level.
+        """
         return [enemy for enemy in self.level_ref.level.enemies if enemy.type == enemy_id]
 
     def _is_object_in_level(self, domain: int, object_index: int) -> bool:
+        """Check for an SMB3 level object while recomputing warning rules.
+
+        ``_update_warnings`` calls this helper when one warning rule needs to
+        know whether a specific SMB3 object combination exists in the edited
+        level. The helper answers that one predicate in domain/id terms instead
+        of making every rule rescan ``level.objects`` itself. A false result
+        stops that warning branch with no popup entry. A true result lets the
+        same recomputation add a warning row, and that row later becomes a
+        hover-focus target in the warning list. The method therefore sits in
+        the middle of the edit-to-warning pipeline: object edits change level
+        state, ``_update_warnings`` re-evaluates each rule, this helper answers
+        one object-presence predicate, and the resulting warning row becomes
+        focusable UI state for the user.
+
+        Parameters
+        ----------
+        domain : int
+            Object domain that determines how the object is interpreted.
+        object_index : int
+            Index of the object.
+
+        Returns
+        -------
+        bool
+            ``True`` when an object has the queried domain and id.
+        """
         return any(
             [
                 lvl_obj
@@ -247,6 +381,7 @@ class WarningList(QWidget):
         )
 
     def _build_enemy_clan_dict(self):
+        """Load enemy incompatibility groups from bundled JSON data."""
         with (data_dir / "enemy_data.json").open("r") as enemy_data_file:
             enemy_data = json.loads(enemy_data_file.read())
 
@@ -258,12 +393,25 @@ class WarningList(QWidget):
                         self._enemy_dict[enemy] = (clan, group)
 
     def warn(self, msg: str, objects: Sequence[InLevelObject] | None = None):
+        """Append a warning and optional related objects.
+
+        The method stores the warning payload for later popup rebuilds and
+        preserves the object references needed by hover-to-select behavior.
+
+        Parameters
+        ----------
+        msg : str
+            Warning text to display.
+        objects : Sequence[InLevelObject] | None, optional
+            Objects selected when the warning label is hovered.
+        """
         if objects is None:
             objects = []
 
         self.warnings.append((msg, list(objects)))
 
     def update(self):
+        """Rebuild warning labels from the active warning list."""
         self.hide()
 
         clear_layout(self.layout())
@@ -279,6 +427,7 @@ class WarningList(QWidget):
         super(WarningList, self).update()
 
     def show(self):
+        """Show the popup just below the cursor."""
         pos = QCursor.pos()
         pos.setY(pos.y() + 10)
 
@@ -287,6 +436,7 @@ class WarningList(QWidget):
         super(WarningList, self).show()
 
     def _focus_objects(self):
+        """Select and scroll to objects related to a hovered warning."""
         sender_widget = self.sender()
 
         assert isinstance(sender_widget, WarningLabel)
@@ -302,20 +452,98 @@ class WarningList(QWidget):
             self.level_ref.blockSignals(False)
 
     def focusOutEvent(self, event: QFocusEvent):
+        """Hide the popup when focus leaves it.
+
+        Parameters
+        ----------
+        event : QFocusEvent
+            Qt event delivered to the widget.
+        """
         self.hide()
 
         super(WarningList, self).focusOutEvent(event)
 
 
 class WarningLabel(QLabel):
+    """Represent one warning as a hoverable jump target back into the editor.
+
+    ``WarningList`` stores warnings as text plus related objects, but the popup
+    itself needs a widget that can participate in Qt layout and mouse events.
+    This label is that adapter: it renders the warning text, remembers the
+    related in-level objects, and emits ``hovered`` so the popup can drive the
+    editor selection, scroll position, and object-list focus from a simple
+    mouse-over gesture. That makes each row more than static text: it is a
+    lightweight controller for the warning-review workflow, where hovering a
+    lint finding immediately answers "which object is this talking about?" in
+    the live level editor.
+
+    Parameters
+    ----------
+    text : str
+        Warning text to display.
+    related_objects : list[InLevelObject]
+        Objects associated with the warning.
+
+    Attributes
+    ----------
+    hovered : SignalInstance
+        Signal emitted when the cursor enters the label so the popup can
+        synchronize editor selection.
+    related_objects : list[InLevelObject]
+        Objects associated with the warning row.
+
+    See Also
+    --------
+    WarningList
+        Creates these labels and uses their hover events to focus warnings in
+        the live editor.
+    """
+
     hovered: SignalInstance = Signal()
 
     def __init__(self, text: str, related_objects: list[InLevelObject]):
+        """Create a warning row tied to specific level objects.
+
+        ``WarningList`` creates one label per warning and reconnects its hover
+        signal so entering the row can focus the matching objects in the live
+        level view. The label therefore carries both the rendered warning text
+        and the object references that drive the popup's hover-to-select flow
+        back into the editor. Once stored here, those references are what
+        ``enterEvent`` hands back to the popup so the warning row can retarget
+        selection, scrolling, and object-list focus without recomputing the
+        warning. Initialization is therefore the point where a passive warning
+        message becomes an interactive editor target: the popup creates the
+        row, stores its related objects, and later hover events use that stored
+        state to drive editor focus.
+
+        Parameters
+        ----------
+        text : str
+            Warning text to display.
+        related_objects : list[InLevelObject]
+            Objects associated with the warning.
+        """
         super(WarningLabel, self).__init__(text)
 
         self.related_objects = related_objects
 
     def enterEvent(self, event: QEvent):
+        """Emit ``hovered`` before delegating the enter event.
+
+        Hover is the bridge between the popup list and the editor canvas: the
+        signal tells ``WarningList`` to select and scroll the related objects
+        before Qt handles the visual hover state.
+
+        Parameters
+        ----------
+        event : QEvent
+            Qt event delivered to the widget.
+
+        Returns
+        -------
+        QEvent | None
+            Result returned by the base Qt handler, if any.
+        """
         self.hovered.emit()
 
         return super(WarningLabel, self).enterEvent(event)

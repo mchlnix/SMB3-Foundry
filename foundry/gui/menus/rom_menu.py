@@ -1,3 +1,23 @@
+"""Host ROM-wide viewer and maintenance actions for the editor shell.
+
+This module owns the ROM menu in Foundry's main window. The menu sits in the
+editor workflow between the loaded ROM and a set of auxiliary viewers or
+dialogs: it surfaces ROM-wide actions in the menu bar, dispatches the chosen
+action into either a reusable viewer window or a one-shot dialog, and emits a
+refresh signal when a ROM-wide mutation invalidates the active editor UI. That
+keeps ROM inspection and ROM maintenance on one route separate from the
+per-object editing workflow in the level canvas.
+
+See Also
+--------
+foundry.gui.FoundryMainWindow
+    Owns the menu bar and reacts to the refresh signal emitted here.
+foundry.gui.windows.LevelViewer
+    ROM-scanning viewer opened from this menu.
+foundry.gui.rom_settings.rom_settings_dialog
+    Dialog that edits persistent ROM-level settings.
+"""
+
 from collections import defaultdict
 
 from PySide6.QtCore import Signal, SignalInstance
@@ -11,6 +31,7 @@ from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.dialogs.GamePropertiesDialog import GamePropertiesDialog
 from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialog
 from foundry.gui.dialogs.PaletteViewer import PaletteViewer
+from foundry.gui.localization import tr
 from foundry.gui.rom_settings.rom_settings_dialog import RomSettingsDialog
 from foundry.gui.windows.BlockViewer import BlockViewer
 from foundry.gui.windows.LevelViewer import LevelViewer
@@ -18,10 +39,71 @@ from foundry.gui.windows.ObjectViewer import ObjectViewer
 
 
 class RomMenu(QMenu):
+    """Expose ROM inspection and ROM-wide maintenance actions.
+
+    The ROM menu groups tools that look beyond the selection in the editing
+    canvas. It opens viewers for decoded blocks, objects, palettes, and scanned
+    levels in memory, and it hosts ROM-wide maintenance actions such as clearing
+    editor metadata or editing persistent ROM settings.
+
+    Parameters
+    ----------
+    level_ref : LevelRef
+        Shared reference to the active level and its selection state.
+    title : str, optional
+        Menu title shown in the main window.
+
+    Attributes
+    ----------
+    _block_viewer : BlockViewer | None
+        Lazily created block viewer window.
+    _clear_editor_data_action : QAction
+        Action that clears Foundry-managed metadata from the ROM.
+    _level_ref : LevelRef
+        Active level reference used to seed viewers with the open level's
+        context.
+    _level_viewer : LevelViewer | None
+        Lazily created level-in-memory viewer window.
+    _object_viewer : ObjectViewer | None
+        Lazily created object viewer window.
+    _view_blocks_action : QAction
+        Action that opens the block viewer.
+    _view_levels_in_memory_action : QAction
+        Action that opens the scanned level viewer.
+    _view_objects_action : QAction
+        Action that opens the object viewer.
+    _view_palettes_action : QAction
+        Action that opens the palette viewer.
+    game_properties_action : QAction
+        Action that edits ROM-level game properties.
+    needs_gui_refresh : SignalInstance
+        Signal emitted after actions that invalidate the open editor state.
+    rom_settings_action : QAction
+        Action that opens the ROM settings dialog.
+    """
+
     needs_gui_refresh: SignalInstance = Signal()
 
     def __init__(self, level_ref: LevelRef, title="&Rom"):
-        super(RomMenu, self).__init__(title)
+        """Create the ROM menu for the active editor session.
+
+        Construction stores the active ``LevelRef``, initializes the lazily
+        created viewer handles to ``None``, connects the central trigger
+        dispatcher, and then registers the actions in the same groups the user
+        sees at runtime: viewers, palette inspection, ROM scanning, ROM-wide
+        property editing, and ROM-maintenance actions. The menu therefore sets
+        up two later workflows at once: action dispatch into one-off dialogs
+        such as ``GamePropertiesDialog`` and lazy creation or reuse of the
+        longer-lived viewer windows.
+
+        Parameters
+        ----------
+        level_ref : LevelRef
+            Shared reference to the active level and its selection state.
+        title : str, optional
+            Menu title shown in the main window.
+        """
+        super(RomMenu, self).__init__(tr("Common", "rom", title))
 
         self._level_ref = level_ref
         self._level_viewer: LevelViewer | None = None
@@ -30,36 +112,64 @@ class RomMenu(QMenu):
 
         self.triggered.connect(self._on_trigger)
 
-        self._view_blocks_action = self.addAction("View Blocks")
+        self._view_blocks_action = self.addAction(tr("Common", "view_blocks", "View Blocks"))
         self._view_blocks_action.setIcon(icon("grid.svg"))
 
-        self._view_objects_action = self.addAction("View Objects")
+        self._view_objects_action = self.addAction(tr("Common", "view_objects", "View Objects"))
         self._view_objects_action.setIcon(icon("star.svg"))
 
         self.addSeparator()
 
-        self._view_palettes_action = self.addAction("View Object Palettes")
+        self._view_palettes_action = self.addAction(tr("Common", "view_object_palettes", "View Object Palettes"))
         self._view_palettes_action.setIcon(icon("figma.svg"))
 
         self.addSeparator()
 
-        self._view_levels_in_memory_action = self.addAction("View Levels in Memory")
+        self._view_levels_in_memory_action = self.addAction(
+            tr("Common", "view_levels_in_memory", "View Levels in Memory")
+        )
         self._view_levels_in_memory_action.setIcon(icon("server.svg"))
 
         self.addSeparator()
 
-        self.game_properties_action = self.addAction("Game Properties")
+        self.game_properties_action = self.addAction(tr("Common", "game_properties", "Game Properties"))
         self.game_properties_action.setIcon(icon("bar-chart-2.svg"))
 
         self.addSeparator()
 
-        self.rom_settings_action = self.addAction("ROM Settings")
+        self.rom_settings_action = self.addAction(tr("Common", "rom_settings", "ROM Settings"))
         self.rom_settings_action.setIcon(icon("settings.svg"))
 
-        self._clear_editor_data_action = self.addAction("Clear Editor Data in ROM")
+        self._clear_editor_data_action = self.addAction(
+            tr("Common", "clear_editor_data_in_rom", "Clear Editor Data in ROM")
+        )
         self._clear_editor_data_action.setIcon(icon("loader.svg"))
 
+    def retranslate_ui(self) -> None:
+        """Refresh ROM-menu labels after a language change.
+
+        The menu updates action text in place while preserving open ROM viewer
+        windows, managed-level metadata, game-property offsets, and editor data
+        commands as stable payloads. Live language switching therefore changes
+        only Qt display text and not ROM-wide state.
+        """
+        self.setTitle(tr("Common", "rom", "&Rom"))
+        self._view_blocks_action.setText(tr("Common", "view_blocks", "View Blocks"))
+        self._view_objects_action.setText(tr("Common", "view_objects", "View Objects"))
+        self._view_palettes_action.setText(tr("Common", "view_object_palettes", "View Object Palettes"))
+        self._view_levels_in_memory_action.setText(tr("Common", "view_levels_in_memory", "View Levels in Memory"))
+        self.game_properties_action.setText(tr("Common", "game_properties", "Game Properties"))
+        self.rom_settings_action.setText(tr("Common", "rom_settings", "ROM Settings"))
+        self._clear_editor_data_action.setText(tr("Common", "clear_editor_data_in_rom", "Clear Editor Data in ROM"))
+
     def _on_trigger(self, action: QAction):
+        """Dispatch ROM-menu actions to the matching tool or dialog.
+
+        Parameters
+        ----------
+        action : QAction
+            Triggered action from this menu.
+        """
         match action:
             case self._view_levels_in_memory_action:
                 self._show_level_viewer()
@@ -87,7 +197,11 @@ class RomMenu(QMenu):
                 try:
                     prop_dialog = GamePropertiesDialog(self.parent(), ROM())
                 except ValueError as ve:
-                    QMessageBox.critical(self.parent(), "Error opening Game Properties", str(ve))
+                    QMessageBox.critical(
+                        self.parent(),
+                        tr("Common", "error_opening_game_properties", "Error opening Game Properties"),
+                        str(ve),
+                    )
                     return
 
                 result = prop_dialog.exec()
@@ -96,6 +210,12 @@ class RomMenu(QMenu):
                     ROM.save_to_file(ROM.path)
 
     def _show_level_viewer(self):
+        """Open the level-in-memory viewer, parsing levels on demand.
+
+        When managed level positions are already available in `ROM.additional_data`,
+        the viewer reuses them. Otherwise it runs the progress dialog that scans
+        the ROM and then caches the discovered levels for inspection.
+        """
         levels_per_object_set: dict[int, set[int]] = defaultdict(set)
         levels_by_address = {}
 
@@ -123,6 +243,7 @@ class RomMenu(QMenu):
             self._level_viewer.showNormal()
 
     def _show_block_viewer(self):
+        """Open the block viewer seeded with the active level's render state."""
         if self._block_viewer is None:
             self._block_viewer = BlockViewer(parent=self.parent())
 
@@ -135,6 +256,13 @@ class RomMenu(QMenu):
         self._block_viewer.showNormal()
 
     def _show_object_viewer(self):
+        """Open the object viewer for the loaded level's object-set context.
+
+        The viewer follows the loaded level's object set and graphics set. When
+        a level object is selected, the viewer also highlights that object's
+        domain, index, and length so the browser stays aligned with the active
+        edit target instead of opening as a disconnected catalog window.
+        """
         if self._object_viewer is None:
             self._object_viewer = ObjectViewer(parent=self.parent())
 
@@ -154,6 +282,7 @@ class RomMenu(QMenu):
         self._object_viewer.showNormal()
 
     def close_everything(self):
+        """Close any auxiliary viewer windows owned by this menu."""
         if self._level_viewer:
             self._level_viewer.close()
 

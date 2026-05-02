@@ -16,6 +16,15 @@ EMPTY_ENEMY_DATA: EnemyItemData = (-1, bytearray())
 
 
 def _load_level_offsets() -> tuple[list[Mario3Level], list[int]]:
+    """Load level offsets.
+
+    It coordinates ROM-backed level data with editor operations and save workflows. The return value keeps level lookup, sizing, or serialization decisions explicit for callers.
+
+    Returns
+    -------
+    tuple[list[Mario3Level], list[int]]
+        Loaded or parsed data.
+    """
     offsets = [Mario3Level(0, 0, 0, 0, 0, "Placeholder")]
     world_indexes = [0]
 

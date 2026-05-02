@@ -34,6 +34,18 @@ MARIO_SPRITE_SHEET_BY_POWERUP = {
 
 
 def make_image_selected(image: QImage) -> QImage:
+    """Return a copy of an image with the editor selection overlay applied.
+
+    Parameters
+    ----------
+    image : QImage
+        Source image whose existing alpha mask defines the selected pixels.
+
+    Returns
+    -------
+    QImage
+        Selected copy of ``image``.
+    """
     alpha_mask = image.createAlphaMask()
     alpha_mask.invertPixels()
 
@@ -45,6 +57,20 @@ def make_image_selected(image: QImage) -> QImage:
 
 
 def load_from_object_sprite_sheet(x: int, y: int):
+    """Load a 16x16 preview sprite from the object sprite sheet.
+
+    Parameters
+    ----------
+    x : int
+        Tile column in the sprite sheet.
+    y : int
+        Tile row in the sprite sheet.
+
+    Returns
+    -------
+    QImage
+        Sprite image with ``MASK_COLOR`` pixels converted to transparency.
+    """
     sprite_side_length = 16
 
     cut_out_area = QRect(*(Rect(x, y, 1, 1) * sprite_side_length))
@@ -57,6 +83,15 @@ def load_from_object_sprite_sheet(x: int, y: int):
 
 
 def apply_selection_overlay(image, mask):
+    """Paint the editor selection tint through an alpha mask.
+
+    Parameters
+    ----------
+    image : QImage
+        Image to modify in place.
+    mask : QImage
+        Alpha mask limiting where the selection tint is painted.
+    """
     overlay = image.copy()
     overlay.fill(SELECTION_OVERLAY_COLOR)
     overlay.setAlphaChannel(mask)

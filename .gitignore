@@ -1,4 +1,5 @@
 venv
+.venv/
 .pytest-cache
 .hypothesis
 .coverage
@@ -11,3 +12,17 @@ dist/
 htmlcov/
 node_modules/
 package-lock.json
+LOCAL_DOC_CONTEXT.md
+
+# Local workspace notes and planning scratch.
+.codex
+.codex/
+.agents/
+.audit-check/
+AGENTS*.md
+*.local.md
+issues/
+
+# Generated documentation output.
+docs/_build*/
+docs/api/generated/

@@ -1,0 +1,16 @@
+{%- extends "!layout.html" %}
+
+{%- block content %}
+  <nav class="top-nav" aria-label="Primary documentation">
+    <a class="top-nav__brand" href="{{ pathto(master_doc) }}">Foundry Docs</a>
+    <div class="top-nav__links">
+      <a href="{{ pathto('api/foundry_gui') }}">Foundry</a>
+      <a href="{{ pathto('api/scribe_gui') }}">Scribe</a>
+      <a href="{{ pathto('user_guide') }}">User Guide</a>
+    </div>
+  </nav>
+  <div class="sidekick-rail sidekick-rail--left" data-enemy-sidekick-rail data-enemy-sidekick-count="18" aria-hidden="true"></div>
+  <div class="sidekick-rail sidekick-rail--right" data-enemy-sidekick-rail data-enemy-sidekick-count="18" aria-hidden="true"></div>
+  {{ super() }}
+  <script src="{{ pathto('_static/enemy_sidekicks.js', 1) }}"></script>
+{%- endblock %}

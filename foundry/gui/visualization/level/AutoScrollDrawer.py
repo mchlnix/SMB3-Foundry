@@ -1,3 +1,22 @@
+"""Render SMB3 autoscroll camera paths for level previews.
+
+This module provides :class:`AutoScrollDrawer`, the level-visualization helper
+that decodes SMB3 autoscroll movement tables from the active ROM and projects
+them onto the editor's level preview. It participates in the level-view
+rendering workflow between low-level autoscroll command bytes and the Qt
+painter surface: the drawer resolves the configured autoscroll routine, traces
+camera-center movement, and accumulates the covered screen area so maintainers
+can inspect how the level view will scroll.
+
+See Also
+--------
+foundry.gui.visualization.MainView
+    Main editing surface that hosts level-visualization helpers.
+foundry.game.level.Level
+    Level model whose header and Mario start position anchor the autoscroll
+    preview.
+"""
+
 from PySide6.QtCore import QPoint, QPointF, QRectF, QSizeF
 from PySide6.QtGui import QBrush, QPainter, QPen, QPolygonF, Qt
 
@@ -20,7 +39,70 @@ _ASCROLL_SCREEN_HEIGHT = 12
 
 
 class AutoScrollDrawer:
+    """Visualize supported SMB3 autoscroll movement paths.
+
+    The drawer reads the autoscroll movement tables from the active ROM and
+    traces the camera center through supported horizontal autoscroll routines.
+    Blue segments show constant-speed movement; red segments show acceleration.
+    The workflow is: decode the row value, resolve the ROM routine slice, step
+    through movement commands, and accumulate both path lines and covered screen
+    rectangles for visualization.
+
+    Parameters
+    ----------
+    auto_scroll_row : int
+        Encoded autoscroll enemy/item row value.
+    level : Level
+        Level whose header determines the initial camera position.
+
+    Attributes
+    ----------
+    acceleration_brush : QBrush
+        Brush used for acceleration markers.
+    acceleration_pen : QPen
+        Pen used for acceleration path segments.
+    auto_scroll_row : int
+        Encoded autoscroll row value.
+    current_pos : QPointF
+        Current traced camera-center position.
+    horizontal_speed : int
+        Current horizontal subpixel speed from the autoscroll routine.
+    level : Level
+        Level being visualized.
+    pixel_length : int
+        Pixel scale relative to a native NES pixel.
+    rom : ROM
+        Active ROM used to read autoscroll tables.
+    screen_polygon : QPolygonF
+        Union of screen rectangles covered by the traced path.
+    scroll_brush : QBrush
+        Brush used for constant-speed markers.
+    scroll_pen : QPen
+        Pen used for constant-speed path segments.
+    vertical_speed : int
+        Current vertical subpixel speed from the autoscroll routine.
+
+    Notes
+    -----
+    Only supported horizontal autoscroll patterns are visualized here. Several
+    vanilla SMB3 autoscroll types are intentionally ignored because their
+    routines are not represented by this drawer yet.
+    """
+
     def __init__(self, auto_scroll_row: int, level: Level):
+        """Create an autoscroll path drawer.
+
+        The drawer snapshots the encoded autoscroll selector and the level
+        header it should anchor to, then initializes ROM-backed tracing state
+        that :meth:`draw` reuses while walking the selected movement routine.
+
+        Parameters
+        ----------
+        auto_scroll_row : int
+            Encoded autoscroll enemy/item row value.
+        level : Level
+            Level whose header determines the initial camera position.
+        """
         self.auto_scroll_row = auto_scroll_row
         self.level = level
 
@@ -40,6 +122,24 @@ class AutoScrollDrawer:
         self.screen_polygon = QPolygonF()
 
     def draw(self, painter: QPainter, block_length: int):
+        """Draw the supported autoscroll path for the configured row.
+
+        This method converts the view's block scale into painter-space pixels,
+        resolves the selected SMB3 autoscroll routine from ROM tables, and then
+        steps through each movement command to update ``current_pos`` and the
+        covered screen polygon. The workflow has three stages: configure pens
+        and brushes for the view zoom level, trace each ROM movement command
+        into line segments and viewport coverage, and finally paint the stop
+        marker plus the accumulated covered-screen overlay for the selected
+        autoscroll enemy row.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        block_length : int
+            Rendered block size in pixels.
+        """
         self.pixel_length = block_length // Block.WIDTH
 
         self.scroll_brush = QBrush(Qt.GlobalColor.blue)
@@ -97,6 +197,23 @@ class AutoScrollDrawer:
         painter.drawPolygon(self.screen_polygon)
 
     def _execute_movement_command(self, painter: QPainter, command: int, repeat: int):
+        """Trace and draw one ROM autoscroll movement command.
+
+        The command byte decides whether this step applies acceleration in
+        place, performs a constant-speed movement span, or dispatches into one
+        of SMB3's movement loops. Each branch updates the traced camera state
+        before painting the corresponding line segment and merging its covered
+        screen area into ``screen_polygon``.
+
+        Parameters
+        ----------
+        painter : QPainter
+            Painter used to render the object or view.
+        command : int
+            Raw movement command byte.
+        repeat : int
+            Repeat count or tick count for the command.
+        """
         h_updates_per_tick = 4  # got those by reading the auto scroll routine
         v_updates_per_tick = 2
 
@@ -198,9 +315,35 @@ class AutoScrollDrawer:
             self._add_points_for_line(old_pos, self.current_pos)
 
     def _add_points_for_position(self, pos: QPointF):
+        """Add the visible screen rectangle centered on a position.
+
+        Parameters
+        ----------
+        pos : QPointF
+            Camera-center position in painter coordinates.
+        """
         self.screen_polygon = self.screen_polygon.united(QPolygonF.fromList(self._rect_for_point(pos)))
 
     def _add_points_for_line(self, start: QPointF, stop: QPointF):
+        """Add the screen area swept between two camera positions.
+
+        :meth:`draw` reaches this helper after one constant-speed ROM command
+        advances ``current_pos`` from ``start`` to ``stop``. The helper turns
+        both camera centers into painter-space viewport corners, branches on
+        the span's vertical direction, and builds ``point_list`` in the corner
+        order needed for one non-self-intersecting sweep polygon. The method
+        then unions that polygon into ``screen_polygon`` so the overlay state
+        carried through :meth:`draw` records the full viewport corridor covered
+        by the command instead of only the rectangles at ``start`` and
+        ``stop``.
+
+        Parameters
+        ----------
+        start : QPointF
+            Start camera-center position.
+        stop : QPointF
+            End camera-center position.
+        """
         start_points = self._rect_for_point(start)
         stop_points = self._rect_for_point(stop)
 
@@ -220,6 +363,28 @@ class AutoScrollDrawer:
         self.screen_polygon = self.screen_polygon.united(QPolygonF.fromList(point_list))
 
     def _rect_for_point(self, pos: QPointF):
+        """Describe the painter-space viewport centered on a camera position.
+
+        Autoscroll tracing stores only camera-center positions, so the overlay
+        builders need a repeatable way to recover the full SMB3 viewport for
+        each traced point. This helper expands one center point into the four
+        corners of the screen rectangle at the active block scale.
+        :meth:`_add_points_for_position` uses the returned corners when one
+        movement step should contribute a single visible screen.
+        :meth:`_add_points_for_line` calls it for both ends of a movement span
+        so it can build the polygon swept between consecutive centers before
+        merging that polygon into ``screen_polygon``.
+
+        Parameters
+        ----------
+        pos : QPointF
+            Camera-center position.
+
+        Returns
+        -------
+        tuple[QPointF, QPointF, QPointF, QPointF]
+            Top-left, top-right, bottom-right, and bottom-left screen corners.
+        """
         top_right = (
             pos + QPointF(LEVEL_SCREEN_WIDTH // 2, -_ASCROLL_SCREEN_HEIGHT // 2) * self.pixel_length * Block.WIDTH
         )
@@ -234,6 +399,23 @@ class AutoScrollDrawer:
 
     def _determine_auto_scroll_start(self, block_length: int) -> QPointF:
         # only support horizontal levels for now
+        """Compute the initial camera-center used for autoscroll tracing.
+
+        The starting point comes from the level header's Mario spawn row and
+        the fixed horizontal autoscroll camera rules used by SMB3 horizontal
+        stages. That anchor gives :meth:`draw` the initial camera center before
+        ROM movement commands advance the preview path.
+
+        Parameters
+        ----------
+        block_length : int
+            Rendered block size in pixels.
+
+        Returns
+        -------
+        QPointF
+            Starting camera-center position in painter coordinates.
+        """
         _, mario_y = self.level.header.mario_position()
 
         scroll_x, scroll_y = LEVEL_SCREEN_WIDTH // 2, min(mario_y + 2, GROUND - _ASCROLL_SCREEN_HEIGHT // 2)
