@@ -5,7 +5,7 @@ from smb3parse.util.parser.constants import (
     MEM_Screen_Start_AddressH,
     MEM_Screen_Start_AddressL,
 )
-from smb3parse.util.rom import PRG_BANK_SIZE, Rom
+from smb3parse.util.rom import PRG_BANK_SIZE
 
 
 class NESMemory(list):

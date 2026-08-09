@@ -116,8 +116,9 @@ class FoundLevelRecord:
 
 
 def gen_levels_in_rom(
-    rom: Rom, max_steps=_DEFAULT_LEVEL_PARSING_MAX_STEPS
+    rom: Rom, use_rust=False, max_steps=_DEFAULT_LEVEL_PARSING_MAX_STEPS
 ) -> Generator[tuple[int, int], bool, tuple[dict, dict[int, FoundLevel]]]:
+
     levels_by_address: dict[int, FoundLevel] = {}
 
     start = time.time()
@@ -157,7 +158,7 @@ def gen_levels_in_rom(
 
             # traverse Jump Destinations by following the offsets in the header, until finding a known level or dead end
             was_cancelled, levels_in_world = yield from _follow_jump_destinations(
-                levels_by_address, levels_in_world, max_steps, record, rom, world
+                levels_by_address, levels_in_world, max_steps, record, rom, world, use_rust
             )
 
     if was_cancelled:
@@ -181,6 +182,7 @@ def _follow_jump_destinations(
     record: FoundLevelRecord,
     rom: Rom,
     world: WorldMap,
+    use_rust,
 ):
     while True:
         levels_in_world += 1
@@ -191,14 +193,14 @@ def _follow_jump_destinations(
             break
 
         try:
-            if False:
-                from smb3parse.util.parser.cpu import load_from_address
-            else:
+            if use_rust:
                 from r6502 import load_from_address
+            else:
+                from smb3parse.util.parser.cpu import load_from_address  # type: ignore
 
             # emulate the level loading of the ROM to let it parse the level objects
             parsed_level = load_from_address(
-                rom._data, rom.prg_banks, record.object_set, record.level_address, record.enemy_address, 200_000
+                rom._data, rom.prg_banks, record.object_set, record.level_address, record.enemy_address, max_steps
             )
         except ValueError as ve:
             print(ve)
