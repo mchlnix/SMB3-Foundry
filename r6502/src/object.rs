@@ -3,7 +3,7 @@ use pyo3::{pyclass, pymethods};
 
 
 #[derive(Debug)]
-#[pyclass]
+#[pyclass(from_py_object)]
 pub struct ParsedLevelObject {
     object_set_number: u8,
     pub(crate) object_bytes: Vec<Byte>,
@@ -84,7 +84,7 @@ impl Clone for ParsedLevelObject {
     }
 }
 
-#[pyclass]
+#[pyclass(from_py_object)]
 pub struct ParsedEnemy {
     object_set_number: u8,
     object_bytes: Vec<Byte>,

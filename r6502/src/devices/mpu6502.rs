@@ -7,26 +7,8 @@ const MEM_PAGE_C000: MemAddress = 0x071F;
 const MEM_PAGE_A000: MemAddress = 0x0720;
 
 #[derive(Debug, Clone)]
-pub enum AddressMode {
-    Absolute,
-    AbsoluteX,
-    AbsoluteY,
-    Accumulator,
-    Immediate,
-    Implicit,
-    Indirect,
-    IndirectX,
-    IndirectY,
-    Relative,
-    ZeroPage,
-    ZeroPageX,
-    ZeroPageY,
-}
-
-#[derive(Debug, Clone)]
 pub struct DisAsm {
     instruction_code: String,
-    address_mode: AddressMode,
 }
 
 #[derive(Debug)]
@@ -39,7 +21,6 @@ pub struct Position {
 #[derive(Debug)]
 pub struct MPU {
     // config
-    name: String,
     byte_mask: u8,
     addr_mask: u16,
     addr_high_mask: u16,
@@ -77,7 +58,6 @@ pub struct MPU {
     a000_bank: u8,
     c000_bank: u8,
 
-    did_start_object_parsing: bool,
     objects: Vec<ParsedLevelObject>,
 }
 
@@ -160,16 +140,9 @@ const SHOULD_LOG: bool = false;
 
 impl MPU {
     // vectors
-    const RESET: u16 = 0xfffc;
-    const NMI: u16 = 0xfffa;
     const IRQ: u16 = 0xfffe;
 
     const BYTE_WIDTH: u32 = 8;
-    const BYTE_FORMAT: &str = "%02x";
-    const ADDR_WIDTH: u32 = 16;
-    const ADDR_FORMAT: &str = "%04x";
-
-    const _MEMORY_SPACE_SIZE: usize = 2u32.pow(Self::ADDR_WIDTH) as usize;
 
     pub fn new(rom: Rom) -> MPU {
         let byte_mask = Byte::MAX;
@@ -182,7 +155,6 @@ impl MPU {
         let sp = u8::MAX;
 
         let mut mpu = MPU {
-            name: String::from("6502"),
             byte_mask,
             addr_mask,
             addr_high_mask: 0xFF00,
@@ -209,7 +181,6 @@ impl MPU {
             disassemble: vec![
                 DisAsm {
                     instruction_code: String::from("???"),
-                    address_mode: AddressMode::Implicit
                 };
                 256
             ],
@@ -217,164 +188,163 @@ impl MPU {
             a000_bank: 0,
             c000_bank: 0,
 
-            did_start_object_parsing: false,
             objects: vec![],
         };
 
         mpu.instruct = vec![MPU::inst_not_implemented; 256];
 
         {
-            mpu._log_op_code(MPU::inst_0x00, 0x00, "BRK", AddressMode::Implicit, 7, 0);
-            mpu._log_op_code(MPU::inst_0x01, 0x01, "ORA", AddressMode::IndirectX, 6, 0);
-            mpu._log_op_code(MPU::inst_0x05, 0x05, "ORA", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0x06, 0x06, "ASL", AddressMode::ZeroPage, 5, 0);
-            mpu._log_op_code(MPU::inst_0x08, 0x08, "PHP", AddressMode::Implicit, 3, 0);
-            mpu._log_op_code(MPU::inst_0x09, 0x09, "ORA", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0x0a, 0x0a, "ASL", AddressMode::Accumulator, 2, 0);
-            mpu._log_op_code(MPU::inst_0x0d, 0x0d, "ORA", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0x0e, 0x0e, "ASL", AddressMode::Absolute, 6, 0);
-            mpu._log_op_code(MPU::inst_0x10, 0x10, "BPL", AddressMode::Relative, 2, 2);
-            mpu._log_op_code(MPU::inst_0x11, 0x11, "ORA", AddressMode::IndirectY, 5, 1);
-            mpu._log_op_code(MPU::inst_0x15, 0x15, "ORA", AddressMode::ZeroPageX, 4, 0);
-            mpu._log_op_code(MPU::inst_0x16, 0x16, "ASL", AddressMode::ZeroPageX, 6, 0);
-            mpu._log_op_code(MPU::inst_0x18, 0x18, "CLC", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0x19, 0x19, "ORA", AddressMode::AbsoluteY, 4, 1);
-            mpu._log_op_code(MPU::inst_0x1d, 0x1d, "ORA", AddressMode::AbsoluteX, 4, 1);
-            mpu._log_op_code(MPU::inst_0x1e, 0x1e, "ASL", AddressMode::AbsoluteX, 7, 0);
-            mpu._log_op_code(MPU::inst_0x20, 0x20, "JSR", AddressMode::Absolute, 6, 0);
-            mpu._log_op_code(MPU::inst_0x21, 0x21, "AND", AddressMode::IndirectX, 6, 0);
-            mpu._log_op_code(MPU::inst_0x24, 0x24, "BIT", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0x25, 0x25, "AND", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0x26, 0x26, "ROL", AddressMode::ZeroPage, 5, 0);
-            mpu._log_op_code(MPU::inst_0x28, 0x28, "PLP", AddressMode::Implicit, 4, 0);
-            mpu._log_op_code(MPU::inst_0x29, 0x29, "AND", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0x2a, 0x2a, "ROL", AddressMode::Accumulator, 2, 0);
-            mpu._log_op_code(MPU::inst_0x2c, 0x2c, "BIT", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0x2d, 0x2d, "AND", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0x2e, 0x2e, "ROL", AddressMode::Absolute, 6, 0);
-            mpu._log_op_code(MPU::inst_0x30, 0x30, "BMI", AddressMode::Relative, 2, 2);
-            mpu._log_op_code(MPU::inst_0x31, 0x31, "AND", AddressMode::IndirectY, 5, 1);
-            mpu._log_op_code(MPU::inst_0x35, 0x35, "AND", AddressMode::ZeroPageX, 4, 0);
-            mpu._log_op_code(MPU::inst_0x36, 0x36, "ROL", AddressMode::ZeroPage, 6, 0);
-            mpu._log_op_code(MPU::inst_0x38, 0x38, "SEC", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0x39, 0x39, "AND", AddressMode::AbsoluteY, 4, 1);
-            mpu._log_op_code(MPU::inst_0x3d, 0x3d, "AND", AddressMode::AbsoluteX, 4, 1);
-            mpu._log_op_code(MPU::inst_0x3e, 0x3e, "ROL", AddressMode::AbsoluteX, 7, 0);
-            mpu._log_op_code(MPU::inst_0x40, 0x40, "RTI", AddressMode::Implicit, 6, 0);
-            mpu._log_op_code(MPU::inst_0x41, 0x41, "EOR", AddressMode::IndirectX, 6, 0);
-            mpu._log_op_code(MPU::inst_0x45, 0x45, "EOR", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0x46, 0x46, "LSR", AddressMode::ZeroPage, 5, 0);
-            mpu._log_op_code(MPU::inst_0x48, 0x48, "PHA", AddressMode::Implicit, 3, 0);
-            mpu._log_op_code(MPU::inst_0x49, 0x49, "EOR", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0x4a, 0x4a, "LSR", AddressMode::Accumulator, 2, 0);
-            mpu._log_op_code(MPU::inst_0x4c, 0x4c, "JMP", AddressMode::Absolute, 3, 0);
-            mpu._log_op_code(MPU::inst_0x4d, 0x4d, "EOR", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0x4e, 0x4e, "LSR", AddressMode::Absolute, 6, 0);
-            mpu._log_op_code(MPU::inst_0x50, 0x50, "BVC", AddressMode::Relative, 2, 2);
-            mpu._log_op_code(MPU::inst_0x51, 0x51, "EOR", AddressMode::IndirectY, 5, 1);
-            mpu._log_op_code(MPU::inst_0x55, 0x55, "EOR", AddressMode::ZeroPageX, 4, 0);
-            mpu._log_op_code(MPU::inst_0x56, 0x56, "LSR", AddressMode::ZeroPageX, 6, 0);
-            mpu._log_op_code(MPU::inst_0x58, 0x58, "CLI", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0x59, 0x59, "EOR", AddressMode::AbsoluteY, 4, 1);
-            mpu._log_op_code(MPU::inst_0x5d, 0x5d, "EOR", AddressMode::AbsoluteX, 4, 1);
-            mpu._log_op_code(MPU::inst_0x5e, 0x5e, "LSR", AddressMode::AbsoluteX, 7, 0);
-            mpu._log_op_code(MPU::inst_0x60, 0x60, "RTS", AddressMode::Implicit, 6, 0);
-            mpu._log_op_code(MPU::inst_0x61, 0x61, "ADC", AddressMode::IndirectX, 6, 0);
-            mpu._log_op_code(MPU::inst_0x65, 0x65, "ADC", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0x66, 0x66, "ROR", AddressMode::ZeroPage, 5, 0);
-            mpu._log_op_code(MPU::inst_0x68, 0x68, "PLA", AddressMode::Implicit, 4, 0);
-            mpu._log_op_code(MPU::inst_0x69, 0x69, "ADC", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0x6a, 0x6a, "ROR", AddressMode::Accumulator, 2, 0);
-            mpu._log_op_code(MPU::inst_0x6c, 0x6c, "JMP", AddressMode::Indirect, 5, 0);
-            mpu._log_op_code(MPU::inst_0x6d, 0x6d, "ADC", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0x6e, 0x6e, "ROR", AddressMode::Absolute, 6, 0);
-            mpu._log_op_code(MPU::inst_0x70, 0x70, "BVS", AddressMode::Relative, 2, 2);
-            mpu._log_op_code(MPU::inst_0x71, 0x71, "ADC", AddressMode::IndirectY, 5, 1);
-            mpu._log_op_code(MPU::inst_0x75, 0x75, "ADC", AddressMode::ZeroPageX, 4, 0);
-            mpu._log_op_code(MPU::inst_0x76, 0x76, "ROR", AddressMode::ZeroPageX, 6, 0);
-            mpu._log_op_code(MPU::inst_0x78, 0x78, "SEI", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0x79, 0x79, "ADC", AddressMode::AbsoluteY, 4, 1);
-            mpu._log_op_code(MPU::inst_0x7d, 0x7d, "ADC", AddressMode::AbsoluteX, 4, 1);
-            mpu._log_op_code(MPU::inst_0x7e, 0x7e, "ROR", AddressMode::AbsoluteX, 7, 0);
-            mpu._log_op_code(MPU::inst_0x81, 0x81, "STA", AddressMode::IndirectX, 6, 0);
-            mpu._log_op_code(MPU::inst_0x84, 0x84, "STY", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0x85, 0x85, "STA", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0x86, 0x86, "STX", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0x88, 0x88, "DEY", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0x8a, 0x8a, "TXA", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0x8c, 0x8c, "STY", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0x8d, 0x8d, "STA", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0x8e, 0x8e, "STX", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0x90, 0x90, "BCC", AddressMode::Relative, 2, 2);
-            mpu._log_op_code(MPU::inst_0x91, 0x91, "STA", AddressMode::IndirectY, 6, 0);
-            mpu._log_op_code(MPU::inst_0x94, 0x94, "STY", AddressMode::ZeroPageX, 4, 0);
-            mpu._log_op_code(MPU::inst_0x95, 0x95, "STA", AddressMode::ZeroPageX, 4, 0);
-            mpu._log_op_code(MPU::inst_0x96, 0x96, "STX", AddressMode::ZeroPageY, 4, 0);
-            mpu._log_op_code(MPU::inst_0x98, 0x98, "TYA", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0x99, 0x99, "STA", AddressMode::AbsoluteY, 5, 0);
-            mpu._log_op_code(MPU::inst_0x9a, 0x9a, "TXS", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0x9d, 0x9d, "STA", AddressMode::AbsoluteX, 5, 0);
-            mpu._log_op_code(MPU::inst_0xa0, 0xa0, "LDY", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0xa1, 0xa1, "LDA", AddressMode::IndirectX, 6, 0);
-            mpu._log_op_code(MPU::inst_0xa2, 0xa2, "LDX", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0xa4, 0xa4, "LDY", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0xa5, 0xa5, "LDA", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0xa6, 0xa6, "LDX", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0xa8, 0xa8, "TAY", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0xa9, 0xa9, "LDA", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0xaa, 0xaa, "TAX", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0xac, 0xac, "LDY", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0xad, 0xad, "LDA", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0xae, 0xae, "LDX", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0xb0, 0xb0, "BCS", AddressMode::Relative, 2, 2);
-            mpu._log_op_code(MPU::inst_0xb1, 0xb1, "LDA", AddressMode::IndirectY, 5, 1);
-            mpu._log_op_code(MPU::inst_0xb4, 0xb4, "LDY", AddressMode::ZeroPageX, 4, 0);
-            mpu._log_op_code(MPU::inst_0xb5, 0xb5, "LDA", AddressMode::ZeroPageX, 4, 0);
-            mpu._log_op_code(MPU::inst_0xb6, 0xb6, "LDX", AddressMode::ZeroPageY, 4, 0);
-            mpu._log_op_code(MPU::inst_0xb8, 0xb8, "CLV", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0xb9, 0xb9, "LDA", AddressMode::AbsoluteY, 4, 1);
-            mpu._log_op_code(MPU::inst_0xba, 0xba, "TSX", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0xbc, 0xbc, "LDY", AddressMode::AbsoluteX, 4, 1);
-            mpu._log_op_code(MPU::inst_0xbd, 0xbd, "LDA", AddressMode::AbsoluteX, 4, 1);
-            mpu._log_op_code(MPU::inst_0xbe, 0xbe, "LDX", AddressMode::AbsoluteY, 4, 1);
-            mpu._log_op_code(MPU::inst_0xc0, 0xc0, "CPY", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0xc1, 0xc1, "CMP", AddressMode::IndirectX, 6, 0);
-            mpu._log_op_code(MPU::inst_0xc4, 0xc4, "CPY", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0xc5, 0xc5, "CMP", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0xc6, 0xc6, "DEC", AddressMode::ZeroPage, 5, 0);
-            mpu._log_op_code(MPU::inst_0xc8, 0xc8, "INY", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0xc9, 0xc9, "CMP", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0xca, 0xca, "DEX", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0xcc, 0xcc, "CPY", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0xcd, 0xcd, "CMP", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0xce, 0xce, "DEC", AddressMode::Absolute, 3, 0);
-            mpu._log_op_code(MPU::inst_0xd0, 0xd0, "BNE", AddressMode::Relative, 2, 2);
-            mpu._log_op_code(MPU::inst_0xd1, 0xd1, "CMP", AddressMode::IndirectY, 5, 1);
-            mpu._log_op_code(MPU::inst_0xd5, 0xd5, "CMP", AddressMode::ZeroPageX, 4, 0);
-            mpu._log_op_code(MPU::inst_0xd6, 0xd6, "DEC", AddressMode::ZeroPageX, 6, 0);
-            mpu._log_op_code(MPU::inst_0xd8, 0xd8, "CLD", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0xd9, 0xd9, "CMP", AddressMode::AbsoluteY, 4, 1);
-            mpu._log_op_code(MPU::inst_0xdd, 0xdd, "CMP", AddressMode::AbsoluteX, 4, 1);
-            mpu._log_op_code(MPU::inst_0xde, 0xde, "DEC", AddressMode::AbsoluteX, 7, 0);
-            mpu._log_op_code(MPU::inst_0xe0, 0xe0, "CPX", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0xe1, 0xe1, "SBC", AddressMode::IndirectX, 6, 0);
-            mpu._log_op_code(MPU::inst_0xe4, 0xe4, "CPX", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0xe5, 0xe5, "SBC", AddressMode::ZeroPage, 3, 0);
-            mpu._log_op_code(MPU::inst_0xe6, 0xe6, "INC", AddressMode::ZeroPage, 5, 0);
-            mpu._log_op_code(MPU::inst_0xe8, 0xe8, "INX", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0xe9, 0xe9, "SBC", AddressMode::Immediate, 2, 0);
-            mpu._log_op_code(MPU::inst_0xea, 0xea, "NOP", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0xec, 0xec, "CPX", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0xed, 0xed, "SBC", AddressMode::Absolute, 4, 0);
-            mpu._log_op_code(MPU::inst_0xee, 0xee, "INC", AddressMode::Absolute, 6, 0);
-            mpu._log_op_code(MPU::inst_0xf0, 0xf0, "BEQ", AddressMode::Relative, 2, 2);
-            mpu._log_op_code(MPU::inst_0xf1, 0xf1, "SBC", AddressMode::IndirectY, 5, 1);
-            mpu._log_op_code(MPU::inst_0xf5, 0xf5, "SBC", AddressMode::ZeroPageX, 4, 0);
-            mpu._log_op_code(MPU::inst_0xf6, 0xf6, "INC", AddressMode::ZeroPageX, 6, 0);
-            mpu._log_op_code(MPU::inst_0xf8, 0xf8, "SED", AddressMode::Implicit, 2, 0);
-            mpu._log_op_code(MPU::inst_0xf9, 0xf9, "SBC", AddressMode::AbsoluteY, 4, 1);
-            mpu._log_op_code(MPU::inst_0xfd, 0xfd, "SBC", AddressMode::AbsoluteX, 4, 1);
-            mpu._log_op_code(MPU::inst_0xfe, 0xfe, "INC", AddressMode::AbsoluteX, 7, 0);
+            mpu._log_op_code(MPU::inst_0x00, 0x00, "BRK", 7, 0);
+            mpu._log_op_code(MPU::inst_0x01, 0x01, "ORA", 6, 0);
+            mpu._log_op_code(MPU::inst_0x05, 0x05, "ORA", 3, 0);
+            mpu._log_op_code(MPU::inst_0x06, 0x06, "ASL", 5, 0);
+            mpu._log_op_code(MPU::inst_0x08, 0x08, "PHP", 3, 0);
+            mpu._log_op_code(MPU::inst_0x09, 0x09, "ORA", 2, 0);
+            mpu._log_op_code(MPU::inst_0x0a, 0x0a, "ASL", 2, 0);
+            mpu._log_op_code(MPU::inst_0x0d, 0x0d, "ORA", 4, 0);
+            mpu._log_op_code(MPU::inst_0x0e, 0x0e, "ASL", 6, 0);
+            mpu._log_op_code(MPU::inst_0x10, 0x10, "BPL", 2, 2);
+            mpu._log_op_code(MPU::inst_0x11, 0x11, "ORA", 5, 1);
+            mpu._log_op_code(MPU::inst_0x15, 0x15, "ORA", 4, 0);
+            mpu._log_op_code(MPU::inst_0x16, 0x16, "ASL", 6, 0);
+            mpu._log_op_code(MPU::inst_0x18, 0x18, "CLC", 2, 0);
+            mpu._log_op_code(MPU::inst_0x19, 0x19, "ORA", 4, 1);
+            mpu._log_op_code(MPU::inst_0x1d, 0x1d, "ORA", 4, 1);
+            mpu._log_op_code(MPU::inst_0x1e, 0x1e, "ASL", 7, 0);
+            mpu._log_op_code(MPU::inst_0x20, 0x20, "JSR", 6, 0);
+            mpu._log_op_code(MPU::inst_0x21, 0x21, "AND", 6, 0);
+            mpu._log_op_code(MPU::inst_0x24, 0x24, "BIT", 3, 0);
+            mpu._log_op_code(MPU::inst_0x25, 0x25, "AND", 3, 0);
+            mpu._log_op_code(MPU::inst_0x26, 0x26, "ROL", 5, 0);
+            mpu._log_op_code(MPU::inst_0x28, 0x28, "PLP", 4, 0);
+            mpu._log_op_code(MPU::inst_0x29, 0x29, "AND", 2, 0);
+            mpu._log_op_code(MPU::inst_0x2a, 0x2a, "ROL", 2, 0);
+            mpu._log_op_code(MPU::inst_0x2c, 0x2c, "BIT", 4, 0);
+            mpu._log_op_code(MPU::inst_0x2d, 0x2d, "AND", 4, 0);
+            mpu._log_op_code(MPU::inst_0x2e, 0x2e, "ROL", 6, 0);
+            mpu._log_op_code(MPU::inst_0x30, 0x30, "BMI", 2, 2);
+            mpu._log_op_code(MPU::inst_0x31, 0x31, "AND", 5, 1);
+            mpu._log_op_code(MPU::inst_0x35, 0x35, "AND", 4, 0);
+            mpu._log_op_code(MPU::inst_0x36, 0x36, "ROL", 6, 0);
+            mpu._log_op_code(MPU::inst_0x38, 0x38, "SEC", 2, 0);
+            mpu._log_op_code(MPU::inst_0x39, 0x39, "AND", 4, 1);
+            mpu._log_op_code(MPU::inst_0x3d, 0x3d, "AND", 4, 1);
+            mpu._log_op_code(MPU::inst_0x3e, 0x3e, "ROL", 7, 0);
+            mpu._log_op_code(MPU::inst_0x40, 0x40, "RTI", 6, 0);
+            mpu._log_op_code(MPU::inst_0x41, 0x41, "EOR", 6, 0);
+            mpu._log_op_code(MPU::inst_0x45, 0x45, "EOR", 3, 0);
+            mpu._log_op_code(MPU::inst_0x46, 0x46, "LSR", 5, 0);
+            mpu._log_op_code(MPU::inst_0x48, 0x48, "PHA", 3, 0);
+            mpu._log_op_code(MPU::inst_0x49, 0x49, "EOR", 2, 0);
+            mpu._log_op_code(MPU::inst_0x4a, 0x4a, "LSR", 2, 0);
+            mpu._log_op_code(MPU::inst_0x4c, 0x4c, "JMP", 3, 0);
+            mpu._log_op_code(MPU::inst_0x4d, 0x4d, "EOR", 4, 0);
+            mpu._log_op_code(MPU::inst_0x4e, 0x4e, "LSR", 6, 0);
+            mpu._log_op_code(MPU::inst_0x50, 0x50, "BVC", 2, 2);
+            mpu._log_op_code(MPU::inst_0x51, 0x51, "EOR", 5, 1);
+            mpu._log_op_code(MPU::inst_0x55, 0x55, "EOR", 4, 0);
+            mpu._log_op_code(MPU::inst_0x56, 0x56, "LSR", 6, 0);
+            mpu._log_op_code(MPU::inst_0x58, 0x58, "CLI", 2, 0);
+            mpu._log_op_code(MPU::inst_0x59, 0x59, "EOR", 4, 1);
+            mpu._log_op_code(MPU::inst_0x5d, 0x5d, "EOR", 4, 1);
+            mpu._log_op_code(MPU::inst_0x5e, 0x5e, "LSR", 7, 0);
+            mpu._log_op_code(MPU::inst_0x60, 0x60, "RTS", 6, 0);
+            mpu._log_op_code(MPU::inst_0x61, 0x61, "ADC", 6, 0);
+            mpu._log_op_code(MPU::inst_0x65, 0x65, "ADC", 3, 0);
+            mpu._log_op_code(MPU::inst_0x66, 0x66, "ROR", 5, 0);
+            mpu._log_op_code(MPU::inst_0x68, 0x68, "PLA", 4, 0);
+            mpu._log_op_code(MPU::inst_0x69, 0x69, "ADC", 2, 0);
+            mpu._log_op_code(MPU::inst_0x6a, 0x6a, "ROR", 2, 0);
+            mpu._log_op_code(MPU::inst_0x6c, 0x6c, "JMP", 5, 0);
+            mpu._log_op_code(MPU::inst_0x6d, 0x6d, "ADC", 4, 0);
+            mpu._log_op_code(MPU::inst_0x6e, 0x6e, "ROR", 6, 0);
+            mpu._log_op_code(MPU::inst_0x70, 0x70, "BVS", 2, 2);
+            mpu._log_op_code(MPU::inst_0x71, 0x71, "ADC", 5, 1);
+            mpu._log_op_code(MPU::inst_0x75, 0x75, "ADC", 4, 0);
+            mpu._log_op_code(MPU::inst_0x76, 0x76, "ROR", 6, 0);
+            mpu._log_op_code(MPU::inst_0x78, 0x78, "SEI", 2, 0);
+            mpu._log_op_code(MPU::inst_0x79, 0x79, "ADC", 4, 1);
+            mpu._log_op_code(MPU::inst_0x7d, 0x7d, "ADC", 4, 1);
+            mpu._log_op_code(MPU::inst_0x7e, 0x7e, "ROR", 7, 0);
+            mpu._log_op_code(MPU::inst_0x81, 0x81, "STA", 6, 0);
+            mpu._log_op_code(MPU::inst_0x84, 0x84, "STY", 3, 0);
+            mpu._log_op_code(MPU::inst_0x85, 0x85, "STA", 3, 0);
+            mpu._log_op_code(MPU::inst_0x86, 0x86, "STX", 3, 0);
+            mpu._log_op_code(MPU::inst_0x88, 0x88, "DEY", 2, 0);
+            mpu._log_op_code(MPU::inst_0x8a, 0x8a, "TXA", 2, 0);
+            mpu._log_op_code(MPU::inst_0x8c, 0x8c, "STY", 4, 0);
+            mpu._log_op_code(MPU::inst_0x8d, 0x8d, "STA", 4, 0);
+            mpu._log_op_code(MPU::inst_0x8e, 0x8e, "STX", 4, 0);
+            mpu._log_op_code(MPU::inst_0x90, 0x90, "BCC", 2, 2);
+            mpu._log_op_code(MPU::inst_0x91, 0x91, "STA", 6, 0);
+            mpu._log_op_code(MPU::inst_0x94, 0x94, "STY", 4, 0);
+            mpu._log_op_code(MPU::inst_0x95, 0x95, "STA", 4, 0);
+            mpu._log_op_code(MPU::inst_0x96, 0x96, "STX", 4, 0);
+            mpu._log_op_code(MPU::inst_0x98, 0x98, "TYA", 2, 0);
+            mpu._log_op_code(MPU::inst_0x99, 0x99, "STA", 5, 0);
+            mpu._log_op_code(MPU::inst_0x9a, 0x9a, "TXS", 2, 0);
+            mpu._log_op_code(MPU::inst_0x9d, 0x9d, "STA", 5, 0);
+            mpu._log_op_code(MPU::inst_0xa0, 0xa0, "LDY", 2, 0);
+            mpu._log_op_code(MPU::inst_0xa1, 0xa1, "LDA", 6, 0);
+            mpu._log_op_code(MPU::inst_0xa2, 0xa2, "LDX", 2, 0);
+            mpu._log_op_code(MPU::inst_0xa4, 0xa4, "LDY", 3, 0);
+            mpu._log_op_code(MPU::inst_0xa5, 0xa5, "LDA", 3, 0);
+            mpu._log_op_code(MPU::inst_0xa6, 0xa6, "LDX", 3, 0);
+            mpu._log_op_code(MPU::inst_0xa8, 0xa8, "TAY", 2, 0);
+            mpu._log_op_code(MPU::inst_0xa9, 0xa9, "LDA", 2, 0);
+            mpu._log_op_code(MPU::inst_0xaa, 0xaa, "TAX", 2, 0);
+            mpu._log_op_code(MPU::inst_0xac, 0xac, "LDY", 4, 0);
+            mpu._log_op_code(MPU::inst_0xad, 0xad, "LDA", 4, 0);
+            mpu._log_op_code(MPU::inst_0xae, 0xae, "LDX", 4, 0);
+            mpu._log_op_code(MPU::inst_0xb0, 0xb0, "BCS", 2, 2);
+            mpu._log_op_code(MPU::inst_0xb1, 0xb1, "LDA", 5, 1);
+            mpu._log_op_code(MPU::inst_0xb4, 0xb4, "LDY", 4, 0);
+            mpu._log_op_code(MPU::inst_0xb5, 0xb5, "LDA", 4, 0);
+            mpu._log_op_code(MPU::inst_0xb6, 0xb6, "LDX", 4, 0);
+            mpu._log_op_code(MPU::inst_0xb8, 0xb8, "CLV", 2, 0);
+            mpu._log_op_code(MPU::inst_0xb9, 0xb9, "LDA", 4, 1);
+            mpu._log_op_code(MPU::inst_0xba, 0xba, "TSX", 2, 0);
+            mpu._log_op_code(MPU::inst_0xbc, 0xbc, "LDY", 4, 1);
+            mpu._log_op_code(MPU::inst_0xbd, 0xbd, "LDA", 4, 1);
+            mpu._log_op_code(MPU::inst_0xbe, 0xbe, "LDX", 4, 1);
+            mpu._log_op_code(MPU::inst_0xc0, 0xc0, "CPY", 2, 0);
+            mpu._log_op_code(MPU::inst_0xc1, 0xc1, "CMP", 6, 0);
+            mpu._log_op_code(MPU::inst_0xc4, 0xc4, "CPY", 3, 0);
+            mpu._log_op_code(MPU::inst_0xc5, 0xc5, "CMP", 3, 0);
+            mpu._log_op_code(MPU::inst_0xc6, 0xc6, "DEC", 5, 0);
+            mpu._log_op_code(MPU::inst_0xc8, 0xc8, "INY", 2, 0);
+            mpu._log_op_code(MPU::inst_0xc9, 0xc9, "CMP", 2, 0);
+            mpu._log_op_code(MPU::inst_0xca, 0xca, "DEX", 2, 0);
+            mpu._log_op_code(MPU::inst_0xcc, 0xcc, "CPY", 4, 0);
+            mpu._log_op_code(MPU::inst_0xcd, 0xcd, "CMP", 4, 0);
+            mpu._log_op_code(MPU::inst_0xce, 0xce, "DEC", 3, 0);
+            mpu._log_op_code(MPU::inst_0xd0, 0xd0, "BNE", 2, 2);
+            mpu._log_op_code(MPU::inst_0xd1, 0xd1, "CMP", 5, 1);
+            mpu._log_op_code(MPU::inst_0xd5, 0xd5, "CMP", 4, 0);
+            mpu._log_op_code(MPU::inst_0xd6, 0xd6, "DEC", 6, 0);
+            mpu._log_op_code(MPU::inst_0xd8, 0xd8, "CLD", 2, 0);
+            mpu._log_op_code(MPU::inst_0xd9, 0xd9, "CMP", 4, 1);
+            mpu._log_op_code(MPU::inst_0xdd, 0xdd, "CMP", 4, 1);
+            mpu._log_op_code(MPU::inst_0xde, 0xde, "DEC", 7, 0);
+            mpu._log_op_code(MPU::inst_0xe0, 0xe0, "CPX", 2, 0);
+            mpu._log_op_code(MPU::inst_0xe1, 0xe1, "SBC", 6, 0);
+            mpu._log_op_code(MPU::inst_0xe4, 0xe4, "CPX", 3, 0);
+            mpu._log_op_code(MPU::inst_0xe5, 0xe5, "SBC", 3, 0);
+            mpu._log_op_code(MPU::inst_0xe6, 0xe6, "INC", 5, 0);
+            mpu._log_op_code(MPU::inst_0xe8, 0xe8, "INX", 2, 0);
+            mpu._log_op_code(MPU::inst_0xe9, 0xe9, "SBC", 2, 0);
+            mpu._log_op_code(MPU::inst_0xea, 0xea, "NOP", 2, 0);
+            mpu._log_op_code(MPU::inst_0xec, 0xec, "CPX", 4, 0);
+            mpu._log_op_code(MPU::inst_0xed, 0xed, "SBC", 4, 0);
+            mpu._log_op_code(MPU::inst_0xee, 0xee, "INC", 6, 0);
+            mpu._log_op_code(MPU::inst_0xf0, 0xf0, "BEQ", 2, 2);
+            mpu._log_op_code(MPU::inst_0xf1, 0xf1, "SBC", 5, 1);
+            mpu._log_op_code(MPU::inst_0xf5, 0xf5, "SBC", 4, 0);
+            mpu._log_op_code(MPU::inst_0xf6, 0xf6, "INC", 6, 0);
+            mpu._log_op_code(MPU::inst_0xf8, 0xf8, "SED", 2, 0);
+            mpu._log_op_code(MPU::inst_0xf9, 0xf9, "SBC", 4, 1);
+            mpu._log_op_code(MPU::inst_0xfd, 0xfd, "SBC", 4, 1);
+            mpu._log_op_code(MPU::inst_0xfe, 0xfe, "INC", 7, 0);
         }
 
         mpu.reset();
@@ -1167,13 +1137,11 @@ impl MPU {
         op_fn: fn(&mut MPU),
         op_code: u8,
         name: &str,
-        address_mode: AddressMode,
         cycles: u8,
         extra_cycles: u8,
     ) {
         let dis_asm = DisAsm {
             instruction_code: String::from(name),
-            address_mode,
         };
 
         self.disassemble[op_code as usize] = dis_asm;
