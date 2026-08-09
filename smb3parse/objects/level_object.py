@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from smb3parse.constants import (
     ENEMY_ITEM_OBJECT_SET,
     PLAINS_OBJECT_SET,
@@ -6,6 +8,9 @@ from smb3parse.constants import (
 from smb3parse.levels import DEFAULT_HORIZONTAL_HEIGHT
 from smb3parse.objects import InLevelObject
 from smb3parse.util import lrange
+
+if TYPE_CHECKING:
+    from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
 
 Domain = int
 ObjectId = int
@@ -35,7 +40,7 @@ def _obj_range(object_set: ObjectSetNo, start: ObjectId) -> list[ObjectId]:
     return lrange(start, start + 0x10)
 
 
-def goes_to_next_level(object_set_num: ObjectSetNo, domain: Domain, obj_id: ObjectId):
+def goes_to_next_level(parsed_obj: "ParsedObject | ParsedEnemy"):
     # there are special level objects, like doors, that will take the player to the jump destination
     object_id_ranges_by_domain_and_definition: dict[ObjectSetNo, dict[Domain, list[ObjectId]]] = {
         PLAINS_OBJECT_SET: {
@@ -85,12 +90,15 @@ def goes_to_next_level(object_set_num: ObjectSetNo, domain: Domain, obj_id: Obje
         object_id_ranges_by_domain_and_definition[definition][1] = [0x90, 0xC0, 0xE0]
         object_id_ranges_by_domain_and_definition[definition][2] = [0x07, 0x10]
 
-    object_id_ranges_by_domain = object_id_ranges_by_domain_and_definition[object_set_num]
+    object_id_ranges_by_domain = object_id_ranges_by_domain_and_definition[parsed_obj.object_set_num]
 
-    if domain not in object_id_ranges_by_domain:
+    if parsed_obj.domain not in object_id_ranges_by_domain:
         return False
 
-    return any(obj_id in _obj_range(object_set_num, jump_obj_id) for jump_obj_id in object_id_ranges_by_domain[domain])
+    return any(
+        parsed_obj.obj_id in _obj_range(parsed_obj.object_set_num, jump_obj_id)
+        for jump_obj_id in object_id_ranges_by_domain[parsed_obj.domain]
+    )
 
 
 class LevelObject(InLevelObject):
