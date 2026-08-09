@@ -1,13 +1,13 @@
-use crate::devices::mpu6502::MPU;
 use crate::level::ParsedLevel;
 use crate::memory::Rom;
+use mpu6502::MPU;
 use pyo3::prelude::*;
 
-mod devices;
 mod object;
 mod memory;
 mod level;
 mod constants;
+mod mpu6502;
 
 /// A Python module implemented in Rust.
 #[pyfunction]

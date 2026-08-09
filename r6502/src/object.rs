@@ -1,4 +1,4 @@
-use crate::devices::mpu6502::{Byte, MemAddress};
+use crate::mpu6502::{Byte, MemAddress};
 use pyo3::{pyclass, pymethods};
 
 

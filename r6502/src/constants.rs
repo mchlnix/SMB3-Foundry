@@ -1,5 +1,5 @@
-use crate::devices::mpu6502::MemAddress;
-use crate::devices::mpu6502::RomAddress;
+use crate::mpu6502::MemAddress;
+use crate::mpu6502::RomAddress;
 
 pub const BASE_OFFSET: RomAddress = 0x10;
 

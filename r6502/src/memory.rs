@@ -1,4 +1,4 @@
-use crate::devices::mpu6502::{Byte, MemAddress, RomAddress};
+use crate::mpu6502::{Byte, MemAddress, RomAddress};
 use std::ops::Range;
 use std::ops::{Index, IndexMut};
 

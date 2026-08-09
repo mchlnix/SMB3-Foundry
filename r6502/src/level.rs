@@ -1,5 +1,5 @@
 use crate::constants::{LEVEL_HEADER_LENGTH, OBJECT_ID_RANGES};
-use crate::devices::mpu6502::Byte;
+use crate::mpu6502::Byte;
 use crate::object::{CanBeJump, ParsedEnemy, ParsedLevelObject};
 use pyo3::{pyclass, pymethods};
 use std::ops::RangeInclusive;
@@ -30,7 +30,7 @@ fn obj_range(object_set_number: u8, start_value: u8) -> RangeInclusive<u8> {
     start_value..=(start_value.saturating_add(0x10))
 }
 
-fn goes_to_next_level(object: Box<&dyn CanBeJump>) -> bool {
+fn goes_to_next_level(object: &dyn CanBeJump) -> bool {
     let (object_set_number, domain, object_id) = object.get_info();
 
     let object_id_ranges: &[(u8, &[u8])] = OBJECT_ID_RANGES[object_set_number as usize];
@@ -40,11 +40,9 @@ fn goes_to_next_level(object: Box<&dyn CanBeJump>) -> bool {
         .find(|(_domain, _)| *_domain == domain);
 
     // current object is not in a domain, where jump objects reside
-    if object_ids.is_none() {
+    let Some((_, object_ids)) = object_ids else {
         return false;
-    }
-
-    let object_ids = object_ids.unwrap().1;
+    };
 
     object_ids
         .iter()
@@ -69,7 +67,7 @@ impl ParsedLevel {
 
         object_iter
             .chain(enemy_iter)
-            .any(|obj| goes_to_next_level(Box::new(obj)))
+            .any(|obj| goes_to_next_level(obj))
     }
 
     fn has_generic_exit(&self) -> bool {
@@ -98,7 +96,7 @@ impl ParsedLevel {
         let domain;
         let id_range;
 
-        if (0x01..0x10).contains(&self.object_set_num) {
+        if (0x01..=0x0F).contains(&self.object_set_num) {
             domain = 1;
             id_range = 0xB0..=0xBF;
         } else {
