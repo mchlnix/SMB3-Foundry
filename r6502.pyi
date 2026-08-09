@@ -31,6 +31,7 @@ def load_from_address(
         prg_bank_count: int,
         object_set_number: int,
         level_position: int,
-        enemy_position: int
+        enemy_position: int,
+        max_steps: int
 ) -> ParsedLevel:
     ...
