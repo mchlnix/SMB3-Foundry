@@ -197,27 +197,27 @@ class ObjectRenderer:
         if self._object.secondary_length > 0:
             self._new_width += self._object.width // 2
 
-        def _insert_block_row(blocks: list[int]):
+        def _insert_block_row(blocks: list[int], row_: int):
             if not blocks:
                 return
 
-            if needs_x_offset and row % 2 == 0:
+            if needs_x_offset and row_ % 2 == 0:
                 blocks_to_draw.extend([BLANK] * x_offset)
 
             for column in range(no_of_columns):
                 blocks_to_draw.extend(blocks)
 
-            if needs_x_offset and row % 2 == 1:
+            if needs_x_offset and row_ % 2 == 1:
                 blocks_to_draw.extend([BLANK] * x_offset)
 
         for row in range(no_of_rows):
-            _insert_block_row(top)
+            _insert_block_row(top, row)
 
             for _ in range(self._object.height - 2):
-                _insert_block_row(middle)
+                _insert_block_row(middle, row)
 
             if self._object.height > 1:
-                _insert_block_row(bottom)
+                _insert_block_row(bottom, row)
 
     def _render_wooden_platform(self, blocks_to_draw: list[int]):
         if self._object.is_4byte:

@@ -34,7 +34,7 @@ class ParsedLevel:
         return len(self.parsed_enemies) * ENEMY_SIZE
 
     def has_jump(self):
-        return any(map(goes_to_next_level, self.parsed_objects + self.parsed_enemies))  # type:ignore
+        return any(map(goes_to_next_level, self.parsed_objects + self.parsed_enemies))  # type: ignore
 
     def has_generic_exit(self):
         """
