@@ -1,21 +1,12 @@
-use crate::devices::mpu6502::{
-    Byte, MemAddress, RAM_LEVEL_START_HI, RAM_LEVEL_START_LO, RAM_LEVEL_TILESET,
-    RAM_SCREEN_MEMORY_END, RAM_SCREEN_MEMORY_START, RomAddress,
-};
+use crate::devices::mpu6502::{Byte, MemAddress, RomAddress};
 use std::ops::Range;
 use std::ops::{Index, IndexMut};
 
-const BASE_OFFSET: RomAddress = 0x0010;
-pub const PRG_BANK_SIZE: u32 = 0x2000;
-
-const VANILLA_PRG_COUNT: u8 = 32;
-
-const MEM_SCREEN_START_ADDRESS_LO: MemAddress = 0x8000;
-const MEM_SCREEN_START_ADDRESS_HI: MemAddress = 0x8001;
-
-const MEM_RANDOM_POOL_START: usize = 0x0781;
-const MEM_RESET_LATCH: usize = 0x7964;
-
+use crate::constants::{
+    BASE_OFFSET, MEM_RANDOM_POOL_START, MEM_RESET_LATCH, MEM_SCREEN_START_ADDRESS_HI,
+    MEM_SCREEN_START_ADDRESS_LO, PRG_BANK_SIZE, RAM_LEVEL_START_HI, RAM_LEVEL_START_LO,
+    RAM_LEVEL_TILESET, RAM_SCREEN_MEMORY_END, RAM_SCREEN_MEMORY_START, VANILLA_PRG_COUNT,
+};
 use crate::object::ParsedLevelObject;
 
 pub type RomData = Vec<Byte>;

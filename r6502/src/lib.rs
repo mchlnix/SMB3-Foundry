@@ -7,6 +7,7 @@ mod devices;
 mod object;
 mod memory;
 mod level;
+mod constants;
 
 /// A Python module implemented in Rust.
 #[pyfunction]

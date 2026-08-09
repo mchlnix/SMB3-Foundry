@@ -1,10 +1,19 @@
+use crate::constants::BYTE_WIDTH;
+use crate::constants::{
+    BASE_OFFSET, RAM_ENEMY_START_HI, RAM_ENEMY_START_LO, RAM_LEVEL_START_HI, RAM_LEVEL_START_LO,
+    RAM_LEVEL_TILESET, RAM_SCREEN_MEMORY_END, RAM_SCREEN_MEMORY_START, ROM_LEVELLOAD_BY_TILESET,
+};
+use crate::constants::{
+    BREAK, CARRY, DECIMAL, INTERRUPT, MEM_PAGE_A000, MEM_PAGE_C000, NEGATIVE,
+    OFFSET_BY_OBJECT_SET_A000, OFFSET_BY_OBJECT_SET_C000, OVERFLOW, PAGE_A000_OFFSET,
+    PRG_BANK_SIZE, RAM_ENEMY_PALETTE, RAM_GRAPHICS_SET, RAM_OBJECT_PALETTE, RAM_PAGE_A000_INDEX,
+    RAM_PAGE_C000_INDEX, RAM_PLAYER_CURRENT, RAM_PLAYER_SCREEN, RAM_PLAYER_X, RAM_PLAYER_Y,
+    RAM_WORLD_NUMBER, ROM_END_OBJECT_PARSING, ROM_LEVEL_LOAD_ENTRY, UNUSED, ZERO,
+};
 use crate::level::ParsedLevel;
-use crate::memory::{Memory, PRG_BANK_SIZE, Rom};
+use crate::memory::{Memory, Rom};
 use crate::object::{ParsedEnemy, ParsedLevelObject};
 use std::fmt::{Debug, Display, Formatter};
-
-const MEM_PAGE_C000: MemAddress = 0x071F;
-const MEM_PAGE_A000: MemAddress = 0x0720;
 
 #[derive(Debug, Clone)]
 pub struct DisAsm {
@@ -66,16 +75,6 @@ pub type RomAddress = u32;
 type Register = u8;
 pub type Byte = u8;
 type Word = u16;
-
-// processor flags
-const NEGATIVE: u8 = 0b1000_0000;
-const OVERFLOW: u8 = 0b0100_0000;
-const UNUSED: u8 = 0b0010_0000;
-const BREAK: u8 = 0b0001_0000;
-const DECIMAL: u8 = 0b0000_1000;
-const INTERRUPT: u8 = 0b0000_0100;
-const ZERO: u8 = 0b0000_0010;
-const CARRY: u8 = 0b0000_0001;
 
 #[derive(Debug)]
 struct FlagsPP(u8);
@@ -141,8 +140,6 @@ const SHOULD_LOG: bool = false;
 impl MPU {
     // vectors
     const IRQ: u16 = 0xfffe;
-
-    const BYTE_WIDTH: u32 = 8;
 
     pub fn new(rom: Rom) -> MPU {
         let byte_mask = Byte::MAX;
@@ -453,7 +450,7 @@ impl MPU {
         let lo_byte = self.byte_at(lo_address) as u16;
         let hi_byte = self.byte_at(hi_address) as u16;
 
-        let word = (hi_byte << MPU::BYTE_WIDTH) + lo_byte;
+        let word = (hi_byte << BYTE_WIDTH) + lo_byte;
 
         word
     }
@@ -596,7 +593,7 @@ impl MPU {
     }
 
     fn st_push_word(&mut self, word: Word) {
-        let left = (word >> MPU::BYTE_WIDTH) as Byte;
+        let left = (word >> BYTE_WIDTH) as Byte;
         let right = word as Byte;
 
         self.st_push(left);
@@ -605,7 +602,7 @@ impl MPU {
 
     fn st_pop_word(&mut self) -> Word {
         let right = self.st_pop() as Word;
-        let left = (self.st_pop() as Word) << MPU::BYTE_WIDTH;
+        let left = (self.st_pop() as Word) << BYTE_WIDTH;
 
         let combined = left | right;
 
@@ -2015,33 +2012,6 @@ impl MPU {
         self.pc = self.pc.wrapping_add(2);
     }
 }
-
-const ROM_LEVEL_LOAD_ENTRY: MemAddress = 0x891A;
-const RAM_PLAYER_CURRENT: MemAddress = 0x0726;
-const RAM_WORLD_NUMBER: MemAddress = 0x0727;
-
-const RAM_PLAYER_SCREEN: MemAddress = 0x0077;
-const RAM_PLAYER_X: MemAddress = 0x0079;
-const RAM_PLAYER_Y: MemAddress = 0x0075;
-
-pub const RAM_SCREEN_MEMORY_START: MemAddress = 0x6000;
-pub const RAM_SCREEN_MEMORY_END: MemAddress = 0x7950;
-const ROM_END_OBJECT_PARSING: MemAddress = 0x9934;
-pub const RAM_LEVEL_TILESET: MemAddress = 0x070A;
-const RAM_GRAPHICS_SET: MemAddress = 0x7EBD;
-const RAM_OBJECT_PALETTE: MemAddress = 0x073A;
-const RAM_ENEMY_PALETTE: MemAddress = 0x073B;
-const ROM_LEVELLOAD_BY_TILESET: MemAddress = 0x9A1D;
-const OFFSET_BY_OBJECT_SET_A000: u32 = 0x3C3F9;
-const OFFSET_BY_OBJECT_SET_C000: u32 = 0x3C3E6;
-const PAGE_A000_OFFSET: u32 = 0xA000;
-const BASE_OFFSET: u32 = 0x10;
-pub const RAM_LEVEL_START_LO: MemAddress = 0x61;
-pub const RAM_LEVEL_START_HI: MemAddress = 0x62;
-pub const RAM_ENEMY_START_LO: MemAddress = 0x67;
-pub const RAM_ENEMY_START_HI: MemAddress = 0x68;
-const RAM_PAGE_A000_INDEX: MemAddress = 0x0720;
-const RAM_PAGE_C000_INDEX: MemAddress = 0x071F;
 
 impl MPU {
     #[allow(dead_code)]

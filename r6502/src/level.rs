@@ -1,29 +1,8 @@
+use crate::constants::{LEVEL_HEADER_LENGTH, OBJECT_ID_RANGES};
 use crate::devices::mpu6502::Byte;
 use crate::object::{CanBeJump, ParsedEnemy, ParsedLevelObject};
 use pyo3::{pyclass, pymethods};
 use std::ops::RangeInclusive;
-
-const OBJECT_ID_RANGES: [&[(u8, &[u8])]; 17] = [
-    &[],                    // 0
-    &[(0, &[0x04]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],        // 1
-    &[(0, &[0x00, 0x06]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],  // 2
-    &[(0, &[0x0F]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],        // 3
-    &[(0, &[0x05]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],        // 4
-    &[(1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],                      // 5
-    &[(0, &[0x0A]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],        // 6
-    &[(0, &[0x04]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],        // 7
-    &[(0, &[0x0A]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],        // 8
-    &[(0, &[0x0B]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],        // 9
-    &[(1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],                      // 10
-    &[(1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],                      // 11
-    &[(0, &[0x05]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],        // 12
-    &[(1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],                      // 13
-    &[(0, &[0x0F]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],        // 14
-    &[(0, &[0x04]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],        // 15
-    &[(0, &[0x08, 0xD5]), (1, &[0x90, 0xC0, 0xE0]), (2, &[0x07, 0x10])],  // 16
-];
-
-const HEADER_LENGTH: u32 = 9; // bytes
 
 #[pyclass]
 pub struct ParsedLevel {
@@ -56,7 +35,9 @@ fn goes_to_next_level(object: Box<&dyn CanBeJump>) -> bool {
 
     let object_id_ranges: &[(u8, &[u8])] = OBJECT_ID_RANGES[object_set_number as usize];
 
-    let object_ids: Option<&(u8, &[u8])> = object_id_ranges.iter().find(|(_domain, _)| *_domain == domain);
+    let object_ids: Option<&(u8, &[u8])> = object_id_ranges
+        .iter()
+        .find(|(_domain, _)| *_domain == domain);
 
     // current object is not in a domain, where jump objects reside
     if object_ids.is_none() {
@@ -65,14 +46,16 @@ fn goes_to_next_level(object: Box<&dyn CanBeJump>) -> bool {
 
     let object_ids = object_ids.unwrap().1;
 
-    object_ids.iter().any(|jump_id| obj_range(object_set_number, *jump_id).contains(&object_id))
+    object_ids
+        .iter()
+        .any(|jump_id| obj_range(object_set_number, *jump_id).contains(&object_id))
 }
 
 #[pymethods]
 impl ParsedLevel {
     #[getter(object_data_length)]
     fn get_object_data_length(&self) -> u32 {
-        HEADER_LENGTH + self.parsed_objects.iter().map(|obj| obj.len()).sum::<u32>()
+        LEVEL_HEADER_LENGTH + self.parsed_objects.iter().map(|obj| obj.len()).sum::<u32>()
     }
 
     #[getter(enemy_data_length)]
@@ -84,7 +67,9 @@ impl ParsedLevel {
         let object_iter = self.parsed_objects.iter().map(|obj| obj as &dyn CanBeJump);
         let enemy_iter = self.parsed_enemies.iter().map(|obj| obj as &dyn CanBeJump);
 
-        object_iter.chain(enemy_iter).any(|obj| goes_to_next_level(Box::new(obj)))
+        object_iter
+            .chain(enemy_iter)
+            .any(|obj| goes_to_next_level(Box::new(obj)))
     }
 
     fn has_generic_exit(&self) -> bool {
@@ -104,7 +89,9 @@ impl ParsedLevel {
             return false;
         }
 
-        self.parsed_objects.iter().any(|obj| obj.domain() == domain && id_range.contains(&obj.object_id()))
+        self.parsed_objects
+            .iter()
+            .any(|obj| obj.domain() == domain && id_range.contains(&obj.object_id()))
     }
 
     fn has_big_q_level(&self) -> bool {
@@ -118,6 +105,8 @@ impl ParsedLevel {
             return false;
         }
 
-        self.parsed_objects.iter().any(|obj| obj.domain() == domain && id_range.contains(&obj.object_id()))
+        self.parsed_objects
+            .iter()
+            .any(|obj| obj.domain() == domain && id_range.contains(&obj.object_id()))
     }
 }
