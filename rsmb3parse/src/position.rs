@@ -3,7 +3,7 @@ use pyo3::{pyclass, pymethods};
 use std::ops::{Add, Sub};
 
 #[pyclass(from_py_object)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Position {
     pub x: u8,
     pub y: u8,

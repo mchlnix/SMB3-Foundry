@@ -2,7 +2,7 @@ mod data_points;
 pub mod types;
 mod position;
 pub mod util;
-pub mod constants;
+pub mod labels;
 
 use pyo3::prelude::*;
 
