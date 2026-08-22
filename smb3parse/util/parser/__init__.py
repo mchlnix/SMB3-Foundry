@@ -17,7 +17,6 @@ from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT, WORLD_MAP_WARP_WORLD_IN
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMap
 from smb3parse.util import apply, hex_int
-from smb3parse.util.parser.cpu import NesCPU
 from smb3parse.util.rom import Rom
 
 _DEFAULT_LEVEL_PARSING_MAX_STEPS = 1_000_000
@@ -119,6 +118,7 @@ class FoundLevelRecord:
 def gen_levels_in_rom(
     rom: Rom, max_steps=_DEFAULT_LEVEL_PARSING_MAX_STEPS
 ) -> Generator[tuple[int, int], bool, tuple[dict, dict[int, FoundLevel]]]:
+
     levels_by_address: dict[int, FoundLevel] = {}
 
     start = time.time()
@@ -192,9 +192,14 @@ def _follow_jump_destinations(
             break
 
         try:
+            try:
+                from r6502 import load_from_address
+            except ImportError:
+                from smb3parse.util.parser.cpu import load_from_address
+
             # emulate the level loading of the ROM to let it parse the level objects
-            parsed_level = NesCPU(rom).load_from_address(
-                record.object_set, record.level_address, record.enemy_address, max_steps
+            parsed_level = load_from_address(
+                rom._data, rom.prg_banks, record.object_set, record.level_address, record.enemy_address, max_steps
             )
         except ValueError as ve:
             print(ve)

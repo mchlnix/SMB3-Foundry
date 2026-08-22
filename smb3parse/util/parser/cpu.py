@@ -39,7 +39,7 @@ from smb3parse.util.parser.constants import (
 from smb3parse.util.parser.level import ParsedLevel
 from smb3parse.util.parser.memory import NESMemory
 from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
-from smb3parse.util.rom import PRG_BANK_SIZE, Rom
+from smb3parse.util.rom import PRG_BANK_SIZE
 
 PINK = "\033[95m"
 CYAN = "\033[96m"
@@ -49,15 +49,29 @@ RED = "\033[91m"
 CLEAR = "\033[0m"
 
 
+def load_from_address(
+    rom_data: bytes,
+    prg_banks: int,
+    object_set_number: int,
+    level_address: int,
+    enemy_address: int,
+    max_steps: int,
+) -> ParsedLevel:
+    cpu = NesCPU(rom_data, prg_banks)
+
+    return cpu.load_from_address(object_set_number, level_address, enemy_address, max_steps)
+
+
 class NesCPU(mpu6502.MPU):
-    def __init__(self, rom: Rom, should_log=False):
+    def __init__(self, rom_data: bytes, prg_banks, should_log=False):
         super(NesCPU, self).__init__()
 
-        self.memory = NESMemory([0x0] * 0x10000, rom)
+        self.memory = NESMemory([0x0] * 0x10000, rom_data, prg_banks)
         self.memory[MEM_Random_Pool_Start] = 0x88  # as in the ROM
         self.memory[MEM_Reset_Latch] = 0x5A  # prevents crash in LoadLevel_LittleCloudSolidRun
 
-        self.rom = rom
+        self.rom_data = rom_data
+
         self.should_log = should_log
         self.dis_asm = Disassembler(self)
 
@@ -94,7 +108,7 @@ class NesCPU(mpu6502.MPU):
         self.start_pc = ROM_LevelLoad_By_TileSet
 
         object_set_offset = (
-            self.rom.int(Constants.OFFSET_BY_OBJECT_SET_A000 + object_set_num) * PRG_BANK_SIZE - PAGE_A000_OFFSET
+            self.rom_data[Constants.OFFSET_BY_OBJECT_SET_A000 + object_set_num] * PRG_BANK_SIZE - PAGE_A000_OFFSET
         )
         level_offset = level_address - object_set_offset - BASE_OFFSET
 
@@ -104,8 +118,12 @@ class NesCPU(mpu6502.MPU):
         self.memory[MEM_EnemiesStartA] = enemy_address & 0xFF
         self.memory[MEM_EnemiesStartB] = enemy_address >> 8
 
-        self.memory[MEM_PAGE_A000] = self.a000_bank = self.rom.int(Constants.OFFSET_BY_OBJECT_SET_A000 + object_set_num)
-        self.memory[MEM_PAGE_C000] = self.c000_bank = self.rom.int(Constants.OFFSET_BY_OBJECT_SET_C000 + object_set_num)
+        self.memory[MEM_PAGE_A000] = self.a000_bank = self.rom_data[
+            Constants.OFFSET_BY_OBJECT_SET_A000 + object_set_num
+        ]
+        self.memory[MEM_PAGE_C000] = self.c000_bank = self.rom_data[
+            Constants.OFFSET_BY_OBJECT_SET_C000 + object_set_num
+        ]
 
         self.memory.load_a000_page(self.a000_bank)
         self.memory.load_c000_page(self.c000_bank)
@@ -115,8 +133,8 @@ class NesCPU(mpu6502.MPU):
         enemy_address += 1
 
         if enemy_address >= 0x0:
-            while self.rom.int(enemy_address) != 0xFF:
-                enemy_bytes = apply(int, self.rom.read(enemy_address, 3))
+            while self.rom_data[enemy_address] != 0xFF:
+                enemy_bytes = apply(int, self.rom_data[enemy_address : enemy_address + 3])
                 level.parsed_enemies.append(ParsedEnemy(ENEMY_ITEM_OBJECT_SET, enemy_bytes, enemy_address))
 
                 enemy_address += 3
@@ -188,6 +206,9 @@ class NesCPU(mpu6502.MPU):
             super(NesCPU, self).step()
             return
 
+        self._logging_step()
+
+    def _logging_step(self):
         ins_len, op = self.dis_asm.instruction_at(self.pc)
 
         if "ST" in op:
@@ -206,7 +227,9 @@ class NesCPU(mpu6502.MPU):
 
         super(NesCPU, self).step()
 
-        print(f"           A={self.a:X}, X={self.x:X}, Y={self.y:X}, A000={self.a000_bank}, C000={self.c000_bank}")
+        print(
+            f"           A={self.a:X}, X={self.x:X}, Y={self.y:X}, A000={self.a000_bank}, C000={self.c000_bank}, Flags= {self.p:08b}   Mem={self.memory[0]}"
+        )
 
     def _start_parsing_next_object(self):
         level_pointer = (self.memory[0x62] << 8) + self.memory[0x61]

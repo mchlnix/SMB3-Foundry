@@ -5,24 +5,24 @@ from smb3parse.util.parser.constants import (
     MEM_Screen_Start_AddressH,
     MEM_Screen_Start_AddressL,
 )
-from smb3parse.util.rom import PRG_BANK_SIZE, Rom
+from smb3parse.util.rom import PRG_BANK_SIZE
 
 
 class NESMemory(list):
-    def __init__(self, backing_list: list, rom: Rom):
+    def __init__(self, backing_list: list, rom_data: bytes, prg_banks: int):
         super(NESMemory, self).__init__(backing_list)
 
-        self.rom = rom
+        self.rom_data = rom_data
 
         self._read_observers: dict[range, Callable] = {}
         self._write_observers: dict[range, Callable] = {}
 
-        last_prg_index = rom.prg_banks - 1
+        last_prg_index = prg_banks - 1
 
-        # load second to last PRG (PRG_30 in the vanilla rom) into 0x8000 - 0x9FFF
+        # load second to last PRG (PRG_30 in the vanilla rom_data) into 0x8000 - 0x9FFF
         self._load_bank(last_prg_index - 1, 0x8000)
 
-        # load last PRG (PRG_31 in the vanilla rom) into 0xE000 - 0xFFFF
+        # load last PRG (PRG_31 in the vanilla rom_data) into 0xE000 - 0xFFFF
         self._load_bank(last_prg_index, 0xE000)
 
     def load_a000_page(self, prg_index: int):
@@ -34,7 +34,7 @@ class NESMemory(list):
     def _load_bank(self, prg_index: int, offset: int):
         prg_bank_position = BASE_OFFSET + prg_index * PRG_BANK_SIZE
 
-        self[offset : offset + PRG_BANK_SIZE] = self.rom.read(prg_bank_position, PRG_BANK_SIZE)
+        self[offset : offset + PRG_BANK_SIZE] = self.rom_data[prg_bank_position : prg_bank_position + PRG_BANK_SIZE]
 
     def add_read_observer(self, address_range: range, callback: Callable):
         self._read_observers[address_range] = callback
