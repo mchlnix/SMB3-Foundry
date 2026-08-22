@@ -106,9 +106,9 @@ jobs:
     strategy:
       matrix:
         cfg:
-          - {os: ubuntu-22.04, prefix: 'linux', suffix: '', architecture: 'x64', python: 'python3.11'}
-          - {os: windows-2022, prefix: 'win64', suffix: '.exe', architecture: 'x64', python: 'python3.exe'}
-          - {os: macos-latest, prefix: 'osx', suffix: '', architecture: 'x64', python: 'python3.11'}
+          - {os: ubuntu-22.04, prefix: 'linux', suffix: '', architecture: 'x64', python: 'python3.11', activate: 'source .venv/bin/activate'}
+          - {os: windows-2022, prefix: 'win64', suffix: '.exe', architecture: 'x64', python: 'python3.exe', activate: '.venv\Scripts\activate.bat'}
+          - {os: macos-latest, prefix: 'osx', suffix: '', architecture: 'x64', python: 'python3.11', activate: 'source .venv/bin/activate'}
         editor:
           - {name: 'smb3-foundry'}
           - {name: 'smb3-scribe'}
@@ -123,8 +123,13 @@ jobs:
           python-version: "3.11"
           architecture: ${{ matrix.cfg.architecture }}
 
+      - name: Setup venv
+        run: python -m venv .venv
+
       - name: Display Python version
-        run: python -c "import sys; print(sys.version)"
+        run: |
+          ${{ matrix.cfg.activate }}
+          python -c "import sys; print(sys.version)"
 
       - name: Update Version File to nightly
         if: ${{ github.ref_name }}
@@ -134,6 +139,7 @@ jobs:
 
       - name: Get Dependencies
         run: |
+          ${{ matrix.cfg.activate }}
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           python -m pip install pyinstaller
@@ -144,8 +150,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libegl1 libxcb-shape0 libqt5gui5
 
+      - name: Create Rust Module
+        run: |
+          ${{ matrix.cfg.activate }}
+          cd r6502
+          pip install -U maturin
+          maturin develop --profile=release
+
       - name: Build Executable
         run: |
+          ${{ matrix.cfg.activate }}
           pyinstaller ${{ matrix.editor.name }}.spec
           mv dist/${{ matrix.editor.name }}${{ matrix.cfg.suffix }} dist/${{ matrix.cfg.prefix }}-${{ matrix.editor.name }}${{ matrix.cfg.suffix }}
 
