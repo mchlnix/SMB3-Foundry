@@ -89,9 +89,10 @@ class WhiteMushroomHouseMixin(SettingsMixin):
 
             # keep copy of old state for undo command
             old_mushroom_item, new_mushroom_item = old_mushroom_item.copy(), old_mushroom_item
-            new_mushroom_item.y_position = new_coins_required
-
             assert old_mushroom_item is not None
+            assert new_mushroom_item is not None
+
+            new_mushroom_item.y_position = new_coins_required
 
             make_macro(
                 self.undo_stack,
