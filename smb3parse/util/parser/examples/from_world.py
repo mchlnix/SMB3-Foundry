@@ -8,12 +8,12 @@ from smb3parse.util.parser.cpu import NesCPU
 from smb3parse.util.parser.examples.canvas import Canvas
 
 if __name__ == "__main__":
-    rom = ROM("SMB3.nes")
+    rom = ROM("roms/SMB3.nes")
 
-    mpu = NesCPU(rom, True)
+    mpu = NesCPU(rom._data, rom.prg_banks)
 
     # parse 1-1
-    parsed_level = mpu.load_from_world_map(0, Position(4, 2, 0))
+    parsed_level = mpu.load_from_world_map(0, Position(4, 2, 0), max_steps=1000000)
 
     print("\n".join(map(str, parsed_level.parsed_objects)))
 

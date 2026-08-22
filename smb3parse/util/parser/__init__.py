@@ -195,7 +195,8 @@ def _follow_jump_destinations(
             try:
                 from r6502 import load_from_address
             except ImportError:
-                from smb3parse.util.parser.cpu import load_from_address
+                # fallback if the rust module doesn't work
+                from smb3parse.util.parser.cpu import load_from_address  # type: ignore
 
             # emulate the level loading of the ROM to let it parse the level objects
             parsed_level = load_from_address(
