@@ -33,7 +33,7 @@ class ROM(Rom):
 
             ROM.load_from_file(path, False)
 
-        super(ROM, self).__init__(ROM.rom_data, ROM.header)
+        super(ROM, self).__init__(ROM.rom_data)
 
     @staticmethod
     def get_tsa_data(object_set: int) -> bytes:

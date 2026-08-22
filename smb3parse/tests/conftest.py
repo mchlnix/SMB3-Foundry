@@ -28,7 +28,7 @@ def rom() -> Generator[Rom, None, None]:
 
     with test_rom_path.open("rb") as rom_file:
         data = bytearray(rom_file.read())
-        yield Rom(data, INESHeader.from_buffer_copy(data))
+        yield Rom(data)
 
 
 @pytest.fixture
@@ -46,7 +46,7 @@ def expanded_rom(rom) -> Generator[Rom, None, None]:
 
     # change amount of PRGs to simulate expanded rom
     expanded_data = ines_header_data + data_before_insertion_point + additional_data + data_after_insertion_point
-    yield Rom(expanded_data, INESHeader.from_buffer_copy(expanded_data))
+    yield Rom(expanded_data)
 
 
 @pytest.fixture

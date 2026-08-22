@@ -37,11 +37,10 @@ class INESHeader(Structure):
 class Rom:
     VANILLA_PRG_SIZE = 0x40000
 
-    def __init__(self, rom_data: bytearray, header: INESHeader | None = None):
+    def __init__(self, rom_data: bytearray):
         self._data = rom_data
 
-        if header is None:
-            header = INESHeader.from_buffer_copy(bytes(rom_data))
+        header = INESHeader.from_buffer_copy(bytes(rom_data))
 
         self._header = header
 
@@ -110,6 +109,7 @@ class Rom:
         if isinstance(delimiter, int):
             delimiter = bytes([delimiter])
 
+        # todo: Doesn't check for fail case
         end = self.find(delimiter, offset)
 
         return self.read(offset, end - offset)
