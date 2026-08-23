@@ -280,7 +280,6 @@ class WorldMapData(_IndexedMixin, DataPoint):
         )
 
         self.fortress_fx_base_index_address = Constants.FortressFXBase_ByWorld + self.index
-        self.fortress_fx_base_index = self._rom.int(self.fortress_fx_base_index_address)
 
         self.airship_level_offset_address = Constants.Airship_Layouts + OFFSET_SIZE * self.index
         self.airship_enemy_offset_address = Constants.Airship_Objects + OFFSET_SIZE * self.index
@@ -518,7 +517,7 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
     @airship_level_address.setter
     def airship_level_address(self, value):
-        self.airship_level_offset = value - self.airship_level_object_set.level_offset
+        self.airship_level_offset = value - ObjectSet(self._rom, self.airship_level_object_set).level_offset
 
     @property
     def airship_level_object_set(self):
@@ -669,4 +668,5 @@ class WorldMapData(_IndexedMixin, DataPoint):
 
         self.x_pos_list_start += diff
 
+        # update things
         self.structure_block_address = self.structure_block_address

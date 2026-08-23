@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     parsed_level: ParsedLevel = load_from_address(rom._data, 32, PLAINS_OBJECT_SET, 0x1FB92, 0xC537, 1_000_000)
 
-    list(gen_levels_in_rom(rom, use_rust))
+    list(gen_levels_in_rom(rom, max_steps=1_000_000))
 
     print(time.time() - start)
 

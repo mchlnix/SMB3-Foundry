@@ -2107,7 +2107,7 @@ impl MPU {
             self.do_step();
 
             if self.step_count > max_steps {
-                panic!("Max steps reached");
+                panic!("Max steps reached. {max_steps}");
             }
         }
     }
