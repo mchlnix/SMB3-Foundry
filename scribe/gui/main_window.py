@@ -27,19 +27,17 @@ from scribe.gui.menus.view_menu import ViewMenu
 from scribe.gui.settings_dialog import SettingsDialog
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse.constants import (
+from smb3parse import (
     MAPOBJ_ASM_SYMBOLS,
-    STARTING_WORLD_INDEX_ADDRESS,
-    WORLD_MAP_OBJECT_SET,
-)
-from smb3parse.data_points import Position
-from smb3parse.levels.constants import (
     MAX_SCREEN_COUNT,
+    STARTING_WORLD_INDEX_ADDRESS,
     WORLD_COUNT,
     WORLD_MAP_BLANK_TILE_ID,
     WORLD_MAP_HEIGHT,
+    WORLD_MAP_OBJECT_SET,
     WORLD_MAP_SCREEN_WIDTH,
 )
+from smb3parse.data_points import Position
 from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
 
 

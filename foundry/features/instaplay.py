@@ -1,15 +1,15 @@
 from foundry.game.level.Level import Level
 from foundry.gui.dialogs.SettingsDialog import PowerupEntry
-from smb3parse.constants import (
+from smb3parse import (
     BASE_OFFSET,
     PAGE_A000_OFFSET,
     POWERUP_ADDITION_PWING,
     POWERUP_ADDITION_STARMAN,
     STARTING_WORLD_INDEX_ADDRESS,
     TILE_LEVEL_1,
+    WORLD_COUNT,
     Constants,
 )
-from smb3parse.levels.constants import WORLD_COUNT
 from smb3parse.levels.world_map import WorldMap
 from smb3parse.util import JSR, LDA_CONST, LDY_CONST, NOP, RTS, STA_OFFSET, STY_RAM
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom

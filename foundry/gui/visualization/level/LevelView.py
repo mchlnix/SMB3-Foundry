@@ -37,8 +37,8 @@ from foundry.gui.visualization.MainView import (
     MainView,
 )
 from foundry.gui.windows.BlockViewer import ANIMATION_FRAME_DURATION_MS
+from smb3parse import HEADER_LENGTH
 from smb3parse.data_points import Position
-from smb3parse.levels.constants import HEADER_LENGTH
 
 
 class LevelView(MainView):

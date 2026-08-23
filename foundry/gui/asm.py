@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QFileDialog, QMessageBox
 from foundry import ASM_FILE_FILTER, NO_PARENT
 from foundry.game.File import ROM
 from foundry.gui.dialogs.ObjectSetSelector import ObjectSetSelector
-from smb3parse.constants import BASE_OFFSET, VANILLA_PRG_BANK_COUNT
+from smb3parse import BASE_OFFSET, VANILLA_PRG_BANK_COUNT
 from smb3parse.util import apply, hex_int
 from smb3parse.util.rom import PRG_BANK_SIZE
 

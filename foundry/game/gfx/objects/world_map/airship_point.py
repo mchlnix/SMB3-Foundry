@@ -3,7 +3,7 @@ from PySide6.QtGui import QPainter
 
 from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.game.gfx.objects.world_map.map_object import MapObject
-from smb3parse.levels.constants import WORLD_MAP_SCREEN_WIDTH
+from smb3parse import WORLD_MAP_SCREEN_WIDTH
 
 AIRSHIP_TRAVEL_POINT_1 = load_from_object_sprite_sheet(59, 2)
 AIRSHIP_TRAVEL_POINT_2 = load_from_object_sprite_sheet(60, 2)

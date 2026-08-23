@@ -8,8 +8,8 @@ from foundry.game.gfx.objects.world_map.map_tile import MapTile
 from foundry.game.level.WorldMap import WorldMap
 from foundry.gui.settings import Settings
 from foundry.gui.util import partition
-from smb3parse.constants import AIRSHIP_TRAVEL_SET_COUNT
-from smb3parse.levels.constants import (
+from smb3parse import (
+    AIRSHIP_TRAVEL_SET_COUNT,
     FIRST_VALID_ROW,
     NO_MAP_SCROLLING,
     WORLD_MAP_BLANK_TILE_ID,

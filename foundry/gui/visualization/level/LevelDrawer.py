@@ -24,21 +24,19 @@ from foundry.game.level.Level import Level
 from foundry.gui.dialogs.SettingsDialog import POWERUPS
 from foundry.gui.settings import Settings
 from foundry.gui.visualization.level.AutoScrollDrawer import AutoScrollDrawer
-from smb3parse.constants import (
+from smb3parse import (
     CLOUDY_OBJECT_SET,
     DESERT_OBJECT_SET,
     DUNGEON_OBJECT_SET,
     ICE_OBJECT_SET,
+    LEVEL_MAX_LENGTH,
+    LEVEL_SCREEN_HEIGHT,
+    LEVEL_SCREEN_WIDTH,
     OBJ_AUTOSCROLL,
     OBJ_CHEST_EXIT,
     OBJ_CHEST_ITEM_SETTER,
     OBJ_PIPE_EXITS,
     OBJ_WHITE_MUSHROOM_HOUSE,
-)
-from smb3parse.levels.constants import (
-    LEVEL_MAX_LENGTH,
-    LEVEL_SCREEN_HEIGHT,
-    LEVEL_SCREEN_WIDTH,
 )
 from smb3parse.util import apply
 from smb3parse.util.rect import Point

@@ -20,9 +20,8 @@ from scribe.gui.commands import (
 )
 from scribe.gui.tool_window.locks_list import NoneDelegate
 from scribe.gui.tool_window.table_widget import SpinBoxDelegate, TableWidget
-from smb3parse.constants import GAME_LEVEL_POINTER_COUNT, GAME_SCREEN_COUNT
+from smb3parse import GAME_LEVEL_POINTER_COUNT, GAME_SCREEN_COUNT, WORLD_COUNT
 from smb3parse.data_points import WorldMapData
-from smb3parse.levels.constants import WORLD_COUNT
 from smb3parse.util.rom import Rom
 
 

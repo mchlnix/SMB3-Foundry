@@ -26,8 +26,7 @@ from foundry.gui.commands import (
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
 from foundry.gui.widgets.Spinner import Spinner
-from smb3parse.constants import OBJECT_SET_NAMES
-from smb3parse.levels.constants import ENEMY_BASE_OFFSET
+from smb3parse import ENEMY_BASE_OFFSET, OBJECT_SET_NAMES
 from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
 
 LEVEL_LENGTHS = [0x10 * (i + 1) for i in range(0, 2**4)]

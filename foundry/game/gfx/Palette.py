@@ -6,7 +6,7 @@ from PySide6.QtGui import QColor
 from foundry import root_dir
 from foundry.game.File import ROM
 from foundry.gui.util import grouper
-from smb3parse.constants import BASE_OFFSET, Constants
+from smb3parse import BASE_OFFSET, Constants
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
 PALETTE_PRG_NO = 22

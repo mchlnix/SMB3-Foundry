@@ -20,9 +20,15 @@ from foundry.game.level import (
 from foundry.game.level.LevelLike import LevelLike
 from foundry.game.ObjectSet import ObjectSet
 from foundry.gui.asm import bytes_to_asm
-from smb3parse.constants import BASE_OFFSET, ENEMY_SIZE, OFFSET_SIZE, Constants
+from smb3parse import (
+    BASE_OFFSET,
+    ENEMY_BASE_OFFSET,
+    ENEMY_SIZE,
+    HEADER_LENGTH,
+    OFFSET_SIZE,
+    Constants,
+)
 from smb3parse.data_points import Position
-from smb3parse.levels.constants import ENEMY_BASE_OFFSET, HEADER_LENGTH
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.util.rect import Rect
 

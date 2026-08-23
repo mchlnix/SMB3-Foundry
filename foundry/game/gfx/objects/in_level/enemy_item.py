@@ -11,7 +11,7 @@ from foundry.game.ObjectDefinitions import (
     enemy_handle_y,
 )
 from foundry.game.ObjectSet import ObjectSet
-from smb3parse.constants import (
+from smb3parse import (
     ENEMY_ITEM_GRAPHICS_SET,
     ENEMY_ITEM_OBJECT_SET,
     OBJ_AUTOSCROLL,

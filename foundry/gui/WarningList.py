@@ -16,7 +16,7 @@ from foundry.gui.dialogs.LevelHeaderEditor import CAMERA_MOVEMENTS
 from foundry.gui.ObjectList import ObjectList
 from foundry.gui.util import clear_layout
 from foundry.gui.visualization.level.LevelView import LevelView
-from smb3parse.constants import (
+from smb3parse import (
     DUNGEON_OBJECT_SET,
     LVL_OBJ_LEVEL_END,
     LVL_OBJ_PLAINS_DOWNWARD_VINE,

@@ -2,7 +2,7 @@ from PySide6.QtGui import QImage, QPainter
 
 from foundry.game import GROUND
 from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
-from smb3parse.levels.constants import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
+from smb3parse import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.util.rect import Rect
 
 

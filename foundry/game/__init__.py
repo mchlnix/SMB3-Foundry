@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from smb3parse.constants import (
+from smb3parse import (
     OBJ_CHEST_EXIT,
     OBJ_CHEST_ITEM_SETTER,
     OBJ_PIPE_EXITS,

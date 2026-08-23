@@ -1,4 +1,4 @@
-from smb3parse.levels.constants import HEADER_LENGTH
+from smb3parse import HEADER_LENGTH
 from smb3parse.levels.level_base import LevelBase
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMapPosition

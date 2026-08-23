@@ -42,18 +42,16 @@ from scribe.gui.commands import (
     SetSpriteType,
 )
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse.constants import (
+from smb3parse import (
+    FIRST_VALID_ROW,
     MUSHROOM_OBJECT_SET,
     OBJECT_SET_NAMES,
     SPADE_BONUS_OBJECT_SET,
     TILE_NAMES,
-)
-from smb3parse.data_points import Position
-from smb3parse.levels.constants import (
-    FIRST_VALID_ROW,
     WORLD_MAP_BLANK_TILE_ID,
     WORLD_MAP_HEIGHT,
 )
+from smb3parse.data_points import Position
 
 
 class WorldView(MainView):

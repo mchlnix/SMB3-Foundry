@@ -16,13 +16,14 @@ from foundry import app_settings_foundry, get_level_thumbnail, icon
 from foundry.game.File import ROM
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
-from smb3parse.constants import (
+from smb3parse import (
+    HEADER_LENGTH,
     MUSHROOM_OBJECT_SET,
     SPADE_BONUS_OBJECT_SET,
+    WORLD_COUNT,
     WORLD_MAP_OBJECT_SET,
 )
 from smb3parse.data_points import LevelPointerData
-from smb3parse.levels.constants import HEADER_LENGTH, WORLD_COUNT
 from smb3parse.levels.level_header import LevelHeader
 
 from ...settings import LevelPreviewType

@@ -6,7 +6,7 @@ from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.gui.dialogs.LevelHeaderEditor import LevelHeaderEditor
 from foundry.gui.visualization.level.LevelView import LevelView
 from foundry.gui.visualization.MainView import object_to_mime_data
-from smb3parse.constants import ENEMY_ITEM_OBJECT_SET, PLAINS_OBJECT_SET
+from smb3parse import ENEMY_ITEM_OBJECT_SET, PLAINS_OBJECT_SET
 from smb3parse.data_points import Position
 
 

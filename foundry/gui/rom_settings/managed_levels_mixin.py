@@ -11,7 +11,7 @@ from foundry.gui.dialogs.LevelParseProgressDialog import LevelParseProgressDialo
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.HorizontalLine import HorizontalLine
 from foundry.gui.widgets.Spinner import Spinner
-from smb3parse.constants import OBJECT_SET_NAMES, Constants
+from smb3parse import OBJECT_SET_NAMES, Constants
 from smb3parse.util.rom import PRG_BANK_SIZE
 
 

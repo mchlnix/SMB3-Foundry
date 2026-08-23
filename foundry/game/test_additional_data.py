@@ -9,7 +9,7 @@ from foundry.game.additional_data import (
     LevelOrganizer,
 )
 from foundry.game.level import EMPTY_OBJECT_DATA, EnemyItemAddress, LevelAddress
-from smb3parse.constants import (
+from smb3parse import (
     BASE_OFFSET,
     DESERT_OBJECT_SET,
     ENEMY_DATA_BANK_INDEX,

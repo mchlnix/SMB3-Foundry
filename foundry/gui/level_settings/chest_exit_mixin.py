@@ -8,7 +8,7 @@ from foundry.game.level.Level import Level
 from foundry.gui import label_and_widget
 from foundry.gui.commands import AddEnemyAt, MoveObject, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
-from smb3parse.constants import (
+from smb3parse import (
     MAPITEM_MUSHROOM,
     MAPITEM_MUSICBOX,
     MAPITEM_NAMES,

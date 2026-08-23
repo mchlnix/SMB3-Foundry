@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from hypothesis import given, strategies
 
-from smb3parse.levels.constants import (
+from smb3parse import (
     DEFAULT_HORIZONTAL_HEIGHT,
     DEFAULT_VERTICAL_WIDTH,
     HEADER_LENGTH,

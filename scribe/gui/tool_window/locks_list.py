@@ -13,7 +13,7 @@ from scribe.gui.tool_window.table_widget import (
     SpinBoxDelegate,
     TableWidget,
 )
-from smb3parse.constants import FORTRESS_FX_COUNT
+from smb3parse import FORTRESS_FX_COUNT
 
 
 class LocksList(TableWidget):

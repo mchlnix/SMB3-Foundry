@@ -6,7 +6,7 @@ from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.windows.BlockViewer import BlockBank
-from smb3parse.levels.constants import WORLD_MAP_BLANK_TILE_ID
+from smb3parse import WORLD_MAP_BLANK_TILE_ID
 
 
 class BlockIcon(QWidget):

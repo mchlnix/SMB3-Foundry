@@ -1,7 +1,7 @@
 from functools import lru_cache
 
 from foundry.game.File import ROM
-from smb3parse.constants import (
+from smb3parse import (
     STOCK_LEVEL_BG_PAGES1_BYTES,
     STOCK_LEVEL_BG_PAGES2_BYTES,
     Constants,

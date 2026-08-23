@@ -1,3 +1,4 @@
+from smb3parse import FIRST_VALID_ROW
 from smb3parse.constants import (
     BASE_OFFSET,
     MAPITEM_NOITEM,
@@ -8,7 +9,6 @@ from smb3parse.constants import (
 )
 from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
 from smb3parse.data_points.world_map_data import WorldMapData
-from smb3parse.levels.constants import FIRST_VALID_ROW
 from smb3parse.util.rom import Rom
 
 

@@ -4,6 +4,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Generator
 
+from smb3parse import HEADER_LENGTH, WORLD_COUNT, WORLD_MAP_WARP_WORLD_INDEX
 from smb3parse.constants import (
     MUSHROOM_OBJECT_SET,
     OFFSET_SIZE,
@@ -13,11 +14,6 @@ from smb3parse.constants import (
     WORLD_MAP_OBJECT_SET,
 )
 from smb3parse.data_points import LevelPointerData
-from smb3parse.levels.constants import (
-    HEADER_LENGTH,
-    WORLD_COUNT,
-    WORLD_MAP_WARP_WORLD_INDEX,
-)
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMap
 from smb3parse.util import apply, hex_int

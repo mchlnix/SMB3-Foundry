@@ -11,14 +11,14 @@ from foundry.game.level import (
     LevelAddress,
     ObjectData,
 )
-from smb3parse.constants import (
+from smb3parse import (
     BASE_OFFSET,
     ENEMY_DATA_BANK_INDEX,
+    HEADER_LENGTH,
     OFFSET_SIZE,
     PAGE_A000_OFFSET,
     Constants,
 )
-from smb3parse.levels.constants import HEADER_LENGTH
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom

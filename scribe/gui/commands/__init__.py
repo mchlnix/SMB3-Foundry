@@ -6,20 +6,18 @@ from foundry.game.gfx.objects.world_map.level_pointer import LevelPointer
 from foundry.game.gfx.objects.world_map.locks import Lock
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from foundry.game.level.WorldMap import WorldMap
-from smb3parse.constants import (
+from smb3parse import (
+    FIRST_VALID_ROW,
     MAPITEM_NAMES,
     MAPOBJ_NAMES,
     MUSIC_THEMES,
+    NO_MAP_SCROLLING,
     OBJECT_SET_NAMES,
     SPRITE_COUNT,
     TILE_NAMES,
-)
-from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
-from smb3parse.levels.constants import (
-    FIRST_VALID_ROW,
-    NO_MAP_SCROLLING,
     WORLD_MAP_BLANK_TILE_ID,
 )
+from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
 
 
 class DirtyAdditionalDataMixin(object):

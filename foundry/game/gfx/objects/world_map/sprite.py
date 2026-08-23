@@ -3,7 +3,8 @@ from PySide6.QtGui import QColor
 
 from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.game.gfx.objects.world_map.map_object import MapObject
-from smb3parse.constants import (
+from smb3parse import (
+    FIRST_VALID_ROW,
     MAPITEM_ANCHOR,
     MAPITEM_FIREFLOWER,
     MAPITEM_FROG,
@@ -40,7 +41,6 @@ from smb3parse.constants import (
     MAPOBJ_WHITETOADHOUSE,
 )
 from smb3parse.data_points import Position, SpriteData
-from smb3parse.levels.constants import FIRST_VALID_ROW
 
 EMPTY_IMAGE = load_from_object_sprite_sheet(0, 53)
 

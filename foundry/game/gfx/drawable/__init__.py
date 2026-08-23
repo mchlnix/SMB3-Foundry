@@ -2,7 +2,7 @@ from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QColor, QImage, QPainter, Qt
 
 from foundry import data_dir
-from smb3parse.constants import (
+from smb3parse import (
     POWERUP_FIREFLOWER,
     POWERUP_FROG,
     POWERUP_HAMMER,

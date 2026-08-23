@@ -15,9 +15,13 @@ from foundry.game.gfx.objects.world_map.start_posiiton import StartPosition
 from foundry.game.gfx.Palette import load_palette_group
 from foundry.game.level.LevelLike import LevelLike
 from foundry.game.ObjectSet import ObjectSet
-from smb3parse.constants import MAPOBJ_EMPTY, WORLD_MAP_OBJECT_SET
+from smb3parse import (
+    FIRST_VALID_ROW,
+    MAPOBJ_EMPTY,
+    WORLD_MAP_HEIGHT,
+    WORLD_MAP_OBJECT_SET,
+)
 from smb3parse.data_points import Position
-from smb3parse.levels.constants import FIRST_VALID_ROW, WORLD_MAP_HEIGHT
 from smb3parse.levels.world_map import WorldMap as _WorldMap
 from smb3parse.levels.world_map import list_world_map_addresses
 from smb3parse.util.rect import Point

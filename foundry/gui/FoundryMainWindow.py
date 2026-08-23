@@ -100,9 +100,8 @@ from foundry.gui.WarningList import WarningList
 from foundry.gui.widgets.object_toolbar.ObjectToolBar import ObjectToolBar
 from foundry.gui.widgets.size_bar.EnemySizeBar import EnemySizeBar
 from foundry.gui.widgets.size_bar.LevelSizeBar import LevelSizeBar
-from smb3parse.constants import OBJECT_SET_NAMES, Constants
+from smb3parse import HEADER_LENGTH, OBJECT_SET_NAMES, Constants
 from smb3parse.data_points import Position
-from smb3parse.levels.constants import HEADER_LENGTH
 
 TOOLBAR_ICON_SIZE = QSize(20, 20)
 

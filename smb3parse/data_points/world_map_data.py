@@ -1,5 +1,13 @@
 from collections import defaultdict
 
+from smb3parse import (
+    MAX_SCREEN_COUNT,
+    WORLD_MAP_BASE_OFFSET,
+    WORLD_MAP_BLANK_TILE_ID,
+    WORLD_MAP_LAYOUT_DELIMITER,
+    WORLD_MAP_SCREEN_SIZE,
+    WORLD_MAP_WARP_WORLD_INDEX,
+)
 from smb3parse.constants import (
     AIR_SHIP_OBJECT_SET,
     AIRSHIP_TRAVEL_SET_COUNT,
@@ -12,14 +20,6 @@ from smb3parse.constants import (
 from smb3parse.data_points import FortressFXData
 from smb3parse.data_points.level_pointer_data import LevelPointerData
 from smb3parse.data_points.util import DataPoint, Position, _IndexedMixin
-from smb3parse.levels.constants import (
-    MAX_SCREEN_COUNT,
-    WORLD_MAP_BASE_OFFSET,
-    WORLD_MAP_BLANK_TILE_ID,
-    WORLD_MAP_LAYOUT_DELIMITER,
-    WORLD_MAP_SCREEN_SIZE,
-    WORLD_MAP_WARP_WORLD_INDEX,
-)
 from smb3parse.objects.object_set import ObjectSet
 from smb3parse.util.rom import Rom
 
