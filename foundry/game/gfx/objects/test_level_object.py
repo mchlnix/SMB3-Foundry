@@ -16,6 +16,8 @@ from smb3parse import (
     DUNGEON_OBJECT_SET,
     HILLY_GRAPHICS_SET,
     HILLY_OBJECT_SET,
+    MAX_DOMAIN,
+    MAX_ID_VALUE,
     MAX_OBJECT_SET,
     MUSHROOM_OBJECT_SET,
     SPADE_BONUS_OBJECT_SET,
@@ -23,7 +25,6 @@ from smb3parse import (
     UNDERGROUND_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
-from smb3parse.objects.constants import MAX_DOMAIN, MAX_ID_VALUE
 
 reference_image_dir = root_dir / "test_refs"
 

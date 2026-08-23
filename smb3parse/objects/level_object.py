@@ -1,13 +1,14 @@
 from typing import TYPE_CHECKING
 
-from smb3parse import DEFAULT_HORIZONTAL_HEIGHT
 from smb3parse.constants import (
+    DEFAULT_HORIZONTAL_HEIGHT,
     ENEMY_ITEM_OBJECT_SET,
     PLAINS_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
-from smb3parse.objects.in_level_object import InLevelObject
 from smb3parse.util import lrange
+
+from .in_level_object import InLevelObject
 
 if TYPE_CHECKING:
     from smb3parse.util.parser.object import ParsedEnemy, ParsedObject

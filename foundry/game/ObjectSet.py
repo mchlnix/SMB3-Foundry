@@ -3,7 +3,7 @@ from functools import lru_cache
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import ObjectDefinition, load_object_definitions
 from smb3parse import ENEMY_ITEM_OBJECT_SET
-from smb3parse.objects.object_set import ObjectSet as SMB3ObjectSet
+from smb3parse.objects import ObjectSet as SMB3ObjectSet
 
 # TODO: make relative to a label in Constants
 ENDING_OBJECT_BASE_OFFSET = 0x1C8F9

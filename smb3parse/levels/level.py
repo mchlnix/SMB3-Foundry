@@ -1,4 +1,4 @@
-from smb3parse.objects.object_set import ObjectSet, assert_valid_object_set_number
+from smb3parse.objects import ObjectSet, assert_valid_object_set_number
 from smb3parse.util.rom import Rom
 
 from ..constants import HEADER_LENGTH

@@ -1,4 +1,4 @@
-from smb3parse.objects.in_level_object import InLevelObject
+from .in_level_object import InLevelObject
 
 
 class EnemyItem(InLevelObject):

@@ -11,7 +11,7 @@ from smb3parse.constants import (
     PLAINS_OBJECT_SET,
     UNDERGROUND_OBJECT_SET,
 )
-from smb3parse.objects.level_object import goes_to_next_level
+from smb3parse.objects import goes_to_next_level
 from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
 
 

@@ -17,7 +17,7 @@ from smb3parse import (
 from smb3parse.levels import (
     LevelHeader,
 )
-from smb3parse.objects.object_set import is_valid_object_set_number
+from smb3parse.objects import is_valid_object_set_number
 from smb3parse.tests.conftest import test_rom_path
 from smb3parse.util.rom import Rom
 
