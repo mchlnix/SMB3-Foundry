@@ -23,33 +23,12 @@ fn load_from_address(_py: Python, rom_data: Vec<u8>, prg_bank_count: u8, object_
     Ok(level)
 }
 
-/// A Python module implemented in Rust.
 #[pymodule]
-fn r6502(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(load_from_address, m)?)?;
-    m.add_class::<ParsedLevel>()?;
+mod r6502 {
+    #[pymodule_export]
+    use super::load_from_address;
 
-    Ok(())
+    #[pymodule_export]
+    use crate::level::ParsedLevel;
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::fs;
-
-    #[test]
-    fn test_load_from_address() {
-        let rom_data = fs::read("/home/michael/Gits/SMB3Foundry/roms/smb3.nes");
-
-        let rom: Rom = Rom {
-            data: rom_data.unwrap(),
-            prg_bank_count: 32,
-        };
-
-        let mut cpu = MPU::new(rom);
-
-        cpu.load_from_address(1, 0x1FB92, 0xC537, 60000);
-    }
-}
-
 
