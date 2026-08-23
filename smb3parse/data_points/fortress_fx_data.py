@@ -1,7 +1,6 @@
-from smb3parse import FIRST_VALID_ROW
-from smb3parse.constants import Constants
-from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
-from smb3parse.util.rom import Rom
+from ..constants import FIRST_VALID_ROW, Constants
+from ..util.rom import Rom
+from .util import DataPoint, _IndexedMixin, _PositionMixin
 
 
 class FortressFXData(_PositionMixin, _IndexedMixin, DataPoint):

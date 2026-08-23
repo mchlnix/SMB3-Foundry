@@ -1,15 +1,15 @@
-from smb3parse import FIRST_VALID_ROW
-from smb3parse.constants import (
+from ..constants import (
     BASE_OFFSET,
+    FIRST_VALID_ROW,
     MAPITEM_NOITEM,
     MAPOBJ_EMPTY,
     OFFSET_SIZE,
     PAGE_C000_OFFSET,
     Constants,
 )
-from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
-from smb3parse.data_points.world_map_data import WorldMapData
-from smb3parse.util.rom import Rom
+from ..util.rom import Rom
+from .util import DataPoint, _IndexedMixin, _PositionMixin
+from .world_map_data import WorldMapData
 
 
 class SpriteData(_PositionMixin, _IndexedMixin, DataPoint):

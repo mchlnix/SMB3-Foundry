@@ -2,8 +2,8 @@ from builtins import NotImplementedError
 from dataclasses import dataclass
 from typing import overload
 
-from smb3parse import FIRST_VALID_ROW, WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
-from smb3parse.util.rom import Rom
+from ..constants import FIRST_VALID_ROW, WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
+from ..util.rom import Rom
 
 
 @dataclass

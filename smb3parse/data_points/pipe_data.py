@@ -1,8 +1,6 @@
-from smb3parse import WORLD_MAP_SCREEN_WIDTH
-from smb3parse.constants import Constants
-from smb3parse.data_points import Position
-from smb3parse.data_points.util import DataPoint, _IndexedMixin
-from smb3parse.util.rom import Rom
+from ..constants import WORLD_MAP_SCREEN_WIDTH, Constants
+from ..util.rom import Rom
+from .util import DataPoint, Position, _IndexedMixin
 
 
 class PipeData(_IndexedMixin, DataPoint):

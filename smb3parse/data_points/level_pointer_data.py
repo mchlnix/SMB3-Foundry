@@ -1,17 +1,19 @@
 from typing import TYPE_CHECKING
 
-from smb3parse import (
+from ..constants import (
+    BASE_OFFSET,
     FIRST_VALID_ROW,
+    OFFSET_SIZE,
     WORLD_MAP_BASE_OFFSET,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
+    Constants,
 )
-from smb3parse.constants import BASE_OFFSET, OFFSET_SIZE, Constants
-from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
-from smb3parse.util.rom import PRG_BANK_SIZE, Rom
+from ..util.rom import PRG_BANK_SIZE, Rom
+from .util import DataPoint, _IndexedMixin, _PositionMixin
 
 if TYPE_CHECKING:
-    from smb3parse.data_points.world_map_data import WorldMapData
+    from .world_map_data import WorldMapData
 
 
 class LevelPointerData(_PositionMixin, _IndexedMixin, DataPoint):
