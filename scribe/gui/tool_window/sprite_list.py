@@ -12,7 +12,7 @@ from scribe.gui.tool_window.table_widget import (
     TableWidget,
 )
 from smb3parse.constants import MAPITEM_NAMES, MAPOBJ_NAMES
-from smb3parse.levels import FIRST_VALID_ROW
+from smb3parse.levels.constants import FIRST_VALID_ROW
 
 
 class SpriteList(TableWidget):

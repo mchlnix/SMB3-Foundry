@@ -1,7 +1,7 @@
 from enum import IntEnum
 from itertools import product
 
-from smb3parse.levels import (
+from smb3parse.levels.constants import (
     DEFAULT_HORIZONTAL_HEIGHT,
     DEFAULT_VERTICAL_WIDTH,
     ENEMY_BASE_OFFSET,

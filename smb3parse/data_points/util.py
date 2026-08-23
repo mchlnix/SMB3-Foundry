@@ -2,7 +2,7 @@ from builtins import NotImplementedError
 from dataclasses import dataclass
 from typing import overload
 
-from smb3parse.levels import (
+from smb3parse.levels.constants import (
     FIRST_VALID_ROW,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,

@@ -15,7 +15,11 @@ from smb3parse.constants import (
     TILE_NAMES,
 )
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
-from smb3parse.levels import FIRST_VALID_ROW, NO_MAP_SCROLLING, WORLD_MAP_BLANK_TILE_ID
+from smb3parse.levels.constants import (
+    FIRST_VALID_ROW,
+    NO_MAP_SCROLLING,
+    WORLD_MAP_BLANK_TILE_ID,
+)
 
 
 class DirtyAdditionalDataMixin(object):

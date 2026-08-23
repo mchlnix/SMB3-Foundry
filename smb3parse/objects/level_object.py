@@ -5,8 +5,8 @@ from smb3parse.constants import (
     PLAINS_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
-from smb3parse.levels import DEFAULT_HORIZONTAL_HEIGHT
-from smb3parse.objects import InLevelObject
+from smb3parse.levels.constants import DEFAULT_HORIZONTAL_HEIGHT
+from smb3parse.objects.in_level_object import InLevelObject
 from smb3parse.util import lrange
 
 if TYPE_CHECKING:

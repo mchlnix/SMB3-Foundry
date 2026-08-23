@@ -23,7 +23,7 @@ from smb3parse.constants import (
     UNDERGROUND_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
-from smb3parse.objects import MAX_DOMAIN, MAX_ID_VALUE
+from smb3parse.objects.constants import MAX_DOMAIN, MAX_ID_VALUE
 
 reference_image_dir = root_dir / "test_refs"
 

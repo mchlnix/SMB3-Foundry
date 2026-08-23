@@ -49,7 +49,11 @@ from smb3parse.constants import (
     TILE_NAMES,
 )
 from smb3parse.data_points import Position
-from smb3parse.levels import FIRST_VALID_ROW, WORLD_MAP_BLANK_TILE_ID, WORLD_MAP_HEIGHT
+from smb3parse.levels.constants import (
+    FIRST_VALID_ROW,
+    WORLD_MAP_BLANK_TILE_ID,
+    WORLD_MAP_HEIGHT,
+)
 
 
 class WorldView(MainView):

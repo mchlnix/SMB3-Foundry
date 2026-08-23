@@ -1,7 +1,7 @@
 from smb3parse.constants import Constants
 from smb3parse.data_points import Position
 from smb3parse.data_points.util import DataPoint, _IndexedMixin
-from smb3parse.levels import WORLD_MAP_SCREEN_WIDTH
+from smb3parse.levels.constants import WORLD_MAP_SCREEN_WIDTH
 from smb3parse.util.rom import Rom
 
 

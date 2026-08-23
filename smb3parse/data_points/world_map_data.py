@@ -12,7 +12,7 @@ from smb3parse.constants import (
 from smb3parse.data_points import FortressFXData
 from smb3parse.data_points.level_pointer_data import LevelPointerData
 from smb3parse.data_points.util import DataPoint, Position, _IndexedMixin
-from smb3parse.levels import (
+from smb3parse.levels.constants import (
     MAX_SCREEN_COUNT,
     WORLD_MAP_BASE_OFFSET,
     WORLD_MAP_BLANK_TILE_ID,

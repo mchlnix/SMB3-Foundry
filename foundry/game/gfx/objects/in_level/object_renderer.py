@@ -9,7 +9,11 @@ from smb3parse.constants import (
     LVL_OBJ_SKY_WOODEN_POLE,
     PLAINS_OBJECT_SET,
 )
-from smb3parse.levels import LEVEL_MAX_LENGTH, LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
+from smb3parse.levels.constants import (
+    LEVEL_MAX_LENGTH,
+    LEVEL_SCREEN_HEIGHT,
+    LEVEL_SCREEN_WIDTH,
+)
 from smb3parse.util.rect import Rect
 
 # not all objects provide a block index for a blank block

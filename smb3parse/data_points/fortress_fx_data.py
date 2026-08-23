@@ -1,6 +1,6 @@
 from smb3parse.constants import Constants
 from smb3parse.data_points.util import DataPoint, _IndexedMixin, _PositionMixin
-from smb3parse.levels import FIRST_VALID_ROW
+from smb3parse.levels.constants import FIRST_VALID_ROW
 from smb3parse.util.rom import Rom
 
 

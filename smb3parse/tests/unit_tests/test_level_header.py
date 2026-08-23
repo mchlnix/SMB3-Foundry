@@ -4,11 +4,13 @@ from pathlib import Path
 import pytest
 from hypothesis import given, strategies
 
-from smb3parse.levels import (
+from smb3parse.levels.constants import (
     DEFAULT_HORIZONTAL_HEIGHT,
     DEFAULT_VERTICAL_WIDTH,
     HEADER_LENGTH,
-    is_valid_level_length,
+    LEVEL_LENGTH_INTERVAL,
+    LEVEL_MAX_LENGTH,
+    LEVEL_MIN_LENGTH,
 )
 from smb3parse.levels.level_header import (
     MARIO_X_POSITIONS,
@@ -20,6 +22,10 @@ from smb3parse.tests.conftest import test_rom_path
 from smb3parse.util.rom import Rom
 
 rom = Rom.from_file(Path(test_rom_path))
+
+
+def is_valid_level_length(level_length: int) -> bool:
+    return level_length in range(LEVEL_MIN_LENGTH, LEVEL_MAX_LENGTH + 1, LEVEL_LENGTH_INTERVAL)
 
 
 @given(header_bytes=strategies.binary(min_size=HEADER_LENGTH, max_size=HEADER_LENGTH))

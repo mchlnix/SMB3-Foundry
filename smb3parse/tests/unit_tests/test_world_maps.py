@@ -2,7 +2,7 @@ import pytest
 
 from smb3parse.constants import TILE_BOWSER_CASTLE, WORLD_MAP_OBJECT_SET
 from smb3parse.data_points import Position
-from smb3parse.levels import WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
+from smb3parse.levels.constants import WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
 from smb3parse.levels.world_map import (
     WorldMap,
     _get_special_enterable_tiles,

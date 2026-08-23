@@ -33,7 +33,7 @@ from smb3parse.constants import (
     WORLD_MAP_OBJECT_SET,
 )
 from smb3parse.data_points import Position
-from smb3parse.levels import (
+from smb3parse.levels.constants import (
     MAX_SCREEN_COUNT,
     WORLD_COUNT,
     WORLD_MAP_BLANK_TILE_ID,

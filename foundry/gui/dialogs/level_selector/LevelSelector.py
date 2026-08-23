@@ -22,7 +22,7 @@ from smb3parse.constants import (
     WORLD_MAP_OBJECT_SET,
 )
 from smb3parse.data_points import LevelPointerData
-from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT
+from smb3parse.levels.constants import HEADER_LENGTH, WORLD_COUNT
 from smb3parse.levels.level_header import LevelHeader
 
 from ...settings import LevelPreviewType

@@ -13,7 +13,11 @@ from smb3parse.constants import (
     WORLD_MAP_OBJECT_SET,
 )
 from smb3parse.data_points import LevelPointerData
-from smb3parse.levels import HEADER_LENGTH, WORLD_COUNT, WORLD_MAP_WARP_WORLD_INDEX
+from smb3parse.levels.constants import (
+    HEADER_LENGTH,
+    WORLD_COUNT,
+    WORLD_MAP_WARP_WORLD_INDEX,
+)
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.levels.world_map import WorldMap
 from smb3parse.util import apply, hex_int
@@ -66,7 +70,12 @@ class FoundLevel:
         )
 
     @staticmethod
-    def from_record(record: "FoundLevelRecord", world_num: int, object_data_len: int, enemy_data_len: int):
+    def from_record(
+        record: "FoundLevelRecord",
+        world_num: int,
+        object_data_len: int,
+        enemy_data_len: int,
+    ):
         return FoundLevel(
             [record.level_address_offset],
             [record.enemy_address_offset],
@@ -154,7 +163,12 @@ def gen_levels_in_rom(
             if record.object_set == SPADE_BONUS_OBJECT_SET:
                 continue
 
-            print(f"W{world.number}", hex(record.level_address), hex(record.enemy_address), record.object_set)
+            print(
+                f"W{world.number}",
+                hex(record.level_address),
+                hex(record.enemy_address),
+                record.object_set,
+            )
 
             # traverse Jump Destinations by following the offsets in the header, until finding a known level or dead end
             was_cancelled, levels_in_world = yield from _follow_jump_destinations(
@@ -200,14 +214,22 @@ def _follow_jump_destinations(
 
             # emulate the level loading of the ROM to let it parse the level objects
             parsed_level = load_from_address(
-                rom._data, rom.prg_banks, record.object_set, record.level_address, record.enemy_address, max_steps
+                rom._data,
+                rom.prg_banks,
+                record.object_set,
+                record.level_address,
+                record.enemy_address,
+                max_steps,
             )
         except ValueError as ve:
             print(ve)
             break
 
         found_level = FoundLevel.from_record(
-            record, world.number, parsed_level.object_data_length, parsed_level.enemy_data_length
+            record,
+            world.number,
+            parsed_level.object_data_length,
+            parsed_level.enemy_data_length,
         )
 
         # add the newly found level to the list of known levels
@@ -256,7 +278,9 @@ def _follow_jump_destinations(
     return was_cancelled, levels_in_world
 
 
-def _sort_levels_by_object_set(levels_by_address: dict[int, FoundLevel]) -> defaultdict[int, list[int]]:
+def _sort_levels_by_object_set(
+    levels_by_address: dict[int, FoundLevel],
+) -> defaultdict[int, list[int]]:
     levels_by_object_set = defaultdict(list)
 
     for level_address in sorted(levels_by_address.keys()):
@@ -265,7 +289,10 @@ def _sort_levels_by_object_set(levels_by_address: dict[int, FoundLevel]) -> defa
     return levels_by_object_set
 
 
-def _print_levels_by_object_set(levels_by_address: dict[int, FoundLevel], levels_by_object_set: defaultdict[int, list]):
+def _print_levels_by_object_set(
+    levels_by_address: dict[int, FoundLevel],
+    levels_by_object_set: defaultdict[int, list],
+):
     total_level_count = 0
 
     for object_set_num, levels_addresses in sorted(levels_by_object_set.items()):

@@ -35,7 +35,11 @@ from smb3parse.constants import (
     OBJ_PIPE_EXITS,
     OBJ_WHITE_MUSHROOM_HOUSE,
 )
-from smb3parse.levels import LEVEL_MAX_LENGTH, LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
+from smb3parse.levels.constants import (
+    LEVEL_MAX_LENGTH,
+    LEVEL_SCREEN_HEIGHT,
+    LEVEL_SCREEN_WIDTH,
+)
 from smb3parse.util import apply
 from smb3parse.util.rect import Point
 

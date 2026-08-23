@@ -20,7 +20,7 @@ from foundry.gui.widgets.Spinner import Spinner
 from smb3parse.constants import OBJ_PIPE_EXITS, PIPE_PAIR_COUNT
 from smb3parse.data_points import Position
 from smb3parse.data_points.pipe_data import PipeData
-from smb3parse.levels import WORLD_COUNT
+from smb3parse.levels.constants import WORLD_COUNT
 
 
 class PipePairMixin(SettingsMixin):

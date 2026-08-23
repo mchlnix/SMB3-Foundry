@@ -30,7 +30,7 @@ from scribe.gui.commands import (
 )
 from scribe.gui.world_overview import WorldOverview
 from smb3parse.constants import MUSIC_THEMES
-from smb3parse.levels import NO_MAP_SCROLLING, WORLD_MAP_PALETTE_COUNT
+from smb3parse.levels.constants import NO_MAP_SCROLLING, WORLD_MAP_PALETTE_COUNT
 
 
 class EditWorldInfo(CustomDialog):

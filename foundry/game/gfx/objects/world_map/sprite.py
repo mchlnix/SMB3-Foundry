@@ -40,7 +40,7 @@ from smb3parse.constants import (
     MAPOBJ_WHITETOADHOUSE,
 )
 from smb3parse.data_points import Position, SpriteData
-from smb3parse.levels import FIRST_VALID_ROW
+from smb3parse.levels.constants import FIRST_VALID_ROW
 
 EMPTY_IMAGE = load_from_object_sprite_sheet(0, 53)
 

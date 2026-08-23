@@ -18,7 +18,7 @@ from smb3parse.constants import (
     PAGE_A000_OFFSET,
     Constants,
 )
-from smb3parse.levels import HEADER_LENGTH
+from smb3parse.levels.constants import HEADER_LENGTH
 from smb3parse.levels.level_header import LevelHeader
 from smb3parse.util.parser import FoundLevel
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom

@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QGridLayout, QLabel, QListWidget, QWidget
 from foundry.game.File import ROM
 from foundry.game.level.Level import Level
 from foundry.gui import WORLD_ITEMS
-from smb3parse.levels import HEADER_LENGTH
+from smb3parse.levels.constants import HEADER_LENGTH
 
 LOST_LEVELS_INDEX = 8
 OVERWORLD_MAPS_INDEX = 9

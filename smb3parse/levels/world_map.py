@@ -11,7 +11,7 @@ from smb3parse.constants import (
     Constants,
 )
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
-from smb3parse.levels import (
+from smb3parse.levels.constants import (
     COMPLETABLE_LIST_END_MARKER,
     FIRST_VALID_ROW,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
@@ -22,8 +22,8 @@ from smb3parse.levels import (
     WORLD_MAP_HEIGHT,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
-    LevelBase,
 )
+from smb3parse.levels.level_base import LevelBase
 from smb3parse.levels.WorldMapPosition import WorldMapPosition
 from smb3parse.objects.object_set import ObjectSet
 from smb3parse.util.rom import Rom

@@ -12,7 +12,7 @@ from foundry.game.gfx.objects.in_level.object_renderer import (
 from foundry.game.gfx.Palette import PaletteGroup
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from foundry.game.ObjectSet import ObjectSet
-from smb3parse.levels import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
+from smb3parse.levels.constants import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
 from smb3parse.util import clamp
 from smb3parse.util.rect import Rect
 

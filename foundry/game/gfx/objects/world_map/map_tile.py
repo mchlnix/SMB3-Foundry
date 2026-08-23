@@ -3,7 +3,7 @@ from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.constants import TILE_NAMES
 from smb3parse.data_points import Position
-from smb3parse.levels import WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
+from smb3parse.levels.constants import WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
 
 
 class MapTile(MapObject):

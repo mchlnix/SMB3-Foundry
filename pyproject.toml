@@ -6,3 +6,6 @@ filterwarnings = ["ignore::foundry.game.gfx.objects.in_level.object_renderer.Lev
 
 [tool.isort]
 profile = "black"
+
+[tool.black]
+line-length=120
