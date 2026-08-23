@@ -3,13 +3,14 @@ from ctypes import Structure, c_char, c_ubyte
 from os import PathLike
 from pathlib import Path
 
-from smb3parse.constants import BASE_OFFSET, WORLD_MAP_TSA_INDEX, Constants
-from smb3parse.types import AnyAddress, NormalizedAddress
-from smb3parse.util import little_endian
-
-TSA_TABLE_SIZE = 0x400
-
-PRG_BANK_SIZE = 0x2000
+from ..constants import (
+    BASE_OFFSET,
+    PRG_BANK_SIZE,
+    TSA_TABLE_SIZE,
+    WORLD_MAP_TSA_INDEX,
+    Constants,
+)
+from .types import AnyAddress, NormalizedAddress
 
 
 class INESHeader(Structure):
@@ -173,3 +174,13 @@ class Rom:
         read_bytes = self.read(offset, 1)
 
         return read_bytes[0]
+
+
+def little_endian(two_bytes: bytearray) -> int:
+    """
+    Takes a byte array of length 2 and returns the integer it represents in little endian.
+    """
+
+    first, second = two_bytes
+
+    return (second << 8) + first

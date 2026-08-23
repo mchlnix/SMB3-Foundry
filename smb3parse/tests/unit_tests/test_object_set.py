@@ -5,7 +5,7 @@ import pytest
 from smb3parse.constants import ENEMY_ITEM_OBJECT_SET
 from smb3parse.objects import ObjectSet
 from smb3parse.tests.conftest import test_rom_path
-from smb3parse.util.rom import Rom
+from smb3parse.util import Rom
 
 rom = Rom.from_file(Path(test_rom_path))
 

@@ -12,7 +12,7 @@ from foundry.game.gfx.objects.in_level.in_level_object import InLevelObject
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from foundry.game.gfx.Palette import load_palette_group
-from smb3parse import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
+from smb3parse.constants import MAX_DOMAIN, MAX_ENEMY_ITEM_ID, MAX_ID_VALUE
 from smb3parse.util import apply
 
 from .object_icon import ObjectIcon

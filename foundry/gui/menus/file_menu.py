@@ -16,7 +16,7 @@ from foundry.gui.asm import (
 from foundry.gui.dialogs.fns_asm_load_dialog import FnsAsmLoadDialog
 from foundry.gui.m3l import save_m3l, save_m3l_filename
 from foundry.gui.settings import Settings
-from smb3parse import update_global_offsets
+from smb3parse.constants import update_global_offsets
 
 
 class FileMenu(QMenu):

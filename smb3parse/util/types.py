@@ -1,7 +1,5 @@
 from typing import NewType, TypeAlias, TypeVar
 
-Offset: TypeAlias = int
-
 RawAddress: TypeAlias = int
 
 

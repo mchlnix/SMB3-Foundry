@@ -24,7 +24,7 @@ from foundry.game.level.Level import Level
 from foundry.gui.dialogs.SettingsDialog import POWERUPS
 from foundry.gui.settings import Settings
 from foundry.gui.visualization.level.AutoScrollDrawer import AutoScrollDrawer
-from smb3parse import (
+from smb3parse.constants import (
     CLOUDY_OBJECT_SET,
     DESERT_OBJECT_SET,
     DUNGEON_OBJECT_SET,
@@ -38,8 +38,7 @@ from smb3parse import (
     OBJ_PIPE_EXITS,
     OBJ_WHITE_MUSHROOM_HOUSE,
 )
-from smb3parse.util import apply
-from smb3parse.util.rect import Point
+from smb3parse.util import Point, apply
 
 FIRE_FLOWER = load_from_object_sprite_sheet(16, 53)
 LEAF = load_from_object_sprite_sheet(17, 53)

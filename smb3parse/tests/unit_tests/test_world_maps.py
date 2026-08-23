@@ -1,6 +1,6 @@
 import pytest
 
-from smb3parse import (
+from smb3parse.constants import (
     TILE_BOWSER_CASTLE,
     WORLD_MAP_HEIGHT,
     WORLD_MAP_OBJECT_SET,
@@ -12,7 +12,7 @@ from smb3parse.levels import (
     get_special_enterable_tiles,
     list_world_map_addresses,
 )
-from smb3parse.util.rom import Rom
+from smb3parse.util import Rom
 
 world_map_addresses = [
     0x185BA,

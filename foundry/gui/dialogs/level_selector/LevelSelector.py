@@ -16,7 +16,7 @@ from foundry import app_settings_foundry, get_level_thumbnail, icon
 from foundry.game.File import ROM
 from foundry.gui import OBJECT_SET_ITEMS
 from foundry.gui.widgets.Spinner import Spinner
-from smb3parse import (
+from smb3parse.constants import (
     HEADER_LENGTH,
     MUSHROOM_OBJECT_SET,
     SPADE_BONUS_OBJECT_SET,

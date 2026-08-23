@@ -1,5 +1,4 @@
-from smb3parse import WORLD_COUNT
-from smb3parse.constants import TILE_CASTLE_BOTTOM
+from smb3parse.constants import TILE_CASTLE_BOTTOM, WORLD_COUNT
 from smb3parse.levels import WorldMap
 
 

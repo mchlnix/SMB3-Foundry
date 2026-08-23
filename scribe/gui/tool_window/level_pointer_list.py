@@ -17,7 +17,7 @@ from scribe.gui.tool_window.table_widget import (
     SpinBoxDelegate,
     TableWidget,
 )
-from smb3parse import FIRST_VALID_ROW, OBJECT_SET_NAMES
+from smb3parse.constants import FIRST_VALID_ROW, OBJECT_SET_NAMES
 
 
 class LevelPointerList(TableWidget):

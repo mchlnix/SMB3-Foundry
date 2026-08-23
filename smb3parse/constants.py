@@ -3,7 +3,6 @@ from collections import defaultdict
 from pathlib import Path
 
 from ._default_constants import _DefaultConstants
-from .util import hex_int
 
 BASE_OFFSET = 0x10
 """the size of the INES header identifying the rom"""
@@ -617,6 +616,8 @@ def reset_global_offsets():
 
 
 def update_global_offsets(path_to_global_list: Path):
+    from .util import hex_int
+
     warnings: list[str] = []
 
     with path_to_global_list.open("r") as label_file:
@@ -741,3 +742,16 @@ MAX_X_VALUE = 0xFF
 MIN_ADDITIONAL_LENGTH = 0
 MAX_ADDITIONAL_LENGTH = 0xFF
 MAX_ENEMY_ITEM_ID = 0xEC
+
+# nn - actual number to be used
+# ll - short for 00ll, 2 byte address in the zero page, basically RAM
+# hhll - full address, 2 bytes high, 2 bytes low
+RTS = 0x60
+NOP = 0xEA
+JSR = 0x20  # JSR $hhll
+LDY_CONST = 0xA0  # LDY #$nn
+LDA_CONST = 0xA9  # LDA #$nn
+STA_OFFSET = 0x8D  # STA $hhll
+STY_RAM = 0x84  # STY $ll
+TSA_TABLE_SIZE = 0x400
+PRG_BANK_SIZE = 0x2000

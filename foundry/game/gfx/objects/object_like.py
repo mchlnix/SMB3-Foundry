@@ -1,6 +1,6 @@
 import abc
 
-from smb3parse.util.rect import Rect
+from smb3parse.util import Rect
 
 
 class ObjectLike(abc.ABC):

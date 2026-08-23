@@ -6,7 +6,7 @@ import foundry
 from foundry.game.gfx.objects.world_map.sprite import Sprite
 from scribe.gui.main_window import ScribeMainWindow
 from scribe.gui.tool_window.tool_window import ToolWindow
-from smb3parse import (
+from smb3parse.constants import (
     TILE_MUSHROOM_HOUSE_1,
     WORLD_MAP_BLANK_TILE_ID,
     WORLD_MAP_SCREEN_WIDTH,

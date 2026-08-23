@@ -7,6 +7,7 @@ from smb3parse.constants import (
     BASE_OFFSET,
     ENEMY_ITEM_OBJECT_SET,
     PAGE_A000_OFFSET,
+    PRG_BANK_SIZE,
     Constants,
 )
 from smb3parse.data_points import Position
@@ -39,7 +40,6 @@ from smb3parse.util.parser.constants import (
 from smb3parse.util.parser.level import ParsedLevel
 from smb3parse.util.parser.memory import NESMemory
 from smb3parse.util.parser.object import ParsedEnemy, ParsedObject
-from smb3parse.util.rom import PRG_BANK_SIZE
 
 PINK = "\033[95m"
 CYAN = "\033[96m"

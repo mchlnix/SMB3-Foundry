@@ -1,7 +1,11 @@
 from foundry.game.gfx.block_cache import get_worldmap_tile
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.objects.world_map.map_object import MapObject
-from smb3parse import TILE_NAMES, WORLD_MAP_SCREEN_SIZE, WORLD_MAP_SCREEN_WIDTH
+from smb3parse.constants import (
+    TILE_NAMES,
+    WORLD_MAP_SCREEN_SIZE,
+    WORLD_MAP_SCREEN_WIDTH,
+)
 from smb3parse.data_points import Position
 
 

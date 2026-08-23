@@ -9,7 +9,7 @@ from foundry.game.gfx.objects import get_minimal_icon_object
 from foundry.game.gfx.objects.in_level.level_object import LevelObject
 from foundry.game.gfx.objects.in_level.level_object_factory import LevelObjectFactory
 from foundry.gui.windows.ObjectViewer import ObjectDrawArea
-from smb3parse import (
+from smb3parse.constants import (
     DESERT_GRAPHICS_SET,
     DESERT_OBJECT_SET,
     DUNGEON_GRAPHICS_SET,

@@ -2,8 +2,8 @@ from os.path import basename
 from pathlib import Path
 
 from foundry.game.additional_data import AdditionalData
-from smb3parse import reset_global_offsets
-from smb3parse.util.rom import PRG_BANK_SIZE, INESHeader, Rom
+from smb3parse.constants import PRG_BANK_SIZE, reset_global_offsets
+from smb3parse.util import INESHeader, Rom
 
 
 class ROM(Rom):

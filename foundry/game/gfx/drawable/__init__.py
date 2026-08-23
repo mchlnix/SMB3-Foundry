@@ -2,7 +2,7 @@ from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QColor, QImage, QPainter, Qt
 
 from foundry import data_dir
-from smb3parse import (
+from smb3parse.constants import (
     POWERUP_FIREFLOWER,
     POWERUP_FROG,
     POWERUP_HAMMER,
@@ -11,7 +11,7 @@ from smb3parse import (
     POWERUP_RACCOON,
     POWERUP_TANOOKI,
 )
-from smb3parse.util.rect import Rect
+from smb3parse.util import Rect
 
 MASK_COLOR = [0xFF, 0x00, 0xFF]
 

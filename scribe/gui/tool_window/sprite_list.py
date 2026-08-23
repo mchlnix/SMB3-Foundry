@@ -11,7 +11,7 @@ from scribe.gui.tool_window.table_widget import (
     DropdownDelegate,
     TableWidget,
 )
-from smb3parse import FIRST_VALID_ROW, MAPITEM_NAMES, MAPOBJ_NAMES
+from smb3parse.constants import FIRST_VALID_ROW, MAPITEM_NAMES, MAPOBJ_NAMES
 
 
 class SpriteList(TableWidget):

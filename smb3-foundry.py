@@ -12,7 +12,7 @@ from foundry import auto_save_rom_path, is_pyinstalled
 from foundry.game.File import ROM
 from foundry.gui.dialogs.AutoSaveDialog import AutoSaveDialog
 from foundry.gui.dialogs.crash_dialog import popup_crash_dialog
-from smb3parse import WORLD_COUNT
+from smb3parse.constants import WORLD_COUNT
 from smb3parse.util import clamp
 
 LOAD_LEVEL = "--load-level"

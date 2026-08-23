@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QCheckBox, QComboBox
 
 from foundry.game.level.Level import Level
 from foundry.gui.dialogs.LevelHeaderEditor import LevelHeaderEditor
-from smb3parse import LEVEL_SCREEN_WIDTH
+from smb3parse.constants import LEVEL_SCREEN_WIDTH
 
 
 @pytest.fixture

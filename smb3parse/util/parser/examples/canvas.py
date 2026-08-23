@@ -7,7 +7,7 @@ from foundry.game.gfx.block_cache import get_block
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.gfx.GraphicsSet import GraphicsSet
 from foundry.game.gfx.Palette import load_palette_group
-from smb3parse import LEVEL_SCREEN_WIDTH
+from smb3parse.constants import LEVEL_SCREEN_WIDTH
 from smb3parse.util.parser.level import ParsedLevel
 
 width = LEVEL_SCREEN_WIDTH * 15

@@ -9,7 +9,7 @@ from foundry.gui import label_and_widget
 from foundry.gui.commands import AddEnemyAt, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.Spinner import Spinner
-from smb3parse import OBJ_AUTOSCROLL
+from smb3parse.constants import OBJ_AUTOSCROLL
 
 if TYPE_CHECKING:
     from foundry.gui.FoundryMainWindow import FoundryMainWindow

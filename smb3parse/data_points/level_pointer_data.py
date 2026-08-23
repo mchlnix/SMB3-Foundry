@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
 
+from smb3parse.constants import PRG_BANK_SIZE
+
 from ..constants import (
     BASE_OFFSET,
     FIRST_VALID_ROW,
@@ -9,7 +11,7 @@ from ..constants import (
     WORLD_MAP_SCREEN_WIDTH,
     Constants,
 )
-from ..util.rom import PRG_BANK_SIZE, Rom
+from ..util.rom import Rom
 from .util import DataPoint, _IndexedMixin, _PositionMixin
 
 if TYPE_CHECKING:

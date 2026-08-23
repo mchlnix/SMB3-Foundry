@@ -16,6 +16,7 @@ from smb3parse.constants import (
     PIPE_OBJECT_SET,
     PIRANHA_PLANT_OBJECT_SET,
     PLAINS_OBJECT_SET,
+    PRG_BANK_SIZE,
     SKY_OBJECT_SET,
     SPADE_BONUS_OBJECT_SET,
     UNDERGROUND_OBJECT_SET,
@@ -23,7 +24,7 @@ from smb3parse.constants import (
     WORLD_MAP_OBJECT_SET,
     Constants,
 )
-from smb3parse.util.rom import PRG_BANK_SIZE, Rom
+from smb3parse.util import Rom
 
 # number of consecutive objects in a group that share the same byte length
 OBJECT_GROUP_SIZE = 16

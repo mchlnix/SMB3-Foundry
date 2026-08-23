@@ -2,7 +2,7 @@ import abc
 from abc import ABC
 
 from foundry.game.gfx.objects.object_like import ObjectLike
-from smb3parse.util.rect import Rect
+from smb3parse.util import Rect
 
 
 # TODO sort out x_position and y_position

@@ -27,7 +27,7 @@ from foundry.gui.settings import (
     Settings,
 )
 from foundry.gui.widgets.HorizontalLine import HorizontalLine
-from smb3parse import (
+from smb3parse.constants import (
     POWERUP_FIREFLOWER,
     POWERUP_FROG,
     POWERUP_HAMMER,

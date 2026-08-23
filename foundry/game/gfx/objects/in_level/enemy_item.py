@@ -11,14 +11,14 @@ from foundry.game.ObjectDefinitions import (
     enemy_handle_y,
 )
 from foundry.game.ObjectSet import ObjectSet
-from smb3parse import (
+from smb3parse.constants import (
     ENEMY_ITEM_GRAPHICS_SET,
     ENEMY_ITEM_OBJECT_SET,
     OBJ_AUTOSCROLL,
     OBJ_BOOMBOOM,
     OBJ_FLYING_BOOMBOOM,
 )
-from smb3parse.util.rect import Rect
+from smb3parse.util import Rect
 
 
 # TODO Get Qt code out of here

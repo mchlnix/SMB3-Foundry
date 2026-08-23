@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from hypothesis import given, strategies
 
-from smb3parse import (
+from smb3parse.constants import (
     DEFAULT_HORIZONTAL_HEIGHT,
     DEFAULT_VERTICAL_WIDTH,
     HEADER_LENGTH,
@@ -19,7 +19,7 @@ from smb3parse.levels import (
 )
 from smb3parse.objects import is_valid_object_set_number
 from smb3parse.tests.conftest import test_rom_path
-from smb3parse.util.rom import Rom
+from smb3parse.util import Rom
 
 rom = Rom.from_file(Path(test_rom_path))
 

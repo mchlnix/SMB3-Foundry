@@ -6,7 +6,7 @@ from foundry import app_settings_foundry, get_level_thumbnail, pixmap_to_base64
 from foundry.game.File import ROM
 from foundry.gui.settings import LevelPreviewType
 from foundry.gui.widgets.table_widget import TableWidget
-from smb3parse import OBJECT_SET_NAMES
+from smb3parse.constants import OBJECT_SET_NAMES
 from smb3parse.util.parser import FoundLevel
 
 LOST_LEVELS_INDEX = 8

@@ -3,7 +3,7 @@ from PySide6.QtGui import QColor
 
 from foundry.game.gfx.drawable import load_from_object_sprite_sheet
 from foundry.game.gfx.objects.world_map.map_object import MapObject
-from smb3parse import (
+from smb3parse.constants import (
     FIRST_VALID_ROW,
     MAPITEM_ANCHOR,
     MAPITEM_FIREFLOWER,

@@ -9,19 +9,19 @@ from foundry.game.additional_data import (
     LevelOrganizer,
 )
 from foundry.game.level import EMPTY_OBJECT_DATA, EnemyItemAddress, LevelAddress
-from smb3parse import (
+from smb3parse.constants import (
     BASE_OFFSET,
     DESERT_OBJECT_SET,
     ENEMY_DATA_BANK_INDEX,
     OFFSET_SIZE,
     PLAINS_LEVEL_DATA_BANK_INDEX,
     PLAINS_OBJECT_SET,
+    PRG_BANK_SIZE,
     VANILLA_PRG_BANK_COUNT,
     Constants,
 )
-from smb3parse.util import apply
+from smb3parse.util import Rom, apply
 from smb3parse.util.parser import FoundLevel
-from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 
 enemy_bank_start = BASE_OFFSET + PRG_BANK_SIZE * ENEMY_DATA_BANK_INDEX
 first_enemy_data = enemy_bank_start + 5

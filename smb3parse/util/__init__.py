@@ -1,66 +1,14 @@
-from functools import partial
-from typing import Callable, Iterable
+from .funcs import apply, clamp, hex_int, lrange
+from .rect import Point, Rect
+from .rom import INESHeader, Rom
 
-# nn - actual number to be used
-# ll - short for 00ll, 2 byte address in the zero page, basically RAM
-# hhll - full address, 2 bytes high, 2 bytes low
-RTS = 0x60
-NOP = 0xEA
-JSR = 0x20  # JSR $hhll
-LDY_CONST = 0xA0  # LDY #$nn
-LDA_CONST = 0xA9  # LDA #$nn
-STA_OFFSET = 0x8D  # STA $hhll
-STY_RAM = 0x84  # STY $ll
-
-
-hex_int = partial(int, base=16)
-
-
-def bytes_to_str(data: bytes | bytearray):
-    return ", ".join(apply(hex, data))
-
-
-def little_endian(two_bytes: bytearray) -> int:
-    """
-    Takes a byte array of length 2 and returns the integer it represents in little endian.
-    """
-
-    first, second = two_bytes
-
-    return (second << 8) + first
-
-
-def compare_bytearrays(bytearray_1, bytearray_2, chunk_size=32):
-    assert len(bytearray_1) == len(bytearray_2)
-
-    for start_address in range(0, len(bytearray_1), chunk_size):
-        old_chunk = bytearray_1[start_address : start_address + chunk_size]
-        new_chunk = bytearray_2[start_address : start_address + chunk_size]
-
-        if (
-            bytearray_1[start_address : start_address + chunk_size]
-            != bytearray_2[start_address : start_address + chunk_size]
-        ):
-            print()
-            print(start_address, hex(start_address))
-            print([hex(bit) for bit in old_chunk])
-            print([hex(bit) for bit in new_chunk])
-            assert False
-
-
-def lrange(a1: int, a2: int | None = None, a3: int | None = None, /):
-    if a2 is None:
-        return list(range(a1))
-
-    if a3 is None:
-        return list(range(a1, a2))
-
-    return list(range(a1, a2, a3))
-
-
-def apply(func: Callable, iterable: Iterable, *iterables: Iterable):
-    return list(map(func, iterable, *iterables))
-
-
-def clamp(minimum, value, maximum):
-    return max(minimum, min(value, maximum))
+__all__ = [
+    "apply",
+    "clamp",
+    "hex_int",
+    "lrange",
+    "Point",
+    "Rect",
+    "INESHeader",
+    "Rom",
+]

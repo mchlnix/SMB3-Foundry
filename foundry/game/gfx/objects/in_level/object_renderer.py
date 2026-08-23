@@ -4,7 +4,7 @@ from warnings import warn
 from foundry.game import GROUND, SKY
 from foundry.game.File import ROM
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
-from smb3parse import (
+from smb3parse.constants import (
     LEVEL_MAX_LENGTH,
     LEVEL_SCREEN_HEIGHT,
     LEVEL_SCREEN_WIDTH,
@@ -12,7 +12,7 @@ from smb3parse import (
     LVL_OBJ_SKY_WOODEN_POLE,
     PLAINS_OBJECT_SET,
 )
-from smb3parse.util.rect import Rect
+from smb3parse.util import Rect
 
 # not all objects provide a block index for a blank block
 BLANK = -1

@@ -42,7 +42,7 @@ from scribe.gui.commands import (
     SetSpriteType,
 )
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse import (
+from smb3parse.constants import (
     FIRST_VALID_ROW,
     MUSHROOM_OBJECT_SET,
     OBJECT_SET_NAMES,

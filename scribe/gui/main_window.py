@@ -27,7 +27,7 @@ from scribe.gui.menus.view_menu import ViewMenu
 from scribe.gui.settings_dialog import SettingsDialog
 from scribe.gui.tool_window.tool_window import ToolWindow
 from scribe.gui.world_view_context_menu import WorldContextMenu
-from smb3parse import (
+from smb3parse.constants import (
     MAPOBJ_ASM_SYMBOLS,
     MAX_SCREEN_COUNT,
     STARTING_WORLD_INDEX_ADDRESS,

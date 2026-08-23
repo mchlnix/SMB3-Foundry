@@ -26,7 +26,7 @@ from foundry.gui.commands import (
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
 from foundry.gui.widgets.Spinner import Spinner
-from smb3parse import (
+from smb3parse.constants import (
     ENEMY_BASE_OFFSET,
     MARIO_X_POSITIONS,
     MARIO_Y_POSITIONS,

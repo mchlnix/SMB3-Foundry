@@ -9,7 +9,7 @@ from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.settings import LevelPreviewType, Settings
 from foundry.gui.visualization.world.WorldView import WorldView
-from smb3parse import WORLD_MAP_OBJECT_SET
+from smb3parse.constants import WORLD_MAP_OBJECT_SET
 from smb3parse.data_points import LevelPointerData, Position
 from smb3parse.levels import WorldMap as SMB3WorldMap
 

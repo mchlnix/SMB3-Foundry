@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
 
-from smb3parse import HEADER_LENGTH
 from smb3parse.constants import (
     CLOUDY_OBJECT_SET,
     ENEMY_ITEM_OBJECT_SET,
     ENEMY_SIZE,
     GIANT_OBJECT_SET,
+    HEADER_LENGTH,
     HILLY_OBJECT_SET,
     PIRANHA_PLANT_OBJECT_SET,
     PLAINS_OBJECT_SET,

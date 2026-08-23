@@ -16,7 +16,7 @@ from foundry.game.gfx.Palette import PaletteGroup, load_palette_group
 from foundry.game.level.Level import Level
 from foundry.game.level.LevelRef import LevelRef
 from foundry.gui.asm import load_asm_enemy
-from smb3parse import OBJECT_SET_NAMES, PIPE_PAIR_COUNT
+from smb3parse.constants import OBJECT_SET_NAMES, PIPE_PAIR_COUNT
 from smb3parse.data_points import Position
 from smb3parse.data_points.pipe_data import PipeData
 

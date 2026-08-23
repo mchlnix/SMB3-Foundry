@@ -8,7 +8,7 @@ from foundry.gui import label_and_widget
 from foundry.gui.commands import AddEnemyAt, MoveObject, RemoveObject
 from foundry.gui.level_settings.settings_mixin import SettingsMixin
 from foundry.gui.widgets.Spinner import Spinner
-from smb3parse import OBJ_WHITE_MUSHROOM_HOUSE
+from smb3parse.constants import OBJ_WHITE_MUSHROOM_HOUSE
 
 
 class WhiteMushroomHouseMixin(SettingsMixin):

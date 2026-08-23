@@ -1,7 +1,24 @@
 from itertools import starmap
 
 from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
-from smb3parse.util import compare_bytearrays
+
+
+def compare_bytearrays(bytearray_1, bytearray_2, chunk_size=32):
+    assert len(bytearray_1) == len(bytearray_2)
+
+    for start_address in range(0, len(bytearray_1), chunk_size):
+        old_chunk = bytearray_1[start_address : start_address + chunk_size]
+        new_chunk = bytearray_2[start_address : start_address + chunk_size]
+
+        if (
+            bytearray_1[start_address : start_address + chunk_size]
+            != bytearray_2[start_address : start_address + chunk_size]
+        ):
+            print()
+            print(start_address, hex(start_address))
+            print([hex(bit) for bit in old_chunk])
+            print([hex(bit) for bit in new_chunk])
+            assert False
 
 
 def test_read_values(world_1):

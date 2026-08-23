@@ -2,8 +2,7 @@ import pytest
 
 from smb3parse.constants import TILE_LEVEL_1
 from smb3parse.levels import WorldMap
-from smb3parse.util import apply
-from smb3parse.util.rom import Rom
+from smb3parse.util import Rom, apply
 
 
 def test_find_first_level_coordinates(rom: Rom):

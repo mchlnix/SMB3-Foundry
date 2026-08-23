@@ -5,7 +5,7 @@ from foundry.game import GROUND
 from foundry.game.File import ROM
 from foundry.game.gfx.drawable.Block import Block
 from foundry.game.level.Level import Level
-from smb3parse import LEVEL_SCREEN_WIDTH, Constants
+from smb3parse.constants import LEVEL_SCREEN_WIDTH, Constants
 
 HORIZONTAL_SCROLL_0 = 0
 HORIZONTAL_SCROLL_1 = 1

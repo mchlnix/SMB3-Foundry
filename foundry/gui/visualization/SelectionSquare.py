@@ -1,7 +1,7 @@
 from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QColor, QPainter, QPen, Qt
 
-from smb3parse.util.rect import Rect
+from smb3parse.util import Rect
 
 STROKE_COLOR = QColor(0x00, 0x00, 0x00, 0x80)
 

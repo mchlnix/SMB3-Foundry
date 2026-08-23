@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 from foundry.game.File import ROM
 from foundry.game.level.LevelRef import LevelRef
-from smb3parse import HEADER_LENGTH
+from smb3parse.constants import HEADER_LENGTH
 
 if TYPE_CHECKING:
     from foundry.gui.menus.file_menu import FileMenu

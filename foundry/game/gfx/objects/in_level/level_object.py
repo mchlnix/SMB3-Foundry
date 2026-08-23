@@ -12,9 +12,8 @@ from foundry.game.gfx.objects.in_level.object_renderer import (
 from foundry.game.gfx.Palette import PaletteGroup
 from foundry.game.ObjectDefinitions import EndType, GeneratorType
 from foundry.game.ObjectSet import ObjectSet
-from smb3parse import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
-from smb3parse.util import clamp
-from smb3parse.util.rect import Rect
+from smb3parse.constants import LEVEL_SCREEN_HEIGHT, LEVEL_SCREEN_WIDTH
+from smb3parse.util import Rect, clamp
 
 ENDING_STR = {
     EndType.UNIFORM: "Uniform",
