@@ -1,14 +1,18 @@
 import pytest
 
-from smb3parse import WORLD_MAP_HEIGHT, WORLD_MAP_SCREEN_WIDTH
-from smb3parse.constants import TILE_BOWSER_CASTLE, WORLD_MAP_OBJECT_SET
+from smb3parse import (
+    TILE_BOWSER_CASTLE,
+    WORLD_MAP_HEIGHT,
+    WORLD_MAP_OBJECT_SET,
+    WORLD_MAP_SCREEN_WIDTH,
+)
 from smb3parse.data_points import Position
-from smb3parse.levels.world_map import (
+from smb3parse.levels import (
     WorldMap,
-    _get_special_enterable_tiles,
-    get_all_world_maps,
+    get_special_enterable_tiles,
     list_world_map_addresses,
 )
+from smb3parse.util.rom import Rom
 
 world_map_addresses = [
     0x185BA,
@@ -46,6 +50,12 @@ world_1_addresses = [
     0x2FC2E,
     0x2FCD1,
 ]
+
+
+def get_all_world_maps(rom: Rom) -> list["WorldMap"]:
+    world_map_addresses = list_world_map_addresses(rom)
+
+    return [WorldMap(address, rom) for address in world_map_addresses]
 
 
 def test_list_world_map_addresses(rom):
@@ -184,7 +194,7 @@ def test_special_enterable_tiles(rom):
 
     last_special_tile = TILE_BOWSER_CASTLE
 
-    special_enterable_tiles = _get_special_enterable_tiles(rom)
+    special_enterable_tiles = get_special_enterable_tiles(rom)
 
     assert special_enterable_tiles.find(first_special_tile) == 0
     assert special_enterable_tiles.rfind(last_special_tile) == len(special_enterable_tiles) - 1

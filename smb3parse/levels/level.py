@@ -1,9 +1,10 @@
-from smb3parse import HEADER_LENGTH
-from smb3parse.levels.level_base import LevelBase
-from smb3parse.levels.level_header import LevelHeader
-from smb3parse.levels.world_map import WorldMapPosition
 from smb3parse.objects.object_set import ObjectSet, assert_valid_object_set_number
 from smb3parse.util.rom import Rom
+
+from ..constants import HEADER_LENGTH
+from .level_base import LevelBase
+from .level_header import LevelHeader
+from .world_map_position import WorldMapPosition
 
 
 class Level(LevelBase):

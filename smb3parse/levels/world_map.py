@@ -1,32 +1,30 @@
 from typing import Generator
 from warnings import warn
 
-from smb3parse import (
+from ..constants import (
     COMPLETABLE_LIST_END_MARKER,
     FIRST_VALID_ROW,
+    OFFSET_SIZE,
     SPECIAL_ENTERABLE_TILE_AMOUNT,
+    SPRITE_COUNT,
+    TILE_LEVEL_1,
+    TILE_LEVEL_10,
+    TILE_NAMES,
     VALID_COLUMNS,
     VALID_ROWS,
     WORLD_COUNT,
     WORLD_MAP_BASE_OFFSET,
     WORLD_MAP_HEIGHT,
+    WORLD_MAP_OBJECT_SET,
     WORLD_MAP_SCREEN_SIZE,
     WORLD_MAP_SCREEN_WIDTH,
-)
-from smb3parse.constants import (
-    OFFSET_SIZE,
-    SPRITE_COUNT,
-    TILE_LEVEL_1,
-    TILE_LEVEL_10,
-    TILE_NAMES,
-    WORLD_MAP_OBJECT_SET,
     Constants,
 )
-from smb3parse.data_points import LevelPointerData, Position, SpriteData, WorldMapData
-from smb3parse.levels.level_base import LevelBase
-from smb3parse.levels.WorldMapPosition import WorldMapPosition
-from smb3parse.objects.object_set import ObjectSet
-from smb3parse.util.rom import Rom
+from ..data_points import LevelPointerData, Position, SpriteData, WorldMapData
+from ..objects.object_set import ObjectSet
+from ..util.rom import Rom
+from .level_base import LevelBase
+from .world_map_position import WorldMapPosition
 
 
 def list_world_map_addresses(rom: Rom) -> list[int]:
@@ -36,12 +34,6 @@ def list_world_map_addresses(rom: Rom) -> list[int]:
     ]
 
     return addresses
-
-
-def get_all_world_maps(rom: Rom) -> list["WorldMap"]:
-    world_map_addresses = list_world_map_addresses(rom)
-
-    return [WorldMap(address, rom) for address in world_map_addresses]
 
 
 def level_name(data: LevelPointerData | None) -> str:
@@ -63,7 +55,7 @@ def _get_normal_enterable_tiles(rom: Rom) -> bytes:
     return rom.read(Constants.TILE_ATTRIBUTES_TS0_OFFSET, 4)
 
 
-def _get_special_enterable_tiles(rom: Rom) -> bytes:
+def get_special_enterable_tiles(rom: Rom) -> bytes:
     return rom.read(Constants.SPECIAL_ENTERABLE_TILES_LIST, SPECIAL_ENTERABLE_TILE_AMOUNT)
 
 
@@ -85,7 +77,7 @@ def tile_is_enterable(tile_index: int, rom: Rom) -> bool:
     return (
         tile_index >= _get_normal_enterable_tiles(rom)[quadrant_index]
         or tile_index in _get_completable_tiles(rom)
-        or tile_index in _get_special_enterable_tiles(rom)
+        or tile_index in get_special_enterable_tiles(rom)
     )
 
 

@@ -3,7 +3,7 @@ from PySide6.QtGui import QColor, QPainter, QPen
 
 from foundry.game.gfx.objects.world_map.map_object import MapObject
 from smb3parse.data_points import LevelPointerData, Position
-from smb3parse.levels.world_map import level_name
+from smb3parse.levels import level_name
 
 
 class LevelPointer(MapObject):

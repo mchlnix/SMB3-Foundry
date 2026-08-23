@@ -26,8 +26,12 @@ from foundry.gui.commands import (
 from foundry.gui.dialogs.CustomDialog import CustomDialog
 from foundry.gui.dialogs.level_selector.LevelSelector import LevelSelector
 from foundry.gui.widgets.Spinner import Spinner
-from smb3parse import ENEMY_BASE_OFFSET, OBJECT_SET_NAMES
-from smb3parse.levels.level_header import MARIO_X_POSITIONS, MARIO_Y_POSITIONS
+from smb3parse import (
+    ENEMY_BASE_OFFSET,
+    MARIO_X_POSITIONS,
+    MARIO_Y_POSITIONS,
+    OBJECT_SET_NAMES,
+)
 
 LEVEL_LENGTHS = [0x10 * (i + 1) for i in range(0, 2**4)]
 STR_LEVEL_LENGTHS = [f"{length - 1:0=#4X} / {length} Blocks".replace("X", "x") for length in LEVEL_LENGTHS]

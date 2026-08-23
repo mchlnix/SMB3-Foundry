@@ -14,8 +14,7 @@ from smb3parse.constants import (
     WORLD_MAP_OBJECT_SET,
 )
 from smb3parse.data_points import LevelPointerData
-from smb3parse.levels.level_header import LevelHeader
-from smb3parse.levels.world_map import WorldMap
+from smb3parse.levels import LevelHeader, WorldMap
 from smb3parse.util import apply, hex_int
 from smb3parse.util.rom import Rom
 

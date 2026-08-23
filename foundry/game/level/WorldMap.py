@@ -22,8 +22,8 @@ from smb3parse import (
     WORLD_MAP_OBJECT_SET,
 )
 from smb3parse.data_points import Position
-from smb3parse.levels.world_map import WorldMap as _WorldMap
-from smb3parse.levels.world_map import list_world_map_addresses
+from smb3parse.levels import WorldMap as _WorldMap
+from smb3parse.levels import list_world_map_addresses
 from smb3parse.util.rect import Point
 from smb3parse.util.rom import Rom
 

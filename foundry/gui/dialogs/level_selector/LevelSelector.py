@@ -24,7 +24,7 @@ from smb3parse import (
     WORLD_MAP_OBJECT_SET,
 )
 from smb3parse.data_points import LevelPointerData
-from smb3parse.levels.level_header import LevelHeader
+from smb3parse.levels import LevelHeader
 
 from ...settings import LevelPreviewType
 from .found_level_list import FoundLevelWidget

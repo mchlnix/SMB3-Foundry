@@ -11,10 +11,10 @@ from smb3parse import (
     LEVEL_LENGTH_INTERVAL,
     LEVEL_MAX_LENGTH,
     LEVEL_MIN_LENGTH,
-)
-from smb3parse.levels.level_header import (
     MARIO_X_POSITIONS,
     MARIO_Y_POSITIONS,
+)
+from smb3parse.levels import (
     LevelHeader,
 )
 from smb3parse.objects.object_set import is_valid_object_set_number

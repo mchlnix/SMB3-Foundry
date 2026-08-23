@@ -29,7 +29,7 @@ from smb3parse import (
     Constants,
 )
 from smb3parse.data_points import Position
-from smb3parse.levels.level_header import LevelHeader
+from smb3parse.levels import LevelHeader
 from smb3parse.util.rect import Rect
 
 TIME_INF = -1

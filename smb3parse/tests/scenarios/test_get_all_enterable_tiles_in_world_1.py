@@ -1,6 +1,6 @@
 import pytest
 
-from smb3parse.levels.world_map import WorldMap
+from smb3parse.levels import WorldMap
 
 world_1_positions = [
     (0, 2, 4),

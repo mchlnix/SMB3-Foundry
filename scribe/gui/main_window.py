@@ -38,7 +38,7 @@ from smb3parse import (
     WORLD_MAP_SCREEN_WIDTH,
 )
 from smb3parse.data_points import Position
-from smb3parse.levels.world_map import WorldMap as SMB3WorldMap
+from smb3parse.levels import WorldMap as SMB3WorldMap
 
 
 class ScribeMainWindow(MainWindow):

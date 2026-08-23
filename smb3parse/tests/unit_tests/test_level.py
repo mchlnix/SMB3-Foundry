@@ -1,5 +1,4 @@
-from smb3parse.levels.level import Level
-from smb3parse.levels.world_map import WorldMapPosition
+from smb3parse.levels import Level, WorldMapPosition
 
 
 def test_level_1_1(rom, world_1):

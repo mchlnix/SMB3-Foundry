@@ -1,7 +1,7 @@
 import abc
 
 from foundry.game.ObjectSet import ObjectSet
-from smb3parse.levels.level_base import LevelBase
+from smb3parse.levels import LevelBase
 
 
 class LevelLike(LevelBase, abc.ABC):

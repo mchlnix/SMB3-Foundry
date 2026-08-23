@@ -1,6 +1,6 @@
 from abc import ABC
 
-from smb3parse.objects.object_set import ObjectSet
+from ..objects.object_set import ObjectSet
 
 
 class LevelBase(ABC):

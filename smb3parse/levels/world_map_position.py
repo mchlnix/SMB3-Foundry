@@ -1,9 +1,9 @@
 import typing
 
-from smb3parse.data_points import LevelPointerData, Position
+from ..data_points import LevelPointerData, Position
 
 if typing.TYPE_CHECKING:
-    from smb3parse.levels.world_map import WorldMap
+    from .world_map import WorldMap
 
 
 class WorldMapPosition(Position):

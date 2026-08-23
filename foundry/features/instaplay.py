@@ -10,7 +10,7 @@ from smb3parse import (
     WORLD_COUNT,
     Constants,
 )
-from smb3parse.levels.world_map import WorldMap
+from smb3parse.levels import WorldMap
 from smb3parse.util import JSR, LDA_CONST, LDY_CONST, NOP, RTS, STA_OFFSET, STY_RAM
 from smb3parse.util.rom import PRG_BANK_SIZE, Rom
 

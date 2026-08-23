@@ -1,28 +1,18 @@
 from enum import IntEnum
 from itertools import product
 
-from smb3parse import (
+from ..constants import (
     DEFAULT_HORIZONTAL_HEIGHT,
     DEFAULT_VERTICAL_WIDTH,
     ENEMY_BASE_OFFSET,
     HEADER_LENGTH,
     LEVEL_LENGTH_INTERVAL,
     LEVEL_MIN_LENGTH,
+    MARIO_X_POSITIONS,
+    MARIO_Y_POSITIONS,
 )
-from smb3parse.objects.object_set import ObjectSet
-from smb3parse.util.rom import Rom
-
-MARIO_X_POSITIONS = [0x18, 0x70, 0xD8, 0x80]  # 0x10249
-MARIO_Y_POSITIONS = [
-    0x17,
-    0x04,
-    0x00,
-    0x14,
-    0x07,
-    0x0B,
-    0x0F,
-    0x18,
-]  # 0x3D7A0 + 0x3D7A8
+from ..objects.object_set import ObjectSet
+from ..util.rom import Rom
 
 
 class MarioStartAction(IntEnum):
