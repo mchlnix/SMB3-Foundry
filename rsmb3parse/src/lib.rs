@@ -1,19 +1,33 @@
 mod data_points;
-pub mod types;
+mod labels;
 mod position;
-pub mod util;
-pub mod labels;
+mod types;
+mod util;
 
 use pyo3::prelude::*;
 
-/// A Python module implemented in Rust.
 #[pymodule]
 mod rsmb3parse {
     use pyo3::prelude::*;
 
-    /// Formats the sum of two numbers as string.
-    #[pyfunction]
-    fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-        Ok((a + b).to_string())
+    #[pymodule]
+    mod util {
+        #[pymodule_export]
+        use crate::util::rom::Rom;
+
+        #[pymodule_export]
+        use crate::util::rom::INESHeader;
+
+        #[pymodule_export]
+        use crate::util::funcs::clamp;
+
+        #[pymodule_export]
+        use crate::util::funcs::hex_int;
+
+        #[pymodule_export]
+        use crate::util::rect::Rect;
+
+        #[pymodule_export]
+        use crate::util::rect::Point;
     }
 }

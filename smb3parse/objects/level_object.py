@@ -6,7 +6,6 @@ from smb3parse.constants import (
     PLAINS_OBJECT_SET,
     WORLD_MAP_OBJECT_SET,
 )
-from smb3parse.util import lrange
 
 from .in_level_object import InLevelObject
 
@@ -38,7 +37,7 @@ def _obj_range(object_set: ObjectSetNo, start: ObjectId) -> list[ObjectId]:
     if start < 0x10:
         return [start]
 
-    return lrange(start, start + 0x10)
+    return list(range(start, start + 0x10))
 
 
 def goes_to_next_level(parsed_obj: "ParsedObject | ParsedEnemy"):
