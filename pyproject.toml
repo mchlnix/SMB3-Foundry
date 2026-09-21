@@ -9,3 +9,34 @@ profile = "black"
 
 [tool.black]
 line-length=120
+
+[tool.mypy]
+mypy_path = [
+    "./rust/rsmb3parse/stubs",
+    "./rust/rtest/stubs",
+    "./rust/r6502/"
+]
+# imports foundry leading to type errors, since only an example folder, consider it a lawless zone
+exclude="smb3parse.util.parser.example"
+check_untyped_defs = true
+no_site_packages=true
+
+[[tool.mypy.overrides]]
+module = "py65.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module="PySide6.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module="pytest.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module="hypothesis.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module="qdarkstyle"
+ignore_missing_imports = true
