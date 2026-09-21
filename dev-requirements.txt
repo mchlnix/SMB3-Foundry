@@ -3,6 +3,7 @@ hypothesis
 maturin
 mypy==1.19.1
 pytest
+pytest-xdist
 pytest-qt
 refurb==2.3.0
 ruff==0.15.6
