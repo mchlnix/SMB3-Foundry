@@ -1,15 +1,9 @@
 from typing import Callable, Iterable
 
 # I haven't figured out how to do type stubs for nested rust modules
-from rsmb3parse import util  # type: ignore
+from rsmb3parse.util import Point, Rect, clamp, hex_int
 
 from .rom import INESHeader, Rom
-
-clamp = util.clamp
-hex_int = util.hex_int
-
-Point = util.Point
-Rect = util.Rect
 
 
 def apply(func: Callable, iterable: Iterable, *iterables: Iterable):
