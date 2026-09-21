@@ -150,11 +150,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libegl1 libxcb-shape0 libqt5gui5
 
-      - name: Create Rust Module
+      - name: Create Rust Modules
         run: |
           ${{ matrix.cfg.activate }}
-          cd r6502
           pip install -U maturin
+
+          pushd rust
+          pushd r6502
+          maturin develop --profile=release
+
+          popd
+          pushd rsmb3parse
           maturin develop --profile=release
 
       - name: Build Executable
