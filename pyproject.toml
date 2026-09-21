@@ -1,6 +1,9 @@
 [tool.refurb]
 ignore = [109, 112, 113, 126, 129, 184]
 
+[tool.ruff.lint.per-file-ignores]
+"rust/*/__init__.py" = ["F403", "F405"]
+
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::foundry.game.gfx.objects.in_level.object_renderer.LevelObjectRenderWarning"]
 
