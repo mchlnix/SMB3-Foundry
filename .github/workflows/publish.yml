@@ -107,7 +107,7 @@ jobs:
       matrix:
         cfg:
           - {os: ubuntu-22.04, prefix: 'linux', suffix: '', architecture: 'x64', python: 'python3.11', activate: 'source .venv/bin/activate'}
-          - {os: windows-2022, prefix: 'win64', suffix: '.exe', architecture: 'x64', python: 'python3.exe', activate: '.venv\Scripts\activate.bat'}
+          - {os: windows-2022, prefix: 'win64', suffix: '.exe', architecture: 'x64', python: 'python3.exe', activate: '.venv\Scripts\activate'}
           - {os: macos-latest, prefix: 'osx', suffix: '', architecture: 'x64', python: 'python3.11', activate: 'source .venv/bin/activate'}
         editor:
           - {name: 'smb3-foundry'}
