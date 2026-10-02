@@ -30,7 +30,7 @@ class LevelPreviewType:
     WIDGET = 2
 
 
-# TODO Make into an enum?
+# TODO Make keys into an enum?
 SETTINGS: dict[str, str | int | float | bool] = dict()
 SETTINGS["editor/instaplay_emulator"] = "fceux"
 SETTINGS["editor/instaplay_arguments"] = "%f"
@@ -169,6 +169,8 @@ class Settings(QSettings):
 
                     self.remove(key)
 
+                continue
+
             if settings_version == 2:
                 self.setValue("editor/settings_version", settings_version + 1)
 
@@ -177,5 +179,6 @@ class Settings(QSettings):
                     self.setValue("editor/release_channel", ReleaseChannel.NONE)
 
                 self.remove("editor/update_on_startup")
+
                 continue
             break

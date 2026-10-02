@@ -132,9 +132,14 @@ class FileMenu(QMenu):
         save_asm(what, pathname, asm)
 
     def on_save_m3l(self):
-        suggested_file = self.settings.value("editor/default_dir_path") + "/" + self.level_ref.name + ".m3l"
+        suggested_file_path = self.settings.value("editor/default_dir_path")
 
-        if not (pathname := save_m3l_filename(suggested_file)):
+        if suggested_file_path:
+            suggested_file_path += "/"
+
+        suggested_file_path += self.level_ref.name + ".m3l"
+
+        if not (pathname := save_m3l_filename(suggested_file_path)):
             return
 
         m3l_bytes = self.level_ref.level.to_m3l()
